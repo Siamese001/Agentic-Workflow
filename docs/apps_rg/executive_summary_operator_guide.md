@@ -53,7 +53,7 @@ All **post-scratch** regen/repair Qwen calls go through `budgeted_qwen_regen_cal
 
 | Variable | Suggested | Purpose |
 |----------|-----------|---------|
-| `VLLM_MAX_MODEL_LEN` | `16384` or `32768` (match server) | Operator-declared context window |
+| `VLLM_MAX_MODEL_LEN` | `24576` (must match Docker `--max-model-len`) | Operator-declared context window |
 | `APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW` | `0` (off) | `=1` probes `/v1/models` for `max_model_len` metadata (W2.1) |
 | `APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS` | `2048` | Scratch generation cap only |
 | `APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS` | `1024` | All synthesis/judge/X2-repair regen (≤ scratch cap) |
@@ -213,15 +213,16 @@ Use this to prove **budget safety and artifact linkage** — not that all judges
 ```powershell
 $env:APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS = "3"
 $env:APPS_RG_QWEN_TIMEOUT_SECONDS = "120"
-$env:VLLM_MAX_MODEL_LEN = "16384"
+$env:VLLM_MAX_MODEL_LEN = "24576"
+$env:APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW = "1"
 
 python -m apps_rg --section executive_summary `
   --target-company "Brown & Brown" `
   --target-role "SVP IT Strategy & Innovation" `
-  --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt `
+  --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd_exec.txt `
   --provider qwen_vllm `
   --allow-non-allow-exit-zero `
-  --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md
+  --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md
 ```
 
 **Required artifacts (budget proof checklist):**

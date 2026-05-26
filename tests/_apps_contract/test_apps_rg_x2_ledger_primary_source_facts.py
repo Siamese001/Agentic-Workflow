@@ -166,7 +166,6 @@ def test_remaining_lane_rejects_jd_briefing_and_random_ids(section: str) -> None
 
 
 def test_mock_headline_lane_x2_receipt_matches_usage_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
     from apps_rg.runtime.sections import headline_lane as lane
 
     args = lane.build_headline_lane_args(
@@ -195,8 +194,8 @@ def test_mock_headline_lane_x2_receipt_matches_usage_ledger(monkeypatch: pytest.
     assert "x2_headline_source_fact_ids_within_srfs_slice" not in gate_ids
 
 
+@pytest.mark.contract_harness_live
 def test_mock_competencies_lane_x2_and_usage_ledger_agree(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
     from apps_rg.runtime.sections import competencies_lane as lane
 
     args = lane.build_competencies_lane_args(

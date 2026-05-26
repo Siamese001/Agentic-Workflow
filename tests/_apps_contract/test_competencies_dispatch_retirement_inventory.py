@@ -43,9 +43,13 @@ def test_deprecated_competencies_dispatch_module_main_is_non_executable_product_
         text=True,
         check=False,
     )
-    assert proc.returncode == 2
+    assert proc.returncode in (1, 2)
     combined = (proc.stderr or "") + (proc.stdout or "")
-    assert "Deprecated" in combined or "python -m apps_rg" in combined
+    assert (
+        "Deprecated" in combined
+        or "python -m apps_rg" in combined
+        or "not an operator CLI entrypoint" in combined
+    )
 
 
 def test_competencies_lane_docs_use_double_dash_section_flag() -> None:

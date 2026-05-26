@@ -11,14 +11,11 @@ from tests._apps_contract.lane_cli_common import (
     REPO_ROOT as REPO,
     artifact_dir_from_stdout,
     contract_artifact_dir,
-    qwen_live_available,
+    contract_live_pytestmark,
     run_lane_cli,
 )
 
-pytestmark = pytest.mark.skipif(
-    not qwen_live_available(),
-    reason="section input usage ledger CLI tests require live qwen_vllm",
-)
+pytestmark = contract_live_pytestmark("section_input_usage_ledger")
 
 SECTION_IDS = (
     "headline",

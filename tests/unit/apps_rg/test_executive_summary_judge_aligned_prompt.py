@@ -49,8 +49,9 @@ def _strategy_payload() -> dict:
 
 def test_template_v15_judge_aligned_markers():
     raw = TEMPLATE.read_text(encoding="utf-8")
-    assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V7" in raw or "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V6" in raw
-    assert "claude_synthesis_pass_contract" in raw
+    assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V9" in raw
+    assert "claude_synthesis_pass_contract" not in raw
+    assert "connective_variety_contract" not in raw
     assert "<third_person_voice_contract>" in raw
     assert "<six_sentence_period_contract>" in raw
     assert "proof-safe narrative order" not in raw

@@ -8,6 +8,8 @@ import shutil
 import uuid
 from pathlib import Path
 
+import pytest
+
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt
 from apps_rg.runtime.dispatch.ibm_bullets_pa import compile_ibm_bullets_prompt
 from apps_rg.runtime.dispatch.ibm_narrative_pa import compile_ibm_narrative_prompt
@@ -165,7 +167,9 @@ def test_ibm_narrative_compiled_shape():
     assert "ACCEPTED_IBM_BULLETS" in body_f
 
 
-def test_canonical_dispatch_routes_ibm_narrative_lane():
+@pytest.mark.contract_harness_live
+def test_canonical_dispatch_routes_ibm_narrative_lane(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("APPS_RG_C0_EVIDENCE_ROOM", "0")
     from apps_rg.runtime.orchestration.canonical_dispatch import run_canonical_apps_rg_from_cli_primitives
 
     art = REPO_ROOT / "artifacts" / "apps_rg" / "_pytest_ibm_narr_lane" / uuid.uuid4().hex[:12]

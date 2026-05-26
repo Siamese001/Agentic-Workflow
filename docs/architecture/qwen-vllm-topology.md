@@ -1,7 +1,7 @@
 # Qwen/vLLM Runtime Topology
 
 > Canonical reference for the supported Qwen inference path in this repo.
-> Last updated 2026-05-18 (W5 infra guidance and proof boundary).
+> Last updated 2026-05-26 (24k context default for 32B-AWQ executive-summary headroom).
 > Related: `docs/architecture/hardening_addendum.md`, `agentic_core/L2_execution/types/local_first_disposition.py`
 
 ---
@@ -18,8 +18,29 @@ For repo `Agentic-Workflow-FRESH`, the Qwen vLLM stack runs under
 | Model | `Qwen/Qwen2.5-32B-Instruct-AWQ` (32B-AWQ) |
 | Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL` in `agentic_core/L0_routing/config/model_registry.py`) |
 | Port mapping | `0.0.0.0:8000->8000/tcp` |
-| Container args | `--model Qwen/Qwen2.5-32B-Instruct-AWQ --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --dtype auto --max-model-len 8192 --gpu-memory-utilization 0.88 --host 0.0.0.0 --port 8000` |
+| Container args | `--model Qwen/Qwen2.5-32B-Instruct-AWQ --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --dtype auto --max-model-len 24576 --gpu-memory-utilization 0.92 --host 0.0.0.0 --port 8000` |
 | Restart policy | `unless-stopped` (set 2026-05-06 W3 of plan apps-rg-vllm-deferred-followup-f7d3a9) |
+
+**Context window SSOT:** `24576` tokens. Set matching `VLLM_MAX_MODEL_LEN=24576` for apps_rg / agentic_core token budgets. Do not set env to 32k while the container stays at 16k (or vice versa).
+
+### Recreate container at 24k (operator)
+
+When changing `--max-model-len`, recreate `local-qwen-vllm` (config is fixed at create time):
+
+```powershell
+docker stop local-qwen-vllm
+docker rm local-qwen-vllm
+docker run -d --name local-qwen-vllm --gpus all -p 8000:8000 `
+  vllm/vllm-openai:latest `
+  --model Qwen/Qwen2.5-32B-Instruct-AWQ `
+  --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ `
+  --quantization awq_marlin --dtype auto `
+  --max-model-len 24576 --gpu-memory-utilization 0.92 `
+  --host 0.0.0.0 --port 8000
+curl http://localhost:8000/v1/models
+```
+
+If the container OOMs on load, try `--gpu-memory-utilization 0.88` or step down to `20480` (update `VLLM_MAX_MODEL_LEN` to match).
 
 ### Lifecycle
 

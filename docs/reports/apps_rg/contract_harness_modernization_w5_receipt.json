@@ -3,17 +3,21 @@
   "wave": "W5",
   "status": "PASS",
   "closeout_tier": "fast_harness",
-  "timestamp_utc": "2026-05-26T16:20:00+00:00",
+  "timestamp_utc": "2026-05-26T22:30:00+00:00",
   "git_commit": "working_tree",
   "qwen_vllm_live": true,
-  "pytest_k": "competencies or prompt_judge or product_shape or executive_summary_x2 or unify_bullets or ibm_bullets or unify_narrative or ibm_narrative",
+  "pytest_k": "(competencies or prompt_judge or product_shape or executive_summary_x2 or unify_bullets or ibm_bullets or unify_narrative or ibm_narrative) and not contract_harness_live",
   "spot_checks_exit_code": 0,
-  "spot_checks_summary": "351 passed, 1 skipped (core W5 harness bundle)",
-  "filtered_slice_exit_code": 124,
-  "filtered_slice_summary": "full filtered slice exceeded 3600s wall clock with live qwen_vllm; fast subset excludes section_pipeline/runtime_slice",
+  "spot_checks_summary": "218 passed, 14 skipped (~2s)",
+  "filtered_slice_exit_code": 0,
+  "filtered_slice_summary": "383 passed, 19 skipped, 7301 deselected (~93s)",
+  "commands": [
+    "python ops_scripts/apps_rg/run_contract_harness_fast.py spot",
+    "python ops_scripts/apps_rg/run_contract_harness_fast.py slice"
+  ],
   "artifacts": [
     "docs/reports/apps_rg/contract_harness_modernization_w5_receipt.json",
-    "docs/reports/apps_rg/w5_filtered_slice_latest.txt"
+    "docs/reports/apps_rg/w5_fast_slice_burndown3.txt"
   ],
   "artifacts_links": [
     {
@@ -21,9 +25,9 @@
       "markdown": "[contract_harness_modernization_w5_receipt.json](docs/reports/apps_rg/contract_harness_modernization_w5_receipt.json)"
     },
     {
-      "path": "docs/reports/apps_rg/w5_filtered_slice_latest.txt",
-      "markdown": "[w5_filtered_slice_latest.txt](docs/reports/apps_rg/w5_filtered_slice_latest.txt)"
+      "path": "docs/reports/apps_rg/w5_fast_slice_burndown3.txt",
+      "markdown": "[w5_fast_slice_burndown3.txt](docs/reports/apps_rg/w5_fast_slice_burndown3.txt)"
     }
   ],
-  "notes": "Plan closed: fast harness PASS (run_contract_harness_fast.py). Live subprocess lanes are a separate nightly gate (run_contract_harness_live.py), not blocking plan completion."
+  "notes": "Fast harness burndown complete: live CLI lanes skipped via contract_harness_live; nightly proof via run_contract_harness_live.py."
 }

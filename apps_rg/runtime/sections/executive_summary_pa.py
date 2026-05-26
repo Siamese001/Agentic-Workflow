@@ -335,9 +335,8 @@ def format_srfs_style_only_quality_oneshot_block() -> str:
         "- JD_TEXT/BRIEFING: targeting-only (pa_targeting_only_v1).\n"
         "- Product shape and X2 gate IDs: see appended PRODUCT_SHAPE (do not restate here).\n"
         "- Voice/density: use E0 many_shot_examples (judge-aligned SVP positives / negatives); do not copy exemplar metrics.\n"
-        "- Thesis-first arc: see I0 judge_alignment_contract and executive_strategy_thesis_first (not brushstroke slot-fill).\n"
-        "- Credential policy: I0 credential_policy_v1; omit cert inventory tails.\n"
-        "- Do not force every allowed fact_id into resume_display_text; document omissions in self_check/gap_notes.\n"
+        "- Arc, voice, and credential rules: I0 judge_alignment_contract (not restated here).\n"
+        "- Do not force every allowed fact_id into resume_display_text; document omissions in gap_notes/self_check.\n"
         + format_srfs_forbidden_phrase_guardrails_block()
         + (
             "<srfs_governance_required_or_explain>\n"
@@ -424,16 +423,7 @@ def build_executive_summary_assembly_input(
 
     strategy_voice = ""
     if is_strategy_executive_target_title(t_title):
-        strategy_voice = (
-            " SVP IT strategy voice: emit executive_strategy_thesis first, then six-sentence display serving that thesis; "
-            "use injected narrative_arc_weights as thematic emphasis only (not one fact per sentence index); "
-            "JD/briefing shape executive concepts only (no JD-as-proof). "
-            "MANDATORY S6: start with 'Looking ahead,' and project innovation incubation / architecture standards / "
-            "decentralized-scale readiness (not 'extend that arc toward' recap). "
-            "MANDATORY S5: one quantitative-rigor clause only — never list derivatives pricing, multi-Greek hedging, "
-            "Towers Perrin/ING/Aetna, or FSA/cert label stacks. "
-            "FORBIDDEN connective: 'That regulatory lineage work extended to' unless causality is explicit in facts."
-        )
+        strategy_voice = " SVP lane: follow I0 judge_alignment_contract (thesis-first, six-sentence arc)."
     composition_block = ""
     _pp_for_plan = runtime_payload.get("proof_pool_metadata")
     if not isinstance(_pp_for_plan, dict):
@@ -456,17 +446,10 @@ def build_executive_summary_assembly_input(
     composition_block = format_composition_plan_for_pa(_composition_plan)
     u0 = (
         f"Task: executive summary for {t_title!r} at {t_company!r} (targeting context only).\n"
-        "Proof: C0 selected facts + ALLOWED_SOURCE_FACT_IDS only. Follow I0 judge_alignment_contract, "
-        "executive_strategy_thesis_first, narrative_arc_contract, and E0 examples for voice.\n"
+        "Proof: C0 + ALLOWED_SOURCE_FACT_IDS only. Generation law: I0 + R0; voice: E0 examples.\n"
         f"{strategy_voice}"
-        "Return bare JSON (see R0 keys). Required: executive_strategy_thesis (one third-person sentence, ledger-backed), then "
-        "resume_display_text: exactly six period-terminated sentences, one paragraph (max 140 words) - third person only (no I/my/we). "
-        "One integrated SVP arc with connective S3-S5 (max two stock bridges: Building on / Through that / Complementing / With that governance); "
-        "distinctive S1 (architecture governance + innovation programs — not generic 'aligns enterprise IT direction'); "
-        "not six Led/Built bullets; never Towers Perrin/ING/Aetna employer inventory line. "
-        "claim_ledger: 3-6 rows supporting the thesis (non-empty claim_text + source_fact_ids from allowlist); "
-        "do not emit one row per sentence by default; document intentional fact omissions in gap_notes. "
-        "Do not emit selected_fact_plan."
+        "Return bare JSON per R0 (executive_strategy_thesis, resume_display_text, claim_ledger, jd_alignment, "
+        "gap_notes, change_log, self_check). Do not emit selected_fact_plan."
     )
     product_patch = (
         "\nGRAPH PRODUCT HARD RULES: JD_TEXT/BRIEFING are targeting-only framing; NEVER list them "

@@ -185,17 +185,17 @@ LOCAL_FAST_7B_MAX_MODEL_LEN: int = 8192
 LOCAL_FAST_7B_MAX_NUM_SEQS: int = 4
 LOCAL_FAST_7B_GPU_MEMORY_UTILIZATION: float = GPU_MEMORY_UTILIZATION
 LOCAL_STRONG_14B_MODEL: str = QWEN_LOCAL_MODEL_ID  # was misnamed; value already pointed at 32B-AWQ
-LOCAL_STRONG_14B_MAX_MODEL_LEN: int = 16384
+LOCAL_STRONG_14B_MAX_MODEL_LEN: int = 24576
 LOCAL_STRONG_14B_MAX_NUM_SEQS: int = 24
 LOCAL_STRONG_14B_GPU_MEMORY_UTILIZATION: float = 0.92
-LOCAL_STRONG_14B_MAX_MODEL_LEN_CEILING: int = 16384
+LOCAL_STRONG_14B_MAX_MODEL_LEN_CEILING: int = 24576
 # Authoritative ceiling for the served Qwen2.5-32B-Instruct-AWQ context window.
 # Profiles must not request more than this regardless of profile_name.
 #
 # Wave 2 of plan qwen-confidence-routing-hardening-d4e7b1 (2026-04-25):
 # previously this was a hardcoded 32768 from the 14B-AWQ era. The 32B-AWQ
-# server actually serves ``max_model_len=16384`` on RTX 5090 + WSL2 (verified
-# 2026-04-25 against ``/v1/models``). The ceiling now reads from the L0
+# Docker server serves ``max_model_len=24576`` on RTX 5090 (see topology doc).
+# The ceiling now reads from the L0
 # SSOT ``QWEN_LOCAL_MAX_MODEL_LEN`` so a stale 32k value can never silently
 # pass validation again.
 QWEN_SERVED_MODEL_MAX_LEN_CEILING: int = QWEN_LOCAL_MAX_MODEL_LEN

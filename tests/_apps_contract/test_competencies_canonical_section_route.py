@@ -64,6 +64,7 @@ def test_python_m_apps_rg_help_lists_competencies_section() -> None:
     assert "competencies" in proc.stdout
 
 
+@pytest.mark.contract_harness_live
 def test_cli_section_competencies_avoids_product_dispatch(monkeypatch: pytest.MonkeyPatch) -> None:
     """``python -m apps_rg --section competencies`` must use canonical_dispatch, not product dispatch."""
     from apps_rg.__main__ import main
@@ -95,7 +96,7 @@ def test_cli_section_competencies_avoids_product_dispatch(monkeypatch: pytest.Mo
     )
 
     monkeypatch.setenv("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO", "1")
-    monkeypatch.setenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", "1")
+    monkeypatch.setenv("APPS_RG_C0_EVIDENCE_ROOM", "0")
     rc = main(
         [
             "--section",

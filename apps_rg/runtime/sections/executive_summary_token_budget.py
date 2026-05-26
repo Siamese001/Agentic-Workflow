@@ -34,7 +34,7 @@ ESTIMATE_METHOD = "approximate_chars_div_3_with_safety_margin"
 _CHARS_PER_TOKEN = 3
 _ESTIMATE_SAFETY_MULTIPLIER = 1.12
 _RESERVED_SYSTEM_SCHEMA_TOKENS = 512
-_DEFAULT_CONTEXT_WINDOW = 16384
+_DEFAULT_CONTEXT_WINDOW = 24576
 
 _SLOT_MARKER_RE = re.compile(r"<!--\s*SLOT:\s*([A-Z0-9]+)\s*-->")
 _FACT_LINE_RE = re.compile(r"^\s*-\s+([A-Za-z0-9_]+):\s+(.*)$", re.MULTILINE)

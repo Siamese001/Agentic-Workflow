@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from apps_rg.runtime.pre_dispatch_preflight import (
+    enforce_pre_dispatch_preflight,
     evaluate_jd_cli_input,
     evaluate_manual_brief_cli_input,
     evaluate_qwen_readiness,
@@ -71,75 +72,66 @@ def _headline_base_argv() -> list[str]:
 
 @pytest.mark.parametrize("section", ["headline", "competencies", "ibm_bullets"])
 def test_section_cli_blocks_missing_jd_before_dispatch(section: str) -> None:
-    r = _run_cli(
-        [
-            "--section",
-            section,
-            "--target-company",
-            "CI-Probe-Co",
-            "--target-role",
-            "Engineer",
-            "--manual-brief",
-            str(_FRESH_BRIEF),
-        ],
-        env_extra={"APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"},
+    result = run_pre_dispatch_preflight(
+        section=section,
+        jd="",
+        manual_brief=str(_FRESH_BRIEF),
+        lane_provider="qwen_vllm",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
     )
-    assert r.returncode == 2, (r.stdout, r.stderr)
-    assert "pre-dispatch" in (r.stderr or "").lower() or "--jd" in (r.stderr or "").lower()
-    assert "dispatch_started=false" not in (r.stdout or "").lower()
+    assert result.dispatch_started is False
+    assert result.jd_status == "MISSING"
+    with pytest.raises(SectionCliConfigError):
+        enforce_pre_dispatch_preflight(
+            section=section,
+            jd="",
+            manual_brief=str(_FRESH_BRIEF),
+            lane_provider="qwen_vllm",
+            provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+            artifact_dir=str(REPO / "artifacts" / "contract_preflight_smoke"),
+        )
 
 
 @pytest.mark.parametrize("section", ["headline", "unify_narrative"])
 def test_section_cli_blocks_missing_briefing_before_dispatch(section: str) -> None:
-    r = _run_cli(
-        [
-            "--section",
-            section,
-            "--target-company",
-            "CI-Probe-Co",
-            "--target-role",
-            "Engineer",
-            "--jd",
-            str(_FRESH_JD),
-        ],
-        env_extra={"APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"},
+    result = run_pre_dispatch_preflight(
+        section=section,
+        jd=str(_FRESH_JD),
+        manual_brief="",
+        lane_provider="qwen_vllm",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
     )
-    assert r.returncode == 2
-    assert "manual-brief" in (r.stderr or "").lower() or "briefing" in (r.stderr or "").lower()
+    assert result.dispatch_started is False
+    assert result.manual_brief_status == "MISSING"
 
 
 def test_section_cli_blocks_stale_default_jd_path_before_dispatch() -> None:
-    r = _run_cli(
-        [
-            *_headline_base_argv(),
-            "--jd",
-            str(_DEFAULT_JD),
-            "--manual-brief",
-            str(_FRESH_BRIEF),
-        ],
-        env_extra={"APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"},
+    result = run_pre_dispatch_preflight(
+        section="headline",
+        jd=str(_DEFAULT_JD),
+        manual_brief=str(_FRESH_BRIEF),
+        lane_provider="qwen_vllm",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
     )
-    assert r.returncode == 2
-    err = (r.stderr or "").lower()
+    assert result.dispatch_started is False
+    err = result.decisive_reason.lower()
     assert "default" in err or "stale" in err or "not updated" in err or "placeholder" in err
 
 
 def test_section_cli_blocks_stale_default_briefing_path_before_dispatch() -> None:
-    r = _run_cli(
-        [
-            *_headline_base_argv(),
-            "--jd",
-            str(_FRESH_JD),
-            "--manual-brief",
-            str(_DEFAULT_BRIEF),
-        ],
-        env_extra={"APPS_RG_QWEN_OFFLINE_CONTRACT_STUB": "1"},
+    result = run_pre_dispatch_preflight(
+        section="headline",
+        jd=str(_FRESH_JD),
+        manual_brief=str(_DEFAULT_BRIEF),
+        lane_provider="qwen_vllm",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
     )
-    assert r.returncode == 2
-    err = (r.stderr or "").lower()
+    assert result.dispatch_started is False
+    err = result.decisive_reason.lower()
     assert "default" in err or "stale" in err or "briefing" in err
 
 
+@pytest.mark.contract_harness_live
 def test_default_paths_allowed_with_explicit_override_env() -> None:
     r = _run_cli(
         [
@@ -225,6 +217,7 @@ def test_no_dev_default_mock_when_qwen_required(monkeypatch: pytest.MonkeyPatch)
     assert src != "mock"
 
 
+@pytest.mark.contract_harness_live
 def test_fresh_inputs_and_stub_allow_dry_run_dispatch_path() -> None:
     r = _run_cli(
         [

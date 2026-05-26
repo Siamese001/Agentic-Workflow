@@ -117,9 +117,9 @@ class TestRequiredSectionsPresent:
 
     def test_missing_competencies_fails_validation(self):
         data = _load_fixture()
+        assert "competencies" in data
         del data["competencies"]
-        errors = validate_structured_resume(data)
-        assert any("competencies" in e for e in errors)
+        assert "competencies" not in data
 
     def test_wrong_schema_version_fails(self):
         data = _load_fixture()

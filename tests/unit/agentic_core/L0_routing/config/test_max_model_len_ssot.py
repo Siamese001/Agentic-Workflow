@@ -4,7 +4,7 @@ Plan ref: ``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 2
 
 Verifies:
   - ``QWEN_LOCAL_MAX_MODEL_LEN`` is exported and equals the env-var override
-    or the post-cutover default 16384.
+    or the post-cutover default 24576.
   - ``vllm_serving_profile_types.QWEN_SERVED_MODEL_MAX_LEN_CEILING`` is the
     same value (single SSOT, no drift).
   - A profile with ``max_model_len`` exceeding the SSOT ceiling raises
@@ -25,7 +25,7 @@ class MaxModelLenSSOTTest(unittest.TestCase):
         from agentic_core.L0_routing.config import model_registry
 
         importlib.reload(model_registry)
-        self.assertEqual(model_registry.QWEN_LOCAL_MAX_MODEL_LEN, 16384)
+        self.assertEqual(model_registry.QWEN_LOCAL_MAX_MODEL_LEN, 24576)
 
     def test_env_override_respected(self) -> None:
         os.environ["VLLM_MAX_MODEL_LEN"] = "8192"

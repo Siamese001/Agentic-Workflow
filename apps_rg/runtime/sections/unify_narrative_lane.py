@@ -457,7 +457,7 @@ def retry_qwen_for_parse(
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     # North-star capstone shape; distinct wording from companion bullet labels; no metric rehash; ledger cites base + bulletts.
     narrative = (
-        "Led the platform roadmap, core architecture, and commercialization of a production-grade generative AI "
+        "Drove the platform roadmap, core architecture, and commercialization of a production-grade generative AI "
         "Solution Accelerator in a consulting firm context at Unify Consulting, serving Fortune 500 financial "
         "institutions and converting bespoke programs into reusable intellectual property deployed across enterprise lines of business."
     )

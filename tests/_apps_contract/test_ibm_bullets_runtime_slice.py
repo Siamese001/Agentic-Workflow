@@ -12,14 +12,11 @@ from tests._apps_contract.lane_cli_common import (
     REPO_ROOT,
     artifact_dir_from_stdout,
     contract_artifact_dir,
-    qwen_live_available,
+    contract_live_pytestmark,
     run_lane_cli,
 )
 
-pytestmark = pytest.mark.skipif(
-    not qwen_live_available(),
-    reason="ibm_bullets CLI contract tests require live qwen_vllm (mock provider removed)",
-)
+pytestmark = contract_live_pytestmark("ibm_bullets_runtime_slice")
 
 _IBM_COMPANY = "Synthetic Enterprise Corp."
 _IBM_ROLE = "SVP Engineering, Agentic AI Platforms"

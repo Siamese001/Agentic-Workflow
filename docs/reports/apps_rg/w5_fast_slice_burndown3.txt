@@ -1,0 +1,209 @@
+APPS_RG_CONTRACT_HARNESS_FAST=1 ΓÇö live CLI lanes skipped
+..............................F...F.F................................... [ 17%]
+................................................ssssssssss.............s [ 35%]
+ssssss..............F................F.................................. [ 52%]
+........s............................................................... [ 70%]
+.........................................FFFFF............F......F...... [ 87%]
+.......F..........................................                       [100%]
+================================== FAILURES ===================================
+_ test_fixture_single_structured_term_fails_format_gate_then_expand_goes_green _
+tests\_apps_contract\test_apps_rg_competencies_x2_source_facts.py:275: in test_fixture_single_structured_term_fails_format_gate_then_expand_goes_green
+    assert fm_ok.pass_ is True
+E   AssertionError: assert False is True
+E    +  where False = X2GateResult(gate_id='x2_competency_format_category_colon_terms', gate_type='deterministic', pass_=False, observed_val...rms[]+source_fact_ids[]', failure_reason='terms count idx 2', evidence_ref='x2_competency_format_category_colon_terms').pass_
+_______ test_v3_post_llm_pipeline_weak_fixture_passes_critical_x2_gates _______
+tests\_apps_contract\test_apps_rg_competencies_x2_source_facts.py:399: in test_v3_post_llm_pipeline_weak_fixture_passes_critical_x2_gates
+    assert_critical_gates_pass("competencies", gates)
+tests\unit\apps_rg\section_rigor\unify_ibm_lane_fixtures.py:256: in assert_critical_gates_pass
+    assert not failed, f"{lane} critical failures: {[(g, results.get(g)) for g in failed]}"
+           ^^^^^^^^^^
+E   AssertionError: competencies critical failures: [('x2_competencies_min_items_per_category', False)]
+_______________ test_mock_slice_still_passes_x2_source_mapping ________________
+tests\_apps_contract\test_apps_rg_competencies_x2_source_facts.py:437: in test_mock_slice_still_passes_x2_source_mapping
+    ctx = lane.run_competencies_lane_execution(args)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+apps_rg\runtime\sections\competencies_lane.py:79: in run_competencies_lane_execution
+    return _execute_competencies_lane(
+apps_rg\runtime\sections\competencies_lane_execution.py:109: in run_competencies_lane_execution
+    wire_spine_c0_fec_for_section(
+apps_rg\runtime\spine\c0_fec_compose.py:489: in wire_spine_c0_fec_for_section
+    assert_canonical_product_section_env(section_id)
+apps_rg\runtime\c0\product_runtime_guards.py:33: in assert_canonical_product_section_env
+    raise ProductRuntimeEnvForbiddenError(
+E   apps_rg.runtime.c0.product_runtime_guards.ProductRuntimeEnvForbiddenError: APPS_RG_C0_EVIDENCE_ROOM=0 is forbidden on canonical product section runs for 'competencies'; unset or use APPS_RG_TEST_HARNESS=1 for dev-only bypass
+____________ test_mock_competencies_lane_x2_and_usage_ledger_agree ____________
+tests\_apps_contract\test_apps_rg_x2_ledger_primary_source_facts.py:211: in test_mock_competencies_lane_x2_and_usage_ledger_agree
+    ctx = lane.run_competencies_lane_execution(args)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+apps_rg\runtime\sections\competencies_lane.py:79: in run_competencies_lane_execution
+    return _execute_competencies_lane(
+apps_rg\runtime\sections\competencies_lane_execution.py:109: in run_competencies_lane_execution
+    wire_spine_c0_fec_for_section(
+apps_rg\runtime\spine\c0_fec_compose.py:489: in wire_spine_c0_fec_for_section
+    assert_canonical_product_section_env(section_id)
+apps_rg\runtime\c0\product_runtime_guards.py:33: in assert_canonical_product_section_env
+    raise ProductRuntimeEnvForbiddenError(
+E   apps_rg.runtime.c0.product_runtime_guards.ProductRuntimeEnvForbiddenError: APPS_RG_C0_EVIDENCE_ROOM=0 is forbidden on canonical product section runs for 'competencies'; unset or use APPS_RG_TEST_HARNESS=1 for dev-only bypass
+____________ test_cli_section_competencies_avoids_product_dispatch ____________
+tests\_apps_contract\test_competencies_canonical_section_route.py:99: in test_cli_section_competencies_avoids_product_dispatch
+    rc = main(
+apps_rg\__main__.py:625: in main
+    assert_production_runtime(context="python -m apps_rg", args=args)
+apps_rg\runtime\qwen_live_only_guard.py:126: in assert_production_runtime
+    assert_production_cli_no_mock_judge_flags(argv, args=args)
+apps_rg\runtime\qwen_live_only_guard.py:107: in assert_production_cli_no_mock_judge_flags
+    raise SystemExit(2)
+E   SystemExit: 2
+---------------------------- Captured stderr call -----------------------------
+ERROR: Production CLI does not accept --mock-judges, --allow-test-mock-judges: X1D judges are always live. Test plumbing only: APPS_RG_TEST_HARNESS=1 and APPS_RG_MOCK_JUDGES=1.
+___ test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[unify_bullets] ____
+tests\_apps_contract\test_section_lane_c0_metrics_all_lanes.py:91: in test_wire_section_fec_bridge_emits_c0_metrics_all_lanes
+    wire_spine_c0_fec_for_section(
+apps_rg\runtime\spine\c0_fec_compose.py:489: in wire_spine_c0_fec_for_section
+    assert_canonical_product_section_env(section_id)
+apps_rg\runtime\c0\product_runtime_guards.py:33: in assert_canonical_product_section_env
+    raise ProductRuntimeEnvForbiddenError(
+E   apps_rg.runtime.c0.product_runtime_guards.ProductRuntimeEnvForbiddenError: APPS_RG_C0_EVIDENCE_ROOM=0 is forbidden on canonical product section runs for 'unify_bullets'; unset or use APPS_RG_TEST_HARNESS=1 for dev-only bypass
+__ test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[unify_narrative] ___
+tests\_apps_contract\test_section_lane_c0_metrics_all_lanes.py:91: in test_wire_section_fec_bridge_emits_c0_metrics_all_lanes
+    wire_spine_c0_fec_for_section(
+apps_rg\runtime\spine\c0_fec_compose.py:489: in wire_spine_c0_fec_for_section
+    assert_canonical_product_section_env(section_id)
+apps_rg\runtime\c0\product_runtime_guards.py:33: in assert_canonical_product_section_env
+    raise ProductRuntimeEnvForbiddenError(
+E   apps_rg.runtime.c0.product_runtime_guards.ProductRuntimeEnvForbiddenError: APPS_RG_C0_EVIDENCE_ROOM=0 is forbidden on canonical product section runs for 'unify_narrative'; unset or use APPS_RG_TEST_HARNESS=1 for dev-only bypass
+____ test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[ibm_bullets] _____
+tests\_apps_contract\test_section_lane_c0_metrics_all_lanes.py:91: in test_wire_section_fec_bridge_emits_c0_metrics_all_lanes
+    wire_spine_c0_fec_for_section(
+apps_rg\runtime\spine\c0_fec_compose.py:489: in wire_spine_c0_fec_for_section
+    assert_canonical_product_section_env(section_id)
+apps_rg\runtime\c0\product_runtime_guards.py:33: in assert_canonical_product_section_env
+    raise ProductRuntimeEnvForbiddenError(
+E   apps_rg.runtime.c0.product_runtime_guards.ProductRuntimeEnvForbiddenError: APPS_RG_C0_EVIDENCE_ROOM=0 is forbidden on canonical product section runs for 'ibm_bullets'; unset or use APPS_RG_TEST_HARNESS=1 for dev-only bypass
+___ test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[ibm_narrative] ____
+tests\_apps_contract\test_section_lane_c0_metrics_all_lanes.py:91: in test_wire_section_fec_bridge_emits_c0_metrics_all_lanes
+    wire_spine_c0_fec_for_section(
+apps_rg\runtime\spine\c0_fec_compose.py:489: in wire_spine_c0_fec_for_section
+    assert_canonical_product_section_env(section_id)
+apps_rg\runtime\c0\product_runtime_guards.py:33: in assert_canonical_product_section_env
+    raise ProductRuntimeEnvForbiddenError(
+E   apps_rg.runtime.c0.product_runtime_guards.ProductRuntimeEnvForbiddenError: APPS_RG_C0_EVIDENCE_ROOM=0 is forbidden on canonical product section runs for 'ibm_narrative'; unset or use APPS_RG_TEST_HARNESS=1 for dev-only bypass
+____ test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[competencies] ____
+tests\_apps_contract\test_section_lane_c0_metrics_all_lanes.py:91: in test_wire_section_fec_bridge_emits_c0_metrics_all_lanes
+    wire_spine_c0_fec_for_section(
+apps_rg\runtime\spine\c0_fec_compose.py:489: in wire_spine_c0_fec_for_section
+    assert_canonical_product_section_env(section_id)
+apps_rg\runtime\c0\product_runtime_guards.py:33: in assert_canonical_product_section_env
+    raise ProductRuntimeEnvForbiddenError(
+E   apps_rg.runtime.c0.product_runtime_guards.ProductRuntimeEnvForbiddenError: APPS_RG_C0_EVIDENCE_ROOM=0 is forbidden on canonical product section runs for 'competencies'; unset or use APPS_RG_TEST_HARNESS=1 for dev-only bypass
+___ TestRequiredSectionsPresent.test_missing_competencies_fails_validation ____
+tests\_apps_contract\test_source_resume_schema_v2.py:123: in test_missing_competencies_fails_validation
+    validator = jsonschema.Draft7Validator(_load_schema())
+                                           ^^^^^^^^^^^^^^
+tests\_apps_contract\test_source_resume_schema_v2.py:34: in _load_schema
+    with open(_SCHEMA_PATH, encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\runtime\\schemas\\source_resume_v2_structured.json'
+__________ test_mock_output_passes_lane_critical_x2[unify_narrative] __________
+tests\_apps_contract\test_unify_ibm_lanes_e2e.py:43: in test_mock_output_passes_lane_critical_x2
+    assert_critical_gates_pass(lane, gates)
+tests\unit\apps_rg\section_rigor\unify_ibm_lane_fixtures.py:256: in assert_critical_gates_pass
+    assert not failed, f"{lane} critical failures: {[(g, results.get(g)) for g in failed]}"
+           ^^^^^^^^^^
+E   AssertionError: unify_narrative critical failures: [('x2_unify_narrative_forbidden_opener', False)]
+______________ test_canonical_dispatch_routes_ibm_narrative_lane ______________
+tests\_apps_contract\test_unify_ibm_pa_compiled_prompt.py:174: in test_canonical_dispatch_routes_ibm_narrative_lane
+    result = run_canonical_apps_rg_from_cli_primitives(
+apps_rg\runtime\orchestration\canonical_dispatch.py:421: in run_canonical_apps_rg_from_cli_primitives
+    return run_apps_rg_spine(
+apps_rg\runtime\spine\apps_rg_spine_run.py:126: in run_apps_rg_spine
+    return runner(**filtered)
+           ^^^^^^^^^^^^^^^^^^
+apps_rg\runtime\spine\section_cli_runners.py:773: in run_section_ibm_narrative_spine
+    ctx = lane.run_ibm_narrative_lane_execution(args, artifact_dir_override=override)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+apps_rg\runtime\sections\ibm_narrative_lane.py:36: in run_ibm_narrative_lane_execution
+    return _execute_ibm_narrative_lane(
+apps_rg\runtime\sections\ibm_narrative_lane_execution.py:118: in run_ibm_narrative_lane_execution
+    wire_spine_c0_fec_for_section(
+apps_rg\runtime\spine\c0_fec_compose.py:489: in wire_spine_c0_fec_for_section
+    assert_canonical_product_section_env(section_id)
+apps_rg\runtime\c0\product_runtime_guards.py:33: in assert_canonical_product_section_env
+    raise ProductRuntimeEnvForbiddenError(
+E   apps_rg.runtime.c0.product_runtime_guards.ProductRuntimeEnvForbiddenError: APPS_RG_C0_EVIDENCE_ROOM=0 is forbidden on canonical product section runs for 'ibm_narrative'; unset or use APPS_RG_TEST_HARNESS=1 for dev-only bypass
+============================== warnings summary ===============================
+agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20
+  C:\Git\Agentic-Workflow-FRESH\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py:20: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.
+    from agentic_core.L2_execution.utils.providers import get_clock
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+agentic_core\L2_execution\healers\confidence_scorer.py:15
+  C:\Git\Agentic-Workflow-FRESH\agentic_core\L2_execution\healers\confidence_scorer.py:15: DeprecationWarning: agentic_core.L2_execution.healers.heal_classifier_model routes its outputs through the unified heal_router.v1 OTEL schema (agentic_core.L6_observability.heal_router_otel). Direct telemetry hooks on classifier results are deprecated (ADR-025 Wave F2 M4).
+    from .heal_classifier_model import ClassifierFeatures, HealClassifierModel
+
+tests\_apps_contract\test_apps_rg_one_pipeline_e2e.py:236
+  c:\Git\Agentic-Workflow-FRESH\tests\_apps_contract\test_apps_rg_one_pipeline_e2e.py:236: PytestUnknownMarkWarning: Unknown pytest.mark.apps_contract - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.apps_contract
+
+tests\_apps_contract\test_apps_rg_one_pipeline_e2e.py:243
+  c:\Git\Agentic-Workflow-FRESH\tests\_apps_contract\test_apps_rg_one_pipeline_e2e.py:243: PytestUnknownMarkWarning: Unknown pytest.mark.apps_contract - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.apps_contract
+
+tests\_apps_contract\test_apps_rg_one_pipeline_e2e.py:281
+  c:\Git\Agentic-Workflow-FRESH\tests\_apps_contract\test_apps_rg_one_pipeline_e2e.py:281: PytestUnknownMarkWarning: Unknown pytest.mark.apps_contract - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.apps_contract
+
+tests\_apps_contract\test_apps_rg_one_pipeline_e2e.py:299
+  c:\Git\Agentic-Workflow-FRESH\tests\_apps_contract\test_apps_rg_one_pipeline_e2e.py:299: PytestUnknownMarkWarning: Unknown pytest.mark.apps_contract - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.apps_contract
+
+tests\_apps_contract\test_apps_rg_spine_convergence_w8.py:14
+  C:\Git\Agentic-Workflow-FRESH\tests\_apps_contract\test_apps_rg_spine_convergence_w8.py:14: PytestUnknownMarkWarning: Unknown pytest.mark.apps_contract - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.apps_contract
+
+tests\_apps_contract\test_apps_rg_spine_convergence_w8.py:28
+  C:\Git\Agentic-Workflow-FRESH\tests\_apps_contract\test_apps_rg_spine_convergence_w8.py:28: PytestUnknownMarkWarning: Unknown pytest.mark.apps_contract - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.apps_contract
+
+tests\_apps_contract\test_apps_rg_spine_convergence_w8.py:47
+  C:\Git\Agentic-Workflow-FRESH\tests\_apps_contract\test_apps_rg_spine_convergence_w8.py:47: PytestUnknownMarkWarning: Unknown pytest.mark.apps_contract - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.apps_contract
+
+apps_eval\types\eval_types.py:35
+  C:\Git\Agentic-Workflow-FRESH\apps_eval\types\eval_types.py:35: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    @validator("score")
+
+apps_eval\types\eval_types.py:56
+  C:\Git\Agentic-Workflow-FRESH\apps_eval\types\eval_types.py:56: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    @validator("pass_rate")
+
+apps_eval\types\eval_types.py:129
+  C:\Git\Agentic-Workflow-FRESH\apps_eval\types\eval_types.py:129: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class EvalRunSummary(BaseModel):
+
+tests/_apps_contract/test_competencies_pa_compiled_prompt.py: 4 warnings
+tests/_apps_contract/test_unify_ibm_pa_compiled_prompt.py: 6 warnings
+  <string>:15: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/_apps_contract/test_apps_rg_competencies_x2_source_facts.py::test_fixture_single_structured_term_fails_format_gate_then_expand_goes_green
+FAILED tests/_apps_contract/test_apps_rg_competencies_x2_source_facts.py::test_v3_post_llm_pipeline_weak_fixture_passes_critical_x2_gates
+FAILED tests/_apps_contract/test_apps_rg_competencies_x2_source_facts.py::test_mock_slice_still_passes_x2_source_mapping
+FAILED tests/_apps_contract/test_apps_rg_x2_ledger_primary_source_facts.py::test_mock_competencies_lane_x2_and_usage_ledger_agree
+FAILED tests/_apps_contract/test_competencies_canonical_section_route.py::test_cli_section_competencies_avoids_product_dispatch
+FAILED tests/_apps_contract/test_section_lane_c0_metrics_all_lanes.py::test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[unify_bullets]
+FAILED tests/_apps_contract/test_section_lane_c0_metrics_all_lanes.py::test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[unify_narrative]
+FAILED tests/_apps_contract/test_section_lane_c0_metrics_all_lanes.py::test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[ibm_bullets]
+FAILED tests/_apps_contract/test_section_lane_c0_metrics_all_lanes.py::test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[ibm_narrative]
+FAILED tests/_apps_contract/test_section_lane_c0_metrics_all_lanes.py::test_wire_section_fec_bridge_emits_c0_metrics_all_lanes[competencies]
+FAILED tests/_apps_contract/test_source_resume_schema_v2.py::TestRequiredSectionsPresent::test_missing_competencies_fails_validation
+FAILED tests/_apps_contract/test_unify_ibm_lanes_e2e.py::test_mock_output_passes_lane_critical_x2[unify_narrative]
+FAILED tests/_apps_contract/test_unify_ibm_pa_compiled_prompt.py::test_canonical_dispatch_routes_ibm_narrative_lane
+13 failed, 379 passed, 19 skipped, 7292 deselected, 24 warnings in 95.03s (0:01:35)
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

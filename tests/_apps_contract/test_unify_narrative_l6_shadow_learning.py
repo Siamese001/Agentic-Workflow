@@ -10,14 +10,11 @@ from tests._apps_contract.lane_cli_common import (
     REPO_ROOT as REPO,
     artifact_dir_from_stdout,
     contract_artifact_dir,
-    qwen_live_available,
+    contract_live_pytestmark,
     run_lane_cli,
 )
 
-pytestmark = pytest.mark.skipif(
-    not qwen_live_available(),
-    reason="unify_narrative L6 contract tests require live qwen_vllm",
-)
+pytestmark = contract_live_pytestmark("unify_narrative_l6_shadow")
 
 _SYNTHETIC_COMPANY = "Synthetic Enterprise Corp."
 _SYNTHETIC_ROLE = "SVP Engineering, Agentic AI Platforms"

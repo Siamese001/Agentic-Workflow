@@ -54,6 +54,8 @@ def main() -> int:
         sys.executable,
         "-m",
         "pytest",
+        "-p",
+        "pytest_timeout",
         "-q",
         "--tb=short",
         "--timeout=120",

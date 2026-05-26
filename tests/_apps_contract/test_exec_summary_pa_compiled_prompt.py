@@ -88,7 +88,7 @@ def test_compiled_messages_include_only_payload_facts_and_jd_as_non_proof():
     assert "x2_claim_ledger_claim_text_non_empty" in content
     assert '"minLength": 1' in content
     assert "es_pa_test_fact_001" in content and "  - es_pa_test_fact_001" in content
-    assert "resume_display_text must be clean prose" in content or "NO [source:" in content
+    assert "clean prose" in content.lower() or "no [source:" in content.lower()
     assert "Do not emit" in content or "must not emit" in content.lower()
 
 
@@ -128,9 +128,9 @@ def test_template_includes_many_shot_examples_and_deliberation_guards():
     assert e0.count("<negative_example ") >= 3
     assert "<internal_deliberation_controls>" in raw
     assert "chain-of-thought" in raw.lower() or "chain of thought" in raw.lower()
-    assert "Do **not** output chain-of-thought" in raw or "not output chain-of-thought" in raw
+    assert "not output chain-of-thought" in raw.lower()
     assert "<self_check_requirements>" in raw
-    assert "composition_themes_omitted_with_reason" in raw
+    assert "s6_forward_synthesis_not_recap" in raw
     assert "jd_used_as_proof_false" in raw
 
 
@@ -140,7 +140,7 @@ def test_template_yaml_includes_judge_alignment_contract():
     raw = _TEMPLATE.read_text(encoding="utf-8")
     e0 = build_executive_summary_e0()
     assert "<judge_alignment_contract>" in raw
-    assert "<executive_strategy_thesis_first>" in raw
+    assert "executive_strategy_thesis" in raw
     import apps_rg.runtime.sections.executive_summary_pa as pa
 
     pa_src = Path(pa.__file__).read_text(encoding="utf-8")
@@ -172,8 +172,8 @@ def test_self_check_fields_list_in_r0_matches_contract():
     for field in (
         "no_first_person",
         "jd_used_as_proof_false",
-        "no_keyword_stuffing",
-        "composition_themes_used",
+        "executive_strategy_thesis_present",
+        "s6_starts_with_looking_ahead",
     ):
         assert field in raw
 
@@ -213,7 +213,7 @@ def test_compiled_srfs_appendix_contains_pool_and_blocking_rules():
 
     assert pa.SRFS_STYLE_ONESHOT_MARKER in content
     assert "STYLE_ONLY_NOT_PROOF" in content
-    assert "causal arc" in content.lower() or "metric-dump" in content.lower()
+    assert "judge_alignment_contract" in content.lower() or "six bullets" in content.lower()
     assert pa.SRFS_COMPOSITION_ONESHOT_MARKER in content
     assert "PRODUCT_SHAPE" in content
     assert "x2_exec_summary_paragraph_max_words" in content
@@ -240,7 +240,7 @@ def test_non_srfs_compiled_prompt_includes_judge_alignment_contract():
     content = out.artifact.messages[0]["content"]
     assert "<judge_alignment_contract>" in content
     assert "executive_strategy_thesis" in content.lower()
-    assert "metric-dump" in content.lower() or "bullet stack" in content.lower()
+    assert "six bullets" in content.lower() or "not six bullets" in content.lower()
     import apps_rg.runtime.dispatch.executive_summary_pa as pa
 
     assert pa.SRFS_STYLE_ONESHOT_MARKER not in content

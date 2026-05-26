@@ -18,10 +18,14 @@ _LIVE_CLI_PATH_FRAGMENTS = (
     "live_proof",
     "integrated_spine",
     "graph_story_authority_e2e",
-    "c0_evidence_room_competencies_e2e",
-    "augmented_skills_graph_all_sections_runtime",
+    "c0_evidence_room",
+    "c0_fec_single_reality",
+    "augmented_skills_graph_all_sections",
+    "section_input_usage_ledgers",
     "resume_lanes_live",
     "qwen_vllm_reliability",
+    "l6_shadow_learning",
+    "section_lane_c0_metrics",
 )
 
 
@@ -57,13 +61,18 @@ def _contract_harness_runtime_env(monkeypatch: pytest.MonkeyPatch, tmp_path_fact
     monkeypatch.delenv("APPS_RG_L2_FORCE_STUB", raising=False)
     monkeypatch.delenv("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", raising=False)
 
-    chroma_default = _REPO / "data" / "cache" / "chromadb"
-    if chroma_default.is_dir():
-        monkeypatch.setenv("CHROMA_PERSIST_DIR", str(chroma_default.resolve()))
+    # Fast harness: do not point at Chroma unless embeddings are enabled (fail-closed C0.2).
+    if not contract_harness_fast():
+        chroma_default = _REPO / "data" / "cache" / "chromadb"
+        if chroma_default.is_dir():
+            monkeypatch.setenv("CHROMA_PERSIST_DIR", str(chroma_default.resolve()))
+        else:
+            chroma_tmp = tmp_path_factory.mktemp("contract_chroma")
+            chroma_tmp.mkdir(parents=True, exist_ok=True)
+            monkeypatch.setenv("CHROMA_PERSIST_DIR", str(chroma_tmp))
     else:
-        chroma_tmp = tmp_path_factory.mktemp("contract_chroma")
-        chroma_tmp.mkdir(parents=True, exist_ok=True)
-        monkeypatch.setenv("CHROMA_PERSIST_DIR", str(chroma_tmp))
+        monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
+        monkeypatch.setenv("APPS_RG_C0_EVIDENCE_ROOM", "0")
 
     cache_root = _REPO / "data" / "cache" / "r1b"
     cache_root.mkdir(parents=True, exist_ok=True)

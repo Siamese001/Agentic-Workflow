@@ -63,19 +63,16 @@ VLLM_BASE_URL: Final[str] = os.getenv(
 
 
 # Wave 2 (qwen-confidence-routing-hardening-d4e7b1): canonical max_model_len
-# SSOT. Default 16384 matches the running 32B-AWQ server (verified
-# 2026-04-25 against /v1/models). Env-overridable; profile classes and
-# token-budget validators MUST read from this constant — hardcoded 32768
-# values from the 14B-era are stale and trigger context-window overruns.
+# SSOT. Default 24576 matches local-qwen-vllm Docker (32B-AWQ, RTX 5090).
+# Env-overridable; profile classes and token-budget validators MUST read
+# from this constant — must match container ``--max-model-len``.
 QWEN_LOCAL_MAX_MODEL_LEN: Final[int] = int(
-    os.getenv("VLLM_MAX_MODEL_LEN", "16384"),
+    os.getenv("VLLM_MAX_MODEL_LEN", "24576"),
 )
 """Maximum context window (prompt + completion tokens) for the local Qwen vLLM server.
 
-Defaults to 16384 (the value with which the 32B-AWQ server is launched on
-RTX 5090 + WSL2 — see ``tools/vllm/start_vllm_server_32b.sh`` / plan
-``vllm-stack-consolidation-f6e95d``). Env override ``VLLM_MAX_MODEL_LEN``
-lets ops bump this when GPU memory is freed up without redeploying code.
+Defaults to 24576 (``local-qwen-vllm`` Docker — see ``docs/architecture/qwen-vllm-topology.md``).
+Env override ``VLLM_MAX_MODEL_LEN`` must match the running container ``--max-model-len``.
 """
 
 

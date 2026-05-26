@@ -41,6 +41,8 @@ def main() -> int:
         LIVE_K,
         "-q",
         "--tb=short",
+        "-p",
+        "pytest_timeout",
         "--timeout=900",
         "-o",
         "addopts=",

@@ -41,7 +41,7 @@ alwaysApply: false
 
 - ✅ Quote VRAM math from the **container CUDA allocator** vantage point.
 - ✅ When `nvidia-smi` (run from WSL or Windows) shows X MiB used, treat that as the floor; remainder is available to vLLM.
-- ✅ For model-size selection on this rig: 32B is the **canonical production choice** (fits at `gpu_memory_utilization=0.92`, `max_model_len=16384`), 72B is out.
+- ✅ For model-size selection on this rig: 32B is the **canonical production choice** (fits at `gpu_memory_utilization=0.92`, `max_model_len=24576`), 72B is out.
 
 ## Stack location (canonical — Stack B, Docker container, since 2026-05-06)
 
@@ -57,7 +57,7 @@ question flipped.
 | Container | `local-qwen-vllm` |
 | Image | `vllm/vllm-openai:latest` |
 | Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL`) |
-| Container args | `--model Qwen/Qwen2.5-32B-Instruct-AWQ --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --dtype auto --max-model-len 8192 --gpu-memory-utilization 0.88 --host 0.0.0.0 --port 8000` |
+| Container args | `--model Qwen/Qwen2.5-32B-Instruct-AWQ --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --dtype auto --max-model-len 24576 --gpu-memory-utilization 0.92 --host 0.0.0.0 --port 8000` |
 | Lifecycle | `docker start local-qwen-vllm` / `docker stop local-qwen-vllm` |
 | Health | `curl http://localhost:8000/v1/models` |
 

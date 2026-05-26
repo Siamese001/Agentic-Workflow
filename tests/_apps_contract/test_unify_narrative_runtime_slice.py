@@ -11,14 +11,11 @@ from tests._apps_contract.lane_cli_common import (
     artifact_dir_from_stdout,
     assert_live_lane_product_proof,
     contract_artifact_dir,
-    qwen_live_available,
+    contract_live_pytestmark,
     run_lane_cli,
 )
 
-pytestmark = pytest.mark.skipif(
-    not qwen_live_available(),
-    reason="unify_narrative runtime slice tests require live qwen_vllm",
-)
+pytestmark = contract_live_pytestmark("unify_narrative_runtime_slice")
 
 LANE_KEY = "unify_narrative"
 _SYNTHETIC_COMPANY = "Synthetic Enterprise Corp."
