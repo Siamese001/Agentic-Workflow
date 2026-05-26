@@ -97,6 +97,18 @@ def run_qwen_self_consistency_paths(
     for offset, temp in enumerate(temps):
         idx = path_index_start + offset
         tagged = tag_reasoning_lane(dict(provider_payload), section_lane)
+        if section_lane == "unify_bullets":
+            from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
+                append_unify_path_framing_to_messages,
+            )
+
+            msgs = list(tagged.get("messages") or [])
+            tagged = {
+                **tagged,
+                "messages": append_unify_path_framing_to_messages(
+                    msgs, path_index=idx, temperature=temp
+                ),
+            }
         result = call_qwen_vllm(
             tagged,
             artifact_dir=artifact_dir,
@@ -109,6 +121,12 @@ def run_qwen_self_consistency_paths(
         parse_error = ""
         if result.runtime_generation_status == "REAL_LLM":
             parsed, parse_error = parse_model_json(raw)
+            if parsed is not None:
+                from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+                    strip_employment_bullet_intensity_model,
+                )
+
+                parsed = strip_employment_bullet_intensity_model(parsed)
         elif result.runtime_generation_status not in ("REAL_LLM",):
             parse_error = result.exact_provider_error or "provider blocked"
         paths.append(

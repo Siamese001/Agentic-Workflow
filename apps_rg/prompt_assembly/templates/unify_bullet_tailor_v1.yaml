@@ -12,18 +12,25 @@ pa_core_law_ref: apps_rg/prompt_assembly/pa_core_law_v1.yaml
 forbidden_slot_body_source: strategic_tailor_v1
 
 purpose: |
-  Rewrite Unify Consulting employment bullets for an SVP Engineering target while preserving the canonical Unify facts.
-  Balance candidate truth from the base resume with targeting signals from JD, target company, target title, and briefing.
-  Outputs exactly 6 bullets with constrained rewrite distribution.
-  No narrative text. No unsupported claims. No JD or briefing copying.
-  This lane must run before unify_position_narrative_v1.
+  Compose six Unify Consulting employment bullets for the target role using augmented_skills_graph proof
+  (C0.3-bound skills + ledger fact atoms) as the authenticity layer. JD, briefing, title, and company shape
+  emphasis and ordering only — never proof. Each Qwen path outputs a full six-bullet variant; Claude pool selector
+  picks the best per bul_unify_* slot. No narrative text. No unsupported claims. No JD or briefing copying.
+  No ATS keyword stuffing. This lane must run before unify_position_narrative_v1.
 
 sovereign_oath: |
   UNIFY BULLETS ONLY — governed by pa_truth_oath_v1, pa_proof_binding_v1, pa_targeting_only_v1 (pa_core_law_v1.yaml).
   bul_unify_001..006 / exp_unify_001 slice only; no cross-employer contamination; bullets only (no narrative).
-  Base-resume parity: preserve mechanism nouns and locked metrics on protected bullets; SRFS allowlist in C0.
-  Runtime compile I0: unify_bullets_pa._legacy_i0; X2 gates via PRODUCT_SHAPE append only.
-  Out-of-slice source_fact_ids fail deterministic X2 SRFS gates; omit unsupported claims rather than generalizing from JD.
+  Proof: GRAPH_BULLET_EVIDENCE_PACK + ALLOWED_SOURCE_FACT_IDS; C0.3-bound skill rows guide vocabulary when fact-linked.
+  Ledger claim_text is archive_reference_only — not a copy source for bullet_text. No base-resume bullet hydration.
+  Preserve locked metrics on protected bullets; SRFS allowlist in C0. Runtime compile I0: unify_bullets_pa._legacy_i0;
+  X2 gates via PRODUCT_SHAPE append only. Out-of-slice source_fact_ids fail deterministic X2 SRFS gates; omit
+  unsupported claims rather than generalizing from JD.
+
+composition_rules:
+  forbid_verbatim_claim_text: true
+  require_skill_id_trace_in_change_log: true
+  max_consecutive_words_from_archive_reference: 7
 
 role_header_fields:
   company:
@@ -55,13 +62,6 @@ input_contract:
       schema: "{claims: [{claim_text, source_fact_id, supported: bool}]}"
     - name: jd_alignment
       schema: "{alignment_score, matched_terms, gap_terms}"
-    - name: rewrite_intensity_request
-      allowed_values: ["DEFAULT", "HEAVY", "MODERATE", "LIGHT_PROTECTED"]
-      default: "DEFAULT"
-    - name: strategic_tailor_plan
-      required_if: "rewrite_intensity_request != DEFAULT"
-      schema: "{justified_distribution: {HEAVY: int, MODERATE: int, LIGHT_PROTECTED: int}}"
-
 output_contract:
   format: "JSON"
   required_fields:
@@ -72,25 +72,9 @@ output_contract:
       item_schema:
         bullet_id: "string (must map to bul_unify_001..006)"
         bullet_text: "string"
-        rewrite_intensity: "enum[HEAVY, MODERATE, LIGHT_PROTECTED]"
         has_metric: "boolean"
         metric_raw: "string or null"
         source_fact_ids: "array[string]"
-    - name: rewrite_distribution
-      type: "object"
-      schema:
-        HEAVY: "integer (must equal 2 for product distribution)"
-        MODERATE: "integer (0-6)"
-        LIGHT_PROTECTED: "integer (1-6, min 1)"
-        total: "integer (must equal 6)"
-      default_distribution:
-        HEAVY: 2
-        MODERATE: 3
-        LIGHT_PROTECTED: 1
-      constraints:
-        - "HEAVY == 2"
-        - "LIGHT_PROTECTED >= 1"
-        - "HEAVY + MODERATE + LIGHT_PROTECTED == 6"
     - name: claim_ledger
       type: "array"
       item_schema:
@@ -107,7 +91,6 @@ output_contract:
       type: "object"
       schema:
         bullet_count_valid: "boolean (must be true)"
-        distribution_valid: "boolean (must be true)"
         no_narrative_text: "boolean (must be true)"
         no_cross_contamination: "boolean (must be true)"
         no_em_dash: "boolean (must be true)"
@@ -116,46 +99,33 @@ output_contract:
         all_checks_passed: "boolean"
 
 rewrite_rules:
-  distribution_constraints:
-    DEFAULT:
-      HEAVY: 2
-      MODERATE: 3
-      LIGHT_PROTECTED: 1
-      protected_bullet_default: "bul_unify_006"
-      protected_bullet_rationale: "Platform Commercialization and Engineering Leadership contains compound metrics ($22M, 20%, 8 to 28) that should not be split"
-    CUSTOM:
-      requires_strategic_justification: true
-      max_HEAVY: 2
-      min_LIGHT_PROTECTED: 1
-      
+  pool_selection:
+    qwen_paths: 15
+    final_bullet_count: 6
+    selector: "claude_pool_top_n_pass"
+    min_selection_score: 0.72
   bullet_specific_guidance:
     bul_unify_001:
-      intensity_default: "MODERATE"
       content: "Agentic AI platform architecture — one outcome spine (regulated enterprise platform delivery)"
       key_terms: ["governed agentic AI platform", "regulated enterprise workflows", "production-grade platform"]
       mechanism_stack_cap: "At most ONE bullet may list dense mechanism vocabulary (routing, orchestration, GraphRAG, sandbox, policy gates, traces). Prefer this bullet for that stack OR distribute outcomes across bullets without comma-stacked machinery."
     bul_unify_002:
-      intensity_default: "MODERATE"
       content: "Dependency graph intelligence"
       key_terms: ["AST analysis", "legacy system analysis", "refactor risk"]
     bul_unify_003:
-      intensity_default: "HEAVY"
       content: "Governed runtime reliability"
       key_terms: ["retrieval quality", "context assembly", "evaluation gates", "telemetry", "rollback controls"]
     bul_unify_004:
-      intensity_default: "MODERATE"
       content: "AI systems lifecycle standardization"
       key_terms: ["lab-to-production", "cycle time reduction", "6 months to 3 weeks"]
-      protected_reason: "Metric-anchored (six months to three weeks); use MODERATE not HEAVY — sole LIGHT_PROTECTED slot reserved for bul_unify_006"
+      metric_anchor: "six months to three weeks must stay on this bullet"
     bul_unify_005:
-      intensity_default: "HEAVY"
       content: "Distributed ecosystem engineering"
       key_terms: ["AWS", "Databricks", "microservices", "API gateways"]
     bul_unify_006:
-      intensity_default: "LIGHT_PROTECTED"
       content: "Platform commercialization and engineering leadership"
       key_terms: ["$22M IP-led revenue", "20% gross margin", "8 to 28 specialists"]
-      protected_reason: "Contains compound business metrics; must not be split or over-rewritten"
+      protected_reason: "Contains compound business metrics; must not be split or diluted"
 
 metric_preservation_rules:
   - metric: "6 months to 3 weeks"
@@ -201,15 +171,6 @@ validation_rules:
     - assert: "len(output.bullets) == 6"
       error: "BULLET_COUNT_INVALID"
       message: "Must emit exactly 6 bullets"
-    - assert: "output.rewrite_distribution.HEAVY == 2"
-      error: "HEAVY_DISTRIBUTION_INVALID"
-      message: "Product shape requires exactly 2 HEAVY rewrites"
-    - assert: "output.rewrite_distribution.LIGHT_PROTECTED >= 1"
-      error: "NO_LIGHT_PROTECTED"
-      message: "Must have at least 1 LIGHT_PROTECTED bullet"
-    - assert: "sum([output.rewrite_distribution[k] for k in ['HEAVY', 'MODERATE', 'LIGHT_PROTECTED']]) == 6"
-      error: "DISTRIBUTION_SUM_INVALID"
-      message: "Distribution must sum to 6"
     - assert: "not any([U+2014 in b.bullet_text for b in output.bullets])"
       error: "EM_DASH_DETECTED"
       message: "Em dash character forbidden"

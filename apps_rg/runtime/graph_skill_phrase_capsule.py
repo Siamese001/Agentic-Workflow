@@ -103,6 +103,7 @@ def format_skill_phrase_capsule_block(
         SKILL_PHRASE_CAPSULE_MARKER,
         "LEXICAL GUIDANCE ONLY — not evidence, not allowed_fact_ids, not claim_ledger proof.",
         f"section_id: {section_id}",
+        "Supplements bound_skills in GRAPH_BULLET_EVIDENCE_PACK (unify_bullets) when present — still not proof.",
         "Use phrasing below only when a claim is already supported by ALLOWED_SOURCE_FACT_IDS / graph facts.",
         "Do not invent skills or metrics from this block alone.",
         "",
