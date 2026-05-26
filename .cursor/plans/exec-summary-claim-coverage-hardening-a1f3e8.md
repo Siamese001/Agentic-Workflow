@@ -15,8 +15,8 @@ parent_rca_run: exec_summary_20260526_183905
 Close the Brown `exec_summary_20260526_183905` proof failures caused by **(A)** `build_sentence_claim_coverage` matching only `claim_text` (false UNSUPPORTED on paraphrased S5) and **(B)** no deterministic enforcement that six display sentences each have a ledger row (model left S6 uncovered; `self_check` honor-system only).
 
 > **plan_id:** `exec-summary-claim-coverage-hardening-a1f3e8`  
-> **RCA run:** [exec_summary_20260526_183905](../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_183905)  
-> **Related doc:** [executive_summary_24k_context_budget_rationalization_20260526.md](../docs/reports/apps_rg/executive_summary_24k_context_budget_rationalization_20260526.md)
+> **RCA run:** [exec_summary_20260526_183905](../../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_183905)  
+> **Related doc:** [executive_summary_24k_context_budget_rationalization_20260526.md](../../docs/reports/apps_rg/executive_summary_24k_context_budget_rationalization_20260526.md)
 
 ---
 
@@ -137,7 +137,7 @@ PLAN_CREATED: slug=exec-summary-claim-coverage-hardening-a1f3e8 path=.cursor/pla
 
 **Tests:** `tests/unit/apps_rg/runtime/exit/test_executive_summary_x3.py` or extend existing x3 tests.
 
-**Docs:** One line in [executive_summary_operator_guide.md](../docs/apps_rg/executive_summary_operator_guide.md) field glossary.
+**Docs:** One line in [executive_summary_operator_guide.md](../../docs/apps_rg/executive_summary_operator_guide.md) field glossary.
 
 ---
 
@@ -151,7 +151,7 @@ PLAN_CREATED: slug=exec-summary-claim-coverage-hardening-a1f3e8 path=.cursor/pla
 | X3 empty judges | `tests/.../test_executive_summary_x3.py` | `[]` judges → `NO_JUDGE_ROWS_EMITTED`, not `BLOCKED_PROVIDER_UNAVAILABLE` |
 | No regression | `test_exec_summary_x2_product_gates.py` full file | all existing green |
 
-**Fixture source:** Copy minimal strings from [exec_summary_20260526_183905/parsed_output.json](../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_183905/parsed_output.json) (no secrets).
+**Fixture source:** Copy minimal strings from [exec_summary_20260526_183905/parsed_output.json](../../artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_183905/parsed_output.json) (no secrets).
 
 ---
 
@@ -208,7 +208,7 @@ python -m pytest tests/unit/apps_rg/runtime/exit/ -k x3 -q
 - [x] W2 X3 label + test (or DEFERRED with marker if user defers)
 - [x] All scoped pytest green with command output in receipt
 - [x] W4 live run artifact path recorded; status PASS or PARTIAL with explicit remaining failures
-- [x] Short report: [exec_summary_claim_coverage_hardening_receipt_20260526.md](../docs/reports/apps_rg/exec_summary_claim_coverage_hardening_receipt_20260526.md)
+- [x] Short report: [exec_summary_claim_coverage_hardening_receipt_20260526.md](../../docs/reports/apps_rg/exec_summary_claim_coverage_hardening_receipt_20260526.md)
 
 ---
 
