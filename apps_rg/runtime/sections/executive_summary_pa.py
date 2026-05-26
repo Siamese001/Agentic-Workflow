@@ -306,18 +306,18 @@ def format_srfs_forbidden_phrase_guardrails_block() -> str:
     )
 
 
-# Judge-aligned SVP style anchor for SRFS appendix (NOT runtime proof — matches exec_summary_pos_svp_it_strategy_001 V7).
+# Judge-aligned SVP style anchor for SRFS appendix (NOT runtime proof — matches exec_summary_pos_svp_it_strategy_001 V10).
 SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR = (
     "Enterprise technology leader who unifies governed AI platforms, regulatory lineage, and commercialization into one "
     "IT strategy and innovation agenda for decentralized regulated enterprises. Designs and operates platform "
     "runtime with deterministic controls and traceable execution so innovation scales without sacrificing validation-ready delivery. "
-    "Building on that platform foundation, platform commercialization and team growth from 8 to 28 specialists convert delivery "
-    "complexity into enterprise program adoption when selected facts support those themes. Complementing that delivery foundation, "
-    "Basel III and CCAR lineage discipline accelerates lineage-ready IT strategy velocity without turning governance into a control "
-    "checklist. With that governance posture, quantitative rigor from capital and risk analytics practice sharpens platform "
-    "investment and stress-analytics decisions for regulated program scale. Looking ahead, architecture standards and "
-    "innovation incubation programs can turn governed platform delivery into decentralized unit adoption while preserving "
-    "lineage discipline."
+    "Building on that direction, platform commercialization generated $22M in IP-led revenue and expanded gross margins by 20% "
+    "while scaling the ML engineering organization from 8 to 28 specialists. Complementing that delivery foundation, "
+    "Basel III and CCAR lineage discipline reduced regulatory reporting errors by 40%, accelerating IT strategy velocity "
+    "without turning governance into a control checklist. With that governance posture, quantitative rigor from capital and "
+    "risk analytics practice improved stress-testing cycles by 40%, sharpening platform investment decisions for regulated "
+    "program scale. Looking ahead, innovation incubation and architecture standards will extend this quantitative foundation "
+    "into decentralized unit adoption while preserving lineage discipline."
 )
 
 def load_executive_summary_example_after(example_id: str) -> str:

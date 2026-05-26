@@ -185,6 +185,7 @@ def _exec_summary_shape() -> SectionProductShape:
             "x2_exec_summary_display_roundtrip_integrity",
             "x2_exec_summary_cross_sentence_metric_dedup",
             "x2_exec_summary_c03_selected_fact_ids_claimable_subset_allowed_fact_ids",
+            "x2_exec_summary_allowed_fact_utilization",
         ),
         style_gate_ids=(
             "x2_first_person_zero",

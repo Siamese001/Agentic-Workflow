@@ -177,7 +177,8 @@ def build_executive_summary_e0(
     ]
     if strategy_executive:
         parts.append(
-            "<e0_lane_note>SVP IT strategy lane: single judge-aligned positive exemplar; negatives teach stack/recap failures.</e0_lane_note>"
+            "<e0_lane_note>SVP IT strategy lane: single judge-aligned positive exemplar with metrics woven into S3–S5 display; "
+            "copy density/register only — not verbatim wording. Negatives teach stack/recap failures.</e0_lane_note>"
         )
     for eid in positive_ids:
         row = by_id.get(eid)

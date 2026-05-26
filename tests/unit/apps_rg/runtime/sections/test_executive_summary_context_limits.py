@@ -7,7 +7,9 @@ import importlib
 import pytest
 
 from apps_rg.runtime.sections import executive_summary_context_limits as limits
+from apps_rg.runtime.sections.executive_summary_briefing import prepare_briefing_for_executive_summary
 from apps_rg.runtime.sections.executive_summary_context_limits import (
+    BRIEFING_RANKED_SELECTION_MAX_CHARS,
     DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS,
     DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS,
     DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX,
@@ -30,6 +32,15 @@ def test_targeting_no_gap_max_chars_is_large() -> None:
 def test_bullet_selector_char_defaults() -> None:
     assert DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS == 6_000
     assert DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS == 6_000
+
+
+def test_briefing_ranked_selection_uses_dedicated_cap() -> None:
+    assert BRIEFING_RANKED_SELECTION_MAX_CHARS == 12_000
+    long_brief = "## Target priorities\n" + ("regulated modernization emphasis. " * 400)
+    long_brief += "\n## Secondary notes\n" + ("additional context tail. " * 400)
+    _, receipt = prepare_briefing_for_executive_summary(long_brief)
+    assert receipt["briefing_original_chars"] > receipt["briefing_included_chars"]
+    assert receipt["truncation_or_selection_reason"] == "ranked_section_selection"
 
 
 def test_24k_token_defaults() -> None:

@@ -293,14 +293,39 @@ REGEN_DELTA_SECTION_ORDER: tuple[str, ...] = (
 )
 
 
-def _flatten_delta_sections(sections: dict[str, list[str]]) -> list[str]:
-    """Include all delta lines in :data:`REGEN_DELTA_SECTION_ORDER` (no token truncation)."""
+def _flatten_delta_sections(
+    sections: dict[str, list[str]],
+    *,
+    max_lines: int | None = None,
+) -> list[str]:
+    """Pack delta lines in :data:`REGEN_DELTA_SECTION_ORDER`.
+
+    When ``max_lines`` is set, truncate ``judge_feedback`` from the tail so dimension,
+    floors, and guards stay intact (core SameAuthorityRegenRunner line budget).
+    """
     order = REGEN_DELTA_SECTION_ORDER
-    packed: list[str] = []
+    by_section: dict[str, list[str]] = {
+        key: [str(ln) for ln in (sections.get(key) or []) if str(ln).strip()] for key in order
+    }
+    if max_lines is None:
+        packed: list[str] = []
+        for section_key in order:
+            packed.extend(by_section[section_key])
+        return packed
+
+    protected_keys = ("dimension", "floors", "guards")
+    protected_count = sum(len(by_section[key]) for key in protected_keys)
+    feedback = list(by_section.get("judge_feedback") or [])
+    budget_for_feedback = max(0, int(max_lines) - protected_count)
+    if len(feedback) > budget_for_feedback:
+        feedback = feedback[:budget_for_feedback]
+
+    packed = []
     for section_key in order:
-        for line in sections.get(section_key) or []:
-            if str(line).strip():
-                packed.append(line)
+        if section_key == "judge_feedback":
+            packed.extend(feedback)
+        else:
+            packed.extend(by_section[section_key])
     return packed
 
 
@@ -567,6 +592,7 @@ def collect_judge_remediation_delta_lines(
 
     if compact:
         from apps_rg.runtime.sections.executive_summary_regen_delta_policy import (
+            DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE,
             build_regen_sentence_allowlist,
             format_delta_class_regen_instruction,
             format_edit_budget_line,
@@ -578,14 +604,21 @@ def collect_judge_remediation_delta_lines(
             operator_judge_pass_floor=operator_floor,
         )
         _allowlist, _ = build_regen_sentence_allowlist(x1d_judges, _delta_class)
+        composite_instruction = format_delta_class_regen_instruction(
+            _delta_class, allowlist=_allowlist
+        )
         focused = collect_dimension_focused_regen_delta_lines(soft_judges)
-        if focused:
-            sections["dimension"] = [f"- {ln}" for ln in focused]
-        else:
-            sections["dimension"] = [
-                f"- {format_delta_class_regen_instruction(_delta_class, allowlist=_allowlist)}",
-            ]
+        sections["dimension"] = [f"- {composite_instruction}"]
+        for ln in focused:
+            if ln not in composite_instruction:
+                sections["dimension"].append(f"- {ln}")
         sections["dimension"].append(f"- {format_edit_budget_line(_delta_class, _allowlist)}")
+        if _delta_class == DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE:
+            sections["guards"].insert(
+                0,
+                "METRIC_WEAVE_S3_S5: weave allowed dollar/percent outcomes into S3–S5 display; "
+                "S5 must surface FSA/quant foundation with a concrete metric or outcome.",
+            )
         if prior_word_count > 0 or prior_ledger_rows > 0:
             from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
                 format_judge_regen_soft_material_preservation,
@@ -608,7 +641,13 @@ def collect_judge_remediation_delta_lines(
             "third person; jd_used_as_proof=false.",
         )
         _ = PROMPT_LOCK_GENERIC
-        return _flatten_delta_sections(sections)
+        from apps_rg.runtime.sections.executive_summary_repair_policy import (
+            judge_regen_max_delta_lines,
+            regen_artificial_caps_enabled,
+        )
+
+        cap = judge_regen_max_delta_lines() if regen_artificial_caps_enabled() else None
+        return _flatten_delta_sections(sections, max_lines=cap)
 
     dimension_lines = collect_dimension_remediation_lines(soft_judges, min_fail_count=1)
     if dimension_lines:
@@ -651,7 +690,13 @@ def collect_judge_remediation_delta_lines(
         ],
     )
     _ = PROMPT_LOCK_GENERIC
-    return _flatten_delta_sections(sections)
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        judge_regen_max_delta_lines,
+        regen_artificial_caps_enabled,
+    )
+
+    cap = judge_regen_max_delta_lines() if regen_artificial_caps_enabled() else None
+    return _flatten_delta_sections(sections, max_lines=cap)
 
 
 def build_judge_remediation_prescriptive_delta_message(

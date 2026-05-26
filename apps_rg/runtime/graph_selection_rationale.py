@@ -12,6 +12,7 @@ from typing import Any
 
 from apps_rg.fact_inventory.augmented_skills_graph import (
     default_augmented_skills_graph_path,
+    graph_payload_digest,
     load_augmented_skills_graph,
 )
 from apps_rg.fact_inventory.candidate_fact_ledger import (
@@ -163,6 +164,7 @@ def emit_graph_selection_rationale(
     jd_text: str,
     briefing_text: str = "",
     repo_root: Path | None = None,
+    graph_digest: str | None = None,
 ) -> dict[str, Any]:
     """Build rationale artifact (fixture/CLI writer — not product PASS by itself)."""
     root = repo_root or Path(__file__).resolve().parents[2]
@@ -171,7 +173,7 @@ def emit_graph_selection_rationale(
 
     graph = load_augmented_skills_graph(repo_root=root)
     graph_path = default_augmented_skills_graph_path(root)
-    graph_digest = _sha256_text(json.dumps(graph.get("graph_metadata") or {}, sort_keys=True))
+    digest = str(graph_digest or "").strip() or graph_payload_digest(graph)
 
     role_family_key = infer_projection_role_family_key(
         target_role=target_role,
@@ -265,7 +267,8 @@ def emit_graph_selection_rationale(
         "jd_keyword_hits": jd_hits,
         "selection_method": selection_method,
         "graph_ref": graph_path.relative_to(root).as_posix(),
-        "graph_digest": graph_digest,
+        "graph_digest": digest,
+        "graph_digest_scope": "full_graph_payload",
         "selected_skill_ids": selected_skill_ids,
         "selected_skill_count": len(selected_skill_ids),
         "allowed_fact_count": allowed_fact_count,
@@ -288,6 +291,7 @@ def write_graph_selection_rationale(
     jd_text: str,
     briefing_text: str = "",
     repo_root: Path | None = None,
+    graph_digest: str | None = None,
 ) -> dict[str, Any]:
     payload = emit_graph_selection_rationale(
         section_id=section_id,
@@ -296,6 +300,7 @@ def write_graph_selection_rationale(
         jd_text=jd_text,
         briefing_text=briefing_text,
         repo_root=repo_root,
+        graph_digest=graph_digest,
     )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")

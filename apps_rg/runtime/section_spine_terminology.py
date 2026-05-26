@@ -62,6 +62,23 @@ LEGACY_FEC_SNAPSHOT_BASENAME = "final_evidence_contract_snapshot.json"
 RECOMMENDED_BINDING_ARTIFACT_BASENAME = "section_graph_binding.json"
 RECOMMENDED_FEC_SNAPSHOT_BASENAME = "section_graph_binding_fec_snapshot.json"
 
+# Graph expansion honesty (exec-summary W0 — incident-edge vs multi-hop traverse).
+GRAPH_EXPANSION_MODE_INCIDENT_EDGE_V1 = "incident_edge_v1"
+GRAPH_EXPANSION_MODE_MULTI_HOP_V1 = "multi_hop_v1"
+GRAPH_HOP_PATHS_COUNT_SEMANTICS_INCIDENT_EDGE = (
+    "count of graph edge refs touching selected proof fact nodes (1-hop incident); "
+    "not a BFS depth-2 traverse unless graph_expansion_mode=multi_hop_v1"
+)
+GRAPH_EXPANSION_MODE_TRACK_WEIGHTED_MULTI_HOP = "TRACK_WEIGHTED_MULTI_HOP"
+GRAPH_HOP_PATHS_COUNT_SEMANTICS_TRACK_WEIGHTED = (
+    "count of materialized track→pillar→skill→fact hop paths for allowed facts; "
+    "not incident-edge ref cardinality"
+)
+NATIVE_C03_GRAPH_HOP_BOUNDS_POLICY_NOTE = (
+    "graph_hop_bounds in native_c03_final_evidence.json is ACL policy max depth; "
+    "exec-summary c03_graphrag_bound materializes TRACK_WEIGHTED_MULTI_HOP paths when pool resolves"
+)
+
 # Governed spine contract types (agentic_spine_contracts_master.json).
 CANONICAL_CONTRACT_TYPES: tuple[str, ...] = (
     "ValidatedRequest",
@@ -81,9 +98,38 @@ SECTION_LANE_MISSING_CANONICAL_CONTRACTS: tuple[str, ...] = CANONICAL_CONTRACT_T
 
 INPUT_AUTHORITY_GRAPH_SUBSTRATE_LINE = (
     "- CLAIM SUPPORT POOL (AUGMENTED SKILLS GRAPH): section graph context binding — "
-    "static master_skills_arsenal ledger neighbors; not full agentic_core C0.3 GraphRAG traverse — "
+    "static master_skills_arsenal ledger incident-edge expansion (graph_expansion_mode=incident_edge_v1); "
+    "not full agentic_core C0.3 GraphRAG traverse — "
     "sole substrate for factual claims; candidate_fact_ledger rows are lineage substrate only"
 )
+
+# Operator / receipt glossary (keys → plain-English; SSOT for docs/reports/apps_rg/c03_exec_summary_binding.md).
+C03_RECEIPT_FIELD_GLOSSARY: dict[str, str] = {
+    "binding_kind": "Always section_c03_graph_binding for lane-local graph receipts.",
+    "binding_classification": (
+        "SECTION_GRAPH_CONTEXT_BINDING_NOT_PRODUCT_C0_3 = lane JSON binding; "
+        "FULL_C0_3_GRAPHRAG_BINDING = route+ACL-bound native AppsRgC03FinalEvidenceContract only."
+    ),
+    "is_full_c0_3_graphrag": "True only when binding_classification is FULL_C0_3_GRAPHRAG_BINDING.",
+    "canonical_c0_3_claimed": "Must stay false on section CLI unless spine traverse proof exists.",
+    "core_c03_graph_rag_used": "Spine agentic_core GraphRAG; false for apps_rg native binding.",
+    "graph_expansion_mode": (
+        "incident_edge_v1 = edges touching selected facts; multi_hop_v1 = BFS hop paths (competencies-style)."
+    ),
+    "graph_hop_paths_count": (
+        "TRACK_WEIGHTED_MULTI_HOP: materialized hop paths; incident_edge_v1: edge-ref count"
+    ),
+    "graph_hop_paths_by_fact_id": "Per-fact track-weighted hop steps (dominant allowed facts).",
+    "graph_incident_edge_refs_count": "Incident-edge refs when graph_expansion_mode=incident_edge_v1.",
+    "graph_hop_bounds": NATIVE_C03_GRAPH_HOP_BOUNDS_POLICY_NOTE,
+    "c03_graphrag_bound_status": "BOUND when support_status=SUPPORTED and proof facts present.",
+    "c03_context_fact_ids": "Graph-expanded fact IDs kept for context; claim_support_allowed=false.",
+    "c03_filtered_out_fact_ids": "Same as context when pool-wins (DG-1=A); not in allowed_fact_ids.",
+    "c03_promotion_candidates": "Read-only scored neighbors (track weight, JD overlap, edge distance); promotion_eligible=false under DG-1=A.",
+    "proof_pool_type": "Receipt label (augmented_skills_graph); not an authority switch.",
+    "graph_targeting_capsule": "JD/theming skills only; claim_support_allowed=false.",
+    "native_c03_status": "EMITTED when AppsRgC03FinalEvidenceContract artifact written.",
+}
 
 EXPLICIT_NON_CLAIMS: tuple[str, ...] = (
     "no claim of full canonical C0.2 dense retrieval unless Chroma/BGE dense path ran",
@@ -197,6 +243,16 @@ def enrich_section_graph_binding_doc(doc: dict[str, Any]) -> dict[str, Any]:
         "RuntimeExhaustBundle": False,
     }
     out["explicit_non_claims"] = list(EXPLICIT_NON_CLAIMS)
+    mode = str(out.get("graph_expansion_mode") or "").strip()
+    if out.get("graph_hop_paths_by_fact_id") or mode == GRAPH_EXPANSION_MODE_TRACK_WEIGHTED_MULTI_HOP:
+        out["graph_expansion_mode"] = mode or GRAPH_EXPANSION_MODE_TRACK_WEIGHTED_MULTI_HOP
+        out["graph_hop_paths_count_semantics"] = str(
+            out.get("graph_hop_paths_count_semantics") or GRAPH_HOP_PATHS_COUNT_SEMANTICS_TRACK_WEIGHTED
+        )
+    else:
+        out["graph_expansion_mode"] = GRAPH_EXPANSION_MODE_INCIDENT_EDGE_V1
+        out["graph_hop_paths_count_semantics"] = GRAPH_HOP_PATHS_COUNT_SEMANTICS_INCIDENT_EDGE
+    out["graph_hop_bounds_policy_note"] = NATIVE_C03_GRAPH_HOP_BOUNDS_POLICY_NOTE
     return out
 
 
@@ -220,6 +276,13 @@ def section_lane_spine_classification() -> dict[str, Any]:
 
 
 __all__ = [
+    "C03_RECEIPT_FIELD_GLOSSARY",
+    "GRAPH_EXPANSION_MODE_INCIDENT_EDGE_V1",
+    "GRAPH_EXPANSION_MODE_MULTI_HOP_V1",
+    "GRAPH_EXPANSION_MODE_TRACK_WEIGHTED_MULTI_HOP",
+    "GRAPH_HOP_PATHS_COUNT_SEMANTICS_TRACK_WEIGHTED",
+    "GRAPH_HOP_PATHS_COUNT_SEMANTICS_INCIDENT_EDGE",
+    "NATIVE_C03_GRAPH_HOP_BOUNDS_POLICY_NOTE",
     "BINDING_CLASSIFICATION_FEC_SHAPE_ONLY",
     "BINDING_CLASSIFICATION_FULL_C03",
     "BINDING_CLASSIFICATION_SECTION_GRAPH_CONTEXT",

@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def _enable_regen_caps_for_policy_tests(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "1")
+
 from apps_rg.runtime.sections.executive_summary_candidate_pool import (
     SCORES_FRESHNESS_CARRIED_FORWARD,
     SCORES_FRESHNESS_FULL_PANEL,
@@ -13,6 +20,7 @@ from apps_rg.runtime.sections.executive_summary_judge_remediation import (
 )
 from apps_rg.runtime.sections.executive_summary_regen_delta_policy import (
     DELTA_CLASS_DIMENSION_EXECUTIVE_SIGNAL,
+    DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE,
     DELTA_CLASS_EXPLORATORY_FULL_PARAGRAPH,
     DELTA_CLASS_RESUME_VOICE_HUMANIZE,
     DELTA_CLASS_S6_FORWARD_SYNTHESIS,
@@ -169,7 +177,7 @@ def test_brown_delta_includes_gemini_voice_and_claude_stack_feedback() -> None:
         compact=True,
     )
     joined = "\n".join(lines)
-    assert resolve_delta_class(_brown_svp_soft_fail_panel()) == DELTA_CLASS_RESUME_VOICE_HUMANIZE
+    assert resolve_delta_class(_brown_svp_soft_fail_panel()) == DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE
     assert "JUDGE_DELTA_SOURCE provider_key=gemini_pro" in joined
     assert "mechanical phrasing" in joined
     assert "JUDGE_DELTA_SOURCE provider_key=anthropic_claude" in joined
@@ -178,13 +186,14 @@ def test_brown_delta_includes_gemini_voice_and_claude_stack_feedback() -> None:
     assert "freeze all other sentences verbatim" in joined
 
 
-def test_resolve_delta_class_prefers_resume_voice_when_combined_with_executive_signal() -> None:
-    judges = [_soft_fail("resume_voice"), _soft_fail("executive_signal")]
-    from apps_rg.runtime.sections.executive_summary_regen_delta_policy import (
-        DELTA_CLASS_RESUME_VOICE_HUMANIZE,
-    )
-
-    assert resolve_delta_class(judges) == DELTA_CLASS_RESUME_VOICE_HUMANIZE
+def test_resolve_delta_class_composite_when_voice_and_executive_signal_on_one_judge() -> None:
+    judges = [_soft_fail("resume_voice")]
+    judges[0]["dimension_verdicts"]["executive_signal"] = {
+        "pass": False,
+        "severity": "major",
+        "codes": ["thin_arc"],
+    }
+    assert resolve_delta_class(judges) == DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE
 
 
 def test_g5_rejects_excess_sentence_edits() -> None:

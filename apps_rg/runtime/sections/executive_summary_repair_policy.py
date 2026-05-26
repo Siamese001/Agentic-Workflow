@@ -25,7 +25,7 @@ def synthesis_regeneration_enabled() -> bool:
 
 
 def synthesis_regen_max_attempts() -> int:
-    """Bounded LLM regen attempts (default 2, hard cap 3)."""
+    """LLM synthesis regen attempts per run."""
     raw = os.environ.get(
         "APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN_MAX_ATTEMPTS",
         str(SYNTHESIS_REGEN_MAX_ATTEMPTS),
@@ -34,16 +34,18 @@ def synthesis_regen_max_attempts() -> int:
         n = int(raw)
     except ValueError:
         n = SYNTHESIS_REGEN_MAX_ATTEMPTS
-    return max(1, min(n, SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP))
+    cap = SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP if regen_artificial_caps_enabled() else 99
+    return max(1, min(n, cap))
 
 
 # Post-X1D same-authority regen when X2 passed and any judge is below floor.
-# Default 3 Qwen cycles (hard cap 3); post-regen rescores soft-failed judges only.
-JUDGE_REGEN_MAX_ATTEMPTS = 3
-JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
-# Regen retries: bounded by JUDGE_REGEN_MAX_ATTEMPTS + G5 sentence-edit scope + frozen compile.
-# Full judge feedback in REGEN_DELTA (no env truncation); core shape guard uses sentinel ceiling only.
+JUDGE_REGEN_MAX_ATTEMPTS = 10
+JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 99
+# Regen delta shape: sentinel ceilings (not product truncation). Opt-in caps via REGEN_CAPS=1.
 JUDGE_REGEN_CORE_DELTA_TOKEN_CEILING = 2_000_000
+JUDGE_REGEN_MAX_DELTA_LINES = 1_000_000
+# Default off — G5 allowlist, line budgets, and regen pre-dispatch blocks disabled unless opted in.
+REGEN_ARTIFICIAL_CAPS_ENABLED_DEFAULT = False
 POST_REGEN_JUDGE_RESCORE_SOFT_ONLY = "soft_failed_only"
 POST_REGEN_JUDGE_RESCORE_FULL_PANEL = "full_panel"
 # Opt-in via APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=1 after X2 pass (bounded, same-authority).
@@ -52,6 +54,25 @@ RELEASE_JUDGE_REGENERATION_ENABLED = True
 
 def _truthy_env(raw: str) -> bool:
     return str(raw or "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def regen_artificial_caps_enabled() -> bool:
+    """When false (default), G5 allowlist, delta line pack limits, and regen dispatch blocks are off."""
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "").strip().lower()
+    if raw in ("1", "true", "yes", "on"):
+        return True
+    if raw in ("0", "false", "no", "off"):
+        return False
+    return REGEN_ARTIFICIAL_CAPS_ENABLED_DEFAULT
+
+
+def judge_regen_max_delta_lines() -> int:
+    """Core SameAuthorityRegenRunner ``max_delta_lines``."""
+    if not regen_artificial_caps_enabled():
+        return JUDGE_REGEN_MAX_DELTA_LINES
+    from agentic_core.L2_execution.regen.prompt_lock import DEFAULT_MAX_DELTA_LINES
+
+    return int(DEFAULT_MAX_DELTA_LINES)
 
 
 def judge_regen_max_delta_tokens() -> int:
@@ -77,7 +98,7 @@ def judge_pass_floor_0_to_5() -> float | None:
 
 
 def judge_regen_max_attempts() -> int:
-    """Bounded judge-regen cycles per run (one Qwen rewrite + re-judge soft fails each)."""
+    """Judge-regen cycles per run (one Qwen rewrite + re-judge soft fails each)."""
     raw = os.environ.get(
         "APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS",
         str(JUDGE_REGEN_MAX_ATTEMPTS),
@@ -86,6 +107,8 @@ def judge_regen_max_attempts() -> int:
         n = int(raw)
     except ValueError:
         n = JUDGE_REGEN_MAX_ATTEMPTS
+    if regen_artificial_caps_enabled():
+        return max(1, min(n, 3))
     return max(1, min(n, JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP))
 
 
@@ -175,7 +198,11 @@ __all__ = [
     "judge_regen_core_runner_enabled",
     "judge_pass_floor_0_to_5",
     "judge_regen_max_attempts",
+    "judge_regen_max_delta_lines",
     "judge_regen_max_delta_tokens",
+    "JUDGE_REGEN_MAX_DELTA_LINES",
+    "REGEN_ARTIFICIAL_CAPS_ENABLED_DEFAULT",
+    "regen_artificial_caps_enabled",
     "JUDGE_REGEN_CORE_DELTA_TOKEN_CEILING",
     "judge_regeneration_enabled",
     "judge_safe_prefilter_enabled",

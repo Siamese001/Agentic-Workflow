@@ -123,6 +123,17 @@ def build_incremental_repair_contract(
         or "vllm",
     )
 
+    trigger_source = TriggerSource.X3_JUDGE
+    if str(trigger_receipt.get("trigger_mode") or "").startswith("x2"):
+        trigger_source = TriggerSource.X2
+
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        judge_regen_max_delta_lines,
+        judge_regen_max_delta_tokens,
+    )
+
+    max_delta_tokens = judge_regen_max_delta_tokens()
+    max_delta_lines = judge_regen_max_delta_lines()
     delta_lines = tuple(
         collect_judge_remediation_delta_lines(
             x1d_judges,
@@ -132,16 +143,6 @@ def build_incremental_repair_contract(
             prior_ledger_rows=prior_ledger_rows,
         ),
     )
-
-    trigger_source = TriggerSource.X3_JUDGE
-    if str(trigger_receipt.get("trigger_mode") or "").startswith("x2"):
-        trigger_source = TriggerSource.X2
-
-    from apps_rg.runtime.sections.executive_summary_repair_policy import (
-        judge_regen_max_delta_tokens,
-    )
-
-    max_delta_tokens = judge_regen_max_delta_tokens()
 
     return IncrementalRepairContract(
         request_id=str(run_id or compile_ctx.get("run_id") or "exec-summary-run"),
@@ -174,6 +175,7 @@ def build_incremental_repair_contract(
         transport_retry_count=transport_retry_count,
         max_semantic_regen_attempts=max_semantic_regen_attempts,
         max_delta_tokens=max_delta_tokens,
+        max_delta_lines=max_delta_lines,
         prompt_messages=pm,
         expected_system_prefix_hash=sys_hash,
         nested_heal_without_new_attempt=nested_heal_without_new_attempt,

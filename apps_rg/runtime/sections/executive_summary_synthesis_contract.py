@@ -38,8 +38,9 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "brushstroke_id": "B2_governed_platform_system",
         "arc_role": "scale_operating_model",
         "guidance": (
-            "S3: weave platform scale, operating model, and innovation delivery as connective prose "
-            "(team growth, lifecycle) — not a standalone achievement bullet; "
+            "S3: weave platform scale, operating model, and commercialization as connective prose — when "
+            "fact_engineering_platform_006 is cited, include $22M IP-led revenue and/or 20% margin expansion in display "
+            "(team 8→28 may share the clause); not a standalone achievement bullet; "
             "avoid SRFS-forbidden phrases (reusable platform services adopted across enterprise programs, engineering scale-out)."
         ),
     },
@@ -47,8 +48,8 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "brushstroke_id": "B3_control_evidence_discipline",
         "arc_role": "governance_innovation",
         "guidance": (
-            "S4: governance, lineage, or regulatory discipline linked to IT strategy velocity "
-            "(targeting may emphasize EA governance / audit-ready delivery) — not a control checklist; "
+            "S4: governance, lineage, or regulatory discipline linked to IT strategy velocity — when fact_governance_003 "
+            "is cited, surface the allowed reporting-error reduction percent in display; not a control checklist; "
             "use parallel thematic sequencing when lineage and HPC facts are separate threads (no forced 'extended to' bridges)."
         ),
     },
@@ -56,18 +57,18 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "brushstroke_id": "B4_business_role_fit",
         "arc_role": "commercial_strategy",
         "guidance": (
-            "S5: one strategic clause weaving quantitative/commercial proof — at most one metric; "
-            "never list derivatives pricing, multi-Greek hedging, employer names, or FSA/cert label stacks from fact_quant_hpc_003; "
-            "imply quantitative rigor through platform/governance decisions instead."
+            "S5: one strategic clause weaving quantitative proof — when fact_quant_hpc_001 is cited, surface the allowed "
+            "stress-testing or cycle-reduction percent in display; never list derivatives pricing, multi-Greek hedging, "
+            "employer names, or FSA/cert label stacks from fact_quant_hpc_003."
         ),
     },
     {
         "brushstroke_id": "B4_business_role_fit",
         "arc_role": "enterprise_capstone",
         "guidance": (
-            "S6: forward capstone — innovation incubation / architecture standards / decentralized-scale readiness projected from "
-            "allowed facts; must add a NEW forward idea (not 'extend that arc toward' recap); "
-            "no JD/briefing echo, no TARGET_COMPANY, no repetition of S2–S5 noun phrases."
+            "S6: forward capstone — innovation incubation / architecture standards projected from the sentence's "
+            "source_fact_ids (e.g. quant/capital foundation when fact_quant_hpc_003 is cited); must add a NEW forward idea "
+            "(not 'extend that arc toward' recap); no JD/briefing echo, no TARGET_COMPANY, no repetition of S2–S5 noun phrases."
         ),
     },
 )
@@ -121,11 +122,12 @@ def format_strategy_executive_u0_block(*, target_title: str = "") -> str:
         "- At most two S2–S5 sentences may use stock bridges (Building on / Through that / Complementing / With that governance); "
         "vary other transitions (From that commercial base / Against that lineage backdrop / In parallel).\n"
         "- Six sentences = one causal arc serving the thesis; **do not** assign one accomplishment per sentence by default.\n"
-        "- S3–S4: connective prose (platform scale + operating model + innovation delivery) — not sequential mini-bullets.\n"
-        "- S5: one quantitative-rigor or commercial clause woven into strategy — no derivatives/employer/cert inventory sentences.\n"
-        "- S6: MUST begin with 'Looking ahead,' — forward innovation-program / architecture-governance capstone; "
+        "- S3–S5: connective prose with material dollar/percent outcomes in display when allowed facts carry them "
+        "(judges read resume_display_text, not claim_text alone).\n"
+        "- S5: surface allowed stress-testing or HPC outcome metrics in display when fact_quant_hpc_001 is cited; "
+        "forbidden: derivatives pricing / multi-Greek / employer inventory lists.\n"
+        "- S6: MUST begin with 'Looking ahead,' — forward capstone grounded in source_fact_ids substance; "
         "forbidden: 'extend that arc toward', 'Governed platform delivery... extend'.\n"
-        "- S5: one embedded quantitative-rigor clause; forbidden: derivatives pricing / multi-Greek / employer inventory lists.\n"
         "- S3–S4: honest connectors only; parallel governance and HPC threads need not be falsely causal.\n"
         f"{format_svp_jd_emphasis_line()}"
         f"- Target role framing: {role} (positioning only).\n"

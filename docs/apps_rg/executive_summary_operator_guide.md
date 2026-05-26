@@ -131,6 +131,41 @@ All **post-scratch** regen/repair Qwen calls go through `budgeted_qwen_regen_cal
 
 `budget_allowed=true` with `transport_timeout=true` is **not** a successful regen. Semantic regen attempt index ≠ transport retry count.
 
+## C0.3 skills graph (claim authority vs targeting)
+
+Executive summary proof comes from the **augmented skills graph**, not the JD text. Use this section when triaging graph receipts or explaining a run to stakeholders.
+
+### What is proof vs what is not
+
+| Source | Role | Can appear as a resume claim? |
+|--------|------|--------------------------------|
+| `allowed_fact_ids` / C0 fact packet | SRFS + pool-wins (typically ~7 facts) | **Yes** — only these |
+| `graph_targeting_capsule.json` | JD/GTM skill labels for tone | **No** — `claim_support_allowed: false` |
+| `c03_context_fact_ids` | Graph neighbors (e.g. partnerships, revenue ops) | **No** — filtered out of pool |
+| JD / briefing | Ranking, role family, brushstroke order | **No** — `jd_used_as_proof: false` |
+
+### Binding vocabulary (read receipts correctly)
+
+| You see | It means | It does **not** mean |
+|---------|----------|----------------------|
+| `c03_graphrag_bound_status: BOUND` | Graph metadata attached to selected facts | Spine GraphRAG traverse completed |
+| `graph_expansion_mode: incident_edge_v1` | Edges touching selected fact nodes | 2-hop BFS retrieval |
+| `graph_hop_paths_count: 47` | Count of incident edge refs (capped) | 47 two-hop paths |
+| `native_c03` + `FULL_C0_3_GRAPHRAG_BINDING` | Apps_rg route/ACL contract emitted | `agentic_core` C0.3 ran (`core_c03_graph_rag_used` stays false) |
+| `canonical_c0_3_claimed: false` | Honest section-lane mode | Missing or broken graph |
+
+**SSOT report:** [c03_exec_summary_binding.md](../reports/apps_rg/c03_exec_summary_binding.md) · **Code glossary:** `apps_rg.runtime.section_spine_terminology.C03_RECEIPT_FIELD_GLOSSARY`
+
+### Artifact quick list (under `exec_summary_<timestamp>/`)
+
+`c03_graphrag_bound.json` · `native_c03_final_evidence.json` · `graph_targeting_capsule.json` · `graph_selection_rationale.json` · `section_metric_receipt.json` · `text_claim_coverage.json`
+
+### Example (Brown `exec_summary_20260526_211453`)
+
+Seven facts were allowed as proof; eleven graph neighbors (GTM/revenue/partnerships) were found but **kept out** of claims. The paragraph’s dollar amounts and Basel/CCAR line trace to those seven IDs in `text_claim_coverage.json`. Release was still **not certified** because judges blocked (Gemini decisive), not because the graph chain failed X2.
+
+---
+
 ## X2 credential policy (FSA vs vendor certs)
 
 `x2_exec_summary_no_credential_dump` blocks **vendor cert inventories** (AWS, Databricks, Associate-level label stacks). **FSA** (Fellow of the Society of Actuaries) is treated as **C0.3 skills-graph phase-1 rigor** — not the same as an AWS cert line:

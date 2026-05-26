@@ -16,16 +16,34 @@ from apps_rg.runtime.sections.executive_summary_judge_remediation import (
 
 def pack_judge_feedback_with_stats(
     sections: dict[str, list[str]],
+    *,
+    max_lines: int | None = None,
 ) -> tuple[list[str], dict[str, Any]]:
-    """Pack all delta lines (full judge feedback; no token truncation)."""
+    """Pack delta lines; truncate judge_feedback tail when over core line budget."""
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        judge_regen_max_delta_lines,
+        regen_artificial_caps_enabled,
+    )
+
+    if not regen_artificial_caps_enabled():
+        line_cap = None
+    else:
+        line_cap = int(max_lines if max_lines is not None else judge_regen_max_delta_lines())
     raw_feedback = [str(ln) for ln in (sections.get("judge_feedback") or []) if str(ln).strip()]
-    packed = _flatten_delta_sections(sections)
+    packed = _flatten_delta_sections(
+        sections,
+        max_lines=line_cap if line_cap is not None else None,
+    )
     included_feedback = [ln for ln in packed if ln in raw_feedback]
+    dropped = max(0, len(raw_feedback) - len(included_feedback))
     stats = {
         "judge_feedback_lines_total": len(raw_feedback),
         "judge_feedback_lines_included": len(included_feedback),
-        "judge_feedback_lines_dropped": 0,
-        "dropped_reason": None,
+        "judge_feedback_lines_dropped": dropped,
+        "dropped_reason": "delta_line_budget_tail_truncation" if dropped else None,
+        "regen_caps_enabled": regen_artificial_caps_enabled(),
+        "max_delta_lines": line_cap,
+        "packed_delta_lines": len(packed),
     }
     return packed, stats
 

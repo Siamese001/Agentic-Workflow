@@ -10,6 +10,7 @@ from apps_rg.runtime.section_graph_skills_proof_pool import GRAPH_SKILLS_AUTHORI
 
 RATIONALE_FILENAME = "graph_selection_rationale.json"
 NATIVE_C03_FILENAME = "native_c03_final_evidence.json"
+PROMOTION_CANDIDATES_FILENAME = "c03_promotion_candidates.json"
 
 
 def _write_json(path: Path, doc: Any) -> None:
@@ -46,6 +47,7 @@ def persist_graph_skills_lane_artifacts(
     paths: dict[str, str | None] = {
         RATIONALE_FILENAME: None,
         NATIVE_C03_FILENAME: None,
+        PROMOTION_CANDIDATES_FILENAME: None,
     }
     if section_id not in GRAPH_SKILLS_AUTHORITY_SECTIONS:
         return paths
@@ -53,6 +55,16 @@ def persist_graph_skills_lane_artifacts(
     company, role, jd_text, briefing = _targeting_from_runtime_payload(runtime_payload)
     if jd_text and company and role:
         rationale_path = artifact_dir / RATIONALE_FILENAME
+        graph_digest: str | None = None
+        pp_meta = runtime_payload.get("proof_pool_metadata")
+        if isinstance(pp_meta, dict):
+            auth = pp_meta.get("evidence_authority")
+            if isinstance(auth, dict):
+                graph_digest = str(auth.get("graph_digest") or "").strip() or None
+            if not graph_digest:
+                graph_digest = str(
+                    pp_meta.get("graph_digest") or pp_meta.get("augmented_skills_graph_digest") or ""
+                ).strip() or None
         write_graph_selection_rationale(
             rationale_path,
             section_id=section_id,
@@ -61,6 +73,7 @@ def persist_graph_skills_lane_artifacts(
             jd_text=jd_text,
             briefing_text=briefing,
             repo_root=repo_root,
+            graph_digest=graph_digest,
         )
         paths[RATIONALE_FILENAME] = rationale_path.as_posix()
 
@@ -72,11 +85,22 @@ def persist_graph_skills_lane_artifacts(
             _write_json(native_path, native_c03)
             paths[NATIVE_C03_FILENAME] = native_path.as_posix()
 
+        promo = pp_meta.get("c03_promotion_candidates")
+        if not isinstance(promo, dict):
+            allow = pp_meta.get("exec_summary_allowlist_receipt")
+            if isinstance(allow, dict):
+                promo = allow.get("c03_promotion_candidates")
+        if isinstance(promo, dict) and promo:
+            promo_path = artifact_dir / PROMOTION_CANDIDATES_FILENAME
+            _write_json(promo_path, promo)
+            paths[PROMOTION_CANDIDATES_FILENAME] = promo_path.as_posix()
+
     return paths
 
 
 __all__ = [
     "NATIVE_C03_FILENAME",
+    "PROMOTION_CANDIDATES_FILENAME",
     "RATIONALE_FILENAME",
     "persist_graph_skills_lane_artifacts",
 ]

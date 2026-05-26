@@ -511,7 +511,11 @@ def regen_dispatch_allowed(
     provider_context_window: int | None = None,
     model: str | None = None,
 ) -> RegenDispatchBudgetCheck:
-    """Fail-closed pre-dispatch gate for regen/repair Qwen calls."""
+    """Pre-dispatch budget check for regen/repair Qwen calls (advisory when regen caps disabled)."""
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        regen_artificial_caps_enabled,
+    )
+
     provenance = (
         resolve_context_window_provenance(model=model)
         if provider_context_window is None
@@ -532,6 +536,9 @@ def regen_dispatch_allowed(
     headroom_pct = round((headroom / available * 100.0) if available > 0 else 0.0, 2)
     allowed = est_in <= available
     block_reason = None if allowed else "regen_input_exceeds_available_context_window"
+    if not regen_artificial_caps_enabled():
+        allowed = True
+        block_reason = None
     return RegenDispatchBudgetCheck(
         estimated_input_tokens=est_in,
         max_output_tokens=max_out,

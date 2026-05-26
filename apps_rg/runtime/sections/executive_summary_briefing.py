@@ -6,14 +6,14 @@ import re
 from typing import Any
 
 from apps_rg.runtime.sections.executive_summary_context_limits import (
-    TARGETING_NO_GAP_MAX_CHARS,
+    resolve_briefing_ranked_selection_max_chars,
 )
 
 _SECTION_HEADING_RE = re.compile(r"^(?:#{1,3}\s+|[A-Z][A-Z0-9 /&-]{3,}:)\s*", re.MULTILINE)
 
 
 def _max_chars() -> int:
-    return TARGETING_NO_GAP_MAX_CHARS
+    return resolve_briefing_ranked_selection_max_chars()
 
 
 def _split_briefing_sections(briefing: str) -> list[tuple[str, str]]:

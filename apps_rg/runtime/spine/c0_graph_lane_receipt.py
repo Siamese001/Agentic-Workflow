@@ -24,6 +24,12 @@ def build_c0_graph_lane_receipt(
     graph_expansion_refs: tuple[str, ...] | list[str] | None = None,
     skills_graph_bound: bool = False,
     c03_graphrag_bound_status: str = "",
+    graph_expansion_mode: str = "",
+    graph_hop_paths_by_fact_id: dict[str, Any] | None = None,
+    graph_hop_paths_count: int | None = None,
+    graph_hop_paths_count_semantics: str = "",
+    graph_hop_paths_sample: list[Any] | None = None,
+    graph_incident_edge_refs_count: int | None = None,
 ) -> dict[str, Any]:
     """Build graph-lane classification receipt (not a claim of full C0.3 Graph RAG)."""
     refs = list(graph_expansion_refs or ())
@@ -54,6 +60,12 @@ def build_c0_graph_lane_receipt(
         "unified_pipeline_bound": live_traverse,
         "deferral_ssot": DEFERRAL_SSOT,
         "explicit_non_claims": non_claims,
+        "graph_expansion_mode": graph_expansion_mode,
+        "graph_hop_paths_by_fact_id": dict(graph_hop_paths_by_fact_id or {}),
+        "graph_hop_paths_count": int(graph_hop_paths_count or 0),
+        "graph_hop_paths_count_semantics": graph_hop_paths_count_semantics,
+        "graph_hop_paths_sample": list(graph_hop_paths_sample or [])[:5],
+        "graph_incident_edge_refs_count": graph_incident_edge_refs_count,
     }
 
 
@@ -87,8 +99,31 @@ def build_c0_graph_lane_receipt_from_bridge(
     if not isinstance(pp, dict):
         pp = {}
     c03 = pp.get("c03_graphrag_bound") if isinstance(pp.get("c03_graphrag_bound"), dict) else {}
+    te = pp.get("track_weighted_graph_expansion")
+    te = te if isinstance(te, dict) else {}
     status = str(c03.get("support_status") or pp.get("c03_graphrag_bound_status") or "")
     refs = list(bridge_doc.get("graph_expansion_refs") or c03.get("graph_expansion_refs") or ())
+    hop_by_fact = c03.get("graph_hop_paths_by_fact_id") or te.get("graph_hop_paths_by_fact_id") or pp.get(
+        "graph_hop_paths_by_fact_id"
+    )
+    hop_count = c03.get("graph_hop_paths_count")
+    if hop_count is None:
+        hop_count = te.get("c03_graph_hop_paths_count") or pp.get("c03_graph_hop_paths_count")
+    hop_sem = str(
+        c03.get("graph_hop_paths_count_semantics")
+        or te.get("graph_hop_paths_count_semantics")
+        or pp.get("graph_hop_paths_count_semantics")
+        or ""
+    )
+    hop_sample = (
+        c03.get("graph_hop_paths_sample")
+        or te.get("graph_hop_paths_sample")
+        or pp.get("graph_hop_paths_sample")
+    )
+    expansion_mode = str(
+        c03.get("graph_expansion_mode") or te.get("graph_expansion_mode") or pp.get("graph_expansion_mode") or ""
+    )
+    incident_refs = c03.get("graph_incident_edge_refs_count")
     if pp.get("spine_graph_authority") and refs:
         graph_ref = str(refs[0])
     else:
@@ -102,6 +137,12 @@ def build_c0_graph_lane_receipt_from_bridge(
         graph_expansion_refs=refs if isinstance(refs, (list, tuple)) else (refs,),
         skills_graph_bound=skills,
         c03_graphrag_bound_status=status,
+        graph_expansion_mode=expansion_mode,
+        graph_hop_paths_by_fact_id=hop_by_fact if isinstance(hop_by_fact, dict) else {},
+        graph_hop_paths_count=int(hop_count or 0),
+        graph_hop_paths_count_semantics=hop_sem,
+        graph_hop_paths_sample=hop_sample if isinstance(hop_sample, list) else [],
+        graph_incident_edge_refs_count=incident_refs,
     )
 
 

@@ -17,6 +17,7 @@ from apps_rg.runtime.spine.front_contracts import (
 from apps_rg.runtime.section_spine_terminology import (
     BINDING_CLASSIFICATION_SECTION_GRAPH_CONTEXT,
     BINDING_KIND_SECTION_C03_GRAPH_BINDING,
+    GRAPH_EXPANSION_MODE_INCIDENT_EDGE_V1,
     SPINE_C03_GRAPHRAG_PROOF_KEYS,
     classify_section_c03_graph_binding,
     spine_c03_graphrag_proof_present,
@@ -50,6 +51,8 @@ def test_section_binding_emits_explicit_classification() -> None:
     assert doc["is_full_c0_3_graphrag"] is False
     assert doc["can_satisfy_integrated_product_proof"] is False
     assert doc["section_local_graph_context_only"] is True
+    assert doc.get("graph_expansion_mode") == GRAPH_EXPANSION_MODE_INCIDENT_EDGE_V1
+    assert doc.get("graph_hop_paths_count_semantics")
 
 
 def test_section_local_binding_is_not_product_c03() -> None:

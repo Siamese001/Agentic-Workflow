@@ -40,11 +40,13 @@ def generation_law_digest_text() -> str:
         "GENERATION_LAW_DIGEST:\n"
         "- Proof: ALLOWED_SOURCE_FACT_IDS + C0 lines only; JD/briefing targeting-only.\n"
         "- Required: executive_strategy_thesis (one sentence) then six-sentence display serving that thesis.\n"
+        "- Display metric weave: when claim_text for S3–S5 includes dollar/percent outcomes from allowed facts, "
+        "the matching display sentence must include at least one outcome (executive_signal; not ledger-only metrics).\n"
         "- Anti-inventory: no comma-chain mechanism dumps; no sequential achievement bullet stack; no employer inventory line.\n"
         "- Credential policy: omit AWS/Databricks/vendor cert inventories; at most one FSA rigor mention "
         "(C0.3 phase-1) when woven into quantitative narrative — not equivalent to AWS Associate labels.\n"
         "- SVP ATS: translate JD themes into executive concepts via allowed facts; document gap_notes when proof IDs absent.\n"
-        "- Exactly 6 sentences, one paragraph, max 140 words; S6 forward synthesis not thin recap.\n"
+        "- Exactly 6 sentences, one paragraph, max 140 words; S6 forward synthesis grounded in source_fact_ids, not thin recap.\n"
     )
 
 

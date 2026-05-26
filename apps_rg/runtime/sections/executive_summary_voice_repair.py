@@ -30,22 +30,25 @@ def _fact_corpus_lower(selected_facts: list[dict[str, Any]] | None) -> str:
     return " ".join(parts).lower()
 
 
+# Credential-inventory dump in display (graph-only / materialized claim_text). Narrow: requires
+# foundation opener plus multi-marker inventory — not metric-bearing quantitative prose.
 _S5_CREDENTIAL_DUMP_RE = re.compile(
-    r"\b(?:built|established)\s+advanced\s+quantitative\s+foundation\b.*\b(?:derivatives|multi-greek|towers perrin)\b",
-    re.IGNORECASE,
+    r"\b(?:built|established)\s+advanced\s+quantitative\s+foundation\b"
+    r".*\b(?:derivatives\s+pricing|multi-greek)\b"
+    r".*\b(?:capital\s+modeling|fsa)\b",
+    re.IGNORECASE | re.DOTALL,
 )
 _S6_THIN_RECAP_RE = re.compile(r"\bextend\s+that\s+arc\s+toward\b", re.IGNORECASE)
 _FORCED_LINEAGE_BRIDGE_RE = re.compile(
     r"\bthat\s+regulatory\s+lineage\s+work\s+extended\s+to\b",
     re.IGNORECASE,
 )
-_S5_CREDENTIAL_REPLACEMENT = (
-    "On that commercial base, capital-markets rigor informs which platform investments clear "
-    "governance gates fastest in regulated programs."
-)
-_S6_FORWARD_REPLACEMENT = (
-    "Looking ahead, innovation incubation and architecture standards can federate governed platform "
-    "capabilities across autonomous business units without weakening lineage controls."
+# Retired judge-fail strings — kept only for regression guards in tests.
+_JUDGE_FAIL_S5_SUBSTRING = "capital-markets rigor informs which platform investments"
+_JUDGE_FAIL_S6_LOOKING_AHEAD = re.compile(r"^Looking ahead,\s*", re.IGNORECASE)
+_MATERIAL_METRIC_RE = re.compile(
+    r"(?:\b\d+(?:\.\d+)?%|\$[\d,]+(?:\.\d+)?[MBKmbk]?)\b",
+    re.IGNORECASE,
 )
 _FORMULAIC_S2_RE = re.compile(
     r"^Building on that platform foundation,\s*",
@@ -106,6 +109,84 @@ _META_PHRASE_REPLACEMENTS: tuple[tuple[str, str], ...] = (
 )
 
 
+def _sentence_has_material_metric(sentence: str) -> bool:
+    return bool(_MATERIAL_METRIC_RE.search(str(sentence or "")))
+
+
+def _sentence_is_credential_inventory_dump(sentence: str) -> bool:
+    from apps_rg.runtime.sections.section_authority_repairs import _sentence_fails_credential_dump
+
+    return _sentence_fails_credential_dump(str(sentence or ""))
+
+
+def _first_percent_from_facts(selected_facts: list[dict[str, Any]] | None) -> str | None:
+    corpus = _fact_corpus_lower(selected_facts)
+    match = re.search(r"\b(\d+(?:\.\d+)?%)\b", corpus)
+    return match.group(1) if match else None
+
+
+def _facts_mention_fsa(selected_facts: list[dict[str, Any]] | None) -> bool:
+    corpus = _fact_corpus_lower(selected_facts)
+    if "fsa" in corpus or "fellow of the society of actuaries" in corpus:
+        return True
+    for row in selected_facts or []:
+        if not isinstance(row, dict):
+            continue
+        fid = str(row.get("fact_id") or row.get("candidate_fact_id") or "").lower()
+        if "quant_hpc_003" in fid or "credentials" in fid:
+            return True
+    return False
+
+
+def build_metric_grounded_s5(
+    selected_facts: list[dict[str, Any]] | None,
+    *,
+    avoid_stress_testing_echo: bool = False,
+) -> str:
+    """S5 with allowed FSA + dollar/percent from proof pool (no derivatives inventory list)."""
+    pct = _first_percent_from_facts(selected_facts)
+    fsa = _facts_mention_fsa(selected_facts)
+    stress_clause = ""
+    if pct and not avoid_stress_testing_echo:
+        stress_clause = f", including {pct} stress-testing cycle gains"
+    elif pct and avoid_stress_testing_echo:
+        stress_clause = f", with {pct} regulatory reporting and analytics outcomes"
+    if fsa and pct:
+        return (
+            "On that commercial base, FSA-certified capital modeling and quantitative rigor"
+            f"{stress_clause}, inform which platform investments clear governance gates "
+            "with measurable regulated outcomes."
+        )
+    if fsa:
+        return (
+            "On that commercial base, FSA-certified capital modeling informs which platform "
+            "investments clear governance gates fastest while preserving quantitative discipline."
+        )
+    if pct:
+        return (
+            f"On that commercial base, quantitative rigor and {pct} analytics outcomes inform "
+            "which platform investments clear governance gates with measurable results."
+        )
+    return (
+        "On that commercial base, quantitative capital modeling informs which platform "
+        "investments clear governance gates fastest in regulated programs."
+    )
+
+
+def build_forward_s6(selected_facts: list[dict[str, Any]] | None) -> str:
+    """Forward synthesis without cover-letter 'Looking ahead' opener."""
+    corpus = _fact_corpus_lower(selected_facts)
+    lineage = (
+        "Basel III lineage controls"
+        if "basel" in corpus or "ccar" in corpus
+        else "regulatory lineage controls"
+    )
+    return (
+        "Innovation incubation and architecture standards can federate governed platform "
+        f"capabilities across autonomous business units without weakening {lineage}."
+    )
+
+
 def _repair_forbidden_meta_phrases(resume_display_text: str) -> tuple[str, list[str]]:
     """Strip X2-banned meta scaffolding without changing sentence count."""
     out = str(resume_display_text or "")
@@ -128,7 +209,11 @@ def _repair_forbidden_meta_phrases(resume_display_text: str) -> tuple[str, list[
     return out.strip(), repairs
 
 
-def _repair_synthesis_quality_sentences(resume_display_text: str) -> tuple[str, list[str]]:
+def _repair_synthesis_quality_sentences(
+    resume_display_text: str,
+    *,
+    selected_facts: list[dict[str, Any]] | None = None,
+) -> tuple[str, list[str]]:
     """Rewrite Claude-fail S5/S6 patterns while preserving six-sentence shape."""
     from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
 
@@ -148,16 +233,23 @@ def _repair_synthesis_quality_sentences(resume_display_text: str) -> tuple[str, 
         )
         repairs.append("forced_lineage_bridge_s4")
 
-    if _S5_CREDENTIAL_DUMP_RE.search(out_sents[4]):
-        out_sents[4] = _S5_CREDENTIAL_REPLACEMENT
-        repairs.append("credential_inventory_s5")
+    s5 = out_sents[4]
+    s5_dump = bool(_S5_CREDENTIAL_DUMP_RE.search(s5)) or _sentence_is_credential_inventory_dump(s5)
+    s5_preserve = _sentence_has_material_metric(s5) and not _sentence_is_credential_inventory_dump(s5)
+    if s5_dump and not s5_preserve:
+        out_sents[4] = build_metric_grounded_s5(
+            selected_facts,
+            avoid_stress_testing_echo=_S5_STRESS_ECHO_RE.search(out_sents[3]) is not None,
+        )
+        repairs.append("credential_inventory_s5_metric_grounded")
 
-    if _S6_THIN_RECAP_RE.search(out_sents[5]) or (
-        "governed platform delivery" in out_sents[5].lower()
-        and "extend" in out_sents[5].lower()
-    ):
-        out_sents[5] = _S6_FORWARD_REPLACEMENT
-        repairs.append("thin_recap_s6")
+    s6 = out_sents[5]
+    s6_thin = bool(_S6_THIN_RECAP_RE.search(s6)) or (
+        "governed platform delivery" in s6.lower() and "extend" in s6.lower()
+    )
+    if s6_thin or _JUDGE_FAIL_S6_LOOKING_AHEAD.match(s6.strip()):
+        out_sents[5] = build_forward_s6(selected_facts)
+        repairs.append("thin_recap_s6_forward_grounded")
 
     if _S4_PARTICIPIAL_AFTER_COMPLEMENT_RE.search(out_sents[3]):
         out_sents[3] = _S4_PARTICIPIAL_AFTER_COMPLEMENT_RE.sub(
@@ -181,13 +273,23 @@ def _repair_synthesis_quality_sentences(resume_display_text: str) -> tuple[str, 
         out_sents[1] = _FORMULAIC_S2_RE.sub("From that platform footprint, ", out_sents[1], count=1)
         repairs.append("formulaic_s2_connective")
 
-    if _S5_STRESS_ECHO_RE.search(out_sents[3]) and _S5_STRESS_ECHO_RE.search(out_sents[4]):
-        out_sents[4] = _S5_CREDENTIAL_REPLACEMENT
-        repairs.append("s5_stress_testing_echo_s4")
+    if (
+        _S5_STRESS_ECHO_RE.search(out_sents[3])
+        and _S5_STRESS_ECHO_RE.search(out_sents[4])
+        and not _sentence_has_material_metric(out_sents[4])
+    ):
+        out_sents[4] = build_metric_grounded_s5(selected_facts, avoid_stress_testing_echo=True)
+        repairs.append("s5_stress_testing_echo_s4_metric_grounded")
+
+    joined = " ".join(s.strip() for s in out_sents if s.strip())
+    if _JUDGE_FAIL_S5_SUBSTRING.lower() in joined.lower():
+        out_sents[4] = build_metric_grounded_s5(selected_facts)
+        joined = " ".join(s.strip() for s in out_sents if s.strip())
+        repairs.append("s5_judge_fail_guard")
 
     if not repairs:
         return text, []
-    return " ".join(s.strip() for s in out_sents if s.strip()), repairs
+    return joined, repairs
 
 
 def repair_generic_filler_prose(
@@ -278,7 +380,9 @@ def repair_generic_filler_prose(
     if out and out[0].islower():
         out = out[0].upper() + out[1:]
 
-    syn_out, syn_repairs = _repair_synthesis_quality_sentences(out)
+    syn_out, syn_repairs = _repair_synthesis_quality_sentences(
+        out, selected_facts=selected_facts
+    )
     if syn_repairs:
         out = syn_out
         receipt["replacements"].extend(syn_repairs)
@@ -536,6 +640,8 @@ def finalize_executive_summary_coherence(
 
 __all__ = [
     "apply_voice_repair_to_parsed",
+    "build_forward_s6",
+    "build_metric_grounded_s5",
     "finalize_executive_summary_coherence",
     "reconcile_claim_ledger_after_voice_repair",
     "repair_generic_filler_prose",

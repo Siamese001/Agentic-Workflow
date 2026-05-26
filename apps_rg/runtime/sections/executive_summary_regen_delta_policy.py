@@ -7,6 +7,7 @@ import sys
 from typing import Any
 
 from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+    dimension_major_fail_on_judge,
     major_failed_dimension_ids_from_judges,
 )
 from apps_rg.runtime.sections.executive_summary_candidate_pool import (
@@ -32,6 +33,7 @@ DELTA_CLASS_LEDGER_METRIC_SYNC = "ledger_metric_sync"
 DELTA_CLASS_DIMENSION_EXECUTIVE_SIGNAL = "dimension_executive_signal"
 DELTA_CLASS_EXPLORATORY_FULL_PARAGRAPH = "exploratory_full_paragraph"
 DELTA_CLASS_RESUME_VOICE_HUMANIZE = "resume_voice_humanize"
+DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE = "executive_signal_and_voice_v1"
 DELTA_CLASS_ATS_TARGETING_WITHOUT_STUFFING = "ats_targeting_without_stuffing"
 DELTA_CLASS_ANTI_OVERFIT_REDUCE_JD_ECHO = "anti_overfit_reduce_jd_echo"
 DELTA_CLASS_DETERMINISTIC_ALIGNMENT_STRUCTURE = "deterministic_alignment_structure"
@@ -45,6 +47,7 @@ _DELTA_CLASS_BUDGET: dict[str, int] = {
     DELTA_CLASS_LEDGER_METRIC_SYNC: 0,
     DELTA_CLASS_EXPLORATORY_FULL_PARAGRAPH: 6,
     DELTA_CLASS_RESUME_VOICE_HUMANIZE: 5,
+    DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE: 6,
     DELTA_CLASS_ATS_TARGETING_WITHOUT_STUFFING: 4,
     DELTA_CLASS_ANTI_OVERFIT_REDUCE_JD_ECHO: 4,
     DELTA_CLASS_DETERMINISTIC_ALIGNMENT_STRUCTURE: 2,
@@ -160,6 +163,28 @@ def _soft_judges_have_resume_voice_prose(soft: list[dict[str, Any]]) -> bool:
     return any(_resume_voice_prose_signal(j) for j in soft)
 
 
+def _executive_signal_and_voice_composite_eligible(
+    soft: list[dict[str, Any]],
+    failed_dims: list[str],
+) -> bool:
+    """True when voice + substantive (exec signal or synthesis) fail together."""
+    dims = set(failed_dims)
+    if "resume_voice" not in dims:
+        return False
+    if not dims.intersection({"executive_signal", "synthesis_quality"}):
+        return False
+    if len(_soft_failed_provider_keys(soft)) >= 2:
+        return True
+    return any(
+        dimension_major_fail_on_judge(j, "resume_voice")
+        and (
+            dimension_major_fail_on_judge(j, "executive_signal")
+            or dimension_major_fail_on_judge(j, "synthesis_quality")
+        )
+        for j in soft
+    )
+
+
 def format_sentence_allowlist_label(allowlist: frozenset[int]) -> str:
     """Human label for allowed sentences (1-based S1..S6)."""
     if not allowlist:
@@ -202,6 +227,9 @@ def resolve_delta_class(
     soft = [j for j in _normalize_judge_list(x1d_judges) if _is_model_backed_soft_fail(j)]
     failed_dims = major_failed_dimension_ids_from_judges(soft, judge_filter=_is_model_backed_soft_fail)
     floor = _operator_pass_floor(operator_judge_pass_floor)
+
+    if _executive_signal_and_voice_composite_eligible(soft, failed_dims):
+        return DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE
 
     if _soft_failed_provider_keys(soft) == {"anthropic_claude"} and any(
         _synthesis_s6_thin_signal(j) for j in soft
@@ -281,6 +309,15 @@ def format_delta_class_regen_instruction(
             f"resume_voice_humanize: reword allowed sentences for natural executive tone; "
             f"preserve facts, metrics, and source_fact_ids.{scope}"
         )
+    if delta_class == DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE:
+        return (
+            "executive_signal_and_voice_v1: (1) executive_signal — S1 = one SVP IT strategy thesis; "
+            "S2–S5 = one causal arc with dollar/percent metrics in display for S3–S5 (not claim_text alone); "
+            "(2) resume_voice — vary S2–S5 connective openers (avoid formulaic From/Against/Complementing/On chains); "
+            "third person, active voice, no Additionally/Furthermore; "
+            "(3) synthesis_quality — S5 must surface FSA/quant foundation with a concrete metric or outcome; "
+            f"S6 = forward enterprise IT direction grounded in proof (no cover-letter Looking ahead opener).{scope}"
+        )
     instructions = {
         DELTA_CLASS_S6_FORWARD_SYNTHESIS: (
             "synthesis_quality: revise S6 forward synthesis (and claim_ledger rows it touches only); "
@@ -317,11 +354,17 @@ def format_delta_class_regen_instruction(
     )
 
 
-def max_sentence_edits_for_delta_class(delta_class: str) -> int:
-    return int(_DELTA_CLASS_BUDGET.get(delta_class, 5))
-
-
 _EXEC_SUMMARY_SENTENCE_COUNT = 6
+
+
+def max_sentence_edits_for_delta_class(delta_class: str) -> int:
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        regen_artificial_caps_enabled,
+    )
+
+    if not regen_artificial_caps_enabled():
+        return _EXEC_SUMMARY_SENTENCE_COUNT
+    return int(_DELTA_CLASS_BUDGET.get(delta_class, 5))
 
 # 1-based sentence indexes (S1=1 … S6=6) permitted when judges omit cited_sentence_indexes.
 _DELTA_CLASS_DEFAULT_ALLOWLIST: dict[str, frozenset[int]] = {
@@ -331,6 +374,7 @@ _DELTA_CLASS_DEFAULT_ALLOWLIST: dict[str, frozenset[int]] = {
     DELTA_CLASS_DIMENSION_EXECUTIVE_SIGNAL: frozenset({2, 3, 4, 5, 6}),
     DELTA_CLASS_EXPLORATORY_FULL_PARAGRAPH: frozenset({1, 2, 3, 4, 5, 6}),
     DELTA_CLASS_RESUME_VOICE_HUMANIZE: frozenset({2, 3, 4, 5, 6}),
+    DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE: frozenset({1, 2, 3, 4, 5, 6}),
     DELTA_CLASS_ATS_TARGETING_WITHOUT_STUFFING: frozenset({1, 2, 3, 4, 5, 6}),
     DELTA_CLASS_ANTI_OVERFIT_REDUCE_JD_ECHO: frozenset({1, 2, 3, 4, 5, 6}),
     DELTA_CLASS_DETERMINISTIC_ALIGNMENT_STRUCTURE: frozenset({1, 2, 3, 4, 5, 6}),
@@ -404,6 +448,18 @@ def build_regen_sentence_allowlist(
     delta_class: str,
 ) -> tuple[frozenset[int], dict[str, Any]]:
     """Union cited indexes from soft-failed judges + delta_class fallback."""
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        regen_artificial_caps_enabled,
+    )
+
+    if not regen_artificial_caps_enabled():
+        full = frozenset(range(1, _EXEC_SUMMARY_SENTENCE_COUNT + 1))
+        return full, {
+            "allowlist_sources": ["regen_caps_disabled"],
+            "judge_allowlist_contributions": [],
+            "delta_class_fallback_indexes": sorted(full),
+        }
+
     from_judge: set[int] = set()
     per_judge: list[dict[str, Any]] = []
     for judge in _normalize_judge_list(x1d_judges):
@@ -504,7 +560,32 @@ def evaluate_g5_delta_scope_v2(
     x1d_judges: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """G5v2 — publish gate: edits must stay within judge/delta_class sentence allowlist."""
+    from apps_rg.runtime.sections.executive_summary_repair_policy import (
+        regen_artificial_caps_enabled,
+    )
+
     edited_count, detail = count_sentence_edits(prior_resume, after_resume)
+    if not regen_artificial_caps_enabled():
+        return {
+            "schema": "executive_summary_g5_delta_scope_v2",
+            "gate_mode": "disabled",
+            "passed": True,
+            "reject_gate": None,
+            "verdict": "regen_caps_disabled",
+            "delta_class": delta_class,
+            "allowlist": list(range(1, _EXEC_SUMMARY_SENTENCE_COUNT + 1)),
+            "allowlist_passed": True,
+            "out_of_allowlist_indices": [],
+            "edited_sentence_count": edited_count,
+            **detail,
+            "allowlist_sources": ["regen_caps_disabled"],
+            "g5_legacy_budget_advisory": {
+                "schema": "executive_summary_g5_delta_scope_v1",
+                "passed": True,
+                "gate_mode": "disabled",
+            },
+        }
+
     edited_set = set(detail.get("edited_sentence_indices") or [])
     allowlist, allow_meta = build_regen_sentence_allowlist(
         list(x1d_judges or []),
@@ -696,6 +777,7 @@ def summarize_cycles_for_operator(
 __all__ = [
     "DELTA_CLASS_CONNECTIVE_S2_S5",
     "DELTA_CLASS_DIMENSION_EXECUTIVE_SIGNAL",
+    "DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE",
     "DELTA_CLASS_EXPLORATORY_FULL_PARAGRAPH",
     "DELTA_CLASS_LEDGER_METRIC_SYNC",
     "DELTA_CLASS_S6_FORWARD_SYNTHESIS",

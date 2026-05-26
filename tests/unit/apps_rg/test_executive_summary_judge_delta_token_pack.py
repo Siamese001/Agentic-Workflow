@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from agentic_core.L2_execution.regen.prompt_lock import format_regen_delta_user_turn
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
     REGEN_DELTA_SECTION_ORDER,
@@ -121,17 +123,38 @@ def test_compact_delta_lines_follow_dimension_before_verbatim_judges() -> None:
     assert edit_budget_idx < first_judge_idx < connective_idx
 
 
-def test_pack_judge_feedback_with_stats_never_drops_lines() -> None:
+def test_pack_judge_feedback_with_stats_under_line_cap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "1")
     sections = {
         "judge_feedback": [f"- judge-line-{i}" for i in range(12)],
         "dimension": ["- dim"],
         "floors": [],
         "guards": [],
     }
-    packed, stats = pack_judge_feedback_with_stats(sections)
+    packed, stats = pack_judge_feedback_with_stats(sections, max_lines=20)
     assert stats["judge_feedback_lines_dropped"] == 0
     assert stats["judge_feedback_lines_included"] == 12
     assert len(packed) == 13
+
+
+def test_flatten_delta_sections_truncates_judge_feedback_tail_at_line_cap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "1")
+    sections = {
+        "dimension": ["- DIM_A", "- DIM_B"],
+        "judge_feedback": [f"- JUDGE_{i}" for i in range(18)],
+        "floors": ["- FLOOR_A"],
+        "guards": ["- GUARD_A", "- GUARD_B"],
+    }
+    packed = _flatten_delta_sections(sections, max_lines=20)
+    assert len(packed) == 20
+    assert packed[0] == "- DIM_A"
+    assert packed[-1] == "- GUARD_B"
+    assert "- JUDGE_0" in packed
+    assert "- JUDGE_17" not in packed
 
 
 def test_regen_delta_user_turn_excludes_anchor_draft() -> None:

@@ -77,6 +77,13 @@ def graph_version_from_payload(graph: dict[str, Any]) -> str:
     return str(meta.get("schema_version") or md.get("schema_version") or "unknown")
 
 
+def graph_payload_digest(graph: dict[str, Any]) -> str:
+    """Canonical SHA-256 of full graph JSON (SSOT for authority + rationale artifacts)."""
+    return _sha256_hex(
+        json.dumps(graph, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    )
+
+
 def skills_authority_fields(
     *,
     graph: dict[str, Any] | None,
@@ -187,9 +194,7 @@ def resolve_augmented_skills_graph_authority(
     ref = str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
     try:
         graph = load_augmented_skills_graph(repo_root=root, path=path)
-        digest = _sha256_hex(
-            json.dumps(graph, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
-        )
+        digest = graph_payload_digest(graph)
         return augmented_skills_graph_authority_metadata(
             graph=graph,
             graph_ref=ref,
@@ -277,6 +282,7 @@ __all__ = [
     "build_verified_skill_inventory_projection",
     "claim_evidence_fields",
     "default_augmented_skills_graph_path",
+    "graph_payload_digest",
     "graph_version_from_payload",
     "load_augmented_skills_graph",
     "merge_dual_source_proof_pool_metadata",

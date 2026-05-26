@@ -11,6 +11,9 @@ import os
 # No preventive char cap when the compiled prompt already fits (token budget is authority).
 TARGETING_NO_GAP_MAX_CHARS: int = 10_000_000
 
+# Ranked briefing section selection (manifested; not silent tail truncate).
+BRIEFING_RANKED_SELECTION_MAX_CHARS: int = 12_000
+
 # Bullet-pool Claude selector sub-prompt (code constant).
 DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS: int = 6_000
 DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS: int = 6_000
@@ -82,6 +85,10 @@ def available_input_tokens(
     )
 
 
+def resolve_briefing_ranked_selection_max_chars() -> int:
+    return BRIEFING_RANKED_SELECTION_MAX_CHARS
+
+
 def resolve_bullet_selector_briefing_max_chars() -> int:
     return DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS
 
@@ -103,9 +110,11 @@ __all__ = [
     "ESTIMATE_SAFETY_MULTIPLIER",
     "HARD_CAP_SCRATCH_MAX_OUTPUT_TOKENS",
     "RESERVED_SYSTEM_SCHEMA_TOKENS",
+    "BRIEFING_RANKED_SELECTION_MAX_CHARS",
     "TARGETING_NO_GAP_MAX_CHARS",
     "available_input_tokens",
     "default_provider_context_window",
+    "resolve_briefing_ranked_selection_max_chars",
     "resolve_bullet_selector_briefing_max_chars",
     "resolve_bullet_selector_jd_max_chars",
     "resolve_first_pass_input_utilization_max",

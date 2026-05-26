@@ -1584,6 +1584,9 @@ def run_executive_summary_execution(
     )
     if isinstance(_allowlist_receipt_early, dict):
         write_json(artifact_dir / "allowlist_coherence_receipt.json", _allowlist_receipt_early)
+        _promo_early = _allowlist_receipt_early.get("c03_promotion_candidates")
+        if isinstance(_promo_early, dict) and _promo_early:
+            write_json(artifact_dir / "c03_promotion_candidates.json", _promo_early)
 
     evidence_capsule_block_reason: str | None = allowlist_block_reason
     if _capsule_enabled(runtime_payload) and not evidence_capsule_block_reason:
@@ -3029,8 +3032,10 @@ def run_executive_summary_execution(
                 else:
                     _cycle_record["skipped"] = "regen_not_accepted"
                     _cycles_receipt["cycles"].append(_cycle_record)
-                    _cycles_receipt["stopped_reason"] = "regen_not_accepted"
-                    break
+                    if _cycle_idx + 1 >= _max_judge_cycles:
+                        _cycles_receipt["stopped_reason"] = "regen_not_accepted"
+                        break
+                    continue
 
             if not _cycles_receipt.get("stopped_reason") and _cycles_receipt["cycles"]:
                 _cycles_receipt["stopped_reason"] = "max_cycles_reached"
@@ -3451,6 +3456,7 @@ def run_executive_summary_execution(
             or []
         ),
         "promoted_fact_ids": list((_allowlist_receipt or {}).get("promoted_fact_ids") or []),
+        "c03_promotion_candidates_ref": str(artifact_dir / "c03_promotion_candidates.json"),
         "graph_targeting_skill_ids": list(
             (_allowlist_receipt or {}).get("graph_targeting_skill_ids") or []
         ),
@@ -3471,6 +3477,13 @@ def run_executive_summary_execution(
         selected_fact_plan=l2_output.get("selected_fact_plan") if isinstance(l2_output, dict) else None,
         claim_ledger=claim_ledger,
     )
+    auth = _smr_es.get("evidence_authority")
+    if isinstance(auth, dict) and isinstance(pp_meta := proof_pool_metadata, dict):
+        digest = str(pp_meta.get("graph_digest") or auth.get("graph_digest") or "").strip()
+        if digest:
+            auth = dict(auth)
+            auth["graph_digest"] = digest
+            _smr_es["evidence_authority"] = auth
     write_json(artifact_dir / "section_metric_receipt.json", _smr_es)
     output_lines = []
     if token_budget_block_reason and isinstance(token_budget_receipt, dict):

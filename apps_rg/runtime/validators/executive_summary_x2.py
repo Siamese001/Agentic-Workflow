@@ -195,6 +195,7 @@ ALLOWED_TOP_LEVEL_FIELDS = {
     "claim_ledger_hash",
     "allowed_fact_ids_hash",
     "c0_graph_diagnostics",
+    "allowed_fact_utilization_receipt",
 }
 
 # Required runtime artifacts
@@ -1477,22 +1478,100 @@ def _selected_fact_pool_size(
     return 0
 
 
-def collect_unused_allowed_fact_ids(
+def _fact_id_base_for_utilization(fid: str) -> str:
+    s = str(fid or "").strip()
+    return s.split("_metric_", 1)[0] if "_metric_" in s else s
+
+
+def collect_cited_source_fact_ids(
     claim_ledger: list[dict[str, Any]],
-    allowed_fact_ids: set[str],
-) -> list[str]:
+    text_claim_coverage: dict[str, Any] | None = None,
+) -> set[str]:
+    """Union of fact IDs cited in claim_ledger and text_claim_coverage material claims."""
     cited: set[str] = set()
     for row in claim_ledger:
         if not isinstance(row, dict):
             continue
         for fid in row.get("source_fact_ids") or []:
             s = str(fid).strip()
-            if s:
-                cited.add(s)
-                if "_metric_" in s:
-                    cited.add(s.split("_metric_", 1)[0])
+            if not s:
+                continue
+            cited.add(s)
+            cited.add(_fact_id_base_for_utilization(s))
+    if isinstance(text_claim_coverage, dict):
+        for sent in text_claim_coverage.get("sentences") or []:
+            if not isinstance(sent, dict):
+                continue
+            for mc in sent.get("material_claims") or []:
+                if not isinstance(mc, dict):
+                    continue
+                for fid in mc.get("source_fact_ids") or []:
+                    s = str(fid).strip()
+                    if not s:
+                        continue
+                    cited.add(s)
+                    cited.add(_fact_id_base_for_utilization(s))
+    return cited
+
+
+def default_allowed_fact_utilization_waivers(allowed_fact_ids: set[str]) -> frozenset[str]:
+    """Credential inventory facts may sit in pool without display weave (I0 / no_credential_dump)."""
+    return frozenset(
+        fid for fid in allowed_fact_ids if fid and _is_cert_fact_id_for_utilization(str(fid))
+    )
+
+
+def resolve_utilization_waived_fact_ids(allowed_fact_ids: set[str]) -> set[str]:
+    """Env override: APPS_RG_EXEC_SUMMARY_UTILIZATION_WAIVE_FACT_IDS=comma-separated fact ids."""
+    import os
+
+    raw = str(os.environ.get("APPS_RG_EXEC_SUMMARY_UTILIZATION_WAIVE_FACT_IDS") or "").strip()
+    if raw:
+        explicit = {x.strip() for x in raw.split(",") if x.strip()}
+        return {fid for fid in explicit if fid in allowed_fact_ids}
+    return set(default_allowed_fact_utilization_waivers(allowed_fact_ids))
+
+
+def collect_unused_allowed_fact_ids(
+    claim_ledger: list[dict[str, Any]],
+    allowed_fact_ids: set[str],
+) -> list[str]:
+    cited = collect_cited_source_fact_ids(claim_ledger)
     unused = [fid for fid in sorted(allowed_fact_ids) if fid and fid not in cited]
     return unused
+
+
+def check_exec_summary_allowed_fact_utilization(
+    claim_ledger: list[dict[str, Any]],
+    allowed_fact_ids: set[str],
+    *,
+    text_claim_coverage: dict[str, Any] | None = None,
+    waived_fact_ids: set[str] | None = None,
+) -> tuple[bool, str | None, dict[str, Any]]:
+    """Every non-waived allowed fact must appear in claim_ledger or text_claim_coverage."""
+    allowed = {str(x).strip() for x in allowed_fact_ids if str(x).strip()}
+    waived = (
+        {str(x).strip() for x in waived_fact_ids if str(x).strip()}
+        if waived_fact_ids is not None
+        else resolve_utilization_waived_fact_ids(allowed)
+    )
+    required = allowed - waived
+    cited = collect_cited_source_fact_ids(claim_ledger, text_claim_coverage)
+    missing: list[str] = []
+    for fid in sorted(required):
+        base = _fact_id_base_for_utilization(fid)
+        if fid not in cited and base not in cited:
+            missing.append(fid)
+    receipt = {
+        "waived_fact_ids": sorted(waived),
+        "required_utilization_fact_ids": sorted(required),
+        "cited_fact_ids": sorted(cited),
+        "unused_required_fact_ids": missing,
+        "policy": "cert_facts_waived_by_default",
+    }
+    if missing:
+        return False, f"unused_required_allowed_facts={missing}", receipt
+    return True, "ok", receipt
 
 
 def check_exec_summary_evidence_utilization(
@@ -2047,6 +2126,20 @@ def run_x2_gates(
         "pool_wins_allowlist",
         allowlist_reason,
     )
+    util_pool_ok, util_pool_reason, util_pool_receipt = check_exec_summary_allowed_fact_utilization(
+        claim_ledger,
+        allowed_fact_ids,
+        text_claim_coverage=text_claim_coverage,
+    )
+    add(
+        "x2_exec_summary_allowed_fact_utilization",
+        util_pool_ok,
+        util_pool_reason or "ok",
+        "non_waived_allowed_facts_cited",
+        util_pool_reason,
+    )
+    if isinstance(parsed_output, dict) and util_pool_receipt:
+        parsed_output.setdefault("allowed_fact_utilization_receipt", util_pool_receipt)
     util_ok, util_reason = check_exec_summary_evidence_utilization(
         resume_display_text,
         parsed_output,

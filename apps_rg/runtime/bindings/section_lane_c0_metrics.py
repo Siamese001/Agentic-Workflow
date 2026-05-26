@@ -25,7 +25,11 @@ from apps_rg.runtime.bindings.c0_metrics_writer import (
     SCHEMA_VERSION,
     build_c0_metrics,
 )
-from apps_rg.runtime.c0.c0_section_authority import proof_support_target
+from apps_rg.runtime.c0.section_support_target import (
+    derive_graph_lane_support_target_met,
+    graph_lane_proof_support_target,
+    proof_pool_retrieval_sources,
+)
 from apps_rg.runtime.bindings.c0_minimum_safety import is_c0_minimum_safe
 from apps_rg.runtime.c0_mandatory_policy import is_c03_mandatory_section
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
@@ -156,13 +160,17 @@ def fec_from_section_bridge(
                 )
             )
 
+    allowed_ids = list(bridge_doc.get("allowed_fact_ids") or bridge_doc.get("source_fact_ids") or ())
+    proof_source = str(bridge_doc.get("proof_source") or bridge_doc.get("source_authority") or "")
+    retrieval_sources = proof_pool_retrieval_sources(allowed_ids, proof_source=proof_source)
     snap_target = snap.get("support_target_met")
-    if isinstance(snap_target, bool):
+    if isinstance(snap_target, bool) and str(snap.get("support_target_derivation") or "") == "graph_lane_v1":
         support_target_met = snap_target
     else:
-        support_target_met = bool(items) and support_status in (
-            SUPPORT_STATUS_PASS,
-            SUPPORT_STATUS_WEAK_WITH_CAVEATS,
+        support_target_met = derive_graph_lane_support_target_met(
+            support_status=support_status,
+            allowed_fact_ids=allowed_ids,
+            evidence_item_count=len(items),
         )
     digest = str(snap.get("final_evidence_digest") or "").strip()
     if not digest and items:
@@ -187,15 +195,7 @@ def fec_from_section_bridge(
         app_id="apps_rg",
         trace_id=run_id,
         evidence_items=tuple(items),
-        retrieval_sources=tuple(
-            sorted(
-                {
-                    str(it.source_type or it.source).split(":", 1)[0]
-                    for it in items
-                    if str(it.source_type or it.source)
-                }
-            )
-        ),
+        retrieval_sources=retrieval_sources or proof_pool_retrieval_sources(allowed_ids, proof_source=proof_source),
         support_target_met=support_target_met,
         support_status=support_status,
         final_evidence_digest=digest or None,
@@ -230,7 +230,7 @@ def emit_section_lane_c0_metrics(
         run_id=run_id,
         route_id=_resolve_route_id(artifact_dir),
         briefing_decision=briefing_decision,
-        support_target=proof_support_target(),
+        support_target=graph_lane_proof_support_target(),
     )
     path = artifact_dir / C0_METRICS_FILENAME
     try:

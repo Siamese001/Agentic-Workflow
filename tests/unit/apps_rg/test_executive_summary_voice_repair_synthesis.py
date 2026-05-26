@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from apps_rg.runtime.sections.executive_summary_voice_repair import (
     repair_generic_filler_prose,
     strip_unsupported_source_sensitive_prose,
@@ -18,8 +20,24 @@ _BAD_S5_S6 = (
 )
 
 
+_FACTS = [
+    {
+        "fact_id": "fact_quant_hpc_001",
+        "claim_text": "Re-architected monolithic risk analytics, trimming stress-testing cycles by 40%.",
+    },
+    {
+        "fact_id": "fact_quant_hpc_003",
+        "claim_text": "FSA credential and capital modeling foundation.",
+    },
+    {
+        "fact_id": "fact_governance_003",
+        "claim_text": "Basel III / CCAR lineage cut regulatory reporting errors by 40%.",
+    },
+]
+
+
 def test_repair_synthesis_quality_rewrites_s5_s6_and_s4_bridge() -> None:
-    out, receipt = repair_generic_filler_prose(_BAD_S5_S6)
+    out, receipt = repair_generic_filler_prose(_BAD_S5_S6, selected_facts=_FACTS)
     assert receipt.get("repaired") is True
     assert "enterprise technology leader who unifies" in out.lower()
     assert "derivatives pricing" not in out.lower()
@@ -28,8 +46,9 @@ def test_repair_synthesis_quality_rewrites_s5_s6_and_s4_bridge() -> None:
     assert "governance discipline" not in out.lower()
     assert "rather than listing credential" not in out.lower()
     assert "re-architecting monolithic" not in out.lower() or "re-architected monolithic" in out.lower()
-    assert out.startswith("Looking ahead,") or "Looking ahead," in out
+    assert "capital-markets rigor informs which platform investments" not in out.lower()
     assert "innovation incubation" in out.lower()
+    assert re.search(r"\b40%|\$[\d,]+", out)
 
 
 def test_strip_unsupported_audit_ready_when_facts_lack_audit() -> None:

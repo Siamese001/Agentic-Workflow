@@ -339,6 +339,13 @@ def _resolve_executive_summary_graph_only_proof_pool(
         allowed,
         track_expansion=track_expansion,
     )
+    from apps_rg.runtime.c0.c03_hop_path_materialization import attach_track_weighted_hop_paths_to_c03_bound
+
+    c03 = attach_track_weighted_hop_paths_to_c03_bound(
+        c03,
+        track_expansion,
+        allowed_fact_ids=allowed,
+    )
     graph_targeting_capsule = build_graph_targeting_capsule(
         track_expansion,
         role_family_key=role_family_key,
@@ -365,7 +372,11 @@ def _resolve_executive_summary_graph_only_proof_pool(
         allowlist_filter_receipt=allowlist_filter_receipt,
         track_expansion=track_expansion,
         proof_pool_digest="",  # filled after digest computed
+        jd_text=jd_text,
     )
+    promo = meta["exec_summary_allowlist_receipt"].get("c03_promotion_candidates")
+    if isinstance(promo, dict):
+        meta["c03_promotion_candidates"] = promo
     meta["allowlist_mismatch"] = False
     meta["c03_expansion_surplus_fact_ids"] = list(
         allowlist_filter_receipt.get("c03_expansion_surplus_fact_ids")
@@ -377,7 +388,13 @@ def _resolve_executive_summary_graph_only_proof_pool(
     meta["c03_sqlite_attach_status"] = str(c03.get("c03_sqlite_attach_status") or "DEGRADED")
     meta["c03_sqlite_attach_reason"] = str(c03.get("c03_sqlite_attach_reason") or "")
     meta["canonical_c0_3_claimed"] = False
-    meta["c03_graph_hop_paths_count"] = c03.get("graph_hop_paths_count", len(c03.get("graph_expansion_refs") or []))
+    meta["c03_graph_hop_paths_count"] = c03.get(
+        "c03_graph_hop_paths_count",
+        c03.get("graph_hop_paths_count", len(c03.get("graph_expansion_refs") or [])),
+    )
+    meta["graph_hop_paths_by_fact_id"] = c03.get("graph_hop_paths_by_fact_id") or {}
+    meta["graph_hop_paths_count_semantics"] = c03.get("graph_hop_paths_count_semantics")
+    meta["graph_expansion_mode"] = c03.get("graph_expansion_mode")
     meta["non_graph_evidence_items_count"] = c03.get("non_graph_evidence_items_count", 0)
     meta["c03_graph_bound_status"] = str(c03.get("c03_graphrag_bound_status") or "NOT_BOUND")
     meta["track_weighted_graph_expansion"] = track_expansion

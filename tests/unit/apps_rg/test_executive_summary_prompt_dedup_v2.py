@@ -53,7 +53,7 @@ def _minimal_payload(*, product_visible: bool = False) -> dict:
 
 def test_template_has_dedup_marker_and_single_proof_law():
     raw = TEMPLATE.read_text(encoding="utf-8")
-    assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V9" in raw
+    assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V10" in raw
     assert "pa_core_law_v1" in raw
     assert raw.count("<proof_law_v1>") == 1
     assert "<pre_output_checklist>" not in raw

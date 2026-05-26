@@ -1,6 +1,6 @@
 {
   "schema": "career_track_p1_w5_track_balanced_sections_receipt_v1",
-  "generated_at": "2026-05-26T18:40:07Z",
+  "generated_at": "2026-05-26T20:40:16Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W5",
   "selected_tracks": [
@@ -782,12 +782,24 @@
   "p1_w4_non_graph_evidence_items_count": 0,
   "p1_w4_graph_hop_paths_count": 22,
   "agentic_core_isolation": {
-    "git_diff_name_only_agentic_core": [],
-    "git_status_short_agentic_core": [
-      "M agentic_core/L0_routing/config/model_registry.py",
-      "M agentic_core/L2_execution/types/vllm_serving_profile_types.py"
+    "git_diff_name_only_agentic_core": [
+      "agentic_core/L2_execution/regen/prompt_lock.py",
+      "agentic_core/runtime/contracts/l1_plan_contract.py",
+      "agentic_core/runtime/contracts/route_contract.py",
+      "agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py"
     ],
-    "dirty_files": [],
+    "git_status_short_agentic_core": [
+      "M agentic_core/L2_execution/regen/prompt_lock.py",
+      "M agentic_core/runtime/contracts/l1_plan_contract.py",
+      "M agentic_core/runtime/contracts/route_contract.py",
+      "M agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py"
+    ],
+    "dirty_files": [
+      "agentic_core/L2_execution/regen/prompt_lock.py",
+      "agentic_core/runtime/contracts/l1_plan_contract.py",
+      "agentic_core/runtime/contracts/route_contract.py",
+      "agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py"
+    ],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
@@ -799,8 +811,8 @@
       "docs/reports/apps_rg/fixtures/p1_w4",
       ".cursor/plans/graph-skills-hardening-f3a8c1.md"
     ],
-    "workspace_guard_clean": true,
-    "isolation_verdict": "CLEAN",
+    "workspace_guard_clean": false,
+    "isolation_verdict": "ISOLATED_PREEXISTING_CHURN",
     "evidence": "P1-W4 closeout changed only apps_rg/fact_inventory, apps_rg/runtime/proof_pool_resolver.py, tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope.",
     "p1_w5_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_balanced_section_projection.py",

@@ -174,17 +174,32 @@ def build_exec_summary_allowlist_receipt(
     allowlist_filter_receipt: dict[str, Any],
     track_expansion: dict[str, Any] | None,
     proof_pool_digest: str,
+    jd_text: str = "",
 ) -> dict[str, Any]:
+    from apps_rg.runtime.c0.c03_promotion_candidates import build_c03_promotion_candidates_receipt
+    from apps_rg.runtime.validators.executive_summary_x2 import resolve_utilization_waived_fact_ids
+
     skill_ids: list[str] = []
     if isinstance(track_expansion, dict):
         skill_ids = sorted(
             {str(x).strip() for x in (track_expansion.get("c03_selected_skill_ids") or []) if str(x).strip()}
         )
+    waived = sorted(resolve_utilization_waived_fact_ids(allowed_fact_ids))
+    filtered_out = list(allowlist_filter_receipt.get("c03_filtered_out_fact_ids") or [])
+    promotion = build_c03_promotion_candidates_receipt(
+        filtered_out_fact_ids=filtered_out,
+        allowed_fact_ids=allowed_fact_ids,
+        track_expansion=track_expansion,
+        jd_text=jd_text,
+    )
     return {
         **allowlist_filter_receipt,
         "proof_pool_digest": proof_pool_digest,
         "graph_targeting_skill_ids": skill_ids,
         "dg1_decision": "A",
+        "waived_fact_ids": waived,
+        "utilization_policy": "fact_certs_waived_by_default",
+        "c03_promotion_candidates": promotion,
     }
 
 

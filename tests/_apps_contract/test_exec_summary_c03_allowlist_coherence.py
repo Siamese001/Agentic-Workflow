@@ -82,6 +82,15 @@ def test_resolve_executive_summary_proof_pool_allowlist_coherent(brown_jd: str) 
     assert meta.get("graph_targeting_capsule")
     for fid in receipt.get("c03_filtered_out_fact_ids") or []:
         assert fid not in allowed
+    promo = receipt.get("c03_promotion_candidates") or meta.get("c03_promotion_candidates")
+    assert isinstance(promo, dict)
+    assert promo.get("promoted_fact_ids") == []
+    if receipt.get("c03_filtered_out_fact_ids"):
+        assert promo.get("candidate_count", 0) >= 1
+        assert all(c.get("promotion_eligible") is False for c in promo.get("candidates") or [])
+    c03 = meta.get("c03_graphrag_bound") or {}
+    assert c03.get("graph_hop_paths_by_fact_id"), "W4: hop paths materialized on c03 bound"
+    assert int(c03.get("graph_hop_paths_count") or 0) > 0
     reason = assert_pre_l2_allowlist_coherence(
         allowed_fact_ids=allowed,
         c03_bound=meta.get("c03_graphrag_bound"),

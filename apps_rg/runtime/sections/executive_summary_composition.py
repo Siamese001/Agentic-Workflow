@@ -159,11 +159,48 @@ def _classify_fact_brushstroke_role(fact_id: str, claim_text: str) -> str:
     return "B2_governed_platform_system"
 
 
+def _skill_ids_for_facts_from_track_expansion(
+    selected_facts: list[dict[str, Any]],
+    proof_pool_metadata: dict[str, Any] | None,
+) -> list[str]:
+    """Scope graph skill refs to skills linked to the given facts (track expansion SSOT)."""
+    if not isinstance(proof_pool_metadata, dict):
+        return []
+    te = proof_pool_metadata.get("track_weighted_graph_expansion")
+    if not isinstance(te, dict):
+        return []
+    fact_bases = {
+        _fact_id_base(str(f.get("fact_id") or ""))
+        for f in selected_facts
+        if isinstance(f, dict) and str(f.get("fact_id") or "").strip()
+    }
+    if not fact_bases:
+        return []
+    refs: list[str] = []
+    for sk in te.get("selected_skills") or []:
+        if not isinstance(sk, dict):
+            continue
+        sid = str(sk.get("skill_id") or "").strip()
+        if not sid:
+            continue
+        fid = str(sk.get("fact_id") or "").strip()
+        link_facts = [str(x).strip() for x in (sk.get("fact_id_links") or []) if str(x).strip()]
+        matched = bool(fid and _fact_id_base(fid) in fact_bases)
+        if not matched:
+            matched = any(_fact_id_base(lf) in fact_bases for lf in link_facts)
+        if matched:
+            refs.append(sid)
+    return sorted(set(refs))
+
+
 def _infer_graph_skill_refs(
     selected_facts: list[dict[str, Any]],
     *,
     proof_pool_metadata: dict[str, Any] | None,
 ) -> list[str]:
+    scoped = _skill_ids_for_facts_from_track_expansion(selected_facts, proof_pool_metadata)
+    if scoped:
+        return scoped
     refs: list[str] = []
     if isinstance(proof_pool_metadata, dict):
         for sid in proof_pool_metadata.get("c03_selected_skill_ids") or []:
@@ -179,7 +216,13 @@ def _infer_graph_skill_refs(
     return sorted(set(refs))
 
 
-def _brushstroke_for_role(role: str, facts: list[dict[str, Any]], allowed: set[str]) -> dict[str, Any]:
+def _brushstroke_for_role(
+    role: str,
+    facts: list[dict[str, Any]],
+    allowed: set[str],
+    *,
+    proof_pool_metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     role_facts = [
         f
         for f in facts
@@ -197,7 +240,7 @@ def _brushstroke_for_role(role: str, facts: list[dict[str, Any]], allowed: set[s
             }
         ),
     )
-    skill_refs = _infer_graph_skill_refs(role_facts, proof_pool_metadata=None)
+    skill_refs = _infer_graph_skill_refs(role_facts, proof_pool_metadata=proof_pool_metadata)
     image_goals = {
         "B1_executive_identity": "Establish executive identity and regulated enterprise platform scope.",
         "B2_governed_platform_system": "Paint the governed agentic platform system (runtime, retrieval, orchestration).",
@@ -348,7 +391,9 @@ def format_composition_plan_for_pa(plan: dict[str, Any]) -> str:
     lines.append(
         "S1 must echo executive_strategy_thesis. You may weave multiple brushstroke facts across S2–S5; "
         "sentence order follows the thesis, not fact-pool or brushstroke index order. "
-        "Bind substantive claims to claim_ledger rows; prose is clean — no brushstroke labels in display text."
+        "Bind substantive claims to claim_ledger rows; prose is clean — no brushstroke labels in display text. "
+        "DISPLAY_LEDGER_PARITY: material dollar/percent outcomes in claim_text for S3–S5 must appear in the "
+        "matching resume_display_text sentence (judges grade display, not ledger-only metrics)."
     )
     lines.append("</executive_summary_composition_plan>")
     return "\n".join(lines) + "\n"
@@ -375,7 +420,10 @@ def build_executive_summary_composition_plan(
     brushstroke_bind = bind_facts_to_brushstrokes(
         facts, allowed_fact_ids=allowed_fact_ids, proof_pool_metadata=proof_pool_metadata
     )
-    brushstrokes = [_brushstroke_for_role(role, facts, allowed) for role in BRUSHSTROKE_ROLES]
+    brushstrokes = [
+        _brushstroke_for_role(role, facts, allowed, proof_pool_metadata=proof_pool_metadata)
+        for role in BRUSHSTROKE_ROLES
+    ]
     dominant = "B2_governed_platform_system"
     if graph_refs:
         dominant = "B2_governed_platform_system"

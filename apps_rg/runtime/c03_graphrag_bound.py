@@ -1,7 +1,10 @@
 """Section C0.3 graph binding (module path: c03_graphrag_bound).
 
-Lane-local static JSON graph neighbor binding for ``python -m apps_rg --section *``.
-**Not** full canonical C0.3 GraphRAG traverse and **not** spine FinalEvidenceContract.
+Lane-local static JSON graph **incident-edge** binding for ``python -m apps_rg --section *``.
+Collects ``graph_edges`` that touch selected proof fact nodes (``graph_expansion_mode=incident_edge_v1``).
+**Not** a multi-hop BFS GraphRAG traverse, **not** spine canonical C0.3, **not** spine FinalEvidenceContract.
+
+Receipt vocabulary SSOT: ``apps_rg.runtime.section_spine_terminology``.
 """
 from __future__ import annotations
 
@@ -120,8 +123,10 @@ def build_section_c03_graphrag_bound(
         evidence_items=evidence_items,
     )
     doc["section_id"] = str(section_id or "").strip() or "executive_summary"
-    hop_count = len(doc.get("graph_expansion_refs") or [])
-    doc["graph_hop_paths_count"] = hop_count
+    incident_count = len(doc.get("graph_expansion_refs") or [])
+    doc["graph_incident_edge_refs_count"] = incident_count
+    if "graph_hop_paths_count" not in doc:
+        doc["graph_hop_paths_count"] = incident_count
     non_graph = 0
     for item in doc.get("final_evidence_contract_snapshot", {}).get("evidence_items") or []:
         if isinstance(item, dict) and str(item.get("source_class") or "") != SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH:
@@ -168,10 +173,13 @@ def build_executive_summary_c03_graphrag_bound(
             )
 
     support_status = SUPPORT_STATUS_SUPPORTED if items and fact_set else SUPPORT_STATUS_EMPTY
-    if support_status in FORBIDDEN_SUPPORT_FOR_PRODUCT_PROOF:
-        support_target_met = False
-    else:
-        support_target_met = bool(items)
+    from apps_rg.runtime.c0.section_support_target import derive_graph_lane_support_target_met
+
+    support_target_met = derive_graph_lane_support_target_met(
+        support_status=support_status,
+        allowed_fact_ids=fact_set,
+        evidence_item_count=len(items),
+    )
 
     ts = datetime.now(timezone.utc).isoformat()
     fec_snapshot = {
@@ -180,6 +188,7 @@ def build_executive_summary_c03_graphrag_bound(
         "source_authority": SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
         "support_status": support_status,
         "support_target_met": support_target_met,
+        "support_target_derivation": "graph_lane_v1",
         "not_applicable_reason": "",
         "graph_expansion_allowed": True,
         "graph_expansion_refs": list(graph_expansion_refs),
@@ -209,8 +218,15 @@ def build_executive_summary_c03_graphrag_bound(
         "final_evidence_contract_snapshot": fec_snapshot,
         "support_status": support_status,
         "support_target_met": support_target_met,
+        "support_target_derivation": "graph_lane_v1",
     }
-    return enrich_section_graph_binding_doc(base)
+    bound = enrich_section_graph_binding_doc(base)
+    bound["support_target_met"] = support_target_met
+    bound["support_target_derivation"] = "graph_lane_v1"
+    if isinstance(bound.get("final_evidence_contract_snapshot"), dict):
+        bound["final_evidence_contract_snapshot"]["support_target_met"] = support_target_met
+        bound["final_evidence_contract_snapshot"]["support_target_derivation"] = "graph_lane_v1"
+    return bound
 
 
 def load_graph_and_build_c03_bound(
