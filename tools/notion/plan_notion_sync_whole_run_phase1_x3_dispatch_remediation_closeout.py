@@ -17,13 +17,16 @@ DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
     "COMPLETED (2026-05-26): Phase-1 X3 dict pass_ fix + resolve/abort decoupling + "
-    "allow_non_allow flag; W4 PARTIAL whole-run full_resume_983aac3da43f lanes_executed=1."
+    "allow_non_allow flag; W4 PARTIAL (lanes_executed=1); 85 unit tests + E2E harness hardened."
 )
 
 AI_SUMMARY = """- PLAN_STATUS: COMPLETE (2026-05-26)
 - RC-1: dict-safe X3 helper (test_phase1_dispatch_x3_dict_pass.py)
 - RC-2: resolve/abort decoupling (test_modular_phase1_resolve_abort_decoupling.py)
-- W4: full_resume_983aac3da43f vs baseline full_resume_1bffb730f966
+- W3: allow_non_allow_exit_zero parity
+- W4: full_resume_983aac3da43f vs baseline full_resume_1bffb730f966 (PARTIAL)
+- Tests: 85 passed; test_modular_phase1_lane_dispatch_status.py edge cases
+- E2E: ops_scripts/apps_rg/run_governed_spine_e2e_proof.sh
 - Closeout: docs/reports/apps_rg/whole_run_phase1_x3_dispatch_remediation_closeout_receipt.md
 - PLAN: .cursor/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md"""
 

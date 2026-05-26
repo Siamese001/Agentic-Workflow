@@ -30,6 +30,26 @@ def test_phase1_allow_flag_from_recipe_context_keys_and_env(
     assert _phase1_allow_flag_from_recipe_context({}) is True
 
 
+@pytest.mark.parametrize(
+    "env_val",
+    ["yes", "TRUE", "on", "Y"],
+)
+def test_phase1_allow_flag_truthy_env_variants(
+    monkeypatch: pytest.MonkeyPatch,
+    env_val: str,
+) -> None:
+    monkeypatch.delenv("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO", raising=False)
+    monkeypatch.setenv("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO", env_val)
+    assert _phase1_allow_flag_from_recipe_context({}) is True
+
+
+def test_phase1_allow_flag_false_for_empty_env(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO", "  ")
+    assert _phase1_allow_flag_from_recipe_context({}) is False
+
+
 def test_resolve_phase1_lane_allow_denied_on_product_fail_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

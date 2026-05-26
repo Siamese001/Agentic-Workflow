@@ -70,7 +70,6 @@ if ! "$PY" ops_scripts/apps_rg/verify_governed_spine_e2e.py \
   --section-dir "$HEADLINE_DIR" \
   --report "$PROOF_ROOT/headline_spine_verify.json"; then
   HEADLINE_VERIFY_EXIT=$?
-  echo "headline_spine_verify_exit=$HEADLINE_VERIFY_EXIT" >&2
 fi
 echo "headline_spine_verify_exit=$HEADLINE_VERIFY_EXIT"
 

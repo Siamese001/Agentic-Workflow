@@ -93,17 +93,25 @@ Judge regen cycle 3 rejected: delta_scope_violation (floor ?). Published scratch
 
 ---
 
-## Unit regression (W1–W3)
+## Unit regression (W1–W3 + edge hardening)
 
 ```bash
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest \
   tests/unit/apps_rg/test_phase1_dispatch_x3_dict_pass.py \
+  tests/unit/apps_rg/test_modular_phase1_lane_dispatch_status.py \
   tests/unit/apps_rg/test_modular_phase1_resolve_abort_decoupling.py \
   tests/unit/apps_rg/test_modular_phase1_allow_non_allow_exit_zero.py \
+  tests/unit/apps_rg/test_phase1_parallel_dispatcher.py \
+  tests/unit/apps_rg/test_modular_resume_generation_phase1.py \
+  tests/unit/apps_rg/test_integrated_executive_summary_materialization_w8c.py \
+  tests/unit/apps_rg/runtime/test_product_fail_closed_p0.py \
+  tests/unit/apps_rg/test_prompt_judge_x2_alignment_w0.py \
   -q -p pytest_timeout -o addopts=
 ```
 
-**Result:** 14 passed (2026-05-26).
+**Result:** 85 passed (2026-05-26 closeout).
+
+**E2E harness:** [run_governed_spine_e2e_proof.sh](../../ops_scripts/apps_rg/run_governed_spine_e2e_proof.sh) hardened (`pipefail`, `full_resume_*` discovery, CLI exit capture).
 
 ---
 

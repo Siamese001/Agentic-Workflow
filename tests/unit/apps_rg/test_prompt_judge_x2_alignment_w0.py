@@ -68,9 +68,13 @@ def test_exec_summary_pa_claim_ledger_guidance_consistent() -> None:
     )
     u0 = str(assembly.u0_user_task or "")
     graph_guard = format_graph_only_quality_guardrails_block()
-    assert "do not emit one row per sentence" in u0.lower() or "not one row per sentence" in u0.lower()
-    assert "3-6" in u0 or "3–6" in u0
-    assert "one claim_ledger row per sentence" not in graph_guard.lower()
+    guard_lower = graph_guard.lower()
+    u0_lower = u0.lower()
+    assert "do not default to one row per sentence" in guard_lower
+    assert "3-6" in graph_guard or "3–6" in graph_guard
+    assert "one claim_ledger row per sentence" not in guard_lower
+    assert "one claim_ledger row per sentence" not in u0_lower
+    assert "not one sentence per brushstroke" in u0_lower
 
 
 def test_competencies_u0_schema_matches_x2() -> None:

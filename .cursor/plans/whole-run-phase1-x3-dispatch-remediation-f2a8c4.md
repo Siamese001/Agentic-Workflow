@@ -28,6 +28,8 @@ LAST_UPDATED: 2026-05-26
 
 PLAN_CREATED: slug=whole-run-phase1-x3-dispatch-remediation-f2a8c4 path=.cursor/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md status=Complete
 
+CLOSEOUT: receipt=[whole_run_phase1_x3_dispatch_remediation_closeout_receipt.md](docs/reports/apps_rg/whole_run_phase1_x3_dispatch_remediation_closeout_receipt.md) tests=85_passed e2e=[run_governed_spine_e2e_proof.sh](ops_scripts/apps_rg/run_governed_spine_e2e_proof.sh)
+
 ---
 
 ## Context (SCQA)

@@ -107,6 +107,40 @@ def test_executive_summary_publish_disposition_apply_certified_path() -> None:
     assert lane_outcome_authorized_from_x3(x3_doc) is True
 
 
+def test_lane_outcome_authorized_from_x3_pass_underscore_key_only() -> None:
+    x3 = {"x3_code": "X3_ALLOW", "pass_": True}
+    assert lane_outcome_authorized_from_x3(x3) is True
+
+
+def test_lane_outcome_authorized_from_x3_x3_block_not_authorized() -> None:
+    x3 = {"x3_code": "X3_BLOCK", "pass": False}
+    assert lane_outcome_authorized_from_x3(x3) is False
+    _, exit_status, code = _lane_dispatch_status_from_x3(x3)
+    assert exit_status == "error"
+    assert code == "X3_BLOCK"
+
+
+def test_lane_outcome_authorized_from_x3_none_and_empty() -> None:
+    assert lane_outcome_authorized_from_x3(None) is False
+    assert lane_outcome_authorized_from_x3({}) is False
+    assert lane_x3_code_from_x3(None) == ""
+
+
+def test_lane_outcome_authorized_exit_ok_family_without_pass_key() -> None:
+    for code in ("EXIT_OK", "EXIT_PARTIAL", "X3C", "X3D"):
+        assert lane_outcome_authorized_from_x3({"x3_code": code}) is True
+
+
+def test_phase1_dispatch_hard_failed_true_on_soft_fail_dispatch() -> None:
+    from apps_rg.runtime.product_output_policy import phase1_dispatch_hard_failed
+
+    x3_doc = {"x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL", "pass": False}
+    _, exit_status, _ = _lane_dispatch_status_from_x3(x3_doc)
+    dispatch = {"exit_status": exit_status, "fault": ""}
+    assert exit_status == "error"
+    assert phase1_dispatch_hard_failed(dispatch) is True
+
+
 def test_phase1_dispatch_hard_failed_false_on_dict_allow() -> None:
     from apps_rg.runtime.product_output_policy import phase1_dispatch_hard_failed
 
