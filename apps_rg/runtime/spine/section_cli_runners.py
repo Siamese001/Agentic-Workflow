@@ -12,6 +12,17 @@ from apps_rg.runtime.orchestration.canonical_dispatch import (
     _read_optional_brief,
     _resolve_lane_manual_brief,
 )
+from apps_rg.runtime.spine.section_x3_finalize import (
+    lane_outcome_authorized_from_x3,
+    lane_x3_code_from_x3,
+)
+
+
+def _lane_dispatch_status_from_x3(x3: Any) -> tuple[bool, str, str]:
+    """Map lane ctx x3 (dict or dataclass) to CLI dispatch exit fields."""
+    authorized = lane_outcome_authorized_from_x3(x3)
+    exit_status = "success" if authorized else "error"
+    return authorized, exit_status, lane_x3_code_from_x3(x3)
 
 def run_section_competencies_spine(
     *,
@@ -75,14 +86,13 @@ def run_section_competencies_spine(
     ctx = lane.run_competencies_lane_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
     x3 = ctx["x3"]
-    outcome_authorized = bool(getattr(x3, "pass_", False))
-    exit_status = "success" if outcome_authorized else "error"
+    outcome_authorized, exit_status, x3_code = _lane_dispatch_status_from_x3(x3)
 
     return {
         "exit_status": exit_status,
         "execution_status": "completed" if outcome_authorized else "failed",
         "outcome_authorized": outcome_authorized,
-        "x3_disposition": getattr(x3, "x3_code", ""),
+        "x3_disposition": x3_code,
         "fault": "",
         "artifact_dir": str(artifact_path),
         "run_id": str(ctx["runtime_payload"].get("run_id", "")),
@@ -161,14 +171,13 @@ def run_section_headline_spine(
     ctx = lane.run_headline_lane_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
     x3 = ctx["x3"]
-    outcome_authorized = bool(getattr(x3, "pass_", False))
-    exit_status = "success" if outcome_authorized else "error"
+    outcome_authorized, exit_status, x3_code = _lane_dispatch_status_from_x3(x3)
 
     return {
         "exit_status": exit_status,
         "execution_status": "completed" if outcome_authorized else "failed",
         "outcome_authorized": outcome_authorized,
-        "x3_disposition": getattr(x3, "x3_code", ""),
+        "x3_disposition": x3_code,
         "fault": "",
         "artifact_dir": str(artifact_path),
         "run_id": str(ctx["runtime_payload"].get("run_id", "")),
@@ -355,14 +364,13 @@ def run_section_executive_summary_spine(
     os.environ["APPS_RG_ARTIFACT_DIR"] = str(artifact_path)
 
     x3 = ctx["x3"]
-    outcome_authorized = bool(getattr(x3, "pass_", False))
-    exit_status = "success" if outcome_authorized else "error"
+    outcome_authorized, exit_status, x3_code = _lane_dispatch_status_from_x3(x3)
 
     return {
         "exit_status": exit_status,
         "execution_status": "completed" if outcome_authorized else "failed",
         "outcome_authorized": outcome_authorized,
-        "x3_disposition": getattr(x3, "x3_code", ""),
+        "x3_disposition": x3_code,
         "fault": "",
         "artifact_dir": str(artifact_path),
         "run_id": str(ctx["runtime_payload"].get("run_id", "")),
@@ -461,14 +469,13 @@ def run_section_unify_bullets_spine(
     artifact_path = Path(ctx["artifact_dir"])
 
     x3 = ctx["x3"]
-    outcome_authorized = bool(getattr(x3, "pass_", False))
-    exit_status = "success" if outcome_authorized else "error"
+    outcome_authorized, exit_status, x3_code = _lane_dispatch_status_from_x3(x3)
 
     return {
         "exit_status": exit_status,
         "execution_status": "completed" if outcome_authorized else "failed",
         "outcome_authorized": outcome_authorized,
-        "x3_disposition": getattr(x3, "x3_code", ""),
+        "x3_disposition": x3_code,
         "fault": "",
         "artifact_dir": str(artifact_path),
         "run_id": str(ctx["runtime_payload"].get("run_id", "")),
@@ -564,14 +571,13 @@ def run_section_unify_narrative_spine(
     artifact_path = Path(ctx["artifact_dir"])
 
     x3 = ctx["x3"]
-    outcome_authorized = bool(getattr(x3, "pass_", False))
-    exit_status = "success" if outcome_authorized else "error"
+    outcome_authorized, exit_status, x3_code = _lane_dispatch_status_from_x3(x3)
 
     return {
         "exit_status": exit_status,
         "execution_status": "completed" if outcome_authorized else "failed",
         "outcome_authorized": outcome_authorized,
-        "x3_disposition": getattr(x3, "x3_code", ""),
+        "x3_disposition": x3_code,
         "fault": "",
         "artifact_dir": str(artifact_path),
         "run_id": str(ctx["runtime_payload"].get("run_id", "")),
@@ -669,14 +675,13 @@ def run_section_ibm_bullets_spine(
     artifact_path = Path(ctx["artifact_dir"])
 
     x3 = ctx["x3"]
-    outcome_authorized = bool(getattr(x3, "pass_", False))
-    exit_status = "success" if outcome_authorized else "error"
+    outcome_authorized, exit_status, x3_code = _lane_dispatch_status_from_x3(x3)
 
     return {
         "exit_status": exit_status,
         "execution_status": "completed" if outcome_authorized else "failed",
         "outcome_authorized": outcome_authorized,
-        "x3_disposition": getattr(x3, "x3_code", ""),
+        "x3_disposition": x3_code,
         "fault": "",
         "artifact_dir": str(artifact_path),
         "run_id": str(ctx["runtime_payload"].get("run_id", "")),
@@ -774,14 +779,13 @@ def run_section_ibm_narrative_spine(
     artifact_path = Path(ctx["artifact_dir"])
 
     x3 = ctx["x3"]
-    outcome_authorized = bool(getattr(x3, "pass_", False))
-    exit_status = "success" if outcome_authorized else "error"
+    outcome_authorized, exit_status, x3_code = _lane_dispatch_status_from_x3(x3)
 
     return {
         "exit_status": exit_status,
         "execution_status": "completed" if outcome_authorized else "failed",
         "outcome_authorized": outcome_authorized,
-        "x3_disposition": getattr(x3, "x3_code", ""),
+        "x3_disposition": x3_code,
         "fault": "",
         "artifact_dir": str(artifact_path),
         "run_id": str(ctx["runtime_payload"].get("run_id", "")),

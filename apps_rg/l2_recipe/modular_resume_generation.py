@@ -177,6 +177,70 @@ def _phase1_lane_dispatch_status(result: dict[str, Any] | None) -> str:
     return f"dispatch_status:{exit_st or 'unknown'}"
 
 
+def _phase1_materialize_lane_run_dir(
+    *,
+    repo: Path,
+    sections_root: Path,
+    integrated_dir: Path,
+    lane: str,
+    lane_provider: str,
+    lane_dispatch_results: dict[str, dict[str, Any]],
+    lane_exec_status: dict[str, str],
+    emit_integrated_lane_pre_run_failure: Any,
+    product_fail_closed: bool,
+) -> Path | None:
+    """Resolve lane run_dir from pointers for recipe rollup (decoupled from dispatch exit_status).
+
+    ``phase1_aborted`` blocks subsequent **dispatch** waves only; every lane gets a resolve
+    attempt so on-disk successes (e.g. executive_summary X3_ALLOW) are not hidden.
+    """
+    from apps_rg.l2_recipe.modular_lane_adapter import resolve_latest_lane_run_dir
+    from apps_rg.runtime.product_output_policy import lane_run_dir_meets_product_bar
+
+    try:
+        run_dir = resolve_latest_lane_run_dir(
+            repo,
+            sections_root,
+            lane,
+            lane_provider=lane_provider,
+        )
+    except FileNotFoundError as exc:
+        lane_exec_status[lane] = f"{lane_exec_status.get(lane, '')}|missing_pointer:{exc}".strip(
+            "|"
+        )
+        dispatch = lane_dispatch_results.get(lane) or {}
+        fault = str(dispatch.get("fault") or "").strip()
+        blocker = fault or "PHASE1_NO_RUN_DIR"
+        if not fault and str(dispatch.get("exit_status") or "").lower() == "error":
+            blocker = "LANE_DISPATCH_EXIT_ERROR"
+        emit_integrated_lane_pre_run_failure(
+            sections_root=sections_root,
+            integrated_dir=integrated_dir,
+            repo_root=repo,
+            lane_id=lane,
+            blocker=blocker,
+            dispatch_result=dispatch,
+            lane_exec_status=str(lane_exec_status.get(lane) or ""),
+        )
+        return None
+
+    if product_fail_closed:
+        ok, bar_reason = lane_run_dir_meets_product_bar(run_dir)
+        if not ok:
+            emit_integrated_lane_pre_run_failure(
+                sections_root=sections_root,
+                integrated_dir=integrated_dir,
+                repo_root=repo,
+                lane_id=lane,
+                blocker=f"LANE_PRODUCT_BAR_FAILED:{bar_reason}",
+                dispatch_result=lane_dispatch_results.get(lane) or {},
+                lane_exec_status=lane_exec_status.get(lane, ""),
+            )
+            return None
+
+    return run_dir
+
+
 def _minimal_judge_blob() -> dict[str, Any]:
     return {
         "judges": [
@@ -362,6 +426,7 @@ class ModularResumeProfile:
     self_consistency_requested: int = 0
     parallel_phase1_lanes: bool = False
     phase1_max_parallel: int = 2
+    phase1_allow_non_allow_exit_zero: bool = False
 
 
 _PLUMBING_ASSEMBLY_PROVIDERS = frozenset({"mock", "mocked", "stub"})
@@ -524,6 +589,13 @@ def run_modular_resume_generation(
                 profile_flag=bool(profile.parallel_phase1_lanes)
             )
             _max_par = resolve_max_parallel(default=int(profile.phase1_max_parallel or 2))
+            from apps_rg.runtime.section_cli_defaults import (
+                resolve_phase1_lane_allow_non_allow_exit_zero,
+            )
+
+            _phase1_allow_exit = resolve_phase1_lane_allow_non_allow_exit_zero(
+                bool(profile.phase1_allow_non_allow_exit_zero)
+            )
 
             def _phase1_dispatch_one_lane(**kwargs: Any) -> dict[str, Any]:
                 nonlocal phase1_aborted, phase1_abort_reason
@@ -579,6 +651,7 @@ def run_modular_resume_generation(
                 lane_provider=profile.phase1_lane_provider,
                 lane_x1d_judges=x1d_eff,
                 lane_mock_judges=lane_mock_j_for_phase1,
+                lane_allow_non_allow_exit_zero=_phase1_allow_exit,
             )
 
             if _parallel_phase1:
@@ -659,6 +732,7 @@ def run_modular_resume_generation(
                             lane_temperature=default_temperature_for_section(lane),
                             lane_x1d_judges=x1d_eff,
                             lane_mock_judges=lane_mock_j_for_phase1,
+                            lane_allow_non_allow_exit_zero=_phase1_allow_exit,
                         )
                         lane_dispatch_results[lane] = dict(result) if isinstance(result, dict) else {}
                         lane_exec_status[lane] = _phase1_lane_dispatch_status(lane_dispatch_results[lane])
@@ -673,50 +747,21 @@ def run_modular_resume_generation(
                         if product_fail_closed_runtime():
                             phase1_aborted = True
                             phase1_abort_reason = f"dispatch_exception:{lane}:{exc!s}"
+            _product_fail_closed = product_fail_closed_runtime()
             for lane in GENERATED_LANES:
-                if phase1_aborted:
-                    continue
-                try:
-                    lane_run_dirs[lane] = resolve_latest_lane_run_dir(
-                        repo,
-                        sections_root,
-                        lane,
-                        lane_provider=profile.phase1_lane_provider,
-                    )
-                    if product_fail_closed_runtime():
-                        ok, bar_reason = lane_run_dir_meets_product_bar(lane_run_dirs[lane])
-                        if not ok:
-                            phase1_aborted = True
-                            phase1_abort_reason = f"lane_product_bar_failed:{lane}:{bar_reason}"
-                            emit_integrated_lane_pre_run_failure(
-                                sections_root=sections_root,
-                                integrated_dir=art,
-                                repo_root=repo,
-                                lane_id=lane,
-                                blocker=f"LANE_PRODUCT_BAR_FAILED:{bar_reason}",
-                                dispatch_result=lane_dispatch_results.get(lane) or {},
-                                lane_exec_status=lane_exec_status.get(lane, ""),
-                            )
-                            lane_run_dirs.pop(lane, None)
-                except FileNotFoundError as exc:
-                    if product_fail_closed_runtime():
-                        phase1_aborted = True
-                        phase1_abort_reason = f"no_run_dir:{lane}:{exc}"
-                    lane_exec_status[lane] = lane_exec_status.get(lane, "") + f"|missing_pointer:{exc}"
-                    dispatch = lane_dispatch_results.get(lane) or {}
-                    fault = str(dispatch.get("fault") or "").strip()
-                    blocker = fault or "PHASE1_NO_RUN_DIR"
-                    if not fault and str(dispatch.get("exit_status") or "").lower() == "error":
-                        blocker = "LANE_DISPATCH_EXIT_ERROR"
-                    emit_integrated_lane_pre_run_failure(
-                        sections_root=sections_root,
-                        integrated_dir=art,
-                        repo_root=repo,
-                        lane_id=lane,
-                        blocker=blocker,
-                        dispatch_result=dispatch,
-                        lane_exec_status=str(lane_exec_status.get(lane) or ""),
-                    )
+                run_dir = _phase1_materialize_lane_run_dir(
+                    repo=repo,
+                    sections_root=sections_root,
+                    integrated_dir=art,
+                    lane=lane,
+                    lane_provider=profile.phase1_lane_provider,
+                    lane_dispatch_results=lane_dispatch_results,
+                    lane_exec_status=lane_exec_status,
+                    emit_integrated_lane_pre_run_failure=emit_integrated_lane_pre_run_failure,
+                    product_fail_closed=_product_fail_closed,
+                )
+                if run_dir is not None:
+                    lane_run_dirs[lane] = run_dir
 
             inv_extra: dict[str, Any] = {
                 "run_id": run_id,
@@ -724,6 +769,7 @@ def run_modular_resume_generation(
                 "sections_root_rel": _rel_under_repo(sections_root, repo),
                 "phase1_parallel_enabled": _parallel_phase1,
                 "phase1_max_parallel": _max_par if _parallel_phase1 else 1,
+                "phase1_allow_non_allow_exit_zero_effective": _phase1_allow_exit,
             }
             if lane_targeting is not None:
                 inv_extra["lane_argv_targeting"] = asdict(lane_targeting)

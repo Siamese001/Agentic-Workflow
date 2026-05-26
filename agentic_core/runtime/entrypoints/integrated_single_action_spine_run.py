@@ -1246,7 +1246,7 @@ def run_integrated_single_action_spine(
                     "request_id": request_id,
                     "trace_root": trace_root,
                     "execution_form": "R4_SINGLE_ACTION",
-                    "grounding_required": False,
+                    "grounding_required": True,
                     "prompt_assembly_required": False,
                 },
             },

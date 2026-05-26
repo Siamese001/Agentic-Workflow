@@ -176,15 +176,17 @@ def test_l0_route_family_grounded_when_fact_check_required() -> None:
     assert route.route_family == "R3R4_MANAGED_WORKFLOW"
 
 
-def test_l0_route_changes_when_grounding_not_required() -> None:
-    """generation_mode=generate_scratch drops grounding; L0 selects scratch profile."""
+def test_l0_route_scratch_still_grounded_apps_research_when_no_briefing() -> None:
+    """generate_scratch: grounding always on; apps_research when U0 has no briefing."""
 
     vr = _live_validated_request(_thin_payload(generation_mode="generate_scratch"))
     plan = l1_plan_apps_rg(vr)
-    assert plan.grounding_required is False, "generate_scratch should drop grounding"
+    assert plan.grounding_required is True
+    assert plan.apps_research_call_required is True
     route = l0_route_apps_rg(plan)
     assert route.route_family == "R4_MANAGED_DRAFT"
-    assert route.cache_eligibility["r3_grounded"] is False
+    assert route.grounding_required is True
+    assert route.cache_eligibility["r3_grounded"] is True
 
 
 def test_l0_cache_eligibility_r1a_always_true_r4_never_for_apps_rg() -> None:

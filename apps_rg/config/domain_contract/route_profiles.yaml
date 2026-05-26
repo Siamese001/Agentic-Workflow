@@ -42,14 +42,54 @@
     live_wiring_deferred: false
     wiring_gate: LIVE
 
-- route_profile_id: arpf::apps_rg::resume_generation::full_grounded_managed::v1
+- route_profile_id: arpf::apps_rg::resume_generation::apps_research_delegated_managed::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  conditions:
+    apps_research_call_required: true
+  spine:
+    route_family: R3R4_MANAGED_WORKFLOW
+    route_id: R4_MANAGED_DRAFT
+    execution_form: MANAGED_WORKFLOW
+    l3_required: true
+  personalization_default: true
+  provider_model_requirement_ref: apps_rg::provider_model::resume_generation::v1
+  managed_workflow:
+    workflow_ref: wfm::apps_rg::resume_generation::v1
+    workflow_manifest_ref: wfm::apps_rg::resume_generation::v1
+    workflow_registry_ref: apps_rg/config/route_registry.yaml
+  budget_constraints:
+    enforced: false
+    profile_present: false
+  graph_traverse:
+    graph_expansion_allowed: true
+    max_hops: 1
+    max_nodes: 32
+    max_edges: 64
+    allowed_relation_types:
+      - DERIVED_FROM
+      - IMPLEMENTS
+      - CONTRADICTS
+      - SOURCE_VERSION
+      - EVIDENCE
+      - SUPPORTS
+      - REQUIRES
+      - RELATED_TO
+    contradiction_scan_enabled: true
+    supersession_scan_enabled: false
+    graph_adapter_ref: apps_rg.integrations.c0_graph_adapter
+    live_wiring_deferred: false
+    wiring_gate: LIVE
+
+- route_profile_id: arpf::apps_rg::resume_generation::full_resume_managed::v1
   app_id: apps_rg
   task_class: resume_generation
   version: "1.0.0"
   status: active
   conditions:
     merge_required_hint: true
-    grounding_required: true
   spine:
     route_family: R3R4_MANAGED_WORKFLOW
     route_id: R4_MANAGED_DRAFT

@@ -21,7 +21,15 @@ def _x3_to_doc(x3: Any) -> dict[str, Any]:
         return dict(x3.to_dict())
     if isinstance(x3, dict):
         return dict(x3)
-    return dict(x3)
+    if hasattr(x3, "pass_") or hasattr(x3, "x3_code"):
+        out: dict[str, Any] = {}
+        if hasattr(x3, "x3_code"):
+            out["x3_code"] = getattr(x3, "x3_code", "")
+        if hasattr(x3, "pass_"):
+            out["pass_"] = bool(getattr(x3, "pass_", False))
+            out["pass"] = out["pass_"]
+        return out
+    return {}
 
 
 def _terminal_class_from_x3(x3: Any, x3_doc: dict[str, Any]) -> str:
@@ -33,6 +41,18 @@ def _terminal_class_from_x3(x3: Any, x3_doc: dict[str, Any]) -> str:
     if code.startswith("X3_ALLOW") or code in {"EXIT_OK", "EXIT_PARTIAL", "X3C", "X3D"}:
         return "success"
     return "failure"
+
+
+def lane_outcome_authorized_from_x3(x3: Any) -> bool:
+    """CLI dispatch outcome: True when lane X3 mirror authorizes (dict or dataclass)."""
+    x3_doc = _x3_to_doc(x3)
+    return _terminal_class_from_x3(x3, x3_doc) == "success"
+
+
+def lane_x3_code_from_x3(x3: Any) -> str:
+    """Resolve x3_code for dispatch receipts from dict or dataclass lane x3."""
+    x3_doc = _x3_to_doc(x3)
+    return str(x3_doc.get("x3_code") or getattr(x3, "x3_code", "") or "")
 
 
 def persist_section_x3_mirror(
@@ -175,6 +195,8 @@ __all__ = [
     "SPINE_FEC_ARTIFACT",
     "finalize_section_lane_x3",
     "finalize_section_spine_exit_after_sealed_l2",
+    "lane_outcome_authorized_from_x3",
+    "lane_x3_code_from_x3",
     "persist_section_x3_mirror",
     "refresh_section_exit_after_x3_change",
 ]

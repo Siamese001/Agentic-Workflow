@@ -1,13 +1,16 @@
-"""Token-budget packing for judge-regen delta lines (verbatim feedback)."""
+"""Judge-regen delta lines: verbatim soft-failed feedback (no env token truncation)."""
 
 from __future__ import annotations
 
-from agentic_core.L2_execution.regen.delta_shape_guard import estimate_token_count
 from agentic_core.L2_execution.regen.prompt_lock import format_regen_delta_user_turn
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+    REGEN_DELTA_SECTION_ORDER,
+    _flatten_delta_sections,
     collect_judge_remediation_delta_lines,
 )
-from apps_rg.runtime.sections.executive_summary_repair_policy import judge_regen_max_delta_tokens
+from apps_rg.runtime.sections.executive_summary_regen_observability import (
+    pack_judge_feedback_with_stats,
+)
 
 
 def _three_judge_soft_fail_panel() -> list[dict]:
@@ -83,8 +86,71 @@ def test_verbatim_feedback_present_for_all_soft_fails() -> None:
     assert "gemini_pro" not in joined or "JUDGE_DELTA_SOURCE provider_key=gemini_pro" not in joined
 
 
-def test_token_pack_drops_guards_before_truncating_judge_text(monkeypatch) -> None:
-    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_DELTA_TOKENS", "512")
+def test_regen_delta_section_order_constant() -> None:
+    assert REGEN_DELTA_SECTION_ORDER == (
+        "dimension",
+        "judge_feedback",
+        "floors",
+        "guards",
+    )
+
+
+def test_flatten_delta_sections_preserves_pack_order() -> None:
+    sections = {
+        "dimension": ["- DIM_A"],
+        "judge_feedback": ["- JUDGE_A", "- JUDGE_B"],
+        "floors": ["- FLOOR_A"],
+        "guards": ["- GUARD_A", "- GUARD_B"],
+    }
+    packed = _flatten_delta_sections(sections)
+    assert packed == ["- DIM_A", "- JUDGE_A", "- JUDGE_B", "- FLOOR_A", "- GUARD_A", "- GUARD_B"]
+
+
+def test_compact_delta_lines_follow_dimension_before_verbatim_judges() -> None:
+    lines = collect_judge_remediation_delta_lines(
+        _three_judge_soft_fail_panel(),
+        unused_fact_ids=[],
+        allowed_fact_count=8,
+        prior_word_count=120,
+        prior_ledger_rows=6,
+        compact=True,
+    )
+    edit_budget_idx = next(i for i, ln in enumerate(lines) if "EDIT_BUDGET" in ln)
+    first_judge_idx = next(i for i, ln in enumerate(lines) if "JUDGE_DELTA_SOURCE" in ln)
+    connective_idx = next(i for i, ln in enumerate(lines) if "CONNECTIVE_TISSUE:" in ln)
+    assert edit_budget_idx < first_judge_idx < connective_idx
+
+
+def test_pack_judge_feedback_with_stats_never_drops_lines() -> None:
+    sections = {
+        "judge_feedback": [f"- judge-line-{i}" for i in range(12)],
+        "dimension": ["- dim"],
+        "floors": [],
+        "guards": [],
+    }
+    packed, stats = pack_judge_feedback_with_stats(sections)
+    assert stats["judge_feedback_lines_dropped"] == 0
+    assert stats["judge_feedback_lines_included"] == 12
+    assert len(packed) == 13
+
+
+def test_regen_delta_user_turn_excludes_anchor_draft() -> None:
+    anchor_snippet = "UNIQUE_ANCHOR_SENTENCE_ZZZ_12345 not in delta"
+    lines = collect_judge_remediation_delta_lines(
+        _three_judge_soft_fail_panel(),
+        unused_fact_ids=[],
+        allowed_fact_count=8,
+        prior_word_count=120,
+        prior_ledger_rows=6,
+        compact=True,
+    )
+    user_turn = format_regen_delta_user_turn(tuple(lines))
+    assert anchor_snippet not in user_turn
+    assert "REGEN_DELTA_v1" in user_turn
+    assert "PROMPT_LOCK" in user_turn
+
+
+def test_compact_delta_includes_connective_guard() -> None:
     lines = collect_judge_remediation_delta_lines(
         _three_judge_soft_fail_panel(),
         unused_fact_ids=[],
@@ -97,24 +163,6 @@ def test_token_pack_drops_guards_before_truncating_judge_text(monkeypatch) -> No
     assert "Anthropic Claude remediation:" in joined
     assert "OpenAI ChatGPT remediation:" in joined
     assert "bullet-stack pattern" in joined
-    user_turn = format_regen_delta_user_turn(tuple(lines))
-    assert estimate_token_count(user_turn) <= 512 + 80
-    if "CONNECTIVE_TISSUE:" not in joined:
-        assert estimate_token_count(user_turn) > 400
-
-
-def test_higher_token_cap_retains_connective_guard(monkeypatch) -> None:
-    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_DELTA_TOKENS", "768")
-    assert judge_regen_max_delta_tokens() == 768
-    lines = collect_judge_remediation_delta_lines(
-        _three_judge_soft_fail_panel(),
-        unused_fact_ids=[],
-        allowed_fact_count=8,
-        prior_word_count=120,
-        prior_ledger_rows=6,
-        compact=True,
-    )
-    joined = "\n".join(lines)
     assert "CONNECTIVE_TISSUE:" in joined
     user_turn = format_regen_delta_user_turn(tuple(lines))
-    assert estimate_token_count(user_turn) <= 768 + 80
+    assert "REGEN_DELTA" in user_turn

@@ -11,7 +11,6 @@ from typing import Any
 from apps_rg.runtime.sections.executive_summary_repair_policy import (
     judge_regen_legacy_remediation_block_enabled,
     judge_regen_max_attempts,
-    judge_regen_max_delta_tokens,
     judge_regen_prescriptive_delta_enabled,
     judge_regeneration_enabled,
     judge_safe_prefilter_enabled,
@@ -285,36 +284,23 @@ def _is_droppable_guard_delta_line(line: str) -> bool:
     )
 
 
-def _pack_delta_lines_to_token_budget(
-    sections: dict[str, list[str]],
-    *,
-    max_tokens: int,
-) -> list[str]:
-    """Pack delta lines without truncating judge feedback text; drop optional guards first."""
-    from agentic_core.L2_execution.regen.delta_shape_guard import estimate_token_count
+# Surgical REGEN_DELTA pack order (Anthropic evaluator→optimizer: class intent, then verbatim critique).
+REGEN_DELTA_SECTION_ORDER: tuple[str, ...] = (
+    "dimension",
+    "judge_feedback",
+    "floors",
+    "guards",
+)
 
-    # Surgical contract first; judge feedback before optional guards (W4 hardening).
-    order = ("dimension", "judge_feedback", "floors", "guards")
+
+def _flatten_delta_sections(sections: dict[str, list[str]]) -> list[str]:
+    """Include all delta lines in :data:`REGEN_DELTA_SECTION_ORDER` (no token truncation)."""
+    order = REGEN_DELTA_SECTION_ORDER
     packed: list[str] = []
     for section_key in order:
         for line in sections.get(section_key) or []:
-            if not str(line).strip():
-                continue
-            trial = packed + [line]
-            if estimate_token_count("\n".join(trial)) <= max_tokens:
-                packed = trial
-                continue
-            if section_key == "judge_feedback":
-                continue
-    if estimate_token_count("\n".join(packed)) <= max_tokens:
-        for line in sections.get("judge_feedback") or []:
-            if not str(line).strip():
-                continue
-            trial = packed + [line]
-            if estimate_token_count("\n".join(trial)) <= max_tokens:
-                packed = trial
-            else:
-                break
+            if str(line).strip():
+                packed.append(line)
     return packed
 
 
@@ -563,7 +549,6 @@ def collect_judge_remediation_delta_lines(
         )
 
     soft_judges = _soft_failed_model_judges(x1d_judges)
-    max_tokens = judge_regen_max_delta_tokens()
     sections: dict[str, list[str]] = {
         "judge_feedback": _verbatim_soft_failed_judge_feedback_lines(soft_judges),
         "dimension": [],
@@ -582,8 +567,9 @@ def collect_judge_remediation_delta_lines(
 
     if compact:
         from apps_rg.runtime.sections.executive_summary_regen_delta_policy import (
+            build_regen_sentence_allowlist,
             format_delta_class_regen_instruction,
-            max_sentence_edits_for_delta_class,
+            format_edit_budget_line,
             resolve_delta_class,
         )
 
@@ -591,17 +577,15 @@ def collect_judge_remediation_delta_lines(
             x1d_judges,
             operator_judge_pass_floor=operator_floor,
         )
+        _allowlist, _ = build_regen_sentence_allowlist(x1d_judges, _delta_class)
         focused = collect_dimension_focused_regen_delta_lines(soft_judges)
         if focused:
             sections["dimension"] = [f"- {ln}" for ln in focused]
         else:
             sections["dimension"] = [
-                f"- {format_delta_class_regen_instruction(_delta_class)}",
+                f"- {format_delta_class_regen_instruction(_delta_class, allowlist=_allowlist)}",
             ]
-        sections["dimension"].append(
-            f"- EDIT_BUDGET: change at most {max_sentence_edits_for_delta_class(_delta_class)} "
-            f"sentence(s) for delta_class={_delta_class}; do not rewrite the whole paragraph.",
-        )
+        sections["dimension"].append(f"- {format_edit_budget_line(_delta_class, _allowlist)}")
         if prior_word_count > 0 or prior_ledger_rows > 0:
             from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
                 format_judge_regen_soft_material_preservation,
@@ -624,7 +608,7 @@ def collect_judge_remediation_delta_lines(
             "third person; jd_used_as_proof=false.",
         )
         _ = PROMPT_LOCK_GENERIC
-        return _pack_delta_lines_to_token_budget(sections, max_tokens=max_tokens)
+        return _flatten_delta_sections(sections)
 
     dimension_lines = collect_dimension_remediation_lines(soft_judges, min_fail_count=1)
     if dimension_lines:
@@ -667,7 +651,7 @@ def collect_judge_remediation_delta_lines(
         ],
     )
     _ = PROMPT_LOCK_GENERIC
-    return _pack_delta_lines_to_token_budget(sections, max_tokens=max_tokens)
+    return _flatten_delta_sections(sections)
 
 
 def build_judge_remediation_prescriptive_delta_message(
@@ -876,8 +860,6 @@ def retry_qwen_for_judge_remediation(
     from apps_rg.runtime.sections.executive_summary_regen_observability import (
         audit_judge_feedback_pack,
     )
-    from apps_rg.runtime.sections.executive_summary_repair_policy import judge_regen_max_delta_tokens
-
     receipt: dict[str, Any] = {
         "schema": "executive_summary_judge_remediation_v1",
         "enabled": judge_regeneration_enabled(),
@@ -886,10 +868,7 @@ def retry_qwen_for_judge_remediation(
         "draft_parse_ok": False,
         "max_attempts": int(max_attempts if max_attempts is not None else judge_regen_max_attempts()),
         "attempts": [],
-        "feedback_pack": audit_judge_feedback_pack(
-            x1d_judges,
-            max_tokens=judge_regen_max_delta_tokens(),
-        ),
+        "feedback_pack": audit_judge_feedback_pack(x1d_judges),
     }
     _attempt_cap = max(1, int(max_attempts if max_attempts is not None else 1))
     if not judge_regeneration_enabled():
@@ -964,7 +943,7 @@ def retry_qwen_for_judge_remediation(
                 prior_ledger_rows=prior_ledger_rows,
                 artifact_dir=artifact_dir,
                 run_id=run_id,
-                semantic_regen_attempt_index=attempt + 1,
+                semantic_regen_attempt_index=cycle_index + 1,
                 transport_retry_count=0,
                 max_semantic_regen_attempts=judge_regen_max_attempts(),
             )

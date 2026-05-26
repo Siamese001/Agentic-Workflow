@@ -16,14 +16,14 @@ Defined in [`apps_rg/runtime/bindings/c0_binding.py`](../../runtime/bindings/c0_
 | Stage | Binding |
 |-------|---------|
 | L0 route | [`route_profiles.yaml`](route_profiles.yaml) → `GraphTraversePolicy` via [`l0_binding.py`](../../runtime/bindings/l0_binding.py) |
-| C0.2 dense/sparse | `c0_retrieve_apps_rg` when `grounding_required` |
+| C0.2 dense/sparse | `c0_retrieve_apps_rg` (apps_rg `grounding_required` always true on product lanes) |
 | C0.3 graph | Core `maybe_run_graph_rag` → `run_graph_traverse` + [`apps_rg/integrations/c0_graph_adapter.py`](../../integrations/c0_graph_adapter.py) |
 | C0.5 FEC | Spine FEC with non-NA `graph_expansion_refs` |
 | Proof pool | Section lanes consume spine FEC / `c03_graphrag_bound` aligned to spine output |
 
 ## STOP AS EVIDENCE GAP
 
-When `L1PlanContract.grounding_required` is true and spine FEC `support_status` is weak or
+When spine FEC `support_status` is weak or
 `NOT_APPLICABLE` without `support_target_met`, section lanes fail closed via
 `StopAsEvidenceGapError` in [`section_c0_retrieve.py`](../../runtime/spine/section_c0_retrieve.py).
 

@@ -28,7 +28,10 @@ class L1PlanContract:
     required_capabilities: tuple[str, ...] = field(default_factory=tuple)
 
     # Execution prerequisites (determine routing)
-    grounding_required: bool = False  # C0 evidence collection needed
+    # apps_rg: grounding_required=True always for active generation modes (C0.1–C0.7).
+    # Company-brief delegation uses apps_research_call_required (no U0 briefing).
+    grounding_required: bool = False
+    apps_research_call_required: bool = False
     model_generation_required: bool = False  # L2 model execution needed
     write_authority_present: bool = False  # State modification required
 

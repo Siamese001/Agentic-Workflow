@@ -13,6 +13,9 @@ from apps_rg.runtime.dispatch.executive_summary_pa import compile_executive_summ
 from apps_rg.runtime.sections.executive_summary_evidence_capsule import (
     compile_executive_summary_evidence_capsule,
 )
+from apps_rg.runtime.sections.executive_summary_context_limits import (
+    TARGETING_NO_GAP_MAX_CHARS,
+)
 from apps_rg.runtime.sections.executive_summary_targeting_cap import (
     _CAP_NOTICE,
     apply_executive_summary_targeting_cap,
@@ -150,9 +153,16 @@ def test_duplicate_jd_line_removed_before_unique_themes():
 
 
 def test_targeting_region_tokens_drop_on_brown_scale(monkeypatch: pytest.MonkeyPatch):
-    """Cap still trims when env forces a ceiling below the Brown briefing size."""
-    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_TARGETING_CAP_BRIEFING_CHARS", "2600")
-    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_TARGETING_CAP_JD_CHARS", "2000")
+    """Cap still trims when a low ceiling is forced below the Brown briefing size."""
+
+    def _low_caps(kind: str, *, gap_tokens: int = 0) -> int:
+        _ = gap_tokens
+        return 2600 if kind.upper() == "BRIEFING" else 2000
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_targeting_cap._resolve_max_chars",
+        _low_caps,
+    )
     payload = _brown_payload()
     payload["targeting_context_frozen"] = False
     before = _compiled_with_capsule(payload)
@@ -196,8 +206,8 @@ def test_default_targeting_caps_pass_full_brown_jd_and_briefing():
         runtime_payload=payload,
         available_input_tokens=22_016,
     )
-    assert meta.get("targeting_max_jd_chars") == 6000
-    assert meta.get("targeting_max_briefing_chars") == 16000
+    assert meta.get("targeting_max_jd_chars") == TARGETING_NO_GAP_MAX_CHARS
+    assert meta.get("targeting_max_briefing_chars") == TARGETING_NO_GAP_MAX_CHARS
     jd_out, br_out = extract_frozen_targeting_from_compiled_content(after)
     assert "Skills & Experience to be Successful" in jd_out
     assert "R26_0000001653" in jd_out

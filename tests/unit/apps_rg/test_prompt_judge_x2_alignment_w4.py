@@ -36,17 +36,18 @@ def test_assert_all_generated_lanes_executable_corpus_non_empty() -> None:
     assert_all_generated_lanes_executable_corpus_non_empty()
 
 
-def test_pack_judge_feedback_with_stats_accounts_for_drops() -> None:
+def test_pack_judge_feedback_with_stats_includes_all_lines() -> None:
     sections = {
         "judge_feedback": [f"line-{i}" for i in range(40)],
         "dimension": [],
         "floors": [],
         "guards": [],
     }
-    packed, stats = pack_judge_feedback_with_stats(sections, max_tokens=30)
+    packed, stats = pack_judge_feedback_with_stats(sections)
     assert stats["judge_feedback_lines_total"] == 40
-    assert stats["judge_feedback_lines_included"] <= stats["judge_feedback_lines_total"]
-    assert len(packed) <= stats["judge_feedback_lines_included"] + 10
+    assert stats["judge_feedback_lines_included"] == 40
+    assert stats["judge_feedback_lines_dropped"] == 0
+    assert len(packed) == 40
 
 
 def test_finalize_judge_regen_cycles_receipt_rollups() -> None:
@@ -94,5 +95,5 @@ def test_audit_judge_feedback_pack_shape() -> None:
             "remediation_suggestions": ["Strengthen S6."],
         },
     ]
-    stats = audit_judge_feedback_pack(judges, max_tokens=500)
+    stats = audit_judge_feedback_pack(judges)
     assert stats["judge_feedback_lines_total"] >= 1

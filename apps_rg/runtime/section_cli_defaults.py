@@ -76,6 +76,16 @@ def resolve_allow_non_allow_exit_zero(cli_flag: bool) -> bool:
     return _truthy_env(os.environ.get("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO"))
 
 
+def resolve_phase1_lane_allow_non_allow_exit_zero(cli_flag: bool) -> bool:
+    """Phase-1 modular lane dispatch — same SSOT as section CLI (``resolve_allow_non_allow_exit_zero``).
+
+    Used when ``run_canonical_apps_rg_from_cli_primitives`` invokes section runners in-process
+    during whole-run ``GenerateResumeStep`` so ``--allow-non-allow-exit-zero`` / env parity
+    matches ``python -m apps_rg --section <lane>``.
+    """
+    return resolve_allow_non_allow_exit_zero(cli_flag)
+
+
 def resolve_cli_x1d_judges(cli_value: str | None) -> str:
     """Honor ``APPS_RG_E2E_X1D_JUDGES`` when CLI omits ``--x1d-judges``."""
     from apps_rg.runtime.x1d_judge_policy import APPS_RG_E2E_DEFAULT_X1D_JUDGES
@@ -240,6 +250,7 @@ __all__ = [
     "default_targeting_briefing_text",
     "fill_executive_summary_cli_targets",
     "resolve_allow_non_allow_exit_zero",
+    "resolve_phase1_lane_allow_non_allow_exit_zero",
     "resolve_cli_lane_provider",
     "resolve_cli_lane_provider_with_source",
     "resolve_cli_x1d_judges",

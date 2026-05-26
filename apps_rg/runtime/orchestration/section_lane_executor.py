@@ -23,6 +23,7 @@ class LaneExecutionContext:
     lane_provider: str
     lane_x1d_judges: Any
     lane_mock_judges: bool
+    lane_allow_non_allow_exit_zero: bool = False
     generation_mode: str = "strategic_tailor"
 
     def env_overlay(self) -> dict[str, str | None]:
@@ -66,6 +67,7 @@ def run_lane_in_context(
             lane_temperature=default_temperature_for_section(lane),
             lane_x1d_judges=ctx.lane_x1d_judges,
             lane_mock_judges=ctx.lane_mock_judges,
+            lane_allow_non_allow_exit_zero=bool(ctx.lane_allow_non_allow_exit_zero),
         )
         dr = dict(result) if isinstance(result, dict) else {}
         return LaneDispatchOutcome(lane=lane, dispatch_result=dr, exec_status="ok")

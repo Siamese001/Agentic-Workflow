@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+    _flatten_delta_sections,
     _is_droppable_guard_delta_line,
     _soft_failed_model_judges,
     _verbatim_soft_failed_judge_feedback_lines,
@@ -15,51 +16,22 @@ from apps_rg.runtime.sections.executive_summary_judge_remediation import (
 
 def pack_judge_feedback_with_stats(
     sections: dict[str, list[str]],
-    *,
-    max_tokens: int,
 ) -> tuple[list[str], dict[str, Any]]:
-    """Pack delta lines and return feedback line accounting for receipts."""
-    from agentic_core.L2_execution.regen.delta_shape_guard import estimate_token_count
-
-    order = ("dimension", "judge_feedback", "floors", "guards")
+    """Pack all delta lines (full judge feedback; no token truncation)."""
     raw_feedback = [str(ln) for ln in (sections.get("judge_feedback") or []) if str(ln).strip()]
-    packed: list[str] = []
-    for section_key in order:
-        for line in sections.get(section_key) or []:
-            if not str(line).strip():
-                continue
-            trial = packed + [line]
-            if estimate_token_count("\n".join(trial)) <= max_tokens:
-                packed = trial
-                continue
-            if section_key == "judge_feedback":
-                continue
-    if estimate_token_count("\n".join(packed)) <= max_tokens:
-        for line in sections.get("judge_feedback") or []:
-            if not str(line).strip():
-                continue
-            trial = packed + [line]
-            if estimate_token_count("\n".join(trial)) <= max_tokens:
-                packed = trial
-            else:
-                break
+    packed = _flatten_delta_sections(sections)
     included_feedback = [ln for ln in packed if ln in raw_feedback]
-    dropped = [ln for ln in raw_feedback if ln not in included_feedback]
-    dropped_reason = "token_budget_exceeded" if dropped else None
     stats = {
         "judge_feedback_lines_total": len(raw_feedback),
         "judge_feedback_lines_included": len(included_feedback),
-        "judge_feedback_lines_dropped": len(dropped),
-        "dropped_reason": dropped_reason,
-        "max_delta_tokens": max_tokens,
+        "judge_feedback_lines_dropped": 0,
+        "dropped_reason": None,
     }
     return packed, stats
 
 
 def audit_judge_feedback_pack(
     x1d_judges: list[Any],
-    *,
-    max_tokens: int,
 ) -> dict[str, Any]:
     """Feedback pack stats for a regen cycle (pre-dispatch)."""
     soft = _soft_failed_model_judges(x1d_judges)
@@ -69,7 +41,7 @@ def audit_judge_feedback_pack(
         "floors": [],
         "guards": [],
     }
-    _packed, stats = pack_judge_feedback_with_stats(sections, max_tokens=max_tokens)
+    _packed, stats = pack_judge_feedback_with_stats(sections)
     stats["droppable_guard_lines_skipped_in_count"] = sum(
         1 for ln in _packed if _is_droppable_guard_delta_line(ln)
     )
@@ -77,7 +49,7 @@ def audit_judge_feedback_pack(
 
 
 def transport_stats_for_cycle(artifact_dir: Path | str | None, cycle_index: int) -> dict[str, int]:
-    """Count Qwen transport rows for judge_regen at ``cycle_index`` (1-based cycle number)."""
+    """Count Qwen transport rows for judge_regen at ``cycle_index`` (0-based, matches ledger)."""
     if artifact_dir is None:
         return {"transport_attempts_per_cycle": 0, "semantic_rewrite_attempts": 0}
     from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import regen_budget_ledger
@@ -151,7 +123,7 @@ def finalize_judge_regen_cycles_receipt(
             cyc = int(row.get("cycle") or 0)
             if cyc < 1:
                 continue
-            stats = transport_stats_for_cycle(artifact_dir, cyc)
+            stats = transport_stats_for_cycle(artifact_dir, cyc - 1)
             row["transport_attempts_per_cycle"] = stats["transport_attempts_per_cycle"]
             row["semantic_rewrite_attempts"] = stats["semantic_rewrite_attempts"]
             transport_total += stats["transport_attempts_per_cycle"]

@@ -879,6 +879,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             )
 
             os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = "1"
+            if bool(getattr(args, "allow_non_allow_exit_zero", False)):
+                os.environ["APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO"] = "1"
             result = run_whole_run_with_route_governance(
                 target_company=args.target_company,
                 target_role=args.target_role,

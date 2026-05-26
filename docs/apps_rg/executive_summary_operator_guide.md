@@ -1,6 +1,7 @@
 # Executive Summary — Operator Guide
 
 > **Plan SSOT:** [.cursor/plans/exec-summary-operator-ship-a3f7c2.md](../.cursor/plans/exec-summary-operator-ship-a3f7c2.md)  
+> **Surgical judge regen:** [.cursor/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md](../.cursor/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md)  
 > **Token / regen budget:** [.cursor/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md](../.cursor/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md) · research: [executive_summary_qwen_regen_token_budget_research_20260525.md](../reports/apps_rg/executive_summary_qwen_regen_token_budget_research_20260525.md)
 
 ## One command
@@ -34,6 +35,58 @@ Stdout includes `OPERATOR_STATUS`, `DRAFT_READY`, `CERTIFIED`, `DISPOSITION_TIER
 1. **Synthesis regen** — before judges; default **on** (`APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN`).
 2. **Judge regen** — after judges when any model-backed judge is below floor; default **on** on product CLI. Default **3 cycles** (Qwen rewrite → re-X2 → **rescore soft-failed judges only**). Stops early when all judges pass. Opt-out: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=0`. Cap: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` (default `3`, max `3`). Trigger: `any_judge_below_floor` (no 2/3-pass skip). Legacy full panel after each regen: `APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE=full_panel`.
 
+**Regen philosophy (24k):** Retries are limited by **cycle count**, not by truncating judge feedback in the delta prompt. Each retry uses a **strict surgical delta** (frozen compile, `REGEN_DELTA` / prescriptive delta, G5 sentence-edit budget) — remediate failed dimensions only; do not re-run or rewrite the full scratch prompt. All soft-failed judge findings and remediation hints are included verbatim in `REGEN_DELTA`.
+
+## Three-stage judge regen (Anthropic-aligned)
+
+Maps Anthropic **prompt chaining** and **evaluator–optimizer** to this lane. Normative core contract: [same_authority_regen_envelope_spec_v1.md](../reference/L2_execution/same_authority_regen_envelope_spec_v1.md) · [ADR-085](../adr/ADR-085-same-authority-incremental-regen.md). External references: [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) · [Effective context engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents).
+
+```mermaid
+flowchart LR
+  S1["Stage 1 — Generate\nfrozen compile + scratch Qwen"]
+  S2["Stage 2 — Evaluate\nX1D judges vs rubric"]
+  S3["Stage 3 — Minimal refine\nREGEN_DELTA same authority"]
+  S1 --> S2
+  S2 -->|"any soft-fail"| S3
+  S3 -->|"re-X2 + rescore soft-failed"| S2
+```
+
+| Stage | What runs | What must stay frozen |
+|-------|-----------|------------------------|
+| **1 — Generate** | First Qwen call on compiled prompt (JD/briefing targeting-only; C0 facts) | `compilation_hash`, system prefix, slot map |
+| **2 — Evaluate** | Model-backed X1D panel (separate provider calls) | No Qwen rewrite; judges only score the scratch |
+| **3 — Minimal refine** | `core.SameAuthorityRegenRunner` appends anchor assistant + `REGEN_DELTA_v1` user turn | Same model/provider lane; **no** PA recompile; anchor JSON on assistant turn only |
+
+### `messages[]` shape (Stage 3)
+
+Per spec § provider request proof:
+
+1. `system` (+ `developer` if any) — frozen prefix from Stage 1 compile  
+2. `user` — original generation turn (unchanged)  
+3. `assistant` — **anchor** = prior `resume_display_text` + `claim_ledger` JSON  
+4. `user` — **`REGEN_DELTA_v1`** = `PROMPT_LOCK` + delta lines only (no embedded anchor draft)
+
+Delta lines are packed in fixed order: **dimension → judge_feedback (verbatim) → floors → guards**. Code constant: `REGEN_DELTA_SECTION_ORDER` in `executive_summary_judge_remediation.py`. Prescriptive dimension lines include an **EDIT_BUDGET** tied to the G5v2 allowlist (e.g. `you may change S2–S5 (indexes 2, 3, 4, 5) … freeze all other sentences verbatim`).
+
+### What judge regen must **not** do
+
+- Re-run or re-compile the **full scratch** prompt because a judge failed.  
+- Truncate or drop soft-failed judge findings to save tokens (there is **no** operator env knob for that).  
+- Substitute provider/model on the regen turn.  
+- Publish a regen candidate when **X2 regresses** (scratch remains publish baseline).  
+- Treat transport timeout or `budget_blocked` as a successful semantic rewrite.
+
+### Per-cycle loop (default product path)
+
+1. Build full verbatim judge feedback + prescriptive dimension lines → `REGEN_DELTA`.  
+2. Qwen regen (same authority) → parse candidate JSON.  
+3. Re-run **X2** on candidate.  
+4. Rescore **soft-failed judges only** (`APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE=soft_failed_only`).  
+5. **G5v2** allowlist gate — edits must fall in `cited_sentence_indexes` from soft-failed judges (plus `delta_class` fallback). Legacy numeric budget is **advisory only** (`g5_legacy_budget_advisory` in receipt).  
+6. Accept cycle only if publish-eligible; else next cycle up to `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS`.
+
+**Artifacts:** `judge_remediation_receipt.json`, `judge_remediation_cycles.json`, `g5_delta_scope_cycle_*.json`, `regen_token_budget_receipt.json` under `artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_<ts>/`.
+
 ## Env flags that matter
 
 | Variable | Default | Purpose |
@@ -56,14 +109,11 @@ All **post-scratch** regen/repair Qwen calls go through `budgeted_qwen_regen_cal
 | `VLLM_MAX_MODEL_LEN` | `24576` (must match Docker `--max-model-len`) | Operator-declared context window |
 | `APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW` | `0` (off) | `=1` probes `/v1/models` for `max_model_len` metadata (W2.1) |
 | `APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS` | `2048` | Scratch generation cap only |
-| `APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS` | `1024` | All synthesis/judge/X2-repair regen (≤ scratch cap) |
+| `APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS` | `2048` | All synthesis/judge/X2-repair regen (≤ scratch cap) |
 | `APPS_RG_QWEN_TIMEOUT_SECONDS` | `90`–`120` | **Transport** timeout per chat completion (not token budget) |
 | `APPS_RG_QWEN_TRANSPORT_MAX_ATTEMPTS` | `3` | HTTP retries on transient failures only (not semantic regen attempts) |
 | `APPS_RG_QWEN_MODELS_PROBE_TIMEOUT_SECONDS` | `5` | `/v1/models` probe when verify flag is on |
-| `APPS_RG_EXEC_SUMMARY_REGEN_MAX_DELTA_TOKENS` | `512` (max `768`) | Core same-authority delta token cap via apps bridge (W4) |
-| `APPS_RG_EXEC_SUMMARY_FIRST_PASS_INPUT_UTILIZATION_MAX` | `0.92` (default) | First-pass input cap fraction; override 0.70–0.95 |
-
-**First-pass policy (W2.2):** After optional-only trim, scratch dispatch is blocked if estimated input exceeds the configured fraction (default **92%**) of `available_input_tokens` (`TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT`). Hard cap at 100% still applies (`TOKEN_BUDGET_EXCEEDED_AFTER_TRIM`).
+**First-pass policy (W2.2):** After optional-only trim, scratch dispatch is blocked if estimated input exceeds **92%** of `available_input_tokens` (code constant — not env-overridable; `TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT`). Hard cap at 100% still applies (`TOKEN_BUDGET_EXCEEDED_AFTER_TRIM`).
 
 **24k budget rationalization (Brown SVP):** With `VLLM_MAX_MODEL_LEN=24576`, available input is **22,016** tokens (92% gate **20,254**). Full JD + briefing under default targeting caps (~**16.9k** dispatch measured) leaves **~3.4k** tokens before the 92% block. Detail: [executive_summary_24k_context_budget_rationalization_20260526.md](../reports/apps_rg/executive_summary_24k_context_budget_rationalization_20260526.md).
 

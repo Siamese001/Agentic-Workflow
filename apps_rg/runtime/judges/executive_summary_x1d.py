@@ -123,6 +123,7 @@ Return ONLY one compact JSON object. No markdown fences, no prose before or afte
 Required shape (findings and remediation_suggestions must be arrays of short strings only):
 {"score_scale":"0_to_5","score":0.0,"threshold":4.0,"pass":true,"decisive_failure":false,"findings":["..."],"cited_sentence_indexes":[1],"remediation_suggestions":[],"dimension_verdicts":{...8 rubric keys...}}
 At most 6 short strings in findings and 4 in remediation_suggestions.
+cited_sentence_indexes: 1-based indexes (S1=1 … S6=6) for every sentence your findings ask to change.
 Include dimension_verdicts with all eight rubric dimension ids (pass/severity/codes per dimension).
 """.strip()
 

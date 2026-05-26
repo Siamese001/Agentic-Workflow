@@ -350,6 +350,7 @@ def l0_route_apps_rg(plan: L1PlanContract) -> RouteContract:
         route_id=route_id,
         l3_required=l3_required,
         grounding_required=plan.grounding_required,
+        apps_research_call_required=plan.apps_research_call_required,
         model_generation_required=plan.model_generation_required,
         write_authority_present=plan.write_authority_present,
         tenant_id=plan.tenant_id,

@@ -379,6 +379,7 @@ def emit_section_front_spine_receipts(
         "parent_contract_ref": request_id,
         "route_id": route_body.get("route_id"),
         "grounding_required": route_body.get("grounding_required"),
+        "apps_research_call_required": route_body.get("apps_research_call_required"),
         "execution_form": route_body.get("execution_form"),
         "payload": route_payload,
     }

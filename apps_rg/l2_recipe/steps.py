@@ -10,6 +10,7 @@ Step classes:
 from __future__ import annotations
 
 import json
+import os
 import uuid
 from pathlib import Path
 from typing import Any
@@ -139,6 +140,17 @@ def write_modular_generate_step_receipt(
     return out
 
 
+def _phase1_allow_flag_from_recipe_context(context: dict[str, Any]) -> bool:
+    """Intent for phase-1 lane exit policy (effective value resolved in modular path)."""
+    if bool(
+        context.get("allow_non_allow_exit_zero")
+        or context.get("lane_allow_non_allow_exit_zero")
+    ):
+        return True
+    raw = os.environ.get("APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO", "").strip().lower()
+    return raw in ("1", "true", "yes", "y", "on")
+
+
 class GenerateResumeStep(BaseRecipeStep):
     """Main resume generation step — calls the PA compiler + LLM.
 
@@ -187,6 +199,7 @@ class GenerateResumeStep(BaseRecipeStep):
             phase1_lane_provider=resolve_apps_rg_modular_lane_provider(),
             run_phase0_synthetic_assembly=False,
             validate_rg_output_fixture=False,
+            phase1_allow_non_allow_exit_zero=_phase1_allow_flag_from_recipe_context(context),
         )
         mr = run_modular_resume_generation(
             inp,

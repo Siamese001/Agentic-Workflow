@@ -102,6 +102,9 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
     pm = app_payload.get("profile_manifest") if isinstance(app_payload.get("profile_manifest"), Mapping) else {}
     planning_digest = str(pm.get("l1_planning_profile_digest") or "")
     manifest_digest = str(pm.get("manifest_digest") or validated_request.payload_digest)
+    from apps_rg.runtime.bindings.briefing_u0_signals import (
+        apps_research_call_required_at_u0,
+    )
     from apps_rg.runtime.bindings.l1_plan_evidence import (
         build_ambiguity_register,
         build_validation_receipt_id,
@@ -114,6 +117,11 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
     )
     ambiguity_register = build_ambiguity_register(app_payload)
 
+    active_generation = (
+        generation_mode in _FULL_RESUME_GENERATION_MODES
+        or generation_mode in _SINGLE_SECTION_MODES
+    )
+
     return L1PlanContract(
         request_id=validated_request.request_id,
         run_id=validated_request.run_id,
@@ -121,7 +129,11 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         trace_id=validated_request.trace_id,
         task_plan=task_plan,
         required_capabilities=required_capabilities,
-        grounding_required=_needs_grounding(generation_mode),
+        grounding_required=_resume_evidence_grounding_required(generation_mode),
+        apps_research_call_required=apps_research_call_required_at_u0(
+            validated_request,
+            active_generation_mode=active_generation,
+        ),
         model_generation_required=_needs_model_generation(generation_mode),
         write_authority_present=False,
         profile_manifest_digest=validated_request.payload_digest,
@@ -320,11 +332,12 @@ def _derive_capabilities(generation_mode: str) -> tuple[str, ...]:
     return tuple(caps)
 
 
-def _needs_grounding(generation_mode: str) -> bool:
-    """Determine if C0 evidence collection is required."""
-    if generation_mode == "generate_scratch":
-        return False
-    return generation_mode in _FULL_RESUME_GENERATION_MODES or generation_mode in _SINGLE_SECTION_MODES
+def _resume_evidence_grounding_required(generation_mode: str) -> bool:
+    """Resume fact evidence binding (C0.1–C0.7) — always on for active apps_rg modes."""
+    return (
+        generation_mode in _FULL_RESUME_GENERATION_MODES
+        or generation_mode in _SINGLE_SECTION_MODES
+    )
 
 
 def _needs_model_generation(generation_mode: str) -> bool:

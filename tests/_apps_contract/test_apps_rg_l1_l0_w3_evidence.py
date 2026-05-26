@@ -66,30 +66,45 @@ def test_route_digest_deterministic_for_same_plan() -> None:
     assert route_a.hmac_sig == route_b.hmac_sig
 
 
-def test_route_digest_changes_when_grounding_changes() -> None:
+def test_route_digest_changes_when_apps_research_call_changes() -> None:
     env = apps_rg_parse(_thin())
     vr = u0_validate_apps_rg(env)
-    plan_grounded = l1_plan_apps_rg(vr)
-    ap = dict(vr.app_payload)
-    ap["task_spec"] = {**(ap.get("task_spec") or {}), "generation_mode": "generate_scratch"}
+    plan_with_brief = l1_plan_apps_rg(vr)
     from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 
-    plan_scratch = L1PlanContract(
-        request_id=plan_grounded.request_id,
-        run_id=plan_grounded.run_id,
-        app_id=plan_grounded.app_id,
-        trace_id=plan_grounded.trace_id,
-        task_plan=plan_grounded.task_plan,
-        required_capabilities=plan_grounded.required_capabilities,
-        grounding_required=False,
-        model_generation_required=plan_grounded.model_generation_required,
-        l5_certification_ref=plan_grounded.l5_certification_ref,
-        task_spec=ap["task_spec"],
-        validation_receipt_id=plan_grounded.validation_receipt_id,
+    plan_no_brief = L1PlanContract(
+        request_id=plan_with_brief.request_id,
+        run_id=plan_with_brief.run_id,
+        app_id=plan_with_brief.app_id,
+        trace_id=plan_with_brief.trace_id,
+        task_plan=plan_with_brief.task_plan,
+        required_capabilities=plan_with_brief.required_capabilities,
+        grounding_required=True,
+        apps_research_call_required=True,
+        model_generation_required=plan_with_brief.model_generation_required,
+        l5_certification_ref=plan_with_brief.l5_certification_ref,
+        task_spec=plan_with_brief.task_spec,
+        merge_required_hint=plan_with_brief.merge_required_hint,
+        validation_receipt_id=plan_with_brief.validation_receipt_id,
     )
-    route_grounded = l0_route_apps_rg(plan_grounded)
-    route_scratch = l0_route_apps_rg(plan_scratch)
-    assert route_grounded.route_digest != route_scratch.route_digest
+    plan_brief_supplied = L1PlanContract(
+        request_id=plan_with_brief.request_id,
+        run_id=plan_with_brief.run_id,
+        app_id=plan_with_brief.app_id,
+        trace_id=plan_with_brief.trace_id,
+        task_plan=plan_with_brief.task_plan,
+        required_capabilities=plan_with_brief.required_capabilities,
+        grounding_required=True,
+        apps_research_call_required=False,
+        model_generation_required=plan_with_brief.model_generation_required,
+        l5_certification_ref=plan_with_brief.l5_certification_ref,
+        task_spec=plan_with_brief.task_spec,
+        merge_required_hint=plan_with_brief.merge_required_hint,
+        validation_receipt_id=plan_with_brief.validation_receipt_id,
+    )
+    route_delegated = l0_route_apps_rg(plan_no_brief)
+    route_uploaded = l0_route_apps_rg(plan_brief_supplied)
+    assert route_delegated.route_digest != route_uploaded.route_digest
 
 
 def test_managed_workflow_allows_l3_only() -> None:

@@ -50,6 +50,7 @@ def compute_route_digest(
         "execution_form": execution_form,
         "l3_required": l3_required,
         "grounding_required": plan.grounding_required,
+        "apps_research_call_required": plan.apps_research_call_required,
         "model_generation_required": plan.model_generation_required,
         "route_profile_ref": route_profile_ref,
         "cache_eligibility": dict(sorted(cache_eligibility.items())),

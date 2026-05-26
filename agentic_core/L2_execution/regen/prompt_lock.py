@@ -12,11 +12,16 @@ PROMPT_LOCK_GENERIC = (
 REPAIR_TACTIC_INCREMENTAL_DELTA = "incremental_delta_turn_v1"
 CONTRACT_VERSION = "1.0.0"
 DEFAULT_MAX_DELTA_LINES = 20
-DEFAULT_MAX_DELTA_TOKENS = 512
+DEFAULT_MAX_DELTA_TOKENS = 1024
 DEFAULT_MAX_SEMANTIC_REGEN_ATTEMPTS = 1
 
 
 def format_regen_delta_user_turn(delta_lines: tuple[str, ...]) -> str:
-    """Build bounded REGEN_DELTA user message from app mapper lines."""
+    """Build bounded REGEN_DELTA user message from app mapper lines.
+
+    The anchor draft lives on the prior assistant turn only (see
+    ``SameAuthorityThreadState.to_chat_messages``). This turn MUST NOT repeat
+    resume_display_text or the full scratch JSON — delta lines + PROMPT_LOCK only.
+    """
     body = "\n".join(line.rstrip() for line in delta_lines if line.strip())
     return f"{REGEN_DELTA_HEADER}\n{PROMPT_LOCK_GENERIC}\n{body}"

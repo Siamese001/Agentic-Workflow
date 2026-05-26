@@ -117,7 +117,9 @@ def build_executive_summary_x1d_rubric_text(*, include_score_schema: str = "") -
         "``executive_summary.generate_scratch_v1`` north star: polished SVP synthesis, not bullet stacks, "
         "not internal label/colon stitching, not one-sentence-per-fact proof, not meta narration.",
         "Return JSON only with: score_scale, score, threshold, pass, decisive_failure, "
-        "findings, cited_sentence_indexes, remediation_suggestions.",
+        "findings, cited_sentence_indexes, remediation_suggestions. "
+        "cited_sentence_indexes MUST list every 1-based sentence you want changed (S1=1 … S6=6); "
+        "when criticizing S2–S5 or S6, include those indexes explicitly.",
     ]
     if include_score_schema.strip():
         lines.extend(["", include_score_schema.strip()])
