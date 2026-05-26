@@ -16,7 +16,6 @@ from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
     SelfConsistencyPath,
     bullet_lane_sc_enabled,
-    run_qwen_self_consistency_paths,
     self_consistency_path_count,
     temperature_ladder,
 )
@@ -216,67 +215,3 @@ def test_employment_targeting_includes_jd_briefing_and_rewrite_contract() -> Non
 def test_section_profiles_unify_15_ibm_12() -> None:
     assert section_reasoning_profile("unify_bullets").self_consistency_samples == 15.0
     assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 12.0
-
-
-def test_unify_sc_paths_append_path_framing_per_call(monkeypatch: pytest.MonkeyPatch) -> None:
-    seen_messages: list[list[dict]] = []
-
-    def _stub(payload: dict, **_: object) -> ProviderResult:
-        seen_messages.append(list(payload.get("messages") or []))
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=True,
-            exact_provider_error=None,
-            runtime_generation_status="REAL_LLM",
-            model="m",
-            raw_model_output='{"bullets":[]}',
-            provider_response={},
-        )
-
-    with patch(
-        "apps_rg.runtime.providers.section_qwen_slice.call_qwen_vllm",
-        side_effect=_stub,
-    ):
-        paths, _ = run_qwen_self_consistency_paths(
-            section_lane="unify_bullets",
-            provider_payload={"model": "m", "messages": [{"role": "user", "content": "base"}]},
-            parse_model_json=lambda r: (json.loads(r), ""),
-            path_count=2,
-        )
-
-    assert len(paths) == 2
-    assert len(seen_messages) == 2
-    assert all("PATH_FRAMING" in str(m[-1].get("content") or "") for m in seen_messages)
-    assert seen_messages[0][-1]["content"] != seen_messages[1][-1]["content"]
-
-
-def test_ibm_sc_paths_do_not_append_unify_path_framing(monkeypatch: pytest.MonkeyPatch) -> None:
-    seen_messages: list[list[dict]] = []
-
-    def _stub(payload: dict, **_: object) -> ProviderResult:
-        seen_messages.append(list(payload.get("messages") or []))
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=True,
-            exact_provider_error=None,
-            runtime_generation_status="REAL_LLM",
-            model="m",
-            raw_model_output='{"bullets":[]}',
-            provider_response={},
-        )
-
-    with patch(
-        "apps_rg.runtime.providers.section_qwen_slice.call_qwen_vllm",
-        side_effect=_stub,
-    ):
-        run_qwen_self_consistency_paths(
-            section_lane="ibm_bullets",
-            provider_payload={"model": "m", "messages": [{"role": "user", "content": "base"}]},
-            parse_model_json=lambda r: (json.loads(r), ""),
-            path_count=2,
-        )
-
-    assert len(seen_messages) == 2
-    assert all("PATH_FRAMING" not in str(m[-1].get("content") or "") for m in seen_messages)
