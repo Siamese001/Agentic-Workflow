@@ -14,6 +14,7 @@ from apps_rg.runtime.sections.section_product_shape_ssot import (
     all_generated_lane_shapes,
     section_product_shape,
 )
+from apps_rg.runtime.sections.section_prompt_authority_ssot import resolve_repo_template_path
 
 _APPS_RG_ROOT = Path(__file__).resolve().parents[2]
 _REPO_ROOT = _APPS_RG_ROOT.parent
@@ -29,7 +30,7 @@ class DriftViolation:
 
 
 def _repo_path(ref: str) -> Path:
-    return _REPO_ROOT / Path(ref.replace("/", "\\"))
+    return resolve_repo_template_path(ref)
 
 
 def _load_contract(section_id: str) -> dict[str, Any]:

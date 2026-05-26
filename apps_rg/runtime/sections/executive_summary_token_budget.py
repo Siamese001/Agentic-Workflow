@@ -20,7 +20,10 @@ SECTION_ID = "executive_summary"
 FAIL_CLOSED_REASON = "TOKEN_BUDGET_EXCEEDED_AFTER_TRIM"
 FAIL_CLOSED_REASON_FIRST_PASS_85PCT = "TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT"
 FAIL_SHAPE_ALTERED = "EVIDENCE_CONTRACT_OR_PROMPT_SHAPE_ALTERED"
-FIRST_PASS_INPUT_UTILIZATION_MAX = 0.85
+# 0.92 from real-run receipt analysis (158 exec_summary_*): p50 PASS dispatch util 91.33%
+# @ 16k; trimmed Brown blockers @ 87.05% (12034 est.). See tools/cursor/_tmp_analyze_token_budget_receipts.py
+FIRST_PASS_INPUT_UTILIZATION_MAX = 0.92
+_ENV_FIRST_PASS_UTILIZATION = "APPS_RG_EXEC_SUMMARY_FIRST_PASS_INPUT_UTILIZATION_MAX"
 _CONTEXT_SOURCE_ENV = "ENV_VLLM_MAX_MODEL_LEN"
 _CONTEXT_SOURCE_SERVER = "SERVER_MODELS_METADATA"
 _CONTEXT_SOURCE_UNKNOWN = "UNKNOWN"
@@ -81,7 +84,13 @@ class ExecutiveSummaryTokenBudgetExceeded(Exception):
 
     def __init__(self, *, receipt: dict[str, Any]) -> None:
         self.receipt = receipt
-        super().__init__(receipt.get("fail_closed_reason") or FAIL_CLOSED_REASON)
+        guidance = receipt.get("operator_guidance")
+        summary = (
+            str(guidance.get("operator_summary"))
+            if isinstance(guidance, dict) and guidance.get("operator_summary")
+            else None
+        )
+        super().__init__(summary or receipt.get("fail_closed_reason") or FAIL_CLOSED_REASON)
 
 
 def resolve_provider_context_window() -> int:
@@ -228,8 +237,25 @@ def context_window_provenance_receipt_fields(
     }
 
 
+def resolve_first_pass_input_utilization_max() -> float:
+    """First-pass input cap as a fraction of ``available_input_tokens`` (W2.2).
+
+    Defaults to :data:`FIRST_PASS_INPUT_UTILIZATION_MAX`. Override via
+    ``APPS_RG_EXEC_SUMMARY_FIRST_PASS_INPUT_UTILIZATION_MAX`` (e.g. ``0.90``).
+    Context window itself comes from ``VLLM_MAX_MODEL_LEN`` (qwen_vllm / vLLM).
+    """
+    raw = os.environ.get(_ENV_FIRST_PASS_UTILIZATION, "").strip()
+    if not raw:
+        return FIRST_PASS_INPUT_UTILIZATION_MAX
+    try:
+        value = float(raw)
+    except ValueError:
+        return FIRST_PASS_INPUT_UTILIZATION_MAX
+    return min(0.95, max(0.70, value))
+
+
 def first_pass_85pct_limit_tokens(available_input_tokens: int) -> int:
-    return max(0, int(available_input_tokens * FIRST_PASS_INPUT_UTILIZATION_MAX))
+    return max(0, int(available_input_tokens * resolve_first_pass_input_utilization_max()))
 
 
 def first_pass_utilization_pct(estimated_tokens: int, available_input_tokens: int) -> float:
@@ -241,6 +267,237 @@ def first_pass_utilization_pct(estimated_tokens: int, available_input_tokens: in
 def exceeds_first_pass_85pct_policy(estimated_tokens: int, available_input_tokens: int) -> bool:
     """W2.2: deterministic fail-closed when optional trim still leaves >85% utilization."""
     return estimated_tokens > first_pass_85pct_limit_tokens(available_input_tokens)
+
+
+def _estimate_chars_to_tokens(char_count: int) -> int:
+    if char_count <= 0:
+        return 0
+    return max(1, int((char_count // _CHARS_PER_TOKEN) * _ESTIMATE_SAFETY_MULTIPLIER))
+
+
+def _runtime_input_source_hints(runtime_payload: dict[str, Any] | None) -> dict[str, str]:
+    payload = runtime_payload if isinstance(runtime_payload, dict) else {}
+    hints: dict[str, str] = {}
+    for key in ("manual_brief", "briefing_path", "jd_path", "jd_file"):
+        raw = str(payload.get(key) or "").strip()
+        if raw:
+            hints[key] = raw
+    sel = payload.get("briefing_selection_receipt")
+    if isinstance(sel, dict):
+        for key in ("selected_path", "briefing_path", "source_path"):
+            raw = str(sel.get(key) or "").strip()
+            if raw:
+                hints.setdefault("briefing_selected_path", raw)
+    return hints
+
+
+def build_token_budget_operator_guidance(
+    receipt: dict[str, Any],
+    *,
+    runtime_payload: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Actionable operator guidance when scratch dispatch is blocked for token budget."""
+    payload = runtime_payload if isinstance(runtime_payload, dict) else {}
+    after = int(receipt.get("compiled_prompt_tokens_after_trim") or 0)
+    available = int(receipt.get("available_input_tokens") or 0)
+    first_limit = int(receipt.get("first_pass_85pct_limit_tokens") or 0)
+    util_pct = float(receipt.get("first_pass_utilization_pct") or 0.0)
+    util_max = float(receipt.get("first_pass_input_utilization_max") or resolve_first_pass_input_utilization_max())
+    fail_reason = str(receipt.get("fail_closed_reason") or FAIL_CLOSED_REASON)
+    trim_applied = bool(receipt.get("trim_applied"))
+    trimmed = receipt.get("trimmed_components") if isinstance(receipt.get("trimmed_components"), list) else []
+
+    if fail_reason == FAIL_SHAPE_ALTERED:
+        return {
+            "operator_summary": (
+                "Prompt token budget exceeded and optional trim cannot fit without altering "
+                "evidence/SRFS shape — do not shorten briefing/JD further in-place; fix compile inputs."
+            ),
+            "operator_message": (
+                "TOKEN BUDGET BLOCKED (evidence shape would change)\n"
+                "Optional briefing/JD trims are exhausted. Further cuts would alter protected "
+                "SRFS / evidence-law / HIGH-fact content.\n"
+                "See token_budget_receipt.json forbidden_trim_violations."
+            ),
+            "tokens_over_budget": max(0, after - available),
+            "tokens_to_remove_estimate": max(0, after - available),
+            "suggestions": [],
+            "protected_signal": list(PROTECTED_COMPONENT_LABELS),
+        }
+
+    if fail_reason == FAIL_CLOSED_REASON_FIRST_PASS_85PCT:
+        budget_line = first_limit
+        over = max(0, after - first_limit)
+        headline = (
+            f"Prompt too large after optional trim ({after} est. input tokens, "
+            f"{util_pct:.1f}% of {available} available; cap {util_max:.0%} = {first_limit}). "
+            f"Shorten briefing and/or JD by ~{over} estimated tokens — see suggestions."
+        )
+    else:
+        budget_line = available
+        over = max(0, after - available)
+        headline = (
+            f"Prompt too large after optional trim ({after} est. tokens vs {available} hard input cap). "
+            f"Shorten briefing and/or JD by ~{over} estimated tokens — see suggestions."
+        )
+
+    suggestions: list[dict[str, Any]] = []
+    source_hints = _runtime_input_source_hints(payload)
+    briefing_text = str(payload.get("briefing") or "")
+    jd_text = str(payload.get("jd_text") or "")
+    briefing_est = _estimate_chars_to_tokens(len(briefing_text))
+    jd_est = _estimate_chars_to_tokens(len(jd_text))
+
+    if briefing_text:
+        suggestions.append(
+            {
+                "priority": 1,
+                "target": "briefing",
+                "action": (
+                    "Use an executive-summary briefing variant (e.g. "
+                    "`apps_rg/config/targeting/*_briefing_exec.md`) with only role themes, "
+                    "constraints, and company hooks — remove narrative background, duplicated JD "
+                    "bullets, and long citations."
+                ),
+                "preserves_signal": (
+                    "Must-have role themes, constraints, targeting hooks; HIGH/C0 facts and "
+                    "selected_fact_plan unchanged."
+                ),
+                "estimated_input_tokens_if_removed_entirely": briefing_est,
+                "source_hint": source_hints.get("briefing_selected_path")
+                or source_hints.get("manual_brief")
+                or source_hints.get("briefing_path"),
+            }
+        )
+        suggestions.append(
+            {
+                "priority": 2,
+                "target": "briefing",
+                "action": (
+                    f"Trim briefing prose by ≥{over} estimated tokens: delete redundant paragraphs, "
+                    "merge duplicate themes, move long quotes to a footnote file (not in prompt)."
+                ),
+                "preserves_signal": "Keep numbered must-haves, risks, and differentiation bullets.",
+                "estimated_input_tokens_if_halved": max(1, briefing_est // 2),
+            }
+        )
+
+    if jd_text:
+        suggestions.append(
+            {
+                "priority": 3,
+                "target": "jd",
+                "action": (
+                    "Shorten JD to targeting-only: retain title, 5–8 must-have responsibilities, "
+                    "and differentiators; drop boilerplate benefits, legal text, and repeated "
+                    "qualification lists already captured in briefing."
+                ),
+                "preserves_signal": (
+                    "JD targeting themes and constraints; evidence facts and claim ledger "
+                    "unchanged."
+                ),
+                "estimated_input_tokens_if_removed_entirely": jd_est,
+            }
+        )
+
+    already_trimmed = {str(c.get("component") or "") for c in trimmed if isinstance(c, dict)}
+    if "e0_examples" in already_trimmed:
+        suggestions.append(
+            {
+                "priority": 4,
+                "target": "style_examples",
+                "action": (
+                    "Runtime already removed E0 style examples. If still over budget, reduce "
+                    "style-example blocks at the source template — not HIGH facts or SRFS arc."
+                ),
+                "preserves_signal": "Generation shape (SRFS), evidence law, required facts.",
+            }
+        )
+    if trim_applied and already_trimmed:
+        suggestions.append(
+            {
+                "priority": 5,
+                "target": "runtime_trim",
+                "action": (
+                    "Automatic optional trim already applied: "
+                    + ", ".join(sorted(already_trimmed))
+                    + ". Further reduction must come from shorter briefing/JD source files."
+                ),
+                "preserves_signal": "Protected components listed in token_budget_receipt.json.",
+            }
+        )
+
+    suggestions.append(
+        {
+            "priority": 9,
+            "target": "do_not_cut",
+            "action": (
+                "Do not delete or paraphrase: selected_fact_plan / HIGH facts, evidence_law, "
+                "SRFS arc, claim_ledger rules, allowed_source_fact_ids, or response_schema."
+            ),
+            "preserves_signal": "All proof-backed claims and X2 sentence/paragraph gates.",
+        }
+    )
+
+    lines = [
+        "TOKEN BUDGET BLOCKED — shorten briefing and/or JD (targeting prose only)",
+        headline,
+        f"Receipt: token_budget_receipt.json | fail_closed_reason={fail_reason}",
+        "",
+        "Reduce estimated input tokens without sacrificing proof signal:",
+    ]
+    for idx, sug in enumerate(suggestions, start=1):
+        if sug.get("target") == "do_not_cut":
+            continue
+        lines.append(f"{idx}. [{sug.get('target')}] {sug.get('action')}")
+        lines.append(f"   Keeps: {sug.get('preserves_signal')}")
+    lines.append("")
+    lines.append("Protected (never cut for token budget):")
+    lines.append(
+        "  HIGH/required facts, selected_fact_plan, evidence_law, SRFS shape, "
+        "claim_ledger, response_schema."
+    )
+    if over > 0:
+        lines.append("")
+        lines.append(
+            f"Target reduction: ≥{over} estimated input tokens "
+            f"(to reach {budget_line} under current policy)."
+        )
+
+    return {
+        "operator_summary": headline,
+        "operator_message": "\n".join(lines),
+        "tokens_over_budget": over,
+        "tokens_to_remove_estimate": over,
+        "first_pass_utilization_pct": util_pct,
+        "first_pass_input_utilization_max": util_max,
+        "available_input_tokens": available,
+        "compiled_prompt_tokens_after_trim": after,
+        "suggestions": suggestions,
+        "protected_signal": list(PROTECTED_COMPONENT_LABELS),
+        "input_source_hints": source_hints,
+    }
+
+
+def attach_token_budget_operator_guidance(
+    receipt: dict[str, Any],
+    *,
+    runtime_payload: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    guidance = build_token_budget_operator_guidance(receipt, runtime_payload=runtime_payload)
+    receipt["operator_guidance"] = guidance
+    receipt["operator_summary"] = guidance.get("operator_summary")
+    receipt["operator_message"] = guidance.get("operator_message")
+    return receipt
+
+
+def _raise_token_budget_exceeded(
+    receipt: dict[str, Any],
+    *,
+    runtime_payload: dict[str, Any],
+) -> None:
+    attach_token_budget_operator_guidance(receipt, runtime_payload=runtime_payload)
+    raise ExecutiveSummaryTokenBudgetExceeded(receipt=receipt)
 
 
 @dataclass(frozen=True)
@@ -896,6 +1153,7 @@ def apply_executive_summary_token_budget_policy(
         "shape_altering_trim_forbidden": True,
         "shape_altering_trim_required_to_fit": still_over,
         "first_pass_85pct_policy_enabled": True,
+        "first_pass_input_utilization_max": resolve_first_pass_input_utilization_max(),
         "first_pass_85pct_limit_tokens": first_pass_limit,
         "first_pass_utilization_pct": utilization_pct,
         "first_pass_85pct_exceeded": exceeds_85,
@@ -910,19 +1168,19 @@ def apply_executive_summary_token_budget_policy(
         receipt["status"] = "FAIL"
         receipt["fail_closed_reason"] = FAIL_SHAPE_ALTERED
         receipt["dispatch_allowed"] = False
-        raise ExecutiveSummaryTokenBudgetExceeded(receipt=receipt)
+        _raise_token_budget_exceeded(receipt, runtime_payload=runtime_payload)
 
     if exceeds_85:
         receipt["status"] = "FAIL"
         receipt["fail_closed_reason"] = FAIL_CLOSED_REASON_FIRST_PASS_85PCT
         receipt["dispatch_allowed"] = False
-        raise ExecutiveSummaryTokenBudgetExceeded(receipt=receipt)
+        _raise_token_budget_exceeded(receipt, runtime_payload=runtime_payload)
 
     if still_over:
         receipt["status"] = "FAIL"
         receipt["fail_closed_reason"] = FAIL_CLOSED_REASON
         receipt["dispatch_allowed"] = False
-        raise ExecutiveSummaryTokenBudgetExceeded(receipt=receipt)
+        _raise_token_budget_exceeded(receipt, runtime_payload=runtime_payload)
 
     if targeting_meta.get("targeting_cap_applied") or trim_applied:
         msgs[0]["content"] = trimmed_content
@@ -964,6 +1222,8 @@ __all__ = [
     "PROTECTED_COMPONENT_LABELS",
     "TRIM_STRATEGY",
     "apply_executive_summary_token_budget_policy",
+    "attach_token_budget_operator_guidance",
+    "build_token_budget_operator_guidance",
     "context_window_provenance_receipt_fields",
     "RegenDispatchBudgetCheck",
     "estimate_regen_thread_tokens",
@@ -976,6 +1236,7 @@ __all__ = [
     "evidence_contract_digest",
     "extract_evidence_contract_snapshot",
     "protected_fact_ids_from_payload",
+    "resolve_first_pass_input_utilization_max",
     "resolve_provider_context_window",
     "graph_product_pool_active",
     "srfs_mode_active",

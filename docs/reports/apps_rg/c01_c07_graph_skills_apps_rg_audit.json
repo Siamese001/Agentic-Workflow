@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "lane_registry_equal": true,
+  "all_lanes_wire_spine_c0": true,
+  "lane_wire": {
+    "headline": {
+      "file": "apps_rg/runtime/sections/headline_lane.py",
+      "wire_spine_c0_fec": true
+    },
+    "executive_summary": {
+      "file": "apps_rg/runtime/sections/executive_summary_lane.py",
+      "wire_spine_c0_fec": true
+    },
+    "unify_bullets": {
+      "file": "apps_rg/runtime/sections/unify_bullets_lane.py",
+      "wire_spine_c0_fec": true
+    },
+    "unify_narrative": {
+      "file": "apps_rg/runtime/sections/unify_narrative_lane.py",
+      "wire_spine_c0_fec": true
+    },
+    "ibm_bullets": {
+      "file": "apps_rg/runtime/sections/ibm_bullets_lane.py",
+      "wire_spine_c0_fec": true
+    },
+    "ibm_narrative": {
+      "file": "apps_rg/runtime/sections/ibm_narrative_lane_execution.py",
+      "wire_spine_c0_fec": true
+    },
+    "competencies": {
+      "file": "apps_rg/runtime/sections/competencies_lane_execution.py",
+      "wire_spine_c0_fec": true
+    }
+  },
+  "c0_phase_code_hits": {
+    "C0.1": [
+      "c0_binding",
+      "section_c0_retrieve",
+      "c0_fec_compose"
+    ],
+    "C0.2": [
+      "c0_binding",
+      "section_c0_retrieve"
+    ],
+    "C0.3": [
+      "c0_binding"
+    ],
+    "C0.4": [
+      "c0_binding"
+    ],
+    "C0.5": [
+      "c0_binding",
+      "section_c0_retrieve",
+      "c0_fec_compose"
+    ],
+    "C0.6": [
+      "c0_binding",
+      "section_c0_retrieve"
+    ],
+    "C0.7": [
+      "c0_binding",
+      "c0_fec_compose"
+    ]
+  },
+  "full_resume_path": {
+    "canonical_dispatch_integrated_spine": true,
+    "modular_section_lanes": true,
+    "spine_scope_full": false
+  },
+  "d7_graph_skills_fec_equality": {
+    "status": "PASS",
+    "pass_count": 6,
+    "target": 6
+  }
+}

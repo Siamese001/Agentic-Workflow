@@ -55,12 +55,16 @@ from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
 from apps_rg.runtime.section_proof.section_input_usage_ledger import build_section_input_usage_ledger_v1
 from apps_rg.runtime.sections.unify_bullets_pa import compile_unify_bullets_prompt
 from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3 as _aggregate_unify_bullets_x3
-from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges
+from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges  # singleton fallback only
 from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
-from apps_rg.runtime.reasoning.employment_bullet_pool import build_employment_targeting_context
+from apps_rg.runtime.reasoning.employment_bullet_pool import (
+    build_employment_targeting_context,
+    employment_pool_x1d_judge_rows,
+    is_employment_pool_generation,
+)
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.shadow.unify_bullets_l6 import build_l6_shadow_package, extend_unify_bullets_l6_learning_fields
@@ -73,8 +77,6 @@ from apps_rg.runtime.validators.fact_id_typo_repair import (
     repair_unify_bullet_surface_id,
 )
 from apps_rg.runtime.validators.unify_bullets_x2 import (
-    DEFAULT_DISTRIBUTION,
-    INTENSITY_BY_BULLET_SSOT,
     PROTECTED_BULLET_DEFAULT,
     UNIFY_BULLET_IDS,
     build_unify_bullets_text_claim_coverage,
@@ -91,7 +93,6 @@ TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
 BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
 
-DEFAULT_INTENSITY_BY_BULLET = dict(INTENSITY_BY_BULLET_SSOT)
 BULLET_ID_ALIASES = {
     **{f"B{i}": f"bul_unify_{i:03d}" for i in range(1, 7)},
     **{f"b{i}": f"bul_unify_{i:03d}" for i in range(1, 7)},
@@ -204,18 +205,10 @@ def build_runtime_payload(
         "allowed_fact_ids": sorted(allowed_fact_ids),
         "writable_context_scope": "unify_bullets_only",
         "full_resume_writable": False,
-        "rewrite_distribution_default": DEFAULT_DISTRIBUTION,
         "protected_bullet_default": PROTECTED_BULLET_DEFAULT,
+        "pool_path_count": 15,
+        "selection_model": "qwen_pool_claude_top_n_pass",
     }
-
-
-def _count_intensities(bullets: list[dict[str, Any]]) -> dict[str, int]:
-    counts = {"HEAVY": 0, "MODERATE": 0, "LIGHT_PROTECTED": 0}
-    for bullet in bullets:
-        key = str(bullet.get("rewrite_intensity", "")).upper()
-        if key in counts:
-            counts[key] += 1
-    return counts
 
 
 def _canonicalize_unify_gate_metric_text(text: str) -> str:
@@ -238,8 +231,11 @@ def _canonicalize_unify_gate_metric_text(text: str) -> str:
 
 
 def _canonicalize_bul_w7_unify_source_fact_id(fid: str) -> str:
-    """Normalize model typos such as ``bul_w7_unify_ 006`` → ``bul_w7_unify_006`` (stray whitespace)."""
+    """Normalize model typos (whitespace, ``bul_unify_.003`` → ``bul_unify_003``)."""
     s = str(fid).strip()
+    if "bul_unify" in s:
+        s = re.sub(r"bul_unify_\.", "bul_unify_", s)
+        s = re.sub(r"\s+", "", s)
     if s.startswith("bul_w7_unify"):
         s = re.sub(r"\s+", "", s)
     return s
@@ -319,7 +315,7 @@ def normalize_unify_parsed_without_ledger_synthesis(
     parsed: dict[str, Any] | None,
     runtime_payload: dict[str, Any],
 ) -> dict[str, Any] | None:
-    """Normalize bullet IDs / intensities / metric phrasing only.
+    """Normalize bullet IDs / metric phrasing only.
 
     Does **not** fabricate ``claim_ledger`` or ``claim_text`` from ``bullet_text`` when the model omits them.
     """
@@ -338,15 +334,6 @@ def normalize_unify_parsed_without_ledger_synthesis(
             row["bullet_id"] = legacy_remap.get(row["bullet_id"], row["bullet_id"])
         elif row["bullet_id"] not in UNIFY_BULLET_IDS and idx < len(UNIFY_BULLET_IDS):
             row["bullet_id"] = UNIFY_BULLET_IDS[idx]
-        intensity_key = row["bullet_id"]
-        if legacy_remap:
-            for leg_id, pool_id in legacy_remap.items():
-                if pool_id == row["bullet_id"]:
-                    intensity_key = leg_id
-                    break
-        row["rewrite_intensity"] = str(
-            DEFAULT_INTENSITY_BY_BULLET.get(intensity_key, "MODERATE")
-        ).upper()
         if not row.get("source_fact_ids"):
             row["source_fact_ids"] = [row["bullet_id"]]
         row["source_fact_ids"] = _normalize_unify_source_fact_id_list(
@@ -371,10 +358,6 @@ def normalize_unify_parsed_without_ledger_synthesis(
     _normalize_unify_claim_ledger(out, remap=legacy_remap, allowed=allowed)
     if not isinstance(out.get("selected_fact_plan"), dict):
         out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
-    dist = out.get("rewrite_distribution") or {}
-    if not dist.get("total"):
-        counts = _count_intensities(normalized_bullets)
-        out["rewrite_distribution"] = {**counts, "total": sum(counts.values())}
     if not isinstance(out.get("jd_alignment"), dict):
         out["jd_alignment"] = {"targeting_only": True, "jd_used_as_proof": False}
     out.setdefault("gap_notes", [])
@@ -386,7 +369,11 @@ def normalize_unify_parsed_without_ledger_synthesis(
         runtime_payload,
         protected_bullet_id=protected_default,
     )
-    return out
+    from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+        strip_employment_bullet_intensity_model,
+    )
+
+    return strip_employment_bullet_intensity_model(out)
 
 
 def _sync_unify_claim_ledger_to_bullets(
@@ -444,7 +431,6 @@ def _repair_protected_unify_bullet_metrics(
     if not canonical:
         return
     protected["bullet_text"] = _canonicalize_unify_gate_metric_text(canonical)
-    protected["rewrite_intensity"] = "LIGHT_PROTECTED"
     protected["has_metric"] = True
     protected["metric_raw"] = protected.get("metric_raw") or "$22M, 20%, 8 to 28"
     protected["source_fact_ids"] = [protected_bullet_id]
@@ -466,7 +452,11 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
     try:
         parsed = json.loads(text)
         if isinstance(parsed, dict):
-            return parsed, ""
+            from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+                strip_employment_bullet_intensity_model,
+            )
+
+            return strip_employment_bullet_intensity_model(parsed), ""
     except json.JSONDecodeError as exc:
         return None, f"JSON parse failed: {exc}"
     return None, "Model output was not a JSON object."
@@ -487,7 +477,8 @@ def retry_qwen_for_parse(
                 f"JSON INVALID: {parse_error}. Return a NEW complete compact JSON object only. "
                 "Use bullet_id values bul_unify_001..bul_unify_006 exactly. "
                 "Include a non-empty claim_ledger: every row must have non-empty claim_text and valid source_fact_ids. "
-                "Include rewrite_distribution with total=6."
+                "Include all six bullets bul_unify_001..bul_unify_006. "
+                "Do NOT emit rewrite_intensity, rewrite_distribution, or HEAVY/MODERATE/LIGHT_PROTECTED fields."
             ),
         },
     ]
@@ -500,13 +491,23 @@ def retry_qwen_for_parse(
     return new_raw, new_parsed, new_err
 
 
+def _clamp_mock_bullet_text(text: str, *, max_chars: int) -> str:
+    """Keep offline mock bullets within line-discipline paragraph cap."""
+    cleaned = str(text or "").strip()
+    if len(cleaned) <= max_chars:
+        return cleaned
+    head = cleaned[: max_chars - 3].rsplit(" ", 1)[0].rstrip(".,;:")
+    return f"{head}..."
+
+
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
+    from apps_rg.runtime.validators.bullet_line_discipline_x2 import DEFAULT_BULLET_MAX_CHARS
+
     by_id = {f["fact_id"]: f for f in runtime_payload["selected_fact_plan"]["facts"]}
     bullets = []
     claim_ledger = []
     for bid in UNIFY_BULLET_IDS:
         fact = by_id[bid]
-        intensity = DEFAULT_INTENSITY_BY_BULLET[bid]
         text = str(fact["claim_text"] or "")
         if ": " in text:
             text = text.split(": ", 1)[-1].strip()
@@ -515,6 +516,14 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
                 "Designed and operationalized a governed agentic AI platform for regulated enterprise "
                 "workflows, combining policy gating and validation controls for traceable production delivery."
             )
+        elif bid == "bul_unify_006":
+            text = (
+                "Productized agentic AI platform services, generating $22M IP-led revenue and 20% "
+                "gross-margin expansion while scaling the ML organization from 8 to 28 engineers and "
+                "compressing delivery from six months to three weeks."
+            )
+        else:
+            text = _clamp_mock_bullet_text(text, max_chars=DEFAULT_BULLET_MAX_CHARS)
         metric_ids = [bid]
         if fact.get("metric_raw"):
             metric_ids.append(f"{bid}_metric_{sha16(fact['metric_raw'])[:8]}")
@@ -522,7 +531,6 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
             {
                 "bullet_id": bid,
                 "bullet_text": text,
-                "rewrite_intensity": intensity,
                 "has_metric": fact.get("has_metric", False),
                 "metric_raw": fact.get("metric_raw") or None,
                 "source_fact_ids": metric_ids,
@@ -537,10 +545,8 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
         "gap_notes": [],
         "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
-        "rewrite_distribution": dict(DEFAULT_DISTRIBUTION),
         "self_check": {
             "bullet_count_valid": True,
-            "distribution_valid": True,
             "no_cross_contamination": True,
             "metrics_preserved": True,
         },
@@ -560,6 +566,11 @@ def enrich_unify_parsed_for_x2(
 ) -> dict[str, Any] | None:
     if parsed is None:
         return None
+    from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+        strip_employment_bullet_intensity_model,
+    )
+
+    parsed = strip_employment_bullet_intensity_model(parsed)
     enriched = dict(parsed)
     enriched["text_claim_coverage"] = coverage
     output_body = {
@@ -571,7 +582,6 @@ def enrich_unify_parsed_for_x2(
             "jd_alignment",
             "gap_notes",
             "change_log",
-            "rewrite_distribution",
             "self_check",
             "text_claim_coverage",
         )
@@ -828,7 +838,6 @@ def run_unify_bullets_execution(
     model_name = resolve_provider_model_name(provider_request_data, provider_result_data)
     temperature = float(args.temperature) if args.provider == "qwen_vllm" else UNIFY_TEMP_DEFAULT
 
-    rewrite_distribution = (parsed or {}).get("rewrite_distribution") or dict(DEFAULT_DISTRIBUTION)
     l2_output = {
         "run_id": runtime_payload["run_id"],
         "section_id": "unify_bullets",
@@ -842,7 +851,6 @@ def run_unify_bullets_execution(
         "jd_alignment": (parsed or {}).get("jd_alignment") or {"targeting_only": True, "jd_used_as_proof": False},
         "gap_notes": (parsed or {}).get("gap_notes") or [],
         "change_log": (parsed or {}).get("change_log") or [],
-        "rewrite_distribution": rewrite_distribution,
         "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
         "text_claim_coverage": coverage,
         "prompt_id": PROMPT_ID,
@@ -855,7 +863,11 @@ def run_unify_bullets_execution(
         "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
         "allowed_fact_ids_hash": (parsed_for_x2 or {}).get("allowed_fact_ids_hash"),
     }
-    write_json(artifact_dir / "l2_output.json", l2_output)
+    from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+        sanitize_l2_employment_bullet_record,
+    )
+
+    write_json(artifact_dir / "l2_output.json", sanitize_l2_employment_bullet_record(l2_output))
     (artifact_dir / "unify_bullets_output.txt").write_text(display_for_coverage + "\n", encoding="utf-8")
     write_json(artifact_dir / "selected_fact_plan.json", l2_output["selected_fact_plan"])
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
@@ -889,20 +901,25 @@ def run_unify_bullets_execution(
         artifact_dir / "section_input_usage_ledger.json",
         apply_proof_pool_to_usage_ledger(usage_doc, pool),
     )
-    write_json(artifact_dir / "rewrite_distribution.json", rewrite_distribution)
-
-    judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
-    x1d = [
-        j.to_dict()
-        for j in run_unify_bullets_judges(
-            bullets=bullets,
-            claim_ledger=claim_ledger,
-            judge_keys=judge_keys,
-            mode=judge_mode,
-            artifact_base=artifact_dir,
+    if is_employment_pool_generation(gen_meta):
+        x1d = employment_pool_x1d_judge_rows(
+            artifact_dir=artifact_dir,
+            section_id=LANE_KEY,
+            gen_meta=gen_meta,
         )
-    ]
+    else:
+        judge_keys = ["anthropic_claude"]
+        x1d = [
+            j.to_dict()
+            for j in run_unify_bullets_judges(
+                bullets=bullets,
+                claim_ledger=claim_ledger,
+                judge_keys=judge_keys,
+                mode=judge_mode,
+                artifact_base=artifact_dir,
+            )
+        ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
     trace = attach_reasoning_to_prompt_trace(
@@ -957,7 +974,6 @@ def run_unify_bullets_execution(
             model_name=model_name,
             raw_output=raw_output,
             x1d_judges=x1d,
-            rewrite_distribution=rewrite_distribution,
             srfs_source_fact_slice_gate_active=srfs_slice_x2_active,
             proof_pool_metadata=pp_x2,
             proof_pool_ref=str(pool.proof_pool_ref or ""),
@@ -1018,7 +1034,7 @@ def run_unify_bullets_execution(
         runtime_generation_status=runtime_generation_status,
         bundle=proof_bundle,
     )
-    write_json(artifact_dir / "l2_output.json", l2_output)
+    write_json(artifact_dir / "l2_output.json", sanitize_l2_employment_bullet_record(l2_output))
 
     from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
 
@@ -1119,9 +1135,6 @@ def run_unify_bullets_execution(
         "L2_UNIFY_BULLETS_OUTPUT:",
         display_for_coverage if bullets else f"BLOCKED: {parse_error}",
         "",
-        "REWRITE_DISTRIBUTION:",
-        json.dumps(rewrite_distribution, indent=2),
-        "",
         "X1D_LLM_JUDGE_OUTPUTS:",
         "| Provider | Mode | Score | Threshold | Pass | Decisive Failure | Error |",
         "|---|---|---:|---:|---|---|---|",
@@ -1135,7 +1148,7 @@ def run_unify_bullets_execution(
     output_lines.extend(["", "X2_DETERMINISTIC_GATE_OUTPUTS:"])
     for gate in x2:
         output_lines.append(f"- {gate['gate_id']}: {'PASS' if gate['pass'] else 'FAIL'}")
-    output_lines.extend(["", "X3_DISPOSITION:", json.dumps(x3_record, indent=2), "", "L6_SHADOW_EVAL_PACKAGE:"])
+    output_lines.extend(["", "X3_DISPOSITION:", json.dumps(x3.to_dict(), indent=2), "", "L6_SHADOW_EVAL_PACKAGE:"])
     output_lines.append(str(artifact_dir / "l6_shadow_eval_package.json"))
     output_lines.append("offline_only=true")
     output_text = "\n".join(output_lines)
@@ -1220,7 +1233,6 @@ def run_unify_bullets_execution(
 __all__ = [
     "BRIEFING_DEFAULT",
     "BULLET_ID_ALIASES",
-    "DEFAULT_INTENSITY_BY_BULLET",
     "JD_TEXT_DEFAULT",
     "LANE_KEY",
     "PROMPT_ID",

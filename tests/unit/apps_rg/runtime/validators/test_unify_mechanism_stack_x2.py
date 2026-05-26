@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from apps_rg.runtime.validators.unify_bullets_x2 import (
-    INTENSITY_BY_BULLET_SSOT,
     UNIFY_BULLET_IDS,
     _mechanism_dense_bullet_ids,
     _unify_metric_anchors_on_assigned_bullets,
@@ -28,7 +27,6 @@ def _six_bullets_with_one_dense_stack() -> list[dict]:
             {
                 "bullet_id": bid,
                 "bullet_text": text,
-                "rewrite_intensity": INTENSITY_BY_BULLET_SSOT.get(bid, "MODERATE"),
                 "source_fact_ids": [bid],
             }
         )
@@ -57,11 +55,7 @@ def test_x2_emits_mechanism_and_metric_anchor_gates():
     ledger = [{"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets]
     gates = run_unify_bullets_x2_gates(
         bullets=bullets,
-        parsed_output={
-            "bullets": bullets,
-            "claim_ledger": ledger,
-            "rewrite_distribution": {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6},
-        },
+        parsed_output={"bullets": bullets, "claim_ledger": ledger},
         claim_ledger=ledger,
         allowed_fact_ids=set(UNIFY_BULLET_IDS),
         jd_text="",
@@ -70,23 +64,4 @@ def test_x2_emits_mechanism_and_metric_anchor_gates():
     gate_ids = {g.gate_id for g in gates}
     assert "x2_unify_at_most_one_mechanism_dense_bullet" in gate_ids
     assert "x2_unify_metric_anchor_bullet_ownership" in gate_ids
-    assert "x2_unify_intensity_per_bullet_ssot" in gate_ids
-
-
-def test_x2_intensity_ssot_fails_when_004_tagged_heavy():
-    bullets = _six_bullets_with_one_dense_stack()
-    for b in bullets:
-        if b["bullet_id"] == "bul_unify_004":
-            b["rewrite_intensity"] = "HEAVY"
-    ledger = [{"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets]
-    gates = run_unify_bullets_x2_gates(
-        bullets=bullets,
-        parsed_output={"bullets": bullets, "claim_ledger": ledger},
-        claim_ledger=ledger,
-        allowed_fact_ids=set(UNIFY_BULLET_IDS),
-        jd_text="",
-        runtime_generation_status="MOCKED",
-    )
-    by_id = {g.gate_id: g for g in gates}
-    assert by_id["x2_unify_intensity_per_bullet_ssot"].pass_ is False
-    assert by_id["x2_unify_metric_bullets_not_heavy"].pass_ is False
+    assert "x2_unify_protected_bullet_metrics_preserved" in gate_ids

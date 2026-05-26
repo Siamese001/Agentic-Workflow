@@ -13,7 +13,6 @@ def test_should_hydrate_when_metrics_missing() -> None:
             {
                 "bullet_id": "bul_unify_006",
                 "bullet_text": "Led platform without locked metrics.",
-                "rewrite_intensity": "MODERATE",
                 "source_fact_ids": ["fact_platform_001"],
             }
         ],

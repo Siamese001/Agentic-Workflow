@@ -81,12 +81,16 @@ REPAIR_LOOP_PHASE_MARKERS: tuple[tuple[str, str], ...] = (
     ("judge_regen_cycle", "repair_judge_regen_after_x2_fail("),
 )
 
-JUDGE_REMEDIATION_X2_FLOOR_MARKERS: tuple[str, ...] = (
-    "X2_FLOOR",
+JUDGE_REMEDIATION_SOFT_PRESERVATION_MARKERS: tuple[str, ...] = (
+    "MATERIAL_PRESERVATION",
+    "not a word-count floor",
     "Weave unused allowed facts",
     "claim_ledger",
     "Exactly 6 sentences",
 )
+
+# Backward-compatible alias for drift audits.
+JUDGE_REMEDIATION_X2_FLOOR_MARKERS = JUDGE_REMEDIATION_SOFT_PRESERVATION_MARKERS
 
 
 def _repo_read(path: Path) -> str:
@@ -226,22 +230,31 @@ def _audit_judge_remediation_contract() -> list[X2X1dDriftViolation]:
     remediation_path = Path(lane_mod.__file__).parent / "executive_summary_judge_remediation.py"
     src = _repo_read(remediation_path)
     floor_sample = format_judge_regen_x2_floor(prior_word_count=100, prior_ledger_rows=6)
-    for marker in JUDGE_REMEDIATION_X2_FLOOR_MARKERS:
+    for marker in JUDGE_REMEDIATION_SOFT_PRESERVATION_MARKERS:
         if marker not in floor_sample:
             out.append(
                 X2X1dDriftViolation(
                     "executive_summary",
-                    "x2_floor_marker_missing",
-                    f"format_judge_regen_x2_floor missing {marker!r}",
+                    "soft_preservation_marker_missing",
+                    f"format_judge_regen_soft_material_preservation missing {marker!r}",
                     str(remediation_path),
                 )
             )
-    if "format_judge_regen_x2_floor" not in src:
+    if "words minimum" in floor_sample.lower() or "≥" in floor_sample and "words" in floor_sample:
         out.append(
             X2X1dDriftViolation(
                 "executive_summary",
-                "judge_remediation_missing_x2_floor",
-                "build_judge_remediation_user_message must call format_judge_regen_x2_floor",
+                "hard_word_count_floor_forbidden",
+                "judge regen must not include hard prior word-count floor",
+                str(remediation_path),
+            )
+        )
+    if "format_judge_regen_x2_floor" not in src and "format_judge_regen_soft_material_preservation" not in src:
+        out.append(
+            X2X1dDriftViolation(
+                "executive_summary",
+                "judge_remediation_missing_soft_preservation",
+                "build_judge_remediation_user_message must call soft material preservation helper",
                 str(remediation_path),
             )
         )

@@ -29,10 +29,12 @@ def unify_bullets_parsed_from_mock() -> tuple[dict[str, Any], set[str]]:
         extract_unify_employment,
         load_base_resume,
     )
+    from apps_rg.runtime.sections.unify_bullets_graph_evidence import TRACK_RANKED_SELECTION_METHOD
 
     base, path, base_hash = load_base_resume()
     header, facts, allowed = extract_unify_employment(base)
     plan = build_selected_fact_plan(facts)
+    plan["selection_method"] = TRACK_RANKED_SELECTION_METHOD
     rp = build_runtime_payload(
         base_json_path=path,
         base_hash=base_hash,
@@ -44,7 +46,16 @@ def unify_bullets_parsed_from_mock() -> tuple[dict[str, Any], set[str]]:
         jd_text="Enterprise AI platform leadership.",
         briefing="regulated insurance distribution",
     )
-    return build_mock_output(rp), allowed
+    parsed = build_mock_output(rp)
+    plan = dict(parsed.get("selected_fact_plan") or plan)
+    plan["selection_method"] = TRACK_RANKED_SELECTION_METHOD
+    for row in plan.get("facts") or []:
+        if not isinstance(row, dict):
+            continue
+        fid = str(row.get("fact_id") or "")
+        row["claim_text"] = f"Graph-bound evidence anchor for {fid} (compose target; not bullet prose)."
+    parsed["selected_fact_plan"] = plan
+    return parsed, allowed
 
 
 def ibm_bullets_parsed_from_mock() -> tuple[dict[str, Any], set[str]]:
@@ -78,7 +89,11 @@ def unify_narrative_parsed_from_mock(*, companion_text: str = "- bul_unify_001: 
         "jd_text": "AI",
         "briefing": "brief",
     }
-    return build_mock_output(rp)
+    out = build_mock_output(rp)
+    out["companion_bullets_text"] = companion_text
+    out["companion_bullets_status"] = rp["companion_bullets_status"]
+    out["companion_bullets_reason"] = rp["companion_bullets_reason"]
+    return out
 
 
 def ibm_narrative_parsed_from_mock(*, companion_text: str = "- bul_ibm_001: sample") -> dict[str, Any]:
@@ -94,7 +109,11 @@ def ibm_narrative_parsed_from_mock(*, companion_text: str = "- bul_ibm_001: samp
         "jd_text": "AI",
         "briefing": "brief",
     }
-    return build_mock_output(rp)
+    out = build_mock_output(rp)
+    out["companion_bullets_text"] = companion_text
+    out["companion_bullets_status"] = rp["companion_bullets_status"]
+    out["companion_bullets_reason"] = rp["companion_bullets_reason"]
+    return out
 
 
 def run_unify_bullets_x2(parsed: dict[str, Any], allowed: set[str]) -> list:
@@ -163,15 +182,18 @@ def run_unify_narrative_x2(
 
     narrative = str(parsed.get("narrative_sentence") or "")
     ledger = parsed.get("claim_ledger") or []
+    resolved_companion = str(companion_text or parsed.get("companion_bullets_text") or "")
+    resolved_status = str(companion_status or parsed.get("companion_bullets_status") or companion_status)
+    resolved_reason = str(companion_reason or parsed.get("companion_bullets_reason") or companion_reason)
     return run_unify_narrative_x2_gates(
         narrative_sentence=narrative,
         parsed_output=parsed,
         claim_ledger=ledger,
         jd_text="enterprise",
         runtime_generation_status=runtime_generation_status,
-        companion_bullet_texts=companion_text,
-        companion_bullets_status=companion_status,
-        companion_bullets_reason=companion_reason,
+        companion_bullet_texts=resolved_companion,
+        companion_bullets_status=resolved_status,
+        companion_bullets_reason=resolved_reason,
         provider_requested="mock",
         provider_attempted="mock",
         raw_output=json.dumps(parsed),
@@ -193,15 +215,18 @@ def run_ibm_narrative_x2(
 
     narrative = str(parsed.get("narrative_sentence") or "")
     ledger = parsed.get("claim_ledger") or []
+    resolved_companion = str(companion_text or parsed.get("companion_bullets_text") or "")
+    resolved_status = str(companion_status or parsed.get("companion_bullets_status") or companion_status)
+    resolved_reason = str(companion_reason or parsed.get("companion_bullets_reason") or companion_reason)
     return run_ibm_narrative_x2_gates(
         narrative_sentence=narrative,
         parsed_output=parsed,
         claim_ledger=ledger,
         jd_text="enterprise",
         runtime_generation_status=runtime_generation_status,
-        companion_bullet_texts=companion_text,
-        companion_bullets_status=companion_status,
-        companion_bullets_reason=companion_reason,
+        companion_bullet_texts=resolved_companion,
+        companion_bullets_status=resolved_status,
+        companion_bullets_reason=resolved_reason,
         companion_aware=companion_aware,
         provider_requested="mock",
         provider_attempted="mock",

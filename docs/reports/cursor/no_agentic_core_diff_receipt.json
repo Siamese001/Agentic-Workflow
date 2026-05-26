@@ -1,0 +1,33 @@
+{
+  "schema": "no_agentic_core_diff_receipt_v1",
+  "plan_id": "exec-summary-judge-regen-control-loop-f8a3c2",
+  "verified_at_utc": "2026-05-26T08:10:01Z",
+  "agentic_core_files_changed": [],
+  "agentic_core_diff_count": 0,
+  "plan_scope_files_changed": [
+    ".cursor/plans/exec-summary-judge-regen-control-loop-f8a3c2.md",
+    "apps_rg/runtime/sections/executive_summary_candidate_pool.py",
+    "apps_rg/runtime/sections/executive_summary_judge_regen_loop.py",
+    "apps_rg/runtime/sections/executive_summary_judge_remediation.py",
+    "apps_rg/runtime/sections/executive_summary_lane.py",
+    "apps_rg/runtime/sections/executive_summary_lane_done_policy.py",
+    "apps_rg/runtime/sections/executive_summary_regen_delta_policy.py",
+    "apps_rg/runtime/sections/executive_summary_repair_policy.py",
+    "apps_rg/runtime/sections/executive_summary_token_budget.py",
+    "docs/reports/cursor/exec_summary_judge_regen_control_loop_w0_receipt.md",
+    "docs/reports/cursor/exec_summary_judge_regen_control_loop_w1_receipt.md",
+    "docs/reports/cursor/exec_summary_judge_regen_control_loop_w2_receipt.md",
+    "docs/reports/cursor/exec_summary_judge_regen_control_loop_w3_receipt.md",
+    "docs/reports/cursor/exec_summary_judge_regen_control_loop_w4_receipt.md",
+    "tests/unit/apps_rg/test_executive_summary_candidate_pool.py",
+    "tests/unit/apps_rg/test_executive_summary_g1_ledger_metric_sync.py",
+    "tests/unit/apps_rg/test_executive_summary_judge_regen_loop.py",
+    "tests/unit/apps_rg/test_executive_summary_judge_remediation.py",
+    "tests/unit/apps_rg/test_executive_summary_regen_delta_policy.py",
+    "tools/cursor/emit_no_agentic_core_diff_receipt.py",
+    "tools/cursor/run_exec_summary_floor_matrix.py",
+    "tools/cursor/verify_exec_summary_judge_regen_w5_artifacts.py"
+  ],
+  "plan_scope_diff_count": 22,
+  "passed": true
+}

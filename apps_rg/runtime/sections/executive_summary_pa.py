@@ -306,16 +306,18 @@ def format_srfs_forbidden_phrase_guardrails_block() -> str:
     )
 
 
-# Judge-aligned SVP style anchor for SRFS appendix (NOT runtime proof — matches exec_summary_pos_svp_it_strategy_001 register).
+# Judge-aligned SVP style anchor for SRFS appendix (NOT runtime proof — matches exec_summary_pos_svp_it_strategy_001 V7).
 SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR = (
-    "Technology strategy executive aligning governed AI platforms, regulatory lineage, and commercialization into one "
-    "enterprise IT direction for regulated programs. Designs and operates platform runtime with deterministic controls "
-    "and traceable execution so innovation scales without sacrificing audit-ready delivery. Leads operating-model and "
-    "engineering scale-out across platform lifecycle work, converting complex delivery into reusable services adopted "
-    "across enterprise programs. Applies governance and quantitative depth to balance innovation velocity with lineage "
-    "discipline when selected facts support regulated analytics themes. Generated proof-backed revenue and margin outcomes "
-    "by productizing platform capabilities rather than listing credentials or certification labels. Closes the arc with "
-    "enterprise technology direction grounded in allowed platform and governance facts, not JD phrasing or employer copy."
+    "Enterprise technology leader who unifies governed AI platforms, regulatory lineage, and commercialization into one "
+    "IT strategy and innovation agenda for decentralized regulated enterprises. Designs and operates platform "
+    "runtime with deterministic controls and traceable execution so innovation scales without sacrificing validation-ready delivery. "
+    "Building on that platform foundation, platform commercialization and team growth from 8 to 28 specialists convert delivery "
+    "complexity into enterprise program adoption when selected facts support those themes. Complementing that delivery foundation, "
+    "Basel III and CCAR lineage discipline accelerates lineage-ready IT strategy velocity without turning governance into a control "
+    "checklist. With that governance posture, quantitative rigor from capital and risk analytics practice sharpens platform "
+    "investment and stress-analytics decisions for regulated program scale. Looking ahead, architecture standards and "
+    "innovation incubation programs can turn governed platform delivery into decentralized unit adoption while preserving "
+    "lineage discipline."
 )
 
 def load_executive_summary_example_after(example_id: str) -> str:
@@ -425,7 +427,12 @@ def build_executive_summary_assembly_input(
         strategy_voice = (
             " SVP IT strategy voice: emit executive_strategy_thesis first, then six-sentence display serving that thesis; "
             "use injected narrative_arc_weights as thematic emphasis only (not one fact per sentence index); "
-            "JD/briefing shape executive concepts only (no JD-as-proof)."
+            "JD/briefing shape executive concepts only (no JD-as-proof). "
+            "MANDATORY S6: start with 'Looking ahead,' and project innovation incubation / architecture standards / "
+            "decentralized-scale readiness (not 'extend that arc toward' recap). "
+            "MANDATORY S5: one quantitative-rigor clause only — never list derivatives pricing, multi-Greek hedging, "
+            "Towers Perrin/ING/Aetna, or FSA/cert label stacks. "
+            "FORBIDDEN connective: 'That regulatory lineage work extended to' unless causality is explicit in facts."
         )
     composition_block = ""
     _pp_for_plan = runtime_payload.get("proof_pool_metadata")
@@ -454,7 +461,9 @@ def build_executive_summary_assembly_input(
         f"{strategy_voice}"
         "Return bare JSON (see R0 keys). Required: executive_strategy_thesis (one third-person sentence, ledger-backed), then "
         "resume_display_text: exactly six period-terminated sentences, one paragraph (max 140 words) - third person only (no I/my/we). "
-        "One integrated SVP arc with connective S3-S5; not six Led/Built bullets; never Towers Perrin/ING/Aetna employer inventory line. "
+        "One integrated SVP arc with connective S3-S5 (max two stock bridges: Building on / Through that / Complementing / With that governance); "
+        "distinctive S1 (architecture governance + innovation programs — not generic 'aligns enterprise IT direction'); "
+        "not six Led/Built bullets; never Towers Perrin/ING/Aetna employer inventory line. "
         "claim_ledger: 3-6 rows supporting the thesis (non-empty claim_text + source_fact_ids from allowlist); "
         "do not emit one row per sentence by default; document intentional fact omissions in gap_notes. "
         "Do not emit selected_fact_plan."
@@ -521,7 +530,9 @@ def format_graph_only_quality_guardrails_block() -> str:
         "<graph_only_generation_quality>\n"
         "Graph path: metrics only from fact lines; no invented revenue/margin/%. "
         "No cross-fact causality unless one fact states it; graph edges are not proof. "
-        "One claim_ledger row per sentence; credentials woven or omitted (see I0 credential_policy_v1).\n"
+        "Claim ledger must cover every material sentence (rows may support multiple sentences); "
+        "target 3-6 rows — do not default to one row per sentence; "
+        "credentials woven or omitted (see I0 credential_policy_v1).\n"
         "</graph_only_generation_quality>"
     )
 

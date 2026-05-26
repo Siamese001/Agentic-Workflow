@@ -27,8 +27,6 @@ IBM_BULLET_IDS = (
     "bul_ibm_004",
     "bul_ibm_005",
 )
-IBM_DEFAULT_DISTRIBUTION = {"HEAVY": 0, "MODERATE": 3, "LIGHT_PROTECTED": 2, "total": 5}
-VALID_INTENSITIES = frozenset({"HEAVY", "MODERATE", "LIGHT_PROTECTED"})
 TEXT_COVERAGE_INTEGRITY_GATE_ID = "x2_text_claim_coverage_integrity"
 
 # Category-style prefix at start of resume bullet (themes belong in bullet_theme / metadata only).
@@ -59,7 +57,6 @@ REQUIRED_TOP_LEVEL = {
     "jd_alignment",
     "gap_notes",
     "change_log",
-    "rewrite_distribution",
     "self_check",
 }
 
@@ -285,15 +282,6 @@ def _taxonomy_prefix_violations(bullets: list[dict[str, Any]]) -> list[str]:
     return bad
 
 
-def _count_intensities(bullets: list[dict[str, Any]]) -> dict[str, int]:
-    counts = {"HEAVY": 0, "MODERATE": 0, "LIGHT_PROTECTED": 0}
-    for bullet in bullets:
-        intensity = str(bullet.get("rewrite_intensity", "")).upper()
-        if intensity in counts:
-            counts[intensity] += 1
-    return counts
-
-
 def _all_source_fact_ids(parsed: dict[str, Any] | None, claim_ledger: list[dict[str, Any]]) -> set[str]:
     ids: set[str] = set()
     for bullet in (parsed or {}).get("bullets") or []:
@@ -350,7 +338,6 @@ def run_ibm_bullets_x2_gates(
     model_name: str | None = None,
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
-    rewrite_distribution: dict[str, Any] | None = None,
     srfs_source_fact_slice_gate_active: bool = False,
     proof_pool_metadata: dict[str, Any] | None = None,
     proof_pool_ref: str = "",
@@ -425,10 +412,47 @@ def run_ibm_bullets_x2_gates(
 
     combined = _combined_bullet_text(bullets)
     combined_lower = combined.lower()
-    dist = rewrite_distribution or (parsed_output or {}).get("rewrite_distribution") or {}
-    intensity_counts = _count_intensities(bullets)
 
     add("x2_ibm_bullet_count_5", len(bullets) == 5, len(bullets), 5, "Must output exactly 5 IBM bullets.")
+
+    from apps_rg.runtime.validators.bullet_line_discipline_x2 import (
+        register_bullet_line_discipline_x2_gates,
+    )
+
+    register_bullet_line_discipline_x2_gates(
+        add,
+        bullets,
+        lane_prefix="ibm",
+        section_id="ibm_bullets",
+    )
+
+    po_raw = parsed_output or {}
+    missing_top_level = sorted(k for k in REQUIRED_TOP_LEVEL if k not in po_raw)
+    add(
+        "x2_required_top_level_json_keys",
+        not missing_top_level,
+        missing_top_level,
+        sorted(REQUIRED_TOP_LEVEL),
+        f"Missing required top-level JSON keys: {', '.join(missing_top_level)}" if missing_top_level else None,
+    )
+
+    from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+        find_rewrite_intensity_model_violations,
+    )
+
+    intensity_violations = find_rewrite_intensity_model_violations(
+        parsed_output=po_raw,
+        bullets=bullets,
+    )
+    add(
+        "x2_ibm_no_rewrite_intensity_model",
+        not intensity_violations,
+        intensity_violations or "absent",
+        "no rewrite_distribution / rewrite_intensity fields",
+        f"Retired rewrite-intensity model fields present: {', '.join(intensity_violations)}"
+        if intensity_violations
+        else None,
+    )
 
     ledger_text_ok, ledger_text_reason = check_claim_ledger_claim_text_non_empty(claim_ledger)
     if not ledger_text_ok and ledger_text_reason:
@@ -455,7 +479,6 @@ def run_ibm_bullets_x2_gates(
         ledger_text_reason,
     )
 
-    po_raw = parsed_output or {}
     cov_gate_payload = po_raw.get("text_claim_coverage") if isinstance(po_raw.get("text_claim_coverage"), dict) else {}
     cov_ok, cov_reason = check_ibm_bullets_text_claim_coverage_integrity(
         bullets=bullets,
@@ -478,31 +501,6 @@ def run_ibm_bullets_x2_gates(
         anchor_fail or "ok",
         "each core metric on assigned bul_ibm_* bullet_text",
         None if anchor_ok else f"Metric anchor ownership failed: {anchor_fail}",
-    )
-
-    dist_valid = (
-        dist.get("HEAVY") == IBM_DEFAULT_DISTRIBUTION["HEAVY"]
-        and dist.get("MODERATE") == IBM_DEFAULT_DISTRIBUTION["MODERATE"]
-        and dist.get("LIGHT_PROTECTED") == IBM_DEFAULT_DISTRIBUTION["LIGHT_PROTECTED"]
-        and (dist.get("total") == 5 or sum(intensity_counts.values()) == 5)
-    )
-    add(
-        "x2_ibm_rewrite_distribution_valid",
-        dist_valid
-        and intensity_counts["HEAVY"] == 0
-        and intensity_counts["MODERATE"] == 3
-        and intensity_counts["LIGHT_PROTECTED"] == 2,
-        {"declared": dist, "observed": intensity_counts},
-        IBM_DEFAULT_DISTRIBUTION,
-        "IBM rewrite distribution must be 0 HEAVY, 3 MODERATE, 2 LIGHT_PROTECTED.",
-    )
-
-    add(
-        "x2_ibm_heavy_rewrites_zero",
-        intensity_counts["HEAVY"] == 0,
-        intensity_counts["HEAVY"],
-        0,
-        "HEAVY rewrites are forbidden for IBM bullets.",
     )
 
     metrics_preserved = (
@@ -664,8 +662,19 @@ def run_ibm_bullets_x2_gates(
         "Silent mock fallback detected.",
     )
 
-    judges_ok, judges_reason = check_judge_rows_present(x1d_judges)
-    add("x2_x1d_required_judges_present", judges_ok, judges_reason, REQUIRED_JUDGE_PROVIDERS, judges_reason)
+    from apps_rg.runtime.reasoning.employment_bullet_pool import EMPLOYMENT_BULLET_JUDGE_PROVIDERS
+
+    judges_ok, judges_reason = check_judge_rows_present(
+        x1d_judges,
+        required_providers=list(EMPLOYMENT_BULLET_JUDGE_PROVIDERS),
+    )
+    add(
+        "x2_x1d_required_judges_present",
+        judges_ok,
+        judges_reason,
+        list(EMPLOYMENT_BULLET_JUDGE_PROVIDERS),
+        judges_reason,
+    )
 
     if x1d_judges:
         blocked_invalid = []
@@ -730,7 +739,6 @@ def run_ibm_bullets_x2_gates(
 
 __all__ = [
     "IBM_BULLET_IDS",
-    "IBM_DEFAULT_DISTRIBUTION",
     "IBM_METRIC_ANCHOR_RULES",
     "REQUIRED_TOP_LEVEL",
     "TEXT_COVERAGE_INTEGRITY_GATE_ID",

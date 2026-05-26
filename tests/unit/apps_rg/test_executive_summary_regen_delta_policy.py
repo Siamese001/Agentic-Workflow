@@ -1,0 +1,205 @@
+"""W4 — delta_class, G5 scope, cycles v2 receipts, cert guards."""
+
+from __future__ import annotations
+
+from typing import Any
+
+from apps_rg.runtime.sections.executive_summary_candidate_pool import (
+    SCORES_FRESHNESS_CARRIED_FORWARD,
+    SCORES_FRESHNESS_FULL_PANEL,
+)
+from apps_rg.runtime.sections.executive_summary_regen_delta_policy import (
+    DELTA_CLASS_DIMENSION_EXECUTIVE_SIGNAL,
+    DELTA_CLASS_EXPLORATORY_FULL_PARAGRAPH,
+    DELTA_CLASS_S6_FORWARD_SYNTHESIS,
+    JUDGE_REMEDIATION_CYCLES_SCHEMA_VERSION,
+    build_judge_remediation_cycles_receipt,
+    cert_block_for_published_scores_freshness,
+    compute_regen_outcome,
+    evaluate_g5_delta_scope,
+    format_delta_class_regen_instruction,
+    resolve_delta_class,
+)
+from apps_rg.runtime.sections.executive_summary_repair_policy import (
+    exploratory_full_paragraph_regen_enabled,
+)
+
+
+def _soft_fail(dim: str, *, major: bool = True) -> dict[str, Any]:
+    sev = "major" if major else "minor"
+    dv = {
+        dim: {"pass": False, "severity": sev, "codes": ["x"]},
+    }
+    for other in (
+        "factual_support",
+        "executive_signal",
+        "resume_voice",
+        "ats_alignment_without_keyword_stuffing",
+        "anti_overfit",
+        "synthesis_quality",
+        "evidence_utilization",
+        "deterministic_alignment",
+    ):
+        if other not in dv:
+            dv[other] = {"pass": True, "severity": "none", "codes": []}
+    return {
+        "provider_key": "anthropic_claude",
+        "evaluator_mode": "MODEL_BACKED",
+        "provider_status": "MODEL_BACKED_FAIL",
+        "pass": False,
+        "score": 3.5,
+        "dimension_verdicts": dv,
+    }
+
+
+def test_cycles_receipt_schema_v2() -> None:
+    doc = build_judge_remediation_cycles_receipt(
+        max_cycles=3,
+        generation_material_digest="abc",
+        targeting_parity_at_regen_start=True,
+        judge_packet_targeting_audit={},
+        operator_judge_pass_floor=4.2,
+    )
+    assert doc["schema_version"] == JUDGE_REMEDIATION_CYCLES_SCHEMA_VERSION
+    assert doc["schema"].endswith("_v2")
+
+
+def test_resolve_delta_class_executive_signal() -> None:
+    judges = [_soft_fail("executive_signal")]
+    assert resolve_delta_class(judges) == DELTA_CLASS_DIMENSION_EXECUTIVE_SIGNAL
+
+
+def test_resolve_delta_class_s6_synthesis_only() -> None:
+    judges = [_soft_fail("synthesis_quality")]
+    assert resolve_delta_class(judges) == DELTA_CLASS_S6_FORWARD_SYNTHESIS
+
+
+def test_default_delta_instruction_bans_full_s2_s6_rewrite() -> None:
+    text = format_delta_class_regen_instruction(DELTA_CLASS_DIMENSION_EXECUTIVE_SIGNAL)
+    assert "S2–S6" not in text
+    assert "rewrite S2" not in text.lower() or "at most three" in text
+
+
+def test_g5_rejects_excess_sentence_edits() -> None:
+    prior = "One. Two. Three. Four. Five. Six."
+    after = "A. B. C. Four. Five. Six."
+    g5 = evaluate_g5_delta_scope(prior, after, DELTA_CLASS_S6_FORWARD_SYNTHESIS)
+    assert g5["passed"] is False
+    assert g5["reject_gate"] == "delta_scope_violation"
+
+
+def test_g5_allows_within_budget() -> None:
+    prior = "One. Two. Three. Four. Five. Six."
+    after = "One. Two. Three. Four. Five. Revised six."
+    g5 = evaluate_g5_delta_scope(prior, after, DELTA_CLASS_S6_FORWARD_SYNTHESIS)
+    assert g5["passed"] is True
+
+
+def test_regen_outcome_scratch_when_no_acceptable_regen() -> None:
+    cycles = [
+        {
+            "accepted": False,
+            "publish_eligible": False,
+            "reject_gate": "trigger_judge_regression",
+        },
+    ]
+    assert (
+        compute_regen_outcome(
+            cycles=cycles,
+            final_publish_baseline="scratch",
+            all_model_backed_judges_pass=False,
+        )
+        == "no_acceptable_candidate"
+    )
+
+
+def test_regen_outcome_not_improved_when_scratch_wins_despite_accepted_regen() -> None:
+    cycles = [
+        {"accepted": True, "publish_eligible": True},
+    ]
+    assert (
+        compute_regen_outcome(
+            cycles=cycles,
+            final_publish_baseline="scratch",
+            all_model_backed_judges_pass=False,
+        )
+        == "no_acceptable_candidate"
+    )
+
+
+def test_cert_blocked_without_full_panel_on_material_change() -> None:
+    blocked, reason = cert_block_for_published_scores_freshness(
+        SCORES_FRESHNESS_CARRIED_FORWARD,
+        published_candidate_id="regen_cycle_1",
+        scratch_digest="a" * 64,
+        published_digest="b" * 64,
+    )
+    assert blocked is True
+    assert reason == "stale_non_trigger_scores"
+
+
+def test_cert_not_blocked_scratch_full_panel() -> None:
+    digest = "c" * 64
+    blocked, reason = cert_block_for_published_scores_freshness(
+        SCORES_FRESHNESS_FULL_PANEL,
+        published_candidate_id="scratch",
+        scratch_digest=digest,
+        published_digest=digest,
+    )
+    assert blocked is False
+    assert reason is None
+
+
+def test_exploratory_delta_class_env_default_off(monkeypatch: Any) -> None:
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_EXPLORATORY_FULL_PARAGRAPH_REGEN", raising=False)
+    assert exploratory_full_paragraph_regen_enabled() is False
+    assert resolve_delta_class([_soft_fail("executive_signal")]) != DELTA_CLASS_EXPLORATORY_FULL_PARAGRAPH
+
+
+def _claude_holistic_soft_fail_s6_thin() -> dict[str, Any]:
+    return {
+        "provider_key": "anthropic_claude",
+        "evaluator_mode": "MODEL_BACKED",
+        "provider_status": "MODEL_BACKED_FAIL",
+        "pass": False,
+        "score": 4.0,
+        "quality_flags": ["s6_forward_synthesis_slightly_thin"],
+        "findings": [
+            "All deterministic gates pass; no structural or compliance failures.",
+            "Minor: S6 forward synthesis is somewhat thin.",
+        ],
+        "remediation_suggestions": [
+            "Strengthen S6 with a more specific forward-looking synthesis.",
+        ],
+        "dimension_verdicts": {
+            "synthesis_quality": {
+                "pass": True,
+                "severity": "minor",
+                "codes": ["s6_thin_recap"],
+            },
+            "factual_support": {"pass": True, "severity": "none", "codes": []},
+            "executive_signal": {"pass": True, "severity": "none", "codes": []},
+            "resume_voice": {"pass": True, "severity": "none", "codes": []},
+            "ats_alignment_without_keyword_stuffing": {
+                "pass": True,
+                "severity": "none",
+                "codes": [],
+            },
+            "anti_overfit": {"pass": True, "severity": "none", "codes": []},
+            "evidence_utilization": {"pass": True, "severity": "none", "codes": []},
+            "deterministic_alignment": {"pass": True, "severity": "none", "codes": []},
+        },
+    }
+
+
+def test_resolve_delta_class_holistic_floor_s6_thin_without_major_dim() -> None:
+    judges = [_claude_holistic_soft_fail_s6_thin()]
+    assert (
+        resolve_delta_class(judges, operator_judge_pass_floor=4.2)
+        == DELTA_CLASS_S6_FORWARD_SYNTHESIS
+    )
+
+
+def test_resolve_delta_class_claude_only_binding_s6() -> None:
+    judges = [_claude_holistic_soft_fail_s6_thin()]
+    assert resolve_delta_class(judges) == DELTA_CLASS_S6_FORWARD_SYNTHESIS

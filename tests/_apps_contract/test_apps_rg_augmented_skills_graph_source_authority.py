@@ -14,11 +14,15 @@ from apps_rg.fact_inventory.augmented_skills_graph import (
     resolve_augmented_skills_graph_authority,
 )
 from apps_rg.fact_inventory.candidate_fact_ledger import default_ledger_path
-from apps_rg.runtime.dispatch.input_authority_prompt_block import format_input_authority_block
+from apps_rg.runtime.dispatch.input_authority_prompt_block import (
+    format_input_authority_block,
+    proof_pool_mode_from_metadata,
+)
 from apps_rg.runtime.proof_pool_resolver import (
     resolve_section_proof_pool,
     proof_pool_usage_ledger_extension,
 )
+from tests._apps_contract.graph_authority_test_support import product_proof_pool_metadata
 
 REPO = Path(__file__).resolve().parents[2]
 GRAPH_PATH = default_augmented_skills_graph_path(REPO)
@@ -119,12 +123,11 @@ def test_prompt_input_authority_names_augmented_graph_not_ledger_ssot(section_id
     if not CANDIDATE_LEDGER_PATH.is_file():
         pytest.skip(f"candidate ledger missing: {CANDIDATE_LEDGER_PATH}")
     pool = resolve_section_proof_pool(section=section_id, repo_root=REPO)
-    from apps_rg.runtime.dispatch.input_authority_prompt_block import proof_pool_mode_from_metadata
-
-    proof_pool_mode_from_metadata(pool.proof_pool_metadata)
+    meta = product_proof_pool_metadata(pool)
+    assert proof_pool_mode_from_metadata(meta) == SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH
     block = format_input_authority_block(
         allowed_source_fact_ids=["bul_fixture_001"],
-        skills_authority_metadata=pool.proof_pool_metadata,
+        skills_authority_metadata=meta,
     )
     lower = block.lower()
     assert "augmented skills graph" in lower
@@ -142,12 +145,11 @@ def test_negative_control_missing_graph_blocks_skills_authority(tmp_path: Path) 
     assert meta.get("skills_authority_status") == "BLOCKED"
     assert meta.get("augmented_skills_graph_present") is False
     assert meta.get("legacy_broad_skills_ledger_skills_authority") is False
-    block = format_input_authority_block(
-        allowed_source_fact_ids=[],
-        skills_authority_metadata=meta,
-    )
-    assert "blocked" in block.lower()
-    assert "do not treat broad_skills_ledger" in block.lower()
+    with pytest.raises(ValueError, match="evidence_authority"):
+        format_input_authority_block(
+            allowed_source_fact_ids=[],
+            skills_authority_metadata=meta,
+        )
 
 
 def test_negative_control_resolver_does_not_fallback_skills_to_candidate_ledger(

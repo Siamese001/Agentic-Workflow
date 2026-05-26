@@ -10,6 +10,7 @@ from __future__ import annotations
 import ast
 import importlib
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -142,6 +143,44 @@ def _first_add_gate_id(arg0: ast.expr, consts: dict[str, str]) -> str | None:
     return None
 
 
+def _helper_registered_x2_gate_ids(run_fn_src: str) -> frozenset[str]:
+    """Gate IDs emitted via shared bullet/narrative mechanical helpers (W2/W3)."""
+    out: set[str] = set()
+    bullet_match = re.search(
+        r"register_bullet_line_discipline_x2_gates\s*\([^)]*lane_prefix\s*=\s*[\"'](\w+)[\"']"
+        r"[^)]*section_id\s*=\s*[\"'](\w+)[\"']",
+        run_fn_src,
+        re.DOTALL,
+    )
+    if bullet_match:
+        prefix, section_id = bullet_match.group(1), bullet_match.group(2)
+        out.update(
+            {
+                f"x2_{prefix}_bullet_no_embedded_newline",
+                f"x2_{prefix}_bullet_single_thought",
+                f"x2_{prefix}_bullet_no_paragraph_block",
+            },
+        )
+        if section_id == "ibm_bullets":
+            out.add("x2_ibm_narrative_slot_reservation")
+    narrative_match = re.search(
+        r"register_narrative_mechanical_x2_gates\s*\([^)]*lane_prefix\s*=\s*[\"'](\w+)[\"']",
+        run_fn_src,
+        re.DOTALL,
+    )
+    if narrative_match:
+        prefix = narrative_match.group(1)
+        out.update(
+            {
+                f"x2_{prefix}_narrative_exactly_one_sentence_mechanical",
+                f"x2_{prefix}_narrative_forbidden_opener",
+                f"x2_{prefix}_narrative_metric_cap",
+                f"x2_{prefix}_narrative_bullet_overlap_threshold",
+            },
+        )
+    return frozenset(out)
+
+
 def extract_runtime_x2_gate_ids(
     *,
     x2_module_ref: str | None = None,
@@ -155,8 +194,10 @@ def extract_runtime_x2_gate_ids(
     tree = ast.parse(src)
     consts = _module_gate_id_constants(tree)
     gate_ids: set[str] = set()
+    run_fn_src = ""
     for node in tree.body:
         if isinstance(node, ast.FunctionDef) and node.name == run_fn:
+            run_fn_src = ast.get_source_segment(src, node) or ""
             for sub in ast.walk(node):
                 if not isinstance(sub, ast.Call):
                     continue
@@ -166,6 +207,7 @@ def extract_runtime_x2_gate_ids(
                     if gate_id:
                         gate_ids.add(gate_id)
             break
+    gate_ids |= set(_helper_registered_x2_gate_ids(run_fn_src))
     if run_fn == "run_x2_gates" and "executive_summary_x2" in getattr(mod, "__name__", ""):
         from apps_rg.runtime.validators.executive_summary_x2 import POST_X2_X1D_WIRING_GATE_IDS
 

@@ -20,10 +20,6 @@ from apps_rg.runtime.sections.executive_summary_repair_policy import (
     POST_REGEN_JUDGE_RESCORE_FULL_PANEL,
     POST_REGEN_JUDGE_RESCORE_SOFT_ONLY,
 )
-from apps_rg.runtime.sections.executive_summary_upstream_triangulation import (
-    consensus_failed_dimensions,
-    solitary_dimension_severe_soft_fail,
-)
 from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
 _SYNTHESIS_TAXONOMY = frozenset(
@@ -59,26 +55,6 @@ _JD_TAXONOMY = frozenset(
         "it strategy",
     }
 )
-
-
-def _env_float(name: str, default: float) -> float:
-    raw = os.environ.get(name, "").strip()
-    if not raw:
-        return default
-    try:
-        return float(raw)
-    except ValueError:
-        return default
-
-
-def _env_int(name: str, default: int) -> int:
-    raw = os.environ.get(name, "").strip()
-    if not raw:
-        return default
-    try:
-        return int(raw)
-    except ValueError:
-        return default
 
 
 def _coerce_judge_dict(judge: Any) -> dict[str, Any]:
@@ -151,50 +127,38 @@ def _is_model_backed_soft_fail(judge: dict[str, Any]) -> bool:
     return False
 
 
-def _median_normalized_score(judges: list[dict[str, Any]]) -> float | None:
-    scores: list[float] = []
-    for j in judges:
-        if j.get("evaluator_mode") != "MODEL_BACKED":
-            continue
-        ns = j.get("normalized_score")
-        if ns is None:
-            continue
-        try:
-            scores.append(float(ns))
-        except (TypeError, ValueError):
-            continue
-    if not scores:
-        return None
-    scores.sort()
-    mid = len(scores) // 2
-    if len(scores) % 2:
-        return scores[mid]
-    return (scores[mid - 1] + scores[mid]) / 2.0
-
-
 def evaluate_judge_remediation_trigger(
     x1d_judges: list[Any],
     *,
     runtime_generation_status: str,
     x2_passed: bool,
 ) -> tuple[bool, dict[str, Any]]:
-    """Return whether post-judge Qwen regen should run (X2 must already be green)."""
+    """Return whether post-judge Qwen regen should run (X2 must already be green).
+
+    Policy (executive_summary): any model-backed judge below floor → regen (bounded
+    by ``judge_regen_max_attempts()``, hard cap 3). No quorum / solitary-severe skip.
+    """
     x1d_judges = _normalize_judge_list(x1d_judges)
     receipt: dict[str, Any] = {
         "schema": "executive_summary_judge_remediation_trigger_v1",
         "triggered": False,
         "runtime_generation_status": runtime_generation_status,
         "x2_passed": x2_passed,
+        "trigger_policy": "any_judge_below_floor_v1",
     }
     if runtime_generation_status != "REAL_LLM" or not x2_passed:
         receipt["reason"] = "requires_real_llm_and_x2_pass"
         return False, receipt
 
+    model_backed = [j for j in x1d_judges if j.get("evaluator_mode") == "MODEL_BACKED"]
+    if not model_backed:
+        receipt["reason"] = "no_model_backed_judges"
+        return False, receipt
+
     pass_count = sum(
         1
-        for j in x1d_judges
-        if j.get("evaluator_mode") == "MODEL_BACKED"
-        and j.get("provider_status") == "MODEL_BACKED_PASS"
+        for j in model_backed
+        if j.get("provider_status") == "MODEL_BACKED_PASS"
         and j.get("pass") is True
         and not j.get("decisive_failure")
     )
@@ -202,74 +166,27 @@ def evaluate_judge_remediation_trigger(
 
     soft_fails = [j for j in x1d_judges if _is_model_backed_soft_fail(j)]
     receipt["soft_fail_count"] = len(soft_fails)
-    min_fail = _env_int("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MIN_FAIL_COUNT", 2)
-    median_threshold = _env_float("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MEDIAN_THRESHOLD", 0.75)
-
-    tag_sets = [_taxonomy_tags(_judge_text_blob(j)) for j in soft_fails]
-    shared_tags: set[str] = set()
-    if tag_sets:
-        shared_tags = set.intersection(*tag_sets) if len(tag_sets) > 1 else tag_sets[0]
-
-    dim_consensus = consensus_failed_dimensions(x1d_judges, min_fail_count=min_fail)
-    receipt["dimension_consensus_failed"] = dim_consensus
-
-    quorum = len(soft_fails) >= min_fail and (bool(shared_tags) or bool(dim_consensus))
-    solitary_severe = False
-    solitary_dim_major: list[str] = []
-    if len(soft_fails) == 1:
-        solo = soft_fails[0]
-        solo_tags = tag_sets[0] if tag_sets else set()
-        dim_severe, solitary_dim_major = solitary_dimension_severe_soft_fail(solo)
-        try:
-            solo_ns = float(solo.get("normalized_score"))
-            solo_nt = float(solo.get("normalized_threshold", 0.8))
-            solitary_severe = solo_ns < solo_nt and (
-                dim_severe or bool(solo_tags & {"synthesis", "executive_signal", "jd_emphasis"})
+    failed_keys = sorted(
+        {
+            str(j.get("provider_key") or "")
+            for j in model_backed
+            if str(j.get("provider_key") or "")
+            and not (
+                j.get("provider_status") == "MODEL_BACKED_PASS"
+                and j.get("pass") is True
+                and not j.get("decisive_failure")
             )
-        except (TypeError, ValueError):
-            solitary_severe = dim_severe
-    receipt["solitary_severe_soft_fail"] = solitary_severe
-    receipt["solitary_dimension_major_failed"] = solitary_dim_major
+        }
+    )
+    receipt["failed_provider_keys"] = failed_keys
 
-    if pass_count >= 2 and not solitary_severe:
-        receipt["reason"] = "two_or_more_judges_already_pass_skip_regen"
+    if all_model_backed_judges_pass(x1d_judges):
+        receipt["reason"] = "all_model_backed_judges_pass"
         return False, receipt
 
-    median = _median_normalized_score(x1d_judges)
-    receipt["median_normalized_score"] = median
-    median_fail = median is not None and median < median_threshold
-
-    decisive_dims = []
-    for j in x1d_judges:
-        if not j.get("decisive_failure"):
-            continue
-        blob = _judge_text_blob(j)
-        if "synthesis" in blob or "executive_signal" in blob or "executive signal" in blob:
-            decisive_dims.append(j.get("provider_key") or "unknown")
-    decisive_trigger = bool(decisive_dims)
-    receipt["decisive_synthesis_providers"] = decisive_dims
-    receipt["quorum_shared_tags"] = sorted(shared_tags)
-    receipt["quorum_soft_fail"] = quorum
-    receipt["median_fail"] = median_fail
-
-    triggered = quorum or median_fail or decisive_trigger or solitary_severe
-    receipt["triggered"] = triggered
-    if triggered:
-        if dim_consensus and quorum:
-            receipt["trigger_mode"] = "dimension_consensus_soft_fail"
-        elif quorum:
-            receipt["trigger_mode"] = "quorum_soft_fail"
-        elif solitary_severe and solitary_dim_major:
-            receipt["trigger_mode"] = "solitary_dimension_major_soft_fail"
-        elif solitary_severe:
-            receipt["trigger_mode"] = "solitary_severe_soft_fail"
-        elif median_fail:
-            receipt["trigger_mode"] = "median_normalized_below_threshold"
-        else:
-            receipt["trigger_mode"] = "decisive_synthesis_or_executive_signal"
-    else:
-        receipt["reason"] = "no_quorum_median_or_decisive_trigger"
-    return triggered, receipt
+    receipt["triggered"] = True
+    receipt["trigger_mode"] = "any_judge_below_floor"
+    return True, receipt
 
 
 def _collect_judge_feedback_lines(x1d_judges: list[dict[str, Any]]) -> dict[str, list[str]]:
@@ -314,8 +231,24 @@ def _provider_label(judge: dict[str, Any]) -> str:
     return str(judge.get("provider_name") or judge.get("provider_key") or "judge").strip()
 
 
+def _finding_contradicts_soft_fail(judge: dict[str, Any], text: str) -> bool:
+    """Drop 'all gates pass' style findings when holistic judge still failed floor."""
+    if not _is_model_backed_soft_fail(judge):
+        return False
+    low = str(text or "").lower()
+    return any(
+        phrase in low
+        for phrase in (
+            "all deterministic gates pass",
+            "no structural or compliance failures",
+            "passes all deterministic",
+            "all gates pass",
+        )
+    )
+
+
 def _verbatim_soft_failed_judge_feedback_lines(soft_judges: list[dict[str, Any]]) -> list[str]:
-    """Full-text X1D feedback per soft-failed judge — no per-field character truncation."""
+    """Bounded X1D feedback per soft-failed judge (contradictory 'pass' lines removed)."""
     lines: list[str] = []
     for j in soft_judges:
         provider = _provider_label(j)
@@ -327,14 +260,16 @@ def _verbatim_soft_failed_judge_feedback_lines(soft_judges: list[dict[str, Any]]
                 lines.append(f"- {provider} remediation: {text}")
         for finding in j.get("findings") or []:
             text = str(finding).strip()
-            if text:
+            if text and not _finding_contradicts_soft_fail(j, text):
                 lines.append(f"- {provider} finding: {text}")
         for reason in j.get("fail_reasons") or []:
             text = str(reason).strip()
             if text:
                 lines.append(f"- {provider} fail_reason: {text}")
         rationale = str(j.get("rationale") or "").strip()
-        if rationale:
+        if rationale and not _finding_contradicts_soft_fail(j, rationale):
+            if len(rationale) > 320:
+                rationale = rationale[:317].rstrip() + "..."
             lines.append(f"- {provider} rationale: {rationale}")
     return lines
 
@@ -358,7 +293,8 @@ def _pack_delta_lines_to_token_budget(
     """Pack delta lines without truncating judge feedback text; drop optional guards first."""
     from agentic_core.L2_execution.regen.delta_shape_guard import estimate_token_count
 
-    order = ("judge_feedback", "dimension", "floors", "guards")
+    # Surgical contract first; judge feedback before optional guards (W4 hardening).
+    order = ("dimension", "judge_feedback", "floors", "guards")
     packed: list[str] = []
     for section_key in order:
         for line in sections.get(section_key) or []:
@@ -369,12 +305,16 @@ def _pack_delta_lines_to_token_budget(
                 packed = trial
                 continue
             if section_key == "judge_feedback":
-                packed.append(line)
+                continue
     if estimate_token_count("\n".join(packed)) <= max_tokens:
-        return packed
-    guards = [ln for ln in packed if _is_droppable_guard_delta_line(ln)]
-    if guards:
-        packed = [ln for ln in packed if ln not in guards]
+        for line in sections.get("judge_feedback") or []:
+            if not str(line).strip():
+                continue
+            trial = packed + [line]
+            if estimate_token_count("\n".join(trial)) <= max_tokens:
+                packed = trial
+            else:
+                break
     return packed
 
 
@@ -382,6 +322,174 @@ def _bounded_soft_fail_findings(x1d_judges: list[dict[str, Any]], *, max_lines: 
     """Legacy alias — prefer ``_verbatim_soft_failed_judge_feedback_lines``."""
     lines = _verbatim_soft_failed_judge_feedback_lines(_soft_failed_model_judges(x1d_judges))
     return lines[:max_lines]
+
+
+def _holistic_judge_score(judge_or_row: dict[str, Any]) -> float | None:
+    """0–5 holistic score for G3 monotonicity (prefer ``score``, else normalized×5)."""
+    raw = judge_or_row.get("score")
+    if raw is not None:
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            pass
+    ns = judge_or_row.get("normalized_score")
+    if ns is not None:
+        try:
+            return round(float(ns) * 5.0, 4)
+        except (TypeError, ValueError):
+            pass
+    return None
+
+
+def _score_from_snapshot_provider(row: dict[str, Any]) -> float | None:
+    return _holistic_judge_score(row)
+
+
+def _judge_by_provider_key(
+    judges: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    for j in _normalize_judge_list(judges):
+        pk = str(j.get("provider_key") or j.get("judge_id") or "").strip()
+        if pk:
+            out[pk] = j
+    return out
+
+
+def _dimension_verdicts_canonical(judge: dict[str, Any]) -> str:
+    dv = judge.get("dimension_verdicts")
+    if not isinstance(dv, dict):
+        return ""
+    try:
+        return json.dumps(dv, sort_keys=True, separators=(",", ":"))
+    except (TypeError, ValueError):
+        return ""
+
+
+def _evaluate_g3_single_trigger_judge(
+    *,
+    provider_key: str,
+    judge_before: dict[str, Any] | None,
+    judge_after: dict[str, Any] | None,
+    score_before: float | None,
+    score_after: float | None,
+) -> dict[str, Any]:
+    from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+        major_dimension_fail_count,
+    )
+
+    verdict: dict[str, Any] = {
+        "provider_key": provider_key,
+        "score_before": score_before,
+        "score_after": score_after,
+        "g3_result": "REJECT",
+        "reject_gate": "trigger_judge_unknown",
+    }
+    if score_after is None:
+        return verdict
+    if score_before is None:
+        verdict["reject_gate"] = "trigger_judge_unknown"
+        return verdict
+
+    major_before = major_dimension_fail_count(judge_before or {})
+    major_after = major_dimension_fail_count(judge_after or {})
+    verdict["major_dimension_fail_count_before"] = major_before
+    verdict["major_dimension_fail_count_after"] = major_after
+
+    if score_after > score_before:
+        verdict["g3_result"] = "PASS"
+        verdict["reject_gate"] = None
+        return verdict
+    if score_after < score_before:
+        verdict["reject_gate"] = "trigger_judge_regression"
+        return verdict
+
+    # score_after == score_before
+    if major_after < major_before:
+        verdict["g3_result"] = "PASS"
+        verdict["reject_gate"] = None
+        return verdict
+
+    if major_after == major_before:
+        before_fp = _dimension_verdicts_canonical(judge_before or {})
+        after_fp = _dimension_verdicts_canonical(judge_after or {})
+        if not before_fp or not after_fp:
+            verdict["reject_gate"] = "trigger_judge_unknown"
+            return verdict
+        if before_fp == after_fp:
+            verdict["reject_gate"] = "trigger_judge_regression"
+            return verdict
+        # Equal score, equal major counts, verdicts changed but not improved → tie not improvement
+        verdict["reject_gate"] = "trigger_judge_regression"
+        return verdict
+
+    verdict["reject_gate"] = "trigger_judge_regression"
+    return verdict
+
+
+def evaluate_g3_trigger_judge_monotonicity(
+    *,
+    prior_judges: list[Any],
+    after_judges: list[Any],
+    scores_before: dict[str, Any] | None = None,
+    scores_after: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Deterministic G3 gate — soft-failed trigger judges must improve or strict-tie win."""
+    prior_norm = _normalize_judge_list(prior_judges)
+    prior_by_key = _judge_by_provider_key(prior_norm)
+    after_by_key = _judge_by_provider_key(_normalize_judge_list(after_judges))
+    before_rows = {
+        str(row.get("provider_key") or ""): row
+        for row in (scores_before or {}).get("providers") or []
+        if isinstance(row, dict) and row.get("provider_key")
+    }
+    after_rows = {
+        str(row.get("provider_key") or ""): row
+        for row in (scores_after or {}).get("providers") or []
+        if isinstance(row, dict) and row.get("provider_key")
+    }
+
+    trigger_keys = sorted(
+        {
+            str(j.get("provider_key") or "")
+            for j in prior_norm
+            if j.get("provider_key") and _is_model_backed_soft_fail(j)
+        }
+    )
+
+    per_judge: list[dict[str, Any]] = []
+    reject_gate: str | None = None
+    for pk in trigger_keys:
+        jb = prior_by_key.get(pk)
+        ja = after_by_key.get(pk)
+        sb = _score_from_snapshot_provider(before_rows[pk]) if pk in before_rows else None
+        sa = _score_from_snapshot_provider(after_rows[pk]) if pk in after_rows else None
+        if sb is None and jb is not None:
+            sb = _holistic_judge_score(jb)
+        if sa is None and ja is not None:
+            sa = _holistic_judge_score(ja)
+        row = _evaluate_g3_single_trigger_judge(
+            provider_key=pk,
+            judge_before=jb,
+            judge_after=ja,
+            score_before=sb,
+            score_after=sa,
+        )
+        per_judge.append(row)
+        if row.get("g3_result") != "PASS" and reject_gate is None:
+            reject_gate = str(row.get("reject_gate") or "trigger_judge_unknown")
+
+    passed = bool(trigger_keys) and reject_gate is None
+    if not trigger_keys:
+        passed = True
+
+    return {
+        "schema": "executive_summary_g3_trigger_judge_v1",
+        "passed": passed,
+        "reject_gate": reject_gate,
+        "trigger_provider_keys": trigger_keys,
+        "g3_verdict_per_trigger_judge": per_judge,
+    }
 
 
 def snapshot_model_backed_judge_scores(x1d_judges: list[dict[str, Any]]) -> dict[str, Any]:
@@ -463,19 +571,47 @@ def collect_judge_remediation_delta_lines(
         "guards": [],
     }
 
+    from apps_rg.runtime.sections.executive_summary_repair_policy import judge_pass_floor_0_to_5
+
+    operator_floor = judge_pass_floor_0_to_5()
+    if operator_floor is not None:
+        sections["floors"].append(
+            f"JUDGE_PASS_FLOOR: every model-backed judge holistic score must be >= {operator_floor} "
+            "on the 0–5 scale (all judges must pass at this floor).",
+        )
+
     if compact:
+        from apps_rg.runtime.sections.executive_summary_regen_delta_policy import (
+            format_delta_class_regen_instruction,
+            max_sentence_edits_for_delta_class,
+            resolve_delta_class,
+        )
+
+        _delta_class = resolve_delta_class(
+            x1d_judges,
+            operator_judge_pass_floor=operator_floor,
+        )
         focused = collect_dimension_focused_regen_delta_lines(soft_judges)
         if focused:
             sections["dimension"] = [f"- {ln}" for ln in focused]
         else:
             sections["dimension"] = [
-                "- synthesis_quality / executive_signal: rewrite S2–S6 as one connective SVP arc "
-                "(no sequential achievement stack; jd_used_as_proof=false).",
+                f"- {format_delta_class_regen_instruction(_delta_class)}",
             ]
+        sections["dimension"].append(
+            f"- EDIT_BUDGET: change at most {max_sentence_edits_for_delta_class(_delta_class)} "
+            f"sentence(s) for delta_class={_delta_class}; do not rewrite the whole paragraph.",
+        )
         if prior_word_count > 0 or prior_ledger_rows > 0:
+            from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+                format_judge_regen_soft_material_preservation,
+            )
+
             sections["floors"].append(
-                f"X2_FLOOR: ≥{max(1, prior_word_count)} words, ≥{max(1, prior_ledger_rows)} "
-                "claim_ledger rows, exactly 6 sentences; preserve cited source_fact_ids.",
+                format_judge_regen_soft_material_preservation(
+                    prior_word_count=prior_word_count,
+                    prior_ledger_rows=prior_ledger_rows,
+                ).strip(),
             )
         failed_dims = set(major_failed_dimension_ids_from_judges(soft_judges))
         if unused_fact_ids and "evidence_utilization" in failed_dims:
@@ -737,13 +873,23 @@ def retry_qwen_for_judge_remediation(
         write_json,
     )
 
+    from apps_rg.runtime.sections.executive_summary_regen_observability import (
+        audit_judge_feedback_pack,
+    )
+    from apps_rg.runtime.sections.executive_summary_repair_policy import judge_regen_max_delta_tokens
+
     receipt: dict[str, Any] = {
         "schema": "executive_summary_judge_remediation_v1",
         "enabled": judge_regeneration_enabled(),
         "trigger": trigger_receipt,
         "accepted": False,
+        "draft_parse_ok": False,
         "max_attempts": int(max_attempts if max_attempts is not None else judge_regen_max_attempts()),
         "attempts": [],
+        "feedback_pack": audit_judge_feedback_pack(
+            x1d_judges,
+            max_tokens=judge_regen_max_delta_tokens(),
+        ),
     }
     _attempt_cap = max(1, int(max_attempts if max_attempts is not None else 1))
     if not judge_regeneration_enabled():
@@ -858,10 +1004,12 @@ def retry_qwen_for_judge_remediation(
                     receipt["voice_repair"] = voice_receipt
                 current_raw = new_raw
                 current_parsed = new_parsed
-            else:
-                attempt_record["parse_error"] = new_err
+                receipt["attempts"].append(attempt_record)
+                break
+            attempt_record["parse_error"] = new_err
             receipt["attempts"].append(attempt_record)
-            break
+            receipt["core_runner_fallback"] = "apps_rg.thread_append"
+            continue
 
         repair_user = build_judge_remediation_user_message(
             x1d_judges=x1d_judges,
@@ -946,21 +1094,20 @@ def retry_qwen_for_judge_remediation(
     post_hash = sha256_hex(str(current_parsed.get("resume_display_text") or "").strip())
     output_changed = bool(post_hash) and post_hash != anchor_hash
     llm_attempt_ok = any(
-        (
-            a.get("parse_ok")
-            and a.get("dispatch_allowed", True)
-            and a.get("skipped") != "budget_blocked"
-        )
-        or (a.get("engine") == "core.SameAuthorityRegenRunner" and a.get("accepted"))
+        a.get("parse_ok")
+        and a.get("dispatch_allowed", True)
+        and a.get("skipped") != "budget_blocked"
         for a in receipt.get("attempts") or []
         if isinstance(a, dict)
     )
     receipt["anchor_output_hash"] = anchor_hash
     receipt["regen_output_hash"] = post_hash
     receipt["output_changed"] = output_changed
-    receipt["accepted"] = output_changed and llm_attempt_ok and bool(
+    draft_parse_ok = output_changed and llm_attempt_ok and bool(
         current_parsed.get("resume_display_text"),
     )
+    receipt["draft_parse_ok"] = draft_parse_ok
+    receipt["accepted"] = draft_parse_ok
     if any(
         isinstance(a, dict) and a.get("status") == "budget_blocked"
         for a in receipt.get("attempts") or []
@@ -1238,6 +1385,11 @@ def rerun_soft_failed_judges(
             briefing_text=briefing_text,
             parsed_output=parsed_output,
             deterministic_gate_summary=gate_summary,
+            graph_targeting_capsule=(
+                (judge_packet.get("targeting_context") or {}).get("graph_targeting_capsule")
+                if isinstance(judge_packet.get("targeting_context"), dict)
+                else None
+            ),
         )
         packet_ref = write_executive_summary_judge_packet(
             artifact_dir / "executive_summary_judge_packet_post_x2.json",
@@ -1425,6 +1577,8 @@ def refresh_x1d_judges_after_full_x2(
     artifact_dir: Path,
     compiled_prompt: str | None,
     prior_judges: list[dict[str, Any]],
+    graph_targeting_capsule: dict[str, Any] | None = None,
+    material_targeting_bundle: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Re-grade with authoritative full-X2 deterministic_gate_summary (post-X2 refresh)."""
     from apps_rg.runtime.judges.executive_summary_judge_packet import (
@@ -1457,7 +1611,50 @@ def refresh_x1d_judges_after_full_x2(
         briefing_text=briefing_text,
         parsed_output=parsed_output,
         deterministic_gate_summary=gate_summary,
+        graph_targeting_capsule=graph_targeting_capsule,
     )
+    from apps_rg.runtime.sections.executive_summary_targeting_publish import (
+        enforce_targeting_parity_before_judge_panel,
+    )
+    from apps_rg.runtime.targeting_context_authority import (
+        GenerationMaterialContext,
+        JudgeMaterialContext,
+        MaterialTargetingBundle,
+        evaluate_targeting_parity,
+        graph_targeting_capsule_from_packet,
+        material_targeting_digest,
+    )
+
+    gen_material = GenerationMaterialContext(
+        jd_text_material=jd_text,
+        briefing_text_material=briefing_text,
+        generation_material_digest=material_targeting_digest(jd_text, briefing_text),
+    )
+    judge_material = JudgeMaterialContext(
+        jd_text_material=jd_text,
+        briefing_text_material=briefing_text,
+        judge_material_digest=material_targeting_digest(jd_text, briefing_text),
+    )
+    bundle_obj = (
+        MaterialTargetingBundle.from_dict(material_targeting_bundle)
+        if isinstance(material_targeting_bundle, dict)
+        else None
+    )
+    judge_capsule = graph_targeting_capsule_from_packet(packet)
+    parity = evaluate_targeting_parity(
+        generation=gen_material,
+        judge=judge_material,
+        bundle=bundle_obj,
+        graph_targeting_capsule_generation=graph_targeting_capsule,
+        graph_targeting_capsule_judge=judge_capsule or graph_targeting_capsule,
+    )
+    receipt["targeting_parity"] = parity
+    panel_ok, panel_reason = enforce_targeting_parity_before_judge_panel(parity)
+    if not panel_ok:
+        receipt["skipped"] = "targeting_parity_mismatch"
+        receipt["block_reason"] = panel_reason
+        return list(prior_judges), receipt
+
     packet_ref = write_executive_summary_judge_packet(
         artifact_dir / "executive_summary_judge_packet_post_x2.json",
         packet,

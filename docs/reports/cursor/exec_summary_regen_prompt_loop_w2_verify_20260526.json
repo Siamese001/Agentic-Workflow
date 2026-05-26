@@ -1,0 +1,21 @@
+{
+  "schema": "executive_summary_regen_prompt_loop_w2_verify_v1",
+  "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_084014",
+  "checks": {
+    "cycle1_delta_class": "S6_forward_synthesis",
+    "cycle1_delta_class_s6": true,
+    "cycle01_edit_budget_line": true
+  },
+  "passed": true,
+  "regen_outcome": "no_acceptable_candidate",
+  "stopped_reason": "regen_not_accepted",
+  "regen_request_files": [
+    "provider_request_judge_regen_cycle00_attempt00_judge_regen-00-00-b282622c.json"
+  ],
+  "regen_delta_digests": {
+    "provider_request_judge_regen_cycle00_attempt00_judge_regen-00-00-b282622c.json": null
+  },
+  "edit_budget_present": {
+    "provider_request_judge_regen_cycle00_attempt00_judge_regen-00-00-b282622c.json": false
+  }
+}

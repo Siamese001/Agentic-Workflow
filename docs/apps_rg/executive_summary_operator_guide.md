@@ -19,6 +19,9 @@ python -m apps_rg --section executive_summary `
 |------|---------|-----|
 | **DRAFT_READY** | `REAL_LLM` + X2 PASS (`PRODUCT_QUALITY_STATUS=PASS`) | **exit 0**, `proof_eligible=false` |
 | **CERTIFIED** | `X3_ALLOW` + all judges ≥ 4.0/5 | **exit 0**, `proof_eligible=true` when manifest allows |
+| **BEST_EFFORT_PUBLISH** | Pool selected a regen snapshot with X2 PASS but ≥1 judge below floor | **REVIEW** only; `proof_eligible=false`; requires `--best-effort-publish-allowed` or `APPS_RG_EXEC_SUMMARY_BEST_EFFORT_PUBLISH_ALLOWED=1` |
+
+`publish_disposition.json` records `certified` vs `best_effort` vs `judge_certification_required`. **Approved** (certified) means all model-backed judges passed on the published snapshot. **Saved for review** (best_effort) means the lane published a candidate for operator inspection without X1D certification.
 
 Stdout includes `OPERATOR_STATUS`, `DRAFT_READY`, `CERTIFIED`, `DISPOSITION_TIER` (see `cli_section_execution_report.json`).
 
@@ -29,7 +32,7 @@ Stdout includes `OPERATOR_STATUS`, `DRAFT_READY`, `CERTIFIED`, `DISPOSITION_TIER
 ## Repair loops (simplified)
 
 1. **Synthesis regen** — before judges; default **on** (`APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN`).
-2. **Judge regen** — after judges when not certified; default **on** on product CLI. Default **1 cycle** (Qwen rewrite → re-X2 → **rescore soft-failed judges only**, not full 3-judge panel). Stops early when all judges pass. Opt-out: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=0`. Cap: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` (default `1`, max `3`). Legacy full panel after each regen: `APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE=full_panel`.
+2. **Judge regen** — after judges when any model-backed judge is below floor; default **on** on product CLI. Default **3 cycles** (Qwen rewrite → re-X2 → **rescore soft-failed judges only**). Stops early when all judges pass. Opt-out: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN=0`. Cap: `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` (default `3`, max `3`). Trigger: `any_judge_below_floor` (no 2/3-pass skip). Legacy full panel after each regen: `APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE=full_panel`.
 
 ## Env flags that matter
 
@@ -37,9 +40,12 @@ Stdout includes `OPERATOR_STATUS`, `DRAFT_READY`, `CERTIFIED`, `DISPOSITION_TIER
 |----------|---------|---------|
 | `APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN` | on | Pre-X2 shape repair |
 | `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN` | **on** (product path); `=0` opt-out | Post-judge Qwen rewrite loop |
-| `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` | `1` (max `3`) | Qwen judge-regen cycles (not judge API count) |
+| `APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS` | `3` (max `3`) | Qwen judge-regen cycles (not judge API count) |
 | `APPS_RG_EXEC_SUMMARY_POST_REGEN_JUDGE_MODE` | `soft_failed_only` | After regen: rescore 1–2 judges vs full panel of 3 |
 | `APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO` | ignored on product path | Dev/harness only |
+| `APPS_RG_EXEC_SUMMARY_BEST_EFFORT_PUBLISH_ALLOWED` | off | Pool publish when judges fail but X2 passed (non-certified) |
+| `--best-effort-publish-allowed` | off | CLI alias for best-effort pool publish |
+| `APPS_RG_EXEC_SUMMARY_TARGETING_PARITY_STRICT` | on (`=0` warn-only) | Block X1D judge panel when `targeting_parity_status=mismatch` |
 
 ### Token budget & Qwen transport (W1/W2)
 
@@ -55,8 +61,11 @@ All **post-scratch** regen/repair Qwen calls go through `budgeted_qwen_regen_cal
 | `APPS_RG_QWEN_TRANSPORT_MAX_ATTEMPTS` | `3` | HTTP retries on transient failures only (not semantic regen attempts) |
 | `APPS_RG_QWEN_MODELS_PROBE_TIMEOUT_SECONDS` | `5` | `/v1/models` probe when verify flag is on |
 | `APPS_RG_EXEC_SUMMARY_REGEN_MAX_DELTA_TOKENS` | `512` (max `768`) | Core same-authority delta token cap via apps bridge (W4) |
+| `APPS_RG_EXEC_SUMMARY_FIRST_PASS_INPUT_UTILIZATION_MAX` | `0.92` (default) | First-pass input cap fraction; override 0.70–0.95 |
 
-**First-pass policy (W2.2):** After optional-only trim, scratch dispatch is blocked if estimated input exceeds **85%** of `available_input_tokens` (`TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT`). Hard cap at 100% still applies (`TOKEN_BUDGET_EXCEEDED_AFTER_TRIM`).
+**First-pass policy (W2.2):** After optional-only trim, scratch dispatch is blocked if estimated input exceeds the configured fraction (default **92%**) of `available_input_tokens` (`TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT`). Hard cap at 100% still applies (`TOKEN_BUDGET_EXCEEDED_AFTER_TRIM`).
+
+**Operator guidance on block:** `token_budget_receipt.json` includes `operator_message` / `operator_guidance` with briefing/JD shortening steps that preserve HIGH facts, `selected_fact_plan`, evidence law, and SRFS shape. Same text prints to **stderr** and appears in `command_output.txt` under `TOKEN_BUDGET_OPERATOR_GUIDANCE`.
 
 **Context provenance (W2.1):** `token_budget_receipt.json` and regen receipts include `provider_context_window_source` (`ENV_VLLM_MAX_MODEL_LEN` \| `SERVER_MODELS_METADATA` \| `UNKNOWN`), `server_context_window_verified`, and `server_context_window_warning` when the window is operator-declared only.
 
@@ -144,11 +153,11 @@ After judges (or after X2 block with no judges), read **`dimension_upstream_tria
 
 **Read order:** X2 gates → `dimension_upstream_triangulation.json` → `compiled_prompt.txt` → dimension matrix → holistic pass count.
 
-**Judge spend (typical):** 1× post-X2 panel (3 judges) + optional 1 Qwen regen cycle + rescore **soft-failed only** (1 judge if solitary fail). Avoid `POST_REGEN_JUDGE_MODE=full_panel` unless debugging transport.
+**Judge spend (typical):** 1× post-X2 panel (3 judges) + up to 3 Qwen regen cycles when any judge is below floor + rescore **soft-failed only**. Avoid `POST_REGEN_JUDGE_MODE=full_panel` unless debugging transport.
 
 `dimension_verdicts_inferred: true` means the model omitted structured dimensions; runtime inferred from findings (use with care).
 
-**Regen hints:** Qwen receives `DIMENSION_VERDICTS` from failed dimensions (`executive_summary_judge_remediation.py`). Trigger modes include `dimension_consensus_soft_fail` and `solitary_dimension_major_soft_fail`.
+**Regen hints:** Qwen receives judge feedback via `collect_judge_remediation_delta_lines` (`executive_summary_judge_remediation.py`). Trigger mode: `any_judge_below_floor`.
 
 **Plans:** [exec-summary-x1d-dimension-verdicts-e8f4a2.md](../.cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md) · [exec-summary-l2-x1d-input-parity-c4f8e1.md](../.cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md)
 

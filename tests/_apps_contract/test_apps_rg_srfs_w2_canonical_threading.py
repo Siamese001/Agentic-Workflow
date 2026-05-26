@@ -1,11 +1,10 @@
 """W2: SelectedRoleFactSet path threaded through canonical CLI dispatch (all generated lanes).
 
-Structural / plumbing contract only — SRFS consumption per lane is W3+.
+Structural / plumbing contract — SRFS file authority is contract-fixture only; product path uses graph proof pool.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import pytest
@@ -13,7 +12,7 @@ import pytest
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
 
-def _stub_lane_return() -> dict[str, Any]:
+def _stub_spine_return() -> dict[str, Any]:
     return {
         "exit_status": "success",
         "execution_status": "completed",
@@ -35,17 +34,6 @@ def _stub_lane_return() -> dict[str, Any]:
     }
 
 
-_RUNNER_BY_LANE: dict[str, str] = {
-    "headline": "_run_headline_lane_from_cli",
-    "executive_summary": "_run_executive_summary_lane_from_cli",
-    "unify_bullets": "_run_unify_bullets_lane_from_cli",
-    "unify_narrative": "_run_unify_narrative_lane_from_cli",
-    "ibm_bullets": "_run_ibm_bullets_lane_from_cli",
-    "ibm_narrative": "_run_ibm_narrative_lane_from_cli",
-    "competencies": "_run_competencies_lane_from_cli",
-}
-
-
 def test_cli_help_selected_role_fact_set_not_executive_only() -> None:
     from apps_rg.__main__ import _build_parser
 
@@ -64,27 +52,27 @@ def test_cli_help_selected_role_fact_set_not_executive_only() -> None:
 
 
 @pytest.mark.parametrize("lane", GENERATED_LANES)
-def test_run_canonical_passes_selected_role_fact_set_to_lane_runner(monkeypatch, lane: str) -> None:
-    from apps_rg.runtime.orchestration import canonical_dispatch as cd
+def test_run_canonical_passes_section_to_spine(monkeypatch, lane: str) -> None:
+    from apps_rg.runtime.spine import apps_rg_spine_run as spine
 
-    srfs_path = "artifacts/apps_rg/fact_inventory/example_srfs.json"
     captured: dict[str, Any] = {}
 
-    def capture_runner(**kwargs: Any) -> dict[str, Any]:  # type: ignore[no-untyped-def]
+    def capture_spine(**kwargs: Any) -> dict[str, Any]:
         captured.update(kwargs)
-        return _stub_lane_return()
+        return _stub_spine_return()
 
-    runner_attr = _RUNNER_BY_LANE[lane]
-    monkeypatch.setattr(cd, runner_attr, capture_runner)
+    monkeypatch.setattr(spine, "run_apps_rg_spine", capture_spine)
+
+    from apps_rg.runtime.orchestration import canonical_dispatch as cd
 
     cd.run_canonical_apps_rg_from_cli_primitives(
         target_company="Acme Labs",
         target_role="VP Engineering",
         section=lane,
-        selected_role_fact_set=srfs_path,
     )
 
-    assert captured.get("selected_role_fact_set") == srfs_path
+    assert captured.get("section_id") == lane
+    assert captured.get("scope") == "section"
 
 
 def test_headline_and_competencies_lane_args_carry_selected_role_fact_set() -> None:
@@ -116,21 +104,3 @@ def test_headline_and_competencies_lane_args_carry_selected_role_fact_set() -> N
         selected_role_fact_set=p,
     )
     assert getattr(c, "selected_role_fact_set", "") == p
-
-
-def test_section_cli_still_dispatches_via_canonical_primitives_only() -> None:
-    """Guard: section lane path should not add a parallel dispatcher module."""
-    repo = Path(__file__).resolve().parents[2]
-    main_src = (repo / "apps_rg" / "__main__.py").read_text(encoding="utf-8")
-    assert "run_canonical_apps_rg_from_cli_primitives" in main_src
-    # Obvious anti-patterns for a splinter entry surface (none expected).
-    assert "run_srfs_section_dispatch" not in main_src
-
-
-def test_canonical_dispatch_exposes_all_generated_lane_runners() -> None:
-    from apps_rg.runtime.orchestration import canonical_dispatch as cd
-
-    for lane in GENERATED_LANES:
-        name = _RUNNER_BY_LANE[lane]
-        assert callable(getattr(cd, name))
-

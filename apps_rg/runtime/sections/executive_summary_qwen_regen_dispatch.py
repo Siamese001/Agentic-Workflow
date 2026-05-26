@@ -28,7 +28,7 @@ _REGEN_PHASES = frozenset(
     {"synthesis_regen", "judge_regen", "judge_x2_repair"},
 )
 
-_DEFAULT_REGEN_MAX_OUTPUT = 1024
+_DEFAULT_REGEN_MAX_OUTPUT = 2048
 _DEFAULT_SCRATCH_MAX_OUTPUT = 2048
 _HARD_CAP_SCRATCH_MAX_OUTPUT = 4096
 

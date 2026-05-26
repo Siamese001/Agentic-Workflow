@@ -24,6 +24,7 @@ from apps_rg.runtime.sections.executive_summary_token_budget import (
     first_pass_85pct_limit_tokens,
     protected_fact_ids_from_payload,
     resolve_context_window_provenance,
+    resolve_first_pass_input_utilization_max,
     trim_executive_summary_prompt_content,
     verify_prompt_shape_preserved,
     write_token_budget_receipt,
@@ -217,12 +218,23 @@ def test_context_window_provenance_defaults_to_env_unverified(monkeypatch) -> No
     assert prov.server_context_window_warning
 
 
-def test_first_pass_85pct_policy_blocks_between_85_and_100_percent() -> None:
+def test_first_pass_85pct_policy_blocks_between_cap_and_100_percent() -> None:
     available = 8464
+    util_max = resolve_first_pass_input_utilization_max()
     limit = first_pass_85pct_limit_tokens(available)
-    assert limit == int(8464 * 0.85)
+    assert limit == int(8464 * util_max)
     assert exceeds_first_pass_85pct_policy(limit + 1, available)
     assert not exceeds_first_pass_85pct_policy(limit, available)
+
+
+def test_brown_scale_first_pass_fits_default_utilization_at_16k_window() -> None:
+    """Regression: trimmed Brown blockers ~12034 est.; p50 PASS dispatch ~12625 @ 13824."""
+    available = 16384 - 2048 - 512
+    assert available == 13824
+    limit = first_pass_85pct_limit_tokens(available)
+    assert limit >= 12625
+    assert not exceeds_first_pass_85pct_policy(12034, available)
+    assert not exceeds_first_pass_85pct_policy(12625, available)
 
 
 def test_apply_policy_fail_closed_on_first_pass_85pct_after_optional_trim() -> None:
@@ -242,3 +254,9 @@ def test_apply_policy_fail_closed_on_first_pass_85pct_after_optional_trim() -> N
     assert receipt["fail_closed_reason"] == FAIL_CLOSED_REASON_FIRST_PASS_85PCT
     assert receipt["first_pass_85pct_exceeded"] is True
     assert receipt["dispatch_allowed"] is False
+    guidance = receipt.get("operator_guidance")
+    assert isinstance(guidance, dict)
+    assert "briefing" in str(guidance.get("operator_message") or "").lower()
+    assert "jd" in str(guidance.get("operator_message") or "").lower()
+    assert int(guidance.get("tokens_to_remove_estimate") or 0) > 0
+    assert any(s.get("target") == "do_not_cut" for s in guidance.get("suggestions") or [])

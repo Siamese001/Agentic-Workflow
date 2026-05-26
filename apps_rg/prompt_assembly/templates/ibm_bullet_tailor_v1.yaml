@@ -20,8 +20,8 @@ purpose: |
   Model IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1 must foreground enterprise AI/data platform architecture,
   cloud and data modernization, reusable platform/productization patterns, lineage + observability +
   regulatory response, and hyperscaler/commercial partnership leverage.
-  Outputs exactly 5 resume-native bullets with zero HEAVY rewrites (3 MODERATE + 2 LIGHT_PROTECTED).
-  No narrative paragraphs. No unsupported claims. No JD-as-proof copying.
+  Each Qwen path outputs exactly 5 resume-native bullets; Claude pool selector picks the top 5 passing variants per bul_ibm_* slot.
+  No narrative paragraphs. No unsupported claims. No JD-as-proof copying. No ATS keyword stuffing.
   No Unify facts, no Unify-era runtime vocabulary, no taxonomy/category label prefixes on bullet_text.
 
 sovereign_oath: |
@@ -87,11 +87,6 @@ input_contract:
       schema: "{claims: [{claim_text, source_fact_id, supported: bool}]}"
     - name: jd_alignment
       schema: "{alignment_score, matched_terms, gap_terms}"
-    - name: rewrite_intensity_request
-      allowed_values: ["DEFAULT", "MODERATE", "LIGHT_PROTECTED"]
-      default: "DEFAULT"
-      forbidden: ["HEAVY"]
-
 output_contract:
   format: "JSON"
   required_fields:
@@ -103,26 +98,9 @@ output_contract:
         bullet_id: "string (must map to bul_ibm_001..005)"
         bullet_text: "string — resume-native; MUST NOT start with 'Category: ' / taxonomy prefix"
         bullet_theme: "optional string — taxonomy/theme belongs here or metadata, never as bullet_text prefix"
-        rewrite_intensity: "enum[MODERATE, LIGHT_PROTECTED] — HEAVY forbidden"
         has_metric: "boolean"
         metric_raw: "string or null"
         source_fact_ids: "array[string]"
-    - name: rewrite_distribution
-      type: "object"
-      schema:
-        MODERATE: "integer (2-3, default 3)"
-        LIGHT_PROTECTED: "integer (2-3, default 2)"
-        HEAVY: "integer (must be 0)"
-        total: "integer (must equal 5)"
-      default_distribution:
-        MODERATE: 3
-        LIGHT_PROTECTED: 2
-        HEAVY: 0
-      constraints:
-        - "HEAVY == 0 (forbidden)"
-        - "MODERATE >= 2, <= 3"
-        - "LIGHT_PROTECTED >= 2"
-        - "MODERATE + LIGHT_PROTECTED + HEAVY == 5"
     - name: claim_ledger
       type: "array"
       item_schema:
@@ -139,8 +117,6 @@ output_contract:
       type: "object"
       schema:
         bullet_count_valid: "boolean (must be true)"
-        distribution_valid: "boolean (must be true)"
-        no_heavy_rewrites: "boolean (must be true)"
         no_narrative_text: "boolean (must be true)"
         no_cross_contamination: "boolean (must be true)"
         no_unify_runtime_inflation: "boolean (must be true)"
@@ -150,42 +126,30 @@ output_contract:
         all_checks_passed: "boolean"
 
 rewrite_rules:
-  distribution_constraints:
-    DEFAULT:
-      MODERATE: 3
-      LIGHT_PROTECTED: 2
-      HEAVY: 0
-    FORBIDDEN:
-      - "HEAVY: > 0"
-    CUSTOM:
-      requires_strategic_justification: true
-      max_MODERATE: 3
-      min_LIGHT_PROTECTED: 2
-      
+  pool_selection:
+    qwen_paths: 12
+    final_bullet_count: 5
+    selector: "claude_pool_top_n_pass"
+    min_selection_score: 0.72
   bullet_specific_guidance:
     bul_ibm_001:
-      intensity_default: "MODERATE"
       content: "Cloud-native AI and analytics platforms for regulated financial services"
       key_terms: ["99.9% uptime", "governed enterprise decision systems", "regulated financial environments"]
       ibm_role: "Enterprise-scale platform delivery"
     bul_ibm_002:
-      intensity_default: "MODERATE"
       content: "Cloud migration and infrastructure modernization"
       key_terms: ["30% infrastructure overhead reduction", "scalable cloud-native architectures"]
       ibm_role: "Cost optimization through modernization"
     bul_ibm_003:
-      intensity_default: "LIGHT_PROTECTED"
       content: "SaaS-like platform conversion for regulatory and analytics workflows"
       key_terms: ["25% renewal rate improvement", "reusable platforms"]
       ibm_role: "Portfolio and productization"
       protected_reason: "Contains specific business metric (25%)"
     bul_ibm_004:
-      intensity_default: "MODERATE"
       content: "Real-time data ingestion, lineage, and observability frameworks"
       key_terms: ["50% regulatory response latency reduction", "data lineage", "observability"]
       ibm_role: "Data engineering and compliance enablement"
     bul_ibm_005:
-      intensity_default: "LIGHT_PROTECTED"
       content: "Hyperscaler alliances and co-sell partnership execution"
       key_terms: ["$15M incremental revenue", "multi-year alliances"]
       ibm_role: "Strategic partnerships and ecosystem execution"
@@ -274,18 +238,6 @@ validation_rules:
     - assert: "len(output.bullets) == 5"
       error: "BULLET_COUNT_INVALID"
       message: "Must emit exactly 5 bullets"
-    - assert: "output.rewrite_distribution.HEAVY == 0"
-      error: "HEAVY_REWRITE_FORBIDDEN"
-      message: "IBM bullets do not permit HEAVY rewrites"
-    - assert: "output.rewrite_distribution.MODERATE >= 2 and output.rewrite_distribution.MODERATE <= 3"
-      error: "MODERATE_COUNT_INVALID"
-      message: "MODERATE must be 2 or 3"
-    - assert: "output.rewrite_distribution.LIGHT_PROTECTED >= 2"
-      error: "INSUFFICIENT_LIGHT_PROTECTED"
-      message: "Must have at least 2 LIGHT_PROTECTED bullets"
-    - assert: "sum([output.rewrite_distribution[k] for k in ['MODERATE', 'LIGHT_PROTECTED', 'HEAVY']]) == 5"
-      error: "DISTRIBUTION_SUM_INVALID"
-      message: "Distribution must sum to 5"
     - assert: "not any([U+2014 in b.bullet_text for b in output.bullets])"
       error: "EM_DASH_DETECTED"
       message: "Em dash character forbidden"
@@ -316,7 +268,7 @@ ibm_positioning_guidance: |
   IBM bullets are standalone FOUNDATION PROOF for regulated enterprise delivery — cloud-native AI/analytics
   platforms, modernization, reusable platform patterns, lineage + observability + regulatory turnaround,
   and hyperscaler alliances.
-  They must NOT read as the current Unify agentic-platform role, heavy wholesale rewrite, or Unify fact import.
+  They must NOT read as the current Unify agentic-platform role, wholesale Unify-era rewrite, or Unify fact import.
   Never prefix bullet_text with taxonomy labels (use bullet_theme / structured fields instead).
   Forbidden in visible bullets: agentic runtime/repo vocabulary (GraphRAG, C0/L2/Exit/UWG, judge mesh,
   governed spine, multi-agent orchestration, etc.) unless literally present in IBM source facts (normally absent).

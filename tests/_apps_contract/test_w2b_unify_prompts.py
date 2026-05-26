@@ -43,34 +43,23 @@ class TestStop5UnifyBulletPrompt:
         assert "max_items: 6" in content or "max_items:6" in content
         assert "BULLET_COUNT_INVALID" in content
     
-    def test_default_distribution_is_2_heavy_3_moderate_1_light(self):
-        """Default rewrite distribution is 2 HEAVY, 3 MODERATE, 1 LIGHT_PROTECTED"""
+    def test_pool_selection_contract_documented(self):
+        """Employment bullets use Qwen pool + Claude top-N selection (no intensity taxonomy)."""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "unify_bullet_tailor_v1.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "HEAVY: 2" in content
-        assert "MODERATE: 3" in content
-        assert "LIGHT_PROTECTED: 1" in content
-    
-    def test_more_than_3_heavy_fails(self):
-        """Pre-output validation asserts HEAVY <= 3"""
-        template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "unify_bullet_tailor_v1.yaml"
-        content = template_path.read_text(encoding="utf-8")
-        assert "HEAVY <= 3" in content or "max_HEAVY: 3" in content
-        assert "HEAVY_EXCEEDS_MAX" in content
-    
-    def test_no_light_protected_fails(self):
-        """Pre-output validation asserts LIGHT_PROTECTED >= 1"""
-        template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "unify_bullet_tailor_v1.yaml"
-        content = template_path.read_text(encoding="utf-8")
-        assert "LIGHT_PROTECTED >= 1" in content or "min_LIGHT_PROTECTED: 1" in content
-        assert "NO_LIGHT_PROTECTED" in content
-    
+        assert "pool_selection:" in content
+        assert "qwen_paths: 15" in content or "qwen_paths:15" in content
+        assert "final_bullet_count: 6" in content or "final_bullet_count:6" in content
+        assert "rewrite_distribution" not in content
+        assert "rewrite_intensity" not in content
+
     def test_default_protected_bullet_is_platform_commercialization(self):
-        """Default LIGHT_PROTECTED bullet is bul_unify_006 (Platform Commercialization)"""
+        """Protected metrics bullet bul_unify_006 is documented in template guidance."""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "unify_bullet_tailor_v1.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "protected_bullet_default: \"bul_unify_006\"" in content or "protected_bullet_default: bul_unify_006" in content
-        assert "Platform Commercialization and Engineering Leadership" in content
+        assert "bul_unify_006:" in content
+        assert "protected_reason" in content
+        assert "platform commercialization" in content.lower()
     
     def test_supported_metrics_preserved_exactly(self):
         """Metric preservation rules require exact preservation for key metrics"""

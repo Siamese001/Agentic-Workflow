@@ -22,8 +22,8 @@ purpose: |
   framing is allowed only when stated as directional career positioning, not proof.
 
 sovereign_oath: |
-  IBM NARRATIVE — capstone sentence only (not bullet recap). pa_truth_oath_v1, pa_proof_binding_v1,
-  pa_targeting_only_v1 (pa_core_law_v1.yaml). Proof: bul_ibm_* from ALLOWED_SOURCE_FACT_IDS; companion bullets read-only.
+  ibm_narrative — capstone sentence only (not bullet recap). pa_truth_oath_v1, pa_proof_binding_v1,
+  pa_targeting_only_v1 (pa_core_law_v1.yaml). Proof: SelectedRoleFactSet slice + bul_ibm_* from ALLOWED_SOURCE_FACT_IDS; companion bullets read-only.
   No Unify-era agentic stack as IBM proof; no candidate name; one sentence. Forbidden terms: see forbidden_terms_in_narrative.
   Runtime compile I0: ibm_narrative_pa from this spec; X2 gates via PRODUCT_SHAPE append only.
 

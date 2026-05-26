@@ -75,6 +75,75 @@ def dimension_verdicts_json_schema_fragment() -> dict[str, Any]:
     }
 
 
+_EXEC_SUMMARY_RUBRIC_DIMENSION_PROSE: dict[str, str] = {
+    "factual_support": (
+        "claims appear supported by the provided claim ledger and source fact IDs "
+        "(no JD/briefing-as-proof)."
+    ),
+    "executive_signal": (
+        "SVP/CTO-level narrative — platform, runtime, governance, retrieval, orchestration, "
+        "evaluation, commercialization **woven**, not listed."
+    ),
+    "resume_voice": (
+        "concise, credible, human executive style; **synthesis**, not recruiter filler, hype, "
+        "or generic AI prose."
+    ),
+    "ats_alignment_without_keyword_stuffing": (
+        "relevant to target role via emphasis only; no JD mirroring or stuffing."
+    ),
+    "anti_overfit": (
+        "no JD-as-proof, no briefing-as-proof, no target company as candidate experience, "
+        "no **copy-paste of style-example metrics/credentials** absent from claim ledger support."
+    ),
+    "synthesis_quality": (
+        "**executive paragraph** flow; penalize sentence-stacked proofs, colon-label stitching, "
+        "visible process language, and excessive naked capability lists without narrative."
+    ),
+    "evidence_utilization": (
+        "penalize under-use of allowed_fact_packet when unused_fact_ids is non-empty and synthesis is thin; "
+        "when x2_exec_summary_evidence_utilization.pass is true, unused facts are optional weave targets."
+    ),
+    "deterministic_alignment": (
+        "**only** penalize gates that show `\"pass\": false` in deterministic_gate_summary; "
+        "never cite retired SRFS slot mandates when gates passed."
+    ),
+}
+
+
+def build_executive_summary_x1d_rubric_text(*, include_score_schema: str = "") -> str:
+    """Canonical eight-dimension rubric block for all exec-summary X1D judge prompts."""
+    lines = [
+        "You are evaluating one executive resume **executive summary paragraph** against the same bar as the "
+        "``executive_summary.generate_scratch_v1`` north star: polished SVP synthesis, not bullet stacks, "
+        "not internal label/colon stitching, not one-sentence-per-fact proof, not meta narration.",
+        "Return JSON only with: score_scale, score, threshold, pass, decisive_failure, "
+        "findings, cited_sentence_indexes, remediation_suggestions.",
+    ]
+    if include_score_schema.strip():
+        lines.extend(["", include_score_schema.strip()])
+    lines.extend(["", "Rubric dimensions:"])
+    for idx, dim in enumerate(EXEC_SUMMARY_RUBRIC_DIMENSION_IDS, start=1):
+        prose = _EXEC_SUMMARY_RUBRIC_DIMENSION_PROSE[dim]
+        lines.append(f"{idx}. {dim}: {prose}")
+    lines.extend(
+        [
+            "",
+            "**Target shape:** **exactly six dense sentences** (one executive paragraph, max 140 words); "
+            "metrics/credentials only when ledger-backed.",
+            "",
+            "Decisive failure triggers:",
+            "- unsupported business metric or credential",
+            "- target company presented as candidate experience",
+            "- first-person narrative",
+            "- copied JD phrase longer than four words",
+            "- generic opener or hype/filler",
+            "- summary is mechanically sentence-stacked proof rather than narrative synthesis",
+            "- obvious colon-label / fact-title stitching in prose",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def required_judge_output_dimension_block() -> str:
     """Prompt appendix for REQUIRED_JUDGE_OUTPUT_SCHEMA."""
     dims = ", ".join(EXEC_SUMMARY_RUBRIC_DIMENSION_IDS)
@@ -352,6 +421,15 @@ def dimension_major_fail_on_judge(judge: dict[str, Any], dimension_id: str) -> b
     if not isinstance(row, dict):
         return False
     return row.get("pass") is False and str(row.get("severity") or "").lower() == "major"
+
+
+def major_dimension_fail_count(judge: dict[str, Any]) -> int:
+    """Count rubric dimensions with major fail on this judge."""
+    return sum(
+        1
+        for dim in EXEC_SUMMARY_RUBRIC_DIMENSION_IDS
+        if dimension_major_fail_on_judge(judge, dim)
+    )
 
 
 def major_failed_dimension_ids_from_judges(

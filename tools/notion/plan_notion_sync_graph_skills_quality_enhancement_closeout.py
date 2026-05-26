@@ -15,17 +15,17 @@ PAGE_ID = "36b27693-f55c-81c0-bb50-d8df6df2b60e"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
-    "COMPLETED (2026-05-26): W0–W10 graph-skills quality — authority, capsules, v2 migration, "
-    "FEC/hybrid, CI ratchet, utilization scorer, operator guide, closeout compiler + 62 tests. "
-    "Closeout PARTIAL (LIVE_X3 2/7). W10-AG C0.3 unified bind deferred follow-on."
+    "COMPLETED (2026-05-26): W0–W10-AG graph-skills quality — authority, capsules, v2, FEC/hybrid, "
+    "CI ratchet, utilization, operator guide, W10-AG unified C0.3 bind (e27875b14e). "
+    "Closeout PARTIAL (LIVE_X3 2/7). Proof burndown: graph-skills-deferred-followup-d7f2a8."
 )
 
-AI_SUMMARY = """- PLAN_STATUS: Completed (user-directed 2026-05-26)
-- Waves W0–W10 DONE; W10-AG/D16 DEFERRED (unified C0.3 bind)
+AI_SUMMARY = """- PLAN_STATUS: Completed (disk + Notion 2026-05-26)
+- Waves W0–W10-AG DONE; W10-AG contract PASS (c0_graph_adapter, LIVE route_profiles)
+- Follow-on: graph-skills-deferred-followup-d7f2a8 (D16 REAL_LLM, 7/7 LIVE_X3, CI GHA)
 - Closeout: docs/reports/apps_rg/graph_skills_quality_enhancement_closeout.json
-- Tests: 62 graph_skills unit tests; CI graph-skills-authority-ratchet.yml
-- Hardening: graph_skills_run_artifacts.py + backfill script
-- claims_release_eligible=false at close; 7/7 LIVE_X3 follow-on proof"""
+- W10-AG: docs/reports/apps_rg/graph_skills_c03_unified_pipeline_bind.json
+- claims_release_eligible=false; release proof in follow-on plan"""
 
 
 def _query_page_id() -> str | None:

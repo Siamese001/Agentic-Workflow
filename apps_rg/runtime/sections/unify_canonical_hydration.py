@@ -9,11 +9,7 @@ import hashlib
 import re
 from typing import Any
 
-from apps_rg.runtime.validators.unify_bullets_x2 import (
-    DEFAULT_DISTRIBUTION,
-    PROTECTED_BULLET_DEFAULT,
-    UNIFY_BULLET_IDS,
-)
+from apps_rg.runtime.validators.unify_bullets_x2 import PROTECTED_BULLET_DEFAULT, UNIFY_BULLET_IDS
 
 _GRAPH_SKILLS_EVIDENCE = "augmented_skills_graph"
 
@@ -52,8 +48,6 @@ def unify_core_metrics_missing(parsed: dict[str, Any]) -> bool:
         None,
     )
     if not isinstance(protected, dict):
-        return True
-    if str(protected.get("rewrite_intensity", "")).upper() != "LIGHT_PROTECTED":
         return True
     pt = str(protected.get("bullet_text") or "")
     if not all(token in pt for token in ("$22M", "20%", "8", "28")):

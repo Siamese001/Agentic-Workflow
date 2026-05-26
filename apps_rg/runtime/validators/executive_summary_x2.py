@@ -988,13 +988,18 @@ def append_executive_summary_x1d_x2_gate_dicts(
     return out
 
 
-def check_judge_rows_present(x1d_judges: list[dict[str, Any]] | None) -> tuple[bool, str | None]:
+def check_judge_rows_present(
+    x1d_judges: list[dict[str, Any]] | None,
+    *,
+    required_providers: list[str] | None = None,
+) -> tuple[bool, str | None]:
     """Check if all required judge provider rows are present."""
     if x1d_judges is None:
         return False, "x1d_judges is None"
-    
+
+    required = list(required_providers or REQUIRED_JUDGE_PROVIDERS)
     present_providers = {j.get("provider_key") for j in x1d_judges}
-    missing = [p for p in REQUIRED_JUDGE_PROVIDERS if p not in present_providers]
+    missing = [p for p in required if p not in present_providers]
     
     if missing:
         return False, f"Missing required judge providers: {', '.join(missing)}"

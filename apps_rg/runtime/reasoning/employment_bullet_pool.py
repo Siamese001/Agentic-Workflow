@@ -2,18 +2,23 @@
 
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Final
 
-from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
-from apps_rg.runtime.validators.unify_bullets_x2 import (
-    DEFAULT_DISTRIBUTION,
-    INTENSITY_BY_BULLET_SSOT,
-    UNIFY_BULLET_IDS,
+from apps_rg.runtime.judges.employment_bullet_judge_rubric import (
+    EMPLOYMENT_BULLET_RUBRIC_VERSION,
+    pool_selector_dimension_ids,
 )
+from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
+from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 
 EMPLOYMENT_BULLET_LANES: Final[frozenset[str]] = frozenset({"unify_bullets", "ibm_bullets"})
+
+# Employment bullets: Claude pool selector is the sole X1D judge (not the 3-provider panel).
+EMPLOYMENT_BULLET_JUDGE_PROVIDERS: Final[tuple[str, ...]] = ("anthropic_claude",)
 
 SC_PATH_COUNT_BY_LANE: Final[dict[str, int]] = {
     "unify_bullets": 15,
@@ -135,10 +140,6 @@ def build_employment_targeting_context(
         "min_selection_score": min_selection_score_for_lane(lane),
         "final_bullet_count": FINAL_BULLET_COUNT.get(lane, 0),
     }
-    if lane == "unify_bullets":
-        ctx["rewrite_distribution"] = dict(DEFAULT_DISTRIBUTION)
-        ctx["rewrite_intensity_by_bullet"] = dict(INTENSITY_BY_BULLET_SSOT)
-        ctx["rewrite_intensity_contract"] = "2_HEAVY_3_MODERATE_1_LIGHT_PROTECTED"
     return ctx
 
 
@@ -219,11 +220,81 @@ def evaluate_employment_selection_quality(
     )
 
 
+def is_employment_pool_generation(gen_meta: dict[str, Any] | None) -> bool:
+    mode = str((gen_meta or {}).get("generation_mode") or "")
+    return mode.startswith("qwen_employment_pool")
+
+
+def employment_pool_x1d_judge_rows(
+    *,
+    artifact_dir: Path,
+    section_id: str,
+    gen_meta: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Single X1D row from Claude pool selection (15× Qwen paths → top-N pass)."""
+    lane = str(section_id or "").strip().lower()
+    gate = dict((gen_meta or {}).get("selection_gate") or {})
+    gate_ok = bool(gate.get("ok"))
+    threshold = min_selection_score_for_lane(lane)
+
+    judge_path = artifact_dir / "bullet_pool_claude_selector_judge.json"
+    sel_path = artifact_dir / "bullet_pool_selection.json"
+    row: dict[str, Any] = {}
+    if judge_path.is_file():
+        loaded = json.loads(judge_path.read_text(encoding="utf-8"))
+        if isinstance(loaded, dict):
+            row = dict(loaded)
+
+    selections: list[dict[str, Any]] = []
+    if sel_path.is_file():
+        sel_doc = json.loads(sel_path.read_text(encoding="utf-8"))
+        if isinstance(sel_doc, dict):
+            selections = [s for s in (sel_doc.get("selections") or []) if isinstance(s, dict)]
+
+    scores = [float(s.get("score") or 0.0) for s in selections if s.get("passes", True) is not False]
+    min_score = min(scores) if scores else 0.0
+    slots_ok = bool(selections) and all(float(s.get("score") or 0.0) >= threshold for s in selections)
+    passed = gate_ok and slots_ok
+
+    row.setdefault("judge_id", f"x1d_anthropic_claude_{lane}_pool")
+    row.setdefault("provider_name", "Anthropic Claude")
+    row["provider_key"] = "anthropic_claude"
+    row["section_id"] = lane
+    row["evaluator_mode"] = "MODEL_BACKED"
+    row["provider_available"] = True
+    row["provider_blocked"] = False
+    row["score_scale"] = "0_to_1"
+    row["score"] = min_score
+    row["normalized_score"] = min_score
+    row["threshold"] = threshold
+    row["normalized_threshold"] = threshold
+    row["pass"] = passed
+    row["pass_"] = passed
+    row["decisive_failure"] = not passed
+    row["provider_status"] = "MODEL_BACKED_PASS" if passed else "MODEL_BACKED_FAIL"
+    row["proof_eligible_judge"] = True
+    row["advisory_only"] = False
+    row["judge_role"] = "employment_bullet_pool_selector"
+    row["rubric_ref"] = f"apps_rg/runtime/judges/employment_bullet_judge_rubric.py#{lane}"
+    row["rubric_version"] = EMPLOYMENT_BULLET_RUBRIC_VERSION
+    row["pool_selector_dimensions"] = list(pool_selector_dimension_ids(lane))
+    row["selection_mode"] = str((gen_meta or {}).get("selection_mode") or "claude_employment_top_n_pass")
+    row["findings"] = [
+        (
+            f"Employment pool selector: {len(selections)} slots, min_score={min_score:.2f}, "
+            f"threshold={threshold:.2f}, gate_ok={gate_ok}"
+        )
+    ]
+    return [row]
+
+
 __all__ = [
     "COMPETENCIES_SC_PATH_COUNT",
     "DEFAULT_MIN_SELECTION_SCORE",
+    "EMPLOYMENT_BULLET_JUDGE_PROVIDERS",
     "EMPLOYMENT_BULLET_LANES",
     "EmploymentSelectionGate",
+    "employment_pool_x1d_judge_rows",
     "FINAL_BULLET_COUNT",
     "REGEN_EXTRA_PATHS_BY_LANE",
     "REQUIRED_BULLET_IDS",
@@ -231,6 +302,7 @@ __all__ = [
     "build_employment_targeting_context",
     "evaluate_employment_selection_quality",
     "is_employment_bullet_lane",
+    "is_employment_pool_generation",
     "max_employment_regen_rounds",
     "min_selection_score_for_lane",
     "regen_extra_path_count_for_lane",

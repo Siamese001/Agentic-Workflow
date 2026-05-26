@@ -1,5 +1,6 @@
 """Compatibility re-export - SSOT: apps_rg.runtime.sections.executive_summary_pa."""
 
+from apps_rg.runtime.bindings.section_prompt_adapter import compile_section_prompt
 from apps_rg.runtime.sections.executive_summary_pa import (
     SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR,
     SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER,
@@ -34,4 +35,5 @@ __all__ = [
     "format_srfs_role_adaptive_appendix",
     "format_srfs_style_only_quality_oneshot_block",
     "load_executive_summary_template_slots",
+    "compile_section_prompt",
 ]

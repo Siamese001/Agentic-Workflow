@@ -37,9 +37,9 @@ def synthesis_regen_max_attempts() -> int:
     return max(1, min(n, SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP))
 
 
-# Post-X1D same-authority regen when X2 passed but dimension/holistic signals synthesis gap.
-# Default 1 Qwen cycle; post-regen rescores soft-failed judges only (not full 3-judge panel).
-JUDGE_REGEN_MAX_ATTEMPTS = 1
+# Post-X1D same-authority regen when X2 passed and any judge is below floor.
+# Default 3 Qwen cycles (hard cap 3); post-regen rescores soft-failed judges only.
+JUDGE_REGEN_MAX_ATTEMPTS = 3
 JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
 REGEN_MAX_DELTA_TOKENS_DEFAULT = 512
 REGEN_MAX_DELTA_TOKENS_HARD_CAP = 768
@@ -64,6 +64,20 @@ def judge_regen_max_delta_tokens() -> int:
     except ValueError:
         n = REGEN_MAX_DELTA_TOKENS_DEFAULT
     return max(1, min(n, REGEN_MAX_DELTA_TOKENS_HARD_CAP))
+
+
+def judge_pass_floor_0_to_5() -> float | None:
+    """Operator override for holistic pass floor on 0..5 scale (``APPS_RG_EXEC_SUMMARY_JUDGE_PASS_FLOOR``)."""
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_JUDGE_PASS_FLOOR", "").strip()
+    if not raw:
+        return None
+    try:
+        floor = float(raw)
+    except ValueError:
+        return None
+    if floor < 0.0 or floor > 5.0:
+        return None
+    return floor
 
 
 def judge_regen_max_attempts() -> int:
@@ -131,6 +145,12 @@ def judge_regen_legacy_remediation_block_enabled() -> bool:
     return raw in ("1", "true", "yes", "on")
 
 
+def exploratory_full_paragraph_regen_enabled() -> bool:
+    """Opt-in full S2–S6 rewrite (default off — W4 GAP-3)."""
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_EXPLORATORY_FULL_PARAGRAPH_REGEN", "0").strip().lower()
+    return _truthy_env(raw)
+
+
 # Re-run X1D after full X2 with authoritative gate snapshot (default on; no gate weakening).
 RELEASE_POST_X2_JUDGE_REFRESH_ENABLED = True
 
@@ -155,7 +175,9 @@ __all__ = [
     "RELEASE_SYNTHESIS_REGENERATION_ENABLED",
     "SYNTHESIS_REGEN_MAX_ATTEMPTS",
     "SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP",
+    "exploratory_full_paragraph_regen_enabled",
     "judge_regen_core_runner_enabled",
+    "judge_pass_floor_0_to_5",
     "judge_regen_max_attempts",
     "judge_regen_max_delta_tokens",
     "REGEN_MAX_DELTA_TOKENS_DEFAULT",

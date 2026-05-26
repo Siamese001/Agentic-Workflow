@@ -70,7 +70,6 @@ from apps_rg.runtime.shadow.ibm_bullets_l6 import (
 )
 from apps_rg.runtime.validators.ibm_bullets_x2 import (
     IBM_BULLET_IDS,
-    IBM_DEFAULT_DISTRIBUTION,
     build_ibm_bullets_text_claim_coverage,
     run_ibm_bullets_x2_gates,
 )
@@ -95,6 +94,13 @@ DEFAULT_INTENSITY_BY_BULLET = {
     "bul_ibm_003": "LIGHT_PROTECTED",
     "bul_ibm_004": "MODERATE",
     "bul_ibm_005": "LIGHT_PROTECTED",
+}
+# Lane-internal normalization only; stripped before X2 (retired rewrite-intensity model).
+IBM_DEFAULT_DISTRIBUTION: dict[str, int] = {
+    "HEAVY": 0,
+    "MODERATE": 3,
+    "LIGHT_PROTECTED": 2,
+    "total": 5,
 }
 BULLET_ID_ALIASES = {
     **{f"I{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
@@ -295,7 +301,11 @@ def normalize_parsed_output(
     parsed.setdefault("gap_notes", [])
     parsed.setdefault("change_log", [])
     parsed.setdefault("self_check", {"normalized_by_dispatch": True})
-    return parsed
+    from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+        strip_employment_bullet_intensity_model,
+    )
+
+    return strip_employment_bullet_intensity_model(parsed)
 
 
 def retry_qwen_for_parse(
@@ -361,21 +371,25 @@ def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
         )
         claim_ledger.append({"claim_text": text, "source_fact_ids": metric_ids})
 
-    return {
-        "bullets": bullets,
-        "selected_fact_plan": runtime_payload["selected_fact_plan"],
-        "claim_ledger": claim_ledger,
-        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
-        "gap_notes": [],
-        "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
-        "rewrite_distribution": dict(IBM_DEFAULT_DISTRIBUTION),
-        "self_check": {
-            "bullet_count_valid": True,
-            "distribution_valid": True,
-            "no_cross_contamination": True,
-            "metrics_preserved": True,
-        },
-    }
+    from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+        strip_employment_bullet_intensity_model,
+    )
+
+    return strip_employment_bullet_intensity_model(
+        {
+            "bullets": bullets,
+            "selected_fact_plan": runtime_payload["selected_fact_plan"],
+            "claim_ledger": claim_ledger,
+            "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
+            "gap_notes": [],
+            "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"}],
+            "self_check": {
+                "bullet_count_valid": True,
+                "no_cross_contamination": True,
+                "metrics_preserved": True,
+            },
+        }
+    )
 
 
 def infer_product_quality(
@@ -805,8 +819,13 @@ def run_ibm_bullets_execution(
     write_json(artifact_dir / "canonical_claim_ledger_v2.json", canon_doc)
     claim_ledger = claim_ledger_raw
     coverage = build_ibm_bullets_text_claim_coverage(bullets, claim_ledger, allowed_fact_ids)
-    parsed_for_x2: dict[str, Any] = {**(parsed or {}), "text_claim_coverage": coverage}
-    rewrite_distribution = (parsed or {}).get("rewrite_distribution") or dict(IBM_DEFAULT_DISTRIBUTION)
+    from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+        strip_employment_bullet_intensity_model,
+    )
+
+    parsed_for_x2 = strip_employment_bullet_intensity_model(
+        {**(parsed or {}), "text_claim_coverage": coverage}
+    ) or {"text_claim_coverage": coverage}
     model_name = resolve_provider_model_name(provider_request_data, provider_result_data)
 
     l2_output = {
@@ -821,7 +840,6 @@ def run_ibm_bullets_execution(
         "jd_alignment": (parsed or {}).get("jd_alignment") or {"targeting_only": True},
         "gap_notes": (parsed or {}).get("gap_notes") or [],
         "change_log": (parsed or {}).get("change_log") or [],
-        "rewrite_distribution": rewrite_distribution,
         "self_check": (parsed or {}).get("self_check") or {"parse_error": parse_error},
         "text_claim_coverage": coverage,
         "prompt_id": PROMPT_ID,
@@ -834,7 +852,6 @@ def run_ibm_bullets_execution(
     (artifact_dir / "ibm_bullets_output.txt").write_text(bullets_display_text(bullets) + "\n", encoding="utf-8")
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
     write_json(artifact_dir / "selected_fact_plan.json", l2_output["selected_fact_plan"])
-    write_json(artifact_dir / "rewrite_distribution.json", rewrite_distribution)
     write_json(artifact_dir / "text_claim_coverage.json", coverage)
     req_id = str(
         (provider_request_data or {}).get("request_id")
@@ -928,7 +945,6 @@ def run_ibm_bullets_execution(
             model_name=model_name,
             raw_output=raw_output,
             x1d_judges=x1d,
-            rewrite_distribution=rewrite_distribution,
             srfs_source_fact_slice_gate_active=srfs_slice_x2_active,
             proof_pool_metadata=pp_x2,
             proof_pool_ref=str(pool.proof_pool_ref or ""),
@@ -1025,7 +1041,6 @@ def run_ibm_bullets_execution(
         claim_ledger=claim_ledger,
         allowed_fact_ids=allowed_fact_ids,
         bullets=bullets,
-        rewrite_distribution=rewrite_distribution,
     )
     write_json(artifact_dir / "l6_shadow_eval_package.json", l6)
 
@@ -1036,7 +1051,6 @@ def run_ibm_bullets_execution(
         "model": model_name,
         "raw_model_output": raw_output,
         "bullets": bullets,
-        "rewrite_distribution": rewrite_distribution,
         "product_quality_status": product_quality_status,
         "x3_code": x3.x3_code,
     }
@@ -1079,9 +1093,6 @@ def run_ibm_bullets_execution(
     lines = [
         "IBM_BULLETS_OUTPUT:",
         bullets_display_text(bullets) if bullets else f"BLOCKED: {parse_error}",
-        "",
-        "REWRITE_DISTRIBUTION:",
-        json.dumps(rewrite_distribution, indent=2),
         "",
         "X1D_LLM_JUDGE_OUTPUTS:",
         "| Provider | Mode | Status | Score | Pass | Decisive Failure |",

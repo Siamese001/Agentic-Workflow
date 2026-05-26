@@ -8,32 +8,119 @@ from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 
 GRAPH_BULLET_EVIDENCE_PACK_MARKER = "GRAPH_BULLET_EVIDENCE_PACK"
 
-UNIFY_SLOT_THEMES: dict[str, str] = {
-    "bul_unify_001": (
-        "Agentic AI platform architecture — one outcome spine (regulated enterprise platform delivery)"
-    ),
-    "bul_unify_002": "Dependency graph intelligence",
-    "bul_unify_003": "Governed runtime reliability",
-    "bul_unify_004": "AI systems lifecycle standardization (metric anchor: six months to three weeks)",
-    "bul_unify_005": "Distributed ecosystem engineering",
-    "bul_unify_006": (
-        "Platform commercialization and engineering leadership "
-        "(protected metrics: $22M IP-led revenue, 20% gross margin, 8 to 28 specialists)"
-    ),
+TRACK_RANKED_SELECTION_METHOD = "augmented_skills_graph_unify_bullets_track_ranked"
+
+# Ledger facts that must appear in the six-pack when present (X2 metric anchors on 004/006 slots).
+_UNIFY_METRIC_LEDGER_IDS: tuple[str, ...] = (
+    "fact_engineering_platform_004",
+    "fact_engineering_platform_006",
+)
+
+# Legacy base-resume six-pack in sorted candidate_fact_id order (forbidden allocation pattern).
+LEGACY_SIX_PACK_LEDGER_ORDER: tuple[str, ...] = tuple(
+    f"fact_engineering_platform_{i:03d}" for i in range(1, 7)
+)
+
+FORBIDDEN_C0_PROMPT_SUBSTRINGS: tuple[str, ...] = (
+    "CANONICAL UNIFY FACTS",
+    "rewrite from these",
+    "archive_reference_only",
+    "| theme:",
+    "Agentic AI platform architecture — one outcome spine",
+    "Dependency graph intelligence",
+    "Governed runtime reliability",
+)
+
+FORBIDDEN_SELECTION_METHOD_MARKERS: tuple[str, ...] = (
+    "company_hint",
+    "hydrate_unify",
+    "canonical_json_all_unify",
+)
+
+# Metric-anchor ledger rows must land on these canonical bullet slots (X2 ownership).
+UNIFY_LEDGER_METRIC_ANCHOR_SLOTS: dict[str, str] = {
+    "fact_engineering_platform_004": "bul_unify_004",
+    "fact_engineering_platform_006": "bul_unify_006",
 }
 
-_PATH_FRAMING_ANGLES: tuple[str, ...] = (
-    "Foreground regulated enterprise platform delivery and governed agentic outcomes; "
-    "use JD IT-strategy themes for verb choice only.",
-    "Foreground dependency-graph intelligence, legacy analysis, and architecture visibility; "
-    "stay within proof atoms for this path.",
-    "Foreground runtime reliability, evaluation gates, retrieval quality, and operational controls; "
-    "avoid duplicating mechanism stacks from other paths.",
-    "Foreground lab-to-production lifecycle and cycle-time outcomes; preserve bul_unify_004 metric anchor if applicable.",
-    "Foreground cloud, data platform, and distributed engineering patterns supported by linked facts.",
-    "Foreground commercialization, engineering leadership scale, and business outcomes; "
-    "preserve bul_unify_006 protected metrics when evidenced.",
-)
+
+def max_consecutive_word_overlap(left: str, right: str) -> int:
+    """Longest run of consecutive shared words (case-insensitive) between two strings."""
+    import re
+
+    lw = re.findall(r"[a-z0-9']+", str(left or "").lower())
+    rw = re.findall(r"[a-z0-9']+", str(right or "").lower())
+    if not lw or not rw:
+        return 0
+    best = 0
+    for i in range(len(lw)):
+        for j in range(len(rw)):
+            n = 0
+            while i + n < len(lw) and j + n < len(rw) and lw[i + n] == rw[j + n]:
+                n += 1
+            if n > best:
+                best = n
+    return best
+
+
+def assign_unify_metric_anchor_slots(facts: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Reorder plan facts so metric ledger rows occupy bul_unify_004 / bul_unify_006."""
+    rows = [dict(f) for f in facts if isinstance(f, dict)]
+    if not rows:
+        return []
+
+    anchored: dict[str, dict[str, Any]] = {}
+    remainder: list[dict[str, Any]] = []
+    for fact in rows:
+        lid = str(
+            fact.get("ledger_candidate_fact_id")
+            or fact.get("candidate_fact_id")
+            or fact.get("fact_id")
+            or ""
+        ).strip()
+        slot = UNIFY_LEDGER_METRIC_ANCHOR_SLOTS.get(lid)
+        if slot:
+            anchored[slot] = fact
+        else:
+            remainder.append(fact)
+
+    out: list[dict[str, Any] | None] = [None] * len(UNIFY_BULLET_IDS)
+    for slot, fact in anchored.items():
+        if slot in UNIFY_BULLET_IDS:
+            out[UNIFY_BULLET_IDS.index(slot)] = fact
+    ri = 0
+    for i, slot in enumerate(UNIFY_BULLET_IDS):
+        if out[i] is not None:
+            continue
+        if ri < len(remainder):
+            out[i] = remainder[ri]
+            ri += 1
+    placed = [f for f in out if f is not None]
+    return placed[: len(UNIFY_BULLET_IDS)]
+
+
+def is_legacy_six_pack_ledger_order(ledger_ids: Sequence[str]) -> bool:
+    """True when allocation is exactly the old sorted engineering_platform_001..006 pack."""
+    normalized = [str(x).strip() for x in ledger_ids if str(x).strip()]
+    return normalized == list(LEGACY_SIX_PACK_LEDGER_ORDER)
+
+
+def is_allowed_unify_selection_method(method: str) -> bool:
+    m = str(method or "").strip()
+    if not m:
+        return False
+    if any(marker in m for marker in FORBIDDEN_SELECTION_METHOD_MARKERS):
+        return False
+    if m == TRACK_RANKED_SELECTION_METHOD:
+        return True
+    return m.startswith("augmented_skills_graph_unify_bullets")
+
+
+def assert_c0_pack_has_no_forbidden_template_leaks(pack_text: str) -> None:
+    blob = str(pack_text or "")
+    hits = [s for s in FORBIDDEN_C0_PROMPT_SUBSTRINGS if s in blob]
+    if hits:
+        raise ValueError(f"GRAPH_BULLET_EVIDENCE_PACK contains forbidden template leakage: {hits}")
 
 
 def _ledger_fact_id(fact: dict[str, Any]) -> str:
@@ -82,15 +169,6 @@ def _skills_for_ledger_ids(
     return out
 
 
-def _archive_reference_snippet(claim_text: str, *, max_len: int = 100) -> str:
-    text = " ".join(str(claim_text or "").split())
-    if not text:
-        return "(none)"
-    if len(text) <= max_len:
-        return text
-    return text[: max_len - 3].rstrip() + "..."
-
-
 def _format_c03_neighbor_hints(pp_meta: dict[str, Any], *, max_refs: int = 8) -> str:
     c03 = pp_meta.get("c03_graphrag_bound")
     if not isinstance(c03, dict):
@@ -103,13 +181,20 @@ def _format_c03_neighbor_hints(pp_meta: dict[str, Any], *, max_refs: int = 8) ->
     return "\n".join(lines)
 
 
+def _jd_framing_excerpt(runtime_payload: dict[str, Any], *, max_chars: int = 200) -> str:
+    jd = str(runtime_payload.get("jd_text") or "").strip()
+    briefing = str(runtime_payload.get("briefing") or runtime_payload.get("briefing_text") or "").strip()
+    bits = [b for b in (jd[:max_chars], briefing[:max_chars]) if b]
+    return " | ".join(bits) if bits else "(no JD/briefing excerpt)"
+
+
 def format_unify_graph_bullet_evidence_pack(
     runtime_payload: dict[str, Any],
     *,
     allowed_block: str,
     unify_id_hygiene: str,
 ) -> str:
-    """C0 body: graph skills + fact atoms per bul_unify_* slot (no copy-source claim_text)."""
+    """C0 body: graph skills + fact atoms per bul_unify_* slot — no legacy theme map or claim_text."""
     plan = runtime_payload.get("selected_fact_plan") or {}
     facts = list(plan.get("facts") or [])
     by_slot: dict[str, dict[str, Any]] = {}
@@ -122,15 +207,17 @@ def format_unify_graph_bullet_evidence_pack(
 
     pp_meta = runtime_payload.get("proof_pool_metadata") if isinstance(runtime_payload.get("proof_pool_metadata"), dict) else {}
     skill_rows = resolve_skill_rows_for_capsule(runtime_payload, section_id="unify_bullets")
+    selection_method = str(plan.get("selection_method") or pp_meta.get("selection_method") or "")
 
     header = (
         f"{allowed_block}{unify_id_hygiene}\n"
         f"{GRAPH_BULLET_EVIDENCE_PACK_MARKER} "
-        "(proof substrate — compose bullets from this pack; do not copy verbatim):\n"
-        "- claim_text fields below are ARCHIVE_REFERENCE_ONLY (wording hint), not bullet_text source.\n"
-        "- Authenticity: bind material claims to allowed_source_fact_ids; prefer bound_skills allowed_phrases "
-        "when supported by linked ledger facts.\n"
-        "- skill_id alone is not proof; every claim needs fact_id backing.\n"
+        "(proof substrate — compose six bullets from bound_skills + proof_atoms only):\n"
+        f"- selection_method: {selection_method or 'augmented_skills_graph'}\n"
+        "- Do NOT use legacy base-resume bullet wording or fixed theme templates.\n"
+        "- No claim_text / archive prose in this pack — synthesize executive lines from skills + atoms.\n"
+        "- skill_id alone is not proof; every claim needs allowed_source_fact_ids for that slot.\n"
+        "- JD/briefing (U0) choose emphasis only; do not invent facts from JD.\n"
     )
 
     slot_blocks: list[str] = []
@@ -139,7 +226,6 @@ def format_unify_graph_bullet_evidence_pack(
         ledger_id = _ledger_fact_id(fact)
         ledger_ids = {ledger_id} if ledger_id else set()
         skills = _skills_for_ledger_ids(skill_rows, ledger_ids)
-        theme = UNIFY_SLOT_THEMES.get(slot_id, "Unify employment theme")
         allowed_ids = [slot_id]
         mr = str(fact.get("metric_raw") or "").strip()
         if mr:
@@ -148,20 +234,20 @@ def format_unify_graph_bullet_evidence_pack(
             allowed_ids.append(metric_derivative_fact_id(slot_id, mr))
 
         lines = [
-            f"{slot_id} | theme: {theme}",
+            f"{slot_id} | compose_one_bullet_from:",
             f"  allowed_source_fact_ids: {allowed_ids}",
         ]
         if skills:
-            lines.append("  bound_skills (C0.3 graph — vocabulary when fact-linked):")
+            lines.append("  bound_skills (graph authority — primary vocabulary):")
             for sk in skills:
                 sid = sk["skill_id"]
                 phrases = sk.get("allowed_phrases") or []
-                phrase_s = ", ".join(phrases[:4]) if phrases else str(sk.get("label") or sid)
+                phrase_s = ", ".join(phrases[:6]) if phrases else str(sk.get("label") or sid)
                 lines.append(f"    - {sid} | allowed_phrases: {phrase_s}")
         else:
-            lines.append("  bound_skills: (none linked — use proof_atoms only)")
+            lines.append("  bound_skills: (none linked — omit or use proof_atoms tags only)")
 
-        lines.append("  proof_atoms:")
+        lines.append("  proof_atoms (metrics/tags only — no prose):")
         if ledger_id:
             tags: list[str] = []
             tech = fact.get("technologies")
@@ -173,11 +259,9 @@ def format_unify_graph_bullet_evidence_pack(
             domain = str(fact.get("domain") or "").strip()
             if domain:
                 tags.append(domain)
-            tag_s = ", ".join(tags) if tags else "(tags not listed)"
+            tag_s = ", ".join(tags) if tags else "(none)"
             metric_s = mr or "(none)"
-            snippet = _archive_reference_snippet(str(fact.get("claim_text") or ""))
-            lines.append(f"    - {ledger_id} | tags: {tag_s} | locked_metrics: {metric_s}")
-            lines.append(f"      | archive_reference_only: \"{snippet}\"")
+            lines.append(f"    - ledger_fact_id: {ledger_id} | tags: {tag_s} | locked_metrics: {metric_s}")
         else:
             lines.append("    - (no ledger fact mapped for this slot)")
 
@@ -187,7 +271,9 @@ def format_unify_graph_bullet_evidence_pack(
     parts = [header, "\n\n".join(slot_blocks)]
     if c03_block:
         parts.append(c03_block)
-    return "\n\n".join(parts)
+    out = "\n\n".join(parts)
+    assert_c0_pack_has_no_forbidden_template_leaks(out)
+    return out
 
 
 def append_unify_path_framing_to_messages(
@@ -195,15 +281,19 @@ def append_unify_path_framing_to_messages(
     *,
     path_index: int,
     temperature: float,
+    runtime_payload: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    """Append per-path targeting angle so SC paths are not temperature-only clones."""
+    """Per-path JD-driven framing — not the legacy six-theme template."""
     if not messages:
         return messages
-    angle = _PATH_FRAMING_ANGLES[path_index % len(_PATH_FRAMING_ANGLES)]
+    payload = runtime_payload if isinstance(runtime_payload, dict) else {}
+    jd_excerpt = _jd_framing_excerpt(payload)
     suffix = (
         f"\n\nPATH_FRAMING (path_index={path_index}, temperature={temperature:.2f}):\n"
-        f"{angle}\n"
-        "Produce a semantically distinct six-bullet set for this path — not a synonym swap of other paths."
+        f"Targeting excerpt (emphasis only): {jd_excerpt}\n"
+        "Vary executive framing and verb choice across paths; each path must produce six distinct "
+        "bullets grounded in GRAPH_BULLET_EVIDENCE_PACK skills/atoms — not a reorder of the same "
+        "six legacy resume themes.\n"
     )
     out = [dict(m) for m in messages]
     last = out[-1]
@@ -213,8 +303,18 @@ def append_unify_path_framing_to_messages(
 
 
 __all__ = [
+    "FORBIDDEN_C0_PROMPT_SUBSTRINGS",
+    "FORBIDDEN_SELECTION_METHOD_MARKERS",
     "GRAPH_BULLET_EVIDENCE_PACK_MARKER",
-    "UNIFY_SLOT_THEMES",
+    "LEGACY_SIX_PACK_LEDGER_ORDER",
+    "TRACK_RANKED_SELECTION_METHOD",
+    "UNIFY_LEDGER_METRIC_ANCHOR_SLOTS",
+    "_UNIFY_METRIC_LEDGER_IDS",
     "append_unify_path_framing_to_messages",
+    "assign_unify_metric_anchor_slots",
+    "assert_c0_pack_has_no_forbidden_template_leaks",
     "format_unify_graph_bullet_evidence_pack",
+    "is_allowed_unify_selection_method",
+    "is_legacy_six_pack_ledger_order",
+    "max_consecutive_word_overlap",
 ]

@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-05-19T08:17:47Z",
+  "generated_at_utc": "2026-05-26T14:02:40Z",
   "status": "PASS",
   "fixture": {
     "target_company": "Acme Revenue Corp",
@@ -16,11 +16,6 @@
   "headline_executive_high_only_proof": {
     "headline": [
       {
-        "candidate_fact_id": "fact_engineering_platform_006",
-        "confidence": "HIGH",
-        "verification_status": "eligible_high_with_metrics_requires_source_trace"
-      },
-      {
         "candidate_fact_id": "fact_quant_hpc_001",
         "confidence": "HIGH",
         "verification_status": "eligible_high_with_metrics_requires_source_trace"
@@ -29,6 +24,11 @@
         "candidate_fact_id": "fact_quant_hpc_003",
         "confidence": "HIGH",
         "verification_status": "eligible_high_qualitative"
+      },
+      {
+        "candidate_fact_id": "fact_engineering_platform_004",
+        "confidence": "HIGH",
+        "verification_status": "eligible_high_with_metrics_requires_source_trace"
       },
       {
         "candidate_fact_id": "fact_consulting_001",
@@ -48,7 +48,7 @@
         "verification_status": "eligible_high_qualitative"
       },
       {
-        "candidate_fact_id": "fact_engineering_platform_004",
+        "candidate_fact_id": "fact_engineering_platform_006",
         "confidence": "HIGH",
         "verification_status": "eligible_high_with_metrics_requires_source_trace"
       },
@@ -699,7 +699,7 @@
   },
   "section_proof_pool_fixture_output": {
     "unify_bullets": {
-      "proof_source": "broad_skills_ledger",
+      "proof_source": "augmented_skills_graph",
       "fact_count": 6,
       "fact_ids": [
         "bul_unify_001",
@@ -712,55 +712,44 @@
       "fixture_claim_texts": [
         {
           "fact_id": "bul_unify_001",
-          "claim_text": "Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue.",
-          "confidence": "MEDIUM",
-          "source_trace_archive_relpaths": [
-            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Strategic_Finance_-_Amit_Ayer.txt"
-          ]
+          "claim_text": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation contro",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
         },
         {
           "fact_id": "bul_unify_002",
-          "claim_text": "Drove $5M in annual contract value by aligning generative AI workflows with CFO priorities and facilitating enterprise-wide adoption of data-driven decision-making.",
-          "confidence": "MEDIUM",
-          "source_trace_archive_relpaths": [
-            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Strategic_Account_Executive.txt",
-            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt",
-            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_VP_Finance_Sales_Marketing.txt"
-          ]
+          "claim_text": "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
         },
         {
           "fact_id": "bul_unify_003",
-          "claim_text": "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-deri",
-          "confidence": "MEDIUM",
-          "source_trace_archive_relpaths": [
-            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt"
-          ]
-        },
-        {
-          "fact_id": "bul_unify_004",
-          "claim_text": "Established strategic alliances with leading data providers, combining co-sell arrangements and subscription-based offerings to drive new financial-services revenue streams.",
-          "confidence": "MEDIUM",
-          "source_trace_archive_relpaths": [
-            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Amit_Ayer_Resume_-_Partner_Development_Manager.txt",
-            "artifacts/apps_rg/fact_inventory/phase_i_resumes_archive_extracted/Sales_-_Amit_Ayer.txt"
-          ]
-        },
-        {
-          "fact_id": "bul_unify_005",
           "claim_text": "Strengthened retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards to make AI behavior more traceable, supportable, and repeatable.",
           "confidence": "HIGH",
           "source_trace_archive_relpaths": []
         },
         {
+          "fact_id": "bul_unify_004",
+          "claim_text": "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving auditability and runtime stability.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
+          "fact_id": "bul_unify_005",
+          "claim_text": "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk.",
+          "confidence": "HIGH",
+          "source_trace_archive_relpaths": []
+        },
+        {
           "fact_id": "bul_unify_006",
-          "claim_text": "Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers.",
+          "claim_text": "Productized agentic AI primitives into reusable platform services, generating $22M in IP-led revenue, expanding gross margins by 20%, and scaling the ML engineering organization from 8 to 28 specialists.",
           "confidence": "HIGH",
           "source_trace_archive_relpaths": []
         }
       ]
     },
     "unify_narrative": {
-      "proof_source": "broad_skills_ledger",
+      "proof_source": "augmented_skills_graph",
       "fact_count": 6,
       "fact_ids": [
         "bul_unify_001",
@@ -810,19 +799,19 @@
       ]
     },
     "ibm_bullets": {
-      "proof_source": "broad_skills_ledger",
+      "proof_source": "augmented_skills_graph",
       "fact_count": 6,
       "fact_ids": [
-        "fact_revenue_ops_004",
-        "fact_revenue_ops_002",
-        "fact_revenue_ops_001",
-        "fact_partnerships_gtm_002",
-        "fact_revenue_ops_005",
+        "bul_ibm_001",
+        "bul_ibm_002",
+        "bul_ibm_003",
+        "bul_ibm_004",
+        "bul_ibm_005",
         "fact_sales_accounts_002"
       ],
       "fixture_claim_texts": [
         {
-          "fact_id": "fact_revenue_ops_004",
+          "fact_id": "bul_ibm_001",
           "claim_text": "Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams.",
           "confidence": "MEDIUM",
           "source_trace_archive_relpaths": [
@@ -831,7 +820,7 @@
           ]
         },
         {
-          "fact_id": "fact_revenue_ops_002",
+          "fact_id": "bul_ibm_002",
           "claim_text": "Expanded client portfolios by 50% through targeted relationship-building and maintained a Salesforce forecast pipeline that drove $10M in net-new revenue.",
           "confidence": "MEDIUM",
           "source_trace_archive_relpaths": [
@@ -839,7 +828,7 @@
           ]
         },
         {
-          "fact_id": "fact_revenue_ops_001",
+          "fact_id": "bul_ibm_003",
           "claim_text": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
           "confidence": "MEDIUM",
           "source_trace_archive_relpaths": [
@@ -848,7 +837,7 @@
           ]
         },
         {
-          "fact_id": "fact_partnerships_gtm_002",
+          "fact_id": "bul_ibm_004",
           "claim_text": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM-AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%.",
           "confidence": "MEDIUM",
           "source_trace_archive_relpaths": [
@@ -856,7 +845,7 @@
           ]
         },
         {
-          "fact_id": "fact_revenue_ops_005",
+          "fact_id": "bul_ibm_005",
           "claim_text": "Conducted preliminary M&A due diligence and developed synergy models to quantify technology integration costs and revenue opportunities.",
           "confidence": "MEDIUM",
           "source_trace_archive_relpaths": [
@@ -874,7 +863,7 @@
       ]
     },
     "ibm_narrative": {
-      "proof_source": "broad_skills_ledger",
+      "proof_source": "augmented_skills_graph",
       "fact_count": 3,
       "fact_ids": [
         "fact_consulting_001",

@@ -29,7 +29,7 @@ slot_bodies:
     <task_contract>
     NO FABRICATION: governed by pa_truth_oath_v1 (pa_core_law_v1.yaml). Return one JSON object only (no markdown fences).
     Every emitted term traces to C0 / ALLOWED_SOURCE_FACT_IDS (bul_*). JD, briefing, title, company, companion: targeting only.
-    verified_skill_inventory: grouping and label ideas only; each emitted term still needs competencies SRFS allowlist bul_* ids.
+    verified_skill_inventory: grouping and label ideas only, not proof; each emitted term still needs competencies SRFS allowlist bul_* ids.
     No em dash (U+2014); no inline [source:] / [fact:] tags; no unsupported JD-only terms.
     </task_contract>
       </system_authority>

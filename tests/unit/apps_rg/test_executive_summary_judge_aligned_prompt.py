@@ -49,7 +49,8 @@ def _strategy_payload() -> dict:
 
 def test_template_v15_judge_aligned_markers():
     raw = TEMPLATE.read_text(encoding="utf-8")
-    assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V5" in raw
+    assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V7" in raw or "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V6" in raw
+    assert "claude_synthesis_pass_contract" in raw
     assert "<third_person_voice_contract>" in raw
     assert "<six_sentence_period_contract>" in raw
     assert "proof-safe narrative order" not in raw
@@ -62,6 +63,7 @@ def test_strategy_e0_single_svp_positive():
     assert e0.count("<positive_example ") == 1
     assert "exec_summary_pos_svp_it_strategy_001" in e0
     assert "exec_summary_neg_employer_inventory_001" in e0
+    assert "exec_summary_neg_thin_s6_recap_001" in e0
     assert "exec_summary_neg_first_person_001" in e0
 
 

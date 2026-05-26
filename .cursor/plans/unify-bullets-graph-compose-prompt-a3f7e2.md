@@ -24,7 +24,7 @@ CURRENT_WAVE: —
 LAST_COMPLETED_WAVE: W1
 LAST_UPDATED: 2026-05-26
 PLAN_COMPLETED: 2026-05-26
-COMPLETION_NOTE: W1 DONE (GRAPH_BULLET_EVIDENCE_PACK + compose I0/U0 + path framing + pytest). W2 LIVE REAL_LLM deferred to graph-skills-deferred-followup-d7f2a8.
+COMPLETION_NOTE: W1 shipped; W1b (2026-05-26) removed UNIFY_SLOT_THEMES/archive anchors + track_ranked allocation. W2 LIVE verify pending.
 NOTION_PAGE_ID: 36c27693-f55c-8122-9714-fd02e06b923c
 NOTION_PLAN_URL: https://www.notion.so/unify-bullets-graph-compose-prompt-a3f7e2-36c27693f55c81229714fd02e06b923c
 

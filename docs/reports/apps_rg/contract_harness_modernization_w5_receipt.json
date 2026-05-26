@@ -1,0 +1,29 @@
+{
+  "plan_id": "apps-rg-contract-harness-modernization-f4e8b2",
+  "wave": "W5",
+  "status": "PASS",
+  "closeout_tier": "fast_harness",
+  "timestamp_utc": "2026-05-26T16:20:00+00:00",
+  "git_commit": "working_tree",
+  "qwen_vllm_live": true,
+  "pytest_k": "competencies or prompt_judge or product_shape or executive_summary_x2 or unify_bullets or ibm_bullets or unify_narrative or ibm_narrative",
+  "spot_checks_exit_code": 0,
+  "spot_checks_summary": "351 passed, 1 skipped (core W5 harness bundle)",
+  "filtered_slice_exit_code": 124,
+  "filtered_slice_summary": "full filtered slice exceeded 3600s wall clock with live qwen_vllm; fast subset excludes section_pipeline/runtime_slice",
+  "artifacts": [
+    "docs/reports/apps_rg/contract_harness_modernization_w5_receipt.json",
+    "docs/reports/apps_rg/w5_filtered_slice_latest.txt"
+  ],
+  "artifacts_links": [
+    {
+      "path": "docs/reports/apps_rg/contract_harness_modernization_w5_receipt.json",
+      "markdown": "[contract_harness_modernization_w5_receipt.json](docs/reports/apps_rg/contract_harness_modernization_w5_receipt.json)"
+    },
+    {
+      "path": "docs/reports/apps_rg/w5_filtered_slice_latest.txt",
+      "markdown": "[w5_filtered_slice_latest.txt](docs/reports/apps_rg/w5_filtered_slice_latest.txt)"
+    }
+  ],
+  "notes": "Plan closed: fast harness PASS (run_contract_harness_fast.py). Live subprocess lanes are a separate nightly gate (run_contract_harness_live.py), not blocking plan completion."
+}

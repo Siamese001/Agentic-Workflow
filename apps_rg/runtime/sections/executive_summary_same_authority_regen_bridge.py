@@ -216,7 +216,10 @@ def run_core_same_authority_regen(
             return {"content": "", "mocked_allow": True}
         if result.runtime_generation_status != "REAL_LLM":
             return {"content": "", "mocked_allow": True}
-        mark_regen_call_parse(artifact_dir, regen_outcome.call_id, parse_ok=bool(result.raw_model_output))
+        from apps_rg.runtime.sections.executive_summary_lane import parse_model_json
+
+        _parsed, _ = parse_model_json(str(result.raw_model_output or ""))
+        mark_regen_call_parse(artifact_dir, regen_outcome.call_id, parse_ok=bool(_parsed))
         return {"content": result.raw_model_output or ""}
 
     result = runner.run(

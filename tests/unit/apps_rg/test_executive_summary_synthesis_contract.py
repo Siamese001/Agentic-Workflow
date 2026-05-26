@@ -68,7 +68,10 @@ def test_judge_remediation_default_mentions_integrative_s6() -> None:
         unused_fact_ids=[],
         allowed_fact_count=6,
     )
-    assert "integrative" in msg.lower() or "S6" in msg
+    lower = msg.lower()
+    assert "regen_delta" in lower
+    assert "edit_budget" in lower
+    assert "s6" in lower or "connective" in lower or "synthesis" in lower
 
 
 def test_solitary_severe_triggers_when_two_judges_pass() -> None:
@@ -106,4 +109,4 @@ def test_solitary_severe_triggers_when_two_judges_pass() -> None:
         judges, runtime_generation_status="REAL_LLM", x2_passed=True
     )
     assert ok is True
-    assert receipt.get("trigger_mode") == "solitary_severe_soft_fail"
+    assert receipt.get("trigger_mode") == "any_judge_below_floor"

@@ -1133,6 +1133,13 @@ def main():
             "PLAN-DOD plan files have ## Definition of Done (advisory baseline)",
             "ops_scripts/ci/check_plan_definition_of_done.py",
         ),
+        # PLAN-WAVE-TOP — consolidated wave summary at top (Status Tables → Wave Progress).
+        # Advisory by default; fail-closed PLAN_WAVE_SUMMARY_TOP_FAIL_CLOSED=1.
+        # Bypass: PLAN_WAVE_SUMMARY_TOP_BYPASS=1.
+        (
+            "PLAN-WAVE-TOP consolidated wave summary at plan top (advisory)",
+            "ops_scripts/ci/check_plan_wave_summary_top.py",
+        ),
         # GAP-001 — Exit L4 Boundary Hardening gate.
         # Blocks direct filesystem durable writes in apps_rg Exit binding.
         # Verifies Exit only produces inert CommitRequest candidates.

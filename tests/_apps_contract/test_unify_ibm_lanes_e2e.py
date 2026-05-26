@@ -44,18 +44,17 @@ def test_mock_output_passes_lane_critical_x2(lane: str) -> None:
 
 
 @pytest.mark.parametrize("lane", ("unify_bullets", "ibm_bullets"))
-def test_bullets_mock_has_expected_counts_and_distribution(lane: str) -> None:
+def test_bullets_mock_has_expected_counts_without_intensity_model(lane: str) -> None:
     if lane == "unify_bullets":
         parsed, _ = unify_bullets_parsed_from_mock()
         expected_count = 6
-        dist = parsed["rewrite_distribution"]
     else:
         parsed, _ = ibm_bullets_parsed_from_mock()
         expected_count = 5
-        dist = parsed["rewrite_distribution"]
     assert len(parsed["bullets"]) == expected_count
-    assert dist.get("HEAVY") == 0 if lane == "ibm_bullets" else dist.get("HEAVY") == 2
-    assert dist.get("total") == expected_count
+    assert "rewrite_distribution" not in parsed
+    for bullet in parsed["bullets"]:
+        assert "rewrite_intensity" not in bullet
 
 
 def test_unify_narrative_two_sentences_fails_exactly_one_gate() -> None:

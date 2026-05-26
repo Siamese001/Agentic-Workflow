@@ -127,39 +127,34 @@ def gate_map(gates: list[Any]) -> dict[str, bool]:
 
 def minimal_unify_bullets_payload(
     *,
-    heavy: int,
-    moderate: int,
-    light_protected: int,
+    heavy: int = 0,
+    moderate: int = 0,
+    light_protected: int = 0,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    """Build six unify bullets with metric anchors on bul_unify_004/006 (intensity args ignored — retired)."""
+    del heavy, moderate, light_protected
     from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 
     bullets: list[dict[str, Any]] = []
     ledger: list[dict[str, Any]] = []
-    pattern = (["HEAVY"] * heavy + ["MODERATE"] * moderate + ["LIGHT_PROTECTED"] * light_protected)
-    while len(pattern) < 6:
-        pattern.append("MODERATE")
-    pattern = pattern[:6]
-    for bid, intensity in zip(UNIFY_BULLET_IDS, pattern, strict=True):
+    for bid in UNIFY_BULLET_IDS:
         text = (
             f"Delivered measurable platform outcome for {bid} with traceable enterprise controls "
             f"and audit-ready delivery."
         )
+        if bid == "bul_unify_004":
+            text = "Reduced lab-to-production cycle time from six months to three weeks."
+        if bid == "bul_unify_006":
+            text = "Generated $22M in IP-led revenue, expanded gross margins by 20%, and scaled team from 8 to 28."
         bullets.append(
             {
                 "bullet_id": bid,
                 "bullet_text": text,
-                "rewrite_intensity": intensity,
                 "source_fact_ids": [bid],
             }
         )
         ledger.append({"claim_text": text, "source_fact_ids": [bid]})
-    dist = {
-        "HEAVY": heavy,
-        "MODERATE": moderate,
-        "LIGHT_PROTECTED": light_protected,
-        "total": 6,
-    }
-    parsed = {"bullets": bullets, "claim_ledger": ledger, "rewrite_distribution": dist}
+    parsed = {"bullets": bullets, "claim_ledger": ledger}
     return bullets, ledger, parsed
 
 

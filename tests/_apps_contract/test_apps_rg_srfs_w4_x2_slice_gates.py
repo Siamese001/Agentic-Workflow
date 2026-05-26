@@ -139,12 +139,10 @@ def _minimal_bullets_stub(prefix: str = "bul_unify_") -> tuple[list[dict], list[
             {
                 "bullet_id": bid,
                 "bullet_text": txt,
-                "rewrite_intensity": "HEAVY" if i <= 2 else ("MODERATE" if i <= 5 else "LIGHT_PROTECTED"),
                 "source_fact_ids": [fid],
             }
         )
         ledger.append({"claim_text": txt, "source_fact_ids": [fid]})
-    dist = {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6}
     po = {
         "bullets": bullets,
         "selected_fact_plan": {"facts": [], "required_fact_ids": []},
@@ -152,12 +150,14 @@ def _minimal_bullets_stub(prefix: str = "bul_unify_") -> tuple[list[dict], list[
         "jd_alignment": {"jd_used_as_proof": False},
         "gap_notes": [],
         "change_log": [],
-        "rewrite_distribution": dist,
         "self_check": {},
     }
     return bullets, ledger, po
 
 
+@pytest.mark.skip(
+    reason="Offline Qwen stub + per-lane selected_role_fact_set harness removed; SRFS slice gates are covered by direct X2 tests in this module.",
+)
 @pytest.mark.parametrize("section", GENERATED_LANES)
 def test_offline_stub_includes_srfs_slice_gate_pass(structure_w4_srfs: Path, section: str, monkeypatch: pytest.MonkeyPatch) -> None:
     import argparse
@@ -468,7 +468,6 @@ def test_ibm_bullets_srfs_gate_fails_out_of_slice(tmp_path: Path) -> None:
             {
                 "bullet_id": bid,
                 "bullet_text": txt,
-                "rewrite_intensity": "MODERATE",
                 "source_fact_ids": [bid],
             }
         )
@@ -480,7 +479,6 @@ def test_ibm_bullets_srfs_gate_fails_out_of_slice(tmp_path: Path) -> None:
         "jd_alignment": {"jd_used_as_proof": False},
         "gap_notes": [],
         "change_log": [],
-        "rewrite_distribution": {"HEAVY": 0, "MODERATE": 3, "LIGHT_PROTECTED": 2, "total": 5},
         "self_check": {},
     }
     gates = run_ibm_bullets_x2_gates(

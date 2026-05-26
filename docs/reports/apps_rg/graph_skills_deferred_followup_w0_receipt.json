@@ -1,0 +1,12 @@
+{
+  "schema": "graph_skills_deferred_followup_wave_receipt_v1",
+  "plan_id": "graph-skills-deferred-followup-d7f2a8",
+  "wave_id": "W0",
+  "status": "PASS",
+  "git_commit": "e27875b14e970b0044a1599d855ea2ef1deb7b53",
+  "parent_closeout_path": "docs/reports/apps_rg/graph_skills_quality_enhancement_closeout.json",
+  "w10_ag_bind_path": "docs/reports/apps_rg/graph_skills_c03_unified_pipeline_bind.json",
+  "w10_ag_status": "PASS",
+  "live_x3_allow_lane_count": 2,
+  "phase_gate": "PHASE_GATE: wave=W0 status=PASS gate=G-W0"
+}

@@ -36,6 +36,16 @@ Bypass: PLAN_REGISTRATION_BYPASS=1
 ### Query Before Claim
 > Cursor Agent MUST NOT assert registration status without live `API-query-data-source` call in same response.
 
+### Consolidated wave summary at top (PLAN-WAVE-TOP)
+
+After Context (SCQA), every execution plan MUST include:
+
+1. `## Status Tables`
+2. `### Wave Progress` with canonical wave table (Wave, Focus, Status minimum)
+3. Table **before** the first `## Wave N` detail section
+
+Enforcement: `check_plan_wave_summary_top.py` (advisory repo scan), `check_plan_format_compliance.py` (strict per path), `after_file_edit` hook (warn; `PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT=1` blocks), `post_cursor_agent_plan_wave_summary_audit.py`.
+
 ---
 
 ## 2. Plan Update Authorization (Scope Expansion)
@@ -132,3 +142,7 @@ Every Backlog Items row MUST have (a) `Plan` relation OR (b) non-empty `Plan Fil
 | `SCOPE_AUTHORIZATION_BYPASS=1` | Skip update auth checks |
 | `NOTION_WAVE_DEFERRAL_BYPASS=1` | Allow MCP mid-wave (reads only) |
 | `NOTION_PLAN_IDENTITY_BYPASS=1` | Skip ID verification (debug) |
+| `PLAN_WAVE_SUMMARY_TOP_BYPASS=1` | Skip PLAN-WAVE-TOP CI gate |
+| `PLAN_WAVE_SUMMARY_TOP_FAIL_CLOSED=1` | PLAN-WAVE-TOP fails CI on violations |
+| `PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT=1` | `afterFileEdit` blocks non-compliant plan edits |
+| `PLAN_WAVE_SUMMARY_TOP_AUDIT_BYPASS=1` | Skip post-agent wave-summary audit |

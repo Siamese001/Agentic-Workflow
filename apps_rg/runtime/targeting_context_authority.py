@@ -146,13 +146,67 @@ def judge_material_context_from_packet(packet: dict[str, Any]) -> JudgeMaterialC
     )
 
 
+def graph_targeting_capsule_from_packet(packet: dict[str, Any]) -> dict[str, Any] | None:
+    tc = packet.get("targeting_context") if isinstance(packet.get("targeting_context"), dict) else {}
+    capsule = tc.get("graph_targeting_capsule")
+    return dict(capsule) if isinstance(capsule, dict) else None
+
+
+def build_targeting_binding_digest(
+    *,
+    target_title: str,
+    target_company: str,
+    jd_text: str,
+    briefing_text: str,
+    graph_targeting_capsule: dict[str, Any] | None = None,
+) -> str:
+    """Canonical generation/judge targeting binding (material + graph capsule + role anchors)."""
+    from apps_rg.runtime.c0.exec_summary_graph_targeting_capsule import (
+        canonical_graph_targeting_capsule_digest,
+    )
+
+    body = json.dumps(
+        {
+            "target_title": str(target_title or "").strip(),
+            "target_company": str(target_company or "").strip(),
+            "material_digest": material_targeting_digest(jd_text, briefing_text),
+            "graph_targeting_capsule_digest": canonical_graph_targeting_capsule_digest(
+                graph_targeting_capsule,
+            ),
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return sha256_hex64(body)
+
+
 def evaluate_targeting_parity(
     *,
     generation: GenerationMaterialContext,
     judge: JudgeMaterialContext,
     bundle: MaterialTargetingBundle | None = None,
+    graph_targeting_capsule_generation: dict[str, Any] | None = None,
+    graph_targeting_capsule_judge: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    parity_match = generation.generation_material_digest == judge.judge_material_digest
+    material_match = generation.generation_material_digest == judge.judge_material_digest
+    title = str(bundle.target_title if bundle else "")
+    company = str(bundle.target_company if bundle else "")
+    generation_targeting_digest = build_targeting_binding_digest(
+        target_title=title,
+        target_company=company,
+        jd_text=generation.jd_text_material,
+        briefing_text=generation.briefing_text_material,
+        graph_targeting_capsule=graph_targeting_capsule_generation,
+    )
+    judge_targeting_digest = build_targeting_binding_digest(
+        target_title=title,
+        target_company=company,
+        jd_text=judge.jd_text_material,
+        briefing_text=judge.briefing_text_material,
+        graph_targeting_capsule=graph_targeting_capsule_judge,
+    )
+    binding_match = generation_targeting_digest == judge_targeting_digest
+    parity_match = material_match and binding_match
     bundle_matches_generation: bool | None = None
     if bundle is not None:
         bundle_matches_generation = (
@@ -162,10 +216,16 @@ def evaluate_targeting_parity(
         if bundle_matches_generation is False:
             parity_match = False
     return {
-        "schema": "targeting_context_parity_v1",
+        "schema": "targeting_context_parity_v2",
         "targeting_bundle_digest": bundle.bundle_digest if bundle else None,
         "generation_material_digest": generation.generation_material_digest,
         "judge_material_digest": judge.judge_material_digest,
+        "generation_targeting_digest": generation_targeting_digest,
+        "judge_targeting_digest": judge_targeting_digest,
+        "targeting_parity_status": "match" if parity_match else "mismatch",
+        "targeting_binding_match": binding_match,
+        "target_title": title,
+        "target_company": company,
         "parity_match": parity_match,
         "bundle_matches_generation_material": bundle_matches_generation,
         "generation_jd_chars": len(generation.jd_text_material),
@@ -190,6 +250,9 @@ def merge_targeting_parity_into_usage_ledger(
     out["targeting_bundle_digest"] = bundle_d
     out["generation_material_digest"] = gen_d
     out["judge_material_digest"] = judge_d
+    out["generation_targeting_digest"] = str(parity_receipt.get("generation_targeting_digest") or "")
+    out["judge_targeting_digest"] = str(parity_receipt.get("judge_targeting_digest") or "")
+    out["targeting_parity_status"] = str(parity_receipt.get("targeting_parity_status") or "")
     out["parity_match"] = match
     refs = dict(out.get("input_refs") or {})
     refs["targeting_bundle_digest"] = bundle_d
@@ -241,7 +304,9 @@ __all__ = [
     "JudgeMaterialContext",
     "MaterialTargetingBundle",
     "TargetingAuthorityError",
+    "build_targeting_binding_digest",
     "evaluate_targeting_parity",
+    "graph_targeting_capsule_from_packet",
     "generation_material_context_from_bundle",
     "extract_material_targeting_from_compiled_prompt",
     "frozen_briefing_text",

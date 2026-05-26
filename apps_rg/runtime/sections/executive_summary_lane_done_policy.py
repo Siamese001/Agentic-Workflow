@@ -54,16 +54,9 @@ def _soft_judge_only_rescore_eligible(
     trigger_receipt: dict[str, Any],
     x1d_judges: list[dict[str, Any]],
 ) -> bool:
-    if judge_regen_triggered:
-        return False
-    if trigger_receipt.get("reason") != "two_or_more_judges_already_pass_skip_regen":
-        return False
-    from apps_rg.runtime.sections.executive_summary_judge_remediation import (
-        _is_model_backed_soft_fail,
-    )
-
-    soft_only = [j for j in x1d_judges if _is_model_backed_soft_fail(j)]
-    return len(soft_only) == 1
+    """Deprecated path: any judge below floor triggers Qwen regen (no rescore-only shortcut)."""
+    del judge_regen_triggered, trigger_receipt, x1d_judges
+    return False
 
 
 def compute_executive_summary_lane_done_policy(

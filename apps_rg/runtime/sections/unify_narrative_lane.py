@@ -262,6 +262,17 @@ def load_companion_unify_bullets_context() -> dict[str, Any]:
     )
 
 
+def build_prompt_messages(
+    runtime_payload: dict[str, Any],
+    companion_text: str = "",
+) -> list[dict[str, str]]:
+    """W7: PA-compiled system prompt via ``section_prompt_adapter`` (no inline fallback)."""
+    rid = str(runtime_payload.get("run_id") or "unify_narrative_prompt_build")
+    return compile_unify_narrative_prompt(
+        runtime_payload, companion_text, run_id=rid
+    ).artifact.messages
+
+
 def build_runtime_payload(
     *,
     base_json_path: Path,

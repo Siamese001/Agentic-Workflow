@@ -63,6 +63,7 @@ SECTION_DEDICATED_TEST_FRAGMENTS: dict[str, tuple[str, ...]] = {
         "tests/unit/apps_rg/test_competencies_rigor_x2.py",
         "tests/unit/apps_rg/test_competencies_certification_category_x2.py",
         "tests/unit/apps_rg/test_section_prompt_product_shape_drift.py",
+        "tests/unit/apps_rg/test_section_prompt_judge_lockstep.py",
     ),
 }
 

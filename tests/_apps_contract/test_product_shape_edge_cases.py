@@ -106,8 +106,12 @@ def test_bullet_truncate_records_export_shape_warning() -> None:
     assert "bullet_text_truncated" in warnings
 
 
-def test_unify_heavy_three_fails_rewrite_distribution_gate() -> None:
-    bullets, ledger, parsed = minimal_unify_bullets_payload(heavy=3, moderate=2, light_protected=1)
+def test_unify_missing_protected_metrics_fails_gate() -> None:
+    bullets, ledger, parsed = minimal_unify_bullets_payload(heavy=2, moderate=3, light_protected=1)
+    for b in bullets:
+        if b["bullet_id"] == "bul_unify_006":
+            b["bullet_text"] = "Scaled platform leadership without locked commercial metrics."
+    parsed["claim_ledger"] = [{"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets]
     gates = run_unify_bullets_x2_gates(
         bullets=bullets,
         parsed_output=parsed,
@@ -118,10 +122,10 @@ def test_unify_heavy_three_fails_rewrite_distribution_gate() -> None:
         x1d_judges=fake_x1d_judges(),
     )
     by_id = gate_map(gates)
-    assert by_id.get("x2_unify_rewrite_distribution_valid") is False
+    assert by_id.get("x2_unify_protected_bullet_metrics_preserved") is False
 
 
-def test_unify_heavy_two_passes_rewrite_distribution_gate() -> None:
+def test_unify_protected_metrics_present_passes_gate() -> None:
     bullets, ledger, parsed = minimal_unify_bullets_payload(heavy=2, moderate=3, light_protected=1)
     gates = run_unify_bullets_x2_gates(
         bullets=bullets,
@@ -133,7 +137,7 @@ def test_unify_heavy_two_passes_rewrite_distribution_gate() -> None:
         x1d_judges=fake_x1d_judges(),
     )
     by_id = gate_map(gates)
-    assert by_id.get("x2_unify_rewrite_distribution_valid") is True
+    assert by_id.get("x2_unify_protected_bullet_metrics_preserved") is True
 
 
 def test_unify_x2_does_not_emit_retired_max_heavy_three_gate() -> None:

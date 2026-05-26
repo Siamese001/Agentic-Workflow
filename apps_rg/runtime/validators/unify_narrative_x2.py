@@ -236,6 +236,25 @@ def run_unify_narrative_x2_gates(
         "Must be exactly one sentence.",
     )
 
+    from apps_rg.runtime.validators.narrative_mechanical_x2 import (
+        UNIFY_NARRATIVE_METRIC_PATTERNS,
+        register_narrative_mechanical_x2_gates,
+    )
+
+    register_narrative_mechanical_x2_gates(
+        add,
+        narrative_sentence,
+        lane_prefix="unify",
+        companion_bullet_texts=companion_bullet_texts or "",
+        metric_patterns=UNIFY_NARRATIVE_METRIC_PATTERNS,
+        max_metrics=(
+            1
+            if (companion_bullet_texts or "").strip()
+            and _companion_bullets_have_metrics(companion_bullet_texts or "")
+            else 2
+        ),
+    )
+
     leaks_name, name_hit = narrative_leaks_candidate_name_tokens(narrative_sentence, candidate_name)
     add(
         "x2_unify_narrative_no_candidate_name_tokens",

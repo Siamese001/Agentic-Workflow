@@ -7,12 +7,14 @@ from pathlib import Path
 import pytest
 
 from apps_rg.fact_inventory.augmented_skills_graph import (
+    CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH,
     CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
     SKILLS_AUTHORITY_SOURCE_TYPE,
     assert_skills_not_broad_ledger_authority,
     build_verified_skill_inventory_projection,
     default_augmented_skills_graph_path,
 )
+from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
 from apps_rg.fact_inventory.candidate_fact_ledger import default_ledger_path
 from apps_rg.runtime.proof_pool_resolver import resolve_section_proof_pool
 
@@ -35,6 +37,7 @@ def _assert_dual_source(meta: dict, *, pool) -> None:  # noqa: ANN001
     assert_skills_not_broad_ledger_authority(meta)
     assert meta.get("skills_authority_source_type") == SKILLS_AUTHORITY_SOURCE_TYPE
     assert meta.get("claim_evidence_source_type") in (
+        CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH,
         CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
         "selected_role_fact_set",
         "base_resume_fallback",
@@ -69,14 +72,15 @@ def test_competencies_graph_projection_authoritative() -> None:
     assert proj.get("verified_skill_inventory_deprecated", {}).get("authority") == "deprecated_non_authority"
 
 
-def test_unify_bullets_resolves_candidate_ledger_not_base_fallback_only() -> None:
+def test_unify_bullets_resolves_graph_skills_not_base_fallback_only() -> None:
     if not CANDIDATE_LEDGER_PATH.is_file():
         pytest.skip("candidate ledger missing")
     pool = resolve_section_proof_pool(section="unify_bullets", repo_root=REPO)
-    assert pool.proof_source in ("broad_skills_ledger", "srfs")
+    assert pool.proof_source == PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
     assert pool.base_resume_fallback_used is False
     meta = pool.proof_pool_metadata
     assert meta.get("skills_authority_status") == "PASS"
+    assert meta.get("claim_evidence_source_type") == CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH
 
 
 def test_no_section_uses_broad_skills_ledger_as_skills_authority() -> None:

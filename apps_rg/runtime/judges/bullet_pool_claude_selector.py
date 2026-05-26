@@ -19,6 +19,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     build_x1d_judge_system_prompt,
 )
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import SelfConsistencyPath
+from apps_rg.runtime.judges.employment_bullet_judge_rubric import pool_selector_scoring_instruction
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     FINAL_BULLET_COUNT,
     is_employment_bullet_lane,
@@ -72,10 +73,7 @@ def _format_bullet_pool(paths: list[SelfConsistencyPath], required_ids: tuple[st
             if bullet is None:
                 lines.append(f"[{bid}] MISSING")
             else:
-                lines.append(
-                    f"[{bid}] intensity={bullet.get('rewrite_intensity', '')} "
-                    f"text={bullet.get('bullet_text', '')}"
-                )
+                lines.append(f"[{bid}] text={bullet.get('bullet_text', '')}")
         blocks.append("\n".join(lines))
     return "\n\n".join(blocks)
 
@@ -115,15 +113,6 @@ def _employment_bullet_selection_prompt(
     n_final = FINAL_BULLET_COUNT.get(section_id, len(required_bullet_ids))
     n_paths = sc_path_count_for_lane(section_id)
     ids_line = ", ".join(required_bullet_ids)
-    rewrite_line = ""
-    if targeting_context:
-        contract = targeting_context.get("rewrite_intensity_contract")
-        by_bullet = targeting_context.get("rewrite_intensity_by_bullet")
-        if contract and by_bullet:
-            rewrite_line = (
-                f"Rewrite intensity contract: {contract}. Per bullet: {json.dumps(by_bullet, ensure_ascii=False)}. "
-                "Reject variants that violate assigned rewrite_intensity.\n"
-            )
     jd = (targeting_context or {}).get("jd_text") or ""
     briefing = (targeting_context or {}).get("briefing") or ""
     skills_ref = (targeting_context or {}).get("skills_graph_ref") or ""
@@ -131,12 +120,10 @@ def _employment_bullet_selection_prompt(
         f"You are the sole selector for {section_id} employment bullets.\n"
         f"{n_paths} Qwen self-consistency paths produced candidate sets. Pick the top {n_final} bullets that PASS "
         f"quality — exactly one winning variant per bullet_id: {ids_line}.\n"
-        f"{rewrite_line}"
         "Constraints:\n"
         "- Skills graph / selected_fact_plan facts are the only proof authority (JD and briefing are targeting "
         "emphasis only — never copy JD phrases as proof).\n"
-        "- Score each candidate 0.0–1.0 on factual_support, skills_alignment, impact_clarity, "
-        "role_fit_to_JD_and_briefing, rewrite_quality, and cross-bullet distinctness.\n"
+        f"- {pool_selector_scoring_instruction(section_id)}\n"
         f"- Minimum score floor: only select variants with score >= {min_score_threshold:.2f} AND passes=true. "
         f"If no variant for a slot meets the floor, set passes=false for that slot.\n"
         f"- Output exactly {n_final} selections when possible; each selected row must include score and passes.\n"

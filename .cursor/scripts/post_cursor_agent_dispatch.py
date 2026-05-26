@@ -78,6 +78,7 @@ LEGACY_SCRIPTS: list[str] = [
     "post_cursor_agent_adr_registry_capture.py",
     "post_cursor_agent_mcp_preflight_audit.py",
     "post_cursor_agent_plan_evidence_gate.py",
+    "post_cursor_agent_plan_wave_summary_audit.py",
     "post_cursor_agent_plan_registration_capture.py",
     "post_cursor_agent_fortknox_integrity_audit.py",
 ]

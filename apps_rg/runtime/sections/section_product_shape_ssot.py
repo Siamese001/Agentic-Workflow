@@ -23,8 +23,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     EXEC_SUMMARY_MIN_SENTENCES,
     EXPECTED_PROMPT_ID as EXEC_SUMMARY_PROMPT_ID,
 )
-from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_DEFAULT_DISTRIBUTION
-from apps_rg.runtime.validators.unify_bullets_x2 import DEFAULT_DISTRIBUTION as UNIFY_DEFAULT_DISTRIBUTION
+from apps_rg.runtime.reasoning.employment_bullet_pool import SC_PATH_COUNT_BY_LANE
 
 # Headline (aligned with headline_x2 headline_runtime_self_check_truth)
 HEADLINE_WORD_MIN = 10
@@ -87,8 +86,23 @@ RETIRED_EXEC_SUMMARY_X2_GATE_IDS: frozenset[str] = frozenset(
     }
 )
 
-# Non-authoritative upper bound; distribution correctness is x2_unify_rewrite_distribution_valid only.
-RETIRED_UNIFY_BULLETS_X2_GATE_IDS: frozenset[str] = frozenset({"x2_unify_max_heavy_3"})
+RETIRED_UNIFY_BULLETS_X2_GATE_IDS: frozenset[str] = frozenset(
+    {
+        "x2_unify_max_heavy_3",
+        "x2_unify_rewrite_distribution_valid",
+        "x2_unify_min_light_protected_1",
+        "x2_unify_intensity_per_bullet_ssot",
+        "x2_unify_metric_bullets_not_heavy",
+        "x2_unify_protected_bullet_preserved_or_justified",
+    }
+)
+
+RETIRED_IBM_BULLETS_X2_GATE_IDS: frozenset[str] = frozenset(
+    {
+        "x2_ibm_rewrite_distribution_valid",
+        "x2_ibm_heavy_rewrites_zero",
+    }
+)
 
 # W3: legacy SRFS slice membership gate IDs — superseded by *_active_proof_pool_source_fact_ids.
 RETIRED_PROOF_POOL_SLICE_X2_GATE_IDS: frozenset[str] = frozenset(
@@ -305,43 +319,55 @@ def _competencies_shape() -> SectionProductShape:
 
 
 def _unify_bullets_shape() -> SectionProductShape:
-    d = UNIFY_DEFAULT_DISTRIBUTION
+    pool_n = SC_PATH_COUNT_BY_LANE["unify_bullets"]
     return SectionProductShape(
         section_id="unify_bullets",
         template_ref="apps_rg/prompt_assembly/templates/unify_bullet_tailor_v1.yaml",
         x2_module_ref="apps_rg/runtime/validators/unify_bullets_x2.py",
         display_field="bullets",
         shape_summary=(
-            f"{d['total']} bullets; HEAVY={d['HEAVY']} MODERATE={d['MODERATE']} "
-            f"LIGHT_PROTECTED={d['LIGHT_PROTECTED']}; bul_unify_* fact ids only"
+            f"6 bullets from {pool_n}-path Qwen pool; Claude pool selector picks top-6 passing score; "
+            "bul_unify_* fact ids only"
         ),
         bounds_gate_ids=(
             "x2_unify_bullet_count_6",
-            "x2_unify_rewrite_distribution_valid",
+            "x2_unify_bullet_single_thought",
+            "x2_unify_bullet_no_embedded_newline",
+            "x2_unify_bullet_no_paragraph_block",
             "x2_unify_at_most_one_mechanism_dense_bullet",
+            "x2_unify_protected_bullet_metrics_preserved",
         ),
         proof_gate_ids=(
             "x2_text_claim_coverage_integrity",
             "x2_unify_metric_anchor_bullet_ownership",
             "x2_claim_ledger_claim_text_non_empty",
+            "x2_unify_no_rewrite_intensity_model",
+            "x2_unify_track_ranked_selection_method",
+            "x2_unify_not_legacy_six_pack_allocation",
+            "x2_unify_no_archive_claim_verbatim",
         ),
         style_gate_ids=(),
-        required_any_text_patterns=(r"exactly\s+6", r"HEAVY \+ MODERATE \+ LIGHT_PROTECTED == 6"),
+        required_any_text_patterns=(
+            r"exactly\s+6",
+            r"pool",
+            r"self[- ]consistency",
+            r"Claude.*select",
+        ),
         required_all_text_patterns=(
-            rf"HEAVY:\s*{d['HEAVY']}",
-            rf"MODERATE:\s*{d['MODERATE']}",
-            rf"LIGHT_PROTECTED:\s*{d['LIGHT_PROTECTED']}",
-            "rewrite_distribution",
             "bul_unify_",
+            "min_selection_score",
         ),
         forbidden_text_patterns=(
             r"exactly\s+5\s+bullets",
             r"7\s+bullets",
             r"bul_ibm_",
+            r"HEAVY:\s*2",
+            r"rewrite_intensity",
+            r"LIGHT_PROTECTED",
         ),
         jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
         compile_hints=(
-            f"distribution HEAVY={d['HEAVY']} MODERATE={d['MODERATE']} LIGHT_PROTECTED={d['LIGHT_PROTECTED']}",
+            f"qwen_pool_paths={pool_n}; claude_top_n=6; min_score gate",
             "companion_context_allowed=false",
         ),
     )
@@ -360,6 +386,10 @@ def _unify_narrative_shape() -> SectionProductShape:
         ),
         bounds_gate_ids=(
             "x2_unify_narrative_exactly_one_sentence",
+            "x2_unify_narrative_exactly_one_sentence_mechanical",
+            "x2_unify_narrative_forbidden_opener",
+            "x2_unify_narrative_metric_cap",
+            "x2_unify_narrative_bullet_overlap_threshold",
             "x2_unify_narrative_word_budget",
         ),
         proof_gate_ids=(
@@ -385,46 +415,49 @@ def _unify_narrative_shape() -> SectionProductShape:
 
 
 def _ibm_bullets_shape() -> SectionProductShape:
-    d = IBM_DEFAULT_DISTRIBUTION
+    pool_n = SC_PATH_COUNT_BY_LANE["ibm_bullets"]
     return SectionProductShape(
         section_id="ibm_bullets",
         template_ref="apps_rg/prompt_assembly/templates/ibm_bullet_tailor_v1.yaml",
         x2_module_ref="apps_rg/runtime/validators/ibm_bullets_x2.py",
         display_field="bullets",
         shape_summary=(
-            f"{d['total']} bullets; HEAVY={d['HEAVY']} (forbidden); MODERATE={d['MODERATE']} "
-            f"LIGHT_PROTECTED={d['LIGHT_PROTECTED']}; bul_ibm_* only"
+            f"5 bullets from {pool_n}-path Qwen pool; Claude pool selector picks top-5 passing score; "
+            "bul_ibm_* only"
         ),
         bounds_gate_ids=(
             "x2_ibm_bullet_count_5",
-            "x2_ibm_rewrite_distribution_valid",
+            "x2_ibm_bullet_single_thought",
+            "x2_ibm_bullet_no_embedded_newline",
+            "x2_ibm_bullet_no_paragraph_block",
+            "x2_ibm_narrative_slot_reservation",
         ),
         proof_gate_ids=(
             "x2_text_claim_coverage_integrity",
             "x2_ibm_metric_anchor_bullet_ownership",
             "x2_claim_ledger_claim_text_non_empty",
+            "x2_ibm_no_rewrite_intensity_model",
         ),
         style_gate_ids=(),
         required_any_text_patterns=(
             r"exactly\s+5",
-            r"zero\s+HEAVY",
-            r"HEAVY == 0",
-            r"HEAVY forbidden",
+            r"pool",
+            r"self[- ]consistency",
         ),
         required_all_text_patterns=(
-            rf"MODERATE:\s*{d['MODERATE']}",
-            rf"LIGHT_PROTECTED:\s*{d['LIGHT_PROTECTED']}",
             "bul_ibm_",
-            "rewrite_distribution",
+            "min_selection_score",
         ),
         forbidden_text_patterns=(
             r"exactly\s+6",
-            r"HEAVY:\s*2",
             r"bul_unify_",
+            r"rewrite_intensity",
+            r"\bHEAVY\b",
+            r"LIGHT_PROTECTED",
         ),
         jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
         compile_hints=(
-            f"distribution HEAVY=0 MODERATE={d['MODERATE']} LIGHT_PROTECTED={d['LIGHT_PROTECTED']}",
+            f"qwen_pool_paths={pool_n}; claude_top_n=5; min_score gate",
             "IBM_BULLETS_FOUNDATION slice",
         ),
     )
@@ -442,6 +475,10 @@ def _ibm_narrative_shape() -> SectionProductShape:
         ),
         bounds_gate_ids=(
             "x2_ibm_narrative_exactly_one_sentence",
+            "x2_ibm_narrative_exactly_one_sentence_mechanical",
+            "x2_ibm_narrative_forbidden_opener",
+            "x2_ibm_narrative_metric_cap",
+            "x2_ibm_narrative_bullet_overlap_threshold",
             "x2_ibm_narrative_word_budget",
         ),
         proof_gate_ids=(

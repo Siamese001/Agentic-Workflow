@@ -531,6 +531,15 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     p.add_argument(
+        "--best-effort-publish-allowed",
+        action="store_true",
+        help=(
+            "Executive summary only: allow pool publish when X2 passes but model-backed judges "
+            "do not all pass (publish_disposition=best_effort; proof_eligible=false). "
+            "May also set APPS_RG_EXEC_SUMMARY_BEST_EFFORT_PUBLISH_ALLOWED=1."
+        ),
+    )
+    p.add_argument(
         "--x1d-judges",
         default=argparse.SUPPRESS,
         help=(
@@ -547,6 +556,16 @@ def _build_parser() -> argparse.ArgumentParser:
         help=(
             "LLM temperature for qwen_vllm in section lanes including competencies "
             "(each lane enforces its own allowed range)."
+        ),
+    )
+    p.add_argument(
+        "--selected-role-fact-set",
+        dest="selected_role_fact_set",
+        default="",
+        help=(
+            "Optional path to SelectedRoleFactSet JSON for all generated apps_rg section lanes. "
+            "Section-specific proof slice (headline, competencies, bullets, narratives, executive summary). "
+            "Contract-fixture / dev containment only when graph proof pool is bypassed."
         ),
     )
     p.add_argument("--artifact-dir", default="", help="Override artifact output directory")
@@ -605,13 +624,20 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         if not is_test_harness():
             assert_production_runtime(context="python -m apps_rg", args=args)
 
+    from dotenv import load_dotenv
+
+    _repo_root = find_repo_root()
+    _env_path = _repo_root / ".env"
+    if _env_path.is_file():
+        load_dotenv(dotenv_path=_env_path, override=False)
+
     from apps_rg.runtime.embedding_settings import (
         apply_apps_rg_embedding_env_guards,
         bootstrap_apps_rg_embedding_env,
         write_embedding_settings_receipt,
     )
 
-    _emb_boot = bootstrap_apps_rg_embedding_env(repo_root=find_repo_root())
+    _emb_boot = bootstrap_apps_rg_embedding_env(repo_root=_repo_root)
     if _emb_boot:
         print(f"embedding_bootstrap: {_emb_boot}", flush=True)
     _emb_settings = apply_apps_rg_embedding_env_guards(route_section=section_eff)
@@ -901,6 +927,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                     process_exit_code=2,
                 )
                 return 2
+            tb_op = str((result or {}).get("token_budget_operator_message") or "").strip()
+            if tb_op:
+                print(tb_op, file=sys.stderr, flush=True)
             es_txt = str((result or {}).get("executive_summary_cli_output_text") or "").strip()
             if es_txt:
                 print(es_txt, flush=True)

@@ -3,37 +3,42 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-CANONICAL_CMD = [
-    sys.executable,
-    "-m",
-    "apps_rg",
-    "--section",
-    "ibm_bullets",
-    "--target-company",
-    "Synthetic Enterprise Corp.",
-    "--target-role",
-    "SVP Engineering, Agentic AI Platforms",
-    "--provider",
-    "mock",
-    "--mock-judges",
-    "--allow-test-mock-judges",
-    "--allow-non-allow-exit-zero",
-]
+import pytest
+
+from tests._apps_contract.lane_cli_common import (
+    REPO_ROOT,
+    artifact_dir_from_stdout,
+    contract_artifact_dir,
+    qwen_live_available,
+    run_lane_cli,
+)
+
+pytestmark = pytest.mark.skipif(
+    not qwen_live_available(),
+    reason="ibm_bullets CLI contract tests require live qwen_vllm (mock provider removed)",
+)
+
+_IBM_COMPANY = "Synthetic Enterprise Corp."
+_IBM_ROLE = "SVP Engineering, Agentic AI Platforms"
 
 
-def run_cmd(*extra: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(CANONICAL_CMD + list(extra), cwd=REPO_ROOT, text=True, capture_output=True, timeout=180)
-
-
-def _artifact_dir_from_stdout(proc: subprocess.CompletedProcess[str]) -> Path:
-    """Prefer stdout ``artifact_dir=`` over ``latest_mock_run`` pointers (xdist-safe)."""
-    for line in (proc.stdout or "").splitlines():
-        if line.startswith("artifact_dir="):
-            return Path(line.split("=", 1)[1].strip())
-    raise AssertionError(f"artifact_dir missing in stdout: {proc.stdout!r} stderr={proc.stderr!r}")
+def _run_contract(*extra: str) -> Path:
+    art = contract_artifact_dir("ibm_bullets", run_key=f"ibm_slice_{uuid.uuid4().hex[:10]}")
+    rel = art.relative_to(REPO_ROOT).as_posix()
+    proc = run_lane_cli(
+        "ibm_bullets",
+        artifact_dir=rel,
+        target_company=_IBM_COMPANY,
+        target_role=_IBM_ROLE,
+        timeout_s=600,
+    )
+    assert proc.returncode == 0, proc.stderr
+    rd = artifact_dir_from_stdout(proc)
+    assert rd.is_dir(), rd
+    return rd
 
 
 def load_json_at(rd: Path, name: str):
@@ -55,16 +60,22 @@ def test_deprecated_dispatch_module_not_a_cli():
     assert "python -m apps_rg" in blob
 
 
-def test_mock_dispatch_executes():
-    result = run_cmd()
-    assert result.returncode == 0, result.stderr
-    assert "IBM_BULLETS_OUTPUT:" in result.stdout
-
-
-def test_mock_outputs_five_bullets():
-    proc = run_cmd()
+def test_live_cli_dispatch_executes():
+    art = contract_artifact_dir("ibm_bullets")
+    rel = art.relative_to(REPO_ROOT).as_posix()
+    proc = run_lane_cli(
+        "ibm_bullets",
+        artifact_dir=rel,
+        target_company=_IBM_COMPANY,
+        target_role=_IBM_ROLE,
+        timeout_s=600,
+    )
     assert proc.returncode == 0, proc.stderr
-    rd = _artifact_dir_from_stdout(proc)
+    assert "IBM_BULLETS_OUTPUT:" in proc.stdout
+
+
+def test_live_outputs_five_bullets():
+    rd = _run_contract()
     l2 = load_json_at(rd, "l2_output.json")
     assert len(l2["bullets"]) == 5
     ids = [b["bullet_id"] for b in l2["bullets"]]
@@ -77,63 +88,10 @@ def test_mock_outputs_five_bullets():
     ]
 
 
-def test_rewrite_distribution_default():
-    proc = run_cmd()
-    assert proc.returncode == 0, proc.stderr
-    rd = _artifact_dir_from_stdout(proc)
-    dist = load_json_at(rd, "rewrite_distribution.json")
-    assert dist["HEAVY"] == 0
-    assert dist["MODERATE"] == 3
-    assert dist["LIGHT_PROTECTED"] == 2
-    assert dist["total"] == 5
-
-
-def test_mocked_judges_review_only():
-    proc = run_cmd()
-    assert proc.returncode == 0, proc.stderr
-    rd = _artifact_dir_from_stdout(proc)
-    x3 = load_json_at(rd, "x3_disposition.json")
-    assert x3["x3_code"] == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
-
-
-def test_x2_all_gates_pass_on_mock():
-    proc = run_cmd()
-    assert proc.returncode == 0, proc.stderr
-    rd = _artifact_dir_from_stdout(proc)
-    x2 = load_json_at(rd, "x2_gate_outputs.json")
-    assert x2["total_x2_gates"] == 31
-    assert x2["x2_failed"] == 0
-
-
-def test_l6_shadow_offline_only():
-    proc = run_cmd()
-    assert proc.returncode == 0, proc.stderr
-    rd = _artifact_dir_from_stdout(proc)
-    l6 = load_json_at(rd, "l6_shadow_eval_package.json")
-    assert l6["offline_only"] is True
-    assert l6["human_label_required"] is True
-    assert l6["promotion_allowed"] is False
-    assert l6["learning_mutation_performed"] is False
-    assert l6["runtime_approval_authority"] == "NONE"
-    assert l6.get("observer_law_assertion")
-    assert l6.get("future_run_only_assertion") is True
-    assert l6.get("current_run_mutation_assertion") is False
-    assert l6.get("durable_write_assertion") is False
-    assert l6.get("proof_eligible") is False
-    assert l6.get("proof_scope") == "plumbing_only"
-    assert l6.get("authorization_scope") == "PLUMBING_ONLY"
-    assert isinstance(l6.get("mocked_judges"), list)
-    assert l6.get("no_runtime_approval_authority_assertion") is True
-    assert l6.get("no_current_run_mutation_assertion") is True
-    cal = l6.get("foundation_proof_calibration") or {}
-    assert cal.get("foundation_proof_model_id") == "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1"
-    assert cal.get("treatment_profile") == "REWRITE_FROM_FACT_POOL_CONSTRAINED"
-    assert cal.get("taxonomy_label_prefix_gate_pass") is True
-    assert cal.get("unify_bullet_overlap_risk_level") == "none"
-    assert cal.get("x2_gate_summary", {}).get("x2_no_taxonomy_label_prefix_in_display_text") is True
-    summ = l6.get("allowed_fact_ids_summary") or {}
-    assert summ.get("allowed_fact_ids_sorted")
-    assert l6.get("claim_ledger_summary", {}).get("row_count", 0) >= 5
+def test_l2_output_has_no_rewrite_intensity_model():
+    rd = _run_contract()
+    l2 = load_json_at(rd, "l2_output.json")
+    assert "rewrite_intensity" not in json.dumps(l2).lower()
 
 
 def test_ibm_overlay_files_exist():
@@ -161,10 +119,8 @@ def test_no_agentic_core_in_overlay_files():
         assert "agentic_core" not in text, path
 
 
-def test_core_metrics_in_mock_output():
-    proc = run_cmd()
-    assert proc.returncode == 0, proc.stderr
-    rd = _artifact_dir_from_stdout(proc)
+def test_core_metrics_in_live_output():
+    rd = _run_contract()
     l2 = load_json_at(rd, "l2_output.json")
     joined = " ".join(b["bullet_text"] for b in l2["bullets"])
     assert "$15M" in joined or "$15m" in joined.lower()
@@ -181,50 +137,7 @@ def test_canonicalize_bul_ibm_double_underscore_source_fact_id():
     assert _canonicalize_bul_ibm_source_fact_id("bul_ibm____003") == "bul_ibm_003"
 
 
-def test_mock_provider_runtime_proof_surfaces_single_run():
-    """Single subprocess: bucket path, manifest, RUN_BUNDLE_INDEX, CLI summary lines."""
-    from apps_rg.runtime.cli_section_execution_report import parse_cli_execution_summary_block
-
-    proc = run_cmd()
-    assert proc.returncode == 0, proc.stderr
-    rd = _artifact_dir_from_stdout(proc).resolve()
-    rel = rd.relative_to(REPO_ROOT).as_posix()
-    assert "/runtime_proofs/ibm_bullets/mock/" in rel
-
-    mf = load_json_at(rd, "run_manifest.json")
-    assert mf.get("proof_eligible") is False
-    assert mf.get("proof_scope") == "plumbing_only"
-    assert mf.get("artifact_namespace_class") == "NON_PROOF_PLUMBING"
-    assert mf.get("test_only_mock_judges") is True
-
-    idx = load_json_at(rd, "RUN_BUNDLE_INDEX.json")
-    assert idx.get("proof_eligible") is False
-    assert idx.get("proof_scope") == "plumbing_only"
-
-    parsed = parse_cli_execution_summary_block(proc.stdout)
-    assert parsed.get("STATUS") == "PASS_NONCERTIFYING_RUNTIME_PROOF"
-    assert parsed.get("PROOF_STATUS") == "NOT_PROOF_ELIGIBLE"
-    assert parsed.get("PRODUCT_STATUS", "").startswith("X3_")
-    assert parsed.get("COMMAND_STATUS") == "PASS"
-
-
-def test_mock_provider_stores_under_mock_bucket():
-    test_mock_provider_runtime_proof_surfaces_single_run()
-
-
-def test_runtime_manifest_proof_accounting_non_proof():
-    test_mock_provider_runtime_proof_surfaces_single_run()
-
-
-def test_run_bundle_index_merges_proof_accounting():
-    test_mock_provider_runtime_proof_surfaces_single_run()
-
-
-def test_cli_execution_summary_explicit_non_proof_labels():
-    test_mock_provider_runtime_proof_surfaces_single_run()
-
-
-def test_lane_proof_bundle_mock_judge_hatch_and_offline_stub():
+def test_lane_proof_bundle_mock_judge_hatch_unit():
     from types import SimpleNamespace
 
     from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
@@ -306,4 +219,4 @@ def test_provider_request_dict_redacts_bearer_substrings():
     )
     dumped = json.dumps(req.to_dict())
     assert "supersecret" not in dumped
-    assert "?" not in dumped  # query stripped from artifact URL
+    assert "?" not in dumped

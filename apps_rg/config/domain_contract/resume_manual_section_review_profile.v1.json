@@ -1,0 +1,83 @@
+{
+  "app_id": "apps_rg",
+  "profile_id": "resume_manual_section_review_profile",
+  "schema_version": "v1",
+  "description": "S8: Manual section review harness profile. Defines section coverage, safe_to_send rules, reviewer decision values, and issue classification. Operational/dev review only ΓÇö not HITL governance.",
+
+  "sections_required": [
+    "headline",
+    "executive_summary",
+    "competencies",
+    "roles",
+    "education",
+    "certifications",
+    "early_career"
+  ],
+
+  "verbatim_sections": ["education", "certifications", "early_career"],
+
+  "reviewer_decisions": {
+    "UNREVIEWED": {
+      "safe_to_send": false,
+      "is_default": true,
+      "note": "Default ΓÇö reviewer has not acted"
+    },
+    "APPROVE": {
+      "safe_to_send": true,
+      "requires_explicit_set": true,
+      "note": "Reviewer explicitly approved. safe_to_send=true only when set explicitly."
+    },
+    "EDIT": {
+      "safe_to_send": false,
+      "note": "Reviewer wants to edit before sending"
+    },
+    "RETRY": {
+      "safe_to_send": false,
+      "note": "Section should be regenerated"
+    },
+    "REJECT": {
+      "safe_to_send": false,
+      "note": "Section is rejected ΓÇö resume must not send"
+    }
+  },
+
+  "blocking_support_statuses": [
+    "INSUFFICIENT_SOURCE_SUPPORT",
+    "BLOCKED",
+    "UNKNOWN",
+    "CONFLICTED",
+    "EMPTY",
+    "WEAK",
+    "WEAK_WITH_CAVEATS"
+  ],
+
+  "blocking_exit_check_statuses": ["FAIL", "BLOCKED", "UNKNOWN"],
+
+  "safe_to_send_policy": {
+    "missing_support_status_treated_as": "UNKNOWN",
+    "missing_exit_check_treated_as": "UNKNOWN",
+    "unknown_is_never_pass": true,
+    "auto_approve_allowed": false,
+    "note": "safe_to_send=true requires explicit APPROVE decision AND no blocking support/exit status"
+  },
+
+  "overall_status_values": {
+    "ALL_APPROVED": "All sections reviewed and approved by reviewer",
+    "PARTIAL_REVIEW": "Some sections reviewed but not all",
+    "UNREVIEWED": "No sections reviewed yet",
+    "BLOCKED": "One or more sections have blocking issues",
+    "NEEDS_EDIT": "One or more sections need editing"
+  },
+
+  "issue_types": {
+    "MISSING_SUPPORT_STATUS": "support_status field absent or UNKNOWN",
+    "BLOCKING_SUPPORT_STATUS": "support_status is in blocking set",
+    "MISSING_EXIT_CHECK": "deterministic exit check not provided or UNKNOWN",
+    "FAILING_EXIT_CHECK": "exit check verdict is FAIL or BLOCKED",
+    "EMPTY_SECTION": "section text is empty",
+    "MISSING_SOURCE": "original_source_text absent for non-verbatim section",
+    "VERBATIM_MISMATCH_WARNING": "verbatim section may have been modified (hash absent ΓÇö WARN only)",
+    "PLACEHOLDER_DETECTED": "generated text contains placeholder pattern",
+    "BULLET_ORDINAL_GAP": "bullet ordinal sequence has a gap"
+  }
+}

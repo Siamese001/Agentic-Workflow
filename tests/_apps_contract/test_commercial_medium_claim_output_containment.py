@@ -11,7 +11,7 @@ from apps_rg.fact_inventory.validate_commercial_medium_claim_output_containment 
     OUT_JSON,
     build_containment_payload,
 )
-from apps_rg.runtime.legacy_proof_sources import PROOF_SOURCE_BROAD_SKILLS_LEDGER
+from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -28,7 +28,7 @@ def test_containment_status_pass(containment: dict) -> None:
 @pytest.mark.parametrize("section_id", BULLET_NARRATIVE_SECTIONS)
 def test_section_proof_pool_fixture_output(containment: dict, section_id: str) -> None:
     pool = containment["section_proof_pool_fixture_output"][section_id]
-    assert pool["proof_source"] == PROOF_SOURCE_BROAD_SKILLS_LEDGER
+    assert pool["proof_source"] == PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
     assert pool["fact_count"] >= 1
     for row in pool["fixture_claim_texts"]:
         if row["confidence"] == "MEDIUM":

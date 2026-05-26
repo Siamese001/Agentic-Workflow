@@ -58,21 +58,16 @@ class TestStop7IBMBulletPrompt:
         assert "max_items: 5" in content or "max_items:5" in content
         assert "BULLET_COUNT_INVALID" in content
     
-    def test_any_heavy_rewrite_fails(self):
-        """Pre-output validation asserts HEAVY == 0"""
+    def test_pool_selection_contract_documented(self):
+        """IBM employment bullets use Qwen pool + Claude top-5 selection (no intensity taxonomy)."""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_bullet_tailor_v1.yaml"
         content = template_path.read_text(encoding="utf-8")
-        assert "HEAVY == 0" in content or "HEAVY: 0" in content
-        assert "HEAVY_REWRITE_FORBIDDEN" in content or "heavy_forbidden" in content.lower()
-    
-    def test_default_distribution_is_3_moderate_2_light_0_heavy(self):
-        """Default rewrite distribution is 3 MODERATE, 2 LIGHT_PROTECTED, 0 HEAVY"""
-        template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_bullet_tailor_v1.yaml"
-        content = template_path.read_text(encoding="utf-8")
-        assert "MODERATE: 3" in content
-        assert "LIGHT_PROTECTED: 2" in content
-        assert "HEAVY: 0" in content
-    
+        assert "pool_selection:" in content
+        assert "qwen_paths: 12" in content or "qwen_paths:12" in content
+        assert "final_bullet_count: 5" in content or "final_bullet_count:5" in content
+        assert "rewrite_distribution" not in content
+        assert "rewrite_intensity" not in content
+
     def test_supported_ibm_metrics_preserved_exactly(self):
         """Metric preservation rules require exact preservation for IBM metrics"""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_bullet_tailor_v1.yaml"

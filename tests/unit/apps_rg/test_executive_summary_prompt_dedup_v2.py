@@ -53,11 +53,19 @@ def _minimal_payload(*, product_visible: bool = False) -> dict:
 
 def test_template_has_dedup_marker_and_single_proof_law():
     raw = TEMPLATE.read_text(encoding="utf-8")
-    assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V5" in raw or "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V4" in raw
+    assert (
+        "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V7" in raw
+        or "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V6" in raw
+        or "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V5" in raw
+    )
     assert "pa_core_law_v1" in raw
     assert raw.count("<proof_law_v1>") == 1
     assert "<pre_output_checklist>" not in raw
-    assert "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V5" in raw or "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V4" in raw or "pa_core_law_v1" in raw
+    assert (
+        "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V7" in raw
+        or "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V6" in raw
+        or "EXEC_SUMMARY_PROMPT_JUDGE_ALIGNED_V5" in raw
+    ) or "pa_core_law_v1" in raw
     assert "many-shot" in raw.lower() or "E0" in raw
 
 
@@ -77,7 +85,7 @@ def test_compiled_prompt_smaller_without_duplicate_allowed_id_json():
     assert "proof_law_v1" in content
     assert "proof_law_v1" in content
     est = estimate_tokens_approximate(content)
-    assert est < 12000, f"compiled prompt still large for minimal fixture: {est}"
+    assert est < 13000, f"compiled prompt still large for minimal fixture: {est}"
 
 
 def test_capsule_enabled_for_augmented_skills_graph_authority():

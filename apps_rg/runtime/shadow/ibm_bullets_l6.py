@@ -21,17 +21,6 @@ def _x2_gate_pass(gates: list[dict[str, Any]], gate_id: str) -> bool:
     return bool(row.get("pass"))
 
 
-def _rewrite_counts_shadow(bullets: list[dict[str, Any]] | None) -> dict[str, int]:
-    counts = {"HEAVY": 0, "MODERATE": 0, "LIGHT_PROTECTED": 0}
-    for bullet in bullets or []:
-        if not isinstance(bullet, dict):
-            continue
-        key = str(bullet.get("rewrite_intensity", "")).upper()
-        if key in counts:
-            counts[key] += 1
-    return counts
-
-
 def _ref_if(repo_root: Path, artifact_dir: Path, filename: str) -> str | None:
     path = artifact_dir / filename
     return repo_rel(repo_root, path.resolve()) if path.is_file() else None
@@ -51,7 +40,6 @@ def extend_ibm_bullets_l6_learning_fields(
     claim_ledger: list[dict[str, Any]],
     allowed_fact_ids: set[str] | frozenset[str],
     bullets: list[dict[str, Any]] | None = None,
-    rewrite_distribution: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Merge IBM bullets learning-metadata / observer attestations (offline only).
 
@@ -79,9 +67,9 @@ def extend_ibm_bullets_l6_learning_fields(
 
     foundation_calibration: dict[str, Any] = {
         "foundation_proof_model_id": FOUNDATION_MODEL_ID,
-        "treatment_profile": "REWRITE_FROM_FACT_POOL_CONSTRAINED",
-        "rewrite_intensity_distribution_observed": _rewrite_counts_shadow(bullets),
-        "rewrite_distribution_declared": dict(rewrite_distribution or {}),
+        "treatment_profile": "QWEN_POOL_CLAUDE_TOP_N_SELECTION",
+        "bullet_count_observed": len(bullets or []),
+        "pool_selection_ref": _ref_if(rr, ad, "bullet_pool_selection.json"),
         "taxonomy_label_prefix_gate_pass": _x2_gate_pass(
             x2_gates, "x2_no_taxonomy_label_prefix_in_display_text"
         ),

@@ -5,9 +5,9 @@ Offline harness: CRO SRFS fixture + proof-pool plan facts (no live LLM).
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import yaml
@@ -29,6 +29,7 @@ from apps_rg.fact_inventory.validate_commercial_srfs_projection import (
     REJECTED_FACT_IDS,
 )
 from apps_rg.runtime.proof_pool_resolver import resolve_section_proof_pool
+from apps_rg.runtime.spine.front_contracts import build_section_front_spine_from_args
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT_JSON = ROOT / "docs/reports/apps_rg/commercial_medium_claim_output_containment.json"
@@ -57,6 +58,19 @@ def _ledger_row(ledger: dict[str, Any], fid: str) -> dict[str, Any] | None:
         if isinstance(row, dict) and row.get("candidate_fact_id") == fid:
             return row
     return None
+
+
+def _containment_lane_args() -> SimpleNamespace:
+    """Minimal CLI-shaped args for offline CRO fixture proof-pool resolution."""
+    return SimpleNamespace(
+        target_company=CRO_FIXTURE["target_company"],
+        target_role=CRO_FIXTURE["target_role"],
+        target_title=CRO_FIXTURE["target_role"],
+        jd_text=CRO_FIXTURE["jd_text"],
+        briefing=CRO_FIXTURE["briefing_text"],
+        base_resume_ref=None,
+        tenant_id="default",
+    )
 
 
 def _overclaim_verdict(row: dict[str, Any], *, claim_text: str) -> dict[str, Any]:
@@ -183,7 +197,15 @@ def build_containment_payload() -> dict[str, Any]:
         violations.append(f"unpromoted MEDIUM commercial in pools: {sorted(unpromoted_medium_in_pool)}")
 
     section_proof_pools: dict[str, dict[str, Any]] = {}
+    lane_args = _containment_lane_args()
     for sec in BULLET_NARRATIVE_SECTIONS:
+        front_spine = build_section_front_spine_from_args(
+            section_id=sec,
+            args=lane_args,
+            repo_root=ROOT,
+            jd_text_override=CRO_FIXTURE["jd_text"],
+            briefing_text_override=CRO_FIXTURE["briefing_text"],
+        )
         pool = resolve_section_proof_pool(
             section=sec,
             selected_role_fact_set_path=None,
@@ -192,6 +214,8 @@ def build_containment_payload() -> dict[str, Any]:
             target_role=CRO_FIXTURE["target_role"],
             jd_text=CRO_FIXTURE["jd_text"],
             briefing_text=CRO_FIXTURE["briefing_text"],
+            front_spine=front_spine,
+            product_visible=True,
         )
         plan_facts = list(pool.selected_fact_plan.get("facts") or [])
         plan_ids = [str(f.get("fact_id") or f.get("candidate_fact_id") or "") for f in plan_facts]

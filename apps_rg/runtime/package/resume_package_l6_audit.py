@@ -6,10 +6,10 @@ from typing import Any, Mapping
 
 from apps_rg.runtime.shadow.l6_handoff_packet import (
     BULLET_LANE_IDS,
-    IBM_REWRITE_POLICY_ID,
+    IBM_POOL_SELECTION_POLICY_ID,
     L6_PACKET_TYPE,
     L6_PACKET_VERSION,
-    UNIFY_REWRITE_POLICY_ID,
+    UNIFY_POOL_SELECTION_POLICY_ID,
 )
 
 
@@ -161,50 +161,37 @@ def _truthy_checks(pkt: Mapping[str, Any]) -> tuple[dict[str, bool], bool]:
 def _bullet_audit(lane_key: str, pkt: Mapping[str, Any]) -> tuple[dict[str, bool], bool]:
     incomplete = False
     out: dict[str, bool] = {}
-    brm = pkt.get("bullet_rewrite_map")
+    brm = pkt.get("bullet_evidence_map") or pkt.get("bullet_rewrite_map")
     bullet_meta_ok = (
-        pkt.get("rewrite_policy_id") is not None
-        and isinstance(pkt.get("rewrite_distribution"), dict)
+        pkt.get("selection_policy_id") is not None
         and isinstance(brm, list)
         and len(brm) > 0
     )
 
     if lane_key == "unify_bullets":
-        pol_ok = pkt.get("rewrite_policy_id") == UNIFY_REWRITE_POLICY_ID
+        pol_ok = pkt.get("selection_policy_id") == UNIFY_POOL_SELECTION_POLICY_ID
         if not pol_ok:
             incomplete = True
-        rd = pkt.get("rewrite_distribution") if isinstance(pkt.get("rewrite_distribution"), dict) else {}
-        counts_ok = (
-            int(rd.get("HEAVY", -1)) == 2
-            and int(rd.get("MODERATE", -1)) == 3
-            and int(rd.get("LIGHT_PROTECTED", -1)) == 1
-        )
-        out["x3_l6_unify_rewrite_distribution_exact"] = pol_ok and counts_ok
-        if not counts_ok:
+        out["x3_l6_unify_pool_selection_policy"] = pol_ok
+        if not pol_ok:
             incomplete = True
 
         unify_prot = False
         if isinstance(brm, list):
             for row in brm:
                 if isinstance(row, dict) and str(row.get("bullet_id")) == "bul_unify_006":
-                    unify_prot = bool(row.get("protected") is True)
+                    unify_prot = bool(row.get("metrics_preserved") is True)
                     break
         out["x3_l6_unify_protects_bul_unify_006"] = unify_prot
         if not unify_prot:
             incomplete = True
 
     elif lane_key == "ibm_bullets":
-        pol_ok = pkt.get("rewrite_policy_id") == IBM_REWRITE_POLICY_ID
+        pol_ok = pkt.get("selection_policy_id") == IBM_POOL_SELECTION_POLICY_ID
         if not pol_ok:
             incomplete = True
-        rd = pkt.get("rewrite_distribution") if isinstance(pkt.get("rewrite_distribution"), dict) else {}
-        counts_ok = (
-            int(rd.get("HEAVY", -1)) == 0
-            and int(rd.get("MODERATE", -1)) == 3
-            and int(rd.get("LIGHT_PROTECTED", -1)) == 2
-        )
-        out["x3_l6_ibm_rewrite_distribution_exact"] = pol_ok and counts_ok
-        if not counts_ok:
+        out["x3_l6_ibm_pool_selection_policy"] = pol_ok
+        if not pol_ok:
             incomplete = True
 
     if lane_key in BULLET_LANE_IDS and not bullet_meta_ok:

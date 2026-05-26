@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import uuid
 from pathlib import Path
 
 import pytest
@@ -19,34 +18,21 @@ from tests._apps_contract.lane_cli_common import (
     REPO_ROOT as REPO,
     base_canonical_argv,
     contract_env,
-    qwen_live_available,
-    run_lane_cli,
+    contract_live_pytestmark,
+    run_lane_cli_once,
 )
 
-pytestmark = pytest.mark.skipif(
-    not qwen_live_available(),
-    reason="ibm_bullets CLI contract tests require live qwen_vllm (mock provider removed)",
-)
+pytestmark = contract_live_pytestmark("ibm_bullets")
 
 
-def _run_ibm_contract() -> Path:
-    art = (
-        REPO
-        / "artifacts"
-        / "apps_rg"
-        / "runtime_proofs"
-        / "contract_harness"
-        / f"_ibm_bullets_pipeline_{uuid.uuid4().hex[:10]}"
-    )
-    art.mkdir(parents=True, exist_ok=True)
-    rel = art.relative_to(REPO).as_posix()
-    proc = run_lane_cli("ibm_bullets", artifact_dir=rel, timeout_s=600, live_l2=False)
-    assert proc.returncode == 0, proc.stderr
-    return art
+@pytest.fixture(scope="module")
+def ibm_bullets_lane_run_dir() -> Path:
+    """One live CLI run per module (was 8+ redundant subprocess invocations)."""
+    return run_lane_cli_once("ibm_bullets", run_key="ibm_bullets_pipeline_module")
 
 
-def test_canonical_cli_emits_required_ibm_bullets_artifacts():
-    rd = _run_ibm_contract()
+def test_canonical_cli_emits_required_ibm_bullets_artifacts(ibm_bullets_lane_run_dir: Path):
+    rd = ibm_bullets_lane_run_dir
     required = [
         "compiled_prompt.txt",
         "compiled_prompt_artifact.json",
@@ -76,14 +62,14 @@ def test_canonical_dispatch_does_not_import_ibm_bullets_dispatch():
     assert "ibm_bullets_dispatch" not in text
 
 
-def test_prompt_selection_trace_points_at_ibm_bullets_lane():
-    rd = _run_ibm_contract()
+def test_prompt_selection_trace_points_at_ibm_bullets_lane(ibm_bullets_lane_run_dir: Path):
+    rd = ibm_bullets_lane_run_dir
     trace = json.loads((rd / "prompt_selection_trace.json").read_text(encoding="utf-8"))
     assert trace.get("runtime_path") == "apps_rg.runtime.sections.ibm_bullets_lane"
 
 
-def test_compiled_ibm_prompt_and_artifact_surface_allowed_fact_ids():
-    rd = _run_ibm_contract()
+def test_compiled_ibm_prompt_and_artifact_surface_allowed_fact_ids(ibm_bullets_lane_run_dir: Path):
+    rd = ibm_bullets_lane_run_dir
     compiled_txt = (rd / "compiled_prompt.txt").read_text(encoding="utf-8").lower()
     assert "allowed_source_fact_ids" in compiled_txt
     art = json.loads((rd / "compiled_prompt_artifact.json").read_text(encoding="utf-8"))
@@ -93,8 +79,8 @@ def test_compiled_ibm_prompt_and_artifact_surface_allowed_fact_ids():
     assert all(str(x).startswith("bul_ibm_") for x in ids)
 
 
-def test_x2_contains_claim_text_gate_and_passes_on_mock():
-    rd = _run_ibm_contract()
+def test_x2_contains_claim_text_gate_and_passes_on_mock(ibm_bullets_lane_run_dir: Path):
+    rd = ibm_bullets_lane_run_dir
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     gate_ids = {g["gate_id"] for g in x2["gates"]}
     assert "x2_claim_ledger_claim_text_non_empty" in gate_ids
@@ -102,8 +88,8 @@ def test_x2_contains_claim_text_gate_and_passes_on_mock():
     assert g["pass"] is True
 
 
-def test_x2_text_claim_coverage_integrity_gate_present_and_passes_on_mock():
-    rd = _run_ibm_contract()
+def test_x2_text_claim_coverage_integrity_gate_present_and_passes_on_mock(ibm_bullets_lane_run_dir: Path):
+    rd = ibm_bullets_lane_run_dir
     assert (rd / "text_claim_coverage.json").is_file()
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     gate_ids = {g["gate_id"] for g in x2["gates"]}
@@ -112,20 +98,54 @@ def test_x2_text_claim_coverage_integrity_gate_present_and_passes_on_mock():
     assert g["pass"] is True
 
 
-def test_x2_ibm_only_fact_scope_present_and_passes_on_mock():
-    rd = _run_ibm_contract()
+def test_x2_ibm_only_fact_scope_present_and_passes_on_mock(ibm_bullets_lane_run_dir: Path):
+    rd = ibm_bullets_lane_run_dir
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     g = next(g for g in x2["gates"] if g["gate_id"] == "x2_ibm_only_fact_scope")
     assert g["pass"] is True
 
 
-def test_x2_no_taxonomy_label_prefix_gate_present_and_passes_on_mock():
-    rd = _run_ibm_contract()
+def test_x2_no_taxonomy_label_prefix_gate_present_and_passes_on_mock(ibm_bullets_lane_run_dir: Path):
+    rd = ibm_bullets_lane_run_dir
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     gate_ids = {g["gate_id"] for g in x2["gates"]}
     assert "x2_no_taxonomy_label_prefix_in_display_text" in gate_ids
     g = next(g for g in x2["gates"] if g["gate_id"] == "x2_no_taxonomy_label_prefix_in_display_text")
     assert g["pass"] is True
+
+
+def test_x2_no_rewrite_intensity_model_gate_passes_on_mock_baseline():
+    base = _ibm_x2_baseline()
+    gates = run_ibm_bullets_x2_gates(
+        bullets=base["bullets"],
+        parsed_output=base["parsed_output"],
+        claim_ledger=base["parsed_output"]["claim_ledger"],
+        allowed_fact_ids=base["allowed_fact_ids"],
+        jd_text=base["jd_text"],
+        runtime_generation_status=base["runtime_generation_status"],
+        x1d_judges=base["x1d_judges"],
+    )
+    g = next(x for x in gates if x.gate_id == "x2_ibm_no_rewrite_intensity_model")
+    assert g.pass_ is True
+
+
+def test_x2_no_rewrite_intensity_model_gate_fails_when_legacy_fields_present():
+    base = _ibm_x2_baseline()
+    parsed = dict(base["parsed_output"])
+    parsed["rewrite_distribution"] = {"HEAVY": 0, "MODERATE": 3, "LIGHT_PROTECTED": 2, "total": 5}
+    parsed["bullets"] = [dict(b) for b in parsed["bullets"]]
+    parsed["bullets"][0]["rewrite_intensity"] = "MODERATE"
+    gates = run_ibm_bullets_x2_gates(
+        bullets=parsed["bullets"],
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        allowed_fact_ids=base["allowed_fact_ids"],
+        jd_text=base["jd_text"],
+        runtime_generation_status=base["runtime_generation_status"],
+        x1d_judges=base["x1d_judges"],
+    )
+    g = next(x for x in gates if x.gate_id == "x2_ibm_no_rewrite_intensity_model")
+    assert g.pass_ is False
 
 
 @pytest.mark.parametrize(
@@ -164,7 +184,6 @@ def _ibm_x2_baseline():
         "model_name": "mock",
         "raw_output": "{}",
         "x1d_judges": judges,
-        "rewrite_distribution": parsed["rewrite_distribution"],
     }
 
 
@@ -198,7 +217,6 @@ def test_x2_ibm_only_fact_scope_fails_on_unify_fact_id():
         model_name=base["model_name"],
         raw_output=base["raw_output"],
         x1d_judges=base["x1d_judges"],
-        rewrite_distribution=base["rewrite_distribution"],
     )
     g = next(x for x in gates if x.gate_id == "x2_ibm_only_fact_scope")
     assert g.pass_ is False
@@ -228,7 +246,6 @@ def test_x2_no_taxonomy_label_prefix_gate_fails_closed():
         model_name=base["model_name"],
         raw_output=base["raw_output"],
         x1d_judges=base["x1d_judges"],
-        rewrite_distribution=base["rewrite_distribution"],
     )
     g = next(x for x in gates if x.gate_id == "x2_no_taxonomy_label_prefix_in_display_text")
     assert g.pass_ is False
@@ -240,8 +257,8 @@ def test_ibm_bullets_dispatch_module_has_no_argparse_cli():
     assert "argparse" not in text
 
 
-def test_l6_shadow_handoff_follows_canonical_run():
-    rd = _run_ibm_contract()
+def test_l6_shadow_handoff_follows_canonical_run(ibm_bullets_lane_run_dir: Path):
+    rd = ibm_bullets_lane_run_dir
     l6 = json.loads((rd / "l6_shadow_eval_package.json").read_text(encoding="utf-8"))
     assert l6.get("section_id") == "ibm_bullets"
     assert l6.get("packet_type") == "L6_SHADOW_HANDOFF_PACKET"
@@ -251,9 +268,8 @@ def test_l6_shadow_handoff_follows_canonical_run():
     assert l6.get("claim_ledger_summary", {}).get("row_count", 0) >= 5
     cal = l6.get("foundation_proof_calibration") or {}
     assert cal.get("foundation_proof_model_id") == "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1"
-    dist = cal.get("rewrite_intensity_distribution_observed") or {}
-    assert isinstance(dist, dict)
-    assert sum(int(v) for v in dist.values()) >= 5
+    assert cal.get("treatment_profile") == "QWEN_POOL_CLAUDE_TOP_N_SELECTION"
+    assert int(cal.get("bullet_count_observed") or 0) >= 5
     summ = l6.get("allowed_fact_ids_summary") or {}
     assert isinstance(summ.get("allowed_fact_ids_sorted"), list)
     assert summ["allowed_fact_ids_sorted"]

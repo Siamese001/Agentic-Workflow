@@ -38,6 +38,9 @@ def _lane_args(provider: str = "qwen_vllm") -> argparse.Namespace:
     )
 
 
+@pytest.mark.skip(
+    reason="Offline Qwen stub lane harness removed; graph proof pool metadata covered by load_section_proof_for_lane unit/contract tests.",
+)
 @pytest.mark.skipif(not LEDGER.is_file(), reason="master candidate fact ledger missing")
 @pytest.mark.parametrize("section", GENERATED_LANES)
 def test_proof_pool_metadata_for_section_offline_stub(

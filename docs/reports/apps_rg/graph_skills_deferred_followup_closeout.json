@@ -1,0 +1,388 @@
+{
+  "schema": "graph_skills_deferred_followup_closeout_v1",
+  "plan_id": "graph-skills-deferred-followup-d7f2a8",
+  "parent_plan_id": "graph-skills-quality-enhancement-c4e8a1",
+  "generated_at": "2026-05-26T06:21:27.055916+00:00",
+  "git_commit": "e27875b14e970b0044a1599d855ea2ef1deb7b53",
+  "status": "PARTIAL",
+  "parent_closeout_status": "PARTIAL",
+  "live_x3_allow_lane_count": 2,
+  "live_x3_required": 7,
+  "claims_c03_unified_pipeline_bound": true,
+  "claims_dynamic_graphrag_traverse_real_llm": false,
+  "claims_live_x3_7_of_7": false,
+  "claims_ci_ratchet_gha_executed": false,
+  "claims_release_eligible": false,
+  "w10_ag_bind_status": "PASS",
+  "wave_receipts": {
+    "w0": "docs/reports/apps_rg/graph_skills_deferred_followup_w0_receipt.json",
+    "w1": "docs/reports/apps_rg/graph_skills_deferred_followup_w1_receipt.json",
+    "w2": "docs/reports/apps_rg/graph_skills_deferred_followup_w2_receipt.json",
+    "w3": "docs/reports/apps_rg/graph_skills_deferred_followup_w3_receipt.json",
+    "w4": "docs/reports/apps_rg/graph_skills_deferred_followup_w4_receipt.json",
+    "w5": "docs/reports/apps_rg/graph_skills_deferred_followup_closeout.json"
+  },
+  "d6_lane_matrix": [
+    {
+      "lane": "headline",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260525_223026",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_ALLOW",
+      "x3_normalized": "ALLOW_FINISH",
+      "x3_pass": true,
+      "live_x3_allow_claimed": true,
+      "brown_jd_sha256": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "brown_briefing_sha256": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "brown_fixture_digests_pass": true,
+      "x2_gate_summary": {
+        "status": "PASS",
+        "failed_gates": [],
+        "na_gates": [],
+        "gate_count": 53
+      },
+      "d6_artifact_checklist": {
+        "artifact_dir": "C:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/runtime_proofs/headline/real/headline_20260525_223026",
+        "artifacts_present": {
+          "native_c03_final_evidence.json": false,
+          "graph_selection_rationale.json": true,
+          "section_input_usage_ledger.json": true,
+          "compiled_prompt.txt": true,
+          "l2_output.json": true,
+          "x2_gate_outputs.json": true,
+          "x3_disposition.json": true,
+          "provider_request.json": true,
+          "provider_response.json": true,
+          "x1d_judge_outputs": true
+        },
+        "skill_capsule_marker_present": false,
+        "checklist_pass": false,
+        "missing": [
+          "native_c03_final_evidence.json"
+        ]
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "lane": "executive_summary",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260525_230113",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_ALLOW",
+      "x3_normalized": "ALLOW_FINISH",
+      "x3_pass": true,
+      "live_x3_allow_claimed": true,
+      "brown_jd_sha256": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "brown_briefing_sha256": "74bd4674f23f17236abf3e5a3837e7fd422d6691e2f7e1dc234653f11a6da1f6",
+      "brown_fixture_digests_pass": true,
+      "x2_gate_summary": {
+        "status": "PASS",
+        "failed_gates": [],
+        "na_gates": [],
+        "gate_count": 81
+      },
+      "d6_artifact_checklist": {
+        "artifact_dir": "C:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260525_230113",
+        "artifacts_present": {
+          "native_c03_final_evidence.json": true,
+          "graph_selection_rationale.json": true,
+          "section_input_usage_ledger.json": true,
+          "compiled_prompt.txt": true,
+          "l2_output.json": true,
+          "x2_gate_outputs.json": true,
+          "x3_disposition.json": true,
+          "provider_request.json": true,
+          "provider_response.json": true,
+          "x1d_judge_outputs": true
+        },
+        "skill_capsule_marker_present": true,
+        "checklist_pass": true,
+        "missing": []
+      },
+      "status": "PASS"
+    },
+    {
+      "lane": "unify_bullets",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260523_123122",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "brown_jd_sha256": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "brown_briefing_sha256": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "brown_fixture_digests_pass": true,
+      "x2_gate_summary": {
+        "status": "FAIL",
+        "failed_gates": [
+          {
+            "gate_id": "x2_unify_only_fact_scope",
+            "failure_reason": "Fact scope must match active proof pool. (tokens_not_in_allowed_fact_pool=['bul_unify_.003'])"
+          },
+          {
+            "gate_id": "x2_unify_bullets_active_proof_pool_source_fact_ids",
+            "failure_reason": "unsupported_source_fact_ids:bul_unify_.003"
+          },
+          {
+            "gate_id": "x2_selected_fact_ids_only",
+            "failure_reason": "source_fact_ids include non-allowed / forbidden tokens"
+          },
+          {
+            "gate_id": "x2_section_claims_supported_by_base_resume",
+            "failure_reason": "Material claims lack selected base-resume support or attribute non-evidence inputs as fact IDs"
+          },
+          {
+            "gate_id": "x2_claim_ledger_source_fact_ids_subset_of_fec",
+            "failure_reason": "claim_ledger_widens_fec:bul_unify_.003"
+          }
+        ],
+        "na_gates": [],
+        "gate_count": 48
+      },
+      "d6_artifact_checklist": {
+        "artifact_dir": "C:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260523_123122",
+        "artifacts_present": {
+          "native_c03_final_evidence.json": false,
+          "graph_selection_rationale.json": true,
+          "section_input_usage_ledger.json": true,
+          "compiled_prompt.txt": true,
+          "l2_output.json": true,
+          "x2_gate_outputs.json": true,
+          "x3_disposition.json": true,
+          "provider_request.json": true,
+          "provider_response.json": true,
+          "x1d_judge_outputs": true
+        },
+        "skill_capsule_marker_present": false,
+        "checklist_pass": false,
+        "missing": [
+          "native_c03_final_evidence.json"
+        ]
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "lane": "unify_narrative",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260523_123336",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "brown_jd_sha256": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "brown_briefing_sha256": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "brown_fixture_digests_pass": true,
+      "x2_gate_summary": {
+        "status": "FAIL",
+        "failed_gates": [
+          {
+            "gate_id": "x2_unify_narrative_exactly_one_sentence",
+            "failure_reason": "Must be exactly one sentence."
+          },
+          {
+            "gate_id": "x2_unify_narrative_source_supported",
+            "failure_reason": "claim_ledger must map to allowed Unify narrative proof facts only."
+          },
+          {
+            "gate_id": "x2_unify_narrative_targeting_inputs_used_but_not_proof",
+            "failure_reason": "jd_alignment_not_object"
+          },
+          {
+            "gate_id": "x2_json_parse_valid",
+            "failure_reason": "parsed_output is None - parsing failed"
+          }
+        ],
+        "na_gates": [
+          {
+            "gate_id": "x2_unify_narrative_requires_finalized_bullets",
+            "failure_reason": "Narrative LLM skipped: upstream bullets not finalized.",
+            "na_allowed": true
+          }
+        ],
+        "gate_count": 43
+      },
+      "d6_artifact_checklist": {
+        "artifact_dir": "C:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260523_123336",
+        "artifacts_present": {
+          "native_c03_final_evidence.json": false,
+          "graph_selection_rationale.json": true,
+          "section_input_usage_ledger.json": true,
+          "compiled_prompt.txt": true,
+          "l2_output.json": true,
+          "x2_gate_outputs.json": true,
+          "x3_disposition.json": true,
+          "provider_request.json": true,
+          "provider_response.json": true,
+          "x1d_judge_outputs": true
+        },
+        "skill_capsule_marker_present": false,
+        "checklist_pass": false,
+        "missing": [
+          "native_c03_final_evidence.json"
+        ]
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "lane": "ibm_bullets",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260523_123849",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "brown_jd_sha256": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "brown_briefing_sha256": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "brown_fixture_digests_pass": true,
+      "x2_gate_summary": {
+        "status": "FAIL",
+        "failed_gates": [
+          {
+            "gate_id": "x2_ibm_metric_anchor_bullet_ownership",
+            "failure_reason": "Metric anchor ownership failed: ['bul_ibm_001_missing_metric_token', 'bul_ibm_002_missing_metric_token', 'bul_ibm_003_missing_metric_token', 'bul_ibm_004_missing_metric_token', 'bul_ibm_005_missing_metric_token']"
+          },
+          {
+            "gate_id": "x2_ibm_metrics_preserved",
+            "failure_reason": "Core IBM metrics ($15M, 99.9%, 30%, 25%, 50%) must appear in bullet text."
+          },
+          {
+            "gate_id": "x2_metric_fact_id_granularity",
+            "failure_reason": "Metric claims lack matching bul_ibm_* source_fact_ids in claim_ledger."
+          }
+        ],
+        "na_gates": [],
+        "gate_count": 43
+      },
+      "d6_artifact_checklist": {
+        "artifact_dir": "C:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260523_123849",
+        "artifacts_present": {
+          "native_c03_final_evidence.json": false,
+          "graph_selection_rationale.json": true,
+          "section_input_usage_ledger.json": true,
+          "compiled_prompt.txt": true,
+          "l2_output.json": true,
+          "x2_gate_outputs.json": true,
+          "x3_disposition.json": true,
+          "provider_request.json": true,
+          "provider_response.json": true,
+          "x1d_judge_outputs": true
+        },
+        "skill_capsule_marker_present": false,
+        "checklist_pass": false,
+        "missing": [
+          "native_c03_final_evidence.json"
+        ]
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "lane": "ibm_narrative",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260523_124006",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": "X3_BLOCK",
+      "x3_normalized": "BLOCK",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "brown_jd_sha256": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "brown_briefing_sha256": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "brown_fixture_digests_pass": true,
+      "x2_gate_summary": {
+        "status": "FAIL",
+        "failed_gates": [
+          {
+            "gate_id": "x2_ibm_narrative_exactly_one_sentence",
+            "failure_reason": "Must be exactly one sentence."
+          },
+          {
+            "gate_id": "x2_ibm_narrative_source_supported",
+            "failure_reason": "claim_ledger must map to IBM bullet facts only."
+          },
+          {
+            "gate_id": "x2_ibm_narrative_claim_ledger_clause_decomposition",
+            "failure_reason": "empty_narrative"
+          },
+          {
+            "gate_id": "x2_json_parse_valid",
+            "failure_reason": "raw_output is missing"
+          }
+        ],
+        "na_gates": [
+          {
+            "gate_id": "x2_ibm_narrative_requires_finalized_bullets",
+            "failure_reason": "Narrative LLM skipped: upstream IBM bullets not finalized.",
+            "na_allowed": true
+          }
+        ],
+        "gate_count": 46
+      },
+      "d6_artifact_checklist": {
+        "artifact_dir": "C:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260523_124006",
+        "artifacts_present": {
+          "native_c03_final_evidence.json": false,
+          "graph_selection_rationale.json": true,
+          "section_input_usage_ledger.json": true,
+          "compiled_prompt.txt": true,
+          "l2_output.json": true,
+          "x2_gate_outputs.json": true,
+          "x3_disposition.json": true,
+          "provider_request.json": true,
+          "provider_response.json": true,
+          "x1d_judge_outputs": true
+        },
+        "skill_capsule_marker_present": false,
+        "checklist_pass": false,
+        "missing": [
+          "native_c03_final_evidence.json"
+        ]
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "lane": "competencies",
+      "artifact_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260524_010446",
+      "proof_class": "REAL_LLM_RUNTIME_PROOF",
+      "x3_code_raw": null,
+      "x3_normalized": "UNKNOWN",
+      "x3_pass": false,
+      "live_x3_allow_claimed": false,
+      "brown_jd_sha256": "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f",
+      "brown_briefing_sha256": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
+      "brown_fixture_digests_pass": true,
+      "x2_gate_summary": {
+        "status": "PASS",
+        "failed_gates": [],
+        "na_gates": [],
+        "gate_count": 0
+      },
+      "d6_artifact_checklist": {
+        "artifact_dir": "C:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260524_010446",
+        "artifacts_present": {
+          "native_c03_final_evidence.json": false,
+          "graph_selection_rationale.json": false,
+          "section_input_usage_ledger.json": false,
+          "compiled_prompt.txt": false,
+          "l2_output.json": false,
+          "x2_gate_outputs.json": false,
+          "x3_disposition.json": false,
+          "provider_request.json": false,
+          "provider_response.json": false,
+          "x1d_judge_outputs": false
+        },
+        "skill_capsule_marker_present": false,
+        "checklist_pass": false,
+        "missing": [
+          "native_c03_final_evidence.json",
+          "graph_selection_rationale.json",
+          "section_input_usage_ledger.json",
+          "compiled_prompt.txt",
+          "l2_output.json",
+          "x2_gate_outputs.json",
+          "x3_disposition.json",
+          "provider_request.json",
+          "provider_response.json",
+          "x1d_judge_outputs"
+        ]
+      },
+      "status": "PARTIAL"
+    }
+  ],
+  "notes": "Follow-on plan; parent remains Completed."
+}

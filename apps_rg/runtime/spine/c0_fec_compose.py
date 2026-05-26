@@ -359,13 +359,22 @@ def emit_spine_c0_fec_artifacts(
     )
     from apps_rg.runtime.spine.c0_graph_lane_receipt import (
         build_c0_graph_lane_receipt_from_bridge,
+        build_c0_graph_lane_receipt_from_spine_retrieve,
         emit_c0_graph_lane_receipt,
     )
 
-    graph_receipt = build_c0_graph_lane_receipt_from_bridge(
-        bridge.bridge_doc,
-        section_id=str(bridge.bridge_doc.get("section_id") or ""),
-    )
+    section_key = str(bridge.bridge_doc.get("section_id") or "")
+    spine_rec = bridge.bridge_doc.get("spine_c0_retrieve_receipt")
+    if isinstance(spine_rec, dict) and spine_rec.get("canonical_c0_3_graph_claimed"):
+        graph_receipt = build_c0_graph_lane_receipt_from_spine_retrieve(
+            spine_rec,
+            section_id=section_key,
+        )
+    else:
+        graph_receipt = build_c0_graph_lane_receipt_from_bridge(
+            bridge.bridge_doc,
+            section_id=section_key,
+        )
     emit_c0_graph_lane_receipt(artifact_dir, graph_receipt)
     return paths
 

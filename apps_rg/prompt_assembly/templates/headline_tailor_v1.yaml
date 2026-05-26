@@ -141,7 +141,8 @@ temperature_profile:
   rationale: "Creative phrasing in X/Y/Z; PRODUCT_SHAPE + validators enforce structure and proof JSON."
 
 w5_proof_targeting_harmonization: |
-  Proof: headline SRFS slice / allowlist only. Targeting: JD, briefing, title, company, companion — never proof or source_fact_ids.
+  Proof: SelectedRoleFactSet (selectedrolefactset) headline slice / allowlist only — source_fact_ids must stay in-slice or X2 fails.
+  Targeting: JD, briefing, title, company, companion — never proof. Omit unsupported claims; no invention beyond selected facts.
   Full law: pa_core_law_v1.yaml. X2 gate IDs: PRODUCT_SHAPE append only.
 
 hash_fields:

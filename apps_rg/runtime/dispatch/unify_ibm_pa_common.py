@@ -123,7 +123,6 @@ BULLETS_R0 = json.dumps(
             "jd_alignment",
             "gap_notes",
             "change_log",
-            "rewrite_distribution",
             "self_check",
         ],
         "properties": {
@@ -172,7 +171,6 @@ BULLETS_R0 = json.dumps(
             "jd_alignment": {"type": "object"},
             "gap_notes": {"type": "array"},
             "change_log": {"type": "array"},
-            "rewrite_distribution": {"type": "object"},
             "self_check": {"type": "object"},
         },
     },

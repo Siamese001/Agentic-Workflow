@@ -11,38 +11,20 @@ from tests._apps_contract.lane_cli_common import (
     REPO_ROOT as REPO,
     base_canonical_argv,
     contract_env,
-    qwen_live_available,
-    run_lane_cli,
+    contract_live_pytestmark,
+    run_lane_cli_once,
 )
 
-pytestmark = pytest.mark.skipif(
-    not qwen_live_available(),
-    reason="unify_bullets CLI contract tests require live qwen_vllm (mock provider removed)",
-)
-
-_CONTRACT_RUN_SEQ = 0
+pytestmark = contract_live_pytestmark("unify_bullets")
 
 
-def _run_unify_contract() -> Path:
-    global _CONTRACT_RUN_SEQ
-    _CONTRACT_RUN_SEQ += 1
-    art = (
-        REPO
-        / "artifacts"
-        / "apps_rg"
-        / "runtime_proofs"
-        / "contract_harness"
-        / f"_unify_bullets_pipeline_{uuid.uuid4().hex[:10]}"
-    )
-    art.mkdir(parents=True, exist_ok=True)
-    rel = art.relative_to(REPO).as_posix()
-    proc = run_lane_cli("unify_bullets", artifact_dir=rel, timeout_s=600, live_l2=False)
-    assert proc.returncode == 0, proc.stderr
-    return art
+@pytest.fixture(scope="module")
+def unify_bullets_lane_run_dir() -> Path:
+    return run_lane_cli_once("unify_bullets", run_key="unify_bullets_pipeline_module")
 
 
-def test_canonical_cli_emits_required_unify_bullets_artifacts():
-    rd = _run_unify_contract()
+def test_canonical_cli_emits_required_unify_bullets_artifacts(unify_bullets_lane_run_dir: Path):
+    rd = unify_bullets_lane_run_dir
     required = [
         "compiled_prompt.txt",
         "compiled_prompt_artifact.json",
@@ -92,8 +74,10 @@ def test_canonical_dispatch_does_not_reference_unify_dispatch():
     assert "unify_bullets_dispatch" not in text
 
 
-def test_compiled_unify_prompt_contains_allowed_source_fact_ids_and_claim_text_contract():
-    rd = _run_unify_contract()
+def test_compiled_unify_prompt_contains_allowed_source_fact_ids_and_claim_text_contract(
+    unify_bullets_lane_run_dir: Path,
+):
+    rd = unify_bullets_lane_run_dir
     compiled = (rd / "compiled_prompt.txt").read_text(encoding="utf-8").lower()
     assert "allowed_source_fact_ids" in compiled
     assert "bul_unify_001" in compiled
@@ -101,8 +85,8 @@ def test_compiled_unify_prompt_contains_allowed_source_fact_ids_and_claim_text_c
     assert "non-empty" in compiled
 
 
-def test_x2_contains_claim_text_gate_and_passes_on_mock():
-    rd = _run_unify_contract()
+def test_x2_contains_claim_text_gate_and_passes_on_mock(unify_bullets_lane_run_dir: Path):
+    rd = unify_bullets_lane_run_dir
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     gate_ids = {g["gate_id"] for g in x2["gates"]}
     assert "x2_claim_ledger_claim_text_non_empty" in gate_ids
@@ -111,8 +95,8 @@ def test_x2_contains_claim_text_gate_and_passes_on_mock():
     assert x2["failed_gates"] == []
 
 
-def test_x2_text_claim_coverage_integrity_gate_present_and_passes_on_mock():
-    rd = _run_unify_contract()
+def test_x2_text_claim_coverage_integrity_gate_present_and_passes_on_mock(unify_bullets_lane_run_dir: Path):
+    rd = unify_bullets_lane_run_dir
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     gate_ids = {g["gate_id"] for g in x2["gates"]}
     assert "x2_text_claim_coverage_integrity" in gate_ids
@@ -120,16 +104,16 @@ def test_x2_text_claim_coverage_integrity_gate_present_and_passes_on_mock():
     assert ig["pass"] is True
 
 
-def test_canonical_claim_ledger_ids_use_unify_bullets_prefix_on_mock():
-    rd = _run_unify_contract()
+def test_canonical_claim_ledger_ids_use_unify_bullets_prefix_on_mock(unify_bullets_lane_run_dir: Path):
+    rd = unify_bullets_lane_run_dir
     canon = json.loads((rd / "canonical_claim_ledger_v2.json").read_text(encoding="utf-8"))
     for row in canon.get("claims") or []:
         cid = str(row.get("claim_id") or "")
         assert cid.startswith("unify_bullets_claim_"), cid
 
 
-def test_text_claim_coverage_structural_schema_on_mock():
-    rd = _run_unify_contract()
+def test_text_claim_coverage_structural_schema_on_mock(unify_bullets_lane_run_dir: Path):
+    rd = unify_bullets_lane_run_dir
     cov = json.loads((rd / "text_claim_coverage.json").read_text(encoding="utf-8"))
     assert cov.get("coverage_schema") == "unify_bullets_structural_v1"
     assert len(cov.get("sentences") or []) == 6
@@ -155,11 +139,11 @@ def test_run_manifest_contains_proof_eligible_fields():
     pass
 
 
-def test_l6_learning_shadow_written_after_x3_par_key_fields():
+def test_l6_learning_shadow_written_after_x3_par_key_fields(unify_bullets_lane_run_dir: Path):
     from apps_rg.runtime.shadow.unify_bullets_l6 import CLAIM_TEXT_GATE_ID
     from apps_rg.runtime.validators.unify_bullets_x2 import TEXT_COVERAGE_INTEGRITY_GATE_ID
 
-    rd = _run_unify_contract()
+    rd = unify_bullets_lane_run_dir
     x3_mtime = (rd / "x3_disposition.json").stat().st_mtime_ns
     l6_mtime = (rd / "l6_shadow_eval_package.json").stat().st_mtime_ns
     assert l6_mtime >= x3_mtime
@@ -277,7 +261,6 @@ def _run_x2(parsed_template: dict, *, merged_claim_ledger: list | None) -> dict[
         allowed_fact_ids=allowed,
         jd_text=str(rp.get("jd_text") or ""),
         runtime_generation_status="MOCKED",
-        rewrite_distribution=parsed_out.get("rewrite_distribution"),
         x1d_judges=_three_model_backed_judges_pass(),
     )
     return {g.gate_id: g.pass_ for g in gates}
@@ -332,6 +315,46 @@ def test_claim_text_gate_passes_for_normalized_mock_output():
     assert gm["x2_claim_ledger_claim_text_non_empty"] is True
 
 
+def test_x2_no_rewrite_intensity_model_gate_passes_on_mock():
+    from apps_rg.runtime.sections.unify_bullets_lane import build_mock_output
+
+    rp, _, _ = _payload_and_allowed()
+    gm = _run_x2(build_mock_output(rp), merged_claim_ledger=None)
+    assert gm["x2_unify_no_rewrite_intensity_model"] is True
+
+
+def test_normalize_strips_legacy_intensity_before_x2_gate():
+    from apps_rg.runtime.sections.unify_bullets_lane import build_mock_output
+
+    rp, _, _ = _payload_and_allowed()
+    parsed = dict(build_mock_output(rp))
+    parsed["rewrite_distribution"] = {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6}
+    parsed["bullets"][0]["rewrite_intensity"] = "HEAVY"
+    gm = _run_x2(parsed, merged_claim_ledger=None)
+    assert gm["x2_unify_no_rewrite_intensity_model"] is True
+
+
+def test_x2_no_rewrite_intensity_model_gate_fails_when_legacy_fields_reach_x2():
+    from apps_rg.runtime.sections.unify_bullets_lane import build_mock_output
+    from apps_rg.runtime.validators.unify_bullets_x2 import run_unify_bullets_x2_gates
+
+    rp, allowed, _ = _payload_and_allowed()
+    parsed = dict(build_mock_output(rp))
+    parsed["rewrite_distribution"] = {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6}
+    parsed["bullets"] = [dict(b) for b in parsed["bullets"]]
+    parsed["bullets"][0]["rewrite_intensity"] = "HEAVY"
+    gates = run_unify_bullets_x2_gates(
+        bullets=parsed["bullets"],
+        parsed_output=parsed,
+        claim_ledger=parsed["claim_ledger"],
+        allowed_fact_ids=allowed,
+        jd_text=str(rp.get("jd_text") or ""),
+        runtime_generation_status="MOCKED",
+    )
+    g = next(x for x in gates if x.gate_id == "x2_unify_no_rewrite_intensity_model")
+    assert g.pass_ is False
+
+
 def test_x2_unify_only_fact_scope_passes_on_normalized_mock_output():
     from apps_rg.runtime.sections.unify_bullets_lane import build_mock_output
 
@@ -367,7 +390,6 @@ def test_x2_unify_only_fact_scope_fails_when_bullet_row_has_bul_un_ify_typo():
         allowed_fact_ids=allowed,
         jd_text=str(rp.get("jd_text") or ""),
         runtime_generation_status="REAL_LLM",
-        rewrite_distribution=parsed.get("rewrite_distribution"),
         x1d_judges=_three_model_backed_judges_pass(),
     )
     scope = next(g for g in gates if g.gate_id == "x2_unify_only_fact_scope")
@@ -454,8 +476,10 @@ def test_canonicalize_bul_w7_unify_whitespace_source_fact_id():
         "bullets": [{"bullet_id": "bul_unify_006", "bullet_text": "x", "source_fact_ids": ["bul_w7_unify_ 006"]}],
         "claim_ledger": [{"claim_text": "x", "source_fact_ids": ["bul_w7_unify_ 006"]}],
     }
+    from tests._apps_contract.graph_authority_test_support import minimal_graph_proof_pool_metadata
+
     rp = {
-        "proof_pool_metadata": {"proof_pool_type": "augmented_skills_graph"},
+        "proof_pool_metadata": minimal_graph_proof_pool_metadata(),
         "selected_fact_plan": {"facts": []},
     }
     out = normalize_unify_parsed_without_ledger_synthesis(parsed, rp)

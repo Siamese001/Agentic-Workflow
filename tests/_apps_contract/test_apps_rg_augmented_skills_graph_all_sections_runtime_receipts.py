@@ -1,16 +1,24 @@
-"""Mock CLI runs: verify section_input_usage_ledger dual-source receipts for all sections."""
+"""Live CLI runs: verify section_input_usage_ledger dual-source receipts for all sections."""
 
 from __future__ import annotations
 
 import json
-import os
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
-REPO = Path(__file__).resolve().parents[2]
+from tests._apps_contract.lane_cli_common import (
+    REPO_ROOT,
+    artifact_dir_from_stdout,
+    contract_artifact_dir,
+    qwen_live_available,
+    run_lane_cli,
+)
+
+pytestmark = pytest.mark.skipif(
+    not qwen_live_available(),
+    reason="section CLI receipt tests require live qwen_vllm",
+)
 
 SECTION_IDS = (
     "headline",
@@ -22,29 +30,16 @@ SECTION_IDS = (
     "ibm_narrative",
 )
 
-_STRIP = frozenset(
-    {
-        "APPS_RG_MODULAR_LANE_PROVIDER",
-        "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
-        "VLLM_BASE_URL",
-        "APPS_RG_QWEN_TIMEOUT_SECONDS",
+
+def _section_kwargs(section_id: str) -> dict[str, str]:
+    if section_id != "executive_summary":
+        return {}
+    return {
+        "target_company": "CI-Probe-Co",
+        "target_role": "Software Engineer",
+        "jd": str(REPO_ROOT / "tests" / "_fixtures" / "ci-probe-jd.txt"),
+        "manual_brief": str(REPO_ROOT / "apps_rg" / "config" / "default_targeting_briefing.txt"),
     }
-)
-
-
-def _env() -> dict[str, str]:
-    env = {k: v for k, v in os.environ.items() if k not in _STRIP}
-    env["APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO"] = "1"
-    env["APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"] = "1"
-    return env
-
-
-def _latest_mock_run_dir(section_id: str) -> Path:
-    from apps_rg.runtime.runtime_proof_layout import resolve_run_dir_from_pointer
-
-    rd = resolve_run_dir_from_pointer(REPO, section_id, "mock")
-    assert rd is not None, f"no mock run pointer for {section_id}"
-    return rd
 
 
 def _assert_usage_ledger_dual_source(doc: dict) -> None:
@@ -63,31 +58,17 @@ def _assert_usage_ledger_dual_source(doc: dict) -> None:
 
 
 @pytest.mark.parametrize("section_id", SECTION_IDS)
-def test_mock_cli_refreshes_dual_source_usage_ledger(section_id: str) -> None:
-    r = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "apps_rg",
-            "--section",
-            section_id,
-            "--provider",
-            "mock",
-            "--mock-judges",
-            "--allow-test-mock-judges",
-        ],
-        cwd=REPO,
-        capture_output=True,
-        text=True,
-        timeout=300,
-        env=_env(),
-    )
+def test_live_cli_refreshes_dual_source_usage_ledger(section_id: str) -> None:
+    art = contract_artifact_dir(section_id)
+    rel = art.relative_to(REPO_ROOT).as_posix()
+    r = run_lane_cli(section_id, artifact_dir=rel, timeout_s=600, **_section_kwargs(section_id))
     assert r.returncode == 0, f"{section_id} stderr={r.stderr!r} stdout={r.stdout!r}"
-    led_path = _latest_mock_run_dir(section_id) / "section_input_usage_ledger.json"
+    rd = artifact_dir_from_stdout(r)
+    led_path = rd / "section_input_usage_ledger.json"
     assert led_path.is_file(), led_path
     doc = json.loads(led_path.read_text(encoding="utf-8"))
     _assert_usage_ledger_dual_source(doc)
-    x2_path = _latest_mock_run_dir(section_id) / "x2_source_fact_pool_receipt.json"
+    x2_path = rd / "x2_source_fact_pool_receipt.json"
     if x2_path.is_file():
         x2 = json.loads(x2_path.read_text(encoding="utf-8"))
         assert x2.get("skills_authority_source_type") in (None, "augmented_skills_graph")

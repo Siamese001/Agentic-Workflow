@@ -176,34 +176,15 @@ Score contract (mandatory - every judge response MUST comply):
 - Do not infer scale from magnitude; declare score_scale explicitly and keep score/threshold within that scale.
 """.strip()
 
-RUBRIC = f"""
-You are evaluating one executive resume **executive summary paragraph** against the same bar as the
-``executive_summary.generate_scratch_v1`` north star: **polished SVP / agentic-AI-platform synthesis**, not bullet stacks,
-not internal label/colon stitching, not one-sentence-per-fact proof, not meta narration.
-Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
+def _build_rubric() -> str:
+    from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
+        build_executive_summary_x1d_rubric_text,
+    )
 
-{JUDGE_SCORE_SCHEMA}
+    return build_executive_summary_x1d_rubric_text(include_score_schema=JUDGE_SCORE_SCHEMA)
 
-Rubric dimensions:
-1. factual_support: claims appear supported by the provided claim ledger and source fact IDs (no JD/briefing-as-proof).
-2. executive_signal: SVP/CTO-level narrative - platform, runtime, governance, retrieval, orchestration, evaluation, commercialization **woven**, not listed.
-3. resume_voice: concise, credible, human executive style; **synthesis**, not recruiter filler, hype, or generic AI prose.
-4. ats_alignment_without_keyword_stuffing: relevant to target role via emphasis only; no JD mirroring or stuffing.
-5. anti_overfit: no JD-as-proof, no briefing-as-proof, no target company as candidate experience, no **copy-paste of style-example metrics/credentials** absent from claim ledger support.
-6. synthesis_quality: **executive paragraph** flow; penalize sentence-stacked proofs, colon-label stitching, visible process language
-   (e.g. “selected facts”, “active-voice delivery”, “governance discipline” as filler), and excessive naked capability lists without narrative.
 
-**Target shape:** **exactly six dense sentences** (one executive paragraph, max 140 words); commercially aware technical platform story; metrics/credentials only when ledger-backed.
-
-Decisive failure triggers:
-- unsupported business metric or credential (including pasted gold-example numbers/titles not in ledger)
-- target company presented as candidate experience
-- first-person narrative
-- copied JD phrase longer than four words
-- generic opener or hype/filler
-- summary is mechanically sentence-stacked proof rather than narrative synthesis
-- obvious colon-label / fact-title stitching in prose
-""".strip()
+RUBRIC = _build_rubric()
 
 
 @dataclass
@@ -769,7 +750,13 @@ def _make_model_backed_output(
         result, deterministic_gate_summary=deterministic_gate_summary
     )
     raw_score = float(result.get("score", 0.0))
-    raw_threshold = float(result.get("threshold", DEFAULT_THRESHOLD))
+    raw_threshold = float(result.get("threshold", 4.0))
+    from apps_rg.runtime.sections.executive_summary_repair_policy import judge_pass_floor_0_to_5
+
+    operator_floor = judge_pass_floor_0_to_5()
+    if operator_floor is not None:
+        raw_threshold = float(operator_floor)
+        result["threshold"] = raw_threshold
     declared_scale = result.get("score_scale")
     declared = declared_scale.strip() if isinstance(declared_scale, str) else None
     score_scale, err = _validate_judge_score_contract(raw_score, raw_threshold, declared)

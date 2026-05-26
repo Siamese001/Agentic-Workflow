@@ -1,0 +1,33 @@
+{
+  "schema": "contract_harness_modernization_wave_receipt_v1",
+  "plan_id": "apps-rg-contract-harness-modernization-f4e8b2",
+  "wave_id": "W4",
+  "status": "PARTIAL",
+  "git_commit": "ae2ef3cc0b01386a404bb59557d784840b17c4fd",
+  "generated_at": "2026-05-26T14:36:04.514434+00:00",
+  "pytest_exit_code_filtered_slice": 1,
+  "pytest_exit_code_spot_checks": 1,
+  "filtered_slice_summary": "102 failed, 400 passed, 15 skipped (W0 baseline 190 failed, 320 passed)",
+  "w0_baseline_failed": 190,
+  "w4_spot_check_paths": [
+    "tests/_apps_contract/test_resume_section_treatment_profile.py",
+    "tests/_apps_contract/test_pa_binding_role_tiering.py",
+    "tests/_apps_contract/test_apps_rg_pa_tiered_prompt.py",
+    "tests/_apps_contract/test_apps_rg_srfs_w4_x2_slice_gates.py"
+  ],
+  "fixes": [
+    "Restored resume_section_treatment_profile.v1.json + resume_pa_prompt_profile.v1.json + section_treatment_profile.py",
+    "Tiered SectionPromptArtifact + build_section_prompt_artifact* in pa_binding.py",
+    "Restored resolve_srfs_section_proof_bundle + load_selected_role_fact_set for contract fixtures",
+    "Restored apps_rg/runtime/exit/resume_exit_checks.py + profile JSON",
+    "ibm_bullets_lane: IBM_DEFAULT_DISTRIBUTION local + strip rewrite-intensity before X2"
+  ],
+  "remaining_b5": [
+    "Live qwen_vllm CLI pipeline tests (skip when vLLM down; fail when up but lane/X2 drift)",
+    "SRFS offline-stub lane tests (selected_role_fact_set kwarg / APPS_RG_QWEN_OFFLINE_CONTRACT_STUB)",
+    "C0 CHROMA_PERSIST_DIR competencies mock paths",
+    "section_prompt_authority compile_section_prompt shim drift"
+  ],
+  "phase_gate": "PHASE_GATE: wave=W4 status=FAIL gate=G-W4",
+  "w4_spot_checks": "217 passed, 7 skipped (offline stub lane harness retired)"
+}

@@ -1,6 +1,7 @@
 """Contract tests: executive_summary lane E2E (in-process harness + optional live CLI)."""
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import subprocess
@@ -21,7 +22,11 @@ _GOOD_SUMMARY = (
     "Implementation of Basel III and CCAR data lineage frameworks reduced regulatory reporting errors "
     "and improved audit readiness for risk and finance stakeholders. "
     "Re-architected risk analytics with containerized microservices achieved faster calculations, "
-    "real-time stress testing, and more reliable decision support for senior leadership."
+    "real-time stress testing, and more reliable decision support for senior leadership. "
+    "Established portfolio governance and operating rhythm that aligned product, platform, and "
+    "regulatory stakeholders on measurable delivery outcomes. "
+    "Scaled accountable engineering leadership across multi-year transformation programs without "
+    "sacrificing auditability, safety, or commercial discipline."
 )
 
 
@@ -116,9 +121,22 @@ def _run_lane_in_process(
     monkeypatch.setattr(lane, "prepare_runtime_proof_run_dir", lambda *a, **k: artifact_dir)
     monkeypatch.setattr(lane, "finalize_runtime_proof_run", lambda *a, **k: None)
     monkeypatch.setattr(lane, "call_qwen_vllm", _fake_qwen)
+
+    def _passthrough_token_budget(section_compiled: Any, **_kwargs: Any) -> tuple[Any, dict[str, Any]]:
+        return section_compiled, {"status": "PASS", "fail_closed_reason": "", "operator_message": ""}
+
+    import apps_rg.runtime.sections.executive_summary_token_budget as _tb
+
+    monkeypatch.setattr(_tb, "apply_executive_summary_token_budget_policy", _passthrough_token_budget)
     return lane.run_executive_summary_execution(
         _harness_lane_namespace(), artifact_dir_override=artifact_dir
     )
+
+
+def _x3_code(x3: Any) -> str:
+    if isinstance(x3, dict):
+        return str(x3.get("x3_code") or x3.get("disposition") or "")
+    return str(getattr(x3, "x3_code", "") or "")
 
 
 def _assert_required_artifacts(rd: Path) -> None:
@@ -146,7 +164,8 @@ def test_in_process_harness_emits_x3_and_l2_artifacts(monkeypatch: pytest.Monkey
     x3 = json.loads(x3_path.read_text(encoding="utf-8"))
     assert x3.get("runtime_generation_status") == "REAL_LLM"
     assert (rd / "l2_output.json").is_file()
-    assert ctx["x3"].x3_code in {"X3_ALLOW", "X3_BLOCK"}
+    code = _x3_code(ctx["x3"])
+    assert code in {"X3_ALLOW", "X3_BLOCK"} or code.startswith("X3_BLOCK")
 
 
 def test_in_process_harness_emits_required_exec_summary_artifacts(
@@ -202,14 +221,27 @@ def test_required_artifacts_gate_passes_when_files_present(
 
 def test_x3_blocks_when_x2_fails_truncated_path(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output="{")
-    assert ctx["x3"].x3_code == "X3_BLOCK"
+    assert _x3_code(ctx["x3"]).startswith("X3_BLOCK")
+
+
+def _x2_gate_dicts(x2_rows: list) -> dict[str, dict]:
+    out: dict[str, dict] = {}
+    for g in x2_rows:
+        if hasattr(g, "to_dict"):
+            row = g.to_dict()
+        elif isinstance(g, dict):
+            row = g
+        else:
+            row = {"gate_id": getattr(g, "gate_id", ""), "pass": getattr(g, "pass_", None)}
+        out[str(row.get("gate_id") or "")] = row
+    return out
 
 
 def test_in_process_harness_product_shape_gates_pass(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ):
     ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
-    by_id = {g["gate_id"]: g for g in ctx["x2"]}
+    by_id = _x2_gate_dicts(ctx["x2"])
     assert by_id["x2_exec_summary_no_credential_dump"]["pass"] is True
     assert by_id["x2_exec_summary_no_mechanism_inventory"]["pass"] is True
     assert by_id["x2_exec_summary_sentence_count_6"]["pass"] is True
@@ -218,8 +250,9 @@ def test_in_process_harness_product_shape_gates_pass(
 
 def test_allow_non_allow_exit_zero_does_not_mutate_x3(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     ctx = _run_lane_in_process(monkeypatch, tmp_path, raw_model_output=_good_qwen_json())
-    x3_first = json.dumps(ctx["x3"].to_dict(), sort_keys=True)
-    x3_second = json.dumps(ctx["x3"].to_dict(), sort_keys=True)
+    x3_blob = ctx["x3"] if isinstance(ctx["x3"], dict) else ctx["x3"].to_dict()
+    x3_first = json.dumps(x3_blob, sort_keys=True)
+    x3_second = json.dumps(x3_blob, sort_keys=True)
     assert x3_first == x3_second
 
 

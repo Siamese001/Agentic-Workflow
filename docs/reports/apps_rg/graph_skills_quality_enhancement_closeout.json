@@ -3,8 +3,8 @@
   "plan_id": "graph-skills-quality-enhancement-c4e8a1",
   "wave": "W10",
   "gate_id": "G-W10",
-  "generated_at": "2026-05-25T23:21:01.389306+00:00",
-  "git_commit": "1451ebbebc13aa3f3f0312b8f3fb471401cfa5f5",
+  "generated_at": "2026-05-26T06:20:27.462479+00:00",
+  "git_commit": "e27875b14e970b0044a1599d855ea2ef1deb7b53",
   "status": "PARTIAL",
   "proof_classification_matrix": [
     {
@@ -677,10 +677,10 @@
     },
     {
       "path": "docs/reports/apps_rg/graph_skills_quality_w10_ag_receipt.json",
-      "exists": false,
-      "wave_id": null,
-      "status": null,
-      "proof_class": null
+      "exists": true,
+      "wave_id": "W10-AG",
+      "status": "PASS",
+      "proof_class": "CONTRACT_TEST_PROOF"
     }
   ],
   "claims_release_eligible": false,
@@ -700,6 +700,9 @@
     "d6_live_allow_count": 2,
     "d6_required_count": 7
   },
-  "notes": "W10 does not complete plan \u2014 W10-AG mandatory. No mixed proof-class PASS.",
-  "contract_test_pass": true
+  "notes": "Parent closeout refreshed at follow-on W0. W10-AG contract PASS on disk; claims_release_eligible remains false until follow-on W2/W5.",
+  "w10_ag_contract_status": "PASS",
+  "claims_c03_unified_pipeline_bound_contract": true,
+  "claims_dynamic_graphrag_traverse_contract": true,
+  "follow_on_plan_id": "graph-skills-deferred-followup-d7f2a8"
 }

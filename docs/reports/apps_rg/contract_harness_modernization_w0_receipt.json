@@ -1,0 +1,31 @@
+{
+  "schema": "contract_harness_modernization_wave_receipt_v1",
+  "plan_id": "apps-rg-contract-harness-modernization-f4e8b2",
+  "wave_id": "W0",
+  "status": "PASS",
+  "git_commit": "ae2ef3cc0b01386a404bb59557d784840b17c4fd",
+  "pytest_exit_code": 1,
+  "pytest_filter_k": "competencies or prompt_judge or product_shape or executive_summary_x2 or unify_bullets or ibm_bullets or unify_narrative or ibm_narrative",
+  "counts": {
+    "failed": 190,
+    "error": 4,
+    "passed": 320,
+    "skipped": 15,
+    "tests_total": 529
+  },
+  "classified_count": 194,
+  "bucket_totals": {
+    "B1": 31,
+    "B2": 6,
+    "B3": 6,
+    "B5": 147,
+    "B4": 4
+  },
+  "register_path": "docs/reports/apps_rg/contract_harness_failure_register_20260526.md",
+  "junit_path": "docs/reports/apps_rg/contract_harness_w0_junit.xml",
+  "phase_gate": "PHASE_GATE: wave=W0 status=PASS gate=G-W0",
+  "register_path_link": {
+    "path": "docs/reports/apps_rg/contract_harness_failure_register_20260526.md",
+    "markdown": "[contract_harness_failure_register_20260526.md](docs/reports/apps_rg/contract_harness_failure_register_20260526.md)"
+  }
+}

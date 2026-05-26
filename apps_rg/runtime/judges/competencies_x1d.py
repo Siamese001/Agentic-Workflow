@@ -21,7 +21,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     resolve_x1d_provider_credentials,
 )
 
-JUDGE_RUBRIC_VERSION = "competencies_x1d_v1"
+JUDGE_RUBRIC_VERSION = "competencies_x1d_v2"
 
 COMPETENCIES_RUBRIC = """
 You are evaluating six to eight executive resume competency categories (short labels plus compact capability phrases).
@@ -43,6 +43,8 @@ Rubric dimensions:
 Advisory notes:
 - Sentence-style competency claims are out of scope for this section format; flag them as quality_flags only.
 - Judge pass/fail does not gate product proof eligibility for competencies.
+- companion_context_used_as_proof must remain false; JD/briefing/targeting_only — never proof (aligns with PA contract).
+- Terms require source_fact_ids / claim_ledger binding — no JD-only skills as proof.
 
 Decisive failure triggers (advisory only):
 - JD or briefing used as primary evidence for unsupported clusters

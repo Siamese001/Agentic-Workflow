@@ -2,8 +2,8 @@
   "schema": "graph_skills_c03_unified_pipeline_bind_v1",
   "plan_id": "graph-skills-quality-enhancement-c4e8a1",
   "wave_id": "W10-AG",
-  "generated_at_utc": "2026-05-25T23:29:51.212550+00:00",
-  "git_commit": "24380206e476546707a307255183d46833b42bb3",
+  "generated_at_utc": "2026-05-26T08:14:33.136950+00:00",
+  "git_commit": "e27875b14e970b0044a1599d855ea2ef1deb7b53",
   "adapter_ref": "apps_rg.integrations.c0_graph_adapter",
   "pipeline_stages": [
     "l0_route_profiles.yaml",

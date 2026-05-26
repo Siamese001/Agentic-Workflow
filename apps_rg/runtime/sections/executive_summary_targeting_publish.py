@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,7 @@ from apps_rg.runtime.targeting_context_authority import (
     GenerationMaterialContext,
     JudgeMaterialContext,
     evaluate_targeting_parity,
+    graph_targeting_capsule_from_packet,
     judge_material_context_from_packet,
     material_targeting_digest,
     merge_targeting_parity_into_usage_ledger,
@@ -102,10 +104,17 @@ def publish_targeting_parity_and_usage_ledger(
     judge_material = judge_material_context_from_packet(
         judge_packet_for_parity_evaluation(judge_packet, generation_material=generation_material)
     )
+    gen_capsule = runtime_payload.get("graph_targeting_capsule")
+    gen_capsule_dict = dict(gen_capsule) if isinstance(gen_capsule, dict) else None
+    judge_capsule = graph_targeting_capsule_from_packet(
+        judge_packet_for_parity_evaluation(judge_packet, generation_material=generation_material),
+    )
     parity = evaluate_targeting_parity(
         generation=generation_material,
         judge=judge_material,
         bundle=bundle,
+        graph_targeting_capsule_generation=gen_capsule_dict,
+        graph_targeting_capsule_judge=judge_capsule or gen_capsule_dict,
     )
     write_json_fn(artifact_dir / "targeting_context_parity_receipt.json", parity)
     runtime_payload["targeting_context_parity"] = parity
@@ -154,6 +163,28 @@ def judge_regen_blocked_by_trim(token_budget_receipt: dict[str, Any] | None) -> 
     return bool(_trimmed_component_names(token_budget_receipt) & JUDGE_REGEN_BLOCKING_TRIM_COMPONENTS)
 
 
+def targeting_parity_strict_enforcement_enabled() -> bool:
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_TARGETING_PARITY_STRICT", "1").strip().lower()
+    return raw not in ("0", "false", "no", "off")
+
+
+def enforce_targeting_parity_before_judge_panel(
+    parity_receipt: dict[str, Any],
+) -> tuple[bool, str]:
+    """Fail closed before X1D panel when binding digests mismatch (W3.1)."""
+    status = str(parity_receipt.get("targeting_parity_status") or "")
+    if status == "match" or parity_receipt.get("parity_match") is True:
+        return True, "targeting_parity_ok"
+    if targeting_parity_strict_enforcement_enabled():
+        return (
+            False,
+            "targeting_parity_status=mismatch blocks judge panel "
+            f"(generation={parity_receipt.get('generation_targeting_digest')!r} "
+            f"judge={parity_receipt.get('judge_targeting_digest')!r})",
+        )
+    return True, "targeting_parity_warn_only"
+
+
 def parity_allows_judge_regen(
     runtime_payload: dict[str, Any],
     *,
@@ -176,10 +207,12 @@ __all__ = [
     "INSTRUCTIONAL_TRIM_COMPONENTS",
     "JUDGE_REGEN_BLOCKING_TRIM_COMPONENTS",
     "audit_judge_packet_targeting_digests",
+    "enforce_targeting_parity_before_judge_panel",
     "instructional_surface_drift_risk",
     "judge_packet_for_parity_evaluation",
     "judge_regen_blocked_by_trim",
     "parity_allows_judge_regen",
     "publish_targeting_parity_and_usage_ledger",
     "resolve_judge_packet_for_parity",
+    "targeting_parity_strict_enforcement_enabled",
 ]

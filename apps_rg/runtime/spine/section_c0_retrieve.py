@@ -239,6 +239,10 @@ def merge_spine_fec_into_bridge_doc(
         "graph_expansion_refs": list(getattr(fec, "graph_expansion_refs", None) or ()),
     }
 
+    spine_exp = list(getattr(fec, "graph_expansion_refs", None) or ())
+    spine_lin: list[str] = []
+    from apps_rg.runtime.spine.spine_c03_authority import overlay_spine_graph_authority_on_bridge
+
     out.update(
         {
             "support_status": support,
@@ -259,11 +263,16 @@ def merge_spine_fec_into_bridge_doc(
             "canonical_c0_5_claimed": True,
             "canonical_c0_5_fec": True,
             "fec_shape_only": False,
-            "graph_expansion_refs": list(getattr(fec, "graph_expansion_refs", None) or ()),
+            "graph_expansion_refs": spine_exp,
             "graph_lane_na_ref": C0_GRAPH_LANE_NA_REF,
             "proof_pool_shim_only": False,
             "binding_kind": "spine_c0_retrieve_apps_rg",
         }
+    )
+    out = overlay_spine_graph_authority_on_bridge(
+        out,
+        spine_graph_expansion_refs=spine_exp,
+        spine_graph_lineage_refs=spine_lin,
     )
     pa_meta = dict(out.get("pa_proof_authority_metadata") or {})
     pa_meta["fec_shape_only"] = False

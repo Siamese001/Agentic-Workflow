@@ -44,7 +44,7 @@ FAMILY_MARKER_GROUPS: dict[str, tuple[tuple[str, ...], ...]] = {
         ("source_fact", "source fact", "bul_", "resume facts"),
     ),
     "bullets": (
-        ("factual_support",),
+        ("factual_support", "claim_ledger_grounding"),
         ("claim_ledger", "claim ledger"),
         ("jd-as-proof", "jd-as-proof"),
         ("briefing-as-proof", "briefing"),

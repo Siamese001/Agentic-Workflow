@@ -135,10 +135,17 @@ def build_allowed_fact_ids_for_plan_facts(
 
 
 def load_selected_role_fact_set(path: str | Path) -> dict[str, Any]:
-    """Removed D2: SRFS JSON file authority is not permitted on the product path."""
-    raise RuntimeError(
-        "load_selected_role_fact_set removed: use graph proof pool / in-memory projection only"
-    )
+    """Load and validate top-level SRFS document keys from JSON (contract fixtures / harness only)."""
+    p = Path(path)
+    if not p.is_file():
+        raise FileNotFoundError(f"SelectedRoleFactSet path not found: {p}")
+    data = json.loads(p.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("SelectedRoleFactSet JSON must deserialize to an object")
+    missing = [k for k in _REQUIRED_TOP if k not in data]
+    if missing:
+        raise ValueError(f"SelectedRoleFactSet JSON missing keys: {missing}")
+    return data
 
 
 def get_section_fact_slice(srfs: dict[str, Any], section_id: str) -> list[dict[str, Any]]:
@@ -496,9 +503,17 @@ def resolve_srfs_section_proof_bundle(
     srfs_path: str | Path,
     section_id: str,
 ) -> tuple[dict[str, Any], list[str], set[str], dict[str, Any]]:
-    """Removed D2: resolve proof pool via ``proof_pool_resolver`` (graph authority)."""
-    _ = (srfs_path, section_id)
-    raise RuntimeError("resolve_srfs_section_proof_bundle removed: use proof_pool_resolver")
+    """Load SRFS JSON, validate slice, return (selected_fact_plan, ordered_allowed, allowed_set, proof_pool_metadata)."""
+    doc = load_selected_role_fact_set(srfs_path)
+    plan = build_section_fact_plan(doc, section_id)
+    facts = list(plan.get("facts") or [])
+    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+    meta = srfs_proof_pool_metadata(
+        section_id=section_id,
+        candidate_fact_pool_count=len(facts),
+        allowed_fact_ids_count=len(allowed),
+    )
+    return plan, ordered, allowed, meta
 
 
 def stub_source_fact_ids_for_allowed(allowed_sorted: list[str], *, max_ids: int = 6) -> list[str]:

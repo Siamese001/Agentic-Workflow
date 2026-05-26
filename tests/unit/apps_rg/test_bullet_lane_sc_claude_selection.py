@@ -20,10 +20,13 @@ from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
     temperature_ladder,
 )
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
+    EMPLOYMENT_BULLET_JUDGE_PROVIDERS,
     SC_PATH_COUNT_BY_LANE,
-    evaluate_employment_selection_quality,
-    min_selection_score_for_lane,
     build_employment_targeting_context,
+    employment_pool_x1d_judge_rows,
+    evaluate_employment_selection_quality,
+    is_employment_pool_generation,
+    min_selection_score_for_lane,
 )
 from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
 from apps_rg.runtime.reasoning.section_reasoning_intensity import (
@@ -194,7 +197,7 @@ def test_employment_bullet_path_counts() -> None:
     assert SC_PATH_COUNT_BY_LANE["ibm_bullets"] == 12
 
 
-def test_employment_targeting_includes_jd_briefing_and_rewrite_contract() -> None:
+def test_employment_targeting_includes_jd_briefing_and_pool_contract() -> None:
     ctx = build_employment_targeting_context(
         {
             "jd_text": "SVP agentic role",
@@ -207,7 +210,8 @@ def test_employment_targeting_includes_jd_briefing_and_rewrite_contract() -> Non
         section_lane="unify_bullets",
     )
     assert "jd_text" in ctx and "briefing" in ctx
-    assert ctx["rewrite_intensity_contract"] == "2_HEAVY_3_MODERATE_1_LIGHT_PROTECTED"
+    assert "rewrite_intensity" not in ctx
+    assert ctx["pool_path_count"] == 15
     assert ctx["final_bullet_count"] == 6
     assert ctx["min_selection_score"] == pytest.approx(min_selection_score_for_lane("unify_bullets"))
 
@@ -215,3 +219,60 @@ def test_employment_targeting_includes_jd_briefing_and_rewrite_contract() -> Non
 def test_section_profiles_unify_15_ibm_12() -> None:
     assert section_reasoning_profile("unify_bullets").self_consistency_samples == 15.0
     assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 12.0
+
+
+def test_employment_pool_generation_mode_detected() -> None:
+    assert is_employment_pool_generation({"generation_mode": "qwen_employment_pool_claude_top_n_regen"})
+    assert not is_employment_pool_generation({"generation_mode": "singleton"})
+
+
+def test_employment_bullet_rubric_not_exec_summary_dimensions() -> None:
+    from apps_rg.runtime.judges.employment_bullet_judge_rubric import (
+        FORBIDDEN_EXEC_SUMMARY_DIMENSION_IDS,
+        assert_no_exec_summary_dimensions,
+        employment_bullet_dimensions,
+        pool_selector_dimension_ids,
+    )
+    from apps_rg.runtime.judges.ibm_bullets_x1d import IBM_RUBRIC
+    from apps_rg.runtime.judges.unify_bullets_x1d import UNIFY_RUBRIC
+
+    assert_no_exec_summary_dimensions("unify_bullets")
+    assert_no_exec_summary_dimensions("ibm_bullets")
+    unify_ids = {d.dimension_id for d in employment_bullet_dimensions("unify_bullets")}
+    ibm_ids = {d.dimension_id for d in employment_bullet_dimensions("ibm_bullets")}
+    assert not unify_ids & FORBIDDEN_EXEC_SUMMARY_DIMENSION_IDS
+    assert not ibm_ids & FORBIDDEN_EXEC_SUMMARY_DIMENSION_IDS
+    assert "bullet_line_discipline" in unify_ids
+    assert "foundation_enterprise_credibility" in ibm_ids
+    assert "executive_signal" not in UNIFY_RUBRIC
+    assert "synthesis_quality" not in IBM_RUBRIC
+    assert "claim_ledger_grounding" in pool_selector_dimension_ids("unify_bullets")
+
+
+def test_employment_pool_x1d_is_single_claude_judge(tmp_path) -> None:
+    gen_meta = {
+        "generation_mode": "qwen_employment_pool_claude_top_n_regen",
+        "selection_gate": {"ok": True},
+        "selection_mode": "claude_employment_top_n_pass",
+    }
+    (tmp_path / "bullet_pool_selection.json").write_text(
+        json.dumps(
+            {
+                "selections": [
+                    {"bullet_id": bid, "score": 0.85, "passes": True, "path_index": i}
+                    for i, bid in enumerate(UNIFY_BULLET_IDS)
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    rows = employment_pool_x1d_judge_rows(
+        artifact_dir=tmp_path,
+        section_id="unify_bullets",
+        gen_meta=gen_meta,
+    )
+    assert len(rows) == 1
+    assert rows[0]["provider_key"] == "anthropic_claude"
+    assert rows[0]["pass"] is True
+    assert rows[0]["judge_role"] == "employment_bullet_pool_selector"
+    assert list(EMPLOYMENT_BULLET_JUDGE_PROVIDERS) == ["anthropic_claude"]

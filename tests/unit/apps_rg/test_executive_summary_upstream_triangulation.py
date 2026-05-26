@@ -37,8 +37,8 @@ def _judge(
     }
 
 
-def test_default_judge_regen_cap_is_one() -> None:
-    assert JUDGE_REGEN_MAX_ATTEMPTS == 1
+def test_default_judge_regen_cap_is_three() -> None:
+    assert JUDGE_REGEN_MAX_ATTEMPTS == 3
 
 
 def test_post_regen_rescore_defaults_soft_only(monkeypatch) -> None:
@@ -111,7 +111,7 @@ def test_trigger_uses_dimension_consensus() -> None:
         judges, runtime_generation_status="REAL_LLM", x2_passed=True
     )
     assert ok is True
-    assert receipt.get("trigger_mode") == "dimension_consensus_soft_fail"
+    assert receipt.get("trigger_mode") == "any_judge_below_floor"
 
 
 def test_triangulation_maps_qwen_surfaces() -> None:

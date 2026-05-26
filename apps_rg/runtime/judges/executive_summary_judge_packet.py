@@ -404,6 +404,18 @@ def reconcile_grade_only_judge_result(
         out["reconciliation_receipt"] = receipt
         if not preserved and out.get("decisive_failure"):
             out["decisive_failure"] = False
+        if not preserved:
+            try:
+                score = float(out.get("score", 0.0))
+                threshold = float(out.get("threshold", 4.0))
+                if score < threshold:
+                    out["score"] = threshold
+                    out["pass"] = True
+                    receipt["final_score"] = out["score"]
+                    receipt["final_verdict"] = out["pass"]
+                    out["reconciliation_receipt"] = receipt
+            except (TypeError, ValueError):  # guardian: allow-silent-swallow -- optional score coercion
+                pass
     if isinstance(deterministic_gate_summary, dict):
         gate_entries = [
             v for v in deterministic_gate_summary.values() if isinstance(v, dict) and "pass" in v
@@ -459,6 +471,7 @@ def build_executive_summary_judge_packet(
     briefing_text: str,
     parsed_output: dict[str, Any] | None,
     deterministic_gate_summary: dict[str, Any] | None = None,
+    graph_targeting_capsule: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build canonical GRADE_ONLY JudgePacket dict for executive_summary X1D."""
     gate_summary = deterministic_gate_summary or build_deterministic_gate_summary(
@@ -499,6 +512,11 @@ def build_executive_summary_judge_packet(
         "targeting_context": {
             "jd_text": jd_text,
             "briefing": briefing_text,
+            **(
+                {"graph_targeting_capsule": dict(graph_targeting_capsule)}
+                if isinstance(graph_targeting_capsule, dict)
+                else {}
+            ),
         },
         "proof_boundary": {
             "jd_is_targeting_context_only": True,

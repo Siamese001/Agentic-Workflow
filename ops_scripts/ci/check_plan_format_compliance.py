@@ -333,8 +333,23 @@ class PlanFormatValidator:
         self._validate_enums(fenced_ranges)
         self._validate_emoji_usage(fenced_ranges)
         self._validate_wave_structure(fenced_ranges)
-        
+        self._validate_wave_summary_at_top()
+
         return self.violations
+
+    def _validate_wave_summary_at_top(self) -> None:
+        """WS-TOP-*: consolidated wave summary before per-wave detail sections."""
+        from ops_scripts.ci.plan_wave_summary_top import (
+            WaveSummarySeverity,
+            validate_consolidated_wave_summary_at_top,
+        )
+
+        for wv in validate_consolidated_wave_summary_at_top(
+            "\n".join(self.lines),
+            self.filepath,
+        ):
+            sev = Severity.FAIL if wv.severity == WaveSummarySeverity.FAIL else Severity.WARN
+            self._add(sev, wv.rule_id, wv.line_num, wv.message)
 
 
 def validate_file(filepath: str) -> Tuple[List[Violation], bool]:

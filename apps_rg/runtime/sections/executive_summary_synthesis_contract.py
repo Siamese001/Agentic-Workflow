@@ -22,7 +22,8 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "arc_role": "strategy_thesis",
         "guidance": (
             "Technology strategy / enterprise technology executive thesis; avoid narrow engineering-manager label; "
-            "frame enterprise IT direction (not a mechanism or metric list)."
+            "frame enterprise IT direction + innovation-program posture for decentralized regulated enterprises "
+            "(targeting vocabulary — not JD-as-proof); avoid generic 'regulated enterprise scale' filler."
         ),
     },
     {
@@ -38,33 +39,35 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "arc_role": "scale_operating_model",
         "guidance": (
             "S3: weave platform scale, operating model, and innovation delivery as connective prose "
-            "(team growth, lifecycle, federated architecture) — not a standalone achievement bullet."
+            "(team growth, lifecycle) — not a standalone achievement bullet; "
+            "avoid SRFS-forbidden phrases (reusable platform services adopted across enterprise programs, engineering scale-out)."
         ),
     },
     {
         "brushstroke_id": "B3_control_evidence_discipline",
         "arc_role": "governance_innovation",
         "guidance": (
-            "S4: governance, lineage, or regulatory discipline linked to IT strategy and innovation velocity "
-            "(targeting may emphasize EA governance / audit-ready delivery) — not a control checklist."
+            "S4: governance, lineage, or regulatory discipline linked to IT strategy velocity "
+            "(targeting may emphasize EA governance / audit-ready delivery) — not a control checklist; "
+            "use parallel thematic sequencing when lineage and HPC facts are separate threads (no forced 'extended to' bridges)."
         ),
     },
     {
         "brushstroke_id": "B4_business_role_fit",
         "arc_role": "commercial_strategy",
         "guidance": (
-            "S5: at most one high-signal metric clause woven into strategy context; "
-            "no metric-inventory stack, no Towers Perrin/ING/Aetna credential dump; no AWS/Databricks cert labels "
-            "(one FSA rigor weave allowed when fact-backed)."
+            "S5: one strategic clause weaving quantitative/commercial proof — at most one metric; "
+            "never list derivatives pricing, multi-Greek hedging, employer names, or FSA/cert label stacks from fact_quant_hpc_003; "
+            "imply quantitative rigor through platform/governance decisions instead."
         ),
     },
     {
         "brushstroke_id": "B4_business_role_fit",
         "arc_role": "enterprise_capstone",
         "guidance": (
-            "S6: integrative capstone — how platform + governance + commercialization + innovation posture "
-            "form one enterprise technology direction; forward-looking synthesis from allowed facts only; "
-            "no JD/briefing echo, no TARGET_COMPANY, no thin recap of S3–S5."
+            "S6: forward capstone — innovation incubation / architecture standards / decentralized-scale readiness projected from "
+            "allowed facts; must add a NEW forward idea (not 'extend that arc toward' recap); "
+            "no JD/briefing echo, no TARGET_COMPANY, no repetition of S2–S5 noun phrases."
         ),
     },
 )
@@ -92,7 +95,7 @@ def format_strategy_targeting_gap_note(*, allowed_fact_ids: set[str] | frozenset
     concept_block = (
         "TARGETING_CONCEPT_MAP (targeting only — NOT PROOF):\n"
         "- Translate allowed platform/governance/commercial/regulated-delivery facts into executive concepts: "
-        "enterprise IT strategy, architecture modernization, innovation incubation, audit-ready operating models, "
+        "enterprise IT strategy, architecture modernization, innovation incubation, lineage-ready operating models, "
         "and regulated enterprise scale — without claiming insurance brokerage, federated M&A integration, or "
         "interoperability product experience unless matching ALLOWED_SOURCE_FACT_IDs exist.\n"
         "- Do not keyword-stuff JD phrases; use causal synthesis so an SVP IT Strategy reader sees strategic fit.\n"
@@ -113,11 +116,17 @@ def format_strategy_executive_u0_block(*, target_title: str = "") -> str:
     return (
         "STRATEGY_EXECUTIVE_SYNTHESIS (targeting only — NOT PROOF):\n"
         "- Required JSON field `executive_strategy_thesis` before `resume_display_text` (one ledger-backed sentence).\n"
-        "- Open display S1 as technology strategy / enterprise technology executive (not narrow AI-platform builder only).\n"
+        "- Open display S1 as technology strategy / enterprise technology executive (not narrow AI-platform builder only); "
+        "avoid generic 'aligns enterprise IT direction' openers — use architecture-governance + innovation-program posture.\n"
+        "- At most two S2–S5 sentences may use stock bridges (Building on / Through that / Complementing / With that governance); "
+        "vary other transitions (From that commercial base / Against that lineage backdrop / In parallel).\n"
         "- Six sentences = one causal arc serving the thesis; **do not** assign one accomplishment per sentence by default.\n"
         "- S3–S4: connective prose (platform scale + operating model + innovation delivery) — not sequential mini-bullets.\n"
-        "- S5: ≤1 metric woven into strategy context; no employer-name inventory; no cert label stacks.\n"
-        "- S6: forward-looking enterprise technology direction — not a recap of S2–S5.\n"
+        "- S5: one quantitative-rigor or commercial clause woven into strategy — no derivatives/employer/cert inventory sentences.\n"
+        "- S6: MUST begin with 'Looking ahead,' — forward innovation-program / architecture-governance capstone; "
+        "forbidden: 'extend that arc toward', 'Governed platform delivery... extend'.\n"
+        "- S5: one embedded quantitative-rigor clause; forbidden: derivatives pricing / multi-Greek / employer inventory lists.\n"
+        "- S3–S4: honest connectors only; parallel governance and HPC threads need not be falsely causal.\n"
         f"{format_svp_jd_emphasis_line()}"
         f"- Target role framing: {role} (positioning only).\n"
         "- NEVER name TARGET_COMPANY in resume_display_text.\n"
@@ -149,16 +158,31 @@ def format_judge_regen_mechanical_opener_guard() -> str:
     )
 
 
-def format_judge_regen_x2_floor(*, prior_word_count: int, prior_ledger_rows: int) -> str:
-    """Non-negotiable X2 floor when rewriting for judges (prevents thin/dropped-ledger regressions)."""
+def format_judge_regen_soft_material_preservation(
+    *,
+    prior_word_count: int,
+    prior_ledger_rows: int,
+) -> str:
+    """Soft regen guidance — no hard word-count floor (W2.3)."""
     return (
-        "X2_FLOOR (judge feedback must NOT violate — certification rewrite stays rules-valid):\n"
-        f"- Maintain or increase resume word count vs prior draft ({prior_word_count} words minimum).\n"
-        f"- Maintain or increase claim_ledger rows vs prior ({prior_ledger_rows} minimum); "
-        "add OBJECT rows with distinct source_fact_ids for each major sentence.\n"
-        "- Exactly 6 sentences, max 140 words; when fact pool is large, each sentence must stay substantive "
-        "(no thin one-clause sentences to sound 'executive').\n"
-        "- Weave unused allowed facts into prose and ledger — do not drop evidence to simplify narrative.\n"
+        "MATERIAL_PRESERVATION (soft — not a word-count floor; hard X2 gates still apply):\n"
+        "- Preserve material claims and ledger-backed support unless removal is required to satisfy "
+        "X2 or judge feedback.\n"
+        "- Stay within the SSOT max word cap and exactly-six-sentence X2 gate; do not pad or bloat "
+        "to match prior length.\n"
+        f"- Prior draft reference only: ~{max(0, prior_word_count)} words, "
+        f"{max(0, prior_ledger_rows)} claim_ledger rows (no minimum word count).\n"
+        "- Weave unused allowed facts into prose and claim_ledger when evidence_utilization failed; "
+        "do not drop cited source_fact_ids without cause.\n"
+        "- Exactly 6 sentences in resume_display_text; claim_ledger row minimums enforced by X2.\n"
+    )
+
+
+def format_judge_regen_x2_floor(*, prior_word_count: int, prior_ledger_rows: int) -> str:
+    """Backward-compatible alias — delegates to soft material preservation (no word minimum)."""
+    return format_judge_regen_soft_material_preservation(
+        prior_word_count=prior_word_count,
+        prior_ledger_rows=prior_ledger_rows,
     )
 
 

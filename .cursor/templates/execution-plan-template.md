@@ -42,6 +42,11 @@ LAST_UPDATED: 2026-01-01
 
 ## Status Tables
 
+> **Placement (required):** This section MUST appear near the top of the plan — after
+> Context (SCQA) and **before** the first `## Wave N` detail section. CI gate
+> PLAN-WAVE-TOP and `after_file_edit` enforce consolidated wave summary at top.
+> Canonical wave columns: Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
+
 > These tables are auto-updated by `post_cursor_agent_wave_lifecycle_capture.py` when
 > `WAVE_COMPLETE:` / `PHASE_COMPLETE:` / `PLAN_COMPLETE:` markers are emitted.
 > Status tokens: `✅ DONE` · `🔄 IN PROGRESS` · `🔲 TODO` · `❌ BLOCKED`

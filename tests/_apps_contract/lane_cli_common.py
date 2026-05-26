@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -17,15 +18,35 @@ BRIEF_PATH = "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_br
 
 
 def contract_env(*, live_l2: bool = False) -> dict[str, str]:
-    """Environment for subprocess contract runs (no mock provider; stub disabled in product)."""
+    """Live ``qwen_vllm`` contract runs — no mock provider, no offline Qwen stub."""
     env = {**os.environ, "APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO": "1"}
-    env.pop("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", None)
-    if live_l2:
-        env["PYTEST_APPS_RG_LIVE_L2"] = "1"
+    for key in (
+        "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
+        "APPS_RG_TEST_HARNESS",
+        "APPS_RG_MOCK_JUDGES",
+        "APPS_RG_SKIP_QWEN_VLLM_HEALTH",
+        "APPS_RG_L2_FORCE_STUB",
+    ):
+        env.pop(key, None)
+    env["APPS_RG_ALLOW_STALE_TARGETING_SSOT"] = "1"
+    env.setdefault("APPS_RG_ALLOW_DEFAULT_TARGETING_PATHS", "1")
+    env["APPS_RG_L2_PROVIDER_MODE"] = "live_allowed"
+    env["PYTEST_APPS_RG_LIVE_L2"] = "1" if live_l2 else env.get("PYTEST_APPS_RG_LIVE_L2", "1")
+    chroma = REPO_ROOT / "data" / "cache" / "chromadb"
+    if chroma.is_dir():
+        env.setdefault("CHROMA_PERSIST_DIR", str(chroma.resolve()))
     return env
 
 
-def base_canonical_argv(section: str, *, artifact_dir: str | None = None) -> list[str]:
+def base_canonical_argv(
+    section: str,
+    *,
+    artifact_dir: str | None = None,
+    target_company: str | None = None,
+    target_role: str | None = None,
+    jd: str | None = None,
+    manual_brief: str | None = None,
+) -> list[str]:
     argv = [
         sys.executable,
         "-m",
@@ -33,13 +54,13 @@ def base_canonical_argv(section: str, *, artifact_dir: str | None = None) -> lis
         "--section",
         section,
         "--target-company",
-        TARGET_COMPANY,
+        target_company or TARGET_COMPANY,
         "--target-role",
-        TARGET_ROLE,
+        target_role or TARGET_ROLE,
         "--jd",
-        JD_PATH,
+        jd or JD_PATH,
         "--manual-brief",
-        BRIEF_PATH,
+        manual_brief or BRIEF_PATH,
         "--provider",
         "qwen_vllm",
         "--allow-non-allow-exit-zero",
@@ -47,6 +68,15 @@ def base_canonical_argv(section: str, *, artifact_dir: str | None = None) -> lis
     if artifact_dir:
         argv.extend(["--artifact-dir", artifact_dir])
     return argv
+
+
+def contract_harness_fast() -> bool:
+    """When true, skip live ``python -m apps_rg`` subprocess contract lanes (dev/CI fast path)."""
+    return os.environ.get("APPS_RG_CONTRACT_HARNESS_FAST", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
 
 
 def qwen_live_available() -> bool:
@@ -57,21 +87,99 @@ def qwen_live_available() -> bool:
     return ok
 
 
+def should_skip_contract_live_lane() -> bool:
+    return contract_harness_fast() or not qwen_live_available()
+
+
+def live_lane_skip_reason(section: str = "") -> str:
+    if contract_harness_fast():
+        return (
+            f"APPS_RG_CONTRACT_HARNESS_FAST=1 — skipping live CLI lane{f' ({section})' if section else ''}; "
+            "unset for nightly live proof"
+        )
+    return (
+        f"{section or 'lane'} CLI contract tests require live qwen_vllm (mock provider removed)"
+    )
+
+
+def contract_live_pytestmark(section: str = ""):
+    """Module-level mark: skip entire file when fast mode or vLLM unreachable."""
+    import pytest
+
+    return pytest.mark.skipif(should_skip_contract_live_lane(), reason=live_lane_skip_reason(section))
+
+
+def run_lane_cli_once(
+    section: str,
+    *,
+    run_key: str | None = None,
+    timeout_s: int = 600,
+    live_l2: bool = False,
+    target_company: str | None = None,
+    target_role: str | None = None,
+    jd: str | None = None,
+    manual_brief: str | None = None,
+) -> Path:
+    """Single subprocess lane run; reuse via module-scoped pytest fixture in pipeline modules."""
+    art = contract_artifact_dir(section, run_key=run_key or f"pipeline_{section}")
+    rel = art.relative_to(REPO_ROOT).as_posix()
+    proc = run_lane_cli(
+        section,
+        artifact_dir=rel,
+        timeout_s=timeout_s,
+        live_l2=live_l2,
+        target_company=target_company,
+        target_role=target_role,
+        jd=jd,
+        manual_brief=manual_brief,
+    )
+    assert proc.returncode == 0, proc.stderr
+    return artifact_dir_from_stdout(proc) if (proc.stdout or "").find("artifact_dir=") >= 0 else art
+
+
+def contract_artifact_dir(section: str, *, run_key: str | None = None) -> Path:
+    key = run_key or f"contract_{section}_{uuid.uuid4().hex[:10]}"
+    art = REPO_ROOT / "artifacts" / "apps_rg" / "runtime_proofs" / "contract_harness" / key
+    art.mkdir(parents=True, exist_ok=True)
+    return art
+
+
 def run_lane_cli(
     section: str,
     *,
     artifact_dir: str | None = None,
+    target_company: str | None = None,
+    target_role: str | None = None,
+    jd: str | None = None,
+    manual_brief: str | None = None,
     timeout_s: int = 600,
-    live_l2: bool = True,
+    live_l2: bool = False,
 ) -> subprocess.CompletedProcess[str]:
+    argv = base_canonical_argv(
+        section,
+        artifact_dir=artifact_dir,
+        target_company=target_company,
+        target_role=target_role,
+        jd=jd,
+        manual_brief=manual_brief,
+    )
     return subprocess.run(
-        base_canonical_argv(section, artifact_dir=artifact_dir),
+        argv,
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
         timeout=timeout_s,
         env=contract_env(live_l2=live_l2),
     )
+
+
+def artifact_dir_from_stdout(proc: subprocess.CompletedProcess[str]) -> Path:
+    for line in (proc.stdout or "").splitlines():
+        if line.startswith("artifact_dir="):
+            raw = line.split("=", 1)[1].strip()
+            p = Path(raw)
+            return p if p.is_absolute() else (REPO_ROOT / p).resolve()
+    raise AssertionError(f"artifact_dir missing in stdout: {proc.stdout!r} stderr={proc.stderr!r}")
 
 
 def resolve_latest_real_run_dir(section: str) -> Path | None:
@@ -118,12 +226,19 @@ __all__ = [
     "REPO_ROOT",
     "TARGET_COMPANY",
     "TARGET_ROLE",
+    "artifact_dir_from_stdout",
     "assert_critical_x2_passes",
-    "base_canonical_argv",
-    "contract_env",
-    "critical_gate_ids",
-    "resolve_latest_real_run_dir",
     "assert_live_lane_product_proof",
+    "base_canonical_argv",
+    "contract_artifact_dir",
+    "contract_env",
+    "contract_harness_fast",
+    "contract_live_pytestmark",
+    "critical_gate_ids",
+    "live_lane_skip_reason",
     "qwen_live_available",
+    "resolve_latest_real_run_dir",
     "run_lane_cli",
+    "run_lane_cli_once",
+    "should_skip_contract_live_lane",
 ]

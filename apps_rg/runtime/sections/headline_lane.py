@@ -1824,6 +1824,7 @@ def build_headline_lane_args(
     jd_text: str,
     briefing: str,
     base_resume_ref: str = "",
+    selected_role_fact_set: str = "",
 ) -> SimpleNamespace:
     return SimpleNamespace(
         provider=str(provider).strip() or "qwen_vllm",
@@ -1837,6 +1838,7 @@ def build_headline_lane_args(
         jd_text=str(jd_text).strip() or JD_TEXT_DEFAULT,
         briefing=str(briefing).strip() or BRIEFING_DEFAULT,
         base_resume_ref=str(base_resume_ref or ""),
+        selected_role_fact_set=str(selected_role_fact_set or ""),
     )
 
 

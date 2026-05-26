@@ -5,49 +5,30 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.judges.employment_bullet_judge_rubric import (
+    assert_no_exec_summary_dimensions,
+    grade_only_rubric_text,
+)
 from apps_rg.runtime.judges.executive_summary_x1d import JudgeOutput
 from apps_rg.runtime.judges.policy_backed_section_judges import run_policy_section_judges
 
-JUDGE_RUBRIC_VERSION = "unify_bullets_x1d_v2"
-JUDGE_RUBRIC_REF = "apps_rg/runtime/judges/unify_bullets_x1d.py#UNIFY_BULLETS_GRADE_ONLY_RUBRIC"
+JUDGE_RUBRIC_VERSION = "unify_bullets_x1d_v4"
+JUDGE_RUBRIC_REF = "apps_rg/runtime/judges/employment_bullet_judge_rubric.py#unify_bullets"
 
-UNIFY_RUBRIC = """
-You are evaluating exactly six Unify Consulting employment bullets (bul_unify_001..006).
-Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
-
-Score contract:
-- score_scale must be "0_to_1" or "0_to_5" only.
-- Keep score and threshold within the declared scale.
-
-Rubric dimensions:
-1. factual_support: each bullet maps to bul_unify_* source_fact_ids in the claim ledger; metrics supported.
-2. executive_platform_signal: platform architecture, governance, operating model, commercial impact, and engineering scale where evidenced.
-3. current_role_attention: Unify reads like the candidate's strongest current-position proof point for SVP Engineering screens.
-4. bullet_impact_clarity: concise, high-impact bullets; no narrative paragraphs.
-5. ats_alignment_without_stuffing: relevant to target role without JD keyword dumping or briefing-as-proof.
-6. anti_overfit: no JD-as-proof, no briefing-as-proof, no target company as candidate experience.
-7. rewrite_quality: respects rewrite distribution (2 HEAVY, 3 MODERATE, 1 LIGHT_PROTECTED default); bul_unify_006 protected commercial metrics preserved.
-8. role_fit_targeting: JD/briefing targeting shapes emphasis without JD-as-proof or keyword stuffing for the target role.
-9. bullet_semantic_distribution: bullets answer distinct outcome spines (commercialization, scale, governance, delivery speed, ecosystem, team) — not six variants of the same platform stack.
-10. narrative_complementarity: bullets deliver measurable outcomes; they must not read as a comma-stacked mechanism inventory duplicated across bullets.
-
-Decisive failure triggers:
-- unsupported metric or cross-employer fact leakage (IBM/InsurTech/EY)
-- first-person language
-- wrong bullet count or invalid rewrite distribution
-- protected bul_unify_006 metrics missing or split incorrectly
-- JD phrase copied as proof (>4 consecutive words)
-- generic executive filler that loses Unify-specific mechanisms or protected metrics
-""".strip()
+UNIFY_RUBRIC = grade_only_rubric_text(
+    "unify_bullets",
+    bullet_count=6,
+    bullet_id_range="bul_unify_001..006",
+)
+assert_no_exec_summary_dimensions("unify_bullets")
 
 
 def _bullets_display_text(bullets: list[dict[str, Any]]) -> str:
     lines = []
     for idx, bullet in enumerate(bullets, start=1):
         bid = bullet.get("bullet_id", f"bullet_{idx}")
-        intensity = bullet.get("rewrite_intensity", "")
         text = bullet.get("bullet_text", "")
-        lines.append(f"[{idx}] {bid} ({intensity}): {text}")
+        lines.append(f"[{idx}] {bid}: {text}")
     return "\n".join(lines)
 
 

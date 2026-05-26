@@ -55,24 +55,46 @@ __all__ = [
     "reset_pa_prompt_profile_cache",
 ]
 
-PA_BOUNDARY_CERT_S3: str = "pa-apps-rg-section-prompt-boundary-s3"
+PA_BOUNDARY_CERT_S3: str = "pa-s3-tiered-prompt-patching-apps-rg-resume-shipping"
 APPS_RG_PA_CERT_REF: str = "pa-apps-rg-resume-generation-w3"
 APPS_RG_TARGET_MODEL: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
 APPS_RG_TARGET_PROVIDER: str = "vllm_local"
 
 _PA_PROFILE_CACHE: dict[str, Any] = {}
+_PA_PROMPT_PROFILE_RELPATH: str = "apps_rg/config/domain_contract/resume_pa_prompt_profile.v1.json"
+_pa_prompt_profile_cache: dict[str, Any] | None = None
 
 _PROVIDER_MODEL_REGISTRY: dict[str, tuple[str, str]] = {
     "apps_rg::provider_model::resume_generation::v1": (APPS_RG_TARGET_MODEL, APPS_RG_TARGET_PROVIDER),
 }
 
 
-@dataclass(frozen=True)
+@dataclass
 class SectionPromptArtifact:
-    """Compiled prompt artifact for a single resume section."""
+    """Typed prompt artifact for a single resume section or bullet (S3 tiered PA)."""
 
     section_id: str
-    prompt_text: str
+    treatment: str
+    rewrite_allowed: bool
+    preserve_verbatim: bool
+    evidence_required: bool
+    copy_only: bool
+    source_span_required: bool
+    jd_alignment_required: bool
+    blocked_items_required: bool
+    support_status_required: bool
+    prompt_directive: str
+    anti_invention_rules: list[str]
+    role_id: str | None = None
+    employer: str | None = None
+    bullet_ordinal: int | None = None
+    source_text: str | None = None
+    jd_context_ref: str | None = None
+    phrase_word_bounds: dict | None = None
+    support_status_values: list[str] = field(
+        default_factory=lambda: ["SUPPORTED", "INSUFFICIENT_SOURCE_SUPPORT", "BLOCKED"]
+    )
+    prompt_text: str = ""
     system_preamble: str = ""
     u0_task_block: str = ""
     evidence_slot: str = "c0_evidence_data_only"
@@ -81,17 +103,38 @@ class SectionPromptArtifact:
 
 
 def reset_pa_prompt_profile_cache() -> None:
-    """Clear the cached PA prompt profile (test helper)."""
+    """Clear cached PA profiles (test helper)."""
     _PA_PROFILE_CACHE.clear()
+    global _pa_prompt_profile_cache
+    _pa_prompt_profile_cache = None
 
 
-def _load_pa_prompt_profile(profile_path: Optional[str] = None) -> dict[str, Any]:
-    """Load the PA prompt profile YAML (cached)."""
+def _load_pa_prompt_profile() -> dict[str, Any]:
+    """Load S3 tiered PA prompt profile JSON (cached)."""
+    global _pa_prompt_profile_cache
+    if _pa_prompt_profile_cache is not None:
+        return _pa_prompt_profile_cache
+    apps_root = Path(__file__).resolve().parents[2]
+    profile_path = apps_root / "config" / "domain_contract" / "resume_pa_prompt_profile.v1.json"
+    if not profile_path.is_file():
+        raise FileNotFoundError(
+            f"PA prompt profile not found: {profile_path}. "
+            "S3 requires apps_rg/config/domain_contract/resume_pa_prompt_profile.v1.json"
+        )
+    with open(profile_path, encoding="utf-8") as f:
+        data = json.load(f)
+    _pa_prompt_profile_cache = data
+    return data
+
+
+def _load_pa_yaml_profile(profile_path: Optional[str] = None) -> dict[str, Any]:
+    """Load legacy rg_prompt_profile YAML for governed spine compose helpers."""
     key = profile_path or "default"
     if key in _PA_PROFILE_CACHE:
         return _PA_PROFILE_CACHE[key]
     try:
         import yaml
+
         path = Path(profile_path) if profile_path else (
             Path(__file__).resolve().parents[3] / "rg_prompt_profile.yaml"
         )
@@ -126,45 +169,109 @@ def _build_bullet_rewrite_prompt(
 
 def build_section_prompt_artifact(
     section_id: str,
-    evidence_text: str = "",
     *,
-    profile_path: Optional[str] = None,
+    role_id: str | None = None,
+    employer: str | None = None,
+    source_text: str | None = None,
+    jd_context_ref: str | None = None,
 ) -> SectionPromptArtifact:
-    """Build a SectionPromptArtifact for a resume section."""
-    import hashlib
-    profile = _load_pa_prompt_profile(profile_path)
-    preamble = _build_system_preamble(profile)
-    task = _build_u0_task_block(section_id, profile)
-    prompt = f"{preamble}\n\n{task}\n\nEvidence:\n{evidence_text}"
-    digest = hashlib.sha256(prompt.encode()).hexdigest()[:16]
+    """Build a tiered SectionPromptArtifact for a non-bullet section."""
+    from apps_rg.runtime.schemas.section_treatment_profile import get_section_policy
+
+    policy = get_section_policy(section_id)
+    treatment = policy["treatment"]
+    pa_profile = _load_pa_prompt_profile()
+    treatment_instructions = pa_profile.get("treatment_instructions", {})
+    instr_key = treatment if treatment != "TIERED_BY_ORDINAL" else "HEAVY"
+    instr = treatment_instructions.get(instr_key, {})
+    if treatment == "JD_RANKED_NOUN_PHRASES":
+        instr = treatment_instructions.get("JD_RANKED_NOUN_PHRASES", instr)
+    anti_invention_rules: list[str] = list(pa_profile.get("anti_invention_rules", []))
+    output_schema: dict = pa_profile.get("output_artifact_schema", {})
+    support_status_values: list[str] = list(
+        output_schema.get(
+            "support_status_values",
+            ["SUPPORTED", "INSUFFICIENT_SOURCE_SUPPORT", "BLOCKED"],
+        )
+    )
+    phrase_word_bounds: dict | None = None
+    if treatment == "JD_RANKED_NOUN_PHRASES":
+        phrase_word_bounds = {
+            "min": policy.get("min_phrase_words", 2),
+            "max": policy.get("max_phrase_words", 4),
+        }
+    elif instr.get("phrase_word_bounds"):
+        phrase_word_bounds = dict(instr["phrase_word_bounds"])
     return SectionPromptArtifact(
         section_id=section_id,
-        prompt_text=prompt,
-        system_preamble=preamble,
-        u0_task_block=task,
-        compilation_hash=f"sha256:{digest}",
-        profile_ref=profile_path or "default",
+        treatment=treatment,
+        rewrite_allowed=bool(policy.get("rewrite_allowed", False)),
+        preserve_verbatim=bool(policy.get("preserve_verbatim", False)),
+        evidence_required=bool(policy.get("evidence_required", False)),
+        copy_only=bool(instr.get("copy_only", policy.get("preserve_verbatim", False))),
+        source_span_required=bool(instr.get("source_span_required", False)),
+        jd_alignment_required=bool(instr.get("jd_alignment_required", False)),
+        blocked_items_required=bool(instr.get("blocked_items_required", False)),
+        support_status_required=bool(instr.get("support_status_required", False)),
+        prompt_directive=str(instr.get("prompt_directive", "")),
+        anti_invention_rules=anti_invention_rules,
+        role_id=role_id,
+        employer=employer,
+        source_text=source_text,
+        jd_context_ref=jd_context_ref,
+        phrase_word_bounds=phrase_word_bounds,
+        support_status_values=support_status_values,
     )
 
 
 def build_section_prompt_artifact_for_bullet(
     section_id: str,
-    bullet_text: str,
+    ordinal: int,
     *,
-    profile_path: Optional[str] = None,
+    role_id: str | None = None,
+    employer: str | None = None,
+    source_text: str | None = None,
+    jd_context_ref: str | None = None,
 ) -> SectionPromptArtifact:
-    """Build a SectionPromptArtifact for a bullet rewrite."""
-    import hashlib
-    profile = _load_pa_prompt_profile(profile_path)
-    preamble = _build_system_preamble(profile)
-    prompt = _build_bullet_rewrite_prompt(section_id, bullet_text, profile)
-    digest = hashlib.sha256(prompt.encode()).hexdigest()[:16]
+    """Build a tiered SectionPromptArtifact for a bullet ordinal."""
+    from apps_rg.runtime.schemas.section_treatment_profile import (
+        get_bullet_treatment,
+        get_section_policy,
+    )
+
+    resolved_treatment = get_bullet_treatment(section_id, ordinal)
+    pa_profile = _load_pa_prompt_profile()
+    treatment_instructions = pa_profile.get("treatment_instructions", {})
+    instr = treatment_instructions.get(resolved_treatment, {})
+    policy = get_section_policy(section_id)
+    anti_invention_rules: list[str] = list(pa_profile.get("anti_invention_rules", []))
+    output_schema: dict = pa_profile.get("output_artifact_schema", {})
+    support_status_values: list[str] = list(
+        output_schema.get(
+            "support_status_values",
+            ["SUPPORTED", "INSUFFICIENT_SOURCE_SUPPORT", "BLOCKED"],
+        )
+    )
     return SectionPromptArtifact(
         section_id=section_id,
-        prompt_text=prompt,
-        system_preamble=preamble,
-        compilation_hash=f"sha256:{digest}",
-        profile_ref=profile_path or "default",
+        treatment=resolved_treatment,
+        rewrite_allowed=bool(policy.get("rewrite_allowed", False)),
+        preserve_verbatim=bool(policy.get("preserve_verbatim", False)),
+        evidence_required=bool(policy.get("evidence_required", False)),
+        copy_only=bool(instr.get("copy_only", False)),
+        source_span_required=bool(instr.get("source_span_required", False)),
+        jd_alignment_required=bool(instr.get("jd_alignment_required", False)),
+        blocked_items_required=bool(instr.get("blocked_items_required", False)),
+        support_status_required=bool(instr.get("support_status_required", False)),
+        prompt_directive=str(instr.get("prompt_directive", "")),
+        anti_invention_rules=anti_invention_rules,
+        role_id=role_id,
+        employer=employer,
+        bullet_ordinal=ordinal,
+        source_text=source_text,
+        jd_context_ref=jd_context_ref,
+        phrase_word_bounds=instr.get("phrase_word_bounds"),
+        support_status_values=support_status_values,
     )
 
 
@@ -284,7 +391,7 @@ def _pa_compose_apps_rg_legacy(
     validated_request: ValidatedRequest,
 ) -> CompiledPromptArtifact:
     """Legacy two-block PA (pre-W5); used when ``APPS_RG_GOVERNED_PA_SKIP=1``."""
-    profile = _load_pa_prompt_profile(None)
+    profile = _load_pa_yaml_profile(None)
     preamble = _build_system_preamble(profile)
     route_hint = (
         f"[L0 route_family={route.route_family} execution_form={route.execution_form} "
@@ -397,7 +504,7 @@ def pa_compose_apps_rg_section(
     profile_path: Optional[str] = None,
 ) -> SectionPromptArtifact:
     """Compose a section-scoped PA artifact (legacy section runner / unit tests)."""
-    profile = _load_pa_prompt_profile(profile_path)
+    profile = _load_pa_yaml_profile(profile_path)
     preamble = _build_system_preamble(profile)
     task_block = _build_u0_task_block(section_id, profile)
     evidence_block = _build_c0_evidence_block(evidence_items)

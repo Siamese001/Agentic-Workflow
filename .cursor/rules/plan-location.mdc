@@ -40,12 +40,15 @@ A plan is NOT required for T0/T1 work, single-file single-concern changes, typo 
 Before writing any execution plan:
 
 1. Read template: `.cursor/templates/execution-plan-template.md`
-2. Include wave summary table with columns: `| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |`
-3. Token estimates are self-reported sizing heuristics only (not budget gates). Mark uncertain estimates with `~`.
-4. Include **Phase-Level Summary table** with columns: `| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |` — this table must appear before the Gap Register section.
-5. Include a **`## Definition of Done`** section with at least 5 DoD rows + Verification-vs-Deferral table. Plans touching an executable surface MUST have a smoke-run DoD row (`python -m <module> [args]` exits 0). Use `dod_exempt: true` frontmatter for RCA/doc/observational plans. Enforced by CI gate `check_plan_definition_of_done.py` (PLAN-DOD).
+2. **Consolidated wave summary at top (required placement):** Immediately after Context (SCQA), add `## Status Tables` → `### Wave Progress` with the wave summary table **before** any `## Wave N` detail section. Do not bury the only wave table under `## Execution Waves` or after architecture sections.
+3. Wave summary table columns (canonical): `| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |` — minimum columns: Wave, Focus, Status; at least one `W#` data row.
+4. Token estimates are self-reported sizing heuristics only (not budget gates). Mark uncertain estimates with `~`.
+5. Include **Phase-Level Summary table** with columns: `| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |` — under `## Status Tables` or before the Gap Register section.
+6. Include a **`## Definition of Done`** section with at least 5 DoD rows + Verification-vs-Deferral table. Plans touching an executable surface MUST have a smoke-run DoD row (`python -m <module> [args]` exits 0). Use `dod_exempt: true` frontmatter for RCA/doc/observational plans. Enforced by CI gate `check_plan_definition_of_done.py` (PLAN-DOD).
 
-A plan missing the wave summary table, phase-level summary table, or `## Definition of Done` (without `dod_exempt: true`) is **invalid and must not be marked Completed in Notion**.
+Enforcement: `ops_scripts/ci/check_plan_wave_summary_top.py` (PLAN-WAVE-TOP, advisory repo scan), `check_plan_format_compliance.py` (per-path strict), `.cursor/hooks/after_file_edit.py` (warn; `PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT=1` to block), `post_cursor_agent_plan_wave_summary_audit.py` (post-agent).
+
+A plan missing the top consolidated wave summary, phase-level summary table, or `## Definition of Done` (without `dod_exempt: true`) is **invalid and must not be marked Completed in Notion**.
 
 ## Notion Status Discipline
 

@@ -214,6 +214,7 @@ def maybe_upsert_c02_fact_vectors(
         return receipt
 
     from apps_rg.runtime.embedding_settings import (
+        apply_apps_rg_embedding_env_guards,
         bootstrap_apps_rg_embedding_env,
         resolve_apps_rg_embedding_settings,
     )

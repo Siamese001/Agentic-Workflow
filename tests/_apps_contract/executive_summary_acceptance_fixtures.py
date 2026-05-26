@@ -110,9 +110,10 @@ def scenario_two_pass_one_soft_shippable_draft() -> dict[str, Any]:
             "operator_status": "DRAFT_READY",
             "disposition_tier": "draft",
             "proof_eligible": False,
-            "judge_regen_triggered": False,
-            "judge_regen_skip_reason": "two_or_more_judges_already_pass_skip_regen",
-            "soft_judge_only_rescore_eligible": True,
+            "judge_regen_triggered": True,
+            "judge_regen_trigger_mode": "any_judge_below_floor",
+            "judge_regen_skip_reason": None,
+            "soft_judge_only_rescore_eligible": False,
         },
     }
 
@@ -147,7 +148,7 @@ def scenario_two_pass_one_soft_solitary_severe_regen() -> dict[str, Any]:
             "disposition_tier": "draft",
             "proof_eligible": False,
             "judge_regen_triggered": True,
-            "judge_regen_trigger_mode": "solitary_severe_soft_fail",
+            "judge_regen_trigger_mode": "any_judge_below_floor",
             "judge_regen_skip_reason": None,
             "soft_judge_only_rescore_eligible": False,
         },
@@ -178,7 +179,7 @@ def scenario_certified_three_pass() -> dict[str, Any]:
             "disposition_tier": "certified",
             "proof_eligible": True,
             "judge_regen_triggered": False,
-            "judge_regen_skip_reason": "two_or_more_judges_already_pass_skip_regen",
+            "judge_regen_skip_reason": "all_model_backed_judges_pass",
             "soft_judge_only_rescore_eligible": False,
         },
     }

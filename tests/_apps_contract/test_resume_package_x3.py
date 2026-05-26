@@ -87,52 +87,34 @@ def _emit_lane_dir(rr: Path, lk: str) -> dict[str, str]:
         "prompt_hash": "b" * 16,
     }
     if lk == "unify_bullets":
-        dist = {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6}
-        specs = [
-            ("bul_unify_001", "MODERATE"),
-            ("bul_unify_002", "MODERATE"),
-            ("bul_unify_003", "HEAVY"),
-            ("bul_unify_004", "MODERATE"),
-            ("bul_unify_005", "HEAVY"),
-            ("bul_unify_006", "LIGHT_PROTECTED"),
+        specs = [f"bul_unify_{i:03d}" for i in range(1, 7)]
+        l2["bullets"] = [
+            {
+                "bullet_id": bid,
+                "bullet_text": f"text for {bid}",
+                "has_metric": bid == "bul_unify_006",
+                "metric_raw": "metric" if bid == "bul_unify_006" else "",
+                "source_fact_ids": [bid],
+            }
+            for bid in specs
         ]
-        bullets = []
-        for bid, intensity in specs:
-            bullets.append(
-                {
-                    "bullet_id": bid,
-                    "bullet_text": f"text for {bid}",
-                    "rewrite_intensity": intensity,
-                    "has_metric": bid == "bul_unify_006",
-                    "metric_raw": "metric" if bid == "bul_unify_006" else "",
-                    "source_fact_ids": [bid],
-                }
-            )
-        l2["bullets"] = bullets
-        l2["rewrite_distribution"] = dist
     elif lk == "ibm_bullets":
-        dist = {"HEAVY": 0, "MODERATE": 3, "LIGHT_PROTECTED": 2, "total": 5}
-        default_i = {
-            "bul_ibm_001": "MODERATE",
-            "bul_ibm_002": "MODERATE",
-            "bul_ibm_003": "MODERATE",
-            "bul_ibm_004": "LIGHT_PROTECTED",
-            "bul_ibm_005": "LIGHT_PROTECTED",
-        }
-        bullets = []
-        for bid, intensity in default_i.items():
-            bullets.append(
-                {
-                    "bullet_id": bid,
-                    "bullet_text": f"ibm {bid}",
-                    "rewrite_intensity": intensity,
-                    "has_metric": False,
-                    "metric_raw": "",
-                    "source_fact_ids": [bid],
-                }
+        l2["bullets"] = [
+            {
+                "bullet_id": bid,
+                "bullet_text": f"ibm {bid}",
+                "has_metric": False,
+                "metric_raw": "",
+                "source_fact_ids": [bid],
+            }
+            for bid in (
+                "bul_ibm_001",
+                "bul_ibm_002",
+                "bul_ibm_003",
+                "bul_ibm_004",
+                "bul_ibm_005",
             )
-        l2["bullets"] = bullets
-        l2["rewrite_distribution"] = dist
+        ]
 
     (ldir / "l2_output.json").write_text(json.dumps(l2), encoding="utf-8")
     (ldir / "x1d_llm_judge_outputs.json").write_text(json.dumps({"judges": []}), encoding="utf-8")

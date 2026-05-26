@@ -150,5 +150,5 @@ def test_regen_message_includes_dimension_block() -> None:
         },
     ]
     msg = build_judge_remediation_user_message(x1d_judges=judges, unused_fact_ids=[], allowed_fact_count=6)
-    assert "DIMENSION_VERDICTS" in msg
+    assert "REGEN_DELTA" in msg
     assert "synthesis_quality" in msg

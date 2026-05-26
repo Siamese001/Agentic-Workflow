@@ -1,59 +1,71 @@
 from __future__ import annotations
 
 import json
-import subprocess
-import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+import pytest
+
+from tests._apps_contract.lane_cli_common import (
+    REPO_ROOT,
+    artifact_dir_from_stdout,
+    assert_live_lane_product_proof,
+    contract_artifact_dir,
+    qwen_live_available,
+    run_lane_cli,
+)
+
+pytestmark = pytest.mark.skipif(
+    not qwen_live_available(),
+    reason="unify_narrative runtime slice tests require live qwen_vllm",
+)
+
 LANE_KEY = "unify_narrative"
-CMD = [
-    sys.executable,
-    "-m",
-    "apps_rg",
-    "--section",
-    "unify_narrative",
-    "--target-company",
-    "Synthetic Enterprise Corp.",
-    "--target-role",
-    "SVP Engineering, Agentic AI Platforms",
-    "--provider",
-    "mock",
-    "--mock-judges",
-    "--allow-test-mock-judges",
-    "--allow-non-allow-exit-zero",
-]
+_SYNTHETIC_COMPANY = "Synthetic Enterprise Corp."
+_SYNTHETIC_ROLE = "SVP Engineering, Agentic AI Platforms"
+_CACHED_RD: Path | None = None
 
 
-def run_cmd(*extra: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(CMD + list(extra), cwd=REPO_ROOT, text=True, capture_output=True, timeout=180)
+def _run_contract() -> Path:
+    global _CACHED_RD
+    if _CACHED_RD is not None:
+        return _CACHED_RD
+    art = contract_artifact_dir(LANE_KEY)
+    rel = art.relative_to(REPO_ROOT).as_posix()
+    proc = run_lane_cli(
+        LANE_KEY,
+        artifact_dir=rel,
+        target_company=_SYNTHETIC_COMPANY,
+        target_role=_SYNTHETIC_ROLE,
+        timeout_s=600,
+    )
+    assert proc.returncode == 0, proc.stderr
+    _CACHED_RD = artifact_dir_from_stdout(proc)
+    return _CACHED_RD
 
 
-def mock_artifacts_dir() -> Path:
-    from apps_rg.runtime.runtime_proof_layout import resolve_latest_mock_run_dir
-
-    rd = resolve_latest_mock_run_dir(REPO_ROOT, LANE_KEY)
-    if rd is not None:
-        return rd
-    legacy = REPO_ROOT / "artifacts" / "apps_rg" / "runtime_proofs" / LANE_KEY
-    if (legacy / "l2_output.json").is_file():
-        return legacy
-    raise AssertionError(f"No mock artifacts for lane {LANE_KEY}; run mock dispatch first")
+def artifacts_dir() -> Path:
+    return _run_contract()
 
 
 def load_json(name: str):
-    return json.loads((mock_artifacts_dir() / name).read_text(encoding="utf-8"))
+    return json.loads((artifacts_dir() / name).read_text(encoding="utf-8"))
 
 
-def test_mock_dispatch_runs():
-    result = run_cmd()
-    assert result.returncode == 0, result.stderr
-    assert "L2_UNIFY_NARRATIVE_OUTPUT:" in result.stdout
+def test_live_cli_dispatch_runs():
+    proc = run_lane_cli(
+        LANE_KEY,
+        artifact_dir=contract_artifact_dir(LANE_KEY).relative_to(REPO_ROOT).as_posix(),
+        target_company=_SYNTHETIC_COMPANY,
+        target_role=_SYNTHETIC_ROLE,
+        timeout_s=600,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert "L2_UNIFY_NARRATIVE_OUTPUT:" in proc.stdout
 
 
-def test_mock_one_sentence():
-    run_cmd()
+def test_live_one_sentence():
+    _run_contract()
     l2 = load_json("l2_output.json")
     assert l2["narrative_sentence"].count(".") >= 1
     text = l2["narrative_sentence"].strip()
@@ -61,26 +73,23 @@ def test_mock_one_sentence():
 
 
 def test_x2_gate_count():
-    run_cmd()
+    _run_contract()
     x2 = load_json("x2_gate_outputs.json")
     assert x2["total_x2_gates"] == 36
     assert x2["x2_failed"] == 0
 
 
-def test_mock_x3_review_plumbing():
-    run_cmd()
-    x3 = load_json("x3_disposition.json")
-    assert x3["x3_code"] == "X3_REVIEW_MOCKED_PLUMBING_ONLY"
+def test_live_x3_allow_or_review_family():
+    rd = _run_contract()
+    assert_live_lane_product_proof(rd, LANE_KEY)
 
 
-def test_l6_flags():
-    run_cmd()
+def test_l6_shadow_package_present():
+    _run_contract()
     l6 = load_json("l6_shadow_eval_package.json")
-    assert l6["offline_only"] is True
-    assert l6["human_label_required"] is True
-    assert l6["promotion_allowed"] is False
-    assert l6["learning_mutation_performed"] is False
-    assert l6["runtime_approval_authority"] == "NONE"
+    assert l6.get("section_id") == LANE_KEY
+    assert l6.get("human_label_required") is True
+    assert l6.get("learning_mutation_performed") is False
 
 
 def _minimal_section_input_usage_ledger() -> dict[str, Any]:

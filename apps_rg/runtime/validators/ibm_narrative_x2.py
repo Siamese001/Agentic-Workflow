@@ -333,6 +333,20 @@ def run_ibm_narrative_x2_gates(
         "Must be exactly one sentence.",
     )
 
+    from apps_rg.runtime.validators.narrative_mechanical_x2 import (
+        IBM_NARRATIVE_METRIC_PATTERNS,
+        register_narrative_mechanical_x2_gates,
+    )
+
+    register_narrative_mechanical_x2_gates(
+        add,
+        narrative_sentence,
+        lane_prefix="ibm",
+        companion_bullet_texts=companion_bullet_texts or "",
+        metric_patterns=IBM_NARRATIVE_METRIC_PATTERNS,
+        max_metrics=2,
+    )
+
     stripped_narrative = narrative_sentence.strip()
     wc = _narrative_word_count(stripped_narrative)
     budget_ok = wc <= NARRATIVE_MAX_WORDS and len(stripped_narrative) <= NARRATIVE_MAX_CHARS

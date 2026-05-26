@@ -1,0 +1,18 @@
+{
+  "schema": "contract_harness_modernization_wave_receipt_v1",
+  "plan_id": "apps-rg-contract-harness-modernization-f4e8b2",
+  "wave_id": "W3",
+  "status": "PASS",
+  "git_commit": "ae2ef3cc0b01386a404bb59557d784840b17c4fd",
+  "generated_at": "2026-05-26T14:03:00.970578+00:00",
+  "pytest_exit_code": 0,
+  "w3_test_paths": [
+    "tests/_apps_contract/test_commercial_medium_claim_output_containment.py",
+    "tests/unit/apps_rg/fact_inventory/test_commercial_medium_claim_output_containment.py"
+  ],
+  "fixes": [
+    "validate_commercial_medium_claim_output_containment: build_section_front_spine_from_args before resolve_section_proof_pool",
+    "test_commercial_medium_claim_output_containment: proof_source augmented_skills_graph SSOT"
+  ],
+  "phase_gate": "PHASE_GATE: wave=W3 status=PASS gate=G-W3"
+}

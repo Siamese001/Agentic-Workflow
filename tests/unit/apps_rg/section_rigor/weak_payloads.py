@@ -499,15 +499,15 @@ def _ibm_narrative_weak_meta_disclaimer():
 def _unify_bullets_weak_empty_claim_text():
     from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
 
-    bullets, parsed = [], {"bullets": [], "claim_ledger": [], "rewrite_distribution": {}}
+    bullets, parsed = [], {"bullets": [], "claim_ledger": []}
     for bid in UNIFY_BULLET_IDS:
         text = f"Outcome for {bid}."
-        bullets.append({"bullet_id": bid, "bullet_text": text, "rewrite_intensity": "MODERATE", "source_fact_ids": [bid]})
+        bullets.append({"bullet_id": bid, "bullet_text": text, "source_fact_ids": [bid]})
     bullets[0]["bullet_text"] = "Valid text."
     ledger = [{"claim_text": "", "source_fact_ids": ["bul_unify_001"]}]
     for b in bullets[1:]:
         ledger.append({"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]})
-    parsed = {"bullets": bullets, "claim_ledger": ledger, "rewrite_distribution": {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6}}
+    parsed = {"bullets": bullets, "claim_ledger": ledger}
     return run_unify_bullets_x2_gates(
         bullets=bullets,
         parsed_output=parsed,
@@ -522,16 +522,15 @@ def _unify_bullets_weak_empty_claim_text():
     )
 
 
-def _unify_bullets_weak_rewrite_distribution():
+def _unify_bullets_weak_protected_metrics():
     from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
 
-    bullets = [{"bullet_id": bid, "bullet_text": f"Text {bid}.", "rewrite_intensity": "HEAVY", "source_fact_ids": [bid]} for bid in UNIFY_BULLET_IDS]
+    bullets = [{"bullet_id": bid, "bullet_text": f"Text {bid}.", "source_fact_ids": [bid]} for bid in UNIFY_BULLET_IDS]
+    for b in bullets:
+        if b["bullet_id"] == "bul_unify_006":
+            b["bullet_text"] = "Scaled leadership without $22M or margin metrics."
     ledger = [{"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets]
-    parsed = {
-        "bullets": bullets,
-        "claim_ledger": ledger,
-        "rewrite_distribution": {"HEAVY": 6, "MODERATE": 0, "LIGHT_PROTECTED": 0, "total": 6},
-    }
+    parsed = {"bullets": bullets, "claim_ledger": ledger}
     return run_unify_bullets_x2_gates(
         bullets=bullets,
         parsed_output=parsed,
@@ -552,9 +551,9 @@ def _unify_bullets_weak_metric_anchor():
         text = f"Governance outcome for {bid} without numeric anchors."
         if bid == "bul_unify_006":
             text = "Scaled global platform programs without revenue or margin figures."
-        bullets.append({"bullet_id": bid, "bullet_text": text, "rewrite_intensity": "MODERATE", "source_fact_ids": [bid]})
+        bullets.append({"bullet_id": bid, "bullet_text": text, "source_fact_ids": [bid]})
         ledger.append({"claim_text": text, "source_fact_ids": [bid]})
-    parsed = {"bullets": bullets, "claim_ledger": ledger, "rewrite_distribution": {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6}}
+    parsed = {"bullets": bullets, "claim_ledger": ledger}
     return run_unify_bullets_x2_gates(
         bullets=bullets,
         parsed_output=parsed,
@@ -573,7 +572,7 @@ def _unify_bullets_weak_text_claim_coverage():
         run_unify_bullets_x2_gates,
     )
 
-    bullets = [{"bullet_id": bid, "bullet_text": f"Delivery {bid}.", "rewrite_intensity": "MODERATE", "source_fact_ids": [bid]} for bid in UNIFY_BULLET_IDS]
+    bullets = [{"bullet_id": bid, "bullet_text": f"Delivery {bid}.", "source_fact_ids": [bid]} for bid in UNIFY_BULLET_IDS]
     ledger = [{"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets]
     cov = build_unify_bullets_text_claim_coverage(bullets, ledger, set(UNIFY_BULLET_IDS))
     row0 = dict(cov["sentences"][0])
@@ -636,9 +635,9 @@ def _unify_narrative_weak_empty_claim():
 def _ibm_bullets_weak_empty_claim():
     from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS, run_ibm_bullets_x2_gates
 
-    bullets = [{"bullet_id": bid, "bullet_text": f"IBM {bid}.", "rewrite_intensity": "MODERATE", "source_fact_ids": [bid]} for bid in IBM_BULLET_IDS]
+    bullets = [{"bullet_id": bid, "bullet_text": f"IBM {bid}.", "source_fact_ids": [bid]} for bid in IBM_BULLET_IDS]
     ledger = [{"claim_text": "", "source_fact_ids": ["bul_ibm_001"]}]
-    parsed = {"bullets": bullets, "claim_ledger": ledger, "rewrite_distribution": {"HEAVY": 0, "MODERATE": 3, "LIGHT_PROTECTED": 2, "total": 5}}
+    parsed = {"bullets": bullets, "claim_ledger": ledger}
     return run_ibm_bullets_x2_gates(
         bullets=bullets,
         parsed_output=parsed,
@@ -659,9 +658,9 @@ def _ibm_bullets_weak_metric_anchor():
         text = f"Cloud foundations for {bid} without KPI restatement."
         if bid == "bul_ibm_005":
             text = "Led hyperscaler alliances without revenue or uptime metrics."
-        bullets.append({"bullet_id": bid, "bullet_text": text, "rewrite_intensity": "MODERATE", "source_fact_ids": [bid]})
+        bullets.append({"bullet_id": bid, "bullet_text": text, "source_fact_ids": [bid]})
         ledger.append({"claim_text": text, "source_fact_ids": [bid]})
-    parsed = {"bullets": bullets, "claim_ledger": ledger, "rewrite_distribution": {"HEAVY": 0, "MODERATE": 3, "LIGHT_PROTECTED": 2, "total": 5}}
+    parsed = {"bullets": bullets, "claim_ledger": ledger}
     return run_ibm_bullets_x2_gates(
         bullets=bullets,
         parsed_output=parsed,
@@ -673,12 +672,13 @@ def _ibm_bullets_weak_metric_anchor():
     )
 
 
-def _ibm_bullets_weak_heavy_distribution():
+def _ibm_bullets_weak_unify_runtime_terms():
     from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS, run_ibm_bullets_x2_gates
 
-    bullets = [{"bullet_id": bid, "bullet_text": f"IBM {bid}.", "rewrite_intensity": "HEAVY", "source_fact_ids": [bid]} for bid in IBM_BULLET_IDS]
+    bullets = [{"bullet_id": bid, "bullet_text": f"IBM {bid}.", "source_fact_ids": [bid]} for bid in IBM_BULLET_IDS]
+    bullets[0]["bullet_text"] = "Delivered agentic runtime with GraphRAG for IBM regulated clients."
     ledger = [{"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets]
-    parsed = {"bullets": bullets, "claim_ledger": ledger, "rewrite_distribution": {"HEAVY": 5, "MODERATE": 0, "LIGHT_PROTECTED": 0, "total": 5}}
+    parsed = {"bullets": bullets, "claim_ledger": ledger}
     return run_ibm_bullets_x2_gates(
         bullets=bullets,
         parsed_output=parsed,
@@ -737,6 +737,113 @@ def _ibm_narrative_weak_requires_finalized():
     )
 
 
+def _unify_bullets_weak_track_ranked_selection():
+    from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
+
+    bullets = [
+        {"bullet_id": bid, "bullet_text": f"Outcome {bid}.", "source_fact_ids": [bid]}
+        for bid in UNIFY_BULLET_IDS
+    ]
+    ledger = [{"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets]
+    parsed = {
+        "bullets": bullets,
+        "selected_fact_plan": {
+            "selection_method": "augmented_skills_graph_unify_bullets_company_hint",
+            "facts": [{"fact_id": bid, "claim_text": "anchor"} for bid in UNIFY_BULLET_IDS],
+        },
+        "claim_ledger": ledger,
+    }
+    return run_unify_bullets_x2_gates(
+        bullets=bullets,
+        parsed_output=parsed,
+        claim_ledger=ledger,
+        allowed_fact_ids=set(UNIFY_BULLET_IDS),
+        jd_text="",
+        runtime_generation_status="MOCKED",
+        x1d_judges=_fake_judges(),
+    )
+
+
+def _unify_bullets_weak_legacy_six_pack_allocation():
+    from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
+        LEGACY_SIX_PACK_LEDGER_ORDER,
+        TRACK_RANKED_SELECTION_METHOD,
+    )
+    from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
+
+    bullets = [
+        {"bullet_id": bid, "bullet_text": f"Outcome {bid}.", "source_fact_ids": [bid]}
+        for bid in UNIFY_BULLET_IDS
+    ]
+    ledger = [{"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets]
+    facts = [
+        {
+            "fact_id": bid,
+            "ledger_candidate_fact_id": lid,
+            "claim_text": f"Anchor {lid}.",
+        }
+        for bid, lid in zip(UNIFY_BULLET_IDS, LEGACY_SIX_PACK_LEDGER_ORDER, strict=True)
+    ]
+    parsed = {
+        "bullets": bullets,
+        "selected_fact_plan": {"selection_method": TRACK_RANKED_SELECTION_METHOD, "facts": facts},
+        "claim_ledger": ledger,
+    }
+    return run_unify_bullets_x2_gates(
+        bullets=bullets,
+        parsed_output=parsed,
+        claim_ledger=ledger,
+        allowed_fact_ids=set(UNIFY_BULLET_IDS),
+        jd_text="",
+        runtime_generation_status="MOCKED",
+        x1d_judges=_fake_judges(),
+    )
+
+
+def _unify_bullets_weak_archive_verbatim():
+    from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
+
+    archive = (
+        "Designed and operationalized governed agentic AI platform capabilities for regulated "
+        "enterprise workflows with deterministic routing and orchestration controls."
+    )
+    bullets = [
+        {
+            "bullet_id": "bul_unify_001",
+            "bullet_text": (
+                "Designed and operationalized governed agentic AI platform capabilities for regulated "
+                "enterprises, enhancing compliance outcomes."
+            ),
+            "source_fact_ids": ["bul_unify_001"],
+        },
+        *[
+            {"bullet_id": bid, "bullet_text": f"Distinct {bid}.", "source_fact_ids": [bid]}
+            for bid in UNIFY_BULLET_IDS[1:]
+        ],
+    ]
+    ledger = [{"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets]
+    parsed = {
+        "bullets": bullets,
+        "selected_fact_plan": {
+            "selection_method": "augmented_skills_graph_unify_bullets_track_ranked",
+            "facts": [
+                {"fact_id": "bul_unify_001", "claim_text": archive},
+                *[{"fact_id": bid, "claim_text": "other"} for bid in UNIFY_BULLET_IDS[1:]],
+            ],
+        },
+        "claim_ledger": ledger,
+    }
+    return run_unify_bullets_x2_gates(
+        bullets=bullets,
+        parsed_output=parsed,
+        claim_ledger=ledger,
+        allowed_fact_ids=set(UNIFY_BULLET_IDS),
+        jd_text="",
+        runtime_generation_status="MOCKED",
+        x1d_judges=_fake_judges(),
+    )
+
+
 def _unify_bullets_weak_mechanism_stack():
     from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
 
@@ -755,7 +862,6 @@ def _unify_bullets_weak_mechanism_stack():
             {
                 "bullet_id": bid,
                 "bullet_text": text,
-                "rewrite_intensity": "MODERATE",
                 "source_fact_ids": [bid],
             }
         )
@@ -763,7 +869,6 @@ def _unify_bullets_weak_mechanism_stack():
     parsed = {
         "bullets": bullets,
         "claim_ledger": ledger,
-        "rewrite_distribution": {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6},
     }
     return run_unify_bullets_x2_gates(
         bullets=bullets,
@@ -857,8 +962,8 @@ def all_weak_fail_cases() -> tuple[WeakFailCase, ...]:
         ),
         WeakFailCase(
             "unify_bullets",
-            "x2_unify_rewrite_distribution_valid",
-            _unify_bullets_weak_rewrite_distribution,
+            "x2_unify_protected_bullet_metrics_preserved",
+            _unify_bullets_weak_protected_metrics,
         ),
         WeakFailCase(
             "unify_bullets",
@@ -869,6 +974,21 @@ def all_weak_fail_cases() -> tuple[WeakFailCase, ...]:
             "unify_bullets",
             "x2_text_claim_coverage_integrity",
             _unify_bullets_weak_text_claim_coverage,
+        ),
+        WeakFailCase(
+            "unify_bullets",
+            "x2_unify_track_ranked_selection_method",
+            _unify_bullets_weak_track_ranked_selection,
+        ),
+        WeakFailCase(
+            "unify_bullets",
+            "x2_unify_not_legacy_six_pack_allocation",
+            _unify_bullets_weak_legacy_six_pack_allocation,
+        ),
+        WeakFailCase(
+            "unify_bullets",
+            "x2_unify_no_archive_claim_verbatim",
+            _unify_bullets_weak_archive_verbatim,
         ),
         WeakFailCase(
             "unify_narrative",
@@ -892,8 +1012,8 @@ def all_weak_fail_cases() -> tuple[WeakFailCase, ...]:
         ),
         WeakFailCase(
             "ibm_bullets",
-            "x2_ibm_rewrite_distribution_valid",
-            _ibm_bullets_weak_heavy_distribution,
+            "x2_no_unify_runtime_terms",
+            _ibm_bullets_weak_unify_runtime_terms,
         ),
         WeakFailCase(
             "ibm_narrative",

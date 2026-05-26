@@ -35,8 +35,9 @@ def test_unify_template_yaml_requires_heavy_equals_two() -> None:
         / "unify_bullet_tailor_v1.yaml"
     )
     body = tpl.read_text(encoding="utf-8")
-    assert "HEAVY == 2" in body
-    assert re.search(r"HEAVY\s*<=\s*3", body) is None
+    assert "pool_selection:" in body
+    assert "rewrite_distribution" not in body
+    assert "rewrite_intensity" not in body
 
 
 def test_ibm_shape_lists_word_budget() -> None:

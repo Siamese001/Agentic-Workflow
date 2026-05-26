@@ -14,8 +14,11 @@ L6_PACKET_VERSION = "1"
 
 BULLET_LANE_IDS = frozenset({"unify_bullets", "ibm_bullets"})
 
-UNIFY_REWRITE_POLICY_ID = "unify_bullets_rewrite_policy_v1"
-IBM_REWRITE_POLICY_ID = "ibm_bullets_rewrite_policy_v1"
+UNIFY_POOL_SELECTION_POLICY_ID = "unify_bullets_pool_selection_v1"
+IBM_POOL_SELECTION_POLICY_ID = "ibm_bullets_pool_selection_v1"
+# Backward-compatible aliases for imports that still reference legacy policy id names.
+UNIFY_REWRITE_POLICY_ID = UNIFY_POOL_SELECTION_POLICY_ID
+IBM_REWRITE_POLICY_ID = IBM_POOL_SELECTION_POLICY_ID
 
 
 def repo_rel(repo_root: Path, path: Path) -> str:
@@ -182,38 +185,37 @@ def _bullet_output_hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def build_bullet_rewrite_map(l2: Mapping[str, Any], *, section_id: str) -> tuple[list[dict[str, Any]], dict[str, int]]:
+def build_bullet_evidence_map(l2: Mapping[str, Any], *, section_id: str) -> list[dict[str, Any]]:
+    """Per-bullet evidence map for L6 shadow (no retired rewrite-intensity taxonomy)."""
+    del section_id  # reserved for lane-specific extensions
     bullets = l2.get("bullets")
     if not isinstance(bullets, list):
-        return [], {"HEAVY": 0, "MODERATE": 0, "LIGHT_PROTECTED": 0}
-    counts = {"HEAVY": 0, "MODERATE": 0, "LIGHT_PROTECTED": 0}
+        return []
     out: list[dict[str, Any]] = []
     for b in bullets:
         if not isinstance(b, dict):
             continue
         bid = str(b.get("bullet_id") or "")
-        intensity = str(b.get("rewrite_intensity") or "").upper()
-        if intensity in counts:
-            counts[intensity] += 1
         text = str(b.get("bullet_text") or "")
         sf = b.get("source_fact_ids")
         if not isinstance(sf, list):
             sf = [bid] if bid else []
-        protected = intensity == "LIGHT_PROTECTED"
-        metrics_preserved = bool(b.get("has_metric"))
         out.append(
             {
                 "bullet_id": bid,
-                "rewrite_intensity": intensity,
-                "protected": protected,
                 "source_fact_ids": [str(x) for x in sf],
-                "metrics_preserved": metrics_preserved,
+                "metrics_preserved": bool(b.get("has_metric")),
                 "source_bullet_hash": None,
                 "output_bullet_hash": _bullet_output_hash(text),
                 "output_text_ref": None,
             }
         )
-    return out, counts
+    return out
+
+
+def build_bullet_rewrite_map(l2: Mapping[str, Any], *, section_id: str) -> list[dict[str, Any]]:
+    """Backward-compatible name — returns evidence map only (no intensity counts)."""
+    return build_bullet_evidence_map(l2, section_id=section_id)
 
 
 def build_l6_shadow_handoff_dict(
@@ -330,27 +332,21 @@ def build_l6_shadow_handoff_dict(
     }
 
     if section_id == "unify_bullets":
-        bmap, _counts_inner = build_bullet_rewrite_map(l2 if isinstance(l2, dict) else {}, section_id="unify_bullets")
-        rd_from_l2 = l2.get("rewrite_distribution") if isinstance(l2.get("rewrite_distribution"), dict) else {}
-        pkt["rewrite_policy_id"] = UNIFY_REWRITE_POLICY_ID
-        pkt["rewrite_distribution"] = {
-            "HEAVY": int(rd_from_l2.get("HEAVY", 0)),
-            "MODERATE": int(rd_from_l2.get("MODERATE", 0)),
-            "LIGHT_PROTECTED": int(rd_from_l2.get("LIGHT_PROTECTED", 0)),
-            "total": int(rd_from_l2.get("total", 0)),
-        }
+        bmap = build_bullet_evidence_map(l2 if isinstance(l2, dict) else {}, section_id="unify_bullets")
+        pkt["selection_policy_id"] = UNIFY_POOL_SELECTION_POLICY_ID
+        pkt["bullet_evidence_map"] = bmap
         pkt["bullet_rewrite_map"] = bmap
+        pool_sel = ad / "bullet_pool_selection.json"
+        if pool_sel.is_file():
+            pkt["pool_selection_ref"] = repo_rel(rr, pool_sel)
     elif section_id == "ibm_bullets":
-        bmap, _ci = build_bullet_rewrite_map(l2 if isinstance(l2, dict) else {}, section_id="ibm_bullets")
-        rd_from_l2 = l2.get("rewrite_distribution") if isinstance(l2.get("rewrite_distribution"), dict) else {}
-        pkt["rewrite_policy_id"] = IBM_REWRITE_POLICY_ID
-        pkt["rewrite_distribution"] = {
-            "HEAVY": int(rd_from_l2.get("HEAVY", 0)),
-            "MODERATE": int(rd_from_l2.get("MODERATE", 0)),
-            "LIGHT_PROTECTED": int(rd_from_l2.get("LIGHT_PROTECTED", 0)),
-            "total": int(rd_from_l2.get("total", 0)),
-        }
+        bmap = build_bullet_evidence_map(l2 if isinstance(l2, dict) else {}, section_id="ibm_bullets")
+        pkt["selection_policy_id"] = IBM_POOL_SELECTION_POLICY_ID
+        pkt["bullet_evidence_map"] = bmap
         pkt["bullet_rewrite_map"] = bmap
+        pool_sel = ad / "bullet_pool_selection.json"
+        if pool_sel.is_file():
+            pkt["pool_selection_ref"] = repo_rel(rr, pool_sel)
 
     elif section_id == "ibm_narrative":
         cap_path = ad / "compiled_prompt_artifact.json"
@@ -461,10 +457,13 @@ def build_l6_shadow_handoff_dict(
 
 __all__ = [
     "BULLET_LANE_IDS",
+    "IBM_POOL_SELECTION_POLICY_ID",
     "IBM_REWRITE_POLICY_ID",
     "L6_PACKET_TYPE",
     "L6_PACKET_VERSION",
+    "UNIFY_POOL_SELECTION_POLICY_ID",
     "UNIFY_REWRITE_POLICY_ID",
+    "build_bullet_evidence_map",
     "build_generator_metadata",
     "build_l6_shadow_handoff_dict",
     "build_bullet_rewrite_map",

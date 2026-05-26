@@ -1,0 +1,10 @@
+{
+  "schema": "graph_skills_deferred_followup_wave_receipt_v1",
+  "plan_id": "graph-skills-deferred-followup-d7f2a8",
+  "wave_id": "W4",
+  "status": "BLOCKED",
+  "ci_gha_executed": false,
+  "gha_run_url": "",
+  "workflow_path": ".github/workflows/graph-skills-authority-ratchet.yml",
+  "phase_gate": "PHASE_GATE: wave=W4 status=BLOCKED gate=G-W4"
+}

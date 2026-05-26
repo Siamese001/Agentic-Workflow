@@ -9,13 +9,13 @@ from apps_rg.fact_inventory.candidate_fact_ledger import (
     load_master_role_family_taxonomy,
 )
 from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS, select_candidate_facts_for_role
+from apps_rg.runtime.sections.unify_bullets_graph_evidence import _UNIFY_METRIC_LEDGER_IDS
 
 GRAPH_SKILLS_AUTHORITY_SECTIONS: frozenset[str] = frozenset(SECTION_KEYS)
 
 _SECTION_COMPANY_HINTS: dict[str, tuple[str, ...]] = {
     "ibm_bullets": ("ibm",),
     "ibm_narrative": ("ibm",),
-    "unify_bullets": ("unify",),
     "unify_narrative": ("unify",),
 }
 
@@ -50,7 +50,12 @@ def _graph_substrate_company_hint_plan(
     hints: tuple[str, ...],
     limit: int,
 ) -> tuple[dict[str, Any], list[str], set[str]] | None:
-    """Selection-only narrowing within graph+ledger substrate (not a proof-pool authority mode)."""
+    """IBM/narrative fallback only — not used for unify_bullets (see graph-ranked plan)."""
+    if section_id == "unify_bullets":
+        raise ValueError(
+            "company_hint allocation is forbidden for unify_bullets; "
+            "use augmented_skills_graph_unify_bullets_track_ranked"
+        )
     from apps_rg.runtime.sections.selected_role_fact_set import slice_row_to_plan_fact
 
     from apps_rg.runtime.proof_pool_resolver import _stamp_unify_canonical_bullet_ids
@@ -69,6 +74,123 @@ def _graph_substrate_company_hint_plan(
     }
     plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
     return {k: v for k, v in plan.items() if not str(k).startswith("_")}, ordered, allowed
+
+
+def _fact_scores_from_graph_expansion(
+    expansion: dict[str, Any],
+    *,
+    unify_ledger_ids: set[str],
+) -> dict[str, float]:
+    """Rank ledger facts by track-weighted graph expansion order (higher = stronger)."""
+    scores: dict[str, float] = {}
+    selected_facts = list(expansion.get("selected_facts") or [])
+    n = max(len(selected_facts), 1)
+    for i, fe in enumerate(selected_facts):
+        if not isinstance(fe, dict):
+            continue
+        cid = str(fe.get("fact_id") or "").strip()
+        if cid in unify_ledger_ids:
+            scores[cid] = max(scores.get(cid, 0.0), float(n - i))
+    return scores
+
+
+def _graph_ranked_unify_bullets_plan(
+    ledger: dict[str, Any],
+    *,
+    section_id: str,
+    target_role: str,
+    jd_text: str,
+    briefing_text: str,
+    limit: int,
+    repo_root: Path | None = None,
+) -> tuple[dict[str, Any], list[str], set[str]] | None:
+    """JD/track-weighted graph ranking for Unify bullets — not sorted ledger id[:6]."""
+    from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+    from apps_rg.fact_inventory.track_weighted_graph_expansion import (
+        build_track_weighted_expansion,
+        infer_projection_role_family_key,
+    )
+    from apps_rg.runtime.proof_pool_resolver import _stamp_unify_canonical_bullet_ids
+    from apps_rg.runtime.sections.selected_role_fact_set import slice_row_to_plan_fact
+
+    unify_rows = _ledger_rows_matching_company_hints(ledger, ("unify",))
+    if not unify_rows:
+        return None
+    by_id = {str(r.get("candidate_fact_id") or "").strip(): r for r in unify_rows}
+    by_id = {k: v for k, v in by_id.items() if k}
+
+    root = repo_root or Path(__file__).resolve().parents[2]
+    graph = load_augmented_skills_graph(repo_root=root)
+    role_key = infer_projection_role_family_key(
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+    )
+    expansion = build_track_weighted_expansion(
+        graph=graph,
+        role_family_key=role_key,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        repo_root=root,
+        min_tracks_with_facts=1,
+    )
+    scores = _fact_scores_from_graph_expansion(expansion, unify_ledger_ids=set(by_id.keys()))
+
+    picked_ids: list[str] = []
+    for fid in _UNIFY_METRIC_LEDGER_IDS:
+        if fid in by_id and fid not in picked_ids:
+            picked_ids.append(fid)
+    ranked = sorted(
+        by_id.keys(),
+        key=lambda fid: (-scores.get(fid, 0.0), fid),
+    )
+    for fid in ranked:
+        if len(picked_ids) >= limit:
+            break
+        if fid not in picked_ids:
+            picked_ids.append(fid)
+
+    if len(picked_ids) < limit:
+        return None
+
+    from apps_rg.runtime.sections.unify_bullets_graph_evidence import is_legacy_six_pack_ledger_order
+
+    if is_legacy_six_pack_ledger_order(picked_ids[:limit]):
+        # Graph scores tied at zero — fail closed rather than emit legacy six-pack.
+        graph_scored = [fid for fid in ranked if scores.get(fid, 0.0) > 0.0]
+        picked_ids = []
+        for fid in _UNIFY_METRIC_LEDGER_IDS:
+            if fid in by_id and fid not in picked_ids:
+                picked_ids.append(fid)
+        for fid in graph_scored:
+            if len(picked_ids) >= limit:
+                break
+            if fid not in picked_ids:
+                picked_ids.append(fid)
+        for fid in ranked:
+            if len(picked_ids) >= limit:
+                break
+            if fid not in picked_ids:
+                picked_ids.append(fid)
+        if len(picked_ids) < limit or is_legacy_six_pack_ledger_order(picked_ids[:limit]):
+            return None
+
+    from apps_rg.runtime.sections.unify_bullets_graph_evidence import assign_unify_metric_anchor_slots
+
+    ledger_pick_order = list(picked_ids[:limit])
+    facts = [slice_row_to_plan_fact(by_id[fid], section_id=section_id) for fid in ledger_pick_order]
+    facts = assign_unify_metric_anchor_slots(facts)
+    plan = {
+        "section_id": section_id,
+        "selection_method": "augmented_skills_graph_unify_bullets_track_ranked",
+        "ledger_pick_order": ledger_pick_order,
+        "facts": facts,
+        "required_fact_ids": [str(f["fact_id"]) for f in facts],
+        "_graph_expansion_role_family_key": role_key,
+    }
+    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
+    clean = {k: v for k, v in plan.items() if not str(k).startswith("_")}
+    return clean, ordered, allowed
 
 
 def assert_graph_skills_section(section_id: str) -> None:
@@ -99,6 +221,22 @@ def allocate_section_facts_from_graph_substrate(
     if section_id == "competencies":
         raise ValueError("competencies uses track-weighted graph expansion, not role slice allocation")
 
+    min_required = _SECTION_MIN_FACTS.get(section_id, 0)
+    repo_root = Path(__file__).resolve().parents[2]
+
+    if section_id == "unify_bullets":
+        ranked = _graph_ranked_unify_bullets_plan(
+            ledger,
+            section_id=section_id,
+            target_role=target_role,
+            jd_text=jd_text,
+            briefing_text=briefing_text,
+            limit=min_required or 6,
+            repo_root=repo_root,
+        )
+        if ranked is not None:
+            return _sanitize_plan(ranked[0]), ranked[1], ranked[2]
+
     srfs = select_candidate_facts_for_role(
         target_company=target_company,
         target_role=target_role,
@@ -111,7 +249,6 @@ def allocate_section_facts_from_graph_substrate(
     )
     slice_rows = list(srfs.selected_facts_by_section.get(section_id) or [])
     hints = _SECTION_COMPANY_HINTS.get(section_id)
-    min_required = _SECTION_MIN_FACTS.get(section_id, 0)
 
     def _hint_if_sufficient() -> tuple[dict[str, Any], list[str], set[str]] | None:
         if not hints:
@@ -160,4 +297,5 @@ __all__ = [
     "GRAPH_SKILLS_AUTHORITY_SECTIONS",
     "allocate_section_facts_from_graph_substrate",
     "assert_graph_skills_section",
+    "_graph_ranked_unify_bullets_plan",
 ]

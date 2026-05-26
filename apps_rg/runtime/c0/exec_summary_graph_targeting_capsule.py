@@ -101,6 +101,25 @@ def build_graph_targeting_capsule(
     return capsule
 
 
+def canonical_graph_targeting_capsule_digest(capsule: dict[str, Any] | None) -> str:
+    """Stable digest for parity binding (PA + judge must share the same capsule document)."""
+    import hashlib
+    import json
+
+    if not isinstance(capsule, dict) or not capsule:
+        return hashlib.sha256(b"").hexdigest()
+    body = json.dumps(
+        {
+            "role_family_key": str(capsule.get("role_family_key") or ""),
+            "skill_ids": sorted(str(x) for x in (capsule.get("skill_ids") or []) if str(x).strip()),
+            "capsule_text": str(capsule.get("capsule_text") or ""),
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(body.encode("utf-8")).hexdigest()
+
+
 def format_graph_targeting_capsule_for_pa(capsule: dict[str, Any]) -> str:
     text = str(capsule.get("capsule_text") or "").strip()
     skills = capsule.get("skill_entries") or []
@@ -122,6 +141,7 @@ __all__ = [
     "CAPSULE_MAX_TOTAL_CHARS",
     "NON_PROOF_BANNER",
     "build_graph_targeting_capsule",
+    "canonical_graph_targeting_capsule_digest",
     "capsule_contains_forbidden_patterns",
     "format_graph_targeting_capsule_for_pa",
 ]

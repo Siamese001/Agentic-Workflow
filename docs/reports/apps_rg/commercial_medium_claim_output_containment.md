@@ -9,14 +9,14 @@
 ## Headline / executive_summary (HIGH-only)
 
 ### `headline`
-- `fact_engineering_platform_006` [HIGH] eligible_high_with_metrics_requires_source_trace
 - `fact_quant_hpc_001` [HIGH] eligible_high_with_metrics_requires_source_trace
 - `fact_quant_hpc_003` [HIGH] eligible_high_qualitative
+- `fact_engineering_platform_004` [HIGH] eligible_high_with_metrics_requires_source_trace
 - `fact_consulting_001` [HIGH] eligible_high_qualitative
 - `fact_engineering_platform_002` [HIGH] eligible_high_qualitative
 ### `executive_summary`
 - `fact_certs_001` [HIGH] eligible_high_qualitative
-- `fact_engineering_platform_004` [HIGH] eligible_high_with_metrics_requires_source_trace
+- `fact_engineering_platform_006` [HIGH] eligible_high_with_metrics_requires_source_trace
 - `fact_engineering_platform_001` [HIGH] eligible_high_qualitative
 - `fact_exec_002` [HIGH] eligible_high_with_metrics_requires_source_trace
 - `fact_governance_003` [HIGH] eligible_high_with_metrics_requires_source_trace

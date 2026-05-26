@@ -78,11 +78,23 @@ def _build_retired_gate_refs() -> dict[str, RetiredGateRef]:
             retired_reason="Legacy exec summary shape bands superseded by x2_exec_summary_sentence_count_6",
             replacement_gate_id="x2_exec_summary_sentence_count_6",
         )
-    out["x2_unify_max_heavy_3"] = _retired(
-        "x2_unify_max_heavy_3",
-        retired_reason="Distribution enforced by x2_unify_rewrite_distribution_valid only",
-        replacement_gate_id="x2_unify_rewrite_distribution_valid",
+    from apps_rg.runtime.sections.section_product_shape_ssot import (
+        RETIRED_IBM_BULLETS_X2_GATE_IDS,
+        RETIRED_UNIFY_BULLETS_X2_GATE_IDS,
     )
+
+    for gid in RETIRED_UNIFY_BULLETS_X2_GATE_IDS:
+        out[gid] = _retired(
+            gid,
+            retired_reason="Rewrite intensity model retired; pool selection + score floor governs bullets",
+            replacement_gate_id="x2_unify_bullet_count_6",
+        )
+    for gid in RETIRED_IBM_BULLETS_X2_GATE_IDS:
+        out[gid] = _retired(
+            gid,
+            retired_reason="Rewrite intensity model retired; pool selection + score floor governs bullets",
+            replacement_gate_id="x2_ibm_bullet_count_5",
+        )
     for gid in RETIRED_PROOF_POOL_SLICE_X2_GATE_IDS:
         out[gid] = _retired(
             gid,

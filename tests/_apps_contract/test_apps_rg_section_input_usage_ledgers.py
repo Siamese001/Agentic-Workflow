@@ -2,24 +2,22 @@
 from __future__ import annotations
 
 import json
-import os
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
 from tests._apps_contract.contract_harness_paths import harness_run
+from tests._apps_contract.lane_cli_common import (
+    REPO_ROOT as REPO,
+    artifact_dir_from_stdout,
+    contract_artifact_dir,
+    qwen_live_available,
+    run_lane_cli,
+)
 
-REPO = Path(__file__).resolve().parents[2]
-
-_STRIP: frozenset[str] = frozenset(
-    {
-        "APPS_RG_MODULAR_LANE_PROVIDER",
-        "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB",
-        "VLLM_BASE_URL",
-        "APPS_RG_QWEN_TIMEOUT_SECONDS",
-    }
+pytestmark = pytest.mark.skipif(
+    not qwen_live_available(),
+    reason="section input usage ledger CLI tests require live qwen_vllm",
 )
 
 SECTION_IDS = (
@@ -33,61 +31,24 @@ SECTION_IDS = (
 )
 
 
-def _subprocess_env() -> dict[str, str]:
-    env = {k: v for k, v in os.environ.items() if k not in _STRIP}
-    env["APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO"] = "1"
-    env["APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"] = "1"
-    return env
-
-
-def _latest_mock_run_dir(lane: str) -> Path:
-    from apps_rg.runtime.runtime_proof_layout import resolve_run_dir_from_pointer
-
-    rd = resolve_run_dir_from_pointer(REPO, lane, "mock")
-    assert rd is not None, f"expected latest_mock_run.json → {lane} mock bucket"
-    return rd
-
-
-def _section_cli_argv(section_id: str) -> list[str]:
-    argv = [
-        sys.executable,
-        "-m",
-        "apps_rg",
-        "--section",
-        section_id,
-        "--provider",
-        "mock",
-        "--mock-judges",
-        "--allow-test-mock-judges",
-    ]
-    if section_id == "executive_summary":
-        argv.extend(
-            [
-                "--target-company",
-                "CI-Probe-Co",
-                "--target-role",
-                "Software Engineer",
-                "--jd",
-                str(REPO / "tests" / "_fixtures" / "ci-probe-jd.txt"),
-                "--manual-brief",
-                str(REPO / "apps_rg" / "config" / "default_targeting_briefing.txt"),
-            ]
-        )
-    return argv
+def _section_kwargs(section_id: str) -> dict[str, str]:
+    if section_id != "executive_summary":
+        return {}
+    return {
+        "target_company": "CI-Probe-Co",
+        "target_role": "Software Engineer",
+        "jd": str(REPO / "tests" / "_fixtures" / "ci-probe-jd.txt"),
+        "manual_brief": str(REPO / "apps_rg" / "config" / "default_targeting_briefing.txt"),
+    }
 
 
 @pytest.mark.parametrize("section_id", SECTION_IDS)
 def test_section_cli_emits_input_usage_ledger_and_prompt_authority(section_id: str) -> None:
-    r = subprocess.run(
-        _section_cli_argv(section_id),
-        cwd=REPO,
-        capture_output=True,
-        text=True,
-        timeout=240,
-        env=_subprocess_env(),
-    )
+    art = contract_artifact_dir(section_id)
+    rel = art.relative_to(REPO).as_posix()
+    r = run_lane_cli(section_id, artifact_dir=rel, timeout_s=600, **_section_kwargs(section_id))
     assert r.returncode == 0, f"stderr={r.stderr!r} stdout={r.stdout!r}"
-    rd = _latest_mock_run_dir(section_id)
+    rd = artifact_dir_from_stdout(r)
     led_path = rd / "section_input_usage_ledger.json"
     assert led_path.is_file(), f"missing {led_path}"
     doc = json.loads(led_path.read_text(encoding="utf-8"))
@@ -186,8 +147,6 @@ def test_x3_blocks_when_evidence_boundary_flags_non_evidence_as_claim_evidence()
 
 
 def test_append_input_usage_x2_missing_ledger_fails() -> None:
-    from pathlib import Path
-
     from apps_rg.runtime.validators.executive_summary_x2 import X2GateResult
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 

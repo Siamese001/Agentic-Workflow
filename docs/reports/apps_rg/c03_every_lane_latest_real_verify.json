@@ -1,0 +1,82 @@
+{
+  "status": "FAIL",
+  "lanes": [
+    {
+      "lane": "headline",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260525_223026",
+      "spine_receipt_present": true,
+      "ledger_present": true,
+      "canonical_c0_3_graph_claimed": false,
+      "graph_lane_deferred": true,
+      "graph_traverse_ref": "",
+      "augmented_skills_graph_authority": true,
+      "pass": false
+    },
+    {
+      "lane": "executive_summary",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260526_080609",
+      "spine_receipt_present": true,
+      "ledger_present": true,
+      "canonical_c0_3_graph_claimed": true,
+      "graph_lane_deferred": false,
+      "graph_traverse_ref": "ref:graph:traverse:17f36184f429b290",
+      "augmented_skills_graph_authority": true,
+      "pass": true
+    },
+    {
+      "lane": "unify_bullets",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260526_081541",
+      "spine_receipt_present": true,
+      "ledger_present": false,
+      "canonical_c0_3_graph_claimed": true,
+      "graph_lane_deferred": false,
+      "graph_traverse_ref": "ref:graph:traverse:17f36184f429b290",
+      "augmented_skills_graph_authority": false,
+      "pass": false
+    },
+    {
+      "lane": "unify_narrative",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260523_123336",
+      "spine_receipt_present": false,
+      "ledger_present": true,
+      "canonical_c0_3_graph_claimed": false,
+      "graph_lane_deferred": true,
+      "graph_traverse_ref": "",
+      "augmented_skills_graph_authority": true,
+      "pass": false
+    },
+    {
+      "lane": "ibm_bullets",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260519_182118",
+      "spine_receipt_present": false,
+      "ledger_present": true,
+      "canonical_c0_3_graph_claimed": false,
+      "graph_lane_deferred": true,
+      "graph_traverse_ref": "",
+      "augmented_skills_graph_authority": true,
+      "pass": false
+    },
+    {
+      "lane": "ibm_narrative",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260523_124006",
+      "spine_receipt_present": false,
+      "ledger_present": true,
+      "canonical_c0_3_graph_claimed": false,
+      "graph_lane_deferred": true,
+      "graph_traverse_ref": "",
+      "augmented_skills_graph_authority": true,
+      "pass": false
+    },
+    {
+      "lane": "competencies",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260524_010446",
+      "spine_receipt_present": false,
+      "ledger_present": false,
+      "canonical_c0_3_graph_claimed": false,
+      "graph_lane_deferred": true,
+      "graph_traverse_ref": "",
+      "augmented_skills_graph_authority": false,
+      "pass": false
+    }
+  ]
+}

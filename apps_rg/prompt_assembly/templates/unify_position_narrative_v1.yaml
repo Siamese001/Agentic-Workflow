@@ -22,9 +22,9 @@ purpose: |
   Complements bullets by concept overlap, never by copying labels, metrics, machinery stacks, or sentence structure.
 
 sovereign_oath: |
-  UNIFY NARRATIVE — role capstone only (not bullet recap). Governed by pa_truth_oath_v1, pa_proof_binding_v1,
-  pa_targeting_only_v1 (pa_core_law_v1.yaml). Proof: C0 unify_narrative_base_* (when listed) and bul_unify_* only.
-  Companion finalized bullets: anti-repetition only. One sentence; no cross-employer facts; no JD-as-proof in source_fact_ids.
+  unify_narrative — role capstone only (not bullet recap). Governed by pa_truth_oath_v1, pa_proof_binding_v1,
+  pa_targeting_only_v1 (pa_core_law_v1.yaml). Proof: SelectedRoleFactSet slice + C0 unify_narrative_base_* and bul_unify_* only.
+  Companion finalized bullets: read-only anti-repetition, not proof. One sentence; no cross-employer facts; no JD-as-proof in source_fact_ids.
   X2 enforcement: PRODUCT_SHAPE append at compile (not restated in runtime I0).
 
 north_star_semantic_contract: |

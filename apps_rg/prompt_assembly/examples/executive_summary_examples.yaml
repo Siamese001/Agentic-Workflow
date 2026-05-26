@@ -96,16 +96,27 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Technology strategy executive aligning governed AI platforms, regulatory lineage, and commercialization into one enterprise IT direction for regulated programs.
-      Designs and operates platform runtime with deterministic controls and traceable execution so innovation scales without sacrificing audit-ready delivery.
-      Leads operating-model and engineering scale-out across platform lifecycle work, converting complex delivery into reusable services adopted across enterprise programs.
-      Applies governance and quantitative depth to balance innovation velocity with lineage discipline when selected facts support regulated analytics themes.
-      Generated proof-backed revenue and margin outcomes by productizing platform capabilities rather than listing credentials or certification labels.
-      Closes the arc with enterprise technology direction grounded in allowed platform and governance facts, not JD phrasing or employer targeting copy.
+      Enterprise technology leader who unifies governed AI platforms, regulatory lineage, and commercialization into one IT strategy and innovation agenda for decentralized regulated enterprises.
+      Designs and operates platform runtime with deterministic controls and traceable execution so innovation scales without sacrificing validation-ready delivery.
+      From that platform footprint, platform commercialization and team growth from 8 to 28 specialists convert delivery complexity into enterprise program adoption when selected facts support those themes.
+      Complementing that delivery foundation, Basel III and CCAR lineage discipline accelerates lineage-ready IT strategy velocity without turning governance into a control checklist.
+      With that governance posture, quantitative rigor from capital and risk analytics practice sharpens platform investment and stress-analytics decisions for regulated program scale.
+      Looking ahead, architecture standards and innovation incubation programs can turn governed platform delivery into decentralized unit adoption while preserving lineage discipline.
     claim_ledger_grounded: false
     annotation: >
-      STYLE VARIANT — SVP IT strategy register: six-sentence integrated arc (S3–S4 platform/scale, S5 commercial
-      synthesis, S6 fact-backed capstone). Targeting shapes emphasis only; metrics appear only when facts support them.
+      STYLE VARIANT — SVP IT strategy register (V7): honest S3–S4 sequencing, woven S5 quantitative rigor (no employer/cert dump),
+      S6 forward innovation/architecture capstone (not thin recap). Targeting shapes emphasis only.
+
+  - id: exec_summary_neg_thin_s6_recap_001
+    category: negative
+    section: executive_summary
+    seniority_band: EXECUTIVE
+    xml_wrapped: true
+    before: null
+    after: |
+      Technology strategy executive who aligns enterprise IT direction, governed AI platform delivery, and innovation programs for regulated enterprise scale. Building on that platform foundation, platform commercialization generated proof-backed revenue outcomes. Through that operating model, Basel III lineage frameworks reduced reporting errors. That regulatory lineage work extended to re-architecting monolithic risk analytics with containerized HPC microservices. Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential rigor. Governed platform delivery, engineering scale, and regulatory-grade controls extend that arc toward enterprise architecture modernization and data-driven innovation programs.
+    annotation: >
+      VIOLATION: Claude-fail bundle — thin S6 recap ("extend that arc toward"), S5 credential inventory, forced S3→S4 causal bridge, generic S1.
 
   - id: exec_summary_neg_credential_dump_001
     category: negative

@@ -370,6 +370,7 @@ def run_section_executive_summary_spine(
         "l7_how_trace_emitted": False,
         "terminal_r5": False,
         "executive_summary_cli_output_text": ctx.get("output_text", ""),
+        "token_budget_operator_message": str(ctx.get("token_budget_operator_message") or ""),
         "headline_cli_output_text": "",
         "unify_bullets_cli_output_text": "",
         "unify_narrative_cli_output_text": "",

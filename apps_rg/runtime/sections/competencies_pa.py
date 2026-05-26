@@ -69,7 +69,7 @@ COMPETENCIES_OUTPUT_SCHEMA: dict[str, Any] = {
                 "maxItems": 8,
                 "description": (
                     "Executive capability categories: category_id, category_label, "
-                    "terms[{term, source_fact_ids, source_skill_ids, support_class}]"
+                    "terms[{text, source_fact_id, source_fact_ids, optional source_skill_ids, support_class}]"
                 ),
             },
             "competencies": {
@@ -207,7 +207,8 @@ def build_competencies_assembly_input(
         "Do NOT use full sentences, impact narratives, metrics, or accomplishment prose inside terms.\n\n"
         "Return RAW JSON only: first character {, last character }. No ``` fences.\n\n"
         "OUTPUT CONTRACT (top-level object):\n"
-        "- competencies: array of 6–8 executive capability objects, each with:\n"
+        "- categories: array of 6–8 executive capability category objects, each with:\n"
+        "  - category_id: stable taxonomy id when known\n"
         "  - category_label: crisp professional label (no colon, no newlines, not a sentence; not generic "
         '"Skills" / "Competency 1")\n'
         "  - terms: array of 2 to 6 entries; EACH entry MUST be an object with keys "
@@ -218,6 +219,7 @@ def build_competencies_assembly_input(
         "acronyms, platforms, products, or credentials (for example GraphRAG, AWS, vLLM); "
         "never emit bare generic one-word skills without proof overlap.\n"
         "  - source_fact_ids: non-empty array of bul_* ids backing the category\n"
+        "  (Legacy read adapters may mirror categories[] to competencies[] after parse — do not emit competencies as the primary top-level key.)\n"
         "- selected_fact_plan: stub only {section_id, selection_method, required_fact_ids}\n"
         "- claim_ledger: one row per emitted term; claim_text non-empty; source_fact_ids [single bul_*]\n"
         "- jd_alignment must include: targeting_only: true, jd_used_as_proof: false, "

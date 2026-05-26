@@ -10,10 +10,11 @@ import pytest
 from apps_rg.runtime.package.resume_package_l6_audit import TOP_REQUIRED_SCALAR, audit_l6_shadow_packet_for_lane
 from apps_rg.runtime.package.resume_package_manifest import RUNTIME_PROOFS, resolve_resume_package_paths, repo_root_default
 from apps_rg.runtime.shadow.l6_handoff_packet import (
-    IBM_REWRITE_POLICY_ID,
+    IBM_POOL_SELECTION_POLICY_ID,
     L6_PACKET_TYPE,
     L6_PACKET_VERSION,
-    UNIFY_REWRITE_POLICY_ID,
+    UNIFY_POOL_SELECTION_POLICY_ID,
+    build_l6_shadow_handoff_dict,
 )
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 
@@ -35,6 +36,29 @@ def _l6_packet(repo_root: Path, rollup: dict, lane_key: str) -> dict:
     raw = json.loads((repo_root / rel).read_text(encoding="utf-8"))
     assert isinstance(raw, dict)
     return raw
+
+
+def _l6_packet_rebuilt_from_artifacts(repo_root: Path, rollup: dict, lane_key: str) -> dict:
+    """Rebuild handoff from on-disk lane artifacts (exercises current envelope builder)."""
+    rel = rollup["lanes"][lane_key]["artifact_refs"]["l6_shadow_eval_package.json"]
+    artifact_dir = (repo_root / rel).parent
+    pr_blob: dict = {}
+    pr_path = artifact_dir / "provider_request.json"
+    if pr_path.is_file():
+        pr_raw = json.loads(pr_path.read_text(encoding="utf-8"))
+        if isinstance(pr_raw, dict):
+            pr_blob = pr_raw
+    temperature = pr_blob.get("temperature")
+    max_tokens = pr_blob.get("max_tokens")
+    prompt_id = str(pr_blob.get("prompt_id") or f"contract_rebuild_{lane_key}")
+    return build_l6_shadow_handoff_dict(
+        artifact_dir=artifact_dir,
+        repo_root=repo_root,
+        section_id=lane_key,
+        prompt_id=prompt_id,
+        temperature=float(temperature) if temperature is not None else None,
+        max_tokens=int(max_tokens) if max_tokens is not None else None,
+    )
 
 
 REGEN_HINT = (
@@ -156,34 +180,31 @@ def test_l6_placeholder_and_safety_flags(rollup_handoff_v1: dict):
         assert pkt["threshold_mutation_performed"] is False
 
 
-def test_unify_bullets_rewrite_envelope_exact(rollup_handoff_v1: dict):
-    pkt = _l6_packet(REPO_ROOT, rollup_handoff_v1, "unify_bullets")
-    assert pkt["rewrite_policy_id"] == UNIFY_REWRITE_POLICY_ID
-    rd = pkt["rewrite_distribution"]
-    assert int(rd["HEAVY"]) == 2
-    assert int(rd["MODERATE"]) == 3
-    assert int(rd["LIGHT_PROTECTED"]) == 1
-    brm = pkt["bullet_rewrite_map"]
+def test_unify_bullets_pool_selection_envelope(rollup_handoff_v1: dict):
+    pkt = _l6_packet_rebuilt_from_artifacts(REPO_ROOT, rollup_handoff_v1, "unify_bullets")
+    assert pkt["selection_policy_id"] == UNIFY_POOL_SELECTION_POLICY_ID
+    assert "rewrite_distribution" not in pkt
+    brm = pkt["bullet_evidence_map"]
     assert isinstance(brm, list) and len(brm) >= 6
     prot = next((r for r in brm if r.get("bullet_id") == "bul_unify_006"), None)
     assert prot is not None
-    assert prot.get("protected") is True
+    assert "rewrite_intensity" not in prot
 
 
-def test_ibm_bullets_rewrite_envelope_exact(rollup_handoff_v1: dict):
-    pkt = _l6_packet(REPO_ROOT, rollup_handoff_v1, "ibm_bullets")
-    assert pkt["rewrite_policy_id"] == IBM_REWRITE_POLICY_ID
-    rd = pkt["rewrite_distribution"]
-    assert int(rd["HEAVY"]) == 0
-    assert int(rd["MODERATE"]) == 3
-    assert int(rd["LIGHT_PROTECTED"]) == 2
-    brm = pkt["bullet_rewrite_map"]
+def test_ibm_bullets_pool_selection_envelope(rollup_handoff_v1: dict):
+    pkt = _l6_packet_rebuilt_from_artifacts(REPO_ROOT, rollup_handoff_v1, "ibm_bullets")
+    assert pkt["selection_policy_id"] == IBM_POOL_SELECTION_POLICY_ID
+    assert "rewrite_distribution" not in pkt
+    brm = pkt["bullet_evidence_map"]
     assert isinstance(brm, list) and len(brm) >= 5
 
 
 def test_lane_audits_not_fatal_when_packets_complete(rollup_handoff_v1: dict):
     for lk in GENERATED_LANES:
-        pkt = _l6_packet(REPO_ROOT, rollup_handoff_v1, lk)
+        if lk in ("unify_bullets", "ibm_bullets"):
+            pkt = _l6_packet_rebuilt_from_artifacts(REPO_ROOT, rollup_handoff_v1, lk)
+        else:
+            pkt = _l6_packet(REPO_ROOT, rollup_handoff_v1, lk)
         rec = audit_l6_shadow_packet_for_lane(lane_key=lk, packet=pkt)
         assert rec["fatal"] is False, (lk, rec.get("incomplete_field_paths_sorted"))
 

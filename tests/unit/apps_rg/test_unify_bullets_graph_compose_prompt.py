@@ -99,7 +99,9 @@ def test_graph_evidence_pack_lists_bound_skills_per_slot() -> None:
     assert GRAPH_BULLET_EVIDENCE_PACK_MARKER in body
     assert "bound_skills" in body
     assert "skill_governed_agentic_systems_architecture" in body
-    assert "archive_reference_only" in body
+    assert "compose_one_bullet_from" in body
+    assert "archive_reference_only" not in body
+    assert "theme:" not in body
     assert "CANONICAL UNIFY FACTS" not in body
 
 
@@ -130,6 +132,8 @@ def test_compiled_prompt_uses_graph_compose_not_rewrite() -> None:
     assert "TARGETING ONLY" in content.upper() or "targeting only" in content
     assert "jd_used_as_proof=false" in content
     assert not _FORBIDDEN_C0.search(content)
+    assert "archive_reference_only" not in content
+    assert "Agentic AI platform architecture" not in content
 
 
 def test_legacy_i0_compose_not_rewrite() -> None:

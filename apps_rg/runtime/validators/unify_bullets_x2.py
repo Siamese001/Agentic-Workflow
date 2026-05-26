@@ -32,20 +32,8 @@ UNIFY_BULLET_IDS = (
     "bul_unify_005",
     "bul_unify_006",
 )
-DEFAULT_DISTRIBUTION = {"HEAVY": 2, "MODERATE": 3, "LIGHT_PROTECTED": 1, "total": 6}
 PROTECTED_BULLET_DEFAULT = "bul_unify_006"
 METRIC_ANCHOR_BULLET_004 = "bul_unify_004"
-# Per-bullet rewrite_intensity SSOT (2 HEAVY + 3 MODERATE + 1 LIGHT). bul_unify_004 is metric-anchored
-# but MODERATE here because only one LIGHT_PROTECTED slot is reserved for bul_unify_006.
-INTENSITY_BY_BULLET_SSOT: dict[str, str] = {
-    "bul_unify_001": "MODERATE",
-    "bul_unify_002": "MODERATE",
-    "bul_unify_003": "HEAVY",
-    "bul_unify_004": "MODERATE",
-    "bul_unify_005": "HEAVY",
-    "bul_unify_006": "LIGHT_PROTECTED",
-}
-VALID_INTENSITIES = frozenset({"HEAVY", "MODERATE", "LIGHT_PROTECTED"})
 FORBIDDEN_FACT_PREFIXES = ("bul_ibm_", "bul_insurtech_", "bul_ey_", "exp_ibm_", "exp_insurtech_", "exp_ey_")
 
 # Mechanism stack vocabulary (narrative anti-pattern; at most one bullet may be mechanism-dense).
@@ -233,7 +221,6 @@ REQUIRED_TOP_LEVEL = {
     "jd_alignment",
     "gap_notes",
     "change_log",
-    "rewrite_distribution",
     "self_check",
 }
 
@@ -295,15 +282,6 @@ def _unify_metric_anchors_on_assigned_bullets(bullets: list[dict[str, Any]]) -> 
     return (not failures, failures)
 
 
-def _count_intensities(bullets: list[dict[str, Any]]) -> dict[str, int]:
-    counts = {"HEAVY": 0, "MODERATE": 0, "LIGHT_PROTECTED": 0}
-    for bullet in bullets:
-        intensity = str(bullet.get("rewrite_intensity", "")).upper()
-        if intensity in counts:
-            counts[intensity] += 1
-    return counts
-
-
 def _all_source_fact_ids(parsed: dict[str, Any] | None, claim_ledger: list[dict[str, Any]]) -> set[str]:
     ids: set[str] = set()
     for bullet in (parsed or {}).get("bullets") or []:
@@ -331,7 +309,6 @@ def run_unify_bullets_x2_gates(
     model_name: str | None = None,
     raw_output: str | None = None,
     x1d_judges: list[dict[str, Any]] | None = None,
-    rewrite_distribution: dict[str, Any] | None = None,
     srfs_source_fact_slice_gate_active: bool = False,
     proof_pool_metadata: dict[str, Any] | None = None,
     proof_pool_ref: str = "",
@@ -361,8 +338,6 @@ def run_unify_bullets_x2_gates(
         )
 
     combined = _combined_bullet_text(bullets)
-    dist = rewrite_distribution or (parsed_output or {}).get("rewrite_distribution") or {}
-    intensity_counts = _count_intensities(bullets)
 
     from apps_rg.runtime.c0.graph_story_authority import (
         x2_gate_base_resume_story_forbidden,
@@ -402,6 +377,84 @@ def run_unify_bullets_x2_gates(
         missing_top_level,
         sorted(REQUIRED_TOP_LEVEL),
         f"Missing required top-level JSON keys: {', '.join(missing_top_level)}" if missing_top_level else None,
+    )
+
+    from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
+        find_rewrite_intensity_model_violations,
+    )
+
+    intensity_violations = find_rewrite_intensity_model_violations(
+        parsed_output=po_raw,
+        bullets=bullets,
+    )
+    add(
+        "x2_unify_no_rewrite_intensity_model",
+        not intensity_violations,
+        intensity_violations or "absent",
+        "no rewrite_distribution / rewrite_intensity fields",
+        f"Retired rewrite-intensity model fields present: {', '.join(intensity_violations)}"
+        if intensity_violations
+        else None,
+    )
+
+    from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
+        TRACK_RANKED_SELECTION_METHOD,
+        is_allowed_unify_selection_method,
+        is_legacy_six_pack_ledger_order,
+        max_consecutive_word_overlap,
+    )
+
+    plan_raw = po_raw.get("selected_fact_plan") if isinstance(po_raw.get("selected_fact_plan"), dict) else {}
+    selection_method = str(plan_raw.get("selection_method") or "")
+    if isinstance(proof_pool_metadata, dict):
+        selection_method = selection_method or str(proof_pool_metadata.get("selection_method") or "")
+    add(
+        "x2_unify_track_ranked_selection_method",
+        is_allowed_unify_selection_method(selection_method),
+        selection_method or "(missing)",
+        TRACK_RANKED_SELECTION_METHOD,
+        "selected_fact_plan must use graph track-ranked allocation (not company_hint / hydrate).",
+    )
+
+    plan_facts = list(plan_raw.get("facts") or [])
+    pick_order = plan_raw.get("ledger_pick_order")
+    if isinstance(pick_order, list) and pick_order:
+        ledger_ids = [str(x).strip() for x in pick_order if str(x).strip()]
+    else:
+        ledger_ids = [
+            str(f.get("ledger_candidate_fact_id") or f.get("candidate_fact_id") or "").strip()
+            for f in plan_facts
+            if isinstance(f, dict)
+        ]
+        ledger_ids = [x for x in ledger_ids if x]
+    add(
+        "x2_unify_not_legacy_six_pack_allocation",
+        not is_legacy_six_pack_ledger_order(ledger_ids),
+        ledger_ids,
+        "not fact_engineering_platform_001..006 in order",
+        "Proof pool reverted to legacy sorted six-pack ledger order.",
+    )
+
+    archive_hits: list[str] = []
+    claim_by_slot = {
+        str(f.get("fact_id") or ""): str(f.get("claim_text") or "")
+        for f in plan_facts
+        if isinstance(f, dict) and str(f.get("fact_id") or "").startswith("bul_unify_")
+    }
+    for bullet in bullets:
+        if not isinstance(bullet, dict):
+            continue
+        bid = str(bullet.get("bullet_id") or "")
+        archive = claim_by_slot.get(bid, "")
+        text = str(bullet.get("bullet_text") or "")
+        if archive and max_consecutive_word_overlap(archive, text) >= 8:
+            archive_hits.append(bid)
+    add(
+        "x2_unify_no_archive_claim_verbatim",
+        not archive_hits,
+        archive_hits or "none",
+        "max consecutive word overlap < 8 vs ledger claim_text",
+        f"Bullet copies archive claim_text run: {', '.join(archive_hits)}",
     )
 
     ledger_text_ok, ledger_text_reason = check_claim_ledger_claim_text_non_empty(claim_ledger)
@@ -446,77 +499,29 @@ def run_unify_bullets_x2_gates(
 
     add("x2_unify_bullet_count_6", len(bullets) == 6, len(bullets), 6, "Must output exactly 6 bullets.")
 
-    dist_valid = (
-        dist.get("HEAVY") == DEFAULT_DISTRIBUTION["HEAVY"]
-        and dist.get("MODERATE") == DEFAULT_DISTRIBUTION["MODERATE"]
-        and dist.get("LIGHT_PROTECTED") == DEFAULT_DISTRIBUTION["LIGHT_PROTECTED"]
-        and (dist.get("total") == 6 or sum(intensity_counts.values()) == 6)
-    )
-    add(
-        "x2_unify_rewrite_distribution_valid",
-        dist_valid and intensity_counts == {
-            k: DEFAULT_DISTRIBUTION[k] for k in ("HEAVY", "MODERATE", "LIGHT_PROTECTED")
-        },
-        {"declared": dist, "observed": intensity_counts},
-        DEFAULT_DISTRIBUTION,
-        "Rewrite distribution must be 2 HEAVY, 3 MODERATE, 1 LIGHT_PROTECTED.",
+    from apps_rg.runtime.validators.bullet_line_discipline_x2 import (
+        register_bullet_line_discipline_x2_gates,
     )
 
-    # x2_unify_max_heavy_3 retired — non-authoritative; use x2_unify_rewrite_distribution_valid only.
-    add(
-        "x2_unify_min_light_protected_1",
-        intensity_counts["LIGHT_PROTECTED"] >= 1,
-        intensity_counts["LIGHT_PROTECTED"],
-        1,
-        "At least one LIGHT_PROTECTED bullet required.",
-    )
-
-    intensity_mismatches = [
-        {
-            "bullet_id": str(b.get("bullet_id")),
-            "observed": str(b.get("rewrite_intensity", "")).upper(),
-            "expected": INTENSITY_BY_BULLET_SSOT.get(str(b.get("bullet_id")), ""),
-        }
-        for b in bullets
-        if str(b.get("bullet_id")) in INTENSITY_BY_BULLET_SSOT
-        and str(b.get("rewrite_intensity", "")).upper()
-        != INTENSITY_BY_BULLET_SSOT[str(b.get("bullet_id"))]
-    ]
-    add(
-        "x2_unify_intensity_per_bullet_ssot",
-        not intensity_mismatches,
-        intensity_mismatches or "ok",
-        INTENSITY_BY_BULLET_SSOT,
-        "Each bullet rewrite_intensity must match INTENSITY_BY_BULLET_SSOT.",
-    )
-
-    metric_bullet_heavy = [
-        str(b.get("bullet_id"))
-        for b in bullets
-        if str(b.get("bullet_id")) in {METRIC_ANCHOR_BULLET_004, PROTECTED_BULLET_DEFAULT}
-        and str(b.get("rewrite_intensity", "")).upper() == "HEAVY"
-    ]
-    add(
-        "x2_unify_metric_bullets_not_heavy",
-        not metric_bullet_heavy,
-        metric_bullet_heavy or "ok",
-        "MODERATE or LIGHT_PROTECTED only",
-        "Metric-anchored bullets bul_unify_004 and bul_unify_006 must not be HEAVY.",
+    register_bullet_line_discipline_x2_gates(
+        add,
+        bullets,
+        lane_prefix="unify",
+        section_id="unify_bullets",
     )
 
     protected = next((b for b in bullets if b.get("bullet_id") == PROTECTED_BULLET_DEFAULT), None)
-    protected_ok = bool(protected) and str(protected.get("rewrite_intensity", "")).upper() == "LIGHT_PROTECTED"
     protected_text = (protected or {}).get("bullet_text", "")
     metrics_ok = all(
         token in protected_text
         for token in ("$22M", "20%", "8", "28")
     )
     add(
-        "x2_unify_protected_bullet_preserved_or_justified",
-        protected_ok and metrics_ok,
-        {"bullet_id": PROTECTED_BULLET_DEFAULT, "intensity": (protected or {}).get("rewrite_intensity")},
-        "LIGHT_PROTECTED + core metrics",
-        "Protected bul_unify_006 must be LIGHT_PROTECTED with $22M, 20%, and 8-to-28 scale.",
+        "x2_unify_protected_bullet_metrics_preserved",
+        bool(protected) and metrics_ok,
+        {"bullet_id": PROTECTED_BULLET_DEFAULT, "metrics_present": metrics_ok},
+        "$22M, 20%, 8-to-28 scale on bul_unify_006",
+        "Protected bul_unify_006 must preserve $22M, 20%, and 8-to-28 scale.",
     )
 
     metrics_preserved = all(
@@ -549,7 +554,7 @@ def run_unify_bullets_x2_gates(
         "<=1 bullet with >=3 mechanism stack terms",
         None
         if mechanism_ok
-        else "Multiple bullets carry mechanism-stack vocabulary; reserve for one HEAVY bullet only.",
+        else "Multiple bullets carry mechanism-stack vocabulary; at most one bullet may be mechanism-dense.",
     )
 
     from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
@@ -703,8 +708,19 @@ def run_unify_bullets_x2_gates(
         "Silent mock fallback detected.",
     )
 
-    judges_ok, judges_reason = check_judge_rows_present(x1d_judges)
-    add("x2_x1d_required_judges_present", judges_ok, judges_reason, REQUIRED_JUDGE_PROVIDERS, judges_reason)
+    from apps_rg.runtime.reasoning.employment_bullet_pool import EMPLOYMENT_BULLET_JUDGE_PROVIDERS
+
+    judges_ok, judges_reason = check_judge_rows_present(
+        x1d_judges,
+        required_providers=list(EMPLOYMENT_BULLET_JUDGE_PROVIDERS),
+    )
+    add(
+        "x2_x1d_required_judges_present",
+        judges_ok,
+        judges_reason,
+        list(EMPLOYMENT_BULLET_JUDGE_PROVIDERS),
+        judges_reason,
+    )
 
     if x1d_judges:
         blocked_invalid = []

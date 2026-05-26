@@ -27,14 +27,18 @@ dod_exempt: false
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: Completed
 CURRENT_WAVE: —
-LAST_COMPLETED_WAVE: W10
+LAST_COMPLETED_WAVE: W10-AG
 LAST_UPDATED: 2026-05-26
 PLAN_COMPLETED: 2026-05-26
-COMPLETION_NOTE: W0–W10 + hardening shipped; closeout PARTIAL (LIVE_X3 2/7); W10-AG unified C0.3 bind deferred per user-directed plan close
+COMPLETION_NOTE: W0–W10-AG COMPLETED on disk+Notion. W10-AG contract bind e27875b14e. Closeout PARTIAL (LIVE_X3 2/7; D16 REAL_LLM) → follow-on graph-skills-deferred-followup-d7f2a8
+FOLLOW_ON_PLAN: graph-skills-deferred-followup-d7f2a8
+DEFERRED_REGISTER: docs/reports/apps_rg/graph_skills_deferred_scope_register_20260526.md
 PLAN_HARDENING: applied-2026-05-26-v3.2-w10-ag-mandatory
 PLAN_REVIEW: basically-safe-to-execute-2026-05-26
 PLAN_CREATED: slug=graph-skills-quality-enhancement-c4e8a1 path=.cursor/plans/graph-skills-quality-enhancement-c4e8a1.md status=Completed
 NOTION_PAGE_ID: 36b27693-f55c-81c0-bb50-d8df6df2b60e
+NOTION_PLAN_URL: https://www.notion.so/graph-skills-quality-enhancement-c4e8a1-36b27693f55c81c0bb50d8df6df2b60e
+PLAN_COMPLETE: plan=graph-skills-quality-enhancement-c4e8a1 status=Completed waves=W0-W10-AG notion_synced=2026-05-26
 
 ---
 
@@ -69,13 +73,14 @@ Lanes: `headline`, `executive_summary`, `unify_bullets`, `unify_narrative`, `ibm
 | W8 | G-W8 | CONTRACT scorer + REAL_LLM utilization | **DONE** |
 | W9 | G-W9 | docs | **DONE** |
 | W10 | G-W10 | LIVE_X3 matrix only | **DONE** |
-| W10-AG | G-W10-AG | C0.3 unified pipeline bind | **DEFERRED** (follow-on) |
+| W10-AG | G-W10-AG | C0.3 unified pipeline bind (contract) | **DONE** (REAL_LLM → [graph-skills-deferred-followup-d7f2a8](graph-skills-deferred-followup-d7f2a8.md)) |
 
-**PLAN_COMPLETE (2026-05-26):** User-directed close. Waves W0–W10 + runtime hardening delivered. **W10-AG / D16** deferred to follow-on (unified C0.3 bind + Author-Gate). Closeout: [graph_skills_quality_enhancement_closeout.json](docs/reports/apps_rg/graph_skills_quality_enhancement_closeout.json) — `claims_release_eligible=false`, `live_x3_allow` 2/7 at close.
+**PLAN_COMPLETE (2026-05-26):** Parent **Completed** on disk and Notion. Waves **W0–W10-AG** delivered (W10-AG contract bind `e27875b14e`). Remaining proof burndown (D16 REAL_LLM, LIVE_X3 7/7) → [graph-skills-deferred-followup-d7f2a8](graph-skills-deferred-followup-d7f2a8.md). Closeout: [graph_skills_quality_enhancement_closeout.json](docs/reports/apps_rg/graph_skills_quality_enhancement_closeout.json) — `claims_release_eligible=false`, `live_x3_allow` 2/7.
 
 ```
-PLAN_COMPLETE: plan=graph-skills-quality-enhancement-c4e8a1 note="W0-W10+hardening on disk; Notion Completed; W10-AG deferred"
-DEFERRED_SCOPE: plan=graph-skills-quality-enhancement-c4e8a1 wave=W10-AG gap="Unified C0.3 pipeline bind (c0_graph_adapter, route_profiles, D16 REAL_LLM)" impact="follow-on plan"
+PLAN_COMPLETE: plan=graph-skills-quality-enhancement-c4e8a1 status=Completed waves=W0-W10-AG notion=Completed
+DEFERRED_SCOPE: plan=graph-skills-quality-enhancement-c4e8a1 wave=follow-on gap="D16 REAL_LLM 7/7, LIVE_X3, CI GHA, utilization REAL_LLM" impact=graph-skills-deferred-followup-d7f2a8
+SPLIT_TO_NEW_PLAN: parent=graph-skills-quality-enhancement-c4e8a1 child=graph-skills-deferred-followup-d7f2a8 register=docs/reports/apps_rg/graph_skills_deferred_scope_register_20260526.md
 ```
 
 ### W0 — Baseline ✅ DONE
@@ -238,7 +243,7 @@ python ops_scripts/apps_rg/emit_graph_skills_quality_w10.py
 - **Honest status:** closeout reflects live inventory (e.g. `live_x3_allow` count); **PARTIAL** at plan close (2/7 LIVE_X3).  
 - Runtime hardening: [graph_skills_run_artifacts.py](apps_rg/runtime/graph_skills_run_artifacts.py) · [backfill_graph_skills_run_artifacts.py](ops_scripts/apps_rg/backfill_graph_skills_run_artifacts.py) · 62 contract tests.
 
-### W10-AG — Unified C0.3 pipeline bind ⏸ DEFERRED (follow-on)
+### W10-AG — Unified C0.3 pipeline bind ✅ DONE (contract; REAL_LLM → follow-on)
 
 **Purpose:** Bind `augmented_skills_graph` to **core C0.3 GraphRAG** through apps_rg profiles and adapters — **one pipeline** (spine retrieve → `maybe_run_graph_rag` / `run_graph_traverse` → FEC → proof pool → L2). Retire parallel “static graph only” product path as SSOT.
 

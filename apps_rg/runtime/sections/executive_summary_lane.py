@@ -387,6 +387,29 @@ def build_prompt_messages(runtime_payload: dict[str, Any]) -> list[dict[str, str
     return compiled.artifact.messages
 
 
+def salvage_truncated_executive_summary_json(text: str) -> tuple[dict[str, Any] | None, str]:
+    """Recover exec-summary JSON when vLLM hits max_tokens mid self_check (finish_reason=length)."""
+    if '"resume_display_text"' not in text:
+        return None, "no salvage anchor"
+    marker = '"self_check"'
+    if marker not in text:
+        return None, "no self_check marker"
+    head = text[: text.index(marker)].rstrip().rstrip(",")
+    tail_stub = (
+        ', "self_check": {"salvaged_truncated_json": true}, '
+        '"change_log": [{"operation": "salvage_truncated_executive_summary_json", "reason": "length"}]}'
+    )
+    if '"change_log"' in head:
+        tail_stub = ', "self_check": {"salvaged_truncated_json": true}}'
+    try:
+        parsed = json.loads(head + tail_stub)
+    except json.JSONDecodeError as exc:
+        return None, str(exc)
+    if not isinstance(parsed, dict) or not str(parsed.get("resume_display_text") or "").strip():
+        return None, "salvaged object missing resume_display_text"
+    return parsed, ""
+
+
 def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
     """Lenient parse for downstream objects; X2 x2_json_parse_valid uses unmodified raw_output."""
     text = raw.strip()
@@ -397,7 +420,10 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
         if isinstance(parsed, dict):
             return parsed, ""
     except json.JSONDecodeError as exc:
-        return None, f"JSON parse failed: {exc}"
+        salvaged, salvage_err = salvage_truncated_executive_summary_json(text)
+        if salvaged is not None:
+            return salvaged, ""
+        return None, f"JSON parse failed: {exc}" + (f"; salvage: {salvage_err}" if salvage_err else "")
     return None, "Model output was not a JSON object."
 
 
@@ -1627,6 +1653,17 @@ def run_executive_summary_execution(
             token_budget_block_reason = str(
                 token_budget_receipt.get("fail_closed_reason") or budget_exc
             )
+            _tb_guidance = token_budget_receipt.get("operator_guidance")
+            _tb_operator_message = (
+                str(token_budget_receipt.get("operator_message") or "").strip()
+                or (
+                    str(_tb_guidance.get("operator_message") or "").strip()
+                    if isinstance(_tb_guidance, dict)
+                    else ""
+                )
+            )
+            if _tb_operator_message:
+                print(_tb_operator_message, file=sys.stderr, flush=True)
             runtime_payload["token_budget_policy"] = {
                 "fail_closed": True,
                 "fail_closed_reason": token_budget_block_reason,
@@ -1635,6 +1672,8 @@ def run_executive_summary_execution(
                 "evidence_contract_preserved": token_budget_receipt.get(
                     "evidence_contract_preserved"
                 ),
+                "operator_summary": token_budget_receipt.get("operator_summary"),
+                "operator_message": _tb_operator_message or None,
             }
     messages = section_compiled.artifact.messages
     compiled_prompt = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
@@ -1762,6 +1801,9 @@ def run_executive_summary_execution(
         )
         req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
     elif token_budget_block_reason:
+        _tb_op_summary = ""
+        if isinstance(token_budget_receipt, dict):
+            _tb_op_summary = str(token_budget_receipt.get("operator_summary") or "").strip()
         provider_request_data = {
             "provider_requested": str(args.provider),
             "provider_attempted": False,
@@ -1770,17 +1812,29 @@ def run_executive_summary_execution(
             "max_tokens": max_out_tokens,
             "token_budget_receipt_ref": "token_budget_receipt.json",
             "mock_fallback_allowed": False,
+            "operator_summary": _tb_op_summary or None,
         }
         write_json(artifact_dir / "provider_request.json", provider_request_data)
         result = ProviderResult(
             provider_requested=str(args.provider),
             provider_attempted=False,
             provider_available=False,
-            exact_provider_error=f"L2_BLOCK:{token_budget_block_reason}",
+            exact_provider_error=(
+                f"L2_BLOCK:{_tb_op_summary or token_budget_block_reason}"
+            ),
             runtime_generation_status="BLOCKED",
             model=str(os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL)),
             raw_model_output="",
-            provider_response={"token_budget_blocked": True, "reason": token_budget_block_reason},
+            provider_response={
+                "token_budget_blocked": True,
+                "reason": token_budget_block_reason,
+                "operator_summary": _tb_op_summary or None,
+                "operator_guidance": (
+                    token_budget_receipt.get("operator_guidance")
+                    if isinstance(token_budget_receipt, dict)
+                    else None
+                ),
+            },
         )
         req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
     else:
@@ -2252,6 +2306,8 @@ def run_executive_summary_execution(
             append_executive_summary_x1d_x2_gate_dicts,
         )
 
+        _gtc_lane = runtime_payload.get("graph_targeting_capsule")
+        _gtc_lane_dict = dict(_gtc_lane) if isinstance(_gtc_lane, dict) else None
         x1d, _x1d_refresh_receipt = refresh_x1d_judges_after_full_x2(
             x2_gates=x2,
             resume_display_text=resume_display_text,
@@ -2268,6 +2324,10 @@ def run_executive_summary_execution(
             artifact_dir=artifact_dir,
             compiled_prompt=compiled_prompt,
             prior_judges=[],
+            graph_targeting_capsule=_gtc_lane_dict,
+            material_targeting_bundle=_bundle_mat.to_dict()
+            if hasattr(_bundle_mat, "to_dict")
+            else runtime_payload.get("material_targeting_bundle"),
         )
         from apps_rg.runtime.sections.executive_summary_repair_policy import (
             judge_regeneration_enabled,
@@ -2327,76 +2387,79 @@ def run_executive_summary_execution(
         from apps_rg.runtime.sections.executive_summary_repair_policy import judge_regen_max_attempts
         from apps_rg.runtime.validators.executive_summary_x2 import collect_unused_allowed_fact_ids
 
-        def _maybe_soft_judge_rescore(
-            *,
-            regen_enabled: bool,
-            trigger_receipt: dict[str, Any],
-            trigger_ok: bool,
-        ) -> None:
-            nonlocal x1d
-            if not (
-                not trigger_ok
-                and trigger_receipt.get("reason") == "two_or_more_judges_already_pass_skip_regen"
-            ):
-                return
-            from apps_rg.runtime.sections.executive_summary_judge_remediation import (
-                _is_model_backed_soft_fail,
-            )
-
-            _soft_only = [j for j in x1d if _is_model_backed_soft_fail(j)]
-            if len(_soft_only) != 1:
-                return
-            _jp_soft = resolve_judge_packet_for_parity(artifact_dir, fallback=judge_packet)
-            _jp_soft_ref = str(artifact_dir / "executive_summary_judge_packet_post_x2.json")
-            x1d = rerun_soft_failed_judges(
-                resume_display_text=resume_display_text,
-                claim_ledger=claim_ledger,
-                judge_packet=_jp_soft,
-                judge_packet_ref=_jp_soft_ref,
-                compiled_prompt=compiled_prompt,
-                artifact_dir=artifact_dir,
-                judge_keys=judge_keys,
-                judge_mode=judge_mode,
-                prior_judges=x1d,
-                x2_gates=x2,
-                allowed_fact_packet=selected_facts_for_x2,
-                allowed_fact_ids=allowed_fact_ids,
-                target_title=_args_target_title(args),
-                target_company=str(args.target_company),
-                jd_text=_judge_jd,
-                briefing_text=_judge_briefing,
-                parsed_output=parsed_for_x2,
-            )
-            _write_x1d_judge_artifacts(artifact_dir, x1d)
-            write_json(
-                artifact_dir / "soft_judge_only_rerun_receipt.json",
-                {
-                    "schema": "executive_summary_soft_judge_only_rerun_v1",
-                    "reason": "skip_regen_two_judges_pass",
-                    "rerun_provider": _soft_only[0].get("provider_key"),
-                    "rescore_only": not regen_enabled,
-                },
-            )
-
         _regen_ok, _regen_parity_reason = parity_allows_judge_regen(
             runtime_payload,
             token_budget_receipt=token_budget_receipt,
         )
+        _gtc_lane = runtime_payload.get("graph_targeting_capsule")
+        _gtc_lane_dict = dict(_gtc_lane) if isinstance(_gtc_lane, dict) else None
+        _pool_publish_applied = False
+        from apps_rg.runtime.sections.executive_summary_publish_disposition import (
+            best_effort_publish_allowed_from_env,
+            resolve_publish_disposition,
+        )
         if judge_remediation_regen_allowed() and _regen_ok:
             _max_judge_cycles = judge_regen_max_attempts()
             _regen_messages = list(messages)
-            _cycles_receipt: dict[str, Any] = {
-                "schema": "executive_summary_judge_remediation_cycles_v1",
-                "max_cycles": _max_judge_cycles,
-                "cycles": [],
-                "stopped_reason": "",
-                "generation_material_digest": _generation_material.generation_material_digest,
-                "targeting_parity_at_regen_start": _targeting_parity,
-                "judge_packet_targeting_audit": audit_judge_packet_targeting_digests(
+            from apps_rg.runtime.sections.executive_summary_regen_delta_policy import (
+                build_judge_remediation_cycles_receipt,
+                compute_regen_outcome,
+                emit_judge_regen_operator_stderr,
+                evaluate_g5_delta_scope,
+                format_judge_regen_operator_stderr_line,
+                resolve_delta_class,
+            )
+            from apps_rg.runtime.sections.executive_summary_repair_policy import (
+                judge_pass_floor_0_to_5,
+            )
+
+            _operator_judge_floor = judge_pass_floor_0_to_5()
+            _judge_prompt_x1d = list(x1d)
+            _cycles_receipt = build_judge_remediation_cycles_receipt(
+                max_cycles=_max_judge_cycles,
+                generation_material_digest=_generation_material.generation_material_digest,
+                targeting_parity_at_regen_start=_targeting_parity,
+                judge_packet_targeting_audit=audit_judge_packet_targeting_digests(
                     artifact_dir,
                     generation_material=_generation_material,
                 ),
-            }
+                operator_judge_pass_floor=_operator_judge_floor,
+            )
+            _last_regen_candidate: dict[str, Any] | None = None
+            _scratch_anchor_resume = resume_display_text
+            from apps_rg.runtime.sections.executive_summary_candidate_pool import (
+                SCORES_FRESHNESS_CARRIED_FORWARD,
+                SCORES_FRESHNESS_SOFT_FAILED_ONLY,
+                CandidatePool,
+                finalize_pool_publish,
+                freeze_candidate_snapshot,
+            )
+
+            _candidate_pool = CandidatePool()
+            _provider_lane = str(
+                provider_payload.get("provider") or provider_payload.get("lane") or ""
+            )
+            _candidate_pool.add(
+                freeze_candidate_snapshot(
+                    candidate_id="scratch",
+                    raw_output=raw_output or "",
+                    parsed=dict(parsed),
+                    resume_display_text=resume_display_text,
+                    claim_ledger=claim_ledger,
+                    x2_gates=x2,
+                    x1d_judges=x1d,
+                    allowed_fact_ids=allowed_fact_ids,
+                    prompt_hash=prompt_hash,
+                    model_name=model_name,
+                    provider_lane=_provider_lane,
+                    run_refs={
+                        "provider_request": str(artifact_dir / "provider_request.json"),
+                        "provider_response": str(artifact_dir / "provider_response.json"),
+                    },
+                    scores_freshness=SCORES_FRESHNESS_CARRIED_FORWARD,
+                    publish_eligible=True,
+                ),
+            )
 
             for _cycle_idx in range(_max_judge_cycles):
                 if all_model_backed_judges_pass(x1d):
@@ -2404,7 +2467,7 @@ def run_executive_summary_execution(
                     break
 
                 trigger_ok, trigger_receipt = evaluate_judge_remediation_trigger(
-                    x1d,
+                    _judge_prompt_x1d,
                     runtime_generation_status=runtime_generation_status,
                     x2_passed=True,
                 )
@@ -2417,12 +2480,6 @@ def run_executive_summary_execution(
                     write_json(artifact_dir / "judge_remediation_trigger.json", trigger_receipt)
 
                 if not trigger_ok:
-                    if _cycle_idx == 0:
-                        _maybe_soft_judge_rescore(
-                            regen_enabled=True,
-                            trigger_receipt=trigger_receipt,
-                            trigger_ok=trigger_ok,
-                        )
                     _cycles_receipt["stopped_reason"] = str(
                         trigger_receipt.get("reason") or "trigger_not_ok"
                     )
@@ -2436,9 +2493,13 @@ def run_executive_summary_execution(
                 _pre_wc = len(re.findall(r"\S+", _pre_resume))
                 _pre_ledger_rows = len(_pre_ledger)
                 from apps_rg.runtime.sections.executive_summary_judge_regen_loop import (
+                    advance_regen_thread_for_next_cycle,
                     post_regen_x2_repair_eligible,
                     preserve_judge_regen_claim_ledger_from_baseline,
                     prepare_parsed_after_judge_regen,
+                    resume_display_text_from_regen_messages,
+                    snapshot_regen_candidate,
+                    sync_claim_ledger_metrics_from_facts,
                     write_judge_regen_x2_snapshot,
                 )
 
@@ -2452,8 +2513,12 @@ def run_executive_summary_execution(
                     snapshot_model_backed_judge_scores,
                 )
 
-                _x1d_before_regen = list(x1d)
+                _x1d_before_regen = list(_judge_prompt_x1d)
                 _scores_before_regen = snapshot_model_backed_judge_scores(_x1d_before_regen)
+                _cycle_delta_class = resolve_delta_class(
+                    _x1d_before_regen,
+                    operator_judge_pass_floor=_operator_judge_floor,
+                )
                 unused_ids = collect_unused_allowed_fact_ids(claim_ledger, allowed_fact_ids)
                 from apps_rg.runtime.sections.executive_summary_pa import (
                     is_strategy_executive_target_title,
@@ -2473,7 +2538,7 @@ def run_executive_summary_execution(
                     provider_payload,
                     raw_output,
                     parsed_for_x2,
-                    x1d_judges=x1d,
+                    x1d_judges=_judge_prompt_x1d,
                     trigger_receipt=trigger_receipt,
                     selected_fact_plan=selected_fact_plan,
                     allowed_fact_ids=allowed_fact_ids,
@@ -2486,14 +2551,28 @@ def run_executive_summary_execution(
                     prior_ledger_rows=_pre_ledger_rows,
                     cycle_index=_cycle_idx,
                 )
+                _feedback_pack = dict(_j_receipt.get("feedback_pack") or {})
+                _draft_parse_ok = bool(
+                    _j_receipt.get("draft_parse_ok", _j_receipt.get("accepted")),
+                )
                 _cycle_record: dict[str, Any] = {
                     "cycle": _cycle_idx + 1,
                     "trigger_mode": trigger_receipt.get("trigger_mode"),
-                    "accepted": bool(_j_receipt.get("accepted")),
+                    "draft_parse_ok": _draft_parse_ok,
+                    "accepted": False,
                     "output_changed": bool(_j_receipt.get("output_changed")),
                     "scores_before": _scores_before_regen,
+                    "delta_class": _cycle_delta_class,
                 }
-                if _j_receipt.get("accepted") or _j_receipt.get("prefilter_applied"):
+                for _fb_key in (
+                    "judge_feedback_lines_total",
+                    "judge_feedback_lines_included",
+                    "judge_feedback_lines_dropped",
+                    "dropped_reason",
+                ):
+                    if _fb_key in _feedback_pack:
+                        _cycle_record[_fb_key] = _feedback_pack[_fb_key]
+                if _draft_parse_ok or _j_receipt.get("prefilter_applied"):
                     from apps_rg.runtime.section_repair_ledger import (
                         KIND_REGEN_LLM,
                         record_repair,
@@ -2514,12 +2593,114 @@ def run_executive_summary_execution(
                         allowed_fact_ids=allowed_fact_ids,
                     )
                     _prepare_receipt["preserve_ledger"] = _preserve_receipt
+                    parsed, _g1_receipt = sync_claim_ledger_metrics_from_facts(
+                        parsed,
+                        plan_facts=list(selected_fact_plan.get("facts") or []),
+                        allowed_fact_ids=allowed_fact_ids,
+                    )
+                    _prepare_receipt["g1_ledger_metric_sync"] = _g1_receipt
                     if artifact_dir is not None:
                         write_json(
                             artifact_dir / "judge_regen_prepare_receipt.json",
                             _prepare_receipt,
                         )
+                        write_json(
+                            artifact_dir / "g1_ledger_metric_sync_receipt.json",
+                            _g1_receipt,
+                        )
+                    if not _g1_receipt.get("passed"):
+                        _reject_gate = str(
+                            _g1_receipt.get("reject_gate") or "ledger_metric_sync_ambiguous"
+                        )
+                        _cycle_record["accepted"] = False
+                        _cycle_record["draft_parse_ok"] = _draft_parse_ok
+                        _cycle_record["publish_eligible"] = False
+                        _cycle_record["reject_gate"] = _reject_gate
+                        _cycle_record["g1_passed"] = False
+                        _j_receipt["accepted"] = False
+                        _j_receipt["draft_parse_ok"] = _draft_parse_ok
+                        _j_receipt["g1_rejected"] = True
+                        _j_receipt["reject_gate"] = _reject_gate
+                        if artifact_dir is not None:
+                            write_json(
+                                artifact_dir / "judge_remediation_receipt.json",
+                                _j_receipt,
+                            )
+                        raw_output = _pre_raw
+                        parsed = dict(_pre_parsed)
+                        parsed_for_x2 = dict(_pre_parsed)
+                        resume_display_text = _pre_resume
+                        claim_ledger = list(_pre_ledger)
+                        x1d = list(_x1d_before_regen)
+                        x2 = list(_pre_x2)
+                        _cycles_receipt["cycles"].append(_cycle_record)
+                        if _cycle_idx + 1 >= _max_judge_cycles:
+                            _cycles_receipt["stopped_reason"] = _reject_gate
+                            break
+                        continue
+
+                    _cycle_record["g1_passed"] = True
                     resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
+                    _g5_baseline = (
+                        resume_display_text_from_regen_messages(_regen_messages) or _pre_resume
+                    )
+                    _g5 = evaluate_g5_delta_scope(
+                        _g5_baseline,
+                        resume_display_text,
+                        _cycle_delta_class,
+                    )
+                    _cycle_record["g5_delta_scope"] = _g5
+                    if artifact_dir is not None:
+                        write_json(
+                            artifact_dir / f"g5_delta_scope_cycle_{_cycle_idx + 1}.json",
+                            _g5,
+                        )
+                    if not _g5.get("passed"):
+                        _reject_gate = str(_g5.get("reject_gate") or "delta_scope_violation")
+                        _regen_raw_for_thread = str(raw_output or "")
+                        _cycle_record["accepted"] = False
+                        _cycle_record["draft_parse_ok"] = _draft_parse_ok
+                        _cycle_record["publish_eligible"] = False
+                        _cycle_record["reject_gate"] = _reject_gate
+                        _cycle_record["g5_passed"] = False
+                        _j_receipt["accepted"] = False
+                        _j_receipt["draft_parse_ok"] = _draft_parse_ok
+                        _j_receipt["g5_rejected"] = True
+                        _j_receipt["reject_gate"] = _reject_gate
+                        emit_judge_regen_operator_stderr(
+                            format_judge_regen_operator_stderr_line(
+                                cycle=_cycle_idx + 1,
+                                reject_gate=_reject_gate,
+                                g3_verdicts=None,
+                                operator_floor=_operator_judge_floor,
+                                final_publish_baseline="scratch",
+                                published_min_score=None,
+                            ),
+                        )
+                        write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
+                        raw_output = _pre_raw
+                        parsed = dict(_pre_parsed)
+                        parsed_for_x2 = dict(_pre_parsed)
+                        resume_display_text = _pre_resume
+                        claim_ledger = list(_pre_ledger)
+                        x1d = list(_x1d_before_regen)
+                        x2 = list(_pre_x2)
+                        if _j_receipt.get("output_changed") and _regen_raw_for_thread.strip():
+                            from apps_rg.runtime.sections.executive_summary_judge_regen_loop import (
+                                extend_regen_thread_after_success,
+                            )
+
+                            _regen_messages = extend_regen_thread_after_success(
+                                _regen_messages,
+                                _regen_raw_for_thread,
+                            )
+                        _cycles_receipt["cycles"].append(_cycle_record)
+                        if _cycle_idx + 1 >= _max_judge_cycles:
+                            _cycles_receipt["stopped_reason"] = _reject_gate
+                            break
+                        continue
+
+                    _cycle_record["g5_passed"] = True
                     claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
                     coverage = build_sentence_claim_coverage(
                         resume_display_text, claim_ledger, allowed_fact_ids
@@ -2559,6 +2740,13 @@ def run_executive_summary_execution(
                         proof_pool_digest=str(pool.proof_pool_digest or ""),
                     )
                     _x2_failed = [g for g in x2_regen if not g["pass"]]
+                    _last_regen_candidate = snapshot_regen_candidate(
+                        raw_output=raw_output or "",
+                        parsed=parsed,
+                        resume_display_text=resume_display_text,
+                        claim_ledger=claim_ledger,
+                        x2_gates=x2_regen,
+                    )
                     if _x2_failed and post_regen_x2_repair_eligible(_x2_failed):
                         _raw_x2r, _parsed_x2r, _x2_repair_rcpt = repair_judge_regen_after_x2_fail(
                             _regen_messages,
@@ -2625,6 +2813,13 @@ def run_executive_summary_execution(
                                 proof_pool_digest=str(pool.proof_pool_digest or ""),
                             )
                             _x2_failed = [g for g in x2_regen if not g["pass"]]
+                            _last_regen_candidate = snapshot_regen_candidate(
+                                raw_output=raw_output or "",
+                                parsed=parsed,
+                                resume_display_text=resume_display_text,
+                                claim_ledger=claim_ledger,
+                                x2_gates=x2_regen,
+                            )
                     if not _x2_failed:
                         record_repair(
                             artifact_dir,
@@ -2647,6 +2842,7 @@ def run_executive_summary_execution(
                             reason="judge_remediation_regen_x2_pass",
                         )
                         from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+                            evaluate_g3_trigger_judge_monotonicity,
                             rescore_judges_after_regen,
                         )
 
@@ -2654,7 +2850,7 @@ def run_executive_summary_execution(
                         _jp_rescore_ref = str(
                             artifact_dir / "executive_summary_judge_packet_post_x2.json"
                         )
-                        x1d, _post_regen_x1d_receipt = rescore_judges_after_regen(
+                        _x1d_after_rescore, _post_regen_x1d_receipt = rescore_judges_after_regen(
                             x2_gates=x2,
                             resume_display_text=resume_display_text,
                             claim_ledger=claim_ledger,
@@ -2669,7 +2865,7 @@ def run_executive_summary_execution(
                             judge_mode=judge_mode,
                             artifact_dir=artifact_dir,
                             compiled_prompt=compiled_prompt,
-                            prior_judges=x1d,
+                            prior_judges=_x1d_before_regen,
                             judge_packet=_jp_rescore,
                             judge_packet_ref=_jp_rescore_ref,
                         )
@@ -2679,6 +2875,92 @@ def run_executive_summary_execution(
                         )
                         _cycle_record["scores_after"] = _post_regen_x1d_receipt.get("scores_after")
                         _cycle_record["score_deltas"] = _post_regen_x1d_receipt.get("score_deltas")
+                        _g3 = evaluate_g3_trigger_judge_monotonicity(
+                            prior_judges=_x1d_before_regen,
+                            after_judges=_x1d_after_rescore,
+                            scores_before=_scores_before_regen,
+                            scores_after=_post_regen_x1d_receipt.get("scores_after"),
+                        )
+                        write_json(
+                            artifact_dir / f"g3_trigger_judge_cycle_{_cycle_idx + 1}.json",
+                            _g3,
+                        )
+                        _cycle_record["g3_verdict_per_trigger_judge"] = _g3.get(
+                            "g3_verdict_per_trigger_judge"
+                        )
+                        _regen_messages, _judge_prompt_x1d = advance_regen_thread_for_next_cycle(
+                            _regen_messages,
+                            raw_output=raw_output or "",
+                            x1d_judges=_x1d_after_rescore,
+                        )
+                        if not _g3.get("passed"):
+                            _reject_gate = str(
+                                _g3.get("reject_gate") or "trigger_judge_regression"
+                            )
+                            _cycle_record["accepted"] = False
+                            _cycle_record["draft_parse_ok"] = _draft_parse_ok
+                            _cycle_record["publish_eligible"] = False
+                            _cycle_record["reject_gate"] = _reject_gate
+                            _cycle_record["g3_passed"] = False
+                            _j_receipt["accepted"] = False
+                            _j_receipt["draft_parse_ok"] = _draft_parse_ok
+                            _j_receipt["g3_rejected"] = True
+                            _j_receipt["reject_gate"] = _reject_gate
+                            emit_judge_regen_operator_stderr(
+                                format_judge_regen_operator_stderr_line(
+                                    cycle=_cycle_idx + 1,
+                                    reject_gate=_reject_gate,
+                                    g3_verdicts=_g3.get("g3_verdict_per_trigger_judge"),
+                                    operator_floor=_operator_judge_floor,
+                                    final_publish_baseline="scratch",
+                                    published_min_score=None,
+                                ),
+                            )
+                            write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
+                            raw_output = _pre_raw
+                            parsed = dict(_pre_parsed)
+                            parsed_for_x2 = dict(_pre_parsed)
+                            resume_display_text = _pre_resume
+                            claim_ledger = list(_pre_ledger)
+                            x1d = list(_x1d_before_regen)
+                            x2 = list(_pre_x2)
+                            _cycles_receipt["cycles"].append(_cycle_record)
+                            if _cycle_idx + 1 >= _max_judge_cycles:
+                                _cycles_receipt["stopped_reason"] = _reject_gate
+                                break
+                            continue
+
+                        x1d = _x1d_after_rescore
+                        _cycle_record["draft_parse_ok"] = True
+                        _cycle_record["accepted"] = True
+                        _cycle_record["publish_eligible"] = True
+                        _cycle_record["g3_passed"] = True
+                        _cycle_record["reject_gate"] = None
+                        _regen_snap = freeze_candidate_snapshot(
+                            candidate_id=f"regen_cycle_{_cycle_idx + 1}",
+                            raw_output=raw_output or "",
+                            parsed=dict(parsed),
+                            resume_display_text=resume_display_text,
+                            claim_ledger=claim_ledger,
+                            x2_gates=x2,
+                            x1d_judges=x1d,
+                            allowed_fact_ids=allowed_fact_ids,
+                            prompt_hash=prompt_hash,
+                            model_name=model_name,
+                            provider_lane=_provider_lane,
+                            run_refs={
+                                "provider_request": str(
+                                    artifact_dir / f"provider_request_regen_{_cycle_idx + 1}.json"
+                                ),
+                                "provider_response": str(
+                                    artifact_dir / f"provider_response_regen_{_cycle_idx + 1}.json"
+                                ),
+                            },
+                            scores_freshness=SCORES_FRESHNESS_SOFT_FAILED_ONLY,
+                            publish_eligible=True,
+                        )
+                        _cycle_record["candidate_digest"] = _regen_snap.candidate_digest
+                        _candidate_pool.add(_regen_snap)
                         _emit_dimension_upstream_triangulation(
                             artifact_dir,
                             x1d_judges=x1d,
@@ -2722,38 +3004,23 @@ def run_executive_summary_execution(
                             _cycles_receipt["stopped_reason"] = "all_model_backed_judges_pass"
                             break
                     else:
-                        raw_output = _pre_raw
-                        parsed = _pre_parsed
-                        parsed_for_x2 = _pre_parsed
-                        resume_display_text = _pre_resume
-                        claim_ledger = _pre_ledger
-                        x2 = _pre_x2
-                        coverage = build_sentence_claim_coverage(
-                            resume_display_text, claim_ledger, allowed_fact_ids
-                        )
-                        (artifact_dir / "raw_model_output.txt").write_text(raw_output or "", encoding="utf-8")
-                        (artifact_dir / "resume_display_text.txt").write_text(
-                            resume_display_text + "\n", encoding="utf-8"
-                        )
-                        write_json(artifact_dir / "claim_ledger.json", claim_ledger)
-                        write_json(artifact_dir / "text_claim_coverage.json", coverage)
-                        l2_output["resume_display_text"] = resume_display_text
-                        l2_output["claim_ledger"] = claim_ledger
-                        l2_output["text_claim_coverage"] = coverage
-                        write_json(artifact_dir / "l2_output.json", l2_output)
-                        _j_receipt["reverted"] = "post_regen_x2_failed"
-                        _j_receipt["post_regen_x2_failed_gate_ids"] = [
-                            g["gate_id"] for g in x2_regen if not g["pass"]
-                        ]
-                        write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
-                        _cycle_record["reverted"] = (
+                        _revert_tag = (
                             "post_regen_x2_failed_after_x2_repair"
                             if _cycle_record.get("x2_repair")
                             else "post_regen_x2_failed"
                         )
+                        _cycle_record["reverted"] = _revert_tag
+                        _cycle_record["retained_regen_candidate"] = True
+                        _cycle_record["publish_baseline"] = "regen_candidate_retained"
+                        _j_receipt["reverted"] = _revert_tag
+                        _j_receipt["retained_regen_candidate"] = True
+                        _j_receipt["post_regen_x2_failed_gate_ids"] = [
+                            g["gate_id"] for g in x2_regen if not g["pass"]
+                        ]
+                        write_json(artifact_dir / "judge_remediation_receipt.json", _j_receipt)
                         _cycles_receipt["cycles"].append(_cycle_record)
                         if _cycle_idx + 1 >= _max_judge_cycles:
-                            _cycles_receipt["stopped_reason"] = str(_cycle_record["reverted"])
+                            _cycles_receipt["stopped_reason"] = _revert_tag
                             break
                         continue
                 else:
@@ -2764,12 +3031,165 @@ def run_executive_summary_execution(
 
             if not _cycles_receipt.get("stopped_reason") and _cycles_receipt["cycles"]:
                 _cycles_receipt["stopped_reason"] = "max_cycles_reached"
+            _pub_freshness = SCORES_FRESHNESS_CARRIED_FORWARD
+            if _candidate_pool.publish_eligible():
+                from apps_rg.runtime.sections.executive_summary_candidate_pool import (
+                    CandidateSnapshot,
+                    SCORES_FRESHNESS_FULL_PANEL,
+                )
+                from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+                    refresh_x1d_judges_after_full_x2,
+                )
+
+                def _rescore_snapshot_full_panel(
+                    snap: CandidateSnapshot,
+                ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+                    _snap_ledger = [dict(r) for r in snap.claim_ledger]
+                    _snap_coverage = build_sentence_claim_coverage(
+                        snap.resume_display_text,
+                        _snap_ledger,
+                        allowed_fact_ids,
+                    )
+                    _snap_parsed_for_x2 = enrich_parsed_for_x2(
+                        dict(snap.parsed_json),
+                        coverage=_snap_coverage,
+                        input_payload_hash=input_payload_hash,
+                        allowed_fact_ids=allowed_fact_ids,
+                        runtime_payload=runtime_payload,
+                    )
+                    return refresh_x1d_judges_after_full_x2(
+                        x2_gates=list(snap.x2_gate_outputs),
+                        resume_display_text=snap.resume_display_text,
+                        claim_ledger=_snap_ledger,
+                        allowed_fact_packet=selected_facts_for_x2,
+                        allowed_fact_ids=allowed_fact_ids,
+                        target_title=_args_target_title(args),
+                        target_company=str(args.target_company),
+                        jd_text=_judge_jd,
+                        briefing_text=_judge_briefing,
+                        parsed_output=_snap_parsed_for_x2,
+                        judge_keys=judge_keys,
+                        judge_mode=judge_mode,
+                        artifact_dir=artifact_dir,
+                        compiled_prompt=compiled_prompt,
+                        prior_judges=x1d,
+                        graph_targeting_capsule=_gtc_lane_dict,
+                        material_targeting_bundle=_bundle_mat.to_dict()
+                        if hasattr(_bundle_mat, "to_dict")
+                        else runtime_payload.get("material_targeting_bundle"),
+                    )
+
+                _pub = finalize_pool_publish(
+                    _candidate_pool,
+                    artifact_dir=artifact_dir,
+                    write_json_fn=write_json,
+                    rescore_full_panel=_rescore_snapshot_full_panel,
+                    enrich_parsed_for_x2_fn=enrich_parsed_for_x2,
+                    build_coverage_fn=build_sentence_claim_coverage,
+                    allowed_fact_ids=allowed_fact_ids,
+                    input_payload_hash=input_payload_hash,
+                    runtime_payload=runtime_payload,
+                    write_x2_fn=lambda path, gates: write_x2_gate_outputs(
+                        path, gates, section_id="executive_summary"
+                    ),
+                    write_x1d_fn=_write_x1d_judge_artifacts,
+                    l2_output=l2_output,
+                    scratch_anchor_resume=_scratch_anchor_resume,
+                )
+                if _pub.selected is not None:
+                    _pool_publish_applied = True
+                    raw_output = _pub.raw_output
+                    parsed = _pub.parsed
+                    resume_display_text = _pub.resume_display_text
+                    claim_ledger = _pub.claim_ledger
+                    x2 = _pub.x2_gates
+                    x1d = _pub.x1d_judges
+                    if _pub.coverage is not None:
+                        coverage = _pub.coverage
+                    parsed_for_x2 = enrich_parsed_for_x2(
+                        parsed,
+                        coverage=coverage,
+                        input_payload_hash=input_payload_hash,
+                        allowed_fact_ids=allowed_fact_ids,
+                        runtime_payload=runtime_payload,
+                    )
+                    _cycles_receipt["final_publish_baseline"] = _pub.selected.candidate_id
+                    _cycles_receipt["publish_reason"] = _pub.receipt.get("publish_reason")
+                    _cycles_receipt["publish_selected_snapshot_id"] = _pub.selected.candidate_id
+                    _cycles_receipt["published_candidate_digest"] = _pub.selected.candidate_digest
+                    _cycles_receipt["scratch_anchor_resume_preserved_in_receipt"] = (
+                        _scratch_anchor_resume
+                    )
+                    _pub_freshness = SCORES_FRESHNESS_FULL_PANEL
+            if not _cycles_receipt.get("final_publish_baseline"):
+                _cycles_receipt["final_publish_baseline"] = "scratch"
+            from apps_rg.runtime.sections.executive_summary_regen_delta_policy import (
+                cert_block_for_published_scores_freshness,
+                min_model_backed_holistic_from_judges,
+            )
+
+            _cycles_receipt["regen_outcome"] = compute_regen_outcome(
+                cycles=list(_cycles_receipt.get("cycles") or []),
+                final_publish_baseline=str(_cycles_receipt.get("final_publish_baseline") or "scratch"),
+                all_model_backed_judges_pass=all_model_backed_judges_pass(x1d),
+            )
+            _scratch_digest = ""
+            if _candidate_pool.entries():
+                _scratch_digest = _candidate_pool.entries()[0].candidate_digest
+            _published_digest = str(_cycles_receipt.get("published_candidate_digest") or "")
+            _cert_blocked, _cert_reason = cert_block_for_published_scores_freshness(
+                _pub_freshness,
+                published_candidate_id=str(
+                    _cycles_receipt.get("final_publish_baseline") or "scratch"
+                ),
+                scratch_digest=_scratch_digest,
+                published_digest=_published_digest,
+            )
+            _cycles_receipt["cert_publish_guard"] = {
+                "cert_blocked": _cert_blocked,
+                "cert_block_reason": _cert_reason,
+                "scores_freshness": _pub_freshness,
+            }
+            _last_cycle_row = (
+                (_cycles_receipt.get("cycles") or [])[-1]
+                if _cycles_receipt.get("cycles")
+                else {}
+            )
+            emit_judge_regen_operator_stderr(
+                format_judge_regen_operator_stderr_line(
+                    cycle=int(_last_cycle_row.get("cycle") or 0) or 1,
+                    reject_gate=_last_cycle_row.get("reject_gate"),
+                    g3_verdicts=_last_cycle_row.get("g3_verdict_per_trigger_judge"),
+                    operator_floor=_operator_judge_floor,
+                    final_publish_baseline=str(
+                        _cycles_receipt.get("final_publish_baseline") or "scratch"
+                    ),
+                    published_min_score=min_model_backed_holistic_from_judges(x1d),
+                ),
+            )
+            _cycles_receipt["publish_disposition"] = resolve_publish_disposition(
+                x1d,
+                best_effort_publish_allowed=bool(getattr(args, "best_effort_publish_allowed", False))
+                or best_effort_publish_allowed_from_env(),
+                published_from_pool=_pool_publish_applied,
+            )
+            from apps_rg.runtime.sections.executive_summary_regen_observability import (
+                finalize_judge_regen_cycles_receipt,
+            )
+
+            _cycles_receipt = finalize_judge_regen_cycles_receipt(
+                _cycles_receipt,
+                artifact_dir=artifact_dir,
+                scratch_candidate_digest=_scratch_digest,
+                published_candidate_digest=_published_digest,
+            )
             write_json(artifact_dir / "judge_remediation_cycles.json", _cycles_receipt)
         elif judge_remediation_regen_allowed() and not _regen_ok:
             write_json(
                 artifact_dir / "judge_remediation_cycles.json",
                 {
-                    "schema": "executive_summary_judge_remediation_cycles_v1",
+                    "schema": "executive_summary_judge_remediation_cycles_v2",
+                    "schema_version": 2,
                     "skipped": "targeting_parity_required",
                     "reason": _regen_parity_reason,
                     "generation_material_digest": _generation_material.generation_material_digest,
@@ -2782,11 +3202,6 @@ def run_executive_summary_execution(
                 x2_passed=True,
             )
             write_json(artifact_dir / "judge_remediation_trigger.json", _trigger0)
-            _maybe_soft_judge_rescore(
-                regen_enabled=False,
-                trigger_receipt=_trigger0,
-                trigger_ok=_trigger_ok0,
-            )
 
     _graph_only_repaired = False
     _repair_meta_path = artifact_dir / "graph_only_generation_quality_repair.json"
@@ -2870,6 +3285,23 @@ def run_executive_summary_execution(
 
     regen_budget_ledger(artifact_dir).flush()
 
+    from apps_rg.runtime.sections.executive_summary_publish_disposition import (
+        apply_publish_disposition_to_proof_bundle,
+        apply_publish_disposition_to_x3_dict,
+        best_effort_publish_allowed_from_env,
+        resolve_publish_disposition,
+    )
+
+    _best_effort_publish = bool(getattr(args, "best_effort_publish_allowed", False)) or (
+        best_effort_publish_allowed_from_env()
+    )
+    _pub_disp = resolve_publish_disposition(
+        x1d,
+        best_effort_publish_allowed=_best_effort_publish,
+        published_from_pool=bool(locals().get("_pool_publish_applied")),
+    )
+    write_json(artifact_dir / "publish_disposition.json", _pub_disp)
+
     from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
 
     x3 = finalize_section_lane_x3(
@@ -2886,6 +3318,14 @@ def run_executive_summary_execution(
         canonical_claims_for_hash=canon_doc.get("claims"),
         section_input_usage_ledger=usage_doc,
     )
+    from apps_rg.runtime.spine.section_x3_finalize import persist_section_x3_mirror
+
+    x3_doc = apply_publish_disposition_to_x3_dict(
+        x3.to_dict() if hasattr(x3, "to_dict") else dict(x3),
+        _pub_disp,
+    )
+    persist_section_x3_mirror(artifact_dir, x3_doc)
+    x3 = x3_doc
     from apps_rg.runtime.section_l2_lane_integration import finalize_section_l2_after_output
     from apps_rg.runtime.section_runtime_exhaust_lane_integration import (
         finalize_section_runtime_exhaust_before_l6,
@@ -2912,6 +3352,7 @@ def run_executive_summary_execution(
         x2_gates=x2,
         x3=x3,
     )
+    proof_bundle = apply_publish_disposition_to_proof_bundle(proof_bundle, _pub_disp)
     attach_lane_proof_bundle_fields(
         l2_output,
         runtime_generation_status=runtime_generation_status,
@@ -2986,8 +3427,12 @@ def run_executive_summary_execution(
         "claim_ledger_hash": (parsed_for_x2 or {}).get("claim_ledger_hash"),
         "runtime_generation_status": runtime_generation_status,
         "product_quality_status": product_quality_status,
-        "x2_failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
-        "x3_code": x3.x3_code,
+        "x2_failed_gates": [
+            (g.get("gate_id") if isinstance(g, dict) else getattr(g, "gate_id", ""))
+            for g in x2
+            if not (g.get("pass") if isinstance(g, dict) else getattr(g, "pass_", False))
+        ],
+        "x3_code": (x3.get("x3_code") if isinstance(x3, dict) else x3.x3_code),
         "proof_eligible": proof_bundle["proof_eligible"],
         "judge_proof_eligible": proof_bundle["judge_proof_eligible"],
         "proof_pool_digest": str(pool.proof_pool_digest or ""),
@@ -3025,8 +3470,22 @@ def run_executive_summary_execution(
     )
     write_json(artifact_dir / "section_metric_receipt.json", _smr_es)
     output_lines = []
+    if token_budget_block_reason and isinstance(token_budget_receipt, dict):
+        _tb_msg = str(token_budget_receipt.get("operator_message") or "").strip()
+        if _tb_msg:
+            output_lines.append("TOKEN_BUDGET_OPERATOR_GUIDANCE:")
+            output_lines.extend(_tb_msg.splitlines())
+            output_lines.append("")
     output_lines.append("L2_EXECUTIVE_SUMMARY_OUTPUT:")
-    output_lines.append(resume_display_text if resume_display_text else f"BLOCKED: {parse_error}")
+    _tb_summary = (
+        str(token_budget_receipt.get("operator_summary") or "").strip()
+        if isinstance(token_budget_receipt, dict)
+        else ""
+    )
+    if token_budget_block_reason and _tb_summary:
+        output_lines.append(f"BLOCKED: {_tb_summary}")
+    else:
+        output_lines.append(resume_display_text if resume_display_text else f"BLOCKED: {parse_error}")
     output_lines.append("")
     output_lines.append("X1D_LLM_JUDGE_OUTPUTS:")
     output_lines.append("| Provider | Mode | Score | Threshold | Pass | Decisive Failure | Error |")
@@ -3041,7 +3500,9 @@ def run_executive_summary_execution(
         output_lines.append(f"- {gate['gate_id']}: {'PASS' if gate['pass'] else 'FAIL'}")
     output_lines.append("")
     output_lines.append("X3_DISPOSITION:")
-    output_lines.append(json.dumps(x3.to_dict(), indent=2))
+    output_lines.append(
+        json.dumps(x3 if isinstance(x3, dict) else x3.to_dict(), indent=2)
+    )
     output_lines.append("")
     output_lines.append("L6_SHADOW_EVAL_PACKAGE:")
     output_lines.append(str(artifact_dir / "l6_shadow_eval_package.json"))
@@ -3131,6 +3592,11 @@ def run_executive_summary_execution(
         "provider_requested_resolved": prq,
         "provider_attempted_resolved": pratt,
         "output_text": output_text,
+        "token_budget_operator_message": (
+            str(token_budget_receipt.get("operator_message") or "").strip()
+            if isinstance(token_budget_receipt, dict)
+            else ""
+        ),
     }
 
 
