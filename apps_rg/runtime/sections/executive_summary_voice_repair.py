@@ -226,8 +226,10 @@ def _repair_synthesis_quality_sentences(
     out_sents = list(sentences)
 
     if _FORCED_LINEAGE_BRIDGE_RE.search(out_sents[3]):
+        # Use a NON-STOCK opener here — "Complementing that" would be the 3rd stock bridge
+        # in S2–S4, failing x2_exec_summary_stock_bridge_max_two (max 2 per paragraph).
         out_sents[3] = _FORCED_LINEAGE_BRIDGE_RE.sub(
-            "Complementing that regulatory foundation,",
+            "In parallel,",
             out_sents[3],
             count=1,
         )

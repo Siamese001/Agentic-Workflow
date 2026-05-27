@@ -7,8 +7,8 @@ description: >
 
 examples:
   - id: exec_summary_gold_base_resume_001
-    category: positive_gold
-    authority: E0_STYLE_EXAMPLE_NOT_PROOF
+    category: negative
+    authority: E0_NEGATIVE_FORBIDDEN_PHRASES
     section: executive_summary
     seniority_band: EXECUTIVE
     xml_wrapped: true
@@ -22,14 +22,12 @@ examples:
       Distributed systems and regulated-risk analytics experience inform governance and commercialization balance when selected facts support those themes.
     claim_ledger_grounded: false
     annotation: >
-      STYLE AND QUALITY TARGET ONLY — not proof for arbitrary runs.
-      This is the voice, density, synthesis, and executive register to emulate.
-      Do not copy example facts, metrics, or credentials unless current selected facts
-      contain the same substance. The example demonstrates executive-level synthesis,
-      not claim-label stitching. Metrics and credentials appear here because this
-      paragraph assumes those facts are already in the proof substrate.
-      Runtime proof remains claim_ledger + source_fact_ids only; resume_display_text
-      stays clean prose.
+      VIOLATION: contains SRFS_FORBIDDEN_PHRASES — "engineering scale-out", "reusable platform services
+      adopted across enterprise programs", "converting bespoke delivery", "commercialization" (standalone).
+      Also contains mechanism-inventory S2 (comma-chain architecture list) and uses same real metrics as C0
+      facts ($22M, 20%), creating a template-following anchor risk.
+      Previously category=positive_gold but excluded from compile; converted to negative 2026-05-27 to prevent
+      accidental re-inclusion via code change.
 
   - id: exec_summary_pos_outcomes_led_001
     category: positive_variant
@@ -39,17 +37,17 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Generated $22M in productized AI revenue and expanded gross margins by 20% by turning complex AI capabilities into repeatable, production-ready platform services adopted across enterprise programs.
-      Engineering executive building production-grade AI platforms and governed runtime architecture for regulated enterprise environments.
-      Designs and operates systems that combine orchestration, retrieval, policy enforcement, and traceability to improve reliability, auditability, and deployment speed.
-      Leads full platform lifecycle work across architecture, operating model, and engineering scale-out.
+      Generated $[X]M in productized platform revenue and expanded gross margins by [Y]% by turning complex capabilities into repeatable, production-ready platform services adopted across programs.
+      Engineering executive building production-grade governed platforms and runtime architecture for regulated enterprise environments.
+      Designs and operates systems that combine orchestration, policy enforcement, and traceability to improve reliability, auditability, and deployment speed.
+      Leads full platform lifecycle work across architecture, operating model, and commercial adoption.
       Quantitative actuarial depth supports regulated delivery when those themes appear in the allowed pool.
       Platform commercialization and governance themes stay woven into one narrative arc rather than stacked credential lists.
     claim_ledger_grounded: false
     annotation: >
-      STYLE VARIANT — outcomes-led narrative order (commercial arc first). Same density
-      register as platform-led gold; teaches reordering and emphasis without new facts.
-      Do not copy metrics or credentials unless ALLOWED_SOURCE_FACT_IDS support them.
+      STYLE VARIANT — outcomes-led narrative order (commercial arc first). Metric placeholders [X]/[Y]
+      are intentionally domain-transposed; do NOT copy them — retrieve real values from C0 ALLOWED_SOURCE_FACT_IDS.
+      Teaches reordering and emphasis without anchoring Qwen to candidate-specific numbers.
 
   - id: exec_summary_pos_integrated_cred_001
     category: positive_variant
@@ -96,16 +94,18 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Enterprise technology leader who unifies governed AI platforms, regulatory lineage, and commercialization into one IT strategy and innovation agenda for decentralized regulated enterprises.
+      Enterprise technology leader who unifies governed data platforms, regulatory lineage, and commercialization into one IT strategy and innovation agenda for decentralized regulated enterprises.
       Designs and operates platform runtime with deterministic controls and traceable execution so innovation scales without sacrificing validation-ready delivery.
-      Building on that direction, platform commercialization generated $22M in IP-led revenue and expanded gross margins by 20% while scaling the ML engineering organization from 8 to 28 specialists.
-      Complementing that delivery foundation, Basel III and CCAR lineage discipline reduced regulatory reporting errors by 40%, accelerating IT strategy velocity without turning governance into a control checklist.
-      FSA-chartered quantitative foundation underpins stress-testing discipline, with containerized HPC practice shortening stress-test cycles by 40% for platform investment decisions.
-      Innovation incubation and architecture standards can federate governed platform capabilities across decentralized operating units while preserving Basel III lineage discipline and quantitative investment rigor.
+      Building on that foundation, supply-chain platform modernization generated $[X]M in efficiency capture and expanded operating margins by [Y]% while growing the platform engineering team from [A] to [B] specialists.
+      Against that delivery foundation, SOX and PCAOB lineage discipline reduced financial close errors by [Z]%, accelerating IT strategy velocity without turning compliance into a delivery bottleneck.
+      Chartered risk-management credential underpins stress-testing discipline, with containerized batch-processing practice shortening cycle times for capital planning decisions.
+      Innovation incubation and architecture standards can federate governed platform capabilities across decentralized operating units while preserving lineage discipline and quantitative investment rigor.
     claim_ledger_grounded: false
     annotation: >
       STYLE VARIANT — SVP IT strategy register (V10): connective arc with material metrics woven into S3–S5 display
       (not metrics-only-in-ledger); S6 forward capstone grounded in quant foundation (not thin recap). Targeting shapes emphasis only.
+      METRICS INTENTIONALLY TRANSPOSED to a different domain (supply-chain/finance) — do NOT copy [X]/[Y]/[A]/[B]/[Z]
+      placeholders into resume_display_text; retrieve the real values from C0 ALLOWED_SOURCE_FACT_IDS.
 
   - id: exec_summary_neg_thin_s6_recap_001
     category: negative
@@ -114,7 +114,7 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Technology strategy executive who aligns enterprise IT direction, governed AI platform delivery, and innovation programs for regulated enterprise scale. Building on that platform foundation, platform commercialization generated proof-backed revenue outcomes. Through that operating model, Basel III lineage frameworks reduced reporting errors. That regulatory lineage work extended to re-architecting monolithic risk analytics with containerized HPC microservices. Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential rigor. Governed platform delivery, engineering scale, and regulatory-grade controls extend that arc toward enterprise architecture modernization and data-driven innovation programs.
+      Technology strategy executive who aligns enterprise IT direction, governed AI platform delivery, and innovation programs for regulated enterprise scale. Building on that platform foundation, platform commercialization generated proof-backed revenue outcomes. Through that operating model, Basel III lineage frameworks reduced reporting errors. That regulatory lineage work extended to re-architecting monolithic risk analytics with containerized HPC microservices. Built advanced quantitative foundation through [FORBIDDEN: derivatives-pricing inventory], capital modeling, and FSA credential rigor. Governed platform delivery, engineering scale, and regulatory-grade controls extend that arc toward enterprise architecture modernization and data-driven innovation programs.
     annotation: >
       VIOLATION: Claude-fail bundle — thin S6 recap ("extend that arc toward"), S5 credential inventory, forced S3→S4 causal bridge, generic S1.
 
@@ -187,7 +187,7 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Technology strategy executive operationalizing governed AI platforms for regulated enterprises. Platform commercialization generated proof-backed revenue outcomes. Basel III lineage frameworks reduced reporting errors. HPC microservices accelerated stress testing. Built quantitative foundation through derivatives pricing and FSA credential across Towers Perrin, ING, and Aetna. Governed platform delivery connects execution discipline to measurable outcomes.
+      Technology strategy executive operationalizing governed AI platforms for regulated enterprises. Platform commercialization generated proof-backed revenue outcomes. Basel III lineage frameworks reduced reporting errors. HPC microservices accelerated stress testing. Built quantitative foundation through [FORBIDDEN: derivatives-pricing inventory] and FSA credential across Towers Perrin, ING, and Aetna. Governed platform delivery connects execution discipline to measurable outcomes.
     annotation: >
       VIOLATION: employer/credential inventory in S5 (Towers Perrin/ING/Aetna line); sequential achievement stack without thesis.
 
@@ -286,5 +286,7 @@ examples:
       voice_variation_score: high
 
 # Legacy weak positives (exec_summary_pos_001 / _002) removed — they pulled toward
-# shallow “years of experience” résumé filler. SSOT positive_gold is
-# exec_summary_gold_base_resume_001 above.
+# shallow “years of experience” résumé filler.
+# exec_summary_gold_base_resume_001 converted from positive_gold to negative 2026-05-27:
+# contains SRFS_FORBIDDEN_PHRASES (engineering scale-out, reusable platform services adopted...,
+# converting bespoke delivery) and carries real candidate metrics ($22M/20%) that anchor Qwen.

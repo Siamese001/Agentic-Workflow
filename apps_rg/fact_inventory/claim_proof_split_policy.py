@@ -95,6 +95,14 @@ def apply_w2_offending_fact_migrations(row: dict[str, Any]) -> dict[str, Any]:
             "Built quantitative rigor through derivatives pricing, capital modeling, and portfolio "
             "stress analytics across early-career actuarial roles."
         )
+        # preferred_c0_display_text is the safe display framing for C0 prompt injection:
+        # the raw claim_text above contains "derivatives pricing" which triggers
+        # x2_exec_summary_s5_no_derivatives_inventory when passed verbatim to the LLM.
+        # format_selected_facts_for_c0 reads this field before claim_text.
+        out["preferred_c0_display_text"] = (
+            "FSA-chartered quantitative foundation, built through early-career "
+            "capital modeling and portfolio stress analytics."
+        )
         out["claim_proof_split_version"] = CLAIM_PROOF_SCHEMA_VERSION
         return out
     return out

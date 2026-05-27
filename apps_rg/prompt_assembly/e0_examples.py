@@ -24,8 +24,14 @@ SECTION_EXAMPLES: dict[str, str] = {
 # Lanes that share the unify examples catalog.
 _UNIFY_LANE_SECTIONS = frozenset({"unify_bullets", "unify_narrative"})
 
-# Primary judge-aligned positive (SVP integrated arc).
-_EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED = ("exec_summary_pos_svp_it_strategy_001",)
+# SVP strategy lane: two structurally diverse positives (thesis-arc + credibility-implied).
+# Providing two avoids the single-example template-following trap where Qwen echoes metric
+# values verbatim from the sole positive. Both examples use domain-transposed or abstract
+# metrics — Qwen must retrieve real values from C0.
+_EXEC_SUMMARY_POSITIVE_SVP_JUDGE_ALIGNED = (
+    "exec_summary_pos_svp_it_strategy_001",
+    "exec_summary_pos_credibility_implied_001",
+)
 
 _EXEC_SUMMARY_POSITIVE_COMPILE_IDS = (
     "exec_summary_pos_svp_it_strategy_001",
@@ -33,8 +39,9 @@ _EXEC_SUMMARY_POSITIVE_COMPILE_IDS = (
     "exec_summary_pos_outcomes_led_001",
 )
 
-# Retired from default E0 compile: exec_summary_gold_base_resume_001 (mechanism-heavy; steers bullet-stack drafts).
-_EXEC_SUMMARY_POSITIVE_RETIRED_FROM_COMPILE = ("exec_summary_gold_base_resume_001",)
+# Retired from default E0 compile: none currently (exec_summary_gold_base_resume_001
+# is now category=negative so is handled by the negative-render path, not this list).
+_EXEC_SUMMARY_POSITIVE_RETIRED_FROM_COMPILE: tuple[str, ...] = ()
 
 _EXEC_SUMMARY_TEMPLATE_SUPPLEMENT = (
     _PA_ROOT / "templates" / "executive_summary.generate_scratch_v1.yaml"
@@ -177,8 +184,13 @@ def build_executive_summary_e0(
     ]
     if strategy_executive:
         parts.append(
-            "<e0_lane_note>SVP IT strategy lane: single judge-aligned positive exemplar with metrics woven into S3–S5 display; "
-            "copy density/register only — not verbatim wording. Negatives teach stack/recap failures.</e0_lane_note>"
+            "<e0_lane_note>SVP IT strategy lane: two structurally diverse judge-aligned positives — "
+            "thesis-arc (exec_summary_pos_svp_it_strategy_001) and credibility-implied arc "
+            "(exec_summary_pos_credibility_implied_001). Metric values in the positives are "
+            "domain-transposed placeholders ([X]M, [Y]%, [A]->[B]): do NOT copy them — retrieve "
+            "real values from C0 ALLOWED_SOURCE_FACT_IDS. "
+            "Copy density, register, and S1-S6 arc structure only. "
+            "Negatives teach stack/recap failures.</e0_lane_note>"
         )
     for eid in positive_ids:
         row = by_id.get(eid)

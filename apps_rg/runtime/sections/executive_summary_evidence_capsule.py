@@ -148,6 +148,10 @@ def build_capsule_document(
             "source_authority": authority_label,
             "section_membership": SECTION_ID,
         }
+        # Persist the safe C0 display framing from the fact dict (set by claim_proof_split_policy).
+        pref = str(fact.get("preferred_c0_display_text") or "").strip()
+        if pref:
+            row["preferred_c0_display_text"] = pref
         framing = PREFERRED_DISPLAY_FRAMING_BY_FACT_ID.get(fid)
         if framing:
             row["preferred_display_framing"] = framing
@@ -197,6 +201,9 @@ def format_evidence_capsule_c0_block(
     runtime_payload: dict[str, Any] | None = None,
 ) -> str:
     """Compact C0 proof substrate for PA (excludes style-only SRFS prose)."""
+    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        FACT_C0_DISPLAY_OVERRIDES,
+    )
     header = format_allowed_source_fact_ids_contract(allowed_ids)
     lines = [
         f"EVIDENCE_CAPSULE_{CAPSULE_VERSION.upper()} (deterministic proof packet; not style guidance):",
@@ -206,6 +213,23 @@ def format_evidence_capsule_c0_block(
         "NO_FABRICATION=true",
         "CLAIM_LEDGER_REQUIRED=true",
         "source_fact_ids must match ALLOWED_SOURCE_FACT_IDS verbatim (no normalization).",
+    ]
+    # Emit hard display prohibitions for any overridden fact so the model sees
+    # a machine-readable ABSOLUTE PROHIBITION before the fact block.
+    override_fact_ids = [
+        row.get("source_fact_id", "")
+        for row in (capsule.get("facts") or [])
+        if row.get("preferred_c0_display_text") or FACT_C0_DISPLAY_OVERRIDES.get(str(row.get("source_fact_id", "")))
+    ]
+    if override_fact_ids:
+        lines.append("")
+        lines.append("DISPLAY_OVERRIDE_PROHIBITIONS (ABSOLUTE — violation fails X2 gate):")
+        for fid in override_fact_ids:
+            lines.append(
+                f"- {fid}: MUST NOT write the phrase 'derivatives pricing' or 'multi-Greek' in "
+                f"resume_display_text — use the DISPLAY_OVERRIDE text provided below verbatim."
+            )
+    lines += [
         "",
         "EVIDENCE_FACTS (HIGH executive_summary slice only):",
     ]
@@ -222,6 +246,14 @@ def format_evidence_capsule_c0_block(
     for row in capsule.get("facts") or []:
         fid = row.get("source_fact_id", "")
         ct = row.get("claim_text", "")
+        # Apply C0 framing override: preferred_c0_display_text wins over claim_text.
+        display_override = (
+            str(row.get("preferred_c0_display_text") or "").strip()
+            or str(FACT_C0_DISPLAY_OVERRIDES.get(str(fid), "")).strip()
+        )
+        if display_override:
+            # Use DISPLAY_OVERRIDE label to reinforce machine-readable instruction above.
+            ct = f"[DISPLAY_OVERRIDE: use exactly this text] {display_override}"
         mr = row.get("metric_raw")
         extra = ""
         if mr:

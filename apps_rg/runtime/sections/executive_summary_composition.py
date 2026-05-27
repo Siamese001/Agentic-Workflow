@@ -425,9 +425,8 @@ def format_composition_plan_for_pa(plan: dict[str, Any]) -> str:
     missing = plan.get("brushstroke_missing_ids") or []
     if missing:
         lines.append(f"brushstroke_gaps (weave if facts exist): {', '.join(missing)}")
-    for bs in plan.get("brushstrokes") or []:
-        if not isinstance(bs, dict):
-            continue
+    brushstrokes = [bs for bs in (plan.get("brushstrokes") or []) if isinstance(bs, dict)]
+    for bs in brushstrokes:
         bid = bs.get("brushstroke_id")
         req = bs.get("required_fact_ids") or []
         lines.append(f"- {bid}: facts={req or '[]'} — {bs.get('image_goal')}")
@@ -441,6 +440,18 @@ def format_composition_plan_for_pa(plan: dict[str, Any]) -> str:
             f"display_metric_fact_id={s5_binding.get('metric_display_fact_id')} "
             f"credential_fact_id={s5_binding.get('credential_fact_id')} "
             f"display_metric_required={s5_binding.get('display_metric_required')}"
+        )
+    # S4 opener directive: when SVP strategy lane has ≥3 brushstrokes covering S2–S4,
+    # S2 and S3 will likely consume both stock-bridge slots — prescribe a non-stock
+    # opener for S4 to enforce the max-two contract (x2_exec_summary_stock_bridge_max_two).
+    strategy_lane = bool(plan.get("strategy_executive") or plan.get("dominant_arc") == "B2_governed_platform_system")
+    if strategy_lane and len(brushstrokes) >= 3:
+        lines.append(
+            "s4_opener_directive: S4 MUST use a non-stock opener "
+            '(e.g. "In parallel," / "That operating foundation also," / "The same platform discipline") '
+            "— S2 and S3 are expected to consume both available stock-bridge slots "
+            "(from that / against that / complementing that / building on that / through that / with that governance); "
+            "a third stock bridge in S4 will fail x2_exec_summary_stock_bridge_max_two."
         )
     s6_anchor = str(plan.get("s6_targeting_forward_anchor") or "").strip()
     if s6_anchor:

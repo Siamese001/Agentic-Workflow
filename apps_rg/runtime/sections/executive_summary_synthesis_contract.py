@@ -29,6 +29,18 @@ EXEC_SUMMARY_STOCK_BRIDGE_PREFIXES: tuple[str, ...] = (
     "with that governance",
 )
 
+# C0 display override for framing-sensitive facts whose claim_text contains
+# phrases that trigger X2 display gates (e.g. derivatives inventory in S5).
+# Applied by format_selected_facts_for_c0 unconditionally — before claim_text
+# and before the evidence capsule path — to guarantee the forbidden phrase never
+# reaches the LLM prompt. Keyed by fact_id.
+FACT_C0_DISPLAY_OVERRIDES: dict[str, str] = {
+    FSA_CREDENTIAL_FACT_ID: (
+        "FSA-chartered quantitative foundation, built through early-career "
+        "capital modeling and portfolio stress analytics."
+    ),
+}
+
 SVP_JD_EMPHASIS_THEMES: tuple[str, ...] = (
     "enterprise architecture governance",
     "innovation programs and incubation",

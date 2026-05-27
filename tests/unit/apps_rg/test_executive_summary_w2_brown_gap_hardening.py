@@ -51,11 +51,32 @@ def test_y0_positive_s5_quant_weave_guidance() -> None:
 
 
 def test_e0_positive_s5_pairs_fsa_with_hpc_metric() -> None:
+    """SVP positive S5 must have a quantitative-foundation + operational-metric pairing.
+
+    Since W1 (qwen-prompt-regen-reduction-7481e3), real metrics ($22M/40%) are replaced
+    with domain-transposed placeholders so Qwen cannot anchor to candidate-specific values.
+    The test now verifies structural intent: quantitative credential + measurable outcome
+    language is present, and the forbidden 'derivatives pricing' phrase is absent.
+    """
     prose = example_after_text("executive_summary", "exec_summary_pos_svp_it_strategy_001")
     low = prose.lower()
-    assert "40%" in prose
-    assert "fsa" in low or "quantitative foundation" in low
-    assert "derivatives pricing" not in low
+    # S5 must have quantitative/credential language
+    assert "quantitative" in low or "credential" in low or "chartered" in low or "fsa" in low, (
+        "S5 in SVP positive must contain quantitative/credential language."
+    )
+    # S5 must pair with an operational-outcome phrase (placeholder or real)
+    has_metric_phrase = (
+        "%" in prose  # percent placeholder like [Z]% is fine
+        or "shortening" in low
+        or "improved" in low
+        or "reduced" in low
+        or "cycle" in low
+    )
+    assert has_metric_phrase, "S5 in SVP positive must reference a measurable operational outcome."
+    # Forbidden phrase must never appear in any positive example
+    assert "derivatives pricing" not in low, (
+        "S5 must not contain 'derivatives pricing' in the positive example."
+    )
 
 
 def test_stock_bridge_x2_gate_id_registered_in_run_x2_gates() -> None:

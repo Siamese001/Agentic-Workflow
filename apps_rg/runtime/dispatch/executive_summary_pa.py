@@ -2,7 +2,7 @@
 
 from apps_rg.runtime.bindings.section_prompt_adapter import compile_section_prompt
 from apps_rg.runtime.sections.executive_summary_pa import (
-    SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR,
+    # SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR removed 2026-05-27 — was never injected; E0 YAML is SSOT.
     SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER,
     SRFS_FORBIDDEN_PHRASES_ALWAYS,
     SRFS_SENTENCE_RESP_SEP_MARKER,
@@ -20,7 +20,6 @@ from apps_rg.runtime.sections.executive_summary_pa import (
 )
 
 __all__ = [
-    "SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR",
     "SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER",
     "SRFS_FORBIDDEN_PHRASES_ALWAYS",
     "SRFS_SENTENCE_RESP_SEP_MARKER",

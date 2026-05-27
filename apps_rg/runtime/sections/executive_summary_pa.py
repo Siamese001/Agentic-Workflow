@@ -306,19 +306,10 @@ def format_srfs_forbidden_phrase_guardrails_block() -> str:
     )
 
 
-# Judge-aligned SVP style anchor for SRFS appendix (NOT runtime proof — matches exec_summary_pos_svp_it_strategy_001 V10).
-SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR = (
-    "Enterprise technology leader who unifies governed AI platforms, regulatory lineage, and commercialization into one "
-    "IT strategy and innovation agenda for decentralized regulated enterprises. Designs and operates platform "
-    "runtime with deterministic controls and traceable execution so innovation scales without sacrificing validation-ready delivery. "
-    "Building on that direction, platform commercialization generated $22M in IP-led revenue and expanded gross margins by 20% "
-    "while scaling the ML engineering organization from 8 to 28 specialists. Complementing that delivery foundation, "
-    "Basel III and CCAR lineage discipline reduced regulatory reporting errors by 40%, accelerating IT strategy velocity "
-    "without turning governance into a control checklist. With that governance posture, quantitative rigor from capital and "
-    "risk analytics practice improved stress-testing cycles by 40%, sharpening platform investment decisions for regulated "
-    "program scale. Innovation incubation and architecture standards can federate governed platform capabilities "
-    "across decentralized operating units while preserving Basel III lineage discipline and quantitative investment rigor."
-)
+# SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR removed 2026-05-27 — was never injected into any
+# prompt path (format_srfs_style_only_quality_oneshot_block does not reference it).
+# It also diverged from the YAML example (different S5 wording) creating a maintenance hazard.
+# Style exemplar is now exclusively in executive_summary_examples.yaml (E0 SSOT).
 
 def load_executive_summary_example_after(example_id: str) -> str:
     """Return the ``after`` prose for a multishot example id (style-only; not proof)."""
@@ -352,17 +343,40 @@ def format_srfs_style_only_quality_oneshot_block() -> str:
 
 
 def format_selected_facts_for_c0(facts: list[dict[str, Any]], allowed_source_fact_ids: list[str]) -> str:
+    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        FACT_C0_DISPLAY_OVERRIDES,
+    )
+
     header = format_allowed_source_fact_ids_contract(allowed_source_fact_ids)
-    lines: list[str] = []
+    prohibition_lines: list[str] = []
+    fact_lines: list[str] = []
     for fact in facts:
         fid = fact.get("fact_id", "")
-        ct = str(fact.get("claim_text") or "").strip()
+        # Prefer graph-node framing, then contract override, then raw claim_text.
+        display_override = (
+            str(fact.get("preferred_c0_display_text") or "").strip()
+            or str(FACT_C0_DISPLAY_OVERRIDES.get(str(fid), "")).strip()
+        )
+        ct = display_override or str(fact.get("claim_text") or "").strip()
         extra = ""
         if fact.get("metric_raw"):
             extra = f" metric_raw={fact.get('metric_raw')!r}"
-        lines.append(f"- {fid}: {ct}{extra}")
-    body = "SELECTED_FACT_PLAN (proof-only; do not invent beyond these lines):\n" + "\n".join(lines)
-    return f"{header}\n\n{body}"
+        if display_override:
+            prohibition_lines.append(
+                f"- {fid}: MUST NOT write 'derivatives pricing' or 'multi-Greek' in resume_display_text — "
+                f"use the DISPLAY_OVERRIDE text below verbatim."
+            )
+            fact_lines.append(f"- {fid}: [DISPLAY_OVERRIDE: use exactly this text] {ct}{extra}")
+        else:
+            fact_lines.append(f"- {fid}: {ct}{extra}")
+    parts = [header]
+    if prohibition_lines:
+        parts.append(
+            "DISPLAY_OVERRIDE_PROHIBITIONS (ABSOLUTE — violation fails X2 gate):\n"
+            + "\n".join(prohibition_lines)
+        )
+    parts.append("SELECTED_FACT_PLAN (proof-only; do not invent beyond these lines):\n" + "\n".join(fact_lines))
+    return "\n\n".join(parts)
 
 
 def build_executive_summary_assembly_input(
@@ -594,7 +608,6 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
 
 
 __all__ = [
-    "SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR",
     "SRFS_COMPOSITION_ONESHOT_MARKER",
     "SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER",
     "SRFS_FORBIDDEN_PHRASES_ALWAYS",

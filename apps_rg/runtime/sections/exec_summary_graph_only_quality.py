@@ -114,6 +114,26 @@ def _quant_hpc_sentence(row: dict[str, Any]) -> str:
 
 
 def _quant_background_sentence(row: dict[str, Any]) -> str:
+    # If the fact has a preferred C0 display framing, use it directly to avoid
+    # "derivatives pricing" reaching display prose (x2_exec_summary_s5_no_derivatives_inventory).
+    preferred = str(row.get("preferred_c0_display_text") or "").strip()
+    if preferred:
+        from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+            FACT_C0_DISPLAY_OVERRIDES,
+        )
+        fid = str(row.get("fact_id") or row.get("candidate_fact_id") or "").strip()
+        # preferred_c0_display_text takes priority; contract override is fallback.
+        text = preferred or FACT_C0_DISPLAY_OVERRIDES.get(fid, "")
+        if text:
+            return text if text.endswith((".", "!", "?")) else text + "."
+    # Also check the synthesis contract override by fact_id even without preferred_c0_display_text.
+    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        FACT_C0_DISPLAY_OVERRIDES,
+    )
+    fid = str(row.get("fact_id") or row.get("candidate_fact_id") or "").strip()
+    contract_override = FACT_C0_DISPLAY_OVERRIDES.get(fid, "")
+    if contract_override:
+        return contract_override if contract_override.endswith((".", "!", "?")) else contract_override + "."
     claim = str(row.get("claim_text") or "").strip()
     claim_lower = claim.lower()
     if claim and any(

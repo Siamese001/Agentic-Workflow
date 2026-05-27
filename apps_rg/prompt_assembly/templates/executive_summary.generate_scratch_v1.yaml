@@ -52,13 +52,11 @@ slot_bodies:
 
     <six_sentence_period_contract>
     **CRITICAL (X2 hard-fail):** `resume_display_text` = **exactly six** sentences, period-terminated (`.`). Count by periods only.
-    Max **two** Led/Designed/Implemented/Built/Generated openers in S2-S5; use connective bridges when causality is real (max two stock bridges).
+    Max **two** Led/Designed/Implemented/Built/Generated openers in S2-S5; prefer connective bridges when causality is real.
     </six_sentence_period_contract>
 
     <approved_non_stock_openers>
-    **S2–S5 transitions (compile advisory):** At most **two** stock bridges among
-    (`From that`, `Against that`, `Complementing that`, `Building on that`, `Through that`, `With that governance`).
-    Prefer approved non-stock openers when varying rhythm:
+    **S2–S5 transitions (compile advisory):** Prefer approved non-stock openers when varying rhythm:
     - From that commercial base,
     - Against that lineage backdrop,
     - In parallel,
@@ -94,10 +92,10 @@ slot_bodies:
     **Workflow:** (1) Read C0 + allowlist; JD/briefing for emphasis only. (2) Write `executive_strategy_thesis` (one sentence, allowed facts). (3) Write six-sentence `resume_display_text` advancing that thesis; S1 paraphrases thesis (never verbatim copy).
     **S1:** Sharp SVP IT strategy register (EA governance, innovation programs) - not generic "regulated enterprise scale."
     **S2-S3:** Platform/operating-model substance; connective causal thread when honest; S3 must surface allowed commercialization metrics in display when fact_engineering_platform_006 is cited.
-    **S4:** Governance/lineage as parallel beat with allowed outcome metrics in display when fact_governance_003 is cited; no forced "extended to" bridges across unrelated facts.
+    **S4:** Governance/lineage as parallel beat with allowed outcome metrics in display when fact_governance_003 is cited; no forced "extended to" bridges across unrelated facts. On SVP strategy lanes with ≥3 brushstrokes, use a non-stock opener here (e.g. `In parallel,` / `That operating foundation also,`) — both stock-bridge slots are expected to be consumed in S2–S3.
     **S5:** One quantitative-rigor clause with allowed percent/outcome from fact_quant_hpc_001 in display; no derivatives/multi-Greek/Towers Perrin/ING/Aetna/FSA inventory; no meta ("rather than listing credentials").
     **S6:** Forward capstone grounded in source_fact_ids (e.g. fact_quant_hpc_003); may use composition_plan TARGETING_FORWARD_ANCHOR for decentralized units / innovation mandate (targeting-only; jd_used_as_proof=false); forbid "Looking ahead," opener, "extend that arc toward", and S2-S5 recap. Never "audit/audit-ready" unless verbatim in allowed claim_text.
-    **Connectives:** At most two stock openers (Building on / Through that / Complementing / With that governance) in S2-S5; vary the noun phrase after each bridge (avoid repeating "platform footprint" + "platform commercialization" in one sentence).
+    **Connectives:** At most **two** stock openers (`Building on` / `Through that` / `Complementing` / `With that governance` / `Against that` / `From that`) in S2-S5; vary the noun phrase after each bridge (avoid repeating "platform footprint" + "platform commercialization" in one sentence). On SVP strategy lanes with ≥3 brushstrokes, S4 MUST use a non-stock opener (e.g. `In parallel,` / `That operating foundation also,`) — S2 and S3 are expected to consume both available stock-bridge slots.
     **Meta-filler ban:** no "governance discipline", "active-voice delivery", "selected facts" scaffolding.
     **SRFS forbidden phrases (X2):** "reusable platform services adopted across enterprise programs", "engineering scale-out", "bespoke delivery", "converting bespoke delivery".
     U0 `narrative_arc_weights` = thematic emphasis only (not one fact per sentence index). claim_ledger: 3-6 thesis-supporting rows when allowlist >=6 facts.
@@ -112,10 +110,9 @@ slot_bodies:
     </internal_deliberation_controls>
 
     <self_check_requirements>
-    Verify before return: no_first_person; no_inline_source_tags; jd_used_as_proof_false; executive_strategy_thesis_present;
-    s1_not_verbatim_thesis_copy; s6_forward_synthesis_not_recap; s6_no_looking_ahead_opener; s6_grounded_in_source_fact;
-    s5_no_derivatives_inventory; s5_no_derivatives_or_employer_inventory; material_metrics_surfaced_in_display_rows_3_4_5;
-    no_extend_that_arc_toward_phrase; achievement_verb_opener_count_at_most_2; every_material_claim_in_claim_ledger.
+    Verify before return (five fields only — X2 gates enforce the rest deterministically):
+    executive_strategy_thesis_present; jd_used_as_proof_false; s6_forward_synthesis_not_recap;
+    material_metrics_surfaced_in_display_rows_3_4_5; every_material_claim_in_claim_ledger.
     </self_check_requirements>
 
     </instructions>
