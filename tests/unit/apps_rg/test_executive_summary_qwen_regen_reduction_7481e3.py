@@ -302,10 +302,10 @@ class TestW4JudgeRegenMaxAttempts:
         result = rp.judge_regen_max_attempts()
         assert result == 3, f"judge_regen_max_attempts() should return 3 by default; got {result}"
 
-    def test_judge_regen_max_attempts_hard_cap_is_10(self):
+    def test_judge_regen_max_attempts_hard_cap_is_3(self):
         from apps_rg.runtime.sections.executive_summary_repair_policy import JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP
-        assert JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP == 10, (
-            f"JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP must be 10; got {JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP}."
+        assert JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP == 3, (
+            f"JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP must be 3 (absolute ceiling); got {JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP}."
         )
 
     def test_operator_can_raise_via_env(self, monkeypatch):
@@ -313,14 +313,16 @@ class TestW4JudgeRegenMaxAttempts:
         monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", raising=False)
         from apps_rg.runtime.sections import executive_summary_repair_policy as rp
         result = rp.judge_regen_max_attempts()
-        assert result == 7, f"Operator env override to 7 should be respected; got {result}"
+        assert result == 3, (
+            f"Env override above hard cap (7 > 3) must be clamped to hard cap 3; got {result}"
+        )
 
     def test_operator_cannot_exceed_hard_cap(self, monkeypatch):
         monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS", "99")
         monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", raising=False)
         from apps_rg.runtime.sections import executive_summary_repair_policy as rp
         result = rp.judge_regen_max_attempts()
-        assert result <= 10, f"Hard cap must be respected; got {result}"
+        assert result <= 3, f"Hard cap 3 must be respected; got {result}"
 
 
 # ---------------------------------------------------------------------------

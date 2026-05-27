@@ -39,11 +39,12 @@ def synthesis_regen_max_attempts() -> int:
 
 
 # Post-X1D same-authority regen when X2 passed and any judge is below floor.
-# Default 3 — after W1 E0 metric transposition the template-following attractor is broken;
-# marginal quality fixes converge within 3 cycles. Operator can raise via env var.
-# Hard cap 10 (JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP) remains the absolute ceiling.
+# Hard cap 3 — absolute ceiling, not operator-overridable. After W1 E0 metric
+# transposition the template-following attractor is broken; 3 cycles is sufficient
+# for marginal quality fixes. Env var APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS
+# may lower the effective limit but cannot exceed JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP.
 JUDGE_REGEN_MAX_ATTEMPTS = 3
-JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 10
+JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
 # Regen delta shape: sentinel ceilings (not product truncation). Opt-in caps via REGEN_CAPS=1.
 JUDGE_REGEN_CORE_DELTA_TOKEN_CEILING = 2_000_000
 JUDGE_REGEN_MAX_DELTA_LINES = 1_000_000
