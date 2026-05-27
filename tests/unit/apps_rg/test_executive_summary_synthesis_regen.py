@@ -89,3 +89,61 @@ def test_shape_failure_count_increases_with_more_issues() -> None:
     }
     n = _shape_failure_count(bad["resume_display_text"], bad, selected_facts=[])
     assert n >= 2
+
+
+def test_synthesis_repair_sentence_count_note_fires_on_5_sentences() -> None:
+    """sentence_count_note must fire when reject reason names wrong sentence count."""
+    reject = (
+        "resume_display_text must have exactly 6 sentences; found 5 "
+        "(legacy 4–5 and 5–6 bands retired)"
+    )
+    msg = _build_synthesis_repair_user(
+        reject,
+        attempt_index=0,
+        prior_word_count=85,
+        prior_ledger_rows=5,
+    )
+    assert "SENTENCE COUNT HARD FAIL" in msg, (
+        "sentence_count_note must fire when reject reason reports found 5 sentences"
+    )
+    assert "EXACTLY 6" in msg or "exactly 6" in msg, (
+        "sentence_count_note must state EXACTLY 6"
+    )
+    assert "use 5" not in msg.lower(), (
+        "No ambiguous 'use 5' guidance when sentence count failed — gate requires exactly 6"
+    )
+
+
+def test_synthesis_repair_evidence_weave_fires_on_sentences_blob() -> None:
+    """utilization_note must fire when 'sentences' appears in reject reason."""
+    reject = "Output has 5 sentences; executive synthesis requires exactly 6 sentences"
+    msg = _build_synthesis_repair_user(
+        reject,
+        attempt_index=0,
+        prior_word_count=85,
+        prior_ledger_rows=5,
+    )
+    assert "EVIDENCE_WEAVE" in msg, (
+        "utilization_note must fire when reject reason contains 'sentences'"
+    )
+    # Ensure the ambiguous fallback is gone
+    assert "use 5 when the pool is tighter" not in msg, (
+        "Ambiguous 'use 5 when the pool is tighter' must be removed — gate requires exactly 6"
+    )
+
+
+def test_synthesis_repair_no_ambiguous_fallback_when_count_fails() -> None:
+    """'Prefer 6 ... use 5 when tighter' phrase must not appear in any sentence-count failure."""
+    for reject in [
+        "resume_display_text must have exactly 6 sentences; found 4 (legacy 4–5 and 5–6 bands retired)",
+        "Output has 5 sentences; executive synthesis requires exactly 6 sentences",
+    ]:
+        msg = _build_synthesis_repair_user(
+            reject,
+            attempt_index=1,
+            prior_word_count=90,
+            prior_ledger_rows=5,
+        )
+        assert "use 5 when the pool is tighter" not in msg, (
+            f"Ambiguous fallback must be absent for reject: {reject!r}"
+        )

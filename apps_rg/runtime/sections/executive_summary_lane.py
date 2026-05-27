@@ -1023,12 +1023,20 @@ def _build_synthesis_repair_user(
             "PRIOR REGEN SHRANK OR DROPPED CLAIM ROWS — next draft must maintain or increase word count "
             f"and claim_ledger rows (minimum {prior_ledger_rows} rows, prefer 5+ when pool has 6+ facts). "
         )
+    sentence_count_note = ""
+    if "found 5" in blob or "found 4" in blob or "sentences; found" in blob or "sentence_count" in blob:
+        sentence_count_note = (
+            "SENTENCE COUNT HARD FAIL: your previous draft had the wrong number of sentences. "
+            "The output MUST have EXACTLY 6 period-terminated sentences — no more, no fewer. "
+            "If the fact pool is tight, SPLIT a multi-beat sentence into two: e.g. S3 governance + S4 lineage outcome. "
+            "Do NOT compress to 5 to 'fit' facts — add an S6 forward synthesis that is NOT a recap. "
+        )
     utilization_note = ""
-    if "claim_ledger_rows" in blob or "need_at_least" in blob or "sentence_" in blob:
+    if "claim_ledger_rows" in blob or "need_at_least" in blob or "sentences" in blob:
         utilization_note = (
             "EVIDENCE_WEAVE: add claim_ledger OBJECT rows (one per major sentence) with distinct source_fact_ids "
             "from selected_fact_plan; weave unused high-confidence facts into prose — no repeated sentence themes. "
-            "Prefer 6 sentences when the fact pool has 7+ facts; use 5 when the pool is tighter. "
+            "Always produce exactly 6 sentences regardless of pool size — split multi-beat sentences to reach 6. "
         )
     mechanism_note = ""
     if "mechanism_inventory" in blob or "mechanism inventory" in blob:
@@ -1081,7 +1089,7 @@ def _build_synthesis_repair_user(
 
         svp_note = format_synthesis_repair_directive(strategy_executive=True)
     return (
-        f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{length_note}{utilization_note}"
+        f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{sentence_count_note}{length_note}{utilization_note}"
         f"{mechanism_note}{meta_note}{filler_note}{conflation_note}{stock_bridge_note}{s5_note}{svp_note}"
         "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
         "Rewrite resume_display_text as exactly 6 period-delimited sentences (one executive paragraph, max 140 words), "
