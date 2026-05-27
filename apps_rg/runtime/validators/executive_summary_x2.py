@@ -251,6 +251,37 @@ def has_jd_phrase_copy(text: str, jd_text: str, max_words: int = 4) -> tuple[boo
     return False, None
 
 
+def check_exec_summary_stock_bridge_count(
+    text: str,
+    *,
+    max_bridges: int = 2,
+) -> tuple[bool, str | None]:
+    """Advisory/runtime lint: at most ``max_bridges`` stock connectives in display S2–S5."""
+    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        EXEC_SUMMARY_STOCK_BRIDGE_PREFIXES,
+    )
+
+    sentences = split_sentences(text)
+    if len(sentences) < 3:
+        return True, None
+    body = sentences[1:5] if len(sentences) >= 6 else sentences[1:]
+    hits = 0
+    matched: list[str] = []
+    for sentence in body:
+        low = sentence.strip().lower()
+        for prefix in EXEC_SUMMARY_STOCK_BRIDGE_PREFIXES:
+            if low.startswith(prefix):
+                hits += 1
+                matched.append(prefix)
+                break
+    if hits > max_bridges:
+        return (
+            False,
+            f"stock_bridge_stack:{hits}_in_s2_s5_max_{max_bridges}_matched={','.join(matched)}",
+        )
+    return True, None
+
+
 def check_exec_summary_mechanical_opener_stack(
     text: str,
     *,
@@ -1997,6 +2028,36 @@ def run_x2_gates(
             "each_claim_in_display",
             claim_map_reason,
         )
+        from apps_rg.runtime.sections.executive_summary_operator_reporting import (
+            check_exec_summary_s5_no_derivatives_inventory,
+            check_self_check_s5_no_derivatives_inventory,
+        )
+
+        s5_inv_ok, s5_inv_reason = check_exec_summary_s5_no_derivatives_inventory(
+            resume_display_text,
+            allowed_fact_ids=allowed_fact_ids,
+            selected_facts=selected_facts,
+        )
+        add(
+            "x2_exec_summary_s5_no_derivatives_inventory",
+            s5_inv_ok,
+            s5_inv_reason or "ok",
+            "no_derivatives_inventory_without_hpc_metric",
+            s5_inv_reason,
+        )
+        s5_sc_ok, s5_sc_reason = check_self_check_s5_no_derivatives_inventory(
+            parsed_output,
+            resume_display_text,
+            allowed_fact_ids=allowed_fact_ids,
+            selected_facts=selected_facts,
+        )
+        add(
+            "x2_self_check_s5_no_derivatives_inventory",
+            s5_sc_ok,
+            s5_sc_reason or "ok",
+            "self_check_s5_derivatives_consistent",
+            s5_sc_reason,
+        )
 
     source_coverage_ok = bool(claim_ledger) and all(
         any((sid in allowed_fact_ids) or ("_metric_" in sid) for sid in (claim.get("source_fact_ids") or []))
@@ -2284,6 +2345,18 @@ def run_x2_gates(
         None,
         mech_stack_reason,
     )
+    if strategy_lane:
+        stock_ok, stock_reason = check_exec_summary_stock_bridge_count(
+            resume_display_text,
+            max_bridges=2,
+        )
+        add(
+            "x2_exec_summary_stock_bridge_max_two",
+            stock_ok,
+            stock_reason or "ok",
+            "max_two_stock_bridges_in_s2_s5",
+            stock_reason,
+        )
 
     conf_ok, conf_reason = check_cross_fact_display_conflation(
         resume_display_text, claim_ledger

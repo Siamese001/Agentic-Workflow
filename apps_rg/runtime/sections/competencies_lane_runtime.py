@@ -1418,7 +1418,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Generation provider (qwen_vllm only). Live vLLM required; offline contract stub is disabled.",
     )
     parser.add_argument("--temperature", type=float, default=COMPETENCIES_TEMP_DEFAULT)
-    parser.add_argument("--x1d-judges", default="gemini_pro,openai_chatgpt,anthropic_claude")
+    parser.add_argument(
+        "--x1d-judges",
+        default="gemini_pro",
+        help="Single X1D judge for competencies (graph pool selector row; not a triple panel).",
+    )
     parser.add_argument(
         "--mock-judges",
         action="store_true",

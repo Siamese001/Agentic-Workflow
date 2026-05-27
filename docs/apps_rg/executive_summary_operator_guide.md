@@ -292,6 +292,22 @@ Legacy aliases (`provider_response_judge_regen.json`, etc.) may exist; verifiers
 | `judge_remediation_receipt.json` | Cycle-level `accepted`, `output_changed`, `budget_blocked` |
 | `judge_remediation_cycles.json` | Per-cycle score deltas when regen ran |
 | `same_authority_regen_receipt.json` | Core `SameAuthorityRegenRunner` outcome when enabled |
+| `regen_escalation_receipt.json` | When `stopped_reason=x2_stuck_same_failure` after cycle 2 — operator options (`widen_delta`, `document_proof_gap`, `stop`) |
+| `judge_score_variance_receipt.json` | Dual-panel judge scores on same `judge_packet_hash`; flags when any provider \|Δ\| ≥ 0.3 |
+
+**`cli_section_execution_report.json` operator fields (W3):**
+
+| Field | Meaning |
+|-------|---------|
+| `regen_reasoning_execution_blocks` | BLOCK rows from `reasoning_execution_receipt.ledger` (scratch + regen provider responses) |
+| `regen_stopped_reason` | Copy of `judge_remediation_cycles.stopped_reason` (e.g. `x2_stuck_same_failure`) |
+| `regen_escalation_receipt_ref` | Present when escalation receipt was written |
+| `regen_escalation_recommended` | `widen_delta` \| `document_proof_gap` \| `stop` |
+| `judge_score_variance_flagged` | `true` when variance receipt flagged providers |
+
+**X2 S5 inventory gate:** `x2_exec_summary_s5_no_derivatives_inventory` fails when display S5 contains `derivatives pricing` or `multi-Greek` without a paired percent/outcome from `fact_quant_hpc_001` in the same sentence. Model `self_check.s5_no_derivatives_inventory` must not be `false` when the gate passes.
+
+**X2 stock-bridge gate:** `x2_exec_summary_stock_bridge_max_two` fails when more than two S2–S5 sentences start with stock connectives (`From that`, `Against that`, `Complementing that`, etc.). Pre-judge **synthesis_regen** also targets these failures when enabled.
 
 ## Brown budget soak (not judge-cert soak)
 

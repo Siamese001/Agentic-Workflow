@@ -221,6 +221,11 @@ def build_section_cli_execution_report_payload(
             "operator_disposition": op.disposition_tier,
             "operator_status": operator_status,
         }
+        from apps_rg.runtime.sections.executive_summary_operator_reporting import (
+            enrich_executive_summary_operator_fields,
+        )
+
+        operator_fields.update(enrich_executive_summary_operator_fields(artifact_dir))
         if not allow_non_allow_exit_zero_effective:
             expected_nz = bool(op.expected_nonzero_exit)
 

@@ -5,14 +5,17 @@ allowed_stage: "L2_EXEC"
 rewrite_intent: "COMPETENCY_SELECTOR"
 
 purpose: |
-  Target-aware, fact-constrained SELECTION and GROUPING of 6–8 executive ENGINEERING & PLATFORM COMPETENCIES categories.
-  Terms come only from verified employment-bullet inventory grounded in this lane's SelectedRoleFactSet allowlist when SRFS
-  is active; never derive competency proof from JD text or briefing alone.
+  Target-aware, fact-constrained SELECTION and GROUPING for ENGINEERING & PLATFORM COMPETENCIES (graph_10x6 product mode).
+  Rank up to 10 executive capability category candidates from VERIFIED_SKILL_INVENTORY_PROJECTION (augmented_skills_graph)
+  and employment-bullet facts; emit exactly 6 highest-scoring categories that pass graph/fact reality checks.
+  Never seed categories or terms from locked base-resume `facts.skills` rows or copy base competency tables as proof.
+  Terms come only from graph-backed skill rows plus bul_* / fact_* ids in the competencies SRFS allowlist when SRFS is active;
+  never derive competency proof from JD text or briefing alone.
   JD/briefing influence emphasis, labels, and ordering only.
   Output format intent: "Category Label: term, term, term" — compact noun phrases only; scannable executive capability index.
-  verified_skill_inventory is organizational/targeting scaffolding: labels and grouping may reference it, but proof tokens
-  on emitted terms must map to fact IDs present in the competencies SRFS slice (plus allowed metric derivatives) —
-  inventory rows alone are not proof when their fact IDs are outside that slice.
+  VERIFIED_SKILL_INVENTORY_PROJECTION is taxonomy scaffolding from augmented_skills_graph: labels and grouping may reference it,
+  but proof tokens on emitted terms must map to fact IDs in the competencies SRFS slice (plus allowed metric derivatives) —
+  projection rows alone are not proof when their fact_id_links are outside that slice.
 
 sovereign_oath: |
   VERIFIED FACT POOL ONLY — JD/BRIEFING/TITLE/COMPANY ARE NEVER PROOF
@@ -25,23 +28,30 @@ sovereign_oath: |
 
   Professional Competencies must be a scannable executive capability index, not a narrative impact section.
 
-  verified_skill_inventory may organize or suggest labels, but treat it as targeting context unless each emitted term's
-  source_fact_id / source_fact_ids are drawn from competencies SRFS selected facts.
+  VERIFIED_SKILL_INVENTORY_PROJECTION may organize or suggest labels, but treat it as graph targeting context unless each
+  emitted term's source_fact_id / source_fact_ids (and optional source_skill_ids) are drawn from competencies SRFS facts
+  and allowed augmented_skills_graph skill rows.
 
+  I may NOT use locked base-resume `facts.skills` or base competency tables as proof or generation seeds.
   I may NOT add tools, acronyms, frameworks, models, compliance terms, or certifications without source support from
-  selected competencies facts.
+  selected competencies facts and graph skill rows.
   I may NOT use em dash character anywhere.
   I may NOT copy more than 5 consecutive words from finalized bullets.
   I may NOT copy more than 4 consecutive words from JD.
-  BASE RESUME PARITY: When verified_skill_inventory reflects the locked canonical base resume ENGINEERING & PLATFORM COMPETENCIES rows (`facts.skills`),
-  preserve category specificity and term density — do not collapse rich platform/governance clusters into
-  vague "AI / leadership" buckets.
+  GRAPH REALITY: Every emitted category and term must be supportable from augmented_skills_graph skill rows and/or bul_* facts
+  in ALLOWED_SOURCE_FACT_IDS — do not emit JD-only clusters without fact or skill_id backing.
 
 input_contract:
   required_fields:
-    - name: verified_skill_inventory
-      schema: "{skills: [{skill_id, skill_name, source_fact_ids: [fact_id], evidence_type}]}"
-      description: "Engineering & platform competency rows verified from canonical JSON (`facts.skills`) with fact provenance"
+    - name: verified_skill_inventory_projection
+      schema: "{skills: [{skill_id, skill_name, source_fact_ids: [fact_id], evidence_type, pillar}]}"
+      description: "Graph-authoritative VERIFIED_SKILL_INVENTORY_PROJECTION from augmented_skills_graph (NOT base-resume facts.skills)"
+    - name: candidate_category_count
+      value: "10"
+      constraint: "Rank up to 10 graph-matched capability category candidates before final selection"
+    - name: emitted_category_count
+      value: "6"
+      constraint: "Emit exactly 6 executive capability categories in final JSON output"
     - name: candidate_fact_map
       schema: "{facts: [{fact_id, fact_text, employment_source, bullet_references}]}"
       description: "Map of all candidate facts with bullet cross-references"
@@ -56,8 +66,8 @@ input_contract:
       access_level: "TARGETING_CONTEXT_ONLY"
       constraint: "Company research only — not proof source"
     - name: required_category_count
-      value: "6-8"
-      constraint: "6 to 8 executive capability clusters — no fewer than 6, no more than 8"
+      value: "6"
+      constraint: "Exactly 6 executive capability clusters in output (top-scoring subset of up to 10 candidates)"
 
 output_contract:
   format: "JSON"
@@ -65,9 +75,9 @@ output_contract:
     - name: competencies
       type: "array"
       min_items: 6
-      max_items: 8
+      max_items: 6
       item_schema:
-        category_label: "string (must match one of 8 base categories or supported equivalent)"
+        category_label: "string (approved taxonomy label or graph-grounded equivalent)"
         terms: "array[object] — each term {text, source_fact_id, source_fact_ids[], optional jd_signal_ids[]}"
         format: "Category Label: term, term, term"
         source_fact_ids: "array[string] — every term must map to at least one fact"
@@ -130,7 +140,8 @@ output_contract:
     - name: self_check
       type: "object"
       schema:
-        category_count_in_range: "boolean (6–8 categories, must be true)"
+        category_count_exactly_six: "boolean (exactly 6 categories, must be true)"
+        candidate_categories_ranked: "array (optional) — up to 10 ranked category candidates with scores before top-6 cut"
         min_three_terms_per_category: "boolean (must be true)"
         format_valid: "boolean (must be true) — Category Label: term, term, term"
         no_full_sentences: "boolean (must be true)"
@@ -144,8 +155,16 @@ output_contract:
         competencies_augment_bullets: "boolean (must be true)"
         all_checks_passed: "boolean"
 
+selection_model:
+  id: graph_10x6_v1
+  candidate_category_count: 10
+  emitted_category_count: 6
+  skills_authority: augmented_skills_graph
+  display_format: "Category Label: term, term, term"
+
 base_categories:
-  required_count: 7
+  required_count: 6
+  candidate_pool_count: 10
   taxonomy_ref: apps_rg/config/competencies/executive_capability_taxonomy.yaml
   labels:
     - "Technology Strategy & Innovation"
@@ -161,7 +180,8 @@ base_categories:
     - "Emit executive capability terms (not scraped resume fragments)"
   forbidden_operations:
     - "Invent categories outside approved taxonomy"
-    - "Drop below six categories"
+    - "Emit fewer than six or more than six categories"
+    - "Seed categories from base-resume facts.skills table"
     - "Use full sentences or paragraphs"
     - "Use bullet format"
     - "Emit Certifications, Credentials, Licenses, or Accreditations as a competency category (reserved for CERTIFICATIONS & CREDENTIALS section)"
@@ -219,18 +239,21 @@ forbidden_patterns:
   - pattern: "em_dash"
     check: "Character U+2014 or U+2013 present"
     action: "REJECT"
-  - pattern: "ninth_category"
-    check: "Output contains 9 or more categories"
+  - pattern: "seventh_category"
+    check: "Output contains more than 6 categories"
     action: "REJECT"
   - pattern: "missing_category"
     check: "Output contains fewer than 6 categories"
     action: "REJECT"
+  - pattern: "base_resume_skills_seed"
+    check: "Category or terms copied from locked base-resume facts.skills without graph/fact backing"
+    action: "REJECT"
 
 validation_rules:
   pre_output:
-    - assert: "6 <= len(output.competencies) <= 8"
+    - assert: "len(output.competencies) == 6"
       error: "CATEGORY_COUNT_INVALID"
-      message: "Must emit 6–8 executive categories with 3–6 capability terms each; never a Certifications category"
+      message: "Must emit exactly 6 graph-grounded executive categories with 3–6 capability terms each; never a Certifications category"
     - assert: "all([c.category_label for c in output.competencies])"
       error: "MISSING_CATEGORY_LABEL"
       message: "Every category must have a label"
@@ -241,7 +264,7 @@ validation_rules:
       error: "TERM_TOO_LONG"
       message: "Terms should be concise (max 5 words)"
   post_output:
-    - assert: "output.self_check.category_count_in_range == true"
+    - assert: "output.self_check.category_count_exactly_six == true"
     - assert: "output.self_check.min_three_terms_per_category == true"
     - assert: "output.self_check.format_valid == true"
     - assert: "output.self_check.no_full_sentences == true"
@@ -260,17 +283,18 @@ temperature_profile:
 
 payload_scope:
   input_tokens_estimate: "~4,000 (skill inventory + finalized bullets + JD)"
-  output_tokens_estimate: "~800 (8 categories with terms)"
+  output_tokens_estimate: "~700 (6 categories with terms; optional 10-candidate rank metadata)"
   context_window_required: "8K minimum"
   json_schema_strict: true
 
 # W5 — SSOT excerpt for contract tests (verified_skill_inventory vs SRFS slice).
 w5_proof_targeting_harmonization: |
   Proof: SelectedRoleFactSet facts for competencies only; claim_ledger / term source_fact_ids must match this section's
-  allowlist. verified_skill_inventory is organizational/targeting context unless each emitted term's source_fact_ids
-  intersect the competencies SRFS slice. Targeting only: JD, briefing, title, company, companion sections — labels/order
-  only, never standalone proof. Out-of-slice source_fact_ids fail X2. No invented competency labels or domains unsupported by
-  selected facts; omit unsupported JD-only skills.
+  allowlist. VERIFIED_SKILL_INVENTORY_PROJECTION (augmented_skills_graph) is organizational/targeting context unless each
+  emitted term's source_fact_ids intersect the competencies SRFS slice and skill rows are graph-backed. Targeting only: JD,
+  briefing, title, company, companion sections — labels/order only, never standalone proof. Out-of-slice source_fact_ids fail
+  X2. Rank up to 10 category candidates; emit top 6 with graph reality. No invented competency labels or domains unsupported
+  by selected facts; omit unsupported JD-only skills. Never use base-resume facts.skills as authority.
 
 metadata:
   produced_at: "2026-05-14"

@@ -55,6 +55,17 @@ slot_bodies:
     Max **two** Led/Designed/Implemented/Built/Generated openers in S2-S5; use connective bridges when causality is real (max two stock bridges).
     </six_sentence_period_contract>
 
+    <approved_non_stock_openers>
+    **S2–S5 transitions (compile advisory):** At most **two** stock bridges among
+    (`From that`, `Against that`, `Complementing that`, `Building on that`, `Through that`, `With that governance`).
+    Prefer approved non-stock openers when varying rhythm:
+    - From that commercial base,
+    - Against that lineage backdrop,
+    - In parallel,
+    - That operating foundation also,
+    - The same platform discipline,
+    </approved_non_stock_openers>
+
     <proof_law_v1>
     Proof: C0 + ALLOWED_SOURCE_FACT_IDS only (pa_proof_binding_v1 / pa_targeting_only_v1). Clean display prose; no [source:...] tags. X2 gates: PRODUCT_SHAPE.
     </proof_law_v1>
@@ -103,7 +114,7 @@ slot_bodies:
     <self_check_requirements>
     Verify before return: no_first_person; no_inline_source_tags; jd_used_as_proof_false; executive_strategy_thesis_present;
     s1_not_verbatim_thesis_copy; s6_forward_synthesis_not_recap; s6_no_looking_ahead_opener; s6_grounded_in_source_fact;
-    s5_no_derivatives_or_employer_inventory; material_metrics_surfaced_in_display_rows_3_4_5;
+    s5_no_derivatives_inventory; s5_no_derivatives_or_employer_inventory; material_metrics_surfaced_in_display_rows_3_4_5;
     no_extend_that_arc_toward_phrase; achievement_verb_opener_count_at_most_2; every_material_claim_in_claim_ledger.
     </self_check_requirements>
 
@@ -137,6 +148,10 @@ slot_bodies:
     Prefer concrete dollar/percent outcomes from ALLOWED_SOURCE_FACT_IDS in S3–S5 display prose.
     Executive synthesis is not abstract paraphrase of claim_text; judges grade resume_display_text for executive_signal.
     Weave metrics into flowing clauses — not comma-stacked inventories.
+    **Positive S5 weave (when fact_quant_hpc_003 + fact_quant_hpc_001 are cited):** one clause pairing FSA-chartered
+    quantitative foundation with the allowed HPC/stress-testing outcome metric in display — e.g. "FSA-chartered quantitative
+    foundation underpins stress-testing discipline, with containerized HPC practice shortening stress-test cycles by 40%
+    for platform investment decisions." Forbidden: verbatim "derivatives pricing" / multi-Greek inventory lists.
     </style_advisory>
 
   R0: |

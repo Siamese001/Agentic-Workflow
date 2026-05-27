@@ -206,6 +206,42 @@ def invoke_section_spine_c0_retrieve(
     return SectionSpineC0RetrieveResult(fec=fec, receipt=receipt)
 
 
+def apply_spine_c03_overlay_to_bridge_doc(
+    bridge_doc: dict[str, Any],
+    *,
+    spine: SectionSpineC0RetrieveResult,
+) -> dict[str, Any]:
+    """Overlay core C0.3 spine graph authority without replacing evidence-room producer_stage."""
+    from apps_rg.runtime.spine.spine_c03_authority import (
+        overlay_spine_graph_authority_on_bridge,
+        spine_graph_refs_live,
+    )
+
+    fec = spine.fec
+    out = dict(bridge_doc)
+    spine_exp = list(getattr(fec, "graph_expansion_refs", None) or ())
+    spine_lin = list(out.get("graph_lineage_refs") or [])
+    out["spine_c0_retrieve_receipt"] = spine.receipt
+    out = overlay_spine_graph_authority_on_bridge(
+        out,
+        spine_graph_expansion_refs=spine_exp,
+        spine_graph_lineage_refs=spine_lin,
+    )
+    core_live = spine_graph_refs_live(spine_exp)
+    out["core_c03_graph_rag_used"] = core_live
+    if core_live:
+        out["apps_rg_c03_skills_graph_used"] = True
+    pa = dict(out.get("pa_proof_authority_metadata") or {})
+    pa["core_c03_graph_rag_used"] = core_live
+    pa["spine_c0_retrieve_receipt_ref"] = "section_spine_c0_retrieve_receipt.json"
+    out["pa_proof_authority_metadata"] = pa
+    snap = dict(out.get("final_evidence_contract_snapshot") or {})
+    if spine_exp:
+        snap["graph_expansion_refs"] = spine_exp
+    out["final_evidence_contract_snapshot"] = snap
+    return out
+
+
 def merge_spine_fec_into_bridge_doc(
     bridge_doc: dict[str, Any],
     *,
@@ -287,6 +323,7 @@ __all__ = [
     "STOP_AS_EVIDENCE_GAP",
     "SectionSpineC0RetrieveResult",
     "StopAsEvidenceGapError",
+    "apply_spine_c03_overlay_to_bridge_doc",
     "assert_no_stop_as_evidence_gap",
     "invoke_section_spine_c0_retrieve",
     "merge_spine_fec_into_bridge_doc",

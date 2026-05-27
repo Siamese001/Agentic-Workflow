@@ -187,7 +187,7 @@ def test_claude_selection_mocked_falls_back(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_self_consistency_path_count_for_competencies() -> None:
-    assert self_consistency_path_count("competencies") == 4
+    assert self_consistency_path_count("competencies") == 10
 
 
 def test_employment_bullet_path_counts() -> None:

@@ -66,7 +66,7 @@ COMPETENCIES_OUTPUT_SCHEMA: dict[str, Any] = {
             "categories": {
                 "type": "array",
                 "minItems": 6,
-                "maxItems": 8,
+                "maxItems": 6,
                 "description": (
                     "Executive capability categories: category_id, category_label, "
                     "terms[{text, source_fact_id, source_fact_ids, optional source_skill_ids, support_class}]"
@@ -193,21 +193,24 @@ def build_competencies_assembly_input(
     )
 
     u0 = (
-        "MODE: Competencies is a target-aware, fact-constrained SELECTION and GROUPING lane — "
-        "not free-form rewriting of the base résumé competencies and not JD/briefing-driven generation.\n"
+        "MODE: Competencies graph_10x6 — target-aware, fact-constrained SELECTION and GROUPING.\n"
+        "Do NOT seed from locked base-resume competencies or facts.skills rows. Do NOT generate from JD/briefing alone.\n"
+        "Rank up to 10 executive capability category candidates using VERIFIED_SKILL_INVENTORY_PROJECTION "
+        "(augmented_skills_graph) plus ALLOWED_SOURCE_FACT_IDS; emit exactly 6 highest-scoring categories that pass "
+        "graph/fact reality.\n"
         "Build a professional Competencies section by selecting, grouping, and normalizing ONLY supported terms "
-        "from the allowed base-resume fact pool.\n"
+        "from graph projection and C0 employment facts.\n"
         "The professional Competencies section must be a scannable executive capability index, "
         "not a narrative impact section.\n"
-        "Every emitted competency term must trace to allowed source_fact_ids from the canonical base resume "
-        "or C0 candidate facts.\n"
+        "Every emitted competency term must trace to allowed source_fact_ids from C0 candidate facts "
+        "(bul_* / fact_*); optional source_skill_ids must be graph-backed.\n"
         "- Copy source_fact_id strings EXACTLY from ALLOWED_SOURCE_FACT_IDS / C0 (no typos such as fact_g_overnance_003).\n"
         "- Skill taxonomy phrasing may be informed by VERIFIED_SKILL_INVENTORY_PROJECTION; claim ids remain bul_* / fact_* only.\n\n"
         "DISPLAY PATTERN (resume-facing intent): Category Label: compact phrase, compact phrase, compact phrase\n"
         "Do NOT use full sentences, impact narratives, metrics, or accomplishment prose inside terms.\n\n"
         "Return RAW JSON only: first character {, last character }. No ``` fences.\n\n"
         "OUTPUT CONTRACT (top-level object):\n"
-        "- categories: array of 6–8 executive capability category objects, each with:\n"
+        "- categories: array of exactly 6 executive capability category objects (top-scoring of up to 10 candidates), each with:\n"
         "  - category_id: stable taxonomy id when known\n"
         "  - category_label: crisp professional label (no colon, no newlines, not a sentence; not generic "
         '"Skills" / "Competency 1")\n'

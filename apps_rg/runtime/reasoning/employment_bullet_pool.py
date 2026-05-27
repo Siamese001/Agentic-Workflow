@@ -12,6 +12,7 @@ from apps_rg.runtime.judges.employment_bullet_judge_rubric import (
     EMPLOYMENT_BULLET_RUBRIC_VERSION,
     pool_selector_dimension_ids,
 )
+from apps_rg.runtime.reasoning.competencies_graph_pool import COMPETENCIES_SC_PATH_COUNT
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 
@@ -28,9 +29,8 @@ SC_PATH_COUNT_BY_LANE: Final[dict[str, int]] = {
 REGEN_EXTRA_PATHS_BY_LANE: Final[dict[str, int]] = {
     "unify_bullets": 5,
     "ibm_bullets": 4,
+    "competencies": 5,
 }
-
-COMPETENCIES_SC_PATH_COUNT: Final[int] = 4
 
 FINAL_BULLET_COUNT: Final[dict[str, int]] = {
     "unify_bullets": len(UNIFY_BULLET_IDS),
@@ -93,6 +93,12 @@ def sc_path_count_for_lane(section_lane: str) -> int:
 
 def regen_extra_path_count_for_lane(section_lane: str) -> int:
     lane = str(section_lane or "").strip().lower()
+    if lane == "competencies":
+        from apps_rg.runtime.reasoning.competencies_graph_pool import (
+            competencies_regen_extra_path_count,
+        )
+
+        return competencies_regen_extra_path_count()
     return REGEN_EXTRA_PATHS_BY_LANE.get(lane, 5)
 
 
@@ -225,6 +231,81 @@ def is_employment_pool_generation(gen_meta: dict[str, Any] | None) -> bool:
     return mode.startswith("qwen_employment_pool")
 
 
+def competencies_pool_x1d_judge_rows(
+    *,
+    artifact_dir: Path,
+    section_id: str,
+    gen_meta: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Single X1D row from graph pool selection (10× Qwen paths → top-6 pass), gemini_pro only."""
+    from apps_rg.runtime.judges.competencies_x1d import JUDGE_RUBRIC_VERSION
+    from apps_rg.runtime.judges.executive_summary_x1d import PROVIDERS
+    from apps_rg.runtime.reasoning.competencies_graph_pool import (
+        COMPETENCIES_FINAL_CATEGORY_COUNT,
+        min_competencies_selection_score,
+    )
+
+    lane = str(section_id or "").strip().lower() or "competencies"
+    gate = dict((gen_meta or {}).get("selection_gate") or {})
+    gate_ok = bool(gate.get("ok"))
+    threshold = min_competencies_selection_score()
+    n_final = COMPETENCIES_FINAL_CATEGORY_COUNT
+
+    judge_path = artifact_dir / "bullet_pool_claude_selector_judge.json"
+    sel_path = artifact_dir / "bullet_pool_selection.json"
+    row: dict[str, Any] = {}
+    if judge_path.is_file():
+        loaded = json.loads(judge_path.read_text(encoding="utf-8"))
+        if isinstance(loaded, dict):
+            row = dict(loaded)
+
+    selections: list[dict[str, Any]] = []
+    if sel_path.is_file():
+        sel_doc = json.loads(sel_path.read_text(encoding="utf-8"))
+        if isinstance(sel_doc, dict):
+            selections = [s for s in (sel_doc.get("selections") or []) if isinstance(s, dict)]
+
+    scores = [float(s.get("score") or 0.0) for s in selections if s.get("passes", True) is not False]
+    min_score = min(scores) if scores else 0.0
+    categories_ok = bool(selections) and all(float(s.get("score") or 0.0) >= threshold for s in selections)
+    passed = gate_ok and categories_ok and len(selections) >= n_final
+
+    gemini_meta = PROVIDERS.get("gemini_pro") or {}
+    row.setdefault("judge_id", f"x1d_gemini_pro_{lane}_pool")
+    row.setdefault("provider_name", gemini_meta.get("provider_name", "Google Gemini"))
+    row["provider_key"] = "gemini_pro"
+    row["section_id"] = lane
+    row["evaluator_mode"] = "MODEL_BACKED"
+    row["provider_available"] = True
+    row["provider_blocked"] = False
+    row["score_scale"] = "0_to_1"
+    row["score"] = min_score
+    row["normalized_score"] = min_score
+    row["threshold"] = threshold
+    row["normalized_threshold"] = threshold
+    row["pass"] = passed
+    row["pass_"] = passed
+    row["decisive_failure"] = not passed
+    row["provider_status"] = "MODEL_BACKED_PASS" if passed else "MODEL_BACKED_FAIL"
+    row["proof_eligible_judge"] = True
+    row["advisory_only"] = False
+    row["judge_role"] = "competencies_graph_pool_selector"
+    row["rubric_ref"] = "apps_rg/runtime/judges/competencies_x1d.py#graph_pool"
+    row["rubric_version"] = JUDGE_RUBRIC_VERSION
+    row["selection_mode"] = str(
+        (gen_meta or {}).get("selection_mode") or "claude_competencies_top_6_pass"
+    )
+    row["final_category_count"] = n_final
+    row["findings"] = [
+        (
+            f"Competencies graph pool selector: {len(selections)} category selections, "
+            f"min_score={min_score:.2f}, threshold={threshold:.2f}, gate_ok={gate_ok}, "
+            f"target_emit={n_final}"
+        )
+    ]
+    return [row]
+
+
 def employment_pool_x1d_judge_rows(
     *,
     artifact_dir: Path,
@@ -294,6 +375,7 @@ __all__ = [
     "EMPLOYMENT_BULLET_JUDGE_PROVIDERS",
     "EMPLOYMENT_BULLET_LANES",
     "EmploymentSelectionGate",
+    "competencies_pool_x1d_judge_rows",
     "employment_pool_x1d_judge_rows",
     "FINAL_BULLET_COUNT",
     "REGEN_EXTRA_PATHS_BY_LANE",

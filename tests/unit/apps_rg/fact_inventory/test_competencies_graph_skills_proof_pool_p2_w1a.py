@@ -56,6 +56,25 @@ def test_default_competencies_resolves_augmented_skills_graph() -> None:
     assert pool.proof_pool_metadata.get("broad_skills_ledger_used_as_authority") is False
 
 
+def test_graph_proof_pool_supports_graph_10x6_product_shape() -> None:
+    from apps_rg.runtime.sections.competencies_rigor import (
+        CANDIDATE_CATEGORY_COUNT,
+        MAX_CATEGORY_COUNT,
+        MIN_CATEGORY_COUNT,
+    )
+
+    pool = resolve_section_proof_pool(
+        section="competencies",
+        repo_root=REPO,
+        target_role="SVP Engineering Agentic AI",
+        jd_text=HYBRID_JD,
+    )
+    assert MIN_CATEGORY_COUNT == MAX_CATEGORY_COUNT == 6
+    assert CANDIDATE_CATEGORY_COUNT == 10
+    assert pool.proof_pool_metadata.get("proof_pool_type") == "augmented_skills_graph"
+    assert isinstance(pool.proof_pool_metadata.get("selected_skill_rows"), list)
+
+
 def test_no_path_selects_broad_skills_ledger_as_authority() -> None:
     pool = resolve_section_proof_pool(section="competencies", repo_root=REPO, jd_text=HYBRID_JD)
     assert pool.proof_source != PROOF_SOURCE_BROAD_SKILLS_LEDGER

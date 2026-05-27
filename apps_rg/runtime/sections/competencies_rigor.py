@@ -11,7 +11,8 @@ from apps_rg.runtime.sections.competencies_certification_contract import (
 from apps_rg.runtime.sections.competencies_term_phrase import term_phrase
 
 MIN_CATEGORY_COUNT = 6
-MAX_CATEGORY_COUNT = 8
+MAX_CATEGORY_COUNT = 6
+CANDIDATE_CATEGORY_COUNT = 10
 MIN_ITEMS_PER_CATEGORY = 3
 MAX_ITEMS_PER_CATEGORY = 6
 
@@ -319,6 +320,7 @@ def check_competencies_keyword_repetition_limit(
 
 
 __all__ = [
+    "CANDIDATE_CATEGORY_COUNT",
     "MAX_CATEGORY_COUNT",
     "MAX_ITEMS_PER_CATEGORY",
     "MIN_CATEGORY_COUNT",

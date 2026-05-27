@@ -849,7 +849,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                     print(f"ERROR: {exc}", file=sys.stderr, flush=True)
                     return 2
 
-            lane_judges_eff = resolve_cli_x1d_judges(getattr(args, "x1d_judges", None))
+            lane_judges_eff = resolve_cli_x1d_judges(
+                getattr(args, "x1d_judges", None),
+                section_id=section_eff,
+            )
             lane_mock_eff, lane_allow_test_mock_eff = resolve_cli_mock_judges()
             section_allow_exit = resolve_allow_non_allow_exit_zero(
                 bool(getattr(args, "allow_non_allow_exit_zero", False))

@@ -840,9 +840,13 @@ def _synthesis_shape_reject_reason(
         check_north_star_style_example_echo_unsupported,
         check_cross_fact_display_conflation,
         check_exec_summary_mechanical_opener_stack,
+        check_exec_summary_stock_bridge_count,
         check_resume_display_colon_space_discipline,
         check_synthesis_quality,
         FIRST_PERSON_PATTERN,
+    )
+    from apps_rg.runtime.sections.executive_summary_operator_reporting import (
+        check_exec_summary_s5_no_derivatives_inventory,
     )
 
     text = str(resume_display_text or "")
@@ -855,6 +859,24 @@ def _synthesis_shape_reject_reason(
     mech_stack_ok, mech_stack_reason = check_exec_summary_mechanical_opener_stack(text)
     if not mech_stack_ok and mech_stack_reason:
         failures.append(mech_stack_reason)
+    stock_ok, stock_reason = check_exec_summary_stock_bridge_count(text, max_bridges=2)
+    if not stock_ok and stock_reason:
+        failures.append(stock_reason)
+    allowed_ids: set[str] = set()
+    if selected_facts:
+        for fact in selected_facts:
+            if isinstance(fact, dict):
+                fid = str(fact.get("fact_id") or fact.get("source_fact_id") or "").strip()
+                if fid:
+                    allowed_ids.add(fid)
+    if isinstance(parsed, dict) and allowed_ids:
+        s5_ok, s5_reason = check_exec_summary_s5_no_derivatives_inventory(
+            text,
+            allowed_fact_ids=allowed_ids,
+            selected_facts=selected_facts,
+        )
+        if not s5_ok and s5_reason:
+            failures.append(s5_reason)
     if isinstance(parsed, dict):
         conf_ok, conf_reason = check_cross_fact_display_conflation(
             text, list(parsed.get("claim_ledger") or [])
@@ -1037,6 +1059,20 @@ def _build_synthesis_repair_user(
             "Weave team 8-to-28 scale (fact_exec_002) into commercialization when selected. "
             "Vary sentence openers; no Led/Successfully/Also/Built chains. "
         )
+    stock_bridge_note = ""
+    if "stock_bridge_stack" in blob:
+        stock_bridge_note = (
+            "TRANSITIONS: At most TWO stock bridges in S2–S5 (From that / Against that / Complementing that / "
+            "Building on that / Through that / With that governance). Use approved non-stock openers "
+            "(From that commercial base / Against that lineage backdrop / In parallel). "
+        )
+    s5_note = ""
+    if "derivatives_inventory" in blob or "derivatives pricing" in blob:
+        s5_note = (
+            "S5: One clause pairing FSA-chartered quantitative foundation (fact_quant_hpc_003) with the "
+            "allowed HPC stress-testing percent from fact_quant_hpc_001 in the SAME sentence — "
+            "no derivatives-pricing or multi-Greek inventory lists. "
+        )
     svp_note = ""
     if strategy_executive:
         from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
@@ -1046,7 +1082,7 @@ def _build_synthesis_repair_user(
         svp_note = format_synthesis_repair_directive(strategy_executive=True)
     return (
         f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{length_note}{utilization_note}"
-        f"{mechanism_note}{meta_note}{filler_note}{conflation_note}{svp_note}"
+        f"{mechanism_note}{meta_note}{filler_note}{conflation_note}{stock_bridge_note}{s5_note}{svp_note}"
         "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
         "Rewrite resume_display_text as exactly 6 period-delimited sentences (one executive paragraph, max 140 words), "
         "fit_to_evidence integrated narrative — not 4 compressed sentences; do not pad with filler. "
@@ -1089,6 +1125,8 @@ def retry_qwen_for_synthesis(
     if not synthesis_regeneration_enabled():
         return raw_output, parsed, ""
 
+    first_raw = raw_output
+    first_parsed = parsed
     first_text = str(parsed.get("resume_display_text") or "")
     shape_ok, reject_reason = _synthesis_shape_reject_reason(
         first_text, parsed, selected_facts=selected_facts
@@ -1235,8 +1273,15 @@ def retry_qwen_for_synthesis(
         final_text, current_parsed, selected_facts=selected_facts
     )
     best_wc = len(re.findall(r"\S+", str(best_parsed.get("resume_display_text") or "")))
+    best_text = str(best_parsed.get("resume_display_text") or "")
+    best_ok, _best_reason = _synthesis_shape_reject_reason(
+        best_text,
+        best_parsed,
+        selected_facts=selected_facts,
+    )
     if (
         not final_ok
+        and best_ok
         and best_fail_count == 0
         and _regen_candidate_preferred(
             new_fail_count=best_fail_count,
@@ -1264,6 +1309,8 @@ def retry_qwen_for_synthesis(
         regen_receipt["final_reject_reason"] = final_reason
     regen_receipt["final_resume_word_count"] = len(re.findall(r"\S+", final_text))
     regen_receipt["final_claim_ledger_rows"] = len(list(current_parsed.get("claim_ledger") or []))
+    if not final_ok:
+        regen_receipt["reverted_to_first_pass"] = True
     if artifact_dir is not None:
         if regen_receipt.get("triggered") and regen_receipt.get("attempts"):
             from apps_rg.runtime.section_repair_ledger import (
@@ -1289,6 +1336,8 @@ def retry_qwen_for_synthesis(
                     reason="synthesis_regen_shape_pass",
                 )
         write_json(artifact_dir / "synthesis_regen_receipt.json", regen_receipt)
+    if not regen_receipt.get("accepted"):
+        return first_raw, first_parsed, parse_err
     return current_raw, current_parsed, parse_err
 
 
@@ -2444,6 +2493,7 @@ def run_executive_summary_execution(
                 ),
                 operator_judge_pass_floor=_operator_judge_floor,
             )
+            _cycles_receipt["allowed_fact_ids"] = sorted(allowed_fact_ids)
             _last_regen_candidate: dict[str, Any] | None = None
             _scratch_anchor_resume = resume_display_text
             _regen_incremental_anchor_parsed: dict[str, Any] | None = None

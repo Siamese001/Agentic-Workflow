@@ -11,6 +11,7 @@ from apps_rg.runtime.sections.competencies_certification_contract import (
     sanitize_competencies_no_certification_category,
 )
 from apps_rg.runtime.sections.competencies_rigor import (
+    MAX_CATEGORY_COUNT,
     MIN_ITEMS_PER_CATEGORY,
     _is_low_rigor_two_word_phrase,
     check_competencies_no_all_generic_skill_phrase,
@@ -390,6 +391,57 @@ def _dedupe_terms(terms: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
+def _taxonomy_emit_max_count(tax: dict[str, Any]) -> int:
+    try:
+        mx = int(tax.get("max_categories") or 0)
+    except (TypeError, ValueError):
+        mx = 0
+    return mx if mx > 0 else MAX_CATEGORY_COUNT
+
+
+def _trim_categories_to_emit_count(
+    categories: list[dict[str, Any]],
+    *,
+    tax_categories: list[dict[str, Any]],
+    max_count: int,
+    priority_category_ids: set[str] | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """graph_10x6: taxonomy has 7 buckets; product emits top ``max_count`` by pool/graph signal."""
+    if max_count <= 0 or len(categories) <= max_count:
+        return categories, []
+    priority = priority_category_ids or set()
+    order_index = {
+        str(row.get("category_id") or ""): idx
+        for idx, row in enumerate(tax_categories)
+        if isinstance(row, dict)
+    }
+
+    def _rank_key(cat: dict[str, Any]) -> tuple[int, int, int]:
+        cid = str(cat.get("category_id") or "")
+        n_terms = sum(1 for t in (cat.get("terms") or []) if isinstance(t, dict))
+        return (1 if cid in priority else 0, n_terms, -order_index.get(cid, 999))
+
+    ranked = sorted(
+        [c for c in categories if isinstance(c, dict)],
+        key=_rank_key,
+        reverse=True,
+    )
+    kept = ranked[:max_count]
+    dropped = ranked[max_count:]
+    kept_ids = {str(c.get("category_id") or "") for c in kept}
+    ordered: list[dict[str, Any]] = []
+    for row in tax_categories:
+        if not isinstance(row, dict):
+            continue
+        cid = str(row.get("category_id") or "")
+        if cid not in kept_ids:
+            continue
+        match = next((c for c in kept if str(c.get("category_id") or "") == cid), None)
+        if match is not None:
+            ordered.append(match)
+    return ordered, dropped
+
+
 def apply_executive_capability_projection(
     parsed: dict[str, Any],
     *,
@@ -511,6 +563,25 @@ def apply_executive_capability_projection(
         if not cat_fact_ids and default_fid:
             cat_fact_ids = [default_fid]
         cat["source_fact_ids"] = cat_fact_ids
+    max_emit = _taxonomy_emit_max_count(tax)
+    incoming_cids = {cid for cid, term_list in buckets.items() if term_list}
+    tax_rows = [r for r in tax.get("categories") or [] if isinstance(r, dict)]
+    v3_cats, dropped = _trim_categories_to_emit_count(
+        v3_cats,
+        tax_categories=tax_rows,
+        max_count=max_emit,
+        priority_category_ids=incoming_cids,
+    )
+    if dropped:
+        changelog.append(
+            {
+                "operation": "trim_taxonomy_to_graph_10x6_emit",
+                "kept": max_emit,
+                "dropped_category_ids": [
+                    str(c.get("category_id") or "") for c in dropped if isinstance(c, dict)
+                ],
+            }
+        )
     parsed["categories"] = v3_cats
     sync_categories_competencies(parsed)
     parsed["change_log"] = changelog

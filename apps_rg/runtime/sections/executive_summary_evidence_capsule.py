@@ -23,6 +23,14 @@ SECTION_ID = "executive_summary"
 CAPSULE_VERSION = "executive_summary_evidence_capsule_v1"
 FAIL_PRESERVATION = "EVIDENCE_CAPSULE_PRESERVATION_FAILED"
 
+# Display framing hints (C0) — reduce verbatim mechanism bleed in S5/S6.
+PREFERRED_DISPLAY_FRAMING_BY_FACT_ID: dict[str, str] = {
+    "fact_quant_hpc_003": (
+        "Prefer executive phrasing: FSA-chartered quantitative foundation / capital-markets rigor — "
+        "not a derivatives-pricing mechanism inventory in display prose."
+    ),
+}
+
 _STYLE_ONLY_MARKERS = (
     "srfs_style_only_oneshot",
     "exemplar_paragraph",
@@ -131,17 +139,19 @@ def build_capsule_document(
         anchors: list[str] = []
         if mr:
             anchors.append(metric_derivative_fact_id(fid, mr))
-        fact_rows.append(
-            {
-                "source_fact_id": fid,
-                "priority": str(fact.get("confidence") or "HIGH").upper(),
-                "claim_text": _normalize_claim_text(str(fact.get("claim_text") or "")),
-                "metric_raw": mr or None,
-                "metric_anchor_ids": anchors,
-                "source_authority": authority_label,
-                "section_membership": SECTION_ID,
-            }
-        )
+        row: dict[str, Any] = {
+            "source_fact_id": fid,
+            "priority": str(fact.get("confidence") or "HIGH").upper(),
+            "claim_text": _normalize_claim_text(str(fact.get("claim_text") or "")),
+            "metric_raw": mr or None,
+            "metric_anchor_ids": anchors,
+            "source_authority": authority_label,
+            "section_membership": SECTION_ID,
+        }
+        framing = PREFERRED_DISPLAY_FRAMING_BY_FACT_ID.get(fid)
+        if framing:
+            row["preferred_display_framing"] = framing
+        fact_rows.append(row)
     graph_used = bool(plan_facts)
     pool_counts = {
         "blocked_facts": int(pool_context.get("blocked_facts_count") or 0),
@@ -224,6 +234,9 @@ def format_evidence_capsule_c0_block(
                 f" prefer_capability_phrases=[{phrases}];"
                 " do_not_echo_full_mechanism_inventory_from_claim_text."
             )
+        framing = row.get("preferred_display_framing") or PREFERRED_DISPLAY_FRAMING_BY_FACT_ID.get(fid)
+        if framing:
+            extra += f" preferred_display_framing={framing!r}"
         lines.append(f"- {fid}: {ct}{extra}")
     compression = runtime_payload.get("c04_exec_summary_compression") if isinstance(runtime_payload, dict) else None
     if isinstance(graph_pa, dict) and graph_pa.get("receipt_only_json_expansion_excluded_from_pa"):

@@ -36,6 +36,8 @@ _UNIFY_NARRATIVE_SECTION_ID = "unify_narrative"
 _IBM_BULLETS_SECTION_ID = "ibm_bullets"
 _IBM_NARRATIVE_SECTION_ID = "ibm_narrative"
 _COMPETENCIES_SECTION_ID = "competencies"
+# Single pool-selector judge (graph_10x6); not the executive-summary triple panel.
+COMPETENCIES_LANE_X1D_JUDGES_DEFAULT = "gemini_pro"
 
 
 def _effective_lane_provider(raw: str | None) -> str:

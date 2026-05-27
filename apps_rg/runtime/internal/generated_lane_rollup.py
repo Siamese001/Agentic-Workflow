@@ -36,10 +36,18 @@ CANONICAL_QWEN_JUDGES_FLAGS: str = (
     "--provider qwen_vllm --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude "
     "--allow-non-allow-exit-zero"
 )
+COMPETENCIES_CANONICAL_QWEN_JUDGES_FLAGS: str = (
+    "--provider qwen_vllm --x1d-judges gemini_pro --allow-non-allow-exit-zero"
+)
 
 
 def canonical_lane_command(lane: str) -> str:
-    return f"python -m apps_rg --section {lane} {CANONICAL_QWEN_JUDGES_FLAGS}"
+    flags = (
+        COMPETENCIES_CANONICAL_QWEN_JUDGES_FLAGS
+        if str(lane or "").strip().lower() == "competencies"
+        else CANONICAL_QWEN_JUDGES_FLAGS
+    )
+    return f"python -m apps_rg --section {lane} {flags}"
 
 
 def _mtime_iso_utc(path: Path) -> str | None:

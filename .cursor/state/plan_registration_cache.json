@@ -1,9 +1,57 @@
 {
-  "fetched_at": "2026-05-26T19:22:13Z",
-  "fetched_at_epoch": 1779823333.3452294,
+  "fetched_at": "2026-05-27T06:45:53Z",
+  "fetched_at_epoch": 1779864353.8290946,
   "plans": {
-    "governance-dedup-closeout-e8a4c2": {
+    "exec-summary-regen-stuck-c0-split-a4f8e2": {
       "status": "In Progress",
+      "page_id": "36d27693-f55c-81d7-847a-c34cd7807849",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "complete-open-scope-closeout-c9e4a1": {
+      "status": "Completed",
+      "page_id": "36d27693-f55c-81e6-b0a7-ed964b7af164",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-regen-voice-repair-unblock-e7c4a2": {
+      "status": "Completed",
+      "page_id": "36c27693-f55c-8192-b780-c470af1130c1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "c03-exec-summary-gaps-v2-a8f2e1": {
+      "status": "Completed",
+      "page_id": "36c27693-f55c-813b-87b8-f231ed2b6cf8",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-context-limits-ssot-b7e4a1": {
+      "status": "Completed",
+      "page_id": "36c27693-f55c-81c5-bb94-cb6e67754828",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-anthropic-surgical-regen-f3c8d2": {
+      "status": "Completed",
+      "page_id": "36c27693-f55c-81bc-a4a3-de1022a6e532",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "whole-run-phase1-x3-dispatch-remediation-f2a8c4": {
+      "status": "Completed",
+      "page_id": "36c27693-f55c-81db-bd84-e5aeaa478a8e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-claim-coverage-hardening-a1f3e8": {
+      "status": "Completed",
+      "page_id": "36c27693-f55c-8196-a732-ec66c02c685f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "governance-dedup-closeout-e8a4c2": {
+      "status": "Completed",
       "page_id": "36c27693-f55c-815e-a2d1-e6e867ffe7bd",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -39,13 +87,13 @@
       "has_ai_summary": true
     },
     "exec-summary-judge-regen-control-loop-f8a3c2": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "36c27693-f55c-8132-8f36-d3ac156e1673",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "exec-summary-judge-regen-monotonicity-b7e4f2": {
-      "status": "Not Started",
+      "status": "Retired",
       "page_id": "36c27693-f55c-81fd-969f-df52e216e54a",
       "exists_on_disk": true,
       "has_ai_summary": true

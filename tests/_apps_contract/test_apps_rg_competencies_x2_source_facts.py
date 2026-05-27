@@ -455,7 +455,7 @@ def test_mock_slice_still_passes_x2_source_mapping(monkeypatch: pytest.MonkeyPat
     args = lane.build_competencies_lane_args(
         provider="qwen_vllm",
         temperature=lane.COMPETENCIES_TEMP_DEFAULT,
-        x1d_judges="gemini_pro,openai_chatgpt,anthropic_claude",
+        x1d_judges="gemini_pro",
         mock_judges=True,
         allow_test_mock_judges=True,
         target_title="SVP Engineering",
@@ -465,6 +465,12 @@ def test_mock_slice_still_passes_x2_source_mapping(monkeypatch: pytest.MonkeyPat
     )
     ctx = lane.run_competencies_lane_execution(args)
     rd = Path(ctx["artifact_dir"])
+    x1d_doc = json.loads((rd / "x1d_llm_judge_outputs.json").read_text(encoding="utf-8"))
+    judges = x1d_doc.get("judges") or []
+    assert len(judges) == 1
+    assert judges[0].get("provider_key") == "gemini_pro"
+    gen_meta = json.loads((rd / "bullet_lane_generation.json").read_text(encoding="utf-8"))
+    assert str(gen_meta.get("generation_mode") or "").startswith("qwen_competencies_graph_pool")
     x2 = json.loads((rd / "x2_gate_outputs.json").read_text(encoding="utf-8"))
     ids = {g["gate_id"]: g["pass"] for g in x2.get("gates", [])}
     assert ids.get("x2_all_terms_source_fact_ids") is True

@@ -251,14 +251,37 @@ def test_g5v2_passes_multi_sentence_edits_within_allowlist() -> None:
     g5 = evaluate_g5_delta_scope_v2(
         prior,
         after,
-        DELTA_CLASS_S6_FORWARD_SYNTHESIS,
+        DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE,
         x1d_judges=judges,
     )
     assert g5["schema"] == "executive_summary_g5_delta_scope_v2"
     assert g5["passed"] is True
     assert g5["allowlist_passed"] is True
     assert g5["edited_sentence_count"] == 5
-    assert g5["g5_legacy_budget_advisory"]["passed"] is False
+    assert g5["g5_legacy_budget_advisory"]["passed"] is True
+
+
+def test_g5v2_s6_forward_synthesis_allowlist_is_s6_only() -> None:
+    prior = "One. Two. Three. Four. Five. Six."
+    after = "One. Two. Three. Four. Five. Revised six."
+    judges = [
+        {
+            "provider_key": "anthropic_claude",
+            "evaluator_mode": "MODEL_BACKED",
+            "provider_status": "MODEL_BACKED_FAIL",
+            "pass": False,
+            "findings": ["S6 thin recap."],
+            "cited_sentence_indexes": [6],
+        },
+    ]
+    g5 = evaluate_g5_delta_scope_v2(
+        prior,
+        after,
+        DELTA_CLASS_S6_FORWARD_SYNTHESIS,
+        x1d_judges=judges,
+    )
+    assert g5["passed"] is True
+    assert g5["allowlist"] == [6]
 
 
 def test_g5v2_fails_s1_thesis_edit_without_allowlist() -> None:
@@ -316,13 +339,13 @@ def test_g5v2_brown_pattern_four_edits_not_blocked_by_legacy_budget() -> None:
     g5 = evaluate_g5_delta_scope_v2(
         prior,
         after,
-        DELTA_CLASS_S6_FORWARD_SYNTHESIS,
+        DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE,
         x1d_judges=judges,
     )
     assert g5["passed"] is True
     assert g5["edited_sentence_count"] == 4
-    assert g5["g5_legacy_budget_advisory"]["passed"] is False
-    assert g5["g5_legacy_budget_advisory"]["max_sentence_edits_allowed"] == 3
+    assert g5["g5_legacy_budget_advisory"]["passed"] is True
+    assert g5["g5_legacy_budget_advisory"]["max_sentence_edits_allowed"] == 6
 
 
 def test_regen_outcome_scratch_when_no_acceptable_regen() -> None:

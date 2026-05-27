@@ -26,7 +26,9 @@ FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: In Progress
 CURRENT_WAVE: W2
 LAST_COMPLETED_WAVE: W1
-LAST_UPDATED: 2026-05-26
+LAST_UPDATED: 2026-05-27
+W1_REAL_LLM_RECEIPT: docs/reports/apps_rg/graph_skills_deferred_followup_w1_real_llm_receipt.json
+W1_BROWN_ARTIFACT_DIR: artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260527_062524
 PARENT_PLAN: graph-skills-quality-enhancement-c4e8a1
 DEFERRED_REGISTER: docs/reports/apps_rg/graph_skills_deferred_scope_register_20260526.md
 

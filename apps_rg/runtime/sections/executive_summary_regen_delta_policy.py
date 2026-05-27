@@ -234,6 +234,8 @@ def resolve_delta_class(
     if _soft_failed_provider_keys(soft) == {"anthropic_claude"} and any(
         _synthesis_s6_thin_signal(j) for j in soft
     ):
+        if _regen_citations_exceed_s6_only(soft):
+            return DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE
         return DELTA_CLASS_S6_FORWARD_SYNTHESIS
 
     if not failed_dims:
@@ -269,6 +271,8 @@ def resolve_delta_class(
         return DELTA_CLASS_DETERMINISTIC_ALIGNMENT_STRUCTURE
 
     if failed_dims == ["synthesis_quality"]:
+        if _regen_citations_exceed_s6_only(soft):
+            return DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE
         return DELTA_CLASS_S6_FORWARD_SYNTHESIS
 
     if "resume_voice" in failed_dims:
@@ -283,6 +287,8 @@ def resolve_delta_class(
         return DELTA_CLASS_CONNECTIVE_S2_S5
 
     if "synthesis_quality" in failed_dims and len(failed_dims) == 1:
+        if _regen_citations_exceed_s6_only(soft):
+            return DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE
         return DELTA_CLASS_S6_FORWARD_SYNTHESIS
 
     return DELTA_CLASS_DIMENSION_EXECUTIVE_SIGNAL
@@ -363,7 +369,7 @@ def max_sentence_edits_for_delta_class(delta_class: str) -> int:
     )
 
     if not regen_artificial_caps_enabled():
-        return _EXEC_SUMMARY_SENTENCE_COUNT
+        return int(_DELTA_CLASS_BUDGET.get(delta_class, _EXEC_SUMMARY_SENTENCE_COUNT))
     return int(_DELTA_CLASS_BUDGET.get(delta_class, 5))
 
 # 1-based sentence indexes (S1=1 … S6=6) permitted when judges omit cited_sentence_indexes.
@@ -443,6 +449,28 @@ def _judge_text_blobs(judge: dict[str, Any]) -> list[str]:
     return parts
 
 
+def _cited_indexes_from_soft_judges(soft: list[dict[str, Any]]) -> set[int]:
+    cited: set[int] = set()
+    for judge in soft:
+        if not _is_model_backed_soft_fail(judge):
+            continue
+        cited_raw = judge.get("cited_sentence_indexes") or []
+        if isinstance(cited_raw, list):
+            for raw in cited_raw:
+                norm = _normalize_cited_sentence_index(raw)
+                if norm is not None:
+                    cited.add(norm)
+        for blob in _judge_text_blobs(judge):
+            cited |= infer_sentence_indexes_from_text(blob)
+    return cited
+
+
+def _regen_citations_exceed_s6_only(soft: list[dict[str, Any]]) -> bool:
+    """True when judge cited/inferred indexes include sentences outside S6."""
+    cited = _cited_indexes_from_soft_judges(soft)
+    return bool(cited - {6})
+
+
 def build_regen_sentence_allowlist(
     x1d_judges: list[dict[str, Any]],
     delta_class: str,
@@ -452,13 +480,7 @@ def build_regen_sentence_allowlist(
         regen_artificial_caps_enabled,
     )
 
-    if not regen_artificial_caps_enabled():
-        full = frozenset(range(1, _EXEC_SUMMARY_SENTENCE_COUNT + 1))
-        return full, {
-            "allowlist_sources": ["regen_caps_disabled"],
-            "judge_allowlist_contributions": [],
-            "delta_class_fallback_indexes": sorted(full),
-        }
+    caps_disabled = not regen_artificial_caps_enabled()
 
     from_judge: set[int] = set()
     per_judge: list[dict[str, Any]] = []
@@ -499,11 +521,19 @@ def build_regen_sentence_allowlist(
         sources.append("delta_class_fallback")
     if not allow and fallback is not None:
         allow = set(fallback)
+    if delta_class == DELTA_CLASS_S6_FORWARD_SYNTHESIS:
+        s6_only = _DELTA_CLASS_DEFAULT_ALLOWLIST[DELTA_CLASS_S6_FORWARD_SYNTHESIS]
+        if allow - s6_only:
+            allow = set(s6_only)
+            sources = ["delta_class_s6_strict"]
     meta = {
         "allowlist_sources": sources or ["delta_class_fallback"],
         "judge_allowlist_contributions": per_judge,
         "delta_class_fallback_indexes": sorted(fallback),
+        "regen_caps_disabled": caps_disabled,
     }
+    if caps_disabled and "regen_caps_disabled" not in meta["allowlist_sources"]:
+        meta["allowlist_sources"] = [*meta["allowlist_sources"], "regen_caps_disabled"]
     return frozenset(allow), meta
 
 

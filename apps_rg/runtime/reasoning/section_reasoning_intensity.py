@@ -114,7 +114,7 @@ _COMPETENCIES_BULLET_POOL = SectionReasoningProfile(
     temperature=0.38,
     tot_branches=1,
     tot_depth=1,
-    self_consistency_samples=4.0,
+    self_consistency_samples=10.0,
     reflexion_loops=0.0,
     executive_lane=False,
 )

@@ -1,40 +1,50 @@
-version: "1.0"
-section: competencies
-description: >
-  Professional Competencies is a target-aware, fact-constrained selection and grouping lane.
-  It selects, groups, normalizes, and prioritizes supported competency terms from the allowed
-  base-resume fact pool. JD, briefing, title, company, and companion generated sections may
-  influence emphasis, labels, ordering, and relevance — never proof.
-
-evidence:
-  evidence_required: candidate_facts_only
-  note: >
-    Every emitted competency term must trace to allowed source_fact_ids from the canonical
-    base resume / C0 candidate facts. No JD-only, briefing-only, or companion-only proof.
-
-gap_marking:
-  jd_gap_marking: optional_notes_only
-  note: >
-    Unsupported JD or briefing phrases belong in excluded_jd_skills / gap_notes — do not
-    emit them as competency terms.
-
-display_and_proof:
-  resume_display_text: clean_no_inline_source_tags
-  proof_surfaces: claim_ledger_and_source_fact_ids
-  display_pattern: "Category Label: compact phrase, compact phrase, ..."
-  note: >
-    Scannable executive capability index — not a narrative impact section.
-    Terms are compact noun phrases (no full sentences, metrics, or accomplishment prose).
-    JD/briefing/title/company/companion are targeting context only.
-
-ordering:
-  cluster_ordering: target_influenced_within_fact_constraints
-  note: >
-    JD/briefing may influence category ordering and labels only within allowed facts.
-
-forbidden:
-  - jd_only_skills_unlabeled
-  - keyword_stuffing
-  - unsupported_trendy_terms
-
-naturalness_guidance_ref: "forbidden_ai_phrases.yaml"
+version: "1.0"
+section: competencies
+description: >
+  Professional Competencies is a target-aware, fact-constrained selection and grouping lane (graph_10x6).
+  It ranks up to 10 graph-matched capability category candidates from augmented_skills_graph projection and
+  employment-bullet facts, then emits exactly 6 highest-scoring categories. JD, briefing, title, company, and
+  companion generated sections may influence emphasis, labels, ordering, and relevance — never proof.
+
+evidence:
+  evidence_required: candidate_facts_and_augmented_skills_graph
+  note: >
+    Every emitted competency term must trace to allowed source_fact_ids from C0 / SRFS and may reference
+    source_skill_ids from augmented_skills_graph when graph-backed. Base-resume facts.skills is not skills authority.
+    No JD-only, briefing-only, or companion-only proof.
+
+selection:
+  model: graph_10x6_v1
+  candidate_category_count: 10
+  emitted_category_count: 6
+  skills_authority: augmented_skills_graph
+  display_format: "Category Label: compact phrase, compact phrase, ..."
+
+gap_marking:
+  jd_gap_marking: optional_notes_only
+  note: >
+    Unsupported JD or briefing phrases belong in excluded_jd_skills / gap_notes — do not
+    emit them as competency terms.
+
+display_and_proof:
+  resume_display_text: clean_no_inline_source_tags
+  proof_surfaces: claim_ledger_and_source_fact_ids
+  display_pattern: "Category Label: compact phrase, compact phrase, ..."
+  note: >
+    Scannable executive capability index — not a narrative impact section.
+    Terms are compact noun phrases (no full sentences, metrics, or accomplishment prose).
+    JD/briefing/title/company/companion are targeting context only.
+
+ordering:
+  cluster_ordering: target_influenced_within_fact_constraints
+  note: >
+    JD/briefing may influence category ordering and labels only within allowed facts and graph projection.
+
+forbidden:
+  - jd_only_skills_unlabeled
+  - keyword_stuffing
+  - unsupported_trendy_terms
+  - base_resume_facts_skills_as_authority
+  - emitting_more_than_six_categories
+
+naturalness_guidance_ref: "forbidden_ai_phrases.yaml"

@@ -316,8 +316,8 @@ SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR = (
     "Basel III and CCAR lineage discipline reduced regulatory reporting errors by 40%, accelerating IT strategy velocity "
     "without turning governance into a control checklist. With that governance posture, quantitative rigor from capital and "
     "risk analytics practice improved stress-testing cycles by 40%, sharpening platform investment decisions for regulated "
-    "program scale. Looking ahead, innovation incubation and architecture standards will extend this quantitative foundation "
-    "into decentralized unit adoption while preserving lineage discipline."
+    "program scale. Innovation incubation and architecture standards can federate governed platform capabilities "
+    "across decentralized operating units while preserving Basel III lineage discipline and quantitative investment rigor."
 )
 
 def load_executive_summary_example_after(example_id: str) -> str:

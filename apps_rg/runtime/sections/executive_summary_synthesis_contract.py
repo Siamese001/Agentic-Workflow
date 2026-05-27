@@ -11,6 +11,24 @@ from typing import Any
 QUANT_METRIC_DISPLAY_FACT_ID = "fact_quant_hpc_001"
 FSA_CREDENTIAL_FACT_ID = "fact_quant_hpc_003"
 
+# Approved S2–S5 transitions (max two stock bridges per paragraph — see I0).
+APPROVED_NON_STOCK_OPENERS: tuple[str, ...] = (
+    "From that commercial base,",
+    "Against that lineage backdrop,",
+    "In parallel,",
+    "That operating foundation also",
+    "The same platform discipline",
+)
+
+EXEC_SUMMARY_STOCK_BRIDGE_PREFIXES: tuple[str, ...] = (
+    "from that",
+    "against that",
+    "complementing that",
+    "building on that",
+    "through that",
+    "with that governance",
+)
+
 SVP_JD_EMPHASIS_THEMES: tuple[str, ...] = (
     "enterprise architecture governance",
     "innovation programs and incubation",
@@ -109,18 +127,98 @@ def format_svp_jd_emphasis_line() -> str:
     )
 
 
+_INTEROP_PROOF_MARKERS = (
+    "interop",
+    "federated",
+    "accession",
+    "brokerage",
+    "enterprise_architecture",
+    "ea_",
+)
+
+_UNSUPPORTED_INDUSTRY_REGEN_PHRASES = (
+    "insurance brokerage",
+    "insurance-sector",
+    "insurance sector",
+    "federated insurance",
+    "insurance operations",
+    "insurance-brokerage",
+)
+
+
+def has_svp_targeting_proof_gap(*, allowed_fact_ids: set[str] | frozenset[str]) -> bool:
+    """True when allowlist lacks EA/interop/federated proof IDs (Brown SVP lane)."""
+    allowed = {str(x).lower() for x in allowed_fact_ids}
+    has_interop_proof = any(any(m in fid for m in _INTEROP_PROOF_MARKERS) for fid in allowed)
+    return not has_interop_proof
+
+
+def format_judge_regen_proof_boundary_guard() -> str:
+    """Regen-turn guard when TARGETING_GAP is active — blocks X2 industry-claim failures."""
+    return (
+        "PROOF_BOUNDARY_REGEN: JD/briefing are targeting-only (jd_used_as_proof=false). "
+        "Do NOT introduce insurance brokerage, insurance operations, federated insurance, or other "
+        "industry-sector nouns in resume_display_text unless an ALLOWED_SOURCE_FACT_ID claim_text "
+        "explicitly supports that domain."
+    )
+
+
+def format_judge_regen_proof_gap_reframe_line() -> str:
+    """Replacement guidance when verbatim judge feedback asks for unsupported industry framing."""
+    return (
+        "- PROOF_GAP_REFRAME: Sharpen S1/S6 with targeting vocabulary only (decentralized operating units, "
+        "federated operating-model posture, innovation-program mandate) — never add insurance-sector "
+        "nouns unless ALLOWED_SOURCE_FACT_IDS support them."
+    )
+
+
+def filter_judge_remediation_feedback_for_proof_gap(
+    lines: list[str],
+    *,
+    allowed_fact_ids: set[str] | frozenset[str],
+) -> tuple[list[str], dict[str, Any]]:
+    """Drop/reframe judge delta lines that instruct unsupported industry claims."""
+    if not has_svp_targeting_proof_gap(allowed_fact_ids=allowed_fact_ids):
+        return list(lines), {"proof_gap_filter": "inactive", "dropped_count": 0}
+
+    kept: list[str] = []
+    dropped: list[str] = []
+    for line in lines:
+        low = str(line).lower()
+        if any(phrase in low for phrase in _UNSUPPORTED_INDUSTRY_REGEN_PHRASES):
+            dropped.append(line)
+            continue
+        if "insurance" in low and any(
+            tok in low
+            for tok in (
+                "brokerage context",
+                "insurance-sector",
+                "insurance sector",
+                "federated insurance",
+                "insurance operations",
+            )
+        ):
+            dropped.append(line)
+            continue
+        kept.append(line)
+
+    meta: dict[str, Any] = {
+        "proof_gap_filter": "active",
+        "dropped_count": len(dropped),
+        "dropped_preview": [d[:120] for d in dropped[:4]],
+    }
+    if dropped:
+        reframe = format_judge_regen_proof_gap_reframe_line()
+        if reframe not in kept:
+            kept.insert(0, reframe)
+        meta["reframe_inserted"] = True
+    return kept, meta
+
+
 def format_strategy_targeting_gap_note(*, allowed_fact_ids: set[str] | frozenset[str]) -> str:
     """When JD themes lack proof IDs, require gap_notes + concept translation (not JD-as-proof)."""
     allowed = {str(x).lower() for x in allowed_fact_ids}
-    interop_proof_markers = (
-        "interop",
-        "federated",
-        "accession",
-        "brokerage",
-        "enterprise_architecture",
-        "ea_",
-    )
-    has_interop_proof = any(any(m in fid for m in interop_proof_markers) for fid in allowed)
+    has_interop_proof = any(any(m in fid for m in _INTEROP_PROOF_MARKERS) for fid in allowed)
     concept_block = (
         "TARGETING_CONCEPT_MAP (targeting only — NOT PROOF):\n"
         "- Translate allowed platform/governance/commercial/regulated-delivery facts into executive concepts: "

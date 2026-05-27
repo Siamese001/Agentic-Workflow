@@ -40,7 +40,7 @@ def test_bullet_pool_sections_map_to_t2_with_sc() -> None:
     for lane in ("competencies", "unify_bullets", "ibm_bullets"):
         prof = section_reasoning_profile(lane)
         assert prof.tier is ReasoningIntensityTier.T2_QUALITY_SECTION
-    assert section_reasoning_profile("competencies").self_consistency_samples == 4.0
+    assert section_reasoning_profile("competencies").self_consistency_samples == 10.0
     assert section_reasoning_profile("unify_bullets").self_consistency_samples == 15.0
     assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 12.0
 

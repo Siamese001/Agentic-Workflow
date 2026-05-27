@@ -22,6 +22,8 @@ JUDGE_X2_REPAIR_WAIVE_SHRINK_GATE_IDS: frozenset[str] = frozenset(
         "x2_no_inferred_bridge_claims",
         "x2_exec_summary_evidence_utilization",
         "x2_exec_summary_mechanical_opener_stack_zero",
+        "x2_exec_summary_stock_bridge_max_two",
+        "x2_exec_summary_s5_no_derivatives_inventory",
         "x2_exec_summary_meta_filler_zero",
         "x2_exec_summary_cross_fact_conflation_zero",
     }

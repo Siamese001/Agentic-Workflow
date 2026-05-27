@@ -503,21 +503,42 @@ def wire_spine_c0_fec_for_section(
             pool=pool,
         )
     from apps_rg.runtime.spine.section_c0_retrieve import (
+        apply_spine_c03_overlay_to_bridge_doc,
         assert_no_stop_as_evidence_gap,
         grounding_required_for_section,
         invoke_section_spine_c0_retrieve,
+        merge_spine_fec_into_bridge_doc,
         section_spine_c0_retrieve_required,
         write_spine_c0_retrieve_receipt,
     )
 
+    evidence_room_producer = bridge.bridge_doc.get("producer_stage") == "section_c0_evidence_room"
+
     if section_spine_c0_retrieve_required(front_spine):
-        if not bridge.bridge_doc.get("spine_c0_retrieve_receipt"):
-            spine_res = invoke_section_spine_c0_retrieve(
-                front_spine=front_spine,
-                section_id=section_id,
+        spine_res = invoke_section_spine_c0_retrieve(
+            front_spine=front_spine,
+            section_id=section_id,
+        )
+        write_spine_c0_retrieve_receipt(artifact_dir, spine_res.receipt)
+        runtime_payload["spine_c0_retrieve_receipt"] = spine_res.receipt
+        if evidence_room_producer:
+            merged_doc = apply_spine_c03_overlay_to_bridge_doc(
+                bridge.bridge_doc,
+                spine=spine_res,
             )
-            write_spine_c0_retrieve_receipt(artifact_dir, spine_res.receipt)
-            runtime_payload["spine_c0_retrieve_receipt"] = spine_res.receipt
+        else:
+            merged_doc = merge_spine_fec_into_bridge_doc(
+                bridge.bridge_doc,
+                spine=spine_res,
+                pool_allowed_fact_ids=list(pool.allowed_fact_ids_ordered),
+            )
+        bridge = SectionFecBridge(
+            section_id=bridge.section_id,
+            bridge_doc=merged_doc,
+            product_visible=bridge.product_visible,
+            fixture_dev_only_bypass=bridge.fixture_dev_only_bypass,
+            non_product_certified=bridge.non_product_certified,
+        )
         snap = bridge.bridge_doc.get("final_evidence_contract_snapshot") or {}
         support = str(snap.get("support_status") or bridge.bridge_doc.get("support_status") or "")
         if support:
@@ -545,9 +566,6 @@ def wire_spine_c0_fec_for_section(
                 fec=fec_check,
                 section_id=section_id,
             )
-        receipt = bridge.bridge_doc.get("spine_c0_retrieve_receipt")
-        if isinstance(receipt, dict):
-            write_spine_c0_retrieve_receipt(artifact_dir, receipt)
 
     emit_spine_c0_fec_artifacts(artifact_dir, bridge)
     runtime_payload["section_fec_bridge"] = bridge.bridge_doc

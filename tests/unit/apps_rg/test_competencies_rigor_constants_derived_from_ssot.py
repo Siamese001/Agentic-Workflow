@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from apps_rg.runtime.sections import competencies_rigor
+from apps_rg.runtime.sections.competencies_rigor import CANDIDATE_CATEGORY_COUNT
 from apps_rg.runtime.sections.section_product_shape_ssot import (
     MAX_CATEGORY_COUNT,
     MAX_ITEMS_PER_CATEGORY,
@@ -17,6 +18,8 @@ def test_competencies_rigor_matches_ssot() -> None:
     assert competencies_rigor.MAX_CATEGORY_COUNT == MAX_CATEGORY_COUNT
     assert competencies_rigor.MIN_ITEMS_PER_CATEGORY == MIN_ITEMS_PER_CATEGORY
     assert competencies_rigor.MAX_ITEMS_PER_CATEGORY == MAX_ITEMS_PER_CATEGORY
+    assert competencies_rigor.CANDIDATE_CATEGORY_COUNT == 10
+    assert CANDIDATE_CATEGORY_COUNT == 10
 
 
 def test_competencies_shape_gate_ids_include_rigor_anchors() -> None:

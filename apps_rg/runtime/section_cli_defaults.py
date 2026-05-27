@@ -86,14 +86,28 @@ def resolve_phase1_lane_allow_non_allow_exit_zero(cli_flag: bool) -> bool:
     return resolve_allow_non_allow_exit_zero(cli_flag)
 
 
-def resolve_cli_x1d_judges(cli_value: str | None) -> str:
-    """Honor ``APPS_RG_E2E_X1D_JUDGES`` when CLI omits ``--x1d-judges``."""
+COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = "gemini_pro"
+
+
+def resolve_cli_x1d_judges(
+    cli_value: str | None,
+    *,
+    section_id: str | None = None,
+) -> str:
+    """Honor ``APPS_RG_E2E_X1D_JUDGES`` when CLI omits ``--x1d-judges``.
+
+    Competencies lane defaults to a single ``gemini_pro`` pool judge (not the triple panel).
+    """
     from apps_rg.runtime.x1d_judge_policy import APPS_RG_E2E_DEFAULT_X1D_JUDGES
 
     if cli_value is not None and str(cli_value).strip():
         return str(cli_value).strip()
     env_csv = (os.environ.get("APPS_RG_E2E_X1D_JUDGES") or "").strip()
-    return env_csv or APPS_RG_E2E_DEFAULT_X1D_JUDGES
+    if env_csv:
+        return env_csv
+    if str(section_id or "").strip().lower() == "competencies":
+        return COMPETENCIES_DEFAULT_X1D_JUDGES
+    return APPS_RG_E2E_DEFAULT_X1D_JUDGES
 
 
 def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, str]:

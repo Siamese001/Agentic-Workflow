@@ -577,6 +577,7 @@ def collect_judge_remediation_delta_lines(
     *,
     unused_fact_ids: list[str],
     allowed_fact_count: int,
+    allowed_fact_ids: set[str] | frozenset[str] | None = None,
     prior_word_count: int = 0,
     prior_ledger_rows: int = 0,
     compact: bool | None = None,
@@ -622,6 +623,20 @@ def collect_judge_remediation_delta_lines(
         verbatim_feedback = filter_verbatim_feedback_for_prior_attempt(
             verbatim_feedback,
             prior_attempt_resume_display_text=prior_resume,
+        )
+    proof_gap_meta: dict[str, Any] = {"proof_gap_filter": "inactive"}
+    proof_gap_active = False
+    if allowed_fact_ids is not None:
+        from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+            filter_judge_remediation_feedback_for_proof_gap,
+            format_judge_regen_proof_boundary_guard,
+            has_svp_targeting_proof_gap,
+        )
+
+        proof_gap_active = has_svp_targeting_proof_gap(allowed_fact_ids=allowed_fact_ids)
+        verbatim_feedback, proof_gap_meta = filter_judge_remediation_feedback_for_proof_gap(
+            verbatim_feedback,
+            allowed_fact_ids=allowed_fact_ids,
         )
     sections: dict[str, list[str]] = {
         "incremental": incremental_lines,
@@ -686,6 +701,8 @@ def collect_judge_remediation_delta_lines(
             suffix = "..." if len(unused_fact_ids) > 6 else ""
             sections["guards"].append(f"EVIDENCE_WEAVE (allowed ids only): {preview}{suffix}")
         sections["guards"].append(format_judge_regen_connective_tissue_guard().strip())
+        if proof_gap_active:
+            sections["guards"].insert(0, format_judge_regen_proof_boundary_guard())
         sections["guards"].append(
             "OUTPUT: NEW JSON only; revise ONLY resume_display_text + claim_ledger; "
             "third person; jd_used_as_proof=false.",
@@ -697,7 +714,10 @@ def collect_judge_remediation_delta_lines(
         )
 
         cap = judge_regen_max_delta_lines() if regen_artificial_caps_enabled() else None
-        return _flatten_delta_sections(sections, max_lines=cap)
+        packed = _flatten_delta_sections(sections, max_lines=cap)
+        if proof_gap_meta.get("proof_gap_filter") == "active":
+            packed.append(f"PROOF_GAP_FILTER_META: {json.dumps(proof_gap_meta, sort_keys=True)}")
+        return packed
 
     dimension_lines = collect_dimension_remediation_lines(soft_judges, min_fail_count=1)
     if dimension_lines:
@@ -1053,6 +1073,7 @@ def retry_qwen_for_judge_remediation(
                 trigger_receipt=trigger_receipt,
                 unused_fact_ids=unused_fact_ids,
                 allowed_fact_count=allowed_count,
+                allowed_fact_ids=allowed_fact_ids,
                 anchor_output_text=anchor_assistant_content or current_raw,
                 prior_word_count=prior_word_count,
                 prior_ledger_rows=prior_ledger_rows,
@@ -1776,4 +1797,18 @@ def refresh_x1d_judges_after_full_x2(
     }
     receipt["gate_summary_gate_count"] = len(gate_summary)
     receipt["judge_packet_post_x2_ref"] = packet_ref
+    from apps_rg.runtime.judges.executive_summary_judge_packet import judge_packet_hash
+    from apps_rg.runtime.sections.executive_summary_judge_variance import (
+        emit_judge_score_variance_if_dual_panel,
+    )
+
+    packet_hash = judge_packet_hash(packet)
+    variance = emit_judge_score_variance_if_dual_panel(
+        artifact_dir=artifact_dir,
+        prior_judges=prior_judges,
+        refreshed_judges=refreshed,
+        judge_packet_hash=packet_hash,
+    )
+    if variance:
+        receipt["judge_score_variance"] = variance
     return refreshed, receipt

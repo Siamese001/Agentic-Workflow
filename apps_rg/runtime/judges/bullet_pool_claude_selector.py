@@ -20,6 +20,13 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
 )
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import SelfConsistencyPath
 from apps_rg.runtime.judges.employment_bullet_judge_rubric import pool_selector_scoring_instruction
+from apps_rg.runtime.reasoning.competencies_graph_pool import (
+    COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
+    COMPETENCIES_FINAL_CATEGORY_COUNT,
+    COMPETENCIES_SC_PATH_COUNT,
+    merge_competencies_graph_pool_top_six,
+    min_competencies_selection_score,
+)
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     FINAL_BULLET_COUNT,
     is_employment_bullet_lane,
@@ -58,12 +65,56 @@ def _bullet_by_id(parsed: dict[str, Any], bullet_id: str) -> dict[str, Any] | No
 
 def _category_by_label(parsed: dict[str, Any], label: str) -> dict[str, Any] | None:
     norm = label.strip().lower()
-    for row in parsed.get("competencies") or []:
-        if not isinstance(row, dict):
-            continue
-        if str(row.get("category_label") or "").strip().lower() == norm:
-            return row
+    for key in ("competencies", "categories"):
+        for row in parsed.get(key) or []:
+            if not isinstance(row, dict):
+                continue
+            if str(row.get("category_label") or "").strip().lower() == norm:
+                return row
     return None
+
+
+def _is_competencies_graph_pool(section_id: str, slot_kind: SlotKind) -> bool:
+    return str(section_id or "").strip().lower() == "competencies" and slot_kind == "competencies"
+
+
+def _competencies_graph_selection_prompt(
+    *,
+    pool_text: str,
+    targeting_context: dict[str, Any] | None,
+    min_score_threshold: float,
+    regen_note: str = "",
+) -> str:
+    n_paths = COMPETENCIES_SC_PATH_COUNT
+    n_final = COMPETENCIES_FINAL_CATEGORY_COUNT
+    n_candidate = COMPETENCIES_CANDIDATE_CATEGORY_COUNT
+    jd = (targeting_context or {}).get("jd_text") or ""
+    briefing = (targeting_context or {}).get("briefing") or ""
+    skills_ref = (targeting_context or {}).get("skills_graph_ref") or ""
+    return (
+        "You are the sole selector for competencies (graph_10x6_v1).\n"
+        f"{n_paths} Qwen self-consistency paths produced candidate category sets (up to {n_candidate} labels). "
+        f"Select exactly {n_final} categories — the top {n_final} by score that PASS graph/fact reality.\n"
+        "Constraints:\n"
+        "- augmented_skills_graph / selected_fact_plan are the only proof authority (JD and briefing are "
+        "targeting emphasis only — never cite facts.skills or base-resume skill rows as proof).\n"
+        "- Score each unique category_label variant on phrase_quality, evidence_alignment, distinctness, "
+        "and anti_keyword_stuffing.\n"
+        f"- Minimum score floor: only select variants with score >= {min_score_threshold:.2f} AND passes=true.\n"
+        f"- Output exactly {n_final} selections when possible; each row must include category_label, "
+        "path_index, score, passes, and rationale.\n"
+        f"{regen_note}\n\n"
+        f"JD (targeting only):\n{jd[:resolve_bullet_selector_jd_max_chars()]}\n\n"
+        f"Briefing (targeting only):\n{briefing[:resolve_bullet_selector_briefing_max_chars()]}\n\n"
+        f"Skills graph ref: {skills_ref}\n\n"
+        "Return JSON only:\n"
+        '{"selections":[{"category_label":"...","path_index":0,"score":0.85,"passes":true,"rationale":"..."}],'
+        f'"pool_summary":{{"paths_scored":{n_paths},"final_category_count":{n_final},'
+        f'"candidate_category_count":{n_candidate},'
+        f'"min_score_threshold":{min_score_threshold:.2f},"selector":"anthropic_claude","mode":"graph_10x6"}}}}\n\n'
+        "CANDIDATE POOL:\n"
+        f"{pool_text}"
+    )
 
 
 def _format_bullet_pool(paths: list[SelfConsistencyPath], required_ids: tuple[str, ...]) -> str:
@@ -88,7 +139,7 @@ def _format_competency_pool(paths: list[SelfConsistencyPath]) -> str:
         if path.parsed is None:
             continue
         lines = [f"=== PATH {path.path_index} (temperature={path.temperature}) ==="]
-        for cat in path.parsed.get("competencies") or []:
+        for cat in (path.parsed.get("competencies") or path.parsed.get("categories") or []):
             if not isinstance(cat, dict):
                 continue
             label = str(cat.get("category_label") or "").strip()
@@ -154,6 +205,18 @@ def _selection_prompt(
     min_score_threshold: float | None = None,
     regen_note: str = "",
 ) -> str:
+    if _is_competencies_graph_pool(section_id, slot_kind):
+        floor = (
+            min_score_threshold
+            if min_score_threshold is not None
+            else min_competencies_selection_score()
+        )
+        return _competencies_graph_selection_prompt(
+            pool_text=pool_text,
+            targeting_context=targeting_context,
+            min_score_threshold=floor,
+            regen_note=regen_note,
+        )
     if slot_kind == "bullets" and is_employment_bullet_lane(section_id) and required_bullet_ids:
         floor = (
             min_score_threshold
@@ -375,6 +438,7 @@ def _fallback_first_complete_path(
     *,
     slot_kind: SlotKind,
     required_bullet_ids: tuple[str, ...] | None,
+    targeting_context: dict[str, Any] | None = None,
 ) -> PoolSelectionResult:
     for path in paths:
         if path.parsed is None:
@@ -389,20 +453,41 @@ def _fallback_first_complete_path(
                     source_path_by_slot={bid: path.path_index for bid in required_bullet_ids},
                 )
         elif slot_kind == "competencies":
-            comps = path.parsed.get("competencies")
-            if isinstance(comps, list) and len(comps) >= 6:
-                labels = {
-                    str(c.get("category_label") or "").strip().lower()
-                    for c in comps
-                    if isinstance(c, dict) and str(c.get("category_label") or "").strip()
-                }
+            comps = path.parsed.get("competencies") or path.parsed.get("categories")
+            if isinstance(comps, list) and len(comps) >= COMPETENCIES_FINAL_CATEGORY_COUNT:
+                tc = targeting_context or {}
+                merged, source_map = merge_competencies_graph_pool_top_six(
+                    paths,
+                    [],
+                    base_parsed=dict(path.parsed),
+                    allowed_fact_ids=set(tc.get("allowed_fact_ids") or []),
+                    allowed_skill_ids=set(tc.get("allowed_skill_ids") or []),
+                    resume_support_blob_lower=str(tc.get("resume_support_blob_lower") or ""),
+                )
                 return PoolSelectionResult(
-                    merged_parsed=dict(path.parsed),
+                    merged_parsed=merged,
                     selections=[],
                     judge_output=None,
-                    selection_mode="fallback_first_complete_path",
-                    source_path_by_slot={lbl: path.path_index for lbl in labels},
+                    selection_mode="competencies_graph_top_6_heuristic",
+                    source_path_by_slot=source_map,
                 )
+    if slot_kind == "competencies":
+        tc = targeting_context or {}
+        merged, source_map = merge_competencies_graph_pool_top_six(
+            paths,
+            [],
+            base_parsed=paths[0].parsed if paths and paths[0].parsed else {},
+            allowed_fact_ids=set(tc.get("allowed_fact_ids") or []),
+            allowed_skill_ids=set(tc.get("allowed_skill_ids") or []),
+            resume_support_blob_lower=str(tc.get("resume_support_blob_lower") or ""),
+        )
+        return PoolSelectionResult(
+            merged_parsed=merged,
+            selections=[],
+            judge_output=None,
+            selection_mode="competencies_graph_top_6_heuristic",
+            source_path_by_slot=source_map,
+        )
     base = paths[0].parsed if paths and paths[0].parsed else {}
     return PoolSelectionResult(
         merged_parsed=dict(base) if isinstance(base, dict) else {},
@@ -515,7 +600,7 @@ def merge_competency_selections(
     for path in paths:
         if not path.parsed:
             continue
-        for cat in path.parsed.get("competencies") or []:
+        for cat in (path.parsed.get("competencies") or path.parsed.get("categories") or []):
             if not isinstance(cat, dict):
                 continue
             label = str(cat.get("category_label") or "").strip()
@@ -551,6 +636,7 @@ def run_claude_bullet_pool_selection(
             paths,
             slot_kind=slot_kind,
             required_bullet_ids=required_bullet_ids,
+            targeting_context=targeting_context,
         )
 
     if slot_kind == "bullets":
@@ -574,6 +660,7 @@ def run_claude_bullet_pool_selection(
             paths,
             slot_kind=slot_kind,
             required_bullet_ids=required_bullet_ids,
+            targeting_context=targeting_context,
         )
 
     meta = PROVIDERS.get("anthropic_claude") or {}
@@ -583,6 +670,7 @@ def run_claude_bullet_pool_selection(
             paths,
             slot_kind=slot_kind,
             required_bullet_ids=required_bullet_ids,
+            targeting_context=targeting_context,
         )
 
     model, model_source = _resolve_anthropic_model(meta, section_id=section_id)
@@ -608,10 +696,12 @@ def run_claude_bullet_pool_selection(
             paths,
             slot_kind=slot_kind,
             required_bullet_ids=required_bullet_ids,
+            targeting_context=targeting_context,
         )
 
     selections = list((parsed_sel or {}).get("selections") or [])
     base = valid_paths[0].parsed
+    tc = targeting_context or {}
     if slot_kind == "bullets" and required_bullet_ids:
         floor = min_score_threshold
         if floor is None and is_employment_bullet_lane(section_id):
@@ -623,18 +713,28 @@ def run_claude_bullet_pool_selection(
             base_parsed=base,
             min_score_threshold=floor,
         )
+        selection_mode = "claude_employment_top_n_pass"
+    elif _is_competencies_graph_pool(section_id, slot_kind):
+        floor = min_score_threshold or min_competencies_selection_score()
+        merged, source_map = merge_competencies_graph_pool_top_six(
+            paths,
+            selections,
+            base_parsed=base,
+            min_score_threshold=floor,
+            allowed_fact_ids=set(tc.get("allowed_fact_ids") or []),
+            allowed_skill_ids=set(tc.get("allowed_skill_ids") or []),
+            resume_support_blob_lower=str(tc.get("resume_support_blob_lower") or ""),
+        )
+        selection_mode = "claude_competencies_top_6_pass"
     else:
         merged, source_map = merge_competency_selections(paths, selections, base_parsed=base)
+        selection_mode = "claude_per_slot_selection"
 
     return PoolSelectionResult(
         merged_parsed=merged,
         selections=selections,
         judge_output=judge_out,
-        selection_mode=(
-            "claude_employment_top_n_pass"
-            if is_employment_bullet_lane(section_id)
-            else "claude_per_slot_selection"
-        ),
+        selection_mode=selection_mode,
         source_path_by_slot=source_map,
     )
 

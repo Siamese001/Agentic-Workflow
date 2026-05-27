@@ -302,6 +302,23 @@ def finalize_regen_cycle_observability(
             "row_indexes": list(failure_signature[1]),
         }
         cycles_receipt["regen_lane_stats"] = build_regen_lane_stats(cycles_receipt)
+        if artifact_dir is not None:
+            from apps_rg.runtime.sections.executive_summary_operator_reporting import (
+                build_regen_escalation_receipt,
+                write_regen_escalation_receipt,
+            )
+
+            allowed_raw = cycles_receipt.get("allowed_fact_ids")
+            allowed_set: set[str] | None = None
+            if isinstance(allowed_raw, list):
+                allowed_set = {str(x) for x in allowed_raw if str(x).strip()}
+            esc = build_regen_escalation_receipt(
+                cycles_receipt=cycles_receipt,
+                allowed_fact_ids=allowed_set,
+            )
+            if esc:
+                esc_path = write_regen_escalation_receipt(artifact_dir, esc)
+                cycles_receipt["regen_escalation_receipt_ref"] = Path(esc_path).name
         return current_hash or prior_regen_output_hash, REGEN_STOPPED_REASON_X2_STUCK
 
     converged = bool(

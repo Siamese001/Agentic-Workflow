@@ -210,6 +210,21 @@ def run_competencies_lane_execution(
             flush=True,
         )
     from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
+    from apps_rg.runtime.reasoning.competencies_graph_pool import build_competencies_targeting_context
+
+    skill_ids: set[str] = set()
+    for row in pp_meta.get("selected_skill_rows") or []:
+        if isinstance(row, dict):
+            sid = str(row.get("skill_id") or "").strip()
+            if sid:
+                skill_ids.add(sid)
+    targeting_context = build_competencies_targeting_context(
+        runtime_payload,
+        allowed_fact_ids=allowed_fact_ids,
+        allowed_skill_ids=skill_ids,
+    )
+    targeting_context["allowed_fact_ids"] = sorted(str(x) for x in allowed_fact_ids)
+    targeting_context["resume_support_blob_lower"] = c0_proof_blob
 
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
     result, raw_output, parsed, parse_error, gen_meta = generate_bullet_lane_with_sc_and_claude(
@@ -223,10 +238,7 @@ def run_competencies_lane_execution(
         temperature_bounds=(0.30, 0.50),
         base_temperature=float(args.temperature),
         required_bullet_ids=None,
-        targeting_context={
-            "target_title": runtime_payload.get("target_title"),
-            "target_company": runtime_payload.get("target_company"),
-        },
+        targeting_context=targeting_context,
         judge_mode=judge_mode,
     )
     write_json(artifact_dir / "bullet_lane_generation.json", gen_meta)
@@ -275,7 +287,7 @@ def run_competencies_lane_execution(
         if parsed is not None:
             parsed = normalize_parsed_output(parsed, runtime_payload, allowed_fact_ids)
             comps = parsed.get("competencies") or []
-            if isinstance(comps, list) and len(comps) >= 8 and not parsed.get("claim_ledger"):
+            if isinstance(comps, list) and len(comps) >= 6 and not parsed.get("claim_ledger"):
                 rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
                 clog = list(parsed.get("change_log") or [])
                 clog.append(
@@ -462,20 +474,29 @@ def run_competencies_lane_execution(
         apply_proof_pool_to_usage_ledger(usage_doc, pool),
     )
 
-    judge_keys = [j.strip() for j in args.x1d_judges.split(",") if j.strip()]
+    from apps_rg.runtime.reasoning.competencies_graph_pool import is_competencies_pool_generation
+    from apps_rg.runtime.reasoning.employment_bullet_pool import competencies_pool_x1d_judge_rows
+
     judge_allowed_mock = bool(args.mock_judges and getattr(args, "allow_test_mock_judges", False))
     judge_mode = "mocked" if judge_allowed_mock else "blocked_if_unavailable"
-    x1d = [
-        j.to_dict()
-        for j in run_competencies_judges(
-            competencies=competencies,
-            claim_ledger=claim_ledger,
-            judge_keys=judge_keys,
-            companion_context=companion_context,
-            mode=judge_mode,
-            artifact_base=artifact_dir,
+    if is_competencies_pool_generation(gen_meta):
+        x1d = competencies_pool_x1d_judge_rows(
+            artifact_dir=artifact_dir,
+            section_id=LANE_KEY,
+            gen_meta=gen_meta,
         )
-    ]
+    else:
+        x1d = [
+            j.to_dict()
+            for j in run_competencies_judges(
+                competencies=competencies,
+                claim_ledger=claim_ledger,
+                judge_keys=["gemini_pro"],
+                companion_context=companion_context,
+                mode=judge_mode,
+                artifact_base=artifact_dir,
+            )
+        ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
     from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags

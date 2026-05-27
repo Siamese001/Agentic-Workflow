@@ -1,0 +1,43 @@
+{
+  "schema_version": "graph_skills_deferred_followup_w1_real_llm_receipt_v1",
+  "generated_at_utc": "2026-05-27T06:31:42Z",
+  "plan_slug": "graph-skills-deferred-followup-d7f2a8",
+  "hardening_plan": "harden-c01-c07-apps-rg-core-c0-binding",
+  "deferred_scope_closed": ["DS-1", "DS-11", "DS-13"],
+  "deferred_scope_note": "executive_summary slice only; 7-lane LIVE_X3 remains W2",
+  "brown_run": {
+    "artifact_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260527_062524",
+    "runtime_generation_status": "REAL_LLM",
+    "operator_status": "DRAFT_READY",
+    "product_status": "X3_REVIEW_JUDGE_SOFT_FAIL",
+    "process_exit_code": 0
+  },
+  "d16_c0_graph_lane": {
+    "receipt": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260527_062524/c0_graph_lane_receipt.json",
+    "canonical_c0_3_graph_claimed": true,
+    "canonical_c0_3_graph_rag_claimed": true,
+    "graph_lane_deferred": false,
+    "graph_expansion_refs": ["ref:graph:traverse:17f36184f429b290"]
+  },
+  "spine_retrieve": {
+    "receipt": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260527_062524/section_spine_c0_retrieve_receipt.json",
+    "canonical_c0_3_graph_claimed": true,
+    "binding": "apps_rg.runtime.bindings.c0_binding.c0_retrieve_apps_rg"
+  },
+  "static_audit": {
+    "receipt": "docs/reports/apps_rg/c01_c07_graph_skills_apps_rg_audit.json",
+    "status": "PASS",
+    "subphase_concentration_ok": true,
+    "executive_summary_graph_lane_emit": true
+  },
+  "contract_tests": {
+    "command": "pytest tests/_apps_contract/test_apps_rg_c0_subphase_bindings.py tests/_apps_contract/test_apps_rg_l0_graph_traverse_policy_active.py -o addopts=",
+    "result": "15 passed"
+  },
+  "code_seams": [
+    "apps_rg/runtime/spine/c0_fec_compose.py:apply_spine_c03_overlay_to_bridge_doc",
+    "apps_rg/runtime/spine/section_c0_retrieve.py:apply_spine_c03_overlay_to_bridge_doc",
+    "apps_rg/runtime/spine/section_c0_graph_lane_ensure.py",
+    "apps_rg/runtime/sections/executive_summary_lane.py:ensure_section_c0_graph_lane_receipt"
+  ]
+}

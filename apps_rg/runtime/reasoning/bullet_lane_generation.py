@@ -18,6 +18,12 @@ from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
     run_qwen_self_consistency_paths,
     self_consistency_path_count,
 )
+from apps_rg.runtime.reasoning.competencies_graph_pool import (
+    evaluate_competencies_selection_quality,
+    max_competencies_regen_rounds,
+    min_competencies_selection_score,
+    write_competencies_regen_artifact,
+)
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     REQUIRED_BULLET_IDS,
     evaluate_employment_selection_quality,
@@ -181,6 +187,136 @@ def _generate_employment_bullet_lane(
     return last_result, raw, merged, "", meta
 
 
+def _generate_competencies_graph_pool_lane(
+    *,
+    provider_payload: dict[str, Any],
+    parse_model_json: ParseFn,
+    normalize_parsed: NormalizeFn,
+    artifact_dir: Path | None,
+    run_id: str | None,
+    temperature_bounds: tuple[float, float],
+    base_temperature: float | None,
+    targeting_context: dict[str, Any] | None,
+    judge_mode: str,
+) -> tuple[ProviderResult | None, str, dict[str, Any] | None, str, dict[str, Any]]:
+    section_lane = "competencies"
+    min_score = min_competencies_selection_score()
+    all_paths: list[SelfConsistencyPath] = []
+    last_result: ProviderResult | None = None
+    pool: PoolSelectionResult | None = None
+    gate = evaluate_competencies_selection_quality(
+        selections=[],
+        merged_parsed={},
+        min_score=min_score,
+    )
+    regen_round = 0
+    max_regen = 0 if judge_mode == "mocked" else max_competencies_regen_rounds()
+
+    while True:
+        batch = (
+            sc_path_count_for_lane(section_lane)
+            if regen_round == 0
+            else regen_extra_path_count_for_lane(section_lane)
+        )
+        new_paths, last_result = run_qwen_self_consistency_paths(
+            section_lane=section_lane,
+            provider_payload=provider_payload,
+            parse_model_json=parse_model_json,
+            artifact_dir=artifact_dir,
+            run_id=run_id,
+            temperature_bounds=temperature_bounds,
+            base_temperature=base_temperature,
+            path_count=batch,
+            path_index_start=len(all_paths),
+            append_artifacts=regen_round > 0,
+        )
+        all_paths.extend(new_paths)
+
+        regen_note = ""
+        if regen_round > 0 and not gate.ok:
+            failed = list(gate.categories_below_threshold) + list(gate.categories_missing)
+            regen_note = (
+                "REGEN ROUND: prior selection did not meet minimum score or category coverage. "
+                f"Re-score pool including new paths. Categories needing stronger winners: {', '.join(failed)}. "
+                f"Select exactly {gate.final_category_count} categories with score >= {min_score:.2f} and passes=true."
+            )
+
+        pool = run_claude_bullet_pool_selection(
+            section_id=section_lane,
+            slot_kind="competencies",
+            paths=all_paths,
+            required_bullet_ids=None,
+            targeting_context=targeting_context,
+            artifact_dir=artifact_dir,
+            mode=judge_mode,
+            min_score_threshold=min_score,
+            regen_note=regen_note,
+        )
+        gate = evaluate_competencies_selection_quality(
+            selections=pool.selections,
+            merged_parsed=pool.merged_parsed,
+            min_score=min_score,
+        )
+
+        if artifact_dir is not None:
+            write_competencies_regen_artifact(
+                artifact_dir,
+                {
+                    "regen_round": regen_round,
+                    "batch_paths": batch,
+                    "total_paths": len(all_paths),
+                    "gate": gate.to_dict(),
+                    "selection_mode": pool.selection_mode,
+                },
+            )
+
+        if gate.ok or regen_round >= max_regen:
+            break
+        regen_round += 1
+
+    completed = sum(1 for p in all_paths if p.parsed is not None)
+    patch_receipt_samples_executed(
+        last_result,
+        paths_requested=len(all_paths),
+        paths_completed=completed,
+    )
+
+    assert pool is not None
+    merged = normalize_parsed(dict(pool.merged_parsed))
+    meta: dict[str, Any] = {
+        "generation_mode": "qwen_competencies_graph_pool_claude_top_6_regen",
+        "section_lane": section_lane,
+        "initial_path_count": sc_path_count_for_lane(section_lane),
+        "total_paths_executed": len(all_paths),
+        "regen_rounds_executed": regen_round,
+        "min_selection_score": min_score,
+        "selection_gate": gate.to_dict(),
+        "selection_mode": pool.selection_mode,
+        "source_path_by_slot": pool.source_path_by_slot,
+        "claude_selection_count": len(pool.selections),
+        "candidate_category_count": 10,
+        "final_category_count": 6,
+    }
+    if artifact_dir is not None:
+        (artifact_dir / "bullet_pool_selection.json").write_text(
+            json.dumps(
+                {
+                    "selection_mode": pool.selection_mode,
+                    "selections": pool.selections,
+                    "source_path_by_slot": pool.source_path_by_slot,
+                    "selection_gate": gate.to_dict(),
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+    raw = json.dumps(merged, sort_keys=True, separators=(",", ":"))
+    return last_result, raw, merged, "", meta
+
+
 def generate_bullet_lane_with_sc_and_claude(
     *,
     section_lane: str,
@@ -221,6 +357,19 @@ def generate_bullet_lane_with_sc_and_claude(
         else:
             err = result.exact_provider_error or "provider blocked"
         return result, raw, parsed, err, meta
+
+    if lane == "competencies" and slot_kind == "competencies":
+        return _generate_competencies_graph_pool_lane(
+            provider_payload=provider_payload,
+            parse_model_json=parse_model_json,
+            normalize_parsed=normalize_parsed,
+            artifact_dir=artifact_dir,
+            run_id=run_id,
+            temperature_bounds=temperature_bounds,
+            base_temperature=base_temperature,
+            targeting_context=targeting_context,
+            judge_mode=judge_mode,
+        )
 
     if is_employment_bullet_lane(lane) and slot_kind == "bullets" and bullet_ids:
         return _generate_employment_bullet_lane(

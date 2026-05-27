@@ -2,56 +2,86 @@
   "status": "PASS",
   "lane_registry_equal": true,
   "all_lanes_wire_spine_c0": true,
+  "executive_summary_graph_lane_emit": true,
+  "subphase_concentration_ok": true,
+  "subphase_concentration": {
+    "C0.4": {
+      "hit_count": 2,
+      "min_required": 2,
+      "ok": true
+    },
+    "C0.3": {
+      "hit_count": 4,
+      "min_required": 2,
+      "ok": true
+    }
+  },
   "lane_wire": {
     "headline": {
       "file": "apps_rg/runtime/sections/headline_lane.py",
-      "wire_spine_c0_fec": true
+      "wire_spine_c0_fec": true,
+      "graph_lane_receipt_emit": false
     },
     "executive_summary": {
       "file": "apps_rg/runtime/sections/executive_summary_lane.py",
-      "wire_spine_c0_fec": true
+      "wire_spine_c0_fec": true,
+      "graph_lane_receipt_emit": true
     },
     "unify_bullets": {
       "file": "apps_rg/runtime/sections/unify_bullets_lane.py",
-      "wire_spine_c0_fec": true
+      "wire_spine_c0_fec": true,
+      "graph_lane_receipt_emit": false
     },
     "unify_narrative": {
       "file": "apps_rg/runtime/sections/unify_narrative_lane.py",
-      "wire_spine_c0_fec": true
+      "wire_spine_c0_fec": true,
+      "graph_lane_receipt_emit": false
     },
     "ibm_bullets": {
       "file": "apps_rg/runtime/sections/ibm_bullets_lane.py",
-      "wire_spine_c0_fec": true
+      "wire_spine_c0_fec": true,
+      "graph_lane_receipt_emit": false
     },
     "ibm_narrative": {
       "file": "apps_rg/runtime/sections/ibm_narrative_lane_execution.py",
-      "wire_spine_c0_fec": true
+      "wire_spine_c0_fec": true,
+      "graph_lane_receipt_emit": false
     },
     "competencies": {
       "file": "apps_rg/runtime/sections/competencies_lane_execution.py",
-      "wire_spine_c0_fec": true
+      "wire_spine_c0_fec": true,
+      "graph_lane_receipt_emit": false
     }
   },
   "c0_phase_code_hits": {
     "C0.1": [
       "c0_binding",
       "section_c0_retrieve",
-      "c0_fec_compose"
+      "c0_fec_compose",
+      "evidence_room",
+      "l0_binding",
+      "l1_binding"
     ],
     "C0.2": [
       "c0_binding",
       "section_c0_retrieve"
     ],
     "C0.3": [
-      "c0_binding"
+      "c0_binding",
+      "c03_graphrag_bound",
+      "c03_graph_expansion",
+      "evidence_room"
     ],
     "C0.4": [
-      "c0_binding"
+      "c0_binding",
+      "evidence_room"
     ],
     "C0.5": [
       "c0_binding",
       "section_c0_retrieve",
-      "c0_fec_compose"
+      "c0_fec_compose",
+      "c03_graphrag_bound",
+      "evidence_room"
     ],
     "C0.6": [
       "c0_binding",
@@ -61,6 +91,44 @@
       "c0_binding",
       "c0_fec_compose"
     ]
+  },
+  "runtime_proof_per_lane": {
+    "headline": {
+      "runtime_proof": "present",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260526_202915",
+      "canonical_c0_3_graph_claimed": false,
+      "graph_lane_deferred": true
+    },
+    "executive_summary": {
+      "runtime_proof": "present",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260527_062524",
+      "canonical_c0_3_graph_claimed": true,
+      "graph_lane_deferred": false
+    },
+    "unify_bullets": {
+      "runtime_proof": "present",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_bullets/real/unify_bullets_20260526_110335",
+      "canonical_c0_3_graph_claimed": false,
+      "graph_lane_deferred": true
+    },
+    "unify_narrative": {
+      "runtime_proof": "missing_receipt",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/unify_narrative/real/unify_narrative_20260523_123336"
+    },
+    "ibm_bullets": {
+      "runtime_proof": "present",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260526_190432",
+      "canonical_c0_3_graph_claimed": false,
+      "graph_lane_deferred": true
+    },
+    "ibm_narrative": {
+      "runtime_proof": "missing_receipt",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_narrative/real/ibm_narrative_20260523_124006"
+    },
+    "competencies": {
+      "runtime_proof": "missing_receipt",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260526_170331"
+    }
   },
   "full_resume_path": {
     "canonical_dispatch_integrated_spine": true,

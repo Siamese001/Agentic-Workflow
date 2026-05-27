@@ -23,6 +23,8 @@ from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_RECEIPT,
     wire_spine_c0_fec_for_section,
 )
+from apps_rg.runtime.spine.c0_graph_lane_receipt import C0_GRAPH_LANE_RECEIPT_ARTIFACT
+from apps_rg.runtime.spine.spine_c03_authority import spine_graph_refs_live
 from apps_rg.runtime.sections.competencies_lane_defaults import (
     BRIEFING_DEFAULT,
     JD_TEXT_DEFAULT,
@@ -90,7 +92,12 @@ def test_generated_lane_c0_evidence_room_e2e(
     doc = bridge.bridge_doc
     assert doc.get("producer_stage") == "section_c0_evidence_room", section_id
     assert doc.get("canonical_c0_2_claimed") is True
-    assert doc.get("canonical_c0_3_claimed") is False
+    graph_refs = list(doc.get("graph_expansion_refs") or [])
+    if spine_graph_refs_live(graph_refs):
+        assert doc.get("canonical_c0_3_claimed") is True
+        assert doc.get("core_c03_graph_rag_used") is True
+    else:
+        assert doc.get("canonical_c0_3_claimed") is False
     assert doc.get("apps_rg_c03_skills_graph_used") is True
     assert doc.get("canonical_c0_5_claimed") is True
     assert doc.get("fec_shape_only") is False
@@ -134,6 +141,8 @@ def test_generated_lane_c0_evidence_room_e2e(
     assert (artifact_dir / C0_ROOM_RECEIPT).is_file()
     assert (artifact_dir / FEC_BRIDGE_ARTIFACT).is_file()
     assert (artifact_dir / FEC_BRIDGE_RECEIPT).is_file()
+    assert (artifact_dir / C0_GRAPH_LANE_RECEIPT_ARTIFACT).is_file()
+    assert (artifact_dir / "section_spine_c0_retrieve_receipt.json").is_file()
     assert (artifact_dir / "c0_metrics.json").is_file()
 
     fec_on_disk = json.loads((artifact_dir / FEC_BRIDGE_ARTIFACT).read_text(encoding="utf-8"))

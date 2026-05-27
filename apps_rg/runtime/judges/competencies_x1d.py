@@ -24,7 +24,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
 JUDGE_RUBRIC_VERSION = "competencies_x1d_v2"
 
 COMPETENCIES_RUBRIC = """
-You are evaluating six to eight executive resume competency categories (short labels plus compact capability phrases).
+You are evaluating exactly six executive resume competency categories (short labels plus compact capability phrases).
 This is OPTIONAL ADVISORY taxonomy grading — deterministic X2 gates are authoritative for proof eligibility.
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 

@@ -11,6 +11,7 @@ from typing import Any
 
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.sections.competencies_rigor import (
+    CANDIDATE_CATEGORY_COUNT,
     MAX_CATEGORY_COUNT,
     MAX_ITEMS_PER_CATEGORY,
     MIN_CATEGORY_COUNT,
@@ -273,9 +274,9 @@ def _competencies_shape() -> SectionProductShape:
         x2_module_ref="apps_rg/runtime/validators/competencies_x2.py",
         display_field="competencies",
         shape_summary=(
-            f"{MIN_CATEGORY_COUNT}-{MAX_CATEGORY_COUNT} categories; "
+            f"graph_10x6: top {MIN_CATEGORY_COUNT} of {CANDIDATE_CATEGORY_COUNT} categories; "
             f"{MIN_ITEMS_PER_CATEGORY}-{MAX_ITEMS_PER_CATEGORY} terms/category; "
-            "compact noun phrases; ENGINEERING & PLATFORM COMPETENCIES authority"
+            "compact noun phrases; augmented_skills_graph authority"
         ),
         bounds_gate_ids=(
             "x2_competencies_min_category_count",
@@ -299,9 +300,10 @@ def _competencies_shape() -> SectionProductShape:
             "x2_competencies_keyword_repetition_limit",
         ),
         required_any_text_patterns=(
-            r"6\s*[-–]\s*8",
-            r"6 to 8",
-            r"6-8",
+            r"graph_10x6",
+            r"VERIFIED_SKILL_INVENTORY_PROJECTION",
+            "augmented_skills_graph",
+            str(CANDIDATE_CATEGORY_COUNT),
         ),
         required_all_text_patterns=(
             str(MIN_CATEGORY_COUNT),
