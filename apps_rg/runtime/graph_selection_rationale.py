@@ -40,7 +40,35 @@ JD_BOOST_RULES: tuple[tuple[tuple[str, ...], str, float], ...] = (
         "track_actuarial_risk_derivatives",
         0.08,
     ),
+    # Enhancement #5 — Phase 1 keyword expansion: regulatory/quantitative risk signals
+    (
+        (
+            "stress testing",
+            "ifrs 17",
+            "solvency ii",
+            "model risk",
+            "quantitative risk",
+            "reserving",
+            "economic capital",
+            "embedded value",
+        ),
+        "track_actuarial_risk_derivatives",
+        0.06,
+    ),
     (("aws", "cloud", "partner", "gtm", "co-sell", "hyperscaler", "revenue"), "track_data_tech_cloud_ml", 0.05),
+    # Enhancement #9 — Phase 2 keyword expansion: IBM ecosystem and FinOps signals
+    (
+        (
+            "watson",
+            "apptio",
+            "finops",
+            "solution engineering",
+            "cloud marketplace",
+            "ibm consulting",
+        ),
+        "track_data_tech_cloud_ml",
+        0.06,
+    ),
     (
         (
             "agentic",
@@ -182,6 +210,10 @@ def emit_graph_selection_rationale(
     )
     weight_audit = jd_track_weight_delta(role_family_key=role_family_key, jd_text=jd_text)
     jd_hits = extract_jd_keyword_hits(jd_text)
+    # Enhancement #1 — three_phase_jd_detected: all three career tracks hit by JD keywords.
+    # Used downstream by binding compression, hybrid boost, and X1D rubrics.
+    jd_hit_tracks = {str(h["track_id"]) for h in jd_hits}
+    three_phase_jd_detected = len(jd_hit_tracks) == 3
 
     selection_method = f"augmented_skills_graph_{section_id}"
     selected_skill_ids: list[str] = []
@@ -263,6 +295,8 @@ def emit_graph_selection_rationale(
             "targeting_only": True,
         },
         "role_family_key": role_family_key,
+        "three_phase_jd_detected": three_phase_jd_detected,
+        "jd_hit_tracks": sorted(jd_hit_tracks),
         "track_weight_audit": weight_audit,
         "jd_keyword_hits": jd_hits,
         "selection_method": selection_method,
@@ -307,8 +341,15 @@ def write_graph_selection_rationale(
     return payload
 
 
+def detect_three_phase_jd(jd_text: str) -> bool:
+    """Return True when JD keywords hit all three career track nodes."""
+    hits = extract_jd_keyword_hits(jd_text)
+    return len({str(h["track_id"]) for h in hits}) == 3
+
+
 __all__ = [
     "SCHEMA",
+    "detect_three_phase_jd",
     "emit_graph_selection_rationale",
     "extract_jd_keyword_hits",
     "jd_track_weight_delta",

@@ -5,12 +5,13 @@
   "inferred_role_families": [
     {
       "role_family": "INSURANCE_BROKERAGE_IT_INNOVATION",
-      "score": 5,
+      "score": 7,
       "evidence_terms": [
         "broker",
         "brokerage",
         "distribution technology",
         "insurance brokerage",
+        "integration ecosystems",
         "interoperability"
       ]
     },
@@ -21,6 +22,15 @@
         "carrier transformation",
         "claims",
         "underwriting"
+      ]
+    },
+    {
+      "role_family": "INSURER_IT_AI_ENABLEMENT",
+      "score": 3,
+      "evidence_terms": [
+        "it strategy",
+        "it strategy & innovation",
+        "modernization"
       ]
     },
     {
@@ -36,13 +46,6 @@
       "evidence_terms": [
         "bi"
       ]
-    },
-    {
-      "role_family": "INSURER_IT_AI_ENABLEMENT",
-      "score": 1,
-      "evidence_terms": [
-        "it strategy"
-      ]
     }
   ],
   "expected_role_family_ids": [
@@ -51,15 +54,15 @@
   "role_family_match": true,
   "projection_role_family_key_default": "INSURANCE_BROKERAGE_IT_INNOVATION",
   "inferred_track_weights_without_override": {
-    "track_actuarial_risk_derivatives": 0.0952,
-    "track_data_tech_cloud_ml": 0.5238,
+    "track_actuarial_risk_derivatives": 0.1429,
+    "track_data_tech_cloud_ml": 0.4762,
     "track_genai_agentic": 0.381
   },
   "manifest_weight_override_applied": true,
   "taxonomy_projection_mapped": true,
   "track_weights_default": {
-    "track_actuarial_risk_derivatives": 0.0952,
-    "track_data_tech_cloud_ml": 0.5238,
+    "track_actuarial_risk_derivatives": 0.1429,
+    "track_data_tech_cloud_ml": 0.4762,
     "track_genai_agentic": 0.381
   },
   "track_weights_applied": {
@@ -77,8 +80,8 @@
   "selected_pillars_ranked": [
     {
       "pillar_id": "pillar_gtm_presales_motion",
-      "skill_hits": 6,
-      "weight_sum": 3.0,
+      "skill_hits": 8,
+      "weight_sum": 5.5,
       "rank": 1
     },
     {
@@ -94,13 +97,13 @@
       "rank": 3
     },
     {
-      "pillar_id": "pillar_strategic_finance_saas",
+      "pillar_id": "pillar_cloud_data_aws",
       "skill_hits": 2,
-      "weight_sum": 1.0,
+      "weight_sum": 2.0,
       "rank": 4
     },
     {
-      "pillar_id": "pillar_technical_presales_accelerators",
+      "pillar_id": "pillar_strategic_finance_saas",
       "skill_hits": 2,
       "weight_sum": 1.0,
       "rank": 5
@@ -112,22 +115,46 @@
       "rank": 6
     },
     {
+      "pillar_id": "pillar_technical_presales_accelerators",
+      "skill_hits": 1,
+      "weight_sum": 2.0,
+      "rank": 7
+    },
+    {
       "pillar_id": "pillar_interoperability_integration_ecosystem",
       "skill_hits": 1,
       "weight_sum": 1.0,
-      "rank": 7
+      "rank": 8
+    },
+    {
+      "pillar_id": "pillar_executive_leadership",
+      "skill_hits": 1,
+      "weight_sum": 0.5,
+      "rank": 9
+    },
+    {
+      "pillar_id": "pillar_insurer_it_strategy_ai_enablement",
+      "skill_hits": 1,
+      "weight_sum": 0.5,
+      "rank": 10
+    },
+    {
+      "pillar_id": "pillar_revenue_operations",
+      "skill_hits": 1,
+      "weight_sum": 0.5,
+      "rank": 11
     },
     {
       "pillar_id": "pillar_actuarial_foundation",
       "skill_hits": 1,
       "weight_sum": 0.1,
-      "rank": 8
+      "rank": 12
     },
     {
       "pillar_id": "pillar_capital_modeling",
       "skill_hits": 1,
       "weight_sum": 0.1,
-      "rank": 9
+      "rank": 13
     }
   ],
   "selected_skills_ranked": [
@@ -144,62 +171,62 @@
       "rank": 2
     },
     {
+      "skill_id": "skill_svp_it_strategy_innovation",
+      "pillar": "pillar_insurer_it_strategy_ai_enablement",
+      "career_track": "track_data_tech_cloud_ml",
+      "rank": 3
+    },
+    {
+      "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+      "pillar": "pillar_executive_leadership",
+      "career_track": "track_data_tech_cloud_ml",
+      "rank": 4
+    },
+    {
+      "skill_id": "skill_commercial_gtm_investment_pipeline",
+      "pillar": "pillar_revenue_operations",
+      "career_track": "track_data_tech_cloud_ml",
+      "rank": 5
+    },
+    {
       "skill_id": "skill_finance_cost_optimization_dashboards",
       "pillar": "pillar_strategic_finance_saas",
       "career_track": "track_data_tech_cloud_ml",
-      "rank": 3
+      "rank": 6
     },
     {
       "skill_id": "skill_finance_ma_synergy_due_diligence",
       "pillar": "pillar_strategic_finance_saas",
       "career_track": "track_data_tech_cloud_ml",
-      "rank": 4
-    },
-    {
-      "skill_id": "skill_p2_gtm_discovery_qualification",
-      "pillar": "pillar_gtm_presales_motion",
-      "career_track": "track_data_tech_cloud_ml",
-      "rank": 5
-    },
-    {
-      "skill_id": "skill_p2_gtm_enterprise_deal_support",
-      "pillar": "pillar_gtm_presales_motion",
-      "career_track": "track_data_tech_cloud_ml",
-      "rank": 6
-    },
-    {
-      "skill_id": "skill_p2_gtm_executive_buyer_alignment",
-      "pillar": "pillar_gtm_presales_motion",
-      "career_track": "track_data_tech_cloud_ml",
       "rank": 7
     },
     {
-      "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
+      "skill_id": "skill_p2_gtm_commercial_validation_pilots",
       "pillar": "pillar_gtm_presales_motion",
       "career_track": "track_data_tech_cloud_ml",
       "rank": 8
     },
     {
-      "skill_id": "skill_p2_gtm_solution_mapping",
+      "skill_id": "skill_p2_gtm_discovery_qualification",
       "pillar": "pillar_gtm_presales_motion",
       "career_track": "track_data_tech_cloud_ml",
       "rank": 9
     },
     {
-      "skill_id": "skill_p2_gtm_stakeholder_alignment",
+      "skill_id": "skill_p2_gtm_enterprise_deal_support",
       "pillar": "pillar_gtm_presales_motion",
       "career_track": "track_data_tech_cloud_ml",
       "rank": 10
     },
     {
-      "skill_id": "skill_p2_tech_aws_modernization_patterns",
-      "pillar": "pillar_technical_presales_accelerators",
+      "skill_id": "skill_p2_gtm_executive_buyer_alignment",
+      "pillar": "pillar_gtm_presales_motion",
       "career_track": "track_data_tech_cloud_ml",
       "rank": 11
     },
     {
-      "skill_id": "skill_p2_tech_devops_pipeline_blueprint",
-      "pillar": "pillar_technical_presales_accelerators",
+      "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
+      "pillar": "pillar_gtm_presales_motion",
       "career_track": "track_data_tech_cloud_ml",
       "rank": 12
     },
@@ -252,18 +279,57 @@
       "rank": 20
     },
     {
+      "skill_id": "skill_p2_tech_aws_modernization_patterns",
+      "pillar": "pillar_technical_presales_accelerators",
+      "career_track": "manifest_supplemental",
+      "rank": 21
+    },
+    {
+      "skill_id": "skill_p2_gtm_presales_delivery_handoff",
+      "pillar": "pillar_gtm_presales_motion",
+      "career_track": "manifest_supplemental",
+      "rank": 22
+    },
+    {
+      "skill_id": "skill_p2_gtm_solution_mapping",
+      "pillar": "pillar_gtm_presales_motion",
+      "career_track": "manifest_supplemental",
+      "rank": 23
+    },
+    {
+      "skill_id": "skill_p2_gtm_stakeholder_alignment",
+      "pillar": "pillar_gtm_presales_motion",
+      "career_track": "manifest_supplemental",
+      "rank": 24
+    },
+    {
+      "skill_id": "skill_partner_aws_ecosystem",
+      "pillar": "pillar_cloud_data_aws",
+      "career_track": "manifest_supplemental",
+      "rank": 25
+    },
+    {
+      "skill_id": "skill_partner_cloud_partner_ecosystem",
+      "pillar": "pillar_cloud_data_aws",
+      "career_track": "manifest_supplemental",
+      "rank": 26
+    },
+    {
       "skill_id": "skill_sr_microservices_integration_platform",
       "pillar": "pillar_interoperability_integration_ecosystem",
       "career_track": "manifest_supplemental",
-      "rank": 21
+      "rank": 27
     }
   ],
   "selected_fact_ids": [
     "fact_certs_001",
+    "fact_consulting_001",
+    "fact_consulting_002",
     "fact_engineering_platform_001",
     "fact_engineering_platform_002",
-    "fact_engineering_platform_003",
     "fact_engineering_platform_004",
+    "fact_engineering_platform_006",
+    "fact_exec_001",
     "fact_exec_002",
     "fact_governance_001",
     "fact_governance_003",
@@ -282,14 +348,14 @@
     "actuarial_to_insurer_ai_strategy",
     "basel_ccar_to_ai_auditability",
     "data_lineage_to_ai_traceability",
-    "partner_ecosystem_to_ai_adoption",
-    "regulatory_governance_to_responsible_ai"
+    "insurtech_to_insurer_it_strategy",
+    "partner_ecosystem_to_ai_adoption"
   ],
   "expected_bridge_edge_families": [
     "domain_expertise_to_section_eligibility"
   ],
   "bridge_edge_match_rate": 0.0,
-  "pillar_match_rate": 0.6667,
+  "pillar_match_rate": 1.0,
   "skill_match_rate": 1.0,
   "manifest_expectation_match": true,
   "skill_classifications": {
@@ -304,16 +370,16 @@
       "skill_app_specific_runtime_overlay_design",
       "skill_approval_gated_workflow_design",
       "skill_capital_capital_modeling",
+      "skill_commercial_board_level_stakeholder_alignment",
+      "skill_commercial_gtm_investment_pipeline",
       "skill_finance_cost_optimization_dashboards",
       "skill_finance_ma_synergy_due_diligence",
+      "skill_p2_gtm_commercial_validation_pilots",
       "skill_p2_gtm_discovery_qualification",
       "skill_p2_gtm_enterprise_deal_support",
       "skill_p2_gtm_executive_buyer_alignment",
       "skill_p2_gtm_joint_vendor_roadmaps",
-      "skill_p2_gtm_solution_mapping",
-      "skill_p2_gtm_stakeholder_alignment",
-      "skill_p2_tech_aws_modernization_patterns",
-      "skill_p2_tech_devops_pipeline_blueprint"
+      "skill_p2_gtm_presales_delivery_handoff"
     ]
   },
   "excluded_items": [
@@ -371,9 +437,9 @@
   "brokerage_evidence_gap_documented": true,
   "track_weighted_only_pillar_match_rate": 0.3333,
   "track_underfire_notes": [
-    "expected_pillar_track_underfire:pillar_cloud_data_aws"
+    "expected_skill_track_underfire:skill_p2_tech_aws_modernization_patterns"
   ],
-  "supplemental_skill_count": 1,
+  "supplemental_skill_count": 7,
   "default_track_weights_underfire": true,
   "gtm_phase2_closeout_check": null,
   "broad_skills_ledger_used_as_authority": false,

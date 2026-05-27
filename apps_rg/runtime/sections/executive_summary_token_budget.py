@@ -27,7 +27,7 @@ from apps_rg.runtime.sections.executive_summary_context_limits import (
 
 SECTION_ID = "executive_summary"
 FAIL_CLOSED_REASON = "TOKEN_BUDGET_EXCEEDED_AFTER_TRIM"
-FAIL_CLOSED_REASON_FIRST_PASS_85PCT = "TOKEN_BUDGET_EXCEEDED_FIRST_PASS_85PCT"
+FAIL_CLOSED_REASON_FIRST_PASS_95PCT = "TOKEN_BUDGET_EXCEEDED_FIRST_PASS_95PCT"
 FAIL_SHAPE_ALTERED = "EVIDENCE_CONTRACT_OR_PROMPT_SHAPE_ALTERED"
 
 # Backward-compatible alias (tests/imports).
@@ -236,7 +236,7 @@ def context_window_provenance_receipt_fields(
     }
 
 
-def first_pass_85pct_limit_tokens(available_input_tokens: int) -> int:
+def first_pass_95pct_limit_tokens(available_input_tokens: int) -> int:
     return max(0, int(available_input_tokens * resolve_first_pass_input_utilization_max()))
 
 
@@ -246,9 +246,9 @@ def first_pass_utilization_pct(estimated_tokens: int, available_input_tokens: in
     return round(min(999.0, estimated_tokens / available_input_tokens * 100.0), 2)
 
 
-def exceeds_first_pass_85pct_policy(estimated_tokens: int, available_input_tokens: int) -> bool:
-    """W2.2: deterministic fail-closed when optional trim still leaves >85% utilization."""
-    return estimated_tokens > first_pass_85pct_limit_tokens(available_input_tokens)
+def exceeds_first_pass_95pct_policy(estimated_tokens: int, available_input_tokens: int) -> bool:
+    """W2.2: deterministic fail-closed when optional trim still leaves >95% utilization."""
+    return estimated_tokens > first_pass_95pct_limit_tokens(available_input_tokens)
 
 
 def _estimate_chars_to_tokens(char_count: int) -> int:
@@ -282,7 +282,7 @@ def build_token_budget_operator_guidance(
     payload = runtime_payload if isinstance(runtime_payload, dict) else {}
     after = int(receipt.get("compiled_prompt_tokens_after_trim") or 0)
     available = int(receipt.get("available_input_tokens") or 0)
-    first_limit = int(receipt.get("first_pass_85pct_limit_tokens") or 0)
+    first_limit = int(receipt.get("first_pass_95pct_limit_tokens") or 0)
     util_pct = float(receipt.get("first_pass_utilization_pct") or 0.0)
     util_max = float(receipt.get("first_pass_input_utilization_max") or resolve_first_pass_input_utilization_max())
     fail_reason = str(receipt.get("fail_closed_reason") or FAIL_CLOSED_REASON)
@@ -307,7 +307,7 @@ def build_token_budget_operator_guidance(
             "protected_signal": list(PROTECTED_COMPONENT_LABELS),
         }
 
-    if fail_reason == FAIL_CLOSED_REASON_FIRST_PASS_85PCT:
+    if fail_reason == FAIL_CLOSED_REASON_FIRST_PASS_95PCT:
         budget_line = first_limit
         over = max(0, after - first_limit)
         headline = (
@@ -1101,8 +1101,8 @@ def apply_executive_summary_token_budget_policy(
     shape_violations = verify_prompt_shape_preserved(
         content_for_trim, trimmed_content, srfs_mode=srfs
     )
-    first_pass_limit = first_pass_85pct_limit_tokens(available)
-    exceeds_85 = exceeds_first_pass_85pct_policy(after_tokens, available)
+    first_pass_limit = first_pass_95pct_limit_tokens(available)
+    exceeds_95 = exceeds_first_pass_95pct_policy(after_tokens, available)
     still_over = after_tokens > available
     shape_altering_required = still_over and not trim_applied
     utilization_pct = first_pass_utilization_pct(after_tokens, available)
@@ -1141,11 +1141,11 @@ def apply_executive_summary_token_budget_policy(
         "evidence_contract_preserved": not evidence_violations,
         "shape_altering_trim_forbidden": True,
         "shape_altering_trim_required_to_fit": still_over,
-        "first_pass_85pct_policy_enabled": True,
+        "first_pass_95pct_policy_enabled": True,
         "first_pass_input_utilization_max": resolve_first_pass_input_utilization_max(),
-        "first_pass_85pct_limit_tokens": first_pass_limit,
+        "first_pass_95pct_limit_tokens": first_pass_limit,
         "first_pass_utilization_pct": utilization_pct,
-        "first_pass_85pct_exceeded": exceeds_85,
+        "first_pass_95pct_exceeded": exceeds_95,
         "dispatch_allowed": True,
         "fail_closed_reason": None,
         "token_estimate_method": ESTIMATE_METHOD,
@@ -1159,9 +1159,9 @@ def apply_executive_summary_token_budget_policy(
         receipt["dispatch_allowed"] = False
         _raise_token_budget_exceeded(receipt, runtime_payload=runtime_payload)
 
-    if exceeds_85:
+    if exceeds_95:
         receipt["status"] = "FAIL"
-        receipt["fail_closed_reason"] = FAIL_CLOSED_REASON_FIRST_PASS_85PCT
+        receipt["fail_closed_reason"] = FAIL_CLOSED_REASON_FIRST_PASS_95PCT
         receipt["dispatch_allowed"] = False
         _raise_token_budget_exceeded(receipt, runtime_payload=runtime_payload)
 
@@ -1205,7 +1205,7 @@ __all__ = [
     "ContextWindowProvenance",
     "ExecutiveSummaryTokenBudgetExceeded",
     "FAIL_CLOSED_REASON",
-    "FAIL_CLOSED_REASON_FIRST_PASS_85PCT",
+    "FAIL_CLOSED_REASON_FIRST_PASS_95PCT",
     "FAIL_SHAPE_ALTERED",
     "FIRST_PASS_INPUT_UTILIZATION_MAX",
     "PROTECTED_COMPONENT_LABELS",
@@ -1217,8 +1217,8 @@ __all__ = [
     "RegenDispatchBudgetCheck",
     "estimate_regen_thread_tokens",
     "estimate_tokens_approximate",
-    "exceeds_first_pass_85pct_policy",
-    "first_pass_85pct_limit_tokens",
+    "exceeds_first_pass_95pct_policy",
+    "first_pass_95pct_limit_tokens",
     "first_pass_utilization_pct",
     "regen_dispatch_allowed",
     "resolve_context_window_provenance",

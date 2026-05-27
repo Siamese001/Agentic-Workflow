@@ -9,20 +9,23 @@
       "section_eligibility_decision": "PASS",
       "policy_violations": [],
       "selected_pillars": [
-        "pillar_gtm_presales_motion",
         "pillar_partner_gtm_alliances",
+        "pillar_gtm_presales_motion",
         "pillar_regulatory_governance",
         "pillar_revenue_commercialization",
         "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_presales_solutioning",
         "pillar_applied_ai_partner_architecture",
         "pillar_strategic_finance_saas",
         "pillar_agentic_ai_platforms",
-        "pillar_presales_solutioning",
         "pillar_technical_presales_accelerators",
-        "pillar_actuarial_foundation"
+        "pillar_executive_leadership",
+        "pillar_revenue_operations"
       ],
       "selected_skills": [
+        "skill_commercial_board_level_stakeholder_alignment",
         "skill_p2_gtm_executive_buyer_alignment",
+        "skill_partner_partner_motions",
         "skill_partner_solution_architecture"
       ],
       "directional_internal_only_skills": [],
@@ -36,20 +39,22 @@
         "skill_app_overlay_runtime_binding",
         "skill_app_specific_runtime_overlay_design",
         "skill_approval_gated_workflow_design",
+        "skill_commercial_gtm_investment_pipeline",
         "skill_finance_cost_optimization_dashboards",
         "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_commercial_validation_pilots",
         "skill_p2_gtm_discovery_qualification",
-        "skill_p2_gtm_enterprise_deal_support",
-        "skill_p2_gtm_joint_vendor_roadmaps",
-        "skill_p2_gtm_solution_mapping"
+        "skill_p2_gtm_enterprise_deal_support"
       ],
       "selected_fact_ids": [
         "fact_certs_001",
         "fact_consulting_001",
         "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
         "fact_engineering_platform_003",
         "fact_engineering_platform_004",
         "fact_engineering_platform_005",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003",
         "fact_quant_hpc_002"
@@ -58,19 +63,21 @@
         "fact_certs_001",
         "fact_consulting_001",
         "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
         "fact_engineering_platform_003",
         "fact_engineering_platform_004",
         "fact_engineering_platform_005",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003",
         "fact_quant_hpc_002"
       ],
       "blocked_facts": [
+        "fact_exec_001",
         "fact_governance_001",
         "fact_partnerships_gtm_001",
         "fact_partnerships_gtm_002",
         "fact_partnerships_gtm_004",
-        "fact_partnerships_gtm_005",
         "fact_revenue_ops_001",
         "fact_revenue_ops_004",
         "fact_revenue_ops_005",
@@ -79,11 +86,11 @@
         "fact_solutions_002"
       ],
       "DRAFT_INTERNAL_ONLY_DO_NOT_PROMOTE_exclusions": [
+        "MEDIUM_blocked_from_headline:fact_exec_001",
         "MEDIUM_blocked_from_headline:fact_governance_001",
         "MEDIUM_blocked_from_headline:fact_partnerships_gtm_001",
         "MEDIUM_blocked_from_headline:fact_partnerships_gtm_002",
         "MEDIUM_blocked_from_headline:fact_partnerships_gtm_004",
-        "MEDIUM_blocked_from_headline:fact_partnerships_gtm_005",
         "MEDIUM_blocked_from_headline:fact_revenue_ops_001",
         "MEDIUM_blocked_from_headline:fact_revenue_ops_004",
         "MEDIUM_blocked_from_headline:fact_revenue_ops_005",
@@ -97,7 +104,7 @@
         "fact_engineering_platform_004",
         "fact_engineering_platform_005",
         "fact_quant_hpc_002",
-        "fact_consulting_001"
+        "fact_engineering_platform_002"
       ],
       "track_balanced_exec_projection_present": false,
       "competencies_grouped_by_track_present": false,
@@ -109,17 +116,18 @@
       "section_eligibility_decision": "PASS",
       "policy_violations": [],
       "selected_pillars": [
-        "pillar_gtm_presales_motion",
         "pillar_partner_gtm_alliances",
+        "pillar_gtm_presales_motion",
         "pillar_regulatory_governance",
         "pillar_revenue_commercialization",
         "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_presales_solutioning",
         "pillar_applied_ai_partner_architecture",
         "pillar_strategic_finance_saas",
         "pillar_agentic_ai_platforms",
-        "pillar_presales_solutioning",
         "pillar_technical_presales_accelerators",
-        "pillar_actuarial_foundation"
+        "pillar_executive_leadership",
+        "pillar_revenue_operations"
       ],
       "selected_skills": [
         "skill_actuarial_fsa_fellowship",
@@ -131,23 +139,26 @@
         "skill_app_overlay_runtime_binding",
         "skill_app_specific_runtime_overlay_design",
         "skill_approval_gated_workflow_design",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "skill_commercial_gtm_investment_pipeline",
         "skill_finance_cost_optimization_dashboards",
         "skill_finance_ma_synergy_due_diligence",
         "skill_p2_gtm_discovery_qualification",
         "skill_p2_gtm_enterprise_deal_support",
         "skill_p2_gtm_executive_buyer_alignment",
-        "skill_p2_gtm_solution_mapping",
-        "skill_p2_gtm_stakeholder_alignment",
         "skill_partner_ibm_aws_alliance_joint_revenue",
+        "skill_partner_partner_motions",
         "skill_sr_w12_hyperscaler_alliance_co_sell"
       ],
       "directional_internal_only_skills": [],
       "blocked_skills": [
+        "skill_p2_gtm_commercial_validation_pilots",
         "skill_p2_gtm_joint_vendor_roadmaps",
         "skill_p2_tech_aws_modernization_patterns",
         "skill_partner_cloud_vendor_joint_gtm",
         "skill_partner_partner_led_ai_solutions",
         "skill_partner_partner_revenue_3m",
+        "skill_partner_pre_sales",
         "skill_partner_solution_architecture",
         "skill_sr_w12_databricks_lakehouse_fundamentals",
         "skill_sr_w12_industry_reference_architecture",
@@ -155,6 +166,7 @@
       ],
       "selected_fact_ids": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
         "fact_engineering_platform_006",
@@ -165,6 +177,7 @@
       ],
       "claim_eligible_facts": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
         "fact_engineering_platform_006",
@@ -174,11 +187,11 @@
         "fact_quant_hpc_003"
       ],
       "blocked_facts": [
+        "fact_exec_001",
         "fact_governance_001",
         "fact_partnerships_gtm_001",
         "fact_partnerships_gtm_002",
         "fact_partnerships_gtm_004",
-        "fact_partnerships_gtm_005",
         "fact_revenue_ops_001",
         "fact_revenue_ops_004",
         "fact_revenue_ops_005",
@@ -187,11 +200,11 @@
         "fact_solutions_002"
       ],
       "DRAFT_INTERNAL_ONLY_DO_NOT_PROMOTE_exclusions": [
+        "MEDIUM_blocked_from_executive_summary:fact_exec_001",
         "MEDIUM_blocked_from_executive_summary:fact_governance_001",
         "MEDIUM_blocked_from_executive_summary:fact_partnerships_gtm_001",
         "MEDIUM_blocked_from_executive_summary:fact_partnerships_gtm_002",
         "MEDIUM_blocked_from_executive_summary:fact_partnerships_gtm_004",
-        "MEDIUM_blocked_from_executive_summary:fact_partnerships_gtm_005",
         "MEDIUM_blocked_from_executive_summary:fact_revenue_ops_001",
         "MEDIUM_blocked_from_executive_summary:fact_revenue_ops_004",
         "MEDIUM_blocked_from_executive_summary:fact_revenue_ops_005",
@@ -206,6 +219,7 @@
         "fact_engineering_platform_001",
         "fact_exec_002",
         "fact_governance_003",
+        "fact_consulting_001",
         "fact_quant_hpc_001",
         "fact_quant_hpc_003"
       ],
@@ -219,17 +233,18 @@
       "section_eligibility_decision": "PASS",
       "policy_violations": [],
       "selected_pillars": [
-        "pillar_gtm_presales_motion",
         "pillar_partner_gtm_alliances",
+        "pillar_gtm_presales_motion",
         "pillar_regulatory_governance",
         "pillar_revenue_commercialization",
         "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_presales_solutioning",
         "pillar_applied_ai_partner_architecture",
         "pillar_strategic_finance_saas",
         "pillar_agentic_ai_platforms",
-        "pillar_presales_solutioning",
         "pillar_technical_presales_accelerators",
-        "pillar_actuarial_foundation"
+        "pillar_executive_leadership",
+        "pillar_revenue_operations"
       ],
       "selected_skills": [
         "skill_agent_to_human_handoff_design",
@@ -251,23 +266,27 @@
       "directional_internal_only_skills": [],
       "blocked_skills": [
         "skill_actuarial_fsa_fellowship",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "skill_commercial_gtm_investment_pipeline",
         "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_commercial_validation_pilots",
         "skill_p2_gtm_discovery_qualification",
         "skill_p2_gtm_enterprise_deal_support",
         "skill_p2_gtm_executive_buyer_alignment",
-        "skill_p2_gtm_solution_mapping",
-        "skill_p2_gtm_stakeholder_alignment",
         "skill_p2_tech_aws_modernization_patterns",
         "skill_partner_ibm_aws_alliance_joint_revenue",
+        "skill_partner_partner_motions",
+        "skill_partner_pre_sales",
         "skill_partner_solution_architecture",
         "skill_sr_w12_databricks_lakehouse_fundamentals",
         "skill_sr_w12_industry_reference_architecture"
       ],
       "selected_fact_ids": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
-        "fact_engineering_platform_002",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003",
         "fact_partnerships_gtm_001",
@@ -277,9 +296,10 @@
       ],
       "claim_eligible_facts": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
-        "fact_engineering_platform_002",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003",
         "fact_partnerships_gtm_001",
@@ -288,8 +308,8 @@
         "fact_sales_accounts_001"
       ],
       "blocked_facts": [
+        "fact_exec_001",
         "fact_governance_001",
-        "fact_partnerships_gtm_005",
         "fact_solutions_001",
         "fact_solutions_002"
       ],
@@ -301,7 +321,6 @@
       "srfs_selected_fact_ids": [
         "fact_partnerships_gtm_003",
         "fact_partnerships_gtm_001",
-        "fact_engineering_platform_002",
         "fact_revenue_ops_003",
         "fact_sales_accounts_001"
       ],
@@ -315,21 +334,22 @@
       "section_eligibility_decision": "PASS",
       "policy_violations": [],
       "selected_pillars": [
-        "pillar_gtm_presales_motion",
         "pillar_partner_gtm_alliances",
+        "pillar_gtm_presales_motion",
         "pillar_regulatory_governance",
         "pillar_revenue_commercialization",
         "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_presales_solutioning",
         "pillar_applied_ai_partner_architecture",
         "pillar_strategic_finance_saas",
         "pillar_agentic_ai_platforms",
-        "pillar_presales_solutioning",
         "pillar_technical_presales_accelerators",
-        "pillar_actuarial_foundation"
+        "pillar_executive_leadership",
+        "pillar_revenue_operations"
       ],
       "selected_skills": [
         "skill_p2_gtm_enterprise_deal_support",
-        "skill_p2_gtm_stakeholder_alignment"
+        "skill_partner_pre_sales"
       ],
       "directional_internal_only_skills": [],
       "blocked_skills": [
@@ -342,30 +362,34 @@
         "skill_app_overlay_runtime_binding",
         "skill_app_specific_runtime_overlay_design",
         "skill_approval_gated_workflow_design",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "skill_commercial_gtm_investment_pipeline",
         "skill_finance_cost_optimization_dashboards",
         "skill_finance_ma_synergy_due_diligence",
-        "skill_p2_gtm_discovery_qualification",
-        "skill_p2_gtm_executive_buyer_alignment",
-        "skill_p2_gtm_joint_vendor_roadmaps",
-        "skill_p2_gtm_solution_mapping"
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_gtm_discovery_qualification"
       ],
       "selected_fact_ids": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003"
       ],
       "claim_eligible_facts": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003"
       ],
       "blocked_facts": [
+        "fact_exec_001",
         "fact_governance_001",
-        "fact_partnerships_gtm_005",
         "fact_solutions_001",
         "fact_solutions_002"
       ],
@@ -384,20 +408,23 @@
       "section_eligibility_decision": "PASS",
       "policy_violations": [],
       "selected_pillars": [
-        "pillar_gtm_presales_motion",
         "pillar_partner_gtm_alliances",
+        "pillar_gtm_presales_motion",
         "pillar_regulatory_governance",
         "pillar_revenue_commercialization",
         "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_presales_solutioning",
         "pillar_applied_ai_partner_architecture",
         "pillar_strategic_finance_saas",
         "pillar_agentic_ai_platforms",
-        "pillar_presales_solutioning",
         "pillar_technical_presales_accelerators",
-        "pillar_actuarial_foundation"
+        "pillar_executive_leadership",
+        "pillar_revenue_operations"
       ],
       "selected_skills": [
+        "skill_p2_gtm_commercial_validation_pilots",
         "skill_p2_tech_aws_modernization_patterns",
+        "skill_partner_pre_sales",
         "skill_sr_w12_hyperscaler_alliance_co_sell",
         "skill_sr_w12_industry_reference_architecture"
       ],
@@ -412,17 +439,19 @@
         "skill_app_overlay_runtime_binding",
         "skill_app_specific_runtime_overlay_design",
         "skill_approval_gated_workflow_design",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "skill_commercial_gtm_investment_pipeline",
         "skill_finance_cost_optimization_dashboards",
         "skill_finance_ma_synergy_due_diligence",
         "skill_p2_gtm_discovery_qualification",
-        "skill_p2_gtm_enterprise_deal_support",
-        "skill_p2_gtm_executive_buyer_alignment",
-        "skill_p2_gtm_joint_vendor_roadmaps"
+        "skill_p2_gtm_enterprise_deal_support"
       ],
       "selected_fact_ids": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003",
         "fact_partnerships_gtm_002",
@@ -434,8 +463,10 @@
       ],
       "claim_eligible_facts": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003",
         "fact_partnerships_gtm_002",
@@ -446,8 +477,8 @@
         "fact_sales_accounts_002"
       ],
       "blocked_facts": [
+        "fact_exec_001",
         "fact_governance_001",
-        "fact_partnerships_gtm_005",
         "fact_solutions_001",
         "fact_solutions_002"
       ],
@@ -471,21 +502,20 @@
       "section_eligibility_decision": "PASS",
       "policy_violations": [],
       "selected_pillars": [
-        "pillar_gtm_presales_motion",
         "pillar_partner_gtm_alliances",
+        "pillar_gtm_presales_motion",
         "pillar_regulatory_governance",
         "pillar_revenue_commercialization",
         "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_presales_solutioning",
         "pillar_applied_ai_partner_architecture",
         "pillar_strategic_finance_saas",
         "pillar_agentic_ai_platforms",
-        "pillar_presales_solutioning",
         "pillar_technical_presales_accelerators",
-        "pillar_actuarial_foundation"
+        "pillar_executive_leadership",
+        "pillar_revenue_operations"
       ],
-      "selected_skills": [
-        "skill_p2_gtm_solution_mapping"
-      ],
+      "selected_skills": [],
       "directional_internal_only_skills": [],
       "blocked_skills": [
         "skill_actuarial_fsa_fellowship",
@@ -497,32 +527,36 @@
         "skill_app_overlay_runtime_binding",
         "skill_app_specific_runtime_overlay_design",
         "skill_approval_gated_workflow_design",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "skill_commercial_gtm_investment_pipeline",
         "skill_finance_cost_optimization_dashboards",
         "skill_finance_ma_synergy_due_diligence",
-        "skill_p2_gtm_discovery_qualification",
-        "skill_p2_gtm_enterprise_deal_support",
-        "skill_p2_gtm_executive_buyer_alignment",
-        "skill_p2_gtm_joint_vendor_roadmaps"
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_gtm_discovery_qualification"
       ],
       "selected_fact_ids": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003",
         "fact_sales_accounts_003"
       ],
       "claim_eligible_facts": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003",
         "fact_sales_accounts_003"
       ],
       "blocked_facts": [
+        "fact_exec_001",
         "fact_governance_001",
-        "fact_partnerships_gtm_005",
         "fact_solutions_001",
         "fact_solutions_002"
       ],
@@ -541,17 +575,18 @@
       "section_eligibility_decision": "PASS",
       "policy_violations": [],
       "selected_pillars": [
-        "pillar_gtm_presales_motion",
         "pillar_partner_gtm_alliances",
+        "pillar_gtm_presales_motion",
         "pillar_regulatory_governance",
         "pillar_revenue_commercialization",
         "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_presales_solutioning",
         "pillar_applied_ai_partner_architecture",
         "pillar_strategic_finance_saas",
         "pillar_agentic_ai_platforms",
-        "pillar_presales_solutioning",
         "pillar_technical_presales_accelerators",
-        "pillar_actuarial_foundation"
+        "pillar_executive_leadership",
+        "pillar_revenue_operations"
       ],
       "selected_skills": [
         "skill_actuarial_fsa_fellowship",
@@ -563,45 +598,49 @@
         "skill_app_overlay_runtime_binding",
         "skill_app_specific_runtime_overlay_design",
         "skill_approval_gated_workflow_design",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "skill_commercial_gtm_investment_pipeline",
         "skill_finance_cost_optimization_dashboards",
         "skill_finance_ma_synergy_due_diligence",
+        "skill_p2_gtm_commercial_validation_pilots",
         "skill_p2_gtm_discovery_qualification",
         "skill_p2_gtm_enterprise_deal_support",
         "skill_p2_gtm_executive_buyer_alignment",
         "skill_p2_gtm_joint_vendor_roadmaps",
-        "skill_p2_gtm_solution_mapping",
-        "skill_p2_gtm_stakeholder_alignment",
         "skill_p2_tech_aws_modernization_patterns",
         "skill_partner_cloud_vendor_joint_gtm",
         "skill_partner_ibm_aws_alliance_joint_revenue",
         "skill_partner_partner_led_ai_solutions",
+        "skill_partner_partner_motions",
         "skill_partner_partner_revenue_3m",
-        "skill_partner_solution_architecture",
-        "skill_sr_w12_databricks_lakehouse_fundamentals",
-        "skill_sr_w12_hyperscaler_alliance_co_sell"
+        "skill_partner_pre_sales"
       ],
       "directional_internal_only_skills": [],
       "blocked_skills": [],
       "selected_fact_ids": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003"
       ],
       "claim_eligible_facts": [
         "fact_certs_001",
+        "fact_consulting_001",
         "fact_engineering_platform_001",
         "fact_engineering_platform_004",
+        "fact_engineering_platform_006",
         "fact_exec_002",
         "fact_governance_003"
       ],
       "blocked_facts": [
+        "fact_exec_001",
         "fact_governance_001",
         "fact_partnerships_gtm_001",
         "fact_partnerships_gtm_002",
         "fact_partnerships_gtm_004",
-        "fact_partnerships_gtm_005",
         "fact_revenue_ops_001",
         "fact_revenue_ops_004",
         "fact_revenue_ops_005",

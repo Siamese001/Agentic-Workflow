@@ -1,6 +1,6 @@
 # P1-W4 — Track-weighted graph expansion
 
-**Generated:** 2026-05-26T20:40:16Z  
+**Generated:** 2026-05-27T12:06:46Z  
 **Plan:** graph-skills-hardening-f3a8c1  
 **Role family:** SVP_ENGINEERING_AI_PLATFORM
 
@@ -45,7 +45,7 @@
 
 - c03_graph_bound_status: **BOUND**
 - c03_binding_surface: `apps_rg/fact_inventory/track_weighted_graph_expansion`
-- c03_graph_expansion_ref: `ref:graph:track_weighted_expansion:46d05acee2450b0c`
+- c03_graph_expansion_ref: `ref:graph:track_weighted_expansion:9ce93d9b1413282d`
 - c03_graph_hop_paths_count: **22**
 - c03_selected_tracks: ['track_actuarial_risk_derivatives', 'track_data_tech_cloud_ml', 'track_genai_agentic']
 - non_graph_evidence_items_count: **0**
@@ -59,6 +59,6 @@
 
 ## agentic_core isolation
 
-- isolation_verdict: **ISOLATED_PREEXISTING_CHURN**
+- isolation_verdict: **CLEAN**
 - touched_by_this_wave: **False**
-- dirty_files: `['agentic_core/L2_execution/regen/prompt_lock.py', 'agentic_core/runtime/contracts/l1_plan_contract.py', 'agentic_core/runtime/contracts/route_contract.py', 'agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py']`
+- dirty_files: `[]`

@@ -1,6 +1,6 @@
 {
   "schema": "p2_w9_ibm_unify_runtime_rca_v1",
-  "generated_at": "2026-05-26T20:40:15Z",
+  "generated_at": "2026-05-27T12:06:45Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "sprint": "P2-W9-IBM-UNIFY-RUNTIME-CLOSEOUT",
   "unify_narrative_prior_blocker": "X3_ALLOW with proof_eligible=false: unify_narrative lane omitted compute_lane_proof_bundle and run_manifest proof_eligible (cli PASS_NONCERTIFYING_RUNTIME_PROOF).",

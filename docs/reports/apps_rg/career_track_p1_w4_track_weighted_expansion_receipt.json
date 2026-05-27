@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-26T20:40:16Z",
+  "generated_at": "2026-05-27T12:06:46Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4",
   "closeout_wave": "P1-W4-CLOSEOUT",
@@ -1956,7 +1956,7 @@
     },
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:46d05acee2450b0c",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:9ce93d9b1413282d",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -2011,7 +2011,7 @@
     "c03_graphrag_bound_document": {
       "schema_version": "c03_graphrag_bound_v1",
       "section_id": "executive_summary",
-      "generated_at_utc": "2026-05-26T20:40:16.377108+00:00",
+      "generated_at_utc": "2026-05-27T12:06:46.351557+00:00",
       "c03_graphrag_bound_status": "BOUND",
       "source_authority": "augmented_skills_graph",
       "graph_expansion_allowed": true,
@@ -2100,9 +2100,9 @@
         "ref:graph:fact_lineage:fact_revenue_ops_005",
         "ref:graph:fact_lineage:fact_sales_accounts_001"
       ],
-      "graph_sig": "f7845defbe361451187fb10a16eed021",
+      "graph_sig": "d5120b7af192979cefe01ad95fdf5d6b",
       "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-      "graph_digest": "46d05acee2450b0cf95736c55e1b3219d27915c84e6e21e11288539aaeb2b900",
+      "graph_digest": "9ce93d9b1413282df54be716124d19cb3bbcea4ddf2643f71aa4d0afa8a72b8d",
       "graph_version": "master_skills_arsenal_graph_v1",
       "evidence_items_count": 14,
       "final_evidence_contract_snapshot": {
@@ -2111,6 +2111,7 @@
         "source_authority": "augmented_skills_graph",
         "support_status": "SUPPORTED",
         "support_target_met": true,
+        "support_target_derivation": "graph_lane_v1",
         "not_applicable_reason": "",
         "graph_expansion_allowed": true,
         "graph_expansion_refs": [
@@ -2198,9 +2199,9 @@
           "ref:graph:fact_lineage:fact_revenue_ops_005",
           "ref:graph:fact_lineage:fact_sales_accounts_001"
         ],
-        "graph_sig": "f7845defbe361451187fb10a16eed021",
+        "graph_sig": "d5120b7af192979cefe01ad95fdf5d6b",
         "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-        "graph_digest": "46d05acee2450b0cf95736c55e1b3219d27915c84e6e21e11288539aaeb2b900",
+        "graph_digest": "9ce93d9b1413282df54be716124d19cb3bbcea4ddf2643f71aa4d0afa8a72b8d",
         "graph_version": "master_skills_arsenal_graph_v1",
         "evidence_items": [
           {
@@ -2330,13 +2331,14 @@
             "career_track": "track_data_tech_cloud_ml"
           }
         ],
-        "evidence_collection_timestamp": "2026-05-26T20:40:16.377108+00:00",
+        "evidence_collection_timestamp": "2026-05-27T12:06:46.351557+00:00",
         "fec_shape_only": true,
         "canonical_final_evidence_contract_emitted": false,
         "recommended_artifact_name": "section_graph_binding_fec_snapshot.json"
       },
       "support_status": "SUPPORTED",
       "support_target_met": true,
+      "support_target_derivation": "graph_lane_v1",
       "binding_kind": "section_c03_graph_binding",
       "binding_classification": "SECTION_GRAPH_CONTEXT_BINDING_NOT_PRODUCT_C0_3",
       "is_full_c0_3_graphrag": false,
@@ -2381,16 +2383,19 @@
         "no claim of canonical C0.5 FinalEvidenceContract unless spine FEC was emitted and consumed by spine PA",
         "no claim of durable write unless UWG commit path executed",
         "section runtime_exhaust_bundle.json is lane-local exhaust refs, not spine RuntimeExhaustBundle"
-      ]
+      ],
+      "graph_expansion_mode": "incident_edge_v1",
+      "graph_hop_paths_count_semantics": "count of graph edge refs touching selected proof fact nodes (1-hop incident); not a BFS depth-2 traverse unless graph_expansion_mode=multi_hop_v1",
+      "graph_hop_bounds_policy_note": "graph_hop_bounds in native_c03_final_evidence.json is ACL policy max depth; exec-summary c03_graphrag_bound materializes TRACK_WEIGHTED_MULTI_HOP paths when pool resolves"
     },
     "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-    "graph_digest": "46d05acee2450b0cf95736c55e1b3219d27915c84e6e21e11288539aaeb2b900",
+    "graph_digest": "9ce93d9b1413282df54be716124d19cb3bbcea4ddf2643f71aa4d0afa8a72b8d",
     "graph_version": "master_skills_arsenal_graph_v1"
   },
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:46d05acee2450b0c",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:9ce93d9b1413282d",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -2407,24 +2412,9 @@
     ]
   },
   "agentic_core_isolation": {
-    "git_diff_name_only_agentic_core": [
-      "agentic_core/L2_execution/regen/prompt_lock.py",
-      "agentic_core/runtime/contracts/l1_plan_contract.py",
-      "agentic_core/runtime/contracts/route_contract.py",
-      "agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py"
-    ],
-    "git_status_short_agentic_core": [
-      "M agentic_core/L2_execution/regen/prompt_lock.py",
-      "M agentic_core/runtime/contracts/l1_plan_contract.py",
-      "M agentic_core/runtime/contracts/route_contract.py",
-      "M agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py"
-    ],
-    "dirty_files": [
-      "agentic_core/L2_execution/regen/prompt_lock.py",
-      "agentic_core/runtime/contracts/l1_plan_contract.py",
-      "agentic_core/runtime/contracts/route_contract.py",
-      "agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py"
-    ],
+    "git_diff_name_only_agentic_core": [],
+    "git_status_short_agentic_core": [],
+    "dirty_files": [],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
@@ -2436,8 +2426,8 @@
       "docs/reports/apps_rg/fixtures/p1_w4",
       ".cursor/plans/graph-skills-hardening-f3a8c1.md"
     ],
-    "workspace_guard_clean": false,
-    "isolation_verdict": "ISOLATED_PREEXISTING_CHURN",
+    "workspace_guard_clean": true,
+    "isolation_verdict": "CLEAN",
     "evidence": "P1-W4 closeout changed only apps_rg/fact_inventory, apps_rg/runtime/proof_pool_resolver.py, tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope."
   }
 }

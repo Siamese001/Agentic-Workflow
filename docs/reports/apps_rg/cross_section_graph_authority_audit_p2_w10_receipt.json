@@ -1,6 +1,6 @@
 {
   "schema": "cross_section_graph_authority_audit_p2_w10_v1",
-  "generated_at": "2026-05-26T20:40:15Z",
+  "generated_at": "2026-05-27T12:06:46Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W10",
   "all_sections_trace_to_augmented_skills_graph": true,
@@ -27,7 +27,7 @@
       "broad_skills_ledger_used_as_authority": false,
       "selection_method": null,
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 43,
+      "c03_graph_hop_paths_count": 4,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
       "allowed_fact_count": 7

@@ -13,15 +13,15 @@ from apps_rg.runtime.spine.front_contracts import (
 from apps_rg.runtime.dispatch.executive_summary_pa import compile_executive_summary_prompt
 from apps_rg.runtime.sections.executive_summary_token_budget import (
     FAIL_CLOSED_REASON,
-    FAIL_CLOSED_REASON_FIRST_PASS_85PCT,
+    FAIL_CLOSED_REASON_FIRST_PASS_95PCT,
     FAIL_SHAPE_ALTERED,
     ExecutiveSummaryTokenBudgetExceeded,
     apply_executive_summary_token_budget_policy,
     evidence_contract_digest,
     estimate_tokens_approximate,
-    exceeds_first_pass_85pct_policy,
+    exceeds_first_pass_95pct_policy,
     extract_evidence_contract_snapshot,
-    first_pass_85pct_limit_tokens,
+    first_pass_95pct_limit_tokens,
     protected_fact_ids_from_payload,
     resolve_context_window_provenance,
     resolve_first_pass_input_utilization_max,
@@ -149,10 +149,10 @@ def test_blocks_instead_of_shape_altering_when_optional_trim_insufficient():
     assert receipt["status"] == "FAIL"
     assert receipt["fail_closed_reason"] in (
         FAIL_CLOSED_REASON,
-        FAIL_CLOSED_REASON_FIRST_PASS_85PCT,
+        FAIL_CLOSED_REASON_FIRST_PASS_95PCT,
     )
     assert receipt["dispatch_allowed"] is False
-    assert receipt["first_pass_85pct_policy_enabled"] is True
+    assert receipt["first_pass_95pct_policy_enabled"] is True
     assert receipt["shape_altering_trim_forbidden"] is True
     assert receipt["evidence_contract_preserved"] is True
     assert receipt["evidence_contract_digest_before"] == receipt["evidence_contract_digest_after"]
@@ -175,7 +175,7 @@ def test_fail_closed_when_required_content_still_exceeds_budget():
     assert receipt["status"] == "FAIL"
     assert receipt["fail_closed_reason"] in (
         FAIL_CLOSED_REASON,
-        FAIL_CLOSED_REASON_FIRST_PASS_85PCT,
+        FAIL_CLOSED_REASON_FIRST_PASS_95PCT,
     )
     assert receipt["dispatch_allowed"] is False
 
@@ -204,7 +204,7 @@ def test_apply_policy_writes_pass_receipt_when_optional_trim_fits(tmp_path: Path
     assert saved["provider_context_window_source"] == "ENV_VLLM_MAX_MODEL_LEN"
     assert saved["server_context_window_verified"] is False
     assert saved.get("server_context_window_warning")
-    assert saved["first_pass_85pct_policy_enabled"] is True
+    assert saved["first_pass_95pct_policy_enabled"] is True
     assert out.artifact.messages[0]["content"]
 
 
@@ -218,27 +218,27 @@ def test_context_window_provenance_defaults_to_env_unverified(monkeypatch) -> No
     assert prov.server_context_window_warning
 
 
-def test_first_pass_85pct_policy_blocks_between_cap_and_100_percent() -> None:
+def test_first_pass_95pct_policy_blocks_between_cap_and_100_percent() -> None:
     available = 8464
     util_max = resolve_first_pass_input_utilization_max()
-    limit = first_pass_85pct_limit_tokens(available)
+    limit = first_pass_95pct_limit_tokens(available)
     assert limit == int(8464 * util_max)
-    assert exceeds_first_pass_85pct_policy(limit + 1, available)
-    assert not exceeds_first_pass_85pct_policy(limit, available)
+    assert exceeds_first_pass_95pct_policy(limit + 1, available)
+    assert not exceeds_first_pass_95pct_policy(limit, available)
 
 
 def test_brown_scale_first_pass_fits_default_utilization_at_16k_window() -> None:
     """Regression: trimmed Brown blockers ~12034 est.; p50 PASS dispatch ~12625 @ 13824."""
     available = 16384 - 2048 - 512
     assert available == 13824
-    limit = first_pass_85pct_limit_tokens(available)
+    limit = first_pass_95pct_limit_tokens(available)
     assert limit >= 12625
-    assert not exceeds_first_pass_85pct_policy(12034, available)
-    assert not exceeds_first_pass_85pct_policy(12625, available)
+    assert not exceeds_first_pass_95pct_policy(12034, available)
+    assert not exceeds_first_pass_95pct_policy(12625, available)
 
 
-def test_apply_policy_fail_closed_on_first_pass_85pct_after_optional_trim() -> None:
-    # Optional trim must not drop below 92%% first-pass gate; tight window forces block.
+def test_apply_policy_fail_closed_on_first_pass_95pct_after_optional_trim() -> None:
+    # Optional trim must not drop below 95% first-pass gate; tight window forces block.
     payload = _minimal_payload(briefing="B" * 24000)
     payload["jd_text"] = "J" * 12000
     compiled = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
@@ -252,8 +252,8 @@ def test_apply_policy_fail_closed_on_first_pass_85pct_after_optional_trim() -> N
             provider_context_window=8000,
         )
     receipt = excinfo.value.receipt
-    assert receipt["fail_closed_reason"] == FAIL_CLOSED_REASON_FIRST_PASS_85PCT
-    assert receipt["first_pass_85pct_exceeded"] is True
+    assert receipt["fail_closed_reason"] == FAIL_CLOSED_REASON_FIRST_PASS_95PCT
+    assert receipt["first_pass_95pct_exceeded"] is True
     assert receipt["dispatch_allowed"] is False
     guidance = receipt.get("operator_guidance")
     assert isinstance(guidance, dict)

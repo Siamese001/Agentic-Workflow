@@ -1,6 +1,6 @@
 {
   "schema": "all_sections_c03_graph_binding_p2_w2_v1",
-  "generated_at": "2026-05-26T20:40:14Z",
+  "generated_at": "2026-05-27T12:06:45Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W2",
   "sections": {
@@ -12,7 +12,7 @@
     },
     "executive_summary": {
       "c03_graph_bound_status": "BOUND",
-      "graph_hop_paths_count": 43,
+      "graph_hop_paths_count": 4,
       "non_graph_evidence_items_count": 0,
       "broad_skills_ledger_used_as_authority": false
     },

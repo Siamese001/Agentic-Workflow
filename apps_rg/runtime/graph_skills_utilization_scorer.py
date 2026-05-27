@@ -19,6 +19,13 @@ SEMANTIC_VARIANT_MAP: dict[str, tuple[str, ...]] = {
     "platform engineering": ("platform engineering", "platform-engineering"),
     "governed runtime": ("governed runtimes",),
     "insurtech": ("insurtech", "insurance technology"),
+    # Enhancement #6 — Phase 1 variants: actuarial/risk terminology equivalences
+    "actuarial modeling": ("actuarial analytics", "risk modeling", "risk analytics", "actuarial analysis"),
+    "capital risk": ("capital modeling", "regulatory capital", "risk quantification", "risk capital"),
+    "stress testing": ("stress tests", "regulatory stress test", "ccar stress", "model stress"),
+    # Enhancement #6 — Phase 2 variants: data platform and cloud terminology equivalences
+    "enterprise data platform": ("cloud data platform", "data and cloud", "data platform engineering"),
+    "cloud data": ("cloud and data", "data cloud", "cloud data services"),
 }
 
 

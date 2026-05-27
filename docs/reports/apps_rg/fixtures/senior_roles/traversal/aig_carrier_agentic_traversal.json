@@ -5,13 +5,31 @@
   "inferred_role_families": [
     {
       "role_family": "INSURANCE_CARRIER_TRANSFORMATION",
-      "score": 5,
+      "score": 7,
       "evidence_terms": [
         "agentic ai transformation",
         "carrier transformation",
         "claims",
+        "global head of agentic",
         "insurance carrier",
         "underwriting"
+      ]
+    },
+    {
+      "role_family": "ENGINEERING_PLATFORM",
+      "score": 3,
+      "evidence_terms": [
+        "agentic",
+        "agentic ai",
+        "global head"
+      ]
+    },
+    {
+      "role_family": "EXECUTIVE_LEADERSHIP",
+      "score": 2,
+      "evidence_terms": [
+        "executive steering",
+        "global head"
       ]
     },
     {
@@ -29,17 +47,10 @@
       ]
     },
     {
-      "role_family": "ENGINEERING_PLATFORM",
+      "role_family": "INSURER_IT_AI_ENABLEMENT",
       "score": 1,
       "evidence_terms": [
-        "agentic"
-      ]
-    },
-    {
-      "role_family": "EXECUTIVE_LEADERSHIP",
-      "score": 1,
-      "evidence_terms": [
-        "executive steering"
+        "modernization"
       ]
     }
   ],
@@ -49,16 +60,16 @@
   "role_family_match": true,
   "projection_role_family_key_default": "INSURANCE_CARRIER_TRANSFORMATION",
   "inferred_track_weights_without_override": {
-    "track_actuarial_risk_derivatives": 0.3478,
-    "track_data_tech_cloud_ml": 0.2609,
-    "track_genai_agentic": 0.3913
+    "track_actuarial_risk_derivatives": 0.344,
+    "track_data_tech_cloud_ml": 0.24,
+    "track_genai_agentic": 0.416
   },
   "manifest_weight_override_applied": true,
   "taxonomy_projection_mapped": true,
   "track_weights_default": {
-    "track_actuarial_risk_derivatives": 0.3478,
-    "track_data_tech_cloud_ml": 0.2609,
-    "track_genai_agentic": 0.3913
+    "track_actuarial_risk_derivatives": 0.344,
+    "track_data_tech_cloud_ml": 0.24,
+    "track_genai_agentic": 0.416
   },
   "track_weights_applied": {
     "track_actuarial_risk_derivatives": 0.35,
@@ -110,27 +121,27 @@
       "rank": 6
     },
     {
-      "pillar_id": "pillar_strategic_finance_saas",
-      "skill_hits": 2,
-      "weight_sum": 0.5,
-      "rank": 7
-    },
-    {
       "pillar_id": "pillar_actuarial_foundation",
       "skill_hits": 1,
       "weight_sum": 0.35,
-      "rank": 8
+      "rank": 7
     },
     {
       "pillar_id": "pillar_derivatives_structured",
       "skill_hits": 1,
       "weight_sum": 0.35,
-      "rank": 9
+      "rank": 8
     },
     {
       "pillar_id": "pillar_greeks_hedging",
       "skill_hits": 1,
       "weight_sum": 0.35,
+      "rank": 9
+    },
+    {
+      "pillar_id": "pillar_executive_leadership",
+      "skill_hits": 1,
+      "weight_sum": 0.25,
       "rank": 10
     },
     {
@@ -138,6 +149,12 @@
       "skill_hits": 1,
       "weight_sum": 0.25,
       "rank": 11
+    },
+    {
+      "pillar_id": "pillar_revenue_operations",
+      "skill_hits": 1,
+      "weight_sum": 0.25,
+      "rank": 12
     }
   ],
   "selected_skills_ranked": [
@@ -202,14 +219,14 @@
       "rank": 10
     },
     {
-      "skill_id": "skill_finance_cost_optimization_dashboards",
-      "pillar": "pillar_strategic_finance_saas",
+      "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+      "pillar": "pillar_executive_leadership",
       "career_track": "track_data_tech_cloud_ml",
       "rank": 11
     },
     {
-      "skill_id": "skill_finance_ma_synergy_due_diligence",
-      "pillar": "pillar_strategic_finance_saas",
+      "skill_id": "skill_commercial_gtm_investment_pipeline",
+      "pillar": "pillar_revenue_operations",
       "career_track": "track_data_tech_cloud_ml",
       "rank": 12
     },
@@ -391,6 +408,8 @@
     "fact_engineering_platform_002",
     "fact_engineering_platform_003",
     "fact_engineering_platform_004",
+    "fact_engineering_platform_006",
+    "fact_exec_001",
     "fact_exec_002",
     "fact_governance_001",
     "fact_governance_002",
@@ -398,8 +417,7 @@
     "fact_governance_004",
     "fact_governance_005",
     "fact_quant_hpc_003",
-    "fact_revenue_ops_004",
-    "fact_revenue_ops_005"
+    "fact_revenue_ops_001"
   ],
   "selected_bridge_edge_families": [
     "actuarial_to_agentic_transformation",
@@ -409,8 +427,7 @@
     "domain_expertise_to_section_eligibility",
     "insurance_to_underwriting_claims_ops",
     "insurtech_to_insurer_it_strategy",
-    "partner_ecosystem_to_ai_adoption",
-    "regulatory_governance_to_responsible_ai"
+    "partner_ecosystem_to_ai_adoption"
   ],
   "expected_bridge_edge_families": [
     "actuarial_to_agentic_transformation",
@@ -441,9 +458,9 @@
       "skill_cache_fallback_grounded_action_routing",
       "skill_capital_capital_modeling",
       "skill_capital_regulatory_capital",
-      "skill_confidence_based_escalation",
-      "skill_context_engineering",
-      "skill_contradiction_and_lineage_handling"
+      "skill_commercial_board_level_stakeholder_alignment",
+      "skill_commercial_gtm_investment_pipeline",
+      "skill_confidence_based_escalation"
     ]
   },
   "excluded_items": [

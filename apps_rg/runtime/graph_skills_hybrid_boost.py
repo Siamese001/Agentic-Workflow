@@ -21,6 +21,22 @@ _FACT_ID_TOKEN_RE = re.compile(r"\bfact_[a-z0-9_]+\b", re.IGNORECASE)
 
 HYBRID_SECTIONS_DEFAULT: tuple[str, ...] = ("executive_summary",)
 
+# Enhancement #7 — narrative sections to add for three-phase JDs.
+# The career arc story most needs JD-signal-informed fact ordering in narrative lanes.
+_HYBRID_NARRATIVE_SECTIONS: tuple[str, ...] = ("unify_narrative", "ibm_narrative")
+
+
+def hybrid_sections_for_jd(three_phase: bool) -> tuple[str, ...]:
+    """Return the set of sections to apply hybrid reorder for, based on JD posture.
+
+    For three-phase JDs (all three career tracks hit), narrative sections are added
+    because they carry the chronological career arc where era-ordering matters most.
+    Pool widening is still forbidden (NEG-3 law applies regardless of section set).
+    """
+    if three_phase:
+        return HYBRID_SECTIONS_DEFAULT + _HYBRID_NARRATIVE_SECTIONS
+    return HYBRID_SECTIONS_DEFAULT
+
 
 def _fact_ids_from_plan(plan: Mapping[str, Any]) -> set[str]:
     out: set[str] = set()
@@ -291,4 +307,5 @@ __all__ = [
     "attempt_hybrid_pool_widen",
     "build_hybrid_graph_boost_receipt",
     "collect_rejected_hybrid_widen_attempts",
+    "hybrid_sections_for_jd",
 ]

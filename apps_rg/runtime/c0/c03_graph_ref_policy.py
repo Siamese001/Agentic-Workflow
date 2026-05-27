@@ -29,6 +29,22 @@ MECHANISM_SKILL_MARKERS: tuple[str, ...] = (
     "dense_sparse",
 )
 
+# Enhancement #3 — Phase 1 skill markers for phase-diversity enforcement.
+# Skills whose IDs contain these tokens are treated as Phase 1 claim candidates.
+PHASE1_SKILL_MARKERS: tuple[str, ...] = (
+    "actuarial",
+    "derivatives",
+    "capital_risk",
+    "ccar",
+    "basel",
+    "stress_test",
+    "model_risk",
+    "reserving",
+    "embedded_value",
+    "quantitative_risk",
+    "solvency",
+)
+
 EXECUTIVE_CAPABILITY_FRAMES: tuple[tuple[str, str], ...] = (
     ("governed_agentic", "governed enterprise AI platform delivery"),
     ("deterministic_route", "deterministic runtime control and routing discipline"),
@@ -38,12 +54,21 @@ EXECUTIVE_CAPABILITY_FRAMES: tuple[tuple[str, str], ...] = (
     ("basel", "regulatory data lineage and risk reporting discipline"),
     ("cloud_data", "cloud data platform engineering for enterprise programs"),
     ("workflow_adoption", "enterprise workflow adoption and operating model change"),
+    # Enhancement #4 — Phase 1 executive capability frames for three-phase JDs
+    ("actuarial_risk", "actuarial risk quantification and capital modeling"),
+    ("ccar_stress", "regulatory stress testing and model risk governance"),
+    ("derivatives_risk", "derivatives risk analytics and structured product pricing"),
 )
 
 
 def _is_mechanism_skill(skill_id: str) -> bool:
     low = str(skill_id or "").lower()
     return any(m in low for m in MECHANISM_SKILL_MARKERS)
+
+
+def _is_phase1_skill(skill_id: str) -> bool:
+    low = str(skill_id or "").lower()
+    return any(m in low for m in PHASE1_SKILL_MARKERS)
 
 
 def resolve_role_family_projection(
@@ -155,6 +180,18 @@ def compress_binding_for_executive_summary(
                 continue
             mech_kept += 1
         kept.append(sid)
+
+    # Enhancement #3 — phase-diversity slot: when no Phase 1 skill survived ranking
+    # (common when all input skills are Phase 3), inject the top Phase 1 candidate
+    # in place of the last kept skill. Cap at MAX_CLAIM_SUPPORT_SKILLS_PER_FACT.
+    # Only applies when at least one Phase 1 candidate exists in the input set.
+    p1_candidates = [s for s in skills if _is_phase1_skill(s) and s not in kept]
+    if p1_candidates and not any(_is_phase1_skill(s) for s in kept):
+        if len(kept) >= MAX_CLAIM_SUPPORT_SKILLS_PER_FACT:
+            kept[-1] = p1_candidates[0]
+        else:
+            kept.append(p1_candidates[0])
+
     suppressed = [s for s in skills if s not in kept]
     clusters = list(out.get("skill_cluster_refs") or [])
     targeting_pillars = [p for p in clusters if str(p).startswith("pillar_") and p in pillar_hints][

@@ -14,12 +14,12 @@
 | Slug | Status | Pillar match | Skill match | RF match | Override required |
 |------|--------|--------------|-------------|----------|-----------------|
 | `aig_carrier_agentic` | PASS | 1.0 | 1.0 | True | True |
-| `lincoln_insurer_it_ai` | PASS | 0.75 | 1.0 | True | True |
+| `lincoln_insurer_it_ai` | PASS | 1.0 | 1.0 | True | True |
 | `citi_banking_platform_ai` | PASS | 1.0 | 1.0 | True | True |
-| `brown_brokerage_it` | PASS_WITH_DOCUMENTED_GAP | 0.6667 | 1.0 | True | True |
+| `brown_brokerage_it` | PASS_WITH_DOCUMENTED_GAP | 1.0 | 1.0 | True | True |
 | `anthropic_partner_applied_ai` | PASS | 1.0 | 1.0 | True | True |
-| `gtm_presales_baseline` | PASS | 1.0 | 0.8 | True | True |
-| `ai_data_platform_professional_services` | PASS | 0.6 | 0.6364 | True | True |
+| `gtm_presales_baseline` | PASS | 1.0 | 1.0 | True | True |
+| `ai_data_platform_professional_services` | PASS | 0.7 | 0.9091 | True | True |
 
 **NEXT_RECOMMENDED_WAVE:** W4_or_W14_multilane_section_projection_per_role
 

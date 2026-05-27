@@ -108,6 +108,14 @@ ROLE_FAMILY_TRACK_WEIGHTS: dict[str, dict[str, float]] = {
         "track_data_tech_cloud_ml": 0.50,
         "track_genai_agentic": 0.35,
     },
+    # Enhancement #2 — three-phase balanced profile for JDs requiring all career eras equally.
+    # Used when detect_three_phase_jd() is True and no domain-specific profile matches.
+    # Weights kept within ±0.11 of each other to prevent any single track dominating.
+    "THREE_PHASE_GENERALIST": {
+        "track_actuarial_risk_derivatives": 0.27,
+        "track_data_tech_cloud_ml": 0.38,
+        "track_genai_agentic": 0.35,
+    },
 }
 
 # Taxonomy ids with dedicated W0.5b projection profiles (JD targeting only).
@@ -250,8 +258,40 @@ def resolve_career_track_weights(
             bumps["track_actuarial_risk_derivatives"] = max(
                 bumps.get("track_actuarial_risk_derivatives", 0.0), 0.08
             )
+        # Enhancement #5 — Phase 1 keyword expansion: regulatory/quantitative risk signals
+        if any(
+            k in jd
+            for k in (
+                "stress testing",
+                "ifrs 17",
+                "solvency ii",
+                "model risk",
+                "quantitative risk",
+                "reserving",
+                "economic capital",
+                "embedded value",
+            )
+        ):
+            bumps["track_actuarial_risk_derivatives"] = max(
+                bumps.get("track_actuarial_risk_derivatives", 0.0), 0.06
+            )
         if any(k in jd for k in ("aws", "cloud", "partner", "gtm", "co-sell", "hyperscaler", "revenue")):
             bumps["track_data_tech_cloud_ml"] = 0.05
+        # Enhancement #9 — Phase 2 keyword expansion: IBM ecosystem and FinOps signals
+        if any(
+            k in jd
+            for k in (
+                "watson",
+                "apptio",
+                "finops",
+                "solution engineering",
+                "cloud marketplace",
+                "ibm consulting",
+            )
+        ):
+            bumps["track_data_tech_cloud_ml"] = max(
+                bumps.get("track_data_tech_cloud_ml", 0.0), 0.06
+            )
         if any(
             k in jd
             for k in (
@@ -296,6 +336,41 @@ def resolve_career_track_weights(
         for track, bump in bumps.items():
             base[track] = base.get(track, 0.0) + bump
     return _normalize_weights(base)
+
+
+def _three_phase_jd_hit(jd_text: str) -> bool:
+    """Return True when JD keywords independently bump all three career track nodes.
+
+    Mirrors the bump keyword sets in resolve_career_track_weights without importing
+    graph_selection_rationale (would create a circular dependency).
+    """
+    jd = jd_text.lower()
+    p1_hit = any(
+        k in jd
+        for k in (
+            "actuarial", "derivatives", "greeks", "basel", "ccar", "capital modeling",
+            "underwriting", "claims", "policy administration", "insurance industry", "insurance carrier",
+            "stress testing", "ifrs 17", "solvency ii", "model risk", "quantitative risk",
+            "reserving", "economic capital", "embedded value",
+        )
+    )
+    p2_hit = any(
+        k in jd
+        for k in (
+            "aws", "cloud", "partner", "gtm", "co-sell", "hyperscaler", "revenue",
+            "watson", "apptio", "finops", "solution engineering", "cloud marketplace", "ibm consulting",
+            "it strategy", "enterprise architecture", "innovation incubation", "data platforms",
+            "technology strategy",
+        )
+    )
+    p3_hit = any(
+        k in jd
+        for k in (
+            "agentic", "graphrag", "orchestration", "routing", "llm governance",
+            "rag-enhanced", "multi-agent", "companion agent", "automation agent",
+        )
+    )
+    return p1_hit and p2_hit and p3_hit
 
 
 def infer_projection_role_family_key(
@@ -439,6 +514,11 @@ def infer_projection_role_family_key(
         mapped = TAXONOMY_TO_PROJECTION_ROLE.get(top_tax)
         if mapped:
             return mapped
+    # Enhancement #2 — three-phase fallback: when no domain-specific profile matched and the
+    # JD signals all three career tracks, prefer the balanced THREE_PHASE_GENERALIST profile
+    # over the Phase 3-dominant SVP_ENGINEERING_AI_PLATFORM default.
+    if _three_phase_jd_hit(jd_text):
+        return "THREE_PHASE_GENERALIST"
     return "SVP_ENGINEERING_AI_PLATFORM"
 
 

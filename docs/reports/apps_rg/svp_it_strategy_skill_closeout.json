@@ -1,0 +1,24 @@
+{
+  "generated_at_utc": "2026-05-27T12:29:57Z",
+  "status": "PASS",
+  "skill_id": "skill_svp_it_strategy_innovation",
+  "fact_id_links": [
+    "fact_exec_001",
+    "fact_consulting_001",
+    "fact_partnerships_gtm_005"
+  ],
+  "created_new_row": true,
+  "skill_rows_before": 162,
+  "skill_rows_after": 163,
+  "promoted": {
+    "skill_id": "skill_svp_it_strategy_innovation",
+    "fact_id_links": [
+      "fact_exec_001",
+      "fact_consulting_001",
+      "fact_partnerships_gtm_005"
+    ],
+    "confidence_grade": "MEDIUM",
+    "activation_status": "ACTIVE_CONFIRMED",
+    "edges_rewired": 3
+  }
+}

@@ -18,12 +18,12 @@ BRIEFING_RANKED_SELECTION_MAX_CHARS: int = 12_000
 DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS: int = 6_000
 DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS: int = 6_000
 
-# --- Token budget (Qwen / vLLM) — output caps env-overridable; first-pass 92% is fixed ---
+# --- Token budget (Qwen / vLLM) — output caps env-overridable; first-pass 95% is fixed ---
 DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS: int = 2048
 DEFAULT_REGEN_MAX_OUTPUT_TOKENS: int = 2048
 HARD_CAP_SCRATCH_MAX_OUTPUT_TOKENS: int = 4096
 RESERVED_SYSTEM_SCHEMA_TOKENS: int = 512
-DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX: float = 0.92
+DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX: float = 0.95
 CHARS_PER_TOKEN_ESTIMATE: int = 3
 ESTIMATE_SAFETY_MULTIPLIER: float = 1.12
 
@@ -69,7 +69,7 @@ def resolve_regen_max_output_tokens() -> int:
 
 
 def resolve_first_pass_input_utilization_max() -> float:
-    """First-pass input cap fraction of ``available_input_tokens`` (fixed 0.92 @ 24k)."""
+    """First-pass input cap fraction of ``available_input_tokens`` (fixed 0.95 @ 24k)."""
     return DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX
 
 

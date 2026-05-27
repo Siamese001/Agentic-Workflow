@@ -1,6 +1,6 @@
 # P1-W5 — Track-balanced section projections
 
-**Generated:** 2026-05-26T20:40:16Z
+**Generated:** 2026-05-27T12:06:46Z
 
 ## Executive summary (by track)
 

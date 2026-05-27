@@ -48,7 +48,7 @@ def test_24k_token_defaults() -> None:
     assert DEFAULT_REGEN_MAX_OUTPUT_TOKENS == 2048
     assert HARD_CAP_SCRATCH_MAX_OUTPUT_TOKENS == 4096
     assert RESERVED_SYSTEM_SCHEMA_TOKENS == 512
-    assert DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX == 0.92
+    assert DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX == 0.95
 
 
 def test_available_input_tokens_formula() -> None:
