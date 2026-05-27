@@ -106,6 +106,10 @@ examples:
       (not metrics-only-in-ledger); S6 forward capstone grounded in quant foundation (not thin recap). Targeting shapes emphasis only.
       METRICS INTENTIONALLY TRANSPOSED to a different domain (supply-chain/finance) — do NOT copy [X]/[Y]/[A]/[B]/[Z]
       placeholders into resume_display_text; retrieve the real values from C0 ALLOWED_SOURCE_FACT_IDS.
+      THESIS-THREAD CONSTRAINT: S1 'commercialization' thread is ONLY valid when an allowed source_fact_id carries
+      a commercialization/revenue-outcome fact (e.g. fact_engineering_platform_001 or fact_engineering_platform_002
+      with a dollar/margin metric). If no such fact is in ALLOWED_SOURCE_FACT_IDS, omit 'commercialization' from S1
+      and use enterprise-architecture-governance or innovation-program framing instead.
 
   - id: exec_summary_neg_thin_s6_recap_001
     category: negative

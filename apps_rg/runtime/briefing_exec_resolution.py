@@ -37,8 +37,17 @@ def discover_exec_briefing_sibling(brief_path: Path) -> Path | None:
 
 
 def auto_exec_brief_enabled() -> bool:
-  raw = os.environ.get("APPS_RG_AUTO_EXEC_BRIEF", "").strip().lower()
-  return raw in {"1", "true", "yes", "on"}
+    """Return True unless APPS_RG_AUTO_EXEC_BRIEF is explicitly set to a falsy value.
+
+    Defaulting to True prevents the common token-budget block when the operator
+    passes the full research briefing (``*_briefing.md``) instead of the exec-digest
+    variant (``*_briefing_exec.md``).  Set ``APPS_RG_AUTO_EXEC_BRIEF=0`` to opt out
+    and always use the path provided on the CLI.
+    """
+    raw = os.environ.get("APPS_RG_AUTO_EXEC_BRIEF", "").strip().lower()
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    return True
 
 
 def resolve_manual_brief_path(

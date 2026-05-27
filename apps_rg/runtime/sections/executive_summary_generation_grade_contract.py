@@ -47,6 +47,9 @@ def generation_law_digest_text() -> str:
         "(C0.3 phase-1) when woven into quantitative narrative — not equivalent to AWS Associate labels.\n"
         "- SVP ATS: translate JD themes into executive concepts via allowed facts; document gap_notes when proof IDs absent.\n"
         "- Exactly 6 sentences, one paragraph, max 140 words; S6 forward synthesis grounded in source_fact_ids, not thin recap.\n"
+        "- S1 thesis-body promise: only name capability threads (e.g. 'commercialization', 'innovation delivery') "
+        "that at least one of S2–S6 substantiates via source_fact_ids; a thesis thread with no body delivery is a "
+        "thesis-body gap that Claude-class judges penalise severely — resolve the gap before writing S1.\n"
     )
 
 

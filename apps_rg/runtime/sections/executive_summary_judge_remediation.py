@@ -19,7 +19,10 @@ from apps_rg.runtime.sections.executive_summary_repair_policy import (
     POST_REGEN_JUDGE_RESCORE_FULL_PANEL,
     POST_REGEN_JUDGE_RESCORE_SOFT_ONLY,
 )
-from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
+from apps_rg.runtime.validators.executive_summary_x2 import (
+    EXEC_SUMMARY_MAX_WORDS,
+    run_x2_gates,
+)
 
 _SYNTHESIS_TAXONOMY = frozenset(
     {
@@ -703,6 +706,15 @@ def collect_judge_remediation_delta_lines(
         sections["guards"].append(format_judge_regen_connective_tissue_guard().strip())
         if proof_gap_active:
             sections["guards"].insert(0, format_judge_regen_proof_boundary_guard())
+        # W3.2: no-new-claims constraint — prevent the model from introducing fresh proper nouns,
+        # metric numbers, or technology names that have no backing source_fact_id.  This is the
+        # primary cause of x2_unsupported_claim_zero failures on post-regen X2 checks.
+        sections["guards"].append(
+            "SYNTHESIS_ONLY: revise sentence structure and connective language only — "
+            "do NOT introduce new proper nouns, metric numbers, technology names, certifications, "
+            "or company names absent from the current resume_display_text; "
+            "synthesis is achieved by re-ordering and bridging existing content, not adding new facts.",
+        )
         sections["guards"].append(
             "OUTPUT: NEW JSON only; revise ONLY resume_display_text + claim_ledger; "
             "third person; jd_used_as_proof=false.",
@@ -1226,6 +1238,17 @@ def retry_qwen_for_judge_remediation(
     draft_parse_ok = output_changed and llm_attempt_ok and bool(
         current_parsed.get("resume_display_text"),
     )
+    # W3.1: pre-accept word-count guard — reject before full X2 run if regen overshoots cap.
+    # This prevents the 7-gate X2 cascade that occurs when the model adds new content beyond
+    # the 140-word limit while attempting narrative synthesis.
+    if draft_parse_ok:
+        _regen_display = str(current_parsed.get("resume_display_text") or "").strip()
+        _regen_wc = len(_regen_display.split())
+        if _regen_wc > EXEC_SUMMARY_MAX_WORDS:
+            draft_parse_ok = False
+            receipt["word_count_pre_accept_fail"] = (
+                f"{_regen_wc} words > {EXEC_SUMMARY_MAX_WORDS} max — regen rejected before X2"
+            )
     receipt["draft_parse_ok"] = draft_parse_ok
     receipt["accepted"] = draft_parse_ok
     if any(
