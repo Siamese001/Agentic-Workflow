@@ -22,9 +22,9 @@ U0 ingress through C0.3 graph targeting and cross-section X2 coherence.
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: NONE
+PLAN_STATUS: COMPLETED
+CURRENT_WAVE: W4
+LAST_COMPLETED_WAVE: W4
 LAST_UPDATED: 2026-05-27
 
 ---
@@ -58,25 +58,25 @@ LAST_UPDATED: 2026-05-27
 
 | Wave | Focus | Status | Tests Added | Files Changed |
 |------|-------|--------|-------------|---------------|
-| W1 | Low-effort plumbing: F2 jd_targeting_mode, F3 briefing_hash, F4 degradation gate, F5 excerpt | 🔲 TODO | — | — |
-| W2 | F1 briefing targeting supplement into C0.3 pillar hints | 🔲 TODO | — | — |
-| W3 | F6 cross-section pillar coherence X2 gate | 🔲 TODO | — | — |
-| W4 | Full test run + commit + GitHub push + plan/Notion closeout | 🔲 TODO | — | — |
+| W1 | Low-effort plumbing: F2 jd_targeting_mode, F3 briefing_hash, F4 degradation gate, F5 excerpt | ✅ DONE | 11 | 5 |
+| W2 | F1 briefing targeting supplement into C0.3 pillar hints | ✅ DONE | 7 | 1 |
+| W3 | F6 cross-section pillar coherence X2 gate | ✅ DONE | 10 | 1 |
+| W4 | Full test run + commit + GitHub push + plan/Notion closeout | ✅ DONE | — | — |
 
 ### Phase Progress
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| W1.1 | F2 — jd_targeting_mode in U0 query_spec + jd_resolution WARNING | 🔲 TODO |
-| W1.2 | F3 — briefing_hash wired in _build_section_evidence_trace() | 🔲 TODO |
-| W1.3 | F4 — TARGETING_DEGRADED gate verdict in resolve_role_family_projection() | 🔲 TODO |
-| W1.4 | F5 — smarter jd_text_excerpt in build_c01_retrieval_plan() | 🔲 TODO |
-| W2.1 | F1 — extract_briefing_targeting_supplement() + augment pillar hints | 🔲 TODO |
-| W2.2 | F1 — unit tests for briefing supplement path | 🔲 TODO |
-| W3.1 | F6 — check_cross_section_pillar_coherence() in cross_section_x2.py | 🔲 TODO |
-| W3.2 | F6 — unit tests for coherence gate | 🔲 TODO |
-| W4.1 | Run full test suite, assert zero regressions | 🔲 TODO |
-| W4.2 | Commit + push to GitHub + Notion/plan closeout | 🔲 TODO |
+| W1.1 | F2 — jd_targeting_mode in U0 query_spec + jd_resolution WARNING | ✅ DONE |
+| W1.2 | F3 — briefing_hash wired in _build_section_evidence_trace() | ✅ DONE |
+| W1.3 | F4 — TARGETING_DEGRADED gate verdict in resolve_role_family_projection() | ✅ DONE |
+| W1.4 | F5 — smarter jd_text_excerpt in build_c01_retrieval_plan() | ✅ DONE |
+| W2.1 | F1 — extract_briefing_targeting_supplement() + augment pillar hints | ✅ DONE |
+| W2.2 | F1 — unit tests for briefing supplement path | ✅ DONE |
+| W3.1 | F6 — check_cross_section_pillar_coherence() in cross_section_x2.py | ✅ DONE |
+| W3.2 | F6 — unit tests for coherence gate | ✅ DONE |
+| W4.1 | Run full test suite, assert zero regressions | ✅ DONE |
+| W4.2 | Commit + push to GitHub + Notion/plan closeout | ✅ DONE |
 
 ---
 
