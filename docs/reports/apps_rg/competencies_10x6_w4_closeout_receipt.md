@@ -60,8 +60,10 @@ python -m apps_rg --section competencies --provider qwen_vllm --x1d-judges gemin
 
 **Note:** Harness mock judges → `PRODUCT_X3_STATUS: X3_BLOCK`, `PROOF_ELIGIBLE: false` (expected). Pool selector used heuristic top-6 (`selection_mode=competencies_graph_top_6_heuristic`) with zero Claude selection rows under mock.
 
+**Post-closeout fix (GAP-4):** Taxonomy YAML lists **7** buckets; `apply_executive_capability_projection` now trims to `max_categories: 6` via `trim_taxonomy_to_graph_10x6_emit` so `l2_output` matches graph_10x6 emit count.
+
 ---
 
 ## Plan complete
 
-Waves W0–W4 implemented. Deferred: full Brown all-lanes REAL_LLM certification (see plan Out Of Scope).
+Waves W0–W4 implemented; gap register closed. Deferred: full Brown all-lanes REAL_LLM certification (see plan Out Of Scope).
