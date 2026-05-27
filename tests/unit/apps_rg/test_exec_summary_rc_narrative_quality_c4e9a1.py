@@ -11,6 +11,7 @@ from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
 )
 from apps_rg.runtime.sections.executive_summary_voice_repair import (
     ensure_required_allowed_fact_utilization,
+    polish_executive_summary_judge_alignment,
 )
 from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
     FACT_C0_DISPLAY_OVERRIDES,
@@ -231,6 +232,80 @@ def test_ensure_governance_fact_utilization_inserts_basel_sentence() -> None:
         for fid in (row.get("source_fact_ids") or [])
     }
     assert "fact_governance_003" in cited
+
+
+def test_polish_dedupes_dependency_graph_and_weaves_team_metric() -> None:
+    duplicate_resume = (
+        "Enterprise technology leader who unifies governed AI platforms. "
+        "Through that operating model, Basel III and CCAR data lineage cut regulatory reporting errors by 40%. "
+        "Software dependency graph intelligence enables accelerated legacy-system analysis, "
+        "exposes architecture dependency chains, and improves transformation visibility across enterprise complexity. "
+        "That regulatory foundation is grounded in FSA-chartered actuarial work in capital modeling. "
+        "Directed large-scale regulatory IT transformations and legacy-modernization programs for major institutions. "
+        "Built and applied software dependency graph intelligence to accelerate legacy-system analysis."
+    )
+    parsed = {
+        "resume_display_text": duplicate_resume,
+        "claim_ledger": [
+            {"claim_text": "a", "source_fact_ids": ["fact_exec_002"]},
+            {"claim_text": "b", "source_fact_ids": ["fact_governance_003"]},
+            {"claim_text": "c", "source_fact_ids": ["fact_engineering_platform_002"]},
+            {"claim_text": "d", "source_fact_ids": ["fact_quant_hpc_003"]},
+            {"claim_text": "e", "source_fact_ids": ["fact_consulting_001"]},
+            {"claim_text": "f", "source_fact_ids": ["fact_engineering_platform_002"]},
+        ],
+    }
+    facts = [
+        {"fact_id": "fact_exec_002", "claim_text": "Scaled team 8 to 28"},
+        {"fact_id": "fact_governance_003", "claim_text": "Basel cut errors 40%"},
+        {"fact_id": "fact_engineering_platform_002", "claim_text": "Graph intelligence"},
+        {"fact_id": "fact_quant_hpc_003", "claim_text": "FSA work"},
+        {"fact_id": "fact_consulting_001", "claim_text": "Consulting"},
+    ]
+    polished, receipt = polish_executive_summary_judge_alignment(parsed, selected_facts=facts)
+    text = str(polished.get("resume_display_text") or "").lower()
+    assert receipt.get("applied") is True
+    assert text.count("dependency graph") == 1
+    assert "8 to 28" in text
+    cited = {
+        fid
+        for row in polished.get("claim_ledger") or []
+        for fid in (row.get("source_fact_ids") or [])
+    }
+    assert "fact_engineering_platform_002" in cited
+
+
+def test_polish_restores_graph_override_when_team_displaced_slot() -> None:
+    """Regression: platform weave must not replace dependency-graph DISPLAY_OVERRIDE."""
+    parsed = {
+        "resume_display_text": (
+            "Enterprise technology leader who unifies governed AI platforms. "
+            "Through that operating model, Basel III and CCAR data lineage cut regulatory reporting errors by 40%. "
+            "Scaled the ML engineering organization from 8 to 28 specialists. "
+            "That regulatory foundation is grounded in FSA-chartered actuarial work in capital modeling. "
+            "Directed large-scale regulatory IT transformations for major financial institutions. "
+            "Designs and operates platform runtimes with deterministic controls and traceable execution."
+        ),
+        "claim_ledger": [],
+    }
+    facts = [
+        {"fact_id": "fact_exec_002", "claim_text": "Scaled team 8 to 28"},
+        {"fact_id": "fact_governance_003", "claim_text": "Basel cut errors 40%"},
+        {"fact_id": "fact_engineering_platform_002", "claim_text": "Graph intelligence"},
+        {"fact_id": "fact_engineering_platform_001", "claim_text": "Agentic AI platform"},
+        {"fact_id": "fact_quant_hpc_003", "claim_text": "FSA work"},
+        {"fact_id": "fact_consulting_001", "claim_text": "Consulting"},
+    ]
+    polished, receipt = polish_executive_summary_judge_alignment(parsed, selected_facts=facts)
+    text = str(polished.get("resume_display_text") or "").lower()
+    assert receipt.get("applied") is True
+    assert "dependency graph intelligence enables accelerated" in text
+    cited = {
+        fid
+        for row in polished.get("claim_ledger") or []
+        for fid in (row.get("source_fact_ids") or [])
+    }
+    assert "fact_engineering_platform_002" in cited
 
 
 def test_strategy_lane_blocks_commercialization_thread() -> None:

@@ -345,13 +345,13 @@ def _holistic_judge_score(judge_or_row: dict[str, Any]) -> float | None:
     if raw is not None:
         try:
             return float(raw)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     ns = judge_or_row.get("normalized_score")
     if ns is not None:
         try:
             return round(float(ns) * 5.0, 4)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     return None
 
@@ -1238,17 +1238,34 @@ def retry_qwen_for_judge_remediation(
     draft_parse_ok = output_changed and llm_attempt_ok and bool(
         current_parsed.get("resume_display_text"),
     )
-    # W3.1: pre-accept word-count guard — reject before full X2 run if regen overshoots cap.
-    # This prevents the 7-gate X2 cascade that occurs when the model adds new content beyond
-    # the 140-word limit while attempting narrative synthesis.
+    # W3.1: pre-accept word-count guard — trim first, then reject if still over cap.
+    # The judge regen model often produces 141-145 word outputs. Apply the deterministic
+    # trim (removes "established through" from FSA, "cataloging, and" from Basel, etc.)
+    # before rejecting, to avoid discarding an otherwise-valid regen candidate.
     if draft_parse_ok:
         _regen_display = str(current_parsed.get("resume_display_text") or "").strip()
         _regen_wc = len(_regen_display.split())
         if _regen_wc > EXEC_SUMMARY_MAX_WORDS:
-            draft_parse_ok = False
-            receipt["word_count_pre_accept_fail"] = (
-                f"{_regen_wc} words > {EXEC_SUMMARY_MAX_WORDS} max — regen rejected before X2"
+            from apps_rg.runtime.sections.executive_summary_voice_repair import (
+                _trim_paragraph_word_budget,
             )
+            from apps_rg.runtime.validators.executive_summary_x2 import split_sentences
+
+            _regen_sents = split_sentences(_regen_display)
+            _trimmed = _trim_paragraph_word_budget(_regen_sents, max_words=EXEC_SUMMARY_MAX_WORDS)
+            _trimmed_display = " ".join(s.strip() for s in _trimmed if s.strip())
+            _trimmed_wc = len(_trimmed_display.split())
+            if _trimmed_wc <= EXEC_SUMMARY_MAX_WORDS and _trimmed_display != _regen_display:
+                current_parsed = dict(current_parsed)
+                current_parsed["resume_display_text"] = _trimmed_display
+                receipt["word_count_pre_accept_trim"] = (
+                    f"trimmed {_regen_wc} → {_trimmed_wc} words before X2"
+                )
+            else:
+                draft_parse_ok = False
+                receipt["word_count_pre_accept_fail"] = (
+                    f"{_regen_wc} words > {EXEC_SUMMARY_MAX_WORDS} max — regen rejected before X2"
+                )
     receipt["draft_parse_ok"] = draft_parse_ok
     receipt["accepted"] = draft_parse_ok
     if any(

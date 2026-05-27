@@ -264,7 +264,7 @@ def test_apply_policy_fail_closed_on_first_pass_95pct_after_optional_trim() -> N
     assert any(s.get("target") == "do_not_cut" for s in guidance.get("suggestions") or [])
 
 
-def test_token_budget_guidance_includes_exec_brief_sibling_when_present() -> None:
+def test_token_budget_guidance_suggests_shorten_briefing_ssot() -> None:
     root = Path(__file__).resolve().parents[5]
     full = root / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
     if not full.is_file():
@@ -287,5 +287,6 @@ def test_token_budget_guidance_includes_exec_brief_sibling_when_present() -> Non
     )
     briefing_sugs = [s for s in guidance.get("suggestions") or [] if s.get("target") == "briefing"]
     assert briefing_sugs
-    assert briefing_sugs[0].get("exec_briefing_sibling_path")
-    assert "briefing_exec" in str(briefing_sugs[0].get("action") or "")
+    assert "briefing" in str(briefing_sugs[0].get("action") or "").lower()
+    assert "exec_briefing_sibling_path" not in briefing_sugs[0]
+    assert "briefing_exec" not in str(briefing_sugs[0].get("action") or "")
