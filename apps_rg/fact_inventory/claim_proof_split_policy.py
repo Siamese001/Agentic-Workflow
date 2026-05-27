@@ -88,6 +88,20 @@ def apply_w2_offending_fact_migrations(row: dict[str, Any]) -> dict[str, Any]:
         )
         out["claim_proof_split_version"] = CLAIM_PROOF_SCHEMA_VERSION
         return out
+    if fid == "fact_engineering_platform_002":
+        original = str(out.get("claim_text") or "").strip()
+        out["proof_text"] = out.get("proof_text") or original
+        # forward_projection_preferred_c0_display_text: when this fact is assigned to an
+        # S6 capstone position, use this forward-modal framing instead of the backward
+        # past-tense "Built and applied..." claim text. RC-C from plan
+        # exec-summary-rc-structural-repair-f4a8c2.
+        out["forward_projection_preferred_c0_display_text"] = (
+            "Software dependency graph intelligence enables accelerated legacy-system analysis, "
+            "exposes architecture dependency chains, and improves transformation visibility "
+            "across enterprise complexity."
+        )
+        out["claim_proof_split_version"] = CLAIM_PROOF_SCHEMA_VERSION
+        return out
     if fid == "fact_quant_hpc_003":
         original = str(out.get("claim_text") or "").strip()
         out["proof_text"] = out.get("proof_text") or original
@@ -100,8 +114,8 @@ def apply_w2_offending_fact_migrations(row: dict[str, Any]) -> dict[str, Any]:
         # x2_exec_summary_s5_no_derivatives_inventory when passed verbatim to the LLM.
         # format_selected_facts_for_c0 reads this field before claim_text.
         out["preferred_c0_display_text"] = (
-            "FSA-chartered quantitative foundation, built through early-career "
-            "capital modeling and portfolio stress analytics."
+            "Quantitative rigor was established through FSA-chartered actuarial work in "
+            "capital modeling and portfolio stress analytics across early-career roles."
         )
         out["claim_proof_split_version"] = CLAIM_PROOF_SCHEMA_VERSION
         return out

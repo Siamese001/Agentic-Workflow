@@ -834,6 +834,7 @@ def _synthesis_shape_reject_reason(
         check_exec_summary_meta_filler_patterns,
         check_exec_summary_no_credential_dump,
         check_exec_summary_no_mechanism_inventory,
+        check_exec_summary_no_sentence_fragment,
         check_exec_summary_paragraph_max_words,
         check_exec_summary_sentence_count_6,
         check_inferred_bridge_claims,
@@ -886,6 +887,9 @@ def _synthesis_shape_reject_reason(
     meta_ok, meta_reason = check_exec_summary_meta_filler_patterns(text)
     if not meta_ok and meta_reason:
         failures.append(meta_reason)
+    frag_ok, frag_reason = check_exec_summary_no_sentence_fragment(text)
+    if not frag_ok and frag_reason:
+        failures.append(frag_reason)
     colon_ok, colon_reason = check_resume_display_colon_space_discipline(text)
     if not colon_ok and colon_reason:
         failures.append(colon_reason)

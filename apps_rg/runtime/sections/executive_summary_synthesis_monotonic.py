@@ -26,6 +26,7 @@ JUDGE_X2_REPAIR_WAIVE_SHRINK_GATE_IDS: frozenset[str] = frozenset(
         "x2_exec_summary_s5_no_derivatives_inventory",
         "x2_exec_summary_meta_filler_zero",
         "x2_exec_summary_cross_fact_conflation_zero",
+        "x2_exec_summary_no_sentence_fragment",
     }
 )
 

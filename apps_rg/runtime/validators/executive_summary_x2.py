@@ -61,6 +61,57 @@ EXEC_SUMMARY_FORBIDDEN_META_PHRASES_LOOSE = [
 ]
 
 
+# Finite-verb pattern: matches common present/past tense verbs and auxiliary constructions.
+# A sentence is a fragment if it has NO finite verb — it's a noun phrase or participial phrase.
+# We use a conservative heuristic: look for at least one token that is a finite verb form.
+_FINITE_VERB_RE = re.compile(
+    r"\b("
+    r"is|are|was|were|has|have|had|does|do|did|"
+    r"can|could|will|would|shall|should|may|might|must|"
+    r"[a-z]{3,}s\b|"  # third-person singular (e.g. "enables", "improves")
+    r"[a-z]{3,}ed\b|"  # past tense / past participle (e.g. "reduced", "scaled")
+    r"[a-z]{3,}es\b"   # third-person plural form (e.g. "establishes")
+    r")",
+    re.IGNORECASE,
+)
+
+# Noun-phrase-only starters that signal a fragment sentence when the rest is participial.
+# Pattern: "NOUN_PHRASE, <participial_phrase>." with no finite verb.
+_PARTICIPIAL_OPENER_RE = re.compile(
+    r"^[A-Z][^.!?]*,\s+(built|established|formed|developed|grounded|rooted|"
+    r"founded|centered|driven|designed|shaped|created)\s+through\b",
+    re.IGNORECASE,
+)
+
+
+def check_exec_summary_no_sentence_fragment(
+    resume_display_text: str,
+) -> tuple[bool, str | None]:
+    """Reject executive summary display text that contains a grammatical fragment.
+
+    A fragment is any sentence that either:
+    1. Matches the participial-opener pattern (noun phrase + ', built/established through...')
+    2. Has no finite verb token (pure noun-phrase sentence)
+
+    RC-B from plan exec-summary-rc-structural-repair-f4a8c2: fact_quant_hpc_003
+    preferred_c0_display_text 'FSA-chartered quantitative foundation, built through...'
+    was a fragment that Gemini-class judges flagged as S4 sentence quality failure.
+    """
+    fragments: list[str] = []
+    for i, sent in enumerate(split_sentences(resume_display_text)):
+        sent_stripped = sent.strip()
+        if not sent_stripped:
+            continue
+        if _PARTICIPIAL_OPENER_RE.search(sent_stripped):
+            fragments.append(f"S{i + 1}(participial_fragment): {sent_stripped[:80]}")
+            continue
+        if not _FINITE_VERB_RE.search(sent_stripped):
+            fragments.append(f"S{i + 1}(no_finite_verb): {sent_stripped[:80]}")
+    if fragments:
+        return False, f"Sentence fragment(s) detected in resume_display_text: {fragments}"
+    return True, None
+
+
 def check_exec_summary_meta_filler_patterns(resume_display_text: str) -> tuple[bool, str | None]:
     lowered = resume_display_text.lower()
     hits: list[str] = []

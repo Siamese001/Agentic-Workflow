@@ -514,7 +514,7 @@ def build_executive_summary_composition_plan(
     if strategy_executive:
         target_picture = (
             "Executive portrait: technology strategy leader aligning governed AI platforms, "
-            "regulatory lineage, and commercialization into one enterprise IT direction "
+            "regulatory lineage, and digital innovation programs into one enterprise IT direction "
             f"(targeting context: {role_s or 'SVP IT strategy role'}; company name never in prose)."
         )
     else:

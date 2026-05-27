@@ -29,15 +29,32 @@ EXEC_SUMMARY_STOCK_BRIDGE_PREFIXES: tuple[str, ...] = (
     "with that governance",
 )
 
+# Fact ID for dependency graph intelligence (RC-C: past-tense S6 issue).
+DEPENDENCY_GRAPH_FACT_ID = "fact_engineering_platform_002"
+
 # C0 display override for framing-sensitive facts whose claim_text contains
-# phrases that trigger X2 display gates (e.g. derivatives inventory in S5).
+# phrases that trigger X2 display gates (e.g. derivatives inventory in S5)
+# or that produce backward-looking past-tense prose when used as S6 capstone.
 # Applied by format_selected_facts_for_c0 unconditionally — before claim_text
 # and before the evidence capsule path — to guarantee the forbidden phrase never
 # reaches the LLM prompt. Keyed by fact_id.
+#
+# RC-B fix (exec-summary-rc-structural-repair-f4a8c2): FSA_CREDENTIAL_FACT_ID
+# previously mapped to "FSA-chartered quantitative foundation, built through..."
+# which is a noun-phrase fragment (no finite verb). Changed to a complete SVO sentence.
+#
+# RC-C fix (exec-summary-rc-structural-repair-f4a8c2): DEPENDENCY_GRAPH_FACT_ID
+# previously had claim_text "Built and applied..." — past-tense; produces backward
+# S6. Changed to forward-modal "enables...exposes...improves" framing.
 FACT_C0_DISPLAY_OVERRIDES: dict[str, str] = {
     FSA_CREDENTIAL_FACT_ID: (
-        "FSA-chartered quantitative foundation, built through early-career "
-        "capital modeling and portfolio stress analytics."
+        "Quantitative rigor was established through FSA-chartered actuarial work in "
+        "capital modeling and portfolio stress analytics across early-career roles."
+    ),
+    DEPENDENCY_GRAPH_FACT_ID: (
+        "Software dependency graph intelligence enables accelerated legacy-system analysis, "
+        "exposes architecture dependency chains, and improves transformation visibility "
+        "across enterprise complexity."
     ),
 }
 
@@ -46,7 +63,7 @@ SVP_JD_EMPHASIS_THEMES: tuple[str, ...] = (
     "innovation programs and incubation",
     "multi-year IT strategy and roadmap",
     "federated / post-merger integration",
-    "AI and data platform commercialization",
+    "AI and data platform revenue generation",
 )
 
 SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
@@ -71,7 +88,7 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "brushstroke_id": "B2_governed_platform_system",
         "arc_role": "scale_operating_model",
         "guidance": (
-            "S3: weave platform scale, operating model, and commercialization as connective prose — when "
+            "S3: weave platform scale, operating model, and platform revenue outcomes as connective prose — when "
             "fact_engineering_platform_006 is cited, include $22M IP-led revenue and/or 20% margin expansion in display "
             "(team 8→28 may share the clause); not a standalone achievement bullet; "
             "avoid SRFS-forbidden phrases (reusable platform services adopted across enterprise programs, engineering scale-out)."
@@ -402,6 +419,7 @@ def format_l6_judge_soft_fail_recommendation(*, soft_judges: list[str]) -> str:
 
 
 __all__ = [
+    "DEPENDENCY_GRAPH_FACT_ID",
     "FSA_CREDENTIAL_FACT_ID",
     "QUANT_METRIC_DISPLAY_FACT_ID",
     "SENTENCE_ARC_SVP_STRATEGY",
