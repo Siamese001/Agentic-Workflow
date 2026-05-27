@@ -1,9 +1,69 @@
 {
-  "fetched_at": "2026-05-27T06:45:53Z",
-  "fetched_at_epoch": 1779864353.8290946,
+  "fetched_at": "2026-05-27T18:45:25Z",
+  "fetched_at_epoch": 1779907525.5375926,
   "plans": {
-    "exec-summary-regen-stuck-c0-split-a4f8e2": {
+    "resume-graph-skills-remediation-a7f2c3": {
+      "status": "Not Started",
+      "page_id": "36d27693-f55c-81ed-8b70-e19ab570f525",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-rc-structural-repair-f4a8c2": {
       "status": "In Progress",
+      "page_id": "36d27693-f55c-8131-b67c-fc0aa960d9dc",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "exec-summary-bro-svp-rca-e3a1f2": {
+      "status": "Completed",
+      "page_id": "36d27693-f55c-8139-aaa6-da41e0c3dca8",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "brown-svp-full-resume-rca-remediation-20260527": {
+      "status": "In Progress",
+      "page_id": "36d27693-f55c-8196-95af-f7013858a502",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "skills-graph-hardening-gap-closure-53576c": {
+      "status": "Not Started",
+      "page_id": "36d27693-f55c-8105-bb47-d93ad7200465",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "graph-skills-three-phase-jd-b3e5f2": {
+      "status": "In Progress",
+      "page_id": "36d27693-f55c-81a7-968f-d1e6e36510e2",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "qwen-prompt-regen-reduction-7481e3": {
+      "status": "Not Started",
+      "page_id": "36d27693-f55c-8134-95c8-c38d17b7bcd2",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "exec-summary-s5-bridge-hardening-acc0f0": {
+      "status": "In Progress",
+      "page_id": "36d27693-f55c-819b-aee7-fcd7798ad9b1",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "exec-summary-brown-gap-hardening-b9e4c1": {
+      "status": "Completed",
+      "page_id": "36d27693-f55c-81ab-879e-def5569f1007",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "competencies-graph-10x6-gemini-924516": {
+      "status": "Completed",
+      "page_id": "36d27693-f55c-81aa-b0de-ddc6e35f2b36",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-regen-stuck-c0-split-a4f8e2": {
+      "status": "Completed",
       "page_id": "36d27693-f55c-81d7-847a-c34cd7807849",
       "exists_on_disk": true,
       "has_ai_summary": true

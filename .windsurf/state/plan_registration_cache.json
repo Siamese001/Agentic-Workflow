@@ -1,6 +1,6 @@
 {
-  "fetched_at": "2026-05-26T19:15:03Z",
-  "fetched_at_epoch": 1779822903.8597057,
+  "fetched_at": "2026-05-27T18:46:49Z",
+  "fetched_at_epoch": 1779907609.1434953,
   "plans": {
     "one-canonical-spine-e8b4a1": {
       "status": "Not Started",
@@ -3041,6 +3041,12 @@
     "governance-dedup-closeout-e8a4c2": {
       "status": "Not Started",
       "page_id": "36c27693-f55c-815e-a2d1-e6e867ffe7bd",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "resume-graph-skills-remediation-a7f2c3": {
+      "status": "Not Started",
+      "page_id": "36d27693-f55c-81ed-8b70-e19ab570f525",
       "exists_on_disk": true,
       "has_ai_summary": true
     }
