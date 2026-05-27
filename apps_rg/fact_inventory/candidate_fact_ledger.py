@@ -159,6 +159,9 @@ def validate_fact_shape(row: Mapping[str, Any]) -> None:
         not isinstance(capability_tags, list) or not all(isinstance(s, str) for s in capability_tags)
     ):
         raise TypeError("capability_tags must be list[str] when present")
+    proof_text = row.get("proof_text")
+    if proof_text is not None and not isinstance(proof_text, str):
+        raise TypeError("proof_text must be str when present")
 
 
 def fact_usage_band(confidence_raw: str) -> FactUsageBand:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -90,6 +91,125 @@ def transport_stats_for_cycle(artifact_dir: Path | str | None, cycle_index: int)
 
 
 REGEN_STOPPED_REASON_CONVERGED = "regen_converged"
+REGEN_STOPPED_REASON_X2_STUCK = "x2_stuck_same_failure"
+STUCK_LOOP_N_CYCLES = 2
+X2_GATE_CLAIM_FIELD_MAPS = "x2_claim_field_maps_to_display_sentence"
+
+_ROW_INDEX_RE = re.compile(r"row_(\d+)")
+
+
+def x2_failed_row_indexes_from_gates(x2_gates: list[dict[str, Any]] | None) -> tuple[int, ...]:
+    """Parse ``row_N`` tokens from the claim-field X2 gate failure text."""
+    if not x2_gates:
+        return ()
+    indexes: list[int] = []
+    for gate in x2_gates:
+        if not isinstance(gate, dict) or gate.get("pass"):
+            continue
+        if str(gate.get("gate_id") or "") != X2_GATE_CLAIM_FIELD_MAPS:
+            continue
+        blob = " ".join(
+            (
+                str(gate.get("failure_reason") or ""),
+                str(gate.get("observed_value") or ""),
+            ),
+        )
+        for match in _ROW_INDEX_RE.finditer(blob):
+            indexes.append(int(match.group(1)))
+    return tuple(sorted(set(indexes)))
+
+
+def regen_failure_signature_from_cycle_record(
+    cycle_record: dict[str, Any],
+) -> tuple[tuple[str, ...], tuple[int, ...]]:
+    """Stable signature for stuck-loop detection: sorted gate ids + row indexes."""
+    gate_ids = tuple(
+        sorted(
+            {
+                str(gate_id)
+                for gate_id in (cycle_record.get("post_regen_x2_failed_gate_ids") or [])
+                if str(gate_id).strip()
+            },
+        ),
+    )
+    rows_raw = cycle_record.get("post_regen_x2_failed_row_indexes")
+    if rows_raw is not None:
+        row_indexes = tuple(sorted({int(idx) for idx in rows_raw}))
+    else:
+        row_indexes = ()
+    return gate_ids, row_indexes
+
+
+def regen_failure_signature(
+    *,
+    cycle_record: dict[str, Any] | None = None,
+    x2_gates: list[dict[str, Any]] | None = None,
+) -> tuple[tuple[str, ...], tuple[int, ...]]:
+    """Build failure signature from a cycle row and/or post-regen X2 gate list."""
+    record = dict(cycle_record or {})
+    if x2_gates is not None:
+        record["post_regen_x2_failed_gate_ids"] = [
+            str(g.get("gate_id") or "")
+            for g in x2_gates
+            if isinstance(g, dict) and not g.get("pass")
+        ]
+        row_indexes = x2_failed_row_indexes_from_gates(x2_gates)
+        if row_indexes:
+            record["post_regen_x2_failed_row_indexes"] = list(row_indexes)
+    return regen_failure_signature_from_cycle_record(record)
+
+
+def trailing_same_failure_signature_count(
+    prior_cycles: list[dict[str, Any]],
+    signature: tuple[tuple[str, ...], tuple[int, ...]],
+) -> int:
+    """Count trailing prior cycles whose failure signature equals ``signature``."""
+    if not signature[0]:
+        return 0
+    count = 0
+    for row in reversed(prior_cycles):
+        if not isinstance(row, dict):
+            break
+        if regen_failure_signature_from_cycle_record(row) == signature:
+            count += 1
+        else:
+            break
+    return count
+
+
+def detect_x2_stuck_same_failure(
+    cycles_receipt: dict[str, Any],
+    signature: tuple[tuple[str, ...], tuple[int, ...]],
+    *,
+    n_cycles: int = STUCK_LOOP_N_CYCLES,
+) -> bool:
+    """True when ``signature`` repeats for ``n_cycles`` consecutive cycles (incl. current)."""
+    if not signature[0]:
+        return False
+    prior = [c for c in (cycles_receipt.get("cycles") or []) if isinstance(c, dict)]
+    trailing = trailing_same_failure_signature_count(prior, signature)
+    return (trailing + 1) >= int(n_cycles)
+
+
+def build_regen_lane_stats(cycles_receipt: dict[str, Any]) -> dict[str, Any]:
+    """Rollup for Notion review / lane receipts."""
+    stopped = str(cycles_receipt.get("stopped_reason") or "").strip()
+    stuck = stopped == REGEN_STOPPED_REASON_X2_STUCK
+    last_sig: dict[str, Any] | None = None
+    cycles = [c for c in (cycles_receipt.get("cycles") or []) if isinstance(c, dict)]
+    if cycles:
+        gate_ids, row_indexes = regen_failure_signature_from_cycle_record(cycles[-1])
+        last_sig = {
+            "failing_gate_ids": list(gate_ids),
+            "row_indexes": list(row_indexes),
+        }
+    stuck_signature = cycles_receipt.get("stuck_signature")
+    return {
+        "stuck_loop_detected": stuck,
+        "stopped_reason": stopped or None,
+        "stuck_signature": stuck_signature if stuck else None,
+        "last_failure_signature": last_sig,
+    }
 
 
 def regen_output_hash_from_receipt(judge_remediation_receipt: dict[str, Any]) -> str:
@@ -153,10 +273,15 @@ def finalize_regen_cycle_observability(
             for g in x2_gates
             if isinstance(g, dict) and not g.get("pass")
         ]
+        row_indexes = x2_failed_row_indexes_from_gates(x2_gates)
+        if row_indexes:
+            record["post_regen_x2_failed_row_indexes"] = list(row_indexes)
     elif judge_remediation_receipt.get("post_regen_x2_failed_gate_ids"):
         record["post_regen_x2_failed_gate_ids"] = list(
             judge_remediation_receipt.get("post_regen_x2_failed_gate_ids") or [],
         )
+    failure_signature = regen_failure_signature(cycle_record=record)
+    stuck = detect_x2_stuck_same_failure(cycles_receipt, failure_signature)
     artifact_paths: dict[str, str] = {}
     if artifact_dir is not None:
         artifact_paths = persist_regen_cycle_artifacts(
@@ -167,15 +292,25 @@ def finalize_regen_cycle_observability(
         )
     if artifact_paths:
         record["artifact_paths"] = artifact_paths
+    cycles_receipt["cycles"].append(normalize_cycle_record_observability(record))
+    if stuck:
+        record_out = cycles_receipt["cycles"][-1]
+        record_out["x2_stuck_same_failure"] = True
+        cycles_receipt["stopped_reason"] = REGEN_STOPPED_REASON_X2_STUCK
+        cycles_receipt["stuck_signature"] = {
+            "failing_gate_ids": list(failure_signature[0]),
+            "row_indexes": list(failure_signature[1]),
+        }
+        cycles_receipt["regen_lane_stats"] = build_regen_lane_stats(cycles_receipt)
+        return current_hash or prior_regen_output_hash, REGEN_STOPPED_REASON_X2_STUCK
+
     converged = bool(
         current_hash
         and prior_regen_output_hash
         and current_hash == prior_regen_output_hash
     )
     if converged:
-        record["regen_converged"] = True
-    cycles_receipt["cycles"].append(normalize_cycle_record_observability(record))
-    if converged:
+        cycles_receipt["cycles"][-1]["regen_converged"] = True
         cycles_receipt["stopped_reason"] = REGEN_STOPPED_REASON_CONVERGED
         return current_hash, REGEN_STOPPED_REASON_CONVERGED
     return current_hash or prior_regen_output_hash, None
@@ -227,6 +362,7 @@ def finalize_judge_regen_cycles_receipt(
         out.get("regen_outcome") == "no_acceptable_candidate"
         and any(c.get("draft_parse_ok") for c in cycles)
     )
+    out["regen_lane_stats"] = build_regen_lane_stats(out)
     if artifact_dir is not None:
         transport_total = 0
         semantic_total = 0
@@ -246,12 +382,21 @@ def finalize_judge_regen_cycles_receipt(
 
 __all__ = [
     "REGEN_STOPPED_REASON_CONVERGED",
+    "REGEN_STOPPED_REASON_X2_STUCK",
+    "STUCK_LOOP_N_CYCLES",
+    "X2_GATE_CLAIM_FIELD_MAPS",
     "audit_judge_feedback_pack",
+    "build_regen_lane_stats",
+    "detect_x2_stuck_same_failure",
     "finalize_judge_regen_cycle_observability",
     "finalize_judge_regen_cycles_receipt",
     "normalize_cycle_record_observability",
     "pack_judge_feedback_with_stats",
     "persist_regen_cycle_artifacts",
+    "regen_failure_signature",
+    "regen_failure_signature_from_cycle_record",
     "regen_output_hash_from_receipt",
     "transport_stats_for_cycle",
+    "trailing_same_failure_signature_count",
+    "x2_failed_row_indexes_from_gates",
 ]

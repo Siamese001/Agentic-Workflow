@@ -1,5 +1,18 @@
 {
   "design_version": "master_skills_arsenal_ledger_design_v1",
+  "claim_proof_split": {
+    "schema_version": "master_skills_arsenal_claim_proof_v2",
+    "policy_module": "apps_rg/fact_inventory/claim_proof_split_policy.py",
+    "candidate_fact_ledger_ref": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+    "semantics": {
+      "claim_text": "Display-allowed paraphrase; X2 verbatim materialization and I0 display policy apply here only.",
+      "proof_text": "Optional full-body provenance; source binding only; must not be matched by X2 gates."
+    },
+    "w2_migrated_fact_ids": [
+      "fact_engineering_platform_001",
+      "fact_quant_hpc_003"
+    ]
+  },
   "generated_at_utc": "2026-05-18T19:28:28Z",
   "upstream_audits": [
     "docs/reports/apps_rg/master_experience_ledger_archive_audit.json",

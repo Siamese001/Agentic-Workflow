@@ -1512,6 +1512,16 @@ def run_executive_summary_execution(
         pool=pool,
         runtime_payload=runtime_payload,
     )
+    from apps_rg.runtime.spine.section_c0_graph_lane_ensure import (
+        ensure_section_c0_graph_lane_receipt,
+    )
+
+    _graph_lane_path = ensure_section_c0_graph_lane_receipt(
+        artifact_dir,
+        runtime_payload=runtime_payload,
+        section_id="executive_summary",
+    )
+    runtime_payload["c0_graph_lane_receipt_ref"] = _graph_lane_path.name
     runtime_payload["section_front_spine_receipt_ref"] = "section_front_spine_receipt.json"
     runtime_payload["proof_pool_front_spine_preconditions"] = {
         "precondition_status": "PASS",

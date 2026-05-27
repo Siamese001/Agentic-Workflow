@@ -6,6 +6,12 @@
     "materialized_from": "apps_rg/fact_inventory/materialize_arsenal_from_design.py",
     "status": "arsenal_ledger_requires_human_confirmation",
     "candidate_fact_ledger_ref": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+    "claim_proof_split_schema_version": "master_skills_arsenal_claim_proof_v2",
+    "claim_proof_split_policy": "apps_rg/fact_inventory/claim_proof_split_policy.py",
+    "w2_offending_facts_migrated": [
+      "fact_engineering_platform_001",
+      "fact_quant_hpc_003"
+    ],
     "w4a_hardened": true,
     "pillar_count": 29,
     "skill_row_count": 162,
