@@ -9,12 +9,15 @@ from __future__ import annotations
 import functools
 import hashlib
 import json
+import logging
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
+
+logger = logging.getLogger(__name__)
 
 # Extensions allowed for local JD artifacts (lowercased suffixes).
 ALLOWED_JD_SUFFIXES: frozenset[str] = frozenset({".txt", ".md", ".json", ".yaml", ".yml", ".markdown"})
@@ -259,6 +262,11 @@ def resolve_jd_for_lanes(
             raise JdResolutionError(f"DEFAULT_SSOT job description file is empty: {_DEFAULT_FILE}")
         ref_used = f"DEFAULT_SSOT:{_DEFAULT_FILE.as_posix()}"
         source = JdSource.DEFAULT_SSOT
+        logger.warning(
+            "jd targeting DEFAULT_SSOT: no run-specific JD provided; "
+            "resume will target the generic role profile. "
+            "Supply job_description_text, job_description_ref, or jd_data for targeted generation."
+        )
 
     payload = build_canonical_jd_payload(
         raw,

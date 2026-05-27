@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from apps_rg.fact_inventory.track_weighted_graph_expansion import SENIOR_ROLE_TAXONOMY_IDS
 from apps_rg.runtime.c0.c03_role_family import resolve_c0_pillar_hints
+
+logger = logging.getLogger(__name__)
 
 EXEC_SUMMARY_SECTION = "executive_summary"
 MAX_CLAIM_SUPPORT_SKILLS_PER_FACT = 4
@@ -121,18 +124,48 @@ def resolve_role_family_projection(
         out["targeting_degraded_explicit"] = True
         out["release_eligible_targeting_proof"] = False
         out["fallback_pillar_bridge_used"] = False
+        out["targeting_degraded_gate"] = {
+            "gate_id": "TARGETING_DEGRADED",
+            "verdict": "WARN",
+            "projection_source": out["projection_source"],
+        }
+        logger.warning(
+            "C0.3 targeting degraded: role_family_key=%r resolved from taxonomy only "
+            "(no skills_graph.sqlite row). Add a role_family_projection row for full targeting.",
+            rf,
+        )
         return out
 
     if pillar_hints:
         out["projection_source"] = "taxonomy_pillar_hints_only"
         out["targeting_degraded_explicit"] = True
         out["release_eligible_targeting_proof"] = False
+        out["targeting_degraded_gate"] = {
+            "gate_id": "TARGETING_DEGRADED",
+            "verdict": "WARN",
+            "projection_source": out["projection_source"],
+        }
+        logger.warning(
+            "C0.3 targeting degraded: role_family_key=%r resolved from taxonomy pillar hints only.",
+            rf,
+        )
         return out
 
     out["projection_source"] = "missing_no_taxonomy_pillars"
     out["fallback_pillar_bridge_used"] = True
     out["targeting_degraded_explicit"] = True
     out["release_eligible_targeting_proof"] = False
+    out["targeting_degraded_gate"] = {
+        "gate_id": "TARGETING_DEGRADED",
+        "verdict": "WARN",
+        "projection_source": out["projection_source"],
+    }
+    logger.warning(
+        "C0.3 targeting degraded: role_family_key=%r not found in skills_graph.sqlite "
+        "and has no taxonomy pillar hints. Graph targeting will use generic fallback. "
+        "Add a role_family_projection row for this role to restore targeted generation.",
+        rf,
+    )
     return out
 
 
@@ -356,16 +389,79 @@ def build_c0_graph_diagnostics(
     }
 
 
+_BRIEFING_PILLAR_SIGNALS: tuple[tuple[str, str], ...] = (
+    ("ai", "AI_PLATFORM"),
+    ("machine learning", "AI_PLATFORM"),
+    ("llm", "AI_PLATFORM"),
+    ("agentic", "AI_PLATFORM"),
+    ("cloud", "CLOUD_INFRASTRUCTURE"),
+    ("aws", "CLOUD_INFRASTRUCTURE"),
+    ("azure", "CLOUD_INFRASTRUCTURE"),
+    ("gcp", "CLOUD_INFRASTRUCTURE"),
+    ("kubernetes", "CLOUD_INFRASTRUCTURE"),
+    ("governance", "GOVERNANCE_RISK"),
+    ("compliance", "GOVERNANCE_RISK"),
+    ("risk", "GOVERNANCE_RISK"),
+    ("regulatory", "GOVERNANCE_RISK"),
+    ("data platform", "DATA_PLATFORM"),
+    ("data strategy", "DATA_PLATFORM"),
+    ("analytics", "DATA_PLATFORM"),
+    ("platform engineering", "PLATFORM_ENGINEERING"),
+    ("developer experience", "PLATFORM_ENGINEERING"),
+    ("sre", "PLATFORM_ENGINEERING"),
+    ("digital transformation", "DIGITAL_TRANSFORMATION"),
+    ("modernization", "DIGITAL_TRANSFORMATION"),
+    ("insurtech", "INSURANCE_DOMAIN"),
+    ("underwriting", "INSURANCE_DOMAIN"),
+    ("claims", "INSURANCE_DOMAIN"),
+    ("fintech", "FINANCE_DOMAIN"),
+    ("capital markets", "FINANCE_DOMAIN"),
+)
+
+_MAX_BRIEFING_SUPPLEMENT_TERMS = 5
+
+
+def extract_briefing_targeting_supplement(briefing_text: str) -> list[str]:
+    """Extract up to _MAX_BRIEFING_SUPPLEMENT_TERMS pillar signal terms from briefing text.
+
+    Returns a deduplicated list of pillar IDs inferred from keyword presence.
+    This is informational targeting only — never used as proof evidence.
+    """
+    low = briefing_text.lower()
+    seen: set[str] = set()
+    result: list[str] = []
+    for keyword, pillar_id in _BRIEFING_PILLAR_SIGNALS:
+        if pillar_id not in seen and keyword in low:
+            seen.add(pillar_id)
+            result.append(pillar_id)
+            if len(result) >= _MAX_BRIEFING_SUPPLEMENT_TERMS:
+                break
+    return result
+
+
 def merge_graph_targeting_jd_alignment(
     jd_alignment: dict[str, Any] | None,
     *,
     role_family_projection: dict[str, Any],
+    briefing_text: str = "",
+    briefing_source: str = "",
 ) -> dict[str, Any]:
-    """Extend jd_alignment with explicit graph targeting posture for X2."""
+    """Extend jd_alignment with explicit graph targeting posture for X2.
+
+    When *briefing_source* is ``"RUN_SPECIFIC"`` and *briefing_text* is non-empty,
+    a lightweight supplement of pillar-adjacent terms extracted from the briefing
+    is appended to ``graph_targeting["briefing_targeting_supplement"]``.
+    This is informational only — ``briefing_used_as_proof`` remains False.
+    """
     out = dict(jd_alignment or {})
     out.setdefault("targeting_only", True)
     out.setdefault("jd_used_as_proof", False)
     out.setdefault("briefing_used_as_proof", False)
+    briefing_supplement = (
+        extract_briefing_targeting_supplement(briefing_text)
+        if briefing_source == "RUN_SPECIFIC" and briefing_text
+        else []
+    )
     out["graph_targeting"] = {
         "role_family_key": role_family_projection.get("role_family_key"),
         "projection_source": role_family_projection.get("projection_source"),
@@ -376,6 +472,7 @@ def merge_graph_targeting_jd_alignment(
         ),
         "targeting_degraded_explicit": role_family_projection.get("targeting_degraded_explicit"),
         "pillar_hint_ids": list(role_family_projection.get("pillar_hint_ids") or []),
+        "briefing_targeting_supplement": briefing_supplement,
     }
     return out
 
@@ -388,6 +485,7 @@ __all__ = [
     "classify_binding_graph_refs",
     "collect_receipt_only_json_expansion_refs",
     "compress_binding_for_executive_summary",
+    "extract_briefing_targeting_supplement",
     "merge_graph_targeting_jd_alignment",
     "resolve_role_family_projection",
 ]

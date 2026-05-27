@@ -146,6 +146,12 @@ def u0_validate_apps_rg(
         or "strategic_tailor"
     )
 
+    jd_ref: str = str(app_payload.get("job_description_ref") or "").strip()
+    jd_data_val: str = str(app_payload.get("jd_data") or "").strip()
+    jd_targeting_mode: str = (
+        "RUN_SPECIFIC" if (jd_text.strip() or jd_ref or jd_data_val) else "DEFAULT_SSOT"
+    )
+
     resume_hash = hashlib.sha256(source_resume_text.encode("utf-8")).hexdigest()
     jd_hash = hashlib.sha256(jd_text.encode("utf-8")).hexdigest()
 
@@ -277,6 +283,7 @@ def u0_validate_apps_rg(
         "query_spec": {
             "jd_hash": jd_hash,
             "resume_hash": resume_hash,
+            "jd_targeting_mode": jd_targeting_mode,
             "target": {
                 "company": target_company,
                 "role": target_role,

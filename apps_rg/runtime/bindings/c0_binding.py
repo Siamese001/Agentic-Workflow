@@ -210,6 +210,12 @@ def _build_section_evidence_trace(
         hashlib.sha256(resume_text.encode("utf-8")).hexdigest()[:32] if resume_text else ""
     )
     jd_h = hashlib.sha256(jd_text.encode("utf-8")).hexdigest()[:32] if jd_text else ""
+    briefing_digest: str = str(
+        (app_payload.get("briefing") or {}).get("briefing_digest", "")
+        or app_payload.get("briefing_digest", "")
+        or ""
+    )
+    briefing_h = briefing_digest[:32] if briefing_digest else ""
     refs = tuple(str(getattr(it, "evidence_id", "") or it.source) for it in section_dense_items)
     hashes = tuple(str(getattr(it, "chunk_digest", "") or "") for it in section_dense_items)
     classes = tuple(_evidence_source_class(it) for it in section_dense_items)
@@ -225,7 +231,7 @@ def _build_section_evidence_trace(
         section_type=str(section.get("section_type", "") or section.get("kind", "")),
         source_resume_hash=sr_hash,
         jd_hash=jd_h,
-        briefing_hash="",
+        briefing_hash=briefing_h,
         retrieved_chunk_refs=refs,
         retrieved_chunk_hashes=hashes,
         source_span_refs=(),

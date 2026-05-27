@@ -2,7 +2,29 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
+
+_JD_KEYWORD_PATTERN = re.compile(
+    r"\b(required|responsibilities|you will|qualifications|skills|requirements|about the role)\b",
+    re.IGNORECASE,
+)
+_JD_EXCERPT_MAX = 300
+
+
+def _smart_jd_excerpt(jd_text: str) -> str:
+    """Return a content-anchored excerpt of at most _JD_EXCERPT_MAX chars.
+
+    Scans for common structural markers (requirements, responsibilities, etc.)
+    and starts the excerpt there. Falls back to [:240] when no marker is found.
+    """
+    text = (jd_text or "").strip()
+    if len(text) <= _JD_EXCERPT_MAX:
+        return text
+    match = _JD_KEYWORD_PATTERN.search(text)
+    if match:
+        return text[match.start() : match.start() + _JD_EXCERPT_MAX]
+    return text[:240]
 
 _ROLE_FAMILY_PLAN_EXTRAS: dict[str, dict[str, list[str]]] = {
     "INSURANCE_CARRIER_TRANSFORMATION": {
@@ -104,7 +126,7 @@ def build_c01_retrieval_plan(
             if item not in merged:
                 merged.append(item)
         targets[key] = merged
-    jd_excerpt = (jd_text or "").strip()[:240]
+    jd_excerpt = _smart_jd_excerpt(jd_text or "")
     return {
         "schema_version": "c01_retrieval_plan_v1",
         "section_id": section_id,

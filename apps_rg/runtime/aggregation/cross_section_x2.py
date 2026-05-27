@@ -594,3 +594,113 @@ def build_cross_section_warn_resolution_report(
             "overlap_decisions": len(overlap_decisions),
         },
     }
+
+
+# ---------------------------------------------------------------------------
+# F6: Cross-section pillar coherence gate (W3 — briefing-jd-c0-enhancements-ee0b1d)
+# ---------------------------------------------------------------------------
+
+_PRIMARY_COHERENCE_SECTIONS: frozenset[str] = frozenset(
+    {"executive_summary", "competencies", "unify_bullets", "ibm_bullets", "unify_narrative", "ibm_narrative"}
+)
+_PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD = 0.4
+
+
+def _extract_pillar_ids_from_section(section: dict[str, Any]) -> set[str]:
+    """Pull pillar IDs from targeting_graph_refs or graph_targeting block."""
+    snap = section.get("l2_output_snapshot") or {}
+    # Try graph_targeting.pillar_hint_ids first (from C0.3 merge)
+    gt = snap.get("graph_targeting") or section.get("graph_targeting") or {}
+    pillar_hint_ids: list[Any] = gt.get("pillar_hint_ids") or []
+    briefing_supplement: list[Any] = gt.get("briefing_targeting_supplement") or []
+    # Also look at targeting_graph_refs flat list
+    targeting_refs: list[Any] = (
+        snap.get("targeting_graph_refs")
+        or section.get("targeting_graph_refs")
+        or []
+    )
+    ids: set[str] = set()
+    for item in pillar_hint_ids:
+        ids.add(str(item))
+    for item in briefing_supplement:
+        ids.add(str(item))
+    for item in targeting_refs:
+        if isinstance(item, str):
+            ids.add(item)
+        elif isinstance(item, dict):
+            ref_id = item.get("pillar_id") or item.get("skill_id") or item.get("ref_id") or ""
+            if ref_id:
+                ids.add(str(ref_id))
+    return ids
+
+
+def check_cross_section_pillar_coherence(
+    sections: list[dict[str, Any]],
+) -> CrossSectionGateResult:
+    """Verify that primary resume sections target overlapping JD pillar IDs.
+
+    Computes pairwise Jaccard similarity of ``pillar_hint_ids`` / ``targeting_graph_refs``
+    across sections whose ``section_id`` is in _PRIMARY_COHERENCE_SECTIONS.
+
+    Verdict:
+    - PASS  — all primary-section pairs have Jaccard ≥ 0.4, or only one primary section.
+    - WARN  — at least one primary-section pair is below the threshold.
+    - UNKNOWN — fewer than two primary sections have pillar data.
+
+    This gate is advisory only. It never blocks resume generation.
+    """
+    primary_pillar_map: dict[str, set[str]] = {}
+    for sec in sections:
+        sid = str(sec.get("section_id") or "")
+        if sid not in _PRIMARY_COHERENCE_SECTIONS:
+            continue
+        ids = _extract_pillar_ids_from_section(sec)
+        if ids:
+            primary_pillar_map[sid] = ids
+
+    if len(primary_pillar_map) < 2:
+        return CrossSectionGateResult(
+            gate_id="x2_cross_section_pillar_coherence",
+            verdict=VERDICT_UNKNOWN,
+            decisive_reason=(
+                "fewer than 2 primary sections with pillar targeting data — cannot assess coherence"
+            ),
+            threshold=_PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD,
+            observed=None,
+            evidence_refs=[],
+        )
+
+    section_ids = sorted(primary_pillar_map.keys())
+    min_jaccard: float = 1.0
+    worst_pair: tuple[str, str] = (section_ids[0], section_ids[1])
+    for i in range(len(section_ids)):
+        for j in range(i + 1, len(section_ids)):
+            a_id, b_id = section_ids[i], section_ids[j]
+            j_score = _jaccard(primary_pillar_map[a_id], primary_pillar_map[b_id])
+            if j_score < min_jaccard:
+                min_jaccard = j_score
+                worst_pair = (a_id, b_id)
+
+    if min_jaccard >= _PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD:
+        return CrossSectionGateResult(
+            gate_id="x2_cross_section_pillar_coherence",
+            verdict=VERDICT_PASS,
+            decisive_reason=(
+                f"min pairwise Jaccard {min_jaccard:.3f} ≥ {_PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD}"
+            ),
+            threshold=_PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD,
+            observed=round(min_jaccard, 4),
+            evidence_refs=section_ids,
+        )
+
+    return CrossSectionGateResult(
+        gate_id="x2_cross_section_pillar_coherence",
+        verdict=VERDICT_WARN,
+        decisive_reason=(
+            f"sections '{worst_pair[0]}' and '{worst_pair[1]}' have Jaccard {min_jaccard:.3f} "
+            f"< {_PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD} — possible cross-section targeting mismatch"
+        ),
+        threshold=_PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD,
+        observed=round(min_jaccard, 4),
+        evidence_refs=section_ids,
+    )
