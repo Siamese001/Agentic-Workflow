@@ -17,6 +17,7 @@ from apps_rg.runtime.sections.executive_summary_token_budget import (
     FAIL_SHAPE_ALTERED,
     ExecutiveSummaryTokenBudgetExceeded,
     apply_executive_summary_token_budget_policy,
+    build_token_budget_operator_guidance,
     evidence_contract_digest,
     estimate_tokens_approximate,
     exceeds_first_pass_95pct_policy,
@@ -261,3 +262,30 @@ def test_apply_policy_fail_closed_on_first_pass_95pct_after_optional_trim() -> N
     assert "jd" in str(guidance.get("operator_message") or "").lower()
     assert int(guidance.get("tokens_to_remove_estimate") or 0) > 0
     assert any(s.get("target") == "do_not_cut" for s in guidance.get("suggestions") or [])
+
+
+def test_token_budget_guidance_includes_exec_brief_sibling_when_present() -> None:
+    root = Path(__file__).resolve().parents[5]
+    full = root / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
+    if not full.is_file():
+        import pytest
+
+        pytest.skip("Brown briefing fixture missing")
+    receipt = {
+        "compiled_prompt_tokens_after_trim": 22000,
+        "available_input_tokens": 22016,
+        "first_pass_95pct_limit_tokens": 20915,
+        "first_pass_utilization_pct": 96.0,
+        "first_pass_input_utilization_max": 0.95,
+        "fail_closed_reason": FAIL_CLOSED_REASON_FIRST_PASS_95PCT,
+        "trim_applied": False,
+        "trimmed_components": [],
+    }
+    guidance = build_token_budget_operator_guidance(
+        receipt,
+        runtime_payload={"manual_brief": str(full), "briefing": "x" * 1000, "jd_text": "y" * 100},
+    )
+    briefing_sugs = [s for s in guidance.get("suggestions") or [] if s.get("target") == "briefing"]
+    assert briefing_sugs
+    assert briefing_sugs[0].get("exec_briefing_sibling_path")
+    assert "briefing_exec" in str(briefing_sugs[0].get("action") or "")

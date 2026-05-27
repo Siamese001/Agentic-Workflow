@@ -93,7 +93,15 @@ def compute_executive_summary_operator_disposition(
     elif draft_ready:
         exit_code = 0
     else:
-        exit_code = 1
+        from apps_rg.runtime.cli_exit_codes import exit_code_for_executive_summary_artifact
+
+        exit_code = exit_code_for_executive_summary_artifact(
+            artifact_dir if artifact_dir is not None else Path("."),
+            fault=fault,
+            x3_code=x3_code,
+        )
+        if exit_code == 0 and not certified:
+            exit_code = 1
 
     return ExecutiveSummaryOperatorDisposition(
         draft_ready=draft_ready,

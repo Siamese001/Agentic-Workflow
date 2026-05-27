@@ -348,6 +348,22 @@ def test_g5v2_brown_pattern_four_edits_not_blocked_by_legacy_budget() -> None:
     assert g5["g5_legacy_budget_advisory"]["max_sentence_edits_allowed"] == 6
 
 
+def test_g5v2_caps_disabled_still_requires_six_sentences(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Brown RCA I3: regen must not publish 5-sentence drafts when caps are disabled."""
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", raising=False)
+    prior = "One. Two. Three. Four. Five. Six."
+    after = "One. Two. Three. Four. Five."
+    g5 = evaluate_g5_delta_scope_v2(
+        prior,
+        after,
+        DELTA_CLASS_EXECUTIVE_SIGNAL_AND_VOICE,
+        x1d_judges=[],
+    )
+    assert g5["passed"] is False
+    assert g5["reject_gate"] == "regen_sentence_count_invariant"
+    assert g5["after_sentence_count"] == 5
+
+
 def test_regen_outcome_scratch_when_no_acceptable_regen() -> None:
     cycles = [
         {

@@ -106,10 +106,15 @@ def collect_full_run_section_status(
             )
             continue
 
+        pre_fail = _load_json(lane_dir / "integrated_lane_pre_run_failure.json")
+        pre_blocker = str(pre_fail.get("blocker") or pre_fail.get("lane_exec_status") or "").strip()
+
         txt_name, txt_path = _resolve_lane_display_txt(lane_dir)
         txt_rel = f"lanes/{lane}/{txt_name}" if txt_name else None
         x3 = _load_json(lane_dir / "x3_disposition.json")
         x3_code = str(x3.get("x3_code") or x3.get("disposition") or "UNKNOWN")
+        if pre_blocker and x3_code == "UNKNOWN" and not txt_name:
+            x3_code = f"PRE_RUN:{pre_blocker[:80]}"
         pq = str(x3.get("product_quality_status") or "UNKNOWN")
         x2_pass, x2_failed = _x2_summary(lane_dir)
         manifest = _load_json(lane_dir / "run_manifest.json")
@@ -165,6 +170,8 @@ def render_full_run_section_status_markdown(
         )
         if row.x2_failed_gate_ids:
             lines.append(f"| ↳ failed gates | | | | | `{row.x2_failed_gate_ids}` |")
+        if row.x3_code.startswith("PRE_RUN:"):
+            lines.append(f"| ↳ pre-run | | | | | `{row.x3_code}` |")
     lines.append("")
     return "\n".join(lines)
 

@@ -662,6 +662,19 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     if args.interactive:
         _gather_interactive_fields(args)
 
+    if str(getattr(args, "manual_brief", "") or "").strip():
+        from apps_rg.runtime.briefing_exec_resolution import resolve_manual_brief_path
+
+        _brief_res = resolve_manual_brief_path(str(args.manual_brief))
+        if _brief_res.swapped:
+            print(
+                f"[apps_rg] APPS_RG_AUTO_EXEC_BRIEF: using exec digest "
+                f"{_brief_res.resolved_path.as_posix()} "
+                f"(was {_brief_res.original_path.name})",
+                flush=True,
+            )
+            args.manual_brief = str(_brief_res.resolved_path)
+
     if section_eff == "executive_summary":
         from apps_rg.runtime.section_cli_defaults import (
             collect_executive_summary_mandatory_missing,
@@ -956,11 +969,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             hl_txt = str((result or {}).get("headline_cli_output_text") or "").strip()
             if hl_txt:
                 print(hl_txt, flush=True)
-            rc = section_lane_process_exit_code(
-                result=res_dict,
-                allow_non_allow_exit_zero_effective=section_allow_exit,
-                section_id=section_eff,
-            )
+            from apps_rg.runtime.cli_exit_codes import exit_code_from_lane_result
+
+            rc = exit_code_from_lane_result(res_dict, section_id=section_eff)
+            if allow_exit_flag and rc != 0:
+                rc = 0
             emit_cli_section_execution_summary(
                 result=res_dict,
                 lane_provider_resolution_source=lane_provider_resolution_source,
@@ -970,7 +983,27 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             )
             return rc
         if status != "success" or not authorized:
-            return 1
+            from apps_rg.runtime.cli_exit_codes import (
+                EXIT_GENERIC_FAILURE,
+                EXIT_JUDGE_REVIEW_REQUIRED,
+                EXIT_TOKEN_BUDGET_BLOCKED,
+            )
+
+            if isinstance(result, dict):
+                ad = str(result.get("artifact_dir") or "").strip()
+                if ad and (Path(ad) / "lanes" / "executive_summary").is_dir():
+                    from apps_rg.runtime.cli_exit_codes import (
+                        exit_code_for_executive_summary_artifact,
+                    )
+
+                    es_ad = Path(ad) / "lanes" / "executive_summary"
+                    return exit_code_for_executive_summary_artifact(es_ad)
+                if str(result.get("token_budget_operator_message") or "").strip():
+                    return EXIT_TOKEN_BUDGET_BLOCKED
+                x3 = str(result.get("x3_disposition") or "")
+                if "JUDGE_SOFT_FAIL" in x3:
+                    return EXIT_JUDGE_REVIEW_REQUIRED
+            return EXIT_GENERIC_FAILURE
         return 0
     except SectionCliConfigError as exc:
         print(f"ERROR: {exc}", file=sys.stderr, flush=True)

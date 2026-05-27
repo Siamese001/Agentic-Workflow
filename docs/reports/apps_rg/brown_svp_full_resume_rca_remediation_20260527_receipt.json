@@ -1,0 +1,59 @@
+{
+  "schema_version": "apps_rg.brown_svp_rca_remediation.v1",
+  "generated_at_utc": "2026-05-27T12:45:00Z",
+  "status": "PASS",
+  "implementation_20260527": {
+    "R0": "targeting/README.md + briefing_exec_resolution",
+    "R1": "token budget exec sibling hint + APPS_RG_AUTO_EXEC_BRIEF in __main__",
+    "R2.2": "g5v2 sentence_count_invariant when regen caps disabled",
+    "R3.2": "cli_exit_codes 3=token 4=judge soft-fail",
+    "R3.3": "full_run_section_status PRE_RUN blocker row"
+  },
+  "summary": "RCA and remediation plan for Brown SVP full resume runs (token budget + judge soft-fail cascade)",
+  "issues": [
+    {
+      "id": "I1",
+      "title": "TOKEN_BUDGET_EXCEEDED_FIRST_PASS_95PCT",
+      "run_id": "full_resume_a7c31b6fe534",
+      "utilization_pct": 96.17,
+      "tokens_over": 257
+    },
+    {
+      "id": "I2",
+      "title": "X3_REVIEW_JUDGE_SOFT_FAIL",
+      "run_id": "full_resume_d8312b748dbe",
+      "blocking_judge": "anthropic_claude",
+      "score": 3.4,
+      "threshold": 4.0
+    },
+    {
+      "id": "I3",
+      "title": "regen_x2_stuck_same_failure",
+      "run_id": "full_resume_d8312b748dbe",
+      "stopped_reason": "x2_stuck_same_failure"
+    },
+    {
+      "id": "I4",
+      "title": "phase1_lane_cascade",
+      "run_id": "full_resume_d8312b748dbe",
+      "lanes_blocked": 6
+    }
+  ],
+  "remediation_waves": ["R0", "R1", "R2", "R3", "R4"],
+  "FILES_CHANGED": [
+    "docs/reports/apps_rg/brown_svp_full_resume_rca_remediation_20260527.md",
+    "docs/reports/apps_rg/brown_svp_full_resume_rca_remediation_20260527_receipt.json"
+  ],
+  "ARTIFACTS": [
+    "artifacts/apps_rg/runtime_proofs/full_resume_a7c31b6fe534",
+    "artifacts/apps_rg/runtime_proofs/full_resume_d8312b748dbe"
+  ],
+  "REPORTS_GENERATED": [
+    "docs/reports/apps_rg/brown_svp_full_resume_rca_remediation_20260527.md",
+    "docs/reports/apps_rg/brown_svp_full_resume_rca_remediation_20260527_receipt.json"
+  ],
+  "related_plan": ".cursor/plans/skills-graph-hardening-gap-closure-53576c.md",
+  "notion_plans_slug": "brown-svp-full-resume-rca-remediation-20260527",
+  "notion_plans_url": "https://www.notion.so/brown-svp-full-resume-rca-remediation-20260527-36d27693f55c819695aff7013858a502",
+  "notion_plans_page_id": "36d27693-f55c-8196-95af-f7013858a502"
+}

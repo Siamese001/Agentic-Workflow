@@ -595,18 +595,23 @@ def evaluate_g5_delta_scope_v2(
     )
 
     edited_count, detail = count_sentence_edits(prior_resume, after_resume)
+    after_count = int(detail.get("after_sentence_count") or 0)
+    sentence_count_ok = after_count == _EXEC_SUMMARY_SENTENCE_COUNT
     if not regen_artificial_caps_enabled():
-        return {
+        passed = sentence_count_ok
+        receipt_disabled: dict[str, Any] = {
             "schema": "executive_summary_g5_delta_scope_v2",
             "gate_mode": "disabled",
-            "passed": True,
-            "reject_gate": None,
-            "verdict": "regen_caps_disabled",
+            "passed": passed,
+            "reject_gate": None if passed else "regen_sentence_count_invariant",
+            "verdict": "regen_caps_disabled" if passed else "regen_sentence_count_violation",
             "delta_class": delta_class,
             "allowlist": list(range(1, _EXEC_SUMMARY_SENTENCE_COUNT + 1)),
             "allowlist_passed": True,
             "out_of_allowlist_indices": [],
             "edited_sentence_count": edited_count,
+            "sentence_count_invariant_required": _EXEC_SUMMARY_SENTENCE_COUNT,
+            "sentence_count_invariant_passed": sentence_count_ok,
             **detail,
             "allowlist_sources": ["regen_caps_disabled"],
             "g5_legacy_budget_advisory": {
@@ -615,6 +620,11 @@ def evaluate_g5_delta_scope_v2(
                 "gate_mode": "disabled",
             },
         }
+        if not passed:
+            receipt_disabled["failure_reason"] = (
+                f"after_sentence_count={after_count} required={_EXEC_SUMMARY_SENTENCE_COUNT}"
+            )
+        return receipt_disabled
 
     edited_set = set(detail.get("edited_sentence_indices") or [])
     allowlist, allow_meta = build_regen_sentence_allowlist(

@@ -12,6 +12,7 @@ import json
 import os
 import re
 from dataclasses import dataclass, replace
+from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt
@@ -330,25 +331,46 @@ def build_token_budget_operator_guidance(
     briefing_est = _estimate_chars_to_tokens(len(briefing_text))
     jd_est = _estimate_chars_to_tokens(len(jd_text))
 
+    exec_sibling_path: str | None = None
+    brief_hint = (
+        source_hints.get("briefing_selected_path")
+        or source_hints.get("manual_brief")
+        or source_hints.get("briefing_path")
+    )
+    if brief_hint:
+        try:
+            from apps_rg.runtime.briefing_exec_resolution import discover_exec_briefing_sibling
+
+            sibling = discover_exec_briefing_sibling(Path(str(brief_hint)))
+            if sibling is not None:
+                exec_sibling_path = sibling.as_posix()
+        except OSError:
+            exec_sibling_path = None
+
     if briefing_text:
+        exec_action = (
+            "Use an executive-summary briefing variant (e.g. "
+            "`apps_rg/config/targeting/*_briefing_exec.md`) with only role themes, "
+            "constraints, and company hooks — remove narrative background, duplicated JD "
+            "bullets, and long citations."
+        )
+        if exec_sibling_path:
+            exec_action = (
+                f"Re-run with exec digest: `--manual-brief {exec_sibling_path}` "
+                "(or set APPS_RG_AUTO_EXEC_BRIEF=1 before launch)."
+            )
         suggestions.append(
             {
                 "priority": 1,
                 "target": "briefing",
-                "action": (
-                    "Use an executive-summary briefing variant (e.g. "
-                    "`apps_rg/config/targeting/*_briefing_exec.md`) with only role themes, "
-                    "constraints, and company hooks — remove narrative background, duplicated JD "
-                    "bullets, and long citations."
-                ),
+                "action": exec_action,
                 "preserves_signal": (
                     "Must-have role themes, constraints, targeting hooks; HIGH/C0 facts and "
                     "selected_fact_plan unchanged."
                 ),
                 "estimated_input_tokens_if_removed_entirely": briefing_est,
-                "source_hint": source_hints.get("briefing_selected_path")
-                or source_hints.get("manual_brief")
-                or source_hints.get("briefing_path"),
+                "source_hint": brief_hint,
+                "exec_briefing_sibling_path": exec_sibling_path,
             }
         )
         suggestions.append(
