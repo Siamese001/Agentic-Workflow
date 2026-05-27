@@ -45,10 +45,18 @@ def prepare_parsed_after_judge_regen(
         strip_unsupported_source_sensitive_prose,
     )
 
+    from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
+        _sanitize_deprecated_commercialization_thread,
+    )
+
     receipt: dict[str, Any] = {
         "schema": "executive_summary_judge_regen_prepare_v1",
     }
     out = dict(parsed)
+    _resume = str(out.get("resume_display_text") or "")
+    if re.search(r"\bcommercialization\b", _resume, re.IGNORECASE):
+        out["resume_display_text"] = _sanitize_deprecated_commercialization_thread(_resume)
+        receipt["commercialization_thread_sanitize"] = True
     out, ss_receipt = strip_unsupported_source_sensitive_prose(
         out,
         selected_facts=plan_facts,

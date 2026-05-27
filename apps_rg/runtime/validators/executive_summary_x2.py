@@ -112,6 +112,60 @@ def check_exec_summary_no_sentence_fragment(
     return True, None
 
 
+_DISPLAY_OVERRIDE_REQUIRED_SUBSTRINGS: dict[str, str] = {
+    "fact_quant_hpc_003": "fsa-chartered actuarial work in capital modeling",
+    "fact_engineering_platform_002": "dependency graph intelligence enables accelerated legacy-system analysis",
+}
+
+
+def check_exec_summary_display_override_compliance(
+    resume_display_text: str,
+    claim_ledger: list[dict[str, Any]],
+) -> tuple[bool, str | None]:
+    """When a DISPLAY_OVERRIDE fact is cited, require its stable middle anchor in display prose."""
+    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        FACT_C0_DISPLAY_OVERRIDES,
+    )
+
+    low = str(resume_display_text or "").lower()
+    cited: set[str] = set()
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        for fid in row.get("source_fact_ids") or []:
+            base = str(fid).split("_metric_")[0]
+            if base:
+                cited.add(base)
+    missing: list[str] = []
+    for fid in FACT_C0_DISPLAY_OVERRIDES:
+        if fid not in cited:
+            continue
+        anchor = _DISPLAY_OVERRIDE_REQUIRED_SUBSTRINGS.get(fid, "")
+        if anchor and anchor not in low:
+            missing.append(f"{fid} missing anchor '{anchor}'")
+    if missing:
+        return False, "DISPLAY_OVERRIDE compliance failed: " + "; ".join(missing)
+    return True, None
+
+
+def check_exec_summary_strategy_no_commercialization_thread(
+    resume_display_text: str,
+    *,
+    target_role: str | None = None,
+) -> tuple[bool, str | None]:
+    """SVP strategy lane must not resurrect the deprecated commercialization identity thread."""
+    from apps_rg.runtime.sections.executive_summary_pa import is_strategy_executive_target_title
+
+    if not is_strategy_executive_target_title(str(target_role or "")):
+        return True, "skipped_not_strategy_lane"
+    if "commercialization" in str(resume_display_text or "").lower():
+        return (
+            False,
+            "SVP strategy lane forbids 'commercialization' in resume_display_text; use digital innovation framing",
+        )
+    return True, None
+
+
 def check_exec_summary_meta_filler_patterns(resume_display_text: str) -> tuple[bool, str | None]:
     lowered = resume_display_text.lower()
     hits: list[str] = []
@@ -2281,6 +2335,36 @@ def run_x2_gates(
         cred_reason or "ok",
         "no_credential_inventory_block",
         cred_reason,
+    )
+    frag_ok, frag_reason = check_exec_summary_no_sentence_fragment(resume_display_text)
+    add(
+        "x2_exec_summary_no_sentence_fragment",
+        frag_ok,
+        frag_reason or "ok",
+        "no_grammatical_fragments",
+        frag_reason,
+    )
+    override_ok, override_reason = check_exec_summary_display_override_compliance(
+        resume_display_text,
+        claim_ledger,
+    )
+    add(
+        "x2_exec_summary_display_override_compliance",
+        override_ok,
+        override_reason or "ok",
+        "display_override_anchor_present",
+        override_reason,
+    )
+    comm_ok, comm_reason = check_exec_summary_strategy_no_commercialization_thread(
+        resume_display_text,
+        target_role=target_role,
+    )
+    add(
+        "x2_exec_summary_strategy_no_commercialization_thread",
+        comm_ok,
+        comm_reason or "ok",
+        "no_commercialization_identity_thread",
+        comm_reason,
     )
     comp_dup_ok, comp_dup_reason = check_exec_summary_no_competencies_duplication(resume_display_text)
     add(

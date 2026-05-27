@@ -835,6 +835,7 @@ def _synthesis_shape_reject_reason(
         check_exec_summary_no_credential_dump,
         check_exec_summary_no_mechanism_inventory,
         check_exec_summary_no_sentence_fragment,
+        check_exec_summary_display_override_compliance,
         check_exec_summary_paragraph_max_words,
         check_exec_summary_sentence_count_6,
         check_inferred_bridge_claims,
@@ -890,6 +891,13 @@ def _synthesis_shape_reject_reason(
     frag_ok, frag_reason = check_exec_summary_no_sentence_fragment(text)
     if not frag_ok and frag_reason:
         failures.append(frag_reason)
+    if isinstance(parsed, dict):
+        override_ok, override_reason = check_exec_summary_display_override_compliance(
+            text,
+            list(parsed.get("claim_ledger") or []),
+        )
+        if not override_ok and override_reason:
+            failures.append(override_reason)
     colon_ok, colon_reason = check_resume_display_colon_space_discipline(text)
     if not colon_ok and colon_reason:
         failures.append(colon_reason)

@@ -114,8 +114,9 @@ def apply_w2_offending_fact_migrations(row: dict[str, Any]) -> dict[str, Any]:
         # x2_exec_summary_s5_no_derivatives_inventory when passed verbatim to the LLM.
         # format_selected_facts_for_c0 reads this field before claim_text.
         out["preferred_c0_display_text"] = (
-            "Quantitative rigor was established through FSA-chartered actuarial work in "
-            "capital modeling and portfolio stress analytics across early-career roles."
+            "That governance discipline is grounded in quantitative rigor established through "
+            "FSA-chartered actuarial work in capital modeling and portfolio stress analytics, "
+            "informing data governance and AI strategy at scale."
         )
         out["claim_proof_split_version"] = CLAIM_PROOF_SCHEMA_VERSION
         return out

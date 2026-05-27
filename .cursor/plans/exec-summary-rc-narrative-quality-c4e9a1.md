@@ -1,5 +1,7 @@
 # Plan: exec-summary-rc-narrative-quality-c4e9a1
 
+**Status**: PARTIAL (2026-05-27) — Brown SVP proof `exec_summary_20260527_195120`: **PRODUCT_QUALITY PASS** (all X2 green); **X3_REVIEW_JUDGE_SOFT_FAIL** (Claude/Gemini judges) remains.
+
 ## Objective
 
 Fix the remaining structural quality failures in the `executive_summary` section that cause
@@ -119,4 +121,4 @@ present in `selected_fact_plan.facts`. This prevents $22M and 20% from leaking i
 
 ## Status
 
-NOT_STARTED
+IN_PROGRESS — W1-W5 complete (9/9 unit tests pass). W6 proof run pending.

@@ -345,6 +345,141 @@ def _flags_opener_only(flags: dict[str, Any]) -> bool:
     )
 
 
+def _flags_display_metric_echo_only(flags: dict[str, Any]) -> bool:
+    """True when unsupported percent/gross-margin echoes are the sole synthesis violations."""
+    metric_echo = bool(flags.get("unsupported_percent_tokens")) or flags.get(
+        "had_unsupported_gross_margin"
+    )
+    if not metric_echo:
+        return False
+    return not any(
+        [
+            flags.get("had_bare_credential_inventory"),
+            flags.get("had_causal_claim_merge_in_ledger"),
+            flags.get("mechanical_opener_stack"),
+            flags.get("cross_fact_display_conflation"),
+            flags.get("mechanism_inventory_violation"),
+            flags.get("evidence_utilization_violation"),
+        ]
+    )
+
+
+def _sanitize_unsupported_percent_tokens(resume: str, unsupported_pcts: list[str]) -> str:
+    """Strip unsupported percent tokens from display text; preserve connective openers."""
+    from apps_rg.runtime.validators.executive_summary_sentence_utils import (
+        join_executive_summary_sentences,
+        split_sentences,
+    )
+
+    if not str(resume or "").strip() or not unsupported_pcts:
+        return str(resume or "").strip()
+    cleaned: list[str] = []
+    for sent in split_sentences(resume):
+        clause = sent
+        for pct in unsupported_pcts:
+            num = re.sub(r"\s+", "", str(pct).lower()).replace("%", "")
+            if not num:
+                continue
+            clause = re.sub(
+                rf"\s+and\s+expanded\s+(?:operating\s+)?margins\s+by\s+{re.escape(num)}\s*%",
+                "",
+                clause,
+                flags=re.IGNORECASE,
+            )
+            clause = re.sub(
+                rf"\b(?:by\s+)?{re.escape(num)}\s*%\b",
+                "",
+                clause,
+                flags=re.IGNORECASE,
+            )
+            clause = re.sub(
+                rf"\b{re.escape(num)}\s*%\s+(?:expansion|reduction|improvement)\b",
+                "",
+                clause,
+                flags=re.IGNORECASE,
+            )
+        clause = re.sub(r"\s+", " ", clause).strip()
+        clause = re.sub(r",\s*,", ",", clause)
+        clause = re.sub(r"\s+while\s+growing\b", " while growing", clause, flags=re.I)
+        if clause and clause not in {",", "and", "while"}:
+            cleaned.append(clause)
+    if cleaned:
+        return join_executive_summary_sentences(cleaned)
+    return str(resume or "").strip()
+
+
+def _sanitize_unsupported_gross_margin_phrases(resume: str) -> str:
+    """Remove gross-margin echo phrases while preserving connective openers."""
+    out = str(resume or "")
+    out = re.sub(
+        r"\s+and\s+expanded\s+(?:operating\s+)?gross\s+margins?\s+by\s+\d+(?:\.\d+)?\s*%",
+        "",
+        out,
+        flags=re.IGNORECASE,
+    )
+    out = re.sub(
+        r"\s+generated\s+\$22\s*m(?:illion)?\s+in\s+[^.]+",
+        "",
+        out,
+        flags=re.IGNORECASE,
+    )
+    out = _UNSUPPORTED_MARGIN_RE.sub("", out)
+    return re.sub(r"\s+", " ", out).strip()
+
+
+def _sanitize_deprecated_commercialization_thread(resume: str) -> str:
+    """Replace deprecated SVP identity thread wording without full template rewrite."""
+    out = str(resume or "")
+    out = re.sub(
+        r"\bplatform\s+commercialization\b",
+        "platform revenue outcomes",
+        out,
+        flags=re.IGNORECASE,
+    )
+    out = re.sub(
+        r"\bcommercialization\b",
+        "digital innovation programs",
+        out,
+        flags=re.IGNORECASE,
+    )
+    return re.sub(r"\s+", " ", out).strip()
+
+
+def _sanitize_display_metric_echoes(
+    resume: str,
+    *,
+    unsupported_pcts: list[str],
+    plan_facts: list[dict[str, Any]],
+) -> str:
+    cleaned = _sanitize_unsupported_percent_tokens(resume, unsupported_pcts)
+    cleaned = _sanitize_unsupported_gross_margin_phrases(cleaned)
+    cleaned = _sanitize_unsupported_style_metric_echoes(cleaned, plan_facts=plan_facts)
+    return _sanitize_deprecated_commercialization_thread(cleaned)
+
+
+def _sanitize_unsupported_style_metric_echoes(
+    resume: str,
+    *,
+    plan_facts: list[dict[str, Any]],
+) -> str:
+    """Remove north-star dollar echoes when selected facts do not support them."""
+    from apps_rg.runtime.validators.executive_summary_x2 import (
+        NORTH_STAR_SIGNATURE_PHRASES,
+        _selected_facts_support_blob,
+    )
+
+    blob = _selected_facts_support_blob(plan_facts)
+    low = resume.lower()
+    out = resume
+    for phrase in NORTH_STAR_SIGNATURE_PHRASES:
+        p = phrase.lower()
+        if p in low and p not in blob:
+            out = re.sub(re.escape(phrase), "", out, flags=re.IGNORECASE)
+    out = re.sub(r"\s+", " ", out).strip()
+    out = re.sub(r"\s+,\s+", ", ", out)
+    return out
+
+
 def build_graph_only_executive_summary_from_facts(
     plan_facts: list[dict[str, Any]],
     allowed_fact_ids: set[str],
@@ -562,8 +697,53 @@ def apply_graph_only_generation_quality_repair(
         "before_claim_ledger_rows": len(before_ledger),
         "after_claim_ledger_rows": len(before_ledger),
     }
+
+    if re.search(r"\bcommercialization\b", before_resume, re.IGNORECASE):
+        sanitized = _sanitize_deprecated_commercialization_thread(before_resume)
+        comm_candidate = copy.deepcopy(out)
+        comm_candidate["resume_display_text"] = sanitized
+        needs_after_comm, flags_after_comm = detect_graph_only_synthesis_violations(
+            comm_candidate,
+            allowed_fact_ids=allowed_fact_ids,
+            plan_facts=plan_facts,
+        )
+        out["resume_display_text"] = sanitized
+        before_resume = sanitized
+        meta["after_resume_display_text"] = sanitized
+        needs = needs_after_comm
+        flags = flags_after_comm
+        meta["needs_repair"] = needs
+        meta.update(flags)
+        if not needs:
+            meta["applied"] = True
+            meta["repaired"] = True
+            meta["repair_kind"] = "commercialization_thread_sanitize_only"
+            return out, meta
+
     if not needs:
         return out, meta
+
+    if _flags_display_metric_echo_only(flags):
+        sanitized = _sanitize_display_metric_echoes(
+            before_resume,
+            unsupported_pcts=list(flags.get("unsupported_percent_tokens") or []),
+            plan_facts=plan_facts,
+        )
+        percent_candidate = copy.deepcopy(out)
+        percent_candidate["resume_display_text"] = sanitized
+        needs_after_percent, _flags_after = detect_graph_only_synthesis_violations(
+            percent_candidate,
+            allowed_fact_ids=allowed_fact_ids,
+            plan_facts=plan_facts,
+        )
+        if not needs_after_percent:
+            meta["repair_kind"] = "display_metric_echo_sanitize_only"
+            meta["applied"] = True
+            meta["repaired"] = True
+            meta["after_resume_display_text"] = sanitized
+            meta["after_claim_ledger_rows"] = len(before_ledger)
+            out["resume_display_text"] = sanitized
+            return out, meta
 
     if _flags_opener_only(flags):
         from apps_rg.runtime.sections.executive_summary_composition import (

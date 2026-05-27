@@ -48,8 +48,9 @@ DEPENDENCY_GRAPH_FACT_ID = "fact_engineering_platform_002"
 # S6. Changed to forward-modal "enables...exposes...improves" framing.
 FACT_C0_DISPLAY_OVERRIDES: dict[str, str] = {
     FSA_CREDENTIAL_FACT_ID: (
-        "Quantitative rigor was established through FSA-chartered actuarial work in "
-        "capital modeling and portfolio stress analytics across early-career roles."
+        "That governance discipline is grounded in quantitative rigor established through "
+        "FSA-chartered actuarial work in capital modeling and portfolio stress analytics, "
+        "informing data governance and AI strategy at scale."
     ),
     DEPENDENCY_GRAPH_FACT_ID: (
         "Software dependency graph intelligence enables accelerated legacy-system analysis, "
@@ -89,8 +90,9 @@ SENTENCE_ARC_SVP_STRATEGY: tuple[dict[str, str], ...] = (
         "arc_role": "scale_operating_model",
         "guidance": (
             "S3: weave platform scale, operating model, and platform revenue outcomes as connective prose — when "
-            "fact_engineering_platform_006 is cited, include $22M IP-led revenue and/or 20% margin expansion in display "
-            "(team 8→28 may share the clause); not a standalone achievement bullet; "
+            "fact_engineering_platform_006 is cited, surface only revenue and margin metrics present in that "
+            "fact's metric_raw (never echo E0 placeholder dollars); team scale may share the clause when "
+            "fact_exec_002 is cited; not a standalone achievement bullet; "
             "avoid SRFS-forbidden phrases (reusable platform services adopted across enterprise programs, engineering scale-out)."
         ),
     },

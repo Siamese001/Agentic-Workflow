@@ -54,6 +54,12 @@ SYNTHESIS_CHECK_TO_X2_GATE: dict[str, str] = {
         "x2_claim_ledger_row_count_matches_sentence_count"
     ),
     "check_exec_summary_no_sentence_fragment": "x2_exec_summary_no_sentence_fragment",
+    "check_exec_summary_display_override_compliance": (
+        "x2_exec_summary_display_override_compliance"
+    ),
+    "check_exec_summary_strategy_no_commercialization_thread": (
+        "x2_exec_summary_strategy_no_commercialization_thread"
+    ),
 }
 
 SYNTHESIS_IMPLICIT_X2_GATES: frozenset[str] = frozenset(
