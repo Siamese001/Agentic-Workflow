@@ -18,7 +18,7 @@ if str(_REPO) not in sys.path:
 TARGET_COMPANY = "Brown & Brown"
 TARGET_ROLE = "SVP IT Strategy & Innovation"
 JD_PATH = _REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt"
-BRIEF_PATH = _REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md"
+BRIEF_PATH = _REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
 
 W6_SECTIONS = (
     "headline",
@@ -199,7 +199,7 @@ def _write_reports(payload: dict[str, Any], ts: str) -> tuple[Path, Path]:
         f"- Company: {TARGET_COMPANY}",
         f"- Role: {TARGET_ROLE}",
         f"- JD: [brown_brown_svp_it_strategy_innovation_jd.txt](apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt)",
-        f"- Brief: [brown_brown_svp_it_strategy_innovation_briefing_exec.md](apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md)",
+        f"- Brief: [brown_brown_svp_it_strategy_innovation_briefing.md](apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md)",
         "",
         "## Lane summary",
         "",

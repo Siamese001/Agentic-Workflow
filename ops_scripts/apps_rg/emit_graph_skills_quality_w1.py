@@ -24,8 +24,7 @@ RECEIPT_JSON = REPORTS / "graph_skills_quality_w1_receipt.json"
 TARGET_COMPANY = "Brown & Brown"
 TARGET_ROLE = "SVP IT Strategy & Innovation"
 JD_PATH = REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt"
-BRIEF_DEFAULT = REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
-BRIEF_EXEC = REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md"
+BRIEF_PATH = REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
 
 LANES = (
     "headline",
@@ -55,9 +54,8 @@ def _git_commit() -> str:
     return "unknown"
 
 
-def _briefing_for(lane: str) -> str:
-    path = BRIEF_EXEC if lane == "executive_summary" else BRIEF_DEFAULT
-    return path.read_text(encoding="utf-8")
+def _briefing_for(_lane: str) -> str:
+    return BRIEF_PATH.read_text(encoding="utf-8")
 
 
 def main() -> int:

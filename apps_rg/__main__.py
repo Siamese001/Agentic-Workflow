@@ -662,19 +662,6 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     if args.interactive:
         _gather_interactive_fields(args)
 
-    if str(getattr(args, "manual_brief", "") or "").strip():
-        from apps_rg.runtime.briefing_exec_resolution import resolve_manual_brief_path
-
-        _brief_res = resolve_manual_brief_path(str(args.manual_brief))
-        if _brief_res.swapped:
-            print(
-                f"[apps_rg] APPS_RG_AUTO_EXEC_BRIEF: using exec digest "
-                f"{_brief_res.resolved_path.as_posix()} "
-                f"(was {_brief_res.original_path.name})",
-                flush=True,
-            )
-            args.manual_brief = str(_brief_res.resolved_path)
-
     if section_eff == "executive_summary":
         from apps_rg.runtime.section_cli_defaults import (
             collect_executive_summary_mandatory_missing,

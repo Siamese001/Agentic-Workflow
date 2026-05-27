@@ -76,17 +76,13 @@ def lane_specs() -> tuple[LaneRigorSpec, ...]:
     )
     brief_default = (
         "--manual-brief",
-        "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.txt",
-    )
-    brief_exec = (
-        "--manual-brief",
-        "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.txt",
+        "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md",
     )
     common_tail = ("--allow-non-allow-exit-zero",)
     specs: list[LaneRigorSpec] = []
     for lane in GENERATED_LANES:
         provider_mode: ProviderMode = "qwen_live"
-        targeting = (*jd_common, *(brief_exec if lane == "executive_summary" else brief_default))
+        targeting = (*jd_common, *brief_default)
         style = STYLE_CRITICAL_GATES if lane != "executive_summary" else frozenset()
         extra = (*targeting_company, *targeting, "--provider", "qwen_vllm", *common_tail)
         specs.append(

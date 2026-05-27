@@ -10,7 +10,10 @@ from dataclasses import dataclass
 
 from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MAX_MODEL_LEN
 
-# Must match optimized_vllm_client._truncate_prompt_for_context
+# Must match optimized_vllm_client._truncate_prompt_for_context (line ~51: max_chars = max_prompt_tokens * 2).
+# _CHARS_PER_TOKEN_EST = 2 is intentionally lower than the SSOT constant (CHARS_PER_TOKEN_ESTIMATE = 3
+# in executive_summary_context_limits) because this mirrors the actual vLLM client truncation ratio,
+# not the ranked-selection pre-filter. Keeping both in sync with the client is the correctness contract.
 _TRUNC_RESERVE = 128
 _TRUNC_MIN_PROMPT_TOKENS = 256
 _CHARS_PER_TOKEN_EST = 2

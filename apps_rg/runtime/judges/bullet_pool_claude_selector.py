@@ -287,7 +287,7 @@ def _load_selection_doc_from_judge_artifacts(
                 result = doc.get("result")
                 if isinstance(result, dict) and isinstance(result.get("selections"), list):
                     return result
-            except (json.JSONDecodeError, OSError):
+            except (json.JSONDecodeError, OSError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
         raw_path = _artifact_path(
             "anthropic_claude",
@@ -299,7 +299,7 @@ def _load_selection_doc_from_judge_artifacts(
                 doc = json.loads(raw_path.read_text(encoding="utf-8"))
                 text = _extract_anthropic_message_text(doc)
                 return _parse_selections(text)
-            except (json.JSONDecodeError, OSError, TypeError):
+            except (json.JSONDecodeError, OSError, TypeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
     if judge_out.rationale:
         return _parse_selections(str(judge_out.rationale))

@@ -15,7 +15,7 @@ REPO = Path(__file__).resolve().parents[3]
 
 def test_persist_graph_selection_rationale_to_run_dir(tmp_path: Path) -> None:
     jd_path = REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt"
-    brief_path = REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md"
+    brief_path = REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
     payload = {
         "target_company": "Brown & Brown",
         "target_title": "SVP IT Strategy & Innovation",

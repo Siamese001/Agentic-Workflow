@@ -12,8 +12,7 @@ This guide is the **canonical CLI surface** for graph-skills quality proof (W0â€
 | Fixture | Path (repo-relative) | SHA-256 (W0 pin) |
 |---------|----------------------|------------------|
 | JD | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt` | `3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f` |
-| Briefing (6 lanes) | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md` | `97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b` |
-| Briefing (executive_summary) | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md` | `74bd4674f23f17236abf3e5a3837e7fd422d6691e2f7e1dc234653f11a6da1f6` |
+| Briefing (all lanes) | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md` | `9d0b63db755cce713bce35aa7c9089453a0e2ffb5060a3ed7bef8da483843e5d` |
 
 **Targeting flags (all lanes):**
 
@@ -43,13 +42,7 @@ python -m apps_rg --section <lane> \
 
 | Lane | `--manual-brief` |
 |------|------------------|
-| `headline` | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md` |
-| `executive_summary` | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md` |
-| `unify_bullets` | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md` |
-| `unify_narrative` | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md` |
-| `ibm_bullets` | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md` |
-| `ibm_narrative` | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md` |
-| `competencies` | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md` |
+| All generated lanes | `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md` |
 
 **Example (executive_summary):**
 
@@ -58,7 +51,7 @@ python -m apps_rg --section executive_summary \
   --target-company "Brown & Brown" \
   --target-role "SVP IT Strategy & Innovation" \
   --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt \
-  --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md \
+  --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md \
   --provider qwen_vllm
 ```
 

@@ -30,12 +30,24 @@ def test_targeting_no_gap_max_chars_is_large() -> None:
 
 
 def test_bullet_selector_char_defaults() -> None:
-    assert DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS == 6_000
-    assert DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS == 6_000
+    from apps_rg.runtime.sections.executive_summary_context_limits import (
+        BULLET_SELECTOR_INPUT_SHARE_FRACTION,
+        CHARS_PER_TOKEN_ESTIMATE,
+    )
+    available = 24_576 - 2_048 - 512
+    expected = int(available * BULLET_SELECTOR_INPUT_SHARE_FRACTION) * CHARS_PER_TOKEN_ESTIMATE
+    assert DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS == expected
+    assert DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS == expected
 
 
 def test_briefing_ranked_selection_uses_dedicated_cap() -> None:
-    assert BRIEFING_RANKED_SELECTION_MAX_CHARS == 12_000
+    from apps_rg.runtime.sections.executive_summary_context_limits import (
+        BRIEFING_INPUT_SHARE_FRACTION,
+        CHARS_PER_TOKEN_ESTIMATE,
+    )
+    available = 24_576 - 2_048 - 512
+    expected = int(available * BRIEFING_INPUT_SHARE_FRACTION) * CHARS_PER_TOKEN_ESTIMATE
+    assert BRIEFING_RANKED_SELECTION_MAX_CHARS == expected
     long_brief = "## Target priorities\n" + ("regulated modernization emphasis. " * 400)
     long_brief += "\n## Secondary notes\n" + ("additional context tail. " * 400)
     _, receipt = prepare_briefing_for_executive_summary(long_brief)

@@ -327,7 +327,7 @@ python -m apps_rg --section executive_summary `
   --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd_exec.txt `
   --provider qwen_vllm `
   --allow-non-allow-exit-zero `
-  --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md
+  --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md
 ```
 
 **Required artifacts (budget proof checklist):**

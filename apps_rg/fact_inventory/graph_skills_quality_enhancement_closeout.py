@@ -28,10 +28,7 @@ BROWN_FIXTURE_PINS: dict[str, str] = {
         "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f"
     ),
     "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md": (
-        "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b"
-    ),
-    "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md": (
-        "74bd4674f23f17236abf3e5a3837e7fd422d6691e2f7e1dc234653f11a6da1f6"
+        "9d0b63db755cce713bce35aa7c9089453a0e2ffb5060a3ed7bef8da483843e5d"
     ),
 }
 
@@ -182,15 +179,9 @@ def build_d6_lane_matrix(repo_root: Path) -> list[dict[str, Any]]:
     for lane in LANES:
         run_dir = _latest_real_run(repo_root, lane)
         rel_dir = _rel(repo_root, run_dir) if run_dir else None
-        briefing_pin = (
-            BROWN_FIXTURE_PINS[
-                "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md"
-            ]
-            if lane == "executive_summary"
-            else BROWN_FIXTURE_PINS[
-                "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
-            ]
-        )
+        briefing_pin = BROWN_FIXTURE_PINS[
+            "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
+        ]
         x3_raw = None
         x3_norm = "UNKNOWN"
         x3_pass = False

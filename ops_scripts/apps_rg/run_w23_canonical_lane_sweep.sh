@@ -28,7 +28,6 @@ fi
 
 JD="apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt"
 BRIEF="apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
-BRIEF_EXEC="apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md"
 LOG_DIR="${REPO}/artifacts/apps_rg/plans/w23_lane_sweep"
 mkdir -p "${LOG_DIR}"
 MANIFEST="${LOG_DIR}/w23_lane_sweep_manifest.json"
@@ -67,7 +66,7 @@ run_lane unify_bullets "${BRIEF}" || OVERALL=$?
 run_lane unify_narrative "${BRIEF}" || OVERALL=$?
 run_lane headline "${BRIEF}" || OVERALL=$?
 run_lane competencies "${BRIEF}" || OVERALL=$?
-run_lane executive_summary "${BRIEF_EXEC}" || OVERALL=$?
+run_lane executive_summary "${BRIEF}" || OVERALL=$?
 run_lane ibm_bullets "${BRIEF}" || OVERALL=$?
 run_lane ibm_narrative "${BRIEF}" || OVERALL=$?
 

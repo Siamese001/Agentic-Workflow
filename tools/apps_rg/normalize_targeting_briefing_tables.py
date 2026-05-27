@@ -161,7 +161,6 @@ def main(argv: list[str]) -> int:
         "neo4j_vp_product_management_agentic_ai_briefing.txt",
         "invesco_global_head_advanced_engineering_briefing.txt",
         "brown_brown_svp_it_strategy_innovation_briefing.md",
-        "brown_brown_svp_it_strategy_innovation_briefing_exec.md",
         "aig_vp_global_head_agentic_ai_briefing.txt",
         "openai_partner_ade_briefing.txt",
     ]

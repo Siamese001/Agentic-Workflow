@@ -14,7 +14,6 @@ def test_operator_guide_canonical_lane_and_whole_run_cli() -> None:
         "Canonical whole-resume CLI",
         "python -m apps_rg \\",
         "Brown & Brown",
-        "brown_brown_svp_it_strategy_innovation_briefing_exec.md",
         "brown_brown_svp_it_strategy_innovation_briefing.md",
         "executive_summary",
         "competencies",
