@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
+    _pad_closer_source_fact_ids,
+    _strategic_closer_sentence,
     apply_graph_only_generation_quality_repair,
     build_graph_only_executive_summary_from_facts,
 )
@@ -164,6 +166,29 @@ def test_apply_repair_opener_only_skips_full_rewrite() -> None:
     assert meta.get("repair_kind") == "opener_normalize_only"
     assert meta.get("applied") is True
     assert "Led the" not in str(repaired.get("resume_display_text") or "")
+
+
+def test_strategic_closer_sentence_does_not_echo_target_role() -> None:
+    closer = _strategic_closer_sentence("SVP Technology Strategy at Acme Corp")
+    assert "Acme" not in closer
+    assert "SVP" not in closer
+    assert "target role" not in closer.lower()
+
+
+def test_pad_closer_source_fact_ids_prefers_priority_order() -> None:
+    facts = [
+        {"fact_id": "fact_exec_002"},
+        {"fact_id": "fact_governance_003"},
+        {"fact_id": "fact_engineering_platform_001"},
+    ]
+    allowed = {str(r["fact_id"]) for r in facts}
+    assert _pad_closer_source_fact_ids(allowed, facts) == ["fact_engineering_platform_001"]
+
+
+def test_pad_closer_source_fact_ids_falls_back_to_sorted_allowed() -> None:
+    facts = [{"fact_id": "fact_z_custom"}, {"fact_id": "fact_a_custom"}]
+    allowed = {"fact_z_custom", "fact_a_custom"}
+    assert _pad_closer_source_fact_ids(allowed, facts) == ["fact_a_custom"]
 
 
 def test_apply_repair_strips_hallucinated_margin() -> None:
