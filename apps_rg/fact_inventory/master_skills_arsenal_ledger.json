@@ -14,19 +14,59 @@
     ],
     "w4a_hardened": true,
     "pillar_count": 29,
-    "skill_row_count": 162,
+    "skill_row_count": 177,
     "deep_agentic_row_count": 78,
     "capability_domain_count": 14,
-    "last_updated": "2026-05-27T18:50:27Z",
-    "last_updated_by": "apply_phase1_new_skill_nodes.py"
+    "last_updated": "2026-05-28T13:00:00Z",
+    "last_updated_by": "apply_ibm_graph_promotion_wave.py",
+    "ibm_graph_promotion_wave": {
+      "wave_id": "ibm_graph_promotion_wave_2026-05-28",
+      "applied_at": "2026-05-28T13:00:00Z",
+      "new_skill_rows_added": [],
+      "skill_rows_updated": [
+        "skill_ibm_automated_release_pipelines",
+        "skill_ibm_devsecops_pipeline_security",
+        "skill_ibm_metadata_audit_rbac",
+        "skill_ibm_watson_studio_analytics"
+      ],
+      "graph_nodes_added": [],
+      "graph_nodes_updated": [
+        "skill_ibm_automated_release_pipelines",
+        "skill_ibm_devsecops_pipeline_security",
+        "skill_ibm_metadata_audit_rbac",
+        "skill_ibm_watson_studio_analytics",
+        "skill_risk_greek_stress_testing"
+      ],
+      "graph_edges_added": [],
+      "draft_promotions_applied": [
+        {
+          "skill_id": "skill_confluent_streaming_platforms",
+          "from": "ACTIVE_CONFIRMED",
+          "to": "ACTIVE_CONFIRMED"
+        },
+        {
+          "skill_id": "skill_risk_greek_stress_testing",
+          "from": "ACTIVE_CONFIRMED",
+          "to": "ACTIVE_CONFIRMED"
+        }
+      ],
+      "excluded_metrics_enforced": [
+        "35%",
+        "$30M",
+        "40%",
+        "30%",
+        "25%",
+        "$15M"
+      ]
+    }
   },
   "graph_metadata": {
     "schema_version": "master_skills_arsenal_graph_v1",
     "w4a_hardened": true,
     "primary_taxonomy": "capability_domain",
     "source_coded_taxonomy_forbidden_as_primary": true,
-    "node_count": 236,
-    "edge_count": 1421,
+    "node_count": 240,
+    "edge_count": 1441,
     "deep_agentic_row_count": 78,
     "career_track_count": 3,
     "career_track_materialized_at": "2026-05-20T12:20:17Z",
@@ -1329,12 +1369,12 @@
       "description": "[",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
-      "activation_status": "DRAFT",
+      "activation_status": "ACTIVE_CONFIRMED",
       "evidence_risk": "low",
       "source_refs": [],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "LOW",
+      "confidence_grade": "HIGH",
       "confidence_grade_derived": "LOW"
     },
     {
@@ -5745,6 +5785,66 @@
       "source_refs": [],
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "internal_traversal_only"
+    },
+    {
+      "node_id": "skill_ibm_automated_release_pipelines",
+      "node_type": "skill_row",
+      "label": "automated_release_pipelines",
+      "description": "IBM-employer-bound skill: automated_release_pipelines. Employer: IBM | Time window: 2017-04 to 2022-10 | Source: archive wave ibm_graph_promotion_wave_2026-05-28.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH"
+    },
+    {
+      "node_id": "skill_ibm_devsecops_pipeline_security",
+      "node_type": "skill_row",
+      "label": "devsecops_pipeline_security",
+      "description": "IBM-employer-bound skill: devsecops_pipeline_security. Employer: IBM | Time window: 2017-04 to 2022-10 | Source: archive wave ibm_graph_promotion_wave_2026-05-28.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH"
+    },
+    {
+      "node_id": "skill_ibm_metadata_audit_rbac",
+      "node_type": "skill_row",
+      "label": "metadata_audit_rbac_governance",
+      "description": "IBM-employer-bound skill: metadata_audit_rbac_governance. Employer: IBM | Time window: 2017-04 to 2022-10 | Source: archive wave ibm_graph_promotion_wave_2026-05-28.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH"
+    },
+    {
+      "node_id": "skill_ibm_watson_studio_analytics",
+      "node_type": "skill_row",
+      "label": "watson_studio_analytics",
+      "description": "IBM-employer-bound skill: watson_studio_analytics. Employer: IBM | Time window: 2017-04 to 2022-10 | Source: archive wave ibm_graph_promotion_wave_2026-05-28.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE",
+      "evidence_risk": "medium",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM"
     }
   ],
   "graph_edges": [
@@ -20117,6 +20217,246 @@
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "atomic_fact_default_external_proof",
       "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_ibm_automated_release_pipelines",
+      "edge_type": "employment_produces_skill",
+      "source_node_id": "employment_exp_ibm_001",
+      "target_node_id": "skill_ibm_automated_release_pipelines",
+      "rationale": "IBM employment produces skill_ibm_automated_release_pipelines",
+      "projection_behavior": "graph_structure",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_automated_release_pipelines_ibm_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_automated_release_pipelines",
+      "target_node_id": "section_ibm_bullets",
+      "rationale": "skill_ibm_automated_release_pipelines allowed in ibm_bullets",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_automated_release_pipelines_ibm_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_automated_release_pipelines",
+      "target_node_id": "section_ibm_narrative",
+      "rationale": "skill_ibm_automated_release_pipelines allowed in ibm_narrative",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_automated_release_pipelines_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_automated_release_pipelines",
+      "target_node_id": "section_competencies",
+      "rationale": "skill_ibm_automated_release_pipelines allowed in competencies",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_ibm_devsecops_pipeline_security",
+      "edge_type": "employment_produces_skill",
+      "source_node_id": "employment_exp_ibm_001",
+      "target_node_id": "skill_ibm_devsecops_pipeline_security",
+      "rationale": "IBM employment produces skill_ibm_devsecops_pipeline_security",
+      "projection_behavior": "graph_structure",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_devsecops_pipeline_security_ibm_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_devsecops_pipeline_security",
+      "target_node_id": "section_ibm_bullets",
+      "rationale": "skill_ibm_devsecops_pipeline_security allowed in ibm_bullets",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_devsecops_pipeline_security_ibm_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_devsecops_pipeline_security",
+      "target_node_id": "section_ibm_narrative",
+      "rationale": "skill_ibm_devsecops_pipeline_security allowed in ibm_narrative",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_devsecops_pipeline_security_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_devsecops_pipeline_security",
+      "target_node_id": "section_competencies",
+      "rationale": "skill_ibm_devsecops_pipeline_security allowed in competencies",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_ibm_metadata_audit_rbac",
+      "edge_type": "employment_produces_skill",
+      "source_node_id": "employment_exp_ibm_001",
+      "target_node_id": "skill_ibm_metadata_audit_rbac",
+      "rationale": "IBM employment produces skill_ibm_metadata_audit_rbac",
+      "projection_behavior": "graph_structure",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_metadata_audit_rbac_ibm_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_metadata_audit_rbac",
+      "target_node_id": "section_ibm_bullets",
+      "rationale": "skill_ibm_metadata_audit_rbac allowed in ibm_bullets",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_metadata_audit_rbac_ibm_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_metadata_audit_rbac",
+      "target_node_id": "section_ibm_narrative",
+      "rationale": "skill_ibm_metadata_audit_rbac allowed in ibm_narrative",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_metadata_audit_rbac_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_metadata_audit_rbac",
+      "target_node_id": "section_competencies",
+      "rationale": "skill_ibm_metadata_audit_rbac allowed in competencies",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_ibm_watson_studio_analytics",
+      "edge_type": "employment_produces_skill",
+      "source_node_id": "employment_exp_ibm_001",
+      "target_node_id": "skill_ibm_watson_studio_analytics",
+      "rationale": "IBM employment produces skill_ibm_watson_studio_analytics",
+      "projection_behavior": "graph_structure",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_watson_studio_analytics_ibm_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_watson_studio_analytics",
+      "target_node_id": "section_ibm_bullets",
+      "rationale": "skill_ibm_watson_studio_analytics allowed in ibm_bullets",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_ibm_watson_studio_analytics_ibm_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_ibm_watson_studio_analytics",
+      "target_node_id": "section_ibm_narrative",
+      "rationale": "skill_ibm_watson_studio_analytics allowed in ibm_narrative",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_confluent_streaming_platforms",
+      "edge_type": "employment_produces_skill",
+      "source_node_id": "employment_exp_ibm_001",
+      "target_node_id": "skill_confluent_streaming_platforms",
+      "rationale": "IBM employment produces skill_confluent_streaming_platforms",
+      "projection_behavior": "graph_structure",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_confluent_streaming_platforms_ibm_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_confluent_streaming_platforms",
+      "target_node_id": "section_ibm_bullets",
+      "rationale": "skill_confluent_streaming_platforms allowed in ibm_bullets",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_confluent_streaming_platforms_ibm_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_confluent_streaming_platforms",
+      "target_node_id": "section_ibm_narrative",
+      "rationale": "skill_confluent_streaming_platforms allowed in ibm_narrative",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_risk_greek_stress_testing",
+      "edge_type": "employment_produces_skill",
+      "source_node_id": "employment_exp_ibm_001",
+      "target_node_id": "skill_risk_greek_stress_testing",
+      "rationale": "IBM employment produces skill_risk_greek_stress_testing",
+      "projection_behavior": "graph_structure",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_risk_greek_stress_testing_ibm_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_risk_greek_stress_testing",
+      "target_node_id": "section_ibm_narrative",
+      "rationale": "skill_risk_greek_stress_testing allowed in ibm_narrative",
+      "projection_behavior": "section_eligibility",
+      "confidence": "HIGH",
+      "wave": "ibm_graph_promotion_wave_2026-05-28",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
     }
   ],
   "external_claim_policies": {
@@ -27470,10 +27810,15 @@
       "subpillar": "greek_stress_testing",
       "career_stage": "early_career",
       "source_resume_files": [
-        "AI and Data Governance - Amit Ayer.docx"
+        "AI and Data Governance - Amit Ayer.docx",
+        "Amit Ayer Resume - Strategic Account Executive.docx",
+        "Field CTO - Amit Ayer.docx",
+        "CTO Resume - Amit Ayer.docx"
       ],
       "source_snippets": [
-        "Deployed advanced Greek parameter stress-testing and scenario analyses"
+        "Deployed advanced Greek parameter stress-testing and scenario analyses",
+        "HPC simulations for stress testing, cutting scenario runtimes for regulatory constraints.",
+        "Cut HPC driven stress test simulations from weeks to hours, enabling rapid ROI demonstrations."
       ],
       "user_confirmed": false,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
@@ -27482,16 +27827,25 @@
         "QUANT_TRADING_HPC": 1.0
       },
       "allowed_phrases": [
-        "Greek parameter stress-testing"
+        "Greek parameter stress-testing",
+        "HPC stress testing",
+        "scenario runtimes",
+        "stress test simulations",
+        "near-real-time stress analytics"
       ],
-      "forbidden_phrases": [],
+      "forbidden_phrases": [
+        "$15M",
+        "40% scenario runtimes",
+        "40%"
+      ],
       "allowed_sections": [
         "early_career",
-        "ibm_bullets"
+        "ibm_bullets",
+        "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
-      "activation_status": "DRAFT",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -27510,8 +27864,14 @@
       "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim greek_stress_testing beyond repo evidence and linked facts; fail closed if proof missing.",
-      "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "archive_signal_ids": [
+        "sig_ibm_002"
+      ]
     },
     {
       "skill_id": "skill_capital_capital_modeling",
@@ -38106,11 +38466,14 @@
       "career_stage": "senior",
       "source_resume_files": [
         "Revenue Operations - Amit Ayer.docx",
-        "Amit Ayer Resume - Strategic Account Executive.docx"
+        "Amit Ayer Resume - Strategic Account Executive.docx",
+        "AI and Data Governance - Amit Ayer.docx"
       ],
       "source_snippets": [
         "integrating CPQ automations with real-time data ingestion, collaborating with Confluent and AWS to unify customer intelligence",
-        "partnering with Confluent and AWS, enhancing real-time data ingestion for financial risk assessments"
+        "partnering with Confluent and AWS, enhancing real-time data ingestion for financial risk assessments",
+        "Transitioned batch-only data processing into streaming analytics ecosystems, enabling near-real-time risk monitoring.",
+        "Unified disparate data infrastructures under Confluent-based pipelines, enabling real-time risk scoring."
       ],
       "user_confirmed": false,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
@@ -38126,16 +38489,24 @@
         "streaming data",
         "real-time data ingestion",
         "event-driven",
-        "streaming platform"
+        "streaming platform",
+        "streaming analytics",
+        "near-real-time risk monitoring",
+        "batch-to-streaming transition"
       ],
-      "forbidden_phrases": [],
+      "forbidden_phrases": [
+        "25% system downtime",
+        "25%"
+      ],
       "allowed_sections": [
         "competencies",
-        "executive_summary"
+        "executive_summary",
+        "ibm_bullets",
+        "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
-      "activation_status": "DRAFT",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -38164,14 +38535,21 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits.",
       "zero_hallucination_guardrail": "Do not claim deep Confluent engineering expertise beyond partnership/integration evidence.",
       "career_track_id": "TRACK_PARTNERSHIPS_GTM",
-      "confidence_grade": "MEDIUM",
-      "confidence_grade_derived": "MEDIUM",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
       "graph_hop_path": [
         "pillar_interoperability_integration_ecosystem",
         "skill_confluent_streaming_platforms"
       ],
       "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "source_ledger_ref": "",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "archive_signal_ids": [
+        "sig_ibm_006",
+        "sig_ibm_007"
+      ]
     },
     {
       "skill_id": "skill_watson_studio_fraud_aml",
@@ -38535,6 +38913,353 @@
       "graph_hop_path": [
         "pillar_risk_management",
         "skill_credit_adjudication_default_risk"
+      ],
+      "link_class_by_fact": {},
+      "source_ledger_ref": ""
+    },
+    {
+      "skill_id": "skill_ibm_automated_release_pipelines",
+      "fact_id_links": [],
+      "pillar": "pillar_interoperability_integration_ecosystem",
+      "subpillar": "automated_release_pipelines",
+      "career_stage": "senior",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "source_resume_files": [
+        "AI and Data Governance - Amit Ayer.docx",
+        "Amit Ayer Resume - AI Financial Services.docx",
+        "Head of Data & Analytics - Amit Ayer.docx",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "Established automated release pipelines with integrated code scanning, reducing production incidents and accelerating time to market for new AI-driven risk models.",
+        "CI/CD pipelines integrating model validation, container orchestration, and code scanning tools."
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_003",
+        "sig_comp_002"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_GOVERNANCE_RISK": 0.8,
+        "BANKING_PLATFORM_AI": 0.8
+      },
+      "allowed_phrases": [
+        "automated release pipelines",
+        "CI/CD automation",
+        "integrated code scanning",
+        "container orchestration",
+        "production incident reduction"
+      ],
+      "forbidden_phrases": [
+        "35% production incidents",
+        "35%"
+      ],
+      "allowed_sections": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "domain_id": "domain_interoperability_integration_ecosystem",
+      "domain": "Interoperability & Integration Ecosystem",
+      "capability": "automated_release_pipelines",
+      "source_concepts": [
+        "CI/CD",
+        "code scanning",
+        "release automation",
+        "DevOps"
+      ],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "CI/CD",
+        "automated release pipelines",
+        "code scanning",
+        "DevOps",
+        "container orchestration"
+      ],
+      "achievement_framing_guidance": "Frame automated_release_pipelines with IBM scope, scanning mechanism, and reliability outcome; metrics only from linked fact_id — do not use 35% or 40% unanchored.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize from IBM-employer archive snippets and approved bundles; skill_id is not proof. No archive prose recitation.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim automated_release_pipelines beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "employment_exp_ibm_001",
+        "pillar_interoperability_integration_ecosystem",
+        "skill_ibm_automated_release_pipelines"
+      ],
+      "link_class_by_fact": {},
+      "source_ledger_ref": ""
+    },
+    {
+      "skill_id": "skill_ibm_devsecops_pipeline_security",
+      "fact_id_links": [],
+      "pillar": "pillar_interoperability_integration_ecosystem",
+      "subpillar": "devsecops_pipeline_security",
+      "career_stage": "senior",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "source_resume_files": [
+        "Amit Ayer Resume - AI Financial Services.docx",
+        "Chief AI Officer - Amit Ayer.docx",
+        "Field CTO - Amit Ayer.docx",
+        "Chief Technology Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "Containerized workloads and integrated DevSecOps scanning; overhead reduction and accelerated daily valuations.",
+        "Implemented automated CI/CD pipelines with real time code scanning and role-based data access, reducing incidents and capturing FinOps best practices savings."
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_004",
+        "sig_comp_002"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_GOVERNANCE_RISK": 0.9,
+        "CTO_FIELD_CTO": 0.9
+      },
+      "allowed_phrases": [
+        "DevSecOps",
+        "DevSecOps scanning",
+        "DevSecOps pipelines",
+        "security integration in development pipelines",
+        "automated code scanning",
+        "FinOps best practices"
+      ],
+      "forbidden_phrases": [
+        "40% latency",
+        "35% incidents",
+        "15% overhead"
+      ],
+      "allowed_sections": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "domain_id": "domain_interoperability_integration_ecosystem",
+      "domain": "Interoperability & Integration Ecosystem",
+      "capability": "devsecops_pipeline_security",
+      "source_concepts": [
+        "DevSecOps",
+        "security scanning",
+        "compliance pipelines",
+        "FinOps"
+      ],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "DevSecOps",
+        "security pipeline",
+        "code scanning",
+        "FinOps",
+        "compliance automation"
+      ],
+      "achievement_framing_guidance": "Frame devsecops_pipeline_security with IBM scope, security-scanning mechanism, and reliability/cost outcome; 10% FinOps savings metric is unique and promotable if base-resume fact confirms.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize from IBM-employer archive snippets; do not use overloaded 40%/35%/15% metrics unanchored.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim DevSecOps beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "employment_exp_ibm_001",
+        "pillar_interoperability_integration_ecosystem",
+        "skill_ibm_devsecops_pipeline_security"
+      ],
+      "link_class_by_fact": {},
+      "source_ledger_ref": ""
+    },
+    {
+      "skill_id": "skill_ibm_metadata_audit_rbac",
+      "fact_id_links": [],
+      "pillar": "pillar_enterprise_portfolio_governance",
+      "subpillar": "metadata_audit_rbac_governance",
+      "career_stage": "senior",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "source_resume_files": [
+        "Amit Ayer Resume - Partner Development Manager.docx",
+        "Partnerships & Alliances - Amit Ayer.docx",
+        "Amit Ayer Resume - Strategic Account Executive.docx",
+        "Revenue Operations - Amit Ayer.docx",
+        "Sales - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "Strengthened compliance by establishing standardized audit trails, metadata tagging, and secure data sharing protocols.",
+        "Deployed robust data governance protocols featuring metadata management and role-based controls."
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_008"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "AI_GOVERNANCE_RISK": 1.0,
+        "BANKING_PLATFORM_AI": 0.9,
+        "ENGINEERING_PLATFORM": 0.8
+      },
+      "allowed_phrases": [
+        "metadata tagging",
+        "audit trails",
+        "role-based access controls",
+        "role-based data access",
+        "data governance protocols",
+        "secure data sharing",
+        "metadata management"
+      ],
+      "forbidden_phrases": [
+        "30% compliance gap",
+        "30%"
+      ],
+      "allowed_sections": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "domain_id": "domain_enterprise_risk",
+      "domain": "Enterprise Risk",
+      "capability": "metadata_audit_rbac_governance",
+      "source_concepts": [
+        "metadata",
+        "audit trail",
+        "role-based access",
+        "RBAC",
+        "data governance"
+      ],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "metadata tagging",
+        "audit trails",
+        "role-based access controls",
+        "RBAC",
+        "data governance",
+        "compliance governance"
+      ],
+      "achievement_framing_guidance": "Frame metadata_audit_rbac_governance with IBM scope, governance mechanism, and compliance outcome; avoid 30% unanchored.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize from IBM employer archive snippets (5 resumes); do not use 30% metric unanchored.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim metadata_audit_rbac beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "employment_exp_ibm_001",
+        "pillar_enterprise_portfolio_governance",
+        "skill_ibm_metadata_audit_rbac"
+      ],
+      "link_class_by_fact": {},
+      "source_ledger_ref": ""
+    },
+    {
+      "skill_id": "skill_ibm_watson_studio_analytics",
+      "fact_id_links": [],
+      "pillar": "pillar_banking_platform_responsible_ai",
+      "subpillar": "watson_studio_analytics",
+      "career_stage": "senior",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "source_resume_files": [
+        "Head of Customer Success - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "Utilized Watson Studio for fraud detection and money laundering analytics, ensuring regulatory compliance and operational security."
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_010"
+      ],
+      "user_confirmed": false,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "BANKING_PLATFORM_AI": 1.0,
+        "AI_GOVERNANCE_RISK": 0.8
+      },
+      "allowed_phrases": [
+        "Watson Studio",
+        "IBM Watson Studio",
+        "fraud detection analytics",
+        "money laundering analytics",
+        "capital markets analytics"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "medium",
+      "activation_status": "ACTIVE",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_cloud_data_platform_engineering",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "domain_id": "domain_banking_platform_responsible_ai",
+      "domain": "Banking Platform / Responsible AI",
+      "capability": "watson_studio_analytics",
+      "source_concepts": [
+        "Watson Studio",
+        "IBM Watson",
+        "fraud analytics",
+        "AML analytics"
+      ],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "Watson Studio",
+        "IBM Watson",
+        "fraud detection",
+        "financial crime analytics"
+      ],
+      "achievement_framing_guidance": "Frame watson_studio_analytics with IBM scope and use case (fraud/AML); single-source — medium confidence only; verify with base resume before metric claims.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize from single source (Head of Customer Success); verify before use.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim Watson Studio beyond single archive source; medium confidence — fail closed if second source missing.",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "employment_exp_ibm_001",
+        "pillar_banking_platform_responsible_ai",
+        "skill_ibm_watson_studio_analytics"
       ],
       "link_class_by_fact": {},
       "source_ledger_ref": ""

@@ -1,0 +1,174 @@
+{
+  "schema": "headline_positioning_bundles_v1",
+  "generated_at": "2026-05-28T15:00:00Z",
+  "generated_by": "remaining_resume_rigor_architecture_finish_wave",
+  "section": "headline",
+  "purpose": "Graph-backed headline positioning bundles are the content/proof authority for the headline. They draw positioning from graph-backed competency capability bundles and graph skill nodes. Base headline is calibration only. Competency bundles are positioning source. JD/briefing are targeting only. E0 examples are style only.",
+  "invariants": {
+    "archive_prose_excluded": true,
+    "base_headline_hydration_excluded": true,
+    "base_headline_used_as_calibration_only": true,
+    "competency_bundle_used_as_positioning_source": true,
+    "jd_used_as_targeting_only": true,
+    "examples_used_as_style_only": true,
+    "config_gate": "ENABLED_WITH_HEADLINE_POSITIONING_BUNDLE_GUARDS",
+    "config_enablement_condition": "headline graph_expansion_allowed may be enabled only when headline generation consumes headline_positioning_bundle_id (graph_expansion_mode=headline_positioning_bundle_only), not flat skill lists or JD-only phrases."
+  },
+  "required_positioning_families": [
+    "svp_engineering_leadership",
+    "agentic_ai_platforms",
+    "distributed_ai_infrastructure",
+    "runtime_governance",
+    "enterprise_ai_architecture",
+    "platform_productization",
+    "regulated_ai_systems"
+  ],
+  "bundles": [
+    {
+      "headline_positioning_bundle_id": "hpb_svp_engineering_leadership",
+      "positioning_family": "svp_engineering_leadership",
+      "display_phrase_candidate": "SVP Engineering",
+      "source_competency_bundle_ids": ["ccb_engineering_leadership"],
+      "graph_skill_node_ids": [
+        "skill_svp_it_strategy_innovation",
+        "skill_commercial_board_level_stakeholder_alignment"
+      ],
+      "linked_source_fact_ids": ["fact_exec_001"],
+      "graph_lineage_refs": ["ccb_engineering_leadership"],
+      "seniority_signal": "svp_engineering_operating_model",
+      "technical_specificity_signal": "medium",
+      "platform_signal": "engineering_operating_model",
+      "governance_signal": "board_level_operating_governance",
+      "target_relevance_rationale": "Anchors the seniority floor: SVP Engineering operating-model ownership and board-level alignment.",
+      "allowed_sections": ["headline"],
+      "activation_status": "ACTIVE",
+      "external_claim_policy": "skill_projection_not_proof"
+    },
+    {
+      "headline_positioning_bundle_id": "hpb_agentic_ai_platforms",
+      "positioning_family": "agentic_ai_platforms",
+      "display_phrase_candidate": "Agentic AI Platforms",
+      "source_competency_bundle_ids": ["ccb_agentic_platforms"],
+      "graph_skill_node_ids": [
+        "skill_governed_agentic_systems_architecture",
+        "skill_reusable_agentic_platform_architecture",
+        "skill_agentic_control_plane_design"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_001"],
+      "graph_lineage_refs": ["ccb_agentic_platforms"],
+      "seniority_signal": "executive_platform_architecture",
+      "technical_specificity_signal": "high",
+      "platform_signal": "agentic_platform_architecture",
+      "governance_signal": "multi_agent_control_plane",
+      "target_relevance_rationale": "Lead positioning theme: governed agentic AI platform architecture for SVP Engineering AI posture.",
+      "allowed_sections": ["headline"],
+      "activation_status": "ACTIVE",
+      "external_claim_policy": "skill_projection_not_proof"
+    },
+    {
+      "headline_positioning_bundle_id": "hpb_distributed_ai_infrastructure",
+      "positioning_family": "distributed_ai_infrastructure",
+      "display_phrase_candidate": "Distributed AI Infrastructure",
+      "source_competency_bundle_ids": ["ccb_distributed_systems_engineering"],
+      "graph_skill_node_ids": [
+        "skill_sr_cloud_data_platform_engineering",
+        "skill_sr_microservices_integration_platform",
+        "skill_confluent_streaming_platforms"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_002"],
+      "graph_lineage_refs": ["ccb_distributed_systems_engineering", "reb_ibm_cloud_modernization"],
+      "seniority_signal": "distributed_platform_architecture",
+      "technical_specificity_signal": "high",
+      "platform_signal": "distributed_cloud_data_infrastructure",
+      "governance_signal": "cloud_native_platform_scale",
+      "target_relevance_rationale": "Distributed cloud and data execution infrastructure positioning for enterprise AI scale.",
+      "allowed_sections": ["headline"],
+      "activation_status": "ACTIVE",
+      "external_claim_policy": "skill_projection_not_proof"
+    },
+    {
+      "headline_positioning_bundle_id": "hpb_runtime_governance",
+      "positioning_family": "runtime_governance",
+      "display_phrase_candidate": "Runtime Governance",
+      "source_competency_bundle_ids": ["ccb_runtime_governance"],
+      "graph_skill_node_ids": [
+        "skill_runtime_gate_mesh_design",
+        "skill_policy_bound_runtime_design",
+        "skill_exit_disposition_governance"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_001"],
+      "graph_lineage_refs": ["ccb_runtime_governance"],
+      "seniority_signal": "runtime_control_governance",
+      "technical_specificity_signal": "high",
+      "platform_signal": "policy_gated_runtime",
+      "governance_signal": "deterministic_gate_governance",
+      "target_relevance_rationale": "Runtime governance and deterministic gate meshes differentiate the engineering leadership posture for regulated AI.",
+      "allowed_sections": ["headline"],
+      "activation_status": "ACTIVE",
+      "external_claim_policy": "skill_projection_not_proof"
+    },
+    {
+      "headline_positioning_bundle_id": "hpb_enterprise_ai_architecture",
+      "positioning_family": "enterprise_ai_architecture",
+      "display_phrase_candidate": "Enterprise AI Architecture",
+      "source_competency_bundle_ids": ["ccb_agentic_platforms", "ccb_distributed_systems_engineering"],
+      "graph_skill_node_ids": [
+        "skill_layered_runtime_spine_design",
+        "skill_app_overlay_runtime_binding",
+        "skill_reusable_agentic_platform_architecture"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_001"],
+      "graph_lineage_refs": ["ccb_agentic_platforms"],
+      "seniority_signal": "enterprise_architecture_ownership",
+      "technical_specificity_signal": "high",
+      "platform_signal": "enterprise_ai_platform_architecture",
+      "governance_signal": "layered_runtime_spine",
+      "target_relevance_rationale": "Enterprise architecture modernization positioning for large-scale AI platform ownership.",
+      "allowed_sections": ["headline"],
+      "activation_status": "ACTIVE",
+      "external_claim_policy": "skill_projection_not_proof"
+    },
+    {
+      "headline_positioning_bundle_id": "hpb_platform_productization",
+      "positioning_family": "platform_productization",
+      "display_phrase_candidate": "Platform Productization",
+      "source_competency_bundle_ids": ["ccb_platform_productization"],
+      "graph_skill_node_ids": [
+        "skill_agentic_platform_productization",
+        "skill_ai_platform_commercialization",
+        "skill_operating_model_for_agentic_ai"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_006"],
+      "graph_lineage_refs": ["ccb_platform_productization"],
+      "seniority_signal": "platform_product_commercialization",
+      "technical_specificity_signal": "medium_high",
+      "platform_signal": "ip_led_platform_commercialization",
+      "governance_signal": "platform_operating_model",
+      "target_relevance_rationale": "Platform productization and commercialization positioning when commercial scope is target-relevant.",
+      "allowed_sections": ["headline"],
+      "activation_status": "ACTIVE",
+      "external_claim_policy": "skill_projection_not_proof"
+    },
+    {
+      "headline_positioning_bundle_id": "hpb_regulated_ai_systems",
+      "positioning_family": "regulated_ai_systems",
+      "display_phrase_candidate": "Regulated Enterprise AI",
+      "source_competency_bundle_ids": ["ccb_runtime_governance", "ccb_data_governance_security"],
+      "graph_skill_node_ids": [
+        "skill_ai_governance_certification",
+        "skill_sr_basel_ccar_lineage_regulatory",
+        "skill_policy_bound_runtime_design"
+      ],
+      "linked_source_fact_ids": ["fact_solutions_002"],
+      "graph_lineage_refs": ["ccb_runtime_governance", "ccb_data_governance_security"],
+      "seniority_signal": "regulated_ai_governance_leadership",
+      "technical_specificity_signal": "high",
+      "platform_signal": "regulated_runtime_controls",
+      "governance_signal": "regulated_enterprise_ai_governance",
+      "target_relevance_rationale": "Regulated enterprise AI systems positioning for financial-services / regulated targets.",
+      "allowed_sections": ["headline"],
+      "activation_status": "ACTIVE",
+      "external_claim_policy": "skill_projection_not_proof"
+    }
+  ]
+}

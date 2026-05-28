@@ -54,7 +54,22 @@ def _canonical_unify_facts_c0(runtime_payload: dict[str, Any]) -> str:
         )
 
     core = format_selected_facts_for_c0(annotated_facts, allowed_ids)
-    return core + base_block
+
+    episode_block = ""
+    pp_meta = runtime_payload.get("proof_pool_metadata") if isinstance(runtime_payload.get("proof_pool_metadata"), dict) else {}
+    if pp_meta.get("role_episode_bundle_consumption") and pp_meta.get("unify_role_episode_section_packet"):
+        try:
+            from apps_rg.runtime.sections.unify_role_episode_evidence import (
+                format_unify_role_episode_evidence_pack,
+            )
+
+            episode_block = "\n\n" + format_unify_role_episode_evidence_pack(
+                runtime_payload, section_id="unify_narrative"
+            )
+        except (OSError, ValueError, TypeError):  # guardian: allow-default-fallback -- episode pack optional boundary
+            episode_block = ""
+
+    return core + base_block + episode_block
 
 
 def _legacy_i0(runtime_payload: dict[str, Any]) -> str:

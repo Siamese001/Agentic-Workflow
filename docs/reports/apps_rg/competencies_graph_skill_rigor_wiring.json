@@ -1,0 +1,109 @@
+{
+  "report_id": "competencies_graph_skill_rigor_wiring",
+  "generated_at": "2026-05-28T14:45:00Z",
+  "scope": "competencies_only",
+  "status": "PASS",
+  "authority_model": {
+    "content_proof_authority": "graph_skills_plus_linked_source_facts",
+    "base_resume_usage": "calibration_only",
+    "archive_usage": "provenance_inventory_only",
+    "jd_usage": "targeting_only",
+    "examples_usage": "style_only",
+    "generic_taxonomy_label": "display_wrapper_only_not_proof"
+  },
+  "no_agentic_core_diff": true,
+  "no_x2_x3_weakening": true,
+  "no_live_runtime_proof_claimed": true,
+  "no_base_or_archive_prose_hydration": true,
+  "competency_bundle_data_file": "apps_rg/fact_inventory/competency_capability_bundles.json",
+  "registry_module": "apps_rg/runtime/sections/competency_capability_registry.py",
+  "evidence_module": "apps_rg/runtime/sections/competency_capability_evidence.py",
+  "competency_bundles": [
+    {"competency_bundle_id": "ccb_agentic_platforms", "capability_family": "agentic_platforms", "required": true, "graph_skill_node_ids": ["skill_governed_agentic_systems_architecture", "skill_reusable_agentic_platform_architecture", "skill_agentic_control_plane_design"], "linked_source_fact_ids": ["fact_engineering_platform_001"]},
+    {"competency_bundle_id": "ccb_runtime_governance", "capability_family": "runtime_governance", "required": true, "graph_skill_node_ids": ["skill_runtime_gate_mesh_design", "skill_fail_closed_gate_semantics", "skill_x1_x2_x3_exit_control", "skill_policy_bound_runtime_design"], "linked_source_fact_ids": ["fact_engineering_platform_001"]},
+    {"competency_bundle_id": "ccb_retrieval_context_engineering", "capability_family": "retrieval_context_engineering", "required": true, "graph_skill_node_ids": ["skill_context_engineering", "skill_dense_sparse_exact_retrieval_design", "skill_graph_aware_relationship_grounding", "skill_prompt_assembly_architecture"], "linked_source_fact_ids": ["fact_engineering_platform_003"]},
+    {"competency_bundle_id": "ccb_llmops_reliability", "capability_family": "llmops_reliability", "required": true, "graph_skill_node_ids": ["skill_audit_grade_observability", "skill_completed_run_evaluation", "skill_eval_regression_and_gauntlet_design", "skill_multi_judge_calibration"], "linked_source_fact_ids": ["fact_engineering_platform_003", "fact_engineering_platform_004"]},
+    {"competency_bundle_id": "ccb_distributed_systems_engineering", "capability_family": "distributed_systems_engineering", "required": true, "graph_skill_node_ids": ["skill_sr_cloud_data_platform_engineering", "skill_sr_microservices_integration_platform", "skill_confluent_streaming_platforms"], "linked_source_fact_ids": ["fact_engineering_platform_002"]},
+    {"competency_bundle_id": "ccb_platform_productization", "capability_family": "platform_productization", "required": true, "graph_skill_node_ids": ["skill_agentic_platform_productization", "skill_reusable_agentic_platform_architecture", "skill_p2_tech_demoable_accelerator"], "linked_source_fact_ids": ["fact_engineering_platform_006"]},
+    {"competency_bundle_id": "ccb_partnerships_ecosystem_execution", "capability_family": "partnerships_ecosystem_execution", "required": true, "graph_skill_node_ids": ["skill_partner_ibm_aws_alliance_joint_revenue", "skill_sr_w12_hyperscaler_alliance_co_sell", "skill_partner_co_selling", "skill_partner_cloud_partner_ecosystem"], "linked_source_fact_ids": ["fact_partnerships_gtm_002"]},
+    {"competency_bundle_id": "ccb_engineering_leadership", "capability_family": "engineering_leadership", "required": true, "graph_skill_node_ids": ["skill_svp_it_strategy_innovation", "skill_commercial_board_level_stakeholder_alignment"], "linked_source_fact_ids": ["fact_exec_001"]},
+    {"competency_bundle_id": "ccb_data_governance_security", "capability_family": "data_governance_security", "required": false, "graph_skill_node_ids": ["skill_sr_basel_ccar_lineage_regulatory", "skill_ibm_metadata_audit_rbac"], "linked_source_fact_ids": ["fact_solutions_002"]},
+    {"competency_bundle_id": "ccb_devsecops_delivery_governance", "capability_family": "devsecops_delivery_governance", "required": false, "graph_skill_node_ids": ["skill_ibm_devsecops_pipeline_security", "skill_ibm_automated_release_pipelines"], "linked_source_fact_ids": ["fact_engineering_platform_002"]}
+  ],
+  "required_capability_families_covered": [
+    "agentic_platforms",
+    "runtime_governance",
+    "retrieval_context_engineering",
+    "llmops_reliability",
+    "distributed_systems_engineering",
+    "platform_productization",
+    "partnerships_ecosystem_execution",
+    "engineering_leadership"
+  ],
+  "config_decision": {
+    "file": "apps_rg/config/domain_contract/section_retrieval_profile.yaml",
+    "section_id": "competencies",
+    "graph_expansion_allowed": true,
+    "competency_bundle_consumption": "required",
+    "graph_expansion_mode": "competency_bundle_only",
+    "rationale": "Enabled because section generation consumes competency_bundle_id (bundle-only mode); flat taxonomy/flat skill consumption is blocked by guards and HARD X2 gates."
+  },
+  "c0_evidence_pack": {
+    "marker": "COMPETENCY_CAPABILITY_EVIDENCE_PACK",
+    "proof_authority": "graph_competency_bundles_plus_linked_source_facts",
+    "base_resume_usage": "calibration_only",
+    "archive_usage": "provenance_inventory_only",
+    "jd_usage": "targeting_only",
+    "examples_usage": "style_only",
+    "emits_competency_bundle_ids": true,
+    "emits_graph_skill_node_ids_by_category": true,
+    "emits_source_fact_ids_by_category": true,
+    "emits_employer_and_role_bindings": true,
+    "emits_activation_status_and_external_claim_policy": true,
+    "emits_seniority_and_rigor_baseline_signals": true,
+    "wired_into": ["apps_rg/runtime/sections/competencies_pa.py", "apps_rg/runtime/proof_pool_resolver.py"]
+  },
+  "x2_gates_added": [
+    "x2_competencies_capability_bundles_in_proof_pool",
+    "x2_competency_bundle_id_required_per_category",
+    "x2_graph_skill_node_ids_required_per_category",
+    "x2_source_fact_ids_or_graph_lineage_required_per_category",
+    "x2_default_fid_only_support_forbidden",
+    "x2_generic_taxonomy_only_category_forbidden",
+    "x2_jd_only_skill_forbidden",
+    "x2_base_archive_ngram_overlap_forbidden_or_warn",
+    "x2_competency_rigor_floor_met",
+    "x2_technical_density_floor_met",
+    "x2_required_capability_families_covered"
+  ],
+  "x2_gate_activation": "HARD when proof_pool_metadata.competency_capability_bundle_consumption is true; not emitted otherwise (no weakening of existing gates).",
+  "registry_guards": [
+    "assert_competency_bundle_id_present",
+    "validate_competency_bundle",
+    "get_bundles_for_section",
+    "reject_flat_taxonomy_only_bundle",
+    "reject_default_fid_only_support",
+    "reject_jd_only_skill",
+    "reject_archive_prose_hydration",
+    "reject_base_resume_prose_hydration",
+    "classify_support"
+  ],
+  "tests": {
+    "file": "tests/unit/apps_rg/test_competencies_capability_bundle_wiring.py",
+    "count": 24,
+    "result": "24 passed"
+  },
+  "commands_run": [
+    "python -m compileall apps_rg -q -> exit 0",
+    "python -m pytest tests/unit/apps_rg/test_competencies_capability_bundle_wiring.py -> 24 passed",
+    "git diff --name-only agentic_core/ -> empty"
+  ],
+  "pre_existing_failures_unrelated": [
+    "test_competencies_rigor_x2.py::test_target_quality_competencies_pass_rigor_gates",
+    "test_competencies_x2_proof_quality.py::test_x2_pass_rows_have_null_failure_reason_for_style_gates",
+    "test_executive_summary_prompt_ssot.py::test_competency_pa_slots_category_band_matches_x2",
+    "test_modular_rg_output_builder.py::test_export_preserves_eight_competency_categories",
+    "test_executive_summary_product_shape_x2.py (collection ImportError)"
+  ],
+  "runtime_proof": "NOT_CLAIMED - canonical CLI runtime proof deferred to user per scope."
+}

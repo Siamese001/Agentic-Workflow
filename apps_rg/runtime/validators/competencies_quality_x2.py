@@ -350,6 +350,293 @@ def check_competencies_base_ngram_overlap(
     )
 
 
+# ---------------------------------------------------------------------------
+# Competency capability bundle gates (graph-backed rigor wiring)
+# ---------------------------------------------------------------------------
+
+# Technical-density signal tokens (substantive engineering vocabulary).
+_TECHNICAL_DENSITY_TOKENS: frozenset[str] = frozenset({
+    "agentic", "orchestration", "runtime", "governance", "gate", "gates",
+    "retrieval", "context", "vector", "graphrag", "grounding", "evaluation",
+    "observability", "telemetry", "reliability", "llmops", "microservices",
+    "distributed", "cloud", "lakehouse", "streaming", "kubernetes", "pipeline",
+    "platform", "architecture", "commercialization", "productization",
+    "alliance", "co-sell", "lineage", "rbac", "devsecops", "policy",
+    "deterministic", "calibration", "judge", "accelerator",
+})
+
+
+def competency_bundle_consumption_active(
+    proof_pool_metadata: dict[str, Any] | None,
+) -> bool:
+    return bool(
+        isinstance(proof_pool_metadata, dict)
+        and proof_pool_metadata.get("competency_capability_bundle_consumption")
+    )
+
+
+def check_capability_bundles_in_proof_pool(
+    proof_pool_metadata: dict[str, Any] | None,
+) -> CompQualityResult:
+    bundles = []
+    if isinstance(proof_pool_metadata, dict):
+        bundles = proof_pool_metadata.get("competency_capability_bundles") or []
+    passed = len(bundles) > 0
+    return CompQualityResult(
+        gate_id="x2_competencies_capability_bundles_in_proof_pool",
+        passed=passed,
+        observed_value=len(bundles),
+        threshold=">=1 competency capability bundle in proof pool",
+        failure_reason=None if passed else "No competency capability bundles in proof pool metadata.",
+        signals=[],
+    )
+
+
+def _cat_bundle_id(cat: Any) -> str:
+    if isinstance(cat, dict):
+        return str(cat.get("competency_bundle_id") or "").strip()
+    return ""
+
+
+def _cat_graph_nodes(cat: Any) -> list[str]:
+    if isinstance(cat, dict):
+        return [str(x) for x in (cat.get("graph_skill_node_ids") or []) if str(x).strip()]
+    return []
+
+
+def _cat_source_fact_ids(cat: Any) -> list[str]:
+    out: list[str] = []
+    if isinstance(cat, dict):
+        for fid in cat.get("source_fact_ids") or []:
+            if str(fid).strip():
+                out.append(str(fid))
+    return out
+
+
+def check_competency_bundle_id_per_category(competencies: list[Any]) -> CompQualityResult:
+    missing = [
+        _category_label(c) or f"idx{i}"
+        for i, c in enumerate(competencies or [])
+        if not _cat_bundle_id(c)
+    ]
+    passed = not missing
+    return CompQualityResult(
+        gate_id="x2_competency_bundle_id_required_per_category",
+        passed=passed,
+        observed_value=missing if missing else "all_bound",
+        threshold="every category carries competency_bundle_id",
+        failure_reason=None if passed else f"Categories missing competency_bundle_id: {missing[:6]}",
+        signals=missing[:6],
+    )
+
+
+def check_graph_skill_node_ids_per_category(competencies: list[Any]) -> CompQualityResult:
+    missing = [
+        _category_label(c) or f"idx{i}"
+        for i, c in enumerate(competencies or [])
+        if not _cat_graph_nodes(c)
+    ]
+    passed = not missing
+    return CompQualityResult(
+        gate_id="x2_graph_skill_node_ids_required_per_category",
+        passed=passed,
+        observed_value=missing if missing else "all_have_graph_nodes",
+        threshold="every category carries >=1 graph_skill_node_id",
+        failure_reason=None if passed else f"Categories missing graph_skill_node_ids: {missing[:6]}",
+        signals=missing[:6],
+    )
+
+
+def check_source_fact_ids_or_graph_lineage_per_category(competencies: list[Any]) -> CompQualityResult:
+    missing: list[str] = []
+    for i, c in enumerate(competencies or []):
+        has_facts = bool(_cat_source_fact_ids(c))
+        has_lineage = bool(_cat_graph_nodes(c)) and bool(_cat_bundle_id(c))
+        if not (has_facts or has_lineage):
+            missing.append(_category_label(c) or f"idx{i}")
+    passed = not missing
+    return CompQualityResult(
+        gate_id="x2_source_fact_ids_or_graph_lineage_required_per_category",
+        passed=passed,
+        observed_value=missing if missing else "all_have_lineage",
+        threshold="every category has source_fact_ids OR (bundle_id + graph_skill_node_ids)",
+        failure_reason=None if passed else f"Categories without source facts or graph lineage: {missing[:6]}",
+        signals=missing[:6],
+    )
+
+
+def check_default_fid_only_support_forbidden(competencies: list[Any]) -> CompQualityResult:
+    """HARD variant: any term whose only support is default_fid backfill fails."""
+    laundered: list[str] = []
+    for cat in (competencies or []):
+        for term in _category_terms(cat):
+            if not isinstance(term, dict):
+                continue
+            if term.get("proof_source") == "default_fid_backfill":
+                skill_ids = term.get("graph_skill_node_ids") or term.get("source_skill_ids") or []
+                if not skill_ids:
+                    laundered.append(str(term.get("term") or term.get("text") or "unknown"))
+    passed = not laundered
+    return CompQualityResult(
+        gate_id="x2_default_fid_only_support_forbidden",
+        passed=passed,
+        observed_value=laundered if laundered else "none",
+        threshold="zero default_fid-only terms",
+        failure_reason=None if passed else f"default_fid-only support terms: {laundered[:6]}",
+        signals=laundered[:6],
+    )
+
+
+def check_generic_taxonomy_only_category_forbidden(competencies: list[Any]) -> CompQualityResult:
+    """A generic category label with no graph-backed terms and no bundle binding fails."""
+    violations: list[str] = []
+    for cat in (competencies or []):
+        label = _category_label(cat)
+        if label not in GENERIC_CATEGORIES_REQUIRING_GRAPH:
+            continue
+        graph_terms = sum(1 for t in _category_terms(cat) if _is_graph_backed(t))
+        if graph_terms < GENERIC_CATEGORY_MIN_GRAPH_TERMS and not _cat_bundle_id(cat):
+            violations.append(label)
+    passed = not violations
+    return CompQualityResult(
+        gate_id="x2_generic_taxonomy_only_category_forbidden",
+        passed=passed,
+        observed_value=violations if violations else "none",
+        threshold="generic categories require graph-backed terms or bundle binding",
+        failure_reason=None if passed else f"Generic taxonomy-only categories: {violations}",
+        signals=violations,
+    )
+
+
+def check_jd_only_skill_forbidden(
+    competencies: list[Any], jd_text: str
+) -> CompQualityResult:
+    jd_low = str(jd_text or "").lower()
+    hits: list[str] = []
+    if jd_low:
+        for cat in (competencies or []):
+            for term in _category_terms(cat):
+                if not isinstance(term, dict):
+                    continue
+                phrase = str(term.get("term") or term.get("text") or "").strip().lower()
+                skill_ids = term.get("graph_skill_node_ids") or term.get("source_skill_ids") or []
+                fact_ids = term.get("source_fact_ids") or []
+                if (
+                    phrase
+                    and len(phrase.split()) >= 2
+                    and phrase in jd_low
+                    and not skill_ids
+                    and not fact_ids
+                ):
+                    hits.append(phrase)
+    passed = not hits
+    return CompQualityResult(
+        gate_id="x2_jd_only_skill_forbidden",
+        passed=passed,
+        observed_value=hits[:6] if hits else "none",
+        threshold="no JD-lifted term without graph/source support",
+        failure_reason=None if passed else f"JD-only skills without support: {hits[:6]}",
+        signals=hits[:6],
+    )
+
+
+def check_competencies_archive_ngram_overlap(
+    competencies_text: str,
+    archive_competencies_texts: list[str],
+    *,
+    threshold: float = BASE_NGRAM_THRESHOLD,
+    warn_only: bool = True,
+) -> CompQualityResult:
+    if not archive_competencies_texts:
+        return CompQualityResult(
+            gate_id="x2_base_archive_ngram_overlap_forbidden_or_warn",
+            passed=True,
+            observed_value=0.0,
+            threshold=f"<={threshold:.0%} 4-gram overlap with archive competencies",
+            failure_reason=None,
+            signals=[],
+        )
+    overlap = compute_max_ngram_overlap_multi_reference(
+        competencies_text, archive_competencies_texts, n=NGRAM_SIZE
+    )
+    passed_gate = overlap <= threshold
+    passed = passed_gate or warn_only
+    return CompQualityResult(
+        gate_id="x2_base_archive_ngram_overlap_forbidden_or_warn",
+        passed=passed,
+        observed_value=round(overlap, 4),
+        threshold=f"<={threshold:.0%} 4-gram overlap with archive competencies (WARN={'Y' if warn_only else 'N'})",
+        failure_reason=(
+            None
+            if passed_gate
+            else f"Archive n-gram overlap {overlap:.1%} exceeds threshold {threshold:.0%}."
+        ),
+        signals=["warn_mode"] if (warn_only and not passed_gate) else [],
+    )
+
+
+def check_competency_rigor_floor(
+    competencies: list[Any], *, min_distinct_terms: int = 12
+) -> CompQualityResult:
+    distinct: set[str] = set()
+    for cat in (competencies or []):
+        for term in _category_terms(cat):
+            phrase = (
+                str(term.get("term") or term.get("text") or "")
+                if isinstance(term, dict)
+                else str(term or "")
+            ).strip().lower()
+            if phrase and len(phrase.split()) >= 2:
+                distinct.add(phrase)
+    n = len(distinct)
+    passed = n >= min_distinct_terms
+    return CompQualityResult(
+        gate_id="x2_competency_rigor_floor_met",
+        passed=passed,
+        observed_value=n,
+        threshold=f">={min_distinct_terms} distinct multi-word executive terms",
+        failure_reason=None if passed else f"Only {n} distinct multi-word terms (rigor floor {min_distinct_terms}).",
+        signals=[],
+    )
+
+
+def check_technical_density_floor(
+    competencies: list[Any], *, min_density: float = 0.4
+) -> CompQualityResult:
+    total = 0
+    technical = 0
+    for cat in (competencies or []):
+        for term in _category_terms(cat):
+            total += 1
+            toks = _term_tokens(term)
+            if toks & _TECHNICAL_DENSITY_TOKENS:
+                technical += 1
+    density = (technical / total) if total else 0.0
+    passed = density >= min_density
+    return CompQualityResult(
+        gate_id="x2_technical_density_floor_met",
+        passed=passed,
+        observed_value=round(density, 3),
+        threshold=f">={min_density:.0%} terms carry technical-density tokens",
+        failure_reason=None if passed else f"Technical density {density:.0%} below floor {min_density:.0%}.",
+        signals=[],
+    )
+
+
+def check_required_capability_families_covered(
+    competencies: list[Any], *, min_families: int = 7
+) -> CompQualityResult:
+    """Required-coverage gate: at least min_families of the 7 capability families present."""
+    return CompQualityResult(
+        gate_id="x2_required_capability_families_covered",
+        passed=check_competencies_capability_family_coverage(competencies, min_families=min_families).passed,
+        observed_value=check_competencies_capability_family_coverage(competencies, min_families=min_families).observed_value,
+        threshold=f">={min_families} of 7 required capability families",
+        failure_reason=check_competencies_capability_family_coverage(competencies, min_families=min_families).failure_reason,
+        signals=[],
+    )
+
+
 def competencies_to_text_blob(competencies: list[Any]) -> str:
     """Flatten all category labels and term phrases to a single text blob for n-gram checking."""
     parts: list[str] = []
@@ -374,10 +661,22 @@ __all__ = [
     "GENERIC_CATEGORIES_REQUIRING_GRAPH",
     "NGRAM_SIZE",
     "REQUIRED_CAPABILITY_FAMILIES",
+    "check_capability_bundles_in_proof_pool",
+    "check_competencies_archive_ngram_overlap",
     "check_competencies_base_ngram_overlap",
     "check_competencies_capability_family_coverage",
     "check_competencies_e0_ngram_overlap",
     "check_competencies_generic_category_has_graph_terms",
     "check_competencies_no_default_fid_proof",
+    "check_competency_bundle_id_per_category",
+    "check_competency_rigor_floor",
+    "check_default_fid_only_support_forbidden",
+    "check_generic_taxonomy_only_category_forbidden",
+    "check_graph_skill_node_ids_per_category",
+    "check_jd_only_skill_forbidden",
+    "check_required_capability_families_covered",
+    "check_source_fact_ids_or_graph_lineage_per_category",
+    "check_technical_density_floor",
     "competencies_to_text_blob",
+    "competency_bundle_consumption_active",
 ]

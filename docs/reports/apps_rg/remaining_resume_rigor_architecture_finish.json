@@ -1,0 +1,148 @@
+{
+  "report": "remaining_resume_rigor_architecture_finish",
+  "generated_at": "2026-05-28T15:55:00Z",
+  "status": "PASS",
+  "scope": ["headline", "unify_bullets", "unify_narrative", "cross_section_signal_guards"],
+  "runtime_proof": "DEFERRED — no live Qwen run; non-runtime architecture only.",
+  "no_agentic_core_diff": true,
+  "parts": {
+    "A_headline_graph_positioning_wiring": {
+      "data": "apps_rg/fact_inventory/headline_positioning_bundles.json",
+      "registry": "apps_rg/runtime/sections/headline_positioning_registry.py",
+      "evidence": "apps_rg/runtime/sections/headline_positioning_evidence.py",
+      "x2": "apps_rg/runtime/validators/headline_positioning_x2.py",
+      "pa_injection": "apps_rg/runtime/sections/headline_pa.py",
+      "positioning_families": [
+        "svp_engineering_leadership",
+        "agentic_ai_platforms",
+        "distributed_ai_infrastructure",
+        "runtime_governance",
+        "enterprise_ai_architecture",
+        "platform_productization",
+        "regulated_ai_systems"
+      ],
+      "c0_pack_marker": "HEADLINE_POSITIONING_EVIDENCE_PACK",
+      "gates": [
+        "x2_headline_positioning_bundles_in_proof_pool",
+        "x2_headline_positioning_bundle_id_required",
+        "x2_headline_graph_skill_node_ids_required",
+        "x2_headline_source_fact_or_graph_lineage_required",
+        "x2_headline_svp_engineering_seniority_required",
+        "x2_headline_platform_or_runtime_signal_required",
+        "x2_headline_governance_or_regulated_ai_signal_required",
+        "x2_headline_base_ngram_overlap_forbidden_or_warn",
+        "x2_headline_e0_ngram_overlap_forbidden",
+        "x2_headline_jd_only_phrase_forbidden",
+        "x2_headline_generic_it_strategy_demote_forbidden",
+        "x2_headline_seniority_floor_met",
+        "x2_headline_technical_specificity_floor_met"
+      ]
+    },
+    "B_unify_graph_gap_fill": {
+      "data": "apps_rg/fact_inventory/unify_graph_gap_fill.json",
+      "signals_classified": 20,
+      "classifications_used": ["ACTIVE_CONFIRMED", "ACTIVE_INTERNAL_ONLY", "DRAFT", "SUPPORTING_CONTEXT_ONLY"],
+      "internal_only_not_external_claim": ["dependency graph accelerator", "architecture visibility", "dependency chains", "identity controls"],
+      "draft_no_authority": ["API gateways"]
+    },
+    "C_unify_role_episode_bundles": {
+      "data": "apps_rg/fact_inventory/unify_role_episode_bundles.json",
+      "registry": "apps_rg/runtime/sections/unify_graph_role_episode_registry.py",
+      "evidence": "apps_rg/runtime/sections/unify_role_episode_evidence.py",
+      "bundles": [
+        "reb_unify_agentic_platform_architecture",
+        "reb_unify_dependency_graph_accelerator",
+        "reb_unify_runtime_reliability_governance",
+        "reb_unify_production_adoption_lifecycle",
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_unify_platform_commercialization_leadership"
+      ],
+      "employer": "Unify",
+      "employer_node_id": "employment_exp_unify_001",
+      "time_window": "2023-02 to present",
+      "approved_metric_outcome_ids": [
+        "metric_unify_22m_ip_led_revenue",
+        "metric_unify_20pct_gross_margin_expansion",
+        "metric_unify_team_scaled_8_to_28",
+        "metric_unify_cycle_six_months_to_three_weeks"
+      ],
+      "conditional_metric_outcome_ids": ["metric_unify_14m_operating_capacity"]
+    },
+    "D_unify_bullets_consumption": {
+      "pa_injection": "apps_rg/runtime/sections/unify_bullets_pa.py",
+      "x2": "apps_rg/runtime/validators/unify_role_episode_x2.py",
+      "gates": [
+        "x2_unify_role_episode_bundles_in_proof_pool",
+        "x2_unify_bullet_role_episode_bundle_id_required",
+        "x2_unify_graph_skill_node_ids_required",
+        "x2_unify_source_fact_or_graph_lineage_required",
+        "x2_unify_metric_outcome_id_required_when_has_metric",
+        "x2_unify_flat_skill_only_graph_packet_forbidden",
+        "x2_unify_generic_consulting_language_forbidden",
+        "x2_unify_base_archive_ngram_overlap_forbidden_or_warn",
+        "x2_unify_seniority_floor_met",
+        "x2_unify_technical_specificity_floor_met",
+        "x2_unify_architecture_mechanism_required",
+        "x2_unify_commercial_or_operating_scope_required"
+      ]
+    },
+    "E_unify_narrative_consumption": {
+      "pa_injection": "apps_rg/runtime/sections/unify_narrative_pa.py",
+      "x2": "apps_rg/runtime/validators/unify_role_episode_x2.py",
+      "gates": [
+        "x2_unify_narrative_role_episode_bundles_in_proof_pool",
+        "x2_unify_narrative_role_episode_bundle_id_required",
+        "x2_unify_narrative_graph_skill_node_ids_required",
+        "x2_unify_narrative_source_fact_or_graph_lineage_required",
+        "x2_unify_narrative_flat_skill_only_forbidden",
+        "x2_unify_narrative_generic_consulting_language_forbidden",
+        "x2_unify_narrative_unsupported_new_claim_forbidden",
+        "x2_unify_narrative_base_archive_ngram_overlap_forbidden_or_warn",
+        "x2_unify_narrative_seniority_floor_met",
+        "x2_unify_narrative_technical_specificity_floor_met"
+      ]
+    },
+    "F_cross_section_signal_guards": {
+      "module": "apps_rg/runtime/sections/cross_section_signal_guards.py",
+      "helpers": [
+        "seniority_floor_score",
+        "technical_specificity_score",
+        "detect_generic_consulting_phrases",
+        "detect_jd_only_phrases",
+        "base_archive_ngram_overlap",
+        "is_flat_skill_only_graph_packet"
+      ]
+    }
+  },
+  "config_decision": {
+    "section_retrieval_profile": "apps_rg/config/domain_contract/section_retrieval_profile.yaml",
+    "headline": {"graph_expansion_allowed": true, "headline_positioning_bundle_consumption": "required", "graph_expansion_mode": "headline_positioning_bundle_only"},
+    "unify_bullets": {"graph_expansion_allowed": true, "role_episode_bundle_consumption": "required", "graph_expansion_mode": "role_episode_bundle_only"},
+    "unify_narrative": {"graph_expansion_allowed": true, "role_episode_bundle_consumption": "required", "graph_expansion_mode": "role_episode_bundle_only"}
+  },
+  "proof_pool_attach": "apps_rg/runtime/proof_pool_resolver.py (headline + unify_bullets + unify_narrative bundle attach)",
+  "tests": {
+    "new_suite": "tests/unit/apps_rg/test_remaining_resume_rigor_finish.py",
+    "new_suite_result": "22 passed",
+    "ibm_competencies_regression": "165 passed (test_ibm_role_episode_consumption_wiring + test_ibm_graph_role_episode_promotion + test_competencies_capability_bundle_wiring)"
+  },
+  "acceptance": {
+    "compileall_apps_rg": "exit 0",
+    "headline_unify_targeted_tests": "exit 0 (22 passed)",
+    "ibm_competencies_suites": "exit 0 (165 passed)",
+    "git_diff_agentic_core": "empty"
+  },
+  "claims_or_metrics_blocked": [
+    "$15M / $30M IBM HOLD metrics — unchanged, not introduced",
+    "Unify metrics restricted to approved metric_outcome_ids; $14M operating capacity conditional/HOLD",
+    "API gateways signal: DRAFT — no external claim authority",
+    "dependency graph accelerator / identity controls: internal-only, not unqualified external claims"
+  ],
+  "pre_existing_failures": [
+    "tests/unit/apps_rg/validators/test_headline_x2_fixed_prefix_contract.py::test_valid_canonical_derived_passes (x2_headline_no_narrowing_it_labels) — confirmed identical with changes stashed",
+    "tests/unit/apps_rg/validators/test_headline_x2_fixed_prefix_contract.py::test_mocked_runtime_with_passing_x2_still_not_x3_allow — same pre-existing gate",
+    "tests/unit/apps_rg/section_rigor/test_section_complexity_budget.py::test_ci_complexity_baseline_gate_passes_on_clean_tree (baseline drift incl. executive_summary loc_delta=8729) — confirmed with changes stashed",
+    "tests/unit/apps_rg/section_rigor/test_section_gate_coverage.py::test_weak_fail_cases_reference_valid_lanes_and_critical_gates — confirmed with changes stashed",
+    "tests/unit/apps_rg/section_rigor/test_section_gate_coverage.py::test_all_lane_critical_gates_have_weak_or_dedicated_coverage — confirmed with changes stashed"
+  ]
+}

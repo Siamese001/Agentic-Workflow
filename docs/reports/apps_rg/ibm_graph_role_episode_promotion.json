@@ -1,0 +1,326 @@
+{
+  "schema": "ibm_graph_role_episode_promotion_v1",
+  "generated_at": "2026-05-28T13:00:00Z",
+  "generated_by": "generate_ibm_graph_role_episode_report.py",
+  "wave_id": "ibm_graph_promotion_wave_2026-05-28",
+  "employer": "IBM",
+  "employer_node_id": "employment_exp_ibm_001",
+  "time_window": "2017-04 to 2022-10",
+  "scope_invariants": {
+    "ibm_only": true,
+    "unify_not_modified": true,
+    "agentic_core_not_modified": true,
+    "x2_x3_not_weakened": true,
+    "archive_prose_not_used_as_output": true,
+    "hold_do_not_promote_metrics_excluded": true
+  },
+  "ledger_state_after_wave": {
+    "total_skill_rows": 177,
+    "total_graph_nodes": 240,
+    "total_graph_edges": 1441
+  },
+  "ibm_promotions": [
+    {
+      "skill_id": "skill_ibm_automated_release_pipelines",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "confidence_grade": "HIGH",
+      "allowed_sections": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_003",
+        "sig_comp_002"
+      ],
+      "graph_node_present": true,
+      "employment_edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_ibm_automated_release_pipelines",
+      "employment_edge_present": true,
+      "is_new": true
+    },
+    {
+      "skill_id": "skill_ibm_devsecops_pipeline_security",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "confidence_grade": "HIGH",
+      "allowed_sections": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_004",
+        "sig_comp_002"
+      ],
+      "graph_node_present": true,
+      "employment_edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_ibm_devsecops_pipeline_security",
+      "employment_edge_present": true,
+      "is_new": true
+    },
+    {
+      "skill_id": "skill_ibm_metadata_audit_rbac",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "confidence_grade": "HIGH",
+      "allowed_sections": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_008"
+      ],
+      "graph_node_present": true,
+      "employment_edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_ibm_metadata_audit_rbac",
+      "employment_edge_present": true,
+      "is_new": true
+    },
+    {
+      "skill_id": "skill_ibm_watson_studio_analytics",
+      "activation_status": "ACTIVE",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "confidence_grade": "MEDIUM",
+      "allowed_sections": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_010"
+      ],
+      "graph_node_present": true,
+      "employment_edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_ibm_watson_studio_analytics",
+      "employment_edge_present": true,
+      "is_new": true
+    },
+    {
+      "skill_id": "skill_confluent_streaming_platforms",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "confidence_grade": "HIGH",
+      "allowed_sections": [
+        "competencies",
+        "executive_summary",
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_006",
+        "sig_ibm_007"
+      ],
+      "graph_node_present": false,
+      "employment_edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_confluent_streaming_platforms",
+      "employment_edge_present": true,
+      "is_new": false
+    },
+    {
+      "skill_id": "skill_risk_greek_stress_testing",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "employer": "IBM",
+      "employer_node_id": "employment_exp_ibm_001",
+      "time_window": "2017-04 to 2022-10",
+      "confidence_grade": "HIGH",
+      "allowed_sections": [
+        "early_career",
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "archive_signal_ids": [
+        "sig_ibm_002"
+      ],
+      "graph_node_present": true,
+      "employment_edge_id": "edge_employment_skill_employment_exp_ibm_001_skill_risk_greek_stress_testing",
+      "employment_edge_present": true,
+      "is_new": false
+    }
+  ],
+  "role_episode_bundles": [
+    {
+      "role_episode_bundle_id": "reb_ibm_cloud_modernization",
+      "bundle_theme": "Cloud Modernization / Containerized Microservices",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "graph_skill_node_ids": [
+        "skill_sr_microservices_integration_platform",
+        "skill_sr_cloud_data_platform_engineering",
+        "skill_ibm_automated_release_pipelines"
+      ],
+      "promotable_metrics": [],
+      "held_metrics": [
+        "$15M modernization deals (HOLD - single source)"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "config_gate": "BLOCKED_FOR_CONFIG_ENABLEMENT"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_devsecops_reliability",
+      "bundle_theme": "DevSecOps / Release Reliability",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "graph_skill_node_ids": [
+        "skill_ibm_devsecops_pipeline_security",
+        "skill_ibm_automated_release_pipelines",
+        "skill_ibm_metadata_audit_rbac"
+      ],
+      "promotable_metrics": [
+        "10% FinOps savings via CI/CD best practices (unique metric from Chief AI Officer resume)"
+      ],
+      "held_metrics": [],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "config_gate": "BLOCKED_FOR_CONFIG_ENABLEMENT"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_streaming_realtime_analytics",
+      "bundle_theme": "Streaming / Near-Real-Time Analytics",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "graph_skill_node_ids": [
+        "skill_confluent_streaming_platforms",
+        "skill_sr_cloud_data_platform_engineering"
+      ],
+      "promotable_metrics": [],
+      "held_metrics": [],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "config_gate": "BLOCKED_FOR_CONFIG_ENABLEMENT"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_metadata_audit_governance",
+      "bundle_theme": "Metadata / Audit Trail / RBAC Governance",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "graph_skill_node_ids": [
+        "skill_ibm_metadata_audit_rbac",
+        "skill_sr_basel_ccar_lineage_regulatory"
+      ],
+      "promotable_metrics": [],
+      "held_metrics": [],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "config_gate": "BLOCKED_FOR_CONFIG_ENABLEMENT"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_hpc_risk_analytics",
+      "bundle_theme": "Risk Analytics / HPC Stress Testing",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "graph_skill_node_ids": [
+        "skill_risk_greek_stress_testing",
+        "skill_sr_cloud_data_platform_engineering",
+        "skill_confluent_streaming_platforms"
+      ],
+      "promotable_metrics": [],
+      "held_metrics": [
+        "$15M modernization deals (HOLD - single source, SAE only)"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "config_gate": "BLOCKED_FOR_CONFIG_ENABLEMENT"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_hyperscaler_alliance_partner",
+      "bundle_theme": "IBM-AWS Hyperscaler Alliance / Partner Execution",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "graph_skill_node_ids": [
+        "skill_partner_ibm_aws_alliance_joint_revenue",
+        "skill_sr_w12_hyperscaler_alliance_co_sell",
+        "skill_partner_co_selling"
+      ],
+      "promotable_metrics": [
+        "20% joint revenue growth (PROMOTABLE - consistent across 2 resumes, IBM-AWS alliance context)",
+        "$10M IBM ARR (PROMOTABLE - consistent across 2 resumes, IBM Salesforce pipeline context)"
+      ],
+      "held_metrics": [
+        "$30M Cloud Pak partner revenue (HOLD - single source, CTO Resume only)"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "config_gate": "BLOCKED_FOR_CONFIG_ENABLEMENT"
+    }
+  ],
+  "metrics_held": [
+    {
+      "metric": "$15M modernization deals",
+      "reason": "HOLD - single source (SAE only)"
+    },
+    {
+      "metric": "$30M Cloud Pak partner revenue",
+      "reason": "HOLD - single source (CTO Resume only)"
+    }
+  ],
+  "metrics_do_not_promote": [
+    {
+      "metric": "25%",
+      "reason": "DO NOT PROMOTE - overloaded across 6+ contexts"
+    },
+    {
+      "metric": "30%",
+      "reason": "DO NOT PROMOTE - overloaded across 8+ contexts"
+    },
+    {
+      "metric": "35%",
+      "reason": "DO NOT PROMOTE - overloaded across 6+ contexts"
+    },
+    {
+      "metric": "40%",
+      "reason": "DO NOT PROMOTE - most overloaded metric in archive"
+    }
+  ],
+  "metrics_promotable": [
+    {
+      "metric": "20% joint revenue growth",
+      "context": "IBM-AWS alliance co-sell"
+    },
+    {
+      "metric": "$10M IBM ARR",
+      "context": "IBM Salesforce pipeline expansion"
+    },
+    {
+      "metric": "10% FinOps savings",
+      "context": "DevSecOps CI/CD practices",
+      "caveat": "unique metric - verify with base resume before use"
+    }
+  ],
+  "config_decision": {
+    "status": "BLOCKED_FOR_CONFIG_ENABLEMENT",
+    "ibm_bullets_graph_expansion_allowed": false,
+    "ibm_narrative_graph_expansion_allowed": false,
+    "reason": "role_episode_bundle consumption is not yet implemented in the ibm_bullets or ibm_narrative section generation path. Config change requires: (1) section generator wired to consume role_episode_bundle_id, (2) flat skill list consumption prohibited, (3) assert_role_episode_bundle_id_present() called before graph context use."
+  },
+  "tests_added": [
+    "tests/unit/apps_rg/test_ibm_graph_role_episode_promotion.py (129 tests)"
+  ],
+  "files_changed": [
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "apps_rg/fact_inventory/ibm_role_episode_bundles.json",
+    "apps_rg/runtime/sections/ibm_graph_role_episode_registry.py",
+    "tools/apps_rg/apply_ibm_graph_promotion_wave.py",
+    "tools/apps_rg/generate_ibm_graph_role_episode_report.py",
+    "tests/unit/apps_rg/test_ibm_graph_role_episode_promotion.py"
+  ]
+}

@@ -69,16 +69,9 @@ IBM_BULLET_MECHANISM_VOCAB: dict[str, list[str]] = {
     "bul_ibm_005": ["hyperscaler alliances", "co-sell"],
 }
 
-# Locked metric tokens per slot.
-# Source: amit_ayer_base_resume_v1.json → facts.employment[exp_ibm_001].bullets[*].metric_raw
-# Model must preserve these tokens when composing from the proof bundle.
-IBM_BULLET_LOCKED_METRICS: dict[str, str] = {
-    "bul_ibm_001": "99.9% uptime",
-    "bul_ibm_002": "30% infrastructure overhead reduction",
-    "bul_ibm_003": "25% renewal rate improvement",
-    "bul_ibm_004": "50% latency reduction",
-    "bul_ibm_005": "$15M incremental revenue",
-}
+# Legacy locked metrics retired — HOLD/DO_NOT_PROMOTE base-resume tokens must not drive C0.
+# Metric claims bind only to allowed_metric_outcome_ids from role episode bundles.
+IBM_BULLET_LOCKED_METRICS: dict[str, str] = {}
 
 # Domain context per slot (structural field — not claim prose).
 IBM_BULLET_SLOT_DOMAIN: dict[str, str] = {
@@ -110,78 +103,16 @@ def assert_ibm_c0_pack_has_no_forbidden_template_leaks(pack_text: str) -> None:
 def format_ibm_graph_bullet_evidence_pack(
     runtime_payload: dict[str, Any],
 ) -> str:
-    """C0 body: graph skills + structured proof atoms per bul_ibm_* slot — no claim_text prose.
+    """C0 body: IBM role episode bundles per bul_ibm_* slot (not flat skill lists).
 
-    Implements the ORGANIC_FROM_GRAPH_BUNDLE treatment for IBM bullets (W1: Bullet Proof Bundle
-    Redesign). The claim_text field from base resume IBM bullets is intentionally excluded.
-    Only structured fields (technologies → mechanism_vocab, metric_raw → locked_metrics, domain)
-    plus arsenal skill node IDs and phrases are included.
+    Delegates to ibm_role_episode_evidence — proof authority is role_episode_bundle_id +
+    bound_skills + linked_source_fact_ids. Base resume claim_text is excluded.
     """
-    from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
-
-    plan = runtime_payload.get("selected_fact_plan") or {}
-    selection_method = str(
-        plan.get("selection_method") or IBM_TRACK_RANKED_SELECTION_METHOD
+    from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+        format_ibm_role_episode_evidence_pack,
     )
-    allowed_fact_ids_raw = list(runtime_payload.get("allowed_fact_ids") or [])
 
-    header_lines = [
-        f"{GRAPH_BULLET_EVIDENCE_PACK_MARKER} "
-        "(proof substrate — compose five IBM bullets organically from bound_skills + proof_atoms):",
-        f"- selection_method: {selection_method}",
-        "- Do NOT copy, paraphrase, or lightly rewrite base-resume IBM bullet wording.",
-        "- No claim_text in this pack — synthesize new executive lines from skills + proof atoms.",
-        "- skill_id alone is not proof; allowed_source_fact_ids bind each claim.",
-        "- JD/briefing (U0) choose emphasis only; do not invent facts from JD.",
-    ]
-    if allowed_fact_ids_raw:
-        ordered = sorted(str(x) for x in allowed_fact_ids_raw)
-        header_lines.append(
-            "\nALLOWED_SOURCE_FACT_IDS "
-            "(claim_ledger.source_fact_ids must cite only these IDs):"
-        )
-        for fid in ordered:
-            header_lines.append(f"- {fid}")
-
-    header = "\n".join(header_lines)
-
-    slot_blocks: list[str] = []
-    for slot_id in IBM_BULLET_SLOT_IDS:
-        skills = IBM_BULLET_SLOT_SKILL_MAP.get(slot_id, [])
-        vocab = IBM_BULLET_MECHANISM_VOCAB.get(slot_id, [])
-        metric = IBM_BULLET_LOCKED_METRICS.get(slot_id, "")
-        domain = IBM_BULLET_SLOT_DOMAIN.get(slot_id, "")
-
-        slot_allowed: list[str] = [slot_id]
-        if metric:
-            slot_allowed.append(metric_derivative_fact_id(slot_id, metric))
-
-        lines = [
-            f"{slot_id} | compose_one_bullet_from:",
-            f"  allowed_source_fact_ids: {slot_allowed}",
-        ]
-        if skills:
-            lines.append("  bound_skills (graph authority — primary vocabulary):")
-            for sk in skills:
-                lines.append(
-                    f"    - {sk['skill_id']} | allowed_phrases: {sk['allowed_phrases']}"
-                )
-        else:
-            lines.append("  bound_skills: (none linked — use proof_atoms only)")
-
-        lines.append("  proof_atoms (structured tokens only — no prose):")
-        if vocab:
-            lines.append(f"    - mechanism_vocab: {vocab}")
-        if metric:
-            lines.append(f"    - locked_metrics: {metric}")
-        if domain:
-            lines.append(f"    - domain: {domain}")
-
-        slot_blocks.append("\n".join(lines))
-
-    out = header + "\n\n" + "\n\n".join(slot_blocks)
-    assert_ibm_c0_pack_has_no_forbidden_template_leaks(out)
-    return out
+    return format_ibm_role_episode_evidence_pack(runtime_payload, section_id="ibm_bullets")
 IBM_PHASE2_CAREER_TRACK_ID = "TRACK_DATA_TECH_CLOUD_ML"
 
 IBM_EMPLOYMENT_START = "2017-04"

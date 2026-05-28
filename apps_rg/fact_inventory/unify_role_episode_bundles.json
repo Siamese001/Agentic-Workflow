@@ -1,0 +1,209 @@
+{
+  "schema": "unify_role_episode_bundles_v1",
+  "generated_at": "2026-05-28T15:35:00Z",
+  "generated_by": "remaining_resume_rigor_architecture_finish_wave",
+  "employer": "Unify",
+  "employer_node_id": "employment_exp_unify_001",
+  "time_window": "2023-02 to present",
+  "invariants": {
+    "archive_prose_excluded": true,
+    "base_resume_hydration_excluded": true,
+    "new_archive_metrics_not_introduced_without_reconciliation": true,
+    "internal_only_signals_not_external_claims": true,
+    "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+    "config_enablement_condition": "unify_bullets and unify_narrative graph_expansion_allowed may be enabled only when section generation consumes role_episode_bundle_id (graph_expansion_mode=role_episode_bundle_only), not flat skill lists."
+  },
+  "approved_metric_outcome_ids": {
+    "metric_unify_22m_ip_led_revenue": "$22M IP-led revenue (canonical, linked to fact_engineering_platform_006)",
+    "metric_unify_20pct_gross_margin_expansion": "20% gross margin expansion (canonical, linked to fact_engineering_platform_006)",
+    "metric_unify_team_scaled_8_to_28": "team scaled 8 to 28 (canonical, linked to fact_engineering_platform_006)",
+    "metric_unify_cycle_six_months_to_three_weeks": "six months to three weeks cycle reduction (canonical, linked to fact_engineering_platform_004)"
+  },
+  "conditional_metric_outcome_ids": {
+    "metric_unify_14m_operating_capacity": "$14M operating capacity — allowed only if already canonical and linked; otherwise HOLD."
+  },
+  "bundles": [
+    {
+      "role_episode_bundle_id": "reb_unify_agentic_platform_architecture",
+      "employer": "Unify",
+      "title": "SVP Engineering, Agentic AI Platforms",
+      "time_window": "2023-02 to present",
+      "employer_node_id": "employment_exp_unify_001",
+      "bundle_theme": "Governed agentic AI platform architecture",
+      "executive_scope_signals": [
+        "Owned platform roadmap and core systems architecture for a production-grade agentic AI accelerator",
+        "Architecture authority over governed multi-agent execution serving Fortune 500 financial institutions"
+      ],
+      "architecture_scope_signals": [
+        "Deterministic routing and multi-agent orchestration across governed execution layers",
+        "GraphRAG retrieval and sandboxed execution with policy gates",
+        "Replayable execution traces for auditable agentic runtime"
+      ],
+      "graph_skill_node_ids": [
+        "skill_governed_agentic_systems_architecture",
+        "skill_deterministic_route_selection",
+        "skill_graph_aware_relationship_grounding",
+        "skill_sandboxed_execution_design",
+        "skill_runtime_gate_mesh_design",
+        "skill_replayable_runtime_design"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_001"],
+      "linked_metric_outcome_ids": [],
+      "operating_context": "Production-grade generative AI Solution Accelerator within a consulting firm; governed agentic platform serving regulated financial institutions.",
+      "bullet_intent": "Frame as governed agentic platform architecture ownership; mechanisms named, no metric without approved outcome id.",
+      "section_eligibility": ["unify_bullets", "unify_narrative", "competencies", "headline"],
+      "external_claim_policy": "skill_projection_not_proof",
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "role_episode_bundle_id": "reb_unify_dependency_graph_accelerator",
+      "employer": "Unify",
+      "title": "SVP Engineering, Agentic AI Platforms",
+      "time_window": "2023-02 to present",
+      "employer_node_id": "employment_exp_unify_001",
+      "bundle_theme": "Dependency graph intelligence and legacy-to-agentic modernization",
+      "executive_scope_signals": [
+        "Directed dependency-graph-driven modernization of legacy systems toward agentic architecture",
+        "Architecture visibility tooling reducing refactor risk across enterprise codebases"
+      ],
+      "architecture_scope_signals": [
+        "Dependency graph accelerator mapping architecture visibility and dependency chains",
+        "Refactor risk reduction through static dependency analysis"
+      ],
+      "graph_skill_node_ids": [
+        "skill_dependency_and_join_control",
+        "skill_static_governance_drift_detection"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_005"],
+      "linked_metric_outcome_ids": [],
+      "operating_context": "Internal dependency-graph accelerator (ADG) used for legacy-to-agentic modernization; internal architecture evidence, not an external metric claim.",
+      "bullet_intent": "Frame as dependency-graph-driven modernization; internal-only architecture evidence — no unqualified external metric.",
+      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "external_claim_policy": "internal_only_not_external_claim",
+      "activation_status": "ACTIVE_INTERNAL_ONLY"
+    },
+    {
+      "role_episode_bundle_id": "reb_unify_runtime_reliability_governance",
+      "employer": "Unify",
+      "title": "SVP Engineering, Agentic AI Platforms",
+      "time_window": "2023-02 to present",
+      "employer_node_id": "employment_exp_unify_001",
+      "bundle_theme": "Runtime reliability, governance, telemetry, evaluation, rollback",
+      "executive_scope_signals": [
+        "Owned runtime reliability and governance for production agentic AI execution",
+        "Established evaluation gates, telemetry instrumentation, and rollback controls"
+      ],
+      "architecture_scope_signals": [
+        "Retrieval quality and context assembly under evaluation gates",
+        "Telemetry instrumentation and rollback controls for runtime stability",
+        "AI CI/CD standards governing release reliability"
+      ],
+      "graph_skill_node_ids": [
+        "skill_audit_grade_observability",
+        "skill_runtime_resilience_controls",
+        "skill_same_authority_runtime_repair",
+        "skill_completed_run_evaluation",
+        "skill_context_engineering"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_003"],
+      "linked_metric_outcome_ids": [],
+      "operating_context": "Runtime reliability and governance for production agentic systems; evaluation gates, telemetry, and rollback controls.",
+      "bullet_intent": "Frame as runtime reliability/governance leadership; named mechanisms, no metric without approved outcome id.",
+      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "external_claim_policy": "skill_projection_not_proof",
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "role_episode_bundle_id": "reb_unify_production_adoption_lifecycle",
+      "employer": "Unify",
+      "title": "SVP Engineering, Agentic AI Platforms",
+      "time_window": "2023-02 to present",
+      "employer_node_id": "employment_exp_unify_001",
+      "bundle_theme": "Standardized AI systems lifecycle and lab-to-production acceleration",
+      "executive_scope_signals": [
+        "Standardized the AI systems lifecycle from intake through production monitoring",
+        "Accelerated lab-to-production cycle time for client AI deployments"
+      ],
+      "architecture_scope_signals": [
+        "Intake, validation, execution, monitoring, remediation lifecycle stages",
+        "Deterministic auditability across the production adoption lifecycle"
+      ],
+      "graph_skill_node_ids": [
+        "skill_managed_workflow_orchestration",
+        "skill_replayable_runtime_design",
+        "skill_exit_disposition_governance"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_004"],
+      "linked_metric_outcome_ids": ["metric_unify_cycle_six_months_to_three_weeks"],
+      "operating_context": "Standardized AI systems lifecycle; lab-to-production acceleration with deterministic auditability.",
+      "bullet_intent": "Frame as lifecycle standardization and lab-to-production acceleration; six-months-to-three-weeks cycle reduction allowed only via metric_unify_cycle_six_months_to_three_weeks.",
+      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "external_claim_policy": "approved_metric_linked",
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "role_episode_bundle_id": "reb_unify_distributed_ecosystem_engineering",
+      "employer": "Unify",
+      "title": "SVP Engineering, Agentic AI Platforms",
+      "time_window": "2023-02 to present",
+      "employer_node_id": "employment_exp_unify_001",
+      "bundle_theme": "Distributed cloud and data execution infrastructure",
+      "executive_scope_signals": [
+        "Architected distributed cloud and data execution infrastructure for agentic workloads",
+        "Owned high-availability execution layers and parallel decision workflows"
+      ],
+      "architecture_scope_signals": [
+        "AWS and Databricks Lakehouse data pipelines feeding vector services",
+        "API gateways and identity controls across distributed execution",
+        "High availability and parallel decision workflows"
+      ],
+      "graph_skill_node_ids": [
+        "skill_sr_cloud_data_platform_engineering",
+        "skill_sr_w12_databricks_lakehouse_fundamentals",
+        "skill_dense_sparse_exact_retrieval_design",
+        "skill_provider_and_egress_governance",
+        "skill_runtime_resilience_controls"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_002"],
+      "linked_metric_outcome_ids": [],
+      "operating_context": "Distributed cloud/data execution infrastructure; AWS, Databricks Lakehouse, vector services, identity controls, high availability.",
+      "bullet_intent": "Frame as distributed infrastructure architecture; identity controls and API gateways framed as internal/supporting where not externally claimable.",
+      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "external_claim_policy": "skill_projection_not_proof",
+      "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "role_episode_bundle_id": "reb_unify_platform_commercialization_leadership",
+      "employer": "Unify",
+      "title": "SVP Engineering, Agentic AI Platforms",
+      "time_window": "2023-02 to present",
+      "employer_node_id": "employment_exp_unify_001",
+      "bundle_theme": "Platform productization, IP-led revenue, margin expansion, team scale",
+      "executive_scope_signals": [
+        "Converted bespoke client delivery into reusable platform IP deployed across enterprise lines of business",
+        "Scaled the engineering organization and the platform operating model"
+      ],
+      "architecture_scope_signals": [
+        "Reusable platform services and IP-led commercialization",
+        "Platform operating model enabling margin expansion"
+      ],
+      "graph_skill_node_ids": [
+        "skill_ai_platform_commercialization",
+        "skill_agentic_platform_productization",
+        "skill_operating_model_for_agentic_ai",
+        "skill_svp_it_strategy_innovation"
+      ],
+      "linked_source_fact_ids": ["fact_engineering_platform_006"],
+      "linked_metric_outcome_ids": [
+        "metric_unify_22m_ip_led_revenue",
+        "metric_unify_20pct_gross_margin_expansion",
+        "metric_unify_team_scaled_8_to_28"
+      ],
+      "operating_context": "Platform productization and commercialization; reusable IP, margin expansion, engineering organization scale-out.",
+      "bullet_intent": "Frame as platform commercialization leadership; $22M IP-led revenue, 20% gross margin expansion, team scaled 8 to 28 allowed only via their approved metric_outcome_ids.",
+      "section_eligibility": ["unify_bullets", "unify_narrative", "competencies", "headline"],
+      "external_claim_policy": "approved_metric_linked",
+      "activation_status": "ACTIVE_CONFIRMED"
+    }
+  ]
+}

@@ -474,6 +474,56 @@ def run_ibm_narrative_x2_gates(
         )
         scope_threshold = "bul_ibm_*"
         scope_fail = "Non-IBM fact scope in payload."
+    from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+        is_flat_skill_only_graph_packet,
+        scan_forbidden_metrics_in_text,
+    )
+
+    pp_meta = dict(proof_pool_metadata or {})
+    bundles_present = bool(pp_meta.get("role_episode_bundles"))
+    flat_only = is_flat_skill_only_graph_packet(pp_meta) and not bundles_present
+    add(
+        "x2_ibm_narrative_role_episode_bundles_in_proof_pool",
+        bundles_present and not flat_only,
+        {"bundles_present": bundles_present, "flat_skill_only": flat_only},
+        "role_episode_bundles required for IBM narrative",
+        "IBM narrative proof pool missing role_episode_bundles"
+        if not bundles_present or flat_only
+        else None,
+    )
+
+    change_log = list((parsed_output or {}).get("change_log") or [])
+    narrative_bundle_ids = [
+        str(e.get("role_episode_bundle_id"))
+        for e in change_log
+        if isinstance(e, dict) and e.get("role_episode_bundle_id")
+    ]
+    pool_bundle_ids = list(pp_meta.get("role_episode_bundle_ids") or [])
+    narrative_has_bundles = bool(narrative_bundle_ids) or bool(
+        (parsed_output or {}).get("role_episode_bundle_ids")
+    )
+    add(
+        "x2_ibm_narrative_role_episode_bundle_id_required",
+        narrative_has_bundles and bool(pool_bundle_ids),
+        {
+            "change_log_bundle_ids": narrative_bundle_ids,
+            "pool_bundle_ids": pool_bundle_ids[:6],
+        },
+        "narrative binds to role_episode_bundle_ids",
+        "IBM narrative missing role_episode_bundle_id binding"
+        if not narrative_has_bundles or not pool_bundle_ids
+        else None,
+    )
+
+    forbidden_narr = scan_forbidden_metrics_in_text(narrative_sentence)
+    add(
+        "x2_ibm_narrative_hold_metric_forbidden",
+        not forbidden_narr,
+        forbidden_narr or "none",
+        "no HOLD/DO_NOT_PROMOTE metrics in narrative",
+        f"Forbidden metrics in narrative: {forbidden_narr}" if forbidden_narr else None,
+    )
+
     add(
         "x2_ibm_narrative_ibm_only_fact_scope",
         scope_ok,

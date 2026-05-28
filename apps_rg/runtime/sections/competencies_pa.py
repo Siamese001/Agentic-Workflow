@@ -173,11 +173,29 @@ def build_competencies_assembly_input(
             + ", ".join(sorted(allowed_list))
         )
 
+    competency_bundle_block = ""
+    if pp_meta.get("competency_capability_bundle_consumption"):
+        try:
+            from apps_rg.runtime.sections.competency_capability_evidence import (
+                format_competency_capability_evidence_pack,
+            )
+
+            competency_bundle_block = (
+                "\n\n"
+                + format_competency_capability_evidence_pack(
+                    runtime_payload, section_id="competencies"
+                )
+                + "\n"
+            )
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):  # guardian: allow-default-fallback -- bundle pack optional boundary
+            competency_bundle_block = ""
+
     c0_facts = (
         "CANONICAL_EMPLOYMENT_BULLETS (claim evidence — candidate_fact_ledger slice; NOT skills authority):\n"
         + fact_lines.strip()
         + allowed_block
         + skill_projection_block
+        + competency_bundle_block
         + "\n\nSELECTED_FACT_PLAN_STUB (echo this shape in output only; do not paste facts[] array):\n"
         + stub
     )
@@ -236,6 +254,11 @@ def build_competencies_assembly_input(
         "- Do not invent tools, platforms, certifications, industries, metrics, or employers.\n"
         "- Do not treat U-tier companion context as proof — tone/positioning only.\n"
         "- No em dash (U+2014). No bullet markers in terms. No inline [source:] tags.\n"
+        "- When COMPETENCY_CAPABILITY_EVIDENCE_PACK is present: generate categories organically "
+        "from competency capability bundles. Each category must bind to a competency_bundle_id and "
+        "its graph_skill_node_ids. Base resume and archive competencies are calibration/provenance only "
+        "— never copy or paraphrase their prose. Preserve or exceed the base resume's rigor and "
+        "senior executive engineering specificity.\n"
     )
 
     return PromptAssemblyInput(

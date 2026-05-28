@@ -41,12 +41,12 @@ def _ibm_position_narrative_spec() -> dict[str, Any]:
 
 
 def _fact_lines(runtime_payload: dict[str, Any]) -> str:
-    facts = runtime_payload["selected_fact_plan"]["facts"]
-    return "\n".join(
-        f"- {fact['fact_id']}: {fact['claim_text']}"
-        + (f" | metric: {fact['metric_raw']}" if fact.get("metric_raw") else "")
-        for fact in facts
+    """Deprecated for C0 — narrative uses role episode bundles, not claim_text fact lines."""
+    from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+        format_ibm_role_episode_evidence_pack,
     )
+
+    return format_ibm_role_episode_evidence_pack(runtime_payload, section_id="ibm_narrative")
 
 
 def _format_allowed_fact_ids(runtime_payload: dict[str, Any]) -> str:
@@ -238,7 +238,7 @@ def compile_ibm_narrative_prompt(
         i0_instructions=_i0_from_spec(runtime_payload),
         c0_candidate_facts=EvidenceSource(
             source_type="candidate_facts",
-            content="CANONICAL IBM FACTS:\n" + fact_lines,
+            content=fact_lines,
             confidence=1.0,
             source_tag="candidate_facts",
         ),

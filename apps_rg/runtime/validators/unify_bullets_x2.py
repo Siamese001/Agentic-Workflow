@@ -925,4 +925,21 @@ def run_unify_bullets_x2_gates(
         else None,
     )
 
+    # -----------------------------------------------------------------------
+    # Unify role episode bundle gates (active only in bundle-consumption mode)
+    # -----------------------------------------------------------------------
+    from apps_rg.runtime.validators.unify_role_episode_x2 import (
+        run_unify_bullets_role_episode_x2_gates,
+        unify_role_episode_consumption_active,
+    )
+
+    if unify_role_episode_consumption_active(proof_pool_metadata):
+        for er in run_unify_bullets_role_episode_x2_gates(
+            bullets=bullets,
+            parsed_output=parsed_output,
+            proof_pool_metadata=proof_pool_metadata,
+            jd_text=jd_text,
+        ):
+            add(er.gate_id, er.passed, er.observed_value, er.threshold, er.failure_reason)
+
     return gates

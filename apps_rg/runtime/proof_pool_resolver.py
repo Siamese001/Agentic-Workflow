@@ -556,6 +556,28 @@ def _resolve_generic_section_graph_skills_proof_pool(
             meta[scope_key] = plan.get(scope_key)
     if section_id == "ibm_bullets" and plan.get("career_track_scope_allowed"):
         meta["selected_tracks"] = list(plan.get("career_track_scope_allowed") or [])
+    if section_id in ("ibm_bullets", "ibm_narrative"):
+        from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+            attach_role_episode_bundles_to_proof_pool_metadata,
+        )
+
+        meta = attach_role_episode_bundles_to_proof_pool_metadata(
+            meta, section_id=section_id, repo_root=root
+        )
+    if section_id in ("unify_bullets", "unify_narrative"):
+        from apps_rg.runtime.sections.unify_role_episode_evidence import (
+            attach_role_episode_bundles_to_proof_pool_metadata as _attach_unify_reb,
+        )
+
+        meta = _attach_unify_reb(meta, section_id=section_id, repo_root=root)
+    if section_id == "headline":
+        from apps_rg.runtime.sections.headline_positioning_evidence import (
+            attach_headline_positioning_bundles_to_proof_pool_metadata,
+        )
+
+        meta = attach_headline_positioning_bundles_to_proof_pool_metadata(
+            meta, section_id=section_id, repo_root=root
+        )
     meta["c03_graph_bound_status"] = c03_status
     meta["c03_graphrag_bound"] = c03_doc
     meta["c03_graph_hop_paths_count"] = c03_doc.get("graph_hop_paths_count", 0)
@@ -697,6 +719,13 @@ def _resolve_competencies_graph_skills_proof_pool(
             substrate_type=CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
             substrate_ref=ledger_ref_str,
         ),
+    )
+    from apps_rg.runtime.sections.competency_capability_evidence import (
+        attach_competency_bundles_to_proof_pool_metadata,
+    )
+
+    meta = attach_competency_bundles_to_proof_pool_metadata(
+        meta, section_id="competencies", repo_root=root
     )
     digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
     return SectionProofPool(

@@ -19,10 +19,12 @@ from apps_rg.runtime.dispatch.unify_ibm_pa_common import (
     load_w7_shell_slot_bodies,
 )
 from apps_rg.runtime.sections.executive_summary_pa import format_jd_targeting_block
-from apps_rg.runtime.sections.ibm_bullets_graph_evidence import (
-    GRAPH_BULLET_EVIDENCE_PACK_MARKER,
-    format_ibm_graph_bullet_evidence_pack,
+from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+    IBM_ROLE_EPISODE_EVIDENCE_MARKER,
+    format_ibm_role_episode_evidence_pack,
 )
+
+GRAPH_BULLET_EVIDENCE_PACK_MARKER = IBM_ROLE_EPISODE_EVIDENCE_MARKER
 
 
 def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
@@ -52,9 +54,9 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         "ALLOWED_SOURCE_FACT_IDS exactly.\n"
         "POOL: each Qwen path emits a full 5-bullet set with semantically distinct framing; "
         "Claude selector picks best variant per bul_ibm_* slot. "
-        "Preserve locked_metrics from proof_atoms per slot "
-        "(bul_ibm_001: 99.9% uptime; bul_ibm_002: 30% overhead; bul_ibm_003: 25% renewal; "
-        "bul_ibm_004: 50% latency; bul_ibm_005: $15M).\n"
+        "Metrics allowed only when bound to allowed_metric_outcome_ids from role episode bundles "
+        "(e.g. metric_ibm_20pct_joint_revenue_growth on alliance slot). "
+        "Forbidden: $15M, $30M, 25/30/35/40% unanchored overload metrics.\n"
         "No first person; no em dash; no inline source tags; no narrative paragraph; max 4 consecutive JD words.\n\n"
         "# Positioning\n"
         "IBM story: enterprise AI/data platform, cloud modernization, reusable platform patterns, "
@@ -67,9 +69,10 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         "not to invent employers, tools, platforms, or metrics. "
         "jd_alignment must include selected_jd_themes[], selected_briefing_themes[], targeting_rationale, "
         "targeting_only=true, jd_used_as_proof=false, briefing_used_as_proof=false.\n"
-        "change_log: per bullet_id include graph_skill_node_ids[] and fact_ids_used[] "
-        "(composition trace — which proof bundle skills and atoms were drawn upon).\n"
-        "self_check: bullets_composed_from_graph_evidence=true, no_verbatim_base_resume_copy=true."
+        "change_log: per bullet_id include role_episode_bundle_id, graph_skill_node_ids[], "
+        "fact_ids_used[], and metric_outcome_ids[] when has_metric=true.\n"
+        "self_check: bullets_composed_from_role_episode_bundles=true, "
+        "no_verbatim_base_resume_copy=true, no_archive_prose_copy=true."
     )
 
 
@@ -89,7 +92,7 @@ def compile_ibm_bullets_prompt(
     run_id: str,
 ) -> SectionCompiledPrompt:
     slots = load_w7_shell_slot_bodies()
-    c0_body = format_ibm_graph_bullet_evidence_pack(runtime_payload)
+    c0_body = format_ibm_role_episode_evidence_pack(runtime_payload, section_id="ibm_bullets")
     assembly = PromptAssemblyInput(
         template_id="strategic_tailor_v1",
         request_id=run_id,

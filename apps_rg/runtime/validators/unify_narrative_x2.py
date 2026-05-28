@@ -685,4 +685,21 @@ def run_unify_narrative_x2_gates(
         e0_narr_r.failure_reason,
     )
 
+    # -----------------------------------------------------------------------
+    # Unify role episode bundle gates (active only in bundle-consumption mode)
+    # -----------------------------------------------------------------------
+    from apps_rg.runtime.validators.unify_role_episode_x2 import (
+        run_unify_narrative_role_episode_x2_gates,
+        unify_role_episode_consumption_active,
+    )
+
+    if unify_role_episode_consumption_active(proof_pool_metadata):
+        for er in run_unify_narrative_role_episode_x2_gates(
+            narrative_sentence=narrative_sentence,
+            parsed_output=parsed_output,
+            proof_pool_metadata=proof_pool_metadata,
+            base_texts=base_narrative_texts,
+        ):
+            add(er.gate_id, er.passed, er.observed_value, er.threshold, er.failure_reason)
+
     return gates

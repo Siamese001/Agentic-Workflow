@@ -607,37 +607,26 @@ def run_ibm_bullets_x2_gates(
         None if anchor_ok else f"Metric anchor ownership failed: {anchor_fail}",
     )
 
-    # When the augmented_skills_graph selector has reassigned bullet slots, the canonical IBM
-    # metric set may not all appear; require the EFFECTIVE metric set instead (canonical token
-    # OR plan-fact metric_raw per slot). Closes Bug:IbmLockedMetricInjectionGarblesGraphSelectedBullets.
-    metrics_preserved_canonical = (
-        ("$15M" in combined or "$15m" in combined_lower)
-        and "99.9%" in combined
-        and "30%" in combined
-        and "25%" in combined
-        and "50%" in combined
+    # Role-episode wave: forbid HOLD/DO_NOT_PROMOTE canonical metric set ($15M, 25/30/35/40%).
+    from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+        PROMOTABLE_METRIC_OUTCOME_IDS,
+        scan_forbidden_metrics_in_text,
     )
-    if metrics_preserved_canonical:
-        metrics_preserved = True
-        metrics_obs: Any = combined[:240]
-        metrics_thr: Any = CORE_METRIC_TOKENS
-        metrics_fail = None
-    else:
-        # Per-slot check: each bul_ibm_NNN bullet must carry SOMETHING (canonical metric or
-        # plan-fact metric_raw substring). Mirrors _ibm_metric_anchors_on_assigned_bullets.
-        per_slot_ok = anchor_ok
-        metrics_preserved = per_slot_ok
-        metrics_obs = {
-            "canonical_set_present": False,
-            "per_slot_anchor_ok": per_slot_ok,
-            "anchor_failures": anchor_fail,
-        }
-        metrics_thr = "canonical_set OR per-slot (canonical|plan-fact metric)"
-        metrics_fail = (
-            None
-            if per_slot_ok
-            else f"Neither canonical IBM metric set nor per-slot plan-fact metric present: {anchor_fail}"
-        )
+
+    forbidden_hits = scan_forbidden_metrics_in_text(combined)
+    add(
+        "x2_ibm_hold_metric_forbidden_in_output",
+        not forbidden_hits,
+        forbidden_hits or "none",
+        "no $15M/$30M or overloaded 25/30/35/40% in bullet text",
+        f"Forbidden metrics in output: {forbidden_hits}" if forbidden_hits else None,
+    )
+
+    # Promotable metrics: optional per bullet when has_metric=true and metric_outcome_ids bound.
+    metrics_preserved = not forbidden_hits
+    metrics_obs: Any = {"forbidden_absent": not forbidden_hits, "promotable_ids": list(PROMOTABLE_METRIC_OUTCOME_IDS)}
+    metrics_thr = "no HOLD/DO_NOT_PROMOTE metrics; promotable only via metric_outcome_ids"
+    metrics_fail = None if metrics_preserved else f"Forbidden metrics: {forbidden_hits}"
     add(
         "x2_ibm_metrics_preserved",
         metrics_preserved,
@@ -680,43 +669,109 @@ def run_ibm_bullets_x2_gates(
         ),
     )
 
-    # W2: metric_raw must trace to proof bundle locked_metrics or plan fact when has_metric=True
-    from apps_rg.runtime.sections.ibm_bullets_graph_evidence import IBM_BULLET_LOCKED_METRICS
+    # Role episode bundle binding required per bullet (not flat skill-only proof).
+    from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+        IBM_BULLET_SLOT_BUNDLE_MAP,
+        PROMOTABLE_METRIC_OUTCOME_IDS,
+        check_watson_studio_metric_bearing_claim,
+        is_flat_skill_only_graph_packet,
+    )
 
-    plan_facts_by_bid: dict[str, dict[str, Any]] = {
-        str(f.get("fact_id") or ""): f for f in plan_facts_for_anchors if isinstance(f, dict)
-    }
-    bullets_metric_unsupported: list[str] = []
-    for b in bullets:
-        bid_m = str(b.get("bullet_id") or "")
-        if not bid_m.startswith("bul_ibm_"):
-            continue
-        if not b.get("has_metric"):
-            continue
-        mr = str(b.get("metric_raw") or "").strip()
-        if not mr:
-            bullets_metric_unsupported.append(f"{bid_m}:metric_raw_empty")
-            continue
-        mr_lower = mr.lower()
-        locked = str(IBM_BULLET_LOCKED_METRICS.get(bid_m, "")).lower()
-        plan_fact_metric = str((plan_facts_by_bid.get(bid_m) or {}).get("metric_raw") or "").lower()
-        # Accept if any key numeric/dollar token from locked OR plan metric appears in mr or vice versa
-        locked_ok = bool(locked) and (locked in mr_lower or mr_lower in locked or any(
-            tok in mr_lower for tok in locked.replace("%", "% ").split() if len(tok) > 1
-        ))
-        plan_ok = bool(plan_fact_metric) and (plan_fact_metric in mr_lower or mr_lower in plan_fact_metric)
-        if not locked_ok and not plan_ok:
-            bullets_metric_unsupported.append(
-                f"{bid_m}:metric_raw={mr!r}_not_in_proof_bundle"
-            )
+    pp_meta = dict(proof_pool_metadata or {})
+    bundles_present = bool(pp_meta.get("role_episode_bundles")) or bool(
+        (runtime_payload or {}).get("role_episode_bundle_ids")
+    )
+    flat_only = is_flat_skill_only_graph_packet(pp_meta) and not bundles_present
     add(
-        "x2_ibm_metric_source_required",
+        "x2_ibm_role_episode_bundles_in_proof_pool",
+        bundles_present and not flat_only,
+        {
+            "bundles_present": bundles_present,
+            "flat_skill_only": flat_only,
+            "consumption_mode": pp_meta.get("role_episode_bundle_consumption_mode"),
+        },
+        "role_episode_bundles in proof_pool_metadata",
+        "IBM proof pool missing role_episode_bundles or flat skill-only context"
+        if not bundles_present or flat_only
+        else None,
+    )
+
+    bullets_missing_bundle_id: list[str] = []
+    bullets_metric_unsupported: list[str] = []
+    bullets_watson_violations: list[str] = []
+    allowed_outcomes = set(PROMOTABLE_METRIC_OUTCOME_IDS)
+    by_bullet_id = {str(b.get("bullet_id")): b for b in bullets if b.get("bullet_id")}
+    for cl_entry in po_change_log:
+        if not isinstance(cl_entry, dict):
+            continue
+        bid_cl = str(cl_entry.get("bullet_id") or "")
+        if not bid_cl.startswith("bul_ibm_"):
+            continue
+        reb = str(cl_entry.get("role_episode_bundle_id") or "").strip()
+        expected = IBM_BULLET_SLOT_BUNDLE_MAP.get(bid_cl, "")
+        if not reb:
+            bullets_missing_bundle_id.append(bid_cl)
+        elif expected and reb != expected:
+            bullets_missing_bundle_id.append(f"{bid_cl}:wrong_bundle={reb}")
+        skill_ids = list(
+            cl_entry.get("graph_skill_node_ids") or cl_entry.get("skill_ids_used") or []
+        )
+        if not skill_ids:
+            bullets_missing_skill_ids.append(bid_cl)
+        metric_ids = [str(x) for x in (cl_entry.get("metric_outcome_ids") or [])]
+        bullet_row = by_bullet_id.get(bid_cl) or {}
+        btext = str(bullet_row.get("bullet_text") or "")
+        if bullet_row.get("has_metric") and metric_ids:
+            if not all(mid in allowed_outcomes for mid in metric_ids):
+                bullets_metric_unsupported.append(f"{bid_cl}:invalid_metric_outcome_ids")
+            if "metric_ibm_10pct_finops_savings_gated" in metric_ids:
+                if "metric_ibm_10pct_finops_savings_confirmed" not in metric_ids:
+                    bullets_metric_unsupported.append(f"{bid_cl}:finops_gated_without_confirmation")
+        watson_ok, watson_reason = check_watson_studio_metric_bearing_claim(
+            graph_skill_node_ids=skill_ids,
+            text=btext,
+            metric_outcome_ids=metric_ids,
+        )
+        if not watson_ok:
+            bullets_watson_violations.append(f"{bid_cl}:{watson_reason}")
+
+    for b in bullets:
+        bid_b = str(b.get("bullet_id") or "")
+        if bid_b.startswith("bul_ibm_") and bid_b not in cl_bullet_ids:
+            bullets_missing_bundle_id.append(bid_b)
+
+    add(
+        "x2_ibm_bullet_role_episode_bundle_id_required",
+        not bullets_missing_bundle_id,
+        bullets_missing_bundle_id or "all_present",
+        "role_episode_bundle_id per bul_ibm_* in change_log",
+        (
+            f"Missing or wrong role_episode_bundle_id: {bullets_missing_bundle_id}"
+            if bullets_missing_bundle_id
+            else None
+        ),
+    )
+
+    add(
+        "x2_ibm_metric_outcome_id_required_when_has_metric",
         not bullets_metric_unsupported,
         bullets_metric_unsupported or "all_traceable",
-        "metric_raw traces to proof_bundle locked_metrics or plan_fact.metric_raw",
+        "metric_outcome_ids from PROMOTABLE allow-list when has_metric=true",
         (
-            f"Unsupported metric claims: {bullets_metric_unsupported}"
+            f"Unsupported metric outcome binding: {bullets_metric_unsupported}"
             if bullets_metric_unsupported
+            else None
+        ),
+    )
+
+    add(
+        "x2_ibm_watson_studio_no_metric_bearing_claim",
+        not bullets_watson_violations,
+        bullets_watson_violations or "ok",
+        "Watson Studio supporting context only",
+        (
+            f"Watson metric-bearing violations: {bullets_watson_violations}"
+            if bullets_watson_violations
             else None
         ),
     )

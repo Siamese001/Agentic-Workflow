@@ -62,7 +62,9 @@ sections:
     optional_metadata_filters: {}
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
-    graph_expansion_allowed: false
+    graph_expansion_allowed: true
+    headline_positioning_bundle_consumption: required
+    graph_expansion_mode: headline_positioning_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
     expected_evidence_strata: [CANONICAL]
     source_class_allowlist: [candidate_profile]
@@ -125,7 +127,9 @@ sections:
     optional_metadata_filters: {}
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
-    graph_expansion_allowed: false
+    graph_expansion_allowed: true
+    competency_bundle_consumption: required
+    graph_expansion_mode: competency_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
     expected_evidence_strata: [CANONICAL]
     source_class_allowlist: [candidate_profile, project_evidence]
@@ -155,7 +159,9 @@ sections:
     optional_metadata_filters: {}
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
-    graph_expansion_allowed: false
+    graph_expansion_allowed: true
+    role_episode_bundle_consumption: required
+    graph_expansion_mode: role_episode_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
     expected_evidence_strata: [CANONICAL]
     source_class_allowlist: [candidate_profile]
@@ -187,7 +193,9 @@ sections:
     optional_metadata_filters: {}
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
-    graph_expansion_allowed: false
+    graph_expansion_allowed: true
+    role_episode_bundle_consumption: required
+    graph_expansion_mode: role_episode_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
     expected_evidence_strata: [CANONICAL]
     source_class_allowlist: [candidate_profile]
@@ -217,7 +225,9 @@ sections:
     optional_metadata_filters: {}
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
-    graph_expansion_allowed: false
+    graph_expansion_allowed: true
+    role_episode_bundle_consumption: required
+    graph_expansion_mode: role_episode_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
     expected_evidence_strata: [CANONICAL]
     source_class_allowlist: [candidate_profile]
@@ -249,7 +259,9 @@ sections:
     optional_metadata_filters: {}
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
-    graph_expansion_allowed: false
+    graph_expansion_allowed: true
+    role_episode_bundle_consumption: required
+    graph_expansion_mode: role_episode_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
     expected_evidence_strata: [CANONICAL]
     source_class_allowlist: [candidate_profile]

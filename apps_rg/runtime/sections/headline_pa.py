@@ -154,11 +154,28 @@ def build_headline_assembly_input(
     jd = str(runtime_payload.get("jd_text") or "")
     briefing = str(runtime_payload.get("briefing") or "")
 
+    positioning_block = ""
+    pp_meta = runtime_payload.get("proof_pool_metadata") if isinstance(runtime_payload.get("proof_pool_metadata"), dict) else {}
+    if pp_meta.get("headline_positioning_bundle_consumption"):
+        try:
+            from apps_rg.runtime.sections.headline_positioning_evidence import (
+                format_headline_positioning_evidence_pack,
+            )
+
+            positioning_block = (
+                "\n\n"
+                + format_headline_positioning_evidence_pack(runtime_payload, section_id="headline")
+                + "\n"
+            )
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):  # guardian: allow-default-fallback -- positioning pack optional boundary
+            positioning_block = ""
+
     c0_block = (
         "CANONICAL_EMPLOYMENT_BULLETS (proof only; do not paste verbatim into headline_line):\n"
         + fact_lines.strip()
         + "\n\nFORBIDDEN_EMPLOYER_NAMES (must not appear in headline_line):\n"
         + forbidden_employer_lines.strip()
+        + positioning_block
         + "\n\nSELECTED_FACT_PLAN_STUB (output this shape only; do not paste facts[]):\n"
         + stub
     )

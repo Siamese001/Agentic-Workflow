@@ -390,6 +390,20 @@ def run_competencies_lane_execution(
             skill_rows_by_id=skill_rows_by_id,
             resume_support_blob_lower=c0_proof_blob,
         )
+        if pp_meta.get("competency_capability_bundle_consumption"):
+            from apps_rg.runtime.sections.competency_capability_evidence import (
+                stamp_competency_bundle_bindings,
+            )
+
+            packet = pp_meta.get("competency_capability_section_packet")
+            stamp_competency_bundle_bindings(
+                parsed.get("categories") or [],
+                packet=packet if isinstance(packet, dict) else None,
+            )
+            stamp_competency_bundle_bindings(
+                parsed.get("competencies") or [],
+                packet=packet if isinstance(packet, dict) else None,
+            )
         _post_finalize = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
         if _post_finalize != _pre_finalize:
             record_deterministic_rewrite(

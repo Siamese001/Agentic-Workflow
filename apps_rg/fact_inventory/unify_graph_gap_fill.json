@@ -1,0 +1,37 @@
+{
+  "schema": "unify_graph_gap_fill_v1",
+  "generated_at": "2026-05-28T15:20:00Z",
+  "generated_by": "remaining_resume_rigor_architecture_finish_wave",
+  "employer": "Unify",
+  "purpose": "Classify the unresolved Unify architecture-spine signals against existing base facts, master skills ledger, repo architecture facts, and already-confirmed internal graph nodes. Archive did not directly support several signals; internal-only signals must not back unqualified external claims unless linked to approved source facts.",
+  "classification_legend": {
+    "ACTIVE_CONFIRMED": "Backed by an active graph skill node and/or approved source fact; usable as external claim authority.",
+    "ACTIVE_INTERNAL_ONLY": "Backed by internal repo architecture evidence; usable as supporting context only — not an unqualified external claim unless linked to an approved source fact.",
+    "DRAFT": "Plausible but not yet promoted; no external claim authority.",
+    "BLOCKED_NO_SOURCE": "No defensible source; excluded from output as a claim.",
+    "SUPPORTING_CONTEXT_ONLY": "Vocabulary / framing context only; never a standalone claim."
+  },
+  "external_claim_policy_default": "internal_only_not_external_claim",
+  "signals": [
+    {"signal": "deterministic routing", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_deterministic_route_selection"], "linked_source_fact_ids": ["fact_engineering_platform_001"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "sandboxed execution", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_sandboxed_execution_design"], "linked_source_fact_ids": ["fact_engineering_platform_001"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "replayable execution traces", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_replayable_runtime_design", "skill_trace_and_reconstruction_design"], "linked_source_fact_ids": ["fact_engineering_platform_001"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "validation controls", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_runtime_gate_mesh_design"], "linked_source_fact_ids": ["fact_engineering_platform_001"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "dependency graph accelerator", "classification": "ACTIVE_INTERNAL_ONLY", "graph_skill_node_ids": ["skill_dependency_and_join_control"], "linked_source_fact_ids": ["fact_engineering_platform_005"], "external_claim_policy": "internal_only_not_external_claim", "note": "Backed by internal ADG repo architecture; not an external metric claim."},
+    {"signal": "architecture visibility", "classification": "ACTIVE_INTERNAL_ONLY", "graph_skill_node_ids": ["skill_static_governance_drift_detection"], "linked_source_fact_ids": ["fact_engineering_platform_005"], "external_claim_policy": "internal_only_not_external_claim"},
+    {"signal": "dependency chains", "classification": "ACTIVE_INTERNAL_ONLY", "graph_skill_node_ids": ["skill_dependency_and_join_control"], "linked_source_fact_ids": ["fact_engineering_platform_005"], "external_claim_policy": "internal_only_not_external_claim"},
+    {"signal": "refactor risk reduction", "classification": "SUPPORTING_CONTEXT_ONLY", "graph_skill_node_ids": ["skill_static_governance_drift_detection"], "linked_source_fact_ids": [], "external_claim_policy": "internal_only_not_external_claim"},
+    {"signal": "telemetry instrumentation", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_audit_grade_observability"], "linked_source_fact_ids": ["fact_engineering_platform_003"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "rollback controls", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_same_authority_runtime_repair", "skill_runtime_resilience_controls"], "linked_source_fact_ids": ["fact_engineering_platform_001"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "identity controls", "classification": "ACTIVE_INTERNAL_ONLY", "graph_skill_node_ids": ["skill_provider_and_egress_governance"], "linked_source_fact_ids": [], "external_claim_policy": "internal_only_not_external_claim"},
+    {"signal": "GraphRAG retrieval", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_graph_aware_relationship_grounding"], "linked_source_fact_ids": ["fact_engineering_platform_003"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "vector services", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_dense_sparse_exact_retrieval_design"], "linked_source_fact_ids": ["fact_engineering_platform_003"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "API gateways", "classification": "DRAFT", "graph_skill_node_ids": [], "linked_source_fact_ids": [], "external_claim_policy": "internal_only_not_external_claim", "note": "No dedicated active node; framing/supporting context only until promoted."},
+    {"signal": "runtime stability", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_runtime_resilience_controls"], "linked_source_fact_ids": ["fact_engineering_platform_001"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "AI CI/CD standards", "classification": "SUPPORTING_CONTEXT_ONLY", "graph_skill_node_ids": ["skill_ibm_automated_release_pipelines"], "linked_source_fact_ids": [], "external_claim_policy": "internal_only_not_external_claim", "note": "Release-pipeline node is IBM-bound; for Unify use as vocabulary/supporting context only."},
+    {"signal": "highly available execution layers", "classification": "SUPPORTING_CONTEXT_ONLY", "graph_skill_node_ids": ["skill_runtime_resilience_controls"], "linked_source_fact_ids": [], "external_claim_policy": "internal_only_not_external_claim"},
+    {"signal": "parallel decision workflows", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_managed_workflow_orchestration"], "linked_source_fact_ids": ["fact_engineering_platform_001"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "platform commercialization", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_ai_platform_commercialization", "skill_agentic_platform_productization"], "linked_source_fact_ids": ["fact_engineering_platform_006"], "external_claim_policy": "skill_projection_not_proof"},
+    {"signal": "team scale / engineering organization growth", "classification": "ACTIVE_CONFIRMED", "graph_skill_node_ids": ["skill_svp_it_strategy_innovation"], "linked_source_fact_ids": ["fact_engineering_platform_006", "fact_exec_001"], "linked_metric_outcome_ids": ["metric_unify_team_scaled_8_to_28"], "external_claim_policy": "approved_metric_linked"}
+  ]
+}

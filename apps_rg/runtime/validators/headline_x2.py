@@ -1141,6 +1141,24 @@ def run_headline_x2_gates(
         base_r.failure_reason,
     )
 
+    # -----------------------------------------------------------------------
+    # Headline positioning bundle gates (active only in bundle-consumption mode)
+    # -----------------------------------------------------------------------
+    from apps_rg.runtime.validators.headline_positioning_x2 import (
+        headline_positioning_consumption_active,
+        run_headline_positioning_x2_gates,
+    )
+
+    if headline_positioning_consumption_active(proof_pool_metadata):
+        for hp in run_headline_positioning_x2_gates(
+            headline_line=h,
+            parsed_output=parsed_output,
+            proof_pool_metadata=proof_pool_metadata,
+            jd_text=jd_text,
+            base_headline_texts=base_hl_texts,
+        ):
+            add(hp.gate_id, hp.passed, hp.observed_value, hp.threshold, hp.failure_reason)
+
     return gates
 
 

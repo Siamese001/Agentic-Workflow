@@ -45,6 +45,18 @@ def _candidate_facts_block(runtime_payload: dict[str, Any]) -> str:
     facts = list(plan.get("facts") or [])
     allowed_ids_list = _ordered_allowed_source_fact_ids(runtime_payload, facts)
     allowed_block = format_allowed_source_fact_ids_contract(allowed_ids_list)
+
+    pp_meta = runtime_payload.get("proof_pool_metadata") if isinstance(runtime_payload.get("proof_pool_metadata"), dict) else {}
+    if pp_meta.get("role_episode_bundle_consumption") and pp_meta.get("unify_role_episode_section_packet"):
+        from apps_rg.runtime.sections.unify_role_episode_evidence import (
+            format_unify_role_episode_evidence_pack,
+        )
+
+        return (
+            f"{allowed_block}{_unify_id_hygiene_block()}\n\n"
+            + format_unify_role_episode_evidence_pack(runtime_payload, section_id="unify_bullets")
+        )
+
     return format_unify_graph_bullet_evidence_pack(
         runtime_payload,
         allowed_block=allowed_block,

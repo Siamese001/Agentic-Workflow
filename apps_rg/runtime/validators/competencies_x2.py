@@ -1194,6 +1194,56 @@ def run_competencies_x2_gates(
         base_comp_r.failure_reason,
     )
 
+    # -----------------------------------------------------------------------
+    # Competency capability bundle gates (HARD when bundle consumption active)
+    # -----------------------------------------------------------------------
+    from apps_rg.runtime.validators.competencies_quality_x2 import (
+        check_capability_bundles_in_proof_pool,
+        check_competencies_archive_ngram_overlap,
+        check_competency_bundle_id_per_category,
+        check_competency_rigor_floor,
+        check_default_fid_only_support_forbidden,
+        check_generic_taxonomy_only_category_forbidden,
+        check_graph_skill_node_ids_per_category,
+        check_jd_only_skill_forbidden,
+        check_required_capability_families_covered,
+        check_source_fact_ids_or_graph_lineage_per_category,
+        check_technical_density_floor,
+        competency_bundle_consumption_active,
+    )
+
+    bundle_mode = competency_bundle_consumption_active(proof_pool_metadata)
+    if bundle_mode:
+        comps_list = competencies if isinstance(competencies, list) else []
+        for res in (
+            check_capability_bundles_in_proof_pool(proof_pool_metadata),
+            check_competency_bundle_id_per_category(comps_list),
+            check_graph_skill_node_ids_per_category(comps_list),
+            check_source_fact_ids_or_graph_lineage_per_category(comps_list),
+            check_default_fid_only_support_forbidden(comps_list),
+            check_generic_taxonomy_only_category_forbidden(comps_list),
+            check_jd_only_skill_forbidden(comps_list, jd_text),
+            check_competency_rigor_floor(comps_list),
+            check_technical_density_floor(comps_list),
+            check_required_capability_families_covered(comps_list, min_families=7),
+        ):
+            add(res.gate_id, res.passed, res.observed_value, res.threshold, res.failure_reason)
+
+        # Archive overlap (anti-hydration) — WARN unless archive prose provided.
+        archive_texts: list[str] = []
+        if isinstance(parsed_output, dict):
+            _rp = parsed_output.get("_runtime_payload_ref") or {}
+            if isinstance(_rp, dict):
+                _arch = _rp.get("archive_competencies_text")
+                if isinstance(_arch, str) and _arch.strip():
+                    archive_texts = [_arch.strip()]
+        arch_r = check_competencies_archive_ngram_overlap(
+            competencies_to_text_blob(competencies if isinstance(competencies, list) else []),
+            archive_texts,
+            warn_only=True,
+        )
+        add(arch_r.gate_id, arch_r.passed, arch_r.observed_value, arch_r.threshold, arch_r.failure_reason)
+
     consistency_ok, consistency_bad = competencies_x2_gate_rows_internally_consistent(gates)
     add(
         "x2_gate_rows_are_internally_consistent",
