@@ -646,6 +646,148 @@ def run_ibm_bullets_x2_gates(
         metrics_fail,
     )
 
+    # W2: graph_skill_node_ids required per bullet in change_log (Bullet Proof Bundle Redesign)
+    po_change_log = list((parsed_output or {}).get("change_log") or [])
+    bullets_missing_skill_ids: list[str] = []
+    cl_bullet_ids: set[str] = set()
+    for cl_entry in po_change_log:
+        if not isinstance(cl_entry, dict):
+            continue
+        bid_cl = str(cl_entry.get("bullet_id") or "")
+        if not bid_cl.startswith("bul_ibm_"):
+            continue
+        cl_bullet_ids.add(bid_cl)
+        skill_ids = (
+            cl_entry.get("graph_skill_node_ids")
+            or cl_entry.get("skill_ids_used")
+            or []
+        )
+        if not skill_ids:
+            bullets_missing_skill_ids.append(bid_cl)
+    for b in bullets:
+        bid_b = str(b.get("bullet_id") or "")
+        if bid_b.startswith("bul_ibm_") and bid_b not in cl_bullet_ids:
+            bullets_missing_skill_ids.append(bid_b)
+    add(
+        "x2_ibm_bullet_graph_skill_node_ids_required",
+        not bullets_missing_skill_ids,
+        bullets_missing_skill_ids or "all_present",
+        "non-empty graph_skill_node_ids per bul_ibm_* in change_log",
+        (
+            f"Missing graph_skill_node_ids in change_log for: {bullets_missing_skill_ids}"
+            if bullets_missing_skill_ids
+            else None
+        ),
+    )
+
+    # W2: metric_raw must trace to proof bundle locked_metrics or plan fact when has_metric=True
+    from apps_rg.runtime.sections.ibm_bullets_graph_evidence import IBM_BULLET_LOCKED_METRICS
+
+    plan_facts_by_bid: dict[str, dict[str, Any]] = {
+        str(f.get("fact_id") or ""): f for f in plan_facts_for_anchors if isinstance(f, dict)
+    }
+    bullets_metric_unsupported: list[str] = []
+    for b in bullets:
+        bid_m = str(b.get("bullet_id") or "")
+        if not bid_m.startswith("bul_ibm_"):
+            continue
+        if not b.get("has_metric"):
+            continue
+        mr = str(b.get("metric_raw") or "").strip()
+        if not mr:
+            bullets_metric_unsupported.append(f"{bid_m}:metric_raw_empty")
+            continue
+        mr_lower = mr.lower()
+        locked = str(IBM_BULLET_LOCKED_METRICS.get(bid_m, "")).lower()
+        plan_fact_metric = str((plan_facts_by_bid.get(bid_m) or {}).get("metric_raw") or "").lower()
+        # Accept if any key numeric/dollar token from locked OR plan metric appears in mr or vice versa
+        locked_ok = bool(locked) and (locked in mr_lower or mr_lower in locked or any(
+            tok in mr_lower for tok in locked.replace("%", "% ").split() if len(tok) > 1
+        ))
+        plan_ok = bool(plan_fact_metric) and (plan_fact_metric in mr_lower or mr_lower in plan_fact_metric)
+        if not locked_ok and not plan_ok:
+            bullets_metric_unsupported.append(
+                f"{bid_m}:metric_raw={mr!r}_not_in_proof_bundle"
+            )
+    add(
+        "x2_ibm_metric_source_required",
+        not bullets_metric_unsupported,
+        bullets_metric_unsupported or "all_traceable",
+        "metric_raw traces to proof_bundle locked_metrics or plan_fact.metric_raw",
+        (
+            f"Unsupported metric claims: {bullets_metric_unsupported}"
+            if bullets_metric_unsupported
+            else None
+        ),
+    )
+
+    # W3: N-gram overlap anti-leakage gates (WARN mode — calibrate before hard-fail activation)
+    from apps_rg.runtime.validators.bullet_ngram_overlap_x2 import (
+        GATE_ID_BASE_RESUME,
+        GATE_ID_E0_EXAMPLE,
+        run_bullet_ngram_overlap_gates,
+    )
+
+    ngram_base_pass, ngram_base_results, ngram_e0_pass, ngram_e0_results = run_bullet_ngram_overlap_gates(
+        bullets,
+        section_id="ibm_bullets",
+        warn_only=True,
+    )
+    ngram_base_violations = [r for r in ngram_base_results if r.failure_reason]
+    add(
+        GATE_ID_BASE_RESUME + "_ibm",
+        ngram_base_pass,
+        [r.failure_reason for r in ngram_base_violations] or "all_below_threshold",
+        f"<= {int(0.25 * 100)}% 4-gram overlap with base resume (WARN mode)",
+        "; ".join(r.failure_reason for r in ngram_base_violations if r.failure_reason) or None,
+    )
+    ngram_e0_violations = [r for r in ngram_e0_results if r.failure_reason]
+    add(
+        GATE_ID_E0_EXAMPLE + "_ibm",
+        ngram_e0_pass,
+        [r.failure_reason for r in ngram_e0_violations] or "all_below_threshold",
+        f"<= {int(0.20 * 100)}% 4-gram overlap with E0 examples (WARN mode)",
+        "; ".join(r.failure_reason for r in ngram_e0_violations if r.failure_reason) or None,
+    )
+
+    # W4: Quality floor gates (seniority proxy, technical specificity, generic consulting blocklist)
+    from apps_rg.runtime.validators.bullet_quality_floor_x2 import (
+        run_bullet_quality_floor_gates,
+    )
+    from apps_rg.runtime.sections.ibm_bullets_graph_evidence import IBM_BULLET_MECHANISM_VOCAB
+
+    sen_pass, sen_results, tech_pass, tech_results, cons_pass, cons_results = (
+        run_bullet_quality_floor_gates(
+            bullets,
+            section_id="ibm_bullets",
+            mechanism_vocab_by_slot=IBM_BULLET_MECHANISM_VOCAB,
+        )
+    )
+    sen_failures = [r.failure_reason for r in sen_results if r.failure_reason]
+    add(
+        "x2_bullet_seniority_floor",
+        sen_pass,
+        sen_failures or "all_pass",
+        "score >= 1 (strong_verb OR scale_signal + no weak_verb)",
+        "; ".join(sen_failures) if sen_failures else None,
+    )
+    tech_failures = [r.failure_reason for r in tech_results if r.failure_reason]
+    add(
+        "x2_bullet_technical_specificity_floor",
+        tech_pass,
+        tech_failures or "all_pass",
+        "at least one named mechanism/technology per bullet",
+        "; ".join(tech_failures) if tech_failures else None,
+    )
+    cons_failures = [r.failure_reason for r in cons_results if r.failure_reason]
+    add(
+        "x2_no_generic_consulting_substitution",
+        cons_pass,
+        cons_failures or "all_pass",
+        "zero consulting-speak substitution phrases per bullet",
+        "; ".join(cons_failures) if cons_failures else None,
+    )
+
     from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
         proof_source_from_metadata,
         scope_ids_membership_only,
@@ -865,8 +1007,13 @@ def run_ibm_bullets_x2_gates(
     return gates
 
 
+IBM_BULLET_GRAPH_SKILL_NODE_IDS_GATE_ID = "x2_ibm_bullet_graph_skill_node_ids_required"
+IBM_BULLET_METRIC_SOURCE_GATE_ID = "x2_ibm_metric_source_required"
+
 __all__ = [
+    "IBM_BULLET_GRAPH_SKILL_NODE_IDS_GATE_ID",
     "IBM_BULLET_IDS",
+    "IBM_BULLET_METRIC_SOURCE_GATE_ID",
     "IBM_METRIC_ANCHOR_RULES",
     "REQUIRED_TOP_LEVEL",
     "TEXT_COVERAGE_INTEGRITY_GATE_ID",

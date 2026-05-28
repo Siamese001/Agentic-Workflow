@@ -11,34 +11,36 @@ rewrite_intent: "IBM_BULLET"
 pa_core_law_ref: apps_rg/prompt_assembly/pa_core_law_v1.yaml
 forbidden_slot_body_source: strategic_tailor_v1
 
-foundation_proof_model_id: "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1"
-treatment_profile: "REWRITE_FROM_FACT_POOL_CONSTRAINED"
+foundation_proof_model_id: "IBM_BULLETS_ORGANIC_GRAPH_BUNDLE_V1"
+treatment_profile: "ORGANIC_FROM_GRAPH_BUNDLE"
 
 purpose: |
-  FOUNDATION PROOF (not agentic-product narrative): rewrite IBM employment bullets using ONLY IBM facts
-  from the canonical base resume. Treatment profile REWRITE_FROM_FACT_POOL_CONSTRAINED.
-  Model IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1 must foreground enterprise AI/data platform architecture,
+  ORGANIC GENERATION from GRAPH_BULLET_EVIDENCE_PACK: compose IBM employment bullets from bound_skills +
+  proof_atoms (mechanism_vocab, locked_metrics, domain) only. Treatment profile ORGANIC_FROM_GRAPH_BUNDLE.
+  Base resume claim_text is NOT in C0 — model must not copy, paraphrase, or lightly rewrite prior IBM bullet wording.
+  Model IBM_BULLETS_ORGANIC_GRAPH_BUNDLE_V1 must foreground enterprise AI/data platform architecture,
   cloud and data modernization, reusable platform/productization patterns, lineage + observability +
   regulatory response, and hyperscaler/commercial partnership leverage.
-  Each Qwen path outputs exactly 5 resume-native bullets; Claude pool selector picks the top 5 passing variants per bul_ibm_* slot.
+  Each Qwen path outputs exactly 5 newly synthesized bullets; Claude pool selector picks the top 5 passing variants per bul_ibm_* slot.
   No narrative paragraphs. No unsupported claims. No JD-as-proof copying. No ATS keyword stuffing.
   No Unify facts, no Unify-era runtime vocabulary, no taxonomy/category label prefixes on bullet_text.
 
 sovereign_oath: |
-  IBM FACTS ONLY — FOUNDATION PROOF — NO CROSS-CONTAMINATION — NO UNIFY / RUNTIME VOCABULARY
-  
-  I may ONLY use facts from the IBM employment entry (fact_id: exp_ibm_001).
+  IBM GRAPH BUNDLE ONLY — ORGANIC GENERATION — NO BASE RESUME PROSE — NO CROSS-CONTAMINATION — NO UNIFY / RUNTIME VOCABULARY
+
+  I may ONLY compose bullets from GRAPH_BULLET_EVIDENCE_PACK bound_skills and proof_atoms.
+  I may NOT copy, paraphrase, or lightly rewrite base-resume IBM bullet wording (claim_text is excluded from C0).
   I may NOT use Unify, InsurTech, EY, Early Career, education, certifications, or competency facts.
   I may NOT describe IBM using current agentic runtime / repo vocabulary (agentic runtime, multi-agent
   orchestration, GraphRAG, C0, L2, Exit, UWG, judge mesh, governed spine, prompt assembly, etc.).
-  I may NOT introduce claims beyond supported IBM facts.
+  I may NOT introduce claims beyond supported IBM proof bundle atoms.
   I may NOT copy JD phrases beyond 4 consecutive words.
   I may NOT use em dash character anywhere.
   I may NOT output narrative text — bullets only.
 
-  QUALITY BAR — BASE RESUME PARITY: Preserve the information density of the locked IBM bullets in the
-  canonical base resume. Do not replace regulated-financials, uptime, migration, or partnership specifics
-  with generic "cloud AI" wording unless change_log documents the simplification with claim_ledger support.
+  QUALITY BAR — PROOF BUNDLE FIDELITY: Preserve locked_metrics tokens from proof_atoms per slot.
+  Use mechanism_vocab and bound_skills allowed_phrases as vocabulary anchors, not as prose to copy.
+  Synthesize new executive lines that demonstrate the same seniority and technical depth as the proof atoms.
 
   FORBIDDEN TERMS unless explicitly in IBM source facts:
   - agentic AI, agentic runtime, multi-agent orchestration
@@ -112,7 +114,7 @@ output_contract:
       description: "List of unsupported JD requirements or gaps"
     - name: change_log
       type: "array"
-      description: "Per-bullet change tracking: {bullet_id, original_summary, change_type, rationale}"
+      description: "Per-bullet composition trace: {bullet_id, graph_skill_node_ids[], fact_ids_used[], rationale}"
     - name: self_check
       type: "object"
       schema:

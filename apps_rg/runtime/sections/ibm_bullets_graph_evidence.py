@@ -7,6 +7,181 @@ from apps_rg.fact_inventory.track_weighted_graph_expansion import _skill_rows_by
 
 # Phase 2 (Data / tech / Cloud / ML) — IBM stint 2017-04..2022-10 lies entirely in this track.
 IBM_PHASE2_CAREER_TRACK = "track_data_tech_cloud_ml"
+
+# ---------------------------------------------------------------------------
+# GRAPH_BULLET_EVIDENCE_PACK — IBM organic proof bundle (W1: Bullet Proof Bundle Redesign)
+# ---------------------------------------------------------------------------
+
+GRAPH_BULLET_EVIDENCE_PACK_MARKER = "GRAPH_BULLET_EVIDENCE_PACK"
+
+IBM_BULLET_SLOT_IDS: tuple[str, ...] = (
+    "bul_ibm_001",
+    "bul_ibm_002",
+    "bul_ibm_003",
+    "bul_ibm_004",
+    "bul_ibm_005",
+)
+
+# Static engineering skill assignments per IBM bullet slot.
+# References arsenal skill nodes tracing through cloud/platform/data-engineering pillars.
+# Phrase labels come from master_skills_arsenal_ledger.json skill_rows.
+IBM_BULLET_SLOT_SKILL_MAP: dict[str, list[dict[str, str]]] = {
+    "bul_ibm_001": [
+        {"skill_id": "skill_sr_cloud_data_platform_engineering",
+         "allowed_phrases": "cloud-native, platform engineering"},
+        {"skill_id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
+         "allowed_phrases": "$30M cloud and AI transformation portfolio, systems architect"},
+    ],
+    "bul_ibm_002": [
+        {"skill_id": "skill_sr_cloud_data_platform_engineering",
+         "allowed_phrases": "cloud-native, platform engineering"},
+        {"skill_id": "skill_sr_microservices_integration_platform",
+         "allowed_phrases": "microservices, cloud-native, integration"},
+    ],
+    "bul_ibm_003": [
+        {"skill_id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
+         "allowed_phrases": "$30M cloud and AI transformation portfolio"},
+        {"skill_id": "skill_ai_platform_commercialization",
+         "allowed_phrases": "ai platform commercialization"},
+    ],
+    "bul_ibm_004": [
+        {"skill_id": "skill_sr_basel_ccar_lineage_regulatory",
+         "allowed_phrases": "Basel, CCAR, data lineage, regulatory reporting"},
+        {"skill_id": "skill_audit_grade_observability",
+         "allowed_phrases": "audit grade observability"},
+    ],
+    "bul_ibm_005": [
+        {"skill_id": "skill_partner_cloud_partner_ecosystem",
+         "allowed_phrases": "IBM-AWS alliance, cloud transformations"},
+        {"skill_id": "skill_partner_ibm_aws_alliance_joint_revenue",
+         "allowed_phrases": "IBM-AWS alliance, 20% joint revenue, AI-driven sales frameworks"},
+    ],
+}
+
+# Mechanism vocabulary per slot extracted from base resume IBM fact structured fields.
+# Source: amit_ayer_base_resume_v1.json → facts.employment[exp_ibm_001].bullets[*].technologies
+# Constraint: claim_text prose is EXCLUDED. Only the `technologies` list is used here.
+IBM_BULLET_MECHANISM_VOCAB: dict[str, list[str]] = {
+    "bul_ibm_001": ["AI platforms", "analytics", "cloud-native"],
+    "bul_ibm_002": ["cloud migration", "modernization", "analytics", "ML"],
+    "bul_ibm_003": ["SaaS platforms", "regulatory workflows", "shared services"],
+    "bul_ibm_004": ["data lineage", "observability", "real-time ingestion"],
+    "bul_ibm_005": ["hyperscaler alliances", "co-sell"],
+}
+
+# Locked metric tokens per slot.
+# Source: amit_ayer_base_resume_v1.json → facts.employment[exp_ibm_001].bullets[*].metric_raw
+# Model must preserve these tokens when composing from the proof bundle.
+IBM_BULLET_LOCKED_METRICS: dict[str, str] = {
+    "bul_ibm_001": "99.9% uptime",
+    "bul_ibm_002": "30% infrastructure overhead reduction",
+    "bul_ibm_003": "25% renewal rate improvement",
+    "bul_ibm_004": "50% latency reduction",
+    "bul_ibm_005": "$15M incremental revenue",
+}
+
+# Domain context per slot (structural field — not claim prose).
+IBM_BULLET_SLOT_DOMAIN: dict[str, str] = {
+    "bul_ibm_001": "AI infrastructure",
+    "bul_ibm_002": "cloud infrastructure",
+    "bul_ibm_003": "platform engineering",
+    "bul_ibm_004": "data engineering",
+    "bul_ibm_005": "business partnerships",
+}
+
+# Strings whose presence in the C0 pack would indicate base-resume prose leakage.
+IBM_FORBIDDEN_C0_PROMPT_SUBSTRINGS: tuple[str, ...] = (
+    "CANONICAL IBM FACTS",
+    "REWRITE_FROM_FACT_POOL",
+    "rewrite from these",
+    "archive_reference_only",
+)
+
+
+def assert_ibm_c0_pack_has_no_forbidden_template_leaks(pack_text: str) -> None:
+    blob = str(pack_text or "")
+    hits = [s for s in IBM_FORBIDDEN_C0_PROMPT_SUBSTRINGS if s in blob]
+    if hits:
+        raise ValueError(
+            f"IBM GRAPH_BULLET_EVIDENCE_PACK contains forbidden template leakage: {hits}"
+        )
+
+
+def format_ibm_graph_bullet_evidence_pack(
+    runtime_payload: dict[str, Any],
+) -> str:
+    """C0 body: graph skills + structured proof atoms per bul_ibm_* slot — no claim_text prose.
+
+    Implements the ORGANIC_FROM_GRAPH_BUNDLE treatment for IBM bullets (W1: Bullet Proof Bundle
+    Redesign). The claim_text field from base resume IBM bullets is intentionally excluded.
+    Only structured fields (technologies → mechanism_vocab, metric_raw → locked_metrics, domain)
+    plus arsenal skill node IDs and phrases are included.
+    """
+    from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
+
+    plan = runtime_payload.get("selected_fact_plan") or {}
+    selection_method = str(
+        plan.get("selection_method") or IBM_TRACK_RANKED_SELECTION_METHOD
+    )
+    allowed_fact_ids_raw = list(runtime_payload.get("allowed_fact_ids") or [])
+
+    header_lines = [
+        f"{GRAPH_BULLET_EVIDENCE_PACK_MARKER} "
+        "(proof substrate — compose five IBM bullets organically from bound_skills + proof_atoms):",
+        f"- selection_method: {selection_method}",
+        "- Do NOT copy, paraphrase, or lightly rewrite base-resume IBM bullet wording.",
+        "- No claim_text in this pack — synthesize new executive lines from skills + proof atoms.",
+        "- skill_id alone is not proof; allowed_source_fact_ids bind each claim.",
+        "- JD/briefing (U0) choose emphasis only; do not invent facts from JD.",
+    ]
+    if allowed_fact_ids_raw:
+        ordered = sorted(str(x) for x in allowed_fact_ids_raw)
+        header_lines.append(
+            "\nALLOWED_SOURCE_FACT_IDS "
+            "(claim_ledger.source_fact_ids must cite only these IDs):"
+        )
+        for fid in ordered:
+            header_lines.append(f"- {fid}")
+
+    header = "\n".join(header_lines)
+
+    slot_blocks: list[str] = []
+    for slot_id in IBM_BULLET_SLOT_IDS:
+        skills = IBM_BULLET_SLOT_SKILL_MAP.get(slot_id, [])
+        vocab = IBM_BULLET_MECHANISM_VOCAB.get(slot_id, [])
+        metric = IBM_BULLET_LOCKED_METRICS.get(slot_id, "")
+        domain = IBM_BULLET_SLOT_DOMAIN.get(slot_id, "")
+
+        slot_allowed: list[str] = [slot_id]
+        if metric:
+            slot_allowed.append(metric_derivative_fact_id(slot_id, metric))
+
+        lines = [
+            f"{slot_id} | compose_one_bullet_from:",
+            f"  allowed_source_fact_ids: {slot_allowed}",
+        ]
+        if skills:
+            lines.append("  bound_skills (graph authority — primary vocabulary):")
+            for sk in skills:
+                lines.append(
+                    f"    - {sk['skill_id']} | allowed_phrases: {sk['allowed_phrases']}"
+                )
+        else:
+            lines.append("  bound_skills: (none linked — use proof_atoms only)")
+
+        lines.append("  proof_atoms (structured tokens only — no prose):")
+        if vocab:
+            lines.append(f"    - mechanism_vocab: {vocab}")
+        if metric:
+            lines.append(f"    - locked_metrics: {metric}")
+        if domain:
+            lines.append(f"    - domain: {domain}")
+
+        slot_blocks.append("\n".join(lines))
+
+    out = header + "\n\n" + "\n\n".join(slot_blocks)
+    assert_ibm_c0_pack_has_no_forbidden_template_leaks(out)
+    return out
 IBM_PHASE2_CAREER_TRACK_ID = "TRACK_DATA_TECH_CLOUD_ML"
 
 IBM_EMPLOYMENT_START = "2017-04"
@@ -189,15 +364,24 @@ def check_ibm_bullets_phase2_career_track_scope(
 
 
 __all__ = [
+    "assert_ibm_c0_pack_has_no_forbidden_template_leaks",
     "build_ibm_phase2_graph_plan_fact",
+    "check_ibm_bullets_phase2_career_track_scope",
     "FORBIDDEN_IBM_BULLET_CAREER_TRACKS",
+    "format_ibm_graph_bullet_evidence_pack",
+    "GRAPH_BULLET_EVIDENCE_PACK_MARKER",
+    "IBM_BULLET_LOCKED_METRICS",
+    "IBM_BULLET_MECHANISM_VOCAB",
+    "IBM_BULLET_SLOT_DOMAIN",
+    "IBM_BULLET_SLOT_IDS",
+    "IBM_BULLET_SLOT_SKILL_MAP",
     "IBM_BULLETS_MIN_PHASE2_FACTS",
     "IBM_EMPLOYMENT_END",
     "IBM_EMPLOYMENT_START",
     "IBM_EMPLOYMENT_WINDOW_LABEL",
+    "IBM_FORBIDDEN_C0_PROMPT_SUBSTRINGS",
     "IBM_PHASE2_CAREER_TRACK",
     "IBM_PHASE2_CAREER_TRACK_ID",
     "IBM_PHASE2_TRACK_WEIGHT_OVERRIDE",
     "IBM_TRACK_RANKED_SELECTION_METHOD",
-    "check_ibm_bullets_phase2_career_track_scope",
 ]

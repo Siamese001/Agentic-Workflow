@@ -804,6 +804,110 @@ def run_ibm_narrative_x2_gates(
         text_claim_coverage=text_claim_coverage,
     )
 
+    # -----------------------------------------------------------------------
+    # Narrative alignment quality gates (seniority, consulting blocklist, specificity, etc.)
+    # -----------------------------------------------------------------------
+    from apps_rg.runtime.validators.narrative_quality_x2 import (
+        check_narrative_base_prose_ngram_overlap,
+        check_narrative_e0_ngram_overlap,
+        check_narrative_no_consulting_language,
+        check_narrative_not_bullet_recap,
+        check_narrative_seniority_floor,
+        check_narrative_technical_specificity,
+        check_narrative_upstream_graph_proof_bundle,
+    )
+
+    # Gate: seniority floor (HARD FAIL)
+    sen_r = check_narrative_seniority_floor(narrative_sentence)
+    add(
+        sen_r.gate_id,
+        sen_r.passed,
+        sen_r.observed_value,
+        sen_r.threshold,
+        sen_r.failure_reason,
+    )
+
+    # Gate: no consulting language (HARD FAIL)
+    consult_r = check_narrative_no_consulting_language(narrative_sentence)
+    add(
+        consult_r.gate_id,
+        consult_r.passed,
+        consult_r.observed_value,
+        consult_r.threshold,
+        consult_r.failure_reason,
+    )
+
+    # Gate: technical specificity floor (HARD FAIL)
+    spec_r = check_narrative_technical_specificity(narrative_sentence)
+    add(
+        spec_r.gate_id,
+        spec_r.passed,
+        spec_r.observed_value,
+        spec_r.threshold,
+        spec_r.failure_reason,
+    )
+
+    # Gate: not bullet recap (WARN mode)
+    companion_bullets_list = [
+        line.strip()
+        for line in (companion_bullet_texts or "").split("\n")
+        if line.strip()
+    ]
+    recap_r = check_narrative_not_bullet_recap(narrative_sentence, companion_bullets_list, warn_only=True)
+    add(
+        recap_r.gate_id,
+        recap_r.passed,
+        recap_r.observed_value,
+        recap_r.threshold,
+        recap_r.failure_reason,
+    )
+
+    # Gate: upstream graph proof required (WARN mode)
+    upstream_x2 = [
+        {"gate_id": g.gate_id, "pass_": g.pass_}
+        for g in gates
+        if "graph_skill_node_ids" in (g.gate_id or "")
+    ]
+    upstream_r = check_narrative_upstream_graph_proof_bundle(upstream_x2, warn_only=True)
+    add(
+        upstream_r.gate_id,
+        upstream_r.passed,
+        upstream_r.observed_value,
+        upstream_r.threshold,
+        upstream_r.failure_reason,
+    )
+
+    # Gate: base prose n-gram overlap (WARN mode)
+    base_narrative_texts: list[str] = []
+    if parsed_output and isinstance(parsed_output, dict):
+        _rp = parsed_output.get("_runtime_payload_ref") or {}
+        if isinstance(_rp, dict):
+            _role_narrative = str(
+                (_rp.get("base_resume", {}) or {}).get("role_narrative", "")
+            ).strip()
+            if _role_narrative:
+                base_narrative_texts = [_role_narrative]
+    base_narr_r = check_narrative_base_prose_ngram_overlap(
+        narrative_sentence, base_narrative_texts, warn_only=True
+    )
+    add(
+        base_narr_r.gate_id,
+        base_narr_r.passed,
+        base_narr_r.observed_value,
+        base_narr_r.threshold,
+        base_narr_r.failure_reason,
+    )
+
+    # Gate: E0 n-gram overlap (WARN mode)
+    e0_narr_r = check_narrative_e0_ngram_overlap(narrative_sentence, [], warn_only=True)
+    add(
+        e0_narr_r.gate_id,
+        e0_narr_r.passed,
+        e0_narr_r.observed_value,
+        e0_narr_r.threshold,
+        e0_narr_r.failure_reason,
+    )
+
     return gates
 
 

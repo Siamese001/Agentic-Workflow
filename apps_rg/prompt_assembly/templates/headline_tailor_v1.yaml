@@ -117,24 +117,34 @@ slot_bodies:
     Shape patterns ONLY (do NOT copy these literal phrases; X/Y/Z must contain specific nouns
     from YOUR cited fact text — see proof_law_v1 LITERAL GROUNDING rule):
 
-    Example shape A (each X/Y/Z carries 1+ specific noun from cited fact):
-      SVP Engineering | Lakehouse Microservices Architecture | AI Lifecycle Standardization | Retrieval Telemetry Catalogs
-    Example shape B:
+    POSITIONING FAMILY GUIDANCE: Segments X/Y/Z should preserve SVP Engineering posture.
+    Approved positioning families: Agentic AI Platforms, Distributed AI Infrastructure,
+    Runtime Governance, Enterprise AI Architecture, Platform Productization, Regulated AI Systems.
+    Avoid narrowing into IT-manager-level labels (see FORBIDDEN below).
+
+    Example shape A (platform + governance + regulated — preferred posture):
+      SVP Engineering | Agentic AI Platform Engineering | Runtime Governance Controls | Regulated Enterprise AI
+    Example shape B (distributed + retrieval + productization):
+      SVP Engineering | Distributed AI Infrastructure | Retrieval Context Engineering | Platform Productization
+    Example shape C (enterprise architecture + LLMOps + regulated):
+      SVP Engineering | Enterprise AI Architecture | LLMOps Eval Harness | Regulated Platform Delivery
+    Example shape D (agentic orchestration + governance gates + scale):
+      SVP Engineering | Agentic Orchestration Platforms | Deterministic Runtime Gates | Enterprise Scale AI
+    Example shape E (specific noun example — Databricks/Lakehouse tied to a proof fact):
+      SVP Engineering | Databricks Lakehouse Workflows | Runtime Governance Pipeline | Retrieval Eval Harness
+    Example shape F (HPC + container + eval — specific noun example):
       SVP Engineering | HPC Trading Platforms | Container Stress Analytics | Eval Pipeline Gates
-    Example shape C:
-      SVP Engineering | Data Lineage Catalogs | Validation Frameworks | Capital Modeling Rigor
-    Example shape D:
-      SVP Engineering | Databricks Lakehouse Workflows | Microservices Telemetry | Lineage Catalog Governance
-    Example shape E:
-      SVP Engineering | Retrieval Eval Harness | Stress Testing Frameworks | HPC Pipeline Orchestration
-    Example shape F:
-      SVP Engineering | Trading Platform Microservices | Telemetry Validation Pipelines | Lakehouse Modeling Workflows
     </many_shot_examples>
 
     <contrastive_examples>
     Bad (metric): SVP Engineering | Fortune 500 AI | $22M Revenue | 20% Growth
     Bad (stuffing): SVP Engineering | LLMOps Retrieval Governance Runtime | Platform Scale | AI Leadership
     Bad (generic): SVP Engineering | Enterprise AI Strategy | Digital Transformation | Innovation Leadership
+    Bad (narrowing IT labels — FORBIDDEN: demotes SVP Engineering posture):
+      SVP Engineering | IT Strategy | Data Modernization | Cloud Transformation
+      SVP Engineering | AI Lifecycle Standardization | Technology Strategy | Innovation
+      SVP Engineering | SVP IT Strategy | Data Modernization | Cloud and AI Vendors
+      (these phrases narrow the candidate from SVP Engineering / Agentic AI to IT-manager-level)
     Bad (ungrounded — fails the literal-grounding deterministic gate):
       SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Enterprise Data Lineage
       (each X/Y/Z is generic role-family wording — no specific noun from any cited fact's claim_text)

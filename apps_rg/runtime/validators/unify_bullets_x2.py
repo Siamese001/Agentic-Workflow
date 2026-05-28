@@ -739,6 +739,152 @@ def run_unify_bullets_x2_gates(
     else:
         add("x2_x1d_schema_valid", False, "no judges", "present", "No X1D judges.")
 
+    # W2: graph_skill_node_ids (or skill_ids_used) required per bullet in change_log
+    po_change_log = list(po_raw.get("change_log") or [])
+    bullets_missing_skill_ids: list[str] = []
+    cl_bullet_ids: set[str] = set()
+    for cl_entry in po_change_log:
+        if not isinstance(cl_entry, dict):
+            continue
+        bid_cl = str(cl_entry.get("bullet_id") or "")
+        if not bid_cl.startswith("bul_unify_"):
+            continue
+        cl_bullet_ids.add(bid_cl)
+        skill_ids = (
+            cl_entry.get("graph_skill_node_ids")
+            or cl_entry.get("skill_ids_used")
+            or []
+        )
+        if not skill_ids:
+            bullets_missing_skill_ids.append(bid_cl)
+    for b in bullets:
+        bid_b = str(b.get("bullet_id") or "")
+        if bid_b.startswith("bul_unify_") and bid_b not in cl_bullet_ids:
+            bullets_missing_skill_ids.append(bid_b)
+    add(
+        "x2_unify_bullet_graph_skill_node_ids_required",
+        not bullets_missing_skill_ids,
+        bullets_missing_skill_ids or "all_present",
+        "non-empty skill_ids_used or graph_skill_node_ids per bul_unify_* in change_log",
+        (
+            f"Missing skill_ids in change_log for: {bullets_missing_skill_ids}"
+            if bullets_missing_skill_ids
+            else None
+        ),
+    )
+
+    # W2: metric_raw must trace to plan fact metric when has_metric=True
+    plan_facts_unify = list(plan_raw.get("facts") or [])
+    plan_facts_by_bid_u: dict[str, dict[str, Any]] = {
+        str(f.get("fact_id") or ""): f
+        for f in plan_facts_unify
+        if isinstance(f, dict)
+    }
+    bullets_metric_unsupported_u: list[str] = []
+    for b in bullets:
+        bid_mu = str(b.get("bullet_id") or "")
+        if not bid_mu.startswith("bul_unify_"):
+            continue
+        if not b.get("has_metric"):
+            continue
+        mr_u = str(b.get("metric_raw") or "").strip()
+        if not mr_u:
+            bullets_metric_unsupported_u.append(f"{bid_mu}:metric_raw_empty")
+            continue
+        mr_u_lower = mr_u.lower()
+        plan_fact_metric_u = str(
+            (plan_facts_by_bid_u.get(bid_mu) or {}).get("metric_raw") or ""
+        ).lower()
+        # Accept if metric_raw overlaps with plan fact metric_raw
+        metric_supported = bool(plan_fact_metric_u) and (
+            plan_fact_metric_u in mr_u_lower or mr_u_lower in plan_fact_metric_u
+        )
+        # Also accept known Unify canonical metrics ($22M, 20%, 8, 28) as self-attesting
+        unify_canonical_tokens = ("$22m", "20%", "8 to 28", "six months to three weeks")
+        metric_supported = metric_supported or any(tok in mr_u_lower for tok in unify_canonical_tokens)
+        if not metric_supported:
+            bullets_metric_unsupported_u.append(
+                f"{bid_mu}:metric_raw={mr_u!r}_not_in_proof_bundle"
+            )
+    add(
+        "x2_unify_metric_source_required",
+        not bullets_metric_unsupported_u,
+        bullets_metric_unsupported_u or "all_traceable",
+        "metric_raw traces to plan_fact.metric_raw or canonical Unify metrics",
+        (
+            f"Unsupported metric claims: {bullets_metric_unsupported_u}"
+            if bullets_metric_unsupported_u
+            else None
+        ),
+    )
+
+    # W4: Quality floor gates (seniority proxy, technical specificity, generic consulting blocklist)
+    from apps_rg.runtime.validators.bullet_quality_floor_x2 import (
+        run_bullet_quality_floor_gates,
+    )
+
+    sen_pass_u, sen_results_u, tech_pass_u, tech_results_u, cons_pass_u, cons_results_u = (
+        run_bullet_quality_floor_gates(
+            bullets,
+            section_id="unify_bullets",
+        )
+    )
+    sen_failures_u = [r.failure_reason for r in sen_results_u if r.failure_reason]
+    add(
+        "x2_bullet_seniority_floor",
+        sen_pass_u,
+        sen_failures_u or "all_pass",
+        "score >= 1 (strong_verb OR scale_signal + no weak_verb)",
+        "; ".join(sen_failures_u) if sen_failures_u else None,
+    )
+    tech_failures_u = [r.failure_reason for r in tech_results_u if r.failure_reason]
+    add(
+        "x2_bullet_technical_specificity_floor",
+        tech_pass_u,
+        tech_failures_u or "all_pass",
+        "at least one named mechanism/technology per bullet",
+        "; ".join(tech_failures_u) if tech_failures_u else None,
+    )
+    cons_failures_u = [r.failure_reason for r in cons_results_u if r.failure_reason]
+    add(
+        "x2_no_generic_consulting_substitution",
+        cons_pass_u,
+        cons_failures_u or "all_pass",
+        "zero consulting-speak substitution phrases per bullet",
+        "; ".join(cons_failures_u) if cons_failures_u else None,
+    )
+
+    # W3: N-gram overlap anti-leakage gates (WARN mode — calibrate before hard-fail activation)
+    from apps_rg.runtime.validators.bullet_ngram_overlap_x2 import (
+        GATE_ID_BASE_RESUME,
+        GATE_ID_E0_EXAMPLE,
+        run_bullet_ngram_overlap_gates,
+    )
+
+    ngram_base_pass_u, ngram_base_results_u, ngram_e0_pass_u, ngram_e0_results_u = (
+        run_bullet_ngram_overlap_gates(
+            bullets,
+            section_id="unify_bullets",
+            warn_only=True,
+        )
+    )
+    ngram_base_violations_u = [r for r in ngram_base_results_u if r.failure_reason]
+    add(
+        GATE_ID_BASE_RESUME + "_unify",
+        ngram_base_pass_u,
+        [r.failure_reason for r in ngram_base_violations_u] or "all_below_threshold",
+        f"<= {int(0.25 * 100)}% 4-gram overlap with base resume (WARN mode)",
+        "; ".join(r.failure_reason for r in ngram_base_violations_u if r.failure_reason) or None,
+    )
+    ngram_e0_violations_u = [r for r in ngram_e0_results_u if r.failure_reason]
+    add(
+        GATE_ID_E0_EXAMPLE + "_unify",
+        ngram_e0_pass_u,
+        [r.failure_reason for r in ngram_e0_violations_u] or "all_below_threshold",
+        f"<= {int(0.20 * 100)}% 4-gram overlap with E0 examples (WARN mode)",
+        "; ".join(r.failure_reason for r in ngram_e0_violations_u if r.failure_reason) or None,
+    )
+
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
     if srfs_source_fact_slice_gate_active or proof_pool_metadata:

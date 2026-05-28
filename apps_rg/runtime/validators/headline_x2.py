@@ -1080,6 +1080,67 @@ def run_headline_x2_gates(
             text_claim_coverage=text_claim_coverage,
         )
 
+    # -----------------------------------------------------------------------
+    # Headline positioning / seniority / anti-leakage quality gates
+    # -----------------------------------------------------------------------
+    from apps_rg.runtime.validators.headline_quality_x2 import (
+        HEADLINE_E0_REFERENCE_TEXTS,
+        check_headline_base_ngram_overlap,
+        check_headline_e0_ngram_overlap,
+        check_headline_no_narrowing_it_labels,
+        check_headline_positioning_families,
+    )
+
+    # Gate: no narrowing IT labels (HARD FAIL)
+    narrowing_r = check_headline_no_narrowing_it_labels(h)
+    add(
+        narrowing_r.gate_id,
+        narrowing_r.passed,
+        narrowing_r.observed_value,
+        narrowing_r.threshold,
+        narrowing_r.failure_reason,
+    )
+
+    # Gate: positioning family preservation (WARN mode — calibrate then promote)
+    positioning_r = check_headline_positioning_families(h, min_families=2)
+    add(
+        positioning_r.gate_id,
+        True,  # WARN mode: always pass in lane; record violation via failure_reason
+        positioning_r.observed_value,
+        positioning_r.threshold,
+        None if positioning_r.passed else positioning_r.failure_reason,
+    )
+
+    # Gate: E0 n-gram overlap (WARN mode)
+    e0_r = check_headline_e0_ngram_overlap(h, HEADLINE_E0_REFERENCE_TEXTS, warn_only=True)
+    add(
+        e0_r.gate_id,
+        e0_r.passed,
+        e0_r.observed_value,
+        e0_r.threshold,
+        e0_r.failure_reason,
+    )
+
+    # Gate: base resume headline n-gram overlap (WARN mode)
+    base_hl_texts: list[str] = []
+    if parsed_output and isinstance(parsed_output, dict):
+        _rp = parsed_output.get("_runtime_payload_ref") or {}
+        _base_hl = str(
+            (_rp.get("base_resume", {}) or {}).get("headline_line", "")
+            if isinstance(_rp, dict)
+            else ""
+        ).strip()
+        if _base_hl:
+            base_hl_texts = [_base_hl]
+    base_r = check_headline_base_ngram_overlap(h, base_hl_texts, warn_only=True)
+    add(
+        base_r.gate_id,
+        base_r.passed,
+        base_r.observed_value,
+        base_r.threshold,
+        base_r.failure_reason,
+    )
+
     return gates
 
 

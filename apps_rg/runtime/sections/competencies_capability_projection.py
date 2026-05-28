@@ -319,6 +319,7 @@ def _backfill_terms_for_category(
                 "source_fact_ids": [default_fid] if default_fid else [],
                 "source_skill_ids": [],
                 "support_class": SUPPORT_CLASS_FACT_ONLY,
+                "proof_source": "default_fid_backfill",
             }
             terms.append(candidate)
             seen.add(_norm(phrase))
@@ -349,6 +350,7 @@ def _backfill_terms_for_category(
                     "source_fact_ids": [default_fid] if default_fid else [],
                     "source_skill_ids": [],
                     "support_class": SUPPORT_CLASS_FACT_ONLY,
+                    "proof_source": "default_fid_backfill",
                 }
                 terms.append(candidate)
                 seen.add(_norm(phrase))
@@ -717,6 +719,7 @@ def _swap_offending_term_for_safe_backfill(
             sids = [x for x in (raw_t.get("source_fact_ids") or []) if str(x).split("_metric_")[0] in allowed_fact_ids]
             if not sids and default_fid:
                 sids = [default_fid]
+                raw_t["proof_source"] = "default_fid_backfill"
             raw_t["source_fact_ids"] = sids
             if raw_t.get("source_fact_id") and sids:
                 raw_t["source_fact_id"] = sids[0]

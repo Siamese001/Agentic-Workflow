@@ -823,11 +823,6 @@ def run_ibm_bullets_execution(
                 plan_facts=ibm_facts,
                 allowed_fact_ids=allowed_fact_ids,
             )
-            inject_ibm_locked_metric_anchors(
-                parsed,
-                plan_facts=ibm_facts,
-                allowed_fact_ids=allowed_fact_ids,
-            )
             record_mechanical(
                 artifact_dir,
                 operation="align_ibm_claim_ledger_from_canonical_facts",
@@ -835,8 +830,8 @@ def run_ibm_bullets_execution(
             )
             record_mechanical(
                 artifact_dir,
-                operation="inject_ibm_locked_metric_anchors",
-                reason="locked_metric_tokens",
+                operation="organic_from_graph_bundle",
+                reason="metric_tokens_in_proof_bundle_not_injected",
             )
     else:
         parsed = None

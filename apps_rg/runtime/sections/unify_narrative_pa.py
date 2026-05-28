@@ -29,7 +29,32 @@ def _canonical_unify_facts_c0(runtime_payload: dict[str, Any]) -> str:
         allowed_ids = [str(x) for x in raw_allowed]
     else:
         allowed_ids = [str(f.get("fact_id") or "") for f in facts if f.get("fact_id")]
-    return format_selected_facts_for_c0(facts, allowed_ids)
+
+    # Annotate base-resume narrative facts as calibration only (not organic proof authority).
+    # These facts are included for seniority/voice calibration and must not be copied,
+    # paraphrased, or used as organic proof for the generated narrative.
+    _BASE_NARRATIVE_PREFIX = "unify_narrative_base_"
+    annotated_facts: list[dict[str, Any]] = []
+    base_calibration_lines: list[str] = []
+    for fact in facts:
+        fid = str(fact.get("fact_id") or "")
+        if fid.startswith(_BASE_NARRATIVE_PREFIX):
+            ct = str(fact.get("claim_text") or "").strip()
+            if ct:
+                base_calibration_lines.append(f"- {fid}: {ct}")
+        else:
+            annotated_facts.append(fact)
+
+    base_block = ""
+    if base_calibration_lines:
+        base_block = (
+            "\n\nUNIFY_NARRATIVE_BASE_CALIBRATION (seniority/voice baseline only — NOT proof; "
+            "do not copy, paraphrase, or hydrate from this text):\n"
+            + "\n".join(base_calibration_lines)
+        )
+
+    core = format_selected_facts_for_c0(annotated_facts, allowed_ids)
+    return core + base_block
 
 
 def _legacy_i0(runtime_payload: dict[str, Any]) -> str:

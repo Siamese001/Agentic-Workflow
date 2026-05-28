@@ -1654,6 +1654,18 @@ def run_headline_execution(
         "x3_code": x3.x3_code,
         "proof_eligible": bundle["proof_eligible"],
         "judge_proof_eligible": bundle["judge_proof_eligible"],
+        "proof_authority_receipt": {
+            "proof_authority": "graph_skills_plus_linked_source_facts",
+            "base_resume_usage": "calibration_only",
+            "jd_usage": "targeting_only",
+            "e0_usage": "style_only",
+            "new_gates_wired": [
+                "x2_headline_no_narrowing_it_labels",
+                "x2_headline_positioning_family_preserved",
+                "x2_headline_e0_ngram_overlap",
+                "x2_headline_base_ngram_overlap",
+            ],
+        },
     }
     merge_normalized_srfs_reporting_into_dict(
         _smr_h,

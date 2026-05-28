@@ -1092,6 +1092,21 @@ def run_unify_narrative_execution(
         "x3_code": x3.x3_code,
         "proof_eligible": proof_bundle["proof_eligible"],
         "judge_proof_eligible": proof_bundle["judge_proof_eligible"],
+        "proof_authority_receipt": {
+            "proof_authority": "graph_skills_plus_linked_source_facts",
+            "base_resume_usage": "calibration_only",
+            "jd_usage": "targeting_only",
+            "e0_usage": "style_only",
+            "new_gates_wired": [
+                "x2_narrative_seniority_floor",
+                "x2_narrative_no_consulting_language",
+                "x2_narrative_technical_specificity_floor",
+                "x2_narrative_not_bullet_recap",
+                "x2_narrative_upstream_graph_proof_required",
+                "x2_narrative_base_prose_ngram_overlap",
+                "x2_narrative_e0_ngram_overlap",
+            ],
+        },
     }
     merge_normalized_srfs_reporting_into_dict(
         _smr_un,

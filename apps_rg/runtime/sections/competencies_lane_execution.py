@@ -763,6 +763,19 @@ def run_competencies_lane_execution(
         "x3_code": x3.x3_code,
         "proof_eligible": bundle["proof_eligible"],
         "judge_proof_eligible": bundle["judge_proof_eligible"],
+        "proof_authority_receipt": {
+            "proof_authority": "graph_skills_plus_linked_source_facts",
+            "base_resume_usage": "calibration_only",
+            "jd_usage": "targeting_only",
+            "e0_usage": "style_only",
+            "new_gates_wired": [
+                "x2_competencies_capability_family_coverage",
+                "x2_competencies_no_default_fid_proof",
+                "x2_competencies_generic_category_blocked_without_graph",
+                "x2_competencies_e0_ngram_overlap",
+                "x2_competencies_base_ngram_overlap",
+            ],
+        },
     }
     merge_normalized_srfs_reporting_into_dict(
         _smr_co,

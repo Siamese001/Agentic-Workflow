@@ -1123,6 +1123,77 @@ def run_competencies_x2_gates(
         text_claim_coverage=text_claim_coverage,
     )
 
+    # -----------------------------------------------------------------------
+    # Competencies capability family coverage / authority / anti-leakage gates
+    # -----------------------------------------------------------------------
+    from apps_rg.runtime.validators.competencies_quality_x2 import (
+        check_competencies_base_ngram_overlap,
+        check_competencies_capability_family_coverage,
+        check_competencies_e0_ngram_overlap,
+        check_competencies_generic_category_has_graph_terms,
+        check_competencies_no_default_fid_proof,
+        competencies_to_text_blob,
+    )
+
+    # Gate: capability family coverage (WARN mode — calibrate before promoting)
+    fam_r = check_competencies_capability_family_coverage(competencies, min_families=5)
+    add(
+        fam_r.gate_id,
+        True,  # WARN mode: always pass in lane; record signal via failure_reason
+        fam_r.observed_value,
+        fam_r.threshold,
+        None if fam_r.passed else fam_r.failure_reason,
+    )
+
+    # Gate: no default_fid laundered proof (WARN mode)
+    dfid_r = check_competencies_no_default_fid_proof(competencies)
+    add(
+        dfid_r.gate_id,
+        True,  # WARN mode
+        dfid_r.observed_value,
+        dfid_r.threshold,
+        None if dfid_r.passed else dfid_r.failure_reason,
+    )
+
+    # Gate: generic category must have ≥3 graph-backed terms (HARD FAIL on blocklist hit with no graph terms)
+    gen_r = check_competencies_generic_category_has_graph_terms(competencies)
+    add(
+        gen_r.gate_id,
+        gen_r.passed,
+        gen_r.observed_value,
+        gen_r.threshold,
+        gen_r.failure_reason,
+    )
+
+    # Gate: E0 n-gram overlap (WARN mode)
+    comp_text = competencies_to_text_blob(competencies)
+    e0_comp_r = check_competencies_e0_ngram_overlap(comp_text, [], warn_only=True)
+    add(
+        e0_comp_r.gate_id,
+        e0_comp_r.passed,
+        e0_comp_r.observed_value,
+        e0_comp_r.threshold,
+        e0_comp_r.failure_reason,
+    )
+
+    # Gate: base resume competencies n-gram overlap (WARN mode)
+    base_comp_texts: list[str] = []
+    if parsed_output and isinstance(parsed_output, dict):
+        _rp = parsed_output.get("_runtime_payload_ref") or {}
+        if isinstance(_rp, dict):
+            _base_comp = _rp.get("base_resume", {}) or {}
+            _base_comp_blob = str(_base_comp.get("competencies_text", "")).strip()
+            if _base_comp_blob:
+                base_comp_texts = [_base_comp_blob]
+    base_comp_r = check_competencies_base_ngram_overlap(comp_text, base_comp_texts, warn_only=True)
+    add(
+        base_comp_r.gate_id,
+        base_comp_r.passed,
+        base_comp_r.observed_value,
+        base_comp_r.threshold,
+        base_comp_r.failure_reason,
+    )
+
     consistency_ok, consistency_bad = competencies_x2_gate_rows_internally_consistent(gates)
     add(
         "x2_gate_rows_are_internally_consistent",
