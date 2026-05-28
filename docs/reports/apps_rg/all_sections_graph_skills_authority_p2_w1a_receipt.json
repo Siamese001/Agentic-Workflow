@@ -1,6 +1,6 @@
 {
   "schema": "all_sections_graph_skills_authority_p2_w1a_v1",
-  "generated_at": "2026-05-27T12:06:44Z",
+  "generated_at": "2026-05-27T19:18:09Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W1A",
   "all_sections_default_to_augmented_skills_graph": true,
@@ -28,7 +28,7 @@
       "c03_graph_hop_paths_count": 20,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
-      "allowed_fact_count": 6
+      "allowed_fact_count": 7
     },
     "executive_summary": {
       "section": "executive_summary",
@@ -37,7 +37,7 @@
       "broad_skills_ledger_used_as_authority": false,
       "selection_method": null,
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 4,
+      "c03_graph_hop_paths_count": 5,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
       "allowed_fact_count": 7
@@ -73,7 +73,7 @@
       "broad_skills_ledger_used_as_authority": false,
       "selection_method": "augmented_skills_graph_ibm_bullets_phase2_track_ranked",
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 2,
+      "c03_graph_hop_paths_count": 4,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
       "allowed_fact_count": 9
@@ -85,7 +85,7 @@
       "broad_skills_ledger_used_as_authority": false,
       "selection_method": "augmented_skills_graph_ibm_narrative_company_hint",
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 16,
+      "c03_graph_hop_paths_count": 18,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
       "allowed_fact_count": 5
@@ -100,7 +100,7 @@
       "c03_graph_hop_paths_count": 22,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
-      "allowed_fact_count": 14
+      "allowed_fact_count": 15
     }
   }
 }

@@ -1,0 +1,25 @@
+{
+  "decision_type": "architecture_choice",
+  "user_goal": "Decide fate of 14 actuarial/Greeks DRAFT skills in skills graph triage",
+  "normalized_intent": "Defer actuarial/Greeks DRAFT skills vs promote with fact_quant_hpc candidate facts for three-phase career track JD coverage",
+  "repo_area": "apps_rg/fact_inventory",
+  "files_in_scope": ["apps_rg/fact_inventory/master_skills_arsenal_ledger.json"],
+  "candidates": [
+    {
+      "id": "defer_actuarial_track",
+      "thesis": "DEFER all 14 actuarial/Greeks/derivatives DRAFT skills. Not primary for Brown & Brown SVP IT Strategy; promote in a dedicated actuarial-track wave with snippet-to-fact audit.",
+      "confidence_score": 0.78,
+      "principle_at_stake": "Role-family projection should not flood insurance-brokerage runs with quant vocabulary",
+      "what_youd_miss": "Three-phase JD runs may under-represent actuarial/risk phase",
+      "what_would_flip": "Active JD explicitly requires FSA/actuarial/HPC stress-testing claims"
+    },
+    {
+      "id": "promote_actuarial_with_quant_facts",
+      "thesis": "PROMOTE all 14 with fact_quant_hpc_001/002/003 links where snippets exist; USER_CONFIRMED_PENDING_SOURCE rows need explicit human_confirmed_by before ACTIVE_CONFIRMED.",
+      "confidence_score": 0.58,
+      "principle_at_stake": "Career track completeness for THREE_PHASE_GENERALIST profile",
+      "what_youd_miss": "Slower triage; some Greeks rows have no source_snippet",
+      "what_would_flip": "Quant facts fail MEDIUM confidence or forbidden overlap with exec narrative"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "decision_type": "architecture_choice",
+  "user_goal": "Promote DRAFT skills from master_skills_arsenal_ledger to ACTIVE_CONFIRMED with fact_id_links for Brown & Brown SVP IT Strategy resume runs",
+  "normalized_intent": "Choose promotion batch scope: Brown-relevant resume-backed only (~18 skills), all DIRECT_FROM_RESUME_ARCHIVE with snippets (~24), or include REPO_EVIDENCE_PORTFOLIO agentic platform skills (+16)",
+  "repo_area": "apps_rg/fact_inventory",
+  "files_in_scope": [
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "apps_rg/fact_inventory/apply_draft_skill_promotions_20260527.py"
+  ],
+  "candidates": [
+    {
+      "id": "brown_relevant_archive_only",
+      "thesis": "Promote ~18 DRAFT skills with resume snippets that match insurance brokerage / SVP IT strategy / partner GTM / executive leadership. Link to existing candidate facts (partnerships_gtm, exec, revenue_ops, solutions). Lowest blast radius; satisfies W3 DoD without diluting graph with actuarial Greeks.",
+      "confidence_score": 0.82,
+      "principle_at_stake": "Graph SSOT should surface only externally claimable, role-relevant capabilities for the active targeting profile",
+      "what_youd_miss": "Actuarial depth and repo-portfolio agentic skills stay invisible until a later wave",
+      "what_would_flip": "User confirms three-phase JD targeting requires full career track on every run"
+    },
+    {
+      "id": "all_archive_snippet_backed",
+      "thesis": "Promote all ~24 DRAFT skills with DIRECT_FROM_RESUME_ARCHIVE and non-empty source_snippets (partner, revops, commercial, p2 tech). Defer actuarial/Greeks and REPO_EVIDENCE_PORTFOLIO. Maps each to best-fit candidate fact by domain.",
+      "confidence_score": 0.74,
+      "principle_at_stake": "Resume archive snippets are sufficient proof substrate when linked to MEDIUM/HIGH candidate facts",
+      "what_youd_miss": "Repo-only agentic platform vocabulary not in resume variants",
+      "what_would_flip": "Archive snippet audit finds overlap or forbidden-phrase conflicts"
+    },
+    {
+      "id": "archive_plus_repo_agentic",
+      "thesis": "Promote archive-backed batch PLUS all 16 REPO_EVIDENCE_PORTFOLIO agentic/governance skills linked to fact_engineering_platform_001/003/004. Maximizes graph coverage for agentic AI platform JDs; support_level stays portfolio-aware.",
+      "confidence_score": 0.61,
+      "principle_at_stake": "Engineering platform facts can anchor portfolio-derived skills when external_claim_policy allows",
+      "what_youd_miss": "Risk of resume claims that read as repo/tooling not employer outcomes",
+      "what_would_flip": "External claim policy rejects REPO_EVIDENCE_PORTFOLIO for executive_summary"
+    },
+    {
+      "id": "defer_all_pending_human_row_review",
+      "thesis": "Do not auto-promote any DRAFT skill; user fills PROMOTE/DEFER/BLOCK per row in triage report first. Safest for evidence discipline.",
+      "confidence_score": 0.55,
+      "principle_at_stake": "candidate_facts_do_not_auto_promote_skills guardrail — human confirmation per skill",
+      "what_youd_miss": "Immediate fix for jd_inferred_skill_svp_it_strategy gap on next run",
+      "what_would_flip": "User explicitly wants agent to execute promotions after this triage list"
+    }
+  ]
+}

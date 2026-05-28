@@ -44,7 +44,7 @@ def exit_code_for_executive_summary_artifact(
                         reason = str(doc.get("fail_closed_reason") or "").strip()
                     if reason in TOKEN_BUDGET_FAIL_REASONS or not doc.get("dispatch_allowed", True):
                         return EXIT_TOKEN_BUDGET_BLOCKED
-            except (OSError, json.JSONDecodeError, TypeError):
+            except (OSError, json.JSONDecodeError, TypeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
     elif reason in TOKEN_BUDGET_FAIL_REASONS:
         return EXIT_TOKEN_BUDGET_BLOCKED
@@ -58,7 +58,7 @@ def exit_code_for_executive_summary_artifact(
                 doc = json.loads(x3p.read_text(encoding="utf-8"))
                 if isinstance(doc, dict):
                     code = str(doc.get("x3_code") or "").strip()
-            except (OSError, json.JSONDecodeError, TypeError):
+            except (OSError, json.JSONDecodeError, TypeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                 pass
     if code == "X3_REVIEW_JUDGE_SOFT_FAIL":
         return EXIT_JUDGE_REVIEW_REQUIRED

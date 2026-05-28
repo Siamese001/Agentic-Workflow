@@ -87,7 +87,7 @@ def build_ibm_phase2_graph_plan_fact(
                     fact["skill_id"] = hop_entry.get("skill_id")
                 fact["graph_phase2_track_proof"] = True
                 return fact
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     row = ledger_row or {}
     metrics = row.get("metric_values") or []

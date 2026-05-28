@@ -1,6 +1,6 @@
 {
   "schema": "career_track_p1_w5_track_balanced_sections_receipt_v1",
-  "generated_at": "2026-05-27T12:06:46Z",
+  "generated_at": "2026-05-27T19:18:11Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W5",
   "selected_tracks": [
@@ -45,11 +45,11 @@
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "track_label": "Data / tech / Cloud / ML (2010-2022)",
       "track_available": true,
-      "sentence": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
+      "sentence": "Directed large-scale regulatory IT transformations and legacy-modernization programs for major financial institutions across risk, compliance, data, cloud, and architecture domains.",
       "source_fact_ids": [
-        "fact_revenue_ops_001"
+        "fact_consulting_001"
       ],
-      "source_skill_id": "skill_p2_gtm_discovery_qualification",
+      "source_skill_id": "skill_p2_gtm_commercial_validation_pilots",
       "graph_hop_path": [
         {
           "edge_type": "career_track_contains_pillar",
@@ -60,13 +60,13 @@
         {
           "edge_type": "skill_row_pillar_projection",
           "from": "pillar_gtm_presales_motion",
-          "to": "skill_p2_gtm_discovery_qualification",
+          "to": "skill_p2_gtm_commercial_validation_pilots",
           "note": "ACTIVE skill_row pillar match (not causal)"
         },
         {
           "edge_type": "skill_supported_by_fact",
-          "from": "skill_p2_gtm_discovery_qualification",
-          "to": "fact_revenue_ops_001",
+          "from": "skill_p2_gtm_commercial_validation_pilots",
+          "to": "fact_consulting_001",
           "note": "graph edge skill_supported_by_fact"
         }
       ]
@@ -208,6 +208,64 @@
       "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
       "skills": [
         {
+          "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+          "label": "board level priorities",
+          "fact_id_links": [
+            "fact_exec_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_data_tech_cloud_ml",
+              "to": "pillar_executive_leadership",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_executive_leadership",
+              "to": "skill_commercial_board_level_stakeholder_alignment",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_commercial_board_level_stakeholder_alignment",
+              "to": "fact_exec_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_data_tech_cloud_ml",
+          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
+        },
+        {
+          "skill_id": "skill_commercial_gtm_investment_pipeline",
+          "label": "go-to-market investment decisions",
+          "fact_id_links": [
+            "fact_revenue_ops_001"
+          ],
+          "graph_hop_path": [
+            {
+              "edge_type": "career_track_contains_pillar",
+              "from": "track_data_tech_cloud_ml",
+              "to": "pillar_revenue_operations",
+              "note": "track-weighted pillar scope"
+            },
+            {
+              "edge_type": "skill_row_pillar_projection",
+              "from": "pillar_revenue_operations",
+              "to": "skill_commercial_gtm_investment_pipeline",
+              "note": "ACTIVE skill_row pillar match (not causal)"
+            },
+            {
+              "edge_type": "skill_supported_by_fact",
+              "from": "skill_commercial_gtm_investment_pipeline",
+              "to": "fact_revenue_ops_001",
+              "note": "graph edge skill_supported_by_fact"
+            }
+          ],
+          "career_track": "track_data_tech_cloud_ml",
+          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
+        },
+        {
           "skill_id": "skill_finance_cost_optimization_dashboards",
           "label": "30% cost optimization",
           "fact_id_links": [
@@ -266,10 +324,10 @@
           "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
         },
         {
-          "skill_id": "skill_p2_gtm_discovery_qualification",
-          "label": "prioritize high-potential deals",
+          "skill_id": "skill_p2_gtm_commercial_validation_pilots",
+          "label": "pilot engagements",
           "fact_id_links": [
-            "fact_revenue_ops_001"
+            "fact_consulting_001"
           ],
           "graph_hop_path": [
             {
@@ -281,71 +339,13 @@
             {
               "edge_type": "skill_row_pillar_projection",
               "from": "pillar_gtm_presales_motion",
-              "to": "skill_p2_gtm_discovery_qualification",
+              "to": "skill_p2_gtm_commercial_validation_pilots",
               "note": "ACTIVE skill_row pillar match (not causal)"
             },
             {
               "edge_type": "skill_supported_by_fact",
-              "from": "skill_p2_gtm_discovery_qualification",
-              "to": "fact_revenue_ops_001",
-              "note": "graph edge skill_supported_by_fact"
-            }
-          ],
-          "career_track": "track_data_tech_cloud_ml",
-          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
-        },
-        {
-          "skill_id": "skill_p2_gtm_enterprise_deal_support",
-          "label": "Annual Contract Value",
-          "fact_id_links": [
-            "fact_sales_accounts_001"
-          ],
-          "graph_hop_path": [
-            {
-              "edge_type": "career_track_contains_pillar",
-              "from": "track_data_tech_cloud_ml",
-              "to": "pillar_gtm_presales_motion",
-              "note": "track-weighted pillar scope"
-            },
-            {
-              "edge_type": "skill_row_pillar_projection",
-              "from": "pillar_gtm_presales_motion",
-              "to": "skill_p2_gtm_enterprise_deal_support",
-              "note": "ACTIVE skill_row pillar match (not causal)"
-            },
-            {
-              "edge_type": "skill_supported_by_fact",
-              "from": "skill_p2_gtm_enterprise_deal_support",
-              "to": "fact_sales_accounts_001",
-              "note": "graph edge skill_supported_by_fact"
-            }
-          ],
-          "career_track": "track_data_tech_cloud_ml",
-          "career_track_id": "TRACK_DATA_TECH_CLOUD_ML"
-        },
-        {
-          "skill_id": "skill_p2_gtm_executive_buyer_alignment",
-          "label": "CFO priorities",
-          "fact_id_links": [
-            "fact_sales_accounts_001"
-          ],
-          "graph_hop_path": [
-            {
-              "edge_type": "career_track_contains_pillar",
-              "from": "track_data_tech_cloud_ml",
-              "to": "pillar_gtm_presales_motion",
-              "note": "track-weighted pillar scope"
-            },
-            {
-              "edge_type": "skill_row_pillar_projection",
-              "from": "pillar_gtm_presales_motion",
-              "to": "skill_p2_gtm_executive_buyer_alignment",
-              "note": "ACTIVE skill_row pillar match (not causal)"
-            },
-            {
-              "edge_type": "skill_supported_by_fact",
-              "from": "skill_p2_gtm_executive_buyer_alignment",
-              "to": "fact_sales_accounts_001",
+              "from": "skill_p2_gtm_commercial_validation_pilots",
+              "to": "fact_consulting_001",
               "note": "graph edge skill_supported_by_fact"
             }
           ],

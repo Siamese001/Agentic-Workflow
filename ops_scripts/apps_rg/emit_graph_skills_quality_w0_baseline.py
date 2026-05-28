@@ -29,16 +29,10 @@ BROWN_FIXTURES = (
         "briefing_role": "jd",
     },
     {
-        "fixture_id": "brown_briefing_default",
+        "fixture_id": "brown_briefing",
         "path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md",
-        "sha256": "97b306a10498240fd676e9ce2d9d3fd00139d6f441d0401224e223456a95c78b",
-        "briefing_role": "six_lanes",
-    },
-    {
-        "fixture_id": "brown_briefing_exec",
-        "path": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md",
-        "sha256": "6fb5d18f438f872cddd9ed4daeef2ae4a3fd16fc21b0435f502aeaa27f11b689",
-        "briefing_role": "executive_summary",
+        "sha256": "9d0b63db755cce713bce35aa7c9089453a0e2ffb5060a3ed7bef8da483843e5d",
+        "briefing_role": "all_lanes",
     },
 )
 
@@ -232,11 +226,8 @@ def emit_baseline() -> dict[str, Any]:
     ]
     lane_registry_discrepancy = {
         "file": "apps_rg/runtime/rigor/lane_registry.py",
-        "registry_default_briefing": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.txt",
+        "registry_briefing": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md",
         "on_disk_ssot_briefing": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md",
-        "registry_exec_briefing": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.txt",
-        "on_disk_ssot_exec_briefing": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.md",
-        "registry_txt_exists": (REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.txt").is_file(),
         "registry_md_exists": (REPO / "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md").is_file(),
         "remediation_wave": "W9",
     }

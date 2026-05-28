@@ -43,7 +43,8 @@ def test_svp_sentence_arc_requires_display_metrics():
     s4 = SENTENCE_ARC_SVP_STRATEGY[3]["guidance"]
     s5 = SENTENCE_ARC_SVP_STRATEGY[4]["guidance"]
     s6 = SENTENCE_ARC_SVP_STRATEGY[5]["guidance"]
-    assert "$22M" in s3 or "22M" in s3
+    assert "$22m" not in s3.lower()
+    assert "metric_raw" in s3
     assert "40%" in s4 or "reporting-error" in s4
     assert QUANT_METRIC_DISPLAY_FACT_ID in s5
     assert FSA_CREDENTIAL_FACT_ID in s5

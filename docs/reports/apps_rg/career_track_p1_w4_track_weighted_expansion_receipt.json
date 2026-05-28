@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-27T12:06:46Z",
+  "generated_at": "2026-05-27T19:18:11Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4",
   "closeout_wave": "P1-W4-CLOSEOUT",
@@ -32,7 +32,7 @@
     },
     "selected_fact_count_by_track": {
       "track_actuarial_risk_derivatives": 3,
-      "track_data_tech_cloud_ml": 4,
+      "track_data_tech_cloud_ml": 5,
       "track_genai_agentic": 8
     },
     "tracks_with_facts": [
@@ -120,6 +120,58 @@
         ]
       },
       {
+        "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+        "career_track": "track_data_tech_cloud_ml",
+        "pillar": "pillar_executive_leadership",
+        "weight": 0.2609,
+        "graph_hop_path": [
+          {
+            "edge_type": "career_track_contains_pillar",
+            "from": "track_data_tech_cloud_ml",
+            "to": "pillar_executive_leadership",
+            "note": "track-weighted pillar scope"
+          },
+          {
+            "edge_type": "skill_row_pillar_projection",
+            "from": "pillar_executive_leadership",
+            "to": "skill_commercial_board_level_stakeholder_alignment",
+            "note": "ACTIVE skill_row pillar match (not causal)"
+          },
+          {
+            "edge_type": "skill_supported_by_fact",
+            "from": "skill_commercial_board_level_stakeholder_alignment",
+            "to": "fact_exec_001",
+            "note": "graph edge skill_supported_by_fact"
+          }
+        ]
+      },
+      {
+        "skill_id": "skill_commercial_gtm_investment_pipeline",
+        "career_track": "track_data_tech_cloud_ml",
+        "pillar": "pillar_revenue_operations",
+        "weight": 0.2609,
+        "graph_hop_path": [
+          {
+            "edge_type": "career_track_contains_pillar",
+            "from": "track_data_tech_cloud_ml",
+            "to": "pillar_revenue_operations",
+            "note": "track-weighted pillar scope"
+          },
+          {
+            "edge_type": "skill_row_pillar_projection",
+            "from": "pillar_revenue_operations",
+            "to": "skill_commercial_gtm_investment_pipeline",
+            "note": "ACTIVE skill_row pillar match (not causal)"
+          },
+          {
+            "edge_type": "skill_supported_by_fact",
+            "from": "skill_commercial_gtm_investment_pipeline",
+            "to": "fact_revenue_ops_001",
+            "note": "graph edge skill_supported_by_fact"
+          }
+        ]
+      },
+      {
         "skill_id": "skill_finance_cost_optimization_dashboards",
         "career_track": "track_data_tech_cloud_ml",
         "pillar": "pillar_strategic_finance_saas",
@@ -172,7 +224,7 @@
         ]
       },
       {
-        "skill_id": "skill_p2_gtm_discovery_qualification",
+        "skill_id": "skill_p2_gtm_commercial_validation_pilots",
         "career_track": "track_data_tech_cloud_ml",
         "pillar": "pillar_gtm_presales_motion",
         "weight": 0.2609,
@@ -186,65 +238,13 @@
           {
             "edge_type": "skill_row_pillar_projection",
             "from": "pillar_gtm_presales_motion",
-            "to": "skill_p2_gtm_discovery_qualification",
+            "to": "skill_p2_gtm_commercial_validation_pilots",
             "note": "ACTIVE skill_row pillar match (not causal)"
           },
           {
             "edge_type": "skill_supported_by_fact",
-            "from": "skill_p2_gtm_discovery_qualification",
-            "to": "fact_revenue_ops_001",
-            "note": "graph edge skill_supported_by_fact"
-          }
-        ]
-      },
-      {
-        "skill_id": "skill_p2_gtm_enterprise_deal_support",
-        "career_track": "track_data_tech_cloud_ml",
-        "pillar": "pillar_gtm_presales_motion",
-        "weight": 0.2609,
-        "graph_hop_path": [
-          {
-            "edge_type": "career_track_contains_pillar",
-            "from": "track_data_tech_cloud_ml",
-            "to": "pillar_gtm_presales_motion",
-            "note": "track-weighted pillar scope"
-          },
-          {
-            "edge_type": "skill_row_pillar_projection",
-            "from": "pillar_gtm_presales_motion",
-            "to": "skill_p2_gtm_enterprise_deal_support",
-            "note": "ACTIVE skill_row pillar match (not causal)"
-          },
-          {
-            "edge_type": "skill_supported_by_fact",
-            "from": "skill_p2_gtm_enterprise_deal_support",
-            "to": "fact_sales_accounts_001",
-            "note": "graph edge skill_supported_by_fact"
-          }
-        ]
-      },
-      {
-        "skill_id": "skill_p2_gtm_executive_buyer_alignment",
-        "career_track": "track_data_tech_cloud_ml",
-        "pillar": "pillar_gtm_presales_motion",
-        "weight": 0.2609,
-        "graph_hop_path": [
-          {
-            "edge_type": "career_track_contains_pillar",
-            "from": "track_data_tech_cloud_ml",
-            "to": "pillar_gtm_presales_motion",
-            "note": "track-weighted pillar scope"
-          },
-          {
-            "edge_type": "skill_row_pillar_projection",
-            "from": "pillar_gtm_presales_motion",
-            "to": "skill_p2_gtm_executive_buyer_alignment",
-            "note": "ACTIVE skill_row pillar match (not causal)"
-          },
-          {
-            "edge_type": "skill_supported_by_fact",
-            "from": "skill_p2_gtm_executive_buyer_alignment",
-            "to": "fact_sales_accounts_001",
+            "from": "skill_p2_gtm_commercial_validation_pilots",
+            "to": "fact_consulting_001",
             "note": "graph edge skill_supported_by_fact"
           }
         ]
@@ -691,6 +691,56 @@
         ]
       },
       {
+        "fact_id": "fact_exec_001",
+        "career_track": "track_data_tech_cloud_ml",
+        "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+        "graph_hop_path": [
+          {
+            "edge_type": "career_track_contains_pillar",
+            "from": "track_data_tech_cloud_ml",
+            "to": "pillar_executive_leadership",
+            "note": "track-weighted pillar scope"
+          },
+          {
+            "edge_type": "skill_row_pillar_projection",
+            "from": "pillar_executive_leadership",
+            "to": "skill_commercial_board_level_stakeholder_alignment",
+            "note": "ACTIVE skill_row pillar match (not causal)"
+          },
+          {
+            "edge_type": "skill_supported_by_fact",
+            "from": "skill_commercial_board_level_stakeholder_alignment",
+            "to": "fact_exec_001",
+            "note": "graph edge skill_supported_by_fact"
+          }
+        ]
+      },
+      {
+        "fact_id": "fact_revenue_ops_001",
+        "career_track": "track_data_tech_cloud_ml",
+        "skill_id": "skill_commercial_gtm_investment_pipeline",
+        "graph_hop_path": [
+          {
+            "edge_type": "career_track_contains_pillar",
+            "from": "track_data_tech_cloud_ml",
+            "to": "pillar_revenue_operations",
+            "note": "track-weighted pillar scope"
+          },
+          {
+            "edge_type": "skill_row_pillar_projection",
+            "from": "pillar_revenue_operations",
+            "to": "skill_commercial_gtm_investment_pipeline",
+            "note": "ACTIVE skill_row pillar match (not causal)"
+          },
+          {
+            "edge_type": "skill_supported_by_fact",
+            "from": "skill_commercial_gtm_investment_pipeline",
+            "to": "fact_revenue_ops_001",
+            "note": "graph edge skill_supported_by_fact"
+          }
+        ]
+      },
+      {
         "fact_id": "fact_revenue_ops_004",
         "career_track": "track_data_tech_cloud_ml",
         "skill_id": "skill_finance_cost_optimization_dashboards",
@@ -741,9 +791,9 @@
         ]
       },
       {
-        "fact_id": "fact_revenue_ops_001",
+        "fact_id": "fact_consulting_001",
         "career_track": "track_data_tech_cloud_ml",
-        "skill_id": "skill_p2_gtm_discovery_qualification",
+        "skill_id": "skill_p2_gtm_commercial_validation_pilots",
         "graph_hop_path": [
           {
             "edge_type": "career_track_contains_pillar",
@@ -754,63 +804,13 @@
           {
             "edge_type": "skill_row_pillar_projection",
             "from": "pillar_gtm_presales_motion",
-            "to": "skill_p2_gtm_discovery_qualification",
+            "to": "skill_p2_gtm_commercial_validation_pilots",
             "note": "ACTIVE skill_row pillar match (not causal)"
           },
           {
             "edge_type": "skill_supported_by_fact",
-            "from": "skill_p2_gtm_discovery_qualification",
-            "to": "fact_revenue_ops_001",
-            "note": "graph edge skill_supported_by_fact"
-          }
-        ]
-      },
-      {
-        "fact_id": "fact_sales_accounts_001",
-        "career_track": "track_data_tech_cloud_ml",
-        "skill_id": "skill_p2_gtm_enterprise_deal_support",
-        "graph_hop_path": [
-          {
-            "edge_type": "career_track_contains_pillar",
-            "from": "track_data_tech_cloud_ml",
-            "to": "pillar_gtm_presales_motion",
-            "note": "track-weighted pillar scope"
-          },
-          {
-            "edge_type": "skill_row_pillar_projection",
-            "from": "pillar_gtm_presales_motion",
-            "to": "skill_p2_gtm_enterprise_deal_support",
-            "note": "ACTIVE skill_row pillar match (not causal)"
-          },
-          {
-            "edge_type": "skill_supported_by_fact",
-            "from": "skill_p2_gtm_enterprise_deal_support",
-            "to": "fact_sales_accounts_001",
-            "note": "graph edge skill_supported_by_fact"
-          }
-        ]
-      },
-      {
-        "fact_id": "fact_sales_accounts_001",
-        "career_track": "track_data_tech_cloud_ml",
-        "skill_id": "skill_p2_gtm_executive_buyer_alignment",
-        "graph_hop_path": [
-          {
-            "edge_type": "career_track_contains_pillar",
-            "from": "track_data_tech_cloud_ml",
-            "to": "pillar_gtm_presales_motion",
-            "note": "track-weighted pillar scope"
-          },
-          {
-            "edge_type": "skill_row_pillar_projection",
-            "from": "pillar_gtm_presales_motion",
-            "to": "skill_p2_gtm_executive_buyer_alignment",
-            "note": "ACTIVE skill_row pillar match (not causal)"
-          },
-          {
-            "edge_type": "skill_supported_by_fact",
-            "from": "skill_p2_gtm_executive_buyer_alignment",
-            "to": "fact_sales_accounts_001",
+            "from": "skill_p2_gtm_commercial_validation_pilots",
+            "to": "fact_consulting_001",
             "note": "graph edge skill_supported_by_fact"
           }
         ]
@@ -1228,36 +1228,16 @@
         "reason": "not_active:DRAFT"
       },
       {
-        "id": "skill_partner_aws_ecosystem",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_partner_cloud_partner_ecosystem",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_partner_partner_motions",
-        "reason": "not_active:DRAFT"
-      },
-      {
         "id": "skill_partner_partner_engineering",
         "reason": "not_active:DRAFT"
       },
       {
-        "id": "skill_partner_pre_sales",
-        "reason": "not_active:DRAFT"
-      },
-      {
         "id": "skill_partner_workshops",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_partner_enterprise_negotiations",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_partner_gtm_enablement",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_partner_product_feedback_loops",
@@ -1265,51 +1245,7 @@
       },
       {
         "id": "skill_partner_pnl_oversight",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_revops_sales_forecasting_frameworks",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_revops_multi_channel_gtm_alignment",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_customer_nrr_predictive_analytics_20pct",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_customer_satisfaction_nps_25pct",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_commercial_board_level_stakeholder_alignment",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_commercial_gtm_investment_pipeline",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_gtm_commercial_validation_pilots",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_gtm_presales_delivery_handoff",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_tech_demoable_accelerator",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_tech_adoption_derisking",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_p2_tech_estimation_sizing_directional",
@@ -1321,10 +1257,6 @@
       },
       {
         "id": "skill_sr_insurance_systems_resilience_internal",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_sr_regulated_financial_institutions_fluency",
         "reason": "not_active:DRAFT"
       },
       {
@@ -1389,6 +1321,46 @@
       },
       {
         "id": "skill_eval_regression_and_gauntlet_design",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_meddpicc_sales_qualification",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cpq_deal_velocity_automation",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_soc2_zero_trust_security",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_saas_arr_ltv_cac_metrics",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_confluent_streaming_platforms",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_watson_studio_fraud_aml",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_algo_trading_sub_ms_inference",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_nps_customer_health_scoring",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_finra_sec_regulatory_compliance",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_credit_adjudication_default_risk",
         "reason": "not_active:DRAFT"
       },
       {
@@ -1452,36 +1424,16 @@
         "reason": "not_active:DRAFT"
       },
       {
-        "id": "skill_partner_aws_ecosystem",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_partner_cloud_partner_ecosystem",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_partner_partner_motions",
-        "reason": "not_active:DRAFT"
-      },
-      {
         "id": "skill_partner_partner_engineering",
         "reason": "not_active:DRAFT"
       },
       {
-        "id": "skill_partner_pre_sales",
-        "reason": "not_active:DRAFT"
-      },
-      {
         "id": "skill_partner_workshops",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_partner_enterprise_negotiations",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_partner_gtm_enablement",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_partner_product_feedback_loops",
@@ -1489,51 +1441,15 @@
       },
       {
         "id": "skill_partner_pnl_oversight",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_revops_sales_forecasting_frameworks",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_revops_multi_channel_gtm_alignment",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_customer_nrr_predictive_analytics_20pct",
-        "reason": "not_active:DRAFT"
+        "reason": "empty_fact_id_links"
       },
       {
         "id": "skill_customer_satisfaction_nps_25pct",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_commercial_board_level_stakeholder_alignment",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_commercial_gtm_investment_pipeline",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_gtm_commercial_validation_pilots",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_gtm_presales_delivery_handoff",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_tech_demoable_accelerator",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_tech_adoption_derisking",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
-        "reason": "not_active:DRAFT"
+        "reason": "empty_fact_id_links"
       },
       {
         "id": "skill_p2_tech_estimation_sizing_directional",
@@ -1545,10 +1461,6 @@
       },
       {
         "id": "skill_sr_insurance_systems_resilience_internal",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_sr_regulated_financial_institutions_fluency",
         "reason": "not_active:DRAFT"
       },
       {
@@ -1613,6 +1525,46 @@
       },
       {
         "id": "skill_eval_regression_and_gauntlet_design",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_meddpicc_sales_qualification",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cpq_deal_velocity_automation",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_soc2_zero_trust_security",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_saas_arr_ltv_cac_metrics",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_confluent_streaming_platforms",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_watson_studio_fraud_aml",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_algo_trading_sub_ms_inference",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_nps_customer_health_scoring",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_finra_sec_regulatory_compliance",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_credit_adjudication_default_risk",
         "reason": "not_active:DRAFT"
       },
       {
@@ -1676,36 +1628,16 @@
         "reason": "not_active:DRAFT"
       },
       {
-        "id": "skill_partner_aws_ecosystem",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_partner_cloud_partner_ecosystem",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_partner_partner_motions",
-        "reason": "not_active:DRAFT"
-      },
-      {
         "id": "skill_partner_partner_engineering",
         "reason": "not_active:DRAFT"
       },
       {
-        "id": "skill_partner_pre_sales",
-        "reason": "not_active:DRAFT"
-      },
-      {
         "id": "skill_partner_workshops",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_partner_enterprise_negotiations",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_partner_gtm_enablement",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_partner_product_feedback_loops",
@@ -1713,51 +1645,7 @@
       },
       {
         "id": "skill_partner_pnl_oversight",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_revops_sales_forecasting_frameworks",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_revops_multi_channel_gtm_alignment",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_customer_nrr_predictive_analytics_20pct",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_customer_satisfaction_nps_25pct",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_commercial_board_level_stakeholder_alignment",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_commercial_gtm_investment_pipeline",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_gtm_commercial_validation_pilots",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_gtm_presales_delivery_handoff",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_tech_demoable_accelerator",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_tech_adoption_derisking",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_p2_tech_estimation_sizing_directional",
@@ -1769,10 +1657,6 @@
       },
       {
         "id": "skill_sr_insurance_systems_resilience_internal",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_sr_regulated_financial_institutions_fluency",
         "reason": "not_active:DRAFT"
       },
       {
@@ -1837,6 +1721,46 @@
       },
       {
         "id": "skill_eval_regression_and_gauntlet_design",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_meddpicc_sales_qualification",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cpq_deal_velocity_automation",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_soc2_zero_trust_security",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_saas_arr_ltv_cac_metrics",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_confluent_streaming_platforms",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_watson_studio_fraud_aml",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_algo_trading_sub_ms_inference",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_nps_customer_health_scoring",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_finra_sec_regulatory_compliance",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_credit_adjudication_default_risk",
         "reason": "not_active:DRAFT"
       }
     ],
@@ -1905,19 +1829,19 @@
         {
           "edge_type": "career_track_contains_pillar",
           "from": "track_data_tech_cloud_ml",
-          "to": "pillar_strategic_finance_saas",
+          "to": "pillar_executive_leadership",
           "note": "track-weighted pillar scope"
         },
         {
           "edge_type": "skill_row_pillar_projection",
-          "from": "pillar_strategic_finance_saas",
-          "to": "skill_finance_cost_optimization_dashboards",
+          "from": "pillar_executive_leadership",
+          "to": "skill_commercial_board_level_stakeholder_alignment",
           "note": "ACTIVE skill_row pillar match (not causal)"
         },
         {
           "edge_type": "skill_supported_by_fact",
-          "from": "skill_finance_cost_optimization_dashboards",
-          "to": "fact_revenue_ops_004",
+          "from": "skill_commercial_board_level_stakeholder_alignment",
+          "to": "fact_exec_001",
           "note": "graph edge skill_supported_by_fact"
         }
       ],
@@ -1925,19 +1849,19 @@
         {
           "edge_type": "career_track_contains_pillar",
           "from": "track_data_tech_cloud_ml",
-          "to": "pillar_strategic_finance_saas",
+          "to": "pillar_revenue_operations",
           "note": "track-weighted pillar scope"
         },
         {
           "edge_type": "skill_row_pillar_projection",
-          "from": "pillar_strategic_finance_saas",
-          "to": "skill_finance_ma_synergy_due_diligence",
+          "from": "pillar_revenue_operations",
+          "to": "skill_commercial_gtm_investment_pipeline",
           "note": "ACTIVE skill_row pillar match (not causal)"
         },
         {
           "edge_type": "skill_supported_by_fact",
-          "from": "skill_finance_ma_synergy_due_diligence",
-          "to": "fact_revenue_ops_005",
+          "from": "skill_commercial_gtm_investment_pipeline",
+          "to": "fact_revenue_ops_001",
           "note": "graph edge skill_supported_by_fact"
         }
       ]
@@ -1956,7 +1880,7 @@
     },
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:9ce93d9b1413282d",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:db95cdec12c1d10f",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -1965,10 +1889,12 @@
     ],
     "c03_selected_fact_ids": [
       "fact_certs_001",
+      "fact_consulting_001",
       "fact_engineering_platform_001",
       "fact_engineering_platform_003",
       "fact_engineering_platform_004",
       "fact_engineering_platform_006",
+      "fact_exec_001",
       "fact_exec_002",
       "fact_governance_001",
       "fact_governance_002",
@@ -1976,8 +1902,7 @@
       "fact_quant_hpc_003",
       "fact_revenue_ops_001",
       "fact_revenue_ops_004",
-      "fact_revenue_ops_005",
-      "fact_sales_accounts_001"
+      "fact_revenue_ops_005"
     ],
     "c03_selected_skill_ids": [
       "skill_actuarial_fsa_fellowship",
@@ -1995,11 +1920,11 @@
       "skill_bounded_agent_execution",
       "skill_capital_capital_modeling",
       "skill_capital_regulatory_capital",
+      "skill_commercial_board_level_stakeholder_alignment",
+      "skill_commercial_gtm_investment_pipeline",
       "skill_finance_cost_optimization_dashboards",
       "skill_finance_ma_synergy_due_diligence",
-      "skill_p2_gtm_discovery_qualification",
-      "skill_p2_gtm_enterprise_deal_support",
-      "skill_p2_gtm_executive_buyer_alignment"
+      "skill_p2_gtm_commercial_validation_pilots"
     ],
     "non_graph_evidence_items_count": 0,
     "graph_expansion_mode": "TRACK_WEIGHTED_MULTI_HOP",
@@ -2011,7 +1936,7 @@
     "c03_graphrag_bound_document": {
       "schema_version": "c03_graphrag_bound_v1",
       "section_id": "executive_summary",
-      "generated_at_utc": "2026-05-27T12:06:46.351557+00:00",
+      "generated_at_utc": "2026-05-27T19:18:11.396920+00:00",
       "c03_graphrag_bound_status": "BOUND",
       "source_authority": "augmented_skills_graph",
       "graph_expansion_allowed": true,
@@ -2022,14 +1947,10 @@
         "ref:graph:edge:edge_skill_fact_skill_actuarial_fsa_fellowship_fact_certs_001",
         "ref:graph:edge:edge_skill_fact_skill_risk_enterprise_risk_controls_fact_governance_001",
         "ref:graph:edge:edge_skill_fact_skill_capital_regulatory_capital_fact_governance_003",
-        "ref:graph:edge:edge_skill_fact_skill_partner_customer_deal_support_fact_sales_accounts_001",
-        "ref:graph:edge:edge_skill_fact_skill_partner_sales_revenue_targets_fact_sales_accounts_001",
         "ref:graph:edge:edge_skill_fact_skill_revops_salesforce_pipeline_analytics_fact_revenue_ops_001",
         "ref:graph:edge:edge_skill_fact_skill_finance_cost_optimization_dashboards_fact_revenue_ops_004",
         "ref:graph:edge:edge_skill_fact_skill_finance_ma_synergy_due_diligence_fact_revenue_ops_005",
         "ref:graph:edge:edge_skill_fact_skill_p2_gtm_discovery_qualification_fact_revenue_ops_001",
-        "ref:graph:edge:edge_skill_fact_skill_p2_gtm_executive_buyer_alignment_fact_sales_accounts_001",
-        "ref:graph:edge:edge_skill_fact_skill_p2_gtm_enterprise_deal_support_fact_sales_accounts_001",
         "ref:graph:edge:edge_skill_fact_skill_p2_tech_devops_pipeline_blueprint_fact_engineering_platform_003",
         "ref:graph:edge:edge_skill_fact_skill_p2_tech_reusable_accelerators_fact_engineering_platform_006",
         "ref:graph:edge:edge_skill_fact_skill_sr_cloud_data_platform_engineering_fact_engineering_platform_001",
@@ -2079,17 +2000,23 @@
         "ref:graph:edge:edge_skill_fact_skill_static_governance_drift_detection_fact_governance_003",
         "ref:graph:edge:edge_skill_fact_skill_replayable_runtime_design_fact_engineering_platform_001",
         "ref:graph:edge:edge_skill_fact_skill_audit_grade_observability_fact_engineering_platform_003",
-        "ref:graph:edge:edge_skill_fact_skill_receipt_and_artifact_chain_design_fact_governance_001"
+        "ref:graph:edge:edge_skill_fact_skill_receipt_and_artifact_chain_design_fact_governance_001",
+        "ref:graph:edge:edge_skill_fact_skill_no_bypass_proof_controls_fact_governance_003",
+        "ref:graph:edge:edge_skill_fact_skill_runtime_proof_bundle_design_fact_engineering_platform_004",
+        "ref:graph:edge:edge_skill_fact_skill_learning_firewall_controls_fact_governance_003",
+        "ref:graph:edge:edge_skill_fact_skill_hitl_escalation_architecture_fact_governance_002"
       ],
       "graph_lineage_refs": [
         "ref:graph:version:master_skills_arsenal_graph_v1",
         "ref:graph:node_count:236",
-        "ref:graph:edge_count:1400",
+        "ref:graph:edge_count:1421",
         "ref:graph:fact_lineage:fact_certs_001",
+        "ref:graph:fact_lineage:fact_consulting_001",
         "ref:graph:fact_lineage:fact_engineering_platform_001",
         "ref:graph:fact_lineage:fact_engineering_platform_003",
         "ref:graph:fact_lineage:fact_engineering_platform_004",
         "ref:graph:fact_lineage:fact_engineering_platform_006",
+        "ref:graph:fact_lineage:fact_exec_001",
         "ref:graph:fact_lineage:fact_exec_002",
         "ref:graph:fact_lineage:fact_governance_001",
         "ref:graph:fact_lineage:fact_governance_002",
@@ -2097,14 +2024,13 @@
         "ref:graph:fact_lineage:fact_quant_hpc_003",
         "ref:graph:fact_lineage:fact_revenue_ops_001",
         "ref:graph:fact_lineage:fact_revenue_ops_004",
-        "ref:graph:fact_lineage:fact_revenue_ops_005",
-        "ref:graph:fact_lineage:fact_sales_accounts_001"
+        "ref:graph:fact_lineage:fact_revenue_ops_005"
       ],
-      "graph_sig": "d5120b7af192979cefe01ad95fdf5d6b",
+      "graph_sig": "b47a8821a03879a8fb6e6bfc126cd691",
       "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-      "graph_digest": "9ce93d9b1413282df54be716124d19cb3bbcea4ddf2643f71aa4d0afa8a72b8d",
+      "graph_digest": "db95cdec12c1d10f3e3fbdd4477fc9a96c068f0446aac22afc6c7ad0bedaeda8",
       "graph_version": "master_skills_arsenal_graph_v1",
-      "evidence_items_count": 14,
+      "evidence_items_count": 15,
       "final_evidence_contract_snapshot": {
         "schema_version": "final_evidence_contract_snapshot_v1",
         "app_id": "apps_rg",
@@ -2121,14 +2047,10 @@
           "ref:graph:edge:edge_skill_fact_skill_actuarial_fsa_fellowship_fact_certs_001",
           "ref:graph:edge:edge_skill_fact_skill_risk_enterprise_risk_controls_fact_governance_001",
           "ref:graph:edge:edge_skill_fact_skill_capital_regulatory_capital_fact_governance_003",
-          "ref:graph:edge:edge_skill_fact_skill_partner_customer_deal_support_fact_sales_accounts_001",
-          "ref:graph:edge:edge_skill_fact_skill_partner_sales_revenue_targets_fact_sales_accounts_001",
           "ref:graph:edge:edge_skill_fact_skill_revops_salesforce_pipeline_analytics_fact_revenue_ops_001",
           "ref:graph:edge:edge_skill_fact_skill_finance_cost_optimization_dashboards_fact_revenue_ops_004",
           "ref:graph:edge:edge_skill_fact_skill_finance_ma_synergy_due_diligence_fact_revenue_ops_005",
           "ref:graph:edge:edge_skill_fact_skill_p2_gtm_discovery_qualification_fact_revenue_ops_001",
-          "ref:graph:edge:edge_skill_fact_skill_p2_gtm_executive_buyer_alignment_fact_sales_accounts_001",
-          "ref:graph:edge:edge_skill_fact_skill_p2_gtm_enterprise_deal_support_fact_sales_accounts_001",
           "ref:graph:edge:edge_skill_fact_skill_p2_tech_devops_pipeline_blueprint_fact_engineering_platform_003",
           "ref:graph:edge:edge_skill_fact_skill_p2_tech_reusable_accelerators_fact_engineering_platform_006",
           "ref:graph:edge:edge_skill_fact_skill_sr_cloud_data_platform_engineering_fact_engineering_platform_001",
@@ -2178,17 +2100,23 @@
           "ref:graph:edge:edge_skill_fact_skill_static_governance_drift_detection_fact_governance_003",
           "ref:graph:edge:edge_skill_fact_skill_replayable_runtime_design_fact_engineering_platform_001",
           "ref:graph:edge:edge_skill_fact_skill_audit_grade_observability_fact_engineering_platform_003",
-          "ref:graph:edge:edge_skill_fact_skill_receipt_and_artifact_chain_design_fact_governance_001"
+          "ref:graph:edge:edge_skill_fact_skill_receipt_and_artifact_chain_design_fact_governance_001",
+          "ref:graph:edge:edge_skill_fact_skill_no_bypass_proof_controls_fact_governance_003",
+          "ref:graph:edge:edge_skill_fact_skill_runtime_proof_bundle_design_fact_engineering_platform_004",
+          "ref:graph:edge:edge_skill_fact_skill_learning_firewall_controls_fact_governance_003",
+          "ref:graph:edge:edge_skill_fact_skill_hitl_escalation_architecture_fact_governance_002"
         ],
         "graph_lineage_refs": [
           "ref:graph:version:master_skills_arsenal_graph_v1",
           "ref:graph:node_count:236",
-          "ref:graph:edge_count:1400",
+          "ref:graph:edge_count:1421",
           "ref:graph:fact_lineage:fact_certs_001",
+          "ref:graph:fact_lineage:fact_consulting_001",
           "ref:graph:fact_lineage:fact_engineering_platform_001",
           "ref:graph:fact_lineage:fact_engineering_platform_003",
           "ref:graph:fact_lineage:fact_engineering_platform_004",
           "ref:graph:fact_lineage:fact_engineering_platform_006",
+          "ref:graph:fact_lineage:fact_exec_001",
           "ref:graph:fact_lineage:fact_exec_002",
           "ref:graph:fact_lineage:fact_governance_001",
           "ref:graph:fact_lineage:fact_governance_002",
@@ -2196,12 +2124,11 @@
           "ref:graph:fact_lineage:fact_quant_hpc_003",
           "ref:graph:fact_lineage:fact_revenue_ops_001",
           "ref:graph:fact_lineage:fact_revenue_ops_004",
-          "ref:graph:fact_lineage:fact_revenue_ops_005",
-          "ref:graph:fact_lineage:fact_sales_accounts_001"
+          "ref:graph:fact_lineage:fact_revenue_ops_005"
         ],
-        "graph_sig": "d5120b7af192979cefe01ad95fdf5d6b",
+        "graph_sig": "b47a8821a03879a8fb6e6bfc126cd691",
         "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-        "graph_digest": "9ce93d9b1413282df54be716124d19cb3bbcea4ddf2643f71aa4d0afa8a72b8d",
+        "graph_digest": "db95cdec12c1d10f3e3fbdd4477fc9a96c068f0446aac22afc6c7ad0bedaeda8",
         "graph_version": "master_skills_arsenal_graph_v1",
         "evidence_items": [
           {
@@ -2212,6 +2139,15 @@
             "authority": "augmented_skills_graph",
             "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
             "career_track": "track_actuarial_risk_derivatives"
+          },
+          {
+            "evidence_id": "evidence:track_weighted:fact_consulting_001",
+            "source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+            "source_class": "augmented_skills_graph",
+            "graph_node_ref": "node_fact:fact_consulting_001",
+            "authority": "augmented_skills_graph",
+            "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
+            "career_track": "track_data_tech_cloud_ml"
           },
           {
             "evidence_id": "evidence:track_weighted:fact_engineering_platform_001",
@@ -2248,6 +2184,15 @@
             "authority": "augmented_skills_graph",
             "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
             "career_track": "track_genai_agentic"
+          },
+          {
+            "evidence_id": "evidence:track_weighted:fact_exec_001",
+            "source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+            "source_class": "augmented_skills_graph",
+            "graph_node_ref": "node_fact:fact_exec_001",
+            "authority": "augmented_skills_graph",
+            "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
+            "career_track": "track_data_tech_cloud_ml"
           },
           {
             "evidence_id": "evidence:track_weighted:fact_exec_002",
@@ -2320,18 +2265,9 @@
             "authority": "augmented_skills_graph",
             "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
             "career_track": "track_data_tech_cloud_ml"
-          },
-          {
-            "evidence_id": "evidence:track_weighted:fact_sales_accounts_001",
-            "source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-            "source_class": "augmented_skills_graph",
-            "graph_node_ref": "node_fact:fact_sales_accounts_001",
-            "authority": "augmented_skills_graph",
-            "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
-            "career_track": "track_data_tech_cloud_ml"
           }
         ],
-        "evidence_collection_timestamp": "2026-05-27T12:06:46.351557+00:00",
+        "evidence_collection_timestamp": "2026-05-27T19:18:11.396920+00:00",
         "fec_shape_only": true,
         "canonical_final_evidence_contract_emitted": false,
         "recommended_artifact_name": "section_graph_binding_fec_snapshot.json"
@@ -2389,13 +2325,13 @@
       "graph_hop_bounds_policy_note": "graph_hop_bounds in native_c03_final_evidence.json is ACL policy max depth; exec-summary c03_graphrag_bound materializes TRACK_WEIGHTED_MULTI_HOP paths when pool resolves"
     },
     "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-    "graph_digest": "9ce93d9b1413282df54be716124d19cb3bbcea4ddf2643f71aa4d0afa8a72b8d",
+    "graph_digest": "db95cdec12c1d10f3e3fbdd4477fc9a96c068f0446aac22afc6c7ad0bedaeda8",
     "graph_version": "master_skills_arsenal_graph_v1"
   },
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:9ce93d9b1413282d",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:db95cdec12c1d10f",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",

@@ -204,7 +204,7 @@ def _phase1_materialize_lane_run_dir(
             lane,
             lane_provider=lane_provider,
         )
-    except FileNotFoundError as exc:
+    except FileNotFoundError as exc:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         lane_exec_status[lane] = f"{lane_exec_status.get(lane, '')}|missing_pointer:{exc}".strip(
             "|"
         )

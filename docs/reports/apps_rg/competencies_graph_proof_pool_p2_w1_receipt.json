@@ -1,6 +1,6 @@
 {
   "schema": "competencies_graph_proof_pool_p2_w1_receipt_v1",
-  "generated_at": "2026-05-27T12:06:46Z",
+  "generated_at": "2026-05-27T19:18:10Z",
   "proof_pool_type": "augmented_skills_graph",
   "section_id": "competencies",
   "graph_source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
@@ -18,7 +18,7 @@
   },
   "selected_fact_count_by_track": {
     "track_actuarial_risk_derivatives": 3,
-    "track_data_tech_cloud_ml": 4,
+    "track_data_tech_cloud_ml": 5,
     "track_genai_agentic": 8
   },
   "selected_skill_rows_sample": [
@@ -113,60 +113,60 @@
       "graph_support_ref": "augmented_skills_graph"
     },
     {
-      "skill_id": "skill_finance_cost_optimization_dashboards",
-      "label": "30% cost optimization",
+      "skill_id": "skill_commercial_board_level_stakeholder_alignment",
+      "label": "board level priorities",
       "career_track": "track_data_tech_cloud_ml",
-      "pillar": "pillar_strategic_finance_saas",
+      "pillar": "pillar_executive_leadership",
       "fact_id_links": [
-        "fact_revenue_ops_004"
+        "fact_exec_001"
       ],
       "graph_hop_path": [
         {
           "edge_type": "career_track_contains_pillar",
           "from": "track_data_tech_cloud_ml",
-          "to": "pillar_strategic_finance_saas",
+          "to": "pillar_executive_leadership",
           "note": "track-weighted pillar scope"
         },
         {
           "edge_type": "skill_row_pillar_projection",
-          "from": "pillar_strategic_finance_saas",
-          "to": "skill_finance_cost_optimization_dashboards",
+          "from": "pillar_executive_leadership",
+          "to": "skill_commercial_board_level_stakeholder_alignment",
           "note": "ACTIVE skill_row pillar match (not causal)"
         },
         {
           "edge_type": "skill_supported_by_fact",
-          "from": "skill_finance_cost_optimization_dashboards",
-          "to": "fact_revenue_ops_004",
+          "from": "skill_commercial_board_level_stakeholder_alignment",
+          "to": "fact_exec_001",
           "note": "graph edge skill_supported_by_fact"
         }
       ],
       "graph_support_ref": "augmented_skills_graph"
     },
     {
-      "skill_id": "skill_finance_ma_synergy_due_diligence",
-      "label": "M&A due diligence",
+      "skill_id": "skill_commercial_gtm_investment_pipeline",
+      "label": "go-to-market investment decisions",
       "career_track": "track_data_tech_cloud_ml",
-      "pillar": "pillar_strategic_finance_saas",
+      "pillar": "pillar_revenue_operations",
       "fact_id_links": [
-        "fact_revenue_ops_005"
+        "fact_revenue_ops_001"
       ],
       "graph_hop_path": [
         {
           "edge_type": "career_track_contains_pillar",
           "from": "track_data_tech_cloud_ml",
-          "to": "pillar_strategic_finance_saas",
+          "to": "pillar_revenue_operations",
           "note": "track-weighted pillar scope"
         },
         {
           "edge_type": "skill_row_pillar_projection",
-          "from": "pillar_strategic_finance_saas",
-          "to": "skill_finance_ma_synergy_due_diligence",
+          "from": "pillar_revenue_operations",
+          "to": "skill_commercial_gtm_investment_pipeline",
           "note": "ACTIVE skill_row pillar match (not causal)"
         },
         {
           "edge_type": "skill_supported_by_fact",
-          "from": "skill_finance_ma_synergy_due_diligence",
-          "to": "fact_revenue_ops_005",
+          "from": "skill_commercial_gtm_investment_pipeline",
+          "to": "fact_revenue_ops_001",
           "note": "graph edge skill_supported_by_fact"
         }
       ],
@@ -238,19 +238,19 @@
       {
         "edge_type": "career_track_contains_pillar",
         "from": "track_data_tech_cloud_ml",
-        "to": "pillar_strategic_finance_saas",
+        "to": "pillar_executive_leadership",
         "note": "track-weighted pillar scope"
       },
       {
         "edge_type": "skill_row_pillar_projection",
-        "from": "pillar_strategic_finance_saas",
-        "to": "skill_finance_cost_optimization_dashboards",
+        "from": "pillar_executive_leadership",
+        "to": "skill_commercial_board_level_stakeholder_alignment",
         "note": "ACTIVE skill_row pillar match (not causal)"
       },
       {
         "edge_type": "skill_supported_by_fact",
-        "from": "skill_finance_cost_optimization_dashboards",
-        "to": "fact_revenue_ops_004",
+        "from": "skill_commercial_board_level_stakeholder_alignment",
+        "to": "fact_exec_001",
         "note": "graph edge skill_supported_by_fact"
       }
     ],
@@ -258,19 +258,19 @@
       {
         "edge_type": "career_track_contains_pillar",
         "from": "track_data_tech_cloud_ml",
-        "to": "pillar_strategic_finance_saas",
+        "to": "pillar_revenue_operations",
         "note": "track-weighted pillar scope"
       },
       {
         "edge_type": "skill_row_pillar_projection",
-        "from": "pillar_strategic_finance_saas",
-        "to": "skill_finance_ma_synergy_due_diligence",
+        "from": "pillar_revenue_operations",
+        "to": "skill_commercial_gtm_investment_pipeline",
         "note": "ACTIVE skill_row pillar match (not causal)"
       },
       {
         "edge_type": "skill_supported_by_fact",
-        "from": "skill_finance_ma_synergy_due_diligence",
-        "to": "fact_revenue_ops_005",
+        "from": "skill_commercial_gtm_investment_pipeline",
+        "to": "fact_revenue_ops_001",
         "note": "graph edge skill_supported_by_fact"
       }
     ]

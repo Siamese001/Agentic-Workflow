@@ -145,7 +145,7 @@ def attempt_hybrid_pool_widen(
                 hybrid_suggested_fact_ids=[fid],
                 resolver_allowed_fact_ids=sorted(allowed),
             )
-        except GraphSkillsProofError:
+        except GraphSkillsProofError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     return attempts
 

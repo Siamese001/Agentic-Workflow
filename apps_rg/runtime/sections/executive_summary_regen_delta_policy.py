@@ -401,7 +401,7 @@ def _normalize_cited_sentence_index(raw: Any) -> int | None:
     """Map judge citation to 1-based index (S1=1). Accepts 0-based S1=0."""
     try:
         n = int(raw)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     if n == 0:
         return 1

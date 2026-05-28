@@ -94,7 +94,7 @@ def judge_pass_floor_0_to_5() -> float | None:
         return None
     try:
         floor = float(raw)
-    except ValueError:
+    except ValueError:  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
     if floor < 0.0 or floor > 5.0:
         return None

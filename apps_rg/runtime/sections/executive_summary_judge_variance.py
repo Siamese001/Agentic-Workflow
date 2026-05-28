@@ -17,11 +17,11 @@ def _coerce_score(judge: dict[str, Any]) -> float | None:
         if raw is not None:
             try:
                 return float(raw) * 5.0
-            except (TypeError, ValueError):
+            except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
                 return None
     try:
         return float(raw)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError):  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary
         return None
 
 

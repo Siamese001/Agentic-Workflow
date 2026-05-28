@@ -50,7 +50,9 @@ def _git_commit() -> str:
 
 def _qwen_live() -> bool:
     try:
-        from tests._apps_contract.lane_cli_common import qwen_live_available
+        from tests._apps_contract.lane_cli_common import (  # guardian: allow-layer-violation -- ops closeout probes contract harness live availability
+            qwen_live_available,
+        )
 
         return bool(qwen_live_available())
     except Exception:

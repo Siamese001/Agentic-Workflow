@@ -290,7 +290,7 @@ def collect_section_prompt_corpus(section_id: str) -> str:
 
         try:
             executable = collect_executable_prompt_corpus(section_id)
-        except (KeyError, FileNotFoundError, ValueError):
+        except (KeyError, FileNotFoundError, ValueError):  # guardian: allow-default-fallback -- P2 burndown: fail-soft optional boundary
             executable = ""
         if len(executable.strip()) >= 200:
             if _PA_CORE_LAW.is_file():

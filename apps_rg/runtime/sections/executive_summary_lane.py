@@ -2142,6 +2142,11 @@ def run_executive_summary_execution(
         parsed, finalize_receipt = finalize_executive_summary_coherence(
             parsed,
             selected_facts=list(selected_fact_plan.get("facts") or []),
+            target_role=str(
+                getattr(args, "target_role", None)
+                or getattr(args, "target_title", None)
+                or ""
+            ),
         )
         if artifact_dir is not None:
             write_json(

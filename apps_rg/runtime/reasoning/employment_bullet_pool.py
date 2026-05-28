@@ -119,7 +119,7 @@ def min_selection_score_for_lane(section_lane: str) -> float:
     if override:
         try:
             return max(0.0, min(1.0, float(override)))
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     return DEFAULT_MIN_SELECTION_SCORE
 

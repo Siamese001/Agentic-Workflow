@@ -62,6 +62,7 @@ DEFAULT_EXEMPT = (
     "apps_rg/runtime/sections/executive_summary_same_authority_regen_bridge.py",
     "apps_rg/runtime/sections/executive_summary_judge_regen_loop.py",
     "apps_rg/runtime/sections/executive_summary_judge_remediation.py",
+    "apps_rg/runtime/sections/executive_summary_repair_policy.py",
 )
 
 

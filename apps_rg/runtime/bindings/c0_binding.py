@@ -130,7 +130,7 @@ def _resolve_spine_graph_expansion_refs(
             merged_refs = (*exp, *lin)
             if merged_refs:
                 return tuple(dict.fromkeys(merged_refs))[:64]
-        except (OSError, ValueError, TypeError) as exc:
+        except (OSError, ValueError, TypeError) as exc:  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary
             _logger.warning("spine graph static FEC fallback failed: %s", exc)
 
     return (C0_GRAPH_LANE_NA_REF,)

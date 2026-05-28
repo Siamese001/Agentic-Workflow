@@ -1,6 +1,6 @@
 {
   "schema": "all_sections_c03_graph_binding_p2_w2_v1",
-  "generated_at": "2026-05-27T12:06:45Z",
+  "generated_at": "2026-05-27T19:18:09Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W2",
   "sections": {
@@ -12,7 +12,7 @@
     },
     "executive_summary": {
       "c03_graph_bound_status": "BOUND",
-      "graph_hop_paths_count": 4,
+      "graph_hop_paths_count": 5,
       "non_graph_evidence_items_count": 0,
       "broad_skills_ledger_used_as_authority": false
     },
@@ -30,13 +30,13 @@
     },
     "ibm_bullets": {
       "c03_graph_bound_status": "BOUND",
-      "graph_hop_paths_count": 2,
+      "graph_hop_paths_count": 4,
       "non_graph_evidence_items_count": 0,
       "broad_skills_ledger_used_as_authority": false
     },
     "ibm_narrative": {
       "c03_graph_bound_status": "BOUND",
-      "graph_hop_paths_count": 16,
+      "graph_hop_paths_count": 18,
       "non_graph_evidence_items_count": 0,
       "broad_skills_ledger_used_as_authority": false
     },

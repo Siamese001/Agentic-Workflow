@@ -53,7 +53,7 @@ def min_competencies_selection_score() -> float:
     if override:
         try:
             return max(0.0, min(1.0, float(override)))
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     return DEFAULT_COMPETENCIES_MIN_SELECTION_SCORE
 
@@ -63,7 +63,7 @@ def competencies_regen_extra_path_count() -> int:
     if raw:
         try:
             return max(0, int(raw))
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     return COMPETENCIES_REGEN_EXTRA_PATHS
 

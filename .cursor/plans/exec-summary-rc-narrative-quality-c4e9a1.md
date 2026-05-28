@@ -1,6 +1,6 @@
 # Plan: exec-summary-rc-narrative-quality-c4e9a1
 
-**Status**: PARTIAL (2026-05-27) — Brown SVP proof `exec_summary_20260527_195120`: **PRODUCT_QUALITY PASS** (all X2 green); **X3_REVIEW_JUDGE_SOFT_FAIL** (Claude/Gemini judges) remains.
+**Status**: PARTIAL (2026-05-27) — W1–W5 implemented + 16 unit tests PASS. Best Brown SVP proof: `exec_summary_20260527_212812` (**PRODUCT_QUALITY PASS**, all X2 green; **X3_REVIEW_JUDGE_SOFT_FAIL** exit 4 — Claude/Gemini). Post-polish pipeline fixes graph/utilization regressions (`212443`/`213732`); LLM variance on later proofs remains. W6 **X3_ALLOW** not yet achieved.
 
 ## Objective
 
@@ -121,4 +121,4 @@ present in `selected_fact_plan.facts`. This prevents $22M and 20% from leaking i
 
 ## Status
 
-IN_PROGRESS — W1-W5 complete (9/9 unit tests pass). W6 proof run pending.
+PARTIAL (2026-05-27) — W1–W5 complete (14 unit tests). W6: Brown SVP proof `exec_summary_20260527_195120` reached **PRODUCT_QUALITY PASS**; **X3_REVIEW_JUDGE_SOFT_FAIL** (Claude/Gemini) addressed in follow-up polish (`polish_executive_summary_judge_alignment`). Re-proof required for exit 0.

@@ -1,0 +1,25 @@
+{
+  "decision_type": "architecture_choice",
+  "user_goal": "Promote customer success metric DRAFT skills (NRR 20%, NPS 25%)",
+  "normalized_intent": "PROMOTE skill_customer_nrr and skill_customer_satisfaction with Head of CS resume snippets vs DEFER to avoid customer-success-primary positioning on SVP IT Strategy runs",
+  "repo_area": "apps_rg/fact_inventory",
+  "files_in_scope": ["apps_rg/fact_inventory/master_skills_arsenal_ledger.json"],
+  "candidates": [
+    {
+      "id": "promote_cs_metrics",
+      "thesis": "PROMOTE both with fact_customer_success_001. Strong resume snippets with metrics; usable in executive_summary as outcomes not role-primary.",
+      "confidence_score": 0.68,
+      "principle_at_stake": "Metric-backed claims strengthen executive narrative when support_level stays DERIVED_SUPPORTED",
+      "what_youd_miss": "Risk of CS-primary framing if allowed_phrases leak into headline",
+      "what_would_flip": "Forbidden phrase audit flags customer success primary"
+    },
+    {
+      "id": "defer_cs_metrics",
+      "thesis": "DEFER until CS vs SVP positioning is clarified. harden_augmented_skills_graph_ssot forbids CS-primary external claims.",
+      "confidence_score": 0.72,
+      "principle_at_stake": "Anti-pattern: Head of Customer Success primary on insurance brokerage IT strategy targeting",
+      "what_youd_miss": "20% NRR and 25% NPS proof points in competencies",
+      "what_would_flip": "User confirms metrics are safe for unify_narrative only with visibility_rule constraint"
+    }
+  ]
+}
