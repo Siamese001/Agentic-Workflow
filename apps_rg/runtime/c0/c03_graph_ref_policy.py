@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import Any
 
@@ -117,6 +118,10 @@ def resolve_role_family_projection(
             out["projection_source"] = "sqlite_role_family_projection"
             out["release_eligible_targeting_proof"] = True
             out["targeting_degraded_explicit"] = False
+            track_profile, targeting_keywords, proof_policy_note = _parse_sqlite_projection_row(row)
+            out["track_weight_profile"] = track_profile
+            out["targeting_keywords"] = targeting_keywords
+            out["proof_policy_note"] = proof_policy_note
             return out
 
     if rf in SENIOR_ROLE_TAXONOMY_IDS and pillar_hints:
@@ -421,6 +426,59 @@ _BRIEFING_PILLAR_SIGNALS: tuple[tuple[str, str], ...] = (
 _MAX_BRIEFING_SUPPLEMENT_TERMS = 5
 
 
+def _parse_sqlite_projection_row(row: Any) -> tuple[dict[str, Any], list[str], str]:
+    """Parse JSON columns from ``role_family_projection`` SQLite row."""
+    track_profile: dict[str, Any] = {}
+    targeting_keywords: list[str] = []
+    proof_policy_note = ""
+    try:
+        raw_profile = row[2] if len(row) > 2 else "{}"
+        loaded = json.loads(raw_profile or "{}")
+        if isinstance(loaded, dict):
+            track_profile = loaded
+    except (json.JSONDecodeError, TypeError, IndexError):  # guardian: allow-silent-swallow -- fail-soft projection parse
+        pass
+    try:
+        raw_kw = row[3] if len(row) > 3 else "[]"
+        loaded_kw = json.loads(raw_kw or "[]")
+        if isinstance(loaded_kw, list):
+            for item in loaded_kw:
+                if isinstance(item, str) and item.strip():
+                    targeting_keywords.append(item.strip())
+                elif isinstance(item, dict):
+                    kw = str(item.get("keyword") or item.get("pillar_id") or "").strip()
+                    if kw:
+                        targeting_keywords.append(kw)
+    except (json.JSONDecodeError, TypeError, IndexError):  # guardian: allow-silent-swallow -- fail-soft projection parse
+        pass
+    try:
+        proof_policy_note = str(row[4] or "").strip() if len(row) > 4 else ""
+    except (TypeError, IndexError):  # guardian: allow-silent-swallow -- fail-soft projection parse
+        proof_policy_note = ""
+    return track_profile, targeting_keywords[:8], proof_policy_note
+
+
+def extract_c03_bindings_from_runtime_payload(
+    runtime_payload: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """C03 per-fact bindings from section FEC bridge (claim_support_graph_refs SSOT)."""
+    if not isinstance(runtime_payload, dict):
+        return []
+    bridge = runtime_payload.get("section_fec_bridge")
+    if not isinstance(bridge, dict):
+        return []
+    room = bridge.get("c0_evidence_room")
+    if not isinstance(room, dict):
+        return []
+    c03 = room.get("c03")
+    if not isinstance(c03, dict):
+        return []
+    bindings = c03.get("bindings")
+    if not isinstance(bindings, list):
+        return []
+    return [dict(b) for b in bindings if isinstance(b, dict)]
+
+
 def extract_briefing_targeting_supplement(briefing_text: str) -> list[str]:
     """Extract up to _MAX_BRIEFING_SUPPLEMENT_TERMS pillar signal terms from briefing text.
 
@@ -486,6 +544,7 @@ __all__ = [
     "collect_receipt_only_json_expansion_refs",
     "compress_binding_for_executive_summary",
     "extract_briefing_targeting_supplement",
+    "extract_c03_bindings_from_runtime_payload",
     "merge_graph_targeting_jd_alignment",
     "resolve_role_family_projection",
 ]

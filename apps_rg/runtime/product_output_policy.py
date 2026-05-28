@@ -144,11 +144,23 @@ def lane_run_dir_meets_product_bar(run_dir: Path) -> tuple[bool, str]:
 
 
 def phase1_dispatch_hard_failed(dispatch_result: dict | object | None) -> bool:
-    """True when lane CLI dispatch reported fault or error exit."""
+    """True ONLY for transport-level / fault failures that should cascade-abort phase1.
+
+    Author-Gate decision dec_19e6e344d5db19589 (architecture_choice, 2026-05-28, confidence=0.78):
+    individual lane X3_BLOCK should NOT cascade-abort independent downstream lanes. Each lane has
+    its own X1D judges + X2 gates; an isolated decisive judge failure on (say) headline does not
+    invalidate exec_summary, ibm_bullets, etc. Only ``fault`` strings (real provider/transport
+    failures, LLM down, OOM, schema-shape errors that block all subsequent dispatch) cascade.
+
+    Soft-fail review (``X3_REVIEW_JUDGE_SOFT_FAIL``) already maps to ``exit_status=='success'``
+    via ``_terminal_class_from_x3`` so it does not reach here. X3_BLOCK still maps to
+    ``exit_status=='error'`` (the lane itself is failed and will not publish) but no longer
+    cascades to abort the rest of phase1.
+    """
     res = dispatch_result if isinstance(dispatch_result, dict) else {}
     if str(res.get("fault") or "").strip():
         return True
-    return str(res.get("exit_status") or "").strip().lower() == "error"
+    return False
 
 
 __all__ = [

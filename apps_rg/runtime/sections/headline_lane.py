@@ -75,6 +75,7 @@ from apps_rg.runtime.validators.headline_x2 import (
     headline_runtime_self_check_truth,
     headline_word_count,
     polish_claim_text_when_headline_has_no_metrics,
+    repair_headline_segment_citations_for_grounding,
     run_headline_x2_gates,
     validate_raw_headline_claim_ledger,
 )
@@ -1257,6 +1258,31 @@ def run_headline_execution(
             fact_id_resolution_receipt = _fid_rec
     headline_line = str((parsed or {}).get("headline_line") or "").strip()
     claim_ledger = list((parsed or {}).get("claim_ledger") or [])
+    # Pre-X2 repair: re-cite mis-bound segments to facts whose claim_text actually contains
+    # their content nouns. Qwen sometimes binds a segment to a fact_id from the allowed set
+    # that has zero shared tokens (e.g. "Microservices Telemetry" → fact_quant_hpc_002 where
+    # neither word appears). The X2 grounding gate would correctly fail closed; this pass
+    # gives the lane a deterministic second chance using only allowed facts.
+    if isinstance(parsed, dict) and claim_ledger and headline_line:
+        repaired_ledger, recitation_receipt = repair_headline_segment_citations_for_grounding(
+            headline_line=headline_line,
+            parsed_output=parsed,
+            claim_ledger=claim_ledger,
+        )
+        if recitation_receipt.get("any_changed"):
+            claim_ledger = repaired_ledger
+            parsed["claim_ledger"] = repaired_ledger
+            write_json(
+                artifact_dir / "headline_segment_recitation_receipt.json",
+                recitation_receipt,
+            )
+            change_log = parsed.setdefault("change_log", [])
+            if isinstance(change_log, list):
+                change_log.append({
+                    "operation": "repair_headline_segment_citations_for_grounding",
+                    "reason": "Qwen mis-cited segments to facts with zero shared content nouns",
+                    "receipt_ref": "headline_segment_recitation_receipt.json",
+                })
     if fact_id_resolution_receipt is not None:
         write_json(artifact_dir / "headline_fact_id_resolution_receipt.json", fact_id_resolution_receipt)
     if runtime_generation_status in _HEADLINE_JSON_OUTPUT_STATUSES and parsed_raw_pre_normalize is not None:

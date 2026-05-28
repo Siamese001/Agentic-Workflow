@@ -1,0 +1,69 @@
+Position: Distinguished AI Tech Lead, Initiatives
+Company: Aveva
+Salary Range: $255,500.00 - $425,500.00
+
+The Job
+
+We are hiring an experienced AI Tech Lead to join our team to architect and lead large-scale technical AI initiatives and drive the implementation of AI technologies to solve real-world industrial problems. This is a high-visibility, hands-on senior role responsible for identifying, documenting, developing, and translating across AI technical architectures (models, data pipelines, RAG, MLOps) and AI business architectures (use cases, personas, user journey and requirements, etc.).
+
+We are specifically keen on individuals with deep understanding of emerging AI and ML technologies who have served as an AI TPM leader.
+
+Key Responsibilities:
+
+    Drive 'forensic' technical work to proactively identify and help mitigate technical risks, AI infrastructure bottlenecks, and scaling challenges across emerging AI/ML concepts; ensure consistency and efficiency
+
+    Drive multi-threaded technical AI initiatives and translate emerging AI technology signals (e.g. new model architectures, advanced agentic capabilities) into technical and operational workflows to support the building out of an actionable, clear and integrated AI roadmap
+
+    Architect and drive AI technical programs orchestrating complex technical decisions across multiple functions and translate high-level business strategies into clear, actionable architectures, deployments, and technical program management standards
+
+    Partner cross-functionally to ensure technical feasibility and translate AI use cases, user journeys and profiles into AI technical roadmaps and manage dependencies
+
+    Support establishing and managing a unified, consistent, and visible cadence for AI solution reviews, decision making, prioritization, alignment, and resource management
+
+    Track progress, maintain up to date information and relevant technical documentation and dashboards while pioneering innovative AI technical program management approaches that become best practices
+
+    Produce technical artifacts including guides and process documentation, templates and other repeatable resources and frameworks
+
+    Ensure AI initiatives comply with privacy, security, and responsible AI standards and regulations
+
+    Build effective working relationships in a matrixed environment, collaborating across functions to guide alignment on AI portfolio-level goals, managing interdependencies, and ensuring clear communication and risk management
+
+Essential Requirements:
+
+    12+ years of experience in AI technical program management with significant experience (5+ years) managing complex AI/ML initiatives as an AI technical lead or AI engineer lead
+
+    Strong at abstraction and turning seemingly bespoke/one-off AI strategies into reusable patterns, templates and reference implementations
+
+    Exceptional technical background with deep intuition for applied AI in highly regulated industries and proven experience having recently led large-scale AI programs
+
+    Recent experience with modern AI paradigms such as: world models, foundation models, and multi-modal language models; agent-based systems and orchestration; and context retrieval and augmentation techniques
+
+    Experience in highly regulated domains including industrial, IoT, life sciences, manufacturing, energy, or asset-intensive domains
+
+    Exceptional leadership and communication skills, with the ability to influence cross-functional and matrixed teams, effectively communicate progress/status and present complex technical information clearly to both technical and non-technical audiences
+
+    Master's degree in Computer Science, Physics, Engineering or a related technical field; Ph. D degree preferred
+
+Desired Skills and Competencies:
+
+    Experience in responsible deployment practices, model drift mitigation, privacy-preserving federating learning, and AI governance best practices
+
+    Builder's mindset with high curiosity and comfortable navigating both deeply technical emerging AI concepts and nuanced business considerations
+
+    Bias for action and willingness to work iteratively with proven track record of delivering ambitious goals for complex, large-scale AI initiatives
+
+    Proficient in SQL and Python for data analysis, including querying database, processing large data sets, and generating actionable insights; proficient in SQL for creating analytics dashboards
+
+What Success Looks Like:
+
+    Ability to take large, complex AI initiatives and break them down into manageable projects to deliver in a successful, timely manner
+
+    Demonstrated ability to drive consensus across cross-functional teams (data science, engineering, product, sales) in a matrixed environment
+
+    Thoughtful prioritization and sequencing decisions balancing business needs vs. technical constraints
+
+    Codified learnings, insights and architectural patterns into references, guides, playbooks, or building blocks that are digestible and actionable
+
+    Lightweight, repeatable processes and enablement vs. overly complex approaches
+
+    Strong collaboration with cross-functional and matrixed, technical and non-technical teams

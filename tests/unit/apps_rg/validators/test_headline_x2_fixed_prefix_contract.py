@@ -35,7 +35,21 @@ def _base_kwargs(headline: str, **over) -> dict[str, Any]:
     allowed = {"bul_1", "bul_2", "bul_unify_001", "bul_ibm_001", "bul_unify_004"}
     parsed = {
         "headline_line": headline,
-        "selected_fact_plan": {"section_id": "headline", "required_fact_ids": ["bul_1"]},
+        "selected_fact_plan": {
+            "section_id": "headline",
+            "required_fact_ids": ["bul_1"],
+            "facts": [
+                {
+                    "fact_id": "bul_1",
+                    "claim_text": (
+                        "Architected Lakehouse Microservices on Databricks; standardized "
+                        "AI Lifecycle automation; engineered HPC Trading Workflows; "
+                        "shipped Distributed Computing Architectures and Agentic Runtime "
+                        "Catalogs with Enterprise Telemetry."
+                    ),
+                }
+            ],
+        },
         "claim_ledger": _segment_claim_ledger(headline, ["bul_1"]),
         "jd_alignment": {
             "targeting_only": True,
@@ -84,7 +98,7 @@ def _failed_ids(gates: list[Any]) -> list[str]:
 
 
 def test_valid_canonical_derived_passes() -> None:
-    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    hl = "SVP Engineering | Lakehouse Microservices | AI Lifecycle Workflows | HPC Trading Architectures"
     gates = run_headline_x2_gates(headline_line=hl, **_base_kwargs(hl))
     assert _failed_ids(gates) == []
 
@@ -288,7 +302,7 @@ def test_snapshot_raw_jd_alignment_unaffected_by_normalize_structural_defaults()
 
 
 def test_mocked_runtime_with_passing_x2_still_not_x3_allow() -> None:
-    hl = "SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Governed Enterprise Systems"
+    hl = "SVP Engineering | Lakehouse Microservices | AI Lifecycle Workflows | HPC Trading Architectures"
     kwargs = _base_kwargs(
         hl,
         runtime_generation_status="MOCKED",

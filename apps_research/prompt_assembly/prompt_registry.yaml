@@ -17,6 +17,17 @@ templates:
       - DEEP
       - DOSSIER
     allowed_stage: E3_EXEC
+  apps_rg_targeting_brief_synthesis_v1:
+    path: apps_research/prompt_assembly/templates/apps_rg_targeting_brief_synthesis_v1.yaml
+    description: >
+      apps_rg targeting brief (=== SECTION === markdown, under 2400 chars).
+      Consumed by apps_rg as --manual-brief / delegated_briefing.txt.
+    depth_profiles:
+      - LIGHT
+      - STANDARD
+      - DEEP
+      - DOSSIER
+    allowed_stage: E3_EXEC
   research_retrieval_plan_v1:
     path: apps_research/prompt_assembly/templates/research_retrieval_plan_v1.yaml
     description: >

@@ -48,7 +48,7 @@ DEPENDENCY_GRAPH_FACT_ID = "fact_engineering_platform_002"
 # S6. Changed to forward-modal "enables...exposes...improves" framing.
 FACT_C0_DISPLAY_OVERRIDES: dict[str, str] = {
     FSA_CREDENTIAL_FACT_ID: (
-        "That governance discipline is grounded in quantitative rigor established through "
+        "That regulatory foundation is grounded in quantitative rigor established through "
         "FSA-chartered actuarial work in capital modeling and portfolio stress analytics, "
         "informing data governance and AI strategy at scale."
     ),

@@ -1391,9 +1391,16 @@ def enrich_parsed_for_x2(
                 projection or c03.get("role_family_projection") or bridge.get("role_family_projection") or {}
             )
             bindings = list(c03.get("bindings") or [])
+        briefing_text = str(runtime_payload.get("briefing") or "").strip()
+        briefing_source = "RUN_SPECIFIC" if briefing_text else ""
+        ingress = runtime_payload.get("targeting_ingress")
+        if isinstance(ingress, dict) and ingress.get("briefing_selection_receipt"):
+            briefing_source = "RUN_SPECIFIC"
         enriched["jd_alignment"] = merge_graph_targeting_jd_alignment(
             enriched.get("jd_alignment") if isinstance(enriched.get("jd_alignment"), dict) else {},
             role_family_projection=projection,
+            briefing_text=briefing_text,
+            briefing_source=briefing_source,
         )
         enriched["c0_graph_diagnostics"] = build_c0_graph_diagnostics(
             bindings,
@@ -2173,6 +2180,38 @@ def run_executive_summary_execution(
                 )
         resume_display_text = str(parsed.get("resume_display_text") or resume_display_text)
         claim_ledger = list(parsed.get("claim_ledger") or claim_ledger)
+        # Defensive: voice_repair may inject canonical sentences (e.g. dependency-graph
+        # DISPLAY_OVERRIDE) and _source_fact_ids_for_display_sentence may stamp
+        # source_fact_ids that aren't in this run's allowed_fact_ids (e.g.
+        # fact_engineering_platform_002 when the SRFS selector excluded it for a given
+        # role). Strip orphan citations so the X2 orphan/subset gates don't fail closed
+        # on voice-repair drift. If filtering empties a row, keep the row but mark its
+        # source_fact_ids empty (the unsupported_claim_zero gate will then catch real
+        # gaps honestly rather than orphan-citation noise).
+        _allowed_set = set(allowed_fact_ids or [])
+        if _allowed_set:
+            _filtered_ledger: list[dict[str, Any]] = []
+            _orphans_stripped: list[str] = []
+            for _row in claim_ledger:
+                if not isinstance(_row, dict):
+                    _filtered_ledger.append(_row)
+                    continue
+                _new_row = dict(_row)
+                _raw_ids = _new_row.get("source_fact_ids") or []
+                _kept = [str(x) for x in _raw_ids if str(x).split("_metric_", 1)[0] in _allowed_set or str(x) in _allowed_set]
+                _dropped = [str(x) for x in _raw_ids if str(x) not in _kept]
+                if _dropped:
+                    _orphans_stripped.extend(_dropped)
+                _new_row["source_fact_ids"] = _kept
+                _filtered_ledger.append(_new_row)
+            if _orphans_stripped:
+                claim_ledger = _filtered_ledger
+                parsed["claim_ledger"] = _filtered_ledger
+                if artifact_dir is not None:
+                    write_json(
+                        artifact_dir / "voice_repair_orphan_citations_stripped.json",
+                        {"stripped": sorted(set(_orphans_stripped)), "allowed_fact_ids": sorted(_allowed_set)},
+                    )
     coverage = build_sentence_claim_coverage(resume_display_text, claim_ledger, allowed_fact_ids)
     parsed_for_x2 = enrich_parsed_for_x2(
         parsed,
@@ -2401,6 +2440,9 @@ def run_executive_summary_execution(
 
         _gtc_lane = runtime_payload.get("graph_targeting_capsule")
         _gtc_lane_dict = dict(_gtc_lane) if isinstance(_gtc_lane, dict) else None
+        from apps_rg.runtime.c0.c03_graph_ref_policy import extract_c03_bindings_from_runtime_payload
+
+        _graph_bindings_lane = extract_c03_bindings_from_runtime_payload(runtime_payload)
         x1d, _x1d_refresh_receipt = refresh_x1d_judges_after_full_x2(
             x2_gates=x2,
             resume_display_text=resume_display_text,
@@ -2421,6 +2463,8 @@ def run_executive_summary_execution(
             material_targeting_bundle=_bundle_mat.to_dict()
             if hasattr(_bundle_mat, "to_dict")
             else runtime_payload.get("material_targeting_bundle"),
+            graph_bindings=_graph_bindings_lane,
+            repo_root=REPO_ROOT,
         )
         from apps_rg.runtime.sections.executive_summary_repair_policy import (
             judge_regeneration_enabled,
@@ -3259,6 +3303,8 @@ def run_executive_summary_execution(
                         material_targeting_bundle=_bundle_mat.to_dict()
                         if hasattr(_bundle_mat, "to_dict")
                         else runtime_payload.get("material_targeting_bundle"),
+                        graph_bindings=_graph_bindings_lane,
+                        repo_root=REPO_ROOT,
                     )
 
                 _pub = finalize_pool_publish(

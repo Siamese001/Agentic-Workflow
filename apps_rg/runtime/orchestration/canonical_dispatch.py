@@ -29,6 +29,9 @@ from apps_rg.runtime.runtime_proof_layout import find_repo_root, load_latest_poi
 
 # V6 terminal codes short values (integrated R4); legacy strings retained.
 _SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
+# Soft-fail review codes that should NOT cascade-block downstream lanes per Author-Gate
+# decision dec_19e6e344d5db19589 (architecture_choice, 2026-05-28).
+_REVIEW_BUT_NOT_BLOCKING_X3 = frozenset({"X3_REVIEW_JUDGE_SOFT_FAIL", "X3_REVIEW"})
 _HEADLINE_SECTION_ID = "headline"
 _EXEC_SUMMARY_SECTION_ID = "executive_summary"
 _UNIFY_BULLETS_SECTION_ID = "unify_bullets"
@@ -373,10 +376,17 @@ def run_canonical_full_resume_from_cli_primitives(
 
     l7_path = art / "agentic_core_how_trace.json"
     l7_ok = bool(result.fault == "" and l7_path.is_file())
+    soft_fail_review = (
+        result.fault == ""
+        and result.x3_disposition in _REVIEW_BUT_NOT_BLOCKING_X3
+    )
     outcome = (
         result.fault == ""
-        and result.x3_disposition in _SUCCESS_X3
+        and (result.x3_disposition in _SUCCESS_X3 or soft_fail_review)
     )
+    # success_with_review keeps exit_status == "success" so phase1_dispatch_hard_failed()
+    # does NOT cascade-block downstream lanes; the review packet preserves the soft-fail
+    # for human inspection.
     exit_status = "success" if outcome else "error"
 
     return {

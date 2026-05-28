@@ -63,6 +63,52 @@ def _bullet_by_id(parsed: dict[str, Any], bullet_id: str) -> dict[str, Any] | No
     return None
 
 
+def inject_positional_bullet_ids_into_pool(
+    paths: list[SelfConsistencyPath],
+    required_bullet_ids: tuple[str, ...] | None,
+) -> int:
+    """Assign bullet_id positionally to pool samples that omit it.
+
+    Closes Bug:BulletPoolSelectorBulletIdMissing (Brown SVP full_resume_183cf9252e02 ibm_bullets
+    X3_BLOCK loop). Qwen self-consistency samples often emit bullets shaped
+    ``{bullet_theme, bullet_text}`` without ``bullet_id``. ``_bullet_by_id`` then returns ``None``
+    for every required slot, ``_format_bullet_pool`` writes ``[bid] MISSING`` for all 20 paths, and
+    ``run_claude_bullet_pool_selection`` produces zero merged bullets — even though Qwen's text
+    is fully populated. We replicate the canonical positional fallback already in
+    ``ibm_bullets_lane.normalize_parsed_output`` lines 268-270 / equivalents in unify_bullets
+    so the selector sees a non-empty pool.
+
+    Returns the number of bullets that received a positional bullet_id assignment.
+    Mutates ``path.parsed`` rows in place. Safe to call when ``required_bullet_ids`` is None or
+    empty (no-op) — selector callers that don't require slot mapping keep prior behavior.
+    """
+    if not required_bullet_ids:
+        return 0
+    injected = 0
+    for path in paths:
+        parsed = path.parsed if path is not None else None
+        if not isinstance(parsed, dict):
+            continue
+        bullets = parsed.get("bullets")
+        if not isinstance(bullets, list):
+            continue
+        for idx, row in enumerate(bullets):
+            if not isinstance(row, dict):
+                continue
+            existing = str(row.get("bullet_id") or "").strip()
+            if existing:
+                continue
+            if idx >= len(required_bullet_ids):
+                break
+            text = str(row.get("bullet_text") or "").strip()
+            if not text:
+                continue
+            row["bullet_id"] = required_bullet_ids[idx]
+            row.setdefault("bullet_id_origin", "positional_pool_fallback")
+            injected += 1
+    return injected
+
+
 def _category_by_label(parsed: dict[str, Any], label: str) -> dict[str, Any] | None:
     norm = label.strip().lower()
     for key in ("competencies", "categories"):
@@ -640,6 +686,7 @@ def run_claude_bullet_pool_selection(
         )
 
     if slot_kind == "bullets":
+        inject_positional_bullet_ids_into_pool(valid_paths, required_bullet_ids)
         pool_text = _format_bullet_pool(valid_paths, required_bullet_ids or ())
     else:
         pool_text = _format_competency_pool(valid_paths)

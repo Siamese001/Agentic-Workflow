@@ -168,7 +168,12 @@ class CompanyBriefEngine(BaseResearchEngine):
         _t_synth = time.perf_counter()
         profile_cfg = _DEPTH_PROFILES[depth_profile]
         synthesized = self._synthesize(
-            topic=topic, findings=research_findings, jd_facets=jd_facets, depth=depth_profile
+            topic=topic,
+            findings=research_findings,
+            jd_facets=jd_facets,
+            depth=depth_profile,
+            jd_context=jd_context,
+            jd_anchor=jd_anchor,
         )
         _sub_stages.append({
             "sub_stage_id": "research.synthesize",
@@ -209,6 +214,12 @@ class CompanyBriefEngine(BaseResearchEngine):
         brief["_depth_profile"] = depth_profile
         brief["_gate_verdict"] = gate_verdict
         brief["_sub_stages"] = _sub_stages
+        if jd_context:
+            brief["_jd_context"] = dict(jd_context)
+        targeting_md = str(synthesized.get("apps_rg_targeting_brief_markdown") or "").strip()
+        if targeting_md:
+            brief["apps_rg_targeting_brief_text"] = targeting_md
+            brief["company_brief_text"] = targeting_md
         _sub_stages.append({
             "sub_stage_id": "research.assemble",
             "sub_stage_name": "Brief Assembly",
@@ -346,6 +357,8 @@ class CompanyBriefEngine(BaseResearchEngine):
         findings: Dict[str, str],
         jd_facets: List[str],
         depth: str,
+        jd_context: Dict[str, Any] | None = None,
+        jd_anchor: Optional[Path] = None,
     ) -> Dict[str, Any]:
         """LLM-synthesize raw research into structured facets.
 
@@ -354,7 +367,22 @@ class CompanyBriefEngine(BaseResearchEngine):
         when the local server is unavailable; deterministic stub when
         both gateways fail. Matches the cascade pattern established in
         Wave 2 for narrative_judge_scorer.
+
+        When ``apps_rg_targeting_brief_enabled`` (env or jd_context), emits
+        apps_rg targeting markdown per ``apps_rg_targeting_brief_v1.md``.
         """
+        from apps_research.prompt_assembly.apps_rg_targeting_brief import (  # noqa: PLC0415
+            apps_rg_targeting_brief_enabled,
+        )
+
+        if apps_rg_targeting_brief_enabled(jd_context=jd_context):
+            return self._synthesize_apps_rg_targeting_brief(
+                topic=topic,
+                findings=findings,
+                jd_context=jd_context or {},
+                jd_anchor=jd_anchor,
+            )
+
         prompt = self._build_synthesis_prompt(topic=topic, findings=findings, jd_facets=jd_facets)
 
         # Strict mode: fail loud with categorized diagnostic when the operator
@@ -608,6 +636,178 @@ class CompanyBriefEngine(BaseResearchEngine):
             latency_ms=(time.time() - started) * 1000.0,
         )
         return parsed
+
+    def _synthesize_apps_rg_targeting_brief(
+        self,
+        *,
+        topic: str,
+        findings: Dict[str, str],
+        jd_context: Dict[str, Any],
+        jd_anchor: Optional[Path],
+    ) -> Dict[str, Any]:
+        """Synthesize apps_rg === SECTION === targeting brief (plain markdown)."""
+        from apps_research.prompt_assembly.apps_rg_targeting_brief import (  # noqa: PLC0415
+            build_targeting_brief_prompt,
+            extract_jd_text,
+            format_research_findings,
+        )
+
+        jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
+        research_notes = format_research_findings(findings)
+        prompt = build_targeting_brief_prompt(
+            jd_text=jd_text,
+            research_notes=research_notes,
+            target_entity=topic,
+        )
+        markdown = self._call_llm_plain_markdown(prompt)
+        if not markdown.strip():
+            markdown = self._stub_targeting_brief_markdown(topic=topic, jd_text=jd_text)
+        stub = self._stub_synthesis(topic=topic, jd_facets=[])
+        stub["apps_rg_targeting_brief_markdown"] = markdown.strip()
+        stub["synthesis_template"] = "apps_rg_targeting_brief_synthesis_v1"
+        return stub
+
+    def _call_llm_plain_markdown(self, prompt: str) -> str:
+        """Qwen → Gemini cascade for plain-text targeting brief output."""
+        from apps_research.integrations.qwen_strict_probe import (  # noqa: PLC0415
+            maybe_enforce_qwen_strict_requirement,
+        )
+
+        maybe_enforce_qwen_strict_requirement()
+        text = self._qwen_synthesize_plain(prompt=prompt)
+        if text:
+            return text
+        text = self._gemini_synthesize_plain(prompt=prompt)
+        return text or ""
+
+    def _qwen_synthesize_plain(self, *, prompt: str) -> str | None:
+        try:
+            from agentic_core.L2_execution.healers.vllm_health_probe import (  # noqa: PLC0415
+                is_qwen_available,
+            )
+        except ImportError:
+            return None
+        if not is_qwen_available():
+            return None
+        try:
+            from apps_research.integrations.llm_client import OpenAI as _OpenAI  # noqa: PLC0415
+            if _OpenAI is None:
+                return None
+        except ImportError:
+            return None
+        try:
+            from agentic_core.L0_routing.config.model_registry import (  # noqa: PLC0415
+                QWEN_LOCAL_MODEL_ID,
+                VLLM_BASE_URL,
+            )
+        except ImportError:
+            return None
+        try:
+            client = _OpenAI(base_url=VLLM_BASE_URL, api_key="not-needed", timeout=90.0)
+            resp = client.chat.completions.create(
+                model=QWEN_LOCAL_MODEL_ID,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You produce apps_rg targeting briefs only. "
+                            "Output plain markdown exactly as instructed. No JSON. No fences."
+                        ),
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.2,
+                max_tokens=1200,
+            )
+        except Exception as exc:  # guardian: allow-broad-exception -- vLLM fail-soft
+            self.logger.info("[CompanyBriefEngine] targeting brief qwen failed: %s", exc)
+            return None
+        return (resp.choices[0].message.content or "").strip() if resp.choices else ""
+
+    def _gemini_synthesize_plain(self, *, prompt: str) -> str | None:
+        import os  # noqa: PLC0415
+
+        try:
+            from google import genai  # noqa: PLC0415
+        except ImportError:
+            return None
+        api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            return None
+        from agentic_core.config.google_ai_env_reads import (  # noqa: PLC0415
+            google_ai_flash_model_env,
+            google_ai_pro_model_env,
+        )
+
+        candidates: list[str] = []
+        pro_model = google_ai_pro_model_env(legacy_default="gemini-3.1-pro-preview").strip()
+        flash_model = google_ai_flash_model_env(legacy_default="gemini-3-flash-preview").strip()
+        if pro_model:
+            candidates.append(pro_model)
+        if flash_model and flash_model != pro_model:
+            candidates.append(flash_model)
+        if not candidates:
+            return None
+        client = genai.Client(api_key=api_key)
+        for model_name in candidates:
+            try:
+                resp = client.models.generate_content(
+                    model=model_name,
+                    contents=(
+                        "You produce apps_rg targeting briefs only. "
+                        "Output plain markdown exactly as instructed. No JSON. No fences.\n\n"
+                        + prompt
+                    ),
+                    config={"temperature": 0.2, "max_output_tokens": 1200},
+                )
+            except Exception as exc:  # guardian: allow-broad-exception -- gemini fail-soft
+                self.logger.info(
+                    "[CompanyBriefEngine] targeting brief gemini model=%s failed: %s",
+                    model_name,
+                    exc,
+                )
+                continue
+            text = (resp.text or "").strip() if hasattr(resp, "text") else ""
+            if text:
+                return text
+        return None
+
+    @staticmethod
+    def _stub_targeting_brief_markdown(*, topic: str, jd_text: str) -> str:
+        role_line = "target role"
+        for line in jd_text.splitlines()[:8]:
+            low = line.lower()
+            if "title" in low or "role" in low or "position" in low:
+                role_line = line.strip()[:80] or role_line
+                break
+        return (
+            f"{topic} (TBD) - {role_line} targeting brief\n"
+            "| TBD | TBD | Reports to TBD (TBD) |\n\n"
+            "=== STRATEGIC MANDATE ===\n"
+            f"- {topic} (stub synthesis — research unavailable)\n"
+            "- Core strategic pressure TBD pending verified research\n"
+            "- Recent AI or platform move TBD\n"
+            "- Central tension: growth vs control TBD\n\n"
+            "=== LEADERSHIP ===\n"
+            "- CEO: TBD\n"
+            "- Technology leader: TBD\n"
+            "- Data or AI leader: TBD\n"
+            "- Key EVP: TBD\n\n"
+            "=== TECH & AI PLATFORM ===\n"
+            "- Platform posture TBD\n"
+            "- Cloud or integration angle TBD\n"
+            "- M&A or transformation fact TBD\n"
+            "- Peer move TBD\n\n"
+            "=== BUSINESS CONTEXT (JD alignment hooks) ===\n"
+            "- Segment 1: TBD\n"
+            "- Segment 2: TBD\n"
+            "- AI or data priority TBD\n"
+            "- Culture or execution hook TBD\n\n"
+            "=== EXEC SUMMARY FRAMING (not proof) ===\n"
+            "- Lead with commercial outcome TBD\n"
+            "- Mirror verified company priority TBD\n"
+            "- 12-month win TBD\n"
+        )
 
     @staticmethod
     def _build_synthesis_prompt(

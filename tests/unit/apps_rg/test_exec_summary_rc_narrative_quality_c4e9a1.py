@@ -34,7 +34,14 @@ def test_s3_guidance_no_literal_22m_or_20_percent() -> None:
 
 def test_fsa_display_override_has_strategic_connector() -> None:
     text = FACT_C0_DISPLAY_OVERRIDES[FSA_CREDENTIAL_FACT_ID]
-    assert text.lower().startswith("that governance")
+    # Opener must be a strategic "That <noun>" connector. Avoid "governance discipline"
+    # because EXEC_SUMMARY_FORBIDDEN_META_PHRASES bans it as meta-filler scaffolding,
+    # which would trigger synthesis regen and strip the anchor on re-attempt.
+    assert text.lower().startswith("that regulatory foundation"), (
+        "Override opener must avoid the forbidden meta-filler phrase 'governance discipline' "
+        "to keep Qwen synthesis from getting rejected on attempt 1 and dropping the X2 anchor."
+    )
+    assert "governance discipline" not in text.lower()
     assert "informing data governance" in text.lower()
 
 

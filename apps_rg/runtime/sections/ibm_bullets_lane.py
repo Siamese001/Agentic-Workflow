@@ -454,12 +454,29 @@ def inject_ibm_locked_metric_anchors(
     plan_facts: list[dict[str, Any]],
     allowed_fact_ids: set[str],
 ) -> None:
-    """Inject locked IBM metric tokens per ``IBM_METRIC_ANCHOR_RULES`` when model output omits them."""
+    """Inject locked IBM metric tokens per ``IBM_METRIC_ANCHOR_RULES`` when model output omits them.
+
+    Closes Bug:IbmLockedMetricInjectionGarblesGraphSelectedBullets (Brown SVP
+    full_resume_6ec3b47aeda0 ibm_bullets X3_BLOCK: all 3 judges decisive-failed on garbled
+    text like "generating in new annual recurring revenue Delivered 30% outcomes at enterprise
+    scale" because the canonical IBM_LOCKED_METRIC_CANONICAL hardcoded "30%" for
+    ``bul_ibm_002`` but the augmented_skills_graph_ibm_bullets_phase2_track_ranked selector
+    had assigned bul_ibm_002 to fact_revenue_ops_001 ("$10M ACV"); injector then scrubbed the
+    legitimate $10M and appended the wrong canonical metric.
+
+    Resolution rule: when the active plan_fact for a bullet slot carries its own metric_raw
+    that conflicts with the canonical IBM_LOCKED_METRIC_CANONICAL token (semantic mismatch),
+    skip canonical-metric injection for that slot. The bullet keeps its graph-selected metric
+    naturally. Only fall back to the canonical token when:
+      (a) the plan_fact has no metric_raw AND the bullet text has no metric, OR
+      (b) the plan_fact's metric_raw aligns with the canonical (already-correct case).
+    """
     from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_METRIC_ANCHOR_RULES
 
     bullets = list(parsed.get("bullets") or [])
     if not bullets:
         return
+    plan_by_bid = {str(f.get("fact_id") or "").strip(): f for f in plan_facts or [] if isinstance(f, dict)}
     changelog = parsed.setdefault("change_log", [])
     if not isinstance(changelog, list):
         changelog = []
@@ -481,6 +498,35 @@ def inject_ibm_locked_metric_anchors(
         )
         if has_own and not foreign:
             continue
+
+        plan_fact = plan_by_bid.get(root) or {}
+        plan_metric = str(plan_fact.get("metric_raw") or "").strip()
+        plan_has_metric = bool(plan_fact.get("has_metric") or plan_metric)
+        canonical_aligns_with_plan = plan_metric and any(
+            n.lower() in plan_metric.lower() for n in needles
+        )
+
+        if plan_fact and not canonical_aligns_with_plan:
+            # Graph-selector reassigned this slot. Respect its choice:
+            #   (a) plan_metric exists but conflicts -> the bullet keeps its plan-fact metric.
+            #   (b) plan_metric is empty/has_metric is false -> the graph fact has no metric
+            #       to claim; forcing the canonical IBM_LOCKED_METRIC_CANONICAL token would
+            #       fabricate an unsupported claim (judges decisively reject it).
+            reason_detail = (
+                f"plan_fact_metric_does_not_match_canonical:{root} "
+                f"(canonical={token}, plan_metric={plan_metric!r}, has_metric={plan_has_metric})"
+            )
+            changelog.append(
+                {
+                    "operation": "skip_ibm_locked_metric_anchor",
+                    "reason": (
+                        f"{reason_detail} \u2014 graph selector chose this fact intentionally; "
+                        "do not append canonical-metric suffix"
+                    ),
+                }
+            )
+            continue
+
         cleaned = _scrub_foreign_ibm_metric_tokens(text, root)
         bullet["bullet_text"] = (
             f"{cleaned} Delivered {token} outcomes at enterprise scale."

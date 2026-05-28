@@ -97,11 +97,31 @@ def _parse_product_argv(argv: list[str]):
     parser.add_argument("--depth", default="standard", help="Depth profile")
     parser.add_argument("--manual-brief-path", default=None)
     parser.add_argument(
+        "--jd",
+        default=None,
+        help="Path to JD .txt/.json or inline text (enables apps_rg targeting brief synthesis)",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Force stub fallback — no LLM call",
     )
     return parser.parse_args(argv)
+
+
+def _read_jd_arg(jd_val: str | None) -> str:
+    from pathlib import Path
+
+    s = str(jd_val or "").strip()
+    if not s:
+        return ""
+    p = Path(s)
+    if p.is_file():
+        try:
+            return p.read_text(encoding="utf-8").strip()
+        except OSError:
+            return ""
+    return s
 
 
 def _payload_from_args(args) -> dict:
@@ -110,6 +130,17 @@ def _payload_from_args(args) -> dict:
     if not topic:
         return {}
     user_constraints: dict = {"topic": topic, "depth": args.depth, "mode": args.mode}
+    jd_text = _read_jd_arg(getattr(args, "jd", None))
+    jd_context: dict = {}
+    if jd_text:
+        jd_context = {
+            "content": jd_text,
+            "jd_text": jd_text,
+            "job_title": str(getattr(args, "target_role", "") or "").strip(),
+            "company_name": (args.target_company or topic).strip(),
+            "output_format": "apps_rg_targeting_brief_v1",
+            "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
+        }
     return {
         "target_company": (args.target_company or topic).strip(),
         "topic": topic,
@@ -118,6 +149,7 @@ def _payload_from_args(args) -> dict:
         "user_constraints": user_constraints,
         "briefing_artifact_ref": args.manual_brief_path,
         "manual_brief_path": args.manual_brief_path,
+        "jd_context": jd_context,
     }
 
 

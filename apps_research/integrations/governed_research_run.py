@@ -146,11 +146,27 @@ class GovernedE2ERunRecord:
     # Bridge-facing evidence lineage (AppsResearchBridge._translate reads this).
     evidence_items: tuple[Any, ...] = ()
     confidence_score: float = 0.0
+    company_brief_text: str = ""
 
 
 # ---------------------------------------------------------------------------
 # GovernedResearchRun — subclass of GovernedAppRunner
 # ---------------------------------------------------------------------------
+
+
+def _company_brief_text_from_fec(fec_ctx: dict[str, Any]) -> str:
+    """Extract apps_rg targeting brief markdown from hop FEC context when present."""
+    brief = fec_ctx.get("company_brief")
+    if isinstance(brief, dict):
+        for key in (
+            "company_brief_text",
+            "apps_rg_targeting_brief_text",
+            "apps_rg_targeting_brief_markdown",
+        ):
+            text = str(brief.get(key) or "").strip()
+            if text:
+                return text
+    return ""
 
 
 class GovernedResearchRun(GovernedAppRunner):
@@ -244,6 +260,7 @@ class GovernedResearchRun(GovernedAppRunner):
             float(core.support_coverage or 0.0),
             max((getattr(item, "confidence", 0.0) for item in evidence_items), default=0.0),
         )
+        company_brief_text = _company_brief_text_from_fec(fec_ctx)
         record = build_app_record(
             GovernedE2ERunRecord, core,
             aliases={"topic": "query"},
@@ -253,6 +270,7 @@ class GovernedResearchRun(GovernedAppRunner):
             fec_run_context=fec_ctx,
             evidence_items=evidence_items,
             confidence_score=confidence_score,
+            company_brief_text=company_brief_text,
         )
 
         # ── L4 durable write path (DS-3) — fail-soft ──────────────────────────
@@ -324,6 +342,7 @@ class GovernedResearchRun(GovernedAppRunner):
                 final_ctx = getattr(record, "final_context", None) or {}
                 brief = (final_ctx.get("company_brief") or {})
                 if isinstance(brief, dict):
+                    fec_context["company_brief"] = brief
                     depth_profile = brief.get("_depth_profile")
                     c0_bundle = brief.get("_c0_bundle")
                     jd_context = brief.get("_jd_context")

@@ -280,6 +280,15 @@ def format_evidence_capsule_c0_block(
                 f"mechanism_vocabulary_cap={graph_pa.get('mechanism_vocabulary_cap')}",
             ]
         )
+        projection = graph_pa.get("role_family_projection")
+        if isinstance(projection, dict):
+            keywords = [
+                str(kw).strip()
+                for kw in (projection.get("targeting_keywords") or [])
+                if str(kw).strip()
+            ][:8]
+            if keywords:
+                lines.append(f"GRAPH_TARGETING_KEYWORDS={','.join(keywords)}")
         for row in graph_pa.get("overloaded_fact_compression") or []:
             if not isinstance(row, dict):
                 continue

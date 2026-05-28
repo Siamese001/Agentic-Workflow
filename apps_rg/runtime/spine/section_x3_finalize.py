@@ -32,21 +32,43 @@ def _x3_to_doc(x3: Any) -> dict[str, Any]:
     return {}
 
 
+_SOFT_FAIL_REVIEW_X3_CODES = frozenset({"X3_REVIEW_JUDGE_SOFT_FAIL", "X3_REVIEW"})
+
+
 def _terminal_class_from_x3(x3: Any, x3_doc: dict[str, Any]) -> str:
+    """Map an x3 disposition to dispatch terminal class.
+
+    Author-Gate decision dec_19e6e344d5db19589 (architecture_choice, 2026-05-28, confidence=0.78):
+    treat ``X3_REVIEW_JUDGE_SOFT_FAIL`` as ``success_with_review`` so a borderline judge score
+    (e.g. Claude 3.8 vs 4.0 threshold) no longer cascade-blocks every downstream lane. The final
+    review packet flags the soft-fail; downstream lanes continue to run, mirroring the semantic
+    of REVIEW vs BLOCK. Hard failures (X3_BLOCK, fault) still produce ``failure`` and cascade.
+    """
+    code = str(x3_doc.get("x3_code") or getattr(x3, "x3_code", "") or "")
     if hasattr(x3, "pass_"):
-        return "success" if bool(x3.pass_) else "failure"
+        if bool(x3.pass_):
+            return "success"
+        if code in _SOFT_FAIL_REVIEW_X3_CODES:
+            return "success_with_review"
+        return "failure"
     if x3_doc.get("pass") is True or x3_doc.get("pass_") is True:
         return "success"
-    code = str(x3_doc.get("x3_code") or getattr(x3, "x3_code", "") or "")
     if code.startswith("X3_ALLOW") or code in {"EXIT_OK", "EXIT_PARTIAL", "X3C", "X3D"}:
         return "success"
+    if code in _SOFT_FAIL_REVIEW_X3_CODES:
+        return "success_with_review"
     return "failure"
 
 
 def lane_outcome_authorized_from_x3(x3: Any) -> bool:
-    """CLI dispatch outcome: True when lane X3 mirror authorizes (dict or dataclass)."""
+    """CLI dispatch outcome: True when lane X3 mirror authorizes (dict or dataclass).
+
+    ``success_with_review`` counts as authorized at the dispatch boundary (downstream lanes
+    proceed) per Author-Gate decision dec_19e6e344d5db19589. The review status is preserved
+    in ``x3_disposition.json`` for the final review packet.
+    """
     x3_doc = _x3_to_doc(x3)
-    return _terminal_class_from_x3(x3, x3_doc) == "success"
+    return _terminal_class_from_x3(x3, x3_doc) in {"success", "success_with_review"}
 
 
 def lane_x3_code_from_x3(x3: Any) -> str:

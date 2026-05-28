@@ -230,8 +230,25 @@ IBM_METRIC_ANCHOR_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
 )
 
 
-def _ibm_metric_anchors_on_assigned_bullets(bullets: list[dict[str, Any]]) -> tuple[bool, list[str]]:
+def _ibm_metric_anchors_on_assigned_bullets(
+    bullets: list[dict[str, Any]],
+    plan_facts: list[dict[str, Any]] | None = None,
+) -> tuple[bool, list[str]]:
+    """Each bul_ibm_* must have ANY recognizable metric token in its bullet_text.
+
+    Accepts EITHER the canonical IBM_METRIC_ANCHOR_RULES token (when Qwen + canonical
+    bullet alignment holds) OR the active plan_fact's metric_raw (when the
+    augmented_skills_graph selector has reassigned the bullet slot to a different fact
+    with its own metric). Closes Bug:IbmLockedMetricInjectionGarblesGraphSelectedBullets
+    by refusing to force the canonical metric onto bullets whose graph-selected fact
+    carries a different one.
+    """
     by_id = {str(b.get("bullet_id")): b for b in bullets if b.get("bullet_id")}
+    plan_by_bid = {
+        str(f.get("fact_id") or "").strip(): f
+        for f in plan_facts or []
+        if isinstance(f, dict)
+    }
     failures: list[str] = []
     for needles, root in IBM_METRIC_ANCHOR_RULES:
         bullet = by_id.get(root)
@@ -239,8 +256,27 @@ def _ibm_metric_anchors_on_assigned_bullets(bullets: list[dict[str, Any]]) -> tu
             failures.append(f"missing_bullet:{root}")
             continue
         tl = str(bullet.get("bullet_text") or "").lower()
-        if not any(n.lower() in tl for n in needles):
-            failures.append(f"{root}_missing_metric_token")
+        has_canonical = any(n.lower() in tl for n in needles)
+        if has_canonical:
+            continue
+        plan_fact = plan_by_bid.get(root) or {}
+        plan_metric = str(plan_fact.get("metric_raw") or "").strip().lower()
+        plan_has_metric = bool(plan_fact.get("has_metric") or plan_metric)
+        # Graph selector chose a fact with NO metric for this slot -> the bullet
+        # legitimately has no metric to claim. Don't fabricate one.
+        if plan_fact and not plan_has_metric:
+            continue
+        if plan_metric and plan_metric in tl:
+            continue
+        # Also accept any numeric-ish token from the plan_fact's metric_raw (eg. "$10M ACV" -> "$10m").
+        if plan_metric:
+            for chunk in re.findall(r"[\$\d][\$\d\.\,\%a-z\-]*", plan_metric):
+                if chunk and chunk in tl:
+                    has_canonical = True
+                    break
+            if has_canonical:
+                continue
+        failures.append(f"{root}_missing_metric_token")
     return (not failures, failures)
 
 
@@ -295,8 +331,19 @@ def _all_source_fact_ids(parsed: dict[str, Any] | None, claim_ledger: list[dict[
     return ids
 
 
-def _metric_granularity_ok(bullets: list[dict[str, Any]], claim_ledger: list[dict[str, Any]]) -> bool:
-    """Metric-bearing bullet or ledger text must cite the matching bul_ibm_* root."""
+def _metric_granularity_ok(
+    bullets: list[dict[str, Any]],
+    claim_ledger: list[dict[str, Any]],
+    plan_facts: list[dict[str, Any]] | None = None,
+) -> bool:
+    """Metric-bearing bullet or ledger text must cite the matching bul_ibm_* root.
+
+    Skips the canonical pairing assertion when the active plan_fact for the *citing*
+    bullet/claim carries its own ``metric_raw`` that already appears in the text — in
+    that case the augmented_skills_graph selector intentionally reassigned the slot and
+    the canonical token in the text is graph-selected, not canonical-drift. Closes the
+    second half of Bug:IbmLockedMetricInjectionGarblesGraphSelectedBullets.
+    """
 
     rules: list[tuple[tuple[str, ...], str]] = [
         (("99.9",), "bul_ibm_001"),
@@ -306,13 +353,37 @@ def _metric_granularity_ok(bullets: list[dict[str, Any]], claim_ledger: list[dic
         (("$15m", "$15 m"), "bul_ibm_005"),
     ]
 
+    plan_by_bid: dict[str, dict[str, Any]] = {
+        str(f.get("fact_id") or "").strip(): f
+        for f in (plan_facts or [])
+        if isinstance(f, dict) and str(f.get("fact_id") or "").strip()
+    }
+
+    def _plan_metric_for(ids_raw: list[str]) -> str:
+        """Return the metric_raw for the first matching plan_fact, lowercased."""
+        for fid in ids_raw:
+            base = str(fid).split("_metric_")[0]
+            plan_fact = plan_by_bid.get(base) or plan_by_bid.get(str(fid))
+            if plan_fact:
+                m = str(plan_fact.get("metric_raw") or "").strip().lower()
+                if m:
+                    return m
+        return ""
+
     def check_text(text: str, ids_raw: list[str]) -> bool:
         tl = text.lower()
         ids_lower = [i.lower() for i in ids_raw]
+        plan_metric = _plan_metric_for(ids_raw)
         for needles, root in rules:
-            if any(n.lower() in tl for n in needles):
-                if not any(root in i for i in ids_lower):
-                    return False
+            if not any(n.lower() in tl for n in needles):
+                continue
+            if any(root in i for i in ids_lower):
+                continue
+            # Canonical metric appears in text but not cited to canonical root —
+            # accept ONLY when the plan_fact for the citing slot owns this metric.
+            if plan_metric and any(n.lower() in plan_metric for n in needles):
+                continue
+            return False
         return True
 
     for b in bullets:
@@ -524,28 +595,55 @@ def run_ibm_bullets_x2_gates(
         cov_reason,
     )
 
-    anchor_ok, anchor_fail = _ibm_metric_anchors_on_assigned_bullets(bullets)
+    plan_facts_for_anchors = list((selected_plan or {}).get("facts") or [])
+    anchor_ok, anchor_fail = _ibm_metric_anchors_on_assigned_bullets(
+        bullets, plan_facts=plan_facts_for_anchors
+    )
     add(
         "x2_ibm_metric_anchor_bullet_ownership",
         anchor_ok,
         anchor_fail or "ok",
-        "each core metric on assigned bul_ibm_* bullet_text",
+        "each core metric on assigned bul_ibm_* bullet_text (canonical or plan-fact metric_raw)",
         None if anchor_ok else f"Metric anchor ownership failed: {anchor_fail}",
     )
 
-    metrics_preserved = (
+    # When the augmented_skills_graph selector has reassigned bullet slots, the canonical IBM
+    # metric set may not all appear; require the EFFECTIVE metric set instead (canonical token
+    # OR plan-fact metric_raw per slot). Closes Bug:IbmLockedMetricInjectionGarblesGraphSelectedBullets.
+    metrics_preserved_canonical = (
         ("$15M" in combined or "$15m" in combined_lower)
         and "99.9%" in combined
         and "30%" in combined
         and "25%" in combined
         and "50%" in combined
     )
+    if metrics_preserved_canonical:
+        metrics_preserved = True
+        metrics_obs: Any = combined[:240]
+        metrics_thr: Any = CORE_METRIC_TOKENS
+        metrics_fail = None
+    else:
+        # Per-slot check: each bul_ibm_NNN bullet must carry SOMETHING (canonical metric or
+        # plan-fact metric_raw substring). Mirrors _ibm_metric_anchors_on_assigned_bullets.
+        per_slot_ok = anchor_ok
+        metrics_preserved = per_slot_ok
+        metrics_obs = {
+            "canonical_set_present": False,
+            "per_slot_anchor_ok": per_slot_ok,
+            "anchor_failures": anchor_fail,
+        }
+        metrics_thr = "canonical_set OR per-slot (canonical|plan-fact metric)"
+        metrics_fail = (
+            None
+            if per_slot_ok
+            else f"Neither canonical IBM metric set nor per-slot plan-fact metric present: {anchor_fail}"
+        )
     add(
         "x2_ibm_metrics_preserved",
         metrics_preserved,
-        combined[:240],
-        CORE_METRIC_TOKENS,
-        "Core IBM metrics ($15M, 99.9%, 30%, 25%, 50%) must appear in bullet text.",
+        metrics_obs,
+        metrics_thr,
+        metrics_fail,
     )
 
     from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
@@ -648,9 +746,9 @@ def run_ibm_bullets_x2_gates(
 
     add(
         "x2_metric_fact_id_granularity",
-        _metric_granularity_ok(bullets, claim_ledger),
+        _metric_granularity_ok(bullets, claim_ledger, plan_facts=plan_facts_for_anchors),
         len(claim_ledger),
-        "metric claims map to bul_ibm_*",
+        "metric claims map to bul_ibm_* (canonical pairing OR plan-fact metric ownership)",
         "Metric claims lack matching bul_ibm_* source_fact_ids in claim_ledger.",
     )
 

@@ -1507,6 +1507,8 @@ def rerun_soft_failed_judges(
     jd_text: str = "",
     briefing_text: str = "",
     parsed_output: dict[str, Any] | None = None,
+    graph_bindings: list[dict[str, Any]] | None = None,
+    repo_root: Any = None,
 ) -> list[dict[str, Any]]:
     """Re-run only model-backed soft-failed judges after remediation.
 
@@ -1550,6 +1552,7 @@ def rerun_soft_failed_judges(
                 if isinstance(judge_packet.get("targeting_context"), dict)
                 else None
             ),
+            graph_bindings=graph_bindings,
         )
         packet_ref = write_executive_summary_judge_packet(
             artifact_dir / "executive_summary_judge_packet_post_x2.json",
@@ -1739,6 +1742,8 @@ def refresh_x1d_judges_after_full_x2(
     prior_judges: list[dict[str, Any]],
     graph_targeting_capsule: dict[str, Any] | None = None,
     material_targeting_bundle: dict[str, Any] | None = None,
+    graph_bindings: list[dict[str, Any]] | None = None,
+    repo_root: Any = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Re-grade with authoritative full-X2 deterministic_gate_summary (post-X2 refresh)."""
     from apps_rg.runtime.judges.executive_summary_judge_packet import (
@@ -1772,6 +1777,8 @@ def refresh_x1d_judges_after_full_x2(
         parsed_output=parsed_output,
         deterministic_gate_summary=gate_summary,
         graph_targeting_capsule=graph_targeting_capsule,
+        graph_bindings=graph_bindings,
+        repo_root=repo_root,
     )
     from apps_rg.runtime.sections.executive_summary_targeting_publish import (
         enforce_targeting_parity_before_judge_panel,

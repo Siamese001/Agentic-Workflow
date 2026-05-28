@@ -1,9 +1,39 @@
 {
-  "fetched_at": "2026-05-27T18:45:25Z",
-  "fetched_at_epoch": 1779907525.5375926,
+  "fetched_at": "2026-05-28T10:30:30Z",
+  "fetched_at_epoch": 1779964230.476806,
   "plans": {
-    "resume-graph-skills-remediation-a7f2c3": {
+    "exec-summary-judge-display-override-parity-7c3e8a": {
       "status": "Not Started",
+      "page_id": "36e27693-f55c-81b6-8d34-c75db2072709",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "context-window-calibration-42a129": {
+      "status": "Completed",
+      "page_id": "36d27693-f55c-8121-aeb1-d140c25344e7",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "exec-summary-rc-narrative-quality-c4e9a1": {
+      "status": "Not Started",
+      "page_id": "36d27693-f55c-81cb-b868-f2f3ddc3a5aa",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "exec-summary-rc-composition-hardcode-b3d7e1": {
+      "status": "In Progress",
+      "page_id": "36d27693-f55c-8177-acd3-eb29f6fd1a91",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "briefing-jd-c0-enhancements-ee0b1d": {
+      "status": "Completed",
+      "page_id": "36d27693-f55c-81c3-8f68-f9830b3b075f",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "resume-graph-skills-remediation-a7f2c3": {
+      "status": "Completed",
       "page_id": "36d27693-f55c-81ed-8b70-e19ab570f525",
       "exists_on_disk": true,
       "has_ai_summary": true

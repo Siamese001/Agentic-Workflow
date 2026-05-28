@@ -41,6 +41,16 @@ Mandatory rules:
 - Grade only against the rubric, allowed_fact_packet (graph proof pool), and candidate_output.
 - **deterministic_gate_summary is authoritative for X2 gates.** If a gate shows `"pass": true`, you MUST NOT
   claim that gate failed or cite retired criteria (five-part S1–S5 arc, mandatory S5 credential sentence, etc.).
+- **DISPLAY_OVERRIDE PARITY (CRITICAL):** When an `allowed_fact_packet` row carries a non-empty
+  `display_override_text` field, treat the **UNION** of `claim_text` + `display_override_text` as the
+  authorized fact substrate for that fact_id. The generator (Qwen) is contractually required by X2 gate
+  `x2_exec_summary_display_override_compliance` to emit the override text verbatim. Phrases drawn from
+  `display_override_text` are **NOT unsupported extensions** and MUST NOT be cited as "extending beyond
+  fact scope" or as inferential stretches. Grade fidelity to the union, not to `claim_text` alone.
+- **GRAPH_PROOF_REFS (CRITICAL):** When a row carries `graph_proof_refs.claim_support_graph_refs`, grade
+  `factual_support` against the UNION of `claim_text`, `display_override_text` (if any), and sentences that
+  demonstrate skills listed in `claim_support_graph_refs`. Treat `graph_proof_refs.source_resume_files` as
+  authoritative provenance for resume-backed skill claims — not as optional decoration.
 - Return ONLY the required structured judge JSON schema (no markdown fences, no prose).
 """.strip()
 
@@ -98,12 +108,22 @@ _RETIRED_JUDGE_CRITERIA_FRAGMENTS = (
 GRAPH_ONLY_GRADE_ONLY_RUBRIC = """
 Rubric dimensions (graph-only C0.3 augmented skills graph authority, non-SRFS lane):
 1. factual_support: claims supported by allowed_fact_packet and candidate claim_ledger source_fact_ids only.
+   **For rows carrying `display_override_text`, the authorized substrate is the UNION of `claim_text` +
+   `display_override_text`. Phrases from `display_override_text` are deterministically authorized — do NOT
+   flag them as unsupported, inferential, or out-of-scope extensions; the generator was X2-required to emit
+   them verbatim. When `graph_proof_refs.claim_support_graph_refs` is non-empty, also authorize prose that
+   demonstrates those skill nodes; `graph_proof_refs.source_resume_files` is authoritative provenance.
+   Cite a `factual_support` failure only when prose deviates from the full authorized union (claim +
+   override + graph skill refs).**
 2. executive_signal: SVP-level platform/governance/commercialization synthesis, not bullet stacks.
 3. resume_voice: credible executive prose; no recruiter filler or meta narration.
 4. ats_alignment_without_keyword_stuffing: JD shapes emphasis only; no JD-as-proof. When allowed facts
    lack EA/interop/federated proof IDs, penalize only if prose invents those themes or ignores documented
    gap_notes — not for absence alone when generation_law_digest requires gap_notes.
 5. anti_overfit: no unsupported metrics/credentials; no target company as candidate experience.
+   **`display_override_text` content is NOT an unsupported credential/metric — it is X2-authorized
+   substrate. Do not cite override phrases (e.g. "FSA-chartered", "informing data governance and AI
+   strategy at scale") as anti_overfit violations.**
 6. synthesis_quality: **exactly six** integrated sentences (X2 band); reward connective SVP IT strategy emphasis when
    ledger-backed; penalize thin recap S6 and bullet-stacked prose. **Do not** soft-penalize credential/metric inventory,
    unused_fact_ids weave targets, or mechanism dumps when the mapped deterministic gate shows `"pass": true`.
@@ -140,14 +160,76 @@ score_scale must be 0_to_5 or 0_to_1 with in-range score/threshold.
 
 REQUIRED_JUDGE_OUTPUT_SCHEMA = _required_judge_output_schema_text()
 
+_MAX_JUDGE_CLAIM_SUPPORT_SKILL_REFS = 6
+_MAX_JUDGE_SOURCE_RESUME_FILES = 8
+_MAX_JUDGE_EXECUTIVE_CAPABILITY_PHRASES = 3
+
+
+def _bindings_by_fact_id(bindings: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    out: dict[str, dict[str, Any]] = {}
+    for binding in bindings:
+        if not isinstance(binding, dict):
+            continue
+        fid = str(binding.get("fact_id") or "").strip()
+        if not fid:
+            continue
+        out[fid] = binding
+        base = fid.split("_metric_", 1)[0]
+        out.setdefault(base, binding)
+    return out
+
+
+def _skill_source_resume_files_for_refs(
+    skill_ids: list[str],
+    *,
+    repo_root: Any = None,
+) -> list[str]:
+    if not skill_ids:
+        return []
+    from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+
+    graph = load_augmented_skills_graph(repo_root=repo_root)
+    skill_rows = {
+        str(row.get("skill_id") or "").strip(): row
+        for row in (graph.get("skill_rows") or [])
+        if isinstance(row, dict) and str(row.get("skill_id") or "").strip()
+    }
+    files: list[str] = []
+    seen: set[str] = set()
+    for sid in skill_ids:
+        row = skill_rows.get(str(sid).strip())
+        if not row:
+            continue
+        for raw in row.get("source_resume_files") or []:
+            path = str(raw).strip()
+            if path and path not in seen:
+                seen.add(path)
+                files.append(path)
+            if len(files) >= _MAX_JUDGE_SOURCE_RESUME_FILES:
+                return files
+    return files
+
 
 def enrich_allowed_fact_packet_for_judges(
     plan_facts: list[dict[str, Any]],
     allowed_fact_ids: set[str],
+    *,
+    graph_bindings: list[dict[str, Any]] | None = None,
+    repo_root: Any = None,
 ) -> list[dict[str, Any]]:
-    """Include metric-derivative rows so X1D judges see the same allowlist as X2."""
+    """Include metric-derivative rows AND attach C0 display-override text so X1D judges see the same fact substrate as X2/Qwen.
+
+    Without ``display_override_text``, judges grade against the raw ``claim_text`` and
+    flag the authorized override phrases as unsupported extensions, producing structural
+    soft-fail loops (closes Bug:ExecSummaryJudgeDisplayOverrideInvisible,
+    plan exec-summary-judge-display-override-parity-7c3e8a).
+    """
+    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        FACT_C0_DISPLAY_OVERRIDES,
+    )
     from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
 
+    bindings_by_fact = _bindings_by_fact_id(list(graph_bindings or []))
     by_id: dict[str, dict[str, Any]] = {
         str(f.get("fact_id")): dict(f) for f in plan_facts if str(f.get("fact_id") or "").strip()
     }
@@ -167,6 +249,38 @@ def enrich_allowed_fact_packet_for_judges(
         derivative["has_metric"] = True
         out.append(derivative)
         by_id[fid] = derivative
+    for row in out:
+        fid = str(row.get("fact_id") or "").strip()
+        if not fid:
+            continue
+        base = fid.split("_metric_")[0]
+        override = str(FACT_C0_DISPLAY_OVERRIDES.get(fid, "") or "").strip()
+        if not override and base != fid:
+            override = str(FACT_C0_DISPLAY_OVERRIDES.get(base, "") or "").strip()
+        if override:
+            row["display_override_text"] = override
+            row["display_substrate_authority"] = "union_claim_text_and_display_override_text"
+        preferred = str(row.get("preferred_c0_display_text") or "").strip()
+        if preferred:
+            row["preferred_c0_display_text"] = preferred
+        binding = bindings_by_fact.get(fid) or bindings_by_fact.get(base)
+        if binding:
+            claim_refs = list(
+                binding.get("claim_support_graph_refs")
+                or binding.get("graph_node_refs")
+                or []
+            )[:_MAX_JUDGE_CLAIM_SUPPORT_SKILL_REFS]
+            capability_phrases = list(binding.get("executive_capability_phrases") or [])[
+                :_MAX_JUDGE_EXECUTIVE_CAPABILITY_PHRASES
+            ]
+            source_files = _skill_source_resume_files_for_refs(claim_refs, repo_root=repo_root)
+            if claim_refs or source_files:
+                row["graph_proof_refs"] = {
+                    "claim_support_graph_refs": claim_refs,
+                    "source_resume_files": source_files,
+                }
+            if capability_phrases:
+                row["executive_capability_phrases"] = capability_phrases
     return out
 
 
@@ -472,6 +586,8 @@ def build_executive_summary_judge_packet(
     parsed_output: dict[str, Any] | None,
     deterministic_gate_summary: dict[str, Any] | None = None,
     graph_targeting_capsule: dict[str, Any] | None = None,
+    graph_bindings: list[dict[str, Any]] | None = None,
+    repo_root: Any = None,
 ) -> dict[str, Any]:
     """Build canonical GRADE_ONLY JudgePacket dict for executive_summary X1D."""
     gate_summary = deterministic_gate_summary or build_deterministic_gate_summary(
@@ -485,9 +601,25 @@ def build_executive_summary_judge_packet(
     judge_allowed_packet = enrich_allowed_fact_packet_for_judges(
         list(allowed_fact_packet),
         allowed_fact_ids,
+        graph_bindings=graph_bindings,
+        repo_root=repo_root,
     )
     unused_fact_ids = collect_unused_allowed_fact_ids(claim_ledger, allowed_fact_ids)
     cited_fact_ids = _collect_source_fact_ids(claim_ledger)
+    from apps_rg.runtime.validators.executive_summary_x2 import (
+        check_judge_packet_display_override_parity,
+    )
+
+    parity_ok, parity_reason = check_judge_packet_display_override_parity(
+        judge_allowed_fact_packet=judge_allowed_packet,
+        cited_fact_ids=cited_fact_ids,
+    )
+    if isinstance(gate_summary, dict):
+        gate_summary = dict(gate_summary)
+        gate_summary["x2_executive_summary_judge_packet_display_override_parity"] = {
+            "pass": parity_ok,
+            "detail": parity_reason or "ok",
+        }
     return {
         "judge_packet_version": JUDGE_PACKET_VERSION,
         "section": "executive_summary",

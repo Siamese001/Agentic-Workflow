@@ -130,6 +130,12 @@ class AppsResearchBridge:
                 "job_title": job_title,
                 "request_id": request_id,
                 "run_id": run_id,
+                "output_format": "apps_rg_targeting_brief_v1",
+                "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
+                "content": (
+                    f"Target company: {company_name}\n"
+                    f"Target role: {job_title or 'target role'}\n"
+                ),
             },
         )
         runner = GovernedResearchRun()

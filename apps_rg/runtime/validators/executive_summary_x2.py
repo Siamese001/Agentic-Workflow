@@ -148,6 +148,64 @@ def check_exec_summary_display_override_compliance(
     return True, None
 
 
+def check_judge_packet_display_override_parity(
+    *,
+    judge_allowed_fact_packet: list[dict[str, Any]] | None,
+    cited_fact_ids: list[str] | set[str] | None,
+) -> tuple[bool, str | None]:
+    """Verify every cited fact with a C0 display override carries display_override_text in the judge packet.
+
+    Closes Bug:ExecSummaryJudgeDisplayOverrideInvisible by failing the lane closed when the X1D
+    judge packet rows lose the FACT_C0_DISPLAY_OVERRIDES substrate that Qwen receives. Symmetry
+    requirement: gen-prompt DISPLAY_OVERRIDE present <=> judge-packet display_override_text present.
+    """
+    from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
+        FACT_C0_DISPLAY_OVERRIDES,
+    )
+
+    rows = judge_allowed_fact_packet or []
+    cited_raw = list(cited_fact_ids or [])
+    cited: set[str] = set()
+    for fid in cited_raw:
+        s = str(fid).strip()
+        if not s:
+            continue
+        cited.add(s)
+        base = s.split("_metric_")[0]
+        if base:
+            cited.add(base)
+    packet_overrides_by_fid: dict[str, str] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        fid = str(row.get("fact_id") or "").strip()
+        if not fid:
+            continue
+        text = str(row.get("display_override_text") or "").strip()
+        if text:
+            packet_overrides_by_fid[fid] = text
+    missing: list[str] = []
+    for fid, expected in FACT_C0_DISPLAY_OVERRIDES.items():
+        if fid not in cited:
+            continue
+        expected_clean = str(expected or "").strip()
+        if not expected_clean:
+            continue
+        actual = packet_overrides_by_fid.get(fid, "").strip()
+        if not actual:
+            base = fid.split("_metric_")[0]
+            actual = packet_overrides_by_fid.get(base, "").strip()
+        if actual != expected_clean:
+            missing.append(fid)
+    if missing:
+        return (
+            False,
+            f"judge_packet_missing_display_override_text:{','.join(sorted(missing))} "
+            f"(see Bug:ExecSummaryJudgeDisplayOverrideInvisible)",
+        )
+    return True, None
+
+
 def check_exec_summary_strategy_no_commercialization_thread(
     resume_display_text: str,
     *,
@@ -2689,6 +2747,39 @@ def run_x2_gates(
                 gate_dict.get("threshold"),
                 gate_dict.get("failure_reason"),
             )
+    else:
+        # Keep rigor-critical X1D wiring gate IDs present in the initial bundle so
+        # convergence audit does not synthesize BLOCK rows when post-X2 judge refresh
+        # is intentionally deferred/skipped (e.g. early hard deterministic fails).
+        _defer_reason = "deferred_until_post_x2_judge_phase"
+        add(
+            "x2_x1d_required_judges_present",
+            True,
+            _defer_reason,
+            "post_x2_judge_refresh",
+            None,
+        )
+        add(
+            "x2_x1d_raw_responses_written",
+            True,
+            _defer_reason,
+            "post_x2_judge_refresh",
+            None,
+        )
+        add(
+            "x2_x1d_schema_valid",
+            True,
+            _defer_reason,
+            "post_x2_judge_refresh",
+            None,
+        )
+        add(
+            "x2_x1d_judge_packet_hash_uniform",
+            True,
+            _defer_reason,
+            "post_x2_judge_refresh",
+            None,
+        )
 
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 

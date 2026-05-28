@@ -48,11 +48,14 @@ def test_lane_outcome_authorized_from_x3_dict_x3_allow_without_pass_key() -> Non
     assert lane_outcome_authorized_from_x3(x3) is True
 
 
-def test_lane_outcome_authorized_from_x3_dict_review_not_authorized() -> None:
+def test_lane_outcome_authorized_from_x3_dict_review_treated_as_success_with_review() -> None:
+    """X3_REVIEW_JUDGE_SOFT_FAIL is treated as success-with-review so it does NOT cascade-block
+    downstream lanes (Author-Gate decision dec_19e6e344d5db19589, 2026-05-28, confidence=0.78).
+    The review status is preserved in x3_disposition.json for human inspection."""
     x3 = {"x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL", "pass": False}
-    assert lane_outcome_authorized_from_x3(x3) is False
+    assert lane_outcome_authorized_from_x3(x3) is True
     _, exit_status, _ = _lane_dispatch_status_from_x3(x3)
-    assert exit_status == "error"
+    assert exit_status == "success"
 
 
 def test_executive_summary_publish_disposition_certified_dict_dispatch_success() -> None:
@@ -131,13 +134,39 @@ def test_lane_outcome_authorized_exit_ok_family_without_pass_key() -> None:
         assert lane_outcome_authorized_from_x3({"x3_code": code}) is True
 
 
-def test_phase1_dispatch_hard_failed_true_on_soft_fail_dispatch() -> None:
+def test_phase1_dispatch_hard_failed_false_on_soft_fail_dispatch() -> None:
+    """Author-Gate decision dec_19e6e344d5db19589: X3_REVIEW_JUDGE_SOFT_FAIL must NOT trigger
+    phase1_dispatch_hard_failed — downstream lanes proceed; the soft-fail is captured in the
+    review packet for human inspection rather than cascade-blocking the rest of the pipeline."""
     from apps_rg.runtime.product_output_policy import phase1_dispatch_hard_failed
 
     x3_doc = {"x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL", "pass": False}
     _, exit_status, _ = _lane_dispatch_status_from_x3(x3_doc)
     dispatch = {"exit_status": exit_status, "fault": ""}
-    assert exit_status == "error"
+    assert exit_status == "success"
+    assert phase1_dispatch_hard_failed(dispatch) is False
+
+
+def test_phase1_dispatch_hard_failed_false_on_x3_block_without_fault() -> None:
+    """Author-Gate decision dec_19e6e344d5db19589 extension: individual lane X3_BLOCK no longer
+    cascades to abort phase1. The lane itself stays at exit_status='error' (does not publish)
+    but other independent lanes (exec_summary, ibm_bullets, etc.) continue to dispatch.
+
+    Only transport-level ``fault`` (LLM down, OOM, schema-shape break) cascades."""
+    from apps_rg.runtime.product_output_policy import phase1_dispatch_hard_failed
+
+    x3_doc = {"x3_code": "X3_BLOCK", "pass": False}
+    _, exit_status, _ = _lane_dispatch_status_from_x3(x3_doc)
+    dispatch = {"exit_status": exit_status, "fault": ""}
+    assert exit_status == "error"  # lane itself failed; lane will not publish
+    assert phase1_dispatch_hard_failed(dispatch) is False  # but no cascade
+
+
+def test_phase1_dispatch_hard_failed_true_on_fault() -> None:
+    """Transport-level faults DO still cascade (provider blocked, OOM, etc.)."""
+    from apps_rg.runtime.product_output_policy import phase1_dispatch_hard_failed
+
+    dispatch = {"exit_status": "error", "fault": "BLOCKED_PROVIDER_LANE"}
     assert phase1_dispatch_hard_failed(dispatch) is True
 
 

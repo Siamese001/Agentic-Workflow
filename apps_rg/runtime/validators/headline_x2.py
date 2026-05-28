@@ -95,6 +95,293 @@ def _ledger_fact_ids(claim_ledger: list[Any]) -> set[str]:
     return ids
 
 
+_HEADLINE_GENERIC_NOUN_STOPLIST: frozenset[str] = frozenset(
+    {
+        # Role-family / executive filler words \u2014 not specific enough to count as grounding.
+        "ai", "ml", "platforms", "platform", "infrastructure", "infra", "systems", "system",
+        "architecture", "engineering", "engineer", "engineered", "leadership", "strategy",
+        "strategic", "innovation", "governance", "governed", "agentic", "agent", "agents",
+        "enterprise", "enterprises", "scale", "scaling", "data", "delivery", "production",
+        "runtime", "operations", "operational", "modern", "modernization", "transformation",
+        "transformations", "transform", "lead", "leader", "led", "leading", "team", "teams",
+        "team-based", "build", "built", "building", "manage", "managed", "managing",
+        "established", "established", "across", "with", "from", "into", "using", "via",
+        "and", "the", "for", "this", "that", "those", "these", "their", "they", "have", "has",
+        "had", "been", "being", "were", "was", "are", "all", "any", "some", "more", "most",
+        "less", "very", "such", "also", "while", "when", "where", "what", "which", "who",
+        "whom", "whose", "him", "her", "his", "hers", "ours", "yours", "theirs", "them",
+        "us", "we", "you", "i", "me", "my", "mine", "be", "do", "did", "does", "doing",
+        "based", "level", "levels", "wide", "broad", "high", "low", "small", "large",
+        "great", "core", "key", "main", "common", "general", "specific", "various",
+        "different", "same", "other", "another", "first", "second", "third", "last",
+        "next", "new", "old", "early", "late", "current", "recent", "future", "past",
+        "long", "short", "term", "terms",
+        # Generic framing nouns that are legitimate filler in executive headlines but don't
+        # carry specific claims on their own. Allowing them as filler prevents the strict
+        # grounding rule from forcing Qwen into awkward compositions.
+        "workflows", "pipelines", "harness", "orchestration", "instrumentation",
+        "observability", "reliability", "performance", "optimization", "programs",
+        "services", "capabilities", "organizations", "functions", "foundations",
+        "frameworks", "rigor", "discipline", "standards", "standardization",
+        "practices", "methodology", "methodologies", "approach", "approaches",
+        # NOTE: "catalogs" / "catalog" REMOVED from stoplist (Brown SVP run #14): ChatGPT
+        # decisively rejects "Retrieval Telemetry Catalogs" as ungrounded because no cited
+        # fact mentions catalogs. Requiring catalog/catalogs to be literally grounded lets
+        # X2 catch this before regen, instead of relying on the judge to flag it.
+        "registries", "registry", "controls", "patterns",
+        "integration", "integrations", "integrated", "integrating", "integrator",
+        "implementation", "implementations", "deployment", "deployments",
+        "adoption", "adoptions", "rollout", "rollouts", "transformation",
+        "transformations", "modernization", "modernizations", "migration", "migrations",
+        "automation", "automations", "automated", "automating",
+    }
+)
+
+
+def _tokenize_for_grounding(text: str) -> set[str]:
+    """Lowercase content tokens (>=4 chars), strip punctuation, drop the generic stoplist."""
+    if not text:
+        return set()
+    raw = re.findall(r"[A-Za-z][A-Za-z\-]{3,}", text.lower())
+    return {tok for tok in raw if tok not in _HEADLINE_GENERIC_NOUN_STOPLIST}
+
+
+def _extract_plan_fact_text_map(
+    parsed_output: dict[str, Any] | None,
+    fallback_facts: list[dict[str, Any]] | None = None,
+) -> dict[str, str]:
+    out: dict[str, str] = {}
+    facts: list[dict[str, Any]] = []
+    if isinstance(parsed_output, dict):
+        sfp = parsed_output.get("selected_fact_plan")
+        if isinstance(sfp, dict):
+            candidate = sfp.get("facts")
+            if isinstance(candidate, list):
+                facts = [f for f in candidate if isinstance(f, dict)]
+    if not facts and fallback_facts:
+        facts = [f for f in fallback_facts if isinstance(f, dict)]
+    for f in facts:
+        fid = str(f.get("fact_id") or "").strip()
+        if not fid:
+            continue
+        text = str(f.get("claim_text") or "").strip()
+        if text:
+            out[fid] = text
+            base = fid.split("_metric_")[0]
+            if base != fid and base not in out:
+                out[base] = text
+    return out
+
+
+def repair_headline_segment_citations_for_grounding(
+    *,
+    headline_line: str,
+    parsed_output: dict[str, Any] | None,
+    claim_ledger: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Re-cite each X/Y/Z segment to the facts in selected_fact_plan whose claim_text shares
+    the most content nouns with the segment. Closes Bug:HeadlineSegmentMiscitationByQwen
+    (Brown SVP full_resume_01b4989c296a — Qwen cited fact_quant_hpc_002 for "Microservices
+    Telemetry" which shares zero content nouns, while fact_engineering_platform_005
+    contained "microservices" and fact_engineering_platform_003 contained "telemetry").
+
+    Strategy: for each segment, find facts with non-empty shared_tokens; pick the union of
+    facts whose claim_texts together cover all (or the majority of) segment content nouns,
+    preferring the smallest covering set. If no improvement is possible, leave the citation
+    unchanged so the X2 grounding gate can still fail honestly.
+    """
+    receipt: dict[str, Any] = {"per_segment": [], "any_changed": False}
+    h = (headline_line or "").strip()
+    if not h:
+        return list(claim_ledger or []), receipt
+    parts = [p.strip() for p in h.split(" | ")]
+    if len(parts) < 4:
+        return list(claim_ledger or []), receipt
+    xyz = parts[1:4]
+
+    fact_text_map = _extract_plan_fact_text_map(parsed_output)
+    if not fact_text_map:
+        return list(claim_ledger or []), receipt
+
+    fact_tokens: dict[str, set[str]] = {
+        fid: _tokenize_for_grounding(text) for fid, text in fact_text_map.items()
+    }
+
+    def _best_covering_fact_ids(seg_tokens: set[str], current_ids: list[str]) -> list[str]:
+        """Greedy smallest set of facts whose union covers as many seg_tokens as possible."""
+        if not seg_tokens:
+            return current_ids
+        remaining = set(seg_tokens)
+        chosen: list[str] = []
+        candidate_fids = sorted(fact_text_map.keys())
+        while remaining:
+            best_fid = None
+            best_cover: set[str] = set()
+            for fid in candidate_fids:
+                if fid in chosen:
+                    continue
+                cover = fact_tokens.get(fid, set()) & remaining
+                if len(cover) > len(best_cover):
+                    best_fid = fid
+                    best_cover = cover
+            if not best_fid or not best_cover:
+                break
+            chosen.append(best_fid)
+            remaining -= best_cover
+        return chosen or current_ids
+
+    rows_by_segment: dict[str, dict[str, Any]] = {}
+    other_rows: list[dict[str, Any]] = []
+    for row in claim_ledger or []:
+        if not isinstance(row, dict):
+            other_rows.append(row)
+            continue
+        ct = str(row.get("claim_text") or "").strip().lower()
+        if ct in {seg.lower() for seg in xyz}:
+            rows_by_segment[ct] = dict(row)
+        else:
+            other_rows.append(row)
+
+    new_rows: list[dict[str, Any]] = list(other_rows)
+    for seg in xyz:
+        seg_clean = seg.strip()
+        seg_key = seg_clean.lower()
+        seg_tokens = _tokenize_for_grounding(seg_clean)
+        existing = rows_by_segment.get(seg_key) or {
+            "claim_text": seg_clean,
+            "source_fact_ids": [],
+        }
+        current_ids = [str(x).strip() for x in (existing.get("source_fact_ids") or []) if str(x).strip()]
+        current_union = set().union(*(fact_tokens.get(fid, set()) for fid in current_ids))
+        current_grounded = current_union & seg_tokens
+        per_seg = {
+            "segment": seg_clean,
+            "before_cited": current_ids,
+            "before_grounded_tokens": sorted(current_grounded),
+        }
+        if seg_tokens and (len(current_grounded) * 2 < len(seg_tokens) or not current_grounded):
+            covering = _best_covering_fact_ids(seg_tokens, current_ids)
+            after_union = set().union(*(fact_tokens.get(fid, set()) for fid in covering))
+            after_grounded = after_union & seg_tokens
+            if covering != current_ids and len(after_grounded) > len(current_grounded):
+                existing["source_fact_ids"] = covering
+                per_seg["after_cited"] = covering
+                per_seg["after_grounded_tokens"] = sorted(after_grounded)
+                per_seg["changed"] = True
+                receipt["any_changed"] = True
+            else:
+                per_seg["changed"] = False
+        else:
+            per_seg["changed"] = False
+        receipt["per_segment"].append(per_seg)
+        new_rows.append(existing)
+
+    return new_rows, receipt
+
+
+def check_headline_xyz_literal_grounding(
+    *,
+    headline_line: str,
+    claim_ledger: list[dict[str, Any]],
+    fact_id_to_text: dict[str, str],
+) -> tuple[bool, dict[str, Any], str | None]:
+    """Each X/Y/Z phrase must share at least one content noun (>=4 chars, non-generic) with its cited fact's claim_text.
+
+    Closes Bug:HeadlineXYZPhrasesNotGroundedInFactText (Brown SVP full_resume_183cf9252e02 headline
+    X3_BLOCK). The previous run synthesized ``Governed Agentic Platforms`` cited to
+    fact_engineering_platform_005 ("cloud-native microservices across AWS and Databricks Lakehouse...")
+    and ``Distributed AI Infrastructure`` cited to fact_quant_hpc_002 ("AI-driven automated trading
+    platform using parallel HPC workflows..."). Both phrases shared zero non-generic content nouns
+    with their cited facts, so two X1D judges (OpenAI 2.0 decisive, Claude 3.2 soft) correctly flagged
+    them as unsupported \u2014 but the existing X2 layer let them through because the fact_id was in
+    the allowed list. This gate enforces the lexical grounding the rubric already requires.
+    """
+    h = (headline_line or "").strip()
+    if not h:
+        return False, {"reason": "empty_headline"}, "headline_line empty; cannot check grounding."
+    parts = [p.strip() for p in h.split(" | ")]
+    if len(parts) < 4:
+        return True, {"reason": "skipped_not_four_segments"}, None  # other gate covers shape
+    xyz = parts[1:4]
+
+    ledger_by_text: dict[str, list[str]] = {}
+    for row in claim_ledger or []:
+        if not isinstance(row, dict):
+            continue
+        ct = str(row.get("claim_text") or "").strip().lower()
+        if not ct:
+            continue
+        fids = [str(f).strip() for f in (row.get("source_fact_ids") or []) if str(f).strip()]
+        if fids:
+            ledger_by_text[ct] = fids
+
+    per_segment: list[dict[str, Any]] = []
+    failures: list[str] = []
+    for seg in xyz:
+        seg_clean = seg.strip()
+        seg_key = seg_clean.lower()
+        fids = ledger_by_text.get(seg_key, [])
+        seg_tokens = _tokenize_for_grounding(seg_clean)
+        if not fids:
+            per_segment.append({
+                "segment": seg_clean,
+                "ground_pass": False,
+                "reason": "segment_has_no_claim_ledger_row",
+                "cited_fact_ids": [],
+                "shared_tokens": [],
+            })
+            failures.append(f"{seg_clean!r} has no claim_ledger row")
+            continue
+        # Hybrid rule (Wave F): require >=1 non-stoplist content noun grounded (deterministic
+        # X2 floor) AND require the MAJORITY (>=50%) of non-stoplist content nouns to be
+        # grounded. This lets common framing modifiers like "Integration", "Workflows" appear
+        # in segments without forcing a regen loop, while still rejecting headlines where the
+        # cited fact is mostly fictional cover. X1D LLM judges have semantic latitude to flag
+        # nuance beyond this floor.
+        per_fact_evidence: list[dict[str, Any]] = []
+        union_grounded: set[str] = set()
+        for fid in fids:
+            text = fact_id_to_text.get(fid) or fact_id_to_text.get(fid.split("_metric_")[0]) or ""
+            fact_tokens = _tokenize_for_grounding(text)
+            shared = sorted(seg_tokens & fact_tokens)
+            per_fact_evidence.append({"fact_id": fid, "shared_tokens": shared, "fact_text_known": bool(text)})
+            union_grounded.update(shared)
+        ungrounded = sorted(seg_tokens - union_grounded)
+        total = len(seg_tokens)
+        grounded_count = len(union_grounded)
+        majority_grounded = grounded_count * 2 >= total if total else False
+        seg_pass = bool(union_grounded) and majority_grounded
+        per_segment.append({
+            "segment": seg_clean,
+            "ground_pass": seg_pass,
+            "cited_fact_ids": fids,
+            "evidence": per_fact_evidence,
+            "ungrounded_tokens": ungrounded,
+            "grounded_tokens": sorted(union_grounded),
+            "majority_grounded": majority_grounded,
+        })
+        if not seg_tokens:
+            failures.append(
+                f"{seg_clean!r} has zero non-generic content nouns (all words are in stoplist) \u2014 "
+                "cannot prove grounding"
+            )
+        elif not union_grounded:
+            failures.append(
+                f"{seg_clean!r} shares zero content nouns with cited fact(s) "
+                f"{fids} \u2014 phrase is not lexically grounded in fact claim_text"
+            )
+        elif not majority_grounded:
+            failures.append(
+                f"{seg_clean!r} grounds only {grounded_count}/{total} content noun(s) in cited "
+                f"fact(s) {fids}; ungrounded={ungrounded} \u2014 majority of segment nouns must "
+                "literally appear in the cited fact"
+            )
+    overall = not failures
+    observed = {"segments": per_segment, "checked": len(per_segment)}
+    failure = None if overall else "; ".join(failures)
+    return overall, observed, failure
+
+
 def headline_word_count(headline: str) -> int:
     flat = re.sub(r"\|", " ", headline.strip())
     return len([w for w in flat.split() if w.strip()])
@@ -525,6 +812,20 @@ def run_headline_x2_gates(
         None if supported else "claim_ledger must cite allowed bul_* facts only.",
     )
 
+    fact_text_map = _extract_plan_fact_text_map(parsed_output)
+    grounding_pass, grounding_obs, grounding_fail = check_headline_xyz_literal_grounding(
+        headline_line=h,
+        claim_ledger=claim_ledger,
+        fact_id_to_text=fact_text_map,
+    )
+    add(
+        "x2_headline_xyz_literal_grounding",
+        grounding_pass,
+        grounding_obs,
+        "each X/Y/Z segment shares >=1 content noun with its cited fact's claim_text",
+        grounding_fail,
+    )
+
     sfp = parsed_output.get("selected_fact_plan") if isinstance(parsed_output, dict) else None
     req_ids = set(sfp.get("required_fact_ids") or []) if isinstance(sfp, dict) else set()
     plan_matches = req_ids == ledger_ids and bool(req_ids)
@@ -783,9 +1084,11 @@ def run_headline_x2_gates(
 
 
 __all__ = [
+    "check_headline_xyz_literal_grounding",
     "headline_runtime_self_check_truth",
     "headline_word_count",
     "polish_claim_text_when_headline_has_no_metrics",
+    "repair_headline_segment_citations_for_grounding",
     "run_headline_x2_gates",
     "validate_raw_headline_claim_ledger",
     "X2GateResult",

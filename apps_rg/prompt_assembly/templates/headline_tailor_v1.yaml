@@ -27,8 +27,12 @@ slot_bodies:
     X2 gate IDs: appended PRODUCT_SHAPE at compile only.
     </authority_hierarchy>
     <north_star_task>
-    Format: SVP Engineering | X | Y | Z — three non-overlapping executive phrases (usually 2-4 words each),
-    ranked by JD/briefing relevance (ranking only, never proof). Prefer strong nouns over adjectives.
+    Format: SVP Engineering | X | Y | Z — three non-overlapping executive phrases. Each of X, Y, Z MUST
+    be 3 words (4 only when a 4-word phrase reads cleaner and total stays ≤13). Two-word segments are
+    NEVER acceptable: the overall headline word_count MUST land in 10-13 inclusive (SVP Engineering = 2
+    words + 9-11 words across X/Y/Z). If a draft segment is 2 words, expand it with ONE specific modifier
+    drawn from its cited fact's claim_text (preferred) or a stoplist framing noun before emitting.
+    Rank by JD/briefing relevance (ranking only, never proof). Prefer strong nouns over adjectives.
     </north_star_task>
     <task_contract>
     NO FABRICATION: governed by pa_truth_oath_v1 (pa_core_law_v1.yaml). One JSON object only (no markdown/fences).
@@ -64,13 +68,35 @@ slot_bodies:
     selected_fact_plan.required_fact_ids must equal sorted union of ledger source_fact_ids.
     SRFS: source_fact_ids only from headline slice allowlist; JD/briefing/title/company/companion steer emphasis only.
     X2 bounds and gate IDs: appended PRODUCT_SHAPE only.
+
+    LITERAL GROUNDING (fail-closed deterministic — see PRODUCT_SHAPE for gate id):
+    Each X/Y/Z segment phrase MUST contain at least one content noun (>=4 letters, NOT a generic
+    role-family word) that literally appears in its cited fact's claim_text. Generic words that DO
+    NOT count as grounding: ai, ml, platforms, infrastructure, systems, architecture, engineering,
+    leadership, strategy, governance, agentic, agent, enterprise, scale, runtime, data, delivery,
+    production, operations, transformation, innovation. Each segment must pair a SPECIFIC noun
+    from the fact's literal text (e.g. "Databricks", "Lakehouse", "Microservices", "Lineage",
+    "Lifecycle", "HPC", "Retrieval", "Telemetry", "Catalog") with whatever framing word you choose.
+    If no fact in the pool contains a specific noun for the theme you want to assert, pick a
+    different theme — never invent positioning that the fact text does not literally support.
     </proof_law_v1>
 
     <composition_heuristics>
     Pick three supported themes from facts; rank with JD/briefing; compose fresh X/Y/Z (non-overlapping).
     Generate internal headline candidates silently; select the best; do not print candidates.
-    Identity reference (not the default answer): SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure
-    — use only for seniority/domain discipline; final line must be newly composed when facts allow.
+    SEGMENT DRAFTING RULE: For each candidate X/Y/Z, first read the cited fact's claim_text and
+    extract 1-2 specific nouns from that text; build the segment phrase AROUND those nouns. Never
+    pick a thematic phrase first and then look for a fact to attach.
+    WORD-COUNT SELF-CHECK (MANDATORY before emitting): count words by replacing each "|" with a space
+    and counting whitespace-separated tokens. The total MUST be in [10, 13]. If count < 10, you have
+    at least one 2-word segment — DO NOT EMIT. Instead, lengthen the shortest segment by adding ONE
+    word that EITHER (a) literally appears in its cited fact's claim_text, OR (b) comes from the
+    generic-noun stoplist above (Architecture, Engineering, Platforms, Infrastructure, Systems,
+    Leadership, Strategy, Governance, Operations, Delivery, Production, Runtime, Data) which carries
+    framing-only weight, then recount. Repeat until 10 ≤ count ≤ 13. NEVER add a brand-new substantive
+    noun (e.g. "Catalogs", "Frameworks",
+    "Harness") that does not appear in any cited fact's claim_text — judges will reject it as
+    ungrounded. If count > 13, shorten the longest segment. Re-count until 10 <= count <= 13.
     Avoid banned voice: visionary, thought leader, digital transformation, innovation leadership, results-driven,
     proven leader, world-class, cutting-edge, leveraging, AI evangelist.
     </composition_heuristics>
@@ -88,20 +114,30 @@ slot_bodies:
 
   E0: |
     <many_shot_examples>
-    Valid patterns (style only — compose fresh lines from facts in production):
+    Shape patterns ONLY (do NOT copy these literal phrases; X/Y/Z must contain specific nouns
+    from YOUR cited fact text — see proof_law_v1 LITERAL GROUNDING rule):
 
-    SVP Engineering | Governed Agentic Platforms | Runtime Infrastructure | Enterprise AI Scale
-    SVP Engineering | AI Platform Architecture | Governed Agent Systems | Regulated Enterprise Scale
-    SVP Engineering | Agentic Runtime Platforms | Retrieval Governance | Production AI Systems
-    SVP Engineering | Enterprise AI Platforms | Context Engineering | Distributed Runtime Reliability
-    SVP Engineering | Autonomous Agent Systems | Platform Governance | Scalable Platform Delivery
-    SVP Engineering | Production AI Platforms | Runtime Controls | Enterprise Platform Adoption
+    Example shape A (each X/Y/Z carries 1+ specific noun from cited fact):
+      SVP Engineering | Lakehouse Microservices Architecture | AI Lifecycle Standardization | Retrieval Telemetry Catalogs
+    Example shape B:
+      SVP Engineering | HPC Trading Platforms | Container Stress Analytics | Eval Pipeline Gates
+    Example shape C:
+      SVP Engineering | Data Lineage Catalogs | Validation Frameworks | Capital Modeling Rigor
+    Example shape D:
+      SVP Engineering | Databricks Lakehouse Workflows | Microservices Telemetry | Lineage Catalog Governance
+    Example shape E:
+      SVP Engineering | Retrieval Eval Harness | Stress Testing Frameworks | HPC Pipeline Orchestration
+    Example shape F:
+      SVP Engineering | Trading Platform Microservices | Telemetry Validation Pipelines | Lakehouse Modeling Workflows
     </many_shot_examples>
 
     <contrastive_examples>
     Bad (metric): SVP Engineering | Fortune 500 AI | $22M Revenue | 20% Growth
     Bad (stuffing): SVP Engineering | LLMOps Retrieval Governance Runtime | Platform Scale | AI Leadership
     Bad (generic): SVP Engineering | Enterprise AI Strategy | Digital Transformation | Innovation Leadership
+    Bad (ungrounded — fails the literal-grounding deterministic gate):
+      SVP Engineering | Agentic AI Platforms | Distributed AI Infrastructure | Enterprise Data Lineage
+      (each X/Y/Z is generic role-family wording — no specific noun from any cited fact's claim_text)
     Bad (flat ledger): "claim_ledger": ["bul_unify_001","bul_unify_005"] — use object rows with claim_text.
     </contrastive_examples>
 

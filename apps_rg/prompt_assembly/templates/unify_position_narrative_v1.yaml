@@ -29,11 +29,16 @@ sovereign_oath: |
 
 north_star_semantic_contract: |
   Preferred semantic shape (paraphrase allowed; must remain fact-grounded):
-  Led the platform roadmap, core systems architecture, and commercialization of [supported AI platform / Solution Accelerator]
+  Owned the platform roadmap, core systems architecture, and commercialization of [supported AI platform / Solution Accelerator]
   within [supported consulting firm / enterprise delivery context], converting bespoke delivery into reusable IP or scalable
   platform services deployed across supported enterprise contexts.
   Use Fortune 500 financial institutions, Solution Accelerator, or enterprise lines of business only when that substance
   exists in the base anchor or bullet facts in C0.
+  FORBIDDEN MECHANICAL OPENERS (X2 fail-closed) — narrative MUST NOT begin with any of:
+  led, successfully, also, built, delivered, designed, implemented, architected (case-insensitive).
+  Replace with substantive openers that name the scope or outcome first, e.g. "Owned", "Drove",
+  "Established", "Championed", "Productized", "Operationalized", "Anchored", "Scaled", "Originated",
+  "Stewarded", or a noun-phrase opener like "Platform roadmap and commercialization of ..."
 
 role_header_fields:
   company:
@@ -120,9 +125,15 @@ few_shot_patterns:
     - id: unify_narrative_positive_north_star
       context: "C0 includes base role anchor and commercialization bullets; bullets carry metrics elsewhere."
       output_pattern: >
-        Led the platform roadmap, core systems architecture, and commercialization of a production-grade agentic AI platform
+        Owned the platform roadmap, core systems architecture, and commercialization of a production-grade agentic AI platform
         at Unify Consulting, converting bespoke enterprise delivery into reusable platform services for regulated financial-services adoption.
-      why_it_works: "North-star capstone without copying bullet labels, mechanism stacks, or default metrics."
+      why_it_works: "North-star capstone with a non-mechanical opener; no bullet labels, mechanism stacks, or default metrics."
+    - id: unify_narrative_positive_alt_opener
+      context: "Alternative non-mechanical opener form."
+      output_pattern: >
+        Drove the platform roadmap and commercialization of a governed agentic AI platform at Unify Consulting,
+        turning bespoke enterprise delivery into reusable IP and scalable platform services for regulated financial-services adoption.
+      why_it_works: "Substantive opener (\"Drove\") not on the forbidden mechanical-opener list."
   negative:
     - id: unify_narrative_negative_mechanism_recap
       bad_output: >
@@ -134,8 +145,12 @@ few_shot_patterns:
       violation: "Repeats bullet metrics as the main point."
     - id: unify_narrative_negative_jd_as_proof
       bad_output: >
-        Led the agentic AI systems and LLMOps strategy required by the target company.
+        Owned the agentic AI systems and LLMOps strategy required by the target company.
       violation: "JD/target framing presented as candidate proof."
+    - id: unify_narrative_negative_forbidden_opener
+      bad_output: >
+        Led the platform roadmap and commercialization of a governed agentic AI platform at Unify Consulting.
+      violation: "Begins with forbidden mechanical opener \"Led\" (X2 fail-closed via x2_unify_narrative_forbidden_opener)."
     - id: unify_narrative_negative_bullet_summary
       bad_output: "Built GraphRAG, deterministic routing, policy gates, Databricks integrations, API gateways, and $22M revenue while scaling from 8 to 28 specialists."
       violation: "Lists bullet topics and repeats protected metrics."
@@ -210,7 +225,7 @@ narrative_complement_guidance:
     - "Mentioning specific dollar amounts or percentages already in bullets"
     - "Echoing bullet sentence structure (Subject-Verb-Object achievement pattern)"
   example_anti_patterns:
-    - bad: "Led the ML engineering organization from 8 to 28 engineers while generating $22M in revenue and expanding margins by 20%."
+    - bad: "Scaled the ML engineering organization from 8 to 28 engineers while generating $22M in revenue and expanding margins by 20%."
       reason: "Repeats all three metrics from bul_unify_006 verbatim"
     - bad: "• Architected cloud-native platforms • Built dependency graphs • Standardized AI lifecycle"
       reason: "Bullet list format forbidden, must be one sentence"

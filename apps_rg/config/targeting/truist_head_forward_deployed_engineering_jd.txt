@@ -1,0 +1,89 @@
+Head of Forward Deployed Engineering — Truist Financial Corporation
+
+Location: Charlotte, North Carolina, USA
+Category: Technology
+Posted Date: 05/05/2026
+
+The Head of Forward Deployed Engineering leads the function responsible for taking AI capabilities out of the platform and into the hands of Truist business lines — deploying, configuring, integrating, enabling, and sustaining production AI solutions directly within the enterprise environments where they create business value.
+
+This role sits at the critical intersection of AI engineering and enterprise activation. The Head of Forward Deployed Engineering owns the strategy, team, operating model, and delivery execution for how Forge capabilities land in production across business units — including integration engineering, deployment readiness, business line enablement, change management partnership, and sustained operational support.
+
+This is an executive builder-leader role. The Head of Forward Deployed Engineering combines deep technical credibility with strong organizational leadership, business relationship management, and the operational discipline to deploy AI at enterprise scale across a complex, regulated financial institution. Daily work includes leading the forward deployed engineering team, managing business line deployment pipelines, driving integration and activation delivery, partnering with product and platform leadership, and ensuring Forge AI capabilities are adopted, operational, and delivering measurable business outcomes.
+
+Essential Duties and Responsibilities
+
+Following is a summary of the essential functions for this job. Other duties may be performed, both major and minor, which are not mentioned below. Specific activities may change from time to time.
+
+- Own the Forge Forward Deployed Engineering function — providing executive leadership, organizational design, delivery standards, and operational accountability for AI capability deployment across all Truist business lines.
+
+- Define and execute the forward deployment strategy — including how AI capabilities are scoped, configured, integrated, tested, deployed, enabled, and sustained within each business line environment.
+
+- Build and develop a high-performing forward deployed engineering team through hiring, onboarding, coaching, performance management, career development, and team culture investment.
+
+- Manage the business line deployment pipeline — including intake, prioritization, scoping, integration engineering, go-live readiness, and post-deployment support for AI capabilities across the enterprise.
+
+- Partner with Forge product, platform, agentic, application, data, security, and QA teams to ensure capabilities are deployment-ready, integration-tested, and enterprise-grade before they reach business lines.
+
+- Own business line stakeholder relationships for all active and pipeline forward deployments — serving as the senior Forge engineering partner to business line technology leaders, operations owners, and executive sponsors.
+
+- Drive integration engineering delivery — including API connections, data feeds, workflow integrations, authentication configurations, and system-specific customizations required to activate AI capabilities within each business environment.
+
+- Ensure deployed AI capabilities are properly enabled — including user training coordination, change management partnership, adoption tracking, and feedback loop management that drives real usage and business value.
+
+- Own the operational support model for deployed AI capabilities — including incident response, performance monitoring, issue escalation, and continuous improvement of live production deployments.
+
+- Represent forward deployed engineering in senior leadership forums, governance reviews, and enterprise stakeholder communications — translating deployment reality into clear executive-facing updates.
+
+- Continuously improve the forward deployment operating model, tooling, integration patterns, and enablement practices as the Forge AI portfolio and enterprise deployment volume scale.
+
+Qualifications
+
+Required Qualifications
+
+The requirements listed below are representative of the knowledge, skill and/or ability required. Reasonable accommodations may be made to enable individuals with disabilities to perform the essential functions.
+
+1. Equivalent combination of advanced education and related experience, which could include any combination of: Fifteen years' experience managing software engineers and systems analysts, Ten years' relevant business experience (i.e. making technical-related decisions on the business side), Five years' managing a large staff, (including managing managers), and Five years' experience with budget responsibilities.
+
+2. Ability to translate enterprise level strategic planning information into software and data management needs, create business plans, and turn them into effective business solutions.
+
+3. Executive level communications skills, including, strong negotiation/facilitation/presentation skills and experience negotiating with vendors for relevant products and services.
+
+4. Significant knowledge of current and emerging application software products and tools.
+
+5. Extensive project management experience to include multi-million dollar projects completed on time, within budget and delivering quality results.
+
+6. Strong analytical and architectural skills.
+
+7. Ability to manage a high volume of internal client relationships.
+
+8. Knowledge of all phases of software engineering life cycle and experience with process improvement models.
+
+Preferred Qualifications
+
+- 12+ years of progressive engineering, technology delivery, or enterprise technology management experience, including 5+ years in engineering management or technical leadership with direct people management responsibility.
+
+- Demonstrated experience leading field engineering, forward deployed engineering, professional services, solutions engineering, or enterprise technology activation functions at scale.
+
+- Deep technical background in software engineering, API integration, enterprise systems, or AI/ML deployment — with the ability to credibly lead and support complex technical integration delivery.
+
+- Proven track record of deploying enterprise technology capabilities across multiple business units or customer environments — on time, with quality, and within governance controls.
+
+- Experience managing complex stakeholder ecosystems across business lines, technology partners, governance, and executive leadership.
+
+- Strong ability to build and lead high-performing engineering teams that operate in field, client-facing, or enterprise-embedded delivery environments.
+
+- Excellent written and verbal communication skills for executive stakeholder management, business line engagement, and organizational leadership.
+
+- Experience operating within regulated enterprise environments where security, compliance, change management, and audit controls shape deployment practice.
+
+- Experience leading forward deployed engineering or enterprise activation functions for AI-enabled products, platforms, or enterprise SaaS capabilities.
+
+- Experience with Microsoft Copilot, Microsoft 365 Copilot, Copilot Studio, Power Platform, or comparable enterprise AI activation and workflow platforms.
+
+- Experience in financial services, cybersecurity, or other highly regulated industries with strong change management, control, and audit requirements for technology deployment.
+
+- Experience designing and scaling forward deployment operating models — including intake processes, integration playbooks, enablement programs, and operational support frameworks.
+
+- Familiarity with enterprise change management, technology adoption, organizational readiness, and user enablement practices for large-scale AI deployment programs.
+
+- Experience representing technical deployment functions to business executives and governance bodies in regulated enterprise environments.

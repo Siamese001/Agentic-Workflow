@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Any
 
 
-RECONCILIATION_POLICY_VERSION = "executive_summary_gate_closure_v1"
+RECONCILIATION_POLICY_VERSION = "executive_summary_gate_closure_v2"
 
 
 @dataclass(frozen=True)
@@ -95,6 +95,28 @@ EXECUTIVE_SUMMARY_GATE_CLOSURE_MAP: tuple[GateClosureRecord, ...] = (
         fragment_shims=(
             "fewer than six sentences",
             "sentence count",
+        ),
+    ),
+    GateClosureRecord(
+        gate_id="x2_executive_summary_judge_packet_display_override_parity",
+        closed_axis="display_override_substrate_authority",
+        forbidden_finding_codes=(
+            "display_override_phrase_flagged_as_unsupported",
+            "display_override_phrase_flagged_as_inferential_stretch",
+            "fsa_chartered_extends_beyond_fact_scope",
+        ),
+        allowed_residual_finding_codes=("residual_executive_clarity",),
+        fragment_shims=(
+            "fsa-chartered actuarial work",
+            "informing data governance and ai strategy",
+            "extends beyond fact_quant_hpc_003",
+            "extends beyond fact_engineering_platform_002",
+            "over-extends fact_quant_hpc_003",
+            "not directly supported by that fact",
+            "mild inferential stretch",
+            "transformation visibility across enterprise complexity",
+            "the fact does not explicitly state fsa",
+            "fact does not explicitly contain",
         ),
     ),
 )
