@@ -50,3 +50,12 @@ def test_format_research_findings_skips_empty() -> None:
     blob = format_research_findings({"overview": "x", "empty": ""})
     assert "### overview" in blob
     assert "empty" not in blob
+
+
+def test_apps_rg_targeting_brief_enabled_from_env(monkeypatch) -> None:
+    monkeypatch.setenv("APPS_RESEARCH_APPS_RG_TARGETING_BRIEF", "1")
+    assert apps_rg_targeting_brief_enabled(jd_context={})
+    monkeypatch.setenv("APPS_RESEARCH_APPS_RG_TARGETING_BRIEF", "0")
+    assert not apps_rg_targeting_brief_enabled(
+        jd_context={"output_format": "apps_rg_targeting_brief_v1"}
+    )
