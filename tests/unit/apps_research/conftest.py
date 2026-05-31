@@ -53,6 +53,6 @@ def pytest_configure(config):
 import sys
 from pathlib import Path
 
-_ROOT = str(Path(__file__).parent.parent.parent)
+_ROOT = str(Path(__file__).resolve().parents[3])
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
