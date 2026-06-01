@@ -2,9 +2,22 @@
 
 from __future__ import annotations
 
+import importlib.util
+import sys
+from pathlib import Path
+
 import pytest
 
-from tools.generate.integration import optional_three_bucket as mod
+_REPO_ROOT = Path(__file__).resolve().parents[5]
+_OPT_PATH = _REPO_ROOT / "tools" / "generate" / "integration" / "optional_three_bucket.py"
+_spec = importlib.util.spec_from_file_location(
+    "tools.generate.integration.optional_three_bucket",
+    _OPT_PATH,
+)
+assert _spec and _spec.loader
+mod = importlib.util.module_from_spec(_spec)
+sys.modules[_spec.name] = mod
+_spec.loader.exec_module(mod)
 
 
 @pytest.fixture(autouse=True)
@@ -30,4 +43,11 @@ def test_master_flag_enables_audit_bundle(monkeypatch: pytest.MonkeyPatch) -> No
     assert mod.runtime_view_enabled() is True
     assert mod.registry_lift_enabled() is True
     assert mod.three_bucket_reports_enabled() is True
+    assert mod.any_three_bucket_stage_enabled() is True
+
+
+def test_reports_only_flag_enables_reports_stage(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ADG_THREE_BUCKET_REPORTS", "1")
+    assert mod.three_bucket_reports_enabled() is True
+    assert mod.runtime_view_enabled() is False
     assert mod.any_three_bucket_stage_enabled() is True
