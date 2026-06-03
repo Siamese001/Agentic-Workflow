@@ -50,3 +50,28 @@ def test_format_research_findings_skips_empty() -> None:
     blob = format_research_findings({"overview": "x", "empty": ""})
     assert "### overview" in blob
     assert "empty" not in blob
+
+
+def test_format_research_findings_truncates_at_max_chars() -> None:
+    long_text = "word " * 5000
+    blob = format_research_findings({"overview": long_text}, max_chars=100)
+    assert len(blob) <= 100
+    assert blob.endswith("...")
+
+
+def test_apps_rg_targeting_brief_enabled_env_override(monkeypatch) -> None:
+    monkeypatch.setenv("APPS_RESEARCH_APPS_RG_TARGETING_BRIEF", "1")
+    assert apps_rg_targeting_brief_enabled(jd_context={})
+    monkeypatch.setenv("APPS_RESEARCH_APPS_RG_TARGETING_BRIEF", "off")
+    assert not apps_rg_targeting_brief_enabled(jd_context={})
+
+
+def test_extract_jd_text_from_json_jd_file(tmp_path: Path) -> None:
+    jd_file = tmp_path / "jd.json"
+    jd_file.write_text(
+        '{"description": "JSON JD body for targeting brief synthesis."}',
+        encoding="utf-8",
+    )
+    assert extract_jd_text(jd_context={}, jd_anchor=jd_file) == (
+        "JSON JD body for targeting brief synthesis."
+    )
