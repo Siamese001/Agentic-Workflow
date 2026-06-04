@@ -661,12 +661,16 @@ def run_modular_resume_generation(
                     dispatch_fn=_phase1_dispatch_one_lane,
                     parallel=True,
                     max_parallel=_max_par,
+                    should_skip_remaining_waves=lambda: phase1_aborted,
                 )
                 for lane, oc in _outcomes.items():
                     lane_dispatch_results[lane] = dict(oc.dispatch_result)
-                    lane_exec_status[lane] = _phase1_lane_dispatch_status(
-                        lane_dispatch_results[lane]
-                    )
+                    if oc.exec_status.startswith("pre_run_blocked:"):
+                        lane_exec_status[lane] = oc.exec_status
+                    else:
+                        lane_exec_status[lane] = _phase1_lane_dispatch_status(
+                            lane_dispatch_results[lane]
+                        )
                     if oc.exec_status.startswith("error:") and not lane_dispatch_results[lane].get(
                         "fault"
                     ):
