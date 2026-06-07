@@ -1,35 +1,11 @@
+# DEPRECATED — next-step capture superseded by native spawn_task (W4, ADR-096)
 
-<!-- Converted from `.claude/rules/next-step-capture.md`. Original Cursor trigger: `model_decision`. -->
+> ⛔ Retired W4 (`claude-native-supersession-9d3f7a`). The `NEXT_STEP:` marker → capture-hook pipeline
+> is superseded by native **`spawn_task`** background-task chips.
 
-# Next-Step Capture — Invariant-Only Stub
+## What to do instead
 
-> ⛔ **When Claude Code suggests a next step, it MUST emit a `NEXT_STEP:` marker in the same response.** Prose-only "could do later" language is a constitutional violation (§24-bis): suggestions historically vanish between sessions.
+Surface a follow-up via `spawn_task` (background-task chip) rather than a `NEXT_STEP:` marker. For
+scoped wave-deferral inside an active plan, note it in the plan body. No marker, no hook.
 
-## Invariant
-
-`NEXT_STEP:` marker is mandatory for any voluntary follow-up suggestion. Sibling to constitutional §24 (DEFERRED_SCOPE) — that rule handles scoped wave deferrals; this rule handles author-suggested polish.
-
-## Marker grammar (minimum)
-
-```
-NEXT_STEP: plan=<slug-or-NEW:slug> title=<short> priority=<P2..P5> est_tokens=<N> reason=<why>
-```
-
-`priority=P1` is FORBIDDEN here (P1 is reserved for scored DEFERRED_SCOPE items).
-
-## Where the procedural detail lives
-
-| Concern | Location |
-|---|---|
-| Full marker contract (all fields, defaults, examples) | (this rule was the SSOT — full text preserved in git history at HEAD~1) |
-| Auto-capture flow | `.claude/governance/scripts/post_cursor_agent_next_step_capture.py` |
-| Plan auto-scaffold | `.claude/governance/scripts/_deferred_scope_plan_scaffold.py` |
-| CI gate | `ops_scripts/ci/check_notion_plan_file_drift.py` |
-| Bypass | `NEXT_STEP_CAPTURE_BYPASS=1` |
-
-## Forbidden Patterns
-
-- Prose follow-up mentions without a `NEXT_STEP:` marker
-- `priority=P1` (use `DEFERRED_SCOPE:` instead)
-- `priority` outside `{P2, P3, P4, P5}`
-- Sentinel plan names like `(no plan)` — use `NEW:<slug>`
+Invariant SSOT: `.claude/rules/constitutional.md` §24.

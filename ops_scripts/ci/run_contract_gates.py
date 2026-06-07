@@ -1044,15 +1044,8 @@ def main():
             "MCP-SCOPE0 filesystem scope sovereignty (Rule #0)",
             "ops_scripts/ci/check_mcp_config_sovereignty.py",
         ),
-        # DEFER — Deferred scope marker compliance (CI mode).
-        # Scans all .claude/plans/*.md for prose indicating deferred work
-        # without DEFERRED_SCOPE: marker. Baseline: 12 violations (advisory).
-        # Advisory by default; fail-closed via DEFERRED_SCOPE_GATE_FAIL_CLOSED=1.
-        # Bypass: DEFERRED_SCOPE_GATE_BYPASS=1.
-        (
-            "DEFER Deferred scope marker compliance (advisory baseline)",
-            "ops_scripts/ci/check_deferred_scope_markers.py",
-        ),
+        # [W4 claude-native-supersession-9d3f7a] DEFER deferred-scope-marker gate RETIRED;
+        # out-of-scope work now surfaces via native spawn_task chips (ADR-096).
         # RULE-FMT — Rule frontmatter schema validation.
         # Validates .claude/rules/*.md YAML frontmatter against canonical schema.
         # Baseline: many rules lack proper frontmatter (advisory).
