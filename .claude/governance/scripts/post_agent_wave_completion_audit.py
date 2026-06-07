@@ -27,7 +27,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "wave_completion_audit.jsonl"
+LOG_PATH = REPO_ROOT / "artifacts" / "governance" / "wave_completion_audit.jsonl"
 MAX_RESPONSE_BYTES = 1_048_576
 
 # Paths that indicate "wave-like work"

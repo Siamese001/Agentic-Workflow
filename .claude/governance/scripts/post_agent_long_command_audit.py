@@ -9,13 +9,13 @@ an explicit timeout guard in the command line.
 
 Subcommands:
   agent_response — **Cursor ``afterAgentResponse`` path** (W1.4): structured
-    stderr (NOT_APPLICABLE / ALLOW / VIOLATION), logs under ``artifacts/cursor/``.
+    stderr (NOT_APPLICABLE / ALLOW / VIOLATION), logs under ``artifacts/governance/``.
     **Advisory only** — always exits 0. **Never** claims to block already-emitted
     ``run_command`` calls.
 
   (default, no subcommand) — **legacy stdin** dispatch (e.g. shadow
     ``post_agent_dispatch.py``): fail-open; writes violations only under
-    ``artifacts/cursor/`` (no ``artifacts/cursor`` dependency).
+    ``artifacts/governance/`` (no ``artifacts/governance`` dependency).
 
 Companion rule: ``.claude/rules/constitutional.md`` §14 (subprocess timeout)
 + §11 (terminal lifecycle).
@@ -38,8 +38,8 @@ fail_policy = "open"
 repo_root = Path(__file__).resolve().parents[3]
 
 # Cursor-native paths only (W1.4).
-violations_log = repo_root / "artifacts" / "cursor" / "long_command_violations.jsonl"
-post_agent_audit_log = repo_root / "artifacts" / "cursor" / "long_command_post_agent_audit.jsonl"
+violations_log = repo_root / "artifacts" / "governance" / "long_command_violations.jsonl"
+post_agent_audit_log = repo_root / "artifacts" / "governance" / "long_command_post_agent_audit.jsonl"
 
 MAX_RESPONSE_BYTES = 512 * 1024
 
@@ -349,7 +349,7 @@ def cmd_legacy_stdin() -> int:
         print(
             f"[long_command_audit] DETECTED {len(violations)} long-command "
             f"invocation(s) without an explicit timeout. Advisory only — does not block "
-            f"already-emitted run_command. See: artifacts/cursor/long_command_violations.jsonl",
+            f"already-emitted run_command. See: artifacts/governance/long_command_violations.jsonl",
             file=sys.stderr,
         )
 

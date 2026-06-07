@@ -58,7 +58,7 @@ def isolated_state(tmp_path, monkeypatch):
                 snapshot[p.name] = p.read_text(encoding="utf-8")
                 p.unlink()
     # Clean violation log
-    vlog = REPO_ROOT / "artifacts" / "windsurf" / "ag_queue_drain_violations.jsonl"
+    vlog = REPO_ROOT / "artifacts" / "governance" / "ag_queue_drain_violations.jsonl"
     vlog_snapshot = vlog.read_text(encoding="utf-8") if vlog.exists() else None
     if vlog.exists():
         vlog.unlink()

@@ -58,7 +58,7 @@ def test_run_writes_row(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None
         "DECISION_CAPTURED: foo bar baz"
     )
     token_telemetry.run(_make_parsed(text), tmp_path)
-    log = tmp_path / "artifacts" / "windsurf" / "turn_budget.jsonl"
+    log = tmp_path / "artifacts" / "governance" / "turn_budget.jsonl"
     assert log.exists()
     rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
     assert len(rows) == 1
@@ -74,14 +74,14 @@ def test_run_writes_row(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None
 def test_run_disabled_via_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TOKEN_TELEMETRY_DISABLED", "1")
     token_telemetry.run(_make_parsed("anything"), tmp_path)
-    log = tmp_path / "artifacts" / "windsurf" / "turn_budget.jsonl"
+    log = tmp_path / "artifacts" / "governance" / "turn_budget.jsonl"
     assert not log.exists()
 
 
 def test_run_empty_payload_noop(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("TOKEN_TELEMETRY_DISABLED", raising=False)
     token_telemetry.run(_make_parsed(""), tmp_path)
-    log = tmp_path / "artifacts" / "windsurf" / "turn_budget.jsonl"
+    log = tmp_path / "artifacts" / "governance" / "turn_budget.jsonl"
     assert not log.exists()
 
 
@@ -89,7 +89,7 @@ def test_run_appends_multiple_rows(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     monkeypatch.delenv("TOKEN_TELEMETRY_DISABLED", raising=False)
     token_telemetry.run(_make_parsed('<invoke name="read_file">'), tmp_path)
     token_telemetry.run(_make_parsed('<invoke name="grep_search">'), tmp_path)
-    log = tmp_path / "artifacts" / "windsurf" / "turn_budget.jsonl"
+    log = tmp_path / "artifacts" / "governance" / "turn_budget.jsonl"
     rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
     assert len(rows) == 2
     assert rows[0]["tool_call_counts"] == {"read_file": 1}

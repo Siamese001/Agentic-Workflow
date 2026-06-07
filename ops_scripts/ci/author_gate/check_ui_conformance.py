@@ -3,7 +3,7 @@
 check_ui_conformance.py — CI gate: Author-Gate UI conformance violations are
 not stale-unresolved.
 
-Tails artifacts/cursor/author_gate_ui_violations.jsonl and fails if any
+Tails artifacts/governance/author_gate_ui_violations.jsonl and fails if any
 non-bypass row within the staleness window (default 7 days) has not been
 resolved (i.e., log tail still contains unresolved rows).
 
@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_ui_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "author_gate_ui_violations.jsonl"
 STALENESS_DAYS = int(os.environ.get("AUTHOR_GATE_UI_STALENESS_DAYS", "7"))
 
 

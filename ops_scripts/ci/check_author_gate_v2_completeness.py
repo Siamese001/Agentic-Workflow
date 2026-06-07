@@ -47,7 +47,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_v2_bypass.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "author_gate_v2_bypass.jsonl"
 
 # Decision types that REQUIRE v2 fields (refactor-class per AG-1).
 _REFACTOR_CLASS_TYPES = frozenset(

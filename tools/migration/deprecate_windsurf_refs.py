@@ -101,9 +101,9 @@ REPLACEMENTS = (
     (".windsurf/RULES_INDEX.md", ".cursor/RULES_INDEX.md"),
     (".windsurf\\RULES_INDEX.md", ".cursor\\RULES_INDEX.md"),
     (".windsurfrules", ".cursor/rules"),
-    ("artifacts/windsurf/", "artifacts/cursor/"),
+    ("artifacts/governance/", "artifacts/governance/"),
     ("artifacts\\windsurf\\", "artifacts\\cursor\\"),
-    ("artifacts/windsurf", "artifacts/cursor"),
+    ("artifacts/governance", "artifacts/governance"),
     ("artifacts\\windsurf", "artifacts\\cursor"),
 )
 

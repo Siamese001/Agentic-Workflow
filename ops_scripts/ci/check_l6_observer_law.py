@@ -35,7 +35,7 @@ Modes
 
 Output
 ------
-Writes findings to `artifacts/cursor/l6_observer_law_violations.json`.
+Writes findings to `artifacts/governance/l6_observer_law_violations.json`.
 """
 from __future__ import annotations
 
@@ -202,7 +202,7 @@ def main() -> int:
     for path in _iter_files():
         findings.extend(_scan_file(path))
 
-    out_dir = REPO_ROOT / "artifacts" / "windsurf"
+    out_dir = REPO_ROOT / "artifacts" / "governance"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / "l6_observer_law_violations.json"
     out_path.write_text(

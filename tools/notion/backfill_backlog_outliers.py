@@ -21,7 +21,7 @@ Three sub-probes (run all three unless --probe is specified):
     select value returned None via _select_name (structurally broken cell,
     mid-migration multi_select→select survivor):
       * Write `L_MIXED` for Layer / `None` for Surface unconditionally.
-      * Log the 16 page IDs to artifacts/cursor/w3_layer_surface_fixes.jsonl.
+      * Log the 16 page IDs to artifacts/governance/w3_layer_surface_fixes.jsonl.
 
 Idempotent per field: only writes if the target field is currently empty
 (or structurally broken for probe3).
@@ -65,7 +65,7 @@ except ImportError:  # pragma: no cover
 BACKLOG_QUERY_URL = f"{NOTION_BASE}/data_sources/{WAVE_PHASE_DATA_SOURCE_ID}/query"
 PLANS_QUERY_URL = f"{NOTION_BASE}/data_sources/{PLANS_DATA_SOURCE_ID}/query"
 PAGE_URL_FMT = f"{NOTION_BASE}/pages/{{}}"
-LAYER_SURFACE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "w3_layer_surface_fixes.jsonl"
+LAYER_SURFACE_LOG = REPO_ROOT / "artifacts" / "governance" / "w3_layer_surface_fixes.jsonl"
 TIMEOUT = 30.0
 THROTTLE_S = 0.35
 

@@ -4,7 +4,7 @@ check_ask_user_question_packet_freshness.py — CI gate.
 
 Plan: author-gate-four-req-enforcement-c4d2a8 W2.P1.
 
-Tails ``artifacts/cursor/ask_user_question_packet_violations.jsonl`` (produced
+Tails ``artifacts/governance/ask_user_question_packet_violations.jsonl`` (produced
 by ``post_agent_ask_user_question_packet_audit.py``) and fails when any
 non-bypass row within the staleness window (default 7 days) has not been
 resolved.
@@ -34,7 +34,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "windsurf" / "ask_user_question_packet_violations.jsonl"
+    REPO_ROOT / "artifacts" / "governance" / "ask_user_question_packet_violations.jsonl"
 )
 DEFAULT_STALENESS_DAYS = 7
 

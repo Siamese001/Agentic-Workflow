@@ -26,8 +26,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_DB = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "precedent_usage_violations.jsonl"
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "precedent_usage_bypass.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "precedent_usage_violations.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "precedent_usage_bypass.jsonl"
 REPORT_PATH = REPO_ROOT / "artifacts" / "ledgers" / "precedent_usage_report.json"
 
 

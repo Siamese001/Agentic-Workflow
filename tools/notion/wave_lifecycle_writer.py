@@ -66,7 +66,7 @@ from tools.notion._wave_lifecycle_helpers import (  # noqa: E402
 )
 from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: E402  DS-1
 
-LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "wave_lifecycle_notion.jsonl"
+LOG_PATH = REPO_ROOT / "artifacts" / "governance" / "wave_lifecycle_notion.jsonl"
 
 # Notion REST endpoints
 PAGE_URL_FMT = f"{NOTION_BASE}/pages/{{}}"

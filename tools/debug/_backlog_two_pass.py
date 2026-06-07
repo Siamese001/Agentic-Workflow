@@ -237,8 +237,8 @@ def constitutional_text() -> str:
 
 
 def violations_log_recent(name_pattern: str, days: int = 30) -> int:
-    """Count entries in artifacts/cursor/*violations*.jsonl matching pattern."""
-    folder = ROOT / "artifacts" / "windsurf"
+    """Count entries in artifacts/governance/*violations*.jsonl matching pattern."""
+    folder = ROOT / "artifacts" / "governance"
     if not folder.exists():
         return 0
     count = 0

@@ -37,7 +37,7 @@ NOTION_VERSION = "2025-09-03"
 
 TRIAGE_CSV = REPO_ROOT / "docs" / "reports" / "maintenance" / "unscored_manual_triage.csv"
 ENRICHED_CSV = REPO_ROOT / "docs" / "reports" / "maintenance" / "unscored_enriched.csv"
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "notion_triage_enrichment_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "notion_triage_enrichment_audit.jsonl"
 
 # Layer inference: ordered priority — first match wins
 LAYER_RULES: list[tuple[re.Pattern[str], str]] = [

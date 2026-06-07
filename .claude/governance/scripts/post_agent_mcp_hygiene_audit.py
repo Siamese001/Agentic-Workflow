@@ -4,7 +4,7 @@
 Subcommands:
   agent_response — **Cursor ``afterAgentResponse`` path** (W1.3): reads agent response
     JSON/text from stdin; detects MCP-related surface; runs **advisory** serialization
-    checks; logs under ``artifacts/cursor/``. **Never blocks** (exit 0). **Never**
+    checks; logs under ``artifacts/governance/``. **Never blocks** (exit 0). **Never**
     invokes orphan process reap.
 
   preflight — stub preflight log (legacy CLI).
@@ -31,10 +31,10 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 LOG_PATHS = {
-    "preflight": REPO_ROOT / "artifacts" / "cursor" / "mcp_preflight_violations.jsonl",
-    "orphan_reap": REPO_ROOT / "artifacts" / "cursor" / "mcp_orphan_reap.jsonl",
-    "serialization": REPO_ROOT / "artifacts" / "cursor" / "mcp_serialization_violations.jsonl",
-    "post_agent": REPO_ROOT / "artifacts" / "cursor" / "mcp_post_agent_hygiene.jsonl",
+    "preflight": REPO_ROOT / "artifacts" / "governance" / "mcp_preflight_violations.jsonl",
+    "orphan_reap": REPO_ROOT / "artifacts" / "governance" / "mcp_orphan_reap.jsonl",
+    "serialization": REPO_ROOT / "artifacts" / "governance" / "mcp_serialization_violations.jsonl",
+    "post_agent": REPO_ROOT / "artifacts" / "governance" / "mcp_post_agent_hygiene.jsonl",
 }
 MAX_RESPONSE_BYTES = 512 * 1024
 

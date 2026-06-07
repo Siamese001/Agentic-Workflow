@@ -13,7 +13,7 @@ Companion to the preflight check inside ``pre_mcp_gate.py``. Runs on every
    (``adg_close_connections``, ``adg_reopen_connections``, ``adg_reload``,
    ``redis_flush_namespace``, ``redis_del_key``, ``mem_cleanup_stale``, ...)
    without a preceding successful health call within 60 s, log a row to
-   ``artifacts/cursor/mcp_preflight_violations.jsonl``.
+   ``artifacts/governance/mcp_preflight_violations.jsonl``.
 
 Policy: **advisory only** — always exits 0, never blocks. Fail-open on any
 internal error so a broken hook never wedges a turn.
@@ -33,8 +33,8 @@ from pathlib import Path
 from typing import Any
 
 repo_root = Path(__file__).resolve().parents[3]
-heartbeat_path = repo_root / "artifacts" / "windsurf" / "mcp_health_heartbeat.json"
-violations_log = repo_root / "artifacts" / "windsurf" / "mcp_preflight_violations.jsonl"
+heartbeat_path = repo_root / "artifacts" / "governance" / "mcp_health_heartbeat.json"
+violations_log = repo_root / "artifacts" / "governance" / "mcp_preflight_violations.jsonl"
 ttl_config = repo_root / ".cursor" / "config" / "mcp_preflight_ttl.json"
 
 # ---------------------------------------------------------------------------
@@ -358,7 +358,7 @@ def main() -> int:
         _append_records(violations)
         print(
             f"[mcp_preflight] DETECTED {len(violations)} preflight violation(s). "
-            f"See: artifacts/cursor/mcp_preflight_violations.jsonl",
+            f"See: artifacts/governance/mcp_preflight_violations.jsonl",
             file=sys.stderr,
         )
 

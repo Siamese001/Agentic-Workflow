@@ -15,7 +15,7 @@ audits (schema, ui, miss). Severity ladder per RCA proposal:
 
 Density threshold = 2 decision-class keywords in response prose.
 
-Output: ``artifacts/cursor/ask_user_question_packet_violations.jsonl``
+Output: ``artifacts/governance/ask_user_question_packet_violations.jsonl``
 Bypass: ``ASK_PACKET_AUDIT_BYPASS=1`` (logs row with reason=bypass).
 Fail policy: OPEN (advisory, exits 0).
 
@@ -37,7 +37,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "cursor" / "ask_user_question_packet_violations.jsonl"
+    REPO_ROOT / "artifacts" / "governance" / "ask_user_question_packet_violations.jsonl"
 )
 MAX_RESPONSE_BYTES = 1_048_576
 

@@ -18,8 +18,8 @@ Contract
 
 Logging
 -------
-    All violations append to: artifacts/cursor/plan_identity_violations.jsonl
-    Summary written to: artifacts/cursor/plan_identity_audit_summary.json
+    All violations append to: artifacts/governance/plan_identity_violations.jsonl
+    Summary written to: artifacts/governance/plan_identity_audit_summary.json
 
 Bypass
 ------
@@ -205,7 +205,7 @@ def _log_violations(violations: list[IdentityViolation]) -> None:
     if not violations:
         return
     
-    log_dir = Path("artifacts/cursor")
+    log_dir = Path("artifacts/governance")
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / "plan_identity_violations.jsonl"
     
@@ -216,7 +216,7 @@ def _log_violations(violations: list[IdentityViolation]) -> None:
 
 def _write_summary(violations: list[IdentityViolation], total_calls: int) -> None:
     """Write audit summary."""
-    summary_dir = Path("artifacts/cursor")
+    summary_dir = Path("artifacts/governance")
     summary_dir.mkdir(parents=True, exist_ok=True)
     summary_file = summary_dir / "plan_identity_audit_summary.json"
     

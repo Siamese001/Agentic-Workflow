@@ -32,7 +32,7 @@ def main() -> int:
         ("docs/architecture/adr", "W6.2c-adr"),
         ("docs/archive/windsurf/legacy-tree/plans", "W6.2c-plans"),
         (".claude/governance/scripts/_legacy_windsurf", "W6.2c-scripts"),
-        ("artifacts/cursor", "W6.2c-windsurf"),
+        ("artifacts/governance", "W6.2c-windsurf"),
     ]
     max_rc = 0
     for lit, label in literals:

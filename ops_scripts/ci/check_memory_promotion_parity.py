@@ -32,8 +32,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_DB = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 MEMORY_DB = REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "memory_promotion_violations.jsonl"
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "memory_promotion_bypass.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "memory_promotion_violations.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "memory_promotion_bypass.jsonl"
 
 
 def _log(path: Path, payload: dict) -> None:

@@ -4,7 +4,7 @@ check_post_agent_alive.py — W5.6 post_cascade hook heartbeat gate.
 
 Windsurf 2.0.67 has a documented bug where post_agent_response hooks
 silently stop firing mid-session. The post-hook chain writes a heartbeat
-row to `artifacts/cursor/post_agent_heartbeat.jsonl` on every fire.
+row to `artifacts/governance/post_agent_heartbeat.jsonl` on every fire.
 When the heartbeat goes stale during an active git session, log the
 manual-replay instructions and fail CI.
 
@@ -30,9 +30,9 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HEARTBEAT = REPO_ROOT / "artifacts" / "windsurf" / "post_agent_heartbeat.jsonl"
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "post_agent_alive_violations.jsonl"
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "post_agent_alive_bypass.jsonl"
+HEARTBEAT = REPO_ROOT / "artifacts" / "governance" / "post_agent_heartbeat.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "post_agent_alive_violations.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "post_agent_alive_bypass.jsonl"
 
 
 def _log(path: Path, payload: dict) -> None:
@@ -81,7 +81,9 @@ def _last_heartbeat() -> datetime | None:
         obj = json.loads(last_line)
     except (json.JSONDecodeError, ValueError):
         return None
-    return _parse_iso(obj.get("timestamp", "") or obj.get("ts", ""))
+    return _parse_iso(
+        obj.get("timestamp_iso", "") or obj.get("timestamp", "") or obj.get("ts", "")
+    )
 
 
 def _has_recent_commits(grace_hours: int) -> bool:

@@ -10,9 +10,9 @@ Reads the refactor decision ledger (SSOT) and emits structured findings:
 
 Outputs (UTF-8):
   - Append one JSON object per run to:
-    artifacts/cursor/author_gate_ledger_runs_anomalies.jsonl
+    artifacts/governance/author_gate_ledger_runs_anomalies.jsonl
   - Overwrite summary:
-    artifacts/cursor/author_gate_ledger_anomalies_latest.json
+    artifacts/governance/author_gate_ledger_anomalies_latest.json
 
 Behavior:
   - Default exit 0 (advisory) even when findings exist.
@@ -40,8 +40,8 @@ if str(REPO_ROOT) not in sys.path:
 
 from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
 
-RUNS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_ledger_runs_anomalies.jsonl"
-LATEST_JSON = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_ledger_anomalies_latest.json"
+RUNS_LOG = REPO_ROOT / "artifacts" / "governance" / "author_gate_ledger_runs_anomalies.jsonl"
+LATEST_JSON = REPO_ROOT / "artifacts" / "governance" / "author_gate_ledger_anomalies_latest.json"
 
 # Clock skew allowance for "future" decision timestamps
 _FUTURE_SKEW = timedelta(minutes=5)

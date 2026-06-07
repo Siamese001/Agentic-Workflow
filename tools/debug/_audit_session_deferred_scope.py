@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 CUTOFF = "2026-04-23T10:30"  # this chat ~06:30 local = 10:30 UTC
-LOG = Path("artifacts/cursor/deferred_scope_capture.jsonl")
+LOG = Path("artifacts/governance/deferred_scope_capture.jsonl")
 
 
 def main() -> int:

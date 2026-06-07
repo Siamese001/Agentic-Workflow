@@ -16,7 +16,7 @@ Usage:
     python tools/notion/migrate_to_unified_plan_c4f8e2.py --dry-run
     python tools/notion/migrate_to_unified_plan_c4f8e2.py --execute
 
-Audit log: artifacts/cursor/migrate_unified_plan_c4f8e2_audit.jsonl
+Audit log: artifacts/governance/migrate_unified_plan_c4f8e2_audit.jsonl
 """
 
 from __future__ import annotations
@@ -51,7 +51,7 @@ SOURCE_PLAN_SLUGS = (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "migrate_unified_plan_c4f8e2_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "migrate_unified_plan_c4f8e2_audit.jsonl"
 
 
 def _token() -> str:

@@ -2,7 +2,7 @@
 """
 audit_promoted_patterns.py — W3.3 sample decision rows with promote_to_pattern=1.
 
-Advisory by default: writes JSON report under artifacts/cursor/.
+Advisory by default: writes JSON report under artifacts/governance/.
 Set PROMOTION_AUDIT_FAIL_CLOSED=1 to exit 1 when any sampled row fails hygiene
 (high bind confidence, not disputed, clean regression flags).
 
@@ -26,7 +26,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB  # noqa: E402
 
-ARTIFACT_DIR = REPO_ROOT / "artifacts" / "windsurf"
+ARTIFACT_DIR = REPO_ROOT / "artifacts" / "governance"
 
 
 def _audit_row(row: sqlite3.Row) -> dict:

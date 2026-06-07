@@ -59,8 +59,8 @@ FORBIDDEN_AT_CREATION = {
 }
 
 # Audit log paths (repo-root anchored — hook cwd is usually repo root but this stays correct)
-_AUDIT_LOG_PATH = _REPO_ROOT / "artifacts" / "cursor" / "plan_creation_corrections.jsonl"
-_ALERT_LOG_PATH = _REPO_ROOT / "artifacts" / "cursor" / "plan_creation_alerts.jsonl"
+_AUDIT_LOG_PATH = _REPO_ROOT / "artifacts" / "governance" / "plan_creation_corrections.jsonl"
+_ALERT_LOG_PATH = _REPO_ROOT / "artifacts" / "governance" / "plan_creation_alerts.jsonl"
 
 # Plans DB identifiers
 PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"

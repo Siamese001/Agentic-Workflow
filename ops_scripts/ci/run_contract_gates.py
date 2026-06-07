@@ -366,7 +366,7 @@ def main():
 
     # Gate: ask_user_question packet vacuum-closure freshness
     # (plan author-gate-four-req-enforcement-c4d2a8 W2.P1).
-    # Watches artifacts/cursor/ask_user_question_packet_violations.jsonl
+    # Watches artifacts/governance/ask_user_question_packet_violations.jsonl
     # produced by post_agent_ask_user_question_packet_audit.py.
     # Bypass: ASK_PACKET_AUDIT_FRESHNESS_BYPASS=1.
     returncode, stdout, stderr = run_cmd(
@@ -388,7 +388,7 @@ def main():
 
     # Gate: AGP1 — Author-Gate pipeline completion freshness
     # (plan author-gate-ui-renderer-hardening-a7f3c2 W3.P3.2).
-    # Watches artifacts/cursor/author_gate_pipeline_violations.jsonl
+    # Watches artifacts/governance/author_gate_pipeline_violations.jsonl
     # produced by post_agent_author_gate_pipeline_audit.py.
     # Fail-closed by default; AG_PIPELINE_ADVISORY=1 downgrades to warning-only.
     # Bypass: AG_PIPELINE_FRESHNESS_BYPASS=1.
@@ -689,7 +689,7 @@ def main():
             "ops_scripts/ci/check_notion_backlog_no_duplicates.py",
         ),
         # NP7 -- Plans-DB write telemetry log size gate (DS-4).
-        # Fails when artifacts/cursor/plans_db_writes.jsonl exceeds 10 MB
+        # Fails when artifacts/governance/plans_db_writes.jsonl exceeds 10 MB
         # without rotation. Advisory by default; fail-closed via
         # NOTION_TELEMETRY_LOG_SIZE_FAIL_CLOSED=1.
         # Plan: notion-plans-db-hygiene-deferred-scope-d4f7c1 DS-4.
@@ -970,7 +970,7 @@ def main():
         # as check_ask_user_question_packet_freshness.py. Advisory by default.
         #
         # ADG-first violations: post_agent_adg_audit.py writes
-        # artifacts/cursor/adg_first_violations.jsonl (see gate script).
+        # artifacts/governance/adg_first_violations.jsonl (see gate script).
         # Advisory by default; fail-closed: ADG_FIRST_VIOLATIONS_FRESHNESS_FAIL_CLOSED=1.
         # Bypass: ADG_FIRST_VIOLATIONS_FRESHNESS_BYPASS=1.
         (

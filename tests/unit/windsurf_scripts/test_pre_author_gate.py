@@ -61,8 +61,8 @@ def temp_repo(tmp_path: Path) -> Path:
     (repo / ".claude" / "schemas").mkdir(parents=True)
     # Create .claude/state/refactor_decisions/
     (repo / ".claude" / "state" / "refactor_decisions").mkdir(parents=True)
-    # Create artifacts/cursor/
-    (repo / "artifacts" / "windsurf").mkdir(parents=True)
+    # Create artifacts/governance/
+    (repo / "artifacts" / "governance").mkdir(parents=True)
     # Create artifacts/adg/
     (repo / "artifacts" / "adg").mkdir(parents=True)
     return repo

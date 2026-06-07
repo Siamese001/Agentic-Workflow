@@ -18,7 +18,7 @@ Logic:
        AND response does NOT contain `AUTHOR_GATE_PACKET:` or legacy
        `HITL_PACKET:` block → log violation.
 
-Log: artifacts/cursor/ag_queue_drain_violations.jsonl (append-only).
+Log: artifacts/governance/ag_queue_drain_violations.jsonl (append-only).
 
 Fail policy: OPEN (exit 0). AUDIT ONLY — never blocks the turn.
 Bypass: AG_QUEUE_DRAIN_BYPASS=1 emits a row with reason="bypass" and
@@ -39,7 +39,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-VIOLATION_LOG = REPO_ROOT / "artifacts" / "cursor" / "ag_queue_drain_violations.jsonl"
+VIOLATION_LOG = REPO_ROOT / "artifacts" / "governance" / "ag_queue_drain_violations.jsonl"
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB
 
 # Completion-marker patterns — detect the response just flipped a wave/phase done.

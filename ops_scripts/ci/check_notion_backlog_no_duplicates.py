@@ -12,7 +12,7 @@ Exit codes:
     1 — duplicates detected
     2 — API error in fail-closed mode
 
-Bypass: BACKLOG_DUP_BYPASS=1 (logged to artifacts/cursor/notion_backlog_dup_violations.jsonl).
+Bypass: BACKLOG_DUP_BYPASS=1 (logged to artifacts/governance/notion_backlog_dup_violations.jsonl).
 
 DS-6 (notion-plans-db-hygiene-deferred-scope-d4f7c1).
 """
@@ -45,7 +45,7 @@ except ImportError:
     BACKLOG_DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "windsurf" / "notion_backlog_dup_violations.jsonl"
+    REPO_ROOT / "artifacts" / "governance" / "notion_backlog_dup_violations.jsonl"
 )
 TIMEOUT_S = 30.0
 _QUERY_URL = f"{NOTION_BASE}/data_sources/{BACKLOG_DATA_SOURCE_ID}/query"

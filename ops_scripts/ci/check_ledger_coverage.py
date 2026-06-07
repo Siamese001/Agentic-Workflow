@@ -31,7 +31,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "audit_ledger_coverage.py"
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "ledger_coverage_bypass.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "ledger_coverage_bypass.jsonl"
 
 
 def _log_bypass(reason: str) -> None:

@@ -44,7 +44,7 @@ if str(REPO_ROOT) not in sys.path:
 from agentic_core.adg.artifact.edge_authority import ALL_AUTHORITIES  # noqa: E402
 
 ADG_DIR = REPO_ROOT / "artifacts" / "adg"
-LOG_DIR = REPO_ROOT / "artifacts" / "windsurf"
+LOG_DIR = REPO_ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "edge_authority_violations.jsonl"
 
 

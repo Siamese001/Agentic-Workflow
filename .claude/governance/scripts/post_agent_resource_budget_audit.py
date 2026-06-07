@@ -13,9 +13,9 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_LOGS = {
-    "grep": REPO_ROOT / "artifacts" / "windsurf" / "grep_budget_violations.jsonl",
-    "read": REPO_ROOT / "artifacts" / "windsurf" / "read_budget_violations.jsonl",
-    "token": REPO_ROOT / "artifacts" / "windsurf" / "token_telemetry.jsonl",
+    "grep": REPO_ROOT / "artifacts" / "governance" / "grep_budget_violations.jsonl",
+    "read": REPO_ROOT / "artifacts" / "governance" / "read_budget_violations.jsonl",
+    "token": REPO_ROOT / "artifacts" / "governance" / "token_telemetry.jsonl",
 }
 SOFT_CAPS = {"grep": 3, "read": 10}
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024

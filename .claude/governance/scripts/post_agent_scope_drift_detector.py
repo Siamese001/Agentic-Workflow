@@ -11,7 +11,7 @@ Sibling to `pre_write_plan_scope_gate.py` (the pre-hook). This post-hook
 captures drift that slipped past the advisory pre-hook (e.g., strict mode
 disabled + warning ignored).
 
-Violations log: `artifacts/cursor/scope_drift_violations.jsonl`
+Violations log: `artifacts/governance/scope_drift_violations.jsonl`
 
 Bypass: `SCOPE_DRIFT_BYPASS=1` (logs row with bypass=true).
 """
@@ -28,7 +28,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "scope_drift_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "scope_drift_violations.jsonl"
 PLAN_FRESHNESS_SEC = 24 * 3600
 
 # Capture the `TargetFile` / `file_path` parameter of write-ish tools.

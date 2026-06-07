@@ -26,7 +26,7 @@ Corroboration (proves writeback happened):
       ArchitecturalInvariant, EpisodicEvent)
 
 Behavior (ADVISORY — always exits 0):
-    - Appends violation records to artifacts/cursor/writeback_violations.jsonl
+    - Appends violation records to artifacts/governance/writeback_violations.jsonl
     - Writes summary to stderr (show_output not set — non-blocking)
 
 Escape hatch: WRITEBACK_AUDIT_BYPASS=1 → logs a bypass row and exits 0.
@@ -50,7 +50,7 @@ FAIL_POLICY = "open"
 CORROBORATION_WINDOW_MINUTES = 10
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "writeback_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "writeback_violations.jsonl"
 MEMORY_DB = REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
 # ---------------------------------------------------------------------------

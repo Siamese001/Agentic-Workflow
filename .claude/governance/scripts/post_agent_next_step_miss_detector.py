@@ -31,7 +31,7 @@ Anti-signals (presence zeros out the score):
     - One or more ``DEFERRED_SCOPE:`` markers (related discipline)
     - Explicit negation ("no follow-ups", "nothing deferred")
 
-Output: artifacts/cursor/next_step_misses.jsonl  (append-only)
+Output: artifacts/governance/next_step_misses.jsonl  (append-only)
 
 Fail policy: OPEN. Audit only — never blocks. Windsurf hook reads exit 0.
 
@@ -52,7 +52,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-MISS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "next_step_misses.jsonl"
+MISS_LOG = REPO_ROOT / "artifacts" / "governance" / "next_step_misses.jsonl"
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB fail-safe cap
 
 # Threshold: miss_score >= this counts as a suspected miss. Set low because

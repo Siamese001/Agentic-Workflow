@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from collections import Counter
 
-log = Path("artifacts/cursor/backlog_plan_linkage_misses.jsonl")
+log = Path("artifacts/governance/backlog_plan_linkage_misses.jsonl")
 slugs = Counter()
 for line in log.read_text(encoding="utf-8").splitlines():
     if not line.strip():

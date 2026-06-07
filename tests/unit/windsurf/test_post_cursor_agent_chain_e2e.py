@@ -32,7 +32,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[3]
 HOOKS_JSON = REPO / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 SCRIPTS = REPO / ".claude" / "governance/scripts" / "_legacy_windsurf"
-ARTIFACTS = REPO / "artifacts" / "windsurf"
+ARTIFACTS = REPO / "artifacts" / "governance"
 
 
 def _load_chain() -> list[Path]:

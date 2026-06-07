@@ -35,7 +35,7 @@ WAVES = [
         "wave": "W0",
         "phase": "P0.1",
         "sub_wave": "W0-P2-CORE",
-        "files": "tools/debug/_agent_deprecation_assessment.py, artifacts/cursor/agent_deprecation_assessment.txt",
+        "files": "tools/debug/_agent_deprecation_assessment.py, artifacts/governance/agent_deprecation_assessment.txt",
         "success": "141 agents scanned, classified into 5 buckets, zero SAFE_TO_ARCHIVE — proves no blind move possible",
         "deps": "Fresh ADG snapshot adg_indexed_04242026_0721.sqlite",
         "est_tokens": 4000,

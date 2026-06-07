@@ -3,7 +3,7 @@
 
 Fires on every Cursor Agent response via `post_agent_response`. Fail-open
 (never blocks). Appends structured violation rows to
-`artifacts/cursor/fortknox_integrity_violations.jsonl` when Cursor Agent
+`artifacts/governance/fortknox_integrity_violations.jsonl` when Cursor Agent
 has made a forbidden claim or edit in the current response.
 
 Detection (conservative — prefers false negatives over false positives
@@ -74,7 +74,7 @@ def _now_iso() -> str:
 def _log_violations(rows: list[dict], repo: Path) -> None:
     if not rows:
         return
-    out_dir = repo / "artifacts" / "windsurf"
+    out_dir = repo / "artifacts" / "governance"
     out_dir.mkdir(parents=True, exist_ok=True)
     out = out_dir / "fortknox_integrity_violations.jsonl"
     try:

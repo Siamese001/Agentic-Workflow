@@ -8,7 +8,7 @@ Strategy:
   * For each: derive slug from `Plan File` (strip `.md`), resolve to a
     Plans-DB page id via `_resolve_plan_page_id` (capture-hook sibling).
   * On hit: PATCH with `Plan = {relation: [{id}]}` + `Last Updated = today`.
-  * On miss: log to `artifacts/cursor/backlog_plan_linkage_misses.jsonl`
+  * On miss: log to `artifacts/governance/backlog_plan_linkage_misses.jsonl`
     for W2 true-orphan triage.
 
 Idempotent: rows whose relation is already set are skipped.
@@ -49,7 +49,7 @@ except ImportError:  # pragma: no cover
 
 QUERY_URL = f"{NOTION_BASE}/data_sources/{WAVE_PHASE_DATA_SOURCE_ID}/query"
 PAGE_URL_FMT = f"{NOTION_BASE}/pages/{{page_id}}"
-MISS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "backlog_plan_linkage_misses.jsonl"
+MISS_LOG = REPO_ROOT / "artifacts" / "governance" / "backlog_plan_linkage_misses.jsonl"
 TIMEOUT = 30.0
 THROTTLE_S = 0.35
 

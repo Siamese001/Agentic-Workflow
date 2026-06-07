@@ -173,7 +173,7 @@ artifacts_adg = repo_root / "artifacts" / "adg"
 # replace vscode_pid in the _session_id derivation and keep the rest of the
 # session-state mechanism unchanged.
 _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
-session_state = repo_root / "artifacts" / "cursor" / f"session_state_{_session_id}.json"
+session_state = repo_root / "artifacts" / "governance" / f"session_state_{_session_id}.json"
 
 # After this many consecutive blocks without a successful memory recall,
 # the gate degrades to open so Cursor Agent is never permanently stuck.
@@ -1325,7 +1325,7 @@ def check_deepwiki_gate() -> int:
 
 def _purge_stale_session_states() -> None:
     """Delete session_state_{pid}.json files older than _session_state_max_age_hours."""
-    cursor_dir = repo_root / "artifacts" / "cursor"
+    cursor_dir = repo_root / "artifacts" / "governance"
     if not cursor_dir.exists():
         return
     cutoff = time.time() - _session_state_max_age_hours * 3600
@@ -1358,7 +1358,7 @@ def check_destructive_preflight(tool_name: str) -> int:
     if os.environ.get("MCP_PREFLIGHT_BYPASS", "").strip() == "1":
         return 0
 
-    heartbeat_path = repo_root / "artifacts" / "cursor" / "mcp_health_heartbeat.json"
+    heartbeat_path = repo_root / "artifacts" / "governance" / "mcp_health_heartbeat.json"
 
     now = time.time()
 

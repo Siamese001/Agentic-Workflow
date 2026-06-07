@@ -32,7 +32,7 @@ hooks continue working, proving hooks.json is valid. This script is the
 fallback that keeps DEFERRED_SCOPE capture, writeback audit, ADG audit,
 and heartbeat functioning until the upstream bug is fixed.
 
-Evidence: ``artifacts/cursor/post_agent_heartbeat.jsonl`` gap.
+Evidence: ``artifacts/governance/post_agent_heartbeat.jsonl`` gap.
 """
 from __future__ import annotations
 

@@ -43,12 +43,12 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 # Violation log paths (preserved from original hooks)
 LOG_PATHS = {
-    "creation": REPO_ROOT / "artifacts" / "windsurf" / "plan_creation_corrections.jsonl",
-    "creation_alert": REPO_ROOT / "artifacts" / "windsurf" / "plan_creation_alerts.jsonl",
-    "scope": REPO_ROOT / "artifacts" / "windsurf" / "plan_scope_audit.jsonl",
-    "complete": REPO_ROOT / "artifacts" / "windsurf" / "plan_complete_audit.jsonl",
-    "duplicate": REPO_ROOT / "artifacts" / "windsurf" / "notion_plans_dup_violations.jsonl",
-    "evidence": REPO_ROOT / "artifacts" / "windsurf" / "plan_evidence_violations.jsonl",
+    "creation": REPO_ROOT / "artifacts" / "governance" / "plan_creation_corrections.jsonl",
+    "creation_alert": REPO_ROOT / "artifacts" / "governance" / "plan_creation_alerts.jsonl",
+    "scope": REPO_ROOT / "artifacts" / "governance" / "plan_scope_audit.jsonl",
+    "complete": REPO_ROOT / "artifacts" / "governance" / "plan_complete_audit.jsonl",
+    "duplicate": REPO_ROOT / "artifacts" / "governance" / "notion_plans_dup_violations.jsonl",
+    "evidence": REPO_ROOT / "artifacts" / "governance" / "plan_evidence_violations.jsonl",
 }
 
 # Notion API constants (from creation audit)

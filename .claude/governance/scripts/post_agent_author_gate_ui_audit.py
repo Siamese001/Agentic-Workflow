@@ -26,7 +26,7 @@ author-gate-enforcement.md Pipeline step 7:
        This catches hand-crafted Author-Gate invocations that bypass the canonical emitter
        pipeline. Advisory only — logged to violations log, never blocks.
 
-Violations append JSONL to artifacts/cursor/author_gate_ui_violations.jsonl.
+Violations append JSONL to artifacts/governance/author_gate_ui_violations.jsonl.
 
 Fail policy: OPEN — always exits 0 (advisory, same shape as sibling post_agent hooks).
 
@@ -48,7 +48,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "cursor" / "author_gate_ui_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "author_gate_ui_violations.jsonl"
 
 # Patterns
 _CONFIDENCE_PREFIX_RE = re.compile(r"^\[(RECOMMENDED \u2b50 )?confidence=0\.\d{2}\]")

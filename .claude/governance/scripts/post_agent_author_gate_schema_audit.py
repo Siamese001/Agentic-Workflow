@@ -44,7 +44,7 @@ For every ``AUTHOR_GATE_PACKET:`` block in the response:
    error_handling).
 
 Fail policy: OPEN (advisory, exit 0). Violations append JSONL to
-``artifacts/cursor/author_gate_schema_violations.jsonl``.
+``artifacts/governance/author_gate_schema_violations.jsonl``.
 
 Bypass: ``AUTHOR_GATE_SCHEMA_BYPASS=1`` logs a row with reason="bypass" and
 returns 0.
@@ -62,7 +62,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "cursor" / "author_gate_schema_violations.jsonl"
+    REPO_ROOT / "artifacts" / "governance" / "author_gate_schema_violations.jsonl"
 )
 
 # Shared canonical schema loader (plan author-gate-ssot-consolidation-b7c3e1 W3.P3.1).

@@ -44,7 +44,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DB_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "cursor" / "author_gate_capture_violations.jsonl"
+VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "governance" / "author_gate_capture_violations.jsonl"
 
 _REFACTOR_CLASS_TYPES = frozenset({
     "refactor_scope", "architecture_choice", "anti_pattern", "deletion_strategy",

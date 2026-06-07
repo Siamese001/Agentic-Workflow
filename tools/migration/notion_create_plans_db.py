@@ -37,7 +37,7 @@ BACKLOG_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 PARENT_PAGE_ID = "33f27693-f55c-8134-9041-d34b6dc11425"
 
 PLANS_DB_ID_FILE = Path("tools/migration/.notion_plans_db_id")
-AUDIT_LOG = Path("artifacts/cursor/notion_plans_migration_audit.jsonl")
+AUDIT_LOG = Path("artifacts/governance/notion_plans_migration_audit.jsonl")
 
 
 def _load_token() -> str:

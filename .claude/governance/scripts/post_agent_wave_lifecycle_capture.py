@@ -55,7 +55,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "wave_lifecycle_capture.jsonl"
+LOG_PATH = REPO_ROOT / "artifacts" / "governance" / "wave_lifecycle_capture.jsonl"
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB
 
 
@@ -281,7 +281,7 @@ def main() -> int:
     if captured or failed:
         print(
             f"[wave_lifecycle_capture] applied {captured} marker(s); "
-            f"{failed} failed (see artifacts/cursor/wave_lifecycle_capture.jsonl)",
+            f"{failed} failed (see artifacts/governance/wave_lifecycle_capture.jsonl)",
             file=sys.stderr,
         )
     return 0

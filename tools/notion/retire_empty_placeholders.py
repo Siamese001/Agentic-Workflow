@@ -27,7 +27,7 @@ from triage_keep_drafts import (  # type: ignore[import-not-found]
     _token, _http, _txt, fetch_drafts, NOTION_API, REPO_ROOT,
 )
 
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "retire_empty_placeholders_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "retire_empty_placeholders_audit.jsonl"
 
 DEFERRED_STUB = re.compile(
     r"Auto-captured from DEFERRED_SCOPE marker.*Cursor Agent to fill on execution",

@@ -45,8 +45,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_FAMILY_GLOB = str(REPO_ROOT / "artifacts" / "ledgers" / "*.sqlite")
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "decision_ledger_chain_bypass.jsonl"
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "decision_ledger_chain_violations.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "decision_ledger_chain_bypass.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "decision_ledger_chain_violations.jsonl"
 
 # Extend sys.path to import author_gate_ledger_integrity from .claude/governance/scripts
 _SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance/scripts"

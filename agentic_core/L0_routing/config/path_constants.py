@@ -156,7 +156,7 @@ ARCHIVES_DIR: Final[str] = "archives"
 # documentation reports, and ADR storage.
 ARTIFACTS_DIR: Final[str] = "artifacts"
 ADG_ARTIFACTS_DIR: Final[str] = "artifacts/adg"
-WINDSURF_ARTIFACTS_DIR: Final[str] = "artifacts/cursor"
+WINDSURF_ARTIFACTS_DIR: Final[str] = "artifacts/governance"
 WINDSURF_PLANS_DIR: Final[str] = "docs/archive/windsurf/legacy-tree/plans"
 DOCS_DIR: Final[str] = "docs"
 DOCS_REPORTS_DIR: Final[str] = "docs/reports"

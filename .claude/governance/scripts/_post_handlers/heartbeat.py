@@ -44,7 +44,7 @@ def _truncate(path: Path, max_lines: int) -> None:
 
 def run(parsed: ParsedResponse, repo_root: Path) -> None:
     """Append heartbeat record. Fail-soft."""
-    artifacts = repo_root / "artifacts" / "cursor"
+    artifacts = repo_root / "artifacts" / "governance"
     try:
         artifacts.mkdir(parents=True, exist_ok=True)
     except OSError as err:

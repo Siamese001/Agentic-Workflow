@@ -17,7 +17,7 @@ Marker format (from rule):
         coverage_gap_pct=<N.N> est_tokens=<N> reason=<short>
 
 Behavior (ADVISORY — always exits 0):
-    - Detected markers logged to artifacts/cursor/deferred_scope_capture.jsonl
+    - Detected markers logged to artifacts/governance/deferred_scope_capture.jsonl
     - Missing-writeback markers trigger auto-POST to Notion (if NOTION_TOKEN set)
     - Auto-post failures logged as 'pending' for next-session recovery
     - Malformed markers logged as violations
@@ -629,7 +629,7 @@ def main() -> int:
 # ---------------------------------------------------------------------------
 
 SNAPSHOT_THROTTLE_S = 30
-SNAPSHOT_LOCKFILE = REPO_ROOT / "artifacts" / "windsurf" / ".snapshot_last_run"
+SNAPSHOT_LOCKFILE = REPO_ROOT / "artifacts" / "governance" / ".snapshot_last_run"
 
 
 def _maybe_regenerate_snapshot(token: str) -> None:

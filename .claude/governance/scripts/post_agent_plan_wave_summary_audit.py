@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[3]
-_LOG_PATH = _ROOT / "artifacts" / "cursor" / "plan_wave_summary_top_violations.jsonl"
+_LOG_PATH = _ROOT / "artifacts" / "governance" / "plan_wave_summary_top_violations.jsonl"
 _BYPASS_ENV = "PLAN_WAVE_SUMMARY_TOP_AUDIT_BYPASS"
 _STRICT_ENV = "PLAN_WAVE_SUMMARY_TOP_AUDIT_STRICT"
 

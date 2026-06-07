@@ -40,7 +40,7 @@ from tools.priority.deferred_scope_scorer import score_deferred_scope  # noqa: E
 NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2025-09-03"
 BACKLOG_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "notion_infer_and_score_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "notion_infer_and_score_audit.jsonl"
 
 LAYER_PATH_RE = re.compile(r"agentic_core/(L[0-6])_\w+/")
 # Priority order — smaller layer number = more critical (higher multiplier).

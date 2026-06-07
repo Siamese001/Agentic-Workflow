@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """W1 extension — batch-register on-disk plan files into the Plans DB.
 
-Reads `artifacts/cursor/backlog_plan_linkage_misses.jsonl`, extracts unique
+Reads `artifacts/governance/backlog_plan_linkage_misses.jsonl`, extracts unique
 slugs whose on-disk plan file exists at `docs/archive/windsurf/legacy-tree/plans/<slug>.md`, and posts
 one Plans DB row per slug with Slug (title) / Status=Not Started / Exists On Disk=true /
 Plan File Path / Summary / AI Summary.
@@ -48,10 +48,10 @@ try:
 except ImportError:
     tqdm = lambda it, **kw: it  # type: ignore[assignment,misc]
 
-MISS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "backlog_plan_linkage_misses.jsonl"
+MISS_LOG = REPO_ROOT / "artifacts" / "governance" / "backlog_plan_linkage_misses.jsonl"
 PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 PLANS_QUERY_URL = f"{NOTION_BASE}/data_sources/{PLANS_DATA_SOURCE_ID}/query"
-RESULT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "register_ondisk_plans_results.jsonl"
+RESULT_LOG = REPO_ROOT / "artifacts" / "governance" / "register_ondisk_plans_results.jsonl"
 TIMEOUT = 30.0
 THROTTLE_S = 0.35
 

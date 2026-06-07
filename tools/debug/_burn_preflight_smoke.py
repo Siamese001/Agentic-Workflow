@@ -11,8 +11,8 @@ import tempfile
 from pathlib import Path
 
 repo = Path(__file__).resolve().parents[2]
-hb_path = repo / "artifacts" / "windsurf" / "mcp_health_heartbeat.json"
-vl_path = repo / "artifacts" / "windsurf" / "mcp_preflight_violations.jsonl"
+hb_path = repo / "artifacts" / "governance" / "mcp_health_heartbeat.json"
+vl_path = repo / "artifacts" / "governance" / "mcp_preflight_violations.jsonl"
 
 
 def _run_pre(payload: dict) -> subprocess.CompletedProcess:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """W2 apply — disposition of 91 orphan Backlog rows per user-approved batch.
 
-Reads `artifacts/cursor/backlog_plan_linkage_misses.jsonl`, classifies each
+Reads `artifacts/governance/backlog_plan_linkage_misses.jsonl`, classifies each
 row's slug, and applies one of two actions:
   * DELETE  — slug contains "(", starts with "_INDEX_", or starts with "multi:"
   * CATCH-ALL — patches Plan relation to the catch-all page id
@@ -37,8 +37,8 @@ except ImportError:
     tqdm = lambda it, **kw: it  # type: ignore[assignment,misc]
 
 CATCH_ALL_PAGE_ID = "35527693-f55c-81f0-be31-dad3f36fa674"
-MISS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "backlog_plan_linkage_misses.jsonl"
-RESULT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "apply_orphan_disposition_results.jsonl"
+MISS_LOG = REPO_ROOT / "artifacts" / "governance" / "backlog_plan_linkage_misses.jsonl"
+RESULT_LOG = REPO_ROOT / "artifacts" / "governance" / "apply_orphan_disposition_results.jsonl"
 PAGE_URL_FMT = f"{NOTION_BASE}/pages/{{page_id}}"
 TIMEOUT = 30.0
 THROTTLE_S = 0.35

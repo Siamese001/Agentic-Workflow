@@ -18,7 +18,7 @@ session-state convention so parallel IDE windows do not collide.
 
 State file shape
 ----------------
-JSON at artifacts/cursor/wave_execution_<session>.json:
+JSON at artifacts/governance/wave_execution_<session>.json:
     {
       "plan": "<slug-6hex>",
       "started_at": "<iso-utc>",
@@ -42,7 +42,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_ARTIFACT_DIR = _REPO_ROOT / "artifacts" / "cursor"
+_ARTIFACT_DIR = _REPO_ROOT / "artifacts" / "governance"
 
 
 def _session_id() -> str:

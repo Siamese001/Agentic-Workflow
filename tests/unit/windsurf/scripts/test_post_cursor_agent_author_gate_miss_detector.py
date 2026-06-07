@@ -264,7 +264,7 @@ class TestMainEndToEnd:
         return proc.returncode, proc.stderr
 
     def test_miss_logged_when_score_above_threshold(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        log = tmp_path / "artifacts" / "windsurf" / "author_gate_misses.jsonl"
+        log = tmp_path / "artifacts" / "governance" / "author_gate_misses.jsonl"
         monkeypatch.setattr(_m, "MISS_LOG", log)
 
         payload = {
@@ -290,7 +290,7 @@ class TestMainEndToEnd:
         assert any(s.startswith("multi_file_edit") for s in record["signals"])
 
     def test_no_log_when_capture_present(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        log = tmp_path / "artifacts" / "windsurf" / "author_gate_misses.jsonl"
+        log = tmp_path / "artifacts" / "governance" / "author_gate_misses.jsonl"
         monkeypatch.setattr(_m, "MISS_LOG", log)
 
         payload = {
@@ -308,7 +308,7 @@ class TestMainEndToEnd:
         assert not log.exists()
 
     def test_empty_stdin_is_noop(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        log = tmp_path / "artifacts" / "windsurf" / "author_gate_misses.jsonl"
+        log = tmp_path / "artifacts" / "governance" / "author_gate_misses.jsonl"
         monkeypatch.setattr(_m, "MISS_LOG", log)
         import io
 
@@ -318,7 +318,7 @@ class TestMainEndToEnd:
         assert not log.exists()
 
     def test_invalid_json_treated_as_raw_text(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        log = tmp_path / "artifacts" / "windsurf" / "author_gate_misses.jsonl"
+        log = tmp_path / "artifacts" / "governance" / "author_gate_misses.jsonl"
         monkeypatch.setattr(_m, "MISS_LOG", log)
         import io
 

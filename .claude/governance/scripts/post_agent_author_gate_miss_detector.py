@@ -22,7 +22,7 @@ Anti-signals (presence of any = NOT a miss):
     - Trivial-tier markers ("T0", "T1", "trivial", "single-file")
     - Explicit user directive phrases ("user said", "as requested")
 
-Output: artifacts/cursor/author_gate_misses.jsonl  (append-only)
+Output: artifacts/governance/author_gate_misses.jsonl  (append-only)
   Each row: {
     timestamp, cascade_id, miss_score, signals: [...], anti_signals: [...],
     files_edited: [...], keywords_hit: [...], response_excerpt: first 500 chars
@@ -47,7 +47,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-MISS_LOG = REPO_ROOT / "artifacts" / "cursor" / "author_gate_misses.jsonl"
+MISS_LOG = REPO_ROOT / "artifacts" / "governance" / "author_gate_misses.jsonl"
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB — fail-safe cap
 
 # Positive signals — each adds weight toward "miss"

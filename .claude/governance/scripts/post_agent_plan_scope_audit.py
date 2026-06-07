@@ -9,7 +9,7 @@ Environment:
     MIN_FILES_FOR_AUDIT           — Threshold for "substantial work" (default 3)
     AUTH_MARKER_RECENCY_SEC       — Authorization validity window (default 300)
 
-Logs: artifacts/cursor/plan_scope_audit.jsonl
+Logs: artifacts/governance/plan_scope_audit.jsonl
 """
 from __future__ import annotations
 
@@ -54,7 +54,7 @@ from _plan_scope_expansion_check import (
 # Configuration
 # ---------------------------------------------------------------------------
 
-LOG_PATH = Path("artifacts/cursor/plan_scope_audit.jsonl")
+LOG_PATH = Path("artifacts/governance/plan_scope_audit.jsonl")
 
 
 def get_config() -> dict:

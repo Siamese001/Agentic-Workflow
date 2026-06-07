@@ -56,7 +56,7 @@ from ops_scripts.ci.adg_gates.unified_registry import (  # noqa: E402
 
 BASELINE_DIR = REPO_ROOT / "ops_scripts" / "ci" / "baselines"
 RESULTS_DIR = REPO_ROOT / "artifacts" / "adg"
-SINK_DIR = REPO_ROOT / "artifacts" / "windsurf"
+SINK_DIR = REPO_ROOT / "artifacts" / "governance"
 SINK_FILE = SINK_DIR / "adg_gate_dispatcher.jsonl"
 
 # ``_MARKER_META`` shape:

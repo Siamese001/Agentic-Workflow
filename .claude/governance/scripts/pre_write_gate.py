@@ -44,7 +44,7 @@ except ImportError:  # guardian: allow-broad-exception -- optional dep; gate fai
 fail_policy = "closed"
 
 repo_root = Path(__file__).resolve().parents[3]
-session_state = repo_root / "artifacts" / "cursor" / "session_state.json"
+session_state = repo_root / "artifacts" / "governance" / "session_state.json"
 
 _BARE_EXCEPT_RE = re.compile(r"^\s*except\s*:", re.MULTILINE)
 _BROAD_EXCEPT_RE = re.compile(r"except\s+Exception(\s*:|\s+as\s+\w+\s*:)")
@@ -68,7 +68,7 @@ _CORE_FORBIDDEN_LITERALS: tuple[str, ...] = (
 )
 
 _SCHEMA_PATH = repo_root / ".claude" / "schemas" / "CoreAdditionAuthorGateReceipt.schema.json"
-_VIOLATIONS_LOG = repo_root / "artifacts" / "cursor" / "core_addition_gate_violations.jsonl"
+_VIOLATIONS_LOG = repo_root / "artifacts" / "governance" / "core_addition_gate_violations.jsonl"
 
 mcp_config_suffix = "mcp.json"
 _RISKY_MCP_PATTERNS = [

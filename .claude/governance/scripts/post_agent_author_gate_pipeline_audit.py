@@ -15,7 +15,7 @@ Together they close the enforcement square:
     3. Ask-without-pkt → post_agent_ask_user_question_packet_audit.py
     4. Pkt-without-ask → THIS FILE
 
-Output: ``artifacts/cursor/author_gate_pipeline_violations.jsonl``
+Output: ``artifacts/governance/author_gate_pipeline_violations.jsonl``
 Bypass: ``AG_PIPELINE_AUDIT_BYPASS=1`` (logs row with reason=bypass).
 Fail policy: OPEN (advisory, exits 0).
 
@@ -37,7 +37,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "cursor" / "author_gate_pipeline_violations.jsonl"
+    REPO_ROOT / "artifacts" / "governance" / "author_gate_pipeline_violations.jsonl"
 )
 MAX_RESPONSE_BYTES = 1_048_576
 

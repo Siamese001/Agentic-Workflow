@@ -22,7 +22,7 @@ and exits 0.
 
 Bypass: set ``MCP_ORPHAN_REAP_BYPASS=1`` in the environment.
 
-Audit trail: ``artifacts/cursor/mcp_orphan_reap.jsonl`` — one JSON line
+Audit trail: ``artifacts/governance/mcp_orphan_reap.jsonl`` — one JSON line
 per invocation with scan counts, orphan PIDs (if any), and kill results.
 """
 
@@ -37,7 +37,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DETECTOR = REPO_ROOT / "tools" / "debug" / "check_orphan_mcp_processes.py"
-LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "mcp_orphan_reap.jsonl"
+LOG_PATH = REPO_ROOT / "artifacts" / "governance" / "mcp_orphan_reap.jsonl"
 
 # Cohort-gap of 60s and stale-min of 5 minutes mean: a freshly-spawned
 # cohort B needs to wait at least 5 minutes before any A-process is

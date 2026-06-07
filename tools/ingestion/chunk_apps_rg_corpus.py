@@ -306,7 +306,7 @@ def chunk_directory(
     _SKIP_DIRS = {".git", "__pycache__", "node_modules", "xet",
                   "docs/archive/windsurf/legacy-tree/plans", ".claude/schemas",
                   "artifacts/apps_rg/runs", "artifacts/adg",
-                  "artifacts/cursor"}
+                  "artifacts/governance"}
     all_chunks: list[dict[str, Any]] = []
     files: list[Path] = []
     for p in sorted(input_dir.rglob("*")):

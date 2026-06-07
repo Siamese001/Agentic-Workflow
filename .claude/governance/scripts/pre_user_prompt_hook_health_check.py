@@ -34,7 +34,7 @@ import time
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[3]
-_HEARTBEAT_PATH = _ROOT / "artifacts" / "cursor" / "post_agent_heartbeat.jsonl"
+_HEARTBEAT_PATH = _ROOT / "artifacts" / "governance" / "post_agent_heartbeat.jsonl"
 
 # Default stale threshold: 30 minutes. Override with
 # POST_AGENT_HEARTBEAT_STALE_SECONDS env var.
@@ -149,7 +149,7 @@ def main() -> int:
             f"(threshold: {threshold}s). Cursor may have skipped the\n"
             "post_agent_response hook chain in the previous session —\n"
             "audit writebacks, author-gate captures, and deferred-scope\n"
-            "captures may be missing. Review artifacts/cursor/*.jsonl\n"
+            "captures may be missing. Review artifacts/governance/*.jsonl\n"
             "for gaps before relying on hook-captured state.\n"
             "\n"
             "WORKAROUND (Cursor 2.0.67 bug): Cursor Agent should invoke\n"

@@ -56,7 +56,7 @@ import _plan_registration as pr  # noqa: E402
 # Deferred scope ledger path for status reconciliation
 _DEFERRED_SCOPE_LEDGER = _REPO_ROOT / "artifacts" / "ledgers" / "deferred_scope_calibration.sqlite"
 
-_BYPASS_LOG = _REPO_ROOT / "artifacts" / "windsurf" / "plan_registration_bypasses.jsonl"
+_BYPASS_LOG = _REPO_ROOT / "artifacts" / "governance" / "plan_registration_bypasses.jsonl"
 
 
 def _log_bypass(plan: str, source: str, reason: str | None) -> None:
@@ -268,7 +268,7 @@ def _notion_sync(plan: str, kind: str, wave: int | None = None, note: str | None
 
     Synthesizes a single ``WaveLifecycleMarker`` and runs it through
     ``wave_lifecycle_writer.apply_spec``. Failures are logged to
-    ``artifacts/cursor/wave_lifecycle_notion.jsonl`` (by the writer) and
+    ``artifacts/governance/wave_lifecycle_notion.jsonl`` (by the writer) and
     swallowed here so wave state remains the source of truth.
 
     Skipped when ``WAVE_LIFECYCLE_NOTION_BYPASS=1`` is set or when no
@@ -527,7 +527,7 @@ def _prior_wave_completed(plan: str, current_wave: int) -> bool:
     if current_wave <= 1:
         return True  # Wave 1 has no prior
 
-    log_path = _REPO_ROOT / "artifacts" / "windsurf" / "wave_lifecycle_capture.jsonl"
+    log_path = _REPO_ROOT / "artifacts" / "governance" / "wave_lifecycle_capture.jsonl"
     if not log_path.exists():
         return False
 

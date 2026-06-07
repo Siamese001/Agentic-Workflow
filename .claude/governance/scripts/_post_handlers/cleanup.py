@@ -38,7 +38,7 @@ def _count(path: Path) -> int:
 
 
 def run(parsed: ParsedResponse, repo_root: Path) -> None:
-    ws = repo_root / "artifacts" / "cursor"
+    ws = repo_root / "artifacts" / "governance"
     if not ws.exists():
         return
 

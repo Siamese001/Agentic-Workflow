@@ -5,7 +5,7 @@ post_agent_router_decision_audit.py — Closed-Loop Router enforcement post-hook
 Reads the cursor agent response payload from stdin. Detects when Cursor Agent has edited
 or substantially referenced a router-implementing file but the response carries
 neither a `ROUTER_DECISION:` marker nor a paired `emit_ledger_event(ledger="router_..."`
-call. Logs violations to artifacts/cursor/router_enforcement_violations.jsonl.
+call. Logs violations to artifacts/governance/router_enforcement_violations.jsonl.
 
 Constitutional anchor: §28.
 Rule: .claude/rules/closed-loop-router-enforcement.md.
@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "router_enforcement_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "router_enforcement_violations.jsonl"
 
 # ---------------------------------------------------------------------------
 # Detection patterns

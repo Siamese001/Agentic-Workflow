@@ -1,7 +1,7 @@
 """Grep-budget handler — advisory cap on grep_search + code_search per response.
 
 In-process equivalent of `.claude/governance/scripts/post_agent_grep_budget_audit.py`.
-Logs a row to `artifacts/cursor/grep_budget_violations.jsonl` when combined
+Logs a row to `artifacts/governance/grep_budget_violations.jsonl` when combined
 text-search invocations exceed the soft cap (3) or when bypass is set.
 """
 
@@ -55,7 +55,7 @@ def run(parsed: ParsedResponse, repo_root: Path) -> None:
         "over_cap": total > SOFT_CAP,
         "via": "dispatcher",
     }
-    log_path = repo_root / "artifacts" / "cursor" / "grep_budget_violations.jsonl"
+    log_path = repo_root / "artifacts" / "governance" / "grep_budget_violations.jsonl"
     _append(log_path, row)
 
     if total > SOFT_CAP and not bypass:

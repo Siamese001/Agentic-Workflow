@@ -17,7 +17,7 @@ Behavior:
     - If the response contains no plan-file edits → exit 0 silently.
     - If a plan file lacks ``## ADG_GRAPH_LAYER_EVIDENCE`` AND declares
       refactor intent → exit 2 (block) + log to
-      ``artifacts/cursor/plan_evidence_violations.jsonl``.
+      ``artifacts/governance/plan_evidence_violations.jsonl``.
     - Bypass: ``PLAN_EVIDENCE_GATE_BYPASS=1``.
 
 Fail policy: OPEN for infrastructure errors (malformed JSON, file read
@@ -37,7 +37,7 @@ fail_policy = "closed_for_refactor_plans"
 
 _ROOT = Path(__file__).resolve().parents[3]
 _PLANS_DIR = _ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
-_LOG_PATH = _ROOT / "artifacts" / "windsurf" / "plan_evidence_violations.jsonl"
+_LOG_PATH = _ROOT / "artifacts" / "governance" / "plan_evidence_violations.jsonl"
 _BYPASS_ENV = "PLAN_EVIDENCE_GATE_BYPASS"
 
 # Matches any plan file path mentioned in a Cursor Agent response (edit/write tool

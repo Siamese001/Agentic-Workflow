@@ -34,7 +34,7 @@ def test_heartbeat_writes_record_with_latency_field():
     a chain_latency_ms field. Order-independent: scans the tail for the
     expected schema rather than asserting line-count deltas (the log file
     is shared state and is truncated at MAX_LINES under xdist parallel)."""
-    log_path = REPO_ROOT / "artifacts" / "windsurf" / "post_agent_heartbeat.jsonl"
+    log_path = REPO_ROOT / "artifacts" / "governance" / "post_agent_heartbeat.jsonl"
 
     r1 = _run()
     assert r1.returncode == 0

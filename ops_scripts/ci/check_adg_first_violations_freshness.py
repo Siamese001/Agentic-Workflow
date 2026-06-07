@@ -2,7 +2,7 @@
 """
 check_adg_first_violations_freshness.py — CI gate (CF1).
 
-Tails ``artifacts/cursor/adg_first_violations.jsonl`` (produced by
+Tails ``artifacts/governance/adg_first_violations.jsonl`` (produced by
 ``post_agent_adg_audit.py``) and fails when any non-bypass row within
 the staleness window (default 7 days) has not been resolved.
 
@@ -37,7 +37,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "adg_first_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "adg_first_violations.jsonl"
 DEFAULT_STALENESS_DAYS = 7
 
 

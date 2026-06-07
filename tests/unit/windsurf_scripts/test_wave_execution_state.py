@@ -34,7 +34,7 @@ def isolated_session(tmp_path, monkeypatch):
     """Force a unique session id so the state file is per-test and point it at tmp_path."""
     monkeypatch.setenv("VSCODE_PID", f"pytest-{os.getpid()}-{tmp_path.name}")
     # Redirect the helper's artifact dir into tmp_path for full isolation.
-    fake_artifact_dir = tmp_path / "artifacts" / "windsurf"
+    fake_artifact_dir = tmp_path / "artifacts" / "governance"
     fake_artifact_dir.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr(wes, "_ARTIFACT_DIR", fake_artifact_dir)
     yield tmp_path

@@ -244,11 +244,11 @@ def _infer_layer(repo_area: str) -> str:
     return ""
 
 
-# Sidecar precedent: Cursor harness writes ``artifacts/cursor/`` (see pre_author_gate.py).
+# Sidecar precedent: Cursor harness writes ``artifacts/governance/`` (see pre_author_gate.py).
 # Legacy Windsurf path retained as secondary read for older working copies.
 _PRECEDENT_SIDECAR_PATHS = (
-    repo_root / "artifacts" / "cursor" / "author_gate_precedent.json",
-    repo_root / "artifacts" / "windsurf" / "author_gate_precedent.json",
+    repo_root / "artifacts" / "governance" / "author_gate_precedent.json",
+    repo_root / "artifacts" / "governance" / "author_gate_precedent.json",
 )
 _PRECEDENT_FRESH_WINDOW_S = 3600
 
@@ -299,10 +299,10 @@ def _derive_precedent_from_sidecar(sidecar: dict) -> tuple[str | None, int | Non
     return verdict, len(matches)
 
 
-# W3.2 — pytest signal: conftest prefers ``artifacts/cursor`` (see tests/conftest.py).
+# W3.2 — pytest signal: conftest prefers ``artifacts/governance`` (see tests/conftest.py).
 _TEST_SIGNAL_PATHS = (
-    repo_root / "artifacts" / "cursor" / "last_test_signal.json",
-    repo_root / "artifacts" / "windsurf" / "last_test_signal.json",
+    repo_root / "artifacts" / "governance" / "last_test_signal.json",
+    repo_root / "artifacts" / "governance" / "last_test_signal.json",
 )
 _FRESH_TEST_WINDOW_S = 1800  # 30 minutes
 

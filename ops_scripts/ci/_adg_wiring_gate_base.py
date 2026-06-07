@@ -20,7 +20,7 @@ Environment overrides (per-gate scripts may read these):
     ADG_SNAPSHOT=<path>              — pin a specific snapshot
     WIRING_GATE_BYPASS=1             — full bypass (logs bypass row, exits 0)
 
-Violation sink: artifacts/cursor/wiring_gate_violations.jsonl (one JSON per line,
+Violation sink: artifacts/governance/wiring_gate_violations.jsonl (one JSON per line,
 append-only). Waivers: config/wiring_gate_waivers.yaml.
 """
 
@@ -43,7 +43,7 @@ except ImportError:  # pragma: no cover
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = REPO_ROOT / "artifacts" / "adg"
-LOG_DIR = REPO_ROOT / "artifacts" / "windsurf"
+LOG_DIR = REPO_ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "wiring_gate_violations.jsonl"
 BASELINE_DIR = REPO_ROOT / "ops_scripts" / "ci" / "baselines"
 WAIVER_FILE = REPO_ROOT / "config" / "wiring_gate_waivers.yaml"
