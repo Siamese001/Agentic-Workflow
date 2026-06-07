@@ -204,7 +204,7 @@ def main() -> int:
         print(f"  {v['slug']}  (age={v['age_days']}d, last_edited={v['last_edited']})", file=sys.stderr)
     print(
         f"  Remedy: emit 'PLAN_COMPLETE: plan=<slug>' in the next response, "
-        f"or run: python tools/windsurf/wave_execution_state.py complete --plan <slug>",
+        f"or run: python tools/plan_lifecycle/wave_execution_state.py complete --plan <slug>",
         file=sys.stderr,
     )
 

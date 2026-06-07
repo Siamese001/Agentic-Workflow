@@ -12,7 +12,7 @@ tags emitted, so this hook does NOT trip remote-MCP audit rules or
 ``notion-plan-wave-deferral.md``.
 
 Also updates the wave-status cells in the on-disk plan ``.md`` file via
-``tools.windsurf._plan_wave_table_updater``, so the Wave Structure / Phase-
+``tools.plan_lifecycle._plan_wave_table_updater``, so the Wave Structure / Phase-
 Level Summary tables stay in sync with actual progress without requiring
 manual edits. Bypass: WAVE_TABLE_UPDATE_BYPASS=1.
 
@@ -103,7 +103,7 @@ def _load_updater():
     """Lazy-import the plan wave table updater."""
     sys.path.insert(0, str(REPO_ROOT))
     try:
-        return importlib.import_module("tools.windsurf._plan_wave_table_updater")
+        return importlib.import_module("tools.plan_lifecycle._plan_wave_table_updater")
     except ImportError as exc:
         _log({"event": "updater_import_failed", "error": repr(exc)})
         return None

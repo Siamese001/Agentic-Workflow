@@ -1,7 +1,7 @@
 """
 tests/unit/windsurf_scripts/test_plan_wave_table_updater.py
 
-Unit tests for tools/windsurf/_plan_wave_table_updater.py.
+Unit tests for tools/plan_lifecycle/_plan_wave_table_updater.py.
 
 Tests are pure-Python: they write temp plan files and assert the on-disk
 content after calling update_wave_in_plan.
@@ -25,7 +25,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO_ROOT))
 
-from tools.windsurf._plan_wave_table_updater import (  # noqa: E402
+from tools.plan_lifecycle._plan_wave_table_updater import (  # noqa: E402
     STATUS_DONE,
     STATUS_IN_PROGRESS,
     STATUS_TODO,

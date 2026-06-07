@@ -4,7 +4,7 @@ check_notion_plan_lifecycle_guard.py — CI gate NP-GUARD.
 
 Validates that the wave-lifecycle Completed guard is present in:
 
-1. ``tools/windsurf/wave_execution_state.py`` — ``_current_notion_status``
+1. ``tools/plan_lifecycle/wave_execution_state.py`` — ``_current_notion_status``
    function and the ``status_already_completed`` guard in ``_cmd_start``.
 
 2. ``tools/notion/_wave_lifecycle_helpers.py`` — ``status_completed_guard:noop``
