@@ -98,7 +98,7 @@ _EXEMPTIONS: dict[str, str] = {
 # Active surfaces that must comply
 _ACTIVE_SURFACES = {
     ".cursor/skills/structured-reasoning/SKILL.md",
-    ".cursor/workflows/author-gate-decision-gate.md",
+    ".claude/commands/author-gate-decision-gate.md",
     # Note: antipattern-author-gate.md is AUTHOR_GATE path, uses AG pipeline
 }
 
