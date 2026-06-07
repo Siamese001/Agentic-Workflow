@@ -3,7 +3,7 @@
 W4.1: Sealing stage that finalizes the manifest with evidence refs,
 card hashes, and source register for audit trail.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W4.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W4.1
 """
 
 from __future__ import annotations

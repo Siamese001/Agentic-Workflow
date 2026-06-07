@@ -47,9 +47,9 @@ if str(REPO_ROOT) not in sys.path:
 # Paths
 # ---------------------------------------------------------------------------
 AGENTIC_CORE_PATH = REPO_ROOT / "agentic_core"
-SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
-SCHEMA_PATH = REPO_ROOT / ".windsurf" / "schemas" / "CoreAdditionAuthorGateReceipt.schema.json"
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "core_addition_gate_violations.jsonl"
+SESSION_STATE = REPO_ROOT / "artifacts" / "cursor" / "session_state.json"
+SCHEMA_PATH = REPO_ROOT / ".cursor" / "schemas" / "CoreAdditionAuthorGateReceipt.schema.json"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "cursor" / "core_addition_gate_violations.jsonl"
 ARTIFACT_OUT = REPO_ROOT / "artifacts" / "ci" / "agentic_core_addition_gate.json"
 
 # ---------------------------------------------------------------------------
@@ -598,7 +598,7 @@ _ALLOWLIST_RE = [
     re.compile(r".*/artifacts/governance/.*"),
     re.compile(r".*/migration_receipts/.*"),
     re.compile(r".*/boundary_receipts/.*"),
-    re.compile(r".*\.windsurf/.*"),
+    re.compile(r".*\docs/archive/windsurf/legacy-tree/.*"),
     # Data/runtime files — non-code, cannot introduce apps_rg behavior
     re.compile(r".*/logs/.*"),  # Log files (JSON data)
     re.compile(r".*\.core_golden_seal$"),  # Runtime seal files

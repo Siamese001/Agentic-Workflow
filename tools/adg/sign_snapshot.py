@@ -1,6 +1,6 @@
 """Sign the canonical ADG snapshot with an in-toto SLSA-style attestation (W6).
 
-Plan: ``.windsurf/plans/three-bucket-gap-remediation-069806.md`` (W6).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-gap-remediation-069806.md`` (W6).
 
 This is the **supply-chain provenance** stage of the three-bucket ADG
 authority pipeline. After the snapshot at

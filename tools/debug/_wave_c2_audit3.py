@@ -10,7 +10,7 @@ NOISE = (
     "docs/reports/",
     "tools/archive/",
     "artifacts/",
-    ".windsurf/plans/",
+    "docs/archive/windsurf/legacy-tree/plans/",
     "archives/",
 )
 

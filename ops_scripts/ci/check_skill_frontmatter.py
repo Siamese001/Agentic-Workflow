@@ -16,7 +16,7 @@ Enforced invariants
    ``before ``, ``after ``, ``during ``).
 6. SKILL.md body (including frontmatter) <= 500 lines.
 7. No Windows-style path separators in SKILL.md content
-   (``scripts\\helper``, ``.windsurf\\skills``, etc.).
+   (``scripts\\helper``, ``docs/archive/windsurf/legacy-tree\\skills``, etc.).
 
 Exit 0: every skill conforms.
 Exit 1: one or more violations.
@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SKILLS_ROOT = REPO_ROOT / ".windsurf" / "skills"
+SKILLS_ROOT = REPO_ROOT / ".cursor" / "skills"
 
 NAME_MAX = 64
 DESC_MAX = 1024
@@ -56,7 +56,7 @@ WHEN_TRIGGER_PATTERNS = (
 # Exempt inline-code (``...``) and fenced code blocks — documentation often
 # *cites* forbidden path patterns as examples (e.g. noting ``C:\Users\...``
 # as a thing to detect), and those cites are not violations.
-WINDOWS_PATH_RE = re.compile(r"[A-Za-z]:\\[A-Za-z]|\.windsurf\\|scripts\\|ops_scripts\\")
+WINDOWS_PATH_RE = re.compile(r"[A-Za-z]:\\[A-Za-z]|\docs/archive/windsurf/legacy-tree\\|scripts\\|ops_scripts\\")
 _INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
 _FENCED_CODE_RE = re.compile(r"```.*?```", re.DOTALL)
 

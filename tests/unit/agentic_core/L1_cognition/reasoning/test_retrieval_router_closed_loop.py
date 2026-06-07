@@ -1,6 +1,6 @@
 """Closed-loop integration tests for L1/c0 RetrievalRouter (constitutional §29).
 
-Plan: .windsurf/plans/closed-loop-router-fleet-rollout-d8f2a3.md (W1.6)
+Plan: docs/archive/windsurf/legacy-tree/plans/closed-loop-router-fleet-rollout-d8f2a3.md (W1.6)
 
 Verifies the wiring through tools.ledgers.router_helper:
   - route() emits the §29 marker
@@ -38,8 +38,8 @@ def temp_ledger(tmp_path, monkeypatch):
     monkeypatch.setattr(writer_mod, "_WRITERS", {})
 
     repo_root = Path(__file__).resolve().parents[5]
-    base_sql = (repo_root / ".windsurf" / "schemas" / "ledger_base.schema.sql").read_text()
-    per_sql = (repo_root / ".windsurf" / "schemas" / "router_l1_c0_ledger.schema.sql").read_text()
+    base_sql = (repo_root / ".cursor" / "schemas" / "ledger_base.schema.sql").read_text()
+    per_sql = (repo_root / ".cursor" / "schemas" / "router_l1_c0_ledger.schema.sql").read_text()
     db_path = tmp_path / "router_l1_c0.sqlite"
     conn = sqlite3.connect(str(db_path))
     conn.executescript(base_sql)

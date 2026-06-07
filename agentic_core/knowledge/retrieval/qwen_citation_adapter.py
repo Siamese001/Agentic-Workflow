@@ -30,7 +30,7 @@ Design invariants
 * ``content_snippet`` is the first 200 chars of the chunk content, matching
   the Anthropic adapter convention.
 
-Plan ref: ``.windsurf/plans/qwen-adoption-waves-a7f3c2.md`` Wave G (F2).
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-adoption-waves-a7f3c2.md`` Wave G (F2).
 """
 
 from __future__ import annotations

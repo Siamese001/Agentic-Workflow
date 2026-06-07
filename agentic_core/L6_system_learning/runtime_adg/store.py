@@ -170,7 +170,7 @@ class FileBackedRuntimeADGStore:
     ) -> str:
         """Persist snapshot idempotently. Returns version_id.
 
-        Tier 1 guardrail (per `.windsurf/plans/runtime-adg-tier1-trace-binding-c9b84d.md`):
+        Tier 1 guardrail (per `docs/archive/windsurf/legacy-tree/plans/runtime-adg-tier1-trace-binding-c9b84d.md`):
 
           1. Empty `trace_id` is REJECTED by default. Use `allow_unbound=True`
              ONLY in back-fill/migration tooling that knows what it's doing.

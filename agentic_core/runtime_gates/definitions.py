@@ -4,7 +4,7 @@ Implements GateDefinition, GateVerdict, and JudgeVerdict dataclasses for the
 RuntimeGateEngine. Reuses Result/Severity/Disposition from L5 safety gates
 for consistency across the agentic_core runtime gate mesh.
 
-Spec reference: .windsurf/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W0.P1)
+Spec reference: docs/archive/windsurf/legacy-tree/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W0.P1)
 """
 
 from __future__ import annotations

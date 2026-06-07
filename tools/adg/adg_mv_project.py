@@ -14,7 +14,7 @@ Usage:
     python tools/adg/adg_mv_project.py --check   # exit 0=hot / 1=cold
     python tools/adg/adg_mv_project.py --sqlite <path>  # explicit snapshot path
 
-See .windsurf/plans/redis-mv-projections-9262a6.md for design & rationale.
+See docs/archive/windsurf/legacy-tree/plans/redis-mv-projections-9262a6.md for design & rationale.
 """
 
 from __future__ import annotations

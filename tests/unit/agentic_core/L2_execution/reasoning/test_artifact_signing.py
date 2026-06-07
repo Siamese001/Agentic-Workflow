@@ -285,7 +285,7 @@ class TestArtifactSerialization:
 
 # --------------------------------------------------------------------------
 # EQ-1 — idempotency nonce, manifest_hash, structured_slots, v1 shim.
-# Plan: .windsurf/plans/eq1-compiled-artifact-schema-d9a3e7.md
+# Plan: docs/archive/windsurf/legacy-tree/plans/eq1-compiled-artifact-schema-d9a3e7.md
 # ADR: docs/architecture/adr/ADR-PROMPT-ASSEMBLY-002-uncovered-best-practice-gaps.md §9
 # --------------------------------------------------------------------------
 

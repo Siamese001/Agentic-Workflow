@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.config.severity`.
 
-Wave 5 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L5 config
+Wave 5 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L5 config
 SSOT for severity bands. Used by ruff/ADG/legacy converters.
 """
 

@@ -15,7 +15,7 @@ Known route types (from docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md):
   R4_SINGLE_ACTION      — full spine with UWG optional write
   R3R4_managed_workflow — full spine with required UWG durable write
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D4.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D4.3
 """
 
 from __future__ import annotations

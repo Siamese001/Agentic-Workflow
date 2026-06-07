@@ -35,7 +35,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -146,7 +146,7 @@ def pick_winner(rows: list[dict]) -> tuple[dict, list[dict]]:
 
 def archive_page(page_id: str, reason: str, tok: str) -> tuple[bool, str]:
     """Soft-delete via PATCH archived=true. Plans schema lacks an Evidence
-    field, so the audit trail lives in artifacts/windsurf/triage_plans_duplicates.jsonl.
+    field, so the audit trail lives in artifacts/cursor/triage_plans_duplicates.jsonl.
     """
     url = f"{NOTION_BASE}/pages/{page_id}"
     body = {"archived": True}

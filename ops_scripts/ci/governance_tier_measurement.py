@@ -16,7 +16,7 @@ THRESHOLD_BYTES = 51_200
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CURSOR_RULES_DIR = REPO_ROOT / ".cursor" / "rules"
 AGENTS_MD = REPO_ROOT / "AGENTS.md"
-WINDSURF_RULES_DIR = REPO_ROOT / ".windsurf" / "rules"
+WINDSURF_RULES_DIR = REPO_ROOT / ".cursor" / "rules"
 INVENTORY_PATH = REPO_ROOT / "docs" / "reports" / "cursor" / "governance_tier_inventory.json"
 
 ALWAYS_APPLY_RE = re.compile(r"alwaysApply:\s*true", re.IGNORECASE)
@@ -150,7 +150,7 @@ def build_inventory(*, policy_option: str = "A", wave: str = "W0") -> dict:
         "explicit_non_claims": [
             "W1-W5 not executed",
             "no semantic rule consolidation performed",
-            ".windsurf not deleted",
+            "docs/archive/windsurf/legacy-tree not deleted",
             "runtime RAG not touched",
             "agentic_core untouched",
             "two-tier consolidation not complete",

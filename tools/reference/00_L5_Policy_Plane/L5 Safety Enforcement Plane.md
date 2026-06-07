@@ -208,7 +208,7 @@ Function: `get_canonical_test_path(source_file: str) -> str`
 **Root Protection**:
 
 Static protected files:
-- `.windsurfrules`
+- `.cursor/rules`
 - `pyproject.toml`
 - `pytest.ini`
 - `README.md`

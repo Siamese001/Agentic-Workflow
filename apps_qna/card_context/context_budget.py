@@ -3,7 +3,7 @@
 W3.4: Budget enforcement for domain card context assembly.
 Ensures card context stays within model context window limits.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W3.4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W3.4
 """
 
 from __future__ import annotations

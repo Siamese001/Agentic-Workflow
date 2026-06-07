@@ -21,7 +21,7 @@ Usage::
     python tools/retrieval/drop_repo_adg_graph.py          # dry-run
     python tools/retrieval/drop_repo_adg_graph.py --apply  # actually delete
 
-W5.2 of ``.windsurf/plans/chromadb-bge-retrieval-hardening-e9aa09.md``.
+W5.2 of ``docs/archive/windsurf/legacy-tree/plans/chromadb-bge-retrieval-hardening-e9aa09.md``.
 """
 
 from __future__ import annotations

@@ -17,7 +17,7 @@ Use-cases
   require citation spans MUST keep pass 1 on Anthropic. When Qwen pass 1
   is used, the orchestrator's citation extraction returns empty.
 
-Plan ref: ``.windsurf/plans/qwen-adoption-waves-a7f3c2.md`` Wave C.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-adoption-waves-a7f3c2.md`` Wave C.
 """
 
 from __future__ import annotations

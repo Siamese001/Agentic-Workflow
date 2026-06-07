@@ -1,6 +1,6 @@
 """G7 — cascade telemetry consumer tests.
 
-Plan ref: ``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md`` G7.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md`` G7.
 """
 
 from __future__ import annotations

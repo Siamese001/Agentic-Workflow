@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L3_orchestration.reasoning.UnifiedAgent`.
 
-Wave 4 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`. L3 orchestration core.
+Wave 4 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`. L3 orchestration core.
 The strategy registry that StructuralValidatorAgent and others delegate to.
 Replaces the prior empty-body stub.
 """

@@ -1,6 +1,6 @@
 """Contract tests for apps_exec exit-hook adoption.
 
-Plan: ``.windsurf/plans/apps-exec-research-exit-hook-adoption-a8d3c5.md`` W1.P3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-exec-research-exit-hook-adoption-a8d3c5.md`` W1.P3.
 
 Verifies the wiring landed by W1.P2:
 - `_load_cert_route_entry` parses `cert_route_registry.yaml` correctly.

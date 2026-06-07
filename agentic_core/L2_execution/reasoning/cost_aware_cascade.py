@@ -1,6 +1,6 @@
 """L2 R-CASC cost-aware escalation + provider fingerprint gate + Brier-by-provider.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W8.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W8.
 
 Closes opportunities 6.1 (cost-aware escalation replaces scalar 0.55), 6.2
 (provider fingerprint drift gate), 6.3 (Brier-by-provider for chronic

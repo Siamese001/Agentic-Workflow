@@ -9,7 +9,7 @@ Emits:    dict — FinalEvidenceContract-shaped dict from apps_qna.c0_adapter.ca
 The result is passed downstream to pa_fn(route, l1_plan, fec, validated).
 AppIngressRunner treats the fec as opaque — it is forwarded to pa_fn.
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
 """
 from __future__ import annotations
 

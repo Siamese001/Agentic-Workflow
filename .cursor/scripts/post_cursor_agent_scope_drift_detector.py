@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "scope_drift_violations.jsonl"
 PLAN_FRESHNESS_SEC = 24 * 3600
 

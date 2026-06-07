@@ -1,6 +1,6 @@
 """W1.3 Governance tests — 20 tests enforcing entrypoint purity and spine discipline.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W1.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W1.3
 """
 
 from __future__ import annotations

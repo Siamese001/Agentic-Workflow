@@ -3,7 +3,7 @@
 W4.1: Healing stage that fixes formatting issues in rendered cards.
 Must never invent facts, add content, or modify evidence.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W4.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W4.1
 """
 
 from __future__ import annotations

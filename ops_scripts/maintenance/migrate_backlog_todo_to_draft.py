@@ -1,6 +1,6 @@
 """One-shot: migrate Backlog Items Status=Todo -> Not Started (canonical taxonomy).
 
-Plan: .windsurf/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md (adjacent
+Plan: docs/archive/windsurf/legacy-tree/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md (adjacent
 cleanup). The canonical Backlog Items Status taxonomy (AGENTS.md "Plans DB
 Status Taxonomy" + "Shared taxonomy" note) is 7 options: In Progress, Not Started,
 Deferred, Waiting, Completed, Retired, Archived. `Todo` is a legacy drift that survived the

@@ -14,7 +14,7 @@ Surfaces:
 The adapter is fail-open — if the canonical clock import fails, it falls
 back to stdlib datetime. All provider calls are stubbed (no network I/O).
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D4.2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D4.2
 """
 
 from __future__ import annotations

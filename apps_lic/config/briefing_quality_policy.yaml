@@ -1,6 +1,6 @@
 # apps_lic Briefing Quality Policy
-# Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W3 D3-P1
-#       Updated: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W1 DS9-P1
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W3 D3-P1
+#       Updated: docs/archive/windsurf/legacy-tree/plans/apps-lic-calibration-holdout-e8f1c4.md W1 DS9-P1
 # Schema version: 1.1
 #
 # Controls BriefingQualityGate thresholds.

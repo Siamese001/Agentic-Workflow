@@ -28,7 +28,7 @@ Prompt architecture for apps_lic:
     user[2]:    USER_INTENT — evidence data: lead profile + sender + personalization
                               (C0_EVIDENCE_DATA_ONLY slot; data boundary enforced)
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W5)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W5)
 """
 from __future__ import annotations
 

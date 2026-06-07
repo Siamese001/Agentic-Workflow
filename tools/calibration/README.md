@@ -1,6 +1,6 @@
 # L0 Routing Calibration Harness (W0)
 
-Plan: `.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`
+Plan: `docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`
 
 Threshold-sweep harness for the five L0 routing paths:
 

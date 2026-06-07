@@ -7,7 +7,7 @@ from `apps_research/SVP_ENGINEERING_REVIEW.md`:
   - SourceEntry confidence enforces [0,1] across the full continuous range
     (when SourceEntry is exposed).
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
 """
 from __future__ import annotations
 

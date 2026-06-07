@@ -7,7 +7,7 @@ the Phase C 18-field trace row shape defined in
 Design references
 -----------------
 - Phase C plan: ``docs/plans/runtime_cert_phase_c_trace_collector_plan.md`` v2
-- Phase C.1 plan: ``.windsurf/plans/runtime-cert-c1-query-adapter-7e3f92.md``
+- Phase C.1 plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-c1-query-adapter-7e3f92.md``
 - Phase B.5 helpers: ``tools/runtime_cert/negative_controls.py``
 - Snapshot types: ``system_learning/runtime_adg/snapshot.py``
 

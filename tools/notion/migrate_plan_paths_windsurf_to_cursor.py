@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Migrate Notion plan file paths from .windsurf/plans to .cursor/plans.
+"""Migrate Notion plan file paths from docs/archive/windsurf/legacy-tree/plans to .cursor/plans.
 
 W5.D1 deferred scope for windsurf-gha-cutover-d9f2a7.
 
@@ -100,8 +100,8 @@ def _resolve_cursor_plan_path(raw: str) -> str | None:
     if not raw or not raw.strip():
         return None
     text = raw.strip().replace("\\", "/")
-    if ".windsurf/plans/" in text:
-        text = text.replace(".windsurf/plans/", ".cursor/plans/")
+    if "docs/archive/windsurf/legacy-tree/plans/" in text:
+        text = text.replace("docs/archive/windsurf/legacy-tree/plans/", ".cursor/plans/")
     elif text.startswith(".cursor/plans/"):
         pass
     elif "/" not in text:
@@ -126,18 +126,18 @@ def _resolve_cursor_plan_path(raw: str) -> str | None:
     for candidate in (REPO_ROOT / ".cursor/plans").rglob(f"{base}*.md"):
         if candidate.is_file():
             return candidate.relative_to(REPO_ROOT).as_posix()
-    # Legacy: copy from .windsurf/plans into cursor archive (execute mode only via caller)
+    # Legacy: copy from docs/archive/windsurf/legacy-tree/plans into cursor archive (execute mode only via caller)
     return None
 
 
 def _ensure_cursor_copy_from_windsurf(filename: str, *, execute: bool) -> str | None:
-    """If plan exists only under .windsurf/plans, copy to .cursor/plans/_archive/windsurf_legacy/."""
+    """If plan exists only under docs/archive/windsurf/legacy-tree/plans, copy to .cursor/plans/_archive/windsurf_legacy/."""
     name = Path(filename).name
     if not name.endswith(".md"):
         name = f"{name}.md"
-    ws = REPO_ROOT / ".windsurf" / "plans" / name
+    ws = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / name
     if not ws.is_file():
-        for c in (REPO_ROOT / ".windsurf" / "plans").rglob(f"{Path(name).stem}*.md"):
+        for c in (REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans").rglob(f"{Path(name).stem}*.md"):
             if c.is_file():
                 ws = c
                 break
@@ -176,7 +176,7 @@ def migrate_plans_db(tok: str, dry_run: bool, *, execute: bool) -> dict[str, int
         tok,
         filter_={
             "or": [
-                {"property": "Plan File Path", "rich_text": {"contains": ".windsurf/plans"}},
+                {"property": "Plan File Path", "rich_text": {"contains": "docs/archive/windsurf/legacy-tree/plans"}},
                 {"property": "Plan File Path", "rich_text": {"contains": "windsurf/plans"}},
             ]
         },
@@ -221,7 +221,7 @@ def migrate_wave_phase(tok: str, dry_run: bool, *, execute: bool) -> dict[str, i
         if not current:
             skipped += 1
             continue
-        if ".windsurf/" in current:
+        if "docs/archive/windsurf/legacy-tree/" in current:
             new_val = _resolve_cursor_plan_path(current)
         elif current.endswith(".md"):
             new_val = _resolve_cursor_plan_path(current)
@@ -235,7 +235,7 @@ def migrate_wave_phase(tok: str, dry_run: bool, *, execute: bool) -> dict[str, i
             continue
         # Wave/Phase stores filename only in many rows
         new_file = Path(new_val).name
-        if new_file == current and ".windsurf" not in current:
+        if new_file == current and "docs/archive/windsurf/legacy-tree" not in current:
             skipped += 1
             continue
         try:

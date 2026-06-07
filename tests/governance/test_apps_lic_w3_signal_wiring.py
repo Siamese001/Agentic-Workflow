@@ -1,6 +1,6 @@
 """apps_lic calibration-holdout W3 — signal engine wiring tests.
 
-Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-calibration-holdout-e8f1c4.md W3
 Covers DS2-P1 (5 signal engines wired into managed_workflow_dispatcher)
 and DS8-P1 (uwg_submit injectable on CampaignBatchOrchestrator).
 

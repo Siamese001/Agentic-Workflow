@@ -17,7 +17,7 @@ DB = Path(r"artifacts/adg/adg_indexed_04232026_0925.sqlite")
 
 
 ENTRY_POINT_PREFIXES = (
-    ".windsurf/scripts/",
+    ".cursor/scripts/_legacy_windsurf/",
     "ops_scripts/ci/",
     "ops_scripts/dev_tools/",
     "ops_scripts/enforcement/",

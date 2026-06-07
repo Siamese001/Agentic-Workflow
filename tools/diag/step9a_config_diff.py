@@ -15,7 +15,7 @@ def load_json_lenient(path: str) -> dict:
 
 
 global_path = r"C:\Users\amita\.codeium\windsurf\mcp_config.json"
-repo_path = r".windsurf\mcp_config.json"
+repo_path = r".cursor\mcp.json"
 
 g = load_json_lenient(global_path)
 r = load_json_lenient(repo_path)

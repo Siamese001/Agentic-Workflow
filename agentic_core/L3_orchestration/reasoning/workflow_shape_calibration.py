@@ -1,6 +1,6 @@
 """L3 workflow-shape calibration — per-task-class loop iter + oscillation.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W7.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W7.
 
 Closes opportunities 5.1 (per-task-class loop-iteration learner replacing
 the global ``r_loop_max_iterations=3``), 5.3 (cascade off-ramp metric), and

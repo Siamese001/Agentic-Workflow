@@ -21,7 +21,7 @@ Three sub-probes (run all three unless --probe is specified):
     select value returned None via _select_name (structurally broken cell,
     mid-migration multi_select→select survivor):
       * Write `L_MIXED` for Layer / `None` for Surface unconditionally.
-      * Log the 16 page IDs to artifacts/windsurf/w3_layer_surface_fixes.jsonl.
+      * Log the 16 page IDs to artifacts/cursor/w3_layer_surface_fixes.jsonl.
 
 Idempotent per field: only writes if the target field is currently empty
 (or structurally broken for probe3).
@@ -48,7 +48,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,

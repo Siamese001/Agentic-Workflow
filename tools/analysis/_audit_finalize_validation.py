@@ -68,7 +68,7 @@ validated = {
         "validated_count": 21,
         "validation_method": "direct evidence-pattern match in violations table",
         "false_positive_rate": "0%",
-        "verdict": "CONFIRMED REAL — all 21 are NOTION literals in .windsurf/scripts/",
+        "verdict": "CONFIRMED REAL — all 21 are NOTION literals in .cursor/scripts/_legacy_windsurf/",
         "breakdown": {
             "NOTION_API_VERSION (literal '2025-09-03')": 10,
             "NOTION_BASE (literal URL)": 3,
@@ -77,7 +77,7 @@ validated = {
             "_PAGE_ID variants": 2,
         },
         "actionable_priority": "P2",
-        "remediation_pattern": "Create `.windsurf/scripts/_notion_constants.py` SSOT module + update all 21 references",
+        "remediation_pattern": "Create `.cursor/scripts/_legacy_windsurf/_notion_constants.py` SSOT module + update all 21 references",
     },
     "11_provider_egress_concentration": {
         "raw_count": 78,

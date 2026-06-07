@@ -9,7 +9,7 @@ Verifies:
   - Invalid input rejected (empty kind, non-string).
 
 ADR: docs/architecture/adr/ADR-075-split-runtime-telemetry-from-adg-edges.md
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W4.2)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W4.2)
 """
 from __future__ import annotations
 

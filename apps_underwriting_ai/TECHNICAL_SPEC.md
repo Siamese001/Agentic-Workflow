@@ -222,5 +222,5 @@ Real OTEL wiring is layered on top by the `bootstrap_runtime` pattern from sibli
 - `config/hop_pipeline.py` — pipeline topology
 - `apps_shared/orchestration/` — `HopRegistry`, `HopStageSpec`, `HopPipelineExecutor`, `Checkpoint`, `HopRunRecord`
 - `agentic_core/runtime/contracts/lifecycle_trace_contract.py` — telemetry primitives
-- Plan: `.windsurf/plans/apps-completeness-remediation-907fac.md` (skeleton build, completed 2026-05-02)
-- Follow-up plan: `.windsurf/plans/apps-completeness-followups-287d2a.md` (this doc, contract tests, etc.)
+- Plan: `docs/archive/windsurf/legacy-tree/plans/apps-completeness-remediation-907fac.md` (skeleton build, completed 2026-05-02)
+- Follow-up plan: `docs/archive/windsurf/legacy-tree/plans/apps-completeness-followups-287d2a.md` (this doc, contract tests, etc.)

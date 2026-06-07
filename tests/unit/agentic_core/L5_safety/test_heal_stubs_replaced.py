@@ -1,6 +1,6 @@
 """Tests verifying W3 stub heal() replacements return valid HealResult dicts.
 
-Plan: .windsurf/plans/l2-execute-v2-agent-conformance-c8e4f1.md §W3.
+Plan: docs/archive/windsurf/legacy-tree/plans/l2-execute-v2-agent-conformance-c8e4f1.md §W3.
 Replaces: NotImplementedError + stub `{"status": "skipped"}` dicts.
 """
 

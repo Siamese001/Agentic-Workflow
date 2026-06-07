@@ -8,7 +8,7 @@ llm_judge_graders roster, and vice versa.
 This module is purely analytical — it reads the YAML configs and returns
 a typed migration report. It does NOT mutate any files.
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D3.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D3.3
 """
 
 from __future__ import annotations

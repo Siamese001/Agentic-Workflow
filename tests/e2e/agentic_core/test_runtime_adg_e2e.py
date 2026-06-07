@@ -22,7 +22,7 @@ ROBUSTNESS_MATRIX:
 | test_pattern_extraction_accuracy | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | test_evolution_log_integrity | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-Reference: system_learning/runtime_adg/, .windsurfrules §1 Testing & Evidence
+Reference: system_learning/runtime_adg/, .cursor/rules §1 Testing & Evidence
 """
 
 from __future__ import annotations

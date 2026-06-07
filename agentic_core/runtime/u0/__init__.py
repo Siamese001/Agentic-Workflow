@@ -6,7 +6,7 @@ contracts. Per Author-Gate AG-1.d, apps_rg's ingress is the
 Pointer through the field-map SSOT and emits an
 ``AppsRgU0ReflectionReceipt`` proving every input field is accounted for.
 
-Plan: .windsurf/plans/apps-rg-u0-reflection-harness-79d032.md
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-u0-reflection-harness-79d032.md
 """
 from __future__ import annotations
 

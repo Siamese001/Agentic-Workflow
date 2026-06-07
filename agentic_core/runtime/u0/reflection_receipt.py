@@ -14,7 +14,7 @@ A receipt with ``pass_status=True`` requires:
 A receipt with ``pass_status=False`` MUST never accompany a returned
 ``ValidatedRequest`` — the adapter raises ``AppsRgU0ReflectionFailure`` instead.
 
-Plan: .windsurf/plans/apps-rg-u0-reflection-harness-79d032.md (W2.P2.2)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-u0-reflection-harness-79d032.md (W2.P2.2)
 """
 from __future__ import annotations
 

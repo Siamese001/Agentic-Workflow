@@ -1,6 +1,6 @@
 """Contract tests for apps_lic FEC producer.
 
-Plan: .windsurf/plans/dom007-fec-producers-followup-e9f3c1.md W2.P1.
+Plan: docs/archive/windsurf/legacy-tree/plans/dom007-fec-producers-followup-e9f3c1.md W2.P1.
 """
 
 from __future__ import annotations

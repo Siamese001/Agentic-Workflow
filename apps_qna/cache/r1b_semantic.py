@@ -4,7 +4,7 @@ W4.3: Semantic similarity cache that provides advisory suggestions only.
 Must never silently return a result as authoritative. Always marked
 as advisory with confidence score.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W4.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W4.3
 """
 
 from __future__ import annotations

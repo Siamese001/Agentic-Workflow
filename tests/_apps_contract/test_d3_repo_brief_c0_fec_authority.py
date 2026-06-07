@@ -9,7 +9,7 @@ Covers §20.2 gates:
 Deferred scope item closed:
   DS-1  C0 authoritative FEC binding (highest priority)
 
-Plan: .windsurf/plans/apps-repo-brief-plan3-deferred-scope-b9e4c1.md D3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-repo-brief-plan3-deferred-scope-b9e4c1.md D3
 """
 
 from __future__ import annotations

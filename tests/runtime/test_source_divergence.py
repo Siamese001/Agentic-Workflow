@@ -1,6 +1,6 @@
 """Tests — Source divergence (RTC-REQ-032).
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``
 
 Coverage
 --------

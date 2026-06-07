@@ -1,7 +1,7 @@
 """Tests for deterministic ADG artifact digest.
 
 Tier: unit
-Plan: .windsurf/plans/three-bucket-otel-view-5db409.md (W7.3)
+Plan: docs/archive/windsurf/legacy-tree/plans/three-bucket-otel-view-5db409.md (W7.3)
 
 Per ADR-074 and the three-bucket authority model, ADG_CERTIFIED requires
 that two snapshot generations of the same source produce byte-identical

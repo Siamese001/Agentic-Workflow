@@ -1,6 +1,6 @@
 """C0 retrieval-mode bandit + adaptive-k + citation-coverage metric.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W6.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W6.
 
 Closes opportunities 3.1 (mode bandit per query class), 3.2 (adaptive k_max
 via marginal utility), and 3.4 (citation-anchor coverage metric) from the

@@ -2,7 +2,7 @@
 """
 recover_deferred_scope_pendings.py — retry unresolved DEFERRED_SCOPE auto-posts.
 
-Scans `artifacts/windsurf/deferred_scope_capture.jsonl` for entries with
+Scans `artifacts/cursor/deferred_scope_capture.jsonl` for entries with
 `kind` in `pending_no_token`, `post_http_error`, `post_transport_error`,
 `post_decode_error` that have NOT been superseded by a later `auto_posted`
 or `confirmed_by_receipt` for the same (plan, wave, phase) key. Attempts
@@ -40,7 +40,7 @@ CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "deferred_scope_capture.jso
 
 import sys as _sys
 
-_sys.path.insert(0, str(Path(REPO_ROOT) / ".windsurf" / "scripts"))
+_sys.path.insert(0, str(Path(REPO_ROOT) / ".cursor" / "scripts" / "_legacy_windsurf"))
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
     NOTION_HTTP_TIMEOUT_S,

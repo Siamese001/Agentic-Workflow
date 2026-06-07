@@ -2,7 +2,7 @@
 
 These tests codify the governance gap surfaced by the cheat-proof audit of
 ``python -m apps_rg`` on 2026-05-01 (see audit conversation; see
-``.windsurf/plans/apps-rg-governed-runtime-b8d4f1.md``).
+``docs/archive/windsurf/legacy-tree/plans/apps-rg-governed-runtime-b8d4f1.md``).
 
 Every test in this directory is currently expected to FAIL because the
 governance plumbing for the R3 grounded-read path does not exist yet. Each

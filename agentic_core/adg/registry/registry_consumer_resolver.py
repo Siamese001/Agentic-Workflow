@@ -30,7 +30,7 @@ Three resolvers ship in this module:
 Each returns a list of `ConsumerEdge` records. The lift script writes them
 in pairs (static + registry) so the gap classifier sees them in both buckets.
 
-Plan: ``.windsurf/plans/three-bucket-gap-remediation-069806.md`` (W1.future).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-gap-remediation-069806.md`` (W1.future).
 """
 
 from __future__ import annotations
@@ -140,7 +140,7 @@ def resolve_mcp_consumer_edges() -> list[ConsumerEdge]:
     server (the consumer doesn't statically pin a single server name, but
     it has read access to the entire registry).
     """
-    config_path = REPO_ROOT / ".windsurf" / "mcp_config.json"
+    config_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
     if not config_path.exists():
         return []
     try:
@@ -167,7 +167,7 @@ def resolve_mcp_consumer_edges() -> list[ConsumerEdge]:
         hits = _scan_files(REPO_ROOT, pattern)
         anchor = f"Registry::MCP::{name}"
         for rel_path, line_nos in hits.items():
-            if rel_path == ".windsurf/mcp_config.json":
+            if rel_path == ".cursor/mcp.json":
                 continue  # the registry source itself is not a consumer
             consumer_module = _module_adg_name(rel_path)
             key = (consumer_module, anchor)

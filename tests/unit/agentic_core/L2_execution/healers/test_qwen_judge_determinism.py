@@ -1,6 +1,6 @@
 """Determinism smoke test for QwenJudgeGateway (Wave 1 P1.4).
 
-Plan: .windsurf/plans/apps-eval-qwen32b-rollout-b7c4d9.md
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-eval-qwen32b-rollout-b7c4d9.md
 
 Scope
 -----

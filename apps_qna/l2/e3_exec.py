@@ -3,7 +3,7 @@
 W0 thin-slice: minimal execution that returns a two-tier card list.
 Full implementation lands in W3.2-W3.4 with real template rendering.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W0.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W0.3
 """
 
 from __future__ import annotations

@@ -17,7 +17,7 @@ Forbidden in this module:
 - Direct L4 write APIs or any durable state mutation
 - Fallback draft generation
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P13
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P13
 """
 
 from __future__ import annotations

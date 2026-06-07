@@ -2,7 +2,7 @@
 #
 # Maps each X1 gate to the rubric version the production exit_eval factory should
 # load. Created 2026-04-25 per runtime-gate-promotion-followup follow-up to
-# .windsurf/plans/runtime-gate-coverage-hardening-7e3f1a.md.
+# docs/archive/windsurf/legacy-tree/plans/runtime-gate-coverage-hardening-7e3f1a.md.
 #
 # v2 graduates to default for X1D and X1F because:
 #   - X1D@v2 promotes `groundedness` to a hard veto sub-gate (G5 closure).

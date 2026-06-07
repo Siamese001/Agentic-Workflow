@@ -1,11 +1,11 @@
 """Shared loader for the canonical Author-Gate packet schema.
 
 Single source of truth used by:
-  - .windsurf/skills/author-gate-packet-builder/emit_packet.py (validate before emit)
-  - .windsurf/scripts/post_cursor_agent_author_gate_schema_audit.py (validate captured)
-  - .windsurf/scripts/post_cursor_agent_author_gate_ui_audit.py (read routing enum)
-  - .windsurf/scripts/post_cursor_agent_author_gate_miss_detector.py (presence check)
-  - .windsurf/scripts/post_cursor_agent_ask_user_question_packet_audit.py (vacuum closure)
+  - .cursor/skills/author-gate-packet-builder/emit_packet.py (validate before emit)
+  - .cursor/scripts/post_cursor_agent_author_gate_schema_audit.py (validate captured)
+  - .cursor/scripts/post_cursor_agent_author_gate_ui_audit.py (read routing enum)
+  - .cursor/scripts/post_cursor_agent_author_gate_miss_detector.py (presence check)
+  - .cursor/scripts/post_cursor_agent_ask_user_question_packet_audit.py (vacuum closure)
 
 Plan: author-gate-ssot-consolidation-b7c3e1 (W1.2 / W3 shared loader).
 
@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCHEMA_PATH = REPO_ROOT / ".windsurf" / "schemas" / "author_gate_packet.schema.json"
+SCHEMA_PATH = REPO_ROOT / ".cursor" / "schemas" / "author_gate_packet.schema.json"
 
 
 @lru_cache(maxsize=1)

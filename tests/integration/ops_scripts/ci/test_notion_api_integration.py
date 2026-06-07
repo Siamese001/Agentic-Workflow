@@ -222,12 +222,12 @@ class TestMCPSchemaGateIntegration:
 
     def test_mcp_config_file_exists(self) -> None:
         """Verify mcp_config.json exists on disk."""
-        config_path = REPO_ROOT / ".windsurf" / "mcp_config.json"
+        config_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
         assert config_path.exists(), f"mcp_config.json not found at {config_path}"
 
     def test_mcp_config_is_valid_json(self) -> None:
         """Verify mcp_config.json is parseable JSON."""
-        config_path = REPO_ROOT / ".windsurf" / "mcp_config.json"
+        config_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
         content = config_path.read_text(encoding="utf-8")
         data = json.loads(content)
         assert "mcpServers" in data, "mcpServers key not found"
@@ -239,7 +239,7 @@ class TestDeferredScopeGateIntegration:
 
     def test_deferred_scope_markers_exist_in_plans(self) -> None:
         """Sample check for DEFERRED_SCOPE markers in plan files."""
-        plans_dir = REPO_ROOT / ".windsurf" / "plans"
+        plans_dir = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
         assert plans_dir.exists(), "Plans directory not found"
 
         plan_files = list(plans_dir.glob("*.md"))

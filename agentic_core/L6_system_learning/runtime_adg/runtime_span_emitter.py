@@ -1,6 +1,6 @@
 """Runtime ADG Tier 2 span emitters.
 
-Plan: `.windsurf/plans/runtime-adg-tier2-emit-sites-b3e9a7.md`
+Plan: `docs/archive/windsurf/legacy-tree/plans/runtime-adg-tier2-emit-sites-b3e9a7.md`
 Doctrine: `docs/reference/Runtime ADG and OTEL Spans.md`
 
 Provides three emission helpers that close the 3 Tier 1 emit-site gaps

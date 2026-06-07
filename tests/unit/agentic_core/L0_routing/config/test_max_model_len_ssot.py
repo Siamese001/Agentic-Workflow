@@ -1,6 +1,6 @@
 """Wave 2 — token-budget SSOT reconciliation tests.
 
-Plan ref: ``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 2.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 2.
 
 Verifies:
   - ``QWEN_LOCAL_MAX_MODEL_LEN`` is exported and equals the env-var override

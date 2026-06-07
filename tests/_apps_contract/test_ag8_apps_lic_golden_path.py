@@ -40,7 +40,7 @@ Required assertion map (per W8 spec):
   A25 no embedding generation
   A26 AG-8-FU1 is documented as follow-up, not silently hidden
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W8)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W8)
 """
 from __future__ import annotations
 

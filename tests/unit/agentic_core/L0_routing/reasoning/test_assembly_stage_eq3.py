@@ -1,6 +1,6 @@
 """EQ-3 — AirlockAssembler.assemble_from_bom E0/M0/H0 + structured_slots wiring.
 
-Plan: ``.windsurf/plans/eq1-compiled-artifact-schema-d9a3e7.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/eq1-compiled-artifact-schema-d9a3e7.md``
 ADR:  ADR-PROMPT-ASSEMBLY-001 Q1 (slot extension)
 
 Covers:

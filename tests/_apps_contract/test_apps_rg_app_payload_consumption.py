@@ -13,7 +13,7 @@ THIS suite proves CONSUMPTION:
       slot_lineage_map + component_hash_map + replay_manifest_ref
     - C0 + PA never reach back to envelope.payload / AppsRgIngressPayload
 
-Plan: .windsurf/plans/apps-rg-app-payload-consumption-wiring-b3a449.md (W5)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-app-payload-consumption-wiring-b3a449.md (W5)
 """
 from __future__ import annotations
 

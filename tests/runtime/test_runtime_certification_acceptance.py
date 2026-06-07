@@ -1,6 +1,6 @@
 """Tests — Acceptance legality + composition non-promotion (RTC-REQ-004, 005, 111, 127).
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``
 
 Coverage
 --------

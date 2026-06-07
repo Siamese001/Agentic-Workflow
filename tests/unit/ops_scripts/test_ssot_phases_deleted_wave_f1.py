@@ -11,8 +11,8 @@ The file was 1635 lines of dead code. The planned "migration to L2 healers"
 (parent plan P3.FUTURE) collapsed to a pure deletion because nothing needed
 to be ported.
 
-Plan reference: `.windsurf/plans/routing-followups-7a2c91.md` Wave F1.
-Parent plan: `.windsurf/plans/routing-unification-qwen-abe735.md` P3.FUTURE.
+Plan reference: `docs/archive/windsurf/legacy-tree/plans/routing-followups-7a2c91.md` Wave F1.
+Parent plan: `docs/archive/windsurf/legacy-tree/plans/routing-unification-qwen-abe735.md` P3.FUTURE.
 """
 
 from __future__ import annotations

@@ -13,7 +13,7 @@ Provides a deterministic log analysis pipeline for apps_qna run logs:
 All operations are deterministic and pure — no I/O, no side effects.
 The caller is responsible for feeding log dicts and persisting output.
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D3.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D3.1
 """
 
 from __future__ import annotations

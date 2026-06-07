@@ -2,7 +2,7 @@
 G13 — Data Perimeter SAIF Sanitization.
 
 Per ADR-070 L5 Guardrail Family Catalog (2026-04-29).
-Phase: W4 P8 W4/P8.13 — `.windsurf/plans/w4-p8-guardrail-family-e93f8a.md`
+Phase: W4 P8 W4/P8.13 — `docs/archive/windsurf/legacy-tree/plans/w4-p8-guardrail-family-e93f8a.md`
 
 # guardian: allow-empty-skeleton -- ADR-070 introduces G13 as a NEW concern
 # with no pre-existing modules. This file establishes the contract surface.

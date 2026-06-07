@@ -27,7 +27,7 @@ Reference:
   - docs/reference/00_L5_Policy_Plane/capability_token.schema.md
   - docs/reference/00_L5_Policy_Plane/risk_tier_bands.md
   - docs/contracts/identity_propagation.md
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 ADR: ADR-049 §7 (§7.3 ratified: full principal_chain from day one)
 """
 

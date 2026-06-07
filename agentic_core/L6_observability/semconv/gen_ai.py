@@ -16,7 +16,7 @@ OTel backend (Jaeger, Tempo, SigNoz, OpenAI Traces, etc.) and so the
 ``check_otel_genai_semconv_coverage.py`` CI gate has stable invariants to
 assert against.
 
-Plan: ``.windsurf/plans/three-bucket-otel-view-5db409.md`` (W3).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-otel-view-5db409.md`` (W3).
 
 USAGE
 =====

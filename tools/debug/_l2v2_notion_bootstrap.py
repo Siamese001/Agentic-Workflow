@@ -145,7 +145,7 @@ def create_plans_row(headers: dict[str, str]) -> str:
         "properties": {
             "Slug": {"title": _title(PLAN_SLUG)},
             "Status": {"select": {"name": "Not Started"}},
-            "Plan File Path": {"rich_text": _rt(f".windsurf/plans/{PLAN_FILENAME}")},
+            "Plan File Path": {"rich_text": _rt(f"docs/archive/windsurf/legacy-tree/plans/{PLAN_FILENAME}")},
             "Exists On Disk": {"checkbox": True},
             "Summary": {
                 "rich_text": _rt(

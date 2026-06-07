@@ -1,4 +1,4 @@
-"""Unit tests for `.windsurf/scripts/_post_handlers/token_telemetry.py`."""
+"""Unit tests for `.cursor/scripts/_legacy_windsurf/_post_handlers/token_telemetry.py`."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HANDLERS_DIR = REPO_ROOT / ".windsurf" / "scripts"
+HANDLERS_DIR = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(HANDLERS_DIR))
 
 from _post_handlers import token_telemetry  # noqa: E402

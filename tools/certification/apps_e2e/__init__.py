@@ -12,7 +12,7 @@ a single declarative harness that:
 Apps remain overlays. The harness reads spine artifacts; it never executes
 spine work itself.
 
-Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-e2e-auditability-harness-7c2a91.md
 """
 from __future__ import annotations
 

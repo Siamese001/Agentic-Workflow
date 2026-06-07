@@ -1,6 +1,6 @@
 """Wave C2 tests — CONSENSUS_JURORS SSOT registry.
 
-Plan: `.windsurf/plans/consensus-validator-unification-5e9f3a.md` Wave C2.
+Plan: `docs/archive/windsurf/legacy-tree/plans/consensus-validator-unification-5e9f3a.md` Wave C2.
 """
 
 from __future__ import annotations

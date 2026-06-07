@@ -1,6 +1,6 @@
 """apps_lic W6 (D5) — A/B variant framework sentinel tests.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W6 D5-P1, D5-P2, D5-P3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W6 D5-P1, D5-P2, D5-P3
 
 Coverage:
   D5-P1 ABVariantEngine:

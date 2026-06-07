@@ -15,7 +15,7 @@ callers drive the same 3 stages declaratively via the standard
 per-stage checkpointing.
 
 Route: R3_SIMPLE_GROUNDED_READ (SIMPLE=no L3, GROUNDED=C0 required, READ=informational)
-Plan: .windsurf/plans/apps-hop-substrate-four-apps-b4a2c9.md (Wave 1)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-hop-substrate-four-apps-b4a2c9.md (Wave 1)
 """
 
 from __future__ import annotations

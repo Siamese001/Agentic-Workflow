@@ -12,7 +12,7 @@ lets future callers drive the same 5 stages via the standard
 during incident healing, or to compose apps_underwriting_ai as a
 sub-pipeline inside a larger workflow.
 
-Plan: .windsurf/plans/apps-hop-substrate-f7751b.md (Wave 4.1)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-hop-substrate-f7751b.md (Wave 4.1)
 """
 
 from __future__ import annotations

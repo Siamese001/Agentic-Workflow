@@ -1,6 +1,6 @@
 """W2 verification — LLM-judge stub importability + STUB marker.
 
-Plan: ``.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md`` W2.P1-P5.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-deferred-e4a1b7.md`` W2.P1-P5.
 
 Proves:
 

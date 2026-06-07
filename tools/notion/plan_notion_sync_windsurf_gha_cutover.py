@@ -19,7 +19,7 @@ SUMMARY = (
     "COMPLETED (2026-05-23): Windsurf GHA cutover + deferred scope implemented. "
     "Removed _deleted/ workflows; migrated CI/workflows to .cursor/ SSOT; Notion plan paths "
     "403+24 patched; artifact dual-write; mirror health + deletion readiness gates. "
-    "Full .windsurf/ tree deletion assessed NOT SAFE (mirror required). "
+    "Full docs/archive/windsurf/legacy-tree/ tree deletion assessed NOT SAFE (mirror required). "
     "Closeout: docs/reports/cursor/windsurf_gha_deferred_scope_closeout.md"
 )
 
@@ -30,8 +30,8 @@ AI_SUMMARY = """- Tier: T3 governance / CI
 - W3: PLANS_DIR → .cursor/plans in drift + plan registration gates
 - W4: Author-Gate schemas/scripts/state SSOT under .cursor/
 - W5: docs/reports/cursor/windsurf_gha_cutover_closeout.md
-- Keep: check_windsurf_config_schema.py until .windsurf/hooks.json retired
-- Out of scope: delete entire .windsurf/ tree
+- Keep: check_windsurf_config_schema.py until .cursor/hooks.json retired
+- Out of scope: delete entire docs/archive/windsurf/legacy-tree/ tree
 - Disk SSOT: .cursor/plans/windsurf-gha-cutover-d9f2a7.md"""
 
 

@@ -119,14 +119,14 @@ def load_tool_registry_from_mcp_config(
 
     Args:
         config_path: Path to ``mcp_config.json``.  Defaults to the
-            repo-local ``.windsurf/mcp_config.json``.
+            repo-local ``.cursor/mcp.json``.
 
     Returns:
         List of ``ToolDefinition`` objects, one per server (coarse-grained
         until per-tool metadata is available in the config).
     """
     if config_path is None:
-        config_path = Path(__file__).resolve().parents[4] / ".windsurf" / "mcp_config.json"
+        config_path = Path(__file__).resolve().parents[4] / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
     config_path = Path(config_path)
 
     tools: list[ToolDefinition] = []

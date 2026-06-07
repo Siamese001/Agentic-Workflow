@@ -2,7 +2,7 @@
 G11 — Continuous Red-Team Assurance Plane.
 
 Per ADR-070 L5 Guardrail Family Catalog (2026-04-29).
-Phase: W4 P8 W6/P8.11 — `.windsurf/plans/w4-p8-guardrail-family-e93f8a.md`
+Phase: W4 P8 W6/P8.11 — `docs/archive/windsurf/legacy-tree/plans/w4-p8-guardrail-family-e93f8a.md`
 
 Existing L5 has red-team *agents* (`AdversarialRedTeamerAgent`, `RedTeamAgent`)
 — they generate adversarial inputs. What was missing is an **orchestrator**

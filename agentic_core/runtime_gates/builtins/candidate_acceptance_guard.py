@@ -4,7 +4,7 @@ Ensures that rejected candidates (accepted=False from PER-CAND gates) are
 NEVER written to resume_data. This is the core write-boundary guard that
 prevents the exec_summary RCA bug: winner written despite accepted=False.
 
-Spec reference: .windsurf/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W1.P1)
+Spec reference: docs/archive/windsurf/legacy-tree/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W1.P1)
 """
 
 from __future__ import annotations

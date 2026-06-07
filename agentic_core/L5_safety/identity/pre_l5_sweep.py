@@ -42,7 +42,7 @@ Reference:
   - data_authority_loader.py (Wave-J)
   - principal_verifier.py (Wave W4)
   - runtime_entry.py (Wave G+H — next consumer)
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 Ref: ADR-049, G-04 (identity propagation), G-13 (data authority)
 """
 

@@ -1,6 +1,6 @@
 """Outcome backfill API for the unified ``decision_events`` table.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W2.
 
 GAP-2: ``outcome_success`` is currently nullable. In practice ~all rows are NULL
 because nothing forces Exit Eval to populate it after sealing. This starves the

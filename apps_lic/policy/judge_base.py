@@ -18,7 +18,7 @@ The deterministic-backend mode (default) ships today. The LLM-backend
 mode is a leaf swap-in: replace `evaluate` with a callable that wraps
 an LLM call. The integration surface inside each HOP does not change.
 
-See `.windsurf/plans/judge-base-and-four-judges-c5e1f3.md` for the
+See `docs/archive/windsurf/legacy-tree/plans/judge-base-and-four-judges-c5e1f3.md` for the
 seven architectural decisions that shape this module (D1-D7).
 """
 from __future__ import annotations

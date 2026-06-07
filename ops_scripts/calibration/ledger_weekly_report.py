@@ -227,7 +227,7 @@ def _render_report(now: datetime) -> str:
         "",
         f"Generated: {now.isoformat(timespec='seconds')}  ",
         f"Ledgers reported: {len(LEDGER_REGISTRY)}  ",
-        "Plan: `.windsurf/plans/intelligence-ledgers-ten-a7c3e2.md`",
+        "Plan: `docs/archive/windsurf/legacy-tree/plans/intelligence-ledgers-ten-a7c3e2.md`",
         "",
     ]
 

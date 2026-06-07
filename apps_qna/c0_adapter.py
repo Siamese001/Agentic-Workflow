@@ -19,7 +19,7 @@ The adapter MUST:
 - Handle C0 errors fail-closed (→ SAFE_ABSTAIN)
 - Never transform evidence or invent facts
 
-Plan: .windsurf/plans/bge-m3-gap-closure-c8f3a2.md W1
+Plan: docs/archive/windsurf/legacy-tree/plans/bge-m3-gap-closure-c8f3a2.md W1
 """
 
 from __future__ import annotations

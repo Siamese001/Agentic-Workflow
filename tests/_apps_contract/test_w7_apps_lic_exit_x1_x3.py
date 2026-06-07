@@ -28,7 +28,7 @@ TC23 — hitl_required=True when disposition is ESCALATE.
 TC24 — X3Disposition identity fields (request_id, run_id, trace_id) match L2 artifact.
 TC25 — W3-W6 regression: existing test modules still importable.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W7)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W7)
 """
 
 from __future__ import annotations

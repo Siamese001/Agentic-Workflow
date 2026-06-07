@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer`.
 
-Wave 5 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L5 safety
+Wave 5 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L5 safety
 seam — the canonical safe subprocess wrapper (constitutional rule §0/§14).
 """
 

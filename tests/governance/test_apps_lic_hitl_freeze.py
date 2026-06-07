@@ -1,6 +1,6 @@
 """apps_lic W1 (D2) — HITL freeze/review/re-clearance sentinel tests.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W1 D2-P2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W1 D2-P2
 Coverage:
   - HITLFreezePolicy: no_freeze baseline, omission escalation, low confidence,
     dim-score trigger, bypass env var, policy_eval_error degraded mode,

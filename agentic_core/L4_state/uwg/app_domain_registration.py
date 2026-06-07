@@ -1,6 +1,6 @@
 """App-domain contract registration adapter (UWG-side).
 
-Plan: ``.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W3.
 
 Converts a validated bundle of app-domain records (parsed from
 ``apps_<name>/config/domain_contract/*.yaml``) into a ``CommitRequest`` +

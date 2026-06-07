@@ -8,7 +8,7 @@
 #   - lazy:    true if import is inside a function body with ImportError fallback
 #   - expires: ISO date; gate fails closed when entry is past expiry
 #
-# Plan: .windsurf/plans/apps-cross-app-precursors-c94c71.md Wave 6 (AG-1)
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-cross-app-precursors-c94c71.md Wave 6 (AG-1)
 # Precedent: config/apps_spine_delegation_allowlist.yaml, config/config_references_allowlist.yaml
 
 allowed_imports:

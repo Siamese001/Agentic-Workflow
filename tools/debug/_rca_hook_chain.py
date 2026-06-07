@@ -5,7 +5,7 @@ Collects four signals:
 2. Last deferred_scope_capture timestamp → confirms the capture-specific
    hook is also dead, not just heartbeat.
 3. Current hooks.json config for post_cursor_agent_response → what SHOULD be firing.
-4. Any error rows recorded anywhere under artifacts/windsurf/ today.
+4. Any error rows recorded anywhere under artifacts/cursor/ today.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 HB = ROOT / "artifacts" / "windsurf" / "post_cursor_agent_heartbeat.jsonl"
 DSC = ROOT / "artifacts" / "windsurf" / "deferred_scope_capture.jsonl"
-HOOKS = ROOT / ".windsurf" / "hooks.json"
+HOOKS = ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 WSDIR = ROOT / "artifacts" / "windsurf"
 
 

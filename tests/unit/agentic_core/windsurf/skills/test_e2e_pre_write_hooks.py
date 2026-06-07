@@ -39,7 +39,7 @@ def main():
     print("🚀 Starting Pre-Write Hooks End-to-End Tests")
     print("=" * 60)
 
-    skills_dir = Path(".windsurf/skills")
+    skills_dir = Path(".cursor/skills")
     test_results = []
 
     # Test 1: All skills have basic structure

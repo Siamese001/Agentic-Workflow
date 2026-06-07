@@ -1,6 +1,6 @@
 """Negative-control fixture builder for the ADG three-graph harness.
 
-Plan: ``.windsurf/plans/adg-three-graph-harness-e57cc7.md`` (W4.P1).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-three-graph-harness-e57cc7.md`` (W4.P1).
 
 Builds minimal SQLite snapshots that DELIBERATELY violate one specific
 invariant per fixture. The negative-control test suite then runs the
@@ -148,7 +148,7 @@ def _well_formed_seed(con: sqlite3.Connection) -> None:
     con.execute(
         "INSERT INTO edges(id,src_id,dst_id,relation_type,edge_kind,source_file,bucket,"
         "resolution_status,authority_status,authority,evidence_refs,symbol)"
-        " VALUES (2001,1,10,'MCP_SERVER_DECLARED','registry','.windsurf/mcp_config.json','registry',"
+        " VALUES (2001,1,10,'MCP_SERVER_DECLARED','registry','.cursor/mcp.json','registry',"
         "'STABLE_REGISTRY','AUTHORITATIVE_REGISTRY','verified',"
         "'{\"registry_digest\":\"abc123\",\"declaration_key\":\"mcpServers.ok_server\"}','ok_server')"
     )
@@ -409,14 +409,14 @@ def build_duplicate_active_target() -> NegativeFixture:
         con.execute(
             "INSERT INTO edges(id,src_id,dst_id,relation_type,edge_kind,source_file,bucket,"
             "resolution_status,authority_status,authority,evidence_refs,symbol)"
-            " VALUES (5201,1,40,'MCP_SERVER_DECLARED','registry','.windsurf/mcp_config.json',"
+            " VALUES (5201,1,40,'MCP_SERVER_DECLARED','registry','.cursor/mcp.json',"
             "'registry','STABLE_REGISTRY','AUTHORITATIVE_REGISTRY','verified',"
             "'{\"registry_digest\":\"d1\"}','dup_server')"
         )
         con.execute(
             "INSERT INTO edges(id,src_id,dst_id,relation_type,edge_kind,source_file,bucket,"
             "resolution_status,authority_status,authority,evidence_refs,symbol)"
-            " VALUES (5202,1,40,'MCP_SERVER_DECLARED','registry','.windsurf/mcp_config.json',"
+            " VALUES (5202,1,40,'MCP_SERVER_DECLARED','registry','.cursor/mcp.json',"
             "'registry','STABLE_REGISTRY','AUTHORITATIVE_REGISTRY','verified',"
             "'{\"registry_digest\":\"d2\"}','dup_server')"
         )

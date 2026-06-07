@@ -28,7 +28,7 @@ Contract
   14. PASSIVE_CLOSE                "Please let me know if you have any questions"
   15. NOISE_OPENER                 "Hope this finds you well" / "Hope you're doing well"
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P0a
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P0a
 """
 
 from __future__ import annotations

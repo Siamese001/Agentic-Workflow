@@ -1,6 +1,6 @@
 """apps_lic.engines.judges.asymmetric_insight_judge — deterministic heuristic (v1).
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P5
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P5
 Exit rubric dim: asymmetric_insight_present
 
 Scores 0.0–1.0 where 1.0 = strong asymmetric insight detected.

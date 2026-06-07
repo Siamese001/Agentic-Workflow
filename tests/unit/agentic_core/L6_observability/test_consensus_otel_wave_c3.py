@@ -1,6 +1,6 @@
 """Wave C3 tests — consensus.v1 OTEL emitter.
 
-Plan: `.windsurf/plans/consensus-validator-unification-5e9f3a.md` Wave C3.
+Plan: `docs/archive/windsurf/legacy-tree/plans/consensus-validator-unification-5e9f3a.md` Wave C3.
 """
 
 from __future__ import annotations

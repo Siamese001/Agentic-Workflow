@@ -38,7 +38,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MCP_CONFIG = REPO_ROOT / ".windsurf" / "mcp_config.json"
+MCP_CONFIG = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 TURN_BUDGET = REPO_ROOT / "artifacts" / "windsurf" / "turn_budget.jsonl"
 
 # Default review targets — the two shadow-disabled MCPs from ADR-095.

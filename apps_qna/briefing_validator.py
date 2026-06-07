@@ -3,7 +3,7 @@
 W2.2: Enhanced validator with SUFFICIENT/STALE/INCOMPLETE/MISMATCH states,
 content parsing, and structured evidence contract production.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W2.2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W2.2
 """
 
 from __future__ import annotations

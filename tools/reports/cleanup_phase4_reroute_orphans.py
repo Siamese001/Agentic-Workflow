@@ -1,7 +1,7 @@
 """Phase 4 — re-route the 7 truly-orphan rows to closest-fit LIVE plans.
 
 Each PATCH:
-  1. Sets Plan File = ".windsurf/plans/<successor>.md"
+  1. Sets Plan File = "docs/archive/windsurf/legacy-tree/plans/<successor>.md"
   2. Appends a [REROUTE 2026-04-30] marker to Blocking Items with the original slug
   3. Preserves Status (Blocked stays Blocked, In Progress stays In Progress)
 
@@ -137,7 +137,7 @@ def main() -> int:
         for raw, t, successor in targets:
             old_plan = _existing_plan_file(raw)
             old_blocking = _existing_blocking(raw)
-            new_plan = f".windsurf/plans/{successor}.md"
+            new_plan = f"docs/archive/windsurf/legacy-tree/plans/{successor}.md"
             marker = (
                 f"{MARKER_PREFIX} {MARKER_DATE}] Re-routed from orphan slug "
                 f"`{t['plan_file']}` (no plan on disk) to live plan `{successor}`. "

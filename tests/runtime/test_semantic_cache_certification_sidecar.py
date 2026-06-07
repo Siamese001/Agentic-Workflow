@@ -1,6 +1,6 @@
 """Tests — R1B semantic-cache subclaim sidecar (W1 phase 1 contract only).
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``
 Author-Gate (2026-04-30, architecture_choice):
 ``map_to_RTC_REQ_055_plus_conditional_056_057_058``.
 

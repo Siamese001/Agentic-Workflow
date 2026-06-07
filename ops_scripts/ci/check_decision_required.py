@@ -32,9 +32,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_DB = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-TRIGGERS_YAML = REPO_ROOT / ".windsurf" / "schemas" / "author_gate_triggers.yaml"
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "decision_required_violations.jsonl"
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "decision_required_bypass.jsonl"
+TRIGGERS_YAML = REPO_ROOT / ".cursor" / "schemas" / "author_gate_triggers.yaml"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "cursor" / "decision_required_violations.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "cursor" / "decision_required_bypass.jsonl"
 
 # Fallback trigger paths if author_gate_triggers.yaml cannot be parsed.
 # These are the narrow set we KNOW are always gate-class (harness infra).

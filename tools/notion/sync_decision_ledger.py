@@ -3,7 +3,7 @@
 
 The Notion "HITL / Author-Gate Decision Ledger" mirror DB was retired on
 2026-05-02 because SQLite at
-``.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite`` is the
+``.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite`` is the
 canonical SSOT (constitutional §30) and the Notion projection added no unique
 data — every mirror row carried ``decision_id=dec_xxxxx`` derived from the
 SQLite chain. The Notion DB was deleted from the workspace; running this
@@ -21,7 +21,7 @@ Original docstring follows for historical reference:
 
 One-way SQLite -> Notion mirror for the Author-Gate Decision Ledger.
 
-SQLite (.windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite) is the
+SQLite (.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite) is the
 canonical SSOT. The Notion "Author-Gate Decision Ledger" data source is a read-only
 human-readable mirror. This script reads new SQLite rows and creates/updates the
 corresponding Notion pages.
@@ -30,7 +30,7 @@ Idempotency: every Notion page Notes field begins with ``decision_id=<dec_xxxxx>
 on a dedicated first line. The sync queries Notion for existing pages and matches
 by decision_id; if a page exists, it is patched (not duplicated).
 
-Watermark: stored at ``.windsurf/state/refactor_decisions/notion_sync_watermark.txt``
+Watermark: stored at ``.cursor/state/refactor_decisions/notion_sync_watermark.txt``
 as the most recent ``created_at`` ISO timestamp successfully synced. The next run
 processes only rows with ``created_at > watermark``.
 
@@ -256,7 +256,7 @@ def sync_one(row: dict, *, apply: bool) -> dict:
 _RETIRED_MSG = (
     "[sync_decision_ledger] RETIRED 2026-05-02 — Notion HITL/Author-Gate "
     "Decision Ledger mirror DB was deleted. SQLite at "
-    ".windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite is the "
+    ".cursor/state/refactor_decisions/refactor_decision_ledger.sqlite is the "
     "SSOT (constitutional §30). This script is now a no-op. "
     "See config/notion_databases.yaml retirement comment for context."
 )

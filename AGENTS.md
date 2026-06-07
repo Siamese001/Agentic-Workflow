@@ -12,7 +12,7 @@ Root `AGENTS.md` is always-on. Push specialized guidance to subdirectory `AGENTS
 
 ## MCP Quick Reference
 
-> Stable IDs are the `mcpServers` keys in `.cursor/mcp.json` (Cursor project SSOT). Windsurf mirror: `.windsurf/mcp_config.json`. Live tool prefixes like `mcp0_`, `mcp1_`, and so on can shift when server order changes. Resolve the live prefix from the current tool list in-session.
+> Stable IDs are the `mcpServers` keys in `.cursor/mcp.json` (Cursor project SSOT). Deprecated Windsurf compatibility copies are non-authoritative. Live tool prefixes like `mcp0_`, `mcp1_`, and so on can shift when server order changes. Resolve the live prefix from the current tool list in-session.
 
 <!-- MCP-QUICK-REFERENCE:START -->
 
@@ -48,8 +48,8 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 | Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. Post-hook `post_cascade_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band. |
 | Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `.cursor/plans/<slug>-<6hex>.md`. Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set. |
 | SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
-| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.windsurf/rules/*.md`. No Notion write. |
-| MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.cursor/mcp.json` (Cursor) + `.windsurf/mcp_config.json` (mirror). No Notion write. |
+| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.cursor/rules/*.mdc`. No Notion write. |
+| MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.cursor/mcp.json` only. Deprecated Windsurf compatibility copies are non-authoritative. |
 | Anti-Pattern Burndown | `4599fe37-8c24-4d89-96af-438b99a967c4` | `80b30bc9-6622-4288-aa4c-6fc526b6a5c5` | "anti-pattern counts", "burndown trend", "ratchet ceiling" | On burndown run or ratchet adjustment |
 
 **Query pattern (reads)**: `API-query-data-source` with `data_source_id` from column 2. Add `filter`/`sorts` as needed.
@@ -95,8 +95,20 @@ Procedural MCP / Notion / ledgers: [`mcp-integration`](.cursor/skills/mcp-integr
 | Skills | `.cursor/skills/*/SKILL.md` | Progressive disclosure; per-server stubs redirect to `mcp-integration` §1–§13 |
 | Hooks | `.cursor/hooks.json` | Post-agent SSOT: `after_agent_governance_dispatch.py` |
 | Index | `.cursor/RULES_INDEX.md` | Generated; `#always-on-discipline` anchor |
-| Windsurf mirror | `.windsurf/rules/*.md` | **Read-only legacy**; edit `.mdc` only |
+| Deprecated Windsurf legacy | `.cursor/windsurf_compat/**` | Non-authoritative compatibility/archive only; edit `.cursor/**` SSOT files |
 
 **Dedup:** Do not restate always-on invariants in skills or hook reminders. MCP procedure → `mcp-integration` sections, not redirect stub bodies. Author-Gate steps → `003-cursor-author-gate-hitl.mdc` only.
 
 Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/governance_tier_inventory.json) · dedup audit: [`governance_dedup_audit_20260526.md`](docs/reports/cursor/governance_dedup_audit_20260526.md) · closeout plan: [`governance-dedup-closeout-e8a4c2.md`](.cursor/plans/governance-dedup-closeout-e8a4c2.md).
+
+## Codex backup adapter
+
+Codex is a backup execution surface, not a second governance SSOT. When using Codex in this repo:
+
+- Load the personal Codex skill `agentic-workflow-governance` before T2/T3 work.
+- Use `.cursor/**`, `.cursor/mcp.json`, and `.cursor/hooks.json` as the authoritative migrated Cursor/Claude governance sources.
+- Do not copy `.cursor` rule bodies into Codex skills; Codex skills should route to the SSOT and summarize only adapter behavior.
+- If a Cursor/Claude MCP is unavailable in Codex, use the closest repo script fallback and report the unavailable MCP clearly.
+- Validate the adapter with `python scripts/governance/verify_codex_backup.py` after changing Codex backup docs or skills.
+
+Details: [`docs/codex-backup-adapter.md`](docs/codex-backup-adapter.md).

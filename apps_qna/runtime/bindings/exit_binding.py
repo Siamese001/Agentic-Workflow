@@ -14,7 +14,7 @@ reads result.disposition and returns it to the caller.
 
 After W1, this is the ONLY place that calls emit_exit_review on the spine path.
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
 """
 from __future__ import annotations
 

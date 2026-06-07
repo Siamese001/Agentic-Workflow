@@ -63,7 +63,7 @@ EXCLUDE_DIRS: set[str] = {
     "archives",
     "_archive",
     "node_modules",
-    ".windsurf",
+    "docs/archive/windsurf/legacy-tree",
     "vector_store",
     "artifacts",
     ".pytest_cache",
@@ -181,7 +181,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": ".windsurf/rules/constitutional.md",
+        "path": ".cursor/rules/constitutional.md",
         "title": "Constitutional Floor — Hard Constraints",
         "doc_family": "standard",
         "topic_bucket": "safety_eval",
@@ -189,7 +189,7 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "required": True,
     },
     {
-        "path": ".windsurf/rules/global_rules.md",
+        "path": ".cursor/rules/global_rules.md",
         "title": "Global Rules — Always-On Policy",
         "doc_family": "standard",
         "topic_bucket": "arch_standards",
@@ -386,7 +386,7 @@ def _compute_collapse_group(path: Path) -> str:
         return "repo_svp"
     if "architecture" in rel.lower():
         return "repo_architecture"
-    if ".windsurf" in rel:
+    if "docs/archive/windsurf/legacy-tree" in rel:
         return "repo_standards"
     return "repo_docs"
 

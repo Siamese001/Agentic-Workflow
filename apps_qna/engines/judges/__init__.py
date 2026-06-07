@@ -3,7 +3,7 @@
 D1.2: Three deterministic heuristic judges for the RAG dims declared in
 eval_rubrics.yaml (context_recall, context_precision, answer_relevancy).
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D1.2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D1.2
 """
 
 from __future__ import annotations

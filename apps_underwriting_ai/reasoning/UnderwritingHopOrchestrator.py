@@ -10,7 +10,7 @@ Both orchestrators are supported:
 - ``UnderwritingHopOrchestrator.run(context) -> HopRunRecord`` — shared
   substrate, declarative, supports replay and composability.
 
-See plan .windsurf/plans/apps-hop-substrate-f7751b.md (Wave 4.1).
+See plan docs/archive/windsurf/legacy-tree/plans/apps-hop-substrate-f7751b.md (Wave 4.1).
 """
 
 from __future__ import annotations

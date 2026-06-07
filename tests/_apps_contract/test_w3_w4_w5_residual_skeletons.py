@@ -1,6 +1,6 @@
 """Tests for W3/W4/W5 residual skeletons.
 
-Plan: `.windsurf/plans/apps-eval-harness-residual-a2d9c7.md` W3/W4/W5 verification.
+Plan: `docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-residual-a2d9c7.md` W3/W4/W5 verification.
 """
 
 from __future__ import annotations

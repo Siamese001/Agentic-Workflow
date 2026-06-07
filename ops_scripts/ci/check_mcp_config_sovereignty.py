@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """MCP Config Sovereignty gate — Constitutional Rule #0 (filesystem scope).
 
-Validates that both editor MCP configs keep the filesystem server scoped to the
+Validates that the Cursor MCP config keeps the filesystem server scoped to the
 repo root only:
 
 - ``filesystem`` entry present in ``mcpServers``
@@ -9,7 +9,7 @@ repo root only:
 - No forbidden out-of-repo path fragments in any server string field
 - ``disabled: true`` is allowed (shadow-disable policy; scope is still structural)
 
-Profiles: ``.cursor/mcp.json`` (Cursor SSOT) and ``.windsurf/mcp_config.json`` (mirror).
+Profile: ``.cursor/mcp.json`` (Cursor SSOT).
 
 Bypass: ``MCP_CONFIG_SOVEREIGNTY_BYPASS=1``
 Artifact: ``artifacts/ci/mcp_config_sovereignty.json``
@@ -29,7 +29,7 @@ _CI_DIR = Path(__file__).resolve().parent
 if str(_CI_DIR) not in sys.path:
     sys.path.insert(0, str(_CI_DIR))
 
-from _mcp_ci_common import CURSOR_MCP_PATH, WINDSURF_MCP_PATH, load_mcp_json  # noqa: E402
+from _mcp_ci_common import CURSOR_MCP_PATH, load_mcp_json  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACT_PATH = REPO_ROOT / "artifacts" / "ci" / "mcp_config_sovereignty.json"
@@ -41,15 +41,12 @@ FORBIDDEN_PATH_FRAGMENTS: tuple[str, ...] = (
     r"c:\users",
     r"c:/users",
     "/users/",
-    ".windsurf/plans",
-    ".windsurf\\plans",
     ".cursor/plans",
     ".cursor\\plans",
 )
 
 PROFILE_LAUNCHERS: dict[str, tuple[Path, str]] = {
     "cursor": (CURSOR_MCP_PATH, ".cursor/scripts/filesystem_mcp_launcher.js"),
-    "windsurf": (WINDSURF_MCP_PATH, ".windsurf/scripts/filesystem_mcp_launcher.js"),
 }
 
 
@@ -274,7 +271,7 @@ def main() -> int:
     if report["valid"]:
         print(
             "[check_mcp_config_sovereignty] OK: Rule #0 filesystem scope valid for "
-            "cursor + windsurf MCP configs"
+            "Cursor MCP config"
         )
         return 0
 

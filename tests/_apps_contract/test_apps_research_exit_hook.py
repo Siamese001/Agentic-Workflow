@@ -1,6 +1,6 @@
 """Contract tests for apps_research exit-hook adoption.
 
-Plan: ``.windsurf/plans/apps-exec-research-exit-hook-adoption-a8d3c5.md`` W2.P3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-exec-research-exit-hook-adoption-a8d3c5.md`` W2.P3.
 """
 
 from __future__ import annotations

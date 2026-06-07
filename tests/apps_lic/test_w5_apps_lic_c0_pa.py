@@ -33,7 +33,7 @@ PA tests:
   TPA11. PA does not generate embeddings.
   TPA12. PA does not write L4.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W5)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W5)
 """
 from __future__ import annotations
 

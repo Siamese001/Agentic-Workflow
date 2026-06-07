@@ -1,7 +1,7 @@
 """Tests for version-aware rubric loading in exit_eval factory.
 
 Covers the migration of X1D/X1F to v2 rubrics per
-.windsurf/plans/runtime-gate-coverage-hardening-7e3f1a.md follow-up.
+docs/archive/windsurf/legacy-tree/plans/runtime-gate-coverage-hardening-7e3f1a.md follow-up.
 """
 
 from __future__ import annotations

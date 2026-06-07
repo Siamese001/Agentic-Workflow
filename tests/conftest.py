@@ -335,7 +335,7 @@ _install_integration_compat_shims()
 # W3.2 — Author-Gate meta-learning: pytest signal writer.
 # =====================================================================
 # Writes {ts, exit_code, passed, failed, errors, duration_s} to
-# artifacts/cursor/last_test_signal.json (and mirrors under artifacts/windsurf/ for
+# artifacts/cursor/last_test_signal.json (and mirrors under artifacts/cursor/ for
 # legacy readers) at session end so post_cursor_agent_author_gate_capture can bind tests_passed.
 
 

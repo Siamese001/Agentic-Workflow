@@ -1,7 +1,7 @@
 """Backfill ADG_GRAPH_LAYER_EVIDENCE + ADG_HOTSPOT_REPORT sections.
 
 Constitutional §22 + adg-hotspot-enforcement.md gate (check_graph_layer_evidence.py)
-requires every refactor-class plan in .windsurf/plans/ to declare:
+requires every refactor-class plan in docs/archive/windsurf/legacy-tree/plans/ to declare:
   - ## ADG_GRAPH_LAYER_EVIDENCE  (≥3 mv_*, ≥1 semantic edge OR ≥1 v_p* P-view)
   - ## ADG_HOTSPOT_REPORT        (≥1 archetype, ≥1 ADG Surface)
 
@@ -16,7 +16,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = ROOT / ".windsurf" / "plans"
+PLANS_DIR = ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 
 # Per-plan customization: app-domain hint drives the wording / surface choice.
 # All sections cite ≥3 mv_*, ≥1 semantic edge or P-view, ≥1 archetype, ≥1 surface.

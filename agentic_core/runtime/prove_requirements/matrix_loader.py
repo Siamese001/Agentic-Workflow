@@ -1,6 +1,6 @@
 """Matrix Loader — single SSOT for the hardened certification CSV.
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``
 
 Every W0 verifier consumes the canonical CSV through this loader. Two
 verifiers running on the same git HEAD MUST see the same row count and

@@ -4,7 +4,7 @@ W3.4: Assembles domain-specific card context from evidence contracts.
 This is NOT canonical Prompt Assembly — apps_qna does domain card
 context assembly only, not model-level prompt construction.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W3.4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W3.4
 """
 
 from __future__ import annotations

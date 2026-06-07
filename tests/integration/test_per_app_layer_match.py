@@ -5,7 +5,7 @@ For every manifest entry, asserts that the actual class.method's
 ``required_spans.yaml``. This is parametric per-method (not just one
 synthetic test), so each apps_* method is independently verified.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
 """
 from __future__ import annotations
 

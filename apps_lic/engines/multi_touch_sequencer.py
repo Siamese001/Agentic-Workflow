@@ -1,6 +1,6 @@
 """apps_lic.engines.multi_touch_sequencer — D6-P3.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P3
 
 Determines the appropriate touch number and sequencing strategy given prior
 outreach history. Returns an immutable TouchSequenceDecision.

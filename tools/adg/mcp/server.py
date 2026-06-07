@@ -7,7 +7,7 @@ runtime lifecycle and tool behavior split into dedicated helper modules.
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 
@@ -160,7 +160,7 @@ def adg_reload() -> dict[str, Any]:
 
 # ---------------------------------------------------------------------------
 # W3 P3.3 — graph-layer primitives (MV / semantic edges / P-views)
-# Plan: .windsurf/plans/adg-three-bucket-unified-c4f8e2.md
+# Plan: docs/archive/windsurf/legacy-tree/plans/adg-three-bucket-unified-c4f8e2.md
 # ---------------------------------------------------------------------------
 
 

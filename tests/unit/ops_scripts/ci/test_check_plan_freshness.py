@@ -54,7 +54,7 @@ from ops_scripts.ci.check_plan_freshness import (  # noqa: E402
 @pytest.fixture
 def temp_plans_dir(tmp_path: Path) -> Path:
     """Create a temporary plans directory."""
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     return plans_dir
 
@@ -543,7 +543,7 @@ class TestEvaluateAllPlans:
 
     def test_empty_plans_dir_returns_info(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Empty plans directory returns NO_PLANS_FOUND info."""
-        plans_dir = tmp_path / ".windsurf" / "plans"
+        plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
         plans_dir.mkdir(parents=True)
         monkeypatch.setattr("ops_scripts.ci.check_plan_freshness.PLANS_DIR", plans_dir)
 
@@ -583,7 +583,7 @@ class TestMain:
     ) -> None:
         """Advisory mode (default) returns 0 even with errors."""
         # Create temp plans dir with stale plan
-        plans_dir = tmp_path / ".windsurf" / "plans"
+        plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
         plans_dir.mkdir(parents=True)
 
         old_date = datetime.now(timezone.utc) - timedelta(days=30)

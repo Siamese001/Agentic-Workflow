@@ -16,8 +16,8 @@ Four modes:
 - **Auxiliary mode** (lint / route / init / feedback / self-eval): runs
   the CardPackBuilder CLI without spine envelope (exempt per W0 audit).
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
-     .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W1.1
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
+     docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W1.1
 """
 
 from __future__ import annotations
@@ -51,7 +51,7 @@ def _run_live_interview(argv: list[str]) -> int:
     Parses --interview <slug> from argv, builds a payload dict, and calls
     AppIngressRunner(profile=profile).run(payload) sequences runtime/bindings.
 
-    Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
+    Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
     """
     import argparse
     import logging
@@ -146,7 +146,7 @@ def _run_product_build(argv: list[str]) -> int:
     the first positional arg that isn't 'build'. Falls back to 'default' for
     testing; real product invocations should supply --interview.
 
-    Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
+    Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P3
     """
     import argparse
     import logging

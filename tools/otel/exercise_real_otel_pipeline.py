@@ -52,7 +52,7 @@ Usage::
     # Only the consumer-edge alignment phase (useful for TRIPLET top-up)
     python tools/otel/exercise_real_otel_pipeline.py --skip-emitters --rebuild
 
-Plan: ``.windsurf/plans/three-bucket-gap-remediation-069806.md`` (final
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-gap-remediation-069806.md`` (final
 W1.future closure — real OTel emitter trace flow).
 """
 

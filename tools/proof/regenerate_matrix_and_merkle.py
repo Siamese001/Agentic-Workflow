@@ -359,7 +359,7 @@ def main() -> int:
            "",
            "## 7. Provenance",
            "",
-           f"- Plan: `.windsurf/plans/10c-proof-depth-remediation-a9f9af.md`",
+           f"- Plan: `docs/archive/windsurf/legacy-tree/plans/10c-proof-depth-remediation-a9f9af.md`",
            f"- Source overlay: `C:\\Users\\amita\\Documents\\10c_requirement_proof_depth_certification_overlay.xlsx`",
            f"- W1 harness: `tools/proof/otel_collector_proof.py` + `tools/proof/_pytest_otel_capture_plugin.py`",
            f"- W2 composition harnesses: `tools/proof/composition_proof_semantic_cache.py`, `tools/proof/composition_proof_provenance_chain.py`",

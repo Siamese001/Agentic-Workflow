@@ -12,7 +12,7 @@ import pytest
 
 # Ensure script is importable
 REPO_ROOT = Path(__file__).parents[3]  # tests/unit/windsurf_scripts/ -> tests/unit/ -> tests/ -> repo root
-SCRIPTS_PATH = REPO_ROOT / ".windsurf" / "scripts"
+SCRIPTS_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
 if str(SCRIPTS_PATH) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_PATH))
 
@@ -60,11 +60,11 @@ class TestExtractSlugFromContext:
     """Test slug extraction from various context formats."""
     
     def test_plan_created_marker(self):
-        ctx = "PLAN_CREATED: slug=my-plan-test123 path=.windsurf/plans/my-plan-test123.md"
+        ctx = "PLAN_CREATED: slug=my-plan-test123 path=docs/archive/windsurf/legacy-tree/plans/my-plan-test123.md"
         assert extract_slug_from_context(ctx) == "my-plan-test123"
     
     def test_plan_file_path(self):
-        ctx = "Open file .windsurf/plans/l6-alignment-deferred-scope-c5e8a7.md for editing"
+        ctx = "Open file docs/archive/windsurf/legacy-tree/plans/l6-alignment-deferred-scope-c5e8a7.md for editing"
         assert extract_slug_from_context(ctx) == "l6-alignment-deferred-scope-c5e8a7"
     
     def test_backtick_slug(self):

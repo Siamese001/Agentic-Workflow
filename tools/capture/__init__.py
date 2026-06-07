@@ -11,6 +11,6 @@ Components:
     ``.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite`` (SSOT;
     see ``tools.refactor_decisions.ledger_paths``)
 
-See `.windsurf/rules/author-gate-enforcement.md` Silent-Marker Invariant for
+See `.cursor/rules/author-gate-enforcement.md` Silent-Marker Invariant for
 when Cursor Agent must emit markers.
 """

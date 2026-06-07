@@ -74,7 +74,7 @@ def resolve_l2_recipe(
         ``GenerateResumeStep``) can write narrative outputs into the
         same dir the spine writes its receipts.  This unifies spine
         and narrative artifacts in a single per-run dir — see
-        ``.windsurf/plans/apps-rg-spine-narrative-unification-d8e4a1.md``.
+        ``docs/archive/windsurf/legacy-tree/plans/apps-rg-spine-narrative-unification-d8e4a1.md``.
 
     Returns
     -------

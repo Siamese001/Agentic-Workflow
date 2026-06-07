@@ -1,6 +1,6 @@
 """Tests — W0 closure invariants (5 user-mandated closure checks, 2026-04-30).
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``
 
 Closure checks proven here
 --------------------------

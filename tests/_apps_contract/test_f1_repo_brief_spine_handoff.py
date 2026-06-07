@@ -9,7 +9,7 @@ Pins:
   - spine scanner classifies apps_repo_brief as FULL_SPINE / PARTIAL_SPINE
     (depending on current state) but NOT as APP_STANDALONE_FORBIDDEN
 
-Plan: .windsurf/plans/apps-repo-brief-plan4-spine-handoff-f2a3c8.md F1.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-repo-brief-plan4-spine-handoff-f2a3c8.md F1.3
 """
 
 from __future__ import annotations

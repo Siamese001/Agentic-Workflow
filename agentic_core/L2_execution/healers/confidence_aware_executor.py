@@ -1,7 +1,7 @@
 """ConfidenceAwareExecutor — primary-path confidence-driven LLM dispatch.
 
 Closes the G1/G4 gap surfaced in
-``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md``:
+``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md``:
 
   - G1 ``HealingRouter.dispatch_to_executor`` had zero in-prod callers — the
     unified dispatch seam existed but no app actually wired through it.
@@ -19,7 +19,7 @@ healing share one routing model.
 Adoption is opt-in through env var ``USE_CONFIDENCE_AWARE_EXECUTOR=1`` so
 no existing app behavior changes until apps are migrated incrementally.
 
-Plan ref: ``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 3.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 3.
 """
 
 from __future__ import annotations

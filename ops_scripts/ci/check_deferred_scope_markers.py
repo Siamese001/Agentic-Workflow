@@ -115,7 +115,7 @@ def _file_has_marker(path: str) -> bool:
 
 def _all_plan_files() -> list[Path]:
     """Return all plan files on disk (CI mode)."""
-    plans_dir = REPO_ROOT / ".windsurf" / "plans"
+    plans_dir = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     if not plans_dir.exists():
         return []
     return list(plans_dir.glob("*.md"))

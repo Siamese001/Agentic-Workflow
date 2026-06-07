@@ -13,7 +13,7 @@ Covers:
   - P1.10 __main__.py is a pure shim (no heavy imports, has main())
   - P1.11 cert/fec_producer.py produce_fec returns canonical shape
 
-Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md W1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-repo-brief-plan3-zero-loss-overwrite.md W1
 """
 from __future__ import annotations
 

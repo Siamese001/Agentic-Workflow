@@ -59,7 +59,7 @@ class TestMcpBeforeHygiene:
 
     def test_block_legacy_windsurf_in_tool_input(self, hygiene_log: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("MCP_BEFORE_HYGIENE_BYPASS", raising=False)
-        p = {"tool_input": json.dumps({"path": "C:/x/.windsurf/foo"})}
+        p = {"tool_input": json.dumps({"path": "C:/x/docs/archive/windsurf/legacy-tree/foo"})}
         assert mbh.run_mcp_before_hygiene_stage(p) == 2
         row = json.loads(hygiene_log.read_text(encoding="utf-8").strip().splitlines()[-1])
         assert row["code"] == "LEGACY_SURFACE_IN_TOOL_INPUT"

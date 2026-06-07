@@ -28,7 +28,7 @@ Reference:
   - agentic_core/L2_execution/enforcement/SovereignLLMGateway.py (wrapped)
   - egress_adapter_gated.py (Wave-O gating)
   - audit_binding_lane.py (Wave-M record)
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

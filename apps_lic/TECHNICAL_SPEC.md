@@ -58,6 +58,6 @@ apps_lic/
 
 ## References
 
-- Plan: `.windsurf/plans/decision-router-policy-tables-b3a4d2.md`
-- Plan: `.windsurf/plans/apps-lic-runtime-adapter-*.md`
+- Plan: `docs/archive/windsurf/legacy-tree/plans/decision-router-policy-tables-b3a4d2.md`
+- Plan: `docs/archive/windsurf/legacy-tree/plans/apps-lic-runtime-adapter-*.md`
 - ADR-082 taxonomy

@@ -9,7 +9,7 @@ This module is purely analytical — no mutations, no I/O side-effects beyond
 reading YAML from disk. It is the machine-readable foundation for any future
 SSOT-enforcement gate.
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D4.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D4.1
 """
 
 from __future__ import annotations

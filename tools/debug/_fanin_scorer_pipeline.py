@@ -5,7 +5,7 @@ print("snapshot:", os.path.basename(snap))
 con = sqlite3.connect(f"file:{snap}?mode=ro", uri=True)
 cur = con.cursor()
 targets = [
-    ".windsurf/scripts/post_cursor_agent_deferred_scope_capture.py",
+    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py",
     "tools/priority/deferred_scope_scorer.py",
     "tools/otel/otel_mcp_server.py",
 ]

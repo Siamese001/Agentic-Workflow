@@ -1,6 +1,6 @@
 """apps_lic W3 (D3) — BriefingQualityGate sentinel tests.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W3 D3-P1, D3-P2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W3 D3-P1, D3-P2
 Coverage:
   - BriefingQualityDecision shape + immutability
   - Coverage checks (pass / marginal / fail)

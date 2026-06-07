@@ -3,7 +3,7 @@
 check_refactor_decision_ledger_ssot.py — W2 ledger SSOT enforcement.
 
 Part A — Forbidden writes: Python sources must not construct the legacy
-``.windsurf/state/refactor_decisions`` path tuple (writers must use
+``.cursor/state/refactor_decisions`` path tuple (writers must use
 ``tools.refactor_decisions.ledger_paths`` and the Cursor SSOT).
 
 Part B — Mirror drift (informational by default): if both SQLite files exist,
@@ -44,8 +44,8 @@ DRIFT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "refactor_ledger_ssot_drift.j
 
 # Tuple-style paths copy-pasted into writers before W2 (forbid reintroduction).
 _FORBIDDEN_TOKENS = (
-    '".windsurf" / "state" / "refactor_decisions"',
-    "'.windsurf' / 'state' / 'refactor_decisions'",
+    '"docs/archive/windsurf/legacy-tree" / "state" / "refactor_decisions"',
+    "'docs/archive/windsurf/legacy-tree' / 'state' / 'refactor_decisions'",
 )
 
 _ALLOWLIST_FILES = frozenset(

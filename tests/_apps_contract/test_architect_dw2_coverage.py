@@ -1,6 +1,6 @@
 """Pattern extraction coverage verification — DS-9.
 
-Plan: ``.windsurf/plans/apps-architect-deferred-scope-b8e3f1.md`` DW2 DS-9.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-architect-deferred-scope-b8e3f1.md`` DW2 DS-9.
 
 Verifies that pattern engines extract ≥90% of expected pattern types from
 a curated sample of recent plan files.

@@ -20,24 +20,24 @@ schema_version: 1
 
 obligations:
   - id: const_0_no_powershell
-    source: ".windsurf/rules/constitutional.md §0"
+    source: ".cursor/rules/constitutional.md §0"
     description: "PowerShell forbidden; subprocess.run(argv, shell=False, timeout=...)"
-    gate_script: ".windsurf/scripts/pre_run_gate.py"
+    gate_script: ".cursor/scripts/_legacy_windsurf/pre_run_gate.py"
     test_ids:
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[powershell_explicit]"
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[pwsh_explicit]"
 
   - id: const_14_subprocess_timeout
-    source: ".windsurf/rules/constitutional.md §14"
+    source: ".cursor/rules/constitutional.md §14"
     description: "Subprocess calls must specify timeout"
-    gate_script: ".windsurf/scripts/pre_run_gate.py"
+    gate_script: ".cursor/scripts/_legacy_windsurf/pre_run_gate.py"
     test_ids:
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[bare_python_repl]"
 
   - id: const_26_no_interactive_pagers
-    source: ".windsurf/rules/constitutional.md §26"
+    source: ".cursor/rules/constitutional.md §26"
     description: "Interactive pagers (more, less, vim, top) hang Cascade — block at run_command"
-    gate_script: ".windsurf/scripts/pre_run_gate.py"
+    gate_script: ".cursor/scripts/_legacy_windsurf/pre_run_gate.py"
     test_ids:
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[pipe_to_more]"
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[pipe_to_less]"
@@ -46,22 +46,22 @@ obligations:
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[top_watcher]"
 
   - id: const_python_dash_c_quote_hazard
-    source: ".windsurf/rules/python-dash-c-quote-hazard.md"
+    source: ".cursor/rules/python-dash-c-quote-hazard.md"
     description: "python -c with escaped triple-quote hangs pwsh"
-    gate_script: ".windsurf/scripts/pre_run_gate.py"
+    gate_script: ".cursor/scripts/_legacy_windsurf/pre_run_gate.py"
     test_ids:
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[python_dash_c_escaped_triple_quote]"
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[python_dash_c_escaped_dquote]"
 
   - id: const_27_windsurf_config_schema_purity
-    source: ".windsurf/rules/constitutional.md §27"
+    source: ".cursor/rules/constitutional.md §27"
     description: "hooks.json + mcp_config.json contain only documented fields"
     gate_script: "ops_scripts/ci/check_windsurf_config_schema.py"
     test_ids:
       - "tests/unit/ops_scripts/ci/test_check_windsurf_config_schema.py"
 
   - id: assurance_p1_runtime_trace
-    source: ".windsurf/plans/assurance-p1-gates-ab4758.md (W1)"
+    source: "docs/archive/windsurf/legacy-tree/plans/assurance-p1-gates-ab4758.md (W1)"
     description: "Canary run emits required span graph U0→L0→C0→PA→L2→Exit→UWG"
     gate_script: "ops_scripts/ci/check_runtime_trace_contract.py"
     test_ids:
@@ -70,14 +70,14 @@ obligations:
       - "tests/unit/ops_scripts/ci/test_check_runtime_trace_contract.py"
 
   - id: assurance_p1_replay_determinism
-    source: ".windsurf/plans/assurance-p1-gates-ab4758.md (W3)"
+    source: "docs/archive/windsurf/legacy-tree/plans/assurance-p1-gates-ab4758.md (W3)"
     description: "Two canary replays produce identical (route, gates, evidence, disposition) digest"
     gate_script: "ops_scripts/ci/check_replay_proof.py"
     test_ids:
       - "tests/unit/tools/proof/test_replay_digest.py"
 
   - id: assurance_p1_negative_controls
-    source: ".windsurf/plans/assurance-p1-gates-ab4758.md (W2)"
+    source: "docs/archive/windsurf/legacy-tree/plans/assurance-p1-gates-ab4758.md (W2)"
     description: "Each gate proves fail-closed on at least one known-bad input"
     gate_script: "tests/negative_controls/test_constitutional_negatives.py"
     test_ids:

@@ -11,7 +11,7 @@ These tests prove:
 8. Any L6 promotion path requires UWG
 9. Static scan: no L4 writes, no send path, no Exit/X3 emission, no cache return for final drafts
 
-Plan: .windsurf/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md (W3)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md (W3)
 """
 
 from __future__ import annotations

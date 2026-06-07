@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Set, Dict, List
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 ARCHIVE_DIR = PLANS_DIR / "_archive"
 
 

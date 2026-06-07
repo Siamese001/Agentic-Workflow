@@ -1,7 +1,7 @@
 """judge_agreement_tracker — Spearman agreement tracker.
 
-Plan: ``.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md`` W5.P1 (skeleton).
-Promoted: ``.windsurf/plans/apps-research-deferred-scope-b7e3d2.md`` W4 (DS-1).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-deferred-e4a1b7.md`` W5.P1 (skeleton).
+Promoted: ``docs/archive/windsurf/legacy-tree/plans/apps-research-deferred-scope-b7e3d2.md`` W4 (DS-1).
 
 PROMOTION HISTORY
 =================

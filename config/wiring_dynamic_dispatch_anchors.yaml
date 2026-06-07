@@ -20,7 +20,7 @@
 version: 1
 anchors:
   # ---------- Hook-dispatched scripts (Windsurf pre/post hooks) ----------
-  - pattern: ".windsurf/scripts/*.py"
+  - pattern: ".cursor/scripts/_legacy_windsurf/*.py"
     reason: "Windsurf hooks invoked by IDE, not imported."
     issued: 2026-04-23
 

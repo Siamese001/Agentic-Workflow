@@ -133,7 +133,7 @@ def register_standard_health(
         otel_mcp used ``otel_status`` + ``otel_server_info``, vector_db used
         ``readiness``, and memory/pytest_mcp/enhanced_http had no explicit
         health endpoint at all. The inconsistency forced
-        ``.windsurf/scripts/mcp_fleet_health.py`` to probe 8 different
+        ``.cursor/scripts/_legacy_windsurf/mcp_fleet_health.py`` to probe 8 different
         preconditions per server instead of calling one uniform endpoint.
 
     Contract:

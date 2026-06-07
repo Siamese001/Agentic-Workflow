@@ -3,7 +3,7 @@
 This registry's stage handlers are one-line stubs (returning
 ``{"status": "processed"}``); the real domain logic was lost in the
 2026-02-08 consolidation and never re-added here. As of plan
-.windsurf/plans/apps-hop-substrate-f7751b.md (Wave 2) the canonical
+docs/archive/windsurf/legacy-tree/plans/apps-hop-substrate-f7751b.md (Wave 2) the canonical
 apps_lic pipeline lives in:
 
 - ``apps_lic.config.hop_pipeline.REGISTRY`` — topology

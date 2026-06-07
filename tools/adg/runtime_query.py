@@ -1,7 +1,7 @@
 """Runtime ADG Query Library — sub-10ms hot-path reads over SQLite + Redis.
 
 This is the enabler for runtime graph-DB-over-SQLite acceleration
-(see `.windsurf/plans/runtime-adg-acceleration-b4f2a1.md`).
+(see `docs/archive/windsurf/legacy-tree/plans/runtime-adg-acceleration-b4f2a1.md`).
 
 Design principles
 -----------------
@@ -44,7 +44,7 @@ valid. This preserves the "library is safe to call from guardrails" contract.
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 
@@ -69,7 +69,7 @@ MAX_TRAVERSAL_DEPTH: Final[int] = 5
 MAX_FANOUT_ROWS: Final[int] = 50
 
 # Archetype classification thresholds (doctrine §3; see
-# .windsurf/rules/adg-canonical-invariants.md).
+# .cursor/rules/adg-canonical-invariants.md).
 CENTRAL_DEPENDENCY_FAN_IN: Final[int] = 20
 ORCHESTRATOR_FAN_OUT: Final[int] = 25
 

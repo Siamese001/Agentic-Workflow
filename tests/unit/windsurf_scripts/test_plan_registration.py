@@ -1,4 +1,4 @@
-"""Unit tests for `.windsurf/scripts/_plan_registration.py` (§36).
+"""Unit tests for `.cursor/scripts/_legacy_windsurf/_plan_registration.py` (§36).
 
 Covers:
   - parse_plan_created_markers (marker grammar)
@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 HELPER_PATH = (
-    Path(__file__).resolve().parents[3] / ".windsurf" / "scripts" / "_plan_registration.py"
+    Path(__file__).resolve().parents[3] / ".cursor" / "scripts" / "_legacy_windsurf" / "_plan_registration.py"
 )
 
 
@@ -56,18 +56,18 @@ def pr(tmp_path, monkeypatch):
 
 
 def test_parse_basic_marker(pr):
-    text = "PLAN_CREATED: slug=my-plan-abc123 path=.windsurf/plans/my-plan-abc123.md status=Not Started"
+    text = "PLAN_CREATED: slug=my-plan-abc123 path=docs/archive/windsurf/legacy-tree/plans/my-plan-abc123.md status=Not Started"
     out = pr.parse_plan_created_markers(text)
     assert len(out) == 1
     assert out[0]["slug"] == "my-plan-abc123"
-    assert out[0]["path"] == ".windsurf/plans/my-plan-abc123.md"
+    assert out[0]["path"] == "docs/archive/windsurf/legacy-tree/plans/my-plan-abc123.md"
     assert out[0]["status"] == "Not Started"
 
 
 def test_parse_multiple_markers(pr):
     text = (
         "Prose intro.\n"
-        "PLAN_CREATED: slug=plan-one-aaaaaa path=.windsurf/plans/plan-one-aaaaaa.md status=In Progress\n"
+        "PLAN_CREATED: slug=plan-one-aaaaaa path=docs/archive/windsurf/legacy-tree/plans/plan-one-aaaaaa.md status=In Progress\n"
         "More prose.\n"
         "PLAN_CREATED: slug=plan-two-bbbbbb\n"
     )
@@ -75,7 +75,7 @@ def test_parse_multiple_markers(pr):
     assert len(out) == 2
     assert out[0]["status"] == "In Progress"
     assert out[1]["slug"] == "plan-two-bbbbbb"
-    assert out[1]["path"] == ".windsurf/plans/plan-two-bbbbbb.md"
+    assert out[1]["path"] == "docs/archive/windsurf/legacy-tree/plans/plan-two-bbbbbb.md"
     assert out[1]["status"] == "Not Started"  # default
 
 
@@ -103,8 +103,8 @@ def test_parse_no_markers(pr):
 
 
 def test_enqueue_and_list_pending(pr):
-    assert pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
-    assert pr.enqueue_plan("slug-two-bbbbbb", ".windsurf/plans/slug-two-bbbbbb.md", "In Progress")
+    assert pr.enqueue_plan("slug-one-aaaaaa", "docs/archive/windsurf/legacy-tree/plans/slug-one-aaaaaa.md")
+    assert pr.enqueue_plan("slug-two-bbbbbb", "docs/archive/windsurf/legacy-tree/plans/slug-two-bbbbbb.md", "In Progress")
     pending = pr.pending_registrations()
     assert len(pending) == 2
     assert {r["slug"] for r in pending} == {"slug-one-aaaaaa", "slug-two-bbbbbb"}
@@ -112,18 +112,18 @@ def test_enqueue_and_list_pending(pr):
 
 
 def test_enqueue_is_idempotent(pr):
-    assert pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
-    assert not pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
+    assert pr.enqueue_plan("slug-one-aaaaaa", "docs/archive/windsurf/legacy-tree/plans/slug-one-aaaaaa.md")
+    assert not pr.enqueue_plan("slug-one-aaaaaa", "docs/archive/windsurf/legacy-tree/plans/slug-one-aaaaaa.md")
     assert len(pr.pending_registrations()) == 1
 
 
 def test_enqueue_invalid_slug_raises(pr):
     with pytest.raises(ValueError):
-        pr.enqueue_plan("INVALID", ".windsurf/plans/whatever.md")
+        pr.enqueue_plan("INVALID", "docs/archive/windsurf/legacy-tree/plans/whatever.md")
 
 
 def test_mark_registered_removes_from_pending(pr):
-    pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
+    pr.enqueue_plan("slug-one-aaaaaa", "docs/archive/windsurf/legacy-tree/plans/slug-one-aaaaaa.md")
     assert pr.mark_registered("slug-one-aaaaaa")
     assert pr.pending_registrations() == []
 
@@ -133,7 +133,7 @@ def test_mark_registered_missing_slug_noop(pr):
 
 
 def test_mark_registered_idempotent(pr):
-    pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
+    pr.enqueue_plan("slug-one-aaaaaa", "docs/archive/windsurf/legacy-tree/plans/slug-one-aaaaaa.md")
     assert pr.mark_registered("slug-one-aaaaaa")
     # Second call returns False because no row was flipped.
     assert not pr.mark_registered("slug-one-aaaaaa")
@@ -218,7 +218,7 @@ def test_check_registration_absent_from_cache(pr):
 
 def test_check_registration_queue_bridges_cache_gap(pr):
     # Slug present in queue with registered=True but NOT in fresh cache yet.
-    pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
+    pr.enqueue_plan("slug-one-aaaaaa", "docs/archive/windsurf/legacy-tree/plans/slug-one-aaaaaa.md")
     pr.mark_registered("slug-one-aaaaaa")
     pr.write_cache({"other-slug-aaaaaa": {"status": "In Progress"}})
     res = pr.check_registration("slug-one-aaaaaa")
@@ -227,7 +227,7 @@ def test_check_registration_queue_bridges_cache_gap(pr):
 
 
 def test_check_registration_cache_missing_falls_back_to_queue(pr):
-    pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
+    pr.enqueue_plan("slug-one-aaaaaa", "docs/archive/windsurf/legacy-tree/plans/slug-one-aaaaaa.md")
     pr.mark_registered("slug-one-aaaaaa")
     res = pr.check_registration("slug-one-aaaaaa")
     assert res.registered
@@ -336,7 +336,7 @@ def test_lower_priority_status_registered_via_cache(pr):
 
 def test_stale_cache_falls_back_to_queue_registered(pr):
     """A stale cache is ignored; queue takes precedence for registered plans."""
-    pr.enqueue_plan("slug-one-aaaaaa", ".windsurf/plans/slug-one-aaaaaa.md")
+    pr.enqueue_plan("slug-one-aaaaaa", "docs/archive/windsurf/legacy-tree/plans/slug-one-aaaaaa.md")
     pr.mark_registered("slug-one-aaaaaa")
     # Write a stale cache
     pr.write_cache({"slug-one-aaaaaa": {"status": "In Progress"}})
@@ -435,7 +435,7 @@ def test_check_registration_empty_status_not_registered(pr):
 def test_queue_preserves_insertion_order(pr):
     """pending_registrations must return rows in insertion order."""
     for i in range(5):
-        pr.enqueue_plan(f"slug-{chr(ord('a') + i)}-aaaaaa", f".windsurf/plans/slug-{chr(ord('a') + i)}-aaaaaa.md")
+        pr.enqueue_plan(f"slug-{chr(ord('a') + i)}-aaaaaa", f"docs/archive/windsurf/legacy-tree/plans/slug-{chr(ord('a') + i)}-aaaaaa.md")
     pending = pr.pending_registrations()
     slugs = [r["slug"] for r in pending]
     assert slugs == [
@@ -449,9 +449,9 @@ def test_queue_preserves_insertion_order(pr):
 
 def test_mark_registered_only_removes_target(pr):
     """mark_registered must only flip the targeted slug; others stay pending."""
-    pr.enqueue_plan("slug-a-aaaaaa", ".windsurf/plans/slug-a-aaaaaa.md")
-    pr.enqueue_plan("slug-b-bbbbbb", ".windsurf/plans/slug-b-bbbbbb.md")
-    pr.enqueue_plan("slug-c-cccccc", ".windsurf/plans/slug-c-cccccc.md")
+    pr.enqueue_plan("slug-a-aaaaaa", "docs/archive/windsurf/legacy-tree/plans/slug-a-aaaaaa.md")
+    pr.enqueue_plan("slug-b-bbbbbb", "docs/archive/windsurf/legacy-tree/plans/slug-b-bbbbbb.md")
+    pr.enqueue_plan("slug-c-cccccc", "docs/archive/windsurf/legacy-tree/plans/slug-c-cccccc.md")
     pr.mark_registered("slug-b-bbbbbb")
     pending_slugs = {r["slug"] for r in pr.pending_registrations()}
     assert "slug-b-bbbbbb" not in pending_slugs
@@ -478,7 +478,7 @@ def test_parse_all_canonical_statuses_accepted(pr):
     for status in canonical_statuses:
         text = (
             f'PLAN_CREATED: slug=test-plan-abc123 '
-            f'path=.windsurf/plans/test-plan-abc123.md status="{status}"'
+            f'path=docs/archive/windsurf/legacy-tree/plans/test-plan-abc123.md status="{status}"'
         )
         out = pr.parse_plan_created_markers(text)
         # If status is parsed, it must match; if the parser strips quotes, check both
@@ -488,7 +488,7 @@ def test_parse_all_canonical_statuses_accepted(pr):
 
 def test_parse_defaults_to_not_started_when_status_absent(pr):
     out = pr.parse_plan_created_markers(
-        "PLAN_CREATED: slug=test-plan-abc123 path=.windsurf/plans/test-plan-abc123.md"
+        "PLAN_CREATED: slug=test-plan-abc123 path=docs/archive/windsurf/legacy-tree/plans/test-plan-abc123.md"
     )
     assert len(out) == 1
     assert out[0]["status"] == "Not Started"

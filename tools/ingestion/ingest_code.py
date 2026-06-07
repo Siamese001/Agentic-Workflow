@@ -113,7 +113,7 @@ class ADGNodeResolver:
     missing or unreadable the resolver degrades gracefully to returning ``None``
     — this keeps ingestion resilient to snapshot regeneration windows.
 
-    Wave E plan: ``.windsurf/plans/wave-e-adg-card-projection-2df148.md`` (µW6).
+    Wave E plan: ``docs/archive/windsurf/legacy-tree/plans/wave-e-adg-card-projection-2df148.md`` (µW6).
     """
 
     def __init__(self, adg_db_path: str | Path | None):

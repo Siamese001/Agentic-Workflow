@@ -3,7 +3,7 @@
 Validates that PA produces provider-neutral prompts with correct XML structure,
 anti-invention rules, source_span-first requirement, and output schema.
 
-Plan ref: .windsurf/plans/01_apps-rg-master-governed-runtime-hardening.md (W2/S3)
+Plan ref: docs/archive/windsurf/legacy-tree/plans/01_apps-rg-master-governed-runtime-hardening.md (W2/S3)
 """
 from __future__ import annotations
 

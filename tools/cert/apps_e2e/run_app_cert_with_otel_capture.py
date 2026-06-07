@@ -1,6 +1,6 @@
 """APPS-DOM Runtime Harness — invoke v6 Exit pipeline per app + capture OTEL.
 
-Plan: .windsurf/plans/apps-dom-runtime-harness-followup-f2a7b3.md W1.P1.
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-dom-runtime-harness-followup-f2a7b3.md W1.P1.
 
 For each of the 8 runtime apps, this harness:
 

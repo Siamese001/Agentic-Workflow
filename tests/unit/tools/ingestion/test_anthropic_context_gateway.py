@@ -1,7 +1,7 @@
 """Unit tests for tools.ingestion.anthropic_context_gateway.
 
 Covers the G1-residual adapter wiring per plan
-``.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md`` §2a.
+``docs/archive/windsurf/legacy-tree/plans/c0-context-assembly-best-practices-b7c3a1.md`` §2a.
 """
 
 from __future__ import annotations

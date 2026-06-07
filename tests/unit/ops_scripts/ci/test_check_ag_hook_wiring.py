@@ -59,7 +59,7 @@ def _make_hooks(
 
 def _hook(script: str, show_output: bool = True) -> dict:
     return {
-        "command": f"python .windsurf/scripts/{script}",
+        "command": f"python .cursor/scripts/_legacy_windsurf/{script}",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": show_output,
     }
@@ -244,7 +244,7 @@ class TestNoAgHooks:
 class TestRealHooksJson:
     def test_current_hooks_json_passes_all_invariants(self, mod):
         """The actual repo hooks.json should satisfy all invariants after the hardening commit."""
-        hooks_path = REPO_ROOT / ".windsurf" / "hooks.json"
+        hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
         if not hooks_path.exists():
             pytest.skip("hooks.json not found")
         hooks_data = json.loads(hooks_path.read_text(encoding="utf-8"))

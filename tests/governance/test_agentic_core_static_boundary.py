@@ -88,7 +88,7 @@ ALLOWLIST_PATTERNS = [
     r'.*/artifacts/governance/.*',  # Receipts
     r'.*/migration_receipts/.*',
     r'.*/boundary_receipts/.*',
-    r'.*/\.windsurf/.*',
+    r'.*/\docs/archive/windsurf/legacy-tree/.*',
     r'.*/package_driven_.*\.py$',  # Generic engines
     r'.*/generic_.*\.py$',
 ]

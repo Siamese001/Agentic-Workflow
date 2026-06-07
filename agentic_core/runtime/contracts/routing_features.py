@@ -1,6 +1,6 @@
 """Routing feature vector — W1.P1 deposit (additive contract).
 
-Plan: ``.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` W1.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` W1.
 
 Encodes the five features the L0 router MUST be able to consume when it
 moves beyond the current ``Path.A/B/C/D`` payload-shape heuristic:

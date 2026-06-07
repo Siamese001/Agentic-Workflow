@@ -1,6 +1,6 @@
 """W3 verification — canonical Anthropic grader types + trajectory match mode.
 
-Plan: ``.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md`` W3.P1-P4.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-deferred-e4a1b7.md`` W3.P1-P4.
 
 Proves:
 

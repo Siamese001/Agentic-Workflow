@@ -30,7 +30,7 @@ from ops_scripts.ci.check_mcp_gate_sync import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-MCP_CONFIG_PATH = REPO_ROOT / ".windsurf" / "mcp_config.json"
+MCP_CONFIG_PATH = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 GATE_PATH = REPO_ROOT / "ops_scripts" / "hooks" / "windsurf" / "pre_mcp_gate.py"
 
 

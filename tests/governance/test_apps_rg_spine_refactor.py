@@ -1,6 +1,6 @@
 """Governance tests for apps_rg agentic spine refactor.
 
-Plan: .windsurf/plans/apps_rg_agentic_spine_refactor_plan.md (W8.P1).
+Plan: docs/archive/windsurf/legacy-tree/plans/apps_rg_agentic_spine_refactor_plan.md (W8.P1).
 
 These tests verify the structural invariants established by the refactor:
   - Terminology alignment (no EXIT_PARTIAL, no Inner DAG)

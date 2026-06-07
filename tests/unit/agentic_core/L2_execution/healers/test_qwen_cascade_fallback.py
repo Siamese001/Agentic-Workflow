@@ -1,6 +1,6 @@
 """Wave 1 tests — vLLM health probe + Qwen→Flash cascade fallback.
 
-Plan ref: ``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 1.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 1.
 
 Coverage matrix:
 

@@ -10,7 +10,7 @@ Usage:
     python tools/notion/plan_registration_backfill.py --execute
 
 Features:
-- Reads all .md files from .windsurf/plans/
+- Reads all .md files from docs/archive/windsurf/legacy-tree/plans/
 - Checks Notion Plans DB for existing rows
 - Generates canonical row payloads
 - Dry-run mode by default (no writes)
@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 
 # Notion Plans DB configuration
 PLANS_DATABASE_ID = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
@@ -106,7 +106,7 @@ def build_notion_payload(plan: Dict[str, str]) -> Dict:
                 "checkbox": True
             },
             "Plan File Path": {
-                "rich_text": [{"text": {"content": f".windsurf/plans/{plan['slug']}.md"}}]
+                "rich_text": [{"text": {"content": f"docs/archive/windsurf/legacy-tree/plans/{plan['slug']}.md"}}]
             },
             "Summary": {
                 "rich_text": [{"text": {"content": summary[:500]}}]

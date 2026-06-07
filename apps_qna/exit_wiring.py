@@ -10,8 +10,8 @@ L4 write surface. The write is strictly optional — failure is fail-open
 and returns UWGWriteResult with skipped=True. Only source_surface="Exit"
 is accepted by DurableWriteGateway; this module encapsulates that detail.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W0.4
-Plan (D2.1): .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W0.4
+Plan (D2.1): docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D2
 """
 
 from __future__ import annotations

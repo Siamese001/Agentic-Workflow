@@ -6,7 +6,7 @@ Hypothesis explores input variations; these tests enforce invariants from
   - ValidationResult.passed is strictly boolean.
   - Round-trip serialization is injective for any valid construction.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W2.2)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W2.2)
 """
 from __future__ import annotations
 

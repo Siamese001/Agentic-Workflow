@@ -22,7 +22,7 @@ Output: ``artifacts/observability/apps_rg_layer_audit.md`` — markdown
 report listing each engine with current layer, suggested layer, and
 evidence. Operator reviews and amends `required_spans.yaml` manually.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P5 NEXT_STEP)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (P5 NEXT_STEP)
 """
 from __future__ import annotations
 

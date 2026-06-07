@@ -1,7 +1,7 @@
 """C0 Context Engine — closed vocabularies + dataclasses.
 
 Spec: ``docs/reference/03_L0_Routing/C0 - Retrieval/C0 Context Engine.md``
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W6.5
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W6.5
    (C0 spec hardening follow-up — implements every named constant in the spec.)
 
 This module is the single source of truth for C0 enums and dataclasses. Other

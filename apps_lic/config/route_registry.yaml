@@ -4,7 +4,7 @@
 # reference one of the route_ids declared here; the static-DAG inspector
 # enforces this match.
 #
-# Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md (NEXT_STEP 2)
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-e2e-auditability-harness-7c2a91.md (NEXT_STEP 2)
 
 app_name: apps_lic
 

@@ -37,7 +37,7 @@ L1/L0/C0/PA/L2/Exit layers. It is a pure validator + reflector.
 No business logic. No routing. No retrieval. No L4 writes. No I/O beyond
 loading the field-map YAML once from disk.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
 """
 from __future__ import annotations
 

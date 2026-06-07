@@ -2,7 +2,7 @@
 """
 audit_promoted_patterns.py — W3.3 sample decision rows with promote_to_pattern=1.
 
-Advisory by default: writes JSON report under artifacts/windsurf/.
+Advisory by default: writes JSON report under artifacts/cursor/.
 Set PROMOTION_AUDIT_FAIL_CLOSED=1 to exit 1 when any sampled row fails hygiene
 (high bind confidence, not disputed, clean regression flags).
 

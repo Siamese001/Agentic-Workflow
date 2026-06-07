@@ -1,6 +1,6 @@
 """E2 tests — LLM-backed RAG judges with heuristic fallback.
 
-Plan: .windsurf/plans/apps-qna-deferred-e5-f7a2b1.md E2.1–E2.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-deferred-e5-f7a2b1.md E2.1–E2.3
 """
 
 from __future__ import annotations

@@ -2,7 +2,7 @@
 G15 — Hard-vs-Remediable Rule Tagging.
 
 Per ADR-070 L5 Guardrail Family Catalog (2026-04-29).
-Phase: W4 P8 W3/P8.15 — `.windsurf/plans/w4-p8-guardrail-family-e93f8a.md`
+Phase: W4 P8 W3/P8.15 — `docs/archive/windsurf/legacy-tree/plans/w4-p8-guardrail-family-e93f8a.md`
 
 Every L5 enforcement rule MUST be tagged with one of two dispositions:
 

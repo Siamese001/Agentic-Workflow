@@ -19,7 +19,7 @@ Default split ratios:
 Ratios are configurable via EvalSetPolicy. The policy must sum to 1.0
 (checked at construction).
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D3.2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D3.2
 """
 
 from __future__ import annotations

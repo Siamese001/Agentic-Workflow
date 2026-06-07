@@ -1,6 +1,6 @@
 """Tests for tools/adg/backfill_edge_authority_nulls.py.
 
-Plan: .windsurf/plans/three-bucket-gap-remediation-069806.md (W7 follow-up).
+Plan: docs/archive/windsurf/legacy-tree/plans/three-bucket-gap-remediation-069806.md (W7 follow-up).
 
 Verifies:
   * Idempotent backfill — running on a fully-populated snapshot is a no-op.

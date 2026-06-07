@@ -25,7 +25,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -33,7 +33,7 @@ from _notion_constants import (  # noqa: E402
     PLANS_DATA_SOURCE_ID,
 )
 
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 TIMEOUT = 30.0
 _WORD_CAP_AI = 12
 
@@ -177,7 +177,7 @@ def main() -> None:
     skipped = 0
     for r in garbage_rows:
         slug = r["slug"]
-        file_path = r["file_path"] or f".windsurf/plans/{slug}.md"
+        file_path = r["file_path"] or f"docs/archive/windsurf/legacy-tree/plans/{slug}.md"
         plan_file = REPO_ROOT / file_path.lstrip("/")
         if not plan_file.exists():
             plan_file = PLANS_DIR / f"{slug}.md"

@@ -74,7 +74,7 @@ EXCLUDE_DIRS = {
     ".git",
     "archives",
     "node_modules",
-    ".windsurf",
+    "docs/archive/windsurf/legacy-tree",
     "vector_store",
     "artifacts",
 }

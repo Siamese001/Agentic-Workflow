@@ -1,6 +1,6 @@
 """Backfill the closed-enum columns on edges where they are NULL.
 
-Plan: ``.windsurf/plans/three-bucket-gap-remediation-069806.md`` (W7 follow-up).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-gap-remediation-069806.md`` (W7 follow-up).
 
 The supplementary scanners (gate_self_test, entrypoint, r6) sometimes
 emit rows AFTER the canonical edge_authority backfill runs in

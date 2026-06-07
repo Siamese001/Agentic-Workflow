@@ -1,6 +1,6 @@
 """apps_lic.integrations.briefing_quality_gate — D3-P1.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W3 D3-P1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W3 D3-P1
 
 Evaluates the quality of an apps_research briefing result on three axes:
 

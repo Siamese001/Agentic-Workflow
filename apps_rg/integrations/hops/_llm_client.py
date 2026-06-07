@@ -14,7 +14,7 @@ the narrative pipeline is end-user-facing, not runtime-governed. Direct
 SDK calls match the apps_rg architecture's layer-gravity rule (see
 `config/contracts/README.md`).
 
-Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-narrative-and-company-research-e3f8c1.md
 (NEXT_STEP-1 ΓÇö wire SovereignLLMGateway into ensemble + judge live).
 """
 

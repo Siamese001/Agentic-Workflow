@@ -1,6 +1,6 @@
 """apps_qna.engines.judges.context_precision_judge — RAG context-precision scorer.
 
-Plan: ``.windsurf/plans/apps-qna-deferred-e5-f7a2b1.md`` E2.2
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-qna-deferred-e5-f7a2b1.md`` E2.2
 
 Scores retrieval signal-to-noise: what fraction of retrieved sources are
 actually relevant to answering the question.

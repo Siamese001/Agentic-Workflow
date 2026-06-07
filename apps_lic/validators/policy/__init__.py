@@ -4,7 +4,7 @@ This package replaces decision-tree HOPs (HOP4 Routing, HOP7 GateDecision,
 plus imperative classifier chains inside HOP1 and HOP5) with YAML-driven
 policies dispatched by a single generic primitive.
 
-See `.windsurf/plans/decision-router-policy-tables-b3a4d2.md`.
+See `docs/archive/windsurf/legacy-tree/plans/decision-router-policy-tables-b3a4d2.md`.
 """
 from apps_lic.validators.policy.decision_router import (
     DecisionRouter,

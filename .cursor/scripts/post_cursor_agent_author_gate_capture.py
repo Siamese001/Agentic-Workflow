@@ -239,7 +239,7 @@ def _infer_layer(repo_area: str) -> str:
         return "infra"
     if p.startswith("tools/"):
         return "tools"
-    if p.startswith(".cursor/") or p.startswith(".windsurf/") or p.startswith("ops_scripts/"):
+    if p.startswith(".cursor/") or p.startswith("docs/archive/windsurf/legacy-tree/") or p.startswith("ops_scripts/"):
         return "harness"
     return ""
 

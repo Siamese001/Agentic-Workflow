@@ -1083,7 +1083,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                      AND (source_file LIKE 'ops_scripts/%'
                        OR source_file LIKE 'tests/%'
                        OR source_file LIKE 'tools/%'
-                       OR source_file LIKE '.windsurf/%'
+                       OR source_file LIKE 'docs/archive/windsurf/legacy-tree/%'
                        OR source_file LIKE 'infrastructure/%'
                        OR source_file LIKE '%/scripts/%'
                        OR source_file LIKE '%_scripts/%'

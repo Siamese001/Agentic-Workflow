@@ -1,8 +1,8 @@
-"""Unit tests for `.windsurf/scripts/_ssot_folder_check.py` (SSOT routing helper).
+"""Unit tests for `.cursor/scripts/_legacy_windsurf/_ssot_folder_check.py` (SSOT routing helper).
 
 Coverage:
 - Forbidden roots block NEW files (scripts/, repo-root, _oneoff/, _oneshot/)
-- Hook-prefix files outside .windsurf/scripts/ are blocked
+- Hook-prefix files outside .cursor/scripts/_legacy_windsurf/ are blocked
 - Routing rules suggest the right canonical folder per filename pattern
 - Allowlists (verify_tier*_gate.py, conftest.py, scripts/proof/**) pass
 - Pre-existing files (exists=True) NEVER violate
@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 # Make the helper importable without a package layout.
-HELPER_DIR = Path(__file__).resolve().parents[3] / ".windsurf" / "scripts"
+HELPER_DIR = Path(__file__).resolve().parents[3] / ".cursor" / "scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(HELPER_DIR))
 
 import _ssot_folder_check as helper  # noqa: E402
@@ -111,7 +111,7 @@ def test_oneoff_oneshot_blocked(path: str) -> None:
 
 
 # ----------------------------------------------------------------------------
-# Hook-prefix files outside .windsurf/scripts/ are misrouted
+# Hook-prefix files outside .cursor/scripts/_legacy_windsurf/ are misrouted
 # ----------------------------------------------------------------------------
 
 
@@ -124,12 +124,12 @@ def test_hook_prefix_misroute_blocked(path: str) -> None:
     v = helper.decide(path, exists=False)
     assert v is not None
     assert v.forbidden == "hook-script-misroute"
-    assert v.suggested == ".windsurf/scripts/"
+    assert v.suggested == ".cursor/scripts/_legacy_windsurf/"
 
 
 def test_hook_prefix_in_canonical_folder_passes() -> None:
-    assert helper.decide(".windsurf/scripts/post_cursor_agent_new.py", exists=False) is None
-    assert helper.decide(".windsurf/scripts/pre_write_extra.py", exists=False) is None
+    assert helper.decide(".cursor/scripts/_legacy_windsurf/post_cursor_agent_new.py", exists=False) is None
+    assert helper.decide(".cursor/scripts/_legacy_windsurf/pre_write_extra.py", exists=False) is None
 
 
 # ----------------------------------------------------------------------------

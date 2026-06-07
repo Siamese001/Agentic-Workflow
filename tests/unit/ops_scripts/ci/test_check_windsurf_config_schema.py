@@ -19,7 +19,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 GATE = REPO_ROOT / "ops_scripts" / "ci" / "check_windsurf_config_schema.py"
-HOOKS_JSON = REPO_ROOT / ".windsurf" / "hooks.json"
+HOOKS_JSON = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 
 
 def _run_gate(cwd: Path, *, gate_path: Path | None = None) -> subprocess.CompletedProcess:
@@ -49,7 +49,7 @@ class TestRejectsUnknownFieldInHooks:
         """Constitutional §27 invariant: unknown hooks.json fields fail closed."""
         # Create a fake repo layout with a tampered hooks.json.
         fake_repo = tmp_path / "repo"
-        (fake_repo / ".windsurf").mkdir(parents=True)
+        (fake_repo / "docs/archive/windsurf/legacy-tree").mkdir(parents=True)
         (fake_repo / "ops_scripts" / "ci").mkdir(parents=True)
 
         # Copy the real gate into the fake repo so its REPO_ROOT resolves
@@ -68,9 +68,9 @@ class TestRejectsUnknownFieldInHooks:
                 }
             ]
         }
-        (fake_repo / ".windsurf" / "hooks.json").write_text(json.dumps(tampered, indent=2), encoding="utf-8")
+        (fake_repo / "docs/archive/windsurf/legacy-tree" / "hooks.json").write_text(json.dumps(tampered, indent=2), encoding="utf-8")
         # Minimal valid mcp_config.json so the mcp validator does not error.
-        (fake_repo / ".windsurf" / "mcp_config.json").write_text(
+        (fake_repo / "docs/archive/windsurf/legacy-tree" / "mcp_config.json").write_text(
             json.dumps({"mcpServers": {}}, indent=2), encoding="utf-8"
         )
 
@@ -83,12 +83,12 @@ class TestRejectsUnknownFieldInHooks:
 class TestRejectsUnknownFieldInMcp:
     def test_unknown_mcp_field_rejected(self, tmp_path: Path) -> None:
         fake_repo = tmp_path / "repo"
-        (fake_repo / ".windsurf").mkdir(parents=True)
+        (fake_repo / "docs/archive/windsurf/legacy-tree").mkdir(parents=True)
         (fake_repo / "ops_scripts" / "ci").mkdir(parents=True)
         gate_copy = fake_repo / "ops_scripts" / "ci" / GATE.name
         shutil.copy2(GATE, gate_copy)
 
-        (fake_repo / ".windsurf" / "hooks.json").write_text(json.dumps({}, indent=2), encoding="utf-8")
+        (fake_repo / "docs/archive/windsurf/legacy-tree" / "hooks.json").write_text(json.dumps({}, indent=2), encoding="utf-8")
         # Tampered mcp_config.json with unknown `platform` field on a server.
         tampered = {
             "mcpServers": {
@@ -99,7 +99,7 @@ class TestRejectsUnknownFieldInMcp:
                 }
             }
         }
-        (fake_repo / ".windsurf" / "mcp_config.json").write_text(
+        (fake_repo / "docs/archive/windsurf/legacy-tree" / "mcp_config.json").write_text(
             json.dumps(tampered, indent=2), encoding="utf-8"
         )
 

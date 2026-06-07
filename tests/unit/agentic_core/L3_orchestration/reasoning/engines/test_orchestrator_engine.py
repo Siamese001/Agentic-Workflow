@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L3_orchestration.reasoning.engines.orchestrator_engine`.
 
-Wave 8 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L3
+Wave 8 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L3
 orchestration core. Highest fan-out untested module (21).
 """
 

@@ -14,7 +14,7 @@ Why local-vLLM judges matter
 * Deterministic by default (temperature=0.0) — matches how other judges
   are configured for reproducibility.
 
-Plan ref: ``.windsurf/plans/qwen-adoption-waves-a7f3c2.md`` Wave A / Phase A3.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-adoption-waves-a7f3c2.md`` Wave A / Phase A3.
 """
 
 from __future__ import annotations

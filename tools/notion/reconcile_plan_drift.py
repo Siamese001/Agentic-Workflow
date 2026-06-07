@@ -34,7 +34,7 @@ from tools.notion._notion_sync_telemetry import emit_reconciliation
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 
 
 def _extract_disk_state(slug: str) -> dict[str, Any]:

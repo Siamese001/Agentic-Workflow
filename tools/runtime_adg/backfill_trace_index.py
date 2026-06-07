@@ -1,6 +1,6 @@
 """Back-fill the Runtime ADG `_trace_index.json` from on-disk snapshot payloads.
 
-Plan: `.windsurf/plans/runtime-adg-tier1-trace-binding-c9b84d.md` (Phase W1.P3)
+Plan: `docs/archive/windsurf/legacy-tree/plans/runtime-adg-tier1-trace-binding-c9b84d.md` (Phase W1.P3)
 
 Why
 ---

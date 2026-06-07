@@ -11,7 +11,7 @@ Two autouse fixtures:
 2. ``_redirect_writer_log_path`` — points
    ``tools.notion.wave_lifecycle_writer.LOG_PATH`` at a per-test tmp file
    so unit-test exercises of ``apply_spec`` etc. don't pollute the
-   production audit log at ``artifacts/windsurf/wave_lifecycle_notion.jsonl``.
+   production audit log at ``artifacts/cursor/wave_lifecycle_notion.jsonl``.
 
 RCA NOTION_PLANS_STATUS_RCA_2026-05-10 §6 (test pollution finding).
 Plan: notion-plans-status-rca-followups-b8e3f2 (W3.P1).

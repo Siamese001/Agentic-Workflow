@@ -26,7 +26,7 @@ class CitedSpan:
 # =============================================================================
 # W1b.P1 — Per-claim grounding confidence (Vertex AI grounded-answer pattern).
 #
-# Plan: .windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W1b.P1.
+# Plan: docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W1b.P1.
 #
 # Vertex AI emits a confidence_score in [0,1] for each sentence/claim in a
 # grounded answer. This dataclass is the analog.

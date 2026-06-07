@@ -483,7 +483,7 @@ _REAL_HOOK_PAYLOAD = {
             "### Planner Response\n\n"
             "Made the wiring change to hitl-enforcement.md.\n\n"
             "DECISION_CAPTURED: type=architecture_choice, "
-            "repo_area=.windsurf/rules/hitl-enforcement.md, "
+            "repo_area=.cursor/rules/hitl-enforcement.md, "
             "selected=extend Execute step with emission, outcome=executed\n\n"
             "Tests pass."
         )
@@ -508,7 +508,7 @@ class TestRealPayloadEndToEnd:
             "SELECT decision_type, normalized_intent, selected_option_id FROM decisions"
         ).fetchone()
         assert row[0] == "architecture_choice"
-        assert ".windsurf/rules/hitl-enforcement.md" in row[1]
+        assert ".cursor/rules/hitl-enforcement.md" in row[1]
         assert row[2] == "extend Execute step with emission"
         conn.close()
 

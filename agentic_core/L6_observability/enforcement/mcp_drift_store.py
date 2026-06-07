@@ -369,7 +369,7 @@ class MCPDriftMonitor:
     Integrates with Layer 6 observability for comprehensive monitoring.
 
         Usage:
-            monitor = MCPDriftMonitor(config_path=".windsurf/mcp_config.json")
+            monitor = MCPDriftMonitor(config_path=".cursor/mcp.json")
 
             # Start monitoring (captures baseline)
             monitor.start_monitoring()

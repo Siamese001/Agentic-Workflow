@@ -26,25 +26,25 @@ def _find_repo_root() -> Path:
     """Find repo root from script location or CWD."""
     # Try script location first (parents[3] from ops_scripts/ci/)
     script_root = Path(__file__).resolve().parents[3]
-    if (script_root / ".windsurf" / "rules").exists():
+    if (script_root / ".cursor" / "rules").exists():
         return script_root
     # Fall back to CWD
     cwd = Path.cwd()
-    if (cwd / ".windsurf" / "rules").exists():
+    if (cwd / ".cursor" / "rules").exists():
         return cwd
     # Last resort: try to find by walking up from CWD
     for parent in [cwd] + list(cwd.parents):
-        if (parent / ".windsurf" / "rules").exists():
+        if (parent / ".cursor" / "rules").exists():
             return parent
     # Known repo location (when running in Windsurf environment)
     known_path = Path("C:/Git/Agentic-Workflow-FRESH")
-    if (known_path / ".windsurf" / "rules").exists():
+    if (known_path / ".cursor" / "rules").exists():
         return known_path
     return script_root  # Default to script-based root
 
 
 REPO_ROOT = _find_repo_root()
-RULES_DIR = REPO_ROOT / ".windsurf" / "rules"
+RULES_DIR = REPO_ROOT / ".cursor" / "rules"
 OUTPUT_PATH = REPO_ROOT / "artifacts" / "ci" / "rules_integrity_gate.json"
 
 # Kebab-case pattern: lowercase, hyphens, numbers, no leading hyphen

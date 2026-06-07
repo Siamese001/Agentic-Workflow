@@ -5,7 +5,7 @@ PURPOSE
 -------
 Document and scaffold the retrieval benchmark that must run before the
 ``repo_adg_graph`` bulk-edge collection is retired. This is the L4 deferred
-scope item from Wave E (``.windsurf/plans/wave-e-adg-card-projection-2df148.md``).
+scope item from Wave E (``docs/archive/windsurf/legacy-tree/plans/wave-e-adg-card-projection-2df148.md``).
 
 This file is a **harness**, not a completed benchmark. Running it without
 real ingested data produces an explicit ``benchmark_not_runnable`` status so

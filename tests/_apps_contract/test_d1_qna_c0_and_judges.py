@@ -1,6 +1,6 @@
 """D1 tests — apps_qna C0 wiring + RAG judges.
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D1.1 + D1.2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D1.1 + D1.2
 
 Coverage:
 - D1.1: call_c0 returns a valid FinalEvidenceContract-shaped dict via run_c0

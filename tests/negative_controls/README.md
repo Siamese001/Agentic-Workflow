@@ -6,7 +6,7 @@ gate exits non-zero (or rejects the bad input via its documented contract)
 when fed an input it must reject.
 
 Covers W2 of plan
-[`.windsurf/plans/assurance-p1-gates-ab4758.md`](../../.windsurf/plans/assurance-p1-gates-ab4758.md).
+[`docs/archive/windsurf/legacy-tree/plans/assurance-p1-gates-ab4758.md`](../../docs/archive/windsurf/legacy-tree/plans/assurance-p1-gates-ab4758.md).
 
 ## Why a separate dir?
 

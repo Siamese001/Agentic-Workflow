@@ -1,6 +1,6 @@
 """apps_qna.engines.judges.interview_card_quality_judge — LLM-as-judge for interview card quality.
 
-Plan: ``.windsurf/plans/bge-m3-deferred-scope-remaining-c4e7a1.md`` W2
+Plan: ``docs/archive/windsurf/legacy-tree/plans/bge-m3-deferred-scope-remaining-c4e7a1.md`` W2
 
 Scores the overall quality of a generated interview card answer using an LLM
 judge (Anthropic claude-sonnet-4-6 by default, configured via ANTHROPIC_MODEL).

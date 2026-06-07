@@ -23,9 +23,9 @@ import pytest
 # Helpers shared across tests
 # ---------------------------------------------------------------------------
 
-# Inject .windsurf/scripts onto sys.path so pre_mcp_gate is importable, matching
+# Inject .cursor/scripts/_legacy_windsurf onto sys.path so pre_mcp_gate is importable, matching
 # the pattern used by test_pre_mcp_gate.py.
-sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 
 def _make_sqlite(adg_dir: Path, name: str) -> Path:

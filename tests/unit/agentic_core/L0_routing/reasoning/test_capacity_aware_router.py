@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L0_routing.reasoning.capacity_aware_router`.
 
-Wave 11 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3). L0
+Wave 11 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3). L0
 capacity-aware routing.
 """
 

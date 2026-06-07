@@ -70,7 +70,7 @@ registry constants (via ``QwenInferenceGateway``) and the L2
 
 Plan reference
 --------------
-``.windsurf/plans/apps-eval-qwen32b-rollout-b7c4d9.md`` Wave 1 (P1.1).
+``docs/archive/windsurf/legacy-tree/plans/apps-eval-qwen32b-rollout-b7c4d9.md`` Wave 1 (P1.1).
 """
 
 from __future__ import annotations

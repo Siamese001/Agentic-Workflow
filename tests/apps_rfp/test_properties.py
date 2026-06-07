@@ -6,7 +6,7 @@ invariants from `apps_rfp/SVP_ENGINEERING_REVIEW.md`:
   - Result types always expose gate_violations.
   - RoadmapPhase rejects out-of-range duration (when exposed).
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
 """
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 """Unit tests for ``ops_scripts/ci/precommit_mm_guard.py`` (W4 P4.1).
 
-Plan: ``.windsurf/plans/adg-three-bucket-unified-c4f8e2.md`` (W4 P4.1).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-three-bucket-unified-c4f8e2.md`` (W4 P4.1).
 
 The guard parses ``git status --porcelain`` and exits non-zero when any file
 is staged AND has unstaged modifications (the "MM dual-state" trap that

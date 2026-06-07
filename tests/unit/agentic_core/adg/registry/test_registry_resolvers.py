@@ -235,7 +235,7 @@ class TestComputeRegistryDigestSet:
 
 class TestResolveAllRegistries:
     def test_returns_nonempty_for_live_repo(self) -> None:
-        # The live `.windsurf/mcp_config.json` should always resolve to ≥3 servers.
+        # The live `.cursor/mcp.json` should always resolve to ≥3 servers.
         edges = resolve_all_registries()
         # Must include the MCP root edges.
         mcp_edges = [e for e in edges if e.src_name == MCP_REGISTRY_ROOT]

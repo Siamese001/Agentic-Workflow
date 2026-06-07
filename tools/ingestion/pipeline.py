@@ -89,12 +89,12 @@ CORE_STAGES: tuple[Stage, ...] = (
     Stage(
         name="docs_windsurf_rules",
         script="ingest_docs.py",
-        args=("--source-dir", ".windsurf/rules", "--embedding-provider", "bge-m3"),
+        args=("--source-dir", ".cursor/rules", "--embedding-provider", "bge-m3"),
     ),
     Stage(
         name="docs_windsurf_skills",
         script="ingest_docs.py",
-        args=("--source-dir", ".windsurf/skills", "--embedding-provider", "bge-m3"),
+        args=("--source-dir", ".cursor/skills", "--embedding-provider", "bge-m3"),
     ),
     Stage(
         name="docs_agents_md",
@@ -102,7 +102,7 @@ CORE_STAGES: tuple[Stage, ...] = (
         args=("--source-dir", ".", "--embedding-provider", "bge-m3",
               "--exclude-glob", "**/*.py", "--exclude-glob", "**/*.json",
               "--exclude-glob", "**/*.yaml", "--exclude-glob", "**/*.yml",
-              "--exclude-glob", "docs/**", "--exclude-glob", ".windsurf/**",
+              "--exclude-glob", "docs/**", "--exclude-glob", "docs/archive/windsurf/legacy-tree/**",
               "--exclude-glob", "apps_*/**", "--exclude-glob", "agentic_core/**",
               "--exclude-glob", "tools/**", "--exclude-glob", "tests/**",
               "--exclude-glob", "scripts/**", "--exclude-glob", "system_learning/**",

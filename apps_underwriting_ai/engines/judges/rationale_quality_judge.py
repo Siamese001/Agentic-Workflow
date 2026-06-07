@@ -1,6 +1,6 @@
 """apps_underwriting_ai.engines.judges.rationale_quality_judge — v3 LLM-as-judge.
 
-Plan: ``.windsurf/plans/apps-underwriting-ai-rationale-judge-deferred-d4e7a2.md`` W2.P1.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-underwriting-ai-rationale-judge-deferred-d4e7a2.md`` W2.P1.
 
 PROMOTION HISTORY
 =================

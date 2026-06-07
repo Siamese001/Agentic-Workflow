@@ -14,7 +14,7 @@ This package is a thin CLI surface on top of ``apps_shared.proof``. Runtime
 logic lives in ``apps_shared.proof.scenario_base``; the verifier enforces
 the §10 anti-cheat principle from the master plan.
 
-Plan: ``.windsurf/plans/apps-proof-anticheat-harness-7e2c1d.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-proof-anticheat-harness-7e2c1d.md``
 """
 
 from __future__ import annotations

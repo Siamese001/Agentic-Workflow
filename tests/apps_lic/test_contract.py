@@ -6,7 +6,7 @@ determinism digest), so this seed asserts the input/output contract; W2.2
 property tests cover voice-fidelity invariants; W4 will cover end-to-end
 hop-chain replay.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W2.1)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W2.1)
 """
 from __future__ import annotations
 

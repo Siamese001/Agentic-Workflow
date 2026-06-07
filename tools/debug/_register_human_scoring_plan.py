@@ -23,7 +23,7 @@ WPC_DB = "aa8d2507-101e-4384-81d9-60ea3fe33876"
 RECEIPTS = ROOT / "artifacts" / "notion" / "_writeback_receipts.jsonl"
 
 PLAN_SLUG = "notion-backlog-human-scoring-e7a941"
-PLAN_FILE = ".windsurf/plans/notion-backlog-human-scoring-e7a941.md"
+PLAN_FILE = "docs/archive/windsurf/legacy-tree/plans/notion-backlog-human-scoring-e7a941.md"
 PLAN_SUMMARY = (
     "Human-driven scoring pass for 63 UNSCORED Wave/Phase Convergence rows that no automated "
     "pass could score. Output: worksheet filled by human -> applier script PATCHes Notion. "
@@ -76,7 +76,7 @@ WAVES = [
     (
         "2",
         "Score 22 governance rows (W1.x / W2.x / W2-P1.x)",
-        "Human audits each governance row against .windsurf/rules/ and .windsurf/hooks.json. Rows that are already landed -> DESCOPE. Rows still real get P-band.",
+        "Human audits each governance row against .cursor/rules/ and .cursor/hooks.json. Rows that are already landed -> DESCOPE. Rows still real get P-band.",
         5000,
         22,
     ),

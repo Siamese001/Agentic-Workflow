@@ -1,6 +1,6 @@
 """Exit Eval reroute governance — ceiling + judge disagreement + replay SLO.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W10.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W10.
 
 Closes opportunities 8.1 (reroute-loop ceiling), 8.2 (judge ensemble
 disagreement metric), 8.3 (replay-certification SLO — block UWG, not warn).

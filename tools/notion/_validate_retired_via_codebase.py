@@ -2,7 +2,7 @@
 
 For each Retired row claimed as DELIVERED or MIXED, check:
   1. If summary names a CI gate (check_*.py) -> does it exist on disk?
-  2. If summary names a successor plan -> does .windsurf/plans/<successor>*.md exist?
+  2. If summary names a successor plan -> does docs/archive/windsurf/legacy-tree/plans/<successor>*.md exist?
   3. If summary says "decomposed into children" -> do child plan files exist?
   4. Predecessor plan file: open it and look for COMPLETED/SHIPPED markers.
 
@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO / ".windsurf" / "plans"
+PLANS_DIR = REPO / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 CI_DIR = REPO / "ops_scripts" / "ci"
 
 DUMP = Path("C:/Users/amita/AppData/Local/Temp/windsurf/mcp_output_4570bbeb1534c8d5.txt")

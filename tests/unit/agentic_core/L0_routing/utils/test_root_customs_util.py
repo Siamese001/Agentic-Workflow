@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L0_routing.utils.root_customs_util`.
 
-Wave 11 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3).
+Wave 11 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3).
 """
 
 from __future__ import annotations

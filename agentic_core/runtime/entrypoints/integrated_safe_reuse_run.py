@@ -26,7 +26,7 @@ Harness rule (anti-cheat — verifier-enforced):
     ``producer_component`` that the verifier checks against the harness
     regex.
 
-Plan: ``.windsurf/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md``
 """
 
 from __future__ import annotations

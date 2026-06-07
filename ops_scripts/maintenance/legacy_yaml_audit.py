@@ -1,6 +1,6 @@
 """Legacy policy/threshold YAML deprecation audit.
 
-Plan: `.windsurf/plans/apps-eval-harness-residual-a2d9c7.md` W4.P1.
+Plan: `docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-residual-a2d9c7.md` W4.P1.
 
 Scans the repo for legacy configuration files matching deprecated
 naming patterns (`*_policies.yaml`, `*_thresholds.yaml`) and emits a
@@ -39,7 +39,7 @@ EXCLUDED_DIRS: frozenset[str] = frozenset(
         "archives",
         "__pycache__",
         "artifacts",
-        ".windsurf",
+        "docs/archive/windsurf/legacy-tree",
     }
 )
 

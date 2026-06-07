@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent`.
 
-Wave 3 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`. L5 execution-surface
+Wave 3 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`. L5 execution-surface
 orchestrator. Fan-out=13. Sovereign action plane that gates execution.
 """
 

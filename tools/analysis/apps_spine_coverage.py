@@ -54,7 +54,7 @@ Output:
     - Single-app deep-dive if --app APP given
 
 Reused by:
-    - Plan SSOT generation (.windsurf/plans/apps-spine-integration-*.md)
+    - Plan SSOT generation (docs/archive/windsurf/legacy-tree/plans/apps-spine-integration-*.md)
     - Future CI gate for runtime-mode ratchets
     - Tests at tests/unit/tools/analysis/test_apps_spine_coverage.py
 

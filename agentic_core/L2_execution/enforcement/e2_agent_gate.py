@@ -1,6 +1,6 @@
 """e2_agent_gate — decorator adapter wrapping agent methods with the E2 gate.
 
-Plan: `.windsurf/plans/l2-execute-v2-agent-conformance-c8e4f1.md` §W4.
+Plan: `docs/archive/windsurf/legacy-tree/plans/l2-execute-v2-agent-conformance-c8e4f1.md` §W4.
 Closes gap G-V6 (no agent-level E2 gate decorator).
 
 This module is a thin ADDITIVE adapter that lets any agent method opt into

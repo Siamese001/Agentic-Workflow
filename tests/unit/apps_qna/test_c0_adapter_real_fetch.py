@@ -8,7 +8,7 @@ Tests:
 - call_c0 returns evidence_sufficiency='grounded' when index has hits
 - call_c0 returns evidence_sufficiency='template_only' when index missing
 
-Plan: .windsurf/plans/bge-m3-gap-closure-c8f3a2.md W1
+Plan: docs/archive/windsurf/legacy-tree/plans/bge-m3-gap-closure-c8f3a2.md W1
 """
 
 from __future__ import annotations

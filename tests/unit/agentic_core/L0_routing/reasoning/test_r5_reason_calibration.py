@@ -1,6 +1,6 @@
 """Unit tests for ``agentic_core.L0_routing.reasoning.r5_reason_calibration``.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` W5.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` W5.
 """
 
 from __future__ import annotations

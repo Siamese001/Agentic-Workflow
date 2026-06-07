@@ -1,7 +1,7 @@
 """Calibration drift detector — automated unknown-budget breach monitor.
 
 Closes G13 gap from the runtime-gate-coverage-hardening plan
-(.windsurf/plans/runtime-gate-coverage-hardening-7e3f1a.md).
+(docs/archive/windsurf/legacy-tree/plans/runtime-gate-coverage-hardening-7e3f1a.md).
 
 Reads scorecard JSONL files in the rolling window, computes per-judge /
 per-dimension Unknown-rate, and compares against the

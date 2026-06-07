@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-MCP_CONFIG = REPO_ROOT / ".windsurf" / "mcp_config.json"
+MCP_CONFIG = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 SERVER_PATH = REPO_ROOT / "tools" / "mcp" / "vector_db_server.py"
 SERVICE_PATH = REPO_ROOT / "tools" / "retrieval" / "vector_service.py"
 STORE_PATH = REPO_ROOT / "tools" / "retrieval" / "vector_store.py"

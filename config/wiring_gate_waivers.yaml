@@ -12,7 +12,7 @@
 #
 # Provenance (W6 requirement — MUST provide at least ONE of):
 #   adr:   docs/architecture/adr/ADR-NNN-*.md filename (must exist)
-#   plan:  .windsurf/plans/<slug>-<6hex>.md filename (must exist)
+#   plan:  docs/archive/windsurf/legacy-tree/plans/<slug>-<6hex>.md filename (must exist)
 #
 # Example:
 #   - gate: G_REACH_l0_reachability

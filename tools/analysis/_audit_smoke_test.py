@@ -47,13 +47,13 @@ WAVE2_FILES = [
 
 # Wave 3 files (8 modified hooks)
 WAVE3_FILES = [
-    ".windsurf/scripts/_notion_constants.py",
-    ".windsurf/scripts/plan_driven_closer.py",
-    ".windsurf/scripts/post_commit_phase_closer.py",
-    ".windsurf/scripts/rollback_bad_patches.py",
-    ".windsurf/scripts/post_cursor_agent_next_step_capture.py",
-    ".windsurf/scripts/post_cursor_agent_deferred_scope_capture.py",
-    ".windsurf/scripts/post_cursor_agent_adr_registry_capture.py",
+    ".cursor/scripts/_legacy_windsurf/_notion_constants.py",
+    ".cursor/scripts/_legacy_windsurf/plan_driven_closer.py",
+    ".cursor/scripts/_legacy_windsurf/post_commit_phase_closer.py",
+    ".cursor/scripts/_legacy_windsurf/rollback_bad_patches.py",
+    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_next_step_capture.py",
+    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py",
+    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_adr_registry_capture.py",
     "ops_scripts/ci/check_notion_plan_file_drift.py",
     "tools/reports/recover_deferred_scope_pendings.py",
 ]
@@ -70,7 +70,7 @@ def import_check(path: Path) -> tuple[bool, str]:
     # Convert path to module name
     rel = path.with_suffix("")
     parts = list(rel.parts)
-    # Skip files that aren't proper modules (e.g., dotted dirs like .windsurf)
+    # Skip files that aren't proper modules (e.g., dotted dirs like docs/archive/windsurf/legacy-tree)
     if any(p.startswith(".") for p in parts):
         return True, "(skipped — non-package path)"
     mod_name = ".".join(parts)

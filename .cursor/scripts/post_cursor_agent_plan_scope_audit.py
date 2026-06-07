@@ -22,9 +22,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Load W2 module via importlib (can't import from dot-prefixed .windsurf directly)
+# Load W2 module via importlib (can't import from dot-prefixed docs/archive/windsurf/legacy-tree directly)
 REPO_ROOT = Path(__file__).parent.parent.parent
-W2_MODULE_PATH = REPO_ROOT / ".windsurf" / "scripts" / "_plan_scope_expansion_check.py"
+W2_MODULE_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "_plan_scope_expansion_check.py"
 
 _w2_spec = importlib.util.spec_from_file_location(
     "_plan_scope_expansion_check", W2_MODULE_PATH

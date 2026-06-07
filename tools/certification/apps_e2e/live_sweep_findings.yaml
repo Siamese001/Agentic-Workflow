@@ -5,7 +5,7 @@
 # needs to pass on real nightly runs. apps_rg already ships a working example
 # in AppSpec.entrypoint_args; the rows below are the open follow-ups.
 #
-# Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md (NEXT_STEP 3)
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-e2e-auditability-harness-7c2a91.md (NEXT_STEP 3)
 
 probe_date_utc: "2026-05-02T03:20:00Z"
 probe_timeout_seconds: 60

@@ -1,6 +1,6 @@
 """Tier 1 span coverage contract for Runtime ADG snapshots.
 
-Plan: `.windsurf/plans/runtime-adg-tier1-trace-binding-c9b84d.md`
+Plan: `docs/archive/windsurf/legacy-tree/plans/runtime-adg-tier1-trace-binding-c9b84d.md`
 Doctrine: `docs/reference/Runtime ADG and OTEL Spans.md`
 
 What this module does

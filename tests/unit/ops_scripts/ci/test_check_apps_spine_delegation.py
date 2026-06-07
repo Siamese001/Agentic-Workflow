@@ -1,6 +1,6 @@
 """Unit tests for ``ops_scripts/ci/check_apps_spine_delegation.py`` (ADR-078).
 
-Plan: ``.windsurf/plans/adg-three-bucket-unified-c4f8e2.md`` (W3 P3.2).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-three-bucket-unified-c4f8e2.md`` (W3 P3.2).
 
 Tests build a synthetic ADG SQLite database in a tmp directory + a synthetic
 apps_*/ directory tree, then invoke the gate's pure functions against that

@@ -11,7 +11,7 @@ source (e.g., to authenticated session lookup) without touching any
 downstream consumer of PrincipalChain.
 
 Reference: docs/contracts/identity_propagation.md §3.1
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

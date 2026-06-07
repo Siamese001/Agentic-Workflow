@@ -21,7 +21,7 @@
 #   3. Pointers without a `mappings` entry → SILENTLY_DROPPED → fail closed
 #   4. `mappings` entries with status outside the taxonomy → UNKNOWN_MAPPING → fail closed
 #
-# Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
 # Schema ref: artifacts/apps_lic/ag8_apps_lic_payload_schema.json
 # Mapping ref: artifacts/apps_lic/ag8_apps_lic_payload_mapping_matrix.json
 

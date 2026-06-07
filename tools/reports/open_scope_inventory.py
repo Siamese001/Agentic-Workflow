@@ -3,7 +3,7 @@
 open_scope_inventory.py — extract open-scope items from plan files and ADRs.
 
 Scans:
-  .windsurf/plans/*.md
+  docs/archive/windsurf/legacy-tree/plans/*.md
   docs/architecture/adr/ADR-*.md
 
 Extracts sections matching a set of canonical open-scope headings:
@@ -37,7 +37,7 @@ from typing import Optional
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 SCAN_ROOTS = [
-    REPO_ROOT / ".windsurf" / "plans",
+    REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans",
     REPO_ROOT / "docs" / "architecture" / "adr",
 ]
 

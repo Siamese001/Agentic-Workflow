@@ -1,6 +1,6 @@
 """Closed-loop integration tests for L6/promo + L6/regret (constitutional §29).
 
-Plan: .windsurf/plans/closed-loop-l6-promo-regret-wiring-e3c5b9.md (W1.5)
+Plan: docs/archive/windsurf/legacy-tree/plans/closed-loop-l6-promo-regret-wiring-e3c5b9.md (W1.5)
 
 Verifies:
   - promotion_decision() writes a route_decision row with full Wilson interval
@@ -46,9 +46,9 @@ def temp_promo_ledger(tmp_path, monkeypatch):
     monkeypatch.setattr(pg, "_PROMO_HELPER", None)
 
     repo_root = Path(__file__).resolve().parents[4]
-    base_sql = (repo_root / ".windsurf" / "schemas" / "ledger_base.schema.sql").read_text()
+    base_sql = (repo_root / ".cursor" / "schemas" / "ledger_base.schema.sql").read_text()
     per_sql = (
-        repo_root / ".windsurf" / "schemas" / "router_l6_promo_ledger.schema.sql"
+        repo_root / ".cursor" / "schemas" / "router_l6_promo_ledger.schema.sql"
     ).read_text()
     db_path = tmp_path / "router_l6_promo.sqlite"
     conn = sqlite3.connect(str(db_path))
@@ -70,9 +70,9 @@ def temp_regret_ledger(tmp_path, monkeypatch):
     monkeypatch.setattr(ra, "_REGRET_HELPER", None)
 
     repo_root = Path(__file__).resolve().parents[4]
-    base_sql = (repo_root / ".windsurf" / "schemas" / "ledger_base.schema.sql").read_text()
+    base_sql = (repo_root / ".cursor" / "schemas" / "ledger_base.schema.sql").read_text()
     per_sql = (
-        repo_root / ".windsurf" / "schemas" / "router_l6_regret_ledger.schema.sql"
+        repo_root / ".cursor" / "schemas" / "router_l6_regret_ledger.schema.sql"
     ).read_text()
     db_path = tmp_path / "router_l6_regret.sqlite"
     conn = sqlite3.connect(str(db_path))

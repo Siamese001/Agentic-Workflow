@@ -15,7 +15,7 @@ Proves the eleven W4 receipt criteria:
     T10. No ChromaDB mutation.
     T11. No embedding generation.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W4)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W4)
 """
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 """Runtime ADG coverage audit — read-only diagnostic.
 
-Plan: `.windsurf/plans/runtime-adg-coverage-audit-4f7a21.md`
+Plan: `docs/archive/windsurf/legacy-tree/plans/runtime-adg-coverage-audit-4f7a21.md`
 
 Produces a markdown report at `docs/reports/runtime_adg_coverage_<ts>.md`
 answering: how many agents emit OTEL, how many snapshots are bound to a
@@ -194,7 +194,7 @@ def write_report(emitters: dict[str, Any], integrity: dict[str, Any], samples: l
     lines: list[str] = []
     lines.append(f"# Runtime ADG Coverage Audit — {ts}")
     lines.append("")
-    lines.append("**Plan**: `.windsurf/plans/runtime-adg-coverage-audit-4f7a21.md`")
+    lines.append("**Plan**: `docs/archive/windsurf/legacy-tree/plans/runtime-adg-coverage-audit-4f7a21.md`")
     lines.append(f"**Runtime ADG dir**: `{_RUNTIME_ADG_DIR.as_posix()}`")
     lines.append("")
     lines.append("## 1. Emitter inventory")

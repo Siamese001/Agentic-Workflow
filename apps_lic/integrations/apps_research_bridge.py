@@ -20,7 +20,7 @@ AppsResearchBridge.fetch() always returns a ResearchResult dataclass.
 ResearchResult.is_blocked / .is_stale / .evidence_items / .confidence_score
 are the contract fields that ManagedWorkflowDispatcher reads.
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W3 P8
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W3 P8
 """
 
 from __future__ import annotations

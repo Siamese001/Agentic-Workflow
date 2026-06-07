@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.reasoning.GitHygieneAgent`.
 
-Wave 6 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2).
+Wave 6 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2).
 """
 
 from __future__ import annotations

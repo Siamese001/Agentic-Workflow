@@ -30,9 +30,9 @@ def main() -> int:
     literals = [
         ("docs/reports", "W6.2b-docs-reports"),
         ("docs/architecture/adr", "W6.2c-adr"),
-        (".windsurf/plans", "W6.2c-plans"),
-        (".windsurf/scripts", "W6.2c-scripts"),
-        ("artifacts/windsurf", "W6.2c-windsurf"),
+        ("docs/archive/windsurf/legacy-tree/plans", "W6.2c-plans"),
+        (".cursor/scripts/_legacy_windsurf", "W6.2c-scripts"),
+        ("artifacts/cursor", "W6.2c-windsurf"),
     ]
     max_rc = 0
     for lit, label in literals:

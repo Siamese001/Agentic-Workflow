@@ -22,7 +22,7 @@ from typing import Dict, List, Optional, Set, Tuple
 
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-HOOKS_JSON_PATH = REPO_ROOT / ".windsurf" / "hooks.json"
+HOOKS_JSON_PATH = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 
 # Default thresholds
 DEFAULT_MAX_HOOKS = 70  # Allow some growth from current 59

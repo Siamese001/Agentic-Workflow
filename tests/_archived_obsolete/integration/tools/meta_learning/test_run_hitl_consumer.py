@@ -8,7 +8,7 @@ CLI-exposed `run()` helper, and asserts that:
   3. At least one `DraftProposal` is written to the sink directory
   4. Each written draft is a valid JSON file with the expected fields
 
-Plan: `.windsurf/plans/system-learning-activation-path-a5e2f1.md`
+Plan: `docs/archive/windsurf/legacy-tree/plans/system-learning-activation-path-a5e2f1.md`
 """
 
 from __future__ import annotations

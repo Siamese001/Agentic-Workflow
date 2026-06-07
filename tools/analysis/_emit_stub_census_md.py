@@ -31,7 +31,7 @@ def _main() -> int:
     lines.append(
         "**Plan:** "
         "[`apps-shared-stub-audit-7dfe16`]"
-        "(../.windsurf/plans/apps-shared-stub-audit-7dfe16.md)"
+        "(../docs/archive/windsurf/legacy-tree/plans/apps-shared-stub-audit-7dfe16.md)"
     )
     lines.append("")
     lines.append("## Summary")

@@ -79,7 +79,7 @@ def test_scanner_fail_closed_returns_nonzero_when_errors_present():
 
 
 def test_scanner_writes_violations_log():
-    """Scanner writes to artifacts/windsurf/apps_rg_pa_boundary_violations.jsonl."""
+    """Scanner writes to artifacts/cursor/apps_rg_pa_boundary_violations.jsonl."""
     log_path = REPO_ROOT / "artifacts" / "windsurf" / "apps_rg_pa_boundary_violations.jsonl"
     initial_size = log_path.stat().st_size if log_path.exists() else 0
     _run_scanner()

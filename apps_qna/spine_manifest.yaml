@@ -47,9 +47,9 @@ claimed_routes:
     notes:
       - "R4_SINGLE_ACTION per RouteIdV15 canonical enum"
       - "ExecutionForm: SINGLE_STEP"
-      - "Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md"
+      - "Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md"
 
 # References:
 # - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
-# - .windsurf/plans/apps-qna-spine-integration-e9c5b3.md (W0-W4)
+# - docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md (W0-W4)
 # - apps_qna/integrations/spine_handoff.py (the wrapper)

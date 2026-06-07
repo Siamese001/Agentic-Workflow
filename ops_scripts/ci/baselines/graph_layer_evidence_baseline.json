@@ -506,11 +506,11 @@
     ".cursor/plans/windsurf-maintenance-2026-q2-0f3564.md",
     ".cursor/plans/windsurf-token-burn-augmentation-b7a3f1.md",
     ".cursor/plans/wire-sqlite-decision-ledger-e8f3a2.md",
-    ".windsurf/plans/apps-rg-pa-w10-5-section-signal-hardening-c4f2a1.md",
-    ".windsurf/plans/apps-rg-pa-w10-5-section-signal-hardening-d9b3e7.md",
-    ".windsurf/plans/apps-rg-spearman-spine-remediation-f3c9a1.md",
-    ".windsurf/plans/apps-underwriting-ai-kill-parallel-pipelines-a3f7e2.md",
-    ".windsurf/plans/kill-shadow-pipelines-a7f3c2.md",
-    ".windsurf/plans/p3.2_apps-rg-l0-critical-gaps-remediation-a3f8e1.md"
+    "docs/archive/windsurf/legacy-tree/plans/apps-rg-pa-w10-5-section-signal-hardening-c4f2a1.md",
+    "docs/archive/windsurf/legacy-tree/plans/apps-rg-pa-w10-5-section-signal-hardening-d9b3e7.md",
+    "docs/archive/windsurf/legacy-tree/plans/apps-rg-spearman-spine-remediation-f3c9a1.md",
+    "docs/archive/windsurf/legacy-tree/plans/apps-underwriting-ai-kill-parallel-pipelines-a3f7e2.md",
+    "docs/archive/windsurf/legacy-tree/plans/kill-shadow-pipelines-a7f3c2.md",
+    "docs/archive/windsurf/legacy-tree/plans/p3.2_apps-rg-l0-critical-gaps-remediation-a3f8e1.md"
   ]
 }

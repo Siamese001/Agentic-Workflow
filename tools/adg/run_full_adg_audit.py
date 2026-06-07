@@ -12,7 +12,7 @@ The wrapper is the fail-closed consumer: it reads the manifests, cross-
 checks against the required-gate registry, enforces runtime-proof when
 requested, and propagates a single aggregate exit code.
 
-Plan: ``.windsurf/plans/adg-audit-pipeline-integration-7f2c93.md`` W2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-audit-pipeline-integration-7f2c93.md`` W2.
 """
 
 from __future__ import annotations

@@ -24,7 +24,7 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-MCP_CONFIG = REPO_ROOT / ".windsurf" / "mcp_config.json"
+MCP_CONFIG = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 
 # Third-party / npx-based servers cannot carry an in-process guard.
 NODE_EXCLUDED_SERVERS = {

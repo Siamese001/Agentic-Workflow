@@ -2,7 +2,7 @@
 
 Replaces the placeholder ``"Real verdict logic TBD"`` stub in
 :class:`DecisionPacketAssembler`. Plan:
-:file:`.windsurf/plans/apps-fort-knox-parity-c5d9a3.md` W8 (OPEN-2).
+:file:`docs/archive/windsurf/legacy-tree/plans/apps-fort-knox-parity-c5d9a3.md` W8 (OPEN-2).
 
 ================================================================================
 NOT REGULATORY-GRADE \u2014 READ BEFORE USE

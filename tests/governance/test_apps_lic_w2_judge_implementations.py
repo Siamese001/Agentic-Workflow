@@ -1,6 +1,6 @@
 """apps_lic W2 (D1) — LLM-judge implementation sentinel tests.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P1..D1-P5
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P1..D1-P5
 Coverage:
   - All 5 judges: IS_STUB=False, IS_CALIBRATED=True, GRADER_ID set.
   - grade() returns (float 0–1, list[str]) — never GRADER_UNKNOWN_SENTINEL for

@@ -3,7 +3,7 @@
 Exercises ``build_attestation_payload`` and ``write_attestation``. No
 network calls. All tests run on unit path.
 
-Plan: .windsurf/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 3, § 7
+Plan: docs/archive/windsurf/legacy-tree/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 3, § 7
 """
 
 from __future__ import annotations

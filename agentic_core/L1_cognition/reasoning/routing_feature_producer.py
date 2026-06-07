@@ -1,6 +1,6 @@
 """L1 producer hook for :class:`RoutingFeatureVector` — W5.P2 deposit.
 
-Plan: ``.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W5.P2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W5.P2.
 
 A thin composition layer that L1 planners (or a shim over older planners
 that don't yet emit the feature vector) can call to turn a request +

@@ -456,7 +456,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description=(
             "Ingest coverage.py data into an ADG SQLite snapshot. "
-            "See plan: .windsurf/plans/hotspot-coverage-pipeline-c4e8d2.md"
+            "See plan: docs/archive/windsurf/legacy-tree/plans/hotspot-coverage-pipeline-c4e8d2.md"
         ),
     )
     p.add_argument("--adg", type=Path, required=True, help="ADG snapshot SQLite path")

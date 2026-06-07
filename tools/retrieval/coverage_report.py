@@ -8,7 +8,7 @@ collection and reports coverage by layer.
 Output: ``docs/reports/plans/chromadb_coverage_report.md``.
 
 W3.3 of the ChromaDB/BGE retrieval-hardening plan
-(``.windsurf/plans/chromadb-bge-retrieval-hardening-e9aa09.md``).
+(``docs/archive/windsurf/legacy-tree/plans/chromadb-bge-retrieval-hardening-e9aa09.md``).
 """
 
 from __future__ import annotations
@@ -133,7 +133,7 @@ def render(
             "",
             "## Next",
             "",
-            "Per plan `.windsurf/plans/chromadb-bge-retrieval-hardening-e9aa09.md`: "
+            "Per plan `docs/archive/windsurf/legacy-tree/plans/chromadb-bge-retrieval-hardening-e9aa09.md`: "
             "run full pipeline to converge chunk count with ADG symbols, then re-run "
             "this report. Target: ≥ 90% layer coverage on every populated layer.",
             "",

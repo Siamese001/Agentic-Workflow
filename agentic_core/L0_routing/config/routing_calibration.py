@@ -1,6 +1,6 @@
 """SSOT loader for routing-calibration thresholds.
 
-Plan: ``.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` phase
+Plan: ``docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` phase
 W2.P1. Consolidates two scalar literals that lived as magic-numbers in
 ``abstain_contract.py`` (``DEFAULT_ABSTAIN_THRESHOLD``) and
 ``semantic_cache_manager.py`` (``similarity_threshold=0.98``).

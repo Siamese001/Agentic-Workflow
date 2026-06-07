@@ -140,7 +140,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
         ".backup",
         ".gravity_state",
     }
-    ide = {".idea", ".vscode", ".windsurf", ".DS_Store"}
+    ide = {".idea", ".vscode", "docs/archive/windsurf/legacy-tree", ".DS_Store"}
     vendor = {"google", "gapic", "pip", "dist-info", "licenses", "src"}
     data = {"data", "docs", "logs", "raw", "shared"}
 
@@ -222,7 +222,7 @@ def generate_precommit_exclude(precommit_patterns: set[str]) -> str:
 # .codeiumignore generator RETIRED 2026-04-19 (L2 consolidation). Windsurf
 # indexing honors .gitignore + hidden paths + node_modules natively; the two
 # deltas (**/*.db, **/*.pb) moved into file_patterns, and the stale
-# !artifacts/windsurf/session_state.json negation was vestigial.
+# !artifacts/cursor/session_state.json negation was vestigial.
 # See config/excluded_paths.yaml L2 CONSOLIDATION block for rationale.
 
 

@@ -33,7 +33,7 @@ NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2025-09-03"
 AUDIT_LOG = REPO / "artifacts" / "windsurf" / "notion_phase2_cleanup.jsonl"
 
-PLANS_DIR = REPO / ".windsurf" / "plans"
+PLANS_DIR = REPO / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 ARCHIVES_DIR = REPO / "archives" / "windsurf_plans"
 
 MARKER_DATE = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")

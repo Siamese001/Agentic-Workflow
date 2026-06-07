@@ -1,6 +1,6 @@
 """Per-namespace Thompson-sampling bandit for R1B / R3 threshold tuning.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W4.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W4.
 
 Replaces the single global ``similarity_threshold=0.98`` and the global
 abstain floor for R3 with per-namespace, per-route Beta-Bernoulli posteriors

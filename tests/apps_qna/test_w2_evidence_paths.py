@@ -1,6 +1,6 @@
 """W2.4 Evidence integration tests — prove evidence contracts flow correctly.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W2.4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W2.4
 """
 
 from __future__ import annotations

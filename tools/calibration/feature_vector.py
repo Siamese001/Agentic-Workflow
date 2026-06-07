@@ -1,7 +1,7 @@
 """Canonical calibration-signal contract for L0 routing paths.
 
 W0.P1 deposit. Encodes the Part 2 Calibration Signal Matrix from
-``.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` as typed
+``docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` as typed
 dataclasses + a fixture loader. No behavior wiring — W3 will consume
 these types when features flow into the router.
 

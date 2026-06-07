@@ -2,7 +2,7 @@
 G06 — Graduated Permission Ladder.
 
 Per ADR-070 L5 Guardrail Family Catalog (2026-04-29).
-Phase: W4 P8 W5/P8.06 — `.windsurf/plans/w4-p8-guardrail-family-e93f8a.md`
+Phase: W4 P8 W5/P8.06 — `docs/archive/windsurf/legacy-tree/plans/w4-p8-guardrail-family-e93f8a.md`
 
 # guardian: allow-empty-skeleton -- ADR-070 introduces G06 as a NEW concern
 # with no pre-existing modules. This file establishes the contract surface.

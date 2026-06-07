@@ -64,7 +64,7 @@ _CONTRACT_FILE = (
 _GOV3_GATE = _REPO_ROOT / "ops_scripts" / "ci" / "check_agentic_core_addition.py"
 _SCHEMA_FILE = (
     _REPO_ROOT
-    / ".windsurf"
+    / "docs/archive/windsurf/legacy-tree"
     / "schemas"
     / "CoreAdditionAuthorGateReceipt.schema.json"
 )

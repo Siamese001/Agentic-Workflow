@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.reasoning.NamingAgent`.
 
-Wave 2 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`. Security-surface
+Wave 2 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`. Security-surface
 L5 gatekeeper — enforces naming laws (agent suffix, canonical placement).
 """
 

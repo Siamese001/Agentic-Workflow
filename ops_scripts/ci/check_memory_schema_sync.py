@@ -59,7 +59,7 @@ def check_memory_schema_sync() -> dict:
         - diff: description of any differences
     """
     repo_root = _get_repo_root()
-    schema_file = repo_root / ".windsurf" / "schemas" / "knowledge_graph.schema.sql"
+    schema_file = repo_root / ".cursor" / "schemas" / "knowledge_graph.schema.sql"
     python_file = repo_root / "tools" / "memory" / "sqlite_memory_store.py"
     
     if not schema_file.exists():

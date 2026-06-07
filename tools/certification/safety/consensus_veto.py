@@ -15,7 +15,7 @@ All juror model IDs are sourced from the L0 routing model registry
 SSOT (agentic_core.L0_routing.config.model_registry). No hardcoded
 model strings in this module.
 
-Plan: .windsurf/plans/rtc-w2b-consensus-jury-rewrite-9a4c71.md § 2.
+Plan: docs/archive/windsurf/legacy-tree/plans/rtc-w2b-consensus-jury-rewrite-9a4c71.md § 2.
 Status: R2.1 foundation. Provider calls (OpenAI, Anthropic, Google)
 land as R2.2 when LLMJudgeVeto is refactored for multi-provider.
 Until then, ConsensusVeto requires callers to pass explicit

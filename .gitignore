@@ -48,6 +48,11 @@ test_artifacts/
 archive/
 archives/
 artifacts/archives/
+# Windsurf deprecation closeout archive: this specific legacy tree is durable
+# provenance for removing the tracked live .windsurf workflow tree.
+!docs/archive/
+!docs/archive/windsurf/
+!docs/archive/windsurf/**
 # W4d-5: artifacts/ is ignored EXCEPT for proof bundles, which are durable
 # evidence and MUST travel with commits so that proof_bundle_exists=true
 # means the same thing on every CI checkout.

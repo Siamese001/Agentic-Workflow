@@ -187,7 +187,7 @@ def generate_agents_quick_reference() -> str:
     lines.append("")
     lines.append(
         "> Stable IDs are the `mcpServers` keys in `.cursor/mcp.json` (Cursor project SSOT). "
-        "Windsurf mirror: `.windsurf/mcp_config.json`. Live tool prefixes like `mcp0_`, `mcp1_`, "
+        "Deprecated Windsurf compatibility copies are non-authoritative. Live tool prefixes like `mcp0_`, `mcp1_`, "
         "and so on can shift when server order changes. Resolve the live prefix from the "
         "current tool list in-session."
     )
@@ -195,6 +195,11 @@ def generate_agents_quick_reference() -> str:
     lines.append("<!-- MCP-QUICK-REFERENCE:START -->")
     lines.append(generate_mcp_quick_reference_block())
     lines.append("<!-- MCP-QUICK-REFERENCE:END -->")
+    lines.append("")
+    lines.append(
+        "Per-server `SKILL.md` files under `.cursor/skills/<name>/` are **redirect stubs**; "
+        "procedural SSOT is [`mcp-integration`](.cursor/skills/mcp-integration/SKILL.md) sections §1–§13."
+    )
     lines.append("")
     return "\n".join(lines)
 

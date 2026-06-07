@@ -33,7 +33,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_CURSOR = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-LEDGER_WINDSURF = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_WINDSURF = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 NOTION_AUDIT_PATHS = (
     REPO_ROOT / "artifacts" / "cursor" / "notion_tool_audit.jsonl",
     REPO_ROOT / "artifacts" / "windsurf" / "notion_tool_audit.jsonl",

@@ -1,11 +1,11 @@
 # CANONICAL SSOT — actively imported; do NOT deprecate.
 # Consumers: agentic_core/runtime/config/routing_thresholds.py, ops_scripts/calibration/calibration_drift_detector.py, ops_scripts/calibration/weekly_refresh.py, agentic_core/L0_routing/reasoning/route_gates.py, agentic_core/L0_routing/reasoning/v15_route_selector.py
 # Rationale: L0 routing's authoritative threshold file; not legacy despite _thresholds.yaml suffix.
-# Plan: .windsurf/plans/legacy-yaml-deletion-audit-c8e3a4.md
+# Plan: docs/archive/windsurf/legacy-tree/plans/legacy-yaml-deletion-audit-c8e3a4.md
 
 # L0 routing calibration thresholds — W2.P1 / W2.P2 deposit.
 #
-# Plan: .windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W2.
+# Plan: docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W2.
 #
 # Loaded by: agentic_core/runtime/config/routing_thresholds.py
 # Consumed by:

@@ -1,6 +1,6 @@
 """apps_lic.engines.judges.antipattern_clean_judge — deterministic heuristic (v1).
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P2
 Exit rubric dim: antipattern_clean
 
 Scores 0.0 (antipatterns present) to 1.0 (clean).

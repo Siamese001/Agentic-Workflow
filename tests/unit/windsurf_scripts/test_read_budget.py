@@ -1,4 +1,4 @@
-"""Unit tests for `.windsurf/scripts/_post_handlers/read_budget.py`.
+"""Unit tests for `.cursor/scripts/_legacy_windsurf/_post_handlers/read_budget.py`.
 
 Coverage:
 - Counts native read_file invocations
@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HANDLERS_DIR = REPO_ROOT / ".windsurf" / "scripts"
+HANDLERS_DIR = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(HANDLERS_DIR))
 
 # Import the handler module directly.

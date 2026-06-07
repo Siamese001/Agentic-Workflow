@@ -10,7 +10,7 @@ Rationale:
       ``artifacts/chromadb``, creating a split-brain corpus. W1.2 of the
       ChromaDB/BGE retrieval-hardening plan unifies on this SSOT.
 
-    Plan: ``.windsurf/plans/chromadb-bge-retrieval-hardening-e9aa09.md``.
+    Plan: ``docs/archive/windsurf/legacy-tree/plans/chromadb-bge-retrieval-hardening-e9aa09.md``.
 
 Override via environment variable ``CHROMA_PERSIST_DIR`` (accepts absolute
 or repo-relative paths). Env override exists purely for test isolation and

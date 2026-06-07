@@ -21,7 +21,7 @@ The MCP path is best-effort. When unavailable (e.g. in CI without
 otel_mcp), the script writes an empty observation file with source
 metadata so downstream tools know the data was unavailable.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
 """
 from __future__ import annotations
 

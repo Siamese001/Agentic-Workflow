@@ -20,8 +20,8 @@ Invocations:
         Per-gate history over last N days (default 30).
 
 Source sinks:
-    - artifacts/windsurf/adg_gate_dispatcher.jsonl  (H3 consolidated)
-    - artifacts/windsurf/wiring_gate_violations.jsonl (per-gate legacy, read-only)
+    - artifacts/cursor/adg_gate_dispatcher.jsonl  (H3 consolidated)
+    - artifacts/cursor/wiring_gate_violations.jsonl (per-gate legacy, read-only)
     - artifacts/adg/adg_gate_results_<ts>.json (per-run snapshot)
 
 Exit 0 on successful query, 2 on argparse error, 1 on I/O error.

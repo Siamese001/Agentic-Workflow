@@ -28,7 +28,7 @@ REQUIRED_HOOK_EVENTS = {
 }
 # Same deny surface as ``.cursor/hooks/lib/cursor_hook_common.py`` (hook runtime).
 LEGACY_HOOK_DENY_TOKENS = (
-    ".windsurf",
+    "docs/archive/windsurf/legacy-tree",
     "mcp_config.json",
     "post_cursor_agent",
     "pre_cursor_agent",

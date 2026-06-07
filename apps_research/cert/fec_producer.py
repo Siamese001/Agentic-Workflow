@@ -1,6 +1,6 @@
 """apps_research FEC producer — builds FinalEvidenceContract dict.
 
-Plan: ``.windsurf/plans/apps-research-c0-fec-producer-wiring-e7a2c3.md`` W1.P1.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-research-c0-fec-producer-wiring-e7a2c3.md`` W1.P1.
 
 Pattern source: ``apps_qna/cert/fec_producer.py``. apps_research is a
 hop research pipeline producing company briefs; FEC surfaces research-hop

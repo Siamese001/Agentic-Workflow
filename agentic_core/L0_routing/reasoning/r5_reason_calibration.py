@@ -1,6 +1,6 @@
 """R5 reason-code calibration — per-trigger Brier + auto-demote.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W5.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W5.
 
 Closes opportunity 1.4: today the multi-signal R5 path treats all 6 triggers
 (``low_confidence``, ``ood_score``, ``circuit_breaker_open``, ``budget_exceeded``,

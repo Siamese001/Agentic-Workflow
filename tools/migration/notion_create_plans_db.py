@@ -37,7 +37,7 @@ BACKLOG_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 PARENT_PAGE_ID = "33f27693-f55c-8134-9041-d34b6dc11425"
 
 PLANS_DB_ID_FILE = Path("tools/migration/.notion_plans_db_id")
-AUDIT_LOG = Path("artifacts/windsurf/notion_plans_migration_audit.jsonl")
+AUDIT_LOG = Path("artifacts/cursor/notion_plans_migration_audit.jsonl")
 
 
 def _load_token() -> str:
@@ -211,7 +211,7 @@ def list_existing_plans(tok: str, plans_db_id: str) -> dict[str, str]:
 
 
 def create_plan_page(tok: str, plans_db_id: str, slug: str, exists_on_disk: bool) -> str:
-    file_path = f".windsurf/plans/{slug}.md" if exists_on_disk else ""
+    file_path = f"docs/archive/windsurf/legacy-tree/plans/{slug}.md" if exists_on_disk else ""
     status = "Not Started"
     ds_id = _plans_data_source_id(tok, plans_db_id)
     body = {
@@ -253,7 +253,7 @@ def main(argv: list[str] | None = None) -> int:
 
     slug_map: dict[str, str] = {}  # slug -> sample-raw value (for audit)
     page_to_slug: dict[str, str] = {}
-    disk_plans = {p.stem for p in Path(".windsurf/plans").glob("*.md")}
+    disk_plans = {p.stem for p in Path("docs/archive/windsurf/legacy-tree/plans").glob("*.md")}
     for row in rows:
         raw = _rt(row["properties"].get("Plan File"))
         if not raw:

@@ -1,6 +1,6 @@
 """apps_lic.engines.judges.personalization_judge — deterministic heuristic (v1).
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P4
 Exit rubric dim: personalization_mode_appropriate
 
 Scores 0.0–1.0 where 1.0 = personalization level is well-matched to the

@@ -1,6 +1,6 @@
 """W5.P7 verification — eval_harness_outcome ledger writer contract.
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W5.P7.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-parity-f8d4a2.md`` W5.P7.
 
 Proves:
 

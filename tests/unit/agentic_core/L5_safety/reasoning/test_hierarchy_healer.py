@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.reasoning.hierarchy_healer`.
 
-Wave 3 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`. L5 write-surface
+Wave 3 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`. L5 write-surface
 orchestrator — heals file hierarchy violations. Fan-out=12.
 """
 

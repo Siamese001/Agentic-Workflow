@@ -1,6 +1,6 @@
 """Unit tests for the W5 P5.3 blast-radius pilot on ``ExecutionOrchestrator``.
 
-Plan: ``.windsurf/plans/adg-three-bucket-unified-c4f8e2.md`` (W5 P5.3).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-three-bucket-unified-c4f8e2.md`` (W5 P5.3).
 ADR:  ``docs/architecture/adr/ADR-079-l2-agent-graph-layer-contract.md``.
 
 The pilot is the first L2/L3 consumer of the P3.3 graph-layer MCP surface.

@@ -1,6 +1,6 @@
 """EQ-4 — provider-matrix golden tests.
 
-Plan: ``.windsurf/plans/eq1-compiled-artifact-schema-d9a3e7.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/eq1-compiled-artifact-schema-d9a3e7.md``
 ADR:  ADR-PROMPT-ASSEMBLY-001 Q2, Q3
 
 Purpose

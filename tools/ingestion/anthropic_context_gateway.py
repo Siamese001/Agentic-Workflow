@@ -8,7 +8,7 @@ sovereignty-enforced ``SovereignLLMGateway`` via
 Purpose
 -------
 Closes the G1-residual gap identified in
-``.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md`` §2a:
+``docs/archive/windsurf/legacy-tree/plans/c0-context-assembly-best-practices-b7c3a1.md`` §2a:
 ``ContextualChunkBuilder`` was shipped by plan ``anthropic-rag-gaps-7f3c2a``
 P1.1 but instantiated at production call sites with no gateway injected, so
 ``enabled`` always resolved to False and only the heuristic fallback ran.

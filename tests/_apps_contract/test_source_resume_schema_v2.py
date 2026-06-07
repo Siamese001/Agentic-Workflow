@@ -4,7 +4,7 @@ Validates SourceResumeV2Structured schema, minimal fixture, verbatim preservatio
 bullet treatment placeholders, and legacy flat-input availability.
 No model calls. No generation behavior. Schema and validation contract only.
 
-Plan ref: .windsurf/plans/01_apps-rg-master-governed-runtime-hardening.md (S1)
+Plan ref: docs/archive/windsurf/legacy-tree/plans/01_apps-rg-master-governed-runtime-hardening.md (S1)
 Receipt: artifacts/governance/apps_rg_resume_shipping_s1_structured_resume_schema.md
 """
 from __future__ import annotations

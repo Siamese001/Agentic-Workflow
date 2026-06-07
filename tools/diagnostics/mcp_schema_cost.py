@@ -1,10 +1,10 @@
 """mcp_schema_cost.py - one-shot audit of MCP server schema bytes.
 
-Spawns each enabled stdio MCP server from `.windsurf/mcp_config.json`, sends
+Spawns each enabled stdio MCP server from `.cursor/mcp.json`, sends
 JSON-RPC `initialize` + `tools/list`, captures the response, measures the
 serialized-bytes cost of the tool schemas, and writes a ranked report to:
 
-  - `artifacts/windsurf/mcp_schema_cost.json` (machine-readable)
+  - `artifacts/cursor/mcp_schema_cost.json` (machine-readable)
   - `docs/reports/token-burn/mcp_schema_cost.md` (human-readable summary)
 
 Servers without a `command` (e.g. HTTP `url`-only entries like deepwiki) and
@@ -36,7 +36,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MCP_CONFIG = REPO_ROOT / ".windsurf" / "mcp_config.json"
+MCP_CONFIG = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 OUT_JSON = REPO_ROOT / "artifacts" / "windsurf" / "mcp_schema_cost.json"
 OUT_MD = REPO_ROOT / "docs" / "reports" / "token-burn" / "mcp_schema_cost.md"
 
@@ -282,8 +282,8 @@ def _render_markdown(report: dict[str, Any]) -> str:
     lines.append("## Notes")
     lines.append("")
     lines.append("- Source: `tools/diagnostics/mcp_schema_cost.py`")
-    lines.append("- Machine-readable: `artifacts/windsurf/mcp_schema_cost.json`")
-    lines.append("- Plan reference: `.windsurf/plans/windsurf-token-burn-augmentation-b7a3f1.md` W2/P6")
+    lines.append("- Machine-readable: `artifacts/cursor/mcp_schema_cost.json`")
+    lines.append("- Plan reference: `docs/archive/windsurf/legacy-tree/plans/windsurf-token-burn-augmentation-b7a3f1.md` W2/P6")
     lines.append("- Approximation: tokens = bytes/4 (Claude tokenizer ratio 3-5x)")
     return "\n".join(lines) + "\n"
 

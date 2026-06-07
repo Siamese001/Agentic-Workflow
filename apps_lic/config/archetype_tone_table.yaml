@@ -1,6 +1,6 @@
 # apps_lic/config/archetype_tone_table.yaml — Archetype Tone Definitions
 #
-# Plan: .windsurf/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md W2
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md W2
 #
 # This file defines the tone vocabulary and register for each recipient archetype.
 # The archetype_tone_calibrator.py engine consumes this configuration.

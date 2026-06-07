@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """W2 apply — disposition of 91 orphan Backlog rows per user-approved batch.
 
-Reads `artifacts/windsurf/backlog_plan_linkage_misses.jsonl`, classifies each
+Reads `artifacts/cursor/backlog_plan_linkage_misses.jsonl`, classifies each
 row's slug, and applies one of two actions:
   * DELETE  — slug contains "(", starts with "_INDEX_", or starts with "multi:"
   * CATCH-ALL — patches Plan relation to the catch-all page id
@@ -27,7 +27,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 from _notion_constants import NOTION_API_VERSION, NOTION_BASE  # noqa: E402
 

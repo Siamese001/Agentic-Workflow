@@ -27,7 +27,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[4]
 PRECOMMIT = REPO_ROOT / ".pre-commit-config.yaml"
 GATES_PY = REPO_ROOT / "ops_scripts" / "ci" / "run_contract_gates.py"
-HOOKS_JSON = REPO_ROOT / ".windsurf" / "hooks.json"
+HOOKS_JSON = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 
 # ---------------------------------------------------------------------------
 # Helper: parse run_contract_gates.py for all script references per plane
@@ -129,11 +129,11 @@ def _run_schema_gate(tmp_repo: Path, hooks_data: dict) -> tuple[int, str, str]:
     gate_dest_dir.mkdir(parents=True, exist_ok=True)
     gate_dest = gate_dest_dir / SCHEMA_GATE.name
     shutil.copy2(SCHEMA_GATE, gate_dest)
-    (tmp_repo / ".windsurf").mkdir(parents=True, exist_ok=True)
-    (tmp_repo / ".windsurf" / "hooks.json").write_text(
+    (tmp_repo / "docs/archive/windsurf/legacy-tree").mkdir(parents=True, exist_ok=True)
+    (tmp_repo / "docs/archive/windsurf/legacy-tree" / "hooks.json").write_text(
         json.dumps({"hooks": hooks_data}, indent=2), encoding="utf-8"
     )
-    (tmp_repo / ".windsurf" / "mcp_config.json").write_text(
+    (tmp_repo / "docs/archive/windsurf/legacy-tree" / "mcp_config.json").write_text(
         json.dumps({"mcpServers": {}}, indent=2), encoding="utf-8"
     )
     result = subprocess.run(
@@ -298,7 +298,7 @@ class TestHitlCorpusTriggerRegex:
     ])
     def test_corpus_file_matches_trigger(self, filename: str) -> None:
         pattern = self._get_hitl_corpus_files_pattern()
-        path = f".windsurf/rules/{filename}"
+        path = f".cursor/rules/{filename}"
         assert re.search(pattern, path), (
             f"HITL corpus trigger regex {pattern!r} does not match {path!r}. "
             "Edits to this file would silently skip the corpus validator."
@@ -318,7 +318,7 @@ class TestLedgerSchemaTrigger:
         fm = re.search(r"files:\s*(\S+)", block)
         assert fm, "author-gate-ledger-schema must have a files: pattern"
         pattern = fm.group(1)
-        ddl_path = ".windsurf/schemas/decision_ledger.schema.sql"
+        ddl_path = ".cursor/schemas/decision_ledger.schema.sql"
         assert re.search(pattern, ddl_path), (
             f"Trigger regex {pattern!r} does not match DDL file {ddl_path!r}. "
             "Changes to the DDL alone would silently skip the schema validator."

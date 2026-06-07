@@ -23,7 +23,7 @@ HARD LAWS:
     - Emits EMPTY/WEAK support_status with explicit reason when required evidence
       is absent so grounding_required=True but evidence is missing → BLOCKED.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W5)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W5)
 """
 from __future__ import annotations
 

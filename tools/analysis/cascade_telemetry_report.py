@@ -1,7 +1,7 @@
 """CLI: aggregate cascade telemetry from a JSONL file or in-memory buffer.
 
 Closes the operator-facing half of G7 from
-``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md``.
+``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md``.
 
 Reads dispatch result records (one JSON object per line) of the shape
 emitted by ``HealingRouter._dispatch_qwen`` /

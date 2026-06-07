@@ -1,6 +1,6 @@
 """apps_lic.engines.judges.ask_friction_judge — deterministic heuristic (v1).
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P1
 Exit rubric dim: ask_friction_score
 
 Scores 0.0–1.0 where **lower is better** (lower friction = easier ask).

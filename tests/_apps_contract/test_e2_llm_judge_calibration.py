@@ -1,6 +1,6 @@
 """E2.4 — Two-tier Spearman-rank calibration for apps_qna RAG judges.
 
-Plan: .windsurf/plans/apps-qna-deferred-e5-f7a2b1.md E2.4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-deferred-e5-f7a2b1.md E2.4
 
 Two-tier calibration design
 ===========================

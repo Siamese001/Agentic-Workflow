@@ -1,6 +1,6 @@
 """token_burn_weekly_report.py - weekly aggregate of per-turn token telemetry.
 
-Reads `artifacts/windsurf/turn_budget.jsonl` (produced by
+Reads `artifacts/cursor/turn_budget.jsonl` (produced by
 `post_cursor_agent_token_telemetry.py`) and emits a markdown report at
 `docs/reports/token-burn/<YYYY-Www>.md` with:
 
@@ -161,9 +161,9 @@ def _render_report(
     lines.append("")
     lines.append("## Notes")
     lines.append("")
-    lines.append("- Source: `artifacts/windsurf/turn_budget.jsonl`")
+    lines.append("- Source: `artifacts/cursor/turn_budget.jsonl`")
     lines.append("- Generator: `ops_scripts/calibration/token_burn_weekly_report.py`")
-    lines.append("- Plan reference: `.windsurf/plans/windsurf-token-burn-augmentation-b7a3f1.md` W2/P3")
+    lines.append("- Plan reference: `docs/archive/windsurf/legacy-tree/plans/windsurf-token-burn-augmentation-b7a3f1.md` W2/P3")
     return "\n".join(lines) + "\n"
 
 

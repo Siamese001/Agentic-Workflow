@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """W1 extension — batch-register on-disk plan files into the Plans DB.
 
-Reads `artifacts/windsurf/backlog_plan_linkage_misses.jsonl`, extracts unique
-slugs whose on-disk plan file exists at `.windsurf/plans/<slug>.md`, and posts
+Reads `artifacts/cursor/backlog_plan_linkage_misses.jsonl`, extracts unique
+slugs whose on-disk plan file exists at `docs/archive/windsurf/legacy-tree/plans/<slug>.md`, and posts
 one Plans DB row per slug with Slug (title) / Status=Not Started / Exists On Disk=true /
 Plan File Path / Summary / AI Summary.
 
@@ -28,7 +28,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -49,7 +49,7 @@ except ImportError:
     tqdm = lambda it, **kw: it  # type: ignore[assignment,misc]
 
 MISS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "backlog_plan_linkage_misses.jsonl"
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 PLANS_QUERY_URL = f"{NOTION_BASE}/data_sources/{PLANS_DATA_SOURCE_ID}/query"
 RESULT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "register_ondisk_plans_results.jsonl"
 TIMEOUT = 30.0
@@ -132,7 +132,7 @@ def _build_payload(slug: str, plan_path: Path) -> dict:
             "Slug": {"title": [{"text": {"content": slug}}]},
             "Status": {"select": {"name": "Not Started"}},
             "Exists On Disk": {"checkbox": True},
-            "Plan File Path": {"rich_text": [{"text": {"content": f".windsurf/plans/{slug}.md"}}]},
+            "Plan File Path": {"rich_text": [{"text": {"content": f"docs/archive/windsurf/legacy-tree/plans/{slug}.md"}}]},
             "Summary": {"rich_text": [{"text": {"content": summary}}]},
             "AI Summary ": {"rich_text": [{"text": {"content": ai_summary}}]},
         },

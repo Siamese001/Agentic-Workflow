@@ -1,6 +1,6 @@
 """eval_harness_weekly_report — weekly rollup of eval_harness_outcome ledger.
 
-Plan: ``.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md`` W5.P3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-deferred-e4a1b7.md`` W5.P3.
 
 Produces a weekly summary of the W5.P7 ``eval_harness_outcome`` ledger:
 per-app run counts, pass/deny/escalate/unknown breakdown, top fail

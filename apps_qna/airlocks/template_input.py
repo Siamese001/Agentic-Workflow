@@ -10,7 +10,7 @@ until cleared by the U0 airlock. Even though apps_qna template inputs
 are YAML-loaded (not raw user text), structured injection via field
 values is possible.
 
-Plan: .windsurf/plans/apps-qna-pa-spine-hardening-498d20.md W3.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-pa-spine-hardening-498d20.md W3.1
 """
 
 from __future__ import annotations

@@ -15,7 +15,7 @@ P3.14 — W3 Governance Contract Tests for apps_repo_brief spine restructure.
 - P3.13 Cache strict compat enforcement
 - Regression: W2 tests still pass (spot-checks)
 
-Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P3.14
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P3.14
 """
 
 from __future__ import annotations

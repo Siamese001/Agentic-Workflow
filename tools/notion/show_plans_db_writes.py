@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """show_plans_db_writes.py — view/summarize Plans-DB write telemetry.
 
-Reads ``artifacts/windsurf/plans_db_writes.jsonl`` (the unified telemetry
+Reads ``artifacts/cursor/plans_db_writes.jsonl`` (the unified telemetry
 log written by every Plans-DB writer) and prints a readable summary or
 filtered tail.
 

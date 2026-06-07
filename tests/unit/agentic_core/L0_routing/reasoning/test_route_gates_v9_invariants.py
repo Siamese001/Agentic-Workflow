@@ -1,6 +1,6 @@
 """v9 L0 route-contract invariant conformance tests — audit plan W4.
 
-Plan ref: `.windsurf/plans/l0-routing-best-practice-audit-1f9180.md` §W4
+Plan ref: `docs/archive/windsurf/legacy-tree/plans/l0-routing-best-practice-audit-1f9180.md` §W4
 v9 doc ref: `docs/reference/03_L0_Routing/03_L0_Route_Decision_Switching_L3 v9.md`
 
 These tests lock in the v9 execution-class invariants:

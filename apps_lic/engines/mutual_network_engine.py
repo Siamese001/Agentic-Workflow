@@ -1,6 +1,6 @@
 """apps_lic.engines.mutual_network_engine — D6-P5.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P5
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P5
 
 Extracts and scores mutual network signals from caller-provided connection
 data. Returns an immutable MutualNetworkSignal.

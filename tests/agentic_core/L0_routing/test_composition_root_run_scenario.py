@@ -1,6 +1,6 @@
 """Tests for the run_scenario hook added to composition_root.
 
-NEXT_STEP 1 closure from .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md
+NEXT_STEP 1 closure from docs/archive/windsurf/legacy-tree/plans/apps-e2e-auditability-harness-7c2a91.md
 — proves the hook honors the four-value inner-status protocol and never
 raises, regardless of input.
 """

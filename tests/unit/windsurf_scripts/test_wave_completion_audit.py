@@ -1,4 +1,4 @@
-"""Unit tests for .windsurf/scripts/post_cursor_agent_wave_completion_audit.py.
+"""Unit tests for .cursor/scripts/_legacy_windsurf/post_cursor_agent_wave_completion_audit.py.
 
 RCA: rca-wave-marker-emission-gap-c7d3f1 W4.P1.
 
@@ -26,12 +26,12 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_wave_completion_audit.py"
-HOOKS_JSON = REPO_ROOT / ".windsurf" / "hooks.json"
+HOOK_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_wave_completion_audit.py"
+HOOKS_JSON = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 
 
 def _load_module():
-    sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+    sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
     sys.path.insert(0, str(REPO_ROOT))
     spec = importlib.util.spec_from_file_location(
         "post_cursor_agent_wave_completion_audit", HOOK_PATH

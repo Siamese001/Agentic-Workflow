@@ -4,7 +4,7 @@
 
 The otel_mcp server is launched by Windsurf via the MCP config. The canonical entry is in both:
 
-- `.windsurf/mcp_config.json` (repo-local reference)
+- `.cursor/mcp.json` (repo-local reference)
 - `C:/Users/amita/.codeium/windsurf/mcp_config.json` (global Windsurf config)
 
 ### Exact Config Entry

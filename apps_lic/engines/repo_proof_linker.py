@@ -25,7 +25,7 @@ Proof requirement matrix (plan SE-P1c):
                   or short LinkedIn message (≤60 words)
                   where appending proof would breach channel fit
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P1c
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P1c
 """
 
 from __future__ import annotations

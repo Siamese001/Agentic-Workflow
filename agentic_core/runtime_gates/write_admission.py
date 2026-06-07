@@ -5,7 +5,7 @@ a GateBundle and determines whether to issue a writeable receipt. This is the
 single point of authority for all resume_data mutations — apps_rg cannot write
 directly without passing through this guard.
 
-Spec reference: .windsurf/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W0.P3)
+Spec reference: docs/archive/windsurf/legacy-tree/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W0.P3)
 """
 
 from __future__ import annotations

@@ -15,7 +15,7 @@ import pathlib
 import jsonschema
 import pytest
 
-SCHEMA_PATH = pathlib.Path(__file__).parents[2] / ".windsurf" / "schemas" / "CoreAdditionAuthorGateReceipt.schema.json"
+SCHEMA_PATH = pathlib.Path(__file__).parents[2] / ".cursor" / "schemas" / "CoreAdditionAuthorGateReceipt.schema.json"
 
 with SCHEMA_PATH.open(encoding="utf-8") as _f:
     SCHEMA = json.load(_f)

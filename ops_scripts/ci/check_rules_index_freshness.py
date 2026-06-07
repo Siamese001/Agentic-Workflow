@@ -24,8 +24,8 @@ from typing import Dict, List, Optional, Tuple
 
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-GENERATOR_SCRIPT = REPO_ROOT / ".windsurf" / "scripts" / "generate_rules_index.py"
-RULES_INDEX_PATH = REPO_ROOT / ".windsurf" / "RULES_INDEX.md"
+GENERATOR_SCRIPT = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "generate_rules_index.py"
+RULES_INDEX_PATH = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "RULES_INDEX.md"
 
 
 def run_generator() -> Tuple[bool, str, str]:

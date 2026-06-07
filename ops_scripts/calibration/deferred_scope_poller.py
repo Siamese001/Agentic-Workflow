@@ -1,6 +1,6 @@
 """deferred_scope_poller.py — Bind deferred-scope outcomes from local capture log.
 
-Reads `artifacts/windsurf/deferred_scope_capture.jsonl` (the capture hook's
+Reads `artifacts/cursor/deferred_scope_capture.jsonl` (the capture hook's
 output) and the deferred_scope_calibration ledger, then reconciles:
 
     - For each capture row with a computed P-band, if we already have a

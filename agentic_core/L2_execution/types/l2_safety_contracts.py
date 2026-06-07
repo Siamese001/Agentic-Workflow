@@ -1,6 +1,6 @@
 """
 L2 safety contracts — W1 additive types for the L2 best-practices gap plan
-(`.windsurf/plans/l2-execute-best-practices-gap-b7c4e2.md`).
+(`docs/archive/windsurf/legacy-tree/plans/l2-execute-best-practices-gap-b7c4e2.md`).
 
 Introduces three orthogonal classification axes that every L2 tool invocation
 should carry, and a composed ``SafetyProfile`` that attaches them to a

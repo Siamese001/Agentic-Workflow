@@ -595,7 +595,7 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
           -- These paths execute outside the agentic runtime and cannot route through
           -- UWG by construction. They must still satisfy their own disciplines
           -- (subprocess timeout, no shell=True, etc.) enforced by other gates.
-          AND src.resolved_path NOT LIKE '.windsurf/scripts/%'
+          AND src.resolved_path NOT LIKE '.cursor/scripts/_legacy_windsurf/%'
           AND src.resolved_path NOT LIKE 'agentic_core/adg/%'
           AND src.resolved_path NOT LIKE 'infrastructure/%'
           -- Symbol-level scanner-false-positive exemptions (2026-04-23):

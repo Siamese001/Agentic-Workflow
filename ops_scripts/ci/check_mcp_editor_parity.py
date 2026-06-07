@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""MCP editor parity gate — Cursor SSOT vs Windsurf mirror.
+"""MCP editor parity gate — Cursor SSOT plus optional compatibility copy.
 
-Ensures both editor configs declare the same canonical MCP fleet (14 servers)
-with only documented per-editor deltas (GitKraken host flags, Playwright id,
-filesystem launcher path).
+Ensures the Cursor config declares the canonical MCP fleet. A deprecated
+Windsurf compatibility copy is checked only when it exists.
 
 Bypass: MCP_EDITOR_PARITY_BYPASS=1
 """
@@ -21,7 +20,6 @@ if str(_CI_DIR) not in sys.path:
 from _mcp_ci_common import (  # noqa: E402
     CURSOR_MCP_PATH,
     MCP_PROFILES,
-    WINDSURF_MCP_PATH,
     canonical_server_set,
     load_mcp_json,
     profile_config_path,
@@ -44,32 +42,19 @@ def main() -> int:
     if not CURSOR_MCP_PATH.exists():
         print(f"[check_mcp_editor_parity] FAIL: missing {CURSOR_MCP_PATH}", file=sys.stderr)
         return 1
-    if not WINDSURF_MCP_PATH.exists():
-        print(f"[check_mcp_editor_parity] FAIL: missing {WINDSURF_MCP_PATH}", file=sys.stderr)
-        return 1
-
     cursor_servers = _load_servers(CURSOR_MCP_PATH)
-    windsurf_servers = _load_servers(WINDSURF_MCP_PATH)
 
     cursor_canon = canonical_server_set(cursor_servers)
-    windsurf_canon = canonical_server_set(windsurf_servers)
 
     issues: list[str] = []
 
-    if len(cursor_servers) != len(windsurf_servers):
-        issues.append(
-            f"server count mismatch: cursor={len(cursor_servers)} windsurf={len(windsurf_servers)}"
-        )
-
-    only_cursor = cursor_canon - windsurf_canon
-    only_windsurf = windsurf_canon - cursor_canon
-    if only_cursor:
-        issues.append(f"canonical servers only in Cursor config: {sorted(only_cursor)}")
-    if only_windsurf:
-        issues.append(f"canonical servers only in Windsurf config: {sorted(only_windsurf)}")
-
     for profile, required in MCP_PROFILES.items():
         path = profile_config_path(profile)
+        if not path.exists():
+            if profile == "windsurf":
+                continue
+            issues.append(f"{profile}: missing config path {path}")
+            continue
         present = set(_load_servers(path))
         missing_required = required - present
         if missing_required:
@@ -82,14 +67,14 @@ def main() -> int:
         for issue in issues:
             print(f"  - {issue}", file=sys.stderr)
         print(
-            "[check_mcp_editor_parity] Fix: align .cursor/mcp.json (Cursor SSOT) and "
-            ".windsurf/mcp_config.json (mirror); run python .cursor/scripts/sync_mcp_config.py",
+            "[check_mcp_editor_parity] Fix: align .cursor/mcp.json (Cursor SSOT); "
+            "deprecated compatibility copies are non-authoritative.",
             file=sys.stderr,
         )
         return 1
 
     print(
-        "[check_mcp_editor_parity] OK: Cursor and Windsurf MCP configs share "
+        "[check_mcp_editor_parity] OK: Cursor MCP config declares "
         f"{len(cursor_canon)} canonical servers."
     )
     return 0

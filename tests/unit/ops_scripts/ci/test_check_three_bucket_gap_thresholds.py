@@ -1,6 +1,6 @@
 """Tests for ops_scripts/ci/check_three_bucket_gap_thresholds.py (W5).
 
-Plan: ``.windsurf/plans/three-bucket-gap-remediation-069806.md`` (W5).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-gap-remediation-069806.md`` (W5).
 """
 
 from __future__ import annotations

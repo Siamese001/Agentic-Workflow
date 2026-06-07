@@ -1,6 +1,6 @@
 """Tests for tools.cost_telemetry — W4.3.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W4.3)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W4.3)
 """
 from __future__ import annotations
 

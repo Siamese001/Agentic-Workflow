@@ -6,7 +6,7 @@
 python -m tools.adg.mcp.server
 ```
 
-This is the only supported launch path — configured in `.windsurf/mcp_config.json` as:
+This is the only supported launch path — configured in `.cursor/mcp.json` as:
 ```json
 "command": "python", "args": ["-m", "tools.adg.mcp.server"]
 ```
@@ -20,7 +20,7 @@ Two distinct restart types exist. Choosing the wrong one wastes time.
 | Change made | Action required | Why |
 |---|---|---|
 | Edited `server.py`, `service.py`, `sqlite_backend.py`, or `models.py` | **Toggle adg_sqlite OFF then ON** in Windsurf MCP Settings | Windsurf kills and respawns the subprocess, loading fresh `.py` files |
-| Edited `.windsurf/mcp_config.json` (command, args, **env**, cwd) | **Fully restart Windsurf IDE** | Windsurf reads global MCP config only at IDE startup; per-server toggle reuses the stale command. This includes `ADG_DIR` and `ADG_REDIS_URL` changes. |
+| Edited `.cursor/mcp.json` (command, args, **env**, cwd) | **Fully restart Windsurf IDE** | Windsurf reads global MCP config only at IDE startup; per-server toggle reuses the stale command. This includes `ADG_DIR` and `ADG_REDIS_URL` changes. |
 | New SQLite snapshot available (`adg_indexed_*.sqlite`) | Call **`adg_reload`** MCP tool | Data-only reload; does not restart the process or reload code |
 
 ## Verifying a restart took effect
@@ -56,7 +56,7 @@ Before using `grep_search` as a fallback for any graph query:
 3. If status is ok, `adg_sqlite` MUST be used — no fallback permitted
 
 **Silent grep-for-graph** (no health check + no reason code) is a policy violation logged to
-`artifacts/windsurf/adg_first_violations.jsonl` with `severity: critical`.
+`artifacts/cursor/adg_first_violations.jsonl` with `severity: critical`.
 
 ## ADG generation lock-release workflow
 
@@ -77,10 +77,10 @@ Use this sequence when the ADG needs full regeneration while Windsurf is running
 
 ## Config sync
 
-`post_write_code` hook auto-syncs `.windsurf/mcp_config.json` → `~/.codeium/windsurf/mcp_config.json` whenever the repo file is written (detected via mtime within 10 s). Manual fallback:
+`post_write_code` hook auto-syncs `.cursor/mcp.json` → `~/.codeium/windsurf/mcp_config.json` whenever the repo file is written (detected via mtime within 10 s). Manual fallback:
 
 ```
-python .windsurf/scripts/sync_mcp_config.py
+python .cursor/scripts/_legacy_windsurf/sync_mcp_config.py
 ```
 
 The hook output confirms sync: `[mcp_sync] Synced N servers to global config.`

@@ -1,6 +1,6 @@
 """apps_lic W4 (D6) — signal enhancement engines sentinel tests.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P1..P5
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P1..P5
 Coverage:
   - NarrativeArcEngine: shape, matrix completeness, disabled when env absent
   - ArchetypeToneSelector: shape, matrix completeness, additive contract

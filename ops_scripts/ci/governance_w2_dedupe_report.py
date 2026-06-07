@@ -147,7 +147,7 @@ def main() -> int:
             "W3-W5 not executed",
             "hooks not rewired",
             "active plans not archived",
-            ".windsurf not deleted",
+            "docs/archive/windsurf/legacy-tree not deleted",
             "runtime RAG not touched",
             "agentic_core untouched",
             "apps_rg runtime/product code untouched",

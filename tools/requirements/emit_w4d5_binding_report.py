@@ -201,7 +201,7 @@ def main() -> int:
             "FAILED — but on a DIFFERENT pre-existing issue, not the original G1 issue. "
             "After G1 fix the meta-gate progressed past EXECUTOR_THEATER_GATE and now stops at "
             "check_graph_layer_evidence (constitutional §22): 14 pre-existing plan files in "
-            ".windsurf/plans/ lack the required ## ADG_GRAPH_LAYER_EVIDENCE and/or "
+            "docs/archive/windsurf/legacy-tree/plans/ lack the required ## ADG_GRAPH_LAYER_EVIDENCE and/or "
             "## ADG_HOTSPOT_REPORT sections (e.g. apps-eval-first-principles-refactor-7b9f1d.md, "
             "apps-rg-first-principles-refactor-7e9c4a.md, ...). NONE of these plans are W4d-5 "
             "plans — they predate §22 or were authored under different conventions. "
@@ -296,7 +296,7 @@ def main() -> int:
                 "(b) dirty files outside scope listed":
                     f"YES — {len(full_dirty_lines)} dirty files outside scope at report time, "
                     "all listed in `full_tree_dirty_at_report_time` (apps_qna/, "
-                    "docs/reference/ moves, .windsurf/rules/, ...)",
+                    "docs/reference/ moves, .cursor/rules/, ...)",
                 "(c) no out-of-scope file affects tests/validators/bundles/gates/ledger":
                     "YES — verified via three independent mechanisms: "
                     "(1) per-bundle content_hash tamper check (5/5 PASS), "

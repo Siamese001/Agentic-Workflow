@@ -6,8 +6,8 @@
 # to implement. Every 'active' stage must have at least one caller from an
 # allowed ingress layer; otherwise gate J1 fails CI.
 #
-# See plan: .windsurf/plans/adg-wiring-ci-hardening-7a5d84.md
-# See plan: .windsurf/plans/c0-context-engine-wiring-fix-9e42a1.md
+# See plan: docs/archive/windsurf/legacy-tree/plans/adg-wiring-ci-hardening-7a5d84.md
+# See plan: docs/archive/windsurf/legacy-tree/plans/c0-context-engine-wiring-fix-9e42a1.md
 
 version: 1
 
@@ -33,7 +33,7 @@ pipelines:
     # we accept any non-test production layer in [L0, L1, L3, L_PG] as a
     # valid ingress caller. Future dedup of the L0 `c0_retrieval` and L_PG
     # `knowledge/retrieval` parallel stacks is captured in the C0 wiring
-    # plan (`.windsurf/plans/c0-context-engine-wiring-fix-9e42a1.md`).
+    # plan (`docs/archive/windsurf/legacy-tree/plans/c0-context-engine-wiring-fix-9e42a1.md`).
     stages:
       - id: C01_plan
         description: "Plan: scope/policy/freshness/tenant-ACL."

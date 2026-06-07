@@ -1,7 +1,7 @@
 """E2E: full post_cursor_agent_response chain with real Windsurf payload shape.
 
 Simulates Windsurf dispatching the entire hook chain defined in
-``.windsurf/hooks.json`` and asserts each hook's observable side-effect.
+``.cursor/hooks.json`` and asserts each hook's observable side-effect.
 This is the end-to-end regression guard for the 2026-04-23 RCA.
 
 What it proves:
@@ -30,8 +30,8 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-HOOKS_JSON = REPO / ".windsurf" / "hooks.json"
-SCRIPTS = REPO / ".windsurf" / "scripts"
+HOOKS_JSON = REPO / "docs/archive/windsurf/legacy-tree" / "hooks.json"
+SCRIPTS = REPO / ".cursor" / "scripts" / "_legacy_windsurf"
 ARTIFACTS = REPO / "artifacts" / "windsurf"
 
 
@@ -42,7 +42,7 @@ def _load_chain() -> list[Path]:
     scripts: list[Path] = []
     for entry in chain:
         cmd = entry["command"]
-        # Format: "python .windsurf/scripts/<name>.py"
+        # Format: "python .cursor/scripts/_legacy_windsurf/<name>.py"
         parts = cmd.split()
         rel = parts[-1].replace("\\", "/")
         if rel.startswith("./"):

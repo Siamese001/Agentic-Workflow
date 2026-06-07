@@ -1,6 +1,6 @@
 """Harness-scoped AppDomainStore loader.
 
-Plan: .windsurf/plans/apps-dom-runtime-evidence-real-b4c9e2.md W2.P1.
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-dom-runtime-evidence-real-b4c9e2.md W2.P1.
 
 Builds an :class:`InMemoryAppDomainStore` populated with per-app
 AppEvalRubricRecord / AppThresholdProfileRecord / AppGraderRosterRecord

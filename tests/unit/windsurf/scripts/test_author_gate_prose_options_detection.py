@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".windsurf" / "scripts"
+_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".cursor" / "scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 
 from post_cursor_agent_author_gate_miss_detector import (  # noqa: E402

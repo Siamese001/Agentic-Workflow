@@ -48,7 +48,7 @@ SSOT_SCORE_THRESHOLD_QWEN: int = 26  # S <= 26  → QWEN; S > 26 → GEMINI
 def consensus_majority_threshold(juror_count: int) -> float:
     """Return the strict-majority fraction for a jury of size ``juror_count``.
 
-    Wave C1 (2026-04-21) of `.windsurf/plans/consensus-validator-unification-5e9f3a.md`.
+    Wave C1 (2026-04-21) of `docs/archive/windsurf/legacy-tree/plans/consensus-validator-unification-5e9f3a.md`.
     Replaces the hardcoded ``MAJORITY_THRESHOLD = 0.66`` in
     ``agentic_core.L1_cognition.enforcement.consensus_validator`` so the
     threshold tracks the juror set rather than a magic number.
@@ -105,7 +105,7 @@ APPS_PACKAGES: Final[list[str]] = [
 PROJECT_ROOT_MARKERS: Final[tuple[str, ...]] = (
     ".git",
     "pyproject.toml",
-    ".windsurfrules",
+    ".cursor/rules",
 )
 
 
@@ -156,8 +156,8 @@ ARCHIVES_DIR: Final[str] = "archives"
 # documentation reports, and ADR storage.
 ARTIFACTS_DIR: Final[str] = "artifacts"
 ADG_ARTIFACTS_DIR: Final[str] = "artifacts/adg"
-WINDSURF_ARTIFACTS_DIR: Final[str] = "artifacts/windsurf"
-WINDSURF_PLANS_DIR: Final[str] = ".windsurf/plans"
+WINDSURF_ARTIFACTS_DIR: Final[str] = "artifacts/cursor"
+WINDSURF_PLANS_DIR: Final[str] = "docs/archive/windsurf/legacy-tree/plans"
 DOCS_DIR: Final[str] = "docs"
 DOCS_REPORTS_DIR: Final[str] = "docs/reports"
 ADR_DIR: Final[str] = "docs/architecture/adr"
@@ -169,7 +169,7 @@ OPS_SCRIPTS_DIR: Final[str] = "ops_scripts"
 SCRIPTS_DIR: Final[str] = "scripts"
 SYSTEM_LEARNING_DIR: Final[str] = "system_learning"
 TESTS_DIR: Final[str] = "tests"
-WINDSURF_SCRIPTS_DIR: Final[str] = ".windsurf/scripts"
+WINDSURF_SCRIPTS_DIR: Final[str] = ".cursor/scripts/_legacy_windsurf"
 TESTS_UNIT_DIR: Final[str] = "tests/unit"
 APPS_TEST_UNIT_DIR: Final[str] = "tests/unit"
 APPS_TEST_INTEGRATION_DIR: Final[str] = "tests"
@@ -308,7 +308,7 @@ ROOT_PROTECTED_FILES: Final[frozenset[str]] = frozenset(
         ".gitignore",
         ".gitattributes",
         ".pre-commit-config.yaml",
-        ".windsurfrules",
+        ".cursor/rules",
         "pyproject.toml",
         "requirements.txt",
         "setup.py",
@@ -374,7 +374,7 @@ GLOBAL_EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
         ".idea",
         ".venv",
         ".vscode",
-        ".windsurf",
+        "docs/archive/windsurf/legacy-tree",
         "__pycache__",
         ".mypy_cache",
         ".pytest_cache",
@@ -400,7 +400,7 @@ DISCOVERY_EXCLUDED_TERRITORIES: Final[frozenset[str]] = frozenset(
 # that want to EXCLUDE tooling from the sovereign-territory list without pulling
 # in caches/build artifacts).
 TOOLING_EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
-    {".git", ".github", ".idea", ".vscode", ".windsurf", ".gravity_state"},
+    {".git", ".github", ".idea", ".vscode", "docs/archive/windsurf/legacy-tree", ".gravity_state"},
 )
 
 # ============================================================================

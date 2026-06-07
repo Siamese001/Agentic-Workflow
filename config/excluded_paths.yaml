@@ -110,7 +110,7 @@ precommit_excludes:
   #   - "artifacts/healing/healing_events.jsonl"
   #   - "artifacts/bypass_audit.jsonl"
   #   - "artifacts/import_health/import_health_report.json"
-  #   - "artifacts/windsurf/*"
+  #   - "artifacts/cursor/*"
   - "temp_[^/]*/.*"  # Temporary directories
   - "tmp.*"  # Generic temp files
   - "_temp_cmd.*"  # Temp command files
@@ -142,7 +142,7 @@ precommit_excludes:
 
 # Windsurf runtime state (local-only, never committed)
 windsurf_state_dirs:
-  - ".windsurf/state"
+  - ".cursor/state"
 
 # ============================================================================
 # RUNTIME SCANNER EXCLUSIONS (mirror of Python frozensets in
@@ -168,8 +168,8 @@ sovereign_excluded_folders:
   - ".healing_backups"
 
 # Mirrors path_constants.GLOBAL_EXCLUDED_DIRS
-# NOTE: includes ".windsurf" — runtime scanners skip it entirely even though
-# git tracks .windsurf/rules, .windsurf/plans, .windsurf/scripts, etc. Review
+# NOTE: includes "docs/archive/windsurf/legacy-tree" — runtime scanners skip it entirely even though
+# git tracks .cursor/rules, docs/archive/windsurf/legacy-tree/plans, .cursor/scripts/_legacy_windsurf, etc. Review
 # flagged as drift risk in docs/reports/exclusion-ssot-consolidated-review-2026-04-19.md §2.1.
 global_excluded_dirs:
   - ".git"
@@ -177,7 +177,7 @@ global_excluded_dirs:
   - ".idea"
   - ".venv"
   - ".vscode"
-  - ".windsurf"
+  - "docs/archive/windsurf/legacy-tree"
   - "__pycache__"
   - ".mypy_cache"
   - ".pytest_cache"
@@ -207,7 +207,7 @@ discovery_excluded_territories:
 # Why: Windsurf indexing already honors .gitignore + hidden paths + node_modules
 # by default (docs/windsurf/llms-full.txt:810-819). The only deltas we ever
 # carried were **/*.db and **/*.pb (now moved into file_patterns above) plus
-# a !artifacts/windsurf/session_state.json negation that was vestigial —
+# a !artifacts/cursor/session_state.json negation that was vestigial —
 # per tests/unit/ops_scripts/hooks/windsurf/test_pre_mcp_gate.py:1695-1704
 # the pre-mcp-gate explicitly REFUSES to consult that path now (stale
 # fallback; Fix 2 regression guard). Indexing it had no remaining upside.

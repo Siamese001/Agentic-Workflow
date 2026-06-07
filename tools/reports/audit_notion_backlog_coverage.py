@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit Notion Wave/Phase Convergence coverage vs .windsurf/plans/ on disk.
+"""Audit Notion Wave/Phase Convergence coverage vs docs/archive/windsurf/legacy-tree/plans/ on disk.
 
 Deterministic, re-runnable. Writes a markdown audit report to
 docs/reports/plans/notion_backlog_audit_<YYYYMMDD>.md.
@@ -31,7 +31,7 @@ NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2025-09-03"
 DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 REPORT_DIR = REPO_ROOT / "docs" / "reports" / "plans"
 
 ENRICHED_FIELDS = (
@@ -117,7 +117,7 @@ def _extract(row: dict[str, Any]) -> dict[str, str]:
         "plan_file": (
             rich("Plan File")
             .strip()
-            .removeprefix(".windsurf/plans/")
+            .removeprefix("docs/archive/windsurf/legacy-tree/plans/")
             .removeprefix("windsurf/plans/")
             .removesuffix(".md")
             .strip()
@@ -161,7 +161,7 @@ def audit() -> int:
     lines: list[str] = [
         f"# Notion Backlog Audit — {today}",
         "",
-        "Deterministic reconciliation of `.windsurf/plans/*.md` vs Notion Wave/Phase Convergence DB.",
+        "Deterministic reconciliation of `docs/archive/windsurf/legacy-tree/plans/*.md` vs Notion Wave/Phase Convergence DB.",
         "",
         "## Headline Numbers",
         "",
@@ -179,7 +179,7 @@ def audit() -> int:
         "",
     ]
     for p in sorted(plans_without_rows):
-        lines.append(f"- `.windsurf/plans/{p}.md`")
+        lines.append(f"- `docs/archive/windsurf/legacy-tree/plans/{p}.md`")
 
     lines += [
         "",

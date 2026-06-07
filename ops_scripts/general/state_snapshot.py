@@ -55,7 +55,7 @@ def _atomic_write(path: Path, content: str) -> None:
 
 def create_snapshot_dirs(repo_root: Path, wave: int) -> tuple[Path, Path, Path]:
     data_dir = repo_root / "data"
-    windsurf_dir = repo_root / ".windsurf"
+    windsurf_dir = repo_root / "docs/archive/windsurf/legacy-tree"
     snapshots_dir = data_dir / "snapshots"
     vector_snapshots_dir = repo_root / "vector_store_snapshots"
 
@@ -97,7 +97,7 @@ def backup_vector_store(repo_root: Path, wave_vector_dir: Path) -> bool:
 
 
 def backup_memory(repo_root: Path, wave_memory_backup: Path) -> bool:
-    memory_file = repo_root / ".windsurf" / "memory.jsonl"
+    memory_file = repo_root / "docs/archive/windsurf/legacy-tree" / "memory.jsonl"
     if not memory_file.exists():
         print(f"  [SKIP] Memory file does not exist: {memory_file}")
         return False
@@ -165,7 +165,7 @@ def take_snapshot(repo_root: Path, wave: int, agent: str) -> bool:
 def restore_snapshot(repo_root: Path, wave: int, execute_restore: bool = False) -> bool:
     data_dir = repo_root / "data"
     vector_store_dir = repo_root / "vector_store"
-    windsurf_dir = repo_root / ".windsurf"
+    windsurf_dir = repo_root / "docs/archive/windsurf/legacy-tree"
 
     wave_data_dir = data_dir / "snapshots" / f"wave{wave}"
     wave_vector_dir = repo_root / "vector_store_snapshots" / f"wave{wave}"

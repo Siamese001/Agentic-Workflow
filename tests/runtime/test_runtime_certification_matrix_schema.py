@@ -1,6 +1,6 @@
 """Tests — Hardened certification matrix schema (RTC-REQ-002, 003, 006, 110).
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``
 
 Coverage
 --------

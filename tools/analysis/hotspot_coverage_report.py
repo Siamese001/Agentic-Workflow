@@ -1,6 +1,6 @@
 """Generate the Hotspot × Coverage priority report.
 
-Plan: `.windsurf/plans/hotspot-coverage-pipeline-c4e8d2.md` (W3)
+Plan: `docs/archive/windsurf/legacy-tree/plans/hotspot-coverage-pipeline-c4e8d2.md` (W3)
 
 Reads: `mv_hotspot_coverage_risk` from the latest ADG snapshot.
 Writes: `artifacts/test_inventory/hotspot_coverage_priority.md`
@@ -19,7 +19,7 @@ Usage:
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 
@@ -168,7 +168,7 @@ def _format(data: dict[str, Any]) -> str:
             "The Phase F materialized view has not been generated. "
             "Regenerate the ADG with `python tools/generate_full_adg.py` "
             "to populate it. See plan "
-            "`.windsurf/plans/hotspot-coverage-pipeline-c4e8d2.md` for context.\n"
+            "`docs/archive/windsurf/legacy-tree/plans/hotspot-coverage-pipeline-c4e8d2.md` for context.\n"
         )
 
     lines: list[str] = []
@@ -299,7 +299,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description=(
             "Generate the Hotspot × Coverage priority report. See plan "
-            "`.windsurf/plans/hotspot-coverage-pipeline-c4e8d2.md`."
+            "`docs/archive/windsurf/legacy-tree/plans/hotspot-coverage-pipeline-c4e8d2.md`."
         ),
     )
     p.add_argument(

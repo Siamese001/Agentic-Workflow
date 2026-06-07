@@ -1,6 +1,6 @@
 """apps_lic.engines.judges.response_likelihood_judge — PROMOTED (v2 deterministic).
 
-Plan: ``.windsurf/plans/apps-eval-harness-terminal-3c9f81.md`` W1.P1.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-terminal-3c9f81.md`` W1.P1.
 
 PROMOTION HISTORY
 =================

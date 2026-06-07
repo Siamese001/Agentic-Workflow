@@ -1,6 +1,6 @@
 """Contract tests for DS-5 W5: new depth profiles beyond DOSSIER.
 
-Plan: .windsurf/plans/apps-research-deferred-scope-b7e3d2.md W5 (DS-5).
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-research-deferred-scope-b7e3d2.md W5 (DS-5).
 
 Acceptance criteria:
 - COMPANY_BRIEF_COMPETITIVE_SCAN profile exists with documented thresholds.

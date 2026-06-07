@@ -1,5 +1,5 @@
 """
-Unit tests for .windsurf/scripts/_plans_dup_detector.py.
+Unit tests for .cursor/scripts/_legacy_windsurf/_plans_dup_detector.py.
 
 Plan: notion-plans-status-rca-followups-b8e3f2 (W1.P2c/d).
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-MODULE_PATH = REPO_ROOT / ".windsurf" / "scripts" / "_plans_dup_detector.py"
+MODULE_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "_plans_dup_detector.py"
 
 
 def _load():

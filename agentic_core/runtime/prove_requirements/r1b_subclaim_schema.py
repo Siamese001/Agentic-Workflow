@@ -1,6 +1,6 @@
 """R1B Subclaim Schema — sidecar contract for the semantic-cache certification.
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``  (W1 phase 1)
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``  (W1 phase 1)
 Author-Gate decision (2026-04-30, architecture_choice):
 ``map_to_RTC_REQ_055_plus_conditional_056_057_058``.
 

@@ -26,7 +26,7 @@ JSONL event shape (one per line) — subset of `HealClassifierTelemetry`:
       "outcome_success": bool
     }
 
-Plan reference: `.windsurf/plans/routing-unification-qwen-abe735.md` P6.1.
+Plan reference: `docs/archive/windsurf/legacy-tree/plans/routing-unification-qwen-abe735.md` P6.1.
 """
 
 from __future__ import annotations

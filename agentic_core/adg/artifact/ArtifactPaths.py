@@ -706,7 +706,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                      AND (source_file LIKE 'ops_scripts/%'
                        OR source_file LIKE 'tests/%'
                        OR source_file LIKE 'tools/%'
-                       OR source_file LIKE '.windsurf/%'
+                       OR source_file LIKE 'docs/archive/windsurf/legacy-tree/%'
                        OR source_file LIKE 'infrastructure/%'
                        OR source_file LIKE '%/scripts/%'
                        OR source_file LIKE '%_scripts/%'
@@ -858,7 +858,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         conn.executescript(SQL_MV_GOVERNANCE)
         # 6) Runtime-as-VIEW (2026-04-29 Mid-Day Pivot — replace lift with view)
         # SSOT: agentic_core/adg/artifact/edge_authority.py
-        # Plan: .windsurf/plans/three-bucket-otel-view-5db409.md
+        # Plan: docs/archive/windsurf/legacy-tree/plans/three-bucket-otel-view-5db409.md
         # Doctrinal source: 2026-04-29 user critique — OTel IS the runtime
         # graph; runtime_adg lift was a fake indirection. Validated against
         # OTel GenAI SIG, OpenAI Agents SDK, Anthropic Claude Code OTel docs.

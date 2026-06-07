@@ -1,8 +1,8 @@
 # setup_symlinks.ps1 — Windows contributor symlink setup for Windsurf config SSOT.
 #
 # Creates symlinks so the repo-local files ARE the files Windsurf reads:
-#   ~/.codeium/windsurf/mcp_config.json  ->  <repo>/.windsurf/mcp_config.json
-#   <repo>/AGENTS.md                     ->  <repo>/.windsurf/AGENTS.md   (with -IncludeAgentsMd)
+#   ~/.codeium/windsurf/mcp_config.json  ->  <repo>/.cursor/mcp.json
+#   <repo>/AGENTS.md                     ->  <repo>/docs/archive/windsurf/legacy-tree/AGENTS.md   (with -IncludeAgentsMd)
 #
 # Eliminates repo<->global drift for Cursor Agent. Idempotent; safe to re-run.
 #
@@ -120,10 +120,10 @@ if (-not (Test-SymlinkCapability)) {
 }
 
 # --- Paths ---
-$repoMcp     = Join-Path $repoRoot ".windsurf\mcp_config.json"
+$repoMcp     = Join-Path $repoRoot ".cursor\mcp.json"
 $globalMcp   = Join-Path $env:USERPROFILE ".codeium\windsurf\mcp_config.json"
 $repoAgents  = Join-Path $repoRoot "AGENTS.md"
-$wsAgentsMd  = Join-Path $repoRoot ".windsurf\AGENTS.md"
+$wsAgentsMd  = Join-Path $repoRoot "docs/archive/windsurf/legacy-tree\AGENTS.md"
 
 Write-Step "Repo root: $repoRoot"
 Write-Step "Mode: $(if ($DryRun) { 'DRY-RUN' } else { 'APPLY' })"

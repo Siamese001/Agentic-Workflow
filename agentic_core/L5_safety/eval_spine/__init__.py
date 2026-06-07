@@ -1,7 +1,7 @@
 """L5 Eval Spine — v33 §5 EXIT EVAL & CONTROL primitives.
 
 This subpackage implements the code listed as Open Items in ADR-036 … ADR-042
-(see `.windsurf/plans/exit-eval-spine-code-fb2c19.md`).
+(see `docs/archive/windsurf/legacy-tree/plans/exit-eval-spine-code-fb2c19.md`).
 
 Modules:
 - tool_call_canonicalizer: ADR-037 §2.3 canonical tool-call shape.

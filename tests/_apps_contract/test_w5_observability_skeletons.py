@@ -1,6 +1,6 @@
 """W5 verification — observability skeleton smoke tests.
 
-Plan: ``.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md`` W5.P1-P3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-deferred-e4a1b7.md`` W5.P1-P3.
 
 Proves the three skeletons run end-to-end against an empty (or populated)
 ledger and produce shape-valid JSON outputs.

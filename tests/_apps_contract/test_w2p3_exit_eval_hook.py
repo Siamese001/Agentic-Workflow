@@ -1,6 +1,6 @@
 """W2.P3 verification — cert-route Exit invocation opt-in hook.
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P3.
 
 Proves:
 

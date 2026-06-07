@@ -46,7 +46,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Late import keeps this module importable from any cwd.
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -69,7 +69,7 @@ DEFAULT_TIMEOUT_S = 15.0
 LOG_ROTATION_BYTES = 10 * 1024 * 1024  # 10 MB
 
 # Cache path — mirrors _plan_registration.CACHE_PATH (DS-2).
-_CACHE_PATH = REPO_ROOT / ".windsurf" / "state" / "plan_registration_cache.json"
+_CACHE_PATH = REPO_ROOT / ".cursor" / "state" / "plan_registration_cache.json"
 
 
 # ---------------------------------------------------------------------------
@@ -148,7 +148,7 @@ def log_plans_db_write(
         detail: Free-form message (HTTP error string, reason code, etc.).
         **extra: Additional fields merged into the row.
 
-    Writes to ``artifacts/windsurf/plans_db_writes.jsonl``. Never raises.
+    Writes to ``artifacts/cursor/plans_db_writes.jsonl``. Never raises.
 
     RCA NOTION_PLANS_STATUS_RCA_2026-05-10 §8 (telemetry mandate).
     """

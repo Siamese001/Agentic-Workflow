@@ -45,10 +45,10 @@ LOG_DIR = ROOT / "artifacts" / "windsurf"
 LOG_FILE = LOG_DIR / "graph_layer_violations.jsonl"
 BASELINE_FILE = ROOT / "ops_scripts" / "ci" / "baselines" / "graph_layer_evidence_baseline.json"
 
-# SSOT plan trees — baseline entries may use `.cursor/plans/` or `.windsurf/plans/`
+# SSOT plan trees — baseline entries may use `.cursor/plans/` or `docs/archive/windsurf/legacy-tree/plans/`
 # prefixes; integrity checks must resolve against both roots.
 _PLAN_INTEGRITY_ROOTS: tuple[Path, ...] = (
-    ROOT / ".windsurf" / "plans",
+    ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans",
     ROOT / ".cursor" / "plans",
 )
 
@@ -295,7 +295,7 @@ def _baseline_entry_resolves(entry: str, existing_rel: set[str]) -> bool:
         if alias in existing_rel:
             return True
     # W3 archive: `.cursor/plans/foo.md` may live at `.cursor/plans/_archive/YYYY-MM/foo.md`
-    for prefix in (".cursor/plans/", ".windsurf/plans/"):
+    for prefix in (".cursor/plans/", "docs/archive/windsurf/legacy-tree/plans/"):
         if not entry.startswith(prefix):
             continue
         leaf = entry[len(prefix) :]
@@ -313,9 +313,9 @@ def _baseline_entry_resolves(entry: str, existing_rel: set[str]) -> bool:
 
 
 def _grandfather_path_aliases(rel: str) -> set[str]:
-    """Baseline may list ``.cursor/plans/…`` while the live file is under ``.windsurf/plans/…`` (or vice versa)."""
+    """Baseline may list ``.cursor/plans/…`` while the live file is under ``docs/archive/windsurf/legacy-tree/plans/…`` (or vice versa)."""
     aliases = {rel}
-    prefix_ws = ".windsurf/plans/"
+    prefix_ws = "docs/archive/windsurf/legacy-tree/plans/"
     prefix_cc = ".cursor/plans/"
     if rel.startswith(prefix_ws):
         aliases.add(prefix_cc + rel[len(prefix_ws) :])

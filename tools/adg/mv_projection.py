@@ -45,7 +45,7 @@ class PViewProjectionSpec:
 
 
 # Canonical projection targets — chosen for top-K utility during T2/T3 refactoring.
-# See .windsurf/plans/redis-mv-projections-9262a6.md for rationale.
+# See docs/archive/windsurf/legacy-tree/plans/redis-mv-projections-9262a6.md for rationale.
 MV_SPECS: tuple[MVProjectionSpec, ...] = (
     MVProjectionSpec(
         table="mv_hotspot_centrality",

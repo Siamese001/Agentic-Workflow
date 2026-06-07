@@ -9,7 +9,7 @@ End-to-end wiring:
         -> CertDecisionSmokeReport                               # D.4 output
 
 Implements the approved plan at
-``.windsurf/plans/runtime-cert-d4-cert-decision-smoke-7acad5.md``.
+``docs/archive/windsurf/legacy-tree/plans/runtime-cert-d4-cert-decision-smoke-7acad5.md``.
 
 Hard invariants enforced at five layers (C.8 input -> D.1 construction ->
 D.3 SQL CHECK -> D.3 read-back hydration -> this report's

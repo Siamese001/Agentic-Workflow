@@ -680,7 +680,7 @@ def generate_full_adg(
         print("[ERROR]")
         print("[ERROR] Syntax errors prevent complete ADG analysis")
         print("[ERROR] Fix all syntax errors before running ADG generation")
-        print("[ERROR] See wave plan: .windsurf/plans/burn-down-syntax-errors-wave-plan-20260406.md")
+        print("[ERROR] See wave plan: docs/archive/windsurf/legacy-tree/plans/burn-down-syntax-errors-wave-plan-20260406.md")
         sys.exit(1)
 
     # --- Build canonical artifact (schema v3) ---

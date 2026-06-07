@@ -1,6 +1,6 @@
 """L6 promotion gates — Wilson-CI + auto-rollback + counterfactual shadow.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W12.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W12.
 
 Closes opportunities 10.1 (Wilson confidence-interval promotion gate),
 10.2 (auto-rollback canary trigger on regression), 10.3 (counterfactual

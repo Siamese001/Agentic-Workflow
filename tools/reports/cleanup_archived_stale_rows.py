@@ -2,7 +2,7 @@
 
 Rules:
   - Only acts on rows whose plan_file points to a slug that exists ONLY in
-    archives/windsurf_plans/ (not in .windsurf/plans/).
+    archives/windsurf_plans/ (not in docs/archive/windsurf/legacy-tree/plans/).
   - Status Todo or Blocked  -> Descoped (with audit marker in Blocking Items)
   - Status In Progress      -> SKIPPED (work may be active)
   - Other statuses          -> SKIPPED
@@ -41,7 +41,7 @@ MARKER_TEXT = (
     "if work is still required."
 )
 
-PLANS_DIR = REPO / ".windsurf" / "plans"
+PLANS_DIR = REPO / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 ARCHIVES_DIR = REPO / "archives" / "windsurf_plans"
 
 

@@ -39,7 +39,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 import pre_mcp_gate as _gate_module
 from pre_mcp_gate import (
@@ -936,7 +936,7 @@ class TestCheckRedisGate:
 
     def test_recovery_tool_bypasses_gate(self):
         """redis_health bypasses gate even when Redis is down.
-        Server name MUST be 'redis' (matches .windsurf/mcp_config.json key exactly)."""
+        Server name MUST be 'redis' (matches .cursor/mcp.json key exactly)."""
         import redis as redis_lib
 
         mock_client = MagicMock()
@@ -1695,7 +1695,7 @@ class TestCheckMemoryFirstGate:
     def test_stale_plain_fallback_not_consulted(self, tmp_path):
         """Fix 2 regression: plain session_state.json with memory_recalled=True must not unblock gate.
 
-        Pre-fix: gate read REPO_ROOT/artifacts/windsurf/session_state.json as a fallback and
+        Pre-fix: gate read REPO_ROOT/artifacts/cursor/session_state.json as a fallback and
         would have returned 0.  Post-fix: only SESSION_STATE (PID-scoped) is consulted.
         """
         artifacts_dir = tmp_path / "artifacts" / "windsurf"

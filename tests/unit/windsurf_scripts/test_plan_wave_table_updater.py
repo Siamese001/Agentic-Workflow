@@ -44,8 +44,8 @@ PLAN_FILENAME = f"{SLUG}.md"
 
 
 def _make_plan(tmp_path: Path, content: str) -> Path:
-    """Write a plan .md file under .windsurf/plans/ inside tmp_path."""
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    """Write a plan .md file under docs/archive/windsurf/legacy-tree/plans/ inside tmp_path."""
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     plan_file = plans_dir / PLAN_FILENAME
     plan_file.write_text(textwrap.dedent(content), encoding="utf-8")
@@ -215,7 +215,7 @@ def test_phase_complete_is_noop(tmp_path: Path) -> None:
 
 
 def test_missing_plan_file_returns_false(tmp_path: Path) -> None:
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     ok, msg = update_wave_in_plan(tmp_path, SLUG, wave=1, kind="wave_complete")
     assert not ok
@@ -370,7 +370,7 @@ Some prose mentioning W1 TODO should not be changed.
 def test_crlf_line_endings_preserved(tmp_path: Path) -> None:
     """File with Windows CRLF line endings must not be converted to LF."""
     crlf_content = SAMPLE_WAVE_TABLE.replace("\n", "\r\n")
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     plan_file = plans_dir / PLAN_FILENAME
     plan_file.write_bytes(crlf_content.encode("utf-8"))
@@ -515,7 +515,7 @@ def test_letter_suffix_bare_todo_combined(tmp_path: Path) -> None:
 
 def _make_plan_with_phase_table(tmp_path: Path, content: str) -> Path:
     """Create a plan file with both Wave Structure and Phase-Level Summary tables."""
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True, exist_ok=True)
     plan_file = plans_dir / PLAN_FILENAME
     plan_file.write_text(content, encoding="utf-8")
@@ -732,7 +732,7 @@ SLUG_NO_HEX = "apps-rg-master-governed-runtime-hardening"
 
 def test_find_plan_file_exact_match(tmp_path: Path) -> None:
     """_find_plan_file resolves exact-match slugs (canonical case)."""
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     plan_file = plans_dir / f"{SLUG_NO_HEX}.md"
     plan_file.write_text("# plan", encoding="utf-8")
@@ -743,7 +743,7 @@ def test_find_plan_file_exact_match(tmp_path: Path) -> None:
 def test_find_plan_file_no_hex_suffix_exact(tmp_path: Path) -> None:
     """Slug without trailing 6-char hex suffix resolves if file name matches exactly."""
     slug = "my-long-plan-name-without-hex"
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     (plans_dir / f"{slug}.md").write_text("# plan", encoding="utf-8")
     assert _find_plan_file(tmp_path, slug) is not None
@@ -757,7 +757,7 @@ def test_find_plan_file_no_hex_suffix_exact(tmp_path: Path) -> None:
 def test_find_plan_file_numeric_prefix_underscore(tmp_path: Path) -> None:
     """01_<slug>.md resolves when slug=<slug> (no numeric prefix)."""
     slug = "apps-rg-master-governed-runtime-hardening"
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     (plans_dir / f"01_{slug}.md").write_text("# plan", encoding="utf-8")
     found = _find_plan_file(tmp_path, slug)
@@ -768,7 +768,7 @@ def test_find_plan_file_numeric_prefix_underscore(tmp_path: Path) -> None:
 def test_find_plan_file_numeric_prefix_dash(tmp_path: Path) -> None:
     """02-<slug>.md resolves when slug=<slug>."""
     slug = "some-plan-abc123"
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     (plans_dir / f"02-{slug}.md").write_text("# plan", encoding="utf-8")
     found = _find_plan_file(tmp_path, slug)
@@ -784,7 +784,7 @@ def test_find_plan_file_numeric_prefix_dash(tmp_path: Path) -> None:
 def test_find_plan_file_frontmatter_plan_id(tmp_path: Path) -> None:
     """File with plan_id: <slug> in frontmatter resolves even if filename differs."""
     slug = "custom-slug-no-hex"
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     content = "---\nplan_id: custom-slug-no-hex\n---\n# plan"
     (plans_dir / "01_different-filename.md").write_text(content, encoding="utf-8")
@@ -795,7 +795,7 @@ def test_find_plan_file_frontmatter_plan_id(tmp_path: Path) -> None:
 
 def test_find_plan_file_missing_returns_none(tmp_path: Path) -> None:
     """Returns None when no plan file can be resolved for the slug."""
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     assert _find_plan_file(tmp_path, "no-such-plan-xyz") is None
 
@@ -1024,7 +1024,7 @@ def test_note_column_idempotent(tmp_path: Path) -> None:
 
 def test_note_columns_missing_plan_returns_false(tmp_path: Path) -> None:
     """update_wave_note_columns returns (False, msg) when plan file not found."""
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     ok, msg = update_wave_note_columns(tmp_path, SLUG, wave=1, note="+5 tests, 2 files")
     assert ok is False
@@ -1043,7 +1043,7 @@ def test_warn_unresolvable_slug_emits_stderr(tmp_path: Path, capsys) -> None:
     import sys
 
     REPO_ROOT_LOCAL = Path(__file__).resolve().parents[3]
-    hook_path = REPO_ROOT_LOCAL / ".windsurf" / "scripts" / "post_cursor_agent_wave_lifecycle_capture.py"
+    hook_path = REPO_ROOT_LOCAL / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_wave_lifecycle_capture.py"
     spec = importlib.util.spec_from_file_location("_wlc_warn_test", hook_path)
     mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
     spec.loader.exec_module(mod)  # type: ignore[union-attr]
@@ -1055,7 +1055,7 @@ def test_warn_unresolvable_slug_emits_stderr(tmp_path: Path, capsys) -> None:
     # Override REPO_ROOT inside the module to point at tmp_path so no real file is found
     orig = mod.REPO_ROOT
     mod.REPO_ROOT = tmp_path
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     plans_dir.mkdir(parents=True)
     try:
         mod._warn_unresolvable_slugs([marker])

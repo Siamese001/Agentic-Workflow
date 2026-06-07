@@ -1,6 +1,6 @@
 """Artifact Payload Hasher — RTC-REQ-123.
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``
 
 The implementation prompt's non-negotiable §11 (and CSV row RTC-REQ-123) is
 explicit:

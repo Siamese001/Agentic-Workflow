@@ -8,7 +8,7 @@ Strategy:
   * For each: derive slug from `Plan File` (strip `.md`), resolve to a
     Plans-DB page id via `_resolve_plan_page_id` (capture-hook sibling).
   * On hit: PATCH with `Plan = {relation: [{id}]}` + `Last Updated = today`.
-  * On miss: log to `artifacts/windsurf/backlog_plan_linkage_misses.jsonl`
+  * On miss: log to `artifacts/cursor/backlog_plan_linkage_misses.jsonl`
     for W2 true-orphan triage.
 
 Idempotent: rows whose relation is already set are skipped.
@@ -33,7 +33,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,

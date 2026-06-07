@@ -14,7 +14,7 @@ Emits:    QnaPromptArtifact — truthy wrapper that carries the assembled card
           AppIngressRunner to skip L2 via _no_gen_disposition — apps_qna must
           never return falsy here since card-pack build IS the product.
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
 """
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 """EQ-6 — replay-verifier shim hardening.
 
-Plan: ``.windsurf/plans/eq1-compiled-artifact-schema-d9a3e7.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/eq1-compiled-artifact-schema-d9a3e7.md``
 ADR:  ADR-PROMPT-ASSEMBLY-002 §9 (back-compat shim window)
 
 Covers:

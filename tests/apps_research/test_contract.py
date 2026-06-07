@@ -4,7 +4,7 @@ Purpose: assert the research public contract holds — including the
 contradiction-aware and source-confidence dimensions claimed in
 SVP_ENGINEERING_REVIEW.md.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W2.1)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W2.1)
 """
 from __future__ import annotations
 

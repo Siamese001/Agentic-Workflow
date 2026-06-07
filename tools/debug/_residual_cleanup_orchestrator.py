@@ -34,7 +34,7 @@ PLANS_DB = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
 WPC_DB = "aa8d2507-101e-4384-81d9-60ea3fe33876"
 RECEIPTS = ROOT / "artifacts" / "notion" / "_writeback_receipts.jsonl"
 PLAN_SLUG = "notion-backlog-residual-cleanup-c3d8f2"
-PLAN_FILE = ".windsurf/plans/notion-backlog-residual-cleanup-c3d8f2.md"
+PLAN_FILE = "docs/archive/windsurf/legacy-tree/plans/notion-backlog-residual-cleanup-c3d8f2.md"
 
 ROWS = json.loads((ROOT / "artifacts/notion/open_rows_with_ids.json").read_text(encoding="utf-8"))
 RESCORE = json.loads((ROOT / "artifacts/notion/_pending_rescore.json").read_text(encoding="utf-8"))

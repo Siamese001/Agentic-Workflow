@@ -1,6 +1,6 @@
 """W4.P1 — OTEL metric emitters for L0 routing calibration.
 
-Plan: ``.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W4.P1.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W4.P1.
 
 Thin, fail-soft metric-emission surface for the four key calibration
 events each L0 decision produces:

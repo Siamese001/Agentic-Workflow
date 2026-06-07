@@ -20,9 +20,9 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-# Load module from .windsurf directory
+# Load module from docs/archive/windsurf/legacy-tree directory
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
-MODULE_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_plan_scope_audit.py"
+MODULE_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_plan_scope_audit.py"
 
 spec = importlib.util.spec_from_file_location(
     "post_cursor_agent_plan_scope_audit", MODULE_PATH
@@ -129,7 +129,7 @@ class TestDetectActivePlan:
     def test_detect_from_file_path(self):
         """Detect plan from file path."""
         text = "Some response"
-        files = [".windsurf/plans/plan-markdown-update-enforcement-a7d4e1.md"]
+        files = ["docs/archive/windsurf/legacy-tree/plans/plan-markdown-update-enforcement-a7d4e1.md"]
         plan = detect_active_plan(text, files)
         # Regex extracts: descriptive_part + "-" + hash
         assert plan == "markdown-update-enforcement-a7d4e1"
@@ -154,9 +154,9 @@ class TestDetectChangedFiles:
     
     def test_detect_edit_call(self):
         """Detect files from edit() calls."""
-        text = 'edit(file_path=".windsurf/rules/new.md", ...)'
+        text = 'edit(file_path=".cursor/rules/new.md", ...)'
         files = detect_changed_files(text)
-        assert ".windsurf/rules/new.md" in files
+        assert ".cursor/rules/new.md" in files
     
     def test_detect_write_to_file(self):
         """Detect files from write_to_file() calls."""

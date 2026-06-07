@@ -8,7 +8,7 @@ Public API:
     ModelPricing       — single model's USD/token rates
     PricingTable       — lookup table; default_pricing_table() returns 2026 list rates
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W4.3)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W4.3)
 """
 from __future__ import annotations
 

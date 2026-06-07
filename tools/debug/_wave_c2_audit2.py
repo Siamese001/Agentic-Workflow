@@ -14,7 +14,7 @@ NOISE_PREFIXES = (
     "docs/reports/",
     "tools/archive/",
     "artifacts/",
-    ".windsurf/plans/",
+    "docs/archive/windsurf/legacy-tree/plans/",
 )
 # Known-mechanical commit subjects (blanket refactors, not feature touches)
 MECHANICAL_COMMIT_PATTERNS = [

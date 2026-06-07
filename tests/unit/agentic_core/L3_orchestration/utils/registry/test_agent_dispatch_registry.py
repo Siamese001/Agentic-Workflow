@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry`.
 
-Wave 11 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3). L3
+Wave 11 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3). L3
 agent dispatch registry — gates which agents may dispatch which.
 """
 

@@ -4,7 +4,7 @@ W0 thin-slice: minimal intake that produces a ValidatedRequest from
 interview parameters. Full implementation lands in W1.1 with proper
 CLI parsing and schema validation.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W0.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W0.1
 """
 
 from __future__ import annotations

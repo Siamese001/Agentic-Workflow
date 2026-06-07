@@ -1,6 +1,6 @@
 """Identify the 4 modules currently failing AUDIT_2 (observability blind spot)."""
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 import sqlite3, glob, os
@@ -16,7 +16,7 @@ cur.execute("""
       AND n.layer IN ('L0', 'L1', 'L2', 'L3', 'L4', 'L5')
       AND n.resolved_path NOT LIKE 'tests/%'
       AND n.resolved_path NOT LIKE 'archives/%'
-      AND n.resolved_path NOT LIKE '.windsurf/%'
+      AND n.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/%'
       AND n.id NOT IN (
           SELECT DISTINCT e.src_id FROM edges e
           JOIN nodes dst ON dst.id = e.dst_id

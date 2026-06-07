@@ -8,7 +8,7 @@ Emits:    L1PlanContract (from agentic_core.L1_cognition.types.plan_contract_typ
 The L1 result must carry .grounding_required — AppIngressRunner reads it to
 decide whether to call c0_fn.
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
 """
 from __future__ import annotations
 

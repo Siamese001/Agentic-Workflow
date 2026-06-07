@@ -3,7 +3,7 @@
 W4.3: Exact-match cache that only returns on full digest equality.
 No partial matches, no fuzzy matching. Fail-safe: miss returns None.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W4.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W4.3
 """
 
 from __future__ import annotations

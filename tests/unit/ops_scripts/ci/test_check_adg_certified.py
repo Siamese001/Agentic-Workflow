@@ -1,7 +1,7 @@
 """Tests for ops_scripts/ci/check_adg_certified.py.
 
 Tier: unit
-Plan: .windsurf/plans/three-bucket-otel-view-5db409.md (W7)
+Plan: docs/archive/windsurf/legacy-tree/plans/three-bucket-otel-view-5db409.md (W7)
 """
 
 from __future__ import annotations

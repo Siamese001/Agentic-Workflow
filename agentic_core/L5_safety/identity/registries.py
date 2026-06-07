@@ -20,7 +20,7 @@ backends (SQLite / JSON / YAML) live in
 Reference:
   - docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md (Registries)
   - docs/contracts/identity_propagation.md §4 (Registry verification)
-Parent plan: .windsurf/plans/l5-governance-best-practice-gap-4615ae.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-governance-best-practice-gap-4615ae.md
 """
 
 from __future__ import annotations

@@ -19,7 +19,7 @@ Detectors:
   A17  rename_shim_consumer_risk (view-only; joins existing shim data)
        WHO still imports the rename shims? (join shim modules × fan-in)
   A19  mcp_tool_contract_drift
-       Compare .windsurf/mcp_config.json servers vs tools/*/mcp_*_server.py
+       Compare .cursor/mcp.json servers vs tools/*/mcp_*_server.py
        @tool declarations
 
 Bonus:
@@ -320,7 +320,7 @@ def _collect_snapshot_metadata() -> dict[str, str]:
 
 # ---------------------------------------------------- A19 MCP contract drift
 MCP_TOOL_DECORATOR_RE = re.compile(r"@(?:mcp\.)?tool\b")
-MCP_CONFIG_PATH = ROOT / ".windsurf" / "mcp_config.json"
+MCP_CONFIG_PATH = ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 
 
 def _collect_mcp_declarations() -> list[dict]:

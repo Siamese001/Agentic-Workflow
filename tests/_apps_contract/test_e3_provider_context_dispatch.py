@@ -1,6 +1,6 @@
 """E3 tests — QnaProviderContext.dispatch() and PA adapter model dispatch wiring.
 
-Plan: .windsurf/plans/apps-qna-deferred-e5-f7a2b1.md E3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-deferred-e5-f7a2b1.md E3
 """
 
 from __future__ import annotations

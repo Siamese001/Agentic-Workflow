@@ -6,7 +6,7 @@
 #   - reason:  non-empty justification (bare "" rejected)
 #   - expires: ISO date; gate fails closed when entry is past expiry
 #
-# Plan: .windsurf/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2)
+# Plan: docs/archive/windsurf/legacy-tree/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2)
 # Audit log: docs/reports/adg/apps_spine_delegation_gate_report.json
 
 # apps_underwriting_ai allowlist entry removed DS-6 (2026-05-05):

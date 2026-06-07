@@ -1,7 +1,7 @@
 """RubricOutputMapper — map DecisionPacket → ExitReviewPacket.output.dim_scores.
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P4.
-Extended: ``.windsurf/plans/apps-underwriting-ai-d3-rationale-judge-f2c8d5.md`` W2.P3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P4.
+Extended: ``docs/archive/windsurf/legacy-tree/plans/apps-underwriting-ai-d3-rationale-judge-f2c8d5.md`` W2.P3.
 
 Producer side of the Fort Knox app-domain contract for apps_underwriting_ai.
 Converts the 6 rubric dimensions declared in

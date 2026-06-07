@@ -1,4 +1,4 @@
-"""Tests for .windsurf/scripts/_author_gate_queue.py"""
+"""Tests for .cursor/scripts/_legacy_windsurf/_author_gate_queue.py"""
 from __future__ import annotations
 
 import importlib.util
@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HELPER_PATH = REPO_ROOT / ".windsurf" / "scripts" / "_author_gate_queue.py"
+HELPER_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "_author_gate_queue.py"
 
 
 def _load_helper(monkeypatch, tmp_path):

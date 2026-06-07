@@ -1,6 +1,6 @@
 """EQ-10 — bundled I0 mixin bank.
 
-Plan: ``.windsurf/plans/prompt-assembly-best-practices-gap-b4e1c2.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/prompt-assembly-best-practices-gap-b4e1c2.md``
 ADR:  ADR-PROMPT-ASSEMBLY-002 §3, §4, §5
 """
 

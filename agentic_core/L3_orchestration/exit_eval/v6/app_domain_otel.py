@@ -11,7 +11,7 @@ Two surfaces:
    proof-bundle fields per plan §P6.2 required schema. Slotted into the
    proof bundle emitted by ``apps_shared/proof/proof_runner.py``.
 
-Plan: ``.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W6.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W6.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """Harness identity + signing utilities.
 
-Plan: .windsurf/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W1+W2.
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W1+W2.
 
 Closes two residual synthetics in the runtime harness:
 

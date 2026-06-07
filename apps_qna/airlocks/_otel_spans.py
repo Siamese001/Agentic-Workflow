@@ -7,7 +7,7 @@ Per PROMPT_BOUNDARY_CONTRACT.md §6:
 
 Optional dependency: opentelemetry. Falls back to no-op when unavailable.
 
-Plan: .windsurf/plans/apps-qna-pa-spine-hardening-498d20.md W3.2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-pa-spine-hardening-498d20.md W3.2
 Pattern: apps_rg/airlocks/_otel_spans.py
 """
 

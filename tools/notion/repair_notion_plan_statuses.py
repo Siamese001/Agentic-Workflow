@@ -33,7 +33,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -49,7 +49,7 @@ from _notion_plans_status_check import (  # noqa: E402
 sys.path.insert(0, str(REPO_ROOT))
 from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: E402  DS-1
 
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 TIMEOUT = 30.0
 
 CANONICAL = CANONICAL_STATUSES_LOWER

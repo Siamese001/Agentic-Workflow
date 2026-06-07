@@ -10,7 +10,7 @@ The schema matches plan § 3. Composer + verifier consume this file.
 Placement: next to the manifest emitted by the integrated-runtime
 entrypoint for the canonical acceptance run.
 
-Plan: .windsurf/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 3, § 4
+Plan: docs/archive/windsurf/legacy-tree/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 3, § 4
 """
 
 from __future__ import annotations
