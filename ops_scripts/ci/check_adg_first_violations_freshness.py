@@ -3,7 +3,7 @@
 check_adg_first_violations_freshness.py — CI gate (CF1).
 
 Tails ``artifacts/cursor/adg_first_violations.jsonl`` (produced by
-``post_cursor_agent_adg_audit.py``) and fails when any non-bypass row within
+``post_agent_adg_audit.py``) and fails when any non-bypass row within
 the staleness window (default 7 days) has not been resolved.
 
 Sibling to ``ops_scripts/ci/author_gate/check_ask_user_question_packet_freshness.py``
@@ -24,7 +24,7 @@ Bypass: ``ADG_FIRST_VIOLATIONS_FRESHNESS_BYPASS=1`` emits a warning and returns 
 Window override: ``ADG_FIRST_STALENESS_DAYS`` (int, default 7).
 
 Constitutional refs: §28 (ADG over grep), §34 (retrieval budgets).
-Sibling hook: ``.claude/governance/scripts/post_cursor_agent_adg_audit.py``.
+Sibling hook: ``.claude/governance/scripts/post_agent_adg_audit.py``.
 """
 
 from __future__ import annotations

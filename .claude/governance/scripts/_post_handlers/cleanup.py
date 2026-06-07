@@ -1,6 +1,6 @@
 """Cleanup handler — log rotation for spawned-processes / mcp-audit logs.
 
-In-process equivalent of `.claude/governance/scripts/post_cursor_agent_cleanup.py`. Always
+In-process equivalent of `.claude/governance/scripts/post_agent_cleanup.py`. Always
 exits 0 on error (fail-soft).
 """
 

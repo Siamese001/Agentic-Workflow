@@ -5,7 +5,7 @@ check_ask_user_question_packet_freshness.py — CI gate.
 Plan: author-gate-four-req-enforcement-c4d2a8 W2.P1.
 
 Tails ``artifacts/cursor/ask_user_question_packet_violations.jsonl`` (produced
-by ``post_cursor_agent_ask_user_question_packet_audit.py``) and fails when any
+by ``post_agent_ask_user_question_packet_audit.py``) and fails when any
 non-bypass row within the staleness window (default 7 days) has not been
 resolved.
 

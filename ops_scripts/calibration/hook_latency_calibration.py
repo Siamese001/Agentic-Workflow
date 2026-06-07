@@ -2,7 +2,7 @@
 """
 hook_latency_calibration.py — Weekly post-cursor-agent hook chain latency report (P5).
 
-Reads ``artifacts/cursor/post_cursor_agent_heartbeat.jsonl`` and emits a
+Reads ``artifacts/cursor/post_agent_heartbeat.jsonl`` and emits a
 markdown report to ``docs/reports/calibration/hook_latency/<YYYY-Www>.md``
 summarizing the last 7 days of chain latency measurements.
 
@@ -28,7 +28,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
-_HEARTBEAT_PATH = _ROOT / "artifacts" / "windsurf" / "post_cursor_agent_heartbeat.jsonl"
+_HEARTBEAT_PATH = _ROOT / "artifacts" / "windsurf" / "post_agent_heartbeat.jsonl"
 _REPORT_DIR = _ROOT / "docs" / "reports" / "calibration" / "hook_latency"
 
 _BUDGET_MS = 500.0  # Kumar best-practice ceiling for hook execution

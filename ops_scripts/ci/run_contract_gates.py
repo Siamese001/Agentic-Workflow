@@ -367,7 +367,7 @@ def main():
     # Gate: ask_user_question packet vacuum-closure freshness
     # (plan author-gate-four-req-enforcement-c4d2a8 W2.P1).
     # Watches artifacts/cursor/ask_user_question_packet_violations.jsonl
-    # produced by post_cursor_agent_ask_user_question_packet_audit.py.
+    # produced by post_agent_ask_user_question_packet_audit.py.
     # Bypass: ASK_PACKET_AUDIT_FRESHNESS_BYPASS=1.
     returncode, stdout, stderr = run_cmd(
         [
@@ -389,7 +389,7 @@ def main():
     # Gate: AGP1 — Author-Gate pipeline completion freshness
     # (plan author-gate-ui-renderer-hardening-a7f3c2 W3.P3.2).
     # Watches artifacts/cursor/author_gate_pipeline_violations.jsonl
-    # produced by post_cursor_agent_author_gate_pipeline_audit.py.
+    # produced by post_agent_author_gate_pipeline_audit.py.
     # Fail-closed by default; AG_PIPELINE_ADVISORY=1 downgrades to warning-only.
     # Bypass: AG_PIPELINE_FRESHNESS_BYPASS=1.
     returncode, stdout, stderr = run_cmd(
@@ -965,11 +965,11 @@ def main():
             "ops_scripts/ci/check_pii_in_telemetry.py",
         ),
         # -- Cursor Agent violation log freshness backstops (2026-05-05) ---------------
-        # Windsurf post_cursor_agent_* hooks write persistent violation logs. These
+        # Windsurf post_agent_* hooks write persistent violation logs. These
         # gates ensure CI surfaces stale unresolved violations — same pattern
         # as check_ask_user_question_packet_freshness.py. Advisory by default.
         #
-        # ADG-first violations: post_cursor_agent_adg_audit.py writes
+        # ADG-first violations: post_agent_adg_audit.py writes
         # artifacts/cursor/adg_first_violations.jsonl (see gate script).
         # Advisory by default; fail-closed: ADG_FIRST_VIOLATIONS_FRESHNESS_FAIL_CLOSED=1.
         # Bypass: ADG_FIRST_VIOLATIONS_FRESHNESS_BYPASS=1.
@@ -1487,7 +1487,7 @@ def main():
         ("DS-R5 Judge Spearman calibration gate (advisory)", "ops_scripts/ci/check_judge_spearman_gate.py"),
         # AG-WIRE — Author-Gate hook wiring invariant.
         # Enforces AG-WIRE-1..4: pre_user_prompt reminder hook present+visible,
-        # and all 3 AG audit hooks in post_cursor_agent_response have show_output=true.
+        # and all 3 AG audit hooks in post_agent_response have show_output=true.
         # Advisory by default; AG_HOOK_WIRING_FAIL_CLOSED=1 activates blocking.
         # Plan: author-gate-deferred-scope-b8c1d4 W3.
         # AG-DEFER — Deferred-scope plan guard marker parity.

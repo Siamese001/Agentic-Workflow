@@ -31,8 +31,8 @@ def _run_pre(payload: dict) -> subprocess.CompletedProcess:
 
 def _load_post_module():
     spec = importlib.util.spec_from_file_location(
-        "post_cursor_agent_mcp_preflight_audit",
-        str(repo / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_mcp_preflight_audit.py"),
+        "post_agent_mcp_preflight_audit",
+        str(repo / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_mcp_preflight_audit.py"),
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

@@ -21,7 +21,7 @@ print("\nViolations in Wave 2/3 modified files:")
 modified_files = [
     "agentic_core/config/constants_config.py",
     "agentic_core/L0_routing/config/path_constants.py",
-    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_agent_deferred_scope_capture.py",
     ".claude/governance/scripts/_legacy_windsurf/_notion_constants.py",
 ]
 for f in modified_files:

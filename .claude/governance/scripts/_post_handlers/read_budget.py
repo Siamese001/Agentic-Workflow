@@ -1,6 +1,6 @@
 """Read-budget handler - advisory cap on file-read tool invocations per response.
 
-In-process equivalent of `.claude/governance/scripts/post_cursor_agent_read_budget_audit.py`.
+In-process equivalent of `.claude/governance/scripts/post_agent_read_budget_audit.py`.
 Logs a row to `artifacts/cursor/read_budget_violations.jsonl` when combined
 read-tool invocations exceed the soft cap (10) or when bypass is set.
 """

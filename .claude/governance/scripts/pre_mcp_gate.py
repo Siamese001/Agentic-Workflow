@@ -48,7 +48,7 @@ adg_server_name = "adg_sqlite"
 # mcp-destructive-gate-preflight-e9a14b W1 Phase P1). Requires a recent
 # successful health probe against the same logical server before honoring
 # a destructive MCP call. Heartbeat is maintained by the companion
-# post_cursor_agent_mcp_preflight_audit.py hook.
+# post_agent_mcp_preflight_audit.py hook.
 #
 # Keyed on tool short-name (after stripping the unstable mcp<digits>_
 # prefix) to stay resilient across Cursor MCP reorderings.
@@ -62,7 +62,7 @@ _DESTRUCTIVE_PREFLIGHT_TOOLS: dict[str, str] = {
     "mem_cleanup_stale": "memory",
 }
 
-# Must match the constant in post_cursor_agent_mcp_preflight_audit.py.
+# Must match the constant in post_agent_mcp_preflight_audit.py.
 _PREFLIGHT_MAX_AGE_S: int = 60
 
 # Grace period after hook startup: allows the very first destructive call of

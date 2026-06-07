@@ -5,7 +5,7 @@ check_marker_ledger_parity.py — CI gate: DECISION_CAPTURED marker ↔ ledger p
 Reconciles structured `DECISION_CAPTURED:` markers emitted by Cursor Agent over the
 last N days against actual rows written to the refactor_decision_ledger.sqlite.
 Detects silent hook-dispatcher failures (e.g., the 2026-04-22 Windsurf 2.0.67
-regression where post_cursor_agent_response hooks stopped firing mid-session).
+regression where post_agent_response hooks stopped firing mid-session).
 
 Parity rule:
     For every DECISION_CAPTURED marker found in scanned sources within window W,
@@ -15,7 +15,7 @@ Parity rule:
 Marker sources scanned (by priority):
     1. `artifacts/cursor/author_gate_miss_detector.jsonl` — post-hook captures
        both successful writes and detected misses.
-    2. `artifacts/cursor/post_cursor_agent_heartbeat.jsonl` — shows whether the hook
+    2. `artifacts/cursor/post_agent_heartbeat.jsonl` — shows whether the hook
        dispatcher was alive for each window; if dispatcher dark AND markers
        present elsewhere → parity failure.
     3. `artifacts/cursor/*.jsonl` grep for `DECISION_CAPTURED:` substrings.
@@ -56,7 +56,7 @@ ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "windsurf"
 BYPASS_LOG = ARTIFACTS_DIR / "marker_ledger_parity_bypass.jsonl"
 VIOLATIONS_LOG = ARTIFACTS_DIR / "marker_ledger_parity_violations.jsonl"
 
-# Same regex as post_cursor_agent_author_gate_capture.py (kept in sync — schema is SSOT).
+# Same regex as post_agent_author_gate_capture.py (kept in sync — schema is SSOT).
 _CAPTURE_RE = re.compile(
     r"DECISION_CAPTURED:\s*type=(?P<dtype>[\w_]+),\s*"
     r"repo_area=(?P<area>[^,]+),\s*"

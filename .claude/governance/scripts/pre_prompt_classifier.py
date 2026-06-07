@@ -734,7 +734,7 @@ def main() -> int:
 
     # W2.1 — prompt_classifier ledger: capture every tier prediction.
     # Actual tier outcome (files_edited, lines_changed, layers_touched) is bound
-    # later by the post_commit/post_cursor_agent pipeline via bind_outcome().
+    # later by the post_commit/post_agent pipeline via bind_outcome().
     try:
         from tools.ledgers.hook_helpers import emit_ledger_event
         import hashlib as _hashlib

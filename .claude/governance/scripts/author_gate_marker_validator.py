@@ -7,7 +7,7 @@ are logged to artifacts/cursor/author_gate_capture_violations.jsonl so the
 coverage gate can alarm on capture rot.
 
 CALLED BY
-    - post_cursor_agent_author_gate_capture.py (advisory — logs then proceeds)
+    - post_agent_author_gate_capture.py (advisory — logs then proceeds)
     - audit_ledger_coverage.py (retrospective audit of existing rows)
     - CLI: python .claude/governance/scripts/author_gate_marker_validator.py --marker "<text>"
 

@@ -1,6 +1,6 @@
 """Grep-budget handler — advisory cap on grep_search + code_search per response.
 
-In-process equivalent of `.claude/governance/scripts/post_cursor_agent_grep_budget_audit.py`.
+In-process equivalent of `.claude/governance/scripts/post_agent_grep_budget_audit.py`.
 Logs a row to `artifacts/cursor/grep_budget_violations.jsonl` when combined
 text-search invocations exceed the soft cap (3) or when bypass is set.
 """

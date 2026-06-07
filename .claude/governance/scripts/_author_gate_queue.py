@@ -3,9 +3,9 @@
 _author_gate_queue.py — Author-Gate pending-packet queue helper (SSOT pure logic).
 
 Shared by:
-  - post_cursor_agent_ag_queue_drain_audit.py (post-hook audit)
+  - post_agent_ag_queue_drain_audit.py (post-hook audit)
   - pre_user_prompt_ag_queue_surface.py (pre-hook proactive surface)
-  - post_cursor_agent_ag_queue_seed_capture.py (AG_QUEUE_SEED marker capture)
+  - post_agent_ag_queue_seed_capture.py (AG_QUEUE_SEED marker capture)
   - ops_scripts/ci/check_ag_queue_drain_freshness.py (weekly drift gate)
 
 State file: .claude/state/author_gate_queue/<plan-slug>.jsonl (append-only)

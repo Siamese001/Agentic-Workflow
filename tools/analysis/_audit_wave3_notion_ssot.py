@@ -6,8 +6,8 @@ from pathlib import Path
 
 # Files still needing the SSOT replacement
 TARGETS = [
-    Path(".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py"),
-    Path(".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_adr_registry_capture.py"),
+    Path(".claude/governance/scripts/_legacy_windsurf/post_agent_deferred_scope_capture.py"),
+    Path(".claude/governance/scripts/_legacy_windsurf/post_agent_adr_registry_capture.py"),
     Path("ops_scripts/ci/check_notion_plan_file_drift.py"),
     Path("tools/migration/notion_create_plans_db.py"),
     Path("tools/notion/snapshot_renderer.py"),

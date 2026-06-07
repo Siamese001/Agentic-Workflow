@@ -1,8 +1,8 @@
 """Pre-user-prompt hook-health check (W7.1 session-start recovery).
 
 Reads the latest heartbeat written by
-``_post_handlers/heartbeat`` (in-process dispatch) / legacy ``_legacy_cursor/post_cursor_agent_heartbeat.py`` — warns when
-the prior session's post_cursor_agent_response chain did not fire.
+``_post_handlers/heartbeat`` (in-process dispatch) / legacy ``_legacy_cursor/post_agent_heartbeat.py`` — warns when
+the prior session's post_agent_response chain did not fire.
 
 Detection logic:
 
@@ -34,10 +34,10 @@ import time
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[3]
-_HEARTBEAT_PATH = _ROOT / "artifacts" / "cursor" / "post_cursor_agent_heartbeat.jsonl"
+_HEARTBEAT_PATH = _ROOT / "artifacts" / "cursor" / "post_agent_heartbeat.jsonl"
 
 # Default stale threshold: 30 minutes. Override with
-# POST_CURSOR_AGENT_HEARTBEAT_STALE_SECONDS env var.
+# POST_AGENT_HEARTBEAT_STALE_SECONDS env var.
 # W10.1 (RCA 2026-04-23): tightened from 6h → 30min so that the 1h34m
 # hook-silence window that triggered the HOOK_OUTAGE RCA would have
 # surfaced the banner instead of hiding behind a stale 6h threshold.
@@ -45,7 +45,7 @@ _DEFAULT_STALE_SECONDS = 30 * 60
 
 
 def _stale_threshold() -> int:
-    raw = os.getenv("POST_CURSOR_AGENT_HEARTBEAT_STALE_SECONDS")
+    raw = os.getenv("POST_AGENT_HEARTBEAT_STALE_SECONDS")
     if not raw:
         return _DEFAULT_STALE_SECONDS
     try:
@@ -120,7 +120,7 @@ def check_heartbeat_health(
 
 
 def main() -> int:
-    if os.getenv("POST_CURSOR_AGENT_HEARTBEAT_HEALTH_DISABLE") == "1":
+    if os.getenv("POST_AGENT_HEARTBEAT_HEALTH_DISABLE") == "1":
         return 0
     try:
         result = check_heartbeat_health()
@@ -135,19 +135,19 @@ def main() -> int:
     threshold = int(result["threshold"])  # type: ignore[arg-type]
     if status == "missing":
         _banner(
-            "No post_cursor_agent heartbeat found at:\n"
+            "No post_agent heartbeat found at:\n"
             f"  {_HEARTBEAT_PATH}\n"
             "This is normal for a brand-new clone. If you have used this\n"
-            "repo before, Cursor may have skipped the post_cursor_agent_response\n"
+            "repo before, Cursor may have skipped the post_agent_response\n"
             "hook chain in prior sessions. Run any Cursor Agent response to\n"
             "reseed the heartbeat."
         )
     elif status == "stale":
         age = int(result["age_seconds"] or 0)  # type: ignore[arg-type]
         _banner(
-            f"Last post_cursor_agent heartbeat is {age}s old\n"
+            f"Last post_agent heartbeat is {age}s old\n"
             f"(threshold: {threshold}s). Cursor may have skipped the\n"
-            "post_cursor_agent_response hook chain in the previous session —\n"
+            "post_agent_response hook chain in the previous session —\n"
             "audit writebacks, author-gate captures, and deferred-scope\n"
             "captures may be missing. Review artifacts/cursor/*.jsonl\n"
             "for gaps before relying on hook-captured state.\n"
@@ -155,8 +155,8 @@ def main() -> int:
             "WORKAROUND (Cursor 2.0.67 bug): Cursor Agent should invoke\n"
             ".claude/governance/scripts/defer.py directly in the same response\n"
             "that emits DEFERRED_SCOPE markers, and use\n"
-            "manual_post_cursor_agent_replay.py --file/--clipboard for the\n"
-            "full post_cursor_agent chain. See docs in those scripts."
+            "manual_post_agent_replay.py --file/--clipboard for the\n"
+            "full post_agent chain. See docs in those scripts."
         )
     return 0
 

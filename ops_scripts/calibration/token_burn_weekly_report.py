@@ -1,7 +1,7 @@
 """token_burn_weekly_report.py - weekly aggregate of per-turn token telemetry.
 
 Reads `artifacts/cursor/turn_budget.jsonl` (produced by
-`post_cursor_agent_token_telemetry.py`) and emits a markdown report at
+`post_agent_token_telemetry.py`) and emits a markdown report at
 `docs/reports/token-burn/<YYYY-Www>.md` with:
 
   - Total turns observed

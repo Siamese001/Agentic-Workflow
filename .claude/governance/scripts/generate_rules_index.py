@@ -270,7 +270,7 @@ def generate_index(rules: List[Dict], skills: List[Dict], workflows: List[Dict],
     lines.append("- **Tier-1 (always injected):** `AGENTS.md` + `000`–`003` `alwaysApply` rules only.")
     lines.append("- **Tier-2 (on demand):** other `.claude/rules/*.mdc` via description/globs.")
     lines.append("- **Tier-3 (progressive):** `.claude/skills/*/SKILL.md` — prefer `mcp-integration` sections over redirect stubs.")
-    lines.append("- **Hooks (zero-token enforcement):** `.cursor/hooks.json` → `.cursor/hooks/*.py` + `.claude/governance/scripts/post_cursor_agent_*.py`.")
+    lines.append("- **Hooks (zero-token enforcement):** `.cursor/hooks.json` → `.cursor/hooks/*.py` + `.claude/governance/scripts/post_agent_*.py`.")
     lines.append("")
     lines.append("## Governance SSOT map")
     lines.append("")

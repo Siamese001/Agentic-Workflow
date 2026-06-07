@@ -114,7 +114,7 @@ def render_card(packet: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
     # The CANONICAL description is `candidate.surface_description` minted by
     # emit_packet.py — it carries the four-requirement floor (confidence prefix,
     # optional ⭐ for dominance, and a · trade-off: <text> segment that
-    # post_cursor_agent_author_gate_ui_audit.py invariant 4 enforces).
+    # post_agent_author_gate_ui_audit.py invariant 4 enforces).
     # Renderer falls through floor → prefix → locally-built description for
     # back-compat with older packets emitted before this plan.
     options: list[dict[str, str]] = []

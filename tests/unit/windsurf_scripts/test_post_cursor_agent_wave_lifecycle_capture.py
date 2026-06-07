@@ -1,4 +1,4 @@
-"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_cursor_agent_wave_lifecycle_capture.py.
+"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_agent_wave_lifecycle_capture.py.
 
 Plan: notion-wave-lifecycle-autosync-f4a2b8 (W3.P3.1).
 
@@ -18,7 +18,7 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_wave_lifecycle_capture.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_wave_lifecycle_capture.py"
 
 
 def _load_hook_module():
@@ -26,11 +26,11 @@ def _load_hook_module():
     sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
     sys.path.insert(0, str(REPO_ROOT))
     spec = importlib.util.spec_from_file_location(
-        "post_cursor_agent_wave_lifecycle_capture", HOOK_PATH
+        "post_agent_wave_lifecycle_capture", HOOK_PATH
     )
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
-    sys.modules["post_cursor_agent_wave_lifecycle_capture"] = mod
+    sys.modules["post_agent_wave_lifecycle_capture"] = mod
     spec.loader.exec_module(mod)
     return mod
 
@@ -181,15 +181,15 @@ class TestMainMarkerProcessing:
 
 
 class TestHooksJsonRegistration:
-    def test_hook_registered_in_post_cursor_agent_response(self):
+    def test_hook_registered_in_post_agent_response(self):
         hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
         data = json.loads(hooks_path.read_text(encoding="utf-8"))
         commands = [
             entry["command"]
-            for entry in data["hooks"]["post_cursor_agent_response"]
+            for entry in data["hooks"]["post_agent_response"]
         ]
         assert any(
-            "post_cursor_agent_wave_lifecycle_capture.py" in c for c in commands
+            "post_agent_wave_lifecycle_capture.py" in c for c in commands
         ), "hook not registered in .cursor/hooks.json"
 
     def test_hook_entry_schema_pure(self):
@@ -198,8 +198,8 @@ class TestHooksJsonRegistration:
         hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
         data = json.loads(hooks_path.read_text(encoding="utf-8"))
         allowed = {"command", "working_directory", "show_output"}
-        for entry in data["hooks"]["post_cursor_agent_response"]:
-            if "post_cursor_agent_wave_lifecycle_capture.py" in entry.get("command", ""):
+        for entry in data["hooks"]["post_agent_response"]:
+            if "post_agent_wave_lifecycle_capture.py" in entry.get("command", ""):
                 assert set(entry.keys()) <= allowed, (
                     f"non-schema keys present: {set(entry.keys()) - allowed}"
                 )

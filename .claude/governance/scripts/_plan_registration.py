@@ -3,7 +3,7 @@
 _plan_registration.py — Plan→Notion registration helper (SSOT pure logic).
 
 Shared by:
-  - post_cursor_agent_plan_registration_capture.py (PLAN_CREATED marker capture)
+  - post_agent_plan_registration_capture.py (PLAN_CREATED marker capture)
   - pre_user_prompt_plan_registration_surface.py (proactive surface)
   - tools/cursor/wave_execution_state.py (wave-start block)
   - ops_scripts/ci/check_plan_registration_freshness.py (pre-commit gate)

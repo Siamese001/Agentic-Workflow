@@ -1,4 +1,4 @@
-"""E2E: full post_cursor_agent_response chain with real Windsurf payload shape.
+"""E2E: full post_agent_response chain with real Windsurf payload shape.
 
 Simulates Windsurf dispatching the entire hook chain defined in
 ``.cursor/hooks.json`` and asserts each hook's observable side-effect.
@@ -36,9 +36,9 @@ ARTIFACTS = REPO / "artifacts" / "windsurf"
 
 
 def _load_chain() -> list[Path]:
-    """Parse hooks.json and return the list of post_cursor_agent_response scripts."""
+    """Parse hooks.json and return the list of post_agent_response scripts."""
     data = json.loads(HOOKS_JSON.read_text(encoding="utf-8"))
-    chain = data["hooks"]["post_cursor_agent_response"]
+    chain = data["hooks"]["post_agent_response"]
     scripts: list[Path] = []
     for entry in chain:
         cmd = entry["command"]
@@ -74,7 +74,7 @@ def _run_hook(script: Path, payload: str) -> subprocess.CompletedProcess[str]:
 def _make_payload(response_text: str) -> str:
     return json.dumps(
         {
-            "agent_action_name": "post_cursor_agent_response",
+            "agent_action_name": "post_agent_response",
             "tool_info": {"response": response_text},
         }
     )
@@ -88,7 +88,7 @@ def _make_payload(response_text: str) -> str:
 class TestHooksJsonIntegrity:
     def test_hooks_json_is_valid(self) -> None:
         data = json.loads(HOOKS_JSON.read_text(encoding="utf-8"))
-        assert "post_cursor_agent_response" in data["hooks"]
+        assert "post_agent_response" in data["hooks"]
 
     def test_every_script_exists(self) -> None:
         for script in _load_chain():
@@ -98,7 +98,7 @@ class TestHooksJsonIntegrity:
         """Heartbeat must run first so we always have proof-of-dispatch
         even when a downstream hook crashes."""
         chain = _load_chain()
-        assert chain[0].name == "post_cursor_agent_heartbeat.py", (
+        assert chain[0].name == "post_agent_heartbeat.py", (
             f"Expected heartbeat first; got {chain[0].name}. "
             "See 2026-04-23 RCA: first-position placement is the only "
             "unambiguous signal that the chain actually fired."
@@ -139,10 +139,10 @@ class TestFullChainRun:
         assert not failures, "\n".join(failures)
 
     def test_heartbeat_jsonl_advances(self) -> None:
-        before = self._before.get("post_cursor_agent_heartbeat.jsonl", 0.0)
+        before = self._before.get("post_agent_heartbeat.jsonl", 0.0)
         payload = _make_payload(self.RESPONSE_TEXT)
-        _run_hook(SCRIPTS / "post_cursor_agent_heartbeat.py", payload)
-        path = ARTIFACTS / "post_cursor_agent_heartbeat.jsonl"
+        _run_hook(SCRIPTS / "post_agent_heartbeat.py", payload)
+        path = ARTIFACTS / "post_agent_heartbeat.jsonl"
         assert path.exists(), "heartbeat hook did not create its log"
         assert path.stat().st_mtime >= before, "heartbeat jsonl mtime did not advance"
 
@@ -150,7 +150,7 @@ class TestFullChainRun:
         """Core regression: the real Windsurf payload (tool_info.response)
         MUST yield 'markers=1' from the deferred-scope hook."""
         payload = _make_payload(self.RESPONSE_TEXT)
-        result = _run_hook(SCRIPTS / "post_cursor_agent_deferred_scope_capture.py", payload)
+        result = _run_hook(SCRIPTS / "post_agent_deferred_scope_capture.py", payload)
         assert result.returncode == 0
         assert "markers=1" in result.stderr, (
             f"Deferred-scope hook did NOT detect marker in real Windsurf payload.\n"
@@ -166,7 +166,7 @@ class TestFullChainRun:
             '<parameter name="Blocking">true</parameter></invoke>\nDone.'
         )
         payload = _make_payload(text)
-        result = _run_hook(SCRIPTS / "post_cursor_agent_long_command_audit.py", payload)
+        result = _run_hook(SCRIPTS / "post_agent_long_command_audit.py", payload)
         assert result.returncode == 0
         assert "DETECTED" in result.stderr, (
             f"long_command hook did not detect pytest invocation.\nstderr: {result.stderr}"
@@ -206,7 +206,7 @@ class TestHeartbeatProvesChainFired:
     truth observability signal the RCA hardening introduced."""
 
     def test_heartbeat_moves_after_single_chain_run(self) -> None:
-        path = ARTIFACTS / "post_cursor_agent_heartbeat.jsonl"
+        path = ARTIFACTS / "post_agent_heartbeat.jsonl"
         # Use line count instead of mtime — Windows mtime resolution is coarse
         # and a full chain run completes in <1s.
         start_lines = len(path.read_text(encoding="utf-8").splitlines()) if path.exists() else 0

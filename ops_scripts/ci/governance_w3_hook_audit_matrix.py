@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build W3 hook audit matrix for post_cursor_agent_* scripts."""
+"""Build W3 hook audit matrix for post_agent_* scripts."""
 from __future__ import annotations
 
 import json
@@ -11,61 +11,61 @@ REPO = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO / ".claude" / "governance/scripts"
 HOOKS_JSON = REPO / ".cursor" / "hooks.json"
 GOVERNANCE_DISPATCH = REPO / ".cursor" / "hooks" / "after_agent_governance_dispatch.py"
-DISPATCH_LEGACY = REPO / ".claude" / "governance/scripts" / "post_cursor_agent_dispatch.py"
+DISPATCH_LEGACY = REPO / ".claude" / "governance/scripts" / "post_agent_dispatch.py"
 OUT_JSON = REPO / "docs/reports/cursor/governance_w3_hook_audit_matrix.json"
 OUT_MD = REPO / "docs/reports/cursor/governance_w3_hook_audit_matrix.md"
 
 HOOK_REQUIRED = {
-    "post_cursor_agent_adg_audit.py",
-    "post_cursor_agent_author_gate_capture.py",
-    "post_cursor_agent_author_gate_miss_detector.py",
-    "post_cursor_agent_author_gate_ui_audit.py",
-    "post_cursor_agent_author_gate_schema_audit.py",
-    "post_cursor_agent_ask_user_question_packet_audit.py",
-    "post_cursor_agent_author_gate_pipeline_audit.py",
-    "post_cursor_agent_ag_queue_drain_audit.py",
-    "post_cursor_agent_ag_queue_seed_capture.py",
-    "post_cursor_agent_mcp_hygiene_audit.py",
-    "post_cursor_agent_long_command_audit.py",
-    "post_cursor_agent_deferred_scope_capture.py",
-    "post_cursor_agent_next_step_capture.py",
-    "post_cursor_agent_wave_lifecycle_capture.py",
-    "post_cursor_agent_writeback_audit.py",
-    "post_cursor_agent_scope_drift_detector.py",
+    "post_agent_adg_audit.py",
+    "post_agent_author_gate_capture.py",
+    "post_agent_author_gate_miss_detector.py",
+    "post_agent_author_gate_ui_audit.py",
+    "post_agent_author_gate_schema_audit.py",
+    "post_agent_ask_user_question_packet_audit.py",
+    "post_agent_author_gate_pipeline_audit.py",
+    "post_agent_ag_queue_drain_audit.py",
+    "post_agent_ag_queue_seed_capture.py",
+    "post_agent_mcp_hygiene_audit.py",
+    "post_agent_long_command_audit.py",
+    "post_agent_deferred_scope_capture.py",
+    "post_agent_next_step_capture.py",
+    "post_agent_wave_lifecycle_capture.py",
+    "post_agent_writeback_audit.py",
+    "post_agent_scope_drift_detector.py",
 }
 
 CI_REQUIRED = {
-    "post_cursor_agent_author_gate_capture.py",
-    "post_cursor_agent_author_gate_miss_detector.py",
-    "post_cursor_agent_author_gate_ui_audit.py",
-    "post_cursor_agent_ask_user_question_packet_audit.py",
-    "post_cursor_agent_author_gate_pipeline_audit.py",
-    "post_cursor_agent_adg_audit.py",
+    "post_agent_author_gate_capture.py",
+    "post_agent_author_gate_miss_detector.py",
+    "post_agent_author_gate_ui_audit.py",
+    "post_agent_ask_user_question_packet_audit.py",
+    "post_agent_author_gate_pipeline_audit.py",
+    "post_agent_adg_audit.py",
 }
 
 MANUAL_ONLY = {
-    "manual_post_cursor_agent_replay.py",
+    "manual_post_agent_replay.py",
 }
 
 OBSOLETE_CANDIDATE = {
-    "post_cursor_agent_author_gate_audit.py": "superseded by capture + miss_detector + schema/ui audits",
-    "post_cursor_agent_author_gate_suite.py": "orchestration duplicate of individual AG audits",
-    "post_cursor_agent_adr_registry_capture.py": "Notion ADR registry archived 2026-05-02; capture optional",
-    "post_cursor_agent_notion_plans_status_audit.py": "superseded by unified_notion_status_auditor in governance hook",
-    "post_cursor_agent_plan_creation_audit.py": "overlap plan_registration_capture + CI plan gates",
-    "post_cursor_agent_plan_complete_audit.py": "CI + lifecycle capture cover completion",
-    "post_cursor_agent_plans_dup_audit.py": "advisory; manual or periodic CI",
-    "post_cursor_agent_heartbeat.py": "native handler in dispatch; not standalone hook",
-    "post_cursor_agent_cleanup.py": "native handler in dispatch",
-    "post_cursor_agent_grep_budget_audit.py": "native handler in dispatch",
-    "post_cursor_agent_read_budget_audit.py": "native handler in dispatch",
-    "post_cursor_agent_token_telemetry.py": "native handler in dispatch",
+    "post_agent_author_gate_audit.py": "superseded by capture + miss_detector + schema/ui audits",
+    "post_agent_author_gate_suite.py": "orchestration duplicate of individual AG audits",
+    "post_agent_adr_registry_capture.py": "Notion ADR registry archived 2026-05-02; capture optional",
+    "post_agent_notion_plans_status_audit.py": "superseded by unified_notion_status_auditor in governance hook",
+    "post_agent_plan_creation_audit.py": "overlap plan_registration_capture + CI plan gates",
+    "post_agent_plan_complete_audit.py": "CI + lifecycle capture cover completion",
+    "post_agent_plans_dup_audit.py": "advisory; manual or periodic CI",
+    "post_agent_heartbeat.py": "native handler in dispatch; not standalone hook",
+    "post_agent_cleanup.py": "native handler in dispatch",
+    "post_agent_grep_budget_audit.py": "native handler in dispatch",
+    "post_agent_read_budget_audit.py": "native handler in dispatch",
+    "post_agent_token_telemetry.py": "native handler in dispatch",
 }
 
 DUPLICATE_CANDIDATE = {
-    "post_cursor_agent_author_gate_audit.py": ["post_cursor_agent_author_gate_capture.py", "post_cursor_agent_author_gate_miss_detector.py"],
-    "post_cursor_agent_notion_plans_status_audit.py": ["tools/notion/unified_notion_status_auditor.py"],
-    "post_cursor_agent_notion_plan_identity_audit.py": ["post_cursor_agent_notion_plans_status_audit.py"],
+    "post_agent_author_gate_audit.py": ["post_agent_author_gate_capture.py", "post_agent_author_gate_miss_detector.py"],
+    "post_agent_notion_plans_status_audit.py": ["tools/notion/unified_notion_status_auditor.py"],
+    "post_agent_notion_plan_identity_audit.py": ["post_agent_notion_plans_status_audit.py"],
 }
 
 
@@ -79,15 +79,15 @@ def _hook_wired() -> set[str]:
     if DISPATCH_LEGACY.is_file():
         text = DISPATCH_LEGACY.read_text(encoding="utf-8")
         for line in text.splitlines():
-            if "post_cursor_agent_" in line and ".py" in line:
-                m = re.search(r"(post_cursor_agent_[\w]+\.py)", line)
+            if "post_agent_" in line and ".py" in line:
+                m = re.search(r"(post_agent_[\w]+\.py)", line)
                 if m:
                     wired.add(m.group(1))
     return wired
 
 
 def _disposition(name: str) -> str:
-    if name == "post_cursor_agent_dispatch.py":
+    if name == "post_agent_dispatch.py":
         return "hook_required"
     if name in MANUAL_ONLY:
         return "manual_only"
@@ -101,7 +101,7 @@ def _disposition(name: str) -> str:
 
 
 def main() -> int:
-    scripts = sorted(SCRIPTS.glob("post_cursor_agent_*.py"))
+    scripts = sorted(SCRIPTS.glob("post_agent_*.py"))
     wired = _hook_wired()
     rows = []
     counts = {
@@ -143,7 +143,7 @@ def main() -> int:
         "counts": counts,
         "matrix": rows,
         "explicit_non_claims": [
-            "no post_cursor_agent scripts deleted in W3",
+            "no post_agent scripts deleted in W3",
             "legacy after_agent_* hook files retained but unwired from hooks.json",
         ],
     }

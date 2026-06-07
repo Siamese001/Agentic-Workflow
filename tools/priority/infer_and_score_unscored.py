@@ -8,7 +8,7 @@ title/evidence keywords. Then runs the deterministic deferred-scope scorer and
 patches Notion in-place.
 
 Coverage gap % is set to 100 for every row (these are deferred items with no
-coverage by definition — matches what post_cursor_agent_deferred_scope_capture does).
+coverage by definition — matches what post_agent_deferred_scope_capture does).
 
 Dry-run by default; pass --apply to patch Notion.
 

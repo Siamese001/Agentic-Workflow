@@ -44,9 +44,9 @@ WAVE2 = [
 # Wave 3 — NOTION literal SSOT
 WAVE3 = [
     ".claude/governance/scripts/_legacy_windsurf/plan_driven_closer.py",
-    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_adr_registry_capture.py",
-    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py",
-    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_next_step_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_agent_adr_registry_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_agent_deferred_scope_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_agent_next_step_capture.py",
     ".claude/governance/scripts/_legacy_windsurf/post_commit_phase_closer.py",
     ".claude/governance/scripts/_legacy_windsurf/rollback_bad_patches.py",
     "ops_scripts/ci/check_notion_plan_file_drift.py",

@@ -4,7 +4,7 @@ unified_plan_creation_auditor.py — Consolidated plan creation validation (W2.P
 
 Merges:
 - pre_notion_plan_creation_gate.py (pre-flight blocking validation)
-- post_cursor_agent_plan_creation_audit.py (post-flight advisory audit with auto-correction)
+- post_agent_plan_creation_audit.py (post-flight advisory audit with auto-correction)
 
 Result: Single unified hook providing defense-in-depth for plan creation.
 
@@ -234,7 +234,7 @@ def _check_payload(payload: dict[str, Any]) -> tuple[bool, list[str]]:
 
 
 # =============================================================================
-# POST-FLIGHT AUDIT (from post_cursor_agent_plan_creation_audit)
+# POST-FLIGHT AUDIT (from post_agent_plan_creation_audit)
 # =============================================================================
 
 def _notion_token() -> str | None:

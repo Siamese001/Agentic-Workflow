@@ -336,7 +336,7 @@ _install_integration_compat_shims()
 # =====================================================================
 # Writes {ts, exit_code, passed, failed, errors, duration_s} to
 # artifacts/cursor/last_test_signal.json (and mirrors under artifacts/cursor/ for
-# legacy readers) at session end so post_cursor_agent_author_gate_capture can bind tests_passed.
+# legacy readers) at session end so post_agent_author_gate_capture can bind tests_passed.
 
 
 def pytest_sessionstart(session):  # noqa: ARG001 — pytest hook signature

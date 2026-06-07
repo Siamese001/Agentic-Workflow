@@ -1,5 +1,5 @@
 """
-Unit tests for post_cursor_agent_plan_scope_audit.py
+Unit tests for post_agent_plan_scope_audit.py
 
 Tests cover:
 - Advisory mode (warning, no block)
@@ -22,16 +22,16 @@ import pytest
 
 # Load module from docs/archive/windsurf/legacy-tree directory
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
-MODULE_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_plan_scope_audit.py"
+MODULE_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_plan_scope_audit.py"
 
 spec = importlib.util.spec_from_file_location(
-    "post_cursor_agent_plan_scope_audit", MODULE_PATH
+    "post_agent_plan_scope_audit", MODULE_PATH
 )
 _module = importlib.util.module_from_spec(spec)
-sys.modules["post_cursor_agent_plan_scope_audit"] = _module
+sys.modules["post_agent_plan_scope_audit"] = _module
 spec.loader.exec_module(_module)
 
-from post_cursor_agent_plan_scope_audit import (
+from post_agent_plan_scope_audit import (
     main,
     get_config,
     extract_markers_from_text,
@@ -177,11 +177,11 @@ class TestAdvisoryMode:
     """Test advisory mode behavior (default)."""
     
     @patch.dict(os.environ, {}, clear=True)
-    @patch('post_cursor_agent_plan_scope_audit.detect_changed_files')
-    @patch('post_cursor_agent_plan_scope_audit.detect_active_plan')
-    @patch('post_cursor_agent_plan_scope_audit.extract_markers_from_text')
-    @patch('post_cursor_agent_plan_scope_audit.check_scope_authorization')
-    @patch('post_cursor_agent_plan_scope_audit.write_audit_record')
+    @patch('post_agent_plan_scope_audit.detect_changed_files')
+    @patch('post_agent_plan_scope_audit.detect_active_plan')
+    @patch('post_agent_plan_scope_audit.extract_markers_from_text')
+    @patch('post_agent_plan_scope_audit.check_scope_authorization')
+    @patch('post_agent_plan_scope_audit.write_audit_record')
     def test_advisory_warning_no_block(
         self, mock_write, mock_check, mock_extract, mock_plan, mock_files
     ):
@@ -214,11 +214,11 @@ class TestStrictMode:
     """Test strict mode behavior."""
     
     @patch.dict(os.environ, {"PLAN_SCOPE_AUDIT_STRICT": "1"}, clear=True)
-    @patch('post_cursor_agent_plan_scope_audit.detect_changed_files')
-    @patch('post_cursor_agent_plan_scope_audit.detect_active_plan')
-    @patch('post_cursor_agent_plan_scope_audit.extract_markers_from_text')
-    @patch('post_cursor_agent_plan_scope_audit.check_scope_authorization')
-    @patch('post_cursor_agent_plan_scope_audit.write_audit_record')
+    @patch('post_agent_plan_scope_audit.detect_changed_files')
+    @patch('post_agent_plan_scope_audit.detect_active_plan')
+    @patch('post_agent_plan_scope_audit.extract_markers_from_text')
+    @patch('post_agent_plan_scope_audit.check_scope_authorization')
+    @patch('post_agent_plan_scope_audit.write_audit_record')
     def test_strict_blocks_unauthorized(
         self, mock_write, mock_check, mock_extract, mock_plan, mock_files
     ):
@@ -248,7 +248,7 @@ class TestBypassMode:
     """Test bypass mode."""
     
     @patch.dict(os.environ, {"PLAN_SCOPE_AUDIT_BYPASS": "1"}, clear=True)
-    @patch('post_cursor_agent_plan_scope_audit.write_audit_record')
+    @patch('post_agent_plan_scope_audit.write_audit_record')
     def test_bypass_exits_zero(self, mock_write):
         """Bypass mode: exit 0 and log bypass."""
         exit_code = main()
@@ -264,8 +264,8 @@ class TestThresholds:
     """Test configurable thresholds."""
     
     @patch.dict(os.environ, {"MIN_FILES_FOR_AUDIT": "5"}, clear=True)
-    @patch('post_cursor_agent_plan_scope_audit.detect_changed_files')
-    @patch('post_cursor_agent_plan_scope_audit.write_audit_record')
+    @patch('post_agent_plan_scope_audit.detect_changed_files')
+    @patch('post_agent_plan_scope_audit.write_audit_record')
     def test_min_files_threshold(self, mock_write, mock_files):
         """MIN_FILES_FOR_AUDIT threshold prevents audit below threshold."""
         # Only 3 files changed, threshold is 5
@@ -282,11 +282,11 @@ class TestRetroactiveDetection:
     """Test retroactive authorization detection via hook."""
     
     @patch.dict(os.environ, {}, clear=True)
-    @patch('post_cursor_agent_plan_scope_audit.detect_changed_files')
-    @patch('post_cursor_agent_plan_scope_audit.detect_active_plan')
-    @patch('post_cursor_agent_plan_scope_audit.extract_markers_from_text')
-    @patch('post_cursor_agent_plan_scope_audit.check_scope_authorization')
-    @patch('post_cursor_agent_plan_scope_audit.write_audit_record')
+    @patch('post_agent_plan_scope_audit.detect_changed_files')
+    @patch('post_agent_plan_scope_audit.detect_active_plan')
+    @patch('post_agent_plan_scope_audit.extract_markers_from_text')
+    @patch('post_agent_plan_scope_audit.check_scope_authorization')
+    @patch('post_agent_plan_scope_audit.write_audit_record')
     def test_retroactive_detected_advisory(
         self, mock_write, mock_check, mock_extract, mock_plan, mock_files
     ):
@@ -315,11 +315,11 @@ class TestRetroactiveDetection:
         assert "RETROACTIVE_AUTHORIZATION_DETECTED" in call_args[1]["result"].reason
     
     @patch.dict(os.environ, {"PLAN_SCOPE_AUDIT_STRICT": "1"}, clear=True)
-    @patch('post_cursor_agent_plan_scope_audit.detect_changed_files')
-    @patch('post_cursor_agent_plan_scope_audit.detect_active_plan')
-    @patch('post_cursor_agent_plan_scope_audit.extract_markers_from_text')
-    @patch('post_cursor_agent_plan_scope_audit.check_scope_authorization')
-    @patch('post_cursor_agent_plan_scope_audit.write_audit_record')
+    @patch('post_agent_plan_scope_audit.detect_changed_files')
+    @patch('post_agent_plan_scope_audit.detect_active_plan')
+    @patch('post_agent_plan_scope_audit.extract_markers_from_text')
+    @patch('post_agent_plan_scope_audit.check_scope_authorization')
+    @patch('post_agent_plan_scope_audit.write_audit_record')
     def test_retroactive_blocks_strict(
         self, mock_write, mock_check, mock_extract, mock_plan, mock_files
     ):
@@ -349,7 +349,7 @@ class TestJSONLLogging:
         """JSONL record has all required fields."""
         log_file = tmp_path / "test_audit.jsonl"
         
-        with patch('post_cursor_agent_plan_scope_audit.LOG_PATH', log_file):
+        with patch('post_agent_plan_scope_audit.LOG_PATH', log_file):
             mock_result = MagicMock()
             mock_result.authorized = False
             mock_result.reason = "MISSING_AUTHORIZATION_DECISION"
@@ -390,11 +390,11 @@ class TestReasonCodes:
     """Test specific reason code detection and surfacing."""
     
     @patch.dict(os.environ, {}, clear=True)
-    @patch('post_cursor_agent_plan_scope_audit.detect_changed_files')
-    @patch('post_cursor_agent_plan_scope_audit.detect_active_plan')
-    @patch('post_cursor_agent_plan_scope_audit.extract_markers_from_text')
-    @patch('post_cursor_agent_plan_scope_audit.check_scope_authorization')
-    @patch('post_cursor_agent_plan_scope_audit.write_audit_record')
+    @patch('post_agent_plan_scope_audit.detect_changed_files')
+    @patch('post_agent_plan_scope_audit.detect_active_plan')
+    @patch('post_agent_plan_scope_audit.extract_markers_from_text')
+    @patch('post_agent_plan_scope_audit.check_scope_authorization')
+    @patch('post_agent_plan_scope_audit.write_audit_record')
     def test_missing_discovered_scope(
         self, mock_write, mock_check, mock_extract, mock_plan, mock_files
     ):
@@ -418,11 +418,11 @@ class TestReasonCodes:
         assert call_args[1]["result"].reason == "MISSING_DISCOVERED_SCOPE"
     
     @patch.dict(os.environ, {}, clear=True)
-    @patch('post_cursor_agent_plan_scope_audit.detect_changed_files')
-    @patch('post_cursor_agent_plan_scope_audit.detect_active_plan')
-    @patch('post_cursor_agent_plan_scope_audit.extract_markers_from_text')
-    @patch('post_cursor_agent_plan_scope_audit.check_scope_authorization')
-    @patch('post_cursor_agent_plan_scope_audit.write_audit_record')
+    @patch('post_agent_plan_scope_audit.detect_changed_files')
+    @patch('post_agent_plan_scope_audit.detect_active_plan')
+    @patch('post_agent_plan_scope_audit.extract_markers_from_text')
+    @patch('post_agent_plan_scope_audit.check_scope_authorization')
+    @patch('post_agent_plan_scope_audit.write_audit_record')
     def test_authorization_not_accepted_deferred(
         self, mock_write, mock_check, mock_extract, mock_plan, mock_files
     ):

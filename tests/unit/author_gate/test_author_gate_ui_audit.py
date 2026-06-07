@@ -1,4 +1,4 @@
-"""Tests for post_cursor_agent_author_gate_ui_audit.audit_response and emit_packet
+"""Tests for post_agent_author_gate_ui_audit.audit_response and emit_packet
 star-gating on the dominance verdict."""
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_author_gate_ui_audit.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_author_gate_ui_audit.py"
 EMIT_PATH = REPO_ROOT / ".claude" / "skills" / "author-gate-packet-builder" / "emit_packet.py"
 
 
@@ -26,7 +26,7 @@ def _load(module_name: str, path: Path):
 
 @pytest.fixture(scope="module")
 def ui_audit():
-    return _load("post_cursor_agent_author_gate_ui_audit", HOOK_PATH)
+    return _load("post_agent_author_gate_ui_audit", HOOK_PATH)
 
 
 @pytest.fixture(scope="module")

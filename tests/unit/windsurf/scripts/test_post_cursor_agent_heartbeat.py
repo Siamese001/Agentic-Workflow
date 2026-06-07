@@ -1,4 +1,4 @@
-"""Tests for post_cursor_agent_heartbeat + pre_user_prompt_hook_health_check (W7.1)."""
+"""Tests for post_agent_heartbeat + pre_user_prompt_hook_health_check (W7.1)."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def _load(mod_name: str, file_name: str):
 
 @pytest.fixture
 def heartbeat_mod(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    mod = _load("post_cursor_agent_heartbeat_t", "post_cursor_agent_heartbeat.py")
+    mod = _load("post_agent_heartbeat_t", "post_agent_heartbeat.py")
     hb_path = tmp_path / "hb.jsonl"
     monkeypatch.setattr(mod, "_HEARTBEAT_PATH", hb_path)
     return mod, hb_path
@@ -40,7 +40,7 @@ def health_mod(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 
 
 # ---------------------------------------------------------------------------
-# post_cursor_agent_heartbeat
+# post_agent_heartbeat
 # ---------------------------------------------------------------------------
 
 
@@ -52,7 +52,7 @@ def test_heartbeat_main_writes_record(heartbeat_mod) -> None:
     lines = hb_path.read_text(encoding="utf-8").splitlines()
     assert len(lines) == 1
     record = json.loads(lines[0])
-    assert record["hook"] == "post_cursor_agent_heartbeat"
+    assert record["hook"] == "post_agent_heartbeat"
     assert isinstance(record["timestamp_unix"], float)
     assert record["pid"] > 0
 
@@ -77,7 +77,7 @@ def test_heartbeat_truncates_to_max_lines(heartbeat_mod, monkeypatch: pytest.Mon
 
 def test_heartbeat_disable_env_var(heartbeat_mod, monkeypatch: pytest.MonkeyPatch) -> None:
     mod, hb_path = heartbeat_mod
-    monkeypatch.setenv("POST_CURSOR_AGENT_HEARTBEAT_DISABLE", "1")
+    monkeypatch.setenv("POST_AGENT_HEARTBEAT_DISABLE", "1")
     rc = mod.main()
     assert rc == 0
     assert not hb_path.exists()
@@ -99,7 +99,7 @@ def test_health_reports_ok_when_fresh(health_mod) -> None:
     mod, hb_path = health_mod
     now = 1_000_000.0
     hb_path.write_text(
-        json.dumps({"timestamp_unix": now - 60.0, "hook": "post_cursor_agent_heartbeat"}) + "\n",
+        json.dumps({"timestamp_unix": now - 60.0, "hook": "post_agent_heartbeat"}) + "\n",
         encoding="utf-8",
     )
     result = mod.check_heartbeat_health(path=hb_path, now=now, stale_seconds=3600)
@@ -111,7 +111,7 @@ def test_health_reports_stale_when_old(health_mod) -> None:
     mod, hb_path = health_mod
     now = 1_000_000.0
     hb_path.write_text(
-        json.dumps({"timestamp_unix": now - 10_000.0, "hook": "post_cursor_agent_heartbeat"}) + "\n",
+        json.dumps({"timestamp_unix": now - 10_000.0, "hook": "post_agent_heartbeat"}) + "\n",
         encoding="utf-8",
     )
     result = mod.check_heartbeat_health(path=hb_path, now=now, stale_seconds=3600)
@@ -160,7 +160,7 @@ def test_health_disable_env_var_silences(
     health_mod, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     mod, _ = health_mod
-    monkeypatch.setenv("POST_CURSOR_AGENT_HEARTBEAT_HEALTH_DISABLE", "1")
+    monkeypatch.setenv("POST_AGENT_HEARTBEAT_HEALTH_DISABLE", "1")
     rc = mod.main()
     assert rc == 0
     err = capsys.readouterr().err
@@ -184,7 +184,7 @@ def test_health_flags_stale_after_thirty_minutes(health_mod) -> None:
     now = 1_000_000.0
     # 31 minutes (1860s) — just past the new default (1800s).
     hb_path.write_text(
-        json.dumps({"timestamp_unix": now - 1860.0, "hook": "post_cursor_agent_heartbeat"}) + "\n",
+        json.dumps({"timestamp_unix": now - 1860.0, "hook": "post_agent_heartbeat"}) + "\n",
         encoding="utf-8",
     )
     result = mod.check_heartbeat_health(path=hb_path, now=now)
@@ -193,14 +193,14 @@ def test_health_flags_stale_after_thirty_minutes(health_mod) -> None:
 
 
 def test_health_env_override_still_honored(health_mod, monkeypatch: pytest.MonkeyPatch) -> None:
-    """W10.1: POST_CURSOR_AGENT_HEARTBEAT_STALE_SECONDS env override still works
+    """W10.1: POST_AGENT_HEARTBEAT_STALE_SECONDS env override still works
     after the default tightening, so operators can relax the threshold
     when justified (e.g. long-running batch sessions)."""
     mod, hb_path = health_mod
-    monkeypatch.setenv("POST_CURSOR_AGENT_HEARTBEAT_STALE_SECONDS", "7200")  # 2h
+    monkeypatch.setenv("POST_AGENT_HEARTBEAT_STALE_SECONDS", "7200")  # 2h
     now = 1_000_000.0
     hb_path.write_text(
-        json.dumps({"timestamp_unix": now - 3600.0, "hook": "post_cursor_agent_heartbeat"}) + "\n",
+        json.dumps({"timestamp_unix": now - 3600.0, "hook": "post_agent_heartbeat"}) + "\n",
         encoding="utf-8",
     )
     # Age 1h is >30min default but <2h override → ok.
@@ -211,7 +211,7 @@ def test_health_env_override_still_honored(health_mod, monkeypatch: pytest.Monke
 
 def test_health_writer_reader_roundtrip(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     hb_path = tmp_path / "hb.jsonl"
-    writer = _load("hb_writer_rt", "post_cursor_agent_heartbeat.py")
+    writer = _load("hb_writer_rt", "post_agent_heartbeat.py")
     reader = _load("hb_reader_rt", "pre_user_prompt_hook_health_check.py")
     monkeypatch.setattr(writer, "_HEARTBEAT_PATH", hb_path)
     monkeypatch.setattr(reader, "_HEARTBEAT_PATH", hb_path)

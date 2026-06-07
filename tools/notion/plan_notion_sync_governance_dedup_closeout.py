@@ -18,7 +18,7 @@ DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
     "Not Started: Close governance dedup deferred scope from 2026-05-26 audit — "
-    "retire obsolete post_cursor_agent hooks (7-day shadow), fix check_cursor_native_config, "
+    "retire obsolete post_agent hooks (7-day shadow), fix check_cursor_native_config, "
     "archive plan sprawl to ≤20 active, Windsurf always_on demotion map, closeout receipt."
 )
 

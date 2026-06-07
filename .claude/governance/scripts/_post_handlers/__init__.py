@@ -3,9 +3,9 @@
 Each handler is a callable taking a ParsedResponse + repo_root, returning None.
 Handlers MUST be fail-soft — never raise; log to stderr and continue.
 
-Wired in by `.claude/governance/scripts/post_cursor_agent_dispatch.py` when env
-`POST_CURSOR_AGENT_DISPATCHER=1`. When unset, the existing standalone scripts
-in `.claude/governance/scripts/post_cursor_agent_*.py` run unchanged.
+Wired in by `.claude/governance/scripts/post_agent_dispatch.py` when env
+`POST_AGENT_DISPATCHER=1`. When unset, the existing standalone scripts
+in `.claude/governance/scripts/post_agent_*.py` run unchanged.
 """
 
 from __future__ import annotations

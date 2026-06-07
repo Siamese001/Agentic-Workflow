@@ -289,12 +289,12 @@ repos:
         entry: py ops_scripts/ci/author_gate/check_ledger_schema.py
         language: system
         pass_filenames: false
-        files: ^(\.claude/schemas/decision_ledger\.schema\.sql|\.claude/governance/scripts/(apply_ledger_schema|post_cursor_agent_hitl_capture|post_cursor_agent_author_gate_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
+        files: ^(\.claude/schemas/decision_ledger\.schema\.sql|\.claude/governance/scripts/(apply_ledger_schema|post_agent_hitl_capture|post_agent_author_gate_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
         always_run: false
         require_serial: true
 
       # -- T6d2: Author-Gate UI Conformance (star + confidence prefix) ----------------
-      # Enforces post_cursor_agent_author_gate_ui_audit findings are not stale-unresolved
+      # Enforces post_agent_author_gate_ui_audit findings are not stale-unresolved
       # within the 7-day window. Triggered when the audit hook, this gate, or the
       # violations log changes.
       - id: author-gate-ui-conformance
@@ -302,7 +302,7 @@ repos:
         entry: py ops_scripts/ci/author_gate/check_ui_conformance.py
         language: system
         pass_filenames: false
-        files: ^(\.claude/governance/scripts/post_cursor_agent_author_gate_ui_audit\.py|ops_scripts/ci/author_gate/check_ui_conformance\.py|artifacts/cursor/author_gate_ui_violations\.jsonl)$
+        files: ^(\.claude/governance/scripts/post_agent_author_gate_ui_audit\.py|ops_scripts/ci/author_gate/check_ui_conformance\.py|artifacts/cursor/author_gate_ui_violations\.jsonl)$
         always_run: false
         require_serial: true
 
@@ -554,7 +554,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: false
-        files: ^(\.claude/governance/scripts/(post_cursor_agent_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.claude/skills/refactor-decision-memory/.*\.py|\.claude/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
+        files: ^(\.claude/governance/scripts/(post_agent_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.claude/skills/refactor-decision-memory/.*\.py|\.claude/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
 
       # -- T7h: Terminal/Subprocess Cleanup (§11 + §14) ---------------------------------
       # Enforces Constitutional §11 (terminal process lifecycle) and §14 (subprocess
@@ -642,7 +642,7 @@ repos:
         entry: py ops_scripts/ci/check_notion_schema_mece.py
         language: system
         pass_filenames: false
-        files: ^\.claude/governance/scripts/post_cursor_agent_(deferred_scope|next_step)_capture\.py$
+        files: ^\.claude/governance/scripts/post_agent_(deferred_scope|next_step)_capture\.py$
         always_run: false
         require_serial: true
 

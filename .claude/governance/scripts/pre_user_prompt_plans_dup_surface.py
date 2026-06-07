@@ -2,7 +2,7 @@
 """pre_user_prompt_plans_dup_surface.py — surface unacknowledged Plans-DB
 duplicate violations at the start of each Cursor Agent prompt.
 
-When ``post_cursor_agent_plans_dup_audit.py`` detected a duplicate Plans-DB POST
+When ``post_agent_plans_dup_audit.py`` detected a duplicate Plans-DB POST
 in the previous response and logged it to
 ``artifacts/cursor/notion_plans_dup_violations.jsonl``, this hook reads the
 last entry and surfaces a PLANS_DUP_SURFACE line so the operator is informed

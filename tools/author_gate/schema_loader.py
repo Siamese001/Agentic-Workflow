@@ -2,10 +2,10 @@
 
 Single source of truth used by:
   - .claude/skills/author-gate-packet-builder/emit_packet.py (validate before emit)
-  - .claude/governance/scripts/post_cursor_agent_author_gate_schema_audit.py (validate captured)
-  - .claude/governance/scripts/post_cursor_agent_author_gate_ui_audit.py (read routing enum)
-  - .claude/governance/scripts/post_cursor_agent_author_gate_miss_detector.py (presence check)
-  - .claude/governance/scripts/post_cursor_agent_ask_user_question_packet_audit.py (vacuum closure)
+  - .claude/governance/scripts/post_agent_author_gate_schema_audit.py (validate captured)
+  - .claude/governance/scripts/post_agent_author_gate_ui_audit.py (read routing enum)
+  - .claude/governance/scripts/post_agent_author_gate_miss_detector.py (presence check)
+  - .claude/governance/scripts/post_agent_ask_user_question_packet_audit.py (vacuum closure)
 
 Plan: author-gate-ssot-consolidation-b7c3e1 (W1.2 / W3 shared loader).
 

@@ -8,7 +8,7 @@ recently but the Notion row hasn't been touched within ``--threshold-hours``
 This is the backstop for the wave-lifecycle auto-sync chain (see plan
 ``notion-wave-lifecycle-autosync-f4a2b8``). When the chain is healthy, every
 ``WAVE_COMPLETE:`` / ``PLAN_COMPLETE:`` marker triggers a Notion patch via
-``post_cursor_agent_wave_lifecycle_capture.py`` or ``wave_execution_state.py``,
+``post_agent_wave_lifecycle_capture.py`` or ``wave_execution_state.py``,
 keeping the row fresh. Drift surfacing here means the chain failed somewhere.
 
 Modes
