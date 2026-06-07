@@ -31,7 +31,7 @@ dod_exempt: false
 | # | Ported emulation (current burden) | Native Claude Code feature that supersedes it | Leverage |
 |---|---|---|---|
 | **S1** | **Author-Gate** packet-builder + ui-renderer skills, `_author_gate_queue`, marker grammar (`AUTHOR_GATE_PACKET`/`DECISION_CAPTURED`), 6-script AG audit chain, queue-seed/drain hooks, ledger-integrity + marker-validator | **`AskUserQuestion`** — renders clickable options with descriptions natively. Precedent kept in **file memory**, not a bespoke SQLite ledger + Notion mirror. | ★★★★★ |
-| **S2** | **`SR_INTAKE/SR_PLAN/SR_APPROVAL/SR_EXECUTE/SR_VERIFY`** marker scheme + `pre_prompt_classifier.py` + `sequential-thinking-enforcement.md` | **Plan mode** (`EnterPlanMode`/`ExitPlanMode`) — "no edits before approval" is the native contract the SR markers hand-rolled. | ★★★★☆ |
+| **S2** | **`SR_INTAKE/SR_PLAN/SR_APPROVAL/SR_EXECUTE/SR_VERIFY`** marker scheme + `pre_prompt_classifier.py` + `plan-first-enforcement.md` | **Plan mode** (`EnterPlanMode`/`ExitPlanMode`) — "no edits before approval" is the native contract the SR markers hand-rolled. | ★★★★☆ |
 | **S3** | **Memory MCP ritual** — mandatory `mem_recall_session_start` first-call, `mem_cleanup_stale`, staleness/purge gates, `memory-notion-writeback` 15/3 discipline | **Native file-based memory** (`memory/MEMORY.md` + per-fact files) — already live this session; no purge gate needed (curated, not auto-grown). | ★★★★☆ |
 | **S4** | **Deferred-scope / next-step** marker+hook pipeline — `DEFERRED_SCOPE:`/`NEXT_STEP:` markers, capture + miss-detector + scorer + recovery hooks, Notion Backlog posting | **`spawn_task`** background-task chips — one click spins out-of-scope work into its own session/worktree. | ★★★☆☆ |
 | **S5** | **Wave-lifecycle markers** — `wave_execution_state.py`, `WAVE_COMPLETE`/`PHASE_COMPLETE`/`PLAN_COMPLETE`, `post_agent_wave_*` capture/audit | **`TodoWrite`** for in-session orchestration; Notion stays only as the explicit durable store. | ★★★☆☆ |
@@ -65,7 +65,7 @@ dod_exempt: false
 | P1.2 | Decision precedent → file memory | `memory/`, `refactor-decision-memory` skill | Replace SQLite ledger lookups | ~14k | Not Started |
 | P1.3 | Archive AG scripts + skills | `_author_gate_*`, AG chain, packet-builder/ui-renderer skills | 8+ scripts + 2 skills + queue | ~20k | Not Started |
 | P1.4 | Retire AG CI gates / §30,§35 markers | `ops_scripts/ci/check_*ag*`, `check_decision_ledger_*` | §30/§35 are constitutional | ~14k | Not Started |
-| P2.1 | Rewrite SR rule → plan-mode contract | `sequential-thinking-enforcement.md`, `CLAUDE.md` | Preserve T2/T3 gating threshold | ~12k | Not Started |
+| P2.1 | Rewrite SR rule → plan-mode contract | `plan-first-enforcement.md`, `CLAUDE.md` | Preserve T2/T3 gating threshold | ~12k | Not Started |
 | P2.2 | Retire `pre_prompt_classifier` SR path | `pre_prompt_classifier.py` | Also hosts ADG step-0 classify | ~13k | Not Started |
 | P2.3 | structured-reasoning skill → plan-mode notes | `structured-reasoning` skill | Keep retrieval-discipline content | ~10k | Not Started |
 | P3.1 | Session-start recall → native memory | `memory-management.md`, §17 | First-call mandate is constitutional | ~14k | Not Started |

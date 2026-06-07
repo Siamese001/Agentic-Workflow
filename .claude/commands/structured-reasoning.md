@@ -10,7 +10,7 @@ description: Thin alias — T2/T3 plan-first reasoning (/structured-reasoning)
 
 | Layer | SSOT |
 |-------|------|
-| On-demand invariant | [sequential-thinking-enforcement.md](../rules/sequential-thinking-enforcement.md) |
+| On-demand invariant | [plan-first-enforcement.md](../rules/plan-first-enforcement.md) |
 | Procedure (full phases) | [structured-reasoning/SKILL.md](../skills/structured-reasoning/SKILL.md) |
 | Templates | `structured-reasoning/plan-template.md`, `verification-template.md`, `failure-template.md` |
 

@@ -16,7 +16,7 @@ natively (`EnterPlanMode` / `ExitPlanMode`): the harness itself blocks edits unt
 - **Invariant kept:** T2/T3 ⇒ plan first, no edits before approval; retrieval discipline (local →
   exact → ADG → semantic → external) unchanged.
 - **Retired:** the `SR_*` marker scheme. `CLAUDE.md` "Plan First" now points at `EnterPlanMode` /
-  `ExitPlanMode`; `sequential-thinking-enforcement.md` reduced to a plan-mode stub that preserves the
+  `ExitPlanMode`; `plan-first-enforcement.md` reduced to a plan-mode stub that preserves the
   retrieval-discipline guidance; the `structured-reasoning` skill keeps its decomposition/retrieval
   content under a deprecation banner (used *inside* plan mode, not as a marker emitter).
 - **Left dormant:** `pre_prompt_classifier.py` also hosts ADG step-0 classification, so it is **not**

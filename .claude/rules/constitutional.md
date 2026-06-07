@@ -72,6 +72,6 @@ ADG graph is the **primary** analysis primitive. `grep_search` for dependency an
 
 ## Extended Doctrine (model_decision rules — load on demand)
 
-`adg-analysis-procedures.md` · `adg-canonical-invariants.md` · `author-gate-enforcement.md` · `sequential-thinking-enforcement.md` · `memory-management.md` · `deferred-scope-capture.md`
+`adg-analysis-procedures.md` · `adg-canonical-invariants.md` · `author-gate-enforcement.md` · `plan-first-enforcement.md` · `memory-management.md` · `deferred-scope-capture.md`
 
 > Repointed W2 (plan `governance-rule-residue-cleanup-7e3a91`): the deprecated ADG stubs (`adg-repair-discipline.md`, `adg-hotspot-enforcement.md`, `adg-graph-layer-enforcement.md`, `adg-test-accelerator-enforcement.md`) all redirect to `adg-analysis-procedures.md`; `anti-pattern-author-gate.md` → `author-gate-enforcement.md`; inactive `global_rules.md` dropped.

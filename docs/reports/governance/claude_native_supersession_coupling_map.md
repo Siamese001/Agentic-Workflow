@@ -49,7 +49,7 @@ baseline names** — that is what this branch actually contains.
 | Coupling type | Artifacts |
 |---|---|
 | **Governance scripts** | `pre_prompt_classifier.py` (hosts SR classification **and** ADG step-0 — split, keep ADG) |
-| **Rules** | `sequential-thinking-enforcement.md`, `CLAUDE.md` "Plan First" section |
+| **Rules** | `plan-first-enforcement.md`, `CLAUDE.md` "Plan First" section |
 | **Skills** | `structured-reasoning` (+ `/structured-reasoning` alias) — keep retrieval-discipline content, drop marker scheme |
 | **Markers retired** | `SR_INTAKE`, `SR_PLAN`, `SR_APPROVAL`, `SR_EXECUTE`, `SR_VERIFY` |
 | **Invariant preserved** | "T2/T3 ⇒ enter plan mode (no edits before approval)." |

@@ -344,7 +344,7 @@ _sr_mandate = """
   4. Emit SR_PLAN: numbered verb-first steps + tools needed + risks
   5. Emit SR_APPROVAL: APPROVED before any writes
   Sequential Thinking MCP is RETIRED. Use: Memory MCP + Task Manager MCP + native Cursor Agent reasoning.
-  Rule: .claude/rules/sequential-thinking-enforcement.md
+  Rule: .claude/rules/plan-first-enforcement.md
   Workflow: /structured-reasoning
 """.strip()
 

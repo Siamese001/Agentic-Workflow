@@ -4,7 +4,7 @@
 
 Root `AGENTS.md` is always-on. Push specialized guidance to subdirectory `AGENTS.md` files or `.claude/rules/` / skills.
 
-**T2/T3** (2+ files, cross-layer, architecture, multi-file debug): first output = plan; invoke `structured-reasoning` skill → `SR_INTAKE` … `SR_VERIFY`. See `.claude/rules/sequential-thinking-enforcement.mdc`.
+**T2/T3** (2+ files, cross-layer, architecture, multi-file debug): first output = plan; invoke `structured-reasoning` skill → `SR_INTAKE` … `SR_VERIFY`. See `.claude/rules/plan-first-enforcement.mdc`.
 
 **T0/T1**: single file ≤20 lines or questions — answer/edit directly.
 

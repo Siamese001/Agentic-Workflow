@@ -1,4 +1,10 @@
-# Plan-First Threshold (native plan mode)
+# Plan-First Enforcement (native plan mode)
+
+> **Renamed W2 (`claude-native-supersession-9d3f7a`).** Formerly `sequential-thinking-enforcement.md`
+> — that name came from a defunct legacy-IDE "Sequential Thinking" MCP that never worked; the rule
+> was goal-seeked to reimplement its *intent*. The real scope is **plan-first reasoning**: on T2/T3
+> work, decompose and gather evidence, and make **no edits before the plan is approved** (native plan
+> mode). Renamed to match scope.
 
 > Superseded W2 (`claude-native-supersession-9d3f7a`, ADR-094): the `SR_INTAKE / SR_PLAN /
 > SR_APPROVAL / SR_EXECUTE / SR_VERIFY` marker packet is retired. Native **plan mode** is the

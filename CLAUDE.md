@@ -9,7 +9,7 @@
 - **T2/T3** (2+ files, cross-layer, architecture, multi-file debug): enter **plan mode**
   (`EnterPlanMode`) and present the plan via `ExitPlanMode` for approval before any edit. The
   [`structured-reasoning`](.claude/skills/structured-reasoning/SKILL.md) skill still offers retrieval
-  discipline for dense decomposition. See `.claude/rules/sequential-thinking-enforcement.md`.
+  discipline for dense decomposition. See `.claude/rules/plan-first-enforcement.md`.
 - **T0/T1**: single file ≤20 lines or questions — answer/edit directly.
 - **Layer separation:** Reasoning / Routing / Execution / Verification — no edits before plan approval.
 
