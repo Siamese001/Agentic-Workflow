@@ -37,8 +37,8 @@ def _judge(
     }
 
 
-def test_default_judge_regen_cap_is_three() -> None:
-    assert JUDGE_REGEN_MAX_ATTEMPTS == 3
+def test_default_judge_regen_cap_is_one() -> None:
+    assert JUDGE_REGEN_MAX_ATTEMPTS == 1
 
 
 def test_post_regen_rescore_defaults_soft_only(monkeypatch) -> None:

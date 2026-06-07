@@ -70,6 +70,32 @@ _PA_AUTHORITY_KEYS: tuple[str, ...] = (
     "proof_pool_digest",
 )
 
+# Graph bundle consumption flags + packet refs (attach_*_to_proof_pool_metadata).
+_PA_GRAPH_BUNDLE_AUTHORITY_KEYS: tuple[str, ...] = (
+    "competency_capability_bundle_consumption",
+    "competency_capability_bundle_consumption_mode",
+    "competency_capability_bundles",
+    "competency_bundle_ids",
+    "competency_capability_section_packet",
+    "graph_expansion_consumes_competency_bundles",
+    "flat_taxonomy_only_graph_context_forbidden",
+    "headline_positioning_bundle_consumption",
+    "headline_positioning_bundle_consumption_mode",
+    "headline_positioning_bundles",
+    "headline_positioning_bundle_ids",
+    "headline_positioning_section_packet",
+    "graph_expansion_consumes_headline_positioning_bundles",
+    "flat_skill_only_graph_context_forbidden",
+    "role_episode_bundle_consumption",
+    "role_episode_bundle_consumption_mode",
+    "role_episode_bundles",
+    "role_episode_bundle_ids",
+    "unify_role_episode_section_packet",
+    "ibm_role_episode_section_packet",
+    "graph_expansion_consumes_role_episode_bundles",
+    "approved_metric_outcome_ids",
+)
+
 
 class SectionFecBridgePreconditionError(RuntimeError):
     """Raised when product-visible PA runs without FEC bridge or canonical FEC."""
@@ -122,7 +148,7 @@ def _build_pa_proof_authority_metadata(
         "proof_pool_digest": pool.proof_pool_digest,
         "proof_source": pool.proof_source,
     }
-    for key in _PA_AUTHORITY_KEYS:
+    for key in _PA_AUTHORITY_KEYS + _PA_GRAPH_BUNDLE_AUTHORITY_KEYS:
         if key in pp_meta and key not in out:
             out[key] = pp_meta[key]
     c03 = pp_meta.get("c03_graphrag_bound")

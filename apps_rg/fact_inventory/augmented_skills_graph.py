@@ -207,6 +207,37 @@ def resolve_augmented_skills_graph_authority(
         )
 
 
+def _build_skill_one_hop_adjacency_index(
+    graph: dict[str, Any],
+) -> dict[str, list[str]]:
+    """C03-style 1-hop adjacency: co-member skills under shared capability_domain."""
+    from collections import defaultdict
+
+    skill_by_id: dict[str, dict[str, Any]] = {}
+    for row in graph.get("skill_rows") or []:
+        if isinstance(row, dict):
+            sid = str(row.get("skill_id") or "").strip()
+            if sid:
+                skill_by_id[sid] = row
+
+    domain_skills: dict[str, set[str]] = defaultdict(set)
+    for edge in graph.get("graph_edges") or []:
+        if not isinstance(edge, dict):
+            continue
+        if edge.get("edge_type") != "capability_domain_contains_skill":
+            continue
+        domain_id = str(edge.get("source_node_id") or "").strip()
+        skill_id = str(edge.get("target_node_id") or "").strip()
+        if domain_id and skill_id:
+            domain_skills[domain_id].add(skill_id)
+
+    adjacency: dict[str, set[str]] = defaultdict(set)
+    for members in domain_skills.values():
+        for sid in members:
+            adjacency[sid].update(other for other in members if other != sid)
+    return {sid: sorted(neighbors)[:5] for sid, neighbors in adjacency.items()}
+
+
 def build_verified_skill_inventory_projection(
     *,
     section_id: str = "competencies",
@@ -218,6 +249,7 @@ def build_verified_skill_inventory_projection(
     root = repo_root or _repo_root()
     g = graph or load_augmented_skills_graph(repo_root=root)
     allowed = allowed_fact_ids or set()
+    adjacency_index = _build_skill_one_hop_adjacency_index(g)
     skills: list[dict[str, Any]] = []
     for row in g.get("skill_rows") or []:
         if not isinstance(row, dict):
@@ -230,6 +262,7 @@ def build_verified_skill_inventory_projection(
         links = [str(x) for x in (row.get("fact_id_links") or []) if str(x).strip()]
         if allowed and not any(lid in allowed or lid.split("_metric_")[0] in allowed for lid in links):
             continue
+        skill_id = str(row.get("skill_id") or "")
         skills.append(
             {
                 "skill_id": row.get("skill_id"),
@@ -240,6 +273,7 @@ def build_verified_skill_inventory_projection(
                 "evidence_type": "augmented_skills_graph_projection",
                 "pillar": row.get("pillar"),
                 "subpillar": row.get("subpillar"),
+                "adjacent_skill_ids": list(adjacency_index.get(skill_id) or []),
             }
         )
     return {

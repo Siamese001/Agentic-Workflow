@@ -43,7 +43,7 @@ def synthesis_regen_max_attempts() -> int:
 # transposition the template-following attractor is broken; 3 cycles is sufficient
 # for marginal quality fixes. Env var APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS
 # may lower the effective limit but cannot exceed JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP.
-JUDGE_REGEN_MAX_ATTEMPTS = 3
+JUDGE_REGEN_MAX_ATTEMPTS = 1
 JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
 # Regen delta shape: sentinel ceilings (not product truncation). Opt-in caps via REGEN_CAPS=1.
 JUDGE_REGEN_CORE_DELTA_TOKEN_CEILING = 2_000_000
@@ -174,8 +174,8 @@ def exploratory_full_paragraph_regen_enabled() -> bool:
     return _truthy_env(raw)
 
 
-# Re-run X1D after full X2 with authoritative gate snapshot (default on; no gate weakening).
-RELEASE_POST_X2_JUDGE_REFRESH_ENABLED = True
+# Re-run X1D after full X2 with authoritative gate snapshot (default off — variance-class trim).
+RELEASE_POST_X2_JUDGE_REFRESH_ENABLED = False
 
 
 def post_x2_judge_refresh_enabled() -> bool:

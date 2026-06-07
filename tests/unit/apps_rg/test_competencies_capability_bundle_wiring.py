@@ -404,3 +404,46 @@ def test_competencies_graph_expansion_enabled_only_in_bundle_only_mode():
     assert sec.get("graph_expansion_allowed") is True
     assert sec.get("competency_bundle_consumption") == "required"
     assert sec.get("graph_expansion_mode") == "competency_bundle_only"
+
+
+def test_fec_bridge_pa_metadata_preserves_competency_bundle_consumption():
+    from apps_rg.runtime.proof_pool_resolver import SectionProofPool
+    from apps_rg.runtime.spine.c0_fec_compose import _build_pa_proof_authority_metadata
+
+    pp_meta = attach_competency_bundles_to_proof_pool_metadata(
+        {
+            "proof_pool_type": "augmented_skills_graph",
+            "augmented_skills_graph_present": True,
+            "c03_graphrag_bound": {"support_status": "SUPPORTED"},
+        },
+        section_id="competencies",
+    )
+    pool = SectionProofPool(
+        section="competencies",
+        proof_source="augmented_skills_graph",
+        proof_pool_ref="apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+        proof_pool_digest="digest-test",
+        selected_fact_plan={"facts": [{"fact_id": "bul_test_001", "claim_text": "x"}]},
+        allowed_fact_ids_ordered=["bul_test_001"],
+        allowed_fact_ids={"bul_test_001"},
+        bullet_rows=[],
+        proof_pool_metadata=pp_meta,
+        fallback_used=False,
+        base_resume_fallback_used=False,
+        broad_skills_ledger_present=False,
+        srfs_present=False,
+        base_resume_json_ref="base.json",
+        base_resume_json_hash="hash",
+        broad_skills_ledger_ref="",
+        broad_skills_ledger_digest="",
+        srfs_ref="",
+        base_resume_override_used=False,
+    )
+    pa_meta = _build_pa_proof_authority_metadata(
+        pp_meta,
+        pool=pool,
+        route_contract_ref="route:test",
+    )
+    assert pa_meta.get("competency_capability_bundle_consumption") is True
+    assert pa_meta.get("competency_capability_bundles")
+    assert pa_meta.get("competency_bundle_ids")

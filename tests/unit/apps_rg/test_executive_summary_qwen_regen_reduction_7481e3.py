@@ -286,21 +286,21 @@ class TestW4SelfCheckFields:
 
 
 class TestW4JudgeRegenMaxAttempts:
-    """W4: JUDGE_REGEN_MAX_ATTEMPTS release default must be 3."""
+    """Variance-class trim: JUDGE_REGEN_MAX_ATTEMPTS release default is 1 (hard cap 3)."""
 
-    def test_judge_regen_max_attempts_constant_is_3(self):
+    def test_judge_regen_max_attempts_constant_is_1(self):
         from apps_rg.runtime.sections.executive_summary_repair_policy import JUDGE_REGEN_MAX_ATTEMPTS
-        assert JUDGE_REGEN_MAX_ATTEMPTS == 3, (
-            f"JUDGE_REGEN_MAX_ATTEMPTS must be 3; got {JUDGE_REGEN_MAX_ATTEMPTS}."
+        assert JUDGE_REGEN_MAX_ATTEMPTS == 1, (
+            f"JUDGE_REGEN_MAX_ATTEMPTS must be 1; got {JUDGE_REGEN_MAX_ATTEMPTS}."
         )
 
-    def test_judge_regen_max_attempts_function_returns_3_by_default(self, monkeypatch):
+    def test_judge_regen_max_attempts_function_returns_1_by_default(self, monkeypatch):
         import os
         monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS", raising=False)
         monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", raising=False)
         from apps_rg.runtime.sections import executive_summary_repair_policy as rp
         result = rp.judge_regen_max_attempts()
-        assert result == 3, f"judge_regen_max_attempts() should return 3 by default; got {result}"
+        assert result == 1, f"judge_regen_max_attempts() should return 1 by default; got {result}"
 
     def test_judge_regen_max_attempts_hard_cap_is_3(self):
         from apps_rg.runtime.sections.executive_summary_repair_policy import JUDGE_REGEN_MAX_ATTEMPTS_HARD_CAP

@@ -1,6 +1,6 @@
 {
   "report_id": "apps_rg_simplification_graphsignal_aig_proof_20260607",
-  "generated_at_utc": "2026-06-07T03:20:00Z",
+  "generated_at_utc": "2026-06-07T08:25:00Z",
   "status": "PARTIAL",
   "author_gate": {
     "decision_id": "dec_19e9ffaee599e073d",
@@ -13,19 +13,31 @@
     "S1_align_sc_path_counts": {
       "unify_bullets_sc": {"from": 15, "to": 4},
       "ibm_bullets_sc": {"from": 12, "to": 4},
-      "competencies_candidate_pool": {"from": 10, "to": 8, "floor": 6, "note": "candidate selection pool, must be >= MAX_CATEGORY_COUNT"},
-      "regen_extra_paths": {"unify": {"from": 5, "to": 3}, "ibm": {"from": 4, "to": 3}, "competencies": {"from": 5, "to": 4}},
-      "rigor_protection": ["claude_pool_selector", "min_selection_score_0.72", "employment_x2_metric_anchor_gates"]
+      "competencies_candidate_pool": {"from": 10, "to": 8, "floor": 6}
     },
     "S2_ibm_drop_redundant_judge": {
-      "before": "claude_pool_selector + second independent run_ibm_bullets_judges (anthropic GRADE_ONLY)",
-      "after": "synthetic anthropic_claude X1D row from selector (employment_pool_x1d_judge_rows) on pool path; adjudicator panel still escalates borderline",
-      "x2_gate_satisfied": "x2_x1d_required_judges_present (requires anthropic_claude)"
+      "after": "synthetic anthropic_claude X1D row from selector on pool path"
     },
     "G1_surface_allowed_phrases": {
-      "sections": ["competencies", "headline"],
-      "added": "bound_skills (graph authority — vocabulary anchors only) block with skill_id | allowed_phrases",
-      "proof_authority_unchanged": ["graph_skill_node_ids", "linked_source_fact_ids", "bundle_ids"]
+      "sections": ["competencies", "headline"]
+    },
+    "wave2_fec_bridge_bundle_authority": {
+      "file": "apps_rg/runtime/spine/c0_fec_compose.py",
+      "keys": "_PA_GRAPH_BUNDLE_AUTHORITY_KEYS"
+    },
+    "wave2_narrative_allowed_phrases": {
+      "files": [
+        "apps_rg/runtime/sections/unify_role_episode_evidence.py",
+        "apps_rg/runtime/sections/ibm_role_episode_evidence.py"
+      ]
+    },
+    "wave2_exec_summary_judge_trim": {
+      "RELEASE_POST_X2_JUDGE_REFRESH_ENABLED": false,
+      "JUDGE_REGEN_MAX_ATTEMPTS": 1
+    },
+    "wave2_c03_adjacency_projection": {
+      "field": "adjacent_skill_ids",
+      "edge_type": "capability_domain_contains_skill"
     }
   },
   "files_changed": [
@@ -34,41 +46,69 @@
     {"path": "apps_rg/runtime/sections/competencies_rigor.py", "markdown": "[competencies_rigor.py](apps_rg/runtime/sections/competencies_rigor.py)"},
     {"path": "apps_rg/runtime/sections/ibm_bullets_lane.py", "markdown": "[ibm_bullets_lane.py](apps_rg/runtime/sections/ibm_bullets_lane.py)"},
     {"path": "apps_rg/runtime/sections/competency_capability_evidence.py", "markdown": "[competency_capability_evidence.py](apps_rg/runtime/sections/competency_capability_evidence.py)"},
-    {"path": "apps_rg/runtime/sections/headline_positioning_evidence.py", "markdown": "[headline_positioning_evidence.py](apps_rg/runtime/sections/headline_positioning_evidence.py)"}
+    {"path": "apps_rg/runtime/sections/headline_positioning_evidence.py", "markdown": "[headline_positioning_evidence.py](apps_rg/runtime/sections/headline_positioning_evidence.py)"},
+    {"path": "apps_rg/runtime/spine/c0_fec_compose.py", "markdown": "[c0_fec_compose.py](apps_rg/runtime/spine/c0_fec_compose.py)"},
+    {"path": "apps_rg/runtime/sections/unify_role_episode_evidence.py", "markdown": "[unify_role_episode_evidence.py](apps_rg/runtime/sections/unify_role_episode_evidence.py)"},
+    {"path": "apps_rg/runtime/sections/ibm_role_episode_evidence.py", "markdown": "[ibm_role_episode_evidence.py](apps_rg/runtime/sections/ibm_role_episode_evidence.py)"},
+    {"path": "apps_rg/runtime/sections/executive_summary_repair_policy.py", "markdown": "[executive_summary_repair_policy.py](apps_rg/runtime/sections/executive_summary_repair_policy.py)"},
+    {"path": "apps_rg/fact_inventory/augmented_skills_graph.py", "markdown": "[augmented_skills_graph.py](apps_rg/fact_inventory/augmented_skills_graph.py)"}
   ],
   "tests_gates": {
     "compileall_apps_rg": "exit 0",
     "agentic_core_diff": "empty",
-    "targeted_unit_contract_tests_passed": 129,
-    "stale_tests_realigned": 3,
-    "stale_test_root_cause": "prior_wave_uncommitted_profile_edit_confirmed_via_stash_parity"
+    "wave1_targeted_tests_passed": 129,
+    "wave2_targeted_tests_passed": 38
   },
   "section_runtime_proof": [
-    {"section": "competencies", "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260607_030711", "gen": "REAL_LLM", "x3": "X3_ALLOW", "proof_eligible": true, "s1_initial_path_count": 8, "x2": "all_pass"},
-    {"section": "ibm_bullets", "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260607_031632", "gen": "REAL_LLM", "x3": "X3_BLOCK", "s1_initial_path_count": 4, "selection_gate_ok": true, "s2_first_judge": {"provider_key": "anthropic_claude", "judge_role": "employment_bullet_pool_selector", "pass": true}, "x2_failed_gates": ["x2_ibm_bullet_single_thought", "x2_ibm_hold_metric_forbidden_in_output", "x2_ibm_metrics_preserved", "x2_bullet_technical_specificity_floor"], "block_class": "deterministic_mechanical_rules"},
-    {"section": "headline", "run_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260607_031442", "gen": "REAL_LLM", "x3": "X3_BLOCK", "g1_positioning_bundle_blocks": 7, "g1_allowed_phrases_lines": 20, "g1_bound_skills_block_present": true, "x2_failed_gates": ["x2_headline_xyz_literal_grounding"], "block_class": "prior_wave_strict_gate"}
+    {
+      "section": "competencies",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260607_030711",
+      "wave": 1,
+      "x3": "X3_ALLOW",
+      "s1_initial_path_count": 8
+    },
+    {
+      "section": "competencies",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/competencies/real/competencies_20260607_081726",
+      "wave": 2,
+      "x3": "X3_BLOCK",
+      "g1_fec_live": {
+        "competency_bundle_blocks": 10,
+        "allowed_phrases_lines": 32,
+        "bound_skills_blocks": 10
+      },
+      "x2_failed_gates": [
+        "x2_duplicate_variants_collapsed",
+        "x2_competency_duplicate_variant_absent",
+        "x2_no_keyword_stuffing",
+        "x2_required_capability_families_covered"
+      ],
+      "block_class": "content_variance_not_wiring_regression"
+    },
+    {
+      "section": "ibm_bullets",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/ibm_bullets/real/ibm_bullets_20260607_031632",
+      "x3": "X3_BLOCK",
+      "s1_initial_path_count": 4,
+      "s2_synthetic_selector_row": true
+    },
+    {
+      "section": "headline",
+      "run_dir": "artifacts/apps_rg/runtime_proofs/headline/real/headline_20260607_031442",
+      "x3": "X3_BLOCK",
+      "g1_allowed_phrases_lines": 20
+    }
   ],
-  "agentic_spine_steps": {
-    "single_pipeline": true,
-    "generated_lanes": ["competencies", "unify_bullets", "ibm_bullets", "unify_narrative", "ibm_narrative", "executive_summary", "headline"],
-    "spine_binding": "apps_rg.runtime.bindings.c0_binding.c0_retrieve_apps_rg",
-    "retrieval_mode": "NATIVE_C0",
-    "route_id": "R3_SIMPLE_GROUNDED_READ",
-    "receipts_present": ["c0_evidence_room_receipt.json", "c02_vector_query.json", "c02_semantic_cache_payload.json", "c0_graph_lane_receipt.json", "section_spine_c0_retrieve_receipt.json", "c0_fec_compose_receipt.json", "c0_metrics.json", "bullet_lane_generation.json", "bullet_pool_selection.json", "compiled_prompt.txt", "x1d_llm_judge_outputs.json", "x2_gate_outputs.json", "x3_disposition.json", "l6_shadow_eval_package.json"]
+  "environment": {
+    "dotenv_loaded_by_cli": true,
+    "anthropic_api_key_via_dotenv": true,
+    "google_api_key_via_dotenv": true,
+    "gemini_api_key_env_var": false,
+    "gemini_canonical": "GOOGLE_API_KEY",
+    "qwen_vllm": "http://localhost:8000/v1",
+    "prior_closeout_false_alarm": "bare os.environ without load_dotenv"
   },
-  "environment_blockers": {
-    "qwen_vllm": "reachable_http_localhost_8000_v1",
-    "anthropic_api_key": false,
-    "gemini_api_key": false,
-    "note": "judge release-signoff blocked on keys; S1/S2 provable on qwen path via selector + synthetic row"
-  },
-  "deferred": [
-    "competencies_fec_bridge_does_not_carry_pa_bundle_block_into_prompt_body",
-    "exec_summary_post_x2_judge_refresh_default_off",
-    "exec_summary_judge_regen_3_to_1",
-    "narrative_pack_allowed_phrases_thickening",
-    "c03_1hop_adjacency_into_competency_projection"
-  ],
+  "deferred": [],
   "reports_generated": [
     {"path": "docs/reports/apps_rg/simplification_graphsignal_aig_proof_20260607.md", "markdown": "[simplification_graphsignal_aig_proof_20260607.md](docs/reports/apps_rg/simplification_graphsignal_aig_proof_20260607.md)"},
     {"path": "docs/reports/apps_rg/simplification_graphsignal_aig_proof_20260607.json", "markdown": "[simplification_graphsignal_aig_proof_20260607.json](docs/reports/apps_rg/simplification_graphsignal_aig_proof_20260607.json)"}

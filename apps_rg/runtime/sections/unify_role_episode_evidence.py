@@ -300,6 +300,15 @@ def _format_narrative_bundle_block(bundle_record: dict[str, Any]) -> str:
         f"  bullet_intent: {bundle_record.get('bullet_intent')}",
         "  Synthesize the Unify role arc from these bundles — do not recap each bullet line.",
     ]
+    bound = bundle_record.get("bound_skills") or []
+    if bound:
+        lines.append("  bound_skills (graph authority — vocabulary anchors only):")
+        for sk in bound:
+            if not isinstance(sk, dict):
+                continue
+            sid = str(sk.get("skill_id") or "")
+            phrases = ", ".join(list(sk.get("allowed_phrases") or [])[:5])
+            lines.append(f"    - {sid} | allowed_phrases: {phrases}")
     return "\n".join(lines)
 
 

@@ -403,10 +403,16 @@ def _format_narrative_bundle_block(
         f"  bullet_intent: {bundle_record.get('bullet_intent')}",
         "  Synthesize one IBM role arc sentence from these bundles — do not recap each bullet line.",
     ]
-    for sk in bundle_record.get("bound_skills") or []:
-        sid = sk.get("skill_id", "")
-        if sid == WATSON_STUDIO_SKILL_ID:
-            lines.append(f"  - {sid} (supporting context only — no metrics)")
+    bound = bundle_record.get("bound_skills") or []
+    if bound:
+        lines.append("  bound_skills (graph authority — vocabulary anchors only):")
+        for sk in bound:
+            if not isinstance(sk, dict):
+                continue
+            sid = str(sk.get("skill_id") or "")
+            phrases = ", ".join(list(sk.get("allowed_phrases") or [])[:5])
+            note = " (supporting context only — no metrics)" if sid == WATSON_STUDIO_SKILL_ID else ""
+            lines.append(f"    - {sid} | allowed_phrases: {phrases}{note}")
     return "\n".join(lines)
 
 

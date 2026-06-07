@@ -70,6 +70,11 @@ def test_competencies_graph_projection_authoritative() -> None:
     assert proj.get("source_authority") == "augmented_skills_graph"
     assert "verified_skill_inventory_projection" in proj
     assert proj.get("verified_skill_inventory_deprecated", {}).get("authority") == "deprecated_non_authority"
+    skills = (proj.get("verified_skill_inventory_projection") or {}).get("skills") or []
+    assert skills, "competencies projection must include graph skills"
+    assert any((s.get("adjacent_skill_ids") or []) for s in skills if isinstance(s, dict)), (
+        "C03 1-hop adjacency must surface on at least one projected skill"
+    )
 
 
 def test_unify_bullets_resolves_graph_skills_not_base_fallback_only() -> None:
