@@ -296,7 +296,7 @@ def main() -> int:
                 "(b) dirty files outside scope listed":
                     f"YES — {len(full_dirty_lines)} dirty files outside scope at report time, "
                     "all listed in `full_tree_dirty_at_report_time` (apps_qna/, "
-                    "docs/reference/ moves, .cursor/rules/, ...)",
+                    "docs/reference/ moves, .claude/rules/, ...)",
                 "(c) no out-of-scope file affects tests/validators/bundles/gates/ledger":
                     "YES — verified via three independent mechanisms: "
                     "(1) per-bundle content_hash tamper check (5/5 PASS), "

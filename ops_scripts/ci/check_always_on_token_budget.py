@@ -1,11 +1,11 @@
 """CI gate — Anthropic two-tier Tier-1 budget (Cursor-native SSOT).
 
 Measures and enforces:
-- ``.cursor/rules/*.mdc`` with ``alwaysApply: true``
+- ``.claude/rules/*.mdc`` with ``alwaysApply: true``
 - ``AGENTS.md``
 
 Reports separately (not summed into Tier-1 fail threshold):
-- ``.cursor/rules/*.md`` with ``trigger: always_on`` (legacy mirror)
+- ``.claude/rules/*.md`` with ``trigger: always_on`` (legacy mirror)
 
 Writes: ``docs/reports/cursor/governance_tier_inventory.json``
 

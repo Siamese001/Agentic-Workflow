@@ -142,7 +142,7 @@ def main(argv: list[str] | None = None) -> int:
     lines.append(f"Cache:     {refresh_note}")
     lines.append("")
     lines.append("Constitutional §36 — plan-Notion registration. See "
-                 "`.cursor/rules/plan-registration-enforcement.md`.")
+                 "`.claude/rules/plan-registration-enforcement.md`.")
     lines.append("")
 
     lines.append("## Summary")

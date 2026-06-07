@@ -465,29 +465,19 @@ repos:
         name: "T7c: HITL Packet Format"
         entry: py ops_scripts/ci/validate_hitl_format.py
         language: system
-        files: ^\.cursor/rules/(hitl-|.*hitl).*\.md$
+        files: ^\.claude/rules/(hitl-|.*hitl).*\.md$
         always_run: false
         require_serial: true
 
-      # -- T7e2: HITL Rules Corpus Validator --------------------------------------------
-      # Validates the HITL rule *corpus* (all 4 files together): §HITL-9 threshold
-      # config, §HITL-10 option shape, forbidden 2-4-count patterns, and required
-      # pipeline patterns. The validator was refactored 2026-04-19 to accept the
-      # post-consolidation split layout (enforcement.md + decision-points.md +
-      # svp-calibration.md + anti-pattern-author-gate.md). Triggers on any HITL file
-      # change; passes all 4 files together so corpus-level checks work.
-      # TRIGGER FIX 2026-05-05: regex previously only matched `hitl-*.md` and
-      # `anti-pattern-hitl*.md`, missing the actual corpus files
-      # (author-gate-enforcement.md, anti-pattern-author-gate.md, etc.).
-      # Expanded to cover all four validator-owned rule files.
-      - id: hitl-rules-corpus
-        name: "T7e2: HITL Rules Corpus"
-        entry: py ops_scripts/ci/validate_hitl_rules.py .cursor/rules/author-gate-enforcement.md .cursor/rules/author-gate-decision-points.md .cursor/rules/author-gate-svp-calibration.md .cursor/rules/anti-pattern-author-gate.md
-        language: system
-        pass_filenames: false
-        files: ^\.cursor/rules/(hitl-|anti-pattern-hitl|author-gate-enforcement|author-gate-decision-points|author-gate-svp-calibration|anti-pattern-author-gate).*\.md$
-        always_run: false
-        require_serial: true
+      # -- T7e2 REMOVED (cursor-decommission W1.2c, 2026-06-07) --------------------------
+      # The `hitl-rules-corpus` hook (ops_scripts/ci/validate_hitl_rules.py) was a dormant,
+      # never-functional gate: its `files:` glob matched `.cursor/rules/*.md` but only
+      # `.mdc` ever existed there, so it never fired; and it asserts §HITL-9/§HITL-10 +
+      # "Surface 1–N options" / "LOW_CONFIDENCE_AMBIGUITY" markers that are absent from BOTH
+      # the legacy `.cursor/*.mdc` AND the `.claude/*.md` SSOT. Removed during the
+      # .cursor→.claude rules migration rather than wired to fail against the SSOT. The
+      # validator script + tests/governance/test_hitl_validators.py remain on disk pending a
+      # separate retire-or-rewrite decision.
 
       # -- T7f: Severity<->Band SSOT (Constitutional §22/§23) --------------------------
       # Forbids local severity<->band mapping dicts outside the canonical SSOT modules
@@ -635,7 +625,7 @@ repos:
         require_serial: true
 
       # -- T7i: Deferred Scope Markers ----------------------------------------------
-      # Enforces the deferred-scope-capture rule (.cursor/rules/deferred-scope-capture.md).
+      # Enforces the deferred-scope-capture rule (.claude/rules/deferred-scope-capture.md).
       # Blocks commits that add prose deferred-scope language to .cursor/plans/*.md
       # files WITHOUT an accompanying DEFERRED_SCOPE: marker. Protects against
       # scope loss between sessions — caught 2026-04-22 session-wide failure modes
@@ -689,7 +679,7 @@ repos:
       # Sibling Windsurf hook: .cursor/scripts/pre_write_gate.py
       # (imports the same helper at .cursor/scripts/_ssot_folder_check.py
       # to keep the author-time and commit-time decisions identical).
-      # Rule SSOT: .cursor/rules/ssot-folder-enforcement.md
+      # Rule SSOT: .claude/rules/ssot-folder-enforcement.md
       - id: ssot-folder-routing
         name: "T7q: SSOT Folder Routing (§31)"
         entry: py ops_scripts/ci/check_ssot_folder_routing.py
@@ -715,7 +705,7 @@ repos:
         require_serial: true
 
       # -- T7r: Always-On Token Budget (Anthropic two-tier compliance) -----------
-      # Sums bytes of all .cursor/rules/*.md with `trigger: always_on` and
+      # Sums bytes of all .claude/rules/*.md with `trigger: always_on` and
       # fails when total exceeds 51,200 bytes / 12,800 tokens. Per Anthropic
       # "Architecture of Agentic RAG" (Apr 2026): always-on rules >50 KB
       # trigger autonomous context compaction, where the model arbitrarily
@@ -737,7 +727,7 @@ repos:
       # scheduled AG work can't silently escape into prose. Example/quoted
       # mentions (wrapped in quotes, backticks, or parens) are excluded.
       # Bypass: AG_QUEUE_SEED_MARKERS_BYPASS=1
-      # Rule SSOT: .cursor/rules/author-gate-queue-drain.md
+      # Rule SSOT: .claude/rules/author-gate-queue-drain.md
       - id: ag-queue-seed-markers
         name: "T7t: Author-Gate Queue Seed Markers (§35)"
         entry: py ops_scripts/ci/check_ag_queue_seed_markers.py
@@ -753,7 +743,7 @@ repos:
       # exists. Refreshes the local cache at
       # .cursor/state/plan_registration_cache.json as a side effect.
       # Bypass: PLAN_REGISTRATION_BYPASS=1.
-      # Rule SSOT: .cursor/rules/plan-registration-enforcement.md
+      # Rule SSOT: .claude/rules/plan-registration-enforcement.md
       - id: plan-registration-freshness
         name: "T7u: Plan–Notion Registration (§36)"
         entry: py ops_scripts/ci/check_plan_registration_freshness.py
@@ -767,8 +757,8 @@ repos:
       #   * mutation-rejection gate: every adversarial mutation is rejected
       #   * positive-control gate: RTC-REQ-001 remains SIGNED_OFF (canary)
       # Bypass: FORTKNOX_DISCIPLINE_BYPASS=1 (all three honor the same env var).
-      # Rule SSOT: .cursor/rules/fortknox-certification-discipline.md
-      # Author-Gate trigger: .cursor/rules/author-gate-decision-points.md §1.11
+      # Rule SSOT: .claude/rules/fortknox-certification-discipline.md
+      # Author-Gate trigger: .claude/rules/author-gate-decision-points.md §1.11
       - id: fortknox-clean-bundle
         name: "T7s.1: Fort Knox clean-bundle (§32)"
         entry: py ops_scripts/ci/check_fortknox_clean_bundle.py

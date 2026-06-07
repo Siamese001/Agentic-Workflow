@@ -59,7 +59,7 @@ databases:
     archived: true
     archived_date: "2026-05-02"
     read_trigger: "\u274c **ARCHIVED 2026-05-02**"
-    write_trigger: "Filesystem SSOT: `.cursor/rules/*.mdc`. No Notion write."
+    write_trigger: "Filesystem SSOT: `.claude/rules/*.mdc`. No Notion write."
 
   - key: mcp_registry
     name: "MCP Registry"

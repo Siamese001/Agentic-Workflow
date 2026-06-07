@@ -450,7 +450,7 @@ class TestMain:
     def test_markdown_file_allowed_regardless(self):
         payload = {
             "tool_info": {
-                "file_path": ".cursor/rules/constitutional.md",
+                "file_path": ".claude/rules/constitutional.md",
                 "edits": [{"old_string": "x", "new_string": "except:\n    pass\n"}],
             },
         }

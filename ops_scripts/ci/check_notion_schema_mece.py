@@ -14,7 +14,7 @@ REQUIRED for every writer that targets WAVE_PHASE_DB_ID:
   - Writes the `Evidence` field (replaces 3 retired prose fields).
 
 Fail policy: exit 1 on any violation. Advisory lives in
-`.cursor/rules/memory-notion-writeback.md` and the MECE v2 memory entity
+`.claude/rules/memory-notion-writeback.md` and the MECE v2 memory entity
 `ProceduralPattern:NotionBacklogMECESchemaV2`.
 
 This gate is Python-only; scans `.cursor/scripts/*.py` and `ops_scripts/**/*.py`

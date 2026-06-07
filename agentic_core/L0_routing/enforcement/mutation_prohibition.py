@@ -87,7 +87,7 @@ def get_default_protected_root_policy() -> ProtectedRootPolicy:
         ProtectedRootPolicy with canonical immutable roots and log path
     """
     return ProtectedRootPolicy(
-        immutable_roots=(AGENTIC_CORE_DIR, TESTS_DIR, ".github", ".cursor/rules"),
+        immutable_roots=(AGENTIC_CORE_DIR, TESTS_DIR, ".github", ".claude/rules"),
         log_path="logs/ssot_protected_root_blocks.jsonl",
     )
 

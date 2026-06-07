@@ -78,7 +78,7 @@ def extract_cross_references(rule_file: Path) -> list[CrossRef]:
                 
                 # Normalize target path
                 if not target.startswith("."):
-                    target = f".cursor/rules/{target}"
+                    target = f".claude/rules/{target}"
                 
                 refs.append(CrossRef(
                     source_file=str(rule_file),

@@ -108,7 +108,7 @@ def mock_triggers_config() -> dict[str, Any]:
                 "decision_type": "governance_edit",
                 "severity": "block",
                 "features": {
-                    "path_globs_any": [".cursor/rules/**", "docs/architecture/adr/**"],
+                    "path_globs_any": [".claude/rules/**", "docs/architecture/adr/**"],
                 },
             },
         ],
@@ -139,9 +139,9 @@ def sample_snapshot_single_file() -> ChangeSnapshot:
 def sample_snapshot_sensitive() -> ChangeSnapshot:
     """Sample ChangeSnapshot for sensitive governance file edit."""
     return ChangeSnapshot(
-        changed_files=[".cursor/rules/ssot-folder-enforcement.md"],
+        changed_files=[".claude/rules/ssot-folder-enforcement.md"],
         deleted_files=[],
-        added_lines_by_file={".cursor/rules/ssot-folder-enforcement.md": ["# New rule"]},
+        added_lines_by_file={".claude/rules/ssot-folder-enforcement.md": ["# New rule"]},
     )
 
 
@@ -267,7 +267,7 @@ class TestTierBypass:
 
     def test_is_sensitive_path_matches_rules(self):
         """_is_sensitive_path correctly identifies governance paths."""
-        assert _is_sensitive_path(".cursor/rules/ssot-folder-enforcement.md") is True
+        assert _is_sensitive_path(".claude/rules/ssot-folder-enforcement.md") is True
         assert _is_sensitive_path(".cursor/schemas/author_gate_triggers.yaml") is True
         assert _is_sensitive_path(".cursor/scripts/_legacy_windsurf/pre_author_gate.py") is True
         assert _is_sensitive_path("apps_rg/config/specs.yaml") is True
@@ -321,7 +321,7 @@ class TestWindowsPathCoverage:
     # Mixed separator paths (edge case)
     def test_mixed_separator_rules_path(self):
         """Mixed / and \\ separators still match."""
-        assert _is_sensitive_path(".cursor/rules\\test.md") is True
+        assert _is_sensitive_path(".claude/rules\\test.md") is True
         assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules/test.md") is True
 
     def test_mixed_separator_nested(self):
@@ -331,7 +331,7 @@ class TestWindowsPathCoverage:
     # POSIX forward slash paths (baseline)
     def test_posix_forward_slash_rules(self):
         """POSIX forward slash paths still work."""
-        assert _is_sensitive_path(".cursor/rules/test.md") is True
+        assert _is_sensitive_path(".claude/rules/test.md") is True
 
     def test_posix_forward_slash_schemas(self):
         """POSIX forward slash schemas paths work."""
@@ -359,7 +359,7 @@ class TestWindowsPathCoverage:
 
     def test_trailing_slash(self):
         """Trailing slash in sensitive directory."""
-        assert _is_sensitive_path(".cursor/rules/") is True
+        assert _is_sensitive_path(".claude/rules/") is True
 
     def test_case_sensitivity(self):
         """Case-sensitive matching (paths are case-sensitive on POSIX)."""
@@ -369,8 +369,8 @@ class TestWindowsPathCoverage:
 
     def test_partial_match_rejection(self):
         """Partial directory names don't match."""
-        assert _is_sensitive_path(".cursor/rules-backup/test.md") is False
-        assert _is_sensitive_path("my.cursor/rules/test.md") is False
+        assert _is_sensitive_path(".claude/rules-backup/test.md") is False
+        assert _is_sensitive_path("my.claude/rules/test.md") is False
         assert _is_sensitive_path(".windsurfx/rules/test.md") is False
 
     def test_deeply_nested_sensitive(self):
@@ -381,8 +381,8 @@ class TestWindowsPathCoverage:
     def test_relative_path_prefix(self):
         """Relative path prefixes still match if containing sensitive pattern."""
         # W2: Paths containing sensitive patterns ARE sensitive regardless of ./ or ../ prefix
-        assert _is_sensitive_path("./.cursor/rules/test.md") is True  # Contains .cursor/rules/
-        assert _is_sensitive_path("../.cursor/rules/test.md") is True  # Contains .cursor/rules/
+        assert _is_sensitive_path("./.claude/rules/test.md") is True  # Contains .claude/rules/
+        assert _is_sensitive_path("../.claude/rules/test.md") is True  # Contains .claude/rules/
         # But paths that don't actually contain the pattern still don't match
         assert _is_sensitive_path("./foo/bar/test.md") is False
         assert _is_sensitive_path("../foo/bar/test.md") is False
@@ -539,11 +539,11 @@ class TestGovernanceEdits:
     """Tests for rule/governance edit triggers (F)."""
 
     def test_rules_edit_triggers(self, mock_triggers_config):
-        """Editing .cursor/rules/ file triggers HITL-1.9."""
+        """Editing .claude/rules/ file triggers HITL-1.9."""
         snap = ChangeSnapshot(
-            changed_files=[".cursor/rules/ssot-folder-enforcement.md"],
+            changed_files=[".claude/rules/ssot-folder-enforcement.md"],
             deleted_files=[],
-            added_lines_by_file={".cursor/rules/ssot-folder-enforcement.md": ["# new rule"]},
+            added_lines_by_file={".claude/rules/ssot-folder-enforcement.md": ["# new rule"]},
         )
         
         # Find governance trigger
@@ -660,7 +660,7 @@ class TestBypass:
         # This is tested in main() integration, but we verify the logic here
         # by checking that sensitive paths are detected before bypass
         snap = ChangeSnapshot(
-            changed_files=[".cursor/rules/test.md"],
+            changed_files=[".claude/rules/test.md"],
             deleted_files=[],
             added_lines_by_file={},
         )

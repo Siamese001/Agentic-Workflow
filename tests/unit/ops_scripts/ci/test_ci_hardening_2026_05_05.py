@@ -298,7 +298,7 @@ class TestHitlCorpusTriggerRegex:
     ])
     def test_corpus_file_matches_trigger(self, filename: str) -> None:
         pattern = self._get_hitl_corpus_files_pattern()
-        path = f".cursor/rules/{filename}"
+        path = f".claude/rules/{filename}"
         assert re.search(pattern, path), (
             f"HITL corpus trigger regex {pattern!r} does not match {path!r}. "
             "Edits to this file would silently skip the corpus validator."

@@ -14,7 +14,7 @@ the reviewer sees:
 - the **snapshot provenance** stamp so the reviewer can gauge freshness.
 
 This is distinct from the developer-loop Author-Gate (see
-``.cursor/rules/author-gate-enforcement.md``). Runtime HITL is v30 step
+``.claude/rules/author-gate-enforcement.md``). Runtime HITL is v30 step
 [5] per ADR-023; this helper only enriches the packet — it does not make
 decisions.
 

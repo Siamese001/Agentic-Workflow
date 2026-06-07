@@ -40,7 +40,7 @@ BYPASS_LOG = REPO_ROOT / "artifacts" / "cursor" / "decision_required_bypass.json
 # These are the narrow set we KNOW are always gate-class (harness infra).
 _FALLBACK_TRIGGER_PATHS = (
     ".cursor/scripts/",
-    ".cursor/rules/",
+    ".claude/rules/",
     ".claude/skills/",
     "ops_scripts/ci/",
     "agentic_core/L5_safety/",

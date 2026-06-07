@@ -6,7 +6,7 @@ Scans plan files (`.cursor/plans/*.md`) for prose deferred-scope language.
 If any are present AND the file lacks a matching `DEFERRED_SCOPE:` marker,
 a violation is reported.
 
-Policy: `.cursor/rules/deferred-scope-capture.md`
+Policy: `.claude/rules/deferred-scope-capture.md`
 
 Modes:
   --staged (default): Scan only git-staged plan files (pre-commit mode)
@@ -288,7 +288,7 @@ def main(argv: list[str] | None = None) -> int:
         print("Fix options:", file=sys.stderr)
         print(
             "  1. Add a DEFERRED_SCOPE: marker line to the same file (see "
-            ".cursor/rules/deferred-scope-capture.md for schema).",
+            ".claude/rules/deferred-scope-capture.md for schema).",
             file=sys.stderr,
         )
         print(

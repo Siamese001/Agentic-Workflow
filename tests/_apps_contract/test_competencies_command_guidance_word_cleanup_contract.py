@@ -57,7 +57,7 @@ def test_cursor_rules_avoids_missing_double_hyphen_before_section_flag() -> None
         text = path.read_text(encoding="utf-8")
         if _INVALID_SECTION_NEEDLE in text:
             offenders.append(path.relative_to(REPO_ROOT).as_posix())
-    assert offenders == [], f"Fix CLI wording under .cursor/rules (need `--section`): {offenders}"
+    assert offenders == [], f"Fix CLI wording under .claude/rules (need `--section`): {offenders}"
 
 
 def test_docs_markdown_avoids_missing_double_hyphen_before_section_flag() -> None:
