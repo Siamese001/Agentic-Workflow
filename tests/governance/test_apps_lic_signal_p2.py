@@ -1,6 +1,6 @@
 """tests.governance.test_apps_lic_signal_p2 — P2 Signal Enhancement Governance Tests.
 
-Plan: .windsurf/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md
 
 Tests for P2a Narrative Arc Engine, P2b Archetype Tone Calibrator, P2c Competitive Landscape Engine.
 """

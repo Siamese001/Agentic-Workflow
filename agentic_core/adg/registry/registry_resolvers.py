@@ -122,7 +122,7 @@ def _rel_path(path: Path) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Resolver: MCP server registry  (.windsurf/mcp_config.json)
+# Resolver: MCP server registry  (.cursor/mcp.json)
 # ---------------------------------------------------------------------------
 
 
@@ -131,7 +131,7 @@ MCP_REGISTRY_ROOT: Final[str] = "Registry::MCP::root"
 
 
 def resolve_mcp_config(config_path: Path | None = None) -> list[RegistryEdge]:
-    """Resolve `.windsurf/mcp_config.json` into registry-bucket edges.
+    """Resolve `.cursor/mcp.json` into registry-bucket edges.
 
     Each `mcpServers` entry becomes one edge:
 
@@ -147,7 +147,7 @@ def resolve_mcp_config(config_path: Path | None = None) -> list[RegistryEdge]:
     'one unresolved entry'.
     """
     if config_path is None:
-        config_path = REPO_ROOT / ".windsurf" / "mcp_config.json"
+        config_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 
     if not config_path.exists():
         return []
@@ -272,7 +272,7 @@ def resolve_agent_specs(spec_paths: list[Path] | None = None) -> list[RegistryEd
 # ---------------------------------------------------------------------------
 # Resolver: Route-contract policy pack  (agentic_core/L0_routing/config/v15_policy_pack.json)
 # ---------------------------------------------------------------------------
-# Plan: .windsurf/plans/three-bucket-otel-view-5db409.md (W5).
+# Plan: docs/archive/windsurf/legacy-tree/plans/three-bucket-otel-view-5db409.md (W5).
 #
 # The route-contract surface declared in `route_contract_v15.py` is realized
 # at runtime by the v15 policy pack. Each rule entry in the JSON is a
@@ -419,7 +419,7 @@ def resolve_prompt_slots(
     same convention as disabled route-contract rules in ``resolve_route_contracts``.
 
     Closes the W11.1 / P5.2 deferred scope from
-    ``.windsurf/plans/three-bucket-otel-view-5db409.md`` once
+    ``docs/archive/windsurf/legacy-tree/plans/three-bucket-otel-view-5db409.md`` once
     ``prompt_registry_config.json`` was confirmed as the canonical manifest.
 
     Returns

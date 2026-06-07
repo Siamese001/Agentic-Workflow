@@ -57,7 +57,7 @@ class ObservabilityHighFaninGate(WiringGate):
               AND n.layer IN ({",".join("?" * len(MAINLINE_LAYERS))})
               AND n.resolved_path NOT LIKE 'tests/%'
               AND n.resolved_path NOT LIKE 'archives/%'
-              AND n.resolved_path NOT LIKE '.windsurf/%'
+              AND n.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/%'
               -- Exclude smoke-test helpers (test scaffolding in production paths)
               AND n.resolved_path NOT LIKE '%/_smoke.py'
               AND n.resolved_path NOT LIKE '%_smoke.py'

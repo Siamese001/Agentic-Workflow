@@ -801,7 +801,7 @@ LAYER_PREFIXES: dict[str, str] = {
     "ops_scripts": "L_OPS",
     "infrastructure": "L_INFRA",
     "tests": "L_TEST",
-    ".windsurf": "L_OPS",
+    "docs/archive/windsurf/legacy-tree": "L_OPS",
 }
 ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
     {

@@ -23,7 +23,7 @@ The registry is the single source of truth for "what minimal-valid input
 each app accepts" — adding a new app means adding a row here, not writing
 a new test from scratch.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W4.4)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W4.4)
 """
 from __future__ import annotations
 

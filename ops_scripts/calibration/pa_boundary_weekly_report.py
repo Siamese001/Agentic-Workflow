@@ -1,6 +1,6 @@
 """PA boundary weekly calibration report — P4.2 of apps-rg-spine-hardening-deferred-wave-2f8b1d.
 
-Reads `artifacts/windsurf/apps_rg_pa_boundary_violations.jsonl` and emits:
+Reads `artifacts/cursor/apps_rg_pa_boundary_violations.jsonl` and emits:
 - Per-week ERROR/WARN/CONDITIONAL_V1 counts
 - Trend: is ERROR count rising, stable, or falling?
 - Airlock detection-rate proxy (weeks at ERROR=0 / total weeks)
@@ -100,7 +100,7 @@ def generate_report(weeks: int = 8) -> str:
         f"# PA Boundary Weekly Calibration Report — {week_label}",
         "",
         f"**Generated**: {now.strftime('%Y-%m-%d %H:%M UTC')}  ",
-        f"**Source**: `artifacts/windsurf/apps_rg_pa_boundary_violations.jsonl`  ",
+        f"**Source**: `artifacts/cursor/apps_rg_pa_boundary_violations.jsonl`  ",
         f"**Scanner**: `ops_scripts/ci/check_apps_rg_pa_boundary.py`  ",
         f"**Plan**: `apps-rg-spine-hardening-deferred-wave-2f8b1d` W4 P4.2",
         "",

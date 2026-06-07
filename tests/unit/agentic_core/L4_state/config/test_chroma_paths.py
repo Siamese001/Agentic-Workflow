@@ -1,6 +1,6 @@
 """Test coverage for `agentic_core.L4_state.config.chroma_paths`.
 
-Wave 1 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`.
+Wave 1 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`.
 
 Module rationale: SSOT for ChromaDB persist paths. 18 prod consumers depend
 on the canonical/legacy split. Silent breakage here corrupts vector store

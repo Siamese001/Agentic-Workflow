@@ -40,7 +40,7 @@ config_dirs = [
     "apps_rfp/config",
     "apps_lic/config",
     "apps_underwriting_ai/config",
-    ".windsurf",
+    "docs/archive/windsurf/legacy-tree",
     "pyproject.toml",
 ]
 

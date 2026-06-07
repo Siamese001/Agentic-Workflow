@@ -5,7 +5,7 @@ Measures and enforces:
 - ``AGENTS.md``
 
 Reports separately (not summed into Tier-1 fail threshold):
-- ``.windsurf/rules/*.md`` with ``trigger: always_on`` (legacy mirror)
+- ``.cursor/rules/*.md`` with ``trigger: always_on`` (legacy mirror)
 
 Writes: ``docs/reports/cursor/governance_tier_inventory.json``
 

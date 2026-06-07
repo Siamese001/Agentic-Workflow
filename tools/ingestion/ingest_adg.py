@@ -9,7 +9,7 @@ DEPRECATED (Wave E, 2026-04-22)
 --------------------------------
 This script bulk-embeds raw edge rows (~624k documents) into the
 ``repo_adg_graph`` collection. Assessment
-``.windsurf/plans/adg-chromadb-retrieval-assessment-8a3f2b.md`` documents
+``docs/archive/windsurf/legacy-tree/plans/adg-chromadb-retrieval-assessment-8a3f2b.md`` documents
 this as the anti-pattern: edge rows are low-semantic-value and dilute
 retrieval. Use the semantic-card projector instead:
 
@@ -18,7 +18,7 @@ retrieval. Use the semantic-card projector instead:
 which emits curated ``adg_symbol_cards``, ``adg_hotspot_cards``,
 ``adg_violation_cards``, ``adg_path_cards`` collections. Removal of the
 ``repo_adg_graph`` collection is tracked as a deferred scope item under the
-Wave E plan (``.windsurf/plans/wave-e-adg-card-projection-2df148.md``).
+Wave E plan (``docs/archive/windsurf/legacy-tree/plans/wave-e-adg-card-projection-2df148.md``).
 """
 
 import hashlib

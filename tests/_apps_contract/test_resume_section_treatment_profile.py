@@ -4,7 +4,7 @@ Validates the treatment matrix policy, ordinal bullet rules, verbatim
 preservation, fail-closed behavior, and reactivation guard.
 No model calls. No generation behavior. Policy data only.
 
-Plan ref: .windsurf/plans/01_apps-rg-master-governed-runtime-hardening.md (S2)
+Plan ref: docs/archive/windsurf/legacy-tree/plans/01_apps-rg-master-governed-runtime-hardening.md (S2)
 Receipt: artifacts/governance/apps_rg_resume_shipping_s2_section_treatment_matrix.md
 """
 from __future__ import annotations

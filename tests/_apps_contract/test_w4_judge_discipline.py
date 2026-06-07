@@ -1,6 +1,6 @@
 """W4 verification — retry-on-low + OTEL domain attrs + tracked_metrics.
 
-Plan: ``.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md`` W4.P1-P4.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-deferred-e4a1b7.md`` W4.P1-P4.
 
 Proves:
 

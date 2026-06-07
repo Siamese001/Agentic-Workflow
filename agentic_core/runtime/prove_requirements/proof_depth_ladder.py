@@ -1,6 +1,6 @@
 """Proof Depth Ladder — canonical ordering and composition-non-promotion rule.
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``
 Source CSV: ``docs/reference/contracts/certification/runtime_certification_requirements_100_percent_hardened.csv``
 Implementation prompt non-negotiables §2 + W0 must-prove "composition proof
 cannot promote to integrated runtime proof".

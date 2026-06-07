@@ -1,6 +1,6 @@
 """L2 Routing Gates — Gate 0-4 overrides applied on top of ConfidenceScorer tier.
 
-Wave 2 P2.1 of `.windsurf/plans/routing-unification-qwen-abe735.md`.
+Wave 2 P2.1 of `docs/archive/windsurf/legacy-tree/plans/routing-unification-qwen-abe735.md`.
 
 Ports the Gate 0-4 override semantics from the legacy L_OPS
 `_ssot_routing.compute_routing_decision` into L2 (where the rest of the

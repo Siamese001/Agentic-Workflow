@@ -8,7 +8,7 @@
 # "remaining_claims_in_draft" = only applies to claims that were NOT omitted
 # via omission_policy.
 #
-# Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W5 P15/P16/P17
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W5 P15/P16/P17
 # Corrected scoping: per plan §B exit_rubric.yaml feedback pass.
 
 schema_version: "1.0"

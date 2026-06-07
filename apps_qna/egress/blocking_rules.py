@@ -3,7 +3,7 @@
 W4.1: Egress verifier that checks rendered cards against blocking rules
 before they leave the L2 pipeline.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W4.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W4.1
 """
 
 from __future__ import annotations

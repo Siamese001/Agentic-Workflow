@@ -5,11 +5,11 @@ deferred_scope_scorer.py — SSOT for deferred-scope priority banding.
 Computes a deterministic P1..P5 priority band from ADG-observable features:
 coverage starvation, layer criticality multiplier, structural fan-in, and
 ADG-surface intersection. This is the single source of truth invoked by
-`.windsurf/scripts/post_cursor_agent_deferred_scope_capture.py` and any manual
+`.cursor/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py` and any manual
 CLI/review tooling.
 
-Policy SSOT: .windsurf/rules/deferred-scope-capture.md
-ADG layer multipliers SSOT: .windsurf/rules/adg-canonical-invariants.md §6
+Policy SSOT: .cursor/rules/deferred-scope-capture.md
+ADG layer multipliers SSOT: .cursor/rules/adg-canonical-invariants.md §6
 Operational signals SSOT: docs/architecture/adr/ADR-031-priority-scoring-operational-signals.md
 
 Formula (v2 — ADR-031):

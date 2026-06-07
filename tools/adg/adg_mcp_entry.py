@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # DEPRECATED: canonical launch path is `python -m tools.adg.mcp.server`
-# (configured in .windsurf/mcp_config.json).  This file is retained for
+# (configured in .cursor/mcp.json).  This file is retained for
 # emergency manual use only.  Do not reference from mcp_config.json.
 """ADG MCP Server — DEPRECATED direct entry point (use -m tools.adg.mcp.server)."""
 

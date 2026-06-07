@@ -2,7 +2,7 @@
 
 Covers the local-GPU Qwen vLLM adapter that replaces the paid Anthropic
 contextualization path per user direction 2026-04-24. See
-``.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md`` §2a.
+``docs/archive/windsurf/legacy-tree/plans/c0-context-assembly-best-practices-b7c3a1.md`` §2a.
 """
 
 from __future__ import annotations

@@ -4,8 +4,8 @@ Scans configuration files for Python entrypoint references and emits
 entrypoint_kind edges into the ADG edge list.
 
 Sources:
-  - .windsurf/hooks.json → entrypoint_kind=hook
-  - .windsurf/mcp_config.json → entrypoint_kind=mcp
+  - .cursor/hooks.json → entrypoint_kind=hook
+  - .cursor/mcp.json → entrypoint_kind=mcp
   - .pre-commit-config.yaml → entrypoint_kind=hook
   - .github/workflows/*.yml → entrypoint_kind=ci
   - pyproject.toml [project.scripts] → entrypoint_kind=cli
@@ -69,11 +69,11 @@ def _extract_py_files_from_command(command: str) -> list[str]:
 
 
 def _scan_hooks_json() -> list[tuple[str, str]]:
-    """Scan .windsurf/hooks.json for hook entrypoints.
+    """Scan .cursor/hooks.json for hook entrypoints.
 
     Returns list of (repo_relative_path, entrypoint_kind).
     """
-    hooks_path = REPO / ".windsurf" / "hooks.json"
+    hooks_path = REPO / "docs/archive/windsurf/legacy-tree" / "hooks.json"
     if not hooks_path.is_file():
         return []
 
@@ -98,11 +98,11 @@ def _scan_hooks_json() -> list[tuple[str, str]]:
 
 
 def _scan_mcp_config() -> list[tuple[str, str]]:
-    """Scan .windsurf/mcp_config.json for MCP entrypoints.
+    """Scan .cursor/mcp.json for MCP entrypoints.
 
     Returns list of (repo_relative_path, entrypoint_kind).
     """
-    mcp_path = REPO / ".windsurf" / "mcp_config.json"
+    mcp_path = REPO / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
     if not mcp_path.is_file():
         return []
 

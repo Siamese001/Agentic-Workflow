@@ -40,7 +40,7 @@ from triage_keep_drafts import (  # type: ignore[import-not-found]
 )
 
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "burndown_d_bucket_audit.jsonl"
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 
 # Expanded A-catch: any ISO date in title (calendar-reminder rows), monitor/audit
 # operational patterns, "graduate to strict" migration reminders.
@@ -156,7 +156,7 @@ def emit_wave_plan(d_rows: list[dict], path: Path) -> None:
     lines.append("## Files In Scope")
     lines.append("")
     lines.append("- Notion Backlog Items DB (data source `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7`)")
-    lines.append("- Each plan file referenced above under `.windsurf/plans/`")
+    lines.append("- Each plan file referenced above under `docs/archive/windsurf/legacy-tree/plans/`")
     lines.append("- `tools/notion/burndown_d_bucket.py` — this driver")
     lines.append("")
     lines.append("## ADG_GRAPH_LAYER_EVIDENCE")

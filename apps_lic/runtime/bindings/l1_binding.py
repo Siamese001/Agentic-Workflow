@@ -39,7 +39,7 @@ HARD LAWS:
 
 Pattern: pure function. No state. No I/O.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W4)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W4)
 """
 from __future__ import annotations
 

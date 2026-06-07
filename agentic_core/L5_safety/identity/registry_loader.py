@@ -28,7 +28,7 @@ resolver pattern (Wave-W1). This loader provides the compose point.
 Reference:
   - agentic_core/L5_safety/identity/registries.py (Wave-C)
   - agentic_core/L5_safety/identity/front_door_resolver.py (Wave-W1 — same pattern)
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

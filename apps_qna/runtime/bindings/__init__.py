@@ -15,7 +15,7 @@ Binding signatures (dictated by AppIngressRunner._run_profile_stages):
     exit(sealed, target_company, target_role, output_directory, writeback_policy)
                                           -> result with .disposition
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1
 """
 from __future__ import annotations
 

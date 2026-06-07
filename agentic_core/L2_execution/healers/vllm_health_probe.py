@@ -10,7 +10,7 @@ preflight the Qwen tier before paying a 30s inference timeout. The probe is:
 - Fail-open in the sense that a probe ERROR is reported as "unknown" — the
   caller decides whether to dispatch or demote. The probe does not raise.
 
-Plan ref: ``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 1.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 1.
 """
 
 from __future__ import annotations

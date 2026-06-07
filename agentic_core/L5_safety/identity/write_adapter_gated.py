@@ -32,7 +32,7 @@ Adoption:
 Reference:
   - write_adapter.py (Wave-E base)
   - runtime_entry_sweep.py (Wave-L source of the gating decision)
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """Final P1/P2/P3 burndown — gross / exempt / net per gate.
 
-Primary source: artifacts/windsurf/wiring_gate_violations.jsonl
+Primary source: artifacts/cursor/wiring_gate_violations.jsonl
     Each entry is one gate run record with:
       - gate_id
       - tier
@@ -30,7 +30,7 @@ print(f"Snapshot: {SNAP.name}\n")
 # ---------------------------------------------------------------------------
 # Parse wiring_gate_violations.jsonl — one JSON object per line
 # ---------------------------------------------------------------------------
-JSONL = ROOT / "artifacts/windsurf/wiring_gate_violations.jsonl"
+JSONL = ROOT / "artifacts/cursor/wiring_gate_violations.jsonl"
 by_gate: dict[str, list[dict]] = {}
 if JSONL.exists():
     for line in JSONL.read_text(encoding="utf-8").splitlines():

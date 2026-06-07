@@ -423,10 +423,10 @@ class TestGap4ShowOutputInHooksJson:
     """
 
     def setup_method(self):
-        self.hooks_path = Path(__file__).resolve().parents[5] / ".windsurf" / "hooks.json"
+        self.hooks_path = Path(__file__).resolve().parents[5] / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 
     def test_hooks_json_exists(self):
-        assert self.hooks_path.exists(), "hooks.json must exist at .windsurf/hooks.json"
+        assert self.hooks_path.exists(), "hooks.json must exist at .cursor/hooks.json"
 
     def test_pre_user_prompt_hook_configured(self):
         data = json.loads(self.hooks_path.read_text(encoding="utf-8"))

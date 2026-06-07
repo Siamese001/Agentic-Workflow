@@ -1,6 +1,6 @@
 """Tests for W3 hardening of ``tools/adg/three_bucket_gap_report.py``.
 
-Plan: ``.windsurf/plans/adg-audit-pipeline-integration-7f2c93.md`` W4.2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-audit-pipeline-integration-7f2c93.md`` W4.2.
 
 Covers:
 - runtime_proof_status field emission (json + md)

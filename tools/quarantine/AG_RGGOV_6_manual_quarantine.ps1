@@ -113,7 +113,7 @@ $receiptContent = @"
 
 ---
 Quarantine performed by: AG_RGGOV_6_manual_quarantine.ps1
-Metadata: .windsurf/state/AG_RGGOV_6_QUARANTINE_METADATA.json
+Metadata: .cursor/state/AG_RGGOV_6_QUARANTINE_METADATA.json
 "@
 
 $receiptContent | Out-File -FilePath $receiptPath -Encoding utf8

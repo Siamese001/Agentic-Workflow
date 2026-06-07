@@ -4,7 +4,7 @@ W2.3: Typed evidence contracts distinct from each other.
 - FinalEvidenceContract: produced by canonical C0 (retrieval-backed)
 - UploadedBriefingEvidenceContract: produced by briefing validator (file-backed)
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W2.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W2.3
 """
 
 from __future__ import annotations

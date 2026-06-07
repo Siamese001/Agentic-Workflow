@@ -1,7 +1,7 @@
 """Embedding exception types — raised at collection write boundaries.
 
 ADR-055: Hard embedding model enforcement.
-Plan: .windsurf/plans/bge-m3-gap-closure-c8f3a2.md W3.1
+Plan: docs/archive/windsurf/legacy-tree/plans/bge-m3-gap-closure-c8f3a2.md W3.1
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """EQ-7 — provider-aware token counter.
 
-Plan: ``.windsurf/plans/eq1-compiled-artifact-schema-d9a3e7.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/eq1-compiled-artifact-schema-d9a3e7.md``
 ADR:  ADR-PROMPT-ASSEMBLY-002 §6 (provider-aware token accounting)
 """
 

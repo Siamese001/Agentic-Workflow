@@ -8,7 +8,7 @@ Verifies the apps_eval → L6 promotion-gate adapter:
   - App mismatch raises (cannot promote across apps)
   - Round-trip provenance preserved on the result
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W4.1)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W4.1)
 """
 from __future__ import annotations
 

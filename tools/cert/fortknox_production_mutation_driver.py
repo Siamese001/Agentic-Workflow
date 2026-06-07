@@ -1,6 +1,6 @@
 """Fort Knox — Production-artifact mutation driver.
 
-Plan: .windsurf/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md §GAP-5
+Plan: docs/archive/windsurf/legacy-tree/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md §GAP-5
 
 Closes the hostile-reviewer gap: "you have only proved the compiler
 rejects hand-crafted bad JSON, not that it detects realistic tampering

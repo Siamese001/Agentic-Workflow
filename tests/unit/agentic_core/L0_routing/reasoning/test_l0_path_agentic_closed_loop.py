@@ -25,8 +25,8 @@ pytestmark = pytest.mark.unit
 # --------------------------------------------------------------------------- #
 def _seed_ledger(tmp_path: Path, schema_filename: str, ledger_filename: str) -> Path:
     repo_root = Path(__file__).resolve().parents[5]
-    base_sql = (repo_root / ".windsurf" / "schemas" / "ledger_base.schema.sql").read_text()
-    per_sql = (repo_root / ".windsurf" / "schemas" / schema_filename).read_text()
+    base_sql = (repo_root / ".cursor" / "schemas" / "ledger_base.schema.sql").read_text()
+    per_sql = (repo_root / ".cursor" / "schemas" / schema_filename).read_text()
     db_path = tmp_path / ledger_filename
     conn = sqlite3.connect(str(db_path))
     conn.executescript(base_sql)

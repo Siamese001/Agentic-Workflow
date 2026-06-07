@@ -1,6 +1,6 @@
 """Unit tests for tools/generate/materialized_views/phase_f_hotspot_coverage.py.
 
-Plan: .windsurf/plans/hotspot-coverage-pipeline-c4e8d2.md (W2)
+Plan: docs/archive/windsurf/legacy-tree/plans/hotspot-coverage-pipeline-c4e8d2.md (W2)
 
 Edge cases (W5 hardening):
     - W5.5: missing upstream MV (no mv_path_criticality_rollup) → graceful

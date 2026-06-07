@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L0_routing.reasoning.agentic_router`.
 
-Wave 4 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`. L0 routing core.
+Wave 4 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`. L0 routing core.
 Fan-out=10 (heavy execution-surface).
 """
 

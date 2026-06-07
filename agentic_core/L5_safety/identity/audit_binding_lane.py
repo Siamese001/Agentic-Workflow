@@ -21,7 +21,7 @@ Reference:
   - audit_binding.py (Wave W5 base)
   - runtime_entry_sweep.py (Wave-L source of RuntimeLaneDecisionWithSweep)
   - docs/reference/00_L5_Policy_Plane/calibration_assurance_planes.md §4
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

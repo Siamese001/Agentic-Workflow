@@ -1,6 +1,6 @@
 """W4.4 Acceptance tests — 37 tests covering Tier 1/2, router, egress, L2, exit, cache.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W4.4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W4.4
 """
 
 from __future__ import annotations

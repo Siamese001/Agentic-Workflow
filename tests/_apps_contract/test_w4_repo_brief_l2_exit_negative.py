@@ -11,7 +11,7 @@ Coverage:
 - P4.9  apps_eval dual-scenario verification (both old+new green)
 - P4.10 W4 integration acceptance (receipt bundle → Exit gate flow)
 
-Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P4.8-P4.10
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P4.8-P4.10
 """
 
 from __future__ import annotations

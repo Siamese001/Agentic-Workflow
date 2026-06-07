@@ -2,7 +2,7 @@
 
 Validates that pa_binding.py correctly assigns treatment tiers per role and bullet ordinal.
 
-Plan ref: .windsurf/plans/01_apps-rg-master-governed-runtime-hardening.md (W2/S3)
+Plan ref: docs/archive/windsurf/legacy-tree/plans/01_apps-rg-master-governed-runtime-hardening.md (W2/S3)
 """
 from __future__ import annotations
 

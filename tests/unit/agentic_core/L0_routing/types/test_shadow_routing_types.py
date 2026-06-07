@@ -1,6 +1,6 @@
 """Test coverage for `agentic_core.L0_routing.types.shadow_routing_types`.
 
-Wave 1 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`.
+Wave 1 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`.
 
 Module rationale: Phase 9 shadow router contract surface. Frozen dataclasses
 that drive non-invasive routing drift detection. Tests pin: enum members,

@@ -10,7 +10,7 @@ The adapter is fail-closed at the PA.0 boundary check (missing contracts
 block), and fail-open on budget (overflow → dispatch=PASS with warning)
 so that the build-time compiler path (which has no LLM call) still works.
 
-Plan (D2.2): .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D2
+Plan (D2.2): docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D2
 """
 
 from __future__ import annotations

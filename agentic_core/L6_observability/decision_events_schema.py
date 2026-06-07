@@ -1,6 +1,6 @@
 """Unified `decision_events` table — cross-layer relational projection.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W1.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W1.
 
 Supersedes the L0-only ``routing_decision_events`` table (ADR-025 §3 / Wave F2 M3
 in ``routing_decision_events_schema.py``) by partitioning rows on ``decision_layer``
@@ -27,7 +27,7 @@ migration helper here copies its rows into the unified surface with
 ``decision_layer = 'L0_routing'``.
 
 References:
-- Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md``
+- Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md``
 - Predecessor: ``agentic_core/L6_observability/routing_decision_events_schema.py``
 - ADR-025 §3 (relational projection of ``heal_router.v1`` spans)
 """

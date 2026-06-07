@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """author_gate_calibrator.py — Fit isotonic regression over Author-Gate outcomes.
 
-Plan: `.windsurf/plans/author-gate-hardening-a3b8f2.md` W2.P2.2 + W2.P2.3.
+Plan: `docs/archive/windsurf/legacy-tree/plans/author-gate-hardening-a3b8f2.md` W2.P2.2 + W2.P2.3.
 W4 (author-gate-feedback-loop-d4e8f1): degenerate-label NOOP, disputed-derived-row
 exclusion, snapshot lineage, optional strict outcome-schema guard.
 

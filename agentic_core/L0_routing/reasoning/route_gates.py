@@ -1,6 +1,6 @@
 """v9 L0 D1/D2 route gates — compose L4 cache surfaces into L0 dispatch arms.
 
-Audit plan ref: `.windsurf/plans/l0-routing-best-practice-audit-1f9180.md` §W1a
+Audit plan ref: `docs/archive/windsurf/legacy-tree/plans/l0-routing-best-practice-audit-1f9180.md` §W1a
 Authoritative doc: `docs/reference/03_L0_Routing/03_L0_Route_Decision_Switching_L3 v9.md`
 
 This module is the L0-side glue that turns the two existing L4 cache surfaces

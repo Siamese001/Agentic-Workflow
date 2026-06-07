@@ -1,7 +1,7 @@
 """App-domain contract records (Fort Knox apps_* domain contract system).
 
 Implements the schema mandated by the user's Fort Knox app-domain contract
-objective (plan: ``.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md``).
+objective (plan: ``docs/archive/windsurf/legacy-tree/plans/apps-domain-contract-fortknox-c4d8e2.md``).
 
 Sibling to ``records.py`` rather than an extension of it: the existing
 ``RubricRecord`` / ``ThresholdProfileRecord`` are minimal id-bearing pointers

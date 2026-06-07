@@ -1,6 +1,6 @@
 """apps_qna FEC producer — builds a FinalEvidenceContract-shaped dict.
 
-Plan: .windsurf/plans/apps-qna-c0-fec-producer-wiring-d4f1e8.md W1.P1.
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-c0-fec-producer-wiring-d4f1e8.md W1.P1.
 
 Parent residual plan (apps-eval-harness-residual-a2d9c7) landed the
 `apps_shared.cert.fec_producer` registry but left per-app producers

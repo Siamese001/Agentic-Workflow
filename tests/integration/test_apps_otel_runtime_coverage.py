@@ -16,7 +16,7 @@ Strategy:
   * Test isolates state per app: the bridge is reinstalled fresh each
     parameterized run and torn down via ``uninstall_bridge``.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
 """
 from __future__ import annotations
 

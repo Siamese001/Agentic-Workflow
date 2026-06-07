@@ -4,7 +4,7 @@ W0 thin-slice: minimal planner that decides whether C0 grounding is
 required or an uploaded briefing is sufficient. Full implementation
 lands in W1.2 with registry integration.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W0.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W0.1
 """
 
 from __future__ import annotations

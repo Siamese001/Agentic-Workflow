@@ -1,6 +1,6 @@
 """Unit tests for ``agentic_core.L3_orchestration.reasoning.workflow_shape_calibration``.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` W7.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` W7.
 """
 
 from __future__ import annotations

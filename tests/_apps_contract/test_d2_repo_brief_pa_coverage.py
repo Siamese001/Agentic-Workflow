@@ -15,7 +15,7 @@ Deferred scope items closed:
   DS-4  board block negative control
   DS-5  cache stale-board block test
 
-Plan: .windsurf/plans/apps-repo-brief-plan3-deferred-scope-b9e4c1.md D2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-repo-brief-plan3-deferred-scope-b9e4c1.md D2
 """
 
 from __future__ import annotations

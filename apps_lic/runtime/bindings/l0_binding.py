@@ -35,7 +35,7 @@ HARD LAWS:
     - Cache bypass for final drafts: R1A exact and R1B semantic always bypassed.
     - Briefing-only requests route to apps_research directly, never through apps_lic L0.
 
-Plan: .windsurf/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md (W2)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md (W2)
 """
 from __future__ import annotations
 

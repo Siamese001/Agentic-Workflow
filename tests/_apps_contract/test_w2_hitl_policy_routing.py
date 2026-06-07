@@ -1,6 +1,6 @@
 """W2.P5 verification — hitl_policy routing at X2.
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P5.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P5.
 
 Proves:
 

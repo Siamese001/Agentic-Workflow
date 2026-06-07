@@ -19,7 +19,7 @@ Snapshot format (per `system_learning/runtime_adg/snapshot.py`):
           status, attributes_json
   * Edge: src_id, dst_id, relation
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
 """
 from __future__ import annotations
 

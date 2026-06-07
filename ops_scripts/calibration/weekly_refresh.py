@@ -1,6 +1,6 @@
 """Weekly calibration refresh + drift report — W4.P2 deposit.
 
-Plan: ``.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W4.P2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W4.P2.
 
 What this does:
 
@@ -179,7 +179,7 @@ def _render_report(
     lines.append(f"# L0 Routing Calibration Drift Report — {generated_at.strftime('%Y-%m-%d')}")
     lines.append("")
     lines.append(
-        "Plan: `.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md` §W4.P2",
+        "Plan: `docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md` §W4.P2",
     )
     lines.append(f"Generated: {generated_at.isoformat()}")
     lines.append(f"Config source: `{config.source_path or 'not loaded'}` loaded_ok={config.loaded_ok}")

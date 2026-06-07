@@ -14,7 +14,7 @@ NOT a grep substitute. We read the same nodes/edges surface the
 adg_sqlite MCP exposes; the static bucket is at 100% per current
 three-bucket-gap-remediation status.
 
-Plan: .windsurf/plans/apps-{lic,eval,exec,rfp,research,underwriting-ai}-first-principles-refactor-*.md (W0.1)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-{lic,eval,exec,rfp,research,underwriting-ai}-first-principles-refactor-*.md (W0.1)
 """
 
 from __future__ import annotations

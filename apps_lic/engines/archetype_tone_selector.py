@@ -1,6 +1,6 @@
 """apps_lic.engines.archetype_tone_selector — D6-P2.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P2
 
 Selects a tone archetype for an outreach draft. Additive-only: this selector
 supplements (does not replace) the existing personalization_mode selection.

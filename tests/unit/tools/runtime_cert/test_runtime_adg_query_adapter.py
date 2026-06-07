@@ -3,7 +3,7 @@
 All tests use synthetic ``RuntimeADGNode`` / ``RuntimeADGSnapshot`` fixtures;
 no live SQLite file is opened and no ``RuntimeADGQuery`` (static ADG) is imported.
 
-Test plan reference: .windsurf/plans/runtime-cert-c1-query-adapter-7e3f92.md §6
+Test plan reference: docs/archive/windsurf/legacy-tree/plans/runtime-cert-c1-query-adapter-7e3f92.md §6
 """
 
 from __future__ import annotations

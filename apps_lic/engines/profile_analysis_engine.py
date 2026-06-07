@@ -7,7 +7,7 @@ downstream stages key on.
 
 This is a re-derivation, not a resurrection — the original HOP1 body was
 lost in the 2026-02-08 consolidation pass. See plan
-.windsurf/plans/apps-hop-substrate-f7751b.md (Wave 2 Phase 2.2).
+docs/archive/windsurf/legacy-tree/plans/apps-hop-substrate-f7751b.md (Wave 2 Phase 2.2).
 """
 
 from __future__ import annotations

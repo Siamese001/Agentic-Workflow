@@ -37,7 +37,7 @@ Trigger types:
   relationship_context  — shared connection, prior interaction, referral chain
   application_context   — current/prior application status
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P1a
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P1a
 """
 
 from __future__ import annotations

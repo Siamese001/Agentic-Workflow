@@ -1,6 +1,6 @@
 """Legacy YAML disposition classifier + per-file header writer.
 
-Plan: `.windsurf/plans/legacy-yaml-deletion-audit-c8e3a4.md`.
+Plan: `docs/archive/windsurf/legacy-tree/plans/legacy-yaml-deletion-audit-c8e3a4.md`.
 
 Classifies each of the 13 "legacy" YAML files into one of three
 dispositions and writes an appropriate header stamp:
@@ -149,7 +149,7 @@ def _header_for(disp: FileDisposition) -> str:
             "# CANONICAL SSOT — actively imported; do NOT deprecate.\n"
             f"# Consumers: {consumers}\n"
             f"# Rationale: {disp.rationale}\n"
-            "# Plan: .windsurf/plans/legacy-yaml-deletion-audit-c8e3a4.md\n"
+            "# Plan: docs/archive/windsurf/legacy-tree/plans/legacy-yaml-deletion-audit-c8e3a4.md\n"
             "\n"
         )
     if disp.disposition is Disposition.MIGRATION_CANDIDATE:
@@ -157,14 +157,14 @@ def _header_for(disp: FileDisposition) -> str:
             "# MIGRATION CANDIDATE — active consumers exist; migration target identified.\n"
             f"# Migration target: {disp.migration_target}\n"
             f"# Rationale: {disp.rationale}\n"
-            "# Plan: .windsurf/plans/legacy-yaml-deletion-audit-c8e3a4.md\n"
+            "# Plan: docs/archive/windsurf/legacy-tree/plans/legacy-yaml-deletion-audit-c8e3a4.md\n"
             "# Do NOT delete without (1) migrating consumers + (2) Author-Gate.\n"
             "\n"
         )
     return (
         "# ORPHANED — no known active consumers; deletion candidate.\n"
         f"# Rationale: {disp.rationale}\n"
-        "# Plan: .windsurf/plans/legacy-yaml-deletion-audit-c8e3a4.md\n"
+        "# Plan: docs/archive/windsurf/legacy-tree/plans/legacy-yaml-deletion-audit-c8e3a4.md\n"
         "# Delete via Author-Gate after confirming no consumers exist.\n"
         "\n"
     )
@@ -197,7 +197,7 @@ def apply(repo_root: Path, dry_run: bool = False) -> list[dict]:
                     "Rationale:",
                     "Delete via Author-Gate",
                     "Do NOT delete without",
-                    "Plan: .windsurf/plans/legacy-yaml",
+                    "Plan: docs/archive/windsurf/legacy-tree/plans/legacy-yaml",
                 )
             ):
                 skipped += 1

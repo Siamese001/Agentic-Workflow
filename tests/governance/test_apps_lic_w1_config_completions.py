@@ -1,6 +1,6 @@
 """apps_lic calibration-holdout W1 — config file completions sentinel tests.
 
-Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-calibration-holdout-e8f1c4.md W1
 Covers DS6-P1 (resurfacing_policy.yaml), DS7-P1 (arc_policy.yaml +
 archetype_tone_policy.yaml), DS9-P1 (briefing_quality_policy.yaml per-class
 recency).

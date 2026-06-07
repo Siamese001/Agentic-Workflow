@@ -14,7 +14,7 @@ Key invariants:
 - Generic V6 fall-through preserved for non-app-bound runs (returns a
   :class:`AppSpecificEvalResult` with ``bound=False`` and no scoring)
 
-Plan: ``.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W5.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W5.
 """
 
 from __future__ import annotations

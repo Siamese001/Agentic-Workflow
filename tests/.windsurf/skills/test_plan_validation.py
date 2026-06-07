@@ -12,7 +12,7 @@ import pytest
 
 # Import the module under test
 sys.path.insert(
-    0, str(Path(__file__).parent.parent.parent.parent / ".windsurf" / "skills" / "plan-validation")
+    0, str(Path(__file__).parent.parent.parent.parent / ".cursor" / "skills" / "plan-validation")
 )
 from main import (
     validate_plan_format,
@@ -153,8 +153,8 @@ class TestValidatePlanLocation:
     """Test plan location validation."""
 
     def test_happy_path_correct_location(self):
-        """Happy path: plan in .windsurf/plans/ passes."""
-        is_valid, issues = validate_plan_location(".windsurf/plans/test_plan.md")
+        """Happy path: plan in docs/archive/windsurf/legacy-tree/plans/ passes."""
+        is_valid, issues = validate_plan_location("docs/archive/windsurf/legacy-tree/plans/test_plan.md")
         assert is_valid is True
         assert issues == []
 
@@ -166,13 +166,13 @@ class TestValidatePlanLocation:
 
     def test_failure_path_user_home(self):
         """Failure path: plan in user home directory fails."""
-        is_valid, issues = validate_plan_location("C:/Users/someone/.windsurf/plans/plan.md")
+        is_valid, issues = validate_plan_location("C:/Users/someone/docs/archive/windsurf/legacy-tree/plans/plan.md")
         assert is_valid is False
         assert "user home directory" in issues[0]
 
     def test_edge_case_windows_backslashes(self):
         """Edge case: Windows backslash paths handled."""
-        is_valid, issues = validate_plan_location(".windsurf\\plans\\test_plan.md")
+        is_valid, issues = validate_plan_location("docs/archive/windsurf/legacy-tree\\plans\\test_plan.md")
         assert is_valid is True
 
 
@@ -195,7 +195,7 @@ Unified plan for testing.
 
 GAP-1: Something
 """
-        result = validate_plan_format(content, ".windsurf/plans/test.md")
+        result = validate_plan_format(content, "docs/archive/windsurf/legacy-tree/plans/test.md")
         assert result["valid"] is True
         assert result["issues"] == []
 

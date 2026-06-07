@@ -19,7 +19,7 @@ Token-split assumption: input/output split is configurable
 distinguish them. Default 0.70 (input-heavy) reflects typical RAG / brief
 generation workloads. Tune per app via the parameter.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
 """
 from __future__ import annotations
 

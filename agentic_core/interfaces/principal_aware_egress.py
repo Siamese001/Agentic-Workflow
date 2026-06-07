@@ -28,7 +28,7 @@ Rationale for an additive helper (same pattern as W2):
 Reference:
   - docs/contracts/identity_propagation.md §3.4, §3.5, §3.6
   - docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md (Egress Inspection)
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

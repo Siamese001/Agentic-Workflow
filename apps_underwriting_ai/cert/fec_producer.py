@@ -1,6 +1,6 @@
 """apps_underwriting_ai FEC producer — builds FinalEvidenceContract dict.
 
-Plan: ``.windsurf/plans/apps-underwriting-ai-c0-fec-producer-wiring-f6b3d9.md`` W1.P1.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-underwriting-ai-c0-fec-producer-wiring-f6b3d9.md`` W1.P1.
 W5.1 extension: adds ``PublicTrustReceipt``, ``route_family``,
 ``reason_code_bundle``, evidence coverage, hitl_posture, and
 ``deterministic_rationale_fallback_used`` fields.

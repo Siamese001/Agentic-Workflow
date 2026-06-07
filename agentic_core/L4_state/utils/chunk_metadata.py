@@ -24,7 +24,7 @@ ChromaDB metadata values must be JSON-scalar-like (str/int/float/bool/None);
 lists and dicts are rejected by ChromaDB itself. Keep new optional fields
 scalar-typed or join-as-string.
 
-Plan: ``.windsurf/plans/chromadb-bge-retrieval-hardening-e9aa09.md`` (W2.1).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/chromadb-bge-retrieval-hardening-e9aa09.md`` (W2.1).
 """
 
 from __future__ import annotations

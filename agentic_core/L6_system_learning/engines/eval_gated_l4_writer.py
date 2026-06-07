@@ -31,7 +31,7 @@ Consumer pattern:
 
 The decorator is intentionally separate from the existing writer implementations
 so downstream callers can opt in without forcing a breaking change on the
-Protocol. Plan SSOT: ``.windsurf/plans/system-learning-waves-7b3c91.md`` C1.
+Protocol. Plan SSOT: ``docs/archive/windsurf/legacy-tree/plans/system-learning-waves-7b3c91.md`` C1.
 
 Eval records are provided per-call via an optional ``eval_record_timestamp``
 keyword that passes through to the gate; callers that never supplied one can

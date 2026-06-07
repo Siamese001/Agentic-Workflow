@@ -4,7 +4,7 @@ Records per-(REQ_ID, trace_id, layer, edge_kind) exemplars from OTEL spans,
 in OpenTelemetry exemplar style: each row links a REQ-coverage aggregate to
 a specific runtime instance.
 
-See: .windsurf/plans/runtime-evidence-foundation-54ad39.md
+See: docs/archive/windsurf/legacy-tree/plans/runtime-evidence-foundation-54ad39.md
 """
 
 from tools.runtime_evidence.ledger_writer import (

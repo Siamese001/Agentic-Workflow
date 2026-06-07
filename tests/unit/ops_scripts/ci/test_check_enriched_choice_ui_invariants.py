@@ -72,14 +72,14 @@ class TestExemptions:
 
     def test_plans_exempt(self):
         """Plan documentation is exempt."""
-        path = REPO_ROOT / ".windsurf" / "plans" / "some-plan.md"
+        path = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / "some-plan.md"
         is_exempt, reason = _is_exempt(path)
         assert is_exempt is True
         assert "plan_documentation" in reason
 
     def test_active_surfaces_not_exempt(self):
         """Active decision surfaces are NOT exempt."""
-        path = REPO_ROOT / ".windsurf" / "skills" / "structured-reasoning" / "SKILL.md"
+        path = REPO_ROOT / ".cursor" / "skills" / "structured-reasoning" / "SKILL.md"
         is_exempt, _ = _is_exempt(path)
         assert is_exempt is False
 
@@ -218,7 +218,7 @@ def emit():
     print("AUTHOR_GATE_PACKET: " + json.dumps(packet))
 '''
         # Create file in AG pipeline path
-        path = REPO_ROOT / ".windsurf" / "skills" / "author-gate-packet-builder" / "emit_packet.py"
+        path = REPO_ROOT / ".cursor" / "skills" / "author-gate-packet-builder" / "emit_packet.py"
         
         violations = _detect_ag_packet_outside_path(content, path)
         assert len(violations) == 0
@@ -229,7 +229,7 @@ def emit():
 Use the canonical Author-Gate pipeline:
 > AUTHOR_GATE_PACKET: {...}
 '''
-        path = REPO_ROOT / ".windsurf" / "workflows" / "antipattern-author-gate.md"
+        path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "workflows" / "antipattern-author-gate.md"
         
         violations = _detect_ag_packet_outside_path(content, path)
         assert len(violations) == 0
@@ -431,11 +431,11 @@ class TestActiveSurfaceCheck:
     """Verify active surfaces are identified."""
 
     def test_structured_reasoning_is_active(self):
-        path = REPO_ROOT / ".windsurf" / "skills" / "structured-reasoning" / "SKILL.md"
+        path = REPO_ROOT / ".cursor" / "skills" / "structured-reasoning" / "SKILL.md"
         assert _is_active_surface(path) is True
 
     def test_decision_gate_is_active(self):
-        path = REPO_ROOT / ".windsurf" / "workflows" / "author-gate-decision-gate.md"
+        path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "workflows" / "author-gate-decision-gate.md"
         assert _is_active_surface(path) is True
 
     def test_random_file_not_active(self):

@@ -102,10 +102,10 @@ def test_main_writes_artifact(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 def test_windsurf_launcher_path_required(tmp_path: Path) -> None:
     cfg = _minimal_config(
         _filesystem_block(
-            launcher="${env:AGENTIC_REPO_ROOT}/.windsurf/scripts/filesystem_mcp_launcher.js",
+            launcher="${env:AGENTIC_REPO_ROOT}/.cursor/scripts/_legacy_windsurf/filesystem_mcp_launcher.js",
         )
     )
     path = tmp_path / "mcp.json"
     path.write_text(json.dumps(cfg), encoding="utf-8")
-    violations = sovereignty.validate_profile("windsurf", path, ".windsurf/scripts/filesystem_mcp_launcher.js")
+    violations = sovereignty.validate_profile("windsurf", path, ".cursor/scripts/_legacy_windsurf/filesystem_mcp_launcher.js")
     assert violations == []

@@ -64,7 +64,7 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
         temperature, signature_required) on match, or None on any
         failure — callers fall back to legacy hop4_routing buffer read.
 
-        Wired W2-P1 per .windsurf/plans/decision-router-policy-tables-b3a4d2.md.
+        Wired W2-P1 per docs/archive/windsurf/legacy-tree/plans/decision-router-policy-tables-b3a4d2.md.
         Additive: HOP4 still runs upstream and writes hop4_routing; this
         function is consulted only when callers want to short-circuit the
         legacy path. Deletion of HOP4 is gated on the 90-day deprecation

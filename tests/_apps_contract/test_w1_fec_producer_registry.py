@@ -1,6 +1,6 @@
 """Tests for apps_shared.cert.fec_producer registry.
 
-Plan: `.windsurf/plans/apps-eval-harness-residual-a2d9c7.md` W1.P2.
+Plan: `docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-residual-a2d9c7.md` W1.P2.
 """
 
 from __future__ import annotations

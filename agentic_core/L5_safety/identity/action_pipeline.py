@@ -42,7 +42,7 @@ Reference:
   - write_adapter_gated.py (Wave-N)
   - egress_adapter_gated.py (Wave-O)
   - audit_binding_lane.py (Wave-M)
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

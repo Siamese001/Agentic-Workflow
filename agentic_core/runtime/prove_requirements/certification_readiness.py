@@ -1,6 +1,6 @@
 """Certification Readiness — strict gate for "this row counts toward certification".
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``  (W0 closure)
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``  (W0 closure)
 
 Public surface
 --------------

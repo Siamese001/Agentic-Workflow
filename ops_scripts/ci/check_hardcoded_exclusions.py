@@ -54,7 +54,7 @@ CANONICAL_EXCLUSION_TOKENS: frozenset[str] = frozenset(
         ".git",
         ".github",
         ".venv",
-        ".windsurf",
+        "docs/archive/windsurf/legacy-tree",
         ".mypy_cache",
         ".pytest_cache",
         ".ruff_cache",
@@ -153,7 +153,7 @@ ALLOWLIST_PATH_PREFIXES: tuple[str, ...] = (
     # Generated / vendored
     "node_modules/",
     # W4-P1: RAG ingestion scripts — all 7 scripts share the same domain-specific
-    # exclusion pattern (archives, artifacts, .windsurf, vector_store, data) which
+    # exclusion pattern (archives, artifacts, docs/archive/windsurf/legacy-tree, vector_store, data) which
     # is tied to ChromaDB ingestion topology, NOT generic file discovery. These
     # literal sets are semantically the RAG ingestion scope, not a hardcoded
     # replacement for GLOBAL_EXCLUDED_DIRS. Several scripts are retired (Wave B2).

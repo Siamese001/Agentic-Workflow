@@ -4,7 +4,7 @@ Covers W2b § 7 matrix cases T3-T8 (unit tests). T1 and T2 (live-provider
 acceptance) require ``pytest.mark.integration`` and are skipped when the
 live endpoints are not available.
 
-Plan: .windsurf/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 7
+Plan: docs/archive/windsurf/legacy-tree/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 7
 """
 
 from __future__ import annotations

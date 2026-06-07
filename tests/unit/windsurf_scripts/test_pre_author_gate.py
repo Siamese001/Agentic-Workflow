@@ -29,8 +29,8 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
 
-# Add .windsurf/scripts to path
-sys.path.insert(0, str(REPO_ROOT / ".windsurf" / "scripts"))
+# Add .cursor/scripts/_legacy_windsurf to path
+sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
 
 # Import pre_author_gate module
 import pre_author_gate
@@ -57,11 +57,11 @@ def temp_repo(tmp_path: Path) -> Path:
     """Create a minimal repo structure for testing."""
     repo = tmp_path / "repo"
     repo.mkdir()
-    # Create .windsurf/schemas/
-    (repo / ".windsurf" / "schemas").mkdir(parents=True)
-    # Create .windsurf/state/refactor_decisions/
-    (repo / ".windsurf" / "state" / "refactor_decisions").mkdir(parents=True)
-    # Create artifacts/windsurf/
+    # Create .cursor/schemas/
+    (repo / ".cursor" / "schemas").mkdir(parents=True)
+    # Create .cursor/state/refactor_decisions/
+    (repo / ".cursor" / "state" / "refactor_decisions").mkdir(parents=True)
+    # Create artifacts/cursor/
     (repo / "artifacts" / "windsurf").mkdir(parents=True)
     # Create artifacts/adg/
     (repo / "artifacts" / "adg").mkdir(parents=True)
@@ -108,7 +108,7 @@ def mock_triggers_config() -> dict[str, Any]:
                 "decision_type": "governance_edit",
                 "severity": "block",
                 "features": {
-                    "path_globs_any": [".windsurf/rules/**", "docs/architecture/adr/**"],
+                    "path_globs_any": [".cursor/rules/**", "docs/architecture/adr/**"],
                 },
             },
         ],
@@ -139,9 +139,9 @@ def sample_snapshot_single_file() -> ChangeSnapshot:
 def sample_snapshot_sensitive() -> ChangeSnapshot:
     """Sample ChangeSnapshot for sensitive governance file edit."""
     return ChangeSnapshot(
-        changed_files=[".windsurf/rules/ssot-folder-enforcement.md"],
+        changed_files=[".cursor/rules/ssot-folder-enforcement.md"],
         deleted_files=[],
-        added_lines_by_file={".windsurf/rules/ssot-folder-enforcement.md": ["# New rule"]},
+        added_lines_by_file={".cursor/rules/ssot-folder-enforcement.md": ["# New rule"]},
     )
 
 
@@ -267,9 +267,9 @@ class TestTierBypass:
 
     def test_is_sensitive_path_matches_rules(self):
         """_is_sensitive_path correctly identifies governance paths."""
-        assert _is_sensitive_path(".windsurf/rules/ssot-folder-enforcement.md") is True
-        assert _is_sensitive_path(".windsurf/schemas/author_gate_triggers.yaml") is True
-        assert _is_sensitive_path(".windsurf/scripts/pre_author_gate.py") is True
+        assert _is_sensitive_path(".cursor/rules/ssot-folder-enforcement.md") is True
+        assert _is_sensitive_path(".cursor/schemas/author_gate_triggers.yaml") is True
+        assert _is_sensitive_path(".cursor/scripts/_legacy_windsurf/pre_author_gate.py") is True
         assert _is_sensitive_path("apps_rg/config/specs.yaml") is True
         assert _is_sensitive_path("agentic_core/L5_safety/guard.py") is True
         assert _is_sensitive_path("docs/architecture/adr/ADR-001.md") is True
@@ -283,7 +283,7 @@ class TestTierBypass:
 
     def test_windows_path_normalization(self):
         """_is_sensitive_path normalizes Windows backslashes."""
-        assert _is_sensitive_path(".windsurf\\rules\\test.md") is True
+        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules\\test.md") is True
 
 
 # =============================================================================
@@ -296,15 +296,15 @@ class TestWindowsPathCoverage:
     # Standard Windows backslash paths
     def test_windows_backslash_rules_path(self):
         """Windows backslash path matches rules pattern."""
-        assert _is_sensitive_path(".windsurf\\rules\\ssot-folder-enforcement.md") is True
+        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules\\ssot-folder-enforcement.md") is True
 
     def test_windows_backslash_schemas_path(self):
         """Windows backslash path matches schemas pattern."""
-        assert _is_sensitive_path(".windsurf\\schemas\\author_gate_triggers.yaml") is True
+        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\schemas\\author_gate_triggers.yaml") is True
 
     def test_windows_backslash_pre_author_gate(self):
         """Windows backslash path matches pre_author_gate.py."""
-        assert _is_sensitive_path(".windsurf\\scripts\\pre_author_gate.py") is True
+        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\scripts\\pre_author_gate.py") is True
 
     def test_windows_backslash_l5_safety(self):
         """Windows backslash path matches L5_safety."""
@@ -321,8 +321,8 @@ class TestWindowsPathCoverage:
     # Mixed separator paths (edge case)
     def test_mixed_separator_rules_path(self):
         """Mixed / and \\ separators still match."""
-        assert _is_sensitive_path(".windsurf/rules\\test.md") is True
-        assert _is_sensitive_path(".windsurf\\rules/test.md") is True
+        assert _is_sensitive_path(".cursor/rules\\test.md") is True
+        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules/test.md") is True
 
     def test_mixed_separator_nested(self):
         """Mixed separators in deeply nested path."""
@@ -331,11 +331,11 @@ class TestWindowsPathCoverage:
     # POSIX forward slash paths (baseline)
     def test_posix_forward_slash_rules(self):
         """POSIX forward slash paths still work."""
-        assert _is_sensitive_path(".windsurf/rules/test.md") is True
+        assert _is_sensitive_path(".cursor/rules/test.md") is True
 
     def test_posix_forward_slash_schemas(self):
         """POSIX forward slash schemas paths work."""
-        assert _is_sensitive_path(".windsurf/schemas/author_gate_triggers.yaml") is True
+        assert _is_sensitive_path(".cursor/schemas/author_gate_triggers.yaml") is True
 
     # Non-sensitive Windows paths (should NOT match)
     def test_windows_backslash_non_sensitive(self):
@@ -355,34 +355,34 @@ class TestWindowsPathCoverage:
 
     def test_trailing_backslash(self):
         """Trailing backslash in sensitive directory."""
-        assert _is_sensitive_path(".windsurf\\rules\\") is True
+        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules\\") is True
 
     def test_trailing_slash(self):
         """Trailing slash in sensitive directory."""
-        assert _is_sensitive_path(".windsurf/rules/") is True
+        assert _is_sensitive_path(".cursor/rules/") is True
 
     def test_case_sensitivity(self):
         """Case-sensitive matching (paths are case-sensitive on POSIX)."""
         # Uppercase should NOT match lowercase patterns
         assert _is_sensitive_path(".WINDSURF/rules/test.md") is False
-        assert _is_sensitive_path(".windsurf/RULES/test.md") is False
+        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree/RULES/test.md") is False
 
     def test_partial_match_rejection(self):
         """Partial directory names don't match."""
-        assert _is_sensitive_path(".windsurf/rules-backup/test.md") is False
-        assert _is_sensitive_path("my.windsurf/rules/test.md") is False
+        assert _is_sensitive_path(".cursor/rules-backup/test.md") is False
+        assert _is_sensitive_path("my.cursor/rules/test.md") is False
         assert _is_sensitive_path(".windsurfx/rules/test.md") is False
 
     def test_deeply_nested_sensitive(self):
         """Deeply nested paths within sensitive directories match."""
-        assert _is_sensitive_path(".windsurf\\rules\\very\\deep\\nested\\file.md") is True
+        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules\\very\\deep\\nested\\file.md") is True
         assert _is_sensitive_path("agentic_core\\L5_safety\\sub\\module\\guard.py") is True
 
     def test_relative_path_prefix(self):
         """Relative path prefixes still match if containing sensitive pattern."""
         # W2: Paths containing sensitive patterns ARE sensitive regardless of ./ or ../ prefix
-        assert _is_sensitive_path("./.windsurf/rules/test.md") is True  # Contains .windsurf/rules/
-        assert _is_sensitive_path("../.windsurf/rules/test.md") is True  # Contains .windsurf/rules/
+        assert _is_sensitive_path("./.cursor/rules/test.md") is True  # Contains .cursor/rules/
+        assert _is_sensitive_path("../.cursor/rules/test.md") is True  # Contains .cursor/rules/
         # But paths that don't actually contain the pattern still don't match
         assert _is_sensitive_path("./foo/bar/test.md") is False
         assert _is_sensitive_path("../foo/bar/test.md") is False
@@ -390,7 +390,7 @@ class TestWindowsPathCoverage:
     def test_absolute_windows_path(self):
         """Absolute Windows paths with drive letters."""
         # Should match based on the path suffix
-        assert _is_sensitive_path("C:\\Git\\Agentic-Workflow\\.windsurf\\rules\\test.md") is True
+        assert _is_sensitive_path("C:\\Git\\Agentic-Workflow\\docs/archive/windsurf/legacy-tree\\rules\\test.md") is True
         assert _is_sensitive_path("D:\\projects\\agentic_core\\L5_safety\\guard.py") is True
 
     # Pattern-specific edge cases
@@ -539,11 +539,11 @@ class TestGovernanceEdits:
     """Tests for rule/governance edit triggers (F)."""
 
     def test_rules_edit_triggers(self, mock_triggers_config):
-        """Editing .windsurf/rules/ file triggers HITL-1.9."""
+        """Editing .cursor/rules/ file triggers HITL-1.9."""
         snap = ChangeSnapshot(
-            changed_files=[".windsurf/rules/ssot-folder-enforcement.md"],
+            changed_files=[".cursor/rules/ssot-folder-enforcement.md"],
             deleted_files=[],
-            added_lines_by_file={".windsurf/rules/ssot-folder-enforcement.md": ["# new rule"]},
+            added_lines_by_file={".cursor/rules/ssot-folder-enforcement.md": ["# new rule"]},
         )
         
         # Find governance trigger
@@ -660,7 +660,7 @@ class TestBypass:
         # This is tested in main() integration, but we verify the logic here
         # by checking that sensitive paths are detected before bypass
         snap = ChangeSnapshot(
-            changed_files=[".windsurf/rules/test.md"],
+            changed_files=[".cursor/rules/test.md"],
             deleted_files=[],
             added_lines_by_file={},
         )

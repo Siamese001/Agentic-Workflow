@@ -64,7 +64,7 @@ ALLOWLISTED_PATHS = {
     r".*/conftest\.py$",
     # Receipts and governance
     r".*/artifacts/governance/.*",
-    r".*/\.windsurf/.*",
+    r".*/\docs/archive/windsurf/legacy-tree/.*",
     # Config (if generic)
     r".*/config/[^/]+\.json$",
     r".*/config/[^/]+\.yaml$",

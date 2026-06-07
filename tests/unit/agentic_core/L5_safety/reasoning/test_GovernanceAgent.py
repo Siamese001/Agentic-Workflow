@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.reasoning.GovernanceAgent`.
 
-Wave 4 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`. L5 governance core.
+Wave 4 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`. L5 governance core.
 Highest fan-out untested module (14). Drives ArchitectureGovernor enforcement.
 """
 

@@ -1,7 +1,7 @@
 """Regression tests for agentic_core.adg.processing.phase2_disposition_processor.
 
 Covers two historical bugs discovered during Wave-1 tech-debt cleanup
-(plan .windsurf/plans/repo-tech-debt-wave1-b3c8d1.md):
+(plan docs/archive/windsurf/legacy-tree/plans/repo-tech-debt-wave1-b3c8d1.md):
 
 1. SQL template rendering bug — plain-string line in a concatenated f-string +
    str.format() template used `{{disposition_filter}}` (double braces) while

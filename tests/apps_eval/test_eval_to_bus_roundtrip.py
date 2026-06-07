@@ -1,7 +1,7 @@
 """Round-trip smoke test — eval → canonical meta-learning bus.
 
 Verifies the end-to-end wiring introduced in plan
-``.windsurf/plans/eval-meta-otel-gap-review-ef4a20.md`` Wave W2:
+``docs/archive/windsurf/legacy-tree/plans/eval-meta-otel-gap-review-ef4a20.md`` Wave W2:
 
   ``ScorecardEngine.compute()``
       → OTel span ``apps_eval.v1.scorecard.compute``

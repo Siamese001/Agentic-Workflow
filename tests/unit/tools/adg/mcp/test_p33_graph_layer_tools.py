@@ -1,6 +1,6 @@
 """Unit tests for the W3 P3.3 graph-layer MCP tools.
 
-Plan: ``.windsurf/plans/adg-three-bucket-unified-c4f8e2.md`` (W3 P3.3).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-three-bucket-unified-c4f8e2.md`` (W3 P3.3).
 
 Covers:
   * adg_mv_hotspot_centrality      — MV row passthrough + ORDER BY

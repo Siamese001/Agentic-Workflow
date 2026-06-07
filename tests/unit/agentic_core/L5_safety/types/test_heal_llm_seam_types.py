@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.types.heal_llm_seam_types`.
 
-Wave 5 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L5 type
+Wave 5 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L5 type
 contract for heal-LLM seam (capability gating + budget caps + telemetry).
 """
 

@@ -1,7 +1,7 @@
 """Query decomposition primitive for apps_research retrieval pipeline.
 
 Fan-out 3/4/5 for depth=shallow/standard/deep per plan
-.windsurf/plans/apps-research-blend-baseline-c74787.md §P1.1.
+docs/archive/windsurf/legacy-tree/plans/apps-research-blend-baseline-c74787.md §P1.1.
 
 W2 (plan apps-research-spine-deferred-followup-9c3e1a P2.1): adds
 coverage-family dispatch. _COVERAGE_FAMILY_CATALOG and related depth-

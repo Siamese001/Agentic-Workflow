@@ -1,6 +1,6 @@
 """Unit tests for ``agentic_core.L6_observability.decision_provenance``.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W3.
 """
 
 from __future__ import annotations

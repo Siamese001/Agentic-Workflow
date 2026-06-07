@@ -1,6 +1,6 @@
 """eval_trend_anomaly_detector — rolling-window anomaly detection (skeleton).
 
-Plan: ``.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md`` W5.P2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-deferred-e4a1b7.md`` W5.P2.
 
 Detects anomalies in eval outcomes by comparing rolling windows (1h / 6h /
 24h) over the W5.P7 ``eval_harness_outcome`` ledger. Current detector is

@@ -30,7 +30,7 @@ Usage::
 
     python tools/ingestion/chunk_apps_rg_corpus.py \\
         --source-class governance_docs \\
-        --input-dir .windsurf/rules \\
+        --input-dir .cursor/rules \\
         --output artifacts/apps_rg/retrieval/ingestion_input/governance_docs.jsonl
 
     python tools/ingestion/chunk_apps_rg_corpus.py \\
@@ -304,9 +304,9 @@ def chunk_directory(
         Flat list of all chunks from all files.
     """
     _SKIP_DIRS = {".git", "__pycache__", "node_modules", "xet",
-                  ".windsurf/plans", ".windsurf/schemas",
+                  "docs/archive/windsurf/legacy-tree/plans", ".cursor/schemas",
                   "artifacts/apps_rg/runs", "artifacts/adg",
-                  "artifacts/windsurf"}
+                  "artifacts/cursor"}
     all_chunks: list[dict[str, Any]] = []
     files: list[Path] = []
     for p in sorted(input_dir.rglob("*")):

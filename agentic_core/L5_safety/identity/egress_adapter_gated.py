@@ -29,7 +29,7 @@ Reference:
   - interfaces/principal_aware_egress.py (Wave-W3 base)
   - runtime_entry_sweep.py (Wave-L gating decision)
   - write_adapter_gated.py (Wave-N sibling for write path)
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

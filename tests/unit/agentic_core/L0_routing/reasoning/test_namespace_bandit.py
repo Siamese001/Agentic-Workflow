@@ -1,6 +1,6 @@
 """Unit tests for ``agentic_core.L0_routing.reasoning.namespace_bandit``.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` W4.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` W4.
 """
 
 from __future__ import annotations

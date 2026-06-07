@@ -1,6 +1,6 @@
 """L5 HITL false-positive metric + adversarial probe escape rate.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W9.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W9.
 
 Closes opportunities 7.1 (HITL FP metric — fired but human approved
 immediately) and 7.3 (adversarial probe regression suite + escape rate).

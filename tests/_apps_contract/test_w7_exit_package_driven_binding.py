@@ -56,12 +56,12 @@ from agentic_core.runtime.gates.gate_types import GateMeshResult, GateVerdict
 
 @pytest.fixture
 def v2_plan_path() -> Path:
-    return Path(".windsurf/plans/apps-research-rich-content-runtime-customization-v2.md")
+    return Path("docs/archive/windsurf/legacy-tree/plans/apps-research-rich-content-runtime-customization-v2.md")
 
 
 @pytest.fixture
 def v1_plan_path() -> Path:
-    return Path(".windsurf/plans/apps-research-rich-content-runtime-customization-a1b2c3.md")
+    return Path("docs/archive/windsurf/legacy-tree/plans/apps-research-rich-content-runtime-customization-a1b2c3.md")
 
 
 @pytest.fixture

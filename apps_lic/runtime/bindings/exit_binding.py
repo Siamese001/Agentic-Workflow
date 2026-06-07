@@ -21,7 +21,7 @@ W3 Package Consumption (runtime_customization_package):
   - G27 is NOT_APPLICABLE with reason "read_only_draft_return" for apps_lic.
   - RuntimeExhaustBundle carries profile refs and cache bypass receipt.
 
-Plan: .windsurf/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md W3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md W3
 """
 
 from __future__ import annotations

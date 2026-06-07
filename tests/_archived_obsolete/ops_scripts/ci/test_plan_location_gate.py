@@ -66,7 +66,7 @@ class TestValidatePlanLocations:
         """Happy path: all files in correct location."""
         with patch("plan_location_gate.get_staged_files") as mock_get:
             mock_get.return_value = [
-                tmp_path / ".windsurf" / "plans" / "test_plan.md",
+                tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / "test_plan.md",
             ]
             result = validate_plan_locations(tmp_path)
 
@@ -83,7 +83,7 @@ class TestValidatePlanLocations:
 
             assert result is False
             assert "PLAN LOCATION VIOLATIONS" in captured.out
-            assert "should be in .windsurf/plans/" in captured.out
+            assert "should be in docs/archive/windsurf/legacy-tree/plans/" in captured.out
 
     def test_edge_case_non_md_files_ignored(self, tmp_path):
         """Edge case: non-.md files in prohibited location are ignored."""

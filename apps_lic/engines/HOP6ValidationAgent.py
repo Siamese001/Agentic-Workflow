@@ -18,7 +18,7 @@ from apps_lic.types.TraceRegistry import TraceRegistry
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
-# DecisionRouter (W2-P2 wiring per .windsurf/plans/decision-router-policy-tables-b3a4d2.md):
+# DecisionRouter (W2-P2 wiring per docs/archive/windsurf/legacy-tree/plans/decision-router-policy-tables-b3a4d2.md):
 # attaches an X3 disposition row to every validation_results entry, so HOP7
 # becomes a thin shim that reads disposition directly. Module-level import
 # keeps the Sovereign Seal happy (no late-bound attribute writes during

@@ -1,6 +1,6 @@
 """apps_lic calibration-holdout W5 — holdout ingest + Spearman calibration tests.
 
-Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W5 DS1-P1, DS1-P2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-calibration-holdout-e8f1c4.md W5 DS1-P1, DS1-P2
 
 Tests verify:
   DS1-P1 (lic_judge_holdout_ingest):

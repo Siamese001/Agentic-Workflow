@@ -1,6 +1,6 @@
 """E3 integration tests — apps_qna provider dispatch layer.
 
-Plan: ``.windsurf/plans/bge-m3-deferred-scope-remaining-c4e7a1.md`` W3
+Plan: ``docs/archive/windsurf/legacy-tree/plans/bge-m3-deferred-scope-remaining-c4e7a1.md`` W3
 """
 
 from __future__ import annotations

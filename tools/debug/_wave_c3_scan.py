@@ -6,7 +6,7 @@ Extra filters vs Wave C.1/C.2:
   - Exclude any file referenced in pyproject [project.scripts] or entry_points
   - Exclude any file referenced in .pre-commit-config.yaml
   - Exclude any file referenced in .github/workflows/*.yml
-  - Exclude any file referenced in .windsurf/workflows/*.md or hooks.json
+  - Exclude any file referenced in docs/archive/windsurf/legacy-tree/workflows/*.md or hooks.json
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ import re
 import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-NOISE = ("docs/reports/", "tools/archive/", "artifacts/", ".windsurf/plans/", "archives/")
+NOISE = ("docs/reports/", "tools/archive/", "artifacts/", "docs/archive/windsurf/legacy-tree/plans/", "archives/")
 
 
 def run(args: list[str]) -> str:
@@ -51,12 +51,12 @@ haystack_parts = []
 for pat in (
     "pyproject.toml",
     ".pre-commit-config.yaml",
-    ".windsurf/hooks.json",
+    ".cursor/hooks.json",
 ):
     p = ROOT / pat
     if p.exists():
         haystack_parts.append(p.read_text(encoding="utf-8", errors="replace"))
-for wd in (".github/workflows", ".windsurf/workflows", "ops_scripts"):
+for wd in (".github/workflows", "docs/archive/windsurf/legacy-tree/workflows", "ops_scripts"):
     p = ROOT / wd
     if not p.exists():
         continue

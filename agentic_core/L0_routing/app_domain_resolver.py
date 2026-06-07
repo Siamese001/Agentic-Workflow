@@ -5,7 +5,7 @@ Given ``(app_id, task_class)`` at L0 dispatch time, this module consults
 bundle of resolved refs that RouteContract / V15RouteContract / Exit need
 to enforce app-specific behavior.
 
-Plan: ``.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W4.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W4.
 
 Authority story:
 

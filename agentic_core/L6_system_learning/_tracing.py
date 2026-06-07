@@ -10,7 +10,7 @@ OTel API returns a ProxyTracer backed by a NoOpTracer — `sl_span()`
 is therefore free in both CPU and allocations, and safe to sprinkle
 across hot paths.
 
-Plan reference: .windsurf/plans/eval-meta-otel-deferred-completion-d6b4e0.md
+Plan reference: docs/archive/windsurf/legacy-tree/plans/eval-meta-otel-deferred-completion-d6b4e0.md
 Wave W-D2 (L_SL / L6 tracer wiring).
 """
 

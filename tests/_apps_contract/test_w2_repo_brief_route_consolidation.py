@@ -13,7 +13,7 @@ Covers:
   P2.12 — PA compiler scaffold
   P2.6 — OTEL dual-span adapter
 
-Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.*
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §P2.*
 """
 
 from __future__ import annotations

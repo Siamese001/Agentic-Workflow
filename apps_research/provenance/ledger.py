@@ -19,7 +19,7 @@ Architecture (deliberate):
     references to unknown source_ids fails the contract. Callers can
     surface validation errors in ``ResearchResult.gate_violations``.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
 """
 from __future__ import annotations
 

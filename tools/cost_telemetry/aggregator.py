@@ -23,7 +23,7 @@ Usage:
     rollup = aggregate_by_app(samples)
     print(rollup.summary())
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W4.3)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W4.3)
 """
 from __future__ import annotations
 

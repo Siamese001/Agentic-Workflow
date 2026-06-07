@@ -15,7 +15,7 @@ Subcommands:
 
   (default, no subcommand) — **legacy stdin** dispatch (e.g. shadow
     ``post_cursor_agent_dispatch.py``): fail-open; writes violations only under
-    ``artifacts/cursor/`` (no ``artifacts/windsurf`` dependency).
+    ``artifacts/cursor/`` (no ``artifacts/cursor`` dependency).
 
 Companion rule: ``.cursor/rules/constitutional.md`` §14 (subprocess timeout)
 + §11 (terminal lifecycle).

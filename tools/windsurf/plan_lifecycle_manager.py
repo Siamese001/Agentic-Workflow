@@ -27,8 +27,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # State paths
 STATE_DIR = REPO_ROOT / "artifacts" / "windsurf"
-REGISTRATION_QUEUE = REPO_ROOT / ".windsurf" / "state" / "plan_registration_queue.jsonl"
-REGISTRATION_CACHE = REPO_ROOT / ".windsurf" / "state" / "plan_registration_cache.json"
+REGISTRATION_QUEUE = REPO_ROOT / ".cursor" / "state" / "plan_registration_queue.jsonl"
+REGISTRATION_CACHE = REPO_ROOT / ".cursor" / "state" / "plan_registration_cache.json"
 
 # Constants
 MAX_RESPONSE_BYTES = 512 * 1024
@@ -410,7 +410,7 @@ class PlanLifecycleManager:
     def gate_completeness(self, slug: str) -> dict:
         """NP-COMPLETENESS: Check DoD verified."""
         # Check if plan file has all DoD items checked
-        plan_file = self.repo_root / ".windsurf" / "plans" / f"{slug}.md"
+        plan_file = self.repo_root / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md"
         if not plan_file.exists():
             return {"gate": "NP-COMPLETENESS", "ok": False, "reason": "plan file not found"}
         
@@ -443,7 +443,7 @@ class PlanLifecycleManager:
     
     def gate_divergence(self, slug: str) -> dict:
         """NP-DIVERGENCE: Check on-disk vs Notion mismatch."""
-        plan_file = self.repo_root / ".windsurf" / "plans" / f"{slug}.md"
+        plan_file = self.repo_root / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md"
         exists_on_disk = plan_file.exists()
         
         status = self.query_status(slug)

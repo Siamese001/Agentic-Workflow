@@ -122,7 +122,7 @@ def check():
             for event, entries in (hooks.get('hooks') or {}).items():
                 for idx, entry in enumerate(entries or []):
                     cmd = str(entry.get('command',''))
-                    if '.windsurf' in cmd or 'post_cursor_agent' in cmd or 'pre_cursor_agent' in cmd:
+                    if 'docs/archive/windsurf/legacy-tree' in cmd or 'post_cursor_agent' in cmd or 'pre_cursor_agent' in cmd:
                         failures.append({'type': 'legacy_hook_command', 'event': event, 'index': idx, 'command': cmd})
         except Exception as exc:
             failures.append({'type': 'invalid_hooks_json', 'path': rel(hooks_path), 'error': str(exc)})
@@ -150,7 +150,7 @@ def check():
             failures.append({'type': 'mdc_missing_description', 'path': rel(path)})
         if 'alwaysApply:' not in fm:
             failures.append({'type': 'mdc_missing_alwaysApply', 'path': rel(path)})
-        if '.windsurf' in fm or 'mcp_config.json' in fm:
+        if 'docs/archive/windsurf/legacy-tree' in fm or 'mcp_config.json' in fm:
             failures.append({'type': 'mdc_legacy_frontmatter', 'path': rel(path)})
 
     # Skill frontmatter.

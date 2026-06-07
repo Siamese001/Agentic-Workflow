@@ -1,7 +1,7 @@
 """APPS-DOM Negative-Control Runtime Harness — invoke v6 Exit with BAD
 output per app and capture the X3 DENY disposition.
 
-Plan: .windsurf/plans/apps-dom-runtime-harness-followup-f2a7b3.md W3.P1.
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-dom-runtime-harness-followup-f2a7b3.md W3.P1.
 
 Produces real runtime evidence that X3 blocks bad app output, satisfying
 APPS-DOM-006 (x3_domain_block_proved). For each of the 8 runtime apps,

@@ -1,6 +1,6 @@
 """apps_lic HITL Freeze Policy — decision-only, no state writes.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W1 D2-P1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W1 D2-P1
 ADR:  ADR-023 (Runtime HITL Exit Control)
 
 Evaluates whether a completed (or partially-completed) apps_lic run should

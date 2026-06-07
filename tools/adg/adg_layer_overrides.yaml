@@ -52,7 +52,7 @@ overrides:
   "apps_underwriting_ai/*": "L_APP"
 
   # Special cases
-  ".windsurf/*": "L_OPS"
+  "docs/archive/windsurf/legacy-tree/*": "L_OPS"
   "infrastructure/*": "L_OPS"
   "tools/*": "L_TOOLS"
   "tests/*": "L_TEST"

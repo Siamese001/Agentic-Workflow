@@ -16,7 +16,7 @@ A ``verdict == "certify"`` record is **not** a certification. Promotion to
 ``RUNTIME_CERTIFIED`` / ``FORMAL_EXCEPTION_VERIFIED`` is Phase F's job
 (explicitly out of scope for D.2 and all prior D sub-phases).
 
-Adaptations from the planning doc (`.windsurf/plans/runtime-cert-d2-decision-
+Adaptations from the planning doc (`docs/archive/windsurf/legacy-tree/plans/runtime-cert-d2-decision-
 evaluator-227b38.md`)
 ----------------------------------------------------------------------------
 During implementation three shapes in the D.1 / C.8 contract surface turned

@@ -6,12 +6,12 @@ Scans (rglob) under selected artifact roots for files matching *bypass*.jsonl,
 counts lines, optionally buckets coarse JSON `reason` / `msg` fields.
 
 Writes:
-  artifacts/windsurf/governance_bypass_rollup_latest.json
+  artifacts/cursor/governance_bypass_rollup_latest.json
 
 Exit 0 always (operator visibility). BYPASS: ROLLUP_GOVERNANCE_BYPASS_LOGS_BYPASS=1.
 
 Scans only:
-  artifacts/windsurf/
+  artifacts/cursor/
   artifacts/cursor/
   artifacts/ci/
 """

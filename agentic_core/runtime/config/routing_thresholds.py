@@ -1,6 +1,6 @@
 """Routing threshold configuration loader — W2.P1 deposit.
 
-Plan: ``.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W2.
 
 Loads :file:`config/routing_thresholds.yaml` and exposes a typed lookup
 surface for the five routing thresholds each L0/C0/L4 consumer needs:

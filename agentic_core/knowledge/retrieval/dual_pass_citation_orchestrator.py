@@ -38,7 +38,7 @@ to eliminate Haiku billing on the deterministic reshape step.
 
 References:
 - https://docs.anthropic.com/en/docs/build-with-claude/citations (incompatibility)
-- Plan: .windsurf/plans/anthropic-rag-gaps-7f3c2a.md (phase P2.3)
+- Plan: docs/archive/windsurf/legacy-tree/plans/anthropic-rag-gaps-7f3c2a.md (phase P2.3)
 """
 
 from __future__ import annotations

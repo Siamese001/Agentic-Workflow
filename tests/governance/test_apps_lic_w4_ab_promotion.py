@@ -1,6 +1,6 @@
 """apps_lic calibration-holdout W4 — A/B production promotion tests.
 
-Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W4 DS3-P1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-calibration-holdout-e8f1c4.md W4 DS3-P1
 
 Tests verify:
   - REQUIRES_REAL_TRAFFIC flag is True at module level.

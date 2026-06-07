@@ -1,6 +1,6 @@
 """tools.calibration.generate_synthetic_holdout — synthetic holdout CSV generator.
 
-Plan: .windsurf/plans/apps-lic-holdout-realtraffic-followup-b2d9f3.md RD1-P1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-holdout-realtraffic-followup-b2d9f3.md RD1-P1
 
 Generates a synthetic holdout CSV by running all 7 lic judges over a curated
 set of contrasting draft texts with known friction/quality profiles.

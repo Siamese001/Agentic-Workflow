@@ -9,7 +9,7 @@ topology. Domain logic per stage lives in
 ``apps_lic/engines/<stage_name>_engine.py``; the walk is delegated to
 ``apps_shared.orchestration.HopPipelineExecutor``.
 
-Plan: .windsurf/plans/apps-hop-substrate-f7751b.md (Wave 2 Phase 2.1)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-hop-substrate-f7751b.md (Wave 2 Phase 2.1)
 
 Historical note
 ---------------

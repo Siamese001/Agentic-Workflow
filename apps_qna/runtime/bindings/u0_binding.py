@@ -9,7 +9,7 @@ the canonical apps_qna.u0_intake.intake_interview_request().
 Consumes: RequestEnvelope
 Emits:    ValidatedRequest (from agentic_core.L0_routing.intake.validated_request)
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P1
 """
 from __future__ import annotations
 

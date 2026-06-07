@@ -1,6 +1,6 @@
 """apps_lic.engines.narrative_arc_engine — P2a Narrative Arc Engine.
 
-Plan: .windsurf/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md W1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md W1
 
 Builds narrative arc context for outreach drafts. Returns an immutable NarrativeArc
 with sections, coherence scoring, and arc break detection.

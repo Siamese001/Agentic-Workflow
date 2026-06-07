@@ -14,7 +14,7 @@ Contract
 - ``SenderCredibilityCard.all_claims`` = full ranked list for HITL review.
 - No claim is invented; the engine only selects and scores.
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P1b
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P1b
 """
 
 from __future__ import annotations

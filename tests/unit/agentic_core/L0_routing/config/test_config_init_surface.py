@@ -1,6 +1,6 @@
 """Test coverage for `agentic_core.L0_routing.config.__init__`.
 
-Wave 1 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`.
+Wave 1 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`.
 
 Module rationale: this `__init__.py` re-exports 50+ canonical path constants
 and structure-blueprint data used by 120 downstream prod modules. Highest

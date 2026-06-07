@@ -1,6 +1,6 @@
 """L2 doctrine edge-case hardening pass.
 
-Maps to: ``.windsurf/plans/l2-execute-doc-gap-fill-9c2a31.md`` Hardening Pass.
+Maps to: ``docs/archive/windsurf/legacy-tree/plans/l2-execute-doc-gap-fill-9c2a31.md`` Hardening Pass.
 
 Coverage rule (uniformly enforced across every contract introduced by the
 plan):

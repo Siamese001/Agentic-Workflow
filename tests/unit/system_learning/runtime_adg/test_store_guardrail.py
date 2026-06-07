@@ -1,6 +1,6 @@
 """Tests for Tier 1 persist() guardrail in FileBackedRuntimeADGStore.
 
-Plan: `.windsurf/plans/runtime-adg-tier1-trace-binding-c9b84d.md` (W1.P1)
+Plan: `docs/archive/windsurf/legacy-tree/plans/runtime-adg-tier1-trace-binding-c9b84d.md` (W1.P1)
 """
 
 from __future__ import annotations

@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_SCRIPTS = _REPO_ROOT / ".windsurf" / "scripts"
+_SCRIPTS = _REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 

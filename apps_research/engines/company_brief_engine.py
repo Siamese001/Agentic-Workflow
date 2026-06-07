@@ -5,7 +5,7 @@ Driven by Tavily research (when available) plus a synthesizing LLM call. Falls
 back to a structured stub when neither is wired so the pipeline stays green
 in offline test environments.
 
-Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P1.2).
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P1.2).
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """APPS-DOM X3E SAFE_ABSTAIN Runtime Harness.
 
-Plan: .windsurf/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W3.P1.
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W3.P1.
 
 Complements the DENY harness (run_app_negative_control_with_otel.py) with
 proof that the X3E SAFE_ABSTAIN disposition path actually fires under

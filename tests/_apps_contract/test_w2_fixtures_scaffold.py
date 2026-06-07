@@ -1,6 +1,6 @@
 """Assert apps_eval/fixtures/{dev,holdout}/ scaffold exists.
 
-Plan: `.windsurf/plans/apps-eval-harness-residual-a2d9c7.md` W2.P2.
+Plan: `docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-residual-a2d9c7.md` W2.P2.
 """
 
 from __future__ import annotations

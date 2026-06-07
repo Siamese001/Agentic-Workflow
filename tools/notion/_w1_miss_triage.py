@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from collections import Counter
 
-log = Path("artifacts/windsurf/backlog_plan_linkage_misses.jsonl")
+log = Path("artifacts/cursor/backlog_plan_linkage_misses.jsonl")
 slugs = Counter()
 for line in log.read_text(encoding="utf-8").splitlines():
     if not line.strip():
@@ -14,7 +14,7 @@ for line in log.read_text(encoding="utf-8").splitlines():
     except Exception:
         pass
 
-plans_dir = Path(".windsurf/plans")
+plans_dir = Path("docs/archive/windsurf/legacy-tree/plans")
 on_disk = {p.stem for p in plans_dir.glob("*.md")}
 
 miss_total = sum(slugs.values())

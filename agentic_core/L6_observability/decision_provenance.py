@@ -1,6 +1,6 @@
 """Decision provenance stamp — five-field identifier for every decision row.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W3.
 
 Every row in the unified ``decision_events`` table carries a five-field
 provenance stamp so any downstream regression can be traced back to:

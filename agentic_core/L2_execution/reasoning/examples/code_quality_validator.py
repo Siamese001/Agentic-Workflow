@@ -1,6 +1,6 @@
 """Exemplar SovereignValidatorBase subclass — code-quality line-length validator.
 
-Plan: `.windsurf/plans/l2-execute-v2-agent-conformance-c8e4f1.md` §W6.
+Plan: `docs/archive/windsurf/legacy-tree/plans/l2-execute-v2-agent-conformance-c8e4f1.md` §W6.
 Closes G-V9 (exemplar #1 of 2).
 
 This class demonstrates the L2 Execute v2 §E2 Work Order Check pattern:

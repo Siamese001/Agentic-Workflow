@@ -1,6 +1,6 @@
 """Judge Spearman calibration — scaffold + SYNTHETIC smoke run.
 
-Plan: `.windsurf/plans/judge-spearman-calibration-a7e4c9.md`.
+Plan: `docs/archive/windsurf/legacy-tree/plans/judge-spearman-calibration-a7e4c9.md`.
 
 Status
 ------

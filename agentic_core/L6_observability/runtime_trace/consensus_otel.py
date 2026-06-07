@@ -16,7 +16,7 @@ Design constraints:
   - Deterministic trace-id generation (uuid4)
   - In-memory ring buffer for test inspection + future SQLite projection
 
-Plan reference: `.windsurf/plans/consensus-validator-unification-5e9f3a.md` Wave C3.
+Plan reference: `docs/archive/windsurf/legacy-tree/plans/consensus-validator-unification-5e9f3a.md` Wave C3.
 """
 
 from __future__ import annotations

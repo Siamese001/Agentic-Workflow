@@ -1,4 +1,4 @@
-"""Unit tests for plan `.windsurf/plans/author-gate-hardening-a3b8f2.md` W1-W4.
+"""Unit tests for plan `docs/archive/windsurf/legacy-tree/plans/author-gate-hardening-a3b8f2.md` W1-W4.
 
 Covers the load-bearing pieces:
   - Schema migration idempotency (W1.P1.1)

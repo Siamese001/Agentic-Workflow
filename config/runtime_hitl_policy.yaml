@@ -4,7 +4,7 @@
 # L5 Policy Plane consumes this to classify runtime escalations.
 #
 # Scope: RUNTIME HITL (v30 step [5] ESCALATE). NOT the developer-loop
-# Author-Gate. Do not merge with .windsurf/ harness config.
+# Author-Gate. Do not merge with docs/archive/windsurf/legacy-tree/ harness config.
 #
 # Defaults (G4) are conservative. Tune per tenant via policy overlay (W5+).
 

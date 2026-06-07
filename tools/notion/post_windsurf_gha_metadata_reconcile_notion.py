@@ -43,7 +43,7 @@ def _create_child_page(token: str) -> str:
         _bullet("MIGRATION_SCOPE_STATUS: COMPLETE (W0–W5 + W5.D1–D4)"),
         _bullet("GLOBAL_CONTRACT_GATE_STATUS: PARTIAL_EXTERNAL_BLOCKER (6 plan_type violations)"),
         _bullet("GOVERNANCE_CERTIFICATION_STATUS: PARTIAL — not full repo green"),
-        _bullet("W1.D1 full .windsurf/ deletion: OUT_OF_BAND (separate plan)"),
+        _bullet("W1.D1 full docs/archive/windsurf/legacy-tree/ deletion: OUT_OF_BAND (separate plan)"),
         _paragraph("Proof artifacts (repo paths):"),
         _bullet("docs/reports/cursor/windsurf_gha_inventory.json"),
         _bullet("docs/reports/cursor/windsurf_gha_cutover_closeout.md"),

@@ -4,7 +4,7 @@ Covers the Phase 7.1 test matrix from the discovery report:
 valid contract passes, missing fields fail closed, duplicate
 dimensions fail, vocabulary rejection.
 
-Plan: ``.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`` §P7.1.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-domain-contract-fortknox-c4d8e2.md`` §P7.1.
 """
 
 from __future__ import annotations

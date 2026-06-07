@@ -1,6 +1,6 @@
 """Production-log mining — harvest eval samples from live runs with PII redaction.
 
-Plan: `.windsurf/plans/apps-eval-harness-residual-a2d9c7.md` W3.P1.
+Plan: `docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-residual-a2d9c7.md` W3.P1.
 
 Purpose
 -------

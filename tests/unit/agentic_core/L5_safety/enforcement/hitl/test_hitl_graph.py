@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.enforcement.hitl.hitl_graph`.
 
-Wave 10 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3). HITL
+Wave 10 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3). HITL
 runtime graph (per ADR-023). Distinct from Author-Gate developer-loop.
 """
 

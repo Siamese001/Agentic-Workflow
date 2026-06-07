@@ -7,7 +7,7 @@ The graph store is non-critical: construction failure falls back to None and
 all canonical query paths remain unaffected.
 """
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 
@@ -330,7 +330,7 @@ class SQLiteBackend:
     # -----------------------------------------------------------------
 
     # Whitelist of canonical semantic relation types (per
-    # `.windsurf/rules/adg-canonical-invariants.md` §3 + ADR-074). Values
+    # `.cursor/rules/adg-canonical-invariants.md` §3 + ADR-074). Values
     # outside this set are rejected with ValueError so callers cannot
     # smuggle arbitrary relation_type strings into the graph-layer surface.
     SEMANTIC_RELATION_TYPES: tuple[str, ...] = (

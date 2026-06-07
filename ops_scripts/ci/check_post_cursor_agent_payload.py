@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
-_SCRIPTS = _ROOT / ".windsurf" / "scripts"
+_SCRIPTS = _ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
 
 # Hooks that legitimately do not read stdin — they are pure-side-effect writers.
 _NO_STDIN_HOOKS: frozenset[str] = frozenset(

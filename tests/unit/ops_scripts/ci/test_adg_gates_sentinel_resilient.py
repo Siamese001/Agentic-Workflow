@@ -2,7 +2,7 @@
 snapshot resolvers MUST skip the legacy sentinel
 ``adg_indexed_99999999_9999.sqlite`` and pick the real snapshot.
 
-Plan: ``.windsurf/plans/adg-three-bucket-unified-c4f8e2.md`` (W6 P6.1 / P6.3
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-three-bucket-unified-c4f8e2.md`` (W6 P6.1 / P6.3
 hardening, 2026-04-30).
 
 Failure precedent (2026-04-30):

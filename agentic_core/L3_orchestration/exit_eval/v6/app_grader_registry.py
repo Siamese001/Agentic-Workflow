@@ -29,7 +29,7 @@ Contract for upstream producers:
   ``evidence_required=true`` FAIL on that rule (already enforced by
   :class:`AppSpecificEvaluator._classify_dimension`).
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W1.P2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-parity-f8d4a2.md`` W1.P2.
 """
 
 from __future__ import annotations

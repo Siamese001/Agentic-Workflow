@@ -1,6 +1,6 @@
 """G6 — Gemini gateway provisioner tests.
 
-Plan ref: ``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md`` G6.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md`` G6.
 """
 
 from __future__ import annotations

@@ -8,13 +8,13 @@ Three-step audit + remediation per 2026-05-02 backlog cleanup decision:
    "AUTO-CLOSE", "IMPLEMENTED", "fully complete", etc.) are flipped to
    Status=Completed with Last Updated=today.
 2. **MISSING_PLAN** — rows whose Plan File references a plan that no
-   longer exists under .windsurf/plans/ are flipped to Status=Retired
+   longer exists under docs/archive/windsurf/legacy-tree/plans/ are flipped to Status=Retired
    with reason "plan file deleted YYYY-MM-DD" prepended to Evidence.
 3. **KEEP** — remaining rows printed as a ranked work-queue (Impact Score
    desc) for operator review; no mutation.
 
 Auth: NOTION_TOKEN from env or .env (snapshot_renderer pattern).
-Audit: artifacts/windsurf/bulk_flip_stale_drafts_audit.jsonl
+Audit: artifacts/cursor/bulk_flip_stale_drafts_audit.jsonl
 
 Usage:
     python tools/notion/bulk_flip_stale_drafts.py --dry-run
@@ -40,7 +40,7 @@ NOTION_VERSION = "2025-09-03"
 BACKLOG_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".windsurf" / "plans"
+PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "bulk_flip_stale_drafts_audit.jsonl"
 
 # Strong closure markers — high confidence the work landed.
@@ -192,7 +192,7 @@ def patch_complete(tok: str, page_id: str, evidence_addendum: str, dry: bool) ->
 
 def patch_retire(tok: str, page_id: str, plan_filename: str, dry: bool) -> dict:
     today = date.today().isoformat()
-    reason = f"Retired {today}: plan file '{plan_filename}' deleted from .windsurf/plans/. Work descoped."
+    reason = f"Retired {today}: plan file '{plan_filename}' deleted from docs/archive/windsurf/legacy-tree/plans/. Work descoped."
     body = {
         "properties": {
             "Status": {"select": {"name": "Retired"}},

@@ -8,4 +8,4 @@ alwaysApply: false
 
 > **Superseded by** `.cursor/rules/cursor-config-lookup.mdc`. Windsurf-specific paths are legacy; Cursor SSOT lives under `.cursor/`.
 
-When a prompt references Windsurf configuration, resolve it through the Cursor lookup order in `cursor-config-lookup.mdc` unless the user explicitly asks about the Windsurf mirror (`.windsurf/mcp_config.json`, `~/.codeium/windsurf/`).
+When a prompt references Windsurf configuration, resolve it through the Cursor lookup order in `cursor-config-lookup.mdc` unless the user explicitly asks about the Windsurf mirror (`.cursor/mcp.json`, `~/.codeium/windsurf/`).

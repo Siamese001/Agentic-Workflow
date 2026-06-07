@@ -3,7 +3,7 @@
 Validates that exit_binding.produce_structured_resume_from_docx emits
 the normalized structured resume format with all required fields.
 
-Plan ref: .windsurf/plans/01_apps-rg-master-governed-runtime-hardening.md (W1)
+Plan ref: docs/archive/windsurf/legacy-tree/plans/01_apps-rg-master-governed-runtime-hardening.md (W1)
 """
 from __future__ import annotations
 

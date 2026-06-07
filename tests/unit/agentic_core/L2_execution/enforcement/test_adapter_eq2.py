@@ -8,7 +8,7 @@ Covers the ADR-PROMPT-ASSEMBLY-001 Q2/Q3 surface that landed in EQ-2:
 - OpenAI GPT-4.1 long-context tail ``# Final instructions`` block.
 - Model-aware registry dispatch via ``get_adapter_for_model``.
 
-Plan: ``.windsurf/plans/eq1-compiled-artifact-schema-d9a3e7.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/eq1-compiled-artifact-schema-d9a3e7.md``
 ADR:  ``docs/architecture/adr/ADR-PROMPT-ASSEMBLY-001-provider-aware-structured-prompt-rendering.md``
 """
 

@@ -1,6 +1,6 @@
 """Wave 3 — ConfidenceAwareExecutor primary-path routing tests.
 
-Plan ref: ``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 3.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md`` Wave 3.
 
 Coverage matrix:
 

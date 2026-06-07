@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """author_gate_consumer.py — Meta-learning consumer for the Author-Gate ledger.
 
-Plan: `.windsurf/plans/author-gate-hardening-a3b8f2.md` W4.P4.1.
+Plan: `docs/archive/windsurf/legacy-tree/plans/author-gate-hardening-a3b8f2.md` W4.P4.1.
 
 Mirrors the runtime HITL consumer (`tools/meta_learning/run_hitl_consumer.py`)
 for the author-loop Author-Gate surface. Reads
 `refactor_decision_ledger.sqlite`, joins decisions ↔ outcomes, updates a
 per-class Thompson bandit (cell key = (decision_type, reason_code)), and
 persists bandit state to
-`.windsurf/state/refactor_decisions/bandit_state.json` so
+`.cursor/state/refactor_decisions/bandit_state.json` so
 `precedent_injector.py` can read the prior on the next packet emit.
 
 Bandit cell posterior: Beta(α, β)

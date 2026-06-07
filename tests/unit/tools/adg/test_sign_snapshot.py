@@ -1,6 +1,6 @@
 """Tests for tools/adg/sign_snapshot.py + ops_scripts/ci/check_adg_snapshot_signed.py (W6).
 
-Plan: ``.windsurf/plans/three-bucket-gap-remediation-069806.md`` (W6).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-gap-remediation-069806.md`` (W6).
 
 Verifies:
   * Ed25519 keypair generation + reuse

@@ -2,7 +2,7 @@
 
 Writable SSOT: ``.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite``.
 
-``.windsurf/state/...`` is a **legacy mirror** surface only (drift checks, one-way
+``.cursor/state/...`` is a **legacy mirror** surface only (drift checks, one-way
 migration). New code must not treat the Windsurf path as an alternate writer target.
 """
 
@@ -20,7 +20,7 @@ REFACTOR_DECISION_LEDGER_DB = REFACTOR_DECISIONS_DIR_SSO / "refactor_decision_le
 LEDGER_DB_PATH = REFACTOR_DECISION_LEDGER_DB
 
 # --- Legacy mirror (Windsurf) — migration / drift / parity tools only ---
-REFACTOR_DECISIONS_DIR_WINDSURF_LEGACY = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions"
+REFACTOR_DECISIONS_DIR_WINDSURF_LEGACY = REPO_ROOT / ".cursor" / "state" / "refactor_decisions"
 REFACTOR_DECISION_LEDGER_DB_WINDSURF_LEGACY = (
     REFACTOR_DECISIONS_DIR_WINDSURF_LEGACY / "refactor_decision_ledger.sqlite"
 )

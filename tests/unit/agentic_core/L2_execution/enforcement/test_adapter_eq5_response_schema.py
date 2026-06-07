@@ -1,6 +1,6 @@
 """EQ-5 — response_schema threading through provider adapters.
 
-Plan: ``.windsurf/plans/eq1-compiled-artifact-schema-d9a3e7.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/eq1-compiled-artifact-schema-d9a3e7.md``
 ADR:  ADR-PROMPT-ASSEMBLY-001 Q4 (response-schema threading)
 
 Verifies the structured-output config landing on ``ProviderPayload.extra``

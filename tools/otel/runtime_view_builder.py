@@ -73,7 +73,7 @@ CI VALIDATION
 * ``ops_scripts/ci/check_otel_genai_semconv_coverage.py`` asserts that the
   underlying OTel spans use the ``gen_ai.*`` semconv attributes.
 
-Plan: ``.windsurf/plans/three-bucket-otel-view-5db409.md`` (W1).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-otel-view-5db409.md`` (W1).
 """
 
 from __future__ import annotations

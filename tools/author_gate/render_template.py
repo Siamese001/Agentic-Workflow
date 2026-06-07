@@ -3,10 +3,10 @@
 
 Plan: author-gate-ssot-consolidation-b7c3e1 W2.P2.2.
 
-Reads .windsurf/schemas/author_gate_packet.schema.json and emits a
+Reads .cursor/schemas/author_gate_packet.schema.json and emits a
 human-readable Markdown reference at:
 
-    .windsurf/skills/author-gate-packet-builder/packet_template.md
+    .cursor/skills/author-gate-packet-builder/packet_template.md
 
 The header section (didactic guidance for Cascade/authors) is preserved
 verbatim from a prelude file; only the per-field reference table is
@@ -33,16 +33,16 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCHEMA_PATH = REPO_ROOT / ".windsurf" / "schemas" / "author_gate_packet.schema.json"
+SCHEMA_PATH = REPO_ROOT / ".cursor" / "schemas" / "author_gate_packet.schema.json"
 TEMPLATE_PATH = (
-    REPO_ROOT / ".windsurf" / "skills" / "author-gate-packet-builder" / "packet_template.md"
+    REPO_ROOT / ".cursor" / "skills" / "author-gate-packet-builder" / "packet_template.md"
 )
 
 PRELUDE = """# Author-Gate Decision Packet Template — Didactic Option Shape
 
 > ⚠️ **GENERATED FILE** — Do not hand-edit. Regenerate with
 > `python tools/author_gate/render_template.py`. The reference below is
-> derived from `.windsurf/schemas/author_gate_packet.schema.json` (canonical
+> derived from `.cursor/schemas/author_gate_packet.schema.json` (canonical
 > SSOT per plan `author-gate-ssot-consolidation-b7c3e1`).
 
 This template is loaded by Cursor Agent when `emit_packet.py` is constructing an
@@ -93,11 +93,11 @@ for audit transparency; only filtered from the user-facing prompt.
 
 ## References
 
-- Canonical schema: `.windsurf/schemas/author_gate_packet.schema.json`
-- Skill: `.windsurf/skills/author-gate-packet-builder/SKILL.md`
-- Renderer skill: `.windsurf/skills/author-gate-ui-renderer/SKILL.md`
+- Canonical schema: `.cursor/schemas/author_gate_packet.schema.json`
+- Skill: `.cursor/skills/author-gate-packet-builder/SKILL.md`
+- Renderer skill: `.cursor/skills/author-gate-ui-renderer/SKILL.md`
 - Constitutional §6, §30
-- Plan: `.windsurf/plans/author-gate-ssot-consolidation-b7c3e1.md`
+- Plan: `.cursor/plans/_archive/windsurf_legacy_plans/author-gate-ssot-consolidation-b7c3e1.md`
 """
 
 

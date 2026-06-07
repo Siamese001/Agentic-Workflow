@@ -1,6 +1,6 @@
 # Retrieval Calibration Manifest
 # --------------------------------------------------------------------------
-# W0.2 of plan: .windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md
+# W0.2 of plan: docs/archive/windsurf/legacy-tree/plans/c0-context-assembly-best-practices-b7c3a1.md
 #
 # Purpose: declare the corpus + query set used by retrieval_benchmark.py to
 # measure baseline (W0.1) and every wave's lift (W1..W6).
@@ -48,7 +48,7 @@ corpus:
       include_globs:
         - "**/*.md"
     - kind: repo_docs
-      root: .windsurf/rules
+      root: .cursor/rules
       include_globs:
         - "**/*.md"
     - kind: repo_code
@@ -95,15 +95,15 @@ queries:
     query: "DEFERRED_SCOPE marker required fields and priority scoring formula"
     intent: exact_lexical
     expected_chunk_ids:
-      - ".windsurf/rules/deferred-scope-capture.md::the_deferred_scope_marker_contract"
-      - ".windsurf/rules/deferred-scope-capture.md::the_priority_formula"
+      - ".cursor/rules/deferred-scope-capture.md::the_deferred_scope_marker_contract"
+      - ".cursor/rules/deferred-scope-capture.md::the_priority_formula"
     notes: "Exact identifier query. BM25 should dominate. Must surface the 9-field schema and layer multipliers."
 
   - id: q004
     query: "How does Author-Gate decision handling differ from runtime HITL exit control?"
     intent: multi_doc
     expected_chunk_ids:
-      - ".windsurf/rules/author-gate-enforcement.md::pipeline"
+      - ".cursor/rules/author-gate-enforcement.md::pipeline"
       - "docs/architecture/adr/ADR-023-runtime-hitl-exit-control.md::context"
     notes: "Requires synthesizing the harness-side vs runtime distinction. Single-doc answer is insufficient."
 
@@ -160,15 +160,15 @@ queries:
     query: "ADG_HOTSPOT_REPORT required fields"
     intent: exact_lexical
     expected_chunk_ids:
-      - ".windsurf/rules/adg-canonical-invariants.md::sec_10_required_plan_sections"
-      - ".windsurf/rules/constitutional.md::rule_22"
+      - ".cursor/rules/adg-canonical-invariants.md::sec_10_required_plan_sections"
+      - ".cursor/rules/constitutional.md::rule_22"
     notes: "Exact identifier. Answer must list archetype, layer, fan_in, impact, surface."
 
   - id: q012
     query: "What is the difference between static ADG and runtime ADG?"
     intent: semantic
     expected_chunk_ids:
-      - ".windsurf/rules/adg-canonical-invariants.md::sec_8_static_vs_runtime"
+      - ".cursor/rules/adg-canonical-invariants.md::sec_8_static_vs_runtime"
       - "docs/reference/_primers/AST Dependency Graphs (ADG)/ADG STATIC vs. RUNTIME MENTAL MODEL.md::overview"
     notes: "Answer must distinguish adg_sqlite MCP vs otel_mcp, AST-scan vs OTEL spans."
 

@@ -6,7 +6,7 @@ import pathlib
 import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-NOISE = ("docs/reports/", "tools/archive/", "artifacts/", ".windsurf/plans/", "archives/")
+NOISE = ("docs/reports/", "tools/archive/", "artifacts/", "docs/archive/windsurf/legacy-tree/plans/", "archives/")
 
 targets = [
     "agentic_core/L2_execution/enforcement/docker_sandbox.py",

@@ -1,7 +1,7 @@
 """Merge APPS-DOM + APPS-NEG-CTRL assertion streams into the compiler's
 canonical input file.
 
-Plan: .windsurf/plans/apps-runtime-domain-enforcement-a7e9d4.md W6.P1.
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-runtime-domain-enforcement-a7e9d4.md W6.P1.
 
 Inputs (all optional — missing files are treated as empty streams):
   - certification/apps_evidence_assertions.jsonl       (existing canonical stream)

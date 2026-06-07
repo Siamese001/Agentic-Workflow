@@ -7,7 +7,7 @@
 # Invalid schema → exit_code=2 at U0 (NOT R5 here).
 # All R5 terminals come from L0 POLICY failures on structurally valid requests.
 #
-# Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P11
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P11
 
 schema_version: "1.0"
 app: apps_lic

@@ -1,5 +1,5 @@
 """Gemini gateway provisioner — closes G6 from
-``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md``.
+``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md``.
 
 The W1 ``HealingRouter._dispatch_gemini`` requires a pre-provisioned
 ``gateway`` object exposing an awaitable ``route_generation(request)``

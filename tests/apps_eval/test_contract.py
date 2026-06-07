@@ -7,7 +7,7 @@ validator chain produces a structured (passed, violations) verdict.
 This is a SEED — it does not exercise the full eval flow. The full
 golden-corpus contract suite is W4.4 (deferred).
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W2.1)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W2.1)
 """
 from __future__ import annotations
 

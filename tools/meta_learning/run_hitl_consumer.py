@@ -1,6 +1,6 @@
 """CLI runner: score the HITL ledger and emit UWG draft proposals.
 
-Plan: `.windsurf/plans/system-learning-activation-path-a5e2f1.md`
+Plan: `docs/archive/windsurf/legacy-tree/plans/system-learning-activation-path-a5e2f1.md`
 
 Closes Gap 4 from the 2026-04-23 gap review. Before this runner,
 `RuntimeHitlConsumer` had 477 lines of well-tested production code but

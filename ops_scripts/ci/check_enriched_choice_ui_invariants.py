@@ -467,8 +467,8 @@ def main() -> int:
     # Default paths if none provided
     if not args.paths:
         args.paths = [
-            REPO_ROOT / ".windsurf" / "skills",
-            REPO_ROOT / ".windsurf" / "workflows",
+            REPO_ROOT / ".cursor" / "skills",
+            REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "workflows",
         ]
     
     # Run checks

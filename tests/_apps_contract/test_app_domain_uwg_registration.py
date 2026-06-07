@@ -7,7 +7,7 @@ Covers plan §P7.2:
 - Lookup by (app_id, task_class) resolves the active contract.
 - Deprecated contract resolution fails closed.
 
-Plan: ``.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`` §P7.2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-domain-contract-fortknox-c4d8e2.md`` §P7.2.
 """
 
 from __future__ import annotations

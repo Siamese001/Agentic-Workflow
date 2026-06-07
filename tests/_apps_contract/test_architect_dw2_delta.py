@@ -1,6 +1,6 @@
 """Delta false positive rate audit — DS-10.
 
-Plan: ``.windsurf/plans/apps-architect-deferred-scope-b8e3f1.md`` DW2 DS-10.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-architect-deferred-scope-b8e3f1.md`` DW2 DS-10.
 
 Audits delta engine output to verify false positive rate <5%.
 """

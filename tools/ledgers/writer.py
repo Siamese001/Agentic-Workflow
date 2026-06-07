@@ -5,7 +5,7 @@ Shared by every post-hook that emits intelligence events. Contract:
     w = writer_for("tool_routing")
     event_id = w.append(
         event_kind="retrieval_tool_choice",
-        repo_area=".windsurf/scripts/pre_prompt_classifier.py",
+        repo_area=".cursor/scripts/pre_prompt_classifier.py",
         prediction={"chosen_tool": "mcp1_adg_edge_fanin", "query_features": {...}},
         outcome=None,           # may be bound later via bind_outcome()
         latency_ms=12,

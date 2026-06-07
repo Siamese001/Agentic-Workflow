@@ -75,4 +75,4 @@ added per route as they enter the proof gate.
 - `agentic_core/L6_observability/runtime_trace/contract.py` — Python loader/validator
 - `ops_scripts/ci/check_runtime_trace_contract.py` — CI gate consumer
 - `scripts/proof/run_runtime_trace_proof.py` — canary runner
-- Plan: `.windsurf/plans/assurance-p1-gates-ab4758.md` (W1.1)
+- Plan: `docs/archive/windsurf/legacy-tree/plans/assurance-p1-gates-ab4758.md` (W1.1)

@@ -9,7 +9,7 @@ Boundary invariant (constitutional §31, plan §14):
   * Apps harness proves app→spine. Core harness proves spine alone.
   * Neither can satisfy the other's contract.
 
-Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md  (Wave 5)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-e2e-auditability-harness-7c2a91.md  (Wave 5)
 """
 from __future__ import annotations
 

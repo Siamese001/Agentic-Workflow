@@ -1,6 +1,6 @@
 """Unit tests for ``agentic_core.L2_execution.reasoning.cost_aware_cascade``.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` W8.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` W8.
 """
 
 from __future__ import annotations

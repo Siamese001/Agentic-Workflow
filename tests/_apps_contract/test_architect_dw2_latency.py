@@ -1,6 +1,6 @@
 """E2E scan latency benchmark — DS-11.
 
-Plan: ``.windsurf/plans/apps-architect-deferred-scope-b8e3f1.md`` DW2 DS-11.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-architect-deferred-scope-b8e3f1.md`` DW2 DS-11.
 
 Benchmarks the full scan → delta → rules pipeline to verify <30s.
 """

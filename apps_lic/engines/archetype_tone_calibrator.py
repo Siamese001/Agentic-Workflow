@@ -1,6 +1,6 @@
 """apps_lic.engines.archetype_tone_calibrator — P2b Archetype Tone Calibrator.
 
-Plan: .windsurf/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md W2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md W2
 
 Calibrates tone and register based on recipient archetype detection.
 Returns an immutable ArchetypeToneCalibration for Prompt Assembly.

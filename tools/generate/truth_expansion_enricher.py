@@ -97,7 +97,7 @@ WRITE_AUDIT_EXEMPT_PREFIXES: tuple[str, ...] = (
     "tests/",
     "tools/",
     "ops_scripts/",
-    ".windsurf/",
+    "docs/archive/windsurf/legacy-tree/",
     "agentic_core/L6_observability/",  # logs/metrics, not state writes
     "agentic_core/L0_routing/",  # routing config, not state
     "infrastructure/",
@@ -147,7 +147,7 @@ GOVERNANCE_ASSERTION_PATTERNS: set[str] = {
 }
 
 # Entrypoint heuristics
-HOOK_PATH_PATTERNS = (".windsurf/scripts/", "/hooks/", "_hook.py")
+HOOK_PATH_PATTERNS = (".cursor/scripts/_legacy_windsurf/", "/hooks/", "_hook.py")
 CI_PATH_PATTERNS = ("ops_scripts/ci/check_", "/ci/", ".github/workflows/")
 MCP_PATH_PATTERNS = ("/mcp_", "_mcp_server.py", "tools/mcp/")
 
@@ -658,7 +658,7 @@ VIEW_STATEMENTS = [
           s.file_path LIKE 'tests/%'
           OR s.file_path LIKE 'tools/%'
           OR s.file_path LIKE 'ops_scripts/%'
-          OR s.file_path LIKE '.windsurf/%'
+          OR s.file_path LIKE 'docs/archive/windsurf/legacy-tree/%'
           OR s.file_path LIKE 'agentic_core/L6_observability/%'
           OR s.file_path LIKE 'agentic_core/L4_state/%'
           OR s.file_path LIKE 'agentic_core/L2_execution/enforcement/%'

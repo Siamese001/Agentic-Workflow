@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-p = Path("artifacts/windsurf/deferred_scope_capture.jsonl")
+p = Path("artifacts/cursor/deferred_scope_capture.jsonl")
 recent = []
 for line in p.read_text(encoding="utf-8").splitlines():
     try:

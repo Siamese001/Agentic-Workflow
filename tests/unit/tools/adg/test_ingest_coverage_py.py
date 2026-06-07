@@ -1,6 +1,6 @@
 """Unit tests for tools/adg/ingest_coverage_py.py.
 
-Plan: .windsurf/plans/hotspot-coverage-pipeline-c4e8d2.md (W1.3)
+Plan: docs/archive/windsurf/legacy-tree/plans/hotspot-coverage-pipeline-c4e8d2.md (W1.3)
 
 Edge cases covered (mapped to plan W5):
     - W5.1: empty .coverage file → 0 rows written, no crash

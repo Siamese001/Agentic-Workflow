@@ -49,7 +49,7 @@ def _sqlite_count(path: Path, table: str) -> int | None:
 
 
 def _mcp_configured(name: str) -> bool:
-    cfg = Path(".windsurf/mcp_config.json")
+    cfg = Path(".cursor/mcp.json")
     if not cfg.exists():
         return False
     data = json.loads(cfg.read_text(encoding="utf-8"))

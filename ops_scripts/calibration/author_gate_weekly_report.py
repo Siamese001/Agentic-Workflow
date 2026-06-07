@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """author_gate_weekly_report.py — Weekly markdown calibration report.
 
-Plan: `.windsurf/plans/author-gate-hardening-a3b8f2.md` W4.P4.2.
+Plan: `docs/archive/windsurf/legacy-tree/plans/author-gate-hardening-a3b8f2.md` W4.P4.2.
 
 Renders a weekly markdown report to
 ``docs/reports/author-gate/<YYYY-Www>.md`` summarising:

@@ -20,7 +20,7 @@ from pathlib import Path
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _ARTIFACTS_DIR = _REPO_ROOT / "artifacts" / "governance"
 _GOVERNANCE_TESTS_DIR = _REPO_ROOT / "tests" / "governance"
-_PLANS_DIR = _REPO_ROOT / ".windsurf" / "plans"
+_PLANS_DIR = _REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 
 
 def _plan_path(plan_slug: str) -> Path:
@@ -73,7 +73,7 @@ def _build_receipt(plan_slug: str, test_result: dict) -> dict:
     return {
         "receipt_id": f"{plan_slug}-w7-final-governance",
         "plan_id": plan_slug,
-        "plan_file": f".windsurf/plans/{plan_slug}.md",
+        "plan_file": f"docs/archive/windsurf/legacy-tree/plans/{plan_slug}.md",
         "receipt_type": "governance_completion",
         "schema_version": "1.0",
         "generated_at": now,
@@ -91,15 +91,15 @@ def _build_receipt(plan_slug: str, test_result: dict) -> dict:
             "W2_skills_workflows": {
                 "status": "COMPLETE",
                 "artifacts": [
-                    ".windsurf/skills/core-boundary-audit/SKILL.md",
-                    ".windsurf/skills/u0-app-customization/SKILL.md",
-                    ".windsurf/skills/runtime-package-verifier/SKILL.md",
-                    ".windsurf/skills/receipt-auditor/SKILL.md",
-                    ".windsurf/skills/app-leakage-refactor/SKILL.md",
-                    ".windsurf/workflows/core-boundary-audit.md",
-                    ".windsurf/workflows/u0-customize-app.md",
-                    ".windsurf/workflows/pre-commit-agentic-cert.md",
-                    ".windsurf/workflows/migrate-app-binding-to-generic-core.md",
+                    ".cursor/skills/core-boundary-audit/SKILL.md",
+                    ".cursor/skills/u0-app-customization/SKILL.md",
+                    ".cursor/skills/runtime-package-verifier/SKILL.md",
+                    ".cursor/skills/receipt-auditor/SKILL.md",
+                    ".cursor/skills/app-leakage-refactor/SKILL.md",
+                    "docs/archive/windsurf/legacy-tree/workflows/core-boundary-audit.md",
+                    "docs/archive/windsurf/legacy-tree/workflows/u0-customize-app.md",
+                    "docs/archive/windsurf/legacy-tree/workflows/pre-commit-agentic-cert.md",
+                    "docs/archive/windsurf/legacy-tree/workflows/migrate-app-binding-to-generic-core.md",
                 ],
             },
             "W3_hooks_scripts": {

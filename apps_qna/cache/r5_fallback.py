@@ -3,7 +3,7 @@
 W4.3: Degraded fallback cache used only when R1A and R1B are unavailable.
 Always marked as degraded with reason codes.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W4.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W4.3
 """
 
 from __future__ import annotations

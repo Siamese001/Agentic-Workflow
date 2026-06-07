@@ -25,7 +25,7 @@ TC18 — L2 fail-soft on HOP pipeline error emits stub_fallback artifact.
 TC19 — L2 emits SealedL2Artifact with correct l5_certification_ref.
 TC20 — L3 receipt sets all four hard-law assertions True.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W6)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W6)
 """
 from __future__ import annotations
 

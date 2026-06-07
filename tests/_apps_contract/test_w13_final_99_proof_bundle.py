@@ -18,7 +18,7 @@ class TestW13AuthorityVerification:
 
     def test_w13_v2_is_active_authority(self) -> None:
         """v2 plan must be active authority."""
-        v2_plan = Path(".windsurf/plans/apps-research-rich-content-runtime-customization-v2.md")
+        v2_plan = Path("docs/archive/windsurf/legacy-tree/plans/apps-research-rich-content-runtime-customization-v2.md")
         assert v2_plan.exists()
         
         content = v2_plan.read_text(encoding="utf-8")
@@ -26,16 +26,16 @@ class TestW13AuthorityVerification:
     
     def test_w13_v1_is_archived(self) -> None:
         """v1 plan must be archived/rebaselined."""
-        v1_plan = Path(".windsurf/plans/apps-research-rich-content-runtime-customization-a1b2c3.md")
+        v1_plan = Path("docs/archive/windsurf/legacy-tree/plans/apps-research-rich-content-runtime-customization-a1b2c3.md")
         # v1 may or may not exist, but v2 must reference it as archived
         
-        v2_plan = Path(".windsurf/plans/apps-research-rich-content-runtime-customization-v2.md")
+        v2_plan = Path("docs/archive/windsurf/legacy-tree/plans/apps-research-rich-content-runtime-customization-v2.md")
         content = v2_plan.read_text(encoding="utf-8")
         assert "ARCHIVED_REBASELINED" in content or "baseline_from" in content
     
     def test_w13_authority_chain_valid(self) -> None:
         """Authority chain from v1 to v2 must be valid."""
-        v2_plan = Path(".windsurf/plans/apps-research-rich-content-runtime-customization-v2.md")
+        v2_plan = Path("docs/archive/windsurf/legacy-tree/plans/apps-research-rich-content-runtime-customization-v2.md")
         content = v2_plan.read_text(encoding="utf-8")
         
         assert "baseline_from: apps-research-rich-content-runtime-customization-a1b2c3" in content
@@ -159,7 +159,7 @@ class TestW13TestTotalsReconciliation:
     
     def test_w13_v2_plan_test_total_matches(self) -> None:
         """v2 plan test total must match receipt totals."""
-        v2_plan = Path(".windsurf/plans/apps-research-rich-content-runtime-customization-v2.md")
+        v2_plan = Path("docs/archive/windsurf/legacy-tree/plans/apps-research-rich-content-runtime-customization-v2.md")
         content = v2_plan.read_text(encoding="utf-8")
         
         # Extract test total from frontmatter

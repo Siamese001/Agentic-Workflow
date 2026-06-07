@@ -6,7 +6,7 @@ Three primitives matching the rubric in apps_eval/config/rubrics/narrative_judge
   - adjacent_repetition: no two consecutive bullets in the same role lead with the same mirror term
   - filler_intensifiers: forbidden words/phrases reject the candidate
 
-Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P3.3).
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P3.3).
 """
 
 from __future__ import annotations

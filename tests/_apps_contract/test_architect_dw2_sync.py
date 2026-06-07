@@ -1,6 +1,6 @@
 """README sync success rate OTEL metrics — DS-12.
 
-Plan: ``.windsurf/plans/apps-architect-deferred-scope-b8e3f1.md`` DW2 DS-12.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-architect-deferred-scope-b8e3f1.md`` DW2 DS-12.
 
 Verifies OTEL span emission for sync operations and CredentialManager integration.
 """

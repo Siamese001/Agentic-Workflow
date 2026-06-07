@@ -21,7 +21,7 @@ class TestTemplateScopeExpansionAuthorization:
     @pytest.fixture
     def template_content(self) -> str:
         """Read the execution plan template."""
-        template_path = REPO_ROOT / ".windsurf" / "templates" / "execution-plan-template.md"
+        template_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "templates" / "execution-plan-template.md"
         if not template_path.exists():
             pytest.skip("Template file not found")
         return template_path.read_text(encoding="utf-8")
@@ -87,7 +87,7 @@ class TestHooksJsonRegistration:
     @pytest.fixture
     def hooks_config(self) -> dict[str, Any]:
         """Read and parse hooks.json."""
-        hooks_path = REPO_ROOT / ".windsurf" / "hooks.json"
+        hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
         if not hooks_path.exists():
             pytest.skip("hooks.json not found")
         content = hooks_path.read_text(encoding="utf-8")
@@ -138,22 +138,22 @@ class TestW6Integration:
 
     def test_w2_helper_exists(self) -> None:
         """W2 helper exists and is importable."""
-        helper_path = REPO_ROOT / ".windsurf" / "scripts" / "_plan_scope_expansion_check.py"
+        helper_path = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "_plan_scope_expansion_check.py"
         assert helper_path.exists(), "W2 helper not found"
 
     def test_w3_hook_exists(self) -> None:
         """W3 hook exists and is runnable."""
-        hook_path = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_plan_scope_audit.py"
+        hook_path = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_plan_scope_audit.py"
         assert hook_path.exists(), "W3 hook not found"
 
     def test_template_exists(self) -> None:
         """Execution plan template exists."""
-        template_path = REPO_ROOT / ".windsurf" / "templates" / "execution-plan-template.md"
+        template_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "templates" / "execution-plan-template.md"
         assert template_path.exists(), "Template not found"
 
     def test_hooks_json_valid_json(self) -> None:
         """hooks.json is valid JSON."""
-        hooks_path = REPO_ROOT / ".windsurf" / "hooks.json"
+        hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
         content = hooks_path.read_text(encoding="utf-8")
         config = json.loads(content)
         assert "hooks" in config

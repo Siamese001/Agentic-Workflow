@@ -8,7 +8,7 @@ cur = c.cursor()
 PATTERNS = ("NOTION_API_VERSION", "NOTION_BASE", "WAVE_PHASE_DATA_SOURCE_ID",
             "_DATA_SOURCE_ID", "_PAGE_ID", "anthropic.com", "openai.com", "api.notion.com")
 SSOT_ALLOWLIST = (
-    ".windsurf/scripts/_notion_constants.py",
+    ".cursor/scripts/_legacy_windsurf/_notion_constants.py",
     "apps_shared/config/environment_config.py",
     "agentic_core/L0_routing/config/path_constants.py",
     "agentic_core/L0_routing/config/external_apis_config.py",

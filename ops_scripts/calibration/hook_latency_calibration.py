@@ -2,7 +2,7 @@
 """
 hook_latency_calibration.py — Weekly post-cursor-agent hook chain latency report (P5).
 
-Reads ``artifacts/windsurf/post_cursor_agent_heartbeat.jsonl`` and emits a
+Reads ``artifacts/cursor/post_cursor_agent_heartbeat.jsonl`` and emits a
 markdown report to ``docs/reports/calibration/hook_latency/<YYYY-Www>.md``
 summarizing the last 7 days of chain latency measurements.
 

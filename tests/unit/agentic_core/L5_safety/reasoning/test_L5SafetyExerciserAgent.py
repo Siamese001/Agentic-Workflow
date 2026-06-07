@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.reasoning.L5SafetyExerciserAgent`.
 
-Wave 3 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`. L5 orchestrator —
+Wave 3 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`. L5 orchestrator —
 exercises the safety plane end-to-end. Fan-out=8.
 """
 

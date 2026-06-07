@@ -13,7 +13,7 @@ The valid fixture is the SSOT — any test that needs a "good" payload loads it.
 The mutations are derived from the valid payload via lawful transforms; this
 keeps the fixture set in sync without hand-editing 5 near-identical JSON files.
 
-Plan: .windsurf/plans/apps-rg-u0-reflection-harness-79d032.md (W3.P3.1)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-u0-reflection-harness-79d032.md (W3.P3.1)
 """
 from __future__ import annotations
 

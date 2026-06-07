@@ -85,8 +85,8 @@ def _resolve_to_disk(plan_path: str, slug: str) -> Path | None:
     if plan_path:
         p = (REPO / plan_path).resolve()
         candidates.append(p)
-    # Fallback: glob by slug under .windsurf/plans/
-    plans_dir = REPO / ".windsurf" / "plans"
+    # Fallback: glob by slug under docs/archive/windsurf/legacy-tree/plans/
+    plans_dir = REPO / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     if slug:
         for match in plans_dir.glob(f"{slug}*.md"):
             candidates.append(match)

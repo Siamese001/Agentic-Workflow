@@ -19,9 +19,9 @@ from pathlib import Path
 CANDIDATES = [
     # path string literals that should be imported from path_constants
     ("artifacts/adg/", "agentic_core.L0_routing.config.path_constants", "ADG_ARTIFACTS_DIR"),
-    ("artifacts/windsurf/", "agentic_core.L0_routing.config.path_constants", "WINDSURF_ARTIFACTS_DIR"),
-    (".windsurf/plans/", "agentic_core.L0_routing.config.path_constants", "WINDSURF_PLANS_DIR"),
-    (".windsurf/scripts/", "agentic_core.L0_routing.config.path_constants", "WINDSURF_SCRIPTS_DIR"),
+    ("artifacts/cursor/", "agentic_core.L0_routing.config.path_constants", "WINDSURF_ARTIFACTS_DIR"),
+    ("docs/archive/windsurf/legacy-tree/plans/", "agentic_core.L0_routing.config.path_constants", "WINDSURF_PLANS_DIR"),
+    (".cursor/scripts/_legacy_windsurf/", "agentic_core.L0_routing.config.path_constants", "WINDSURF_SCRIPTS_DIR"),
     ("docs/reports/", "agentic_core.L0_routing.config.path_constants", "DOCS_REPORTS_DIR"),
     ("docs/architecture/adr/", "agentic_core.L0_routing.config.path_constants", "ADR_DIR"),
 ]

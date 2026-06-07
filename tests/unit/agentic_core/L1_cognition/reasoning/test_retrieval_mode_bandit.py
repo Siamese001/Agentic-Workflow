@@ -1,6 +1,6 @@
 """Unit tests for ``agentic_core.L1_cognition.reasoning.retrieval_mode_bandit``.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` W6.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` W6.
 """
 
 from __future__ import annotations

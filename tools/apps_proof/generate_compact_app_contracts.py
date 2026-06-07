@@ -6,7 +6,7 @@ resulting files are real (they round-trip through the loader, pass
 dataclass invariants, and register through UWG) — they just use tighter
 per-app content derived from a compact declarative SPEC in this file.
 
-Plan: ``.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`` §P2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-domain-contract-fortknox-c4d8e2.md`` §P2.
 """
 
 from __future__ import annotations

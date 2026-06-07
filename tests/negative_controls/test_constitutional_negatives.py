@@ -35,7 +35,7 @@ class NegativeCase:
 # interactive pagers), python-dash-c-quote-hazard rule.
 # -------------------------------------------------------------------------
 
-PRE_RUN_GATE = ".windsurf/scripts/pre_run_gate.py"
+PRE_RUN_GATE = ".cursor/scripts/_legacy_windsurf/pre_run_gate.py"
 
 PRE_RUN_NEGATIVES: list[NegativeCase] = [
     NegativeCase(

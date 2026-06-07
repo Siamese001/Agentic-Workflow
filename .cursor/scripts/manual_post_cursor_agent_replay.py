@@ -43,7 +43,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HOOKS_CONFIG = REPO_ROOT / ".windsurf" / "hooks.json"
+HOOKS_CONFIG = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 EVENT = "post_cursor_agent_response"
 TIMEOUT_SECONDS = 120
 

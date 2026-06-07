@@ -1,6 +1,6 @@
 """apps_research.engines.judges.citation_quality_judge — Calibrated deterministic grader.
 
-Plan: ``.windsurf/plans/apps-research-deferred-scope-b7e3d2.md`` W4 (DS-1).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-research-deferred-scope-b7e3d2.md`` W4 (DS-1).
 
 PROMOTION HISTORY
 =================

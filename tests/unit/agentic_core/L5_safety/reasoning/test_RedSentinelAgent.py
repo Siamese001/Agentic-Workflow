@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.reasoning.RedSentinelAgent`.
 
-Wave 9 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3).
+Wave 9 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3).
 """
 
 from __future__ import annotations

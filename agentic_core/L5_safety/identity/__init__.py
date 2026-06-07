@@ -23,7 +23,7 @@ Wire-in layers exported here (bottom-up):
 | P    | run_v4_action                       | ONE-CALL composed recipe (preferred) |
 
 Reference: docs/contracts/identity_propagation.md
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

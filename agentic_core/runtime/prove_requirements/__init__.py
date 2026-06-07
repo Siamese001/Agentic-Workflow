@@ -20,7 +20,7 @@ Phase status (this build):
     Phase 8 — E2E scenarios:           NOT_IMPLEMENTED
 
 Subsequent phases will be added behind explicit Author-Gate decisions per
-``.windsurf/rules/author-gate-enforcement.md``. No phase will be marked
+``.cursor/rules/author-gate-enforcement.md``. No phase will be marked
 complete without machine-verifiable artifacts on disk.
 """
 

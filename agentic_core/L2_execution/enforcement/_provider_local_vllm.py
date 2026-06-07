@@ -10,7 +10,7 @@ contract expected by ``SovereignLLMGateway.generate`` to the async
 detection so it is safe to call from both sync code and from code already
 running inside an event loop.
 
-Plan ref: ``.windsurf/plans/qwen-adoption-waves-a7f3c2.md`` Wave A / Phase A1.
+Plan ref: ``docs/archive/windsurf/legacy-tree/plans/qwen-adoption-waves-a7f3c2.md`` Wave A / Phase A1.
 """
 
 from __future__ import annotations

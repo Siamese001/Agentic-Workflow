@@ -1,4 +1,4 @@
-"""Archive closed/stub plans from .windsurf/plans/ -> archives/windsurf_plans/<yyyy-mm>/.
+"""Archive closed/stub plans from docs/archive/windsurf/legacy-tree/plans/ -> archives/windsurf_plans/<yyyy-mm>/.
 
 Selection (a plan is archive-eligible if ANY apply):
   1. Body contains explicit closure markers (RESOLVED, COMPLETE, CLOSED, DONE, ✅ Done)
@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-PLANS = REPO / ".windsurf" / "plans"
+PLANS = REPO / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 ARCHIVE_BASE = REPO / "archives" / "windsurf_plans"
 
 CLOSED_RE = re.compile(

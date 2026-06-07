@@ -13,7 +13,7 @@ Detects:
 Read-only. No code modifications.
 """
 
-# W6 ADG consumer mode declaration (per .windsurf/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 import json
@@ -40,7 +40,7 @@ def q1_zero_caller_modules(cur: sqlite3.Cursor) -> list[dict]:
         "FROM mv_hotspot_centrality h "
         "WHERE h.fan_in = 0 AND h.fan_out > 0 "
         "  AND h.resolved_path NOT LIKE 'tests/%' "
-        "  AND h.resolved_path NOT LIKE '.windsurf/%' "
+        "  AND h.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/%' "
         "ORDER BY h.fan_out DESC "
         "LIMIT 100"
     )
@@ -95,7 +95,7 @@ def q4_observability_gaps(cur: sqlite3.Cursor) -> list[dict]:
         "WHERE n.entity_type = 'module' "
         "  AND n.layer IN ('L0', 'L1', 'L2', 'L3', 'L4', 'L5') "
         "  AND n.resolved_path NOT LIKE 'tests/%' "
-        "  AND n.resolved_path NOT LIKE '.windsurf/%' "
+        "  AND n.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/%' "
         "  AND n.id NOT IN ("
         "      SELECT DISTINCT e.src_id FROM edges e "
         "      JOIN nodes dst ON dst.id = e.dst_id "
@@ -195,7 +195,7 @@ def q6_unreachable_from_entry(cur: sqlite3.Cursor) -> list[dict]:
         r = dict(zip([d[0] for d in cur.description], row))
         # Filter out test/archive/windsurf paths
         rp = r.get('resolved_path', '')
-        if rp and not rp.startswith('tests/') and not rp.startswith('archives/') and not rp.startswith('.windsurf/'):
+        if rp and not rp.startswith('tests/') and not rp.startswith('archives/') and not rp.startswith('docs/archive/windsurf/legacy-tree/'):
             unreachable.append(r)
 
     # Sort by fan_out descending (highest blast radius unreachable = worst)
@@ -274,7 +274,7 @@ def q10_high_fanout_no_observability(cur: sqlite3.Cursor) -> list[dict]:
         "WHERE h.fan_out >= 10 "
         "  AND h.layer IN ('L0', 'L1', 'L2', 'L3', 'L4', 'L5') "
         "  AND h.resolved_path NOT LIKE 'tests/%' "
-        "  AND h.resolved_path NOT LIKE '.windsurf/%' "
+        "  AND h.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/%' "
         "  AND h.node_id NOT IN ("
         "      SELECT DISTINCT e.src_id FROM edges e "
         "      JOIN nodes dst ON dst.id = e.dst_id "

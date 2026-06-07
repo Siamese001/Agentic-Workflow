@@ -1,6 +1,6 @@
 """agent_seal_helper — build SealedL2Artifact from agent output + HealResult.
 
-Plan: `.windsurf/plans/l2-execute-v2-agent-conformance-c8e4f1.md` §W5.
+Plan: `docs/archive/windsurf/legacy-tree/plans/l2-execute-v2-agent-conformance-c8e4f1.md` §W5.
 Closes G-V7 from plan §5.
 
 Helper primitives:

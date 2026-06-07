@@ -4,7 +4,7 @@ W0 thin-slice: minimal router that selects between grounded and
 briefing-based routes. Full implementation lands in W3.1 with
 two-tier router and precedence rules.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W0.2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W0.2
 """
 
 from __future__ import annotations

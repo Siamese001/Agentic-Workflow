@@ -213,7 +213,7 @@ class CoreKnowledgeIngestion:
             "docs/**/*.md",
             "docs/**/*.rst",
             "agentic_core/**/*.md",
-            ".windsurf/**/*.md",
+            "docs/archive/windsurf/legacy-tree/**/*.md",
         ]
 
         for pattern in doc_patterns:

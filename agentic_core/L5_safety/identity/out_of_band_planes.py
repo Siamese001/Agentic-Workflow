@@ -22,7 +22,7 @@ into these contracts.
 Reference:
   - docs/reference/00_L5_Policy_Plane/calibration_assurance_planes.md
   - docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md (Planes)
-Parent plan: .windsurf/plans/l5-governance-best-practice-gap-4615ae.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-governance-best-practice-gap-4615ae.md
 """
 
 from __future__ import annotations

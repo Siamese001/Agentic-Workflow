@@ -1,6 +1,6 @@
 """W6 — Apps_* Evaluation Harness Parity — doctrinal fence posts (out-of-scope).
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` Wave 6.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-parity-f8d4a2.md`` Wave 6.
 
 This module is intentionally declarative. It declares the boundary of the
 harness-parity plan so Author-Gate reviewers can reject scope-creep

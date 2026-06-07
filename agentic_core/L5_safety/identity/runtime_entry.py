@@ -37,7 +37,7 @@ Adoption path — the runtime lane entry point picks ONE of:
 Reference:
   - docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md (Runtime Lane)
   - docs/contracts/identity_propagation.md §5 (Composition)
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

@@ -1,12 +1,12 @@
 # Notion Workspace Map — SSOT for all Notion database IDs and routing triggers.
 #
 # Consumed by:
-#   - .windsurf/scripts/sync_mcp_config.py  -> regenerates AGENTS.md NOTION-MAP autogen block
-#   - .windsurf/scripts/post_write_mcp_config_sync.py -> picks MCP Registry DB ID
+#   - .cursor/scripts/sync_mcp_config.py  -> regenerates AGENTS.md NOTION-MAP autogen block
+#   - .cursor/scripts/post_write_mcp_config_sync.py -> picks MCP Registry DB ID
 #   - ops_scripts/ci/check_agents_md_sync.py -> fails PRs on drift
 #
 # NEVER hand-edit Notion DB IDs in AGENTS.md or post_write_mcp_config_sync.py.
-# Change them here and regenerate via: python .windsurf/scripts/sync_mcp_config.py
+# Change them here and regenerate via: python .cursor/scripts/sync_mcp_config.py
 #
 # TWO IDs PER DATABASE (Notion 2025-09-03 API):
 #   - `id`         = data_source_id — use for API-query-data-source (reads)
@@ -44,7 +44,7 @@ databases:
     write_trigger: "Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write."
 
   # HITL Decision Ledger RETIRED 2026-05-02 — superseded by SQLite SSOT at
-  # .windsurf/state/refactor_decisions/refactor_decision_ledger.sqlite (per
+  # .cursor/state/refactor_decisions/refactor_decision_ledger.sqlite (per
   # constitutional §30). The Notion mirror at data_source 5b60fdde-7259-491e-9f2d-
   # e088f1f741ef / database 18bb9145-1320-4191-8b14-6c309776bcf5 was a one-way
   # projection only — every page carried `decision_id=dec_xxxxx` derived from the
@@ -59,7 +59,7 @@ databases:
     archived: true
     archived_date: "2026-05-02"
     read_trigger: "\u274c **ARCHIVED 2026-05-02**"
-    write_trigger: "Filesystem SSOT: `.windsurf/rules/*.md`. No Notion write."
+    write_trigger: "Filesystem SSOT: `.cursor/rules/*.mdc`. No Notion write."
 
   - key: mcp_registry
     name: "MCP Registry"
@@ -68,7 +68,7 @@ databases:
     archived: true
     archived_date: "2026-05-02"
     read_trigger: "\u274c **ARCHIVED 2026-05-02**"
-    write_trigger: "Filesystem SSOT: `.cursor/mcp.json` (Cursor) + `.windsurf/mcp_config.json` (mirror). No Notion write."
+    write_trigger: "Filesystem SSOT: `.cursor/mcp.json` only. Deprecated Windsurf compatibility copies are non-authoritative."
 
   # ADR Registry RETIRED 2026-05-02 — consolidated in commit b11200e833
   # "chore(notion): consolidate 4 mirror DBs; migrate value-add to SSOT".

@@ -402,7 +402,7 @@ HEALER_PIPE_ORDER: tuple[str, ...] = (
 # Mapping to legacy ``Path`` enum in
 # ``agentic_core/L0_routing/reasoning/path_router.py``
 # (Path.A/B/C/D are payload-shape heuristics, NOT v9 execution classes; retained
-# pending W2 of audit plan `.windsurf/plans/l0-routing-best-practice-audit-1f9180.md`):
+# pending W2 of audit plan `docs/archive/windsurf/legacy-tree/plans/l0-routing-best-practice-audit-1f9180.md`):
 #
 #   | path_router.Path | v9 L0Route (approx) | rationale                         |
 #   |------------------|---------------------|-----------------------------------|
@@ -463,7 +463,7 @@ L0_ORCHESTRATED_ROUTES: frozenset[L0Route] = frozenset({L0Route.R3R4_MANAGED})
 # =============================================================================
 # W1b.P1 — Closed vocabulary for L0RouteContract.reason_codes.
 #
-# Plan: .windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W1b.P1.
+# Plan: docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W1b.P1.
 #
 # BACK-COMPAT CONTRACT: L0RouteContract.reason_codes remains ``tuple[str, ...]``
 # (no shape change). Producers SHOULD use RouteReasonCode.<MEMBER>.value so the

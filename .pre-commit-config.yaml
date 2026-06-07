@@ -151,13 +151,23 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6a: No Active Windsurf Authoring ------------------------------------------
+      - id: no-active-windsurf-authoring
+        name: "T6a: No Active Windsurf Authoring"
+        entry: py ops_scripts/ci/check_no_active_windsurf_changes.py
+        language: system
+        pass_filenames: false
+        files: ^(\docs/archive/windsurf/legacy-tree/|\.cursor/windsurf_compat/|docs/archive/windsurf/)
+        always_run: false
+        require_serial: true
+
       # -- T6b: MCP Config Sync Integrity ----------------------------------------------
       - id: mcp-sync-integrity
         name: "T6b: MCP Sync Integrity"
         entry: py ops_scripts/ci/check_mcp_sync_integrity.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\.windsurf/mcp_config\.json|AGENTS\.md|\.cursor/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.cursor/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
+        files: ^(\.cursor/mcp\.json|AGENTS\.md|\.cursor/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.cursor/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
         always_run: false
         require_serial: true
 
@@ -184,7 +194,7 @@ repos:
         entry: py ops_scripts/ci/check_agents_mcp_coverage.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\.windsurf/mcp_config\.json|AGENTS\.md)$
+        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md)$
         always_run: false
         require_serial: true
 
@@ -329,7 +339,7 @@ repos:
         require_serial: true
 
       # -- T6e2: MCP Config Schema Validation (W5 implementation) ------------------------
-      # Validates .windsurf/mcp_config.json against canonical schema.
+      # Validates .cursor/mcp.json against canonical schema.
       # Checks required servers, valid keys per constitutional §27.
       # Bypass: MCP_CONFIG_SCHEMA_BYPASS=1.
       - id: mcp-config-schema
@@ -337,7 +347,7 @@ repos:
         entry: py ops_scripts/ci/check_mcp_config_schema.py --profile all
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\.windsurf/mcp_config\.json)$
+        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json)$
         always_run: false
         require_serial: true
 
@@ -357,7 +367,7 @@ repos:
         entry: py ops_scripts/ci/check_mcp_editor_parity.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\.windsurf/mcp_config\.json)$
+        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json)$
         always_run: false
         require_serial: true
 
@@ -369,7 +379,7 @@ repos:
         entry: py ops_scripts/ci/check_mcp_config_sovereignty.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\.windsurf/mcp_config\.json)$
+        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json)$
         always_run: false
         require_serial: true
 
@@ -385,7 +395,7 @@ repos:
         entry: py ops_scripts/ci/check_agents_md_sync.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\.windsurf/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.cursor/scripts/sync_mcp_config\.py|\.cursor/scripts/sync_mcp_config\.py)$
+        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.cursor/scripts/sync_mcp_config\.py|\.cursor/scripts/sync_mcp_config\.py)$
         always_run: false
         require_serial: true
 

@@ -1,7 +1,7 @@
 """MCP ADG_REDIS_URL Consistency Gate — S-08 verification.
 
 Verifies that `adg_sqlite` and `memory` MCP servers have consistent ADG_REDIS_URL
-declarations in both `.cursor/mcp.json` and `.windsurf/mcp_config.json`.
+declarations in both `.cursor/mcp.json` and `.cursor/mcp.json`.
 
 Bypass: MCP_ADG_REDIS_CONSISTENCY_BYPASS=1
 """

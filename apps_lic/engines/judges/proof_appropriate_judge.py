@@ -1,6 +1,6 @@
 """apps_lic.engines.judges.proof_appropriate_judge — deterministic heuristic (v1).
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W2 D1-P3
 Exit rubric dim: proof_appropriate_for_recipient
 
 Scores 0.0–1.0 where 1.0 = proof is well-matched to the recipient context.

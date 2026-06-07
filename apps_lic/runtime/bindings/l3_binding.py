@@ -31,7 +31,7 @@ HARD LAWS (AG-8 W6):
     - l3_no_prompt_assembly_assertion=True on every receipt.
     - l3_no_l4_write_assertion=True on every receipt.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W6)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W6)
 """
 from __future__ import annotations
 

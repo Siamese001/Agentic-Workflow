@@ -16,7 +16,7 @@ REMOVED imports (QUARANTINED):
 - REMOVED: All apps_rg/integrations/hops/*, All apps_rg/prompt_assembly/*
 - REMOVED: All apps_rg/cert/*, All apps_rg/enforcement/*, All apps_rg/validators/*
 
-See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19
+See: docs/archive/windsurf/legacy-tree/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19
 
 W7 CLEANUP (2026-05-11): Removed 4 dead Wave-10 imports that raised ModuleNotFoundError:
 - REMOVED: CampaignBalanceAgent (file deleted Wave 10)

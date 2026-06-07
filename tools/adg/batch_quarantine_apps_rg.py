@@ -36,7 +36,7 @@ raise RuntimeError(
     "apps_rg.{module_path} is QUARANTINED. "
     "apps_rg may NOT contain runtime authority. "
     "Core owns all runtime. "
-    "See: .windsurf/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
+    "See: docs/archive/windsurf/legacy-tree/plans/apps-rg-declarative-ingress-only-spinal-governance-c8b3e1.md §19"
 )
 '''
     

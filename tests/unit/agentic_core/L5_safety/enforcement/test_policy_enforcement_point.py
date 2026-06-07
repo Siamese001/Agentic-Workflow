@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.enforcement.policy_enforcement_point`.
 
-Wave 10 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3). PEP
+Wave 10 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3). PEP
 that gates actions through L5 policy.
 """
 

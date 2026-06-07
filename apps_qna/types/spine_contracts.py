@@ -4,7 +4,7 @@ W2.3: Evidence contract types moved to evidence_contracts.py.
 This module re-exports them for backward compatibility and keeps
 app-specific pipeline types (CardPackManifestExtended, ExitReviewPacket, X3Disposition).
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W2.3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W2.3
 """
 
 from __future__ import annotations

@@ -24,7 +24,7 @@ Usage:
         latency_ms=12.4,
     )
 
-Plan reference: ADR-025; `.windsurf/plans/routing-followups-7a2c91.md` F2.3.
+Plan reference: ADR-025; `docs/archive/windsurf/legacy-tree/plans/routing-followups-7a2c91.md` F2.3.
 """
 
 from __future__ import annotations

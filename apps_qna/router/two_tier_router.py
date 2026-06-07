@@ -3,7 +3,7 @@
 W3.1: Core router that selects between Tier 1 always-on and Tier 2
 specialist cards based on interview context and evidence.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W3.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W3.1
 """
 
 from __future__ import annotations

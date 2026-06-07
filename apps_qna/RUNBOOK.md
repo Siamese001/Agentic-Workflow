@@ -145,7 +145,7 @@ python -m apps_qna --interview drew-clements-r2 ...
 ## 7. References
 
 - Source pattern: `C:\Users\amita\Documents\Dentsu\Drew Clements - 4.29.2026\`
-- Bootstrap plan: `.windsurf/plans/apps-qna-bootstrap-c4f2a8.md`
+- Bootstrap plan: `docs/archive/windsurf/legacy-tree/plans/apps-qna-bootstrap-c4f2a8.md`
 - Routing manifest SSOT: `apps_qna/config/route_registry.yaml`
 
 ## Eval Harness (apps-eval-harness-closeout-b7c9d2 W3.P1)

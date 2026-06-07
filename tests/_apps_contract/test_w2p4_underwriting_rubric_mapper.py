@@ -1,6 +1,6 @@
 """W2.P4 verification — apps_underwriting_ai rubric output mapper + status flip.
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P4.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-parity-f8d4a2.md`` W2.P4.
 
 Proves:
 

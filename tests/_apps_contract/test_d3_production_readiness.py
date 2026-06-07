@@ -5,7 +5,7 @@ Covers:
   D3.2 apps_qna.config.eval_set_policy (EvalSetPolicy, assign_partition, is_holdout)
   D3.3 apps_qna.config.rubric_migration (check_rubric_roster_alignment, get_judge_class_for_dim)
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D3
 """
 
 from __future__ import annotations

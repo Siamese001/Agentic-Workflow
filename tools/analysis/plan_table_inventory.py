@@ -1,7 +1,7 @@
 """
 plan_table_inventory.py — W1.1 format audit script
 
-Read-only scan of .windsurf/plans/*.md to inventory table patterns.
+Read-only scan of docs/archive/windsurf/legacy-tree/plans/*.md to inventory table patterns.
 Outputs JSON artifact for plan-format-simplification-rca-d4f8e2 W1.1.
 """
 
@@ -144,7 +144,7 @@ def analyze_plan(plan_path: Path) -> PlanInventory:
 
 def main():
     repo_root = Path(__file__).resolve().parents[2]
-    plans_dir = repo_root / '.windsurf' / 'plans'
+    plans_dir = repo_root / 'docs' / 'archive' / 'windsurf' / 'legacy-tree' / 'plans'
     artifact_dir = repo_root / 'artifacts'
     artifact_dir.mkdir(parents=True, exist_ok=True)
     

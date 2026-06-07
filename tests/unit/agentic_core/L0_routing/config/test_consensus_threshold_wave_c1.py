@@ -1,6 +1,6 @@
 """Wave C1 tests — consensus_majority_threshold SSOT helper.
 
-Plan: `.windsurf/plans/consensus-validator-unification-5e9f3a.md` Wave C1.
+Plan: `docs/archive/windsurf/legacy-tree/plans/consensus-validator-unification-5e9f3a.md` Wave C1.
 
 Covers:
   - 3-juror formula matches legacy MAJORITY_THRESHOLD=0.66 within epsilon

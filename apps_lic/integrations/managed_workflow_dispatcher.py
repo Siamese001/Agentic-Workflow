@@ -33,7 +33,7 @@ This dispatcher is L3 orchestration. It:
   - MAY call AppsResearchBridge (registered public interface only).
   - MAY read config via open(path, "r") / yaml.safe_load / json.load.
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W3 P7 + P9
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W3 P7 + P9
 """
 
 from __future__ import annotations

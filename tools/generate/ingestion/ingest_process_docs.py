@@ -18,7 +18,7 @@ Source mapping — directories rolled into `process_docs`:
   docs/monitoring/      → monitoring (observability/monitoring docs)
   docs/technical/       → technical (technical notes)
   docs/project/         → project (project-level docs)
-  .windsurf/rules/      → windsurf_rules (constitutional/model rules)
+  .cursor/rules/      → windsurf_rules (constitutional/model rules)
   apps_*/README.md      → apps (per-app README)
   apps_*/TECHNICAL_SPEC.md, TEST_STRATEGY.md, SVP_ENGINEERING_REVIEW.md → apps
 
@@ -91,7 +91,7 @@ SCAN_DIRS: list[tuple[str, str]] = [
     ("docs/monitoring", "monitoring"),
     ("docs/technical", "technical"),
     ("docs/project", "project"),
-    (".windsurf/rules", "rule"),
+    (".cursor/rules", "rule"),
 ]
 
 # Per-app named files to include
@@ -184,7 +184,7 @@ def detect_layer(file_path: Path) -> str:
             return part[:2]
         if part.startswith("apps_"):
             return "apps"
-    if ".windsurf" in parts:
+    if "docs/archive/windsurf/legacy-tree" in parts:
         return "windsurf"
     if "docs" in parts:
         return "docs"

@@ -18,7 +18,7 @@ pipeline. Its job is to:
 Pattern: pure function. No state. No I/O beyond the adapter's deterministic
 field-map load. No provider calls. No L1/L0/C0/PA/L2/Exit calls.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
 """
 from __future__ import annotations
 

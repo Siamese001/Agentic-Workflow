@@ -1,6 +1,6 @@
 """apps_lic calibration-holdout W2 — data contract sentinel tests.
 
-Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-calibration-holdout-e8f1c4.md W2
 Covers DS4-P1 (OutreachTouchRecord / OutreachHistory) and
 DS5-P1 (MutualConnectionItem / ConnectionDataSet).
 

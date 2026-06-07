@@ -36,7 +36,7 @@ and optional metadata (e.g., ADG fan-out count).
 References:
 - Anthropic. How we built our multi-agent research system.
   https://www.anthropic.com/engineering/built-multi-agent-research-system
-- Plan: .windsurf/plans/anthropic-rag-gaps-7f3c2a.md (phase P4.3)
+- Plan: docs/archive/windsurf/legacy-tree/plans/anthropic-rag-gaps-7f3c2a.md (phase P4.3)
 """
 
 from __future__ import annotations

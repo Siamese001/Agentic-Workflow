@@ -15950,7 +15950,7 @@
       "recommended_fix": "# ValueError, TypeError, RuntimeError should be handled properly, not swallowed"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\agent-deletion-guard\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\agent-deletion-guard\\main.py",
       "line_number": 39,
       "exception_type": "Exception",
       "handler_body": [],
@@ -15960,7 +15960,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\agent-deletion-guard\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\agent-deletion-guard\\main.py",
       "line_number": 53,
       "exception_type": "Exception",
       "handler_body": [],
@@ -15970,7 +15970,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\agent-deletion-guard\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\agent-deletion-guard\\main.py",
       "line_number": 67,
       "exception_type": "Exception",
       "handler_body": [],
@@ -15980,7 +15980,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\agent-deletion-guard\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\agent-deletion-guard\\main.py",
       "line_number": 84,
       "exception_type": "Exception",
       "handler_body": [],
@@ -15990,7 +15990,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-grep-ban\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-grep-ban\\main.py",
       "line_number": 46,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16000,7 +16000,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-grep-ban\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-grep-ban\\main.py",
       "line_number": 48,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16010,7 +16010,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-guardian-comments\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-guardian-comments\\main.py",
       "line_number": 41,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16020,7 +16020,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-guardian-comments\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-guardian-comments\\main.py",
       "line_number": 43,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16030,7 +16030,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-hollow-file\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-hollow-file\\main.py",
       "line_number": 58,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16040,7 +16040,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 131,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16050,7 +16050,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 187,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16060,7 +16060,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 382,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16070,7 +16070,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 393,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16080,7 +16080,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 396,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16090,7 +16090,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 407,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16100,7 +16100,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 292,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16110,7 +16110,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 308,
       "exception_type": "Exception",
       "handler_body": [
@@ -16122,7 +16122,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 322,
       "exception_type": "Exception",
       "handler_body": [
@@ -16134,7 +16134,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 75,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16144,7 +16144,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 86,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16154,7 +16154,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 88,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16164,7 +16164,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 97,
       "exception_type": "Exception",
       "handler_body": [
@@ -16176,7 +16176,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-integration\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-integration\\main.py",
       "line_number": 289,
       "exception_type": "Exception",
       "handler_body": [
@@ -16188,7 +16188,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-layer-sovereignty\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-layer-sovereignty\\main.py",
       "line_number": 100,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16198,7 +16198,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-layer-sovereignty\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-layer-sovereignty\\main.py",
       "line_number": 92,
       "exception_type": "IndexError, ValueError",
       "handler_body": [
@@ -16210,7 +16210,7 @@
       "recommended_fix": "# IndexError, ValueError should be handled properly, not swallowed"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-schema-validation\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-schema-validation\\main.py",
       "line_number": 46,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16220,7 +16220,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\ci-schema-validation\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\ci-schema-validation\\main.py",
       "line_number": 48,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16230,7 +16230,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\guardian-exemption-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\guardian-exemption-validator\\main.py",
       "line_number": 76,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16240,7 +16240,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\guardian-exemption-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\guardian-exemption-validator\\main.py",
       "line_number": 90,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16250,7 +16250,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\hitl-decision-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\hitl-decision-validator\\main.py",
       "line_number": 63,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16260,7 +16260,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\hitl-decision-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\hitl-decision-validator\\main.py",
       "line_number": 112,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16270,7 +16270,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\hitl-decision-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\hitl-decision-validator\\main.py",
       "line_number": 131,
       "exception_type": "ValueError",
       "handler_body": [],
@@ -16280,7 +16280,7 @@
       "recommended_fix": "# ValueError indicates invalid input - validate before use"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\hitl-decision-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\hitl-decision-validator\\main.py",
       "line_number": 95,
       "exception_type": "Exception",
       "handler_body": [
@@ -16292,7 +16292,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\performance-monitor\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\performance-monitor\\main.py",
       "line_number": 84,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16302,7 +16302,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\performance-monitor\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\performance-monitor\\main.py",
       "line_number": 68,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16312,7 +16312,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\performance-monitor\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\performance-monitor\\main.py",
       "line_number": 99,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16322,7 +16322,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\pre-write-orchestrator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\pre-write-orchestrator\\main.py",
       "line_number": 159,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16332,7 +16332,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\pre-write-orchestrator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\pre-write-orchestrator\\main.py",
       "line_number": 162,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16342,7 +16342,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\pre-write-orchestrator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\pre-write-orchestrator\\main.py",
       "line_number": 215,
       "exception_type": "ValueError",
       "handler_body": [],
@@ -16352,7 +16352,7 @@
       "recommended_fix": "# ValueError indicates invalid input - validate before use"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\repair-gate-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\repair-gate-validator\\main.py",
       "line_number": 28,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16362,7 +16362,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\repair-gate-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\repair-gate-validator\\main.py",
       "line_number": 38,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16372,7 +16372,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\repair-gate-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\repair-gate-validator\\main.py",
       "line_number": 48,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16382,7 +16382,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\repair-gate-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\repair-gate-validator\\main.py",
       "line_number": 61,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16392,7 +16392,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\repair-gate-validator\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\repair-gate-validator\\main.py",
       "line_number": 74,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16402,7 +16402,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\skill-status-dashboard\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\skill-status-dashboard\\main.py",
       "line_number": 129,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16412,7 +16412,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\skill-status-dashboard\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\skill-status-dashboard\\main.py",
       "line_number": 188,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16422,7 +16422,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\skill-status-dashboard\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\skill-status-dashboard\\main.py",
       "line_number": 191,
       "exception_type": "Exception",
       "handler_body": [],
@@ -16432,7 +16432,7 @@
       "recommended_fix": "# Replace 'except Exception:' with specific exception types"
     },
     {
-      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\.windsurf\\skills\\skill-status-dashboard\\main.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\tools\\archive\\docs/archive/windsurf/legacy-tree\\skills\\skill-status-dashboard\\main.py",
       "line_number": 105,
       "exception_type": "Exception",
       "handler_body": [],

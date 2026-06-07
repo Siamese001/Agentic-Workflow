@@ -1,6 +1,6 @@
 """Unit tests for tools/analysis/hotspot_coverage_report.py.
 
-Plan: .windsurf/plans/hotspot-coverage-pipeline-c4e8d2.md (W3.2)
+Plan: docs/archive/windsurf/legacy-tree/plans/hotspot-coverage-pipeline-c4e8d2.md (W3.2)
 
 Edge cases (W5):
     - W5.5: missing mv_hotspot_coverage_risk → graceful "regenerate ADG" message

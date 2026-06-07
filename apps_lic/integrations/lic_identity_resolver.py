@@ -9,7 +9,7 @@ This module is decision-only:
 - Reads config via open(path, "r") / yaml.safe_load / json.load only.
 - Produces a frozen LicSenderIdentity dataclass.
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P13
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P13
 """
 
 from __future__ import annotations

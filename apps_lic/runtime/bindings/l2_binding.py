@@ -31,7 +31,7 @@ HARD LAWS (AG-8 W6):
     - Fail-soft: on HOP pipeline failure, emit SealedL2Artifact with
       execution_status='stub_fallback' rather than crashing the chain.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W6)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W6)
 """
 from __future__ import annotations
 

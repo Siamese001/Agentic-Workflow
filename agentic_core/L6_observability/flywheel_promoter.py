@@ -13,7 +13,7 @@ W8 live wire-up (2026-04-26): ``promote_candidate`` accepts an optional
 the call is wrapped in an ``l6.promotion_attempt`` span carrying
 reason_codes from the candidate-detection signals. Default behavior is
 unchanged when no emitter is passed (every existing call site continues
-to work). See `.windsurf/plans/runtime-proof-system-*.md` Author-Gate
+to work). See `docs/archive/windsurf/legacy-tree/plans/runtime-proof-system-*.md` Author-Gate
 ``architecture_choice`` decision (W8) for context.
 """
 

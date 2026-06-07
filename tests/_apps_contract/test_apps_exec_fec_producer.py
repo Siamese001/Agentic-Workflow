@@ -1,6 +1,6 @@
 """Contract tests for apps_exec FEC producer.
 
-Plan: ``.windsurf/plans/apps-exec-c0-fec-producer-wiring-c2e8a5.md`` W1.P3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-exec-c0-fec-producer-wiring-c2e8a5.md`` W1.P3.
 """
 
 from __future__ import annotations

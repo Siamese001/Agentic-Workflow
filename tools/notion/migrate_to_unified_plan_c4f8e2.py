@@ -16,7 +16,7 @@ Usage:
     python tools/notion/migrate_to_unified_plan_c4f8e2.py --dry-run
     python tools/notion/migrate_to_unified_plan_c4f8e2.py --execute
 
-Audit log: artifacts/windsurf/migrate_unified_plan_c4f8e2_audit.jsonl
+Audit log: artifacts/cursor/migrate_unified_plan_c4f8e2_audit.jsonl
 """
 
 from __future__ import annotations
@@ -142,7 +142,7 @@ def step_a_post_plans_row(tok: str, dry_run: bool) -> dict:
         _audit({"step": "A", "action": "skip_existing", "page_id": page_id})
         return {"action": "skip", "page_id": page_id}
 
-    plan_file_path = f".windsurf/plans/{NEW_PLAN_FILE}"
+    plan_file_path = f"docs/archive/windsurf/legacy-tree/plans/{NEW_PLAN_FILE}"
     slug = NEW_PLAN_SLUG
     summary = (
         "Unified plan superseding adg-three-bucket-authority-model-7e2a91, "

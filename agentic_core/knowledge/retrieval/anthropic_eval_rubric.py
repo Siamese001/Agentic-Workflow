@@ -24,7 +24,7 @@ harness runs) and this module composes them into the ReportCard.
 References:
 - Anthropic API Docs. Define success criteria and build evaluations.
   https://docs.anthropic.com/en/docs/test-and-evaluate/define-success
-- Plan: .windsurf/plans/anthropic-rag-gaps-7f3c2a.md (phase P3.1)
+- Plan: docs/archive/windsurf/legacy-tree/plans/anthropic-rag-gaps-7f3c2a.md (phase P3.1)
 """
 
 from __future__ import annotations

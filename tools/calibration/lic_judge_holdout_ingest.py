@@ -1,6 +1,6 @@
 """tools.calibration.lic_judge_holdout_ingest — DS1-P1.
 
-Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W5 DS1-P1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-calibration-holdout-e8f1c4.md W5 DS1-P1
 
 Offline-only holdout corpus ingest pipeline.
 

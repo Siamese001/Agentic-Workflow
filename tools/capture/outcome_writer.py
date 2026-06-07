@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """outcome_writer.py — Parse DECISION_OUTCOME markers and write to decision_outcomes.
 
-Plan: `.windsurf/plans/author-gate-hardening-a3b8f2.md` W1.P1.2.
+Plan: `docs/archive/windsurf/legacy-tree/plans/author-gate-hardening-a3b8f2.md` W1.P1.2.
 
 DECISION_OUTCOME marker shape (produced by Cursor Agent at end of an executing turn
 or by a Git post-commit trailer parser):

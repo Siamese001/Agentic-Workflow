@@ -10,9 +10,9 @@ Reads the refactor decision ledger (SSOT) and emits structured findings:
 
 Outputs (UTF-8):
   - Append one JSON object per run to:
-    artifacts/windsurf/author_gate_ledger_runs_anomalies.jsonl
+    artifacts/cursor/author_gate_ledger_runs_anomalies.jsonl
   - Overwrite summary:
-    artifacts/windsurf/author_gate_ledger_anomalies_latest.json
+    artifacts/cursor/author_gate_ledger_anomalies_latest.json
 
 Behavior:
   - Default exit 0 (advisory) even when findings exist.

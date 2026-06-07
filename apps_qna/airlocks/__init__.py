@@ -9,7 +9,7 @@ Two airlock surfaces per apps_qna route types:
 
 Each airlock emits a PA boundary receipt and an optional OTEL span.
 
-Plan: .windsurf/plans/apps-qna-pa-spine-hardening-498d20.md W3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-pa-spine-hardening-498d20.md W3
 """
 
 from __future__ import annotations

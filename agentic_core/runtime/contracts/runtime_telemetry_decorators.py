@@ -41,7 +41,7 @@ This module is **additive** — existing ``_emit_*`` inline calls continue to
 work unchanged. The migration plan (ADR-075 §"Migration Plan") will
 incrementally convert the unconditional, top-of-function cases.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W4.2)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W4.2)
 ADR: docs/architecture/adr/ADR-075-split-runtime-telemetry-from-adg-edges.md
 """
 from __future__ import annotations

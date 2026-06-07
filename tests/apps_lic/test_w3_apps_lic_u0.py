@@ -16,7 +16,7 @@ These tests verify that by checking what the adapter DOES NOT do:
   - it does not mutate shared state
   - it is a pure function returning (ValidatedRequest, receipt) or raising
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
 """
 from __future__ import annotations
 

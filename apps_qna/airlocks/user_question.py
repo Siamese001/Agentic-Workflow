@@ -8,7 +8,7 @@ cleared by the U0 airlock. Prompt injection via crafted question text is a
 realistic attack surface when the question is included verbatim in the LLM
 prompt.
 
-Plan: .windsurf/plans/apps-qna-pa-spine-hardening-498d20.md W3.1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-pa-spine-hardening-498d20.md W3.1
 """
 
 from __future__ import annotations

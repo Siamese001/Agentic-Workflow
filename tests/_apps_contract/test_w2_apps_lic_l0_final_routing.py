@@ -9,7 +9,7 @@ These tests prove:
 6. Cache bypass proven for final drafts
 7. Briefing-only requests -> R5_FALLBACK (fail closed)
 
-Plan: .windsurf/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md (W2)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md (W2)
 """
 
 from __future__ import annotations

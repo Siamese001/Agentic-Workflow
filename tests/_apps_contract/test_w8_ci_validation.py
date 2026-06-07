@@ -5,7 +5,7 @@ Verifies W8 gate hardening validation and CI integration:
 - Test file existence
 - Module export validation
 
-Spec reference: .windsurf/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W8)
+Spec reference: docs/archive/windsurf/legacy-tree/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W8)
 """
 
 from __future__ import annotations

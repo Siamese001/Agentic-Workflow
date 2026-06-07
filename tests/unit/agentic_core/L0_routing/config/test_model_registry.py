@@ -1,6 +1,6 @@
 """Tests for L0 model registry SSOT.
 
-Wave 1 P1.2 of `.windsurf/plans/routing-unification-qwen-abe735.md`.
+Wave 1 P1.2 of `docs/archive/windsurf/legacy-tree/plans/routing-unification-qwen-abe735.md`.
 """
 
 from __future__ import annotations

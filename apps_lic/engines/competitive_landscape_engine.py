@@ -1,6 +1,6 @@
 """apps_lic.engines.competitive_landscape_engine — P2c Competitive Landscape Engine.
 
-Plan: .windsurf/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md W3
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-signal-enhancements-p2p3-spine-aligned.md W3
 
 Builds competitive landscape context for outreach drafts.
 Returns an immutable CompetitiveLandscapeContext for Prompt Assembly.

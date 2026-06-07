@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.enforcement.verification_gate`.
 
-Wave 2 of `.windsurf/plans/test-coverage-waves-f8f5a7.md`. Security-surface
+Wave 2 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md`. Security-surface
 L5 gatekeeper — verification gate for hallucination detection.
 """
 

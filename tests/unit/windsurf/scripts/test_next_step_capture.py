@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-HOOK_PATH = REPO_ROOT / ".windsurf" / "scripts" / "post_cursor_agent_next_step_capture.py"
+HOOK_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_next_step_capture.py"
 
 
 def _load_module():
@@ -146,7 +146,7 @@ def test_process_marker_without_token_returns_pending(tmp_path, monkeypatch) -> 
     record = HOOK._process_marker(_marker(), token=None)  # noqa: SLF001
     assert record["kind"] == "pending_no_token"
     # Scaffolder should still have created the plan file.
-    plans_dir = tmp_path / ".windsurf" / "plans"
+    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
     assert plans_dir.exists()
     created = list(plans_dir.glob("next-step-unit-*.md"))
     assert len(created) == 1

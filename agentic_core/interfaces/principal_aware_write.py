@@ -26,7 +26,7 @@ Contract:
 Reference:
   - docs/contracts/identity_propagation.md §3.4 (Tool invocation)
   - docs/reference/00_L5_Policy_Plane/capability_token.schema.md §7
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

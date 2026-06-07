@@ -1,6 +1,6 @@
 """Contract tests for apps_qna FEC producer.
 
-Plan: .windsurf/plans/apps-qna-c0-fec-producer-wiring-d4f1e8.md W1.P2.
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-c0-fec-producer-wiring-d4f1e8.md W1.P2.
 
 Verifies:
 - Importing ``apps_qna.cert`` auto-registers the producer in the shared registry.

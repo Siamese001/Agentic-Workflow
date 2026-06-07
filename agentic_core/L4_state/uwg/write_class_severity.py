@@ -1,6 +1,6 @@
 """UWG write-class severity matrix + invalidation coverage + alias atomicity.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W11.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W11.
 
 Closes opportunities 9.1 (write-class severity / reversibility partition),
 9.2 (cache invalidation coverage gate), 9.4 (alias-swap atomicity proof).

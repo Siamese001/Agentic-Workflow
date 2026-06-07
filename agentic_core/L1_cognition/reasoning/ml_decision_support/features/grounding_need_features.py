@@ -1,6 +1,6 @@
 """Grounding-need heuristic classifier — W1.P2 deposit.
 
-Plan: ``.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` W1.P2.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` W1.P2.
 
 Per Anthropic *Building Effective Agents* (2024), routing classifiers
 should start as heuristic rules before promoting to an LLM classifier:

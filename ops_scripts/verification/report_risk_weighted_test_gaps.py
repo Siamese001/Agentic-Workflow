@@ -289,7 +289,7 @@ def is_source_file(path: str) -> bool:
         "tests/",
         "archives/",
         "tools/archive/",
-        ".windsurf/",
+        "docs/archive/windsurf/legacy-tree/",
         "docs/",
         "artifacts/",
         "reports/",

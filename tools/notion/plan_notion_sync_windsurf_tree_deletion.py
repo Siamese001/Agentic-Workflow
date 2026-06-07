@@ -16,7 +16,7 @@ PLAN_PATH = ".cursor/plans/windsurf-tree-deletion-ci-parity-b8e4f1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
-    "Not Started: Deprecate then delete .windsurf/ mirror after CI parity. "
+    "Not Started: Deprecate then delete docs/archive/windsurf/legacy-tree/ mirror after CI parity. "
     "Prerequisite: windsurf-gha-cutover COMPLETED. deletion_safe=false today. "
     "W0–W5: ref burndown → content retirement → artifacts → gate flip → git rm."
 )
@@ -26,10 +26,10 @@ AI_SUMMARY = """- Plan type: governance / CI parity
 - Prerequisite: windsurf-gha-cutover-d9f2a7 (COMPLETED)
 - Today: deletion_safe false (artifacts/cursor/windsurf_deletion_readiness.json)
 - W1: Retarget check_skill_frontmatter, check_hook_consolidation, pre-commit MCP
-- W2: Remove duplicate .windsurf/plans scripts skills
-- W3: artifacts/windsurf namespace removal
+- W2: Remove duplicate docs/archive/windsurf/legacy-tree/plans scripts skills
+- W3: artifacts/cursor namespace removal
 - W4: Retire mirror gates; deletion_safe true
-- W5: git rm -r .windsurf/
+- W5: git rm -r docs/archive/windsurf/legacy-tree/
 - Disk: .cursor/plans/windsurf-tree-deletion-ci-parity-b8e4f1.md"""
 
 

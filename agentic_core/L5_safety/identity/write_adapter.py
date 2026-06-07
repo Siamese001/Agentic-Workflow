@@ -32,7 +32,7 @@ Invariants:
 Reference:
   - docs/contracts/identity_propagation.md §3.4 (Write gateway threading)
   - agentic_core/interfaces/principal_aware_write.py (W2)
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

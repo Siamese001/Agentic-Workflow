@@ -1,7 +1,7 @@
 """
 Test Rigor Enforcer
 
-Enforces §1 TESTING & EVIDENCE requirements from .windsurfrules during code generation.
+Enforces §1 TESTING & EVIDENCE requirements from .cursor/rules during code generation.
 Provides automated validation that code changes comply with constitutional testing requirements.
 
 Constitutional Requirements:

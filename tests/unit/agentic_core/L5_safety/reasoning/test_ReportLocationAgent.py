@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L5_safety.reasoning.ReportLocationAgent`.
 
-Wave 6 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L5 agent
+Wave 6 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L5 agent
 that heals report file locations to canonical paths.
 """
 

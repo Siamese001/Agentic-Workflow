@@ -1,6 +1,6 @@
 """Seed synthetic OTel traces into the runtime ADG store (W2).
 
-Plan: ``.windsurf/plans/three-bucket-gap-remediation-069806.md`` (W2).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-gap-remediation-069806.md`` (W2).
 
 Until the GenAI emitter migration (W3) propagates real spans into
 ``runtime_adg_store`` from production code paths, the runtime bucket of

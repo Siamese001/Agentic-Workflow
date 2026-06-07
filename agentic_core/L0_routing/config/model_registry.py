@@ -19,7 +19,7 @@ healing_router.py), making drift and mismatched versions a recurring
 source of routing bugs.
 
 References:
-  - `.windsurf/plans/routing-unification-qwen-abe735.md` Wave 1 P1.2
+  - `docs/archive/windsurf/legacy-tree/plans/routing-unification-qwen-abe735.md` Wave 1 P1.2
   - `docs/architecture/qwen-vllm-topology.md`
 """
 

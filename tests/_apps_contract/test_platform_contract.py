@@ -4,7 +4,7 @@ This is the framework-driven counterpart to per-app `test_contract.py`
 files. Adding a new app means registering it in
 `tests/_apps_contract/fixtures.py` — no new test file required.
 
-Plan: .windsurf/plans/apps-svp-plus-hardening-7c4e3a.md (W4.4)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-svp-plus-hardening-7c4e3a.md (W4.4)
 """
 from __future__ import annotations
 

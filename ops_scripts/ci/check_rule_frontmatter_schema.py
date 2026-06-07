@@ -31,8 +31,8 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RULES_DIR = REPO_ROOT / ".windsurf" / "rules"
-SCHEMA_PATH = REPO_ROOT / ".windsurf" / "schemas" / "rule_frontmatter.schema.json"
+RULES_DIR = REPO_ROOT / ".cursor" / "rules"
+SCHEMA_PATH = REPO_ROOT / ".cursor" / "schemas" / "rule_frontmatter.schema.json"
 ARTIFACT_PATH = REPO_ROOT / "artifacts" / "ci" / "rule_frontmatter_validation.json"
 
 

@@ -1,6 +1,6 @@
 """C0 producer hook for :class:`ClaimGroundingConfidence` — W5.P3 deposit.
 
-Plan: ``.windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W5.P3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md`` §W5.P3.
 
 Helpers that turn C0 retrieval output (cited spans + per-claim
 relevance signals) into populated

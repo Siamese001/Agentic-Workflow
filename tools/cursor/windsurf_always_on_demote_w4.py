@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""W4: demote .windsurf/rules/*.md from trigger: always_on → model_decision."""
+"""W4: demote .cursor/rules/*.md from trigger: always_on → model_decision."""
 from __future__ import annotations
 
 import json
@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-WINDSURF_RULES = REPO / ".windsurf" / "rules"
+WINDSURF_RULES = REPO / ".cursor" / "rules"
 CURSOR_RULES = REPO / ".cursor" / "rules"
 MAP_OUT = REPO / "docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md"
 DEMOTION_NOTE = (

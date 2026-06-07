@@ -5,7 +5,7 @@ Covers:
   D4.2 apps_qna.integrations.provider_adapter (QnaProviderContext, build_provider_context)
   D4.3 apps_qna.config.spine_alignment (check_spine_alignment, AlignmentReport)
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D4
 """
 
 from __future__ import annotations

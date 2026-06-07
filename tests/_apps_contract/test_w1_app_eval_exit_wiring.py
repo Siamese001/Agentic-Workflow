@@ -1,6 +1,6 @@
 """W1 verification — App-specific eval is wired into X2 aggregate + X3 disposition.
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W1.P5.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-parity-f8d4a2.md`` W1.P5.
 
 This module proves the NEW wiring introduced in W1.P1-P4:
 

@@ -13,7 +13,7 @@ consumed downstream must appear with status DEFERRED in the field map
 ``apps_lic_ingress_field_map.v1.yaml`` with an explicit reason. Adding a field
 to this contract WITHOUT adding a field-map row fails the harness closed.
 
-Plan: .windsurf/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-ag8-golden-template-adoption-f3c2e1.md (W3)
 Schema ref: artifacts/apps_lic/ag8_apps_lic_payload_schema.json
 """
 from __future__ import annotations

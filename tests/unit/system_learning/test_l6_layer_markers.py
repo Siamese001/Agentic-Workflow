@@ -9,7 +9,7 @@ Verifies the in-tree L6 layer markers landed on system_learning and its
 - system_learning.<sub>.__l6_chapter__       canonical L6 chapter id
                                               (or "" for cross-cutting)
 
-Failure here means W1 regressed. See .windsurf/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md.
+Failure here means W1 regressed. See docs/archive/windsurf/legacy-tree/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md.
 """
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ import importlib
 
 import pytest
 
-# Mirrors CHAPTER_MAP in .windsurf/scratch/_apply_l6_markers.py.
+# Mirrors CHAPTER_MAP in docs/archive/windsurf/legacy-tree/scratch/_apply_l6_markers.py.
 SUBPACKAGE_CHAPTERS: dict[str, str] = {
     "adg": "06.1",
     "adapters": "06.1",

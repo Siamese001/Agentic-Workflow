@@ -2,7 +2,7 @@
 G07 — Capability Token Single-Use Registry (consumed-token ledger).
 
 Per ADR-070 L5 Guardrail Family Catalog (2026-04-29).
-Phase: W4 P8 W2/P8.07 — `.windsurf/plans/w4-p8-guardrail-family-e93f8a.md`
+Phase: W4 P8 W2/P8.07 — `docs/archive/windsurf/legacy-tree/plans/w4-p8-guardrail-family-e93f8a.md`
 
 Closes the trust gap in the existing rotation logic. ``capability_token_rotation.evaluate_rotation``
 already decides ``ROTATE_DUE_USAGE`` when ``single_use AND usage_count >= 1`` —

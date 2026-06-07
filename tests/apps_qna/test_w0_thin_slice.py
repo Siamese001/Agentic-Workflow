@@ -1,6 +1,6 @@
 """W0 thin-slice tests — prove spine contracts flow end-to-end.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W0.4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W0.4
 """
 
 from __future__ import annotations

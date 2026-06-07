@@ -1,6 +1,6 @@
 """Constitutional §29 — L2/cascade router closed-loop ledger wiring tests.
 
-Plan: .windsurf/plans/l2-cascade-router-closed-loop-wiring-c4d8a1.md (W1.7)
+Plan: .cursor/plans/_archive/windsurf_legacy_plans/l2-cascade-router-closed-loop-wiring-c4d8a1.md (W1.7)
 
 Covers:
   - cascade_calibrator math primitives (EU, Brier, Wilson, fingerprint, score band)
@@ -99,10 +99,10 @@ def temp_ledger(tmp_path, monkeypatch):
     # Apply schema to the tmp DB so writer.append doesn't blow up on missing
     # tables. We manually exec the base + per-ledger schema.
     repo_root = Path(__file__).resolve().parents[5]
-    base_sql = (repo_root / ".windsurf" / "schemas" / "ledger_base.schema.sql").read_text()
+    base_sql = (repo_root / ".cursor" / "schemas" / "ledger_base.schema.sql").read_text()
     per_sql = (
         repo_root
-        / ".windsurf"
+        / ".cursor"
         / "schemas"
         / "router_l2_cascade_ledger.schema.sql"
     ).read_text()

@@ -1,6 +1,6 @@
 """Wave F1.4 regression tests — _ssot_routing / _ssot_types full deletion.
 
-Plan: `.windsurf/plans/routing-followups-7a2c91.md` Wave F1.4.
+Plan: `docs/archive/windsurf/legacy-tree/plans/routing-followups-7a2c91.md` Wave F1.4.
 
 These modules were retained as deprecated shims after Wave F1 (2026-04-21)
 with 9 shim-validation tests. Fan-in scan on 2026-04-21 confirmed zero

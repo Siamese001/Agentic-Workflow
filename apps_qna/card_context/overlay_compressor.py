@@ -3,7 +3,7 @@
 W3.4: Compresses company overlay facts to fit within card context budget.
 Ensures overlay is compact and doesn't dump raw briefing content.
 
-Plan: .windsurf/plans/apps-qna-spine-integration-e9c5b3.md W3.4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.md W3.4
 """
 
 from __future__ import annotations

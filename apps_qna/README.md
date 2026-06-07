@@ -115,4 +115,4 @@ apps_qna/
 - `RUNBOOK.md` — how to paste a pack into ChatGPT 5.5-Thinking
 - `PATHOLOGY_TAXONOMY.md` — drift codes used by Card 22 and self-eval
 - `SVP_ENGINEERING_REVIEW.md` — architectural review
-- Plans — `.windsurf/plans/apps-qna-bootstrap-c4f2a8.md`, `apps-qna-rag-skills-alignment-7d2c4e.md`
+- Plans — `docs/archive/windsurf/legacy-tree/plans/apps-qna-bootstrap-c4f2a8.md`, `apps-qna-rag-skills-alignment-7d2c4e.md`

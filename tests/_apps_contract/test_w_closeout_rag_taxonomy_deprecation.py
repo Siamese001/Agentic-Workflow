@@ -1,6 +1,6 @@
 """Closeout verification — W1 RAG dims, W2 taxonomy, W4 deprecation shim.
 
-Plan: ``.windsurf/plans/apps-eval-harness-closeout-b7c9d2.md``.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-closeout-b7c9d2.md``.
 
 Covers:
 - W1.P1/P2: 5 grounded apps carry the 3 RAG dims with OpenAI baselines.

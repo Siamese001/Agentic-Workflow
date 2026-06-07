@@ -63,7 +63,7 @@ C0 Policy (W4 c0-policy-rectification-f7b2a9):
     contract-driven C0 policy frozen by L0 in RouteContract.c0_policy.
     Receipts sealed via ``build_c0_bypass_receipt`` conform to ``C0BypassReceipt``.
 
-Plan: ``.windsurf/plans/apps-rg-canonical-wireup-c8a4f2.md`` §W2 P3
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-rg-canonical-wireup-c8a4f2.md`` §W2 P3
 """
 
 from __future__ import annotations
@@ -140,6 +140,20 @@ _PRODUCER_FUNCTION = "run_integrated_single_action_spine"
 _IDENTITY_RECEIPT_FILENAME = "r4_identity_receipt.json"
 _C0_BYPASS_RECEIPT_FILENAME = "r4_c0_bypass_receipt.json"
 _R4_RUN_MANIFEST_FILENAME = "r4_run_manifest.json"
+_L7_COMPAT_ALIAS_ROLE = "core_compat_alias_for_l7_projection"
+
+
+def _l7_compat_alias_fields(
+    *,
+    canonical_source_artifact: str = _R4_RUN_MANIFEST_FILENAME,
+) -> dict[str, str]:
+    return {
+        "producer_component": _PRODUCER_COMPONENT,
+        "artifact_role": _L7_COMPAT_ALIAS_ROLE,
+        "canonical_source_artifact": canonical_source_artifact,
+        "runtime_subject": "agentic_core",
+        "app_subject": "apps_rg",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -796,7 +810,7 @@ def run_integrated_single_action_spine(
         try:
             # 2026-05-07 — pass artifact_dir into the recipe context so
             # narrative steps land in the same dir as spine receipts.
-            # See .windsurf/plans/apps-rg-spine-narrative-unification-d8e4a1.md
+            # See docs/archive/windsurf/legacy-tree/plans/apps-rg-spine-narrative-unification-d8e4a1.md
             l2_callable = resolve_l2_recipe(
                 app_name,
                 raw_request,
@@ -1222,14 +1236,27 @@ def run_integrated_single_action_spine(
     if _identity_src.exists() and not _identity_dst.exists():
         # Wrap flat identity dict in payload envelope that build_how_trace expects
         _identity_flat = json.loads(_identity_src.read_text(encoding="utf-8"))
-        _identity_envelope = {"schema_version": "runtime_identity_envelope.v1", "payload": _identity_flat}
+        _identity_envelope = {
+            "schema_version": "runtime_identity_envelope.v1",
+            **_l7_compat_alias_fields(
+                canonical_source_artifact=_IDENTITY_RECEIPT_FILENAME
+            ),
+            "payload": _identity_flat,
+        }
         _write_json(_identity_dst, _identity_envelope)
 
     _plan_src = artifact_dir / _R4_RUN_MANIFEST_FILENAME
     _plan_dst = artifact_dir / "l1_plan_contract.json"
     if _plan_src.exists() and not _plan_dst.exists():
         _plan_data = json.loads(_plan_src.read_text(encoding="utf-8"))
-        _write_json(_plan_dst, {"schema_version": "l1_plan_contract.v1", "payload": _plan_data})
+        _write_json(
+            _plan_dst,
+            {
+                "schema_version": "l1_plan_contract.v1",
+                **_l7_compat_alias_fields(),
+                "payload": _plan_data,
+            },
+        )
 
     # Create route_contract.json (required by build_how_trace but not written by R4)
     # request_id + trace_root MUST be present at payload level — the L7 route-family
@@ -1240,6 +1267,7 @@ def run_integrated_single_action_spine(
             _route_contract_path,
             {
                 "schema_version": "route_contract.v1",
+                **_l7_compat_alias_fields(),
                 "payload": {
                     "route_id": effective_route_id,
                     "route_contract_id": route_contract_id,
@@ -1260,6 +1288,9 @@ def run_integrated_single_action_spine(
         _c0_flat["c0_sub_stages"] = c0_sub_stages
         _c0_envelope = {
             "schema_version": "c0_bypass_receipt.v1",
+            **_l7_compat_alias_fields(
+                canonical_source_artifact=_C0_BYPASS_RECEIPT_FILENAME
+            ),
             "artifact_hash": _hash_payload(_c0_flat),
             "payload": _c0_flat,
         }
@@ -1282,6 +1313,7 @@ def run_integrated_single_action_spine(
     }
     _exhaust_envelope = {
         "schema_version": "runtime_exhaust_bundle.v1",
+        **_l7_compat_alias_fields(),
         "artifact_hash": _hash_payload(_exhaust_payload),
         "payload": _exhaust_payload,
     }
@@ -1300,16 +1332,21 @@ def run_integrated_single_action_spine(
     }
     _trace_envelope = {
         "schema_version": "runtime_trace_snapshot.v1",
+        **_l7_compat_alias_fields(),
         "artifact_hash": _hash_payload(_trace_payload),
         "payload": _trace_payload,
     }
     _write_json(artifact_dir / "runtime_trace_snapshot.json", _trace_envelope)
 
     _how_trace = _build_how_trace(artifact_dir, chain_kind=CHAIN_KIND)
-    _write_json(artifact_dir / "agentic_core_how_trace.json", _how_trace.to_dict())
+    _how_trace_doc = dict(_how_trace.to_dict())
+    _how_trace_doc.setdefault("producer_component", _PRODUCER_COMPONENT)
+    _write_json(artifact_dir / "agentic_core_how_trace.json", _how_trace_doc)
 
     _rfc = _build_rfc(artifact_dir, chain_kind=CHAIN_KIND, write=False)
-    _write_json(artifact_dir / "agentic_core_l7_route_family_coverage.json", _rfc["payload"])
+    _rfc_doc = dict(_rfc["payload"])
+    _rfc_doc.setdefault("producer_component", _PRODUCER_COMPONENT)
+    _write_json(artifact_dir / "agentic_core_l7_route_family_coverage.json", _rfc_doc)
 
     _spine = _build_spine_proof(
         artifact_dir=artifact_dir,
@@ -1319,13 +1356,16 @@ def run_integrated_single_action_spine(
         finished_at_utc=_utc_now_iso(),
         exit_code=0,
     )
-    _write_json(artifact_dir / "agentic_core_spine_proof.json", _spine)
+    _spine_doc = dict(_spine)
+    _spine_doc.setdefault("producer_component", _PRODUCER_COMPONENT)
+    _write_json(artifact_dir / "agentic_core_spine_proof.json", _spine_doc)
 
     # Update manifest with L7 refs
     _write_json(
         artifact_dir / "integrated_runtime_artifact_manifest.json",
         {
             "invocation_id": run_id,
+            "producer_component": _PRODUCER_COMPONENT,
             "entry_point": f"{_PRODUCER_COMPONENT}.{_PRODUCER_FUNCTION}",
             "integrated_runtime_entrypoint_used": True,
             "chain_kind": CHAIN_KIND,

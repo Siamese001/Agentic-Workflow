@@ -1,6 +1,6 @@
 """Tests for ``tools/adg/run_full_adg_audit.py`` (wrapper).
 
-Plan: ``.windsurf/plans/adg-audit-pipeline-integration-7f2c93.md`` W4.1.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-audit-pipeline-integration-7f2c93.md`` W4.1.
 
 Strategy: mock ``subprocess.run`` inside ``run_full_adg_audit`` so we
 exercise manifest discovery + required-gate cross-check + certification

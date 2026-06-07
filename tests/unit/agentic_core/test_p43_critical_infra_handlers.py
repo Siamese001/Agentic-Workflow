@@ -1,6 +1,6 @@
 """Regression tests for W4 P4.3 — CriticalInfrastructureError handlers.
 
-Plan: ``.windsurf/plans/adg-three-bucket-unified-c4f8e2.md`` (W4 P4.3).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-three-bucket-unified-c4f8e2.md`` (W4 P4.3).
 
 Each test verifies that a specific caller of ``SemanticCacheManager._initialize``
 (transitively via ``get_instance()``) catches ``CriticalInfrastructureError``

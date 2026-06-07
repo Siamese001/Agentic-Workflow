@@ -9,7 +9,7 @@ respectively.
 Replaces the pre-refactor ``HOPPipelineExecutor`` / ``hop_stage_registry``
 pairing, whose stage handlers were stubs after the 2026-02-08
 consolidation. See plan
-.windsurf/plans/apps-hop-substrate-f7751b.md (Wave 2 Phase 2.3).
+docs/archive/windsurf/legacy-tree/plans/apps-hop-substrate-f7751b.md (Wave 2 Phase 2.3).
 """
 
 from __future__ import annotations

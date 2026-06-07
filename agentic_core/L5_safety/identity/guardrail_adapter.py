@@ -28,7 +28,7 @@ Invariants:
 Reference:
   - agentic_core/L5_safety/identity/guardrail_bank.py (Wave-A)
   - docs/reference/00_L5_Policy_Plane/guardrail_families.md
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 """
 
 from __future__ import annotations

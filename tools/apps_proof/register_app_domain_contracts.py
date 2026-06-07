@@ -7,7 +7,7 @@ Usage:
 
 A dry-run validates schemas without submitting to UWG.
 
-Plan: ``.windsurf/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W3.3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-domain-contract-fortknox-c4d8e2.md`` §W3.3.
 """
 
 from __future__ import annotations

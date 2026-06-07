@@ -5,7 +5,7 @@ safety-veto verdict that runs in the production integrated entry point
 between a D2 hit and any cache reuse. Read-only after construction;
 serialized as a JSON artifact in the W2 evidence chain.
 
-Spec reference: .windsurf/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md
+Spec reference: docs/archive/windsurf/legacy-tree/plans/rtc-w2-integrated-runtime-r1b-safe-reuse-c7e9f3.md
 Producer: agentic_core.runtime.entrypoints.integrated_safe_reuse_run
 """
 

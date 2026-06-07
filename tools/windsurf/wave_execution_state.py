@@ -47,7 +47,7 @@ from typing import Any
 
 # Import the shared helpers without polluting sys.path globally.
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_SCRIPTS = _REPO_ROOT / ".windsurf" / "scripts"
+_SCRIPTS = _REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(_SCRIPTS))
 
 import _wave_execution_state as wes  # noqa: E402

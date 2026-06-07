@@ -67,7 +67,7 @@ EXCLUDE_DIRS = {
     "archives",
     "_archive",
     "node_modules",
-    ".windsurf",
+    "docs/archive/windsurf/legacy-tree",
     "vector_store",
     "artifacts",
     ".pytest_cache",

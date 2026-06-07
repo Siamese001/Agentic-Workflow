@@ -1,6 +1,6 @@
 """Contract tests: apps_qna PA spine hardening — W5 P5.1.
 
-Plan: .windsurf/plans/apps-qna-pa-spine-hardening-498d20.md W4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-pa-spine-hardening-498d20.md W4
 Parent: apps-rg-spine-hardening-deferred-wave-2f8b1d W5
 """
 

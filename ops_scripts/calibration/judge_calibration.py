@@ -14,11 +14,11 @@ IS the source of truth.
 
 Constitutional anchor:
   - §29 closed-loop router enforcement (judge surface analogue)
-  - ``.windsurf/rules/judge-calibration-cadence.md`` — weekly human
+  - ``.cursor/rules/judge-calibration-cadence.md`` — weekly human
     spot-check + unknown-budget watchdog.
 
 Plan reference:
-  - ``.windsurf/plans/apps-eval-qwen32b-rollout-b7c4d9.md`` Wave 1
+  - ``docs/archive/windsurf/legacy-tree/plans/apps-eval-qwen32b-rollout-b7c4d9.md`` Wave 1
     (P1.3).
 
 Behavior contract:
@@ -327,7 +327,7 @@ def _render_report(snap: JudgeCalibrationSnapshot) -> str:
     lines.append("## Human spot-check sampling")
     lines.append("")
     lines.append(
-        "Per ``.windsurf/rules/judge-calibration-cadence.md``, draw a "
+        "Per ``.cursor/rules/judge-calibration-cadence.md``, draw a "
         "stratified sample of 10 verdicts this week (split evenly across "
         "accepted / rejected / fallback buckets) for human verification. "
         "Record disagreements in the report's free-form notes and open a "

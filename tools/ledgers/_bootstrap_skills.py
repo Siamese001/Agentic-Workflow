@@ -13,7 +13,7 @@ from pathlib import Path
 
 from tools.ledgers.schema_registry import LEDGER_REGISTRY, REPO_ROOT
 
-SKILLS_DIR = REPO_ROOT / ".windsurf" / "skills"
+SKILLS_DIR = REPO_ROOT / ".cursor" / "skills"
 
 TRIGGER_HINTS = {
     "tool_routing": "Any retrieval-class tool dispatch (grep, ADG query, semantic search, read_file).",
@@ -94,10 +94,10 @@ verdict = LedgerConsulter("{spec.name}").lookup(
 
 ## See Also
 
-- Base skill: `.windsurf/skills/ledger-consulter/SKILL.md`
+- Base skill: `.cursor/skills/ledger-consulter/SKILL.md`
 - Writer API: `tools/ledgers/writer.py`
-- Schema: `.windsurf/schemas/{spec.schema_file}`
-- Plan: `.windsurf/plans/intelligence-ledgers-ten-a7c3e2.md`
+- Schema: `.cursor/schemas/{spec.schema_file}`
+- Plan: `.cursor/plans/_archive/windsurf_legacy_plans/intelligence-ledgers-ten-a7c3e2.md`
 """
 
 

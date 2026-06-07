@@ -184,7 +184,7 @@ class TestMigratedSurfaces:
 
     def test_structured_reasoning_skill_passes(self):
         """Structured reasoning SKILL.md passes scanner."""
-        skill_path = REPO_ROOT / ".windsurf" / "skills" / "structured-reasoning" / "SKILL.md"
+        skill_path = REPO_ROOT / ".cursor" / "skills" / "structured-reasoning" / "SKILL.md"
         assert skill_path.exists(), "SKILL.md should exist"
 
         scanner_path = REPO_ROOT / "ops_scripts" / "ci" / "check_enriched_choice_ui_invariants.py"
@@ -200,7 +200,7 @@ class TestMigratedSurfaces:
 
     def test_decision_gate_workflow_passes(self):
         """Author-gate decision gate workflow passes scanner."""
-        workflow_path = REPO_ROOT / ".windsurf" / "workflows" / "author-gate-decision-gate.md"
+        workflow_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "workflows" / "author-gate-decision-gate.md"
         assert workflow_path.exists(), "author-gate-decision-gate.md should exist"
 
         scanner_path = REPO_ROOT / "ops_scripts" / "ci" / "check_enriched_choice_ui_invariants.py"
@@ -272,7 +272,7 @@ class TestViolationsLog:
     """Integration: violations are logged to JSONL."""
 
     def test_violations_logged_to_jsonl(self):
-        """Scanner writes violations to artifacts/windsurf/enriched_choice_ui_violations.jsonl."""
+        """Scanner writes violations to artifacts/cursor/enriched_choice_ui_violations.jsonl."""
         code = '''
 def bad_function():
     ask_user_question(

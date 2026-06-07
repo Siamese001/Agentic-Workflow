@@ -15,7 +15,7 @@ Verifies:
     it is a build-time compiler path, not a governed slug runtime path, and that
     __main__ product/live paths cannot reach it.
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P4
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P4
 """
 from __future__ import annotations
 

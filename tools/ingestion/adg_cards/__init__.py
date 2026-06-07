@@ -6,8 +6,8 @@ ingestion pattern (tools/ingestion/ingest_adg.py) with a small, high-signal
 document set: symbol / path / violation / hotspot cards.
 
 Doctrinal basis: Wave E plan at
-`.windsurf/plans/wave-e-adg-card-projection-2df148.md` and the 2026-04-06
-assessment at `.windsurf/plans/adg-chromadb-retrieval-assessment-8a3f2b.md`.
+`docs/archive/windsurf/legacy-tree/plans/wave-e-adg-card-projection-2df148.md` and the 2026-04-06
+assessment at `docs/archive/windsurf/legacy-tree/plans/adg-chromadb-retrieval-assessment-8a3f2b.md`.
 """
 
 from tools.ingestion.adg_cards.types import (

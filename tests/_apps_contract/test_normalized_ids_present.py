@@ -3,7 +3,7 @@
 Validates that all sections have normalized section_ids and all roles
 have normalized company_ids per the canonical ID scheme.
 
-Plan ref: .windsurf/plans/01_apps-rg-master-governed-runtime-hardening.md (W1)
+Plan ref: docs/archive/windsurf/legacy-tree/plans/01_apps-rg-master-governed-runtime-hardening.md (W1)
 """
 from __future__ import annotations
 

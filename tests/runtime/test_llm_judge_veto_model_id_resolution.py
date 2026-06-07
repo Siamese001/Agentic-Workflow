@@ -14,7 +14,7 @@ Resolution precedence locked by these tests:
   3. GET {endpoint}/v1/models first data[].id (preferred default)
   4. _FALLBACK_MODEL_ID ("Qwen2.5-7B-Instruct") if all three above fail
 
-Plan: .windsurf/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 7 (P1)
+Plan: docs/archive/windsurf/legacy-tree/plans/rtc-w2b-live-provider-allow-proof-b24f8e.md § 7 (P1)
 """
 from __future__ import annotations
 

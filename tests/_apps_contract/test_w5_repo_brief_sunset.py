@@ -10,7 +10,7 @@ P5.6 Archive: apps_exec/ moved to archives/apps_exec_20260505/.
 P5.7 OTEL: observability_adapter emits only canonical apps_repo_brief.* spans.
 P5.8 Final acceptance: W1-W5 regression green.
 
-Plan: .windsurf/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §W5
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-repo-brief-plan3-zero-loss-overwrite.md §W5
 """
 
 from __future__ import annotations
@@ -72,7 +72,7 @@ class TestZeroHardRefsGate:
         exclude = (
             "archives/",
             "tests/",
-            ".windsurf/",
+            "docs/archive/windsurf/legacy-tree/",
             "__pycache__",
             "tools/archive/",
         )

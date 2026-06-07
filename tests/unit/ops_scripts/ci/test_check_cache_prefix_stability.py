@@ -1,6 +1,6 @@
 """Tests for the EQ-9 cache-prefix stability CI gate.
 
-Plan: ``.windsurf/plans/prompt-assembly-best-practices-gap-b4e1c2.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/prompt-assembly-best-practices-gap-b4e1c2.md``
 ADR:  ADR-PROMPT-ASSEMBLY-002 §10
 """
 

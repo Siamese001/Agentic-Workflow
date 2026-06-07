@@ -2,7 +2,7 @@
 G08 — Egress Output-Side AI Firewall.
 
 Per ADR-070 L5 Guardrail Family Catalog (2026-04-29).
-Phase: W4 P8 W4/P8.08 — `.windsurf/plans/w4-p8-guardrail-family-e93f8a.md`
+Phase: W4 P8 W4/P8.08 — `docs/archive/windsurf/legacy-tree/plans/w4-p8-guardrail-family-e93f8a.md`
 
 The G08 firewall inspects every model-generated output BEFORE it crosses the
 process boundary (returned to user, posted to network, written to UWG).

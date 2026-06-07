@@ -4,7 +4,7 @@ import json
 import unittest
 from pathlib import Path
 
-SKILLS_ROOT = Path(__file__).resolve().parents[2] / ".windsurf" / "skills"
+SKILLS_ROOT = Path(__file__).resolve().parents[2] / ".cursor" / "skills"
 EXPECTED_SKILLS = {
     "artifact-management",
     "boundary-enforcement",

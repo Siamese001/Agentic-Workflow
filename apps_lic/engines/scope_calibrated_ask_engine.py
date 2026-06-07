@@ -24,7 +24,7 @@ Ask calibration matrix:
   Referral + any                 → forwardable, light CTA
   Followup + any                 → light nudge, very brief
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P0c
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P0c
 """
 
 from __future__ import annotations

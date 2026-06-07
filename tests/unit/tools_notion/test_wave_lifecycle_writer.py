@@ -386,7 +386,7 @@ class TestApplySpec:
 
 class TestStatusTaxonomy:
     def test_canonical_includes_all_documented(self):
-        # Must align with .windsurf/rules/notion-plans-taxonomy.md.
+        # Must align with .cursor/rules/notion-plans-taxonomy.md.
         assert "Not Started" in CANONICAL_STATUSES
         assert "In Progress" in CANONICAL_STATUSES
         assert "Completed" in CANONICAL_STATUSES

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Remediate the three real defects surfaced by the ADG three-graph quick-strict suite.
 
-Plan: ``.windsurf/plans/adg-three-graph-harness-e57cc7.md`` (W7 — defect remediation).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-three-graph-harness-e57cc7.md`` (W7 — defect remediation).
 
 Defects targeted (from harness commit 8a0f78bdf7 baseline strict run)
 -------------------------------------------------------------------

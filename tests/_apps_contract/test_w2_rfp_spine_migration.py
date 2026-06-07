@@ -17,7 +17,7 @@ Proves:
   NC-4  make_rfp_ingress_runner not imported in __main__
   NC-5  parse_payload produces RequestEnvelope with required fields
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W2.P4
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W2.P4
 """
 from __future__ import annotations
 

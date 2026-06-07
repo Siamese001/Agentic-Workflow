@@ -10,7 +10,7 @@ and runtime bundles. They are **not** ``apps_rg.runtime.bindings.exit_binding.Ex
 and they do **not** subsume Exit's single X3 disposition (X3 remains Exit-owned
 after X1/X2 aggregation).
 
-Spec reference: .windsurf/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W0.P4)
+Spec reference: docs/archive/windsurf/legacy-tree/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W0.P4)
 """
 
 from __future__ import annotations

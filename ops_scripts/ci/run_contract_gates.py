@@ -78,10 +78,7 @@ def _pfc1_gate_cmd() -> list[str]:
 # PRE-WRITE HOOKS INTEGRATION
 def validate_pre_write_hooks():
     """Validate all pre-write hook skills."""
-    # Cursor SSOT; Windsurf mirror retained for legacy hook parity only.
     skills_dir = ROOT / ".cursor" / "skills"
-    if not skills_dir.is_dir():
-        skills_dir = ROOT / ".windsurf" / "skills"
     failed_skills: list[str] = []
     if not skills_dir.is_dir():
         print(f"❌ Skills directory missing: {skills_dir}")
@@ -1001,7 +998,7 @@ def main():
         # as check_ask_user_question_packet_freshness.py. Advisory by default.
         #
         # ADG-first violations: post_cursor_agent_adg_audit.py writes
-        # artifacts/windsurf/adg_first_violations.jsonl (see gate script).
+        # artifacts/cursor/adg_first_violations.jsonl (see gate script).
         # Advisory by default; fail-closed: ADG_FIRST_VIOLATIONS_FRESHNESS_FAIL_CLOSED=1.
         # Bypass: ADG_FIRST_VIOLATIONS_FRESHNESS_BYPASS=1.
         (
@@ -1170,7 +1167,7 @@ def main():
             "W6ECE1 emit-contract enrichment 9-concern gate (advisory)",
             "ops_scripts/ci/check_w6_emit_contract_enrichment.py",
         ),
-        # MCP-SCHEMA — .cursor/mcp.json + .windsurf/mcp_config.json validation.
+        # MCP-SCHEMA — .cursor/mcp.json + .cursor/mcp.json validation.
         # Verifies required servers present, valid keys per constitutional §27,
         # and proper server configuration (command/args for local, url for remote).
         # Advisory by default; fail-closed via MCP_CONFIG_SCHEMA_FAIL_CLOSED=1.
@@ -1236,11 +1233,11 @@ def main():
             "ops_scripts/ci/check_hook_consolidation.py",
         ),
         (
-            "MIRROR-H Cursor .windsurf mirror health (advisory)",
+            "MIRROR-H Cursor docs/archive/windsurf/legacy-tree mirror health (advisory)",
             "ops_scripts/ci/check_cursor_governance_mirror_health.py",
         ),
         (
-            "WIND-DEL .windsurf deletion readiness report (advisory)",
+            "WIND-DEL docs/archive/windsurf/legacy-tree deletion readiness report (advisory)",
             "ops_scripts/ci/check_windsurf_deletion_readiness.py",
         ),
         # GOV-1..GOV-4 — Agentic Core governance enforcement gates

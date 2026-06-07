@@ -1,6 +1,6 @@
 """W6 verification — CI gate promotion from advisory to run_contract_gates.
 
-Plan: ``.windsurf/plans/apps-eval-harness-deferred-e4a1b7.md`` W6.P1-P3.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-deferred-e4a1b7.md`` W6.P1-P3.
 
 Proves:
 

@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-_RULES_PATH = Path(__file__).parents[3] / ".windsurf" / "rules" / "global_rules.md"
+_RULES_PATH = Path(__file__).parents[3] / ".cursor" / "rules" / "global_rules.md"
 
 
 def _load_rules() -> str:

@@ -2,7 +2,7 @@
 """_notion_sync_telemetry.py — Sync telemetry emitter for Notion operations.
 
 Records structured telemetry for every sync attempt, success, or failure.
-Emits to artifacts/windsurf/sync_telemetry.jsonl per §24 deferred-scope capture.
+Emits to artifacts/cursor/sync_telemetry.jsonl per §24 deferred-scope capture.
 
 Constitutional: §25 (MCP serialization), §36 (plan registration), §30 (capture health)
 """
@@ -145,7 +145,7 @@ def _ensure_ledger_schema() -> None:
     
     if not LEDGER_DB_PATH.exists():
         # Initialize schema from SQL file
-        schema_path = REPO_ROOT / ".windsurf" / "schemas" / "sync_health_ledger.schema.sql"
+        schema_path = REPO_ROOT / ".cursor" / "schemas" / "sync_health_ledger.schema.sql"
         if schema_path.exists():
             conn = sqlite3.connect(str(LEDGER_DB_PATH))
             try:

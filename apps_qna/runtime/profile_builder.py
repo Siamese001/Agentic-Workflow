@@ -13,7 +13,7 @@ Stage bindings are in apps_qna/runtime/bindings/:
     l2  → qna_l2   (QnaPromptArtifact → SealedQnaArtifact via E1/E2/E3)
     exit → qna_exit (SealedQnaArtifact → QnaExitResult via exit_wiring)
 
-Plan: .windsurf/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P2
+Plan: docs/archive/windsurf/legacy-tree/plans/one-spine-qna-rfp-migration-d2e8f1.md W1.P2
 """
 from __future__ import annotations
 

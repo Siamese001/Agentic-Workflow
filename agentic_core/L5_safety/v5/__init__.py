@@ -2,7 +2,7 @@
 
 Spec: ``docs/reference/00_L5_Policy_Plane/Governance & Safety v5.md``
 ADR : ``docs/architecture/adr/ADR-051-l5-v5-governance-plane.md``
-Plan: ``.windsurf/plans/l5-v5-governance-implementation-7d3a91.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/l5-v5-governance-implementation-7d3a91.md``
 
 Public API surface:
 

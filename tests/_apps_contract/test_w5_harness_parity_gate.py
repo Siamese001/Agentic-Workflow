@@ -1,6 +1,6 @@
 """W5.P6 verification — apps_* harness-parity advisory gate.
 
-Plan: ``.windsurf/plans/apps-eval-harness-parity-f8d4a2.md`` W5.P6.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-eval-harness-parity-f8d4a2.md`` W5.P6.
 
 Proves the advisory gate:
 

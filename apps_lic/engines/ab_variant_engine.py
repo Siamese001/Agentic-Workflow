@@ -1,7 +1,7 @@
 """apps_lic.engines.ab_variant_engine — D5-P1 + DS3.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W6 D5-P1
-      Updated: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W4 DS3-P1
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W6 D5-P1
+      Updated: docs/archive/windsurf/legacy-tree/plans/apps-lic-calibration-holdout-e8f1c4.md W4 DS3-P1
 
 Holdout assignment and variant scoring for A/B testing of outreach strategies.
 Non-blocking: if this engine is disabled or raises, callers MUST proceed with

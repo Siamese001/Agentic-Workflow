@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Constitutional §26 — Windsurf config schema purity.
 
-Validates that `.cursor/hooks.json` and `.windsurf/mcp_config.json` contain
+Validates that `.cursor/hooks.json` and `.cursor/mcp.json` contain
 only fields published in the official Windsurf schema. Unknown keys (e.g.
 `powershell`, `bash`, `shell`, `env_override`, `platform`) silently disable
 the hook entry or MCP server — Windsurf's parser rejects the entry with no
@@ -14,7 +14,7 @@ Precedent (2026-04-23):
 
 Bypass (Cursor-only / no Windsurf mirror maintenance):
     ``WINDSURF_CONFIG_SCHEMA_BYPASS=1`` — skip validation of
-    ``.windsurf/hooks.json`` and ``.windsurf/mcp_config.json`` only. CI must
+    ``.cursor/hooks.json`` and ``.cursor/mcp.json`` only. CI must
     NOT set this; Cursor schema is still enforced by
     ``check_cursor_config_schema.py``.
 
@@ -36,8 +36,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-HOOKS_PATH = ROOT / ".windsurf" / "hooks.json"
-MCP_PATH = ROOT / ".windsurf" / "mcp_config.json"
+HOOKS_PATH = ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
+MCP_PATH = ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 
 # Schema whitelists — extend ONLY when docs/cursor/*.md is updated upstream.
 # Underscore-prefixed keys (e.g. `_note`, `_comment`) are universally allowed

@@ -32,9 +32,9 @@ def temp_bandit_ledger(tmp_path, monkeypatch):
     monkeypatch.setattr(nb, "_BANDIT_HELPER", None)
 
     repo_root = Path(__file__).resolve().parents[5]
-    base_sql = (repo_root / ".windsurf" / "schemas" / "ledger_base.schema.sql").read_text()
+    base_sql = (repo_root / ".cursor" / "schemas" / "ledger_base.schema.sql").read_text()
     per_sql = (
-        repo_root / ".windsurf" / "schemas" / "router_l0_bandit_ledger.schema.sql"
+        repo_root / ".cursor" / "schemas" / "router_l0_bandit_ledger.schema.sql"
     ).read_text()
     db_path = tmp_path / "router_l0_bandit.sqlite"
     conn = sqlite3.connect(str(db_path))

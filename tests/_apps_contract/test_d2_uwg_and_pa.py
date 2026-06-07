@@ -4,7 +4,7 @@ Covers:
   D2.1 emit_uwg_pack_record() in apps_qna.exit_wiring
   D2.2 run_pa_for_card_context() in apps_qna.card_context.pa_adapter
 
-Plan: .windsurf/plans/apps-qna-spine-deferred-e9c5b3.md D2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-deferred-e9c5b3.md D2
 """
 
 from __future__ import annotations

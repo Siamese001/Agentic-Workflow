@@ -1,6 +1,6 @@
 """Gate precision audit — W4 P4.5.
 
-Plan: ``.windsurf/plans/adg-three-bucket-unified-c4f8e2.md`` (W4 P4.5).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/adg-three-bucket-unified-c4f8e2.md`` (W4 P4.5).
 
 Purpose
 -------

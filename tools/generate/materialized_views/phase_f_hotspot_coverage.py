@@ -1,6 +1,6 @@
 """Phase F materialized views — Hotspot × Coverage risk join.
 
-Plan: `.windsurf/plans/hotspot-coverage-pipeline-c4e8d2.md` (W2)
+Plan: `docs/archive/windsurf/legacy-tree/plans/hotspot-coverage-pipeline-c4e8d2.md` (W2)
 
 Family 9 — Risk × Coverage prioritization
     `mv_hotspot_coverage_risk` — per-node join of:
@@ -168,7 +168,7 @@ def materialize_phase_f(sqlite_path: Path) -> dict[str, int]:
           AND n.resolved_path NOT LIKE 'tests/%'
           AND n.resolved_path NOT LIKE 'tools/%'
           AND n.resolved_path NOT LIKE 'ops_scripts/%'
-          AND n.resolved_path NOT LIKE '.windsurf/%'
+          AND n.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/%'
         ORDER BY criticality_score DESC, n.resolved_path
         """
     )

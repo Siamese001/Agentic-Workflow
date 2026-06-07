@@ -290,7 +290,7 @@ class ExitControlGate:
         # Shadow eval_spine observer — gated by EVAL_SPINE_SHADOW=1. Never
         # raises, never mutates decision. See Author-Gate 2026-04-23
         # (confidence=0.86, principle=observer-first-enforcer-later) and
-        # .windsurf/plans/exit-eval-spine-shadow-wiring-a9c124.md.
+        # docs/archive/windsurf/legacy-tree/plans/exit-eval-spine-shadow-wiring-a9c124.md.
         try:
             from agentic_core.L5_safety.eval_spine.shadow_observer import (
                 emit_shadow_exit_decision,
@@ -305,7 +305,7 @@ class ExitControlGate:
 
         # Active §5 enforcement — gated by EVAL_SPINE_ENFORCE=1. Upgrade-only
         # semantics: eval_spine can make disposition stricter, never looser.
-        # See plan .windsurf/plans/exit-eval-spine-deferred-closeout-d5e8b3.md §Q4.
+        # See plan docs/archive/windsurf/legacy-tree/plans/exit-eval-spine-deferred-closeout-d5e8b3.md §Q4.
         try:
             from agentic_core.L5_safety.eval_spine.enforcement_bridge import (
                 is_enforce_enabled,

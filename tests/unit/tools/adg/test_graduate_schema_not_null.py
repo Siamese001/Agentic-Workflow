@@ -1,7 +1,7 @@
 """Tests for tools/adg/graduate_schema_not_null.py +
 ops_scripts/ci/check_schema_graduation_readiness.py (W7).
 
-Plan: ``.windsurf/plans/three-bucket-gap-remediation-069806.md`` (W7).
+Plan: ``docs/archive/windsurf/legacy-tree/plans/three-bucket-gap-remediation-069806.md`` (W7).
 """
 
 from __future__ import annotations

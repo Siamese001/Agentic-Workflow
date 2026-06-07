@@ -1,6 +1,6 @@
 """Regression coverage for severity classification in multi_writer.
 
-Plan: .windsurf/plans/antipattern-reclassify-e5a569.md Wave 4 (Priority 5).
+Plan: docs/archive/windsurf/legacy-tree/plans/antipattern-reclassify-e5a569.md Wave 4 (Priority 5).
 
 The severity CASE inside ``agentic_core/adg/artifact/multi_writer.py`` is the
 authority for how antipattern edges are classified into

@@ -5,7 +5,7 @@ The RuntimeGateEngine produces a GateBundle after evaluating all gates
 for a given placement; the WriteAdmissionGuard uses this to determine
 whether to issue a WriteAdmissionReceipt.
 
-Spec reference: .windsurf/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W0.P2)
+Spec reference: docs/archive/windsurf/legacy-tree/plans/apps-rg-runtime-gate-catalog-c4d7e1.md (W0.P2)
 """
 
 from __future__ import annotations

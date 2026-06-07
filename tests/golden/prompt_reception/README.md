@@ -1,6 +1,6 @@
 # Prompt-Reception Golden-Replay Fixtures
 
-**Plan:** `.windsurf/plans/prompt-reception-followups-a7b3c4.md`, phase RH5B.2.
+**Plan:** `docs/archive/windsurf/legacy-tree/plans/prompt-reception-followups-a7b3c4.md`, phase RH5B.2.
 
 ## Purpose
 

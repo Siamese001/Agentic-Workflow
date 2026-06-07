@@ -10,7 +10,7 @@ Both paths are supported:
 - ``ResearchHopOrchestrator.run(context) -> HopRunRecord`` — shared
   substrate, declarative, supports replay and composability.
 
-See plan .windsurf/plans/apps-hop-substrate-four-apps-b4a2c9.md (Wave 1).
+See plan docs/archive/windsurf/legacy-tree/plans/apps-hop-substrate-four-apps-b4a2c9.md (Wave 1).
 """
 
 from __future__ import annotations

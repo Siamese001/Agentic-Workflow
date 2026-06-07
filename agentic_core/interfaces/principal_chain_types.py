@@ -11,7 +11,7 @@ it in L2_execution/types/ would couple L5 semantics to execution-layer types.
 L_SHARED interfaces are the correct home.
 
 Reference: docs/contracts/identity_propagation.md
-Parent plan: .windsurf/plans/l5-v4-g04-identity-propagation-0b9d22.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-v4-g04-identity-propagation-0b9d22.md
 ADR: ADR-049 (§7.3 ratified: full principal_chain from day one, env-seeded)
 """
 

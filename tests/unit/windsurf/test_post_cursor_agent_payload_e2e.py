@@ -22,7 +22,7 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-SCRIPTS = REPO / ".windsurf" / "scripts"
+SCRIPTS = REPO / ".cursor" / "scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(SCRIPTS))
 
 from _post_cursor_agent_payload import extract_response_text  # noqa: E402

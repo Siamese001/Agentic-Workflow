@@ -1,6 +1,6 @@
 """Unit tests for the Tier 3 auto-wrap helper.
 
-Plan: `.windsurf/plans/runtime-adg-tier3-broader-adoption-8f2d1c.md`
+Plan: `docs/archive/windsurf/legacy-tree/plans/runtime-adg-tier3-broader-adoption-8f2d1c.md`
 
 Validates `install_seal_step_autowrap` correctly wraps concrete `execute`
 methods on subclasses — sync and async — while leaving abstract methods,

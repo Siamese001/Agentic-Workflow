@@ -15,7 +15,7 @@ def temp_repo():
     """Provide a temporary repo structure with mcp_config.json."""
     with tempfile.TemporaryDirectory() as tmp:
         repo_root = Path(tmp)
-        windsurf_dir = repo_root / ".windsurf"
+        windsurf_dir = repo_root / "docs/archive/windsurf/legacy-tree"
         windsurf_dir.mkdir()
         yield repo_root
 
@@ -34,7 +34,7 @@ def test_gate_passes_with_consistent_env_var(temp_repo: Path) -> None:
             }
         }
     }
-    config_path = temp_repo / ".windsurf" / "mcp_config.json"
+    config_path = temp_repo / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
     config_path.write_text(json.dumps(config))
 
     # Import and run the check
@@ -72,7 +72,7 @@ def test_gate_fails_with_hardcoded_adg_sqlite(temp_repo: Path) -> None:
             }
         }
     }
-    config_path = temp_repo / ".windsurf" / "mcp_config.json"
+    config_path = temp_repo / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
     config_path.write_text(json.dumps(config))
 
     import sys
@@ -107,7 +107,7 @@ def test_gate_fails_with_hardcoded_memory(temp_repo: Path) -> None:
             }
         }
     }
-    config_path = temp_repo / ".windsurf" / "mcp_config.json"
+    config_path = temp_repo / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
     config_path.write_text(json.dumps(config))
 
     import sys
@@ -156,7 +156,7 @@ def test_gate_error_on_missing_config(temp_repo: Path) -> None:
         import ops_scripts.ci.check_mcp_adg_redis_consistency as check_module
 
         original_config_path = check_module.MCP_CONFIG_PATH
-        check_module.MCP_CONFIG_PATH = temp_repo / ".windsurf" / "mcp_config.json"
+        check_module.MCP_CONFIG_PATH = temp_repo / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 
         result = main()
         assert result == 2
@@ -169,7 +169,7 @@ def test_gate_error_on_missing_config(temp_repo: Path) -> None:
 def test_gate_error_on_missing_servers(temp_repo: Path) -> None:
     """Missing required servers should return error exit code 2."""
     config = {"mcpServers": {}}  # Empty servers
-    config_path = temp_repo / ".windsurf" / "mcp_config.json"
+    config_path = temp_repo / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
     config_path.write_text(json.dumps(config))
 
     import sys

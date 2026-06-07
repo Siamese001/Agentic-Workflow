@@ -23,7 +23,7 @@ every guardrail must emit so the policy chokepoint can reason uniformly.
 Reference:
   - docs/reference/00_L5_Policy_Plane/guardrail_families.md
   - docs/reference/00_L5_Policy_Plane/Governance & Safety v4.md (Runtime Lane)
-Parent plan: .windsurf/plans/l5-governance-best-practice-gap-4615ae.md
+Parent plan: docs/archive/windsurf/legacy-tree/plans/l5-governance-best-practice-gap-4615ae.md
 """
 
 from __future__ import annotations

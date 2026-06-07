@@ -1,6 +1,6 @@
 """apps_qna.engines.judges.answer_relevancy_judge — RAG answer-relevancy scorer.
 
-Plan: ``.windsurf/plans/apps-qna-deferred-e5-f7a2b1.md`` E2.3
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-qna-deferred-e5-f7a2b1.md`` E2.3
 
 Scores how well the generated answer addresses the interview question intent.
 

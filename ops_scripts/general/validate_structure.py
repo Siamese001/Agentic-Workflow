@@ -52,7 +52,7 @@ VALID_TERRITORIES = frozenset(
         "logs",
         "scripts",
         ".github",
-        ".windsurf",
+        "docs/archive/windsurf/legacy-tree",
         ".backup",
         ".git",
         ".sovereign_healing_backup",

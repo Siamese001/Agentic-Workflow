@@ -1,6 +1,6 @@
 """Cross-layer regret accounting — end-to-end counterfactual replay.
 
-Plan: ``.windsurf/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W13.
+Plan: ``docs/archive/windsurf/legacy-tree/plans/routing-decision-process-enhancement-9c7e4d.md`` Wave W13.
 
 Closes opportunity X.7 (cross-layer regret accounting). Per-layer learners
 optimize their own arm; without an end-to-end accounting they can locally

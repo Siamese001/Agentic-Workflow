@@ -23,7 +23,7 @@ Outreach mode override:
   followup → never required (brevity-first)
   referral → never required (forwarding ease > insight depth)
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P1d
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P1d
 """
 
 from __future__ import annotations

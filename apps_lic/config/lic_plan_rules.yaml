@@ -7,7 +7,7 @@
 # L0 uses l0_policy.yaml; this file governs how the message is structured
 # once a route has been decided.
 #
-# Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P12
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md W4 P12
 
 schema_version: "1.0"
 app: apps_lic

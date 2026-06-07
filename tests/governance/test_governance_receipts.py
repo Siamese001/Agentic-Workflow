@@ -53,7 +53,7 @@ COMPLETENESS_FIELDS = [
 BOUNDARY_SENSITIVE_PATTERNS = [
     r'agentic_core/.*\.py$',
     r'agentic_core/.*\.yaml$',
-    r'\.windsurf/rules/.*\.md$',
+    r'\.cursor/rules/.*\.md$',
     r'AGENTS\.md$',
     r'apps_.*/config/domain_contract/.*',
 ]

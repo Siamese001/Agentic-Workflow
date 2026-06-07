@@ -378,7 +378,7 @@ class TestW3PilotPlans:
         import subprocess
         result = subprocess.run(
             ["python", "ops_scripts/ci/check_plan_format_compliance.py",
-             "--advisory", "--paths", ".windsurf/plans/plan-format-simplification-rca-d4f8e2.md"],
+             "--advisory", "--paths", "docs/archive/windsurf/legacy-tree/plans/plan-format-simplification-rca-d4f8e2.md"],
             capture_output=True,
             text=True,
         )
@@ -390,7 +390,7 @@ class TestW3PilotPlans:
         import subprocess
         result = subprocess.run(
             ["python", "ops_scripts/ci/check_plan_format_compliance.py",
-             "--advisory", "--paths", ".windsurf/templates/execution-plan-template.md"],
+             "--advisory", "--paths", ".cursor/templates/execution-plan-template.md"],
             capture_output=True,
             text=True,
         )

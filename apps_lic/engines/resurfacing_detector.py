@@ -1,6 +1,6 @@
 """apps_lic.engines.resurfacing_detector — D6-P4.
 
-Plan: .windsurf/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P4
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-deferred-scope-followup-d3f9b2.md W4 D6-P4
 
 Detects whether a recipient is a re-engagement candidate based on signals
 passed in by the caller. Returns an immutable ResurfacingDecision.

@@ -9,7 +9,7 @@
 # match between HopStageSpec.outputs and HopStageSpec.inputs. campaign_request
 # is the run-level input (treated as an external entry token, not a stage).
 #
-# Plan: .windsurf/plans/apps-e2e-auditability-harness-7c2a91.md (NEXT_STEP 2)
+# Plan: docs/archive/windsurf/legacy-tree/plans/apps-e2e-auditability-harness-7c2a91.md (NEXT_STEP 2)
 
 dag_id: apps_lic.outreach_pipeline_v1.l3_dag
 dag_name: apps_lic_outreach_v1

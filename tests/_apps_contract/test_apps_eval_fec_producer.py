@@ -1,6 +1,6 @@
 """Contract tests for apps_eval FEC producer.
 
-Plan: .windsurf/plans/dom007-fec-producers-followup-e9f3c1.md W1.P1.
+Plan: docs/archive/windsurf/legacy-tree/plans/dom007-fec-producers-followup-e9f3c1.md W1.P1.
 
 Verifies:
 - Importing ``apps_eval.cert`` auto-registers the producer in the shared registry.

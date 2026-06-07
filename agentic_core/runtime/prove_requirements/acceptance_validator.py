@@ -1,6 +1,6 @@
 """Acceptance Validator — pure-function legality engine for hardened matrix.
 
-Plan: ``.windsurf/plans/runtime-cert-hardened-w0-7e3c9a.md``
+Plan: ``docs/archive/windsurf/legacy-tree/plans/runtime-cert-hardened-w0-7e3c9a.md``
 
 Implements RTC-REQ-004, 005, 111, 127:
   - ACCEPTED iff ``actual_proof_depth >= required_proof_depth`` (rule §1)

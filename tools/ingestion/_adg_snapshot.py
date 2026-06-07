@@ -6,7 +6,7 @@ go stale the moment ``tools/generate_full_adg.py`` is run again, leaving
 ChromaDB populated with stale ``adg_node_id`` values.
 
 W1.4 of the ChromaDB/BGE retrieval-hardening plan:
-``.windsurf/plans/chromadb-bge-retrieval-hardening-e9aa09.md``.
+``docs/archive/windsurf/legacy-tree/plans/chromadb-bge-retrieval-hardening-e9aa09.md``.
 """
 
 from __future__ import annotations

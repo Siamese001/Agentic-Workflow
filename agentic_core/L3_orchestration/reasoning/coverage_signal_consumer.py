@@ -5,7 +5,7 @@ by ``agentic_core.L3_orchestration.reasoning.engines.evidence_shaper`` and
 routes low-coverage outcomes through the Wave D3 abstain primitive into the
 Wave D4 R5-compatible action shape.
 
-Wave D scope: implements WC-G06 / F14 per ``.windsurf/plans/wave_d_plan.md``
+Wave D scope: implements WC-G06 / F14 per ``docs/archive/windsurf/legacy-tree/plans/wave_d_plan.md``
 §3 Slice D5.1.
 
 Design notes (D5.1):

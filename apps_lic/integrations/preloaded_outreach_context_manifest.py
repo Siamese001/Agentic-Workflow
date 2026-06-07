@@ -39,7 +39,7 @@ Failure mapping:
   - origin_label_map missing → APPS_RESEARCH_EMPTY
   - unsupported gap not classified → APPS_RESEARCH_BLOCKED
 
-Plan: ``.windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md`` W2 P5
+Plan: ``docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md`` W2 P5
 """
 
 from __future__ import annotations

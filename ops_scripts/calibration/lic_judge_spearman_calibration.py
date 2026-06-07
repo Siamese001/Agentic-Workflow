@@ -1,6 +1,6 @@
 """ops_scripts.calibration.lic_judge_spearman_calibration — DS1-P2.
 
-Plan: .windsurf/plans/apps-lic-calibration-holdout-e8f1c4.md W5 DS1-P2
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-calibration-holdout-e8f1c4.md W5 DS1-P2
 
 Offline Spearman rank-correlation calibration for the 5 heuristic lic judges.
 

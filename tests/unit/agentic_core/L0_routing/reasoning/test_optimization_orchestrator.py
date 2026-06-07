@@ -1,6 +1,6 @@
 """Surface coverage for `agentic_core.L0_routing.reasoning.optimization_orchestrator`.
 
-Wave 8 of `.windsurf/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L0
+Wave 8 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v2). L0
 routing optimization orchestrator — analyzes historical routing outcomes.
 """
 

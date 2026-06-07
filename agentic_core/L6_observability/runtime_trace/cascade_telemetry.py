@@ -1,6 +1,6 @@
 """Cascade telemetry consumer for Wave 1/3 routing decisions.
 
-Closes G7 from ``.windsurf/plans/qwen-confidence-routing-hardening-d4e7b1.md``.
+Closes G7 from ``docs/archive/windsurf/legacy-tree/plans/qwen-confidence-routing-hardening-d4e7b1.md``.
 
 The W1 ``HealingRouter._dispatch_qwen`` and W3 ``ConfidenceAwareExecutor``
 stamp every dispatch result with ``tier_attempted``, ``tier_used``, and

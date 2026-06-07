@@ -14,7 +14,7 @@ Contract
   falls back to channel-wide defaults if no exact match.
 - Produces evidence_ref (ceiling, actual, tolerance) on fail.
 
-Plan: .windsurf/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P0b
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-canonical-spine-wireup-e7c2a5.md SE-P0b
 """
 
 from __future__ import annotations

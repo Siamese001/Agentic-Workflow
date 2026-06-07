@@ -1,7 +1,7 @@
 """Length budget extractor ΓÇö derives per-bullet and per-section word budgets
 from master_resume.json with a configurable tolerance (default ┬▒15%).
 
-Plan: .windsurf/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P3.1).
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-narrative-and-company-research-e3f8c1.md (P3.1).
 """
 
 from __future__ import annotations

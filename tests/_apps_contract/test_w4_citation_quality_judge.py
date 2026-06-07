@@ -1,6 +1,6 @@
 """Contract tests for DS-1 W4: citation_quality_judge + Spearman calibration.
 
-Plan: .windsurf/plans/apps-research-deferred-scope-b7e3d2.md W4 (DS-1).
+Plan: docs/archive/windsurf/legacy-tree/plans/apps-research-deferred-scope-b7e3d2.md W4 (DS-1).
 
 Acceptance criteria:
 - citation_quality dim wired to non-stub grader in apps_research rubric.

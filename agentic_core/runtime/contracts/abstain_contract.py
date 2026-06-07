@@ -212,7 +212,7 @@ def plan_clarify(
 # =============================================================================
 # W3.P2 — Multi-signal R5 trigger aggregation.
 #
-# Plan: .windsurf/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W3.P2.
+# Plan: docs/archive/windsurf/legacy-tree/plans/l0-routing-calibration-gap-audit-b3c9d4.md §W3.P2.
 #
 # ``plan_abstain`` (above) fires R5 on a single scalar confidence check.
 # Real-world routing needs ≥5 independent triggers per Anthropic guidance
