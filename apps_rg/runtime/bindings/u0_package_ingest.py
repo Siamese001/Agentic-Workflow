@@ -1,22 +1,21 @@
-"""apps_rg U0 runtime package ingest via core RuntimePackageRegistry (W1 spine convergence)."""
+"""apps_rg U0 runtime package ingest via app-owned package registry."""
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Mapping
 
 from agentic_core.runtime.contracts.runtime_customization_package import (
     PackageValidationReceipt,
     RuntimeCustomizationPackage,
 )
-from agentic_core.runtime.entry.u0_runtime_package_binding import (
-    RuntimePackageRegistry,
-    U0PackageValidationError,
-)
 
 from apps_rg.runtime.bindings.u0_binding import APPS_RG_TASK_CLASS
 from apps_rg.runtime.bindings.u0_profile_manifest import repo_root
 
+_LOGGER = logging.getLogger(__name__)
 _PACKAGE_RELPATH = "apps_rg/config/domain_contract/runtime_customization_package.yaml"
 
 # Map core package profile_refs keys → apps_rg ingress RuntimeCustomizationPackage fields.
@@ -28,6 +27,99 @@ _PROFILE_REF_FIELD_MAP: dict[str, str] = {
     "prompt_registry": "prompt_profile_ref",
     "l6_learning_profile": "learning_profile_ref",
 }
+
+
+class U0PackageValidationError(Exception):
+    """Raised when apps_rg U0 package validation fails."""
+
+    def __init__(self, message: str, field: str = "", receipt: Any = None) -> None:
+        self.message = message
+        self.field = field
+        self.receipt = receipt
+        super().__init__(message)
+
+
+class AppsRgRuntimePackageRegistry:
+    """apps_rg-local registry for app-owned runtime customization packages."""
+
+    def __init__(self, registry_base_path: str | Path | None = None) -> None:
+        self.registry_base_path = Path(registry_base_path) if registry_base_path else None
+        self._cache: dict[str, dict[str, Any]] = {}
+
+    def load_app_registry(self, app_id: str) -> dict[str, Any] | None:
+        if app_id in self._cache:
+            return self._cache[app_id]
+        base = self.registry_base_path or repo_root()
+        registry_path = base / app_id / "config" / "domain_contract" / "runtime_package_registry.yaml"
+        if not registry_path.exists():
+            _LOGGER.warning("No runtime package registry found for %s at %s", app_id, registry_path)
+            return None
+        import yaml
+
+        try:
+            data = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
+        except OSError as exc:
+            _LOGGER.error("Failed to read registry for %s: %s", app_id, exc)
+            return None
+        except yaml.YAMLError as exc:
+            _LOGGER.error("Failed to parse registry for %s: %s", app_id, exc)
+            return None
+        if not isinstance(data, dict):
+            _LOGGER.error("Runtime package registry for %s is not a mapping", app_id)
+            return None
+        self._cache[app_id] = data
+        return data
+
+    def resolve_default_package_ref(
+        self,
+        app_id: str,
+        task_class: str,
+        request_context: Mapping[str, Any],
+    ) -> tuple[str | None, str | None, str]:
+        registry = self.load_app_registry(app_id)
+        if not registry:
+            return None, None, f"No registry found for {app_id}"
+        default_packages = registry.get("default_packages", {})
+        if not isinstance(default_packages, dict):
+            return None, None, f"No default_packages mapping found for {app_id}"
+        task_config = default_packages.get(task_class)
+        if not isinstance(task_config, dict):
+            return None, None, f"No default package configured for task_class={task_class} in {app_id} registry"
+        caller_app_id = request_context.get("caller_app_id")
+        if caller_app_id is not None:
+            blocked_for = list(task_config.get("auto_injection_blocked_for", []) or [])
+            blocked_key = f"delegated_{caller_app_id}_without_context"
+            if blocked_key in blocked_for or "delegated_any_without_context" in blocked_for:
+                return None, None, f"Auto-injection blocked for delegated call from {caller_app_id}"
+            allowed_for = list(task_config.get("auto_injection_allowed_for", []) or [])
+            allowed_key = f"delegated_{caller_app_id}"
+            if allowed_key not in allowed_for and "delegated_any" not in allowed_for:
+                return None, None, f"Auto-injection not explicitly allowed for {caller_app_id}"
+        package_ref = str(task_config.get("package_ref") or "")
+        schema_ref = str(task_config.get("schema_ref") or "") or None
+        if not package_ref:
+            return None, None, f"No package_ref configured for task_class={task_class}"
+        return package_ref, schema_ref, "Resolved from app-owned registry"
+
+    def load_package_from_ref(self, package_ref: str) -> RuntimeCustomizationPackage | None:
+        package_path = repo_root() / package_ref
+        if not package_path.exists():
+            _LOGGER.error("Package config not found: %s", package_path)
+            return None
+        import yaml
+
+        try:
+            data = yaml.safe_load(package_path.read_text(encoding="utf-8"))
+        except OSError as exc:
+            _LOGGER.error("Failed to read package from %s: %s", package_path, exc)
+            return None
+        except yaml.YAMLError as exc:
+            _LOGGER.error("Failed to parse package from %s: %s", package_path, exc)
+            return None
+        if not isinstance(data, dict):
+            _LOGGER.error("Runtime package at %s is not a mapping", package_path)
+            return None
+        return RuntimeCustomizationPackage.from_dict(data)
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,7 +145,7 @@ def ingest_apps_rg_runtime_package(
 ) -> AppsRgU0PackageIngestResult:
     """Load and validate the apps_rg runtime customization package from app-owned registry."""
 
-    registry = RuntimePackageRegistry()
+    registry = AppsRgRuntimePackageRegistry()
     ctx = dict(request_context or {})
     package_ref, _schema_ref, reason = registry.resolve_default_package_ref(
         app_id,
@@ -175,7 +267,9 @@ def assert_package_files_on_disk() -> None:
 
 
 __all__ = [
+    "AppsRgRuntimePackageRegistry",
     "AppsRgU0PackageIngestResult",
+    "U0PackageValidationError",
     "assert_package_files_on_disk",
     "default_package_ref",
     "ingest_apps_rg_runtime_package",

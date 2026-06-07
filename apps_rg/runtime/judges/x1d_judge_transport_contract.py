@@ -4,10 +4,9 @@ Audits that Gemini, OpenAI, and Claude receive the same grading objectives, user
 score normalization, and comparable token/JSON/system constraints. Transport-only API deltas
 (responseSchema vs json_object) are allowed when documented.
 
-Transport wiring audits (system/json/truncation/token parity) delegate to
-``agentic_core.runtime.judges.panel`` via :mod:`apps_rg.runtime.judges.x1d_panel_preflight`.
-Long-term SSOT: core panel harness (plan ``core-judge-panel-harness-f3c8d1``); legacy
-``inspect.getsource`` checks are deprecated for provider transport profile fields.
+Transport wiring audits (system/json/truncation/token parity) delegate to the
+apps_rg X1D panel harness via :mod:`apps_rg.runtime.judges.x1d_panel_preflight`.
+Legacy ``inspect.getsource`` checks are deprecated for provider transport profile fields.
 """
 
 from __future__ import annotations

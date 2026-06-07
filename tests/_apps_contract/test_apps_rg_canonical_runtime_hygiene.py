@@ -49,7 +49,7 @@ def test_canonical_modules_and_symbols_exist() -> None:
 def test_main_integrated_path_calls_dispatch_apps_rg_run() -> None:
     main = importlib.import_module("apps_rg.__main__")
     src = inspect.getsource(main.main)
-    assert "dispatch_apps_rg_run" in src
+    assert "run_whole_run_with_route_governance" in src
     assert "run_whole_run_spine_harness" not in src
 
 

@@ -1,4 +1,4 @@
-"""apps_rg provider adapters for agentic_core JudgePanelRunner."""
+"""apps_rg provider adapters for the local X1D panel runner."""
 
 from __future__ import annotations
 
@@ -7,13 +7,14 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _invoke_judge_with_bounded_retries,
     _resolved_x1d_judge_max_output_tokens,
 )
-from apps_rg.runtime.judges.x1d_panel_context import X1dPanelProviderContext
-from agentic_core.runtime.judges.panel.adapter_protocol import (
+from apps_rg.runtime.judges.x1d_panel_harness import (
     AdapterInvokeError,
+    CanonicalJudgeContract,
     DeclaredTransportPolicy,
+    PanelJudgeOutcome,
+    TransportReceipt,
 )
-from agentic_core.runtime.judges.panel.canonical_contract import CanonicalJudgeContract
-from agentic_core.runtime.judges.panel.panel_types import PanelJudgeOutcome, TransportReceipt
+from apps_rg.runtime.judges.x1d_panel_context import X1dPanelProviderContext
 
 
 def _transport_receipt(

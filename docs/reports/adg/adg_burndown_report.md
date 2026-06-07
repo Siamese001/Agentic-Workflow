@@ -1,12 +1,12 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-05-27T20:47:15+00:00
-- **Gate-results source:** `artifacts\adg\adg_gate_results_20260527_204427.json`
+- **Generated:** 2026-06-07T12:24:37+00:00
+- **Gate-results source:** `artifacts\adg\adg_gate_results_20260607_122437.json`
 - **Burndown source:** `artifacts\adg\adg_burndown_table.json`
-- **Snapshot timestamp:** 2026-05-27T20:44:27.816368+00:00
+- **Snapshot timestamp:** 2026-06-07T12:24:37.300083+00:00
 - **Total gates:** 48
 - **Overall verdict:** **BLOCKED** (run halt — exit code)
-- **Action:** **FIX**=13 (address for green ADG) · **TRACK**=9 (CI OK, backlog) · **CLEAR**=26
+- **Action:** **FIX**=13 (address for green ADG) · **TRACK**=11 (CI OK, backlog) · **CLEAR**=24
 
 ## 1. Burndown by Severity Band
 
@@ -16,10 +16,10 @@ Counts come from the canonical `adg_burndown_table.json` (schema 2.2).
 
 | Band | Label | Gross | Guardian | Net | Diff vs prev |
 |------|-------|------:|---------:|----:|-------------:|
-| P0 | layer_violations | 42 | 42 | 0 | +42 |
-| P1 | anti_patterns_high | 1189 | 1189 | 0 | +1189 |
-| P2 | anti_patterns_medium | 689 | 689 | 0 | +689 |
-| P3 | style_warnings | 19301 | 93 | 19208 | +93 |
+| P0 | layer_violations | 0 | 0 | 0 | +0 |
+| P1 | anti_patterns_high | 0 | 0 | 0 | +0 |
+| P2 | anti_patterns_medium | 0 | 0 | 0 | +0 |
+| P3 | style_warnings | 0 | 0 | 0 | +0 |
 
 _p0_clean = True • p1_no_ratchet = True • counting_mode = `violations_plus_exempted_edge_inference`_
 
@@ -76,6 +76,8 @@ One row per registered gate.
 | `O_tool_call_parity_ratchet` | P1 | ratchet | FIX | regr | 347 | Counts: Tool invocations missing observability receipt (Anthropic parity pattern). Sub: +23 vs baseline 324. |
 | `C4_policy_without_audit_ratchet` | P1 | ratchet | TRACK | floor | 1 | Counts: controls_flow edges without paired audit/telemetry emission. Sub: 1 at floor (baseline 1); no new debt. |
 | `E1_trace_stub_module` | P1 | ratchet | TRACK | floor | 1032 | Counts: Modules with high test:production import ratio (trace-theater stub pattern). Sub: 1032 at floor (baseline 1032); no new debt. |
+| `H1_new_orphans_delta_ratchet` | P1 | ratchet | TRACK | floor | -1 | Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: -1 at floor (baseline 0); no new debt. |
+| `H2_fanin_collapse_ratchet` | P1 | ratchet | TRACK | floor | -1 | Counts: Hotspot modules with >30% fan_in drop vs prior snapshot. Sub: -1 at floor (baseline 0); no new debt. |
 | `I1_exit_disposition_ratchet` | P1 | ratchet | TRACK | floor | 742 | Counts: Terminal exit paths not covered in mv_exit_disposition_coverage. Sub: 742 at floor (baseline 742); no new debt. |
 | `N_guardrail_separation_ratchet` | P1 | ratchet | TRACK | floor | 112 | Counts: L5 guardrail and L3 core-response sharing same write target. Sub: 112 at floor (baseline 112); no new debt. |
 | `P_structured_output_ratchet` | P1 | ratchet | TRACK | floor | 1 | Counts: generates_prompt at scale without structured output schema. Sub: 1 at floor (baseline 1); no new debt. |
@@ -85,8 +87,6 @@ One row per registered gate.
 | `G2_seam_test_export_coherence` | P1 | block | CLEAR | — | 0 | Counts: Production seam symbols exported in tests but not in package __all__/exports. Sub: No findings. |
 | `G_ISLAND_connected_components` | P1 | ratchet | CLEAR | — | 0 | Counts: Non-giant connected components on undirected import graph. Sub: No findings. |
 | `G_WATCHLIST_DELTA_hotspot_regressions` | P1 | ratchet | CLEAR | — | 0 | Counts: Graph watchlist items newly FAIL/WARN vs prior run. Sub: No findings. |
-| `H1_new_orphans_delta_ratchet` | P1 | ratchet | CLEAR | — | 0 | Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: No findings. |
-| `H2_fanin_collapse_ratchet` | P1 | ratchet | CLEAR | — | 0 | Counts: Hotspot modules with >30% fan_in drop vs prior snapshot. Sub: No findings. |
 | `F1_untyped_seam_ratchet` | P2 | ratchet | FIX | regr | 1075 | Counts: Cross-layer imports where target has empty type_surface. Sub: +1 vs baseline 1074. |
 | `I2_replay_surface_gaps_ratchet` | P2 | ratchet | FIX | regr | 1102 | Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: +48 vs baseline 1054. |
 | `D2_role_duplication_warn` | P2 | warn | TRACK | advis | 101 | Counts: Role-suffix clusters (_reranker, _planner, …) with fan_in=0 members (advisory). Sub: 101 advisory; never blocks. |
@@ -94,8 +94,8 @@ One row per registered gate.
 | `C5_unresolved_callsites_ratchet` | P2 | ratchet | CLEAR | — | 0 | Counts: resolves_callsite edges with NULL destination (unresolved callee). Sub: No findings. |
 | `F2_broken_contract_ratchet` | P2 | ratchet | CLEAR | — | 0 | Counts: Import targets publishing zero exports edges (contract drift). Sub: No findings. |
 | `H4_mv_staleness_ratchet` | P2 | ratchet | CLEAR | — | 0 | Counts: Total edge count delta >5% vs prior snapshot (graph drift). Sub: No findings. |
-| `M1_module_loc_ratchet` | P3 | ratchet | FIX | regr | 447 | Counts: Production modules exceeding LOC ceiling (disk scan). Sub: +6 vs baseline 441. |
-| `Q2_cyclomatic_complexity_ratchet` | P3 | ratchet | FIX | regr | 981 | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: +71 vs baseline 910. |
+| `M1_module_loc_ratchet` | P3 | ratchet | FIX | regr | 449 | Counts: Production modules exceeding LOC ceiling (disk scan). Sub: +8 vs baseline 441. |
+| `Q2_cyclomatic_complexity_ratchet` | P3 | ratchet | FIX | regr | 1012 | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: +102 vs baseline 910. |
 | `S4_unused_imports_ratchet` | P3 | ratchet | FIX | regr | 10880 | Counts: Unused import edges in production modules. Sub: +105 vs baseline 10775. |
 | `D1_layer_doc_binding` | P3 | warn | TRACK | advis | 3 | Counts: Layer folders missing or mismatched LAYER.md binding (advisory). Sub: 3 advisory; never blocks. |
 | `E3_trace_theater_kpi` | P3 | warn | CLEAR | — | 0 | Counts: Emit-symbol density per layer vs imports (KPI advisory). Sub: No findings. |
@@ -113,10 +113,10 @@ One row per registered gate.
 | `S2_uwg_bypass_ratchet` | regr | 1718 |
 | `I2_replay_surface_gaps_ratchet` | regr | 1102 |
 | `F1_untyped_seam_ratchet` | regr | 1075 |
-| `Q2_cyclomatic_complexity_ratchet` | regr | 981 |
+| `Q2_cyclomatic_complexity_ratchet` | regr | 1012 |
 | `B2_layer_skip_ratchet` | regr | 951 |
 | `M_taint_actionable_ratchet` | regr | 702 |
-| `M1_module_loc_ratchet` | regr | 447 |
+| `M1_module_loc_ratchet` | regr | 449 |
 | `O_tool_call_parity_ratchet` | regr | 347 |
 | `8_trace_replay_eval` | regr | 134 |
 | `L2_lpg_drift_ratchet` | regr | 2 |
@@ -134,6 +134,8 @@ One row per registered gate.
 | `C4_policy_without_audit_ratchet` | floor | 1 |
 | `J1_canonical_pipeline_wiring` | inventory | 1 |
 | `P_structured_output_ratchet` | floor | 1 |
+| `H1_new_orphans_delta_ratchet` | floor | -1 |
+| `H2_fanin_collapse_ratchet` | floor | -1 |
 
 ## 4. Aggregate Verdicts
 
@@ -151,8 +153,8 @@ One row per registered gate.
 | Verdict | Gates | Meaning |
 |---------|------:|---------|
 | FIX | 13 | Address before treating ADG as green (gate blocked or ratchet regressed). |
-| TRACK | 9 | CI passed this gate; findings are backlog — plan hygiene, not a halt. |
-| CLEAR | 26 | Zero findings; nothing to do on this gate. |
+| TRACK | 11 | CI passed this gate; findings are backlog — plan hygiene, not a halt. |
+| CLEAR | 24 | Zero findings; nothing to do on this gate. |
 
 ## 5. Fix now (detail)
 
@@ -164,10 +166,10 @@ One row per registered gate.
 | `S2_uwg_bypass_ratchet` | P0 | ratchet | regr | 1718 | Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: +119 vs baseline 1599. |
 | `I2_replay_surface_gaps_ratchet` | P2 | ratchet | regr | 1102 | Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: +48 vs baseline 1054. |
 | `F1_untyped_seam_ratchet` | P2 | ratchet | regr | 1075 | Counts: Cross-layer imports where target has empty type_surface. Sub: +1 vs baseline 1074. |
-| `Q2_cyclomatic_complexity_ratchet` | P3 | ratchet | regr | 981 | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: +71 vs baseline 910. |
+| `Q2_cyclomatic_complexity_ratchet` | P3 | ratchet | regr | 1012 | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: +102 vs baseline 910. |
 | `B2_layer_skip_ratchet` | P1 | ratchet | regr | 951 | Counts: Import edges that skip more than one layer ordinal (layer-hop). Sub: +1 vs baseline 950. |
 | `M_taint_actionable_ratchet` | P1 | ratchet | regr | 702 | Counts: Actionable taint surfaces without output schema binding. Sub: +45 vs baseline 657. |
-| `M1_module_loc_ratchet` | P3 | ratchet | regr | 447 | Counts: Production modules exceeding LOC ceiling (disk scan). Sub: +6 vs baseline 441. |
+| `M1_module_loc_ratchet` | P3 | ratchet | regr | 449 | Counts: Production modules exceeding LOC ceiling (disk scan). Sub: +8 vs baseline 441. |
 | `O_tool_call_parity_ratchet` | P1 | ratchet | regr | 347 | Counts: Tool invocations missing observability receipt (Anthropic parity pattern). Sub: +23 vs baseline 324. |
 | `8_trace_replay_eval` | P1 | ratchet | regr | 134 | Counts: Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path). Sub: Above ratchet baseline. |
 | `L2_lpg_drift_ratchet` | P0 | ratchet | regr | 2 | Counts: Illegal or drifted imports touching L_PG boundary. Sub: +2 vs baseline 0. |

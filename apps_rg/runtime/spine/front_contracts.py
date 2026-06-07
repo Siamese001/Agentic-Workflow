@@ -10,70 +10,30 @@ import json
 import os
 import uuid
 from contextvars import ContextVar
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
 from apps_rg.runtime.section_spine_terminology import (
-    CANONICAL_CONTRACT_TYPES,
     CANONICAL_SPINE_CHAIN,
     section_lane_spine_classification,
+)
+from apps_rg.runtime.spine.section_contract_bundles import (
+    DOWNSTREAM_MISSING_CANONICAL_CONTRACTS,
+    FRONT_SPINE_CONTRACTS,
+    OBSERVED_CHAIN_WITH_FRONT_BRIDGE,
+    SectionFrontSpineBridge,
+    SectionRunContractBundle,
 )
 
 _FIXTURE_DEV_BYPASS_CTX: ContextVar[bool] = ContextVar(
     "apps_rg_section_fixture_dev_bypass", default=False
 )
 
-FRONT_SPINE_CONTRACTS: tuple[str, ...] = (
-    "ValidatedRequest",
-    "L1PlanContract",
-    "RouteContract",
-)
-
-DOWNSTREAM_MISSING_CANONICAL_CONTRACTS: tuple[str, ...] = tuple(
-    c for c in CANONICAL_CONTRACT_TYPES if c not in FRONT_SPINE_CONTRACTS
-)
-
-OBSERVED_CHAIN_WITH_FRONT_BRIDGE: tuple[str, ...] = (
-    "CLI",
-    "section_front_spine_bridge",
-    "U0",
-    "L1",
-    "L0",
-    "proof_pool_resolver",
-    "section_lane_modular",
-)
-
-
 class SectionFrontSpinePreconditionError(RuntimeError):
     """Raised when proof_pool runs product-visible without front-spine contracts."""
-
-
-@dataclass(frozen=True, slots=True)
-class SectionFrontSpineBridge:
-    """Front-spine contract bundle for a section lane invocation."""
-
-    section_id: str
-    validated_request: Any
-    l1_plan: Any
-    route: Any
-    product_visible: bool = True
-    fixture_dev_only_bypass: bool = False
-    non_product_certified: bool = False
-    observed_chain: tuple[str, ...] = OBSERVED_CHAIN_WITH_FRONT_BRIDGE
-    missing_downstream_contracts: tuple[str, ...] = DOWNSTREAM_MISSING_CANONICAL_CONTRACTS
-    spine_lane_mode: str = "section_spine_run"
-    is_canonical_c0_path: bool = False
-    whole_run_envelope: bool = False
-
-    def contracts_emitted(self) -> dict[str, bool]:
-        return {
-            "ValidatedRequest": self.validated_request is not None,
-            "L1PlanContract": self.l1_plan is not None,
-            "RouteContract": self.route is not None,
-        }
 
 
 def activate_fixture_dev_bypass(*, non_product_certified: bool = True) -> None:
@@ -413,6 +373,7 @@ __all__ = [
     "OBSERVED_CHAIN_WITH_FRONT_BRIDGE",
     "SectionFrontSpineBridge",
     "SectionFrontSpinePreconditionError",
+    "SectionRunContractBundle",
     "activate_fixture_dev_bypass",
     "assert_proof_pool_front_spine_preconditions",
     "build_section_front_spine_from_args",

@@ -1,0 +1,17 @@
+{
+  "forbidden_prefixes": [
+    "agentic_core.runtime.entrypoints",
+    "agentic_core.runtime.entry",
+    "agentic_core.L0_routing",
+    "agentic_core.L1_cognition",
+    "agentic_core.L2_execution",
+    "agentic_core.runtime.exit",
+    "agentic_core.runtime.judges",
+    "agentic_core.runtime.l6"
+  ],
+  "generated_at": "2026-06-07",
+  "message": "apps_rg must bind to spine contracts, not concrete agentic_core implementation internals.",
+  "schema_version": "apps_rg.forbidden_core_import_baseline.v1",
+  "violation_count": 0,
+  "violations": []
+}

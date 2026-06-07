@@ -48,7 +48,7 @@ from typing import Any
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
+PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 REPORT_OUT = REPO_ROOT / "artifacts" / "ci" / "plan_freshness_gate.json"
 
 sys.path.insert(0, str(REPO_ROOT))

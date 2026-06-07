@@ -8,7 +8,7 @@ from typing import Any
 
 _METRIC_PCT_RE = re.compile(r"\d+(?:\.\d+)?\s*%", re.IGNORECASE)
 
-from agentic_core.L2_execution.regen.judge_directed_regen import (
+from apps_rg.runtime.sections.executive_summary_regen_support import (
     DEFAULT_STEP_ORDER,
     JudgeDirectedRegenPlan,
     JudgeDirectedRegenStep,

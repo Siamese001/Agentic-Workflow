@@ -109,7 +109,7 @@ def build_inventory(*, policy_option: str = "A", wave: str = "W0") -> dict:
         always_apply_set - OPTION_A_ALWAYS_APPLY - OPTION_A_TRANSITIONAL_EXTRAS
     )
     tier1_status = "PASS" if tier1_total <= THRESHOLD_BYTES else "FAIL"
-    plans_dir = REPO_ROOT / ".cursor" / "plans"
+    plans_dir = REPO_ROOT / ".claude" / "plans"
     active_plan_count = (
         len([p for p in plans_dir.iterdir() if p.is_file()]) if plans_dir.is_dir() else 0
     )

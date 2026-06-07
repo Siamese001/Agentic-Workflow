@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-19T11:01:13.677621+00:00",
+  "generated_at": "2026-06-07T12:01:14.655040+00:00",
   "plan_id": "cursor-governance-two-tier-b4e8f2",
   "wave": "W2",
   "policy_option": "A",
@@ -120,7 +120,7 @@
       }
     ]
   },
-    "tier_1_bytes": 18460,
+  "tier_1_bytes": null,
   "always_apply_count": 4,
   "risk_notes": [
     "Agents must load plan-governance skill for lifecycle work \u2014 rule file is now a pointer",
@@ -130,7 +130,7 @@
     "W3-W5 not executed",
     "hooks not rewired",
     "active plans not archived",
-    ".windsurf not deleted",
+    "docs/archive/windsurf/legacy-tree not deleted",
     "runtime RAG not touched",
     "agentic_core untouched",
     "apps_rg runtime/product code untouched",

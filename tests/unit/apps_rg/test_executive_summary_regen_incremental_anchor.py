@@ -30,6 +30,7 @@ def _regen_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_PRESCRIPTIVE_DELTA", "1")
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_CORE_SAME_AUTHORITY_REGEN", "1")
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_LEGACY_BLOCK", "0")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS", "2")
     (tmp_path / "compiled_prompt_artifact.json").write_text(
         json.dumps(
             {

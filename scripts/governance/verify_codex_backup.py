@@ -1,0 +1,96 @@
+"""Verify the thin Codex backup adapter for Agentic-Workflow.
+
+This script checks presence and anchor references only. Claude/Cursor governance
+remains authoritative; this verifier guards the Codex adapter against drift.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+CODEX_SKILLS_ROOT = Path.home() / ".codex" / "skills"
+
+REQUIRED_REPO_FILES = [
+    "AGENTS.md",
+    "docs/codex-backup-adapter.md",
+    ".cursor/rules/sequential-thinking-enforcement.mdc",
+    ".cursor/skills/structured-reasoning/SKILL.md",
+    ".cursor/skills/mcp-integration/SKILL.md",
+    ".cursor/skills/plan-governance/SKILL.md",
+    ".cursor/mcp.json",
+    ".cursor/hooks.json",
+]
+
+REQUIRED_CODEX_SKILLS = [
+    "agentic-workflow-governance/SKILL.md",
+    "agentic-workflow-verification/SKILL.md",
+]
+
+REQUIRED_ANCHORS = {
+    "AGENTS.md": [
+        "## Codex backup adapter",
+        "agentic-workflow-governance",
+        "scripts/governance/verify_codex_backup.py",
+    ],
+    "docs/codex-backup-adapter.md": [
+        ".cursor/skills/structured-reasoning/SKILL.md",
+        ".cursor/skills/mcp-integration/SKILL.md",
+        "agentic-workflow-verification",
+    ],
+}
+
+REQUIRED_SKILL_ANCHORS = {
+    "agentic-workflow-governance/SKILL.md": [
+        ".cursor/skills/structured-reasoning/SKILL.md",
+        ".cursor/skills/mcp-integration/SKILL.md",
+        "SR_INTAKE",
+    ],
+    "agentic-workflow-verification/SKILL.md": [
+        "scripts/governance/verify_codex_backup.py",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        "SR_VERIFY",
+    ],
+}
+
+
+def missing_paths(paths: list[str], root: Path) -> list[Path]:
+    return [root / path for path in paths if not (root / path).exists()]
+
+
+def missing_anchors(anchor_map: dict[str, list[str]], root: Path) -> list[str]:
+    failures: list[str] = []
+    for relative_path, anchors in anchor_map.items():
+        path = root / relative_path
+        text = path.read_text(encoding="utf-8")
+        for anchor in anchors:
+            if anchor not in text:
+                failures.append(f"{path}: missing anchor {anchor!r}")
+    return failures
+
+
+def main() -> int:
+    failures: list[str] = []
+
+    failures.extend(str(path) for path in missing_paths(REQUIRED_REPO_FILES, REPO_ROOT))
+    failures.extend(str(path) for path in missing_paths(REQUIRED_CODEX_SKILLS, CODEX_SKILLS_ROOT))
+
+    if not failures:
+        failures.extend(missing_anchors(REQUIRED_ANCHORS, REPO_ROOT))
+        failures.extend(missing_anchors(REQUIRED_SKILL_ANCHORS, CODEX_SKILLS_ROOT))
+
+    if failures:
+        print("Codex backup adapter verification FAILED")
+        for failure in failures:
+            print(f"- {failure}")
+        return 1
+
+    print("Codex backup adapter verification passed")
+    print(f"- repo: {REPO_ROOT}")
+    print(f"- codex skills: {CODEX_SKILLS_ROOT}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

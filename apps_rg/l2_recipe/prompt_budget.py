@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MAX_MODEL_LEN
+from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MAX_MODEL_LEN
 
 # Must match optimized_vllm_client._truncate_prompt_for_context (line ~51: max_chars = max_prompt_tokens * 2).
 # _CHARS_PER_TOKEN_EST = 2 is intentionally lower than the SSOT constant (CHARS_PER_TOKEN_ESTIMATE = 3

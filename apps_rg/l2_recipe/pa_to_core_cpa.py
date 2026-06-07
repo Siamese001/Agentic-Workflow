@@ -11,12 +11,11 @@ import json
 import uuid
 from typing import Any
 
-from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
-
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact as CoreCompiledPromptArtifact,
     PromptBlock,
 )
+from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MODEL_ID
 
 
 def adapt_apps_rg_cpa_for_l2_envelope(

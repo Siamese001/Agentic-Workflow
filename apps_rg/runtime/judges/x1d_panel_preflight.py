@@ -1,10 +1,12 @@
-"""apps_rg wrapper — core panel transport preflight from static provider profiles."""
+"""apps_rg panel transport preflight from static provider profiles."""
 
 from __future__ import annotations
 
-from agentic_core.runtime.judges.panel.adapter_protocol import DeclaredTransportPolicy
-from agentic_core.runtime.judges.panel.panel_types import TransportReceipt
-from agentic_core.runtime.judges.panel.preflight import audit_provider_transport_profile
+from apps_rg.runtime.judges.x1d_panel_harness import (
+    DeclaredTransportPolicy,
+    TransportReceipt,
+    audit_provider_transport_profile,
+)
 from apps_rg.runtime.judges.x1d_judge_transport_contract import (
     PROOF_JUDGE_PROVIDER_KEYS,
     ProviderTransportProfile,

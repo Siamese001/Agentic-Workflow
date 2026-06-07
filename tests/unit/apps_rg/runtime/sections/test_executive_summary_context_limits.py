@@ -69,11 +69,11 @@ def test_available_input_tokens_formula() -> None:
 
 def test_resolve_provider_context_window_matches_l0(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("VLLM_MAX_MODEL_LEN", raising=False)
-    from agentic_core.L0_routing.config import model_registry
+    from apps_rg.runtime import qwen_vllm_health
 
-    importlib.reload(model_registry)
+    importlib.reload(qwen_vllm_health)
     importlib.reload(limits)
-    assert resolve_provider_context_window() == model_registry.QWEN_LOCAL_MAX_MODEL_LEN
+    assert resolve_provider_context_window() == qwen_vllm_health.QWEN_LOCAL_MAX_MODEL_LEN
 
 
 def test_regen_output_capped_by_scratch(monkeypatch: pytest.MonkeyPatch) -> None:

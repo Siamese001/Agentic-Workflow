@@ -21,7 +21,7 @@ from pathlib import Path
 from lib.claude_hook_common import cursor_response_payload, read_payload
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = REPO_ROOT / ".cursor" / "scripts"
+SCRIPTS = REPO_ROOT / ".claude" / "governance" / "scripts"
 NOTION_AUDITOR = REPO_ROOT / "tools" / "notion" / "unified_notion_status_auditor.py"
 
 _SCRIPT_EXTRA_ARGS: dict[str, tuple[str, ...]] = {

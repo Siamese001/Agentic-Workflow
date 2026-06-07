@@ -170,8 +170,8 @@ def finding_is_contract_invalid_under_gate_closures(
 
 
 def core_gate_closure_map():
-    """Export apps_rg closure map for agentic_core reconcile engine (W2)."""
-    from agentic_core.runtime.judges.panel.gate_closure_reconcile import (
+    """Export apps_rg closure map in the panel harness shape."""
+    from apps_rg.runtime.judges.x1d_panel_harness import (
         GateClosureMap,
         GateClosureRule,
     )

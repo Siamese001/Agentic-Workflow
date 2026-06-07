@@ -1,4 +1,4 @@
-"""R3R4 managed research delegation reachability for whole-run CLI."""
+"""R3R4 whole-run reachability with apps_research delegation disabled."""
 from __future__ import annotations
 
 import json
@@ -21,8 +21,8 @@ from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import (
 
 
 def test_research_enabled_when_brief_missing_and_auto_research_on() -> None:
-    assert research_delegation_enabled(auto_research_internal=True, research_via=None)
-    assert should_delegate_apps_research(
+    assert not research_delegation_enabled(auto_research_internal=True, research_via=None)
+    assert not should_delegate_apps_research(
         route_family=ROUTE_FAMILY_R3R4,
         manual_brief="",
         auto_research_internal=True,
@@ -42,7 +42,7 @@ def test_no_delegation_when_brief_present(tmp_path: Path) -> None:
     )
 
 
-def test_whole_run_r3r4_mock_research_delegation(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_whole_run_r3r4_reachable_without_research_delegation(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("APPS_RG_MOCK_RESEARCH", "1")
     monkeypatch.setenv("APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST", "1")
 
@@ -97,31 +97,31 @@ def test_whole_run_r3r4_mock_research_delegation(monkeypatch: pytest.MonkeyPatch
         lambda explicit: tmp_path / "full_resume_test01",
     )
 
+    brief = tmp_path / "brief.txt"
+    brief.write_text("Existing authoritative briefing.\n", encoding="utf-8")
+
     result = orch.run_whole_run_with_route_governance(
         target_company="Brown & Brown",
         target_role="SVP IT Strategy",
         jd="Target JD text for testing.",
-        manual_brief="",
+        manual_brief=str(brief),
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "full_resume_test01"),
     )
 
     assert result["route_family"] == ROUTE_FAMILY_R3R4
-    assert result["research_delegation_executed"] is True
+    assert result["research_delegation_executed"] is False
     art = Path(result["artifact_dir"])
     assert (art / FILENAME_SPINE_MANIFEST).is_file()
-    assert (art / FILENAME_RESEARCH_BRIDGE_REQUEST).is_file()
-    assert (art / FILENAME_RESEARCH_BRIDGE_RESPONSE).is_file()
-    assert (art / FILENAME_DELEGATED_BRIEFING).is_file()
+    assert not (art / FILENAME_RESEARCH_BRIDGE_REQUEST).exists()
+    assert not (art / FILENAME_RESEARCH_BRIDGE_RESPONSE).exists()
+    assert not (art / FILENAME_DELEGATED_BRIEFING).exists()
 
     spine = json.loads((art / FILENAME_SPINE_MANIFEST).read_text(encoding="utf-8"))
     assert spine["proof_authority"] == "spine_run_manifest.json"
     assert spine["draft_leg_proof_scope"] == "draft_leg_only"
     assert spine["route_family"] == ROUTE_FAMILY_R3R4
-
-    bridge_resp = json.loads((art / FILENAME_RESEARCH_BRIDGE_RESPONSE).read_text(encoding="utf-8"))
-    assert bridge_resp["outcome"] == "ResumeBriefingReady"
 
     r4 = json.loads((art / "r4_run_manifest.json").read_text(encoding="utf-8"))
     assert r4.get("apps_rg_proof_scope") == "draft_leg_only"
@@ -129,4 +129,4 @@ def test_whole_run_r3r4_mock_research_delegation(monkeypatch: pytest.MonkeyPatch
 
     route_decision = result["route_decision"]
     assert route_decision["route_family"] == ROUTE_FAMILY_R3R4
-    assert route_decision["briefing_input_present"] is False
+    assert route_decision["briefing_input_present"] is True

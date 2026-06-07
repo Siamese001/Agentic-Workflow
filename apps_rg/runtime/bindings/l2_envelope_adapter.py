@@ -112,7 +112,7 @@ def _cpa_prompt_text(cpa: Any) -> str:
 
 
 def _build_lineage_root(prompt_artifact: Any) -> Any:
-    from agentic_core.L2_execution.types.l2_v3_receipts import LineageRoot
+    from apps_rg.runtime.bindings.l2_envelope_contracts import LineageRoot
 
     trace_id = str(getattr(prompt_artifact, "trace_id", "") or "")
     request_id = str(getattr(prompt_artifact, "request_id", "") or "")
@@ -128,7 +128,7 @@ def _build_lineage_root(prompt_artifact: Any) -> Any:
 
 
 def _build_determinism_bundle(prompt_artifact: Any) -> Any:
-    from agentic_core.L2_execution.types.l2_v3_receipts import DeterminismBundle
+    from apps_rg.runtime.bindings.l2_envelope_contracts import DeterminismBundle
 
     comp = str(getattr(prompt_artifact, "compilation_hash", "") or "")
     pol = str(getattr(prompt_artifact, "l5_certification_ref", "") or "")
@@ -151,7 +151,7 @@ def _build_frozen_execution_context(
     validated_request: Any | None = None,
 ) -> Any:
     del route_contract, validated_request
-    from agentic_core.L2_execution.types.l2_v4_contracts import FrozenExecutionContext
+    from apps_rg.runtime.bindings.l2_envelope_contracts import FrozenExecutionContext
 
     tm = str(getattr(prompt_artifact, "target_model", "") or "").strip()
     if not tm:
@@ -179,7 +179,7 @@ def _build_work_order_inputs(
     route_contract: Any | None = None,
 ) -> Any:
     del route_contract
-    from agentic_core.L2_execution.types.l2_v4_contracts import (
+    from apps_rg.runtime.bindings.l2_envelope_contracts import (
         CapabilitySpec,
         ExecutionForm,
         TaskSpec,
@@ -236,7 +236,7 @@ def _mk_sealed_rejection(
     missing_field: str = "",
     decisive: str = "V_FAIL",
 ) -> Any:
-    from agentic_core.L2_execution.types.l2_v4_contracts import SealedRejectionPacket
+    from apps_rg.runtime.bindings.l2_envelope_contracts import SealedRejectionPacket
 
     return SealedRejectionPacket(
         rejection_packet_id=f"rej-{uuid.uuid4().hex}",
@@ -264,7 +264,7 @@ def _build_prep_output(
     elif validated_request is None:
         _, validated_request = _synth_route_and_vr_from_prompt_artifact(prompt_artifact)
 
-    from agentic_core.L2_execution.types.l2_v4_contracts import PrepOutput, ReplayBindings, WriteLockAssertion
+    from apps_rg.runtime.bindings.l2_envelope_contracts import PrepOutput, ReplayBindings, WriteLockAssertion
 
     comp = str(getattr(prompt_artifact, "compilation_hash", "") or "")
     rk = str(getattr(prompt_artifact, "replay_key", "") or "")
@@ -300,7 +300,7 @@ def _build_prep_output(
 
 
 def _validate_work_order(prep_output: Any, cpa: Any) -> Any:
-    from agentic_core.L2_execution.types.l2_v4_contracts import (
+    from apps_rg.runtime.bindings.l2_envelope_contracts import (
         ApprovedWorkOrder,
         BudgetSnapshot,
         CapabilityScopeSummary,
@@ -487,7 +487,7 @@ def _attempt_from_provider_resolution_error(
     attempt_number: int,
     exc: AppsRgEnvelopeProviderResolutionError,
 ) -> Any:
-    from agentic_core.L2_execution.types.l2_v3_receipts import (
+    from apps_rg.runtime.bindings.l2_envelope_contracts import (
         AttemptReceipt,
         ExecutionLane,
         ResultClass,
@@ -534,7 +534,7 @@ def _attempt_from_authenticity_violation(
     attempt_number: int,
     viol: ProviderAuthenticityViolation,
 ) -> Any:
-    from agentic_core.L2_execution.types.l2_v3_receipts import (
+    from apps_rg.runtime.bindings.l2_envelope_contracts import (
         AttemptReceipt,
         ExecutionLane,
         ResultClass,
@@ -581,7 +581,7 @@ def _execute_approved_work_order(
     resume_artifact_contract_mode: Any | None = None,
     artifact_dir: str | None = None,
 ) -> Any:
-    from agentic_core.L2_execution.types.l2_v3_receipts import (
+    from apps_rg.runtime.bindings.l2_envelope_contracts import (
         AttemptReceipt,
         ExecutionLane,
         ResultClass,
@@ -1005,14 +1005,14 @@ def _heal_attempt_failure(
     repair_count: int,
 ) -> Any:
     """E4 heal — same-authority repairs only (no ProviderGateway)."""
-    from agentic_core.L2_execution.types.l2_v3_receipts import (
+    from apps_rg.runtime.bindings.l2_envelope_contracts import (
         AttemptReceipt,
         HealOutcomeStamp,
         HealReceipt,
         RepairStatus,
         ResultClass,
     )
-    from agentic_core.L2_execution.types.l2_v4_contracts import DISALLOWED_REPAIRS, SAFE_LOCAL_REPAIRS, is_repair_allowed
+    from apps_rg.runtime.bindings.l2_envelope_contracts import DISALLOWED_REPAIRS, SAFE_LOCAL_REPAIRS, is_repair_allowed
 
     _ = cpa  # reserved for CPA-scoped repairs
     rid = HealReceipt.new_id()

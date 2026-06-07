@@ -433,6 +433,8 @@ def write_embedding_settings_receipt(
 
 
 def semantic_cache_r1b_eligible(settings: AppsRgEmbeddingSettings | None = None) -> bool:
+    if not _env_truthy("APPS_RG_ENABLE_R1B_SEMANTIC_CACHE"):
+        return False
     s = settings or resolve_apps_rg_embedding_settings()
     return bool(s.embeddings_enabled and s.semantic_cache_enabled and not s.semantic_cache_ineligible)
 

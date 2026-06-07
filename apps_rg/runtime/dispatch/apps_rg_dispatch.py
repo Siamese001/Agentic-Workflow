@@ -140,14 +140,16 @@ def apps_rg_dispatch(envelope: Any) -> SimpleNamespace:
         ``outcome_authorized`` (and optional ``error``).
     """
     try:
-        from agentic_core.runtime.entry.apps_rg_dispatch import dispatch_apps_rg_run
+        from apps_rg.runtime.orchestration.canonical_dispatch import (
+            run_canonical_apps_rg_from_cli_primitives,
+        )
 
         payload_obj = getattr(envelope, "payload", None)
         if payload_obj is not None and hasattr(payload_obj, "target_company"):
             p = payload_obj
             uc = dict(getattr(p, "user_constraints", None) or {})
             gm = str(uc.get("_generation_mode") or "strategic_tailor")
-            raw = dispatch_apps_rg_run(
+            raw = run_canonical_apps_rg_from_cli_primitives(
                 target_company=str(p.target_company or ""),
                 target_role=str(p.target_role or ""),
                 target_level=str(p.target_level or ""),
@@ -168,7 +170,7 @@ def apps_rg_dispatch(envelope: Any) -> SimpleNamespace:
 
         else:
             app_payload = getattr(envelope, "app_payload", {}) or {}
-            raw = dispatch_apps_rg_run(
+            raw = run_canonical_apps_rg_from_cli_primitives(
                 target_company=app_payload.get("target_company", ""),
                 target_role=app_payload.get("target_role", ""),
                 target_level=app_payload.get("target_level", ""),

@@ -2,7 +2,7 @@
 
 Best practice: **do not** restart on every invocation — that hides instability and adds
 ~tens of seconds per run while the model reloads. Default mode is ``if_unhealthy``:
-call :func:`agentic_core.L2_execution.healers.vllm_health_probe.probe` on
+call the apps_rg-local vLLM health probe on
 ``VLLM_BASE_URL``/``/v1/models`` and only run ``docker restart`` when the probe fails.
 
 **W4:** When restart is opt-in and a restart is performed (or skipped as already healthy),
@@ -31,9 +31,6 @@ import subprocess
 import time
 from typing import Any, Literal
 
-from agentic_core.L0_routing.config.model_registry import VLLM_BASE_URL
-from agentic_core.L2_execution.healers.vllm_health_probe import probe
-
 from apps_rg.runtime.qwen_transport_diag import (
     READINESS_MODEL_MISMATCH,
     READINESS_MODEL_MISSING,
@@ -47,6 +44,7 @@ from apps_rg.runtime.qwen_transport_diag import (
     fetch_openai_compatible_model_ids,
     redact_base_url_for_banner,
 )
+from apps_rg.runtime.qwen_vllm_health import VLLM_BASE_URL, probe
 
 __all__ = ["maybe_restart_qwen_vllm_for_apps_rg_run"]
 

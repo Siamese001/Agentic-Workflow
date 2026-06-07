@@ -1,4 +1,27 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Grep",
+      "Glob",
+      "Agent",
+      "Skill",
+      "Task",
+      "NotebookEdit",
+      "WebFetch",
+      "WebSearch",
+      "mcp__memory",
+      "mcp__adg_sqlite",
+      "mcp__notion",
+      "mcp__GitKraken",
+      "mcp__vector_db",
+      "mcp__context7",
+      "mcp__playwright"
+    ]
+  },
   "hooks": {
     "UserPromptSubmit": [
       {

@@ -7,10 +7,9 @@ import shutil
 import subprocess
 from typing import Any
 
-from agentic_core.L0_routing.config.model_registry import VLLM_BASE_URL
-
 from apps_rg.runtime.providers.competencies_live_provider_gate import competencies_vllm_preflight_timeout_s
 from apps_rg.runtime.qwen_transport_diag import run_http_models_preflight
+from apps_rg.runtime.qwen_vllm_health import VLLM_BASE_URL
 
 _ENV_SKIP_QWEN_HEALTH = "APPS_RG_SKIP_QWEN_VLLM_HEALTH"
 _ENV_VLLM_AUTO_START = "APPS_RG_VLLM_AUTO_START"

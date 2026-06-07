@@ -1,4 +1,4 @@
-"""Bridge apps_rg GRADE_ONLY judge path to agentic_core JudgePanelRunner."""
+"""Bridge apps_rg GRADE_ONLY judge path to the local X1D panel runner."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.judges.panel import (
+from apps_rg.runtime.judges.x1d_panel_harness import (
     CanonicalJudgeContract,
     JudgePanelRunner,
     PanelAdapterRegistry,
@@ -36,7 +36,7 @@ def build_core_contract_from_packet(
     *,
     canonical_hash: str | None = None,
 ) -> CanonicalJudgeContract:
-    """Map apps_rg JudgePacket to core CanonicalJudgeContract."""
+    """Map apps_rg JudgePacket to the panel CanonicalJudgeContract."""
     boundary = judge_packet.get("proof_boundary") or {}
     packet_hash = canonical_hash
     if packet_hash is None and str(judge_packet.get("judge_packet_version", "")).startswith(
@@ -83,7 +83,7 @@ def run_grade_only_judges_via_core_panel(
     judge_packet_ref: str | None,
     contract_hash: str | None,
 ) -> list[JudgeOutput]:
-    """Run proof panel through core JudgePanelRunner (W2 migration path)."""
+    """Run proof panel through the apps_rg X1D panel runner."""
     sid = normalize_section_id(section_id)
     contract = build_core_contract_from_packet(
         judge_packet,

@@ -11,7 +11,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-CURSOR_PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
+CURSOR_PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 CURSOR_SCRIPTS_DIR = REPO_ROOT / ".cursor" / "scripts"
 CURSOR_SCHEMAS_DIR = REPO_ROOT / ".cursor" / "schemas"
 CURSOR_STATE_DIR = REPO_ROOT / ".cursor" / "state"

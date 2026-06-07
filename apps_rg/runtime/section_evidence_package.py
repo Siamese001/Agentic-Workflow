@@ -14,6 +14,7 @@ from typing import Any, Mapping
 
 from apps_rg.runtime.section_binding_taxonomy import (
     APPS_RG_DOMAIN_ARTIFACTS,
+    APPS_RG_SECTION_SHIM_PREFERRED_NAMES,
     L7_CORE_ARTIFACTS,
     W4_INTEGRATED_PARENT_BUNDLE_INDEX,
     W4_VERIFIED_EXTERNAL_ARTIFACTS,
@@ -104,6 +105,21 @@ def _sha256_file(path: Path) -> str:
     except OSError:
         return ""
     return h.hexdigest()
+
+
+def mirror_preferred_section_shim_names(artifact_dir: Path) -> list[dict[str, str]]:
+    """Dual-write preferred app-owned names for legacy section shim receipts."""
+
+    mirrored: list[dict[str, str]] = []
+    for legacy, preferred in APPS_RG_SECTION_SHIM_PREFERRED_NAMES.items():
+        legacy_path = artifact_dir / legacy
+        preferred_path = artifact_dir / preferred
+        if not legacy_path.is_file():
+            continue
+        if not preferred_path.exists():
+            preferred_path.write_bytes(legacy_path.read_bytes())
+        mirrored.append({"legacy": legacy, "preferred": preferred})
+    return mirrored
 
 
 def _load_json(path: Path) -> dict[str, Any]:

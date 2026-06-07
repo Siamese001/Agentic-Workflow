@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-26T19:27:03.683699+00:00",
+  "generated_at": "2026-06-07T12:23:09.220261+00:00",
   "plan_id": "cursor-governance-two-tier-b4e8f2",
   "wave": "W0",
   "policy_option_selected": "A",
@@ -12,50 +12,30 @@
   "policy_option_a_transitional_extras_pending_w1": [],
   "tier_1_cursor_native": {
     "measured_paths": [
-      ".cursor/rules/000-agentic-core-operating-contract.mdc",
-      ".cursor/rules/001-cursor-runtime-seam-execution.mdc",
-      ".cursor/rules/002-pass-blocked-proof-contract.mdc",
-      ".cursor/rules/003-cursor-author-gate-hitl.mdc",
       "AGENTS.md"
     ],
     "files": [
       {
-        "path": ".cursor/rules/000-agentic-core-operating-contract.mdc",
-        "bytes": 2345
-      },
-      {
-        "path": ".cursor/rules/001-cursor-runtime-seam-execution.mdc",
-        "bytes": 2414
-      },
-      {
-        "path": ".cursor/rules/002-pass-blocked-proof-contract.mdc",
-        "bytes": 1848
-      },
-      {
-        "path": ".cursor/rules/003-cursor-author-gate-hitl.mdc",
-        "bytes": 2674
-      },
-      {
         "path": "AGENTS.md",
-        "bytes": 10393
+        "bytes": 11268
       }
     ],
-    "total_bytes": 19674,
-    "approx_tokens": 4918,
+    "total_bytes": 11268,
+    "approx_tokens": 2817,
     "threshold_bytes": 51200,
     "status": "PASS",
-    "headroom_bytes": 31526
+    "headroom_bytes": 39932
   },
-  "agents_md_bytes": 10393,
-  "always_apply_mdc_count": 4,
-  "always_apply_mdc_names": [
-    "000-agentic-core-operating-contract.mdc",
-    "001-cursor-runtime-seam-execution.mdc",
-    "002-pass-blocked-proof-contract.mdc",
-    "003-cursor-author-gate-hitl.mdc"
-  ],
+  "agents_md_bytes": 11268,
+  "always_apply_mdc_count": 0,
+  "always_apply_mdc_names": [],
   "option_a_alignment": {
-    "missing_from_disk": [],
+    "missing_from_disk": [
+      "000-agentic-core-operating-contract.mdc",
+      "001-cursor-runtime-seam-execution.mdc",
+      "002-pass-blocked-proof-contract.mdc",
+      "003-cursor-author-gate-hitl.mdc"
+    ],
     "transitional_extras_present": [],
     "unexpected_extras": [],
     "w1_pending_demotion": []
@@ -68,11 +48,11 @@
     "file_count": 0,
     "files": []
   },
-  "active_plans_top_level_count": 11,
+  "active_plans_top_level_count": 40,
   "explicit_non_claims": [
     "W1-W5 not executed",
     "no semantic rule consolidation performed",
-    ".windsurf not deleted",
+    "docs/archive/windsurf/legacy-tree not deleted",
     "runtime RAG not touched",
     "agentic_core untouched",
     "two-tier consolidation not complete"

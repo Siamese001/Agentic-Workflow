@@ -1,6 +1,5 @@
 # apps_rg Prompt Assembly Compiler
-# Local compile/validation path — minimal runtime wiring: model id is read from
-# L0 ``QWEN_LOCAL_MODEL_ID`` SSOT so PA manifests match vLLM serve name.
+# Local compile/validation path: model id matches the apps_rg vLLM serve name.
 
 from __future__ import annotations
 
@@ -12,7 +11,7 @@ from typing import Any, Optional
 
 import yaml
 
-from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
+from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MODEL_ID
 
 from .contracts import (
     AUTHORITY_PRECEDENCE,

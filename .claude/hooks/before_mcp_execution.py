@@ -21,8 +21,8 @@ from lib.claude_hook_common import (
 from lib.mcp_before_hygiene import run_mcp_before_hygiene_stage
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PRE_MCP_GATE = REPO_ROOT / ".cursor" / "scripts" / "pre_mcp_gate.py"
-UNIFIED_PLAN_AUDITOR = REPO_ROOT / ".cursor" / "scripts" / "unified_plan_creation_auditor.py"
+PRE_MCP_GATE = REPO_ROOT / ".claude" / "governance" / "scripts" / "pre_mcp_gate.py"
+UNIFIED_PLAN_AUDITOR = REPO_ROOT / ".claude" / "governance" / "scripts" / "unified_plan_creation_auditor.py"
 
 
 def _parse_payload(raw: str) -> dict[str, Any]:

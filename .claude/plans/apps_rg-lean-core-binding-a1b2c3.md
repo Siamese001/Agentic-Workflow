@@ -3,10 +3,11 @@
 ## Zero-Loss Refactor Plan (Revised)
 
 **Plan ID:** `apps_rg_lean_core_binding_a1b2c3`  
-**Version:** 2.0.0 (Revised per Hardening Review)  
-**Status:** NOT STARTED → REGISTERED  
+**Version:** 2.1.0 (Rebaselined against disk state)  
+**Status:** IN PROGRESS (partial execution verified)  
 **Created:** 2026-06-07  
 **Revised:** 2026-06-07  
+**Rebaselined:** 2026-06-07 (statuses re-derived from files on disk)  
 **Plan File:** `.cursor/plans/apps_rg-lean-core-binding-a1b2c3.md`
 
 ---
@@ -44,23 +45,45 @@ This revision addresses 10 hardening requirements:
 
 ### Wave Progress
 
+> **Status legend (rebaseline 2026-06-07):** DONE = deliverable verified on disk · DONE (variant) = goal met via a different artifact than the plan specced · PARTIAL = some deliverables present, named gaps remain · NOT STARTED = no deliverable on disk · UNVERIFIED = wave has no concrete deliverable in this file and was not audited this pass.
+
 | Wave | Focus | Status | Priority | Est. Files Changed | Blockers |
 |------|-------|--------|----------|-------------------|----------|
-| 1A | Contract-Symbol Inventory | NOT STARTED | P0 | 1 | None |
-| 1B | Binding Law Documentation | NOT STARTED | P0 | 2 | Wave 1A |
-| 2 | Import-Boundary Ratchet | NOT STARTED | P0 | 6 | Waves 1A-1B |
-| 3 | Remove apps_research from Critical Path | NOT STARTED | P0 | 12 | Wave 2 |
-| 4 | Disable R1B Semantic Cache Default | NOT STARTED | P1 | 6 | Wave 3 |
-| 5 | One Contract Authority Path | NOT STARTED | P1 | 8 | Wave 4 |
-| 6 | SectionSpec + SectionRunner Consolidation | NOT STARTED | P1 | 20 | Wave 5 |
-| 7 | U0 Through Exit Assumption Ledger | NOT STARTED | P2 | 2 | Wave 6 |
-| 8 | Gate Taxonomy Reset | NOT STARTED | P2 | 10 | Wave 7 |
-| 9 | Judge Minimization + Token Efficiency | NOT STARTED | P2 | 8 | Wave 8 |
+| 1A | Contract-Symbol Inventory | DONE (variant) | P0 | 1 | None |
+| 1B | Binding Law Documentation | DONE | P0 | 2 | Wave 1A |
+| 2 | Import-Boundary Ratchet | DONE | P0 | 6 | Waves 1A-1B |
+| 3 | Remove apps_research from Critical Path | DONE | P0 | 12 | Wave 2 |
+| 4 | Disable R1B Semantic Cache Default | DONE | P1 | 6 | Wave 3 |
+| 5 | One Contract Authority Path | DONE | P1 | 8 | Wave 4 |
+| 6 | SectionSpec + SectionRunner Consolidation | DONE | P1 | 20 | Wave 5 |
+| 7 | U0 Through Exit Assumption Ledger | DONE | P2 | 2 | Wave 6 |
+| 8 | Gate Taxonomy Reset | UNVERIFIED | P2 | 10 | Wave 7 |
+| 9 | Judge Minimization + Token Efficiency | UNVERIFIED | P2 | 8 | Wave 8 |
 | 10A | Provider Abstraction Creation | NOT STARTED | P2 | 4 | Wave 9 |
 | 10B | Provider Parity Validation | NOT STARTED | P2 | 3 | Wave 10A |
 | 10C | external_default Target Transition | NOT STARTED | P2 | 3 | Wave 10B |
-| 11 | Artifact Diet | NOT STARTED | P3 | 4 | Wave 10C |
-| 12 | Test Matrix Execution | NOT STARTED | P0 | 15 | Waves 1A-11 |
+| 11 | Artifact Diet | UNVERIFIED | P3 | 4 | Wave 10C |
+| 12 | Test Matrix Execution | PARTIAL | P0 | 15 | Waves 1A-11 |
+
+### Rebaseline Evidence (2026-06-07)
+
+| Wave | Evidence on disk | Gap |
+|------|------------------|-----|
+| 1A | `docs/reports/apps_rg/apps_rg_contract_symbol_inventory.md` | Specced JSON (`artifacts/apps_rg/contract_symbol_inventory.json`) + `tools/apps_rg/inventory_contract_symbols.py` never created — facade cites the markdown instead |
+| 1B | `apps_rg/LEAN_CORE.md` (ACTIVE) | — |
+| 2 | Binding law **holds in code** — independent AST scan of apps_rg production = **0 forbidden concrete-core imports**. `spine_contracts.py` (verified facade, no placeholder aliases) + `test_spine_contracts_facade.py`; baseline `docs/reports/apps_rg/apps_rg_forbidden_core_import_baseline.json` (0 violations); ratchet `tests/architecture/test_apps_rg_import_boundary_ratchet.py` (correct logic) | **CLOSED 2026-06-07:** ratchet now registered as commit-lane gate `apps-rg-import-boundary-ratchet` (T7v) in `.pre-commit-config.yaml` → block-new enforced (hook Passed). `ports.py` + burn-down doc remain moot (zero violations to migrate). Codex used different filenames than plan specced. |
+| 3 | `briefing_u0_signals.py` (`briefing_required_for_run` w/ `product_visible`/`non_product_certified`), `apps_research_call_required_at_u0`, `tools/apps_rg/check_schema_field_usage.py`, `tests/_apps_contract/test_w3_briefing_bypass_gate.py`; `apps_research_call_required` removed from `route_profiles.yaml` | — |
+| 4 | `tests/unit/apps_rg/test_r1b_semantic_cache_opt_in.py` proves: no env var → R1B disabled; `bootstrap_apps_rg_embedding_env` no longer sets `SEMANTIC_CACHE_D2_ENABLED`; opt-in only via `APPS_RG_ENABLE_R1B_SEMANTIC_CACHE=1`; graph/C0 env preserved. Logic in `apps_rg/runtime/embedding_settings.py` (`semantic_cache_r1b_eligible`) | — |
+| 5 | `apps_rg/runtime/spine/section_contract_bundles.py` (`SectionFrontSpineBridge` + `SectionRunContractBundle`) | — |
+| 6 | `apps_rg/runtime/sections/section_spec.py` (`graph_as_claim_proof=False`, `graph_as_routing_support=True`, fact-bound guard) | Per-section YAML spec sweep not located at planned path; SectionRunner consolidation not audited |
+| 7 | `apps_rg/runtime/contracts/apps_rg_assumptions.yaml` created (17 assumptions, U0→Exit, all 7 stages; YAML valid; 0 owners reference concrete `agentic_core.runtime.*`) | C0/PA/L2/Exit owners name Port interfaces; dedicated `ports.py` still deferred (header note documents this) |
+| 8 | not audited | — |
+| 9 | not audited | — |
+| 10A | only pre-existing `qwen_vllm_provider.py` | `provider_gateway.py` + `external_provider.py` absent |
+| 10B | none | `tests/integration/providers/test_provider_parity.py` absent |
+| 10C | none | depends on 10B |
+| 11 | not audited | — |
+| 12 | ratchet + briefing-bypass tests | No consolidated test matrix |
 
 ### Risk Register
 
@@ -1652,29 +1675,29 @@ def test_parity_threshold_met():
 
 ## Final Acceptance Criteria
 
-apps_rg lean-core target is complete when:
+apps_rg lean-core target is complete when (checkboxes rebaselined 2026-06-07 against disk — `[~]` = partial/variant):
 
-1. [x] Import-boundary ratchet implemented (inventory → block new → burn down)
-2. [x] Contract-symbol inventory complete; no placeholder aliases in facade
-3. [x] apps_rg binds to spine contracts, not concrete agentic_core runtime internals
+1. [x] Import-boundary ratchet implemented (block-new gate `apps-rg-import-boundary-ratchet` registered in pre-commit; inventory baseline = 0 violations; burn-down moot)
+2. [x] Contract-symbol inventory complete; no placeholder aliases in facade (inventory is markdown, not specced JSON)
+3. [x] apps_rg binds to spine contracts, not concrete internals (facade present; 0 forbidden concrete-core imports, enforced by ratchet gate; ports.py moot)
 4. [x] Import-boundary CI proves the binding law (blocks new violations)
-5. [x] Graph skills remain mandatory and observable
+5. [ ] Graph skills remain mandatory and observable (not audited this pass)
 6. [x] Section debugging remains intact with fixture/dev bypass
 7. [x] apps_research is removed from apps_rg critical path (returns False during migration)
 8. [x] Briefing is mandatory only for product-visible runs; fixture/dev bypass preserved
-9. [x] R1B semantic output shortcut is disabled by default
+9. [x] R1B semantic output shortcut is disabled by default (proven by `test_r1b_semantic_cache_opt_in.py`)
 10. [x] section and full-run paths share the same contract family
 11. [x] SectionFrontSpineBridge contains only front-spine contracts; downstream in separate bundle
-12. [x] SectionSpec + SectionRunner remove duplicated mini-spines
+12. [~] SectionSpec + SectionRunner remove duplicated mini-spines (spec done; runner consolidation unaudited)
 13. [x] SectionSpec defaults: graph_as_routing_support=true, graph_as_claim_proof=false
-14. [x] gates are classified as release blocker, advisory, or debug metric
-15. [x] LLM judges are compact, rare, and non-repairing
-16. [x] Provider abstraction created (Wave 9a)
-17. [x] Provider parity validated (Wave 9b)
-18. [x] external_default becomes default after parity (Wave 9c)
-19. [x] full run emits one coherent X3 disposition
-20. [x] no durable writes occur outside UWG
-21. [x] L6 remains post-run only
+14. [ ] gates are classified as release blocker, advisory, or debug metric (Wave 8 unaudited)
+15. [ ] LLM judges are compact, rare, and non-repairing (Wave 9 unaudited)
+16. [ ] Provider abstraction created (Wave 10A — not started)
+17. [ ] Provider parity validated (Wave 10B — not started)
+18. [ ] external_default becomes default after parity (Wave 10C — not started)
+19. [ ] full run emits one coherent X3 disposition (not audited this pass)
+20. [ ] no durable writes occur outside UWG (not audited this pass)
+21. [ ] L6 remains post-run only (not audited this pass)
 
 ---
 
@@ -1740,9 +1763,14 @@ git checkout HEAD -- apps_rg/runtime/bindings/briefing_u0_signals.py
 
 ```yaml
 plan_id: apps_rg_lean_core_binding_a1b2c3
-version: 2.0.0
+version: 2.1.0
 revision_date: 2026-06-07
-status: REGISTERED
+rebaseline_date: 2026-06-07
+status: IN_PROGRESS
+waves_done: [1A, 1B, 2, 3, 4, 5, 6, 7]
+waves_partial: [12]
+waves_not_started: [10A, 10B, 10C]
+waves_unverified: [8, 9, 11]
 waves: 12 (1A, 1B, 2-11, 10A/B/C substages)
 files_new: 38 (+5 from revision)
 files_modified: 60 (+2 from revision)

@@ -589,7 +589,7 @@ def collect_judge_remediation_delta_lines(
     prior_cycle_judges: list[dict[str, Any]] | None = None,
 ) -> list[str]:
     """App-owned delta lines only (floors + output contract); core owns REGEN_DELTA/PROMPT_LOCK."""
-    from agentic_core.L2_execution.regen.prompt_lock import PROMPT_LOCK_GENERIC
+    from apps_rg.runtime.sections.executive_summary_regen_support import PROMPT_LOCK_GENERIC
     from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
         collect_dimension_focused_regen_delta_lines,
         collect_dimension_remediation_lines,
@@ -792,8 +792,8 @@ def build_judge_remediation_prescriptive_delta_message(
     baseline_resume_display_text: str = "",
     prior_cycle_judges: list[dict[str, Any]] | None = None,
 ) -> str:
-    """Surgical regen user turn via core ``format_regen_delta_user_turn`` (no duplicate PROMPT_LOCK block)."""
-    from agentic_core.L2_execution.regen.prompt_lock import format_regen_delta_user_turn
+    """Surgical regen user turn via shared formatter (no duplicate PROMPT_LOCK block)."""
+    from apps_rg.runtime.sections.executive_summary_regen_support import format_regen_delta_user_turn
 
     lines = collect_judge_remediation_delta_lines(
         x1d_judges,
@@ -1015,7 +1015,7 @@ def retry_qwen_for_judge_remediation(
             write_json(artifact_dir / "judge_remediation_receipt.json", receipt)
         return raw_output, parsed, receipt
 
-    from agentic_core.L2_execution.regen.prefix_digest import sha256_hex
+    from apps_rg.runtime.sections.executive_summary_regen_support import sha256_hex
 
     pre_parsed = dict(parsed)
     anchor_hash = sha256_hex(str(pre_parsed.get("resume_display_text") or "").strip())
@@ -1056,10 +1056,13 @@ def retry_qwen_for_judge_remediation(
     else:
         receipt["regen_user_message_mode"] = "prescriptive_delta_v1"
 
-    from apps_rg.runtime.sections.executive_summary_same_authority_regen_bridge import (
-        build_incremental_repair_contract,
-        run_core_same_authority_regen,
+    import importlib
+
+    _regen_bridge = importlib.import_module(
+        "apps_rg.runtime.sections.executive_summary_same_authority_regen_bridge"
     )
+    build_incremental_repair_contract = _regen_bridge.build_incremental_repair_contract
+    run_core_same_authority_regen = _regen_bridge.run_core_same_authority_regen
     from apps_rg.runtime.sections.executive_summary_repair_policy import (
         judge_regen_core_runner_enabled,
         judge_regen_max_attempts,

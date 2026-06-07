@@ -874,6 +874,20 @@ repos:
         always_run: false
         require_serial: true
 
+      # ---- apps_rg Import-Boundary Ratchet (Wave 2, plan apps_rg_lean_core_binding_a1b2c3) ----
+      # Blocks NEW concrete agentic_core runtime imports from apps_rg production.
+      # Baseline (docs/reports/apps_rg/apps_rg_forbidden_core_import_baseline.json) is
+      # currently 0 violations — the binding law holds. Commit-lane scoped to apps_rg
+      # python + the ratchet test/baseline; full suite also runs in CI.
+      - id: apps-rg-import-boundary-ratchet
+        name: "T7v: apps_rg Import-Boundary Ratchet (block new concrete-core imports)"
+        entry: py -m pytest tests/architecture/test_apps_rg_import_boundary_ratchet.py -q --no-header
+        language: system
+        pass_filenames: false
+        files: ^(apps_rg/.*\.py|tests/architecture/test_apps_rg_import_boundary_ratchet\.py|docs/reports/apps_rg/apps_rg_forbidden_core_import_baseline\.json)$
+        always_run: false
+        require_serial: true
+
       # ---- MANUAL / CI-ONLY LANE -----------------------------------------------
       # Run manually: pre-commit run <id> --hook-stage manual
       - id: adg-stale-guard

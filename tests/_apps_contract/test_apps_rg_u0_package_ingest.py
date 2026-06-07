@@ -7,18 +7,20 @@ from pathlib import Path
 import pytest
 import yaml
 
-from agentic_core.L0_routing.intake.reason_codes import IngressReasonCode
-from agentic_core.L0_routing.intake.validated_request import RejectedRequestNotice
-from agentic_core.runtime.entry.u0_runtime_package_binding import RuntimePackageRegistry
 from apps_rg.runtime.bindings.u0_binding import (
     APPS_RG_TASK_CLASS,
     AppsRgU0RejectedError,
     u0_validate_apps_rg,
 )
 from apps_rg.runtime.bindings.u0_package_ingest import (
+    AppsRgRuntimePackageRegistry,
     assert_package_files_on_disk,
     default_package_ref,
     ingest_apps_rg_runtime_package,
+)
+from apps_rg.runtime.bindings.u0_rejection import (
+    AppsRgIngressReasonCode,
+    AppsRgRejectedRequestNotice,
 )
 from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse
 
@@ -45,7 +47,7 @@ class TestPackageSsotOnDisk:
         assert_package_files_on_disk()
 
     def test_registry_resolves_resume_generation_package(self) -> None:
-        registry = RuntimePackageRegistry()
+        registry = AppsRgRuntimePackageRegistry()
         ref, _schema, reason = registry.resolve_default_package_ref(
             "apps_rg",
             APPS_RG_TASK_CLASS,
@@ -117,6 +119,6 @@ class TestU0TerminalRejection:
         with pytest.raises(AppsRgU0RejectedError) as exc_info:
             u0_validate_apps_rg(_EnvelopeMissingTargets())
         notice = exc_info.value.notice
-        assert isinstance(notice, RejectedRequestNotice)
-        assert notice.rejection_reason == IngressReasonCode.FIELD_TYPE_MISMATCH
+        assert isinstance(notice, AppsRgRejectedRequestNotice)
+        assert notice.rejection_reason == AppsRgIngressReasonCode.FIELD_TYPE_MISMATCH
         assert "target_company" in str(notice.machine_readable_detail.get("missing_keys", []))

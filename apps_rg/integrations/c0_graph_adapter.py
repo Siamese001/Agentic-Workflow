@@ -1,7 +1,7 @@
 """apps_rg C0.3 graph adapter — W4N + W10-AG unified spine bind.
 
 W4N invariants:
-  - Does not call ``run_graph_traverse()`` (core executor only).
+  - Does not invoke the core graph traversal executor.
   - Does not import L4 state; no answer/route/tool/L4 writes.
 
 W10-AG:
@@ -18,21 +18,19 @@ import re
 from functools import lru_cache
 from typing import Any, Mapping
 
-from agentic_core.L0_routing.c0_retrieval.c0_3_enhanced.adapter import (
+from apps_rg.integrations.c0_graph_types import (
     AmbiguousAnchorResolution,
+    AclStatus,
+    AnchorCandidate,
+    AnchorType,
+    FreshnessStatus,
     GraphAdapterHealth,
     GraphNeighbor,
     GraphRelationPath,
     GraphTraversalAdapter,
     ProjectionManifest,
-    UnresolvedAnchorResolution,
-)
-from agentic_core.L0_routing.c0_retrieval.c0_3_enhanced.contracts import (
-    AclStatus,
-    AnchorCandidate,
-    AnchorType,
-    FreshnessStatus,
     ResolvedGraphAnchor,
+    UnresolvedAnchorResolution,
 )
 
 _GRAPH_SOURCE = "apps_rg.augmented_skills_graph.v1"

@@ -1,0 +1,291 @@
+# apps_rg U0 → Exit Assumption Ledger
+#
+# Plan:    apps_rg_lean_core_binding_a1b2c3 (Wave 7 — U0 Through Exit Assumption Ledger)
+# Created: 2026-06-07
+# Status:  ACTIVE
+#
+# Purpose
+# -------
+# Single source of truth for the per-stage assumptions across the apps_rg lean-core
+# spine (U0 → L1 → L0 → C0 → PA → L2 → Exit). Each assumption names exactly one
+# decision authority, the contract it emits, its failure behavior, the gate ids it
+# owns, its effect on the final X3 disposition, and the test that validates it.
+#
+# Ownership law (Wave 7 acceptance)
+# ---------------------------------
+# `owner` MUST be an apps_rg binding module OR a Port interface — NEVER a concrete
+# `agentic_core.runtime.*` internal. This keeps apps_rg bound to spine contracts, not
+# to one runtime implementation (see apps_rg/LEAN_CORE.md).
+#
+# Port-owner provenance note
+# --------------------------
+# The C0/PA/L2/Exit stages name Port interfaces as owners
+# (EvidenceResolverPort, PromptCompilerPort, ProviderGatewayPort, ExitEvaluatorPort).
+# These are the *intended* contract owners. The dedicated `apps_rg/runtime/ports.py`
+# module is a DEFERRED Wave 2 sub-item (it was moot for the import-boundary ratchet
+# because apps_rg already has zero forbidden concrete-core imports). Until ports.py
+# lands, these roles are fulfilled by the existing apps_rg binding/runtime modules.
+# The ledger encodes the target ownership deliberately — do not downgrade port owners
+# to concrete runtime internals to "match" the transitional state.
+
+assumptions:
+  # ==========================================================================
+  # U0 STAGE — Intake Validation
+  # ==========================================================================
+  - assumption_id: U0-001
+    stage: U0
+    owner: apps_rg.runtime.bindings.u0_binding
+    decision_authority: structure_validation
+    description: "U0 validates input structure only, does not route"
+    input_fields:
+      - source_resume_text
+      - job_description_text
+      - briefing_text (optional for fixture/dev)
+    output_contract: ValidatedRequest
+    failure_behavior: reject_with_explicit_error
+    gate_ids: [U0-G-001]
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_u0_validation.py
+
+  - assumption_id: U0-002
+    stage: U0
+    owner: apps_rg.runtime.bindings.u0_binding
+    decision_authority: identity_digest
+    description: "U0 stamps identity/digests for traceability"
+    input_fields:
+      - request_id
+      - run_id
+      - trace_id
+      - tenant_id
+    output_contract: ValidatedRequest
+    failure_behavior: reject
+    gate_ids: [U0-G-002]
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_u0_identity.py
+
+  - assumption_id: U0-003
+    stage: U0
+    owner: apps_rg.runtime.bindings.briefing_u0_signals
+    decision_authority: briefing_presence
+    description: "U0 validates briefing for product-visible runs; fixture/dev bypass allowed"
+    input_fields:
+      - briefing_artifact_ref
+      - manual_brief_path
+      - product_visible (context)
+      - non_product_certified (context)
+    output_contract: ValidatedRequest
+    failure_behavior: fail_closed_for_product_visible
+    gate_ids: [U0-G-003]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_briefing_mandatory_no_apps_research.py
+
+  # ==========================================================================
+  # L1 STAGE — Deterministic Planning
+  # ==========================================================================
+  - assumption_id: L1-001
+    stage: L1
+    owner: apps_rg.runtime.bindings.l1_binding
+    decision_authority: deterministic_planning
+    description: "L1 deterministic planning, no evidence retrieval, no model calls"
+    input_fields:
+      - ValidatedRequest
+    output_contract: L1PlanContract
+    failure_behavior: explicit_ambiguity_register
+    gate_ids: [L1-G-001]
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_l1_planning.py
+
+  - assumption_id: L1-002
+    stage: L1
+    owner: apps_rg.runtime.bindings.l1_binding
+    decision_authority: route_hints_advisory
+    description: "Route hints are advisory only, never binding authority"
+    input_fields:
+      - user_constraints.route_hint
+    output_contract: L1PlanContract
+    failure_behavior: ignore_hint_on_conflict
+    gate_ids: []
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_route_hints.py
+
+  # ==========================================================================
+  # L0 STAGE — Deterministic Routing
+  # ==========================================================================
+  - assumption_id: L0-001
+    stage: L0
+    owner: apps_rg.runtime.bindings.l0_binding
+    decision_authority: deterministic_route
+    description: "L0 selects one cheapest safe route deterministically"
+    input_fields:
+      - L1PlanContract
+    output_contract: RouteContract
+    failure_behavior: fail_closed
+    gate_ids: [L0-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_l0_routing.py
+
+  - assumption_id: L0-002
+    stage: L0
+    owner: apps_rg.runtime.bindings.l0_binding
+    decision_authority: no_retrieval_no_model
+    description: "L0 performs no retrieval, no model calls, R1B off by default"
+    input_fields: []
+    output_contract: RouteContract
+    failure_behavior: n/a
+    gate_ids: []
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_r1b_semantic_cache_opt_in.py
+
+  # ==========================================================================
+  # C0 STAGE — Evidence Resolution
+  # ==========================================================================
+  - assumption_id: C0-001
+    stage: C0
+    owner: apps_rg.runtime.ports.EvidenceResolverPort
+    decision_authority: candidate_facts_proof
+    description: "Candidate facts prove claims; graph supports routing unless fact-bound"
+    input_fields:
+      - source_resume_facts
+      - skills_graph
+      - role_episode_graph
+      - GraphTraversePolicy
+    output_contract: FinalEvidenceContract
+    failure_behavior: empty_proof_pool
+    gate_ids: [C0-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_c0_fact_proof.py
+
+  - assumption_id: C0-002
+    stage: C0
+    owner: apps_rg.runtime.ports.EvidenceResolverPort
+    decision_authority: graph_routing_support
+    description: "Graph supports role/phase/skill routing; never proves claims unless fact-bound"
+    input_fields:
+      - GraphTraversePolicy
+      - source_authority.graph_as_routing_support
+    output_contract: FinalEvidenceContract
+    failure_behavior: fallback_to_facts_only
+    gate_ids: [C0-G-002]
+    x3_effect: ADVISORY
+    test_ref: tests/unit/apps_rg/runtime/sections/test_section_spec_wave6.py
+
+  - assumption_id: C0-003
+    stage: C0
+    owner: apps_rg.runtime.ports.EvidenceResolverPort
+    decision_authority: targeting_only
+    description: "JD and briefing are targeting only, never proof sources"
+    input_fields:
+      - job_description_text
+      - briefing_text
+    output_contract: FinalEvidenceContract
+    failure_behavior: n/a
+    gate_ids: [C0-G-003]
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_c0_targeting_only.py
+
+  # ==========================================================================
+  # PA STAGE — Prompt Assembly
+  # ==========================================================================
+  - assumption_id: PA-001
+    stage: PA
+    owner: apps_rg.runtime.ports.PromptCompilerPort
+    decision_authority: single_compiler_single_shape
+    description: "PA uses one compiler, one artifact shape, canonical slot order"
+    input_fields:
+      - FinalEvidenceContract
+      - SectionSpec
+    output_contract: CompiledPromptArtifact
+    failure_behavior: compilation_error
+    gate_ids: [PA-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_pa_to_core_cpa_fields.py
+
+  # ==========================================================================
+  # L2 STAGE — Model Execution
+  # ==========================================================================
+  - assumption_id: L2-001
+    stage: L2
+    owner: apps_rg.runtime.ports.ProviderGatewayPort
+    decision_authority: provider_execution
+    description: "All model calls through ProviderGatewayPort; no direct qwen calls"
+    input_fields:
+      - CompiledPromptArtifact
+      - provider_profile
+      - token_budget
+    output_contract: SealedL2Artifact
+    failure_behavior: provider_error
+    gate_ids: [L2-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_l2_provider_port.py
+
+  - assumption_id: L2-002
+    stage: L2
+    owner: apps_rg.runtime.ports.ProviderGatewayPort
+    decision_authority: generation_attempts
+    description: "One generation attempt by default; one optional regen if SectionSpec permits"
+    input_fields:
+      - SectionSpec.max_regen_attempts
+      - SectionSpec.allowed_repair
+    output_contract: SealedL2Artifact
+    failure_behavior: fail_after_max_attempts
+    gate_ids: [L2-G-002]
+    x3_effect: REVIEW
+    test_ref: tests/unit/apps_rg/test_l2_regen_policy.py
+
+  # ==========================================================================
+  # EXIT STAGE — Disposition Aggregation
+  # ==========================================================================
+  - assumption_id: Exit-001
+    stage: Exit
+    owner: apps_rg.runtime.ports.ExitEvaluatorPort
+    decision_authority: x1_checkout
+    description: "X1 checkout before Exit evaluation"
+    input_fields:
+      - section_receipts
+      - X2 receipts from all sections
+    output_contract: X3Disposition
+    failure_behavior: checkout_failure
+    gate_ids: [Exit-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_exit_x1.py
+
+  - assumption_id: Exit-002
+    stage: Exit
+    owner: apps_rg.runtime.ports.ExitEvaluatorPort
+    decision_authority: x2_aggregation
+    description: "X2 deterministic aggregation plus optional judge"
+    input_fields:
+      - X2 receipts from all sections
+      - GateSummary from each section
+    output_contract: X3Disposition
+    failure_behavior: aggregation_failure
+    gate_ids: [Exit-G-002]
+    x3_effect: REVIEW
+    test_ref: tests/unit/apps_rg/test_exit_x2.py
+
+  - assumption_id: Exit-003
+    stage: Exit
+    owner: apps_rg.runtime.ports.ExitEvaluatorPort
+    decision_authority: x3_disposition
+    description: "Exactly one X3 disposition; UNKNOWN is never PASS"
+    input_fields:
+      - aggregated_X2_results
+      - judge_evaluations (optional)
+    output_contract: X3Disposition
+    failure_behavior: explicit_error
+    gate_ids: [Exit-G-003]
+    x3_effect: FINAL
+    test_ref: tests/unit/apps_rg/test_exit_x3.py
+
+  - assumption_id: Exit-004
+    stage: Exit
+    owner: apps_rg.runtime.spine.exit_artifacts
+    decision_authority: section_disposition_mapping
+    description: "Section dispositions map into same Exit model via ExitEvaluatorPort"
+    input_fields:
+      - section_exit_receipts
+    output_contract: X3Disposition
+    failure_behavior: mapping_error
+    gate_ids: [Exit-G-004]
+    x3_effect: FINAL
+    test_ref: tests/unit/apps_rg/test_section_exit_mapping.py
