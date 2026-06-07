@@ -3,7 +3,15 @@ from lib.claude_hook_common import allow, payload_path, read_payload, text_from_
 payload = read_payload()
 text = text_from_payload(payload)
 path = payload_path(payload)
-if "/plans/_archive/" in path or "/_zero_loss_originals/" in path or "windsurf_compat" in path or "plans/_archive" in text:
+# Active plans (.claude/plans/*, excluding the _archive/ subtree) are non-sensitive:
+# they are live execution material and must never warn on read.
+active_plan = "/.claude/plans/" in path and "/plans/_archive/" not in path
+if not active_plan and (
+    "/plans/_archive/" in path
+    or "/_zero_loss_originals/" in path
+    or "windsurf_compat" in path
+    or "plans/_archive" in text
+):
     reason = "Reading archived historical material; reference only, not active execution instruction."
     write_receipt("beforeReadFile", payload, "warn", reason)
     raise SystemExit(warn(reason))
