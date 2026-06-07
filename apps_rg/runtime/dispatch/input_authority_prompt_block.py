@@ -93,6 +93,37 @@ def augment_section_compiled_with_product_shape(compiled: SectionCompiledPrompt)
     return _append_block_to_last_message(compiled, block)
 
 
+def format_graph_binding_materiality_prompt_block(summary: dict[str, Any]) -> str:
+    payload = summary if isinstance(summary, dict) else {}
+    return (
+        "GRAPH_BINDING_MATERIALITY_SUMMARY:\n"
+        f"{json.dumps(payload, ensure_ascii=False, sort_keys=True)}\n"
+        "Use this only to prioritize and de-duplicate C0.3 graph-backed skills; "
+        "do not treat JD or briefing text as claim proof."
+    )
+
+
+def augment_section_compiled_with_graph_binding_materiality(
+    compiled: SectionCompiledPrompt,
+    *,
+    runtime_payload: dict[str, Any],
+) -> SectionCompiledPrompt:
+    from apps_rg.runtime.c0.c03_graph_ref_policy import extract_c03_bindings_from_runtime_payload
+    from apps_rg.runtime.graph_skills_utilization_scorer import (
+        build_graph_binding_materiality_summary,
+    )
+
+    summary = build_graph_binding_materiality_summary(
+        section_id=compiled.section_id,
+        runtime_payload=runtime_payload,
+        graph_bindings=extract_c03_bindings_from_runtime_payload(runtime_payload),
+    )
+    return _append_block_to_last_message(
+        compiled,
+        format_graph_binding_materiality_prompt_block(summary),
+    )
+
+
 def augment_section_compiled_with_input_authority(
     compiled: SectionCompiledPrompt,
     *,
@@ -113,6 +144,10 @@ def augment_section_compiled_with_input_authority(
         from apps_rg.runtime.graph_skill_phrase_capsule import augment_section_compiled_with_skill_phrase_capsule
 
         out = augment_section_compiled_with_skill_phrase_capsule(out, runtime_payload=runtime_payload)
+        out = augment_section_compiled_with_graph_binding_materiality(
+            out,
+            runtime_payload=runtime_payload,
+        )
     return out
 
 
@@ -137,6 +172,10 @@ def finalize_section_compiled_with_proof_pool(
     from apps_rg.runtime.graph_skill_phrase_capsule import augment_section_compiled_with_skill_phrase_capsule
 
     out = augment_section_compiled_with_skill_phrase_capsule(out, runtime_payload=runtime_payload)
+    out = augment_section_compiled_with_graph_binding_materiality(
+        out,
+        runtime_payload=runtime_payload,
+    )
     last_content = ""
     if out.artifact.messages:
         last_content = str(out.artifact.messages[-1].get("content") or "")
@@ -163,9 +202,11 @@ def proof_pool_mode_from_metadata(metadata: dict[str, Any] | None) -> str:
 
 
 __all__ = [
+    "augment_section_compiled_with_graph_binding_materiality",
     "augment_section_compiled_with_input_authority",
     "augment_section_compiled_with_product_shape",
     "finalize_section_compiled_with_proof_pool",
+    "format_graph_binding_materiality_prompt_block",
     "format_input_authority_block",
     "proof_pool_mode_from_metadata",
 ]

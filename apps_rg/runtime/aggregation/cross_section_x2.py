@@ -510,6 +510,7 @@ def run_cross_section_x2_gates(
             observed={"kept": len(kept), "removed": len(removed), "rewritten": len(rewritten)},
         ),
     )
+    gates.append(build_cross_section_graph_coherence_receipt(sections))
 
     return gates, kept, removed, rewritten, decisions
 
@@ -594,6 +595,81 @@ def build_cross_section_warn_resolution_report(
             "overlap_decisions": len(overlap_decisions),
         },
     }
+
+
+def _extract_graph_materiality(section: dict[str, Any]) -> dict[str, Any]:
+    snap = section.get("l2_output_snapshot")
+    if not isinstance(snap, dict):
+        snap = {}
+    summary = (
+        snap.get("graph_binding_materiality_summary")
+        or section.get("graph_binding_materiality_summary")
+        or {}
+    )
+    return summary if isinstance(summary, dict) else {}
+
+
+def build_cross_section_graph_coherence_receipt(
+    sections: list[dict[str, Any]],
+) -> CrossSectionGateResult:
+    """Check whether generated sections expose reusable graph-binding materiality."""
+    primary: dict[str, dict[str, Any]] = {}
+    for sec in sections:
+        sid = str(sec.get("section_id") or "")
+        if sid not in _PRIMARY_COHERENCE_SECTIONS:
+            continue
+        summary = _extract_graph_materiality(sec)
+        if summary:
+            primary[sid] = summary
+
+    if len(primary) < 2:
+        return CrossSectionGateResult(
+            gate_id="x2_cross_section_graph_coherence",
+            verdict=VERDICT_UNKNOWN,
+            decisive_reason="fewer than 2 primary sections expose graph_binding_materiality_summary",
+            threshold=">=2 sections with graph materiality summaries",
+            observed={"sections_with_summary": sorted(primary)},
+            evidence_refs=[],
+        )
+
+    pillar_sets: dict[str, set[str]] = {
+        sid: {str(x) for x in (summary.get("pillar_hint_ids") or []) if str(x).strip()}
+        for sid, summary in primary.items()
+    }
+    support_sets: dict[str, set[str]] = {
+        sid: {str(x) for x in (summary.get("claim_support_graph_refs") or []) if str(x).strip()}
+        for sid, summary in primary.items()
+    }
+    section_ids = sorted(primary)
+    min_overlap = 1.0
+    worst_pair: tuple[str, str] = (section_ids[0], section_ids[1])
+    for i in range(len(section_ids)):
+        for j in range(i + 1, len(section_ids)):
+            a = section_ids[i]
+            b = section_ids[j]
+            pillar_overlap = _jaccard(pillar_sets.get(a, set()), pillar_sets.get(b, set()))
+            support_overlap = _jaccard(support_sets.get(a, set()), support_sets.get(b, set()))
+            overlap = max(pillar_overlap, support_overlap)
+            if overlap < min_overlap:
+                min_overlap = overlap
+                worst_pair = (a, b)
+
+    verdict = VERDICT_PASS if min_overlap >= _PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD else VERDICT_WARN
+    return CrossSectionGateResult(
+        gate_id="x2_cross_section_graph_coherence",
+        verdict=verdict,
+        decisive_reason=(
+            f"min graph-binding overlap {min_overlap:.3f} across {len(section_ids)} sections; "
+            f"worst_pair={worst_pair[0]}:{worst_pair[1]}"
+        ),
+        threshold=_PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD,
+        observed={
+            "section_ids": section_ids,
+            "min_overlap": round(min_overlap, 4),
+            "worst_pair": list(worst_pair),
+        },
+        evidence_refs=section_ids,
+    )
 
 
 # ---------------------------------------------------------------------------

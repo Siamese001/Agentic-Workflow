@@ -67,6 +67,7 @@ def build_grade_only_judge_packet(
     targeting_context: dict[str, Any] | None = None,
     deterministic_gate_summary: dict[str, Any] | None = None,
     source_fact_ids: list[str] | None = None,
+    graph_binding_materiality_summary: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build canonical GRADE_ONLY JudgePacket for any section."""
     sid = normalize_section_id(section_id)
@@ -98,6 +99,7 @@ def build_grade_only_judge_packet(
         "deterministic_gate_summary": ensure_panel_gate_summary(
             deterministic_gate_summary, section_id=sid
         ),
+        "graph_binding_materiality_summary": dict(graph_binding_materiality_summary or {}),
         "section_specific_rubric": section_rubric.strip(),
         "grading_only_instructions": GRADE_ONLY_INSTRUCTION,
         "required_judge_output_schema": REQUIRED_JUDGE_OUTPUT_SCHEMA,

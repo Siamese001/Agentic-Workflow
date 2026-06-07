@@ -559,6 +559,7 @@ def build_canonical_judge_contract(packet: dict[str, Any]) -> dict[str, Any]:
         "grading_instruction": packet.get("grading_instruction") or GRADE_ONLY_INSTRUCTION,
         "proof_boundary": packet.get("proof_boundary") or {},
         "deterministic_gate_summary": packet.get("deterministic_gate_summary") or {},
+        "graph_binding_materiality_summary": packet.get("graph_binding_materiality_summary") or {},
         "rubric": packet.get("rubric") or GRAPH_ONLY_GRADE_ONLY_RUBRIC,
         "required_output_schema": packet.get("required_output_schema") or REQUIRED_JUDGE_OUTPUT_SCHEMA,
         "judge_rubric_mode": packet.get("judge_rubric_mode"),
@@ -604,6 +605,19 @@ def build_executive_summary_judge_packet(
         graph_bindings=graph_bindings,
         repo_root=repo_root,
     )
+    from apps_rg.runtime.graph_skills_utilization_scorer import (
+        build_graph_binding_materiality_summary,
+    )
+
+    graph_binding_materiality_summary = build_graph_binding_materiality_summary(
+        section_id="executive_summary",
+        runtime_payload={
+            "section_id": "executive_summary",
+            "allowed_fact_ids": sorted(allowed_fact_ids),
+            "graph_targeting_for_pa": graph_targeting_capsule or {},
+        },
+        graph_bindings=graph_bindings or [],
+    )
     unused_fact_ids = collect_unused_allowed_fact_ids(claim_ledger, allowed_fact_ids)
     cited_fact_ids = _collect_source_fact_ids(claim_ledger)
     from apps_rg.runtime.validators.executive_summary_x2 import (
@@ -633,6 +647,7 @@ def build_executive_summary_judge_packet(
         },
         "allowed_fact_packet": judge_allowed_packet,
         "allowed_fact_ids": sorted(allowed_fact_ids),
+        "graph_binding_materiality_summary": graph_binding_materiality_summary,
         "evidence_utilization": {
             "cited_fact_ids": cited_fact_ids,
             "unused_fact_ids": unused_fact_ids,

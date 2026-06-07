@@ -183,6 +183,37 @@ def _load_optional_json(path: Path) -> dict[str, Any] | None:
         return None
 
 
+def summarize_graph_skills_product_closeout(
+    cross_section_x2: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Summarize graph-skill proof propagation at package level."""
+    blob = cross_section_x2 if isinstance(cross_section_x2, Mapping) else {}
+    gates_raw = blob.get("gates") if isinstance(blob.get("gates"), list) else []
+    graph_gate = next(
+        (
+            g
+            for g in gates_raw
+            if isinstance(g, Mapping) and g.get("gate_id") == "x2_cross_section_graph_coherence"
+        ),
+        None,
+    )
+    verdict = str((graph_gate or {}).get("verdict") or "").strip()
+    return {
+        "schema": "apps_rg.graph_skills_product_proof_closeout.v1",
+        "graph_coherence_gate_present": graph_gate is not None,
+        "graph_coherence_gate_verdict": verdict or "MISSING",
+        "graph_coherence_gate_pass": bool((graph_gate or {}).get("pass") is True),
+        "graph_coherence_gate_decisive_reason": str(
+            (graph_gate or {}).get("decisive_reason") or ""
+        ),
+        "graph_coherence_gate_evidence_refs": list(
+            (graph_gate or {}).get("evidence_refs") or []
+        ),
+        "product_closeout_status": "PASS" if bool((graph_gate or {}).get("pass") is True) else "REVIEW",
+        "explicit_non_claim": "package closeout records graph-skill propagation; it is not an Exit X3 allow claim",
+    }
+
+
 def evaluate_resume_package(
     *,
     paths: ResumePackageProofPaths,
@@ -711,6 +742,9 @@ def evaluate_resume_package(
         "warn_policy": warn_blob,
         "explicit_non_claims": list(asm.get("explicit_non_claims") or []) + list(rlp.get("explicit_non_claims") or []),
     }
+    disposition["graph_skills_product_proof_closeout"] = summarize_graph_skills_product_closeout(
+        cross_section_x2
+    )
     disposition["block_notes_sorted_unique"] = sorted(set(block_notes))
 
     return disposition
@@ -827,6 +861,9 @@ def emit_resume_package_artifacts(
         }
     )
     receipt["product_review_required"] = bool(agg_proof.get("product_review_required"))
+    receipt["graph_skills_product_proof_closeout"] = disposition.get(
+        "graph_skills_product_proof_closeout"
+    )
     receipt["review_lane_policy_json"] = _repo_rel(rr, assembly_dir / "review_lane_policy.json")
     receipt["coherent_rollup_policy_json"] = _repo_rel(rr, assembly_dir / "coherent_rollup_policy.json")
     rc_path.write_text(json.dumps(receipt, indent=2, sort_keys=False) + "\n", encoding="utf-8")

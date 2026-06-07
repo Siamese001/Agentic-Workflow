@@ -248,10 +248,94 @@ def _phrases_from_row(row: dict[str, Any]) -> list[str]:
     return out
 
 
+def _strings(raw: Any) -> list[str]:
+    if not isinstance(raw, Sequence) or isinstance(raw, (str, bytes)):
+        return []
+    return [str(x).strip() for x in raw if str(x).strip()]
+
+
+def build_graph_binding_materiality_summary(
+    *,
+    section_id: str,
+    runtime_payload: Mapping[str, Any] | None = None,
+    graph_bindings: Sequence[Mapping[str, Any]] | None = None,
+    max_items: int = 8,
+) -> dict[str, Any]:
+    """Summarize which C0.3 graph bindings materially shape a section.
+
+    The summary is intentionally compact: it gives PA and judges the same
+    graph-binding context without treating targeting-only JD or briefing text
+    as claim proof.
+    """
+    payload = runtime_payload if isinstance(runtime_payload, Mapping) else {}
+    max_n = max(1, int(max_items or 1))
+    targeting = payload.get("graph_targeting_for_pa")
+    targeting_map = targeting if isinstance(targeting, Mapping) else {}
+    fec = payload.get("canonical_final_evidence_contract_snapshot")
+    fec_map = fec if isinstance(fec, Mapping) else {}
+    role_family = targeting_map.get("role_family_projection")
+    role_family_map = role_family if isinstance(role_family, Mapping) else {}
+
+    allowed_fact_ids = _strings(payload.get("allowed_fact_ids") or fec_map.get("allowed_fact_ids"))
+    support_refs = _strings(targeting_map.get("claim_support_graph_refs"))
+    pillar_ids = _strings(
+        role_family_map.get("pillar_hint_ids") or targeting_map.get("targeting_graph_refs")
+    )
+    lineage_refs = _strings(targeting_map.get("receipt_only_lineage_refs"))
+
+    binding_fact_ids: list[str] = []
+    binding_skill_refs: list[str] = []
+    for row in graph_bindings or ():
+        if not isinstance(row, Mapping):
+            continue
+        fid = str(row.get("fact_id") or "").strip()
+        if fid:
+            binding_fact_ids.append(fid)
+        binding_skill_refs.extend(_strings(row.get("claim_support_graph_refs") or row.get("graph_node_refs")))
+
+    compressed: list[dict[str, Any]] = []
+    for row in targeting_map.get("overloaded_fact_compression") or []:
+        if not isinstance(row, Mapping):
+            continue
+        compressed.append(
+            {
+                "fact_id": str(row.get("fact_id") or "").strip(),
+                "skill_binding_count_before": row.get("skill_binding_count_before"),
+                "skill_binding_count_after": row.get("skill_binding_count_after"),
+                "executive_capability_phrases": _strings(row.get("executive_capability_phrases"))[:max_n],
+            }
+        )
+    pp_meta = payload.get("proof_pool_metadata")
+    pp_meta_map = pp_meta if isinstance(pp_meta, Mapping) else {}
+
+    return {
+        "schema": "apps_rg.graph_binding_materiality_summary.v1",
+        "section_id": str(section_id or payload.get("section_id") or "").strip(),
+        "authority": "C0.3 graph bindings and FinalEvidenceContract only",
+        "jd_and_briefing_policy": "targeting_context_only_not_claim_proof",
+        "allowed_fact_ids": allowed_fact_ids[:max_n],
+        "allowed_fact_count": len(allowed_fact_ids),
+        "claim_support_graph_refs": (support_refs or binding_skill_refs)[:max_n],
+        "claim_support_graph_ref_count": len(support_refs or binding_skill_refs),
+        "pillar_hint_ids": pillar_ids[:max_n],
+        "pillar_hint_count": len(pillar_ids),
+        "binding_fact_ids": sorted(set(binding_fact_ids))[:max_n],
+        "lineage_ref_count": len(lineage_refs),
+        "overloaded_fact_compression": compressed[:max_n],
+        "final_evidence_digest": str(fec_map.get("final_evidence_digest") or "").strip(),
+        "proof_pool_digest": str(
+            payload.get("proof_pool_digest")
+            or pp_meta_map.get("proof_pool_digest")
+            or ""
+        ).strip(),
+    }
+
+
 __all__ = [
     "PLAN_ID",
     "RECEIPT_SCHEMA",
     "SEMANTIC_VARIANT_MAP",
+    "build_graph_binding_materiality_summary",
     "score_graph_skills_utilization",
     "validate_scorer_inputs_neg6",
 ]
