@@ -3,7 +3,7 @@
 
 # Author-Gate Queue Drain (§35)
 
-> ⛔ After ANY wave/phase completion marker, Cursor Agent MUST emit the next pending `AUTHOR_GATE_PACKET:` from `.cursor/state/author_gate_queue/<plan-slug>.jsonl` in the same or immediately-following response. Queue drains to empty or explicit user stop.
+> ⛔ After ANY wave/phase completion marker, Cursor Agent MUST emit the next pending `AUTHOR_GATE_PACKET:` from `.claude/state/author_gate_queue/<plan-slug>.jsonl` in the same or immediately-following response. Queue drains to empty or explicit user stop.
 
 ## Invariant
 
@@ -13,8 +13,8 @@ When triggered AND `_author_gate_queue.list_plans_with_pending()` is non-empty �
 
 ## SSOT
 
-- **State**: `.cursor/state/author_gate_queue/<slug>.jsonl` (append-only, survives restart).
-- **Helper**: `.cursor/scripts/_author_gate_queue.py` — `enqueue`, `next_packet`, `mark_answered`, `pending_count`, `list_plans_with_pending`.
+- **State**: `.claude/state/author_gate_queue/<slug>.jsonl` (append-only, survives restart).
+- **Helper**: `.claude/governance/scripts/_author_gate_queue.py` — `enqueue`, `next_packet`, `mark_answered`, `pending_count`, `list_plans_with_pending`.
 - **Row**: `{id, title, depends_on, status, recommended_option, score, gap, enqueued_at, answered_at, chosen}`.
 
 ## Plan-Time Seeding

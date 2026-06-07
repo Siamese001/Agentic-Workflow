@@ -10,10 +10,10 @@ Shared by:
   - ops_scripts/calibration/plan_registration_weekly_report.py (weekly drift)
 
 State files:
-  - .cursor/state/plan_registration_queue.jsonl
+  - .claude/state/plan_registration_queue.jsonl
         Append-only log of PLAN_CREATED markers awaiting Notion registration.
         One row per slug; re-enqueue is idempotent.
-  - .cursor/state/plan_registration_cache.json
+  - .claude/state/plan_registration_cache.json
         Snapshot of the Notion Plans DB keyed by slug. TTL 1h. Populated by
         the pre-commit gate / weekly report; consumed by the wave-start
         block when network is unavailable.
@@ -58,7 +58,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-STATE_DIR = REPO_ROOT / ".cursor" / "state"
+STATE_DIR = REPO_ROOT / ".claude" / "state"
 QUEUE_PATH = STATE_DIR / "plan_registration_queue.jsonl"
 CACHE_PATH = STATE_DIR / "plan_registration_cache.json"
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"

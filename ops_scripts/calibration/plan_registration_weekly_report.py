@@ -9,7 +9,7 @@ Scans both directions of the Plan↔Notion registration mapping and reports:
   - Stale items in the registration queue (``registered=false`` older than 7 days).
 
 Emits a Markdown report under ``docs/reports/plan_registration/<YYYY-Www>.md``.
-Refreshes the shared cache at ``.cursor/state/plan_registration_cache.json``
+Refreshes the shared cache at ``.claude/state/plan_registration_cache.json``
 as a side effect so other gates can read a fresh snapshot.
 
 CLI::
@@ -35,7 +35,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HELPER_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "_plan_registration.py"
+HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_plan_registration.py"
 GATE_PATH = REPO_ROOT / "ops_scripts" / "ci" / "check_plan_registration_freshness.py"
 REPORT_DIR = REPO_ROOT / "docs" / "reports" / "plan_registration"
 
@@ -192,7 +192,7 @@ def main(argv: list[str] | None = None) -> int:
     lines.append("- For Notion orphans: either restore the plan file OR flip Status to "
                  "Retired/Archived and clear `Exists On Disk`.")
     lines.append("- For stale queue entries: register via Notion OR remove the slug from "
-                 "`.cursor/state/plan_registration_queue.jsonl` if the plan was retracted.")
+                 "`.claude/state/plan_registration_queue.jsonl` if the plan was retracted.")
     lines.append("")
 
     out_path.write_text("\n".join(lines), encoding="utf-8")

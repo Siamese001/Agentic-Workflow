@@ -2,7 +2,7 @@
 """pre_user_prompt_plan_registration_refresh.py — async cache refresh.
 
 Runs at the start of every Cursor Agent prompt. When
-``.cursor/state/plan_registration_cache.json`` is older than
+``.claude/state/plan_registration_cache.json`` is older than
 ``CACHE_TTL_SECONDS`` (1h), spawns a detached background subprocess to
 refresh it via ``ops_scripts/ci/check_plan_registration_freshness.py
 --refresh``. Returns immediately so prompt latency is <100ms typical.
@@ -37,7 +37,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 # CACHE_PATH constant.
 from _plan_registration import CACHE_TTL_SECONDS  # noqa: E402
 
-CACHE_PATH = REPO_ROOT / ".cursor" / "state" / "plan_registration_cache.json"
+CACHE_PATH = REPO_ROOT / ".claude" / "state" / "plan_registration_cache.json"
 REFRESH_SCRIPT = REPO_ROOT / "ops_scripts" / "ci" / "check_plan_registration_freshness.py"
 LOG_PATH = REPO_ROOT / "artifacts" / "cursor" / "plan_cache_refresh.jsonl"
 

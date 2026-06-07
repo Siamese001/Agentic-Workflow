@@ -37,7 +37,7 @@ ADR_REGISTRY_DS_ID: str = "e59d7640-dc09-48f9-8bdc-b0c94bf98c2a"
 
 
 # Author-Gate Decision Ledger — ARCHIVED 2026-05-02 (SQLite SSOT per constitutional §30)
-# Filesystem SSOT: .cursor/state/refactor_decisions/refactor_decision_ledger.sqlite
+# Filesystem SSOT: .claude/state/refactor_decisions/refactor_decision_ledger.sqlite
 AUTHOR_GATE_LEDGER_DB_ID: str = "18bb9145-1320-4191-8b14-6c309776bcf5"
 AUTHOR_GATE_LEDGER_DS_ID: str = "5b60fdde-7259-491e-9f2d-e088f1f741ef"
 

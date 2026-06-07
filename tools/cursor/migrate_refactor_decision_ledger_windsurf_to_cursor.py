@@ -2,8 +2,8 @@
 """migrate_refactor_decision_ledger_windsurf_to_cursor.py — one-shot ledger alignment.
 
 Backs up the Cursor ledger if present, then either copies (empty Cursor) or
-merges rows from ``.cursor/state/.../refactor_decision_ledger.sqlite`` that
-are missing in ``.cursor/state/...`` (ATTACH-based INSERT OR IGNORE).
+merges rows from ``.claude/state/.../refactor_decision_ledger.sqlite`` that
+are missing in ``.claude/state/...`` (ATTACH-based INSERT OR IGNORE).
 
 Usage:
     python tools/cursor/migrate_refactor_decision_ledger_windsurf_to_cursor.py
@@ -22,8 +22,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CURSOR_DB = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-WINDSURF_DB = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+CURSOR_DB = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+WINDSURF_DB = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 
 
 def _count(conn: sqlite3.Connection, table: str) -> int:

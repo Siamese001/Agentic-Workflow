@@ -3,7 +3,7 @@
 generate_calibration_report.py — Weekly Author-Gate calibration report.
 
 Reads:
-    - .cursor/state/refactor_decisions/refactor_decision_ledger.sqlite (SSOT)
+    - .claude/state/refactor_decisions/refactor_decision_ledger.sqlite (SSOT)
     - artifacts/windsurf/author_gate_violations.jsonl (falls back to legacy hitl_violations.jsonl)
 
 Writes:

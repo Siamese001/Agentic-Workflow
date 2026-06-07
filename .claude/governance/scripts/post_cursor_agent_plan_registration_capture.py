@@ -5,7 +5,7 @@ post_cursor_agent_plan_registration_capture.py — Capture PLAN_CREATED markers.
 Hook: post_cursor_agent_response (show_output=false).
 
 Scans the Cursor Agent response for ``PLAN_CREATED:`` markers and appends each
-to ``.cursor/state/plan_registration_queue.jsonl``. Idempotent — re-running
+to ``.claude/state/plan_registration_queue.jsonl``. Idempotent — re-running
 on the same response does not create duplicates (enqueue is slug-keyed).
 
 Marker grammar (one per line)::

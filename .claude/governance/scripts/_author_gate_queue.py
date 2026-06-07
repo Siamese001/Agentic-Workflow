@@ -8,7 +8,7 @@ Shared by:
   - post_cursor_agent_ag_queue_seed_capture.py (AG_QUEUE_SEED marker capture)
   - ops_scripts/ci/check_ag_queue_drain_freshness.py (weekly drift gate)
 
-State file: .cursor/state/author_gate_queue/<plan-slug>.jsonl (append-only)
+State file: .claude/state/author_gate_queue/<plan-slug>.jsonl (append-only)
 
 Each row shape::
 
@@ -36,7 +36,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-STATE_DIR = REPO_ROOT / ".cursor" / "state" / "author_gate_queue"
+STATE_DIR = REPO_ROOT / ".claude" / "state" / "author_gate_queue"
 
 
 def _state_path(plan_slug: str) -> Path:

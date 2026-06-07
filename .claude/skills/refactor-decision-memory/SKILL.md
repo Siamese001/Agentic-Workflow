@@ -90,7 +90,7 @@ Proceed with standard Author-Gate.
 
 ## Ledger Location
 
-`.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite`
+`.claude/state/refactor_decisions/refactor_decision_ledger.sqlite`
 
 Auto-created on first Author-Gate capture by the `post_cursor_agent_response` hook.
 

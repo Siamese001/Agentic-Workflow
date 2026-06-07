@@ -81,7 +81,7 @@ def main() -> int:
     if len(pending) > MAX_LINES:
         print(
             f"PLAN_REGISTRATION_PENDING: ... {len(pending) - MAX_LINES} more "
-            f"(see .cursor/state/plan_registration_queue.jsonl)"
+            f"(see .claude/state/plan_registration_queue.jsonl)"
         )
     return 0
 

@@ -3,7 +3,7 @@
 Registered in `.cursor/hooks.json` under `pre_user_prompt`. On the FIRST user
 prompt of each ISO week (Mon-Sun per ISO 8601), runs
 `ops_scripts/calibration/token_burn_weekly_report.py` in the background and
-writes a sentinel to `.cursor/state/weekly_report_<YYYY-Www>.flag` so
+writes a sentinel to `.claude/state/weekly_report_<YYYY-Www>.flag` so
 subsequent prompts in the same week are no-ops.
 
 This addresses the f8c2d1 follow-up plan deferred item: "Weekly token-burn
@@ -15,7 +15,7 @@ Behavior
 - Read stdin (Cursor Agent passes JSON payload). Payload ignored — this is a
   cadence trigger, not a conditional one.
 - Compute current ISO year-week (YYYY-WNN).
-- If `.cursor/state/weekly_report_<YYYY-Www>.flag` exists → no-op, exit 0.
+- If `.claude/state/weekly_report_<YYYY-Www>.flag` exists → no-op, exit 0.
 - Else: subprocess.Popen the weekly report script in the background (30s
   timeout, detached), write the sentinel, exit 0.
 - Report output lands in `docs/reports/token-burn/<YYYY-Www>.md` as usual.
@@ -36,7 +36,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-STATE_DIR = REPO_ROOT / ".cursor" / "state"
+STATE_DIR = REPO_ROOT / ".claude" / "state"
 REPORT_SCRIPT = REPO_ROOT / "ops_scripts" / "calibration" / "token_burn_weekly_report.py"
 TIMEOUT_SECONDS = 30
 

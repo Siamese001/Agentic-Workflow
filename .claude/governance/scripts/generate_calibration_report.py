@@ -3,7 +3,7 @@
 generate_calibration_report.py — Weekly Author-Gate calibration report.
 
 Reads:
-    - .cursor/state/refactor_decisions/refactor_decision_ledger.sqlite
+    - .claude/state/refactor_decisions/refactor_decision_ledger.sqlite
     - artifacts/cursor/author_gate_violations.jsonl (falls back to legacy hitl_violations.jsonl)
 
 Writes:
@@ -64,7 +64,7 @@ from tools.calibration.loop_metrics import (  # noqa: E402
     render_calibration_curve,
     render_precedent_block,
 )
-DB_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+DB_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "cursor" / "author_gate_violations.jsonl"
 # Back-compat: legacy name pre-2026-04-21 rename. Read-fallback if canonical missing.
 _LEGACY_VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "cursor" / "hitl_violations.jsonl"

@@ -15,7 +15,7 @@
 | **MCP Registry** | DB `59693bbc-...` / DS `e7b149b4-...` | `.mcp.json` is the SSOT; Notion mirror caused drift | `.mcp.json` |
 | **Constitutional Rules Registry** | DB `1c1379bc-...` / DS `9bd2523e-...` | Rules live in `.claude/rules/*.md`; Notion mirror was never reliable | `.claude/rules/*.md` |
 | **SC/AP Violation Backlog** | DB `0a3b8072-...` / DS `803834e1-...` | ADG SQLite is the authoritative source; Notion mirror caused double-tracking | `artifacts/adg/*.sqlite` + violation JSON |
-| **Author-Gate Decision Ledger** | DB various | SQLite ledger is the SSOT; captured via `tools/capture/append_marker.py` | `.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite` |
+| **Author-Gate Decision Ledger** | DB various | SQLite ledger is the SSOT; captured via `tools/capture/append_marker.py` | `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite` |
 | **Anti-Pattern Burndown** | DB `80b30bc9-...` / DS `4599fe37-...` | 404 confirmed 2026-05-11 — DB not accessible to integration; filesystem ratchet files are canonical | `artifacts/adg/` ratchet files |
 
 ## What Changed

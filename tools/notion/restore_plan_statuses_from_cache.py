@@ -4,7 +4,7 @@
 At ~2026-05-10T10:50 UTC, all 328 rows in the Notion Plans DB were
 bulk-overwritten to Status="Not Started". This script reverses that overwrite
 by patching each row to the Status recorded in
-`.cursor/state/plan_registration_cache.json` (a 2026-05-10T01:44:17Z snapshot
+`.claude/state/plan_registration_cache.json` (a 2026-05-10T01:44:17Z snapshot
 captured ~9h pre-corruption).
 
 Pattern source: tools/notion/apply_plan_derived_status.py.
@@ -20,7 +20,7 @@ Modes:
 
   --limit N   Process at most N rows (debug).
 
-Sanctioned non-MCP path per .cursor/rules/notion-plan-wave-deferral.md —
+Sanctioned non-MCP path per .claude/rules/notion-plan-wave-deferral.md —
 direct HTTP, no MCP tool invocations.
 """
 from __future__ import annotations
@@ -40,8 +40,8 @@ from typing import Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
-sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
 
 from _notion_constants import NOTION_API_VERSION, NOTION_BASE  # noqa: E402
 from _notion_plans_status_check import CANONICAL_STATUSES, STALE_EQUIVALENTS  # noqa: E402
@@ -56,7 +56,7 @@ except ImportError:  # pragma: no cover
 # Constants
 # ---------------------------------------------------------------------------
 
-PLAN_REG_CACHE = REPO_ROOT / ".cursor" / "state" / "plan_registration_cache.json"
+PLAN_REG_CACHE = REPO_ROOT / ".claude" / "state" / "plan_registration_cache.json"
 PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 PLANS_DATABASE_ID = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
 

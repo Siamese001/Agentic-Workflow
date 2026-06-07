@@ -6,7 +6,7 @@ Historical behavior compared SQLite ``refactor_decision_ledger.sqlite`` to Notio
 Author-Gate Decision Ledger writes mirrored in ``notion_tool_audit.jsonl``.
 
 As of 2026-05-02 the Author-Gate Decision Ledger Notion database is **archived**;
-the filesystem ledger under ``.cursor/state/refactor_decisions/`` is SSOT
+the filesystem ledger under ``.claude/state/refactor_decisions/`` is SSOT
 (see AGENTS.md). This gate therefore:
 
 - Counts decisions in the SQLite ledger (rolling window) for telemetry only.
@@ -32,8 +32,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LEDGER_CURSOR = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
-LEDGER_WINDSURF = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_CURSOR = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_WINDSURF = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 NOTION_AUDIT_PATHS = (
     REPO_ROOT / "artifacts" / "cursor" / "notion_tool_audit.jsonl",
     REPO_ROOT / "artifacts" / "windsurf" / "notion_tool_audit.jsonl",
@@ -157,7 +157,7 @@ def main() -> int:
     )
     print(
         "[check_notion_decision_parity] INFO: Author-Gate Notion ledger archived 2026-05-02; "
-        "SQLite under .cursor/state/refactor_decisions/ is SSOT. Drift vs Notion is not evaluated.",
+        "SQLite under .claude/state/refactor_decisions/ is SSOT. Drift vs Notion is not evaluated.",
         file=sys.stderr,
     )
 

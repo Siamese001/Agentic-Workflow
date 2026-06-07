@@ -3,7 +3,7 @@
 check_refactor_decision_ledger_ssot.py — W2 ledger SSOT enforcement.
 
 Part A — Forbidden writes: Python sources must not construct the legacy
-``.cursor/state/refactor_decisions`` path tuple (writers must use
+``.claude/state/refactor_decisions`` path tuple (writers must use
 ``tools.refactor_decisions.ledger_paths`` and the Cursor SSOT).
 
 Part B — Mirror drift (informational by default): if both SQLite files exist,
@@ -60,7 +60,7 @@ _ALLOWLIST_FILES = frozenset(
 _ALLOWLIST_DIR_PREFIXES = (
     "tests/",
     "docs/",
-    ".cursor/scripts/_legacy_windsurf/",
+    ".claude/governance/scripts/_legacy_windsurf/",
 )
 
 
