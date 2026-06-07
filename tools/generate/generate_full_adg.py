@@ -1090,7 +1090,24 @@ def generate_full_adg(
     # three-bucket (runtime OTel ingest + registry lift) after enrichment; that
     # stage can take long and must not block MV creation (observed: missing nodes
     # table when MV refresh ran after a failed three-bucket pass).
-    _materialize_adg_views(paths.sqlite)
+    #
+    # W1.2 (plan adg-gate-pipeline-efficiency-e4b1c7): MVs are a HARD dependency
+    # for the 12 MV-backed P0/P1 gates + the dispatcher fleet. Unlike the P4/P5
+    # intelligence layers this is NOT non-blocking — but a silent stranded
+    # snapshot (committed, no MV tables) is worse than a loud failure. Record the
+    # failure to the skip ledger for forensics, then fail fast with a pointed
+    # message instead of letting 12 gates error opaquely downstream.
+    try:
+        _materialize_adg_views(paths.sqlite)
+    except (OSError, RuntimeError, ValueError, _phase2_sqlite3.Error) as _mv_exc:
+        _record_pipeline_skip(
+            adg_artifacts_dir, ts, layer="MV", name="materialize_all_views", exc=_mv_exc
+        )
+        print("\n[ERROR] Materialized-view refresh failed — snapshot has no MV tables.")
+        print(f"[ERROR]   {type(_mv_exc).__name__}: {_mv_exc}")
+        print("[ERROR] The 12 MV-backed P0/P1 gates + dispatcher fleet cannot run without MVs.")
+        print("[ERROR] Fix the MV phase error above and re-run ADG generation.")
+        sys.exit(1)
 
     # --- Optional three-bucket audit (ADR-079): runtime view + registry lift ---
     # Runs after MV refresh; registry rows get a second authority backfill below.
@@ -1149,6 +1166,39 @@ def generate_full_adg(
 
     p0_wave_plan = _emit_p0_remediation_wave_plan(adg_artifacts_dir, ts, prod_sqlite_path)
 
+    # --- W1.2 MV-presence gate before fleet dispatch (plan adg-gate-pipeline-efficiency-e4b1c7) ---
+    # Belt-and-suspenders: confirm the dispatcher's hard MV dependencies actually
+    # materialized as TABLES before spending minutes running the 51-gate fleet. A
+    # phase that silently no-ops (rather than raising) would otherwise surface as
+    # a wall of opaque gate errors. Cheap sqlite_master lookup; fail fast with a
+    # pointer to check_snapshot_has_mvs.py (constitutional §22).
+    _required_mv = (
+        "mv_handoff_witness_tiers",
+        "mv_write_sovereignty_paths",
+        "mv_critical_path_segments",
+    )
+    _mv_probe = _sqlite_connect_with_wal(prod_sqlite_path)
+    try:
+        _present_mv = {
+            _row[0]
+            for _row in _mv_probe.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name IN (?,?,?)",
+                _required_mv,
+            ).fetchall()
+        }
+    finally:
+        _mv_probe.close()
+    _missing_mv = [_m for _m in _required_mv if _m not in _present_mv]
+    if _missing_mv:
+        print("\n[ERROR] Required materialized views missing from snapshot before gate dispatch:")
+        for _m in _missing_mv:
+            print(f"[ERROR]   - {_m}")
+        print(
+            "[ERROR] MV materialization did not complete; gate fleet cannot run. "
+            "See check_snapshot_has_mvs.py (constitutional §22)."
+        )
+        sys.exit(1)
+
     # --- ADG gate dispatcher (plan adg-wiring-ci-hardening-7a5d84, H3) ---
     # ADR-081: blocking when ADG_CERTIFICATION_MODE=1 (plane 3).
     from tools.generate.integration import adg_run_state as _adg_run_state  # noqa: PLC0415
@@ -1159,13 +1209,29 @@ def generate_full_adg(
     try:
         import subprocess as _sp
 
+        # W1.1 (plan adg-gate-pipeline-efficiency-e4b1c7): pin the dispatcher to
+        # THIS run's snapshot instead of letting it re-resolve "latest" by
+        # glob/mtime. `latest_snapshot()` honors ADG_SNAPSHOT (see
+        # ops_scripts/ci/_adg_wiring_gate_base.py), so exporting it removes both
+        # the redundant glob scan AND the race where a concurrently-touched older
+        # snapshot could be graded. `--output-dir` keeps the results JSON in the
+        # current run's artifacts dir.
+        _disp_env = {**os.environ, "ADG_SNAPSHOT": str(prod_sqlite_path)}
         _disp = _sp.run(
-            [sys.executable, "-m", "ops_scripts.ci.adg_gates.run", "--json-only"],
+            [
+                sys.executable,
+                "-m",
+                "ops_scripts.ci.adg_gates.run",
+                "--json-only",
+                "--output-dir",
+                str(adg_artifacts_dir),
+            ],
             capture_output=True,
             text=True,
             cwd=str(ROOT),
             timeout=600,
             check=False,
+            env=_disp_env,
         )
         _dispatcher_exit = int(_disp.returncode)
         _adg_run_state.dispatcher_exit_code = _dispatcher_exit

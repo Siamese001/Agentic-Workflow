@@ -303,13 +303,15 @@ def _spine_layers_in() -> str:
     return "(" + ", ".join(f"'{l}'" for l in _SPINE_LAYERS) + ")"
 
 
-def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
+def materialize_phase_a(sqlite_path: Path, *, conn: sqlite3.Connection | None = None) -> dict[str, int]:
     """Create all Phase A materialized tables. Idempotent — safe to call repeatedly.
 
     Returns:
         dict mapping table_name -> row_count for each Phase A table.
     """
-    conn = _connect_sqlite(sqlite_path)
+    _owns_conn = conn is None
+    if conn is None:
+        conn = _connect_sqlite(sqlite_path)
     conn.execute("PRAGMA cache_size = -64000")  # 64MB cache for MV queries
     conn.execute("PRAGMA temp_store = MEMORY")
     cur = conn.cursor()
@@ -1434,5 +1436,6 @@ def materialize_phase_a(sqlite_path: Path) -> dict[str, int]:
             row = cur.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()
             counts[tbl] = row[0] if row else 0
     finally:
-        conn.close()
+        if _owns_conn:
+            conn.close()
     return counts

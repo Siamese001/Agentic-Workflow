@@ -42,7 +42,7 @@ from tools.generate.materialized_views.sqlite_helpers import connect_sqlite_for_
 _PHASE_F_TABLES: tuple[str, ...] = ("mv_hotspot_coverage_risk",)
 
 
-def materialize_phase_f(sqlite_path: Path) -> dict[str, int]:
+def materialize_phase_f(sqlite_path: Path, *, conn: sqlite3.Connection | None = None) -> dict[str, int]:
     """Create Phase F materialized tables. Idempotent — safe to call repeatedly.
 
     Depends on:
@@ -56,7 +56,9 @@ def materialize_phase_f(sqlite_path: Path) -> dict[str, int]:
     Returns:
         dict mapping table_name -> row_count.
     """
-    conn = _connect_sqlite(sqlite_path)
+    _owns_conn = conn is None
+    if conn is None:
+        conn = _connect_sqlite(sqlite_path)
     conn.execute("PRAGMA cache_size = -64000")
     conn.execute("PRAGMA temp_store = MEMORY")
     cur = conn.cursor()
@@ -184,7 +186,8 @@ def materialize_phase_f(sqlite_path: Path) -> dict[str, int]:
 
     counts = {tbl: cur.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0] for tbl in _PHASE_F_TABLES}
     conn.commit()
-    conn.close()
+    if _owns_conn:
+        conn.close()
     return counts
 
 

@@ -8,10 +8,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from tqdm import tqdm  # §16 progress-bar compliance for the multi-phase MV refresh
+
 try:
-    from tools.generate.materialized_views.sqlite_helpers import validate_sqlite_path
+    from tools.generate.materialized_views.sqlite_helpers import (
+        connect_sqlite_for_mv,
+        validate_sqlite_path,
+    )
 except ImportError:  # pragma: no cover — standalone ``python -m materialized_views`` layout
-    from materialized_views.sqlite_helpers import validate_sqlite_path
+    from materialized_views.sqlite_helpers import (
+        connect_sqlite_for_mv,
+        validate_sqlite_path,
+    )
 
 try:
     from tools.generate.materialized_views.phase_a_path_authority import materialize_phase_a
@@ -45,28 +53,35 @@ def materialize_all_views(sqlite_path: Path) -> dict[str, int]:
     sqlite_path = validate_sqlite_path(sqlite_path)
     all_counts: dict[str, int] = {}
 
-    counts_a = materialize_phase_a(sqlite_path)
-    all_counts.update(counts_a)
-
-    counts_b = materialize_phase_b(sqlite_path)
-    all_counts.update(counts_b)
-
-    counts_c = materialize_phase_c(sqlite_path)
-    all_counts.update(counts_c)
-
-    counts_d = materialize_phase_d(sqlite_path)
-    all_counts.update(counts_d)
-
-    # Phase E: Graph-native intelligence (Prompt 5)
-    counts_e = materialize_phase_e(sqlite_path)
-    all_counts.update(counts_e)
-
-    # Phase F: Hotspot × Coverage risk join (plan hotspot-coverage-pipeline-c4e8d2)
-    # Depends on Phase C (debt) + Phase E (criticality, fan-in/out with defects)
-    # + the `coverage_by_path` table written by `tools/adg/ingest_coverage_py.py`
-    # ahead of this call. LEFT JOINs make missing data fail-soft.
-    counts_f = materialize_phase_f(sqlite_path)
-    all_counts.update(counts_f)
+    # W1.3 (plan adg-gate-pipeline-efficiency-e4b1c7): phases run sequentially in
+    # dependency order — A → B,C (depend on A) → D (A+B+C) → E (A+B) → F. Phase F
+    # (Hotspot × Coverage, plan hotspot-coverage-pipeline-c4e8d2) also depends on
+    # the `coverage_by_path` table written by tools/adg/ingest_coverage_py.py
+    # ahead of this call; its LEFT JOINs make missing data fail-soft. The order
+    # below is load-bearing — do not reorder. Surface a progress bar (§16): MV
+    # refresh is a >5 s step that was previously silent until the summary table.
+    _phases = (
+        ("A path/authority", materialize_phase_a),
+        ("B capability/tool/task", materialize_phase_b),
+        ("C trace/drift/debt", materialize_phase_c),
+        ("D snapshot/regression", materialize_phase_d),
+        ("E graph-intelligence", materialize_phase_e),
+        ("F hotspot×coverage", materialize_phase_f),
+    )
+    # W2.1 (plan adg-gate-pipeline-efficiency-e4b1c7): open ONE WAL connection for
+    # the whole refresh instead of one per phase. Phases run sequentially in
+    # dependency order, so a shared connection keeps the 64MB page cache warm
+    # across phases, makes each phase's tables visible to the next without a
+    # close/reopen, and avoids up-to-6 intermediate WAL checkpoints. Each phase
+    # still commits and only closes the connection when it opened it (standalone).
+    _shared_conn = connect_sqlite_for_mv(sqlite_path)
+    try:
+        for _label, _phase_fn in tqdm(
+            _phases, desc="ADG-MV phases", unit="phase", total=len(_phases)
+        ):
+            all_counts.update(_phase_fn(sqlite_path, conn=_shared_conn))
+    finally:
+        _shared_conn.close()
 
     _log_summary(all_counts)
     return all_counts
