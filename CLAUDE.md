@@ -39,17 +39,18 @@ Detail: `.claude/rules/002-pass-blocked-proof-contract.md`.
 
 ## Author-Gate (HITL before edits)
 
-Detail: `.claude/rules/003-cursor-author-gate-hitl.md` · triggers `.claude/rules/author-gate-decision-points.md` ·
-scoring `.claude/rules/author-gate-enforcement.md`. Skills:
-[`author-gate-packet-builder`](.claude/skills/author-gate-packet-builder/SKILL.md),
-[`author-gate-ui-renderer`](.claude/skills/author-gate-ui-renderer/SKILL.md).
+Stop and ask via the native **`AskUserQuestion`** tool before edits when the decision is
+`architecture_choice`, `refactor_scope`, `anti_pattern`, `deletion_strategy`, `dependency_addition`,
+`test_strategy`, or `error_handling` — i.e. two+ plausible approaches with different blast radius and
+no unambiguous user directive. Present each option with a one-line trade-off and mark the recommended
+one. Do **not** fire for typos, single-path fixes, or explicit instructions; when one path clearly
+dominates, say so and proceed.
 
-Stop and ask (via `AskUserQuestion`) before edits when the decision is `architecture_choice`,
-`refactor_scope`, `anti_pattern`, `deletion_strategy`, `dependency_addition`, `test_strategy`, or
-`error_handling` — i.e. two+ plausible approaches with different blast radius and no unambiguous user
-directive. Pipeline (same response): precedent lookup (`refactor-decision-memory`) → emit packet →
-render options → ask → capture `DECISION_CAPTURED:`. Do **not** fire for typos, single-path fixes, or
-explicit instructions.
+> Superseded W1 (`claude-native-supersession-9d3f7a`, ADR-093): the bespoke packet-builder /
+> ui-renderer / `AUTHOR_GATE_PACKET:` / `DECISION_CAPTURED:` marker + SQLite-ledger + queue pipeline is
+> retired — `AskUserQuestion` renders clickable options natively. Precedent, if useful, lives in file
+> memory.
+
 
 ## MCP Quick Reference
 
