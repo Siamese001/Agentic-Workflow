@@ -64,7 +64,7 @@ except ImportError:  # pragma: no cover
 from typing import Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+DB_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 
 GENESIS_PREV_HASH = "0" * 64
 HASH_ALGO = "sha256"

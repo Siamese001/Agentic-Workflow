@@ -18,21 +18,9 @@ from lib.claude_hook_common import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
-def _trigger_mcp_sync(file_path: str) -> None:
-    if not file_path.lower().endswith(".cursor/mcp.json"):
-        return
-    sync_script = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_write_mcp_config_sync.py"
-    if not sync_script.exists():
-        return
-    subprocess.run(
-        [sys.executable, str(sync_script), file_path],
-        cwd=str(REPO_ROOT),
-        stdin=subprocess.DEVNULL,
-        capture_output=True,
-        text=True,
-        timeout=30,
-        check=False,
-    )
+# NOTE (cursor-decommission W6): the legacy MCP-mirror sync (root .mcp.json -> .cursor/mcp.json)
+# is retired. The .cursor/mcp.json mirror no longer exists; root .mcp.json is the sole SSOT,
+# so no post-edit mirror sync is triggered.
 
 
 payload = read_payload()
@@ -112,6 +100,5 @@ _wave_top_exit = _audit_plan_wave_summary_top(file_path.replace("\\", "/"))
 if _wave_top_exit is not None:
     raise SystemExit(_wave_top_exit)
 
-_trigger_mcp_sync(file_path)
 write_receipt("afterFileEdit", payload, "allow", "edit accepted")
 raise SystemExit(allow("edit accepted"))

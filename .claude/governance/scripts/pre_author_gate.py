@@ -74,7 +74,7 @@ try:
     _ADG_BACKEND_AVAILABLE = True
 except ImportError:
     _ADG_BACKEND_AVAILABLE = False
-LEDGER_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 STATE_DIR = REPO_ROOT / "artifacts" / "cursor"
 SESSION_STATE_PATH = STATE_DIR / "author_gate_session_state.json"
 VIOLATIONS_PATH = STATE_DIR / "author_gate_violations.jsonl"

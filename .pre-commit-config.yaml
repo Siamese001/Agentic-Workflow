@@ -167,7 +167,7 @@ repos:
         entry: py ops_scripts/ci/check_mcp_sync_integrity.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|AGENTS\.md|\.cursor/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.cursor/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
+        files: ^(\.cursor/mcp\.json|AGENTS\.md|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
         always_run: false
         require_serial: true
 
@@ -284,7 +284,7 @@ repos:
       # -- T6d: Author-Gate Ledger Schema (harness HITL W2) ---------------------------
       # Verifies decision ledger matches canonical DDL. Triggered when schema or
       # migrator changes, and when the capture script changes.
-      # TRIGGER FIX 2026-05-05: DDL file .cursor/schemas/decision_ledger.schema.sql
+      # TRIGGER FIX 2026-05-05: DDL file .claude/schemas/decision_ledger.schema.sql
       # was already in the description but missing from the files: regex — changes to
       # the DDL alone would not trigger this gate. Added explicitly.
       - id: author-gate-ledger-schema
@@ -292,7 +292,7 @@ repos:
         entry: py ops_scripts/ci/author_gate/check_ledger_schema.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/schemas/decision_ledger\.schema\.sql|\.cursor/scripts/(apply_ledger_schema|post_cursor_agent_hitl_capture|post_cursor_agent_author_gate_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
+        files: ^(\.claude/schemas/decision_ledger\.schema\.sql|\.claude/governance/scripts/(apply_ledger_schema|post_cursor_agent_hitl_capture|post_cursor_agent_author_gate_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
         always_run: false
         require_serial: true
 
@@ -305,7 +305,7 @@ repos:
         entry: py ops_scripts/ci/author_gate/check_ui_conformance.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/scripts/post_cursor_agent_author_gate_ui_audit\.py|ops_scripts/ci/author_gate/check_ui_conformance\.py|artifacts/cursor/author_gate_ui_violations\.jsonl)$
+        files: ^(\.claude/governance/scripts/post_cursor_agent_author_gate_ui_audit\.py|ops_scripts/ci/author_gate/check_ui_conformance\.py|artifacts/cursor/author_gate_ui_violations\.jsonl)$
         always_run: false
         require_serial: true
 
@@ -351,15 +351,10 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T6e2b: Cursor config schema purity -----------------------------------------
-      - id: cursor-config-schema
-        name: "T6e2b: Cursor Config Schema Purity"
-        entry: py ops_scripts/ci/check_cursor_config_schema.py
-        language: system
-        pass_filenames: false
-        files: ^(\.cursor/hooks\.json|\.cursor/mcp\.json)$
-        always_run: false
-        require_serial: true
+      # -- T6e2b REMOVED (cursor-decommission W7) --------------------------------------
+      # cursor-config-schema validated .cursor/hooks.json + .cursor/mcp.json structure,
+      # both deleted in the .cursor->.claude migration (Claude Code uses .claude/settings.json
+      # + root .mcp.json). Validator script removed; hook retired.
 
       # -- T6e2c: MCP editor parity (Cursor SSOT vs Windsurf mirror) -------------------
       - id: mcp-editor-parity
@@ -388,14 +383,14 @@ repos:
       # byte-identical to the SSOT generator output. Currently covers:
       #   - MCP-QUICK-REFERENCE (mcp_config.json)
       #   - NOTION-MAP          (config/notion_databases.yaml)
-      # Fix drift: `python .cursor/scripts/sync_mcp_config.py`
+      # Fix drift: `python .claude/governance/scripts/sync_mcp_config.py`
       # RENAME 2026-05-05: was labelled T6d (collision with author-gate-ledger-schema).
       - id: agents-md-autogen-sync
         name: "T6d3: AGENTS.md Autogen Sync"
         entry: py ops_scripts/ci/check_agents_md_sync.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.cursor/scripts/sync_mcp_config\.py|\.cursor/scripts/sync_mcp_config\.py)$
+        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.claude/governance/scripts/sync_mcp_config\.py|\.claude/governance/scripts/sync_mcp_config\.py)$
         always_run: false
         require_serial: true
 
@@ -413,7 +408,7 @@ repos:
         entry: py ops_scripts/ci/check_hardcoded_exclusions.py
         language: system
         pass_filenames: false
-        files: ^(agentic_core/.*\.py|apps_[^/]+/.*\.py|ops_scripts/.*\.py|tools/.*\.py|\.cursor/scripts/.*\.py|ops_scripts/ci/check_hardcoded_exclusions\.py|ops_scripts/ci/baselines/hardcoded_exclusions_baseline\.json)$
+        files: ^(agentic_core/.*\.py|apps_[^/]+/.*\.py|ops_scripts/.*\.py|tools/.*\.py|\.claude/governance/scripts/.*\.py|ops_scripts/ci/check_hardcoded_exclusions\.py|ops_scripts/ci/baselines/hardcoded_exclusions_baseline\.json)$
         always_run: false
         require_serial: true
 
@@ -471,7 +466,7 @@ repos:
 
       # -- T7e2 REMOVED (cursor-decommission W1.2c, 2026-06-07) --------------------------
       # The `hitl-rules-corpus` hook (ops_scripts/ci/validate_hitl_rules.py) was a dormant,
-      # never-functional gate: its `files:` glob matched `.cursor/rules/*.md` but only
+      # never-functional gate: its `files:` glob matched `.claude/rules/*.md` but only
       # `.mdc` ever existed there, so it never fired; and it asserts §HITL-9/§HITL-10 +
       # "Surface 1–N options" / "LOW_CONFIDENCE_AMBIGUITY" markers that are absent from BOTH
       # the legacy `.cursor/*.mdc` AND the `.claude/*.md` SSOT. Removed during the
@@ -555,14 +550,14 @@ repos:
       # > 20. Floors are deliberately permissive (WARN-band on audit_ledger_coverage)
       # so the gate alarms on rot but doesn't block routine work.
       # Bypass: LEDGER_COVERAGE_BYPASS=1 (logged to artifacts/cursor/).
-      # Audit script SSOT: .cursor/scripts/audit_ledger_coverage.py
+      # Audit script SSOT: .claude/governance/scripts/audit_ledger_coverage.py
       - id: author-gate-ledger-coverage
         name: "T7e: Author-Gate Ledger Coverage (W4.1)"
         entry: py ops_scripts/ci/check_ledger_coverage.py
         language: system
         pass_filenames: false
         always_run: false
-        files: ^(\.cursor/scripts/(post_cursor_agent_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.claude/skills/refactor-decision-memory/.*\.py|\.cursor/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
+        files: ^(\.claude/governance/scripts/(post_cursor_agent_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.claude/skills/refactor-decision-memory/.*\.py|\.claude/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
 
       # -- T7h: Terminal/Subprocess Cleanup (§11 + §14) ---------------------------------
       # Enforces Constitutional §11 (terminal process lifecycle) and §14 (subprocess
@@ -650,7 +645,7 @@ repos:
         entry: py ops_scripts/ci/check_notion_schema_mece.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/scripts/post_cursor_agent_(deferred_scope|next_step)_capture\.py$
+        files: ^\.claude/governance/scripts/post_cursor_agent_(deferred_scope|next_step)_capture\.py$
         always_run: false
         require_serial: true
 
@@ -674,10 +669,10 @@ repos:
       # -- T7q: SSOT Folder Routing (Constitutional §31) -----------------------------
       # Blocks NEW Python files written into forbidden roots: scripts/,
       # repo-root, tools/_oneoff/, tools/_oneshot/, or hook-prefix files
-      # outside .cursor/scripts/. Pre-existing files are never flagged.
+      # outside .claude/governance/scripts/. Pre-existing files are never flagged.
       # Bypass: SSOT_FOLDER_BYPASS=1.
-      # Sibling Windsurf hook: .cursor/scripts/pre_write_gate.py
-      # (imports the same helper at .cursor/scripts/_ssot_folder_check.py
+      # Sibling Windsurf hook: .claude/governance/scripts/pre_write_gate.py
+      # (imports the same helper at .claude/governance/scripts/_ssot_folder_check.py
       # to keep the author-time and commit-time decisions identical).
       # Rule SSOT: .claude/rules/ssot-folder-enforcement.md
       - id: ssot-folder-routing
@@ -741,7 +736,7 @@ repos:
       # flip fail-closed via PLAN_REGISTRATION_FAIL_CLOSED=1. Offline-safe:
       # SKIPs when NOTION_API_KEY/NOTION_TOKEN is unset and no local cache
       # exists. Refreshes the local cache at
-      # .cursor/state/plan_registration_cache.json as a side effect.
+      # .claude/state/plan_registration_cache.json as a side effect.
       # Bypass: PLAN_REGISTRATION_BYPASS=1.
       # Rule SSOT: .claude/rules/plan-registration-enforcement.md
       - id: plan-registration-freshness

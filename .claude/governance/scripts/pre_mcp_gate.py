@@ -240,7 +240,7 @@ def _load_mcp_whitelist() -> set[str]:
     global _mcp_whitelist_cache
     if _mcp_whitelist_cache is not None:
         return _mcp_whitelist_cache
-    config_path = repo_root / ".cursor" / "mcp.json"
+    config_path = repo_root / ".mcp.json"
     try:
         with config_path.open("r", encoding="utf-8") as fh:
             data = json.load(fh)

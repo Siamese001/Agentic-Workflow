@@ -42,7 +42,7 @@ from pathlib import Path
 from typing import Any
 
 _REPO = Path(__file__).resolve().parents[2]
-_MCP_CONFIG = _REPO / ".cursor" / "mcp.json"
+_MCP_CONFIG = _REPO / ".mcp.json"
 
 
 def _load_python_mcp_servers() -> dict[str, str]:

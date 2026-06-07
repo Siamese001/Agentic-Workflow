@@ -43,7 +43,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+DB_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "cursor" / "author_gate_capture_violations.jsonl"
 
 _REFACTOR_CLASS_TYPES = frozenset({

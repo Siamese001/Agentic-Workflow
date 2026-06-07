@@ -64,7 +64,7 @@ from tools.refactor_decisions.precedent_capture_metadata import (  # noqa: E402
 from tools.refactor_decisions.author_gate_w2_signals import (  # noqa: E402
     replace_decision_signals_for_capture,
 )
-DB_DIR = repo_root / ".cursor" / "state" / "refactor_decisions"
+DB_DIR = repo_root / ".claude" / "state" / "refactor_decisions"
 DB_PATH = DB_DIR / "refactor_decision_ledger.sqlite"
 _log_path = DB_DIR / "author_gate_capture.log"
 # Lowercase aliases preserved for back-compat with any external importer.

@@ -157,15 +157,8 @@ def validate_mcp_health():
         return False
     print("✅ MCP config sovereignty (Rule #0) validated")
 
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_cursor_config_schema.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Cursor config schema check failed")
-        print(stdout or stderr)
-        return False
-    print("✅ Cursor config schema validated")
+    # cursor-decommission W7: check_cursor_config_schema removed (validated deleted
+    # .cursor/hooks.json + .cursor/mcp.json; Claude Code uses .claude/settings.json + root .mcp.json).
 
     # Gate: every .claude/skills/<name>/SKILL.md must conform to Anthropic's
     # Agent Skills authoring spec (frontmatter, name/description rules, 500-line
@@ -1176,10 +1169,11 @@ def main():
             "MCP-SCHEMA Cursor+Windsurf MCP config validation (advisory)",
             "ops_scripts/ci/check_mcp_config_schema.py --profile all",
         ),
-        # CURSOR-MCP-SCHEMA — hooks.json + mcp.json schema purity (§27).
+        # NO-CURSOR-REFS — .cursor decommission anti-regression (W7): no tracked
+        # .cursor/ files + no active .cursor/ path construction in live code.
         (
-            "CURSOR-MCP-SCHEMA Cursor hooks/mcp schema purity",
-            "ops_scripts/ci/check_cursor_config_schema.py",
+            "NO-CURSOR-REFS .cursor decommission anti-regression",
+            "ops_scripts/ci/check_no_cursor_refs.py",
         ),
         # MCP-PARITY — canonical fleet parity across editor configs.
         (
@@ -1517,7 +1511,6 @@ def main():
         # and all 3 AG audit hooks in post_cursor_agent_response have show_output=true.
         # Advisory by default; AG_HOOK_WIRING_FAIL_CLOSED=1 activates blocking.
         # Plan: author-gate-deferred-scope-b8c1d4 W3.
-        ("AG-WIRE Author-Gate hook wiring invariant (advisory)", "ops_scripts/ci/check_ag_hook_wiring.py"),
         # AG-DEFER — Deferred-scope plan guard marker parity.
         # Every plan with "do not implement without" prose MUST have a
         # DO_NOT_IMPLEMENT_GUARD: marker so the pre_user_prompt hook can surface

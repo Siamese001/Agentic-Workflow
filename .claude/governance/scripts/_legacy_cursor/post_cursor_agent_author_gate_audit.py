@@ -56,7 +56,7 @@ VIOLATION_LOGS = {
 }
 
 # Ledger path for capture subcommand
-LEDGER_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+LEDGER_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB cap
 

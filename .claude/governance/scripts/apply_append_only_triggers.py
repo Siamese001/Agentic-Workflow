@@ -30,7 +30,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_FAMILY_GLOB = str(REPO_ROOT / "artifacts" / "ledgers" / "*.sqlite")
-AUTHOR_GATE_DB = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+AUTHOR_GATE_DB = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 
 # Mapping of DB-kind → list of protected tables. We guard only the canonical
 # decision/event tables; sqlite_sequence, schema_version, FTS shadow tables,

@@ -80,7 +80,7 @@ except ImportError:  # pragma: no cover — tqdm is a project dep but allow degr
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+DB_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 
 DEFAULT_LOOKBACK = 5
 GIT_TIMEOUT_S = 15

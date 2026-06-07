@@ -24,7 +24,7 @@ from datetime import date
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-REMINDERS_DIR = REPO_ROOT / ".cursor" / "reminders"
+REMINDERS_DIR = REPO_ROOT / "docs" / "archive" / "cursor" / "reminders"
 
 DUE_DATE_RE = re.compile(
     r"^due_date:\s*(\d{4}-\d{2}-\d{2})\s*$", re.MULTILINE

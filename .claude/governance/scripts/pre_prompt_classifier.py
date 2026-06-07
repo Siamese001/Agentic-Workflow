@@ -652,8 +652,8 @@ def _check_mcp_config_drift() -> None:
     repo SSOT when any server has env in repo but is missing or different in global.
     Fail-open: any I/O or parse error is silently ignored.
     """
-    repo_cfg = repo_root / ".cursor" / "mcp.json"
-    global_cfg = Path.home() / ".cursor" / "cursor" / "mcp.json"
+    repo_cfg = repo_root / ".mcp.json"
+    global_cfg = repo_cfg
     try:
         repo_data = json.loads(repo_cfg.read_text(encoding="utf-8"))
         global_data = json.loads(global_cfg.read_text(encoding="utf-8"))

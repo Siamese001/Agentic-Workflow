@@ -48,9 +48,10 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-REPO_CONFIG = REPO_ROOT / ".cursor" / "mcp.json"
-GLOBAL_CONFIG = Path.home() / ".cursor" / "cursor" / "mcp.json"
-GLOBAL_BACKUP = Path.home() / ".cursor" / "cursor" / "mcp_config.backup.json"
+REPO_CONFIG = REPO_ROOT / ".mcp.json"
+# cursor-decommission: the Cursor IDE user-home config is retired; root .mcp.json is the sole SSOT.
+GLOBAL_CONFIG = REPO_CONFIG
+GLOBAL_BACKUP = REPO_CONFIG
 
 # Must stay in sync with sync_mcp_config.MIN_PLAUSIBLE_SERVER_COUNT.
 MIN_PLAUSIBLE_SERVER_COUNT = 5

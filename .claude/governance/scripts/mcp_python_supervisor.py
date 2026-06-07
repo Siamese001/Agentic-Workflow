@@ -48,7 +48,7 @@ from pathlib import Path
 from typing import Any
 
 _REPO = Path(__file__).resolve().parents[2]
-_MCP_CONFIG = _REPO / ".cursor" / "mcp.json"
+_MCP_CONFIG = _REPO / ".mcp.json"
 _STATE_PATH = _REPO / "artifacts" / "mcp_supervisor" / "state.json"
 
 # Ensure sibling heartbeat probe is importable by path (the scripts dir is

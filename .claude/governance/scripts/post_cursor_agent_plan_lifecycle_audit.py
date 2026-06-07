@@ -291,7 +291,7 @@ def cmd_duplicate(args: argparse.Namespace) -> int:
             if slug_match:
                 slug = slug_match.group(1)
                 # Check against cache (simplified - would check actual cache file)
-                cache_path = REPO_ROOT / ".cursor" / "state" / "plan_registration_cache.json"
+                cache_path = REPO_ROOT / ".claude" / "state" / "plan_registration_cache.json"
                 if cache_path.exists():
                     try:
                         with open(cache_path, "r", encoding="utf-8") as f:
