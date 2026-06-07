@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -151,6 +152,32 @@ def _run_unified_plan_auditor(normalized_payload: dict[str, Any]) -> int:
 
 raw_stdin = sys.stdin.read() if not sys.stdin.isatty() else ""
 payload = _parse_payload(raw_stdin)
+
+# pre_mcp_gate keys its session_state file on VSCODE_PID, else getppid(). Under Claude Code
+# every hook is a fresh process, so getppid() changes each call and the memory-first /
+# heartbeat state never persists. Pin a stable per-session key from Claude's session_id.
+_sid = str(payload.get("session_id") or "").strip()
+if _sid and not os.environ.get("VSCODE_PID"):
+    os.environ["VSCODE_PID"] = "claude-" + _sid
+
+# The gate only auto-marks memory_recalled on its degrade-open paths; a successful
+# mem_recall_session_start returns early (Rule 1) without marking. Mark it here so the
+# memory-first precondition is satisfied for subsequent MCP calls this session.
+_tn = str(payload.get("tool_name") or payload.get("toolName") or "")
+if _tn.endswith("mem_recall_session_start"):
+    try:
+        _vp = os.environ.get("VSCODE_PID") or str(os.getppid())
+        _ss = REPO_ROOT / "artifacts" / "cursor" / f"session_state_{_vp}.json"
+        _st = json.loads(_ss.read_text(encoding="utf-8")) if _ss.exists() else {}
+        if not isinstance(_st, dict):
+            _st = {}
+        _st["memory_recalled"] = True
+        _st["max_memory_block_attempts"] = 0
+        _ss.parent.mkdir(parents=True, exist_ok=True)
+        _ss.write_text(json.dumps(_st), encoding="utf-8")
+    except Exception:  # noqa: BLE001 - fail-open: gate degrades open after 3 attempts anyway
+        pass
+
 text = text_from_payload(payload) or raw_stdin
 legacy = contains_legacy_execution_token(text)
 if legacy:
