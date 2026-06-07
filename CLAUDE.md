@@ -16,7 +16,7 @@
 
 Full text: [`.claude/rules/constitutional.md`](.claude/rules/constitutional.md). Hard constraints:
 
-- **No PowerShell for repo automation** — `subprocess.run(argv, shell=False, timeout=30)`. Subprocess timeout always required.
+- **Subprocess timeout always required** — `subprocess.run(argv, shell=False, timeout=30)`. PowerShell is allowed (primary Windows shell); the legacy Windsurf PowerShell ban is lifted.
 - **No test skipping** — no `pytest.mark.skip`, no `xfail` without `strict=True`.
 - **No editing while exploring** — all repair gates pass before any edit; mode separation (`analyze`/`plan`/`edit`/`verify`).
 - **Precise exceptions** — no bare `except:` / `except Exception` without a guardian comment.

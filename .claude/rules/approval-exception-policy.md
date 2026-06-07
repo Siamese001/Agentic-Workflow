@@ -44,7 +44,6 @@ These are enforced by CI gates without human interaction unless the gate fails:
 | Action | Gate | Exit on Fail |
 |--------|------|--------------|
 | Commit with new anti-patterns | `guardian_exemption_gate.py` | Block commit |
-| Commit with PowerShell usage | `pre_run_gate.py` + pre-commit T18 | Block commit |
 | Commit with bare `except:` | `pre_write_gate.py` | Block commit |
 | Commit with archives/ imports | `check_no_archives_imports.py` | Block commit |
 | Commit with hollow file | `zero_loss_refactor_verifier.py` | Block commit |

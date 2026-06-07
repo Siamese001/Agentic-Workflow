@@ -63,8 +63,8 @@ When tempted to write `python -c "..."` with embedded quotes, do **one** of:
 
 ## Constitutional Tie-In
 
-Sibling to constitutional **§0** (no PowerShell), **§14** (subprocess
-timeout), and **§26** (no interactive pagers in `run_command`). Same root
+Sibling to constitutional **§0/§14** (subprocess timeout) and **§26** (no
+interactive pagers in `run_command`). Same root
 concern: shell-pipeline behaviors that hang Cursor Agent's turn forever, where
 no Python-level `timeout=` can rescue it because the shell itself — not the
 Python process — is the blocking entity.

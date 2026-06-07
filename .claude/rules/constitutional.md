@@ -9,7 +9,7 @@
 
 ## Hard Constraints
 
-0. **No PowerShell, subprocess timeout required.** `subprocess.run(argv, shell=False, timeout=30)`. (Slot §14 retained for stable numbering.)
+0. **Subprocess timeout required.** `subprocess.run(argv, shell=False, timeout=30)`. PowerShell is permitted (primary Windows shell); the legacy Windsurf-era PowerShell ban is lifted. (Slot §14 retained for stable numbering.)
 1. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`.
 2. **No editing while exploring.** All five repair gates must pass before any edit.
 3. **No agent deletion without authorization.** AGENT-DELETION-AUTHORIZED marker, 90-day deprecation, zero references.
