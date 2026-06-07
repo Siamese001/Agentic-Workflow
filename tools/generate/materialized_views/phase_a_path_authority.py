@@ -361,58 +361,69 @@ def materialize_phase_a(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
 
     # mv_runtime_spine_gaps
     # Per-layer: how many modules have zero incoming spine edges (disconnected from spine).
+    #
+    # W2 (plan adg-mv-materialization-perf-b3d9f1): the prior implementation
+    # evaluated a CORRELATED `EXISTS` subquery (full imports/calls edge scan)
+    # once per in-scope module row (1,997 of them) and wrote it out 3x
+    # (connected_count / gap_count / gap_pct) — O(modules x edges) x 3, ~436s on
+    # the 1.07M-edge snapshot = 99.1% of the entire MV refresh (profiled
+    # 2026-06-07, artifact mv_phase_profile_20260607_130124.json). Rewritten as a
+    # set-based pre-aggregation: collect the "spine-connected" module
+    # resolved_paths ONCE into an indexed temp table (a single pass over
+    # imports/calls edges), then a plain per-layer aggregation with one
+    # IN-membership test, deriving gap_count/gap_pct arithmetically. Output rows
+    # are IDENTICAL — proven by isolated EXCEPT-comparison (old 301.2s vs new
+    # 0.10s, rows 7=7, only_in_old=0 only_in_new=0). ~436s -> <1s.
+    #
+    # Equivalence note: the temp set is {dst.resolved_path : an imports/calls edge
+    # exists from a spine-source module with src.resolved_path != dst.resolved_path}.
+    # `n.resolved_path IN <set>` is therefore TRUE iff the old per-row EXISTS held
+    # (dst2.resolved_path = n.resolved_path makes `src2 != n` == `src != dst`).
+    # NULL resolved_path is excluded by both forms (= / IN against NULL is never true).
+    cur.execute("DROP TABLE IF EXISTS _t_spine_connected")
+    cur.execute(f"""
+        CREATE TEMP TABLE _t_spine_connected AS
+        SELECT DISTINCT dst.resolved_path AS resolved_path
+        FROM edges e
+        JOIN nodes dst ON dst.id = e.dst_id
+        JOIN nodes src ON src.id = e.src_id
+        WHERE e.relation_type IN ('imports', 'calls')
+          AND src.layer IN {_spine_connection_sources_in()}
+          AND src.resolved_path != dst.resolved_path
+    """)
+    cur.execute("CREATE INDEX _ix_spine_connected ON _t_spine_connected(resolved_path)")
     cur.execute(f"""
         CREATE TABLE mv_runtime_spine_gaps AS
         SELECT
-            {_snapshot_id_expr()} AS snapshot_id,
-            n.layer               AS layer,
-            COUNT(n.id)           AS module_count,
-            COUNT(CASE
-                WHEN EXISTS (
-                    SELECT 1 FROM edges e2
-                    JOIN nodes dst2 ON dst2.id = e2.dst_id
-                    JOIN nodes src2 ON src2.id = e2.src_id
-                    WHERE dst2.resolved_path = n.resolved_path
-                      AND src2.resolved_path != n.resolved_path
-                      AND e2.relation_type IN ('imports', 'calls')
-                      AND src2.layer IN {_spine_connection_sources_in()}
-                ) THEN 1
-            END)                  AS connected_count,
-            COUNT(n.id) - COUNT(CASE
-                WHEN EXISTS (
-                    SELECT 1 FROM edges e2
-                    JOIN nodes dst2 ON dst2.id = e2.dst_id
-                    JOIN nodes src2 ON src2.id = e2.src_id
-                    WHERE dst2.resolved_path = n.resolved_path
-                      AND src2.resolved_path != n.resolved_path
-                      AND e2.relation_type IN ('imports', 'calls')
-                      AND src2.layer IN {_spine_connection_sources_in()}
-                ) THEN 1
-            END)                  AS gap_count,
+            snapshot_id,
+            layer,
+            module_count,
+            connected_count,
+            module_count - connected_count AS gap_count,
             ROUND(
-                CAST(
-                    COUNT(n.id) - COUNT(CASE
-                        WHEN EXISTS (
-                            SELECT 1 FROM edges e2
-                            JOIN nodes dst2 ON dst2.id = e2.dst_id
-                            JOIN nodes src2 ON src2.id = e2.src_id
-                            WHERE dst2.resolved_path = n.resolved_path
-                              AND src2.resolved_path != n.resolved_path
-                              AND e2.relation_type IN ('imports', 'calls')
-                              AND src2.layer IN {_spine_connection_sources_in()}
-                        ) THEN 1
-                    END)
-                AS REAL) / NULLIF(COUNT(n.id), 0) * 100,
+                CAST(module_count - connected_count AS REAL)
+                / NULLIF(module_count, 0) * 100,
                 1
-            )                     AS gap_pct
-        FROM nodes n
-        WHERE n.entity_type = 'module'
-          AND n.layer IN {_spine_layers_in()}
-          AND n.resolved_path NOT LIKE 'tests/%'
-          AND n.resolved_path NOT LIKE 'tools/%'
-        GROUP BY n.layer
+            ) AS gap_pct
+        FROM (
+            SELECT
+                {_snapshot_id_expr()} AS snapshot_id,
+                n.layer               AS layer,
+                COUNT(n.id)           AS module_count,
+                COUNT(CASE
+                    WHEN n.resolved_path IN (SELECT resolved_path FROM _t_spine_connected)
+                    THEN 1
+                END)                  AS connected_count
+            FROM nodes n
+            WHERE n.entity_type = 'module'
+              AND n.layer IN {_spine_layers_in()}
+              AND n.resolved_path NOT LIKE 'tests/%'
+              AND n.resolved_path NOT LIKE 'tools/%'
+            GROUP BY n.layer
+        )
         ORDER BY gap_count DESC
     """)
+    cur.execute("DROP TABLE IF EXISTS _t_spine_connected")
 
     # mv_path_criticality_rollup
     # Per-module composite criticality: fan_in, fan_out, violation_count, cross-layer edges.
