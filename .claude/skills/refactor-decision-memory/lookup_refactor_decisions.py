@@ -2,7 +2,7 @@
 """
 lookup_refactor_decisions.py — Query the refactor decision ledger for precedent.
 
-Invoked by Cursor Agent when the refactor-decision-memory skill is active.
+Invoked by Claude Code when the refactor-decision-memory skill is active.
 Reads a JSON query from stdin, searches the SQLite ledger using FTS5,
 and returns a structured precedent verdict to stdout.
 
