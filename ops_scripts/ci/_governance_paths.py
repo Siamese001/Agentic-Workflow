@@ -20,11 +20,11 @@ CURSOR_REFACTOR_DECISIONS_DIR = CURSOR_STATE_DIR / "refactor_decisions"
 # Primary alias used by plan drift / registration gates
 PLANS_DIR = CURSOR_PLANS_DIR
 
-CURSOR_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "cursor"
+CURSOR_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "governance"
 
 
 def governance_artifact_log(name: str) -> Path:
-    """Primary audit log path under ``artifacts/cursor/``."""
+    """Primary audit log path under ``artifacts/governance/``."""
     path = CURSOR_ARTIFACTS_DIR / name
     path.parent.mkdir(parents=True, exist_ok=True)
     return path

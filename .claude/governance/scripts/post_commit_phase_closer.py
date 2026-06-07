@@ -28,7 +28,7 @@ Requirements:
 Fail policy: OPEN — any error → log + exit 0. Must never block a commit.
 Bypass: PHASE_CLOSER_BYPASS=1 → log + exit 0.
 
-Audit log: artifacts/cursor/phase_close_audit.jsonl (one JSON line per patch/skip)
+Audit log: artifacts/governance/phase_close_audit.jsonl (one JSON line per patch/skip)
 
 CLI:
     python post_commit_phase_closer.py                    # current HEAD
@@ -52,7 +52,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-AUDIT_LOG = REPO_ROOT / "artifacts" / "cursor" / "phase_close_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "phase_close_audit.jsonl"
 
 import sys as _sys
 

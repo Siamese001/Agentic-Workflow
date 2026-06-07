@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """show_plans_db_writes.py — view/summarize Plans-DB write telemetry.
 
-Reads ``artifacts/cursor/plans_db_writes.jsonl`` (the unified telemetry
+Reads ``artifacts/governance/plans_db_writes.jsonl`` (the unified telemetry
 log written by every Plans-DB writer) and prints a readable summary or
 filtered tail.
 
@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "plans_db_writes.jsonl"
+LOG_PATH = REPO_ROOT / "artifacts" / "governance" / "plans_db_writes.jsonl"
 
 
 def _read_rows() -> list[dict]:

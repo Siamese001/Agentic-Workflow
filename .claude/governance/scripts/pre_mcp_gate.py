@@ -48,7 +48,7 @@ adg_server_name = "adg_sqlite"
 # mcp-destructive-gate-preflight-e9a14b W1 Phase P1). Requires a recent
 # successful health probe against the same logical server before honoring
 # a destructive MCP call. Heartbeat is maintained by the companion
-# post_cursor_agent_mcp_preflight_audit.py hook.
+# post_agent_mcp_preflight_audit.py hook.
 #
 # Keyed on tool short-name (after stripping the unstable mcp<digits>_
 # prefix) to stay resilient across Cursor MCP reorderings.
@@ -62,7 +62,7 @@ _DESTRUCTIVE_PREFLIGHT_TOOLS: dict[str, str] = {
     "mem_cleanup_stale": "memory",
 }
 
-# Must match the constant in post_cursor_agent_mcp_preflight_audit.py.
+# Must match the constant in post_agent_mcp_preflight_audit.py.
 _PREFLIGHT_MAX_AGE_S: int = 60
 
 # Grace period after hook startup: allows the very first destructive call of
@@ -173,7 +173,7 @@ artifacts_adg = repo_root / "artifacts" / "adg"
 # replace vscode_pid in the _session_id derivation and keep the rest of the
 # session-state mechanism unchanged.
 _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
-session_state = repo_root / "artifacts" / "cursor" / f"session_state_{_session_id}.json"
+session_state = repo_root / "artifacts" / "governance" / f"session_state_{_session_id}.json"
 
 # After this many consecutive blocks without a successful memory recall,
 # the gate degrades to open so Cursor Agent is never permanently stuck.
@@ -1325,7 +1325,7 @@ def check_deepwiki_gate() -> int:
 
 def _purge_stale_session_states() -> None:
     """Delete session_state_{pid}.json files older than _session_state_max_age_hours."""
-    cursor_dir = repo_root / "artifacts" / "cursor"
+    cursor_dir = repo_root / "artifacts" / "governance"
     if not cursor_dir.exists():
         return
     cutoff = time.time() - _session_state_max_age_hours * 3600
@@ -1358,7 +1358,7 @@ def check_destructive_preflight(tool_name: str) -> int:
     if os.environ.get("MCP_PREFLIGHT_BYPASS", "").strip() == "1":
         return 0
 
-    heartbeat_path = repo_root / "artifacts" / "cursor" / "mcp_health_heartbeat.json"
+    heartbeat_path = repo_root / "artifacts" / "governance" / "mcp_health_heartbeat.json"
 
     now = time.time()
 

@@ -11,7 +11,7 @@ Behavior (FAIL-CLOSED on explicit violations, FAIL-OPEN on parse errors):
   - Block reads of sensitive filenames (.env, id_rsa, credentials*, etc.)
     and sensitive suffixes (.pem, .key, .kdbx, etc.), with .env.example
     / .env.template / .env.sample whitelisted.
-  - Append every block decision to artifacts/cursor/secret_scan.jsonl
+  - Append every block decision to artifacts/governance/secret_scan.jsonl
     for audit and later baseline tuning.
 
 FAIL POLICY: closed for explicit sensitivity hits; open for malformed
@@ -38,7 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _secret_patterns import is_sensitive_path  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-AUDIT_DIR = REPO_ROOT / "artifacts" / "cursor"
+AUDIT_DIR = REPO_ROOT / "artifacts" / "governance"
 AUDIT_LOG = AUDIT_DIR / "secret_scan.jsonl"
 
 # Paths outside the repo that are explicitly allowed for read

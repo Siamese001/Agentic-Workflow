@@ -22,7 +22,7 @@ Usage:
     python tools/migration/notion_backfill_typed_fields.py --execute
 
 Artifacts:
-    artifacts/cursor/notion_backfill_audit.jsonl
+    artifacts/governance/notion_backfill_audit.jsonl
 """
 
 from __future__ import annotations
@@ -42,7 +42,7 @@ import urllib.error
 DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2025-09-03"
-AUDIT_LOG = Path("artifacts/cursor/notion_backfill_audit.jsonl")
+AUDIT_LOG = Path("artifacts/governance/notion_backfill_audit.jsonl")
 
 BAND_RE = re.compile(r"^\s*\[(P[0-5])\]")
 METRICS_RE = re.compile(

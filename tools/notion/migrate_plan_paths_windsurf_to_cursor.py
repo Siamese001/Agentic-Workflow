@@ -36,7 +36,7 @@ NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2025-09-03"
 WAVE_PHASE_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 PLANS_DS_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-AUDIT_LOG = REPO_ROOT / "artifacts" / "cursor" / "migrate_plan_paths_windsurf_to_cursor.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "migrate_plan_paths_windsurf_to_cursor.jsonl"
 
 
 def _token() -> str:

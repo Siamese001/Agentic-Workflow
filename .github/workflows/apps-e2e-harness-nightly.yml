@@ -101,7 +101,7 @@ jobs:
       # being wired through apps_shared.spine_emission.
       #
       # Emergency bypass (operator-only): set APPS_E2E_SPINE_STRICT_BYPASS=1
-      # at the env level — logged to artifacts/windsurf/apps_e2e_strict_bypass.jsonl.
+      # at the env level — logged to artifacts/governance/apps_e2e_strict_bypass.jsonl.
       # See docs/adr/ADR-081-apps-e2e-spine-cert-wireup.md for full history.
       - name: Gate 2 — apps_e2e_spine_certification (BLOCKING)
         run: |

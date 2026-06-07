@@ -2,7 +2,7 @@
 """_notion_sync_telemetry.py — Sync telemetry emitter for Notion operations.
 
 Records structured telemetry for every sync attempt, success, or failure.
-Emits to artifacts/cursor/sync_telemetry.jsonl per §24 deferred-scope capture.
+Emits to artifacts/governance/sync_telemetry.jsonl per §24 deferred-scope capture.
 
 Constitutional: §25 (MCP serialization), §36 (plan registration), §30 (capture health)
 """
@@ -23,8 +23,8 @@ from tools.notion._notion_retry import RetryContext, RetryResult
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-TELEMETRY_LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "sync_telemetry.jsonl"
-LEDGER_DB_PATH = REPO_ROOT / "artifacts" / "windsurf" / "sync_health_ledger.sqlite"
+TELEMETRY_LOG_PATH = REPO_ROOT / "artifacts" / "governance" / "sync_telemetry.jsonl"
+LEDGER_DB_PATH = REPO_ROOT / "artifacts" / "governance" / "sync_health_ledger.sqlite"
 
 # ---------------------------------------------------------------------------
 # Telemetry event types

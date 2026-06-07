@@ -5,7 +5,7 @@ Does NOT delete anything. Emits a JSON report of required mirror paths and exits
   0 — readiness assessment complete (deletion may still be blocked)
   1 — fail-closed and blockers present
 
-Report: artifacts/cursor/windsurf_deletion_readiness.json
+Report: artifacts/governance/windsurf_deletion_readiness.json
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-REPORT = REPO_ROOT / "artifacts" / "cursor" / "windsurf_deletion_readiness.json"
+REPORT = REPO_ROOT / "artifacts" / "governance" / "windsurf_deletion_readiness.json"
 
 TEXT_EXTS = {
     ".md",
@@ -84,7 +84,7 @@ def _active_windsurf_references() -> list[str]:
             text = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        if LOCAL_WINDSURF_PATH_RE.search(text) or "artifacts/windsurf" in text:
+        if LOCAL_WINDSURF_PATH_RE.search(text) or "artifacts/governance" in text:
             refs.append(rel)
     return sorted(set(refs))
 

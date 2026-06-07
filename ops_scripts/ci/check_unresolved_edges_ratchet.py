@@ -31,7 +31,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 ADG_DIR = REPO_ROOT / "artifacts" / "adg"
-LOG_DIR = REPO_ROOT / "artifacts" / "windsurf"
+LOG_DIR = REPO_ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "unresolved_edges_ratchet.jsonl"
 BASELINE_DIR = REPO_ROOT / "ops_scripts" / "ci" / "baselines"
 BASELINE_FILE = BASELINE_DIR / "unresolved_edges_ratchet.json"

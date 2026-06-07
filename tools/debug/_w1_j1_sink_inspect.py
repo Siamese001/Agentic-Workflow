@@ -4,7 +4,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-p = Path("artifacts/cursor/wiring_gate_violations.jsonl")
+p = Path("artifacts/governance/wiring_gate_violations.jsonl")
 lines = p.read_text(encoding="utf-8").strip().splitlines()
 print(f"total_runs_logged: {len(lines)}")
 

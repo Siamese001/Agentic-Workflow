@@ -33,8 +33,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Listed explicitly to avoid false positives on unrelated scripts that happen
 # to mention Notion terminology.
 KNOWN_WRITERS = [
-    REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_deferred_scope_capture.py",
-    REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_next_step_capture.py",
+    REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_deferred_scope_capture.py",
+    REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_next_step_capture.py",
 ]
 
 RETIRED_FIELDS = {

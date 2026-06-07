@@ -6,13 +6,13 @@ Scans (rglob) under selected artifact roots for files matching *bypass*.jsonl,
 counts lines, optionally buckets coarse JSON `reason` / `msg` fields.
 
 Writes:
-  artifacts/cursor/governance_bypass_rollup_latest.json
+  artifacts/governance/governance_bypass_rollup_latest.json
 
 Exit 0 always (operator visibility). BYPASS: ROLLUP_GOVERNANCE_BYPASS_LOGS_BYPASS=1.
 
 Scans only:
-  artifacts/cursor/
-  artifacts/cursor/
+  artifacts/governance/
+  artifacts/governance/
   artifacts/ci/
 """
 
@@ -28,11 +28,11 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ARTIFACT_ROOTS = (
-    REPO_ROOT / "artifacts" / "windsurf",
-    REPO_ROOT / "artifacts" / "cursor",
+    REPO_ROOT / "artifacts" / "governance",
+    REPO_ROOT / "artifacts" / "governance",
     REPO_ROOT / "artifacts" / "ci",
 )
-OUT_JSON = REPO_ROOT / "artifacts" / "windsurf" / "governance_bypass_rollup_latest.json"
+OUT_JSON = REPO_ROOT / "artifacts" / "governance" / "governance_bypass_rollup_latest.json"
 MAX_LINE_BYTES = 65536
 
 

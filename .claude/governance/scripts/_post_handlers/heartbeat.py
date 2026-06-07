@@ -1,6 +1,6 @@
 """Heartbeat handler — writes one line per response to the heartbeat log.
 
-In-process equivalent of archived `.claude/governance/scripts/_legacy_cursor/post_cursor_agent_heartbeat.py`.
+In-process equivalent of archived `.claude/governance/scripts/_legacy_cursor/post_agent_heartbeat.py`.
 Mirrors that script's contract exactly so the standalone hook can be
 removed once the dispatcher is fully cut over.
 """
@@ -44,14 +44,14 @@ def _truncate(path: Path, max_lines: int) -> None:
 
 def run(parsed: ParsedResponse, repo_root: Path) -> None:
     """Append heartbeat record. Fail-soft."""
-    artifacts = repo_root / "artifacts" / "cursor"
+    artifacts = repo_root / "artifacts" / "governance"
     try:
         artifacts.mkdir(parents=True, exist_ok=True)
     except OSError as err:
         print(f"[heartbeat] mkdir failed: {err}", file=sys.stderr)
         return
 
-    path = artifacts / "post_cursor_agent_heartbeat.jsonl"
+    path = artifacts / "post_agent_heartbeat.jsonl"
     now = time.time()
     prev = _previous_timestamp(path)
     gap_ms = round((now - prev) * 1000.0, 2) if prev else None

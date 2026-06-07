@@ -35,7 +35,7 @@ from tools.notion._notion_circuit_breaker import get_all_circuit_states
 # Configuration
 # ---------------------------------------------------------------------------
 
-LEDGER_DB_PATH = REPO_ROOT / "artifacts" / "windsurf" / "sync_health_ledger.sqlite"
+LEDGER_DB_PATH = REPO_ROOT / "artifacts" / "governance" / "sync_health_ledger.sqlite"
 REPORTS_DIR = REPO_ROOT / "docs" / "reports" / "notion_sync"
 
 TARGET_SUCCESS_RATE = 99.0

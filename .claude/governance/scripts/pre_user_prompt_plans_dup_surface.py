@@ -2,9 +2,9 @@
 """pre_user_prompt_plans_dup_surface.py — surface unacknowledged Plans-DB
 duplicate violations at the start of each Cursor Agent prompt.
 
-When ``post_cursor_agent_plans_dup_audit.py`` detected a duplicate Plans-DB POST
+When ``post_agent_plans_dup_audit.py`` detected a duplicate Plans-DB POST
 in the previous response and logged it to
-``artifacts/cursor/notion_plans_dup_violations.jsonl``, this hook reads the
+``artifacts/governance/notion_plans_dup_violations.jsonl``, this hook reads the
 last entry and surfaces a PLANS_DUP_SURFACE line so the operator is informed
 before acting on the next prompt.
 
@@ -26,10 +26,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "cursor" / "notion_plans_dup_violations.jsonl"
+    REPO_ROOT / "artifacts" / "governance" / "notion_plans_dup_violations.jsonl"
 )
 SURFACED_LOG = (
-    REPO_ROOT / "artifacts" / "cursor" / "notion_plans_dup_surfaced.jsonl"
+    REPO_ROOT / "artifacts" / "governance" / "notion_plans_dup_surfaced.jsonl"
 )
 
 

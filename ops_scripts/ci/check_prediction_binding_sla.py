@@ -27,8 +27,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_GLOB = str(REPO_ROOT / "artifacts" / "ledgers" / "*.sqlite")
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "prediction_binding_violations.jsonl"
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "prediction_binding_bypass.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "prediction_binding_violations.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "prediction_binding_bypass.jsonl"
 
 
 def _log(path: Path, payload: dict) -> None:

@@ -37,7 +37,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LOG_DIR = REPO_ROOT / "artifacts" / "windsurf"
+LOG_DIR = REPO_ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "pii_telemetry_violations.jsonl"
 
 

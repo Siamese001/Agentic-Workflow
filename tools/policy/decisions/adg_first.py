@@ -1,6 +1,6 @@
 """PDP — ADG-first dependency analysis decision (P6).
 
-Pure decision primitive extracted from ``post_cursor_agent_adg_audit.py``. The
+Pure decision primitive extracted from ``post_agent_adg_audit.py``. The
 hook remains the PEP (reads stdin, writes to violation log, decides exit
 code). This module is the PDP: given observed facts about a Cursor Agent
 response, produce a verdict.
@@ -41,7 +41,7 @@ class AdgFirstDecision:
 
     Attributes:
         verdict: Categorical verdict (see AdgFirstVerdict).
-        severity: String label matching the post_cursor_agent_adg_audit log
+        severity: String label matching the post_agent_adg_audit log
             format ("info", "warning", "error", "critical").
         is_blocking: True when enforcement should exit 2 (block the
             response). False for advisory outcomes.

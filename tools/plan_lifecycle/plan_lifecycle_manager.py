@@ -26,7 +26,7 @@ from typing import Any, Iterable, Optional
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # State paths
-STATE_DIR = REPO_ROOT / "artifacts" / "windsurf"
+STATE_DIR = REPO_ROOT / "artifacts" / "governance"
 REGISTRATION_QUEUE = REPO_ROOT / ".claude" / "state" / "plan_registration_queue.jsonl"
 REGISTRATION_CACHE = REPO_ROOT / ".claude" / "state" / "plan_registration_cache.json"
 
@@ -124,7 +124,7 @@ class PlanLifecycleManager:
     
     def __init__(self, repo_root: Optional[Path] = None):
         self.repo_root = repo_root or REPO_ROOT
-        self.state_dir = self.repo_root / "artifacts" / "windsurf"
+        self.state_dir = self.repo_root / "artifacts" / "governance"
         self.state_dir.mkdir(parents=True, exist_ok=True)
         
         # Compile marker regex patterns

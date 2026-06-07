@@ -1,7 +1,7 @@
 -- =====================================================================
 -- Decision Ledger — Canonical DDL (SSOT)
 -- =====================================================================
--- Location: .cursor/state/refactor_decisions/refactor_decision_ledger.sqlite
+-- Location: .claude/state/refactor_decisions/refactor_decision_ledger.sqlite
 -- Applied by: .cursor/scripts/apply_ledger_schema.py (idempotent)
 -- Referenced by:
 --   - .cursor/scripts/post_cursor_agent_hitl_capture.py (writer)

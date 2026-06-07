@@ -36,7 +36,7 @@ ENV_FAIL_CLOSED = "ENRICHED_CHOICE_UI_FAIL_CLOSED"
 ENV_BYPASS = "ENRICHED_CHOICE_UI_BYPASS"
 
 # Output paths
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "enriched_choice_ui_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "enriched_choice_ui_violations.jsonl"
 
 # Decision context keywords that trigger enforcement
 DECISION_CONTEXT_KEYWORDS: tuple[str, ...] = (

@@ -1,4 +1,4 @@
-"""Tests for post_cursor_agent_adr_registry_capture.py — filesystem-only ADR logger.
+"""Tests for post_agent_adr_registry_capture.py — filesystem-only ADR logger.
 
 ADR Registry archived 2026-05-02; this hook now logs to JSONL only.
 
@@ -34,7 +34,7 @@ _SCRIPTS = _REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
 def _load(mod_name: str = "adr_registry_t") -> ModuleType:
     spec = importlib.util.spec_from_file_location(
         mod_name,
-        _SCRIPTS / "post_cursor_agent_adr_registry_capture.py",
+        _SCRIPTS / "post_agent_adr_registry_capture.py",
     )
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)

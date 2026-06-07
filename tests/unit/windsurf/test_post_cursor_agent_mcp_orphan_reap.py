@@ -1,4 +1,4 @@
-"""Tests for the post_cursor_agent_mcp_orphan_reap Windsurf hook.
+"""Tests for the post_agent_mcp_orphan_reap Windsurf hook.
 
 Invariants the hook must uphold:
     1. ALWAYS exit 0 (must never block Cursor Agent).
@@ -22,12 +22,12 @@ from unittest import mock
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_mcp_orphan_reap.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_mcp_orphan_reap.py"
 
 
 def _load_hook(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """Import the hook module with LOG_PATH redirected to tmp_path."""
-    spec = importlib.util.spec_from_file_location("post_cursor_agent_mcp_orphan_reap", HOOK_PATH)
+    spec = importlib.util.spec_from_file_location("post_agent_mcp_orphan_reap", HOOK_PATH)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -215,12 +215,12 @@ def test_malformed_detector_json_still_exits_zero(tmp_path: Path, monkeypatch: p
 
 
 def test_hook_is_registered_in_hooks_json() -> None:
-    """Regression guard: the hook must be wired into post_cursor_agent_response."""
+    """Regression guard: the hook must be wired into post_agent_response."""
     hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
     data = json.loads(hooks_path.read_text(encoding="utf-8"))
-    entries = data["hooks"]["post_cursor_agent_response"]
+    entries = data["hooks"]["post_agent_response"]
     commands = [e["command"] for e in entries]
-    assert any("post_cursor_agent_mcp_orphan_reap.py" in c for c in commands), (
-        "post_cursor_agent_mcp_orphan_reap.py must be registered in "
-        ".cursor/hooks.json post_cursor_agent_response chain"
+    assert any("post_agent_mcp_orphan_reap.py" in c for c in commands), (
+        "post_agent_mcp_orphan_reap.py must be registered in "
+        ".cursor/hooks.json post_agent_response chain"
     )

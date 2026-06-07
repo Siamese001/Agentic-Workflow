@@ -156,7 +156,7 @@ ARCHIVES_DIR: Final[str] = "archives"
 # documentation reports, and ADR storage.
 ARTIFACTS_DIR: Final[str] = "artifacts"
 ADG_ARTIFACTS_DIR: Final[str] = "artifacts/adg"
-WINDSURF_ARTIFACTS_DIR: Final[str] = "artifacts/cursor"
+WINDSURF_ARTIFACTS_DIR: Final[str] = "artifacts/governance"
 WINDSURF_PLANS_DIR: Final[str] = "docs/archive/windsurf/legacy-tree/plans"
 DOCS_DIR: Final[str] = "docs"
 DOCS_REPORTS_DIR: Final[str] = "docs/reports"
@@ -186,7 +186,7 @@ REPORTS_DIR: Final[str] = "reports"
 # data and flip the consumer to the CLAUDE_* symbol. Both endpoints are exported
 # so migration tooling can reference either side explicitly.
 CURSOR_PLANS_DIR: Final[str] = ".cursor/plans"
-CURSOR_STATE_DIR: Final[str] = ".cursor/state"
+CURSOR_STATE_DIR: Final[str] = ".claude/state"
 CURSOR_SCHEMAS_DIR: Final[str] = ".cursor/schemas"
 CURSOR_TEMPLATES_DIR: Final[str] = ".cursor/templates"
 CURSOR_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".cursor/scripts"

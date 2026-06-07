@@ -544,7 +544,7 @@ class TestGov3SchemaRegression:
             / "core_l5_producer_author_gate_receipt.json"
         )
         gate_json = _REPO_ROOT / "artifacts" / "ci" / "agentic_core_addition_gate.json"
-        session_state = _REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
+        session_state = _REPO_ROOT / "artifacts" / "governance" / "session_state.json"
 
         if not receipt_path.exists():
             pytest.skip("Receipt not present — skip in isolated env.")

@@ -175,7 +175,7 @@ jobs:
           PYTHONPATH: .
 
       - name: ADG enforcement violation log delta gate (P3)
-        # Fails the build when artifacts/windsurf/adg_first_violations.jsonl,
+        # Fails the build when artifacts/governance/adg_first_violations.jsonl,
         # graph_layer_violations.jsonl, or plan_evidence_violations.jsonl
         # grew relative to the base branch. Converts the append-only audit
         # trail into a PR-level deterrent. Override: ADG_VIOLATION_LOG_DELTA_BYPASS=1.

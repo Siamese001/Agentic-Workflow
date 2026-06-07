@@ -1,5 +1,5 @@
 # pylint: disable=protected-access
-"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_cursor_agent_author_gate_miss_detector.py.
+"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_agent_author_gate_miss_detector.py.
 
 Coverage:
     _extract_edited_files       - pulls .py/.md/.js/.yaml/.json paths from
@@ -25,9 +25,9 @@ import pytest
 _SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 
-import post_cursor_agent_author_gate_miss_detector as _m  # noqa: E402
+import post_agent_author_gate_miss_detector as _m  # noqa: E402
 
-from post_cursor_agent_author_gate_miss_detector import (  # noqa: E402
+from post_agent_author_gate_miss_detector import (  # noqa: E402
     MISS_SCORE_THRESHOLD,
     _compute_miss_score,
     _decision_keywords_hit,
@@ -249,7 +249,7 @@ class TestComputeMissScore:
 
 
 class TestMainEndToEnd:
-    SCRIPT = _SCRIPTS_DIR / "post_cursor_agent_author_gate_miss_detector.py"
+    SCRIPT = _SCRIPTS_DIR / "post_agent_author_gate_miss_detector.py"
 
     def _run(self, payload: dict, repo_root: Path) -> tuple[int, str]:
         proc = subprocess.run(
@@ -264,7 +264,7 @@ class TestMainEndToEnd:
         return proc.returncode, proc.stderr
 
     def test_miss_logged_when_score_above_threshold(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        log = tmp_path / "artifacts" / "windsurf" / "author_gate_misses.jsonl"
+        log = tmp_path / "artifacts" / "governance" / "author_gate_misses.jsonl"
         monkeypatch.setattr(_m, "MISS_LOG", log)
 
         payload = {
@@ -290,7 +290,7 @@ class TestMainEndToEnd:
         assert any(s.startswith("multi_file_edit") for s in record["signals"])
 
     def test_no_log_when_capture_present(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        log = tmp_path / "artifacts" / "windsurf" / "author_gate_misses.jsonl"
+        log = tmp_path / "artifacts" / "governance" / "author_gate_misses.jsonl"
         monkeypatch.setattr(_m, "MISS_LOG", log)
 
         payload = {
@@ -308,7 +308,7 @@ class TestMainEndToEnd:
         assert not log.exists()
 
     def test_empty_stdin_is_noop(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        log = tmp_path / "artifacts" / "windsurf" / "author_gate_misses.jsonl"
+        log = tmp_path / "artifacts" / "governance" / "author_gate_misses.jsonl"
         monkeypatch.setattr(_m, "MISS_LOG", log)
         import io
 
@@ -318,7 +318,7 @@ class TestMainEndToEnd:
         assert not log.exists()
 
     def test_invalid_json_treated_as_raw_text(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        log = tmp_path / "artifacts" / "windsurf" / "author_gate_misses.jsonl"
+        log = tmp_path / "artifacts" / "governance" / "author_gate_misses.jsonl"
         monkeypatch.setattr(_m, "MISS_LOG", log)
         import io
 

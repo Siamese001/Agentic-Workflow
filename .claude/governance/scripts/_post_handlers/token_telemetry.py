@@ -1,7 +1,7 @@
 """Token-telemetry handler - per-turn token-cost telemetry.
 
-In-process equivalent of `.claude/governance/scripts/post_cursor_agent_token_telemetry.py`.
-Logs a row to `artifacts/cursor/turn_budget.jsonl` for every Cursor Agent response.
+In-process equivalent of `.claude/governance/scripts/post_agent_token_telemetry.py`.
+Logs a row to `artifacts/governance/turn_budget.jsonl` for every Cursor Agent response.
 """
 
 from __future__ import annotations
@@ -80,5 +80,5 @@ def run(parsed: ParsedResponse, repo_root: Path) -> None:
         "approximation_note": "tokens = bytes/4 (Claude tokenizer ratio varies 3-5x)",
         "via": "dispatcher",
     }
-    log_path = repo_root / "artifacts" / "cursor" / "turn_budget.jsonl"
+    log_path = repo_root / "artifacts" / "governance" / "turn_budget.jsonl"
     _append(log_path, row)

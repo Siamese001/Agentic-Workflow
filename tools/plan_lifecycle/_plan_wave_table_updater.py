@@ -2,7 +2,7 @@
 _plan_wave_table_updater.py — Update wave-status cells in plan .md files.
 
 Pure logic: no I/O side-effects beyond the file write. No Notion calls. No
-subprocess. Called by post_cursor_agent_wave_lifecycle_capture.py after each
+subprocess. Called by post_agent_wave_lifecycle_capture.py after each
 WAVE_START / WAVE_COMPLETE / PLAN_COMPLETE marker is processed.
 
 Status cell mapping:

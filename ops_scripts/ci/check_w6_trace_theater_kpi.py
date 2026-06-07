@@ -6,7 +6,7 @@ count vs real production imports. A rising ratio signals trace-
 theater (stub modules masquerading as instrumented surfaces).
 
 Tier: K (KPI). Emits one JSONL row per run to
-``artifacts/cursor/kpi_trace_theater.jsonl``.
+``artifacts/governance/kpi_trace_theater.jsonl``.
 """
 
 from __future__ import annotations

@@ -46,7 +46,7 @@ from _notion_constants import (  # noqa: E402
 # Unified Plans-DB write telemetry (RCA §8).
 from tools.notion._plan_registration_helpers import log_plans_db_write  # noqa: E402
 
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "triage_plans_duplicates.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "triage_plans_duplicates.jsonl"
 TIMEOUT_S = 30.0
 THROTTLE_S = 0.35
 
@@ -146,7 +146,7 @@ def pick_winner(rows: list[dict]) -> tuple[dict, list[dict]]:
 
 def archive_page(page_id: str, reason: str, tok: str) -> tuple[bool, str]:
     """Soft-delete via PATCH archived=true. Plans schema lacks an Evidence
-    field, so the audit trail lives in artifacts/cursor/triage_plans_duplicates.jsonl.
+    field, so the audit trail lives in artifacts/governance/triage_plans_duplicates.jsonl.
     """
     url = f"{NOTION_BASE}/pages/{page_id}"
     body = {"archived": True}

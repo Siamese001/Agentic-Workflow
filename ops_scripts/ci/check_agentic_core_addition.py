@@ -16,7 +16,7 @@ Modes:
 
 Bypass:
   CORE_ADDITION_GATE_BYPASS=1 — local writes only; CI fails if bypass evidence
-  exists in artifacts/cursor/core_addition_gate_violations.jsonl without a
+  exists in artifacts/governance/core_addition_gate_violations.jsonl without a
   matching emergency_approval_receipt_ref field on the bypass event.
 
 Opt-in full-tree scan (rare audit only):
@@ -47,9 +47,9 @@ if str(REPO_ROOT) not in sys.path:
 # Paths
 # ---------------------------------------------------------------------------
 AGENTIC_CORE_PATH = REPO_ROOT / "agentic_core"
-SESSION_STATE = REPO_ROOT / "artifacts" / "cursor" / "session_state.json"
+SESSION_STATE = REPO_ROOT / "artifacts" / "governance" / "session_state.json"
 SCHEMA_PATH = REPO_ROOT / ".claude" / "schemas" / "CoreAdditionAuthorGateReceipt.schema.json"
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "cursor" / "core_addition_gate_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "core_addition_gate_violations.jsonl"
 ARTIFACT_OUT = REPO_ROOT / "artifacts" / "ci" / "agentic_core_addition_gate.json"
 
 # ---------------------------------------------------------------------------

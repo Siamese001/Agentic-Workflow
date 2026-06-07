@@ -50,7 +50,7 @@ NOTION_VERSION = "2025-09-03"
 BACKLOG_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 
 TRIAGE_CSV = REPO_ROOT / "docs" / "reports" / "maintenance" / "unscored_manual_triage.csv"
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "notion_batch_rescore_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "notion_batch_rescore_audit.jsonl"
 
 PBAND_RE = re.compile(r"^\s*\[(P[0-5]|NEXT·P[0-5]|INDEX|RECOVERY|EVIDENCE)\b")
 # Title-prefix -> P-Band select value. Only the concrete P0..P5 bands are valid

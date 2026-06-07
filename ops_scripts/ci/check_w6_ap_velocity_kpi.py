@@ -6,7 +6,7 @@ rising ratio signals drift — the codebase is accumulating bad
 patterns faster than it is removing them.
 
 Tier: K (KPI). Emits JSONL row per run to
-``artifacts/cursor/kpi_ap_velocity.jsonl``.
+``artifacts/governance/kpi_ap_velocity.jsonl``.
 """
 
 from __future__ import annotations

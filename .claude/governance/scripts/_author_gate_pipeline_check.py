@@ -5,7 +5,7 @@ _author_gate_pipeline_check.py — Author-Gate pipeline-completion helper.
 Plan: author-gate-ui-renderer-hardening-a7f3c2 W1.P1.1.
 
 Pure logic. No I/O at import. Safe to import from the post-cursor_agent audit hook
-(`.claude/governance/scripts/post_cursor_agent_author_gate_pipeline_audit.py`) and from the
+(`.claude/governance/scripts/post_agent_author_gate_pipeline_audit.py`) and from the
 CI freshness gate (`ops_scripts/ci/check_author_gate_pipeline_freshness.py`).
 
 Single responsibility: given a Cursor Agent response text, detect whether an

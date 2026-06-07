@@ -35,8 +35,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_CURSOR = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 LEDGER_WINDSURF = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 NOTION_AUDIT_PATHS = (
-    REPO_ROOT / "artifacts" / "cursor" / "notion_tool_audit.jsonl",
-    REPO_ROOT / "artifacts" / "windsurf" / "notion_tool_audit.jsonl",
+    REPO_ROOT / "artifacts" / "governance" / "notion_tool_audit.jsonl",
+    REPO_ROOT / "artifacts" / "governance" / "notion_tool_audit.jsonl",
 )
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "ci" / "notion_decision_parity_violations.jsonl"
 BYPASS_LOG = REPO_ROOT / "artifacts" / "ci" / "notion_decision_parity_bypass.jsonl"

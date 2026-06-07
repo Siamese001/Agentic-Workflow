@@ -3,7 +3,7 @@
 pre_user_prompt_deferred_scope_recovery.py — session-start scope-loss surfacing.
 
 Runs on every user prompt. Scans
-`artifacts/cursor/deferred_scope_capture.jsonl` for unresolved pendings
+`artifacts/governance/deferred_scope_capture.jsonl` for unresolved pendings
 (entries with kind in pending_no_token / post_*_error that have no later
 auto_posted / confirmed_by_receipt record for the same key).
 
@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-CAPTURE_LOG = REPO_ROOT / "artifacts" / "cursor" / "deferred_scope_capture.jsonl"
+CAPTURE_LOG = REPO_ROOT / "artifacts" / "governance" / "deferred_scope_capture.jsonl"
 
 PENDING_KINDS = {
     "pending_no_token",

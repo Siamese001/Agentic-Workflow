@@ -26,7 +26,7 @@ from audit_notion_backlog_coverage import _query_all_rows, _extract  # noqa: E40
 
 NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2025-09-03"
-AUDIT_LOG = REPO / "artifacts" / "windsurf" / "notion_phase4_reroute.jsonl"
+AUDIT_LOG = REPO / "artifacts" / "governance" / "notion_phase4_reroute.jsonl"
 
 MARKER_DATE = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
 MARKER_PREFIX = "[REROUTE"

@@ -163,7 +163,7 @@ _tn = str(payload.get("tool_name") or payload.get("toolName") or "")
 if _tn.endswith("mem_recall_session_start"):
     try:
         _vp = os.environ.get("VSCODE_PID") or str(os.getppid())
-        _ss = REPO_ROOT / "artifacts" / "cursor" / f"session_state_{_vp}.json"
+        _ss = REPO_ROOT / "artifacts" / "governance" / f"session_state_{_vp}.json"
         _st = json.loads(_ss.read_text(encoding="utf-8")) if _ss.exists() else {}
         if not isinstance(_st, dict):
             _st = {}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Temporary smoke test for post_cursor_agent_author_gate_pipeline_audit.py.
+"""Temporary smoke test for post_agent_author_gate_pipeline_audit.py.
 Delete after W5 verification."""
 
 import json
@@ -8,8 +8,8 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-AUDIT = REPO / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_author_gate_pipeline_audit.py"
-LOG = REPO / "artifacts" / "windsurf" / "author_gate_pipeline_violations.jsonl"
+AUDIT = REPO / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_author_gate_pipeline_audit.py"
+LOG = REPO / "artifacts" / "governance" / "author_gate_pipeline_violations.jsonl"
 
 
 def _run(response_text: str) -> int:

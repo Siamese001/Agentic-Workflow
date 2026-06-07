@@ -42,8 +42,8 @@ def tmp_ledger(tmp_path: Path) -> Path:
     # Redirect DB_PATH by patching the module-level constant via env var approach
     # would require code changes; simpler is to call the DDL directly.
     capture_mod = _import(
-        ".claude/governance/scripts/post_cursor_agent_author_gate_capture.py",
-        "post_cursor_agent_author_gate_capture_under_test",
+        ".claude/governance/scripts/post_agent_author_gate_capture.py",
+        "post_agent_author_gate_capture_under_test",
     )
     db_path = tmp_path / "ledger.sqlite"
     conn = sqlite3.connect(str(db_path))
@@ -153,8 +153,8 @@ def test_outcome_writer_unparseable_returns_none() -> None:
 
 def test_reason_code_tail_parse() -> None:
     capture_mod = _import(
-        ".claude/governance/scripts/post_cursor_agent_author_gate_capture.py",
-        "post_cursor_agent_author_gate_capture_parse_test",
+        ".claude/governance/scripts/post_agent_author_gate_capture.py",
+        "post_agent_author_gate_capture_parse_test",
     )
     tail = (
         ", confidence=0.89, gap=0.15, override=true, "

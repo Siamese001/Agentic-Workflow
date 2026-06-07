@@ -272,7 +272,7 @@ class TestViolationsLog:
     """Integration: violations are logged to JSONL."""
 
     def test_violations_logged_to_jsonl(self):
-        """Scanner writes violations to artifacts/cursor/enriched_choice_ui_violations.jsonl."""
+        """Scanner writes violations to artifacts/governance/enriched_choice_ui_violations.jsonl."""
         code = '''
 def bad_function():
     ask_user_question(
@@ -293,7 +293,7 @@ def bad_function():
             )
 
             # Check log file
-            log_path = REPO_ROOT / "artifacts" / "windsurf" / "enriched_choice_ui_violations.jsonl"
+            log_path = REPO_ROOT / "artifacts" / "governance" / "enriched_choice_ui_violations.jsonl"
             if log_path.exists():
                 # Read last line
                 lines = log_path.read_text().strip().split("\n")

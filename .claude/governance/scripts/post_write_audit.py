@@ -13,7 +13,7 @@ Behavior (ADVISORY ONLY — always exits 0):
       * Tool count: warn if approaching 100 MCP tool limit
       * Risky edit notice: server removal / new server / transport change
   - All other files: exit 0 immediately
-  - Logs results to artifacts/cursor/mcp_lint_audit.jsonl
+  - Logs results to artifacts/governance/mcp_lint_audit.jsonl
 
 Fail policy: OPEN — any error → exit 0 silently (never breaks Cursor Agent).
 Zero hardcoded paths — repo_root resolved from __file__.
@@ -29,7 +29,7 @@ fail_policy = "open"
 mcp_config_suffix = "mcp.json"
 
 repo_root = Path(__file__).resolve().parents[3]
-audit_log = repo_root / "artifacts" / "cursor" / "mcp_lint_audit.jsonl"
+audit_log = repo_root / "artifacts" / "governance" / "mcp_lint_audit.jsonl"
 
 _SHELL_ENV_VAR_RE = re.compile(r"\$\{[A-Z_][A-Z0-9_]*:-[^}]*\}")
 _WINDSURF_ENV_VAR_RE = re.compile(r"\$\{env:[A-Z_][A-Z0-9_]*\}")

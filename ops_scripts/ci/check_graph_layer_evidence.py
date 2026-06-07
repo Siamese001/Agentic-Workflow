@@ -21,7 +21,7 @@ refactoring intent include an ``## ADG_GRAPH_LAYER_EVIDENCE`` section with:
   * at least 1 semantic-edge relation beyond 'imports' OR 1 P-view cross-ref
 
 Plans that LACK a refactoring intent (question plans, docs-only plans) are
-skipped. Violations are logged to artifacts/cursor/graph_layer_violations.jsonl
+skipped. Violations are logged to artifacts/governance/graph_layer_violations.jsonl
 and the gate exits non-zero.
 
 Run manually:
@@ -41,7 +41,7 @@ ROOT = Path(__file__).resolve().parents[2]
 # Active-plan evaluation SSOT (W3 archive): top-level `.claude/plans/*.md` only.
 PLANS_DIR = ROOT / ".claude" / "plans"
 _ACTIVE_PLAN_EXCLUDE_NAMES = frozenset({"README.md", "CURSOR_RUNTIME_SEAM_TEMPLATE.md"})
-LOG_DIR = ROOT / "artifacts" / "windsurf"
+LOG_DIR = ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "graph_layer_violations.jsonl"
 BASELINE_FILE = ROOT / "ops_scripts" / "ci" / "baselines" / "graph_layer_evidence_baseline.json"
 

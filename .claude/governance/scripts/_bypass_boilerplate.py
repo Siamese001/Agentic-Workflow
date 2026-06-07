@@ -28,14 +28,14 @@ def get_bypass_var(hook_name: str) -> str:
     
     Examples (from hooks.json analysis):
     - pre_write_gate.py -> PRE_WRITE_GATE_BYPASS
-    - post_cursor_agent_notion_plans_status_audit.py -> NOTION_PLANS_STATUS_BYPASS
+    - post_agent_notion_plans_status_audit.py -> NOTION_PLANS_STATUS_BYPASS
     - check_plan_definition_of_done.py -> PLAN_DEFINITION_OF_DONE_BYPASS
     """
     # Remove .py extension
     base = hook_name.replace(".py", "")
     
     # Remove common prefixes (extracted from existing hooks)
-    prefixes_to_strip = ["pre_", "post_", "post_cursor_agent_", "check_"]
+    prefixes_to_strip = ["pre_", "post_", "post_agent_", "check_"]
     for prefix in prefixes_to_strip:
         if base.startswith(prefix):
             base = base[len(prefix):]
@@ -112,7 +112,7 @@ def check_bypass_with_logging(
 
 # Pure constants extracted from existing hooks
 KNOWN_BYPASS_VARS = [
-    # From post_cursor_agent hooks
+    # From post_agent hooks
     "ADG_FIRST_VIOLATION_BYPASS",
     "AG_HOOK_WIRING_BYPASS",
     "AG_PIPELINE_AUDIT_BYPASS",
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     # Self-test: verify extraction purity
     test_cases = [
         ("pre_write_gate.py", "PRE_WRITE_GATE_BYPASS"),
-        ("post_cursor_agent_notion_plans_status_audit.py", "NOTION_PLANS_STATUS_BYPASS"),
+        ("post_agent_notion_plans_status_audit.py", "NOTION_PLANS_STATUS_BYPASS"),
         ("check_plan_definition_of_done.py", "PLAN_DEFINITION_OF_DONE_BYPASS"),
     ]
     

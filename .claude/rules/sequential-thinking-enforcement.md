@@ -62,7 +62,7 @@ Emit the full 4-phase packet across the task lifecycle:
 
 Emit SR_INTAKE + SR_PLAN before any tool calls. Then gather evidence (reads only). Emit `SR_APPROVAL: APPROVED` before any writes or edits. SR_EXECUTE and SR_VERIFY are emitted inline during and after the execute phase.
 
-Use Task Manager MCP for decomposition when tasks have multiple sequential steps.
+Use the `structured-reasoning` skill (native decomposition) when tasks have multiple sequential steps. (The legacy Task Manager MCP is retired — not in `.mcp.json`; use native file tools / `structured-reasoning`.)
 
 ## Rules
 

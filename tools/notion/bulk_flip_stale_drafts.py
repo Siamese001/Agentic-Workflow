@@ -14,7 +14,7 @@ Three-step audit + remediation per 2026-05-02 backlog cleanup decision:
    desc) for operator review; no mutation.
 
 Auth: NOTION_TOKEN from env or .env (snapshot_renderer pattern).
-Audit: artifacts/cursor/bulk_flip_stale_drafts_audit.jsonl
+Audit: artifacts/governance/bulk_flip_stale_drafts_audit.jsonl
 
 Usage:
     python tools/notion/bulk_flip_stale_drafts.py --dry-run
@@ -41,7 +41,7 @@ BACKLOG_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "bulk_flip_stale_drafts_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "bulk_flip_stale_drafts_audit.jsonl"
 
 # Strong closure markers — high confidence the work landed.
 STRONG_CLOSURE = re.compile(

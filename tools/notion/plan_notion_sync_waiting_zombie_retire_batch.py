@@ -24,7 +24,7 @@ RETIRE: list[tuple[str, str, str, str]] = [
         "RETIRED 2026-05-24: DS-1–DS-4 DONE on disk; AGP1 fail-closed default; "
         "HITL_PACKET alias retired. DS-5 optional — no violation jsonl yet.",
         "Parent hardening complete. Remaining regex tune is optional T1 when "
-        "artifacts/cursor/author_gate_pipeline_violations.jsonl has 14d data.",
+        "artifacts/governance/author_gate_pipeline_violations.jsonl has 14d data.",
     ),
     (
         "notion-plan-identity-deferred-scope-a3b7e2",

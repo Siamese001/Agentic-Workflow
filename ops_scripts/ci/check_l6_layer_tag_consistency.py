@@ -17,7 +17,7 @@ Modes
 
 Output
 ------
-Writes findings to `artifacts/cursor/l6_layer_tag_violations.json`.
+Writes findings to `artifacts/governance/l6_layer_tag_violations.json`.
 """
 from __future__ import annotations
 
@@ -96,7 +96,7 @@ def main() -> int:
         print("[l6_layer_tag] BYPASS active (L6_LAYER_TAG_BYPASS=1)")
         return 0
 
-    out_dir = REPO_ROOT / "artifacts" / "windsurf"
+    out_dir = REPO_ROOT / "artifacts" / "governance"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / "l6_layer_tag_violations.json"
 

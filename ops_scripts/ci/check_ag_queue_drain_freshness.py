@@ -2,7 +2,7 @@
 """
 check_ag_queue_drain_freshness.py — Weekly drift detection for AG queue drain.
 
-Scans `artifacts/cursor/ag_queue_drain_violations.jsonl` for rows in the
+Scans `artifacts/governance/ag_queue_drain_violations.jsonl` for rows in the
 last 7 days. Fails (exit 1) when ≥3 non-bypass violations occur within
 the window — signals Cursor Agent is regressing on the §35 drain discipline.
 
@@ -26,7 +26,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-VIOLATION_LOG = REPO_ROOT / "artifacts" / "windsurf" / "ag_queue_drain_violations.jsonl"
+VIOLATION_LOG = REPO_ROOT / "artifacts" / "governance" / "ag_queue_drain_violations.jsonl"
 
 
 def _parse_ts(s: str) -> datetime | None:

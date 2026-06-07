@@ -11,6 +11,17 @@ relates_to:
 
 # Cursor/Windsurf Live-Wiring Rename — Neutral Names for the Governance Engine
 
+> ## COMPLETION STATUS (2026-06-07) — W1-W7 done; W6 config de-brand deferred to dec0de
+> - W1 done: rollback tag + ledger-drift resolved (authoritative = .claude/state).
+> - W2 done: tools/windsurf -> tools/plan_lifecycle (+ compat shims). Merged to main (#246).
+> - W3 done: post_cursor_agent_* -> post_agent_* (34 renames, 646 refs, stale guard token dropped). Live dispatch verified.
+> - W4 done: artifacts/cursor + artifacts/windsurf -> artifacts/governance (401 refs); fixed long-dead alive-gate (dir + timestamp field). E2E PASS.
+> - W5 done: .cursor/state pointers -> .claude/state (path_constants value + GH workflow + schema doc).
+> - W6 deferred-to-dec0de: guard already correct (W3 dropped stale token; remaining legacy-IDE-name blocks valid). Config exclusion de-brand needs dec0de's legacy scripts-tree migration first (the legacy scripts-dir constant is live-consumed by static_scanner + 2 gates and points to a still-present frozen tree). Exclusion drift gate green.
+> - W7 done: E2E PASS (dispatch chain, alive, payload, exclusion drift, plan-lifecycle CLI, ledger SSOT). Zero-brand: live residual = only intentional W2 compat shims; rest is frozen legacy/_archive/docs (dec0de domain).
+> - Concurrency note: a separate agent was switching branches/editing apps_rg during execution; all decommission work committed + pushed to origin/w5/w3-script-rename.
+
+
 > Split out of [cursor-windsurf-codeium-decommission-dec0de](../.claude/plans/cursor-windsurf-codeium-decommission-dec0de.md)
 > at its W5 gate (2026-06-07, decision `deletion_strategy selected=split_w5_to_own_plan`). The parent
 > plan already delivered a **brand-free prose surface** (W3 P3.1 + W4). What remains is the
@@ -47,7 +58,7 @@ relates_to:
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | R1.1–R1.2 | Safety prep + ledger-drift resolution | ~8k | `.cursor/state` vs `.claude/state` resolvable from refs | ✅ Done (2026-06-07) | Tag `pre-w5-rename-b4f1a9`@d345db6 set. **Ledger drift RESOLVED:** authoritative = `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite` (live 188KB, `ledger_paths.py` SSOT, §30). `.cursor/state/` is empty; `path_constants.CURSOR_STATE_DIR` is a dead constant → **W5 needs no data migration** (see R1.2 note). |
 | W2 | R2.1–R2.2 | `tools/windsurf/` → `tools/plan_lifecycle/` (lowest risk) | ~10k | Compat shim viable; prior `rewrite_windsurf_refs_to_cursor.py` map reusable | ✅ Done (2026-06-07) | 3 tools moved (history-preserving) + `sys.modules`-redirect shims; reconciled a **stale prior `plan_lifecycle/wave_execution_state.py` (495 vs live 647 lines)** — restored live content; consumers updated (importlib + doc + 2 CI gates + test); `__init__.py` added. Smoke: `python -m tools.plan_lifecycle.wave_execution_state status` → exit 0; shim redirect verified. Moved modules byte-identical to HEAD (CRLF-only). 49 pre-existing test failures in `test_plan_wave_table_updater` proven NOT caused by W2 (byte-identical module). |
-| W3 | R3.1–R3.2 | `post_cursor_agent_*.py` → `post_agent_*.py` | ~14k | Dispatch + deny-token guard editable atomically | ⬜ Not Started | Scripts renamed; dispatch/CI/tests updated; after-agent chain fires; gates green |
+| W3 | R3.1–R3.2 | `post_cursor_agent_*.py` → `post_agent_*.py` | ~14k | Dispatch + deny-token guard editable atomically | ✅ Done (2026-06-07) | 34 files git-renamed (30 governance scripts + `_post_agent_payload` + `manual_post_agent_replay` + 2 CI gates); 646 refs replaced / 145 files incl. env `POST_AGENT_DISPATCHER`; guard token dropped; `.pre-commit-config.yaml` + `author-gate-gates.yml` updated. **Verified:** dispatch wiring 16 post_agent/0 stale; all modules import; **live dispatch fired** (fresh `post_agent_heartbeat.jsonl` + audit rows written); payload gate PASS; zero live residual (13 frozen `_legacy_cursor`/migration-tool only). |
 | W4 | R4.1–R4.3 | `artifacts/cursor/` → `artifacts/governance/` (highest risk) | ~16k | Dual-read migration preserves in-flight session-state | ⬜ Not Started | Dual-read live; writers updated; no lost session-state; gates green |
 | W5 | R5.1–R5.3 | Ledger **dead-pointer cleanup** (core + CI) — *risk downgraded by R1.2* | ~6k | Data already at `.claude/state`; no migration | ⬜ Not Started | Dead `path_constants.CURSOR_STATE_DIR` removed (Author-Gate); GH workflow repointed to `.claude/state`; schema-doc comment fixed; empty `.cursor/state` deleted |
 | W6 | R6.1–R6.2 | Deferred dec0de W3 config + final guard restore | ~8k | `_legacy_windsurf` importers migrated by now | ⬜ Not Started | `excluded_paths`/`path_constants` mirror cleaned + drift gate green; `T6a` retired or repointed; shell guard restored at new tokens |
@@ -61,8 +72,12 @@ relates_to:
 | R1.2 | Resolve ledger drift | `path_constants.py`, `.github/workflows/author-gate-gates.yml`, `decision_ledger.schema.sql`, `.cursor/state/**`, `.claude/state/**` | Two locations referenced; must pick authoritative + reconcile data | ~7k | ✅ Done — authoritative=`.claude/state`; `.cursor/state` empty; no data migration needed |
 | R2.1 | Move `tools/windsurf/` → `tools/plan_lifecycle/` + compat shim | `tools/windsurf/**` (3 tools) | Sunset shim; importlib string consumer; **stale prior copy reconciled** | ~6k | ✅ Done |
 | R2.2 | Update consumers | `post_cursor_agent_wave_lifecycle_capture.py`, `agents-tier1-companion.md`, CLI refs, CI gates, 1 test | importlib module string | ~4k | ✅ Done |
-| R3.1 | Rename `post_cursor_agent_*.py` → `post_agent_*.py` | ~30 scripts + `_legacy_cursor/` | Atomic with dispatch + deny-token | ~9k | ⬜ |
-| R3.2 | Update dispatch + CI + tests | `after_agent_governance_dispatch.py`, `lib/claude_hook_common.py`, `lib/mcp_before_hygiene.py`, `check_post_cursor_agent_*.py`, `check_cursor_optimized_config.py`, ~50 tests | Reconcile already-renamed `hooks/cursor/test_post_agent_*` | ~5k | ⬜ |
+| R3.1 | Rename `post_cursor_agent_*.py` → `post_agent_*.py` | 34 files renamed (+ ~12 `_legacy_cursor/` FROZEN) | Atomic with dispatch + deny-token | ~9k | ✅ Done |
+| R3.2 | Update dispatch + CI + tests | dispatch wiring + env `POST_AGENT_DISPATCHER` + guard tuple + matrix + gates + tests | Reconcile already-renamed `hooks/cursor/test_post_agent_*` | ~5k | ✅ Done — 646 refs/145 files; live dispatch verified |
+
+> **W3 findings (pre-existing, NOT regressions — out of scope, flagged):**
+> (1) `check_post_agent_alive.py` reads `artifacts/windsurf/` but the handler writes `artifacts/cursor/` (its own docstring says `cursor`) — dir mismatch → always-fails; **belongs to W4** (`artifacts/cursor`→`artifacts/governance`). Not a pre-commit/contract gate, so non-blocking.
+> (2) `_legacy_windsurf/_notion_plans_status_check.py:21` loads a dead `.claude/governance/.cursor/scripts/` path — frozen legacy, fail-open.
 | R4.1 | Add dual-read for `artifacts/cursor/` ↔ `artifacts/governance/` | `before_mcp_execution.py`, shared path helper | In-flight session_state must not be lost | ~6k | ⬜ |
 | R4.2 | Migrate writers | ~50 writer scripts + CI + calibration | High count | ~6k | ⬜ |
 | R4.3 | Cut over + drop legacy read | path helper | Order-sensitive | ~4k | ⬜ |
@@ -96,12 +111,29 @@ relates_to:
   `ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py`.
 - **Gate:** `python -m tools.plan_lifecycle.wave_execution_state status` exits 0.
 
-### W3 — `post_cursor_agent_*.py` → `post_agent_*.py`
-- **R3.1/R3.2** Rename scripts AND update dispatch wiring (`_AG_CHAIN`, `_SCRIPT_EXTRA_ARGS`,
-  `lib/claude_hook_common.py`, `lib/mcp_before_hygiene.py`), the deny-token list in
-  `check_cursor_optimized_config.py`, the alive/payload/wiring CI gates, and ~50 tests — atomically.
-  Reconcile the already-renamed `tests/unit/ops_scripts/hooks/cursor/test_post_agent_*.py`.
+### W3 — `post_cursor_agent_*.py` → `post_agent_*.py`  ⏸️ PRE-FLIGHT DONE — PAUSED before rename (2026-06-07)
+
+- **R3.1/R3.2** Rename scripts AND update dispatch wiring + deny-token + CI gates + tests — atomically.
 - **Gate:** run the after-agent dispatch once → audit rows still produced; `check_ag_hook_wiring.py` green.
+
+#### R3.1 Blast-radius map (read-only — `DEGRADED_FALLBACK: reason=governance_scripts+name_literals_outside_adg_import_index`)
+**Scope: 656 `post_cursor_agent` refs across 156 `.py` files** (+ docs/plans, left frozen). Categories:
+
+| # | Category | Files | What changes |
+|---|----------|-------|--------------|
+| 1 | **Rename targets** | **30 live** `.claude/governance/scripts/post_cursor_agent_*.py` | `git mv` → `post_agent_*.py` |
+| 2 | **Atomic dispatch core** (must change WITH the mv) | `.claude/hooks/after_agent_governance_dispatch.py` (16: `_AG_CHAIN`, `_SCRIPT_EXTRA_ARGS`, adg-audit, dispatch loader, **env `POST_CURSOR_AGENT_DISPATCHER`**), `post_cursor_agent_dispatch.py` (14, itself a rename target), `_post_cursor_agent_payload.py` (5, rename target), `lib/claude_hook_common.py` (1), `lib/mcp_before_hygiene.py` (1), `_post_handlers/*` | string refs + env-var name |
+| 3 | **Self-referential guards** (atomic) | `.claude/hooks/before_shell_execution.py` (deny-token `post_cursor_agent`), `check_cursor_optimized_config.py` (1) | neutralize first, restore at new token |
+| 4 | **CI gates** | `governance_w3_hook_audit_matrix.py` (45), `check_post_cursor_agent_payload.py` (17, rename target), `check_post_cursor_agent_alive.py` (14, rename target), `check_hook_consolidation.py` (11), `run_contract_gates.py` (5), `check_marker_ledger_parity.py` (3), `check_writer_allowlist.py` (2), +~6 singles | name literals |
+| 5 | **Tests (~50 files)** | `tests/unit/windsurf/**`, `tests/windsurf/**`, `tests/unit/windsurf_scripts/**`, `tests/unit/ops_scripts/hooks/windsurf/**`, `test_check_ag_hook_wiring.py` (28) | imports + name literals |
+| 6 | **Other consumers (~20)** | `tools/capture/queue_to_ledger.py`, `tools/author_gate/schema_loader.py`, `tools/cursor/emit_governance_dispatch_shadow_baseline.py`, `tools/ledgers/schema_registry.py`, `apps_qna/router/route_bandit.py`, `ops_scripts/calibration/*`, `tests/conftest.py` | name literals |
+| 7 | **FROZEN — do NOT touch** | `_legacy_cursor/post_cursor_agent_*.py` (~12, legacy, dec0de-owned), `docs/**`, `.claude/plans/_archive/**`, `ops_scripts/maintenance/rewrite_*.py` (migration tools) | — |
+
+**Already migrated (reconcile, don't duplicate):** `tests/unit/ops_scripts/hooks/cursor/test_post_agent_*.py` (2 files use the new name).
+
+**Execution order when resumed:** (1) neutralize `before_shell_execution` deny-token → (2) `git mv` 30 scripts (via script) → (3) global `post_cursor_agent`→`post_agent` replace across cat 2/4/5/6 + env var `POST_CURSOR_AGENT_DISPATCHER`→`POST_AGENT_DISPATCHER` → (4) update AG-WIRE matrix + deny-token → (5) **prove chain fires**: run after-agent dispatch, `check_ag_hook_wiring.py`, alive/payload gates → (6) restore guard at new token.
+
+**Top risk:** one missed dispatch/`_AG_CHAIN` ref = governance chain silently dark. Mitigation = the cat-5 gates + a live dispatch run are the proof, not the diff.
 
 ### W4 — `artifacts/cursor/` → `artifacts/governance/` (highest risk)
 - **R4.1** Introduce a path helper with **dual-read** (read new, fall back to old) and write-new; migrate

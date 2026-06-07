@@ -1,4 +1,4 @@
-"""Smoke tests for post_cursor_agent_plan_evidence_gate (P2)."""
+"""Smoke tests for post_agent_plan_evidence_gate (P2)."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HOOK = REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_plan_evidence_gate.py"
+HOOK = REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_plan_evidence_gate.py"
 
 
 def _run_hook(stdin_payload: str, env_overrides: dict[str, str] | None = None) -> subprocess.CompletedProcess:

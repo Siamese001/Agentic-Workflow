@@ -30,7 +30,7 @@ REQUIRED_HOOK_EVENTS = {
 LEGACY_HOOK_DENY_TOKENS = (
     "docs/archive/windsurf/legacy-tree",
     "mcp_config.json",
-    "post_cursor_agent",
+    "post_agent",
     "pre_cursor_agent",
     "Cursor Agent",
     "Windsurf",

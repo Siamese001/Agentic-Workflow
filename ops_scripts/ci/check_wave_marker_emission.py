@@ -18,7 +18,7 @@ Algorithm
    rows (skips plans where ALL rows are DONE or all are TODO — only flags
    mixed state, i.e. at least one ✅ DONE row alongside at least one 🔲 TODO).
    Mixed state indicates partial completion without terminal markers.
-2. For each flagged slug, check ``artifacts/cursor/wave_lifecycle_capture.jsonl``
+2. For each flagged slug, check ``artifacts/governance/wave_lifecycle_capture.jsonl``
    for any entry with ``"slug": "<slug>"`` — if absent the audit log has no
    record of marker emission for this plan.
 3. Report violations as WARN (advisory). Plans where the log has at least one
@@ -47,7 +47,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
-CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "wave_lifecycle_capture.jsonl"
+CAPTURE_LOG = REPO_ROOT / "artifacts" / "governance" / "wave_lifecycle_capture.jsonl"
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "wave_marker_emission_gate.json"
 
 # Regex: a Wave Structure table row with 🔲 TODO

@@ -13,7 +13,7 @@ This file specifically targets branches that the existing test files do NOT cove
   - pytest full-suite regex variants (trailing slash, Windows backslash)
   - subprocess nested-paren timeout window
   - post_write_audit finding_count accuracy, ${env:} format allow-list
-  - post_cursor_agent_cleanup per-log rotation limits (500 / 500 / 200)
+  - post_agent_cleanup per-log rotation limits (500 / 500 / 200)
   - pre_prompt_classifier field aliasing, default tier, keyword priority
 """
 
@@ -986,7 +986,7 @@ class TestPostWriteAuditEnvVarFormats:
 
 
 # ============================================================================
-# post_cursor_agent_cleanup — deep edge cases
+# post_agent_cleanup — deep edge cases
 # ============================================================================
 
 
@@ -998,7 +998,7 @@ class TestPostCascadeCleanupRotationLimits:
         path.write_text("\n".join(f"line {i}" for i in range(n_lines)) + "\n")
 
     def test_process_log_limit_is_500(self, tmp_path):
-        from post_cursor_agent_cleanup import run_cleanup
+        from post_agent_cleanup import run_cleanup
 
         log = tmp_path / "spawned_processes.jsonl"
         self._make_log(log, 600)
@@ -1007,7 +1007,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(lines) == 500
 
     def test_mcp_tool_log_limit_is_500(self, tmp_path):
-        from post_cursor_agent_cleanup import run_cleanup
+        from post_agent_cleanup import run_cleanup
 
         log = tmp_path / "mcp_tool_audit.jsonl"
         self._make_log(log, 600)
@@ -1016,7 +1016,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(lines) == 500
 
     def test_mcp_lint_log_limit_is_200_not_500(self, tmp_path):
-        from post_cursor_agent_cleanup import run_cleanup
+        from post_agent_cleanup import run_cleanup
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         self._make_log(log, 300)
@@ -1025,7 +1025,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(lines) == 200, "mcp_lint_audit has a 200-line limit, not 500"
 
     def test_at_exactly_limit_no_rotation(self, tmp_path):
-        from post_cursor_agent_cleanup import run_cleanup
+        from post_agent_cleanup import run_cleanup
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         self._make_log(log, 200)
@@ -1034,7 +1034,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert log.read_text() == original, "At exactly limit, file must not be modified"
 
     def test_under_limit_no_rotation(self, tmp_path):
-        from post_cursor_agent_cleanup import run_cleanup
+        from post_agent_cleanup import run_cleanup
 
         log = tmp_path / "spawned_processes.jsonl"
         self._make_log(log, 10)
@@ -1042,7 +1042,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert len(log.read_text().strip().splitlines()) == 10
 
     def test_rotation_keeps_newest_lines(self, tmp_path):
-        from post_cursor_agent_cleanup import run_cleanup
+        from post_agent_cleanup import run_cleanup
 
         log = tmp_path / "mcp_lint_audit.jsonl"
         self._make_log(log, 250)
@@ -1053,7 +1053,7 @@ class TestPostCascadeCleanupRotationLimits:
         assert lines[-1] == "line 249"
 
     def test_session_summary_has_audit_line_counts_keyed_by_filename(self, tmp_path):
-        from post_cursor_agent_cleanup import run_cleanup
+        from post_agent_cleanup import run_cleanup
 
         summary = run_cleanup(tmp_path)
         assert "audit_line_counts" in summary
@@ -1063,18 +1063,18 @@ class TestPostCascadeCleanupRotationLimits:
         assert "mcp_lint_audit.jsonl" in counts
 
     def test_session_summary_has_timestamp(self, tmp_path):
-        from post_cursor_agent_cleanup import run_cleanup
+        from post_agent_cleanup import run_cleanup
 
         summary = run_cleanup(tmp_path)
         assert "timestamp" in summary
         datetime.fromisoformat(summary["timestamp"].replace("Z", "+00:00"))
 
     def test_main_returns_0_even_on_oserror(self, tmp_path):
-        from post_cursor_agent_cleanup import main
+        from post_agent_cleanup import main
 
-        with patch("post_cursor_agent_cleanup.windsurf_dir", tmp_path / "no_write"):
+        with patch("post_agent_cleanup.windsurf_dir", tmp_path / "no_write"):
             with patch(
-                "post_cursor_agent_cleanup.session_summary",
+                "post_agent_cleanup.session_summary",
                 tmp_path / "no_write" / "s.json",
             ):
                 with patch("pathlib.Path.mkdir", side_effect=OSError("read only")):

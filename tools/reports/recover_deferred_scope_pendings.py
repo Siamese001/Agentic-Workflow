@@ -2,7 +2,7 @@
 """
 recover_deferred_scope_pendings.py — retry unresolved DEFERRED_SCOPE auto-posts.
 
-Scans `artifacts/cursor/deferred_scope_capture.jsonl` for entries with
+Scans `artifacts/governance/deferred_scope_capture.jsonl` for entries with
 `kind` in `pending_no_token`, `post_http_error`, `post_transport_error`,
 `post_decode_error` that have NOT been superseded by a later `auto_posted`
 or `confirmed_by_receipt` for the same (plan, wave, phase) key. Attempts
@@ -36,7 +36,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "deferred_scope_capture.jsonl"
+CAPTURE_LOG = REPO_ROOT / "artifacts" / "governance" / "deferred_scope_capture.jsonl"
 
 import sys as _sys
 

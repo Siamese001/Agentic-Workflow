@@ -8,7 +8,7 @@ dependency-analysis intent ("grep for imports of X", "who uses Y",
 stderr so Cursor Agent sees the injected signal in the next turn.
 
 Does NOT block the prompt — advisory only. The companion post-response
-hook ``post_cursor_agent_adg_audit.py`` remains the enforcement point.
+hook ``post_agent_adg_audit.py`` remains the enforcement point.
 
 Rationale: Wave 14 changelog — "Users can now configure Cursor Agent Hooks
 on user prompts for logging all user prompts and blocking policy-violating

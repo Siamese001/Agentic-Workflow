@@ -25,9 +25,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = REPO_ROOT / "config" / "ledger_freshness_slo.yaml"
 LEDGER_GLOB = str(REPO_ROOT / "artifacts" / "ledgers" / "*.sqlite")
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "ledger_freshness_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "ledger_freshness_violations.jsonl"
 REPORT_PATH = REPO_ROOT / "artifacts" / "ledgers" / "freshness_report.json"
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "ledger_freshness_bypass.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "ledger_freshness_bypass.jsonl"
 
 
 def _log(path: Path, payload: dict) -> None:

@@ -21,7 +21,7 @@ Posture:
 
 Output:
 - Stdout: human-readable findings table.
-- artifacts/cursor/apps_rg_pa_boundary_violations.jsonl — durable audit log.
+- artifacts/governance/apps_rg_pa_boundary_violations.jsonl — durable audit log.
 
 Per constitutional §22 + ADR-083 + adg-graph-layer-enforcement.md.
 """
@@ -43,7 +43,7 @@ APPS_RG = REPO_ROOT / "apps_rg"
 APPS_QNA = REPO_ROOT / "apps_qna"
 PROMPT_GOVERNANCE = REPO_ROOT / "agentic_core" / "prompt_governance"
 ASSEMBLY_STAGE = REPO_ROOT / "agentic_core" / "L0_routing" / "reasoning" / "assembly_stage.py"
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "apps_rg_pa_boundary_violations.jsonl"
+VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "apps_rg_pa_boundary_violations.jsonl"
 
 # Files SANCTIONED to construct provider clients / messages in apps_rg
 ALLOWLIST_FILES = {

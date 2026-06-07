@@ -85,7 +85,7 @@ gates:
       min_mv: 30
       min_pview: 3
       min_infra: 1
-    output_artifact: artifacts/cursor/snapshot_mv_violations.jsonl
+    output_artifact: artifacts/governance/snapshot_mv_violations.jsonl
     legacy: true
     accepts_runner_flags: false
     suite: ["quick", "full"]
@@ -98,7 +98,7 @@ gates:
     enforcement_mode: strict
     assertion: "Every edge has non-NULL authority drawn from the closed enum"
     bypass_env: EDGE_AUTHORITY_BYPASS
-    output_artifact: artifacts/cursor/edge_authority_violations.jsonl
+    output_artifact: artifacts/governance/edge_authority_violations.jsonl
     legacy: true
     accepts_runner_flags: false
     suite: ["quick", "full"]

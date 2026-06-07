@@ -110,7 +110,7 @@ precommit_excludes:
   #   - "artifacts/healing/healing_events.jsonl"
   #   - "artifacts/bypass_audit.jsonl"
   #   - "artifacts/import_health/import_health_report.json"
-  #   - "artifacts/cursor/*"
+  #   - "artifacts/governance/*"
   - "temp_[^/]*/.*"  # Temporary directories
   - "tmp.*"  # Generic temp files
   - "_temp_cmd.*"  # Temp command files
@@ -207,7 +207,7 @@ discovery_excluded_territories:
 # Why: Windsurf indexing already honors .gitignore + hidden paths + node_modules
 # by default (docs/windsurf/llms-full.txt:810-819). The only deltas we ever
 # carried were **/*.db and **/*.pb (now moved into file_patterns above) plus
-# a !artifacts/cursor/session_state.json negation that was vestigial —
+# a !artifacts/governance/session_state.json negation that was vestigial —
 # per tests/unit/ops_scripts/hooks/windsurf/test_pre_mcp_gate.py:1695-1704
 # the pre-mcp-gate explicitly REFUSES to consult that path now (stale
 # fallback; Fix 2 regression guard). Indexing it had no remaining upside.

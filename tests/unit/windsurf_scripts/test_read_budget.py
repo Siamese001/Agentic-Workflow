@@ -93,7 +93,7 @@ def test_under_cap_does_not_log(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     monkeypatch.delenv("READ_BUDGET_BYPASS", raising=False)
     text = '<invoke name="read_file">' * 5  # under cap of 10
     read_budget.run(_make_parsed(text), tmp_path)
-    log = tmp_path / "artifacts" / "windsurf" / "read_budget_violations.jsonl"
+    log = tmp_path / "artifacts" / "governance" / "read_budget_violations.jsonl"
     assert not log.exists()
 
 
@@ -101,7 +101,7 @@ def test_over_cap_logs_violation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     monkeypatch.delenv("READ_BUDGET_BYPASS", raising=False)
     text = '<invoke name="read_file">' * 12  # over cap
     read_budget.run(_make_parsed(text), tmp_path)
-    log = tmp_path / "artifacts" / "windsurf" / "read_budget_violations.jsonl"
+    log = tmp_path / "artifacts" / "governance" / "read_budget_violations.jsonl"
     assert log.exists()
     rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
     assert len(rows) == 1
@@ -117,7 +117,7 @@ def test_bypass_logs_even_under_cap(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     monkeypatch.setenv("READ_BUDGET_BYPASS", "1")
     text = '<invoke name="read_file">'  # 1 read, under cap
     read_budget.run(_make_parsed(text), tmp_path)
-    log = tmp_path / "artifacts" / "windsurf" / "read_budget_violations.jsonl"
+    log = tmp_path / "artifacts" / "governance" / "read_budget_violations.jsonl"
     assert log.exists()
     rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
     assert rows[0]["bypass"] is True
@@ -127,7 +127,7 @@ def test_bypass_logs_even_under_cap(tmp_path: Path, monkeypatch: pytest.MonkeyPa
 def test_empty_text_is_noop(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("READ_BUDGET_BYPASS", raising=False)
     read_budget.run(_make_parsed(""), tmp_path)
-    log = tmp_path / "artifacts" / "windsurf" / "read_budget_violations.jsonl"
+    log = tmp_path / "artifacts" / "governance" / "read_budget_violations.jsonl"
     assert not log.exists()
 
 
@@ -139,7 +139,7 @@ def test_mixed_tools_aggregate_to_total(tmp_path: Path, monkeypatch: pytest.Monk
         + '<invoke name="mcp4_read_multiple_files">' * 3
     )
     read_budget.run(_make_parsed(text), tmp_path)
-    log = tmp_path / "artifacts" / "windsurf" / "read_budget_violations.jsonl"
+    log = tmp_path / "artifacts" / "governance" / "read_budget_violations.jsonl"
     rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
     assert rows[0]["total"] == 11
     assert rows[0]["counts"]["read_file"] == 4

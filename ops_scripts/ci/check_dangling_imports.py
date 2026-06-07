@@ -77,7 +77,7 @@ DYNAMIC_IMPORT_CALLS = frozenset(
     }
 )
 
-LOG_DIR = REPO_ROOT / "artifacts" / "windsurf"
+LOG_DIR = REPO_ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "dangling_import_violations.jsonl"
 
 

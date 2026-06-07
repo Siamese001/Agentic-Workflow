@@ -23,7 +23,7 @@
 11. **Terminal process lifecycle.** All `run_command`/subprocess must terminate. Gate: `check_terminal_cleanup.py`.
 12. **No imports from `archives/` in production.** Gate: `check_no_archives_imports.py`.
 13. **MCP green light before T2/T3.** Redis hot cache (`adg_redis_ingest.py --check`) → `adg_health` fallback. Both red = BLOCKED.
-14. **Subprocess timeout required.** See §0.
+14. **Subprocess timeout required** — reserved alias of §0, kept for stable numbering (sibling rules `query-progress-bar.md` and `python-dash-c-quote-hazard.md` cite "§14"; do not renumber to dedupe). See §0.
 15. **Precise exception handling.** Catch specific types. Bare `except:` and `except Exception` without guardian comment FORBIDDEN.
 16. **Query progress bar mandatory.** Operations >5s, loops >10 lines, heavy-named functions (`scan_*`/`build_*`/`query_*`) >12 lines. Gate: `check_query_progress_bar.py`. See `query-progress-bar.md`.
 17. **Memory lifecycle mandatory.** Call `mem_recall_session_start` at session start. Write back significant decisions / patterns via `create_entities`/`add_observations`. See AGENTS.md Memory Lifecycle.
@@ -35,9 +35,10 @@
 20. **Fact grading mandatory.** Classify claims as **DIRECTLY OBSERVED** / **DERIVED** / **UNRESOLVED**. Don't present unresolved as fact.
 21. **Zero-loss overwrite discipline.** When overwriting rule/skill/workflow: preserve constraints + script-relied references; remove redundancy; don't silently delete operational intent.
 
-22. **ADG graph layer is primary for refactoring.** MVs (`mv_*`), semantic edges (`flows_to`/`emits_side_effect`/`resolves_callsite`/`controls_flow`/`reads_from`/`writes_to`), P-views (`v_p0_*`..`v_p3_*`) MUST drive T2/T3 plans — not raw `edges`/`violations`. Plans missing `## ADG_GRAPH_LAYER_EVIDENCE` invalid. Gate: `check_graph_layer_evidence.py`. See `adg-graph-layer-enforcement.md`.
+22. **ADG graph layer is primary for refactoring.** MVs (`mv_*`), semantic edges (`flows_to`/`emits_side_effect`/`resolves_callsite`/`controls_flow`/`reads_from`/`writes_to`), P-views (`v_p0_*`..`v_p3_*`) MUST drive T2/T3 plans — not raw `edges`/`violations`. Plans missing `## ADG_GRAPH_LAYER_EVIDENCE` invalid. Gate: `check_graph_layer_evidence.py`. See `adg-analysis-procedures.md` §3.
 23. **ADG canonical invariants.** SQLite=truth, Redis=hot projection, MCP=read-only gateway. ADG wins vs text-search/intuition. Hotspot rows MUST classify by archetype (`CENTRAL_DEPENDENCY`/`ORCHESTRATOR`/`STATE_NODE`/`SAFETY_GATEKEEPER`) + cross-ref 5 Surfaces (Execution/Write/Security/State/Observability). Layer multipliers: L0/L5 ×2.0, L3/L4 ×1.75, L1/L2 ×1.0, L6 ×0.75. Static ADG (`adg_sqlite`) ≠ Runtime ADG (`otel_mcp`). Detail: `adg-canonical-invariants.md`.
 24. **Deferred-scope capture mandatory.** `DEFERRED_SCOPE:` marker line in the response that introduces it (plain text, before any Notion `API-post-page`). Hook auto-scores P1..P5 and posts to Wave/Phase Convergence DB. Never hand-assign `[Pn]`. Pre-commit: `check_deferred_scope_markers.py`. See `deferred-scope-capture.md`.
+25. *(Reserved — no rule occupies §25. Slot intentionally vacant; numbering held stable because `§`-citations are load-bearing across rules. Do not renumber to close the gap.)*
 26. **No interactive pagers in `run_command`.** `more`/`less`/`most`/`more.com` (pipe or bare) FORBIDDEN — Claude Code can't send keystrokes; pagers hang the turn. Pattern: redirect to file (`> out.txt`) + `read_file`. Long-running: `Blocking=false` + `WaitMsBeforeAsync`. Gate: `pre_run_gate.py`.
 27. **Config schema purity.** `.claude/settings.json` (only `command`+`working_directory`+`show_output`) and `.mcp.json` (only `command`+`args`+`env`+`disabled`) MUST contain ONLY official-schema fields. Unknown keys silently disable subsystem. Gate: `check_cursor_config_schema.py`.
 28. **SQLite-direct fallback supersedes grep for dependency analysis.** Hierarchy: (1) `adg_sqlite` MCP → (2) direct `sqlite3` of latest `artifacts/adg/adg_indexed_<ts>.sqlite` → (3) grep ONLY if BOTH fail AND `DEGRADED_FALLBACK: reason=<mcp_err>+<sqlite_err>` emitted. MCP unavailability is NEVER an excuse for grep — only for SQLite. Audit: `post_cursor_agent_adg_audit.py`. Bypass: `ADG_SQLITE_FALLBACK_BYPASS=1`.
@@ -71,4 +72,6 @@ ADG graph is the **primary** analysis primitive. `grep_search` for dependency an
 
 ## Extended Doctrine (model_decision rules — load on demand)
 
-`adg-repair-discipline.md` · `anti-pattern-author-gate.md` · `author-gate-enforcement.md` · `sequential-thinking-enforcement.md` · `global_rules.md` · `adg-test-accelerator-enforcement.md` · `memory-management.md` · `adg-hotspot-enforcement.md` · `adg-graph-layer-enforcement.md` · `deferred-scope-capture.md`
+`adg-analysis-procedures.md` · `adg-canonical-invariants.md` · `author-gate-enforcement.md` · `sequential-thinking-enforcement.md` · `memory-management.md` · `deferred-scope-capture.md`
+
+> Repointed W2 (plan `governance-rule-residue-cleanup-7e3a91`): the deprecated ADG stubs (`adg-repair-discipline.md`, `adg-hotspot-enforcement.md`, `adg-graph-layer-enforcement.md`, `adg-test-accelerator-enforcement.md`) all redirect to `adg-analysis-procedures.md`; `anti-pattern-author-gate.md` → `author-gate-enforcement.md`; inactive `global_rules.md` dropped.

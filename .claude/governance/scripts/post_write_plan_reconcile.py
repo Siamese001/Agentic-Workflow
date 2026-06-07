@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-AUDIT_LOG = REPO_ROOT / "artifacts" / "cursor" / "plan_reconcile_hook.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "plan_reconcile_hook.jsonl"
 CLOSER_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "plan_driven_closer.py"
 
 

@@ -48,7 +48,7 @@ from _plans_dup_detector import (  # noqa: E402
 
 CACHE_PATH = REPO_ROOT / ".claude" / "state" / "plan_registration_cache.json"
 VIOLATIONS_LOG = (
-    REPO_ROOT / "artifacts" / "windsurf" / "notion_plans_dup_violations.jsonl"
+    REPO_ROOT / "artifacts" / "governance" / "notion_plans_dup_violations.jsonl"
 )
 TIMEOUT_S = 30.0
 

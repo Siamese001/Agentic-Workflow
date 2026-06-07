@@ -70,7 +70,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = ROOT / "artifacts" / "adg"
-LOG_DIR = ROOT / "artifacts" / "windsurf"
+LOG_DIR = ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "snapshot_mv_violations.jsonl"
 
 MIN_MV_TABLES = 30

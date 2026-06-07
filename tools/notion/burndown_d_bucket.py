@@ -39,7 +39,7 @@ from triage_keep_drafts import (  # type: ignore[import-not-found]
     post_plan_to_notion, NOTION_API, PLANS_DB_ID, REPO_ROOT,
 )
 
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "burndown_d_bucket_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "burndown_d_bucket_audit.jsonl"
 PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 
 # Expanded A-catch: any ISO date in title (calendar-reminder rows), monitor/audit
