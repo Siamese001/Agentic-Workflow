@@ -325,6 +325,23 @@ class TestW4JudgeRegenMaxAttempts:
         assert result <= 3, f"Hard cap 3 must be respected; got {result}"
 
 
+class TestPostX2JudgeRefreshDefault:
+    """Variance-class trim: post-X2 judge refresh is release-off unless explicitly enabled."""
+
+    def test_release_constant_is_false(self):
+        from apps_rg.runtime.sections.executive_summary_repair_policy import (
+            RELEASE_POST_X2_JUDGE_REFRESH_ENABLED,
+        )
+        assert RELEASE_POST_X2_JUDGE_REFRESH_ENABLED is False
+
+    def test_post_x2_judge_refresh_disabled_by_default_even_with_env_on(self, monkeypatch):
+        monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_X1D_POST_X2_REFRESH", "1")
+        from apps_rg.runtime.sections.executive_summary_repair_policy import (
+            post_x2_judge_refresh_enabled,
+        )
+        assert post_x2_judge_refresh_enabled() is False
+
+
 # ---------------------------------------------------------------------------
 # W5 — Gold example converted to negative
 # ---------------------------------------------------------------------------
