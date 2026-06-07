@@ -1,7 +1,7 @@
 
 <!-- Converted from `.claude/rules/plan-location.md`. Original Cursor trigger: `always_on`. -->
 
-> See `.cursor/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
+> See `CLAUDE.md` for shared retrieval / enforcement guidance.
 
 # Plan Rules — Location, Format, and Overwrite
 

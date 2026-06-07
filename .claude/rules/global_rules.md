@@ -1,7 +1,7 @@
 
 # Global Rules Reference
 
-This file is intentionally inactive. The active always-on Cursor rules are:
+This file is intentionally inactive. The active always-on Claude Code rules are:
 
 - `000-agentic-core-operating-contract.md`
 - `001-cursor-runtime-seam-execution.md`

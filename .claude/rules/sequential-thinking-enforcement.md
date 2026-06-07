@@ -1,7 +1,7 @@
 
 <!-- Converted from `.claude/rules/sequential-thinking-enforcement.md`. Original Cursor trigger: `model_decision`. -->
 
-> See `.cursor/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
+> See `CLAUDE.md` for shared retrieval / enforcement guidance.
 
 # Structured Reasoning Threshold
 

@@ -1,7 +1,7 @@
 
 <!-- Converted from `.claude/rules/author-gate-decision-points.md`. Original Cursor trigger: `model_decision`. -->
 
-> See `.cursor/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
+> See `CLAUDE.md` for shared retrieval / enforcement guidance.
 
 # Author-Gate Decision Points — Full Doctrine
 
@@ -65,7 +65,7 @@ Author-Gate only if regeneration cost is significant AND task can safely proceed
 
 ### 1.11 Certification Claim (`certification_claim`) — Constitutional §32
 TRIGGER: Before claiming (in prose or as a tool invocation) that any `RTC-REQ-*` is SIGNED_OFF, FINAL_SIGNED_CERTIFICATION, "certified", or that the bundle `trust_level` has been upgraded.
-Cursor Agent MUST run `scripts/compile_requirement_signoff.py` + `scripts/verify_final_requirement_signoff_bundle.py` in the same response and include the resulting `trust_level` and `merkle_root` in the Author-Gate packet.
+Claude Code MUST run `scripts/compile_requirement_signoff.py` + `scripts/verify_final_requirement_signoff_bundle.py` in the same response and include the resulting `trust_level` and `merkle_root` in the Author-Gate packet.
 Precedent: all prior certification decisions live in the ADR Registry (Notion MCP) and under `docs/architecture/adr/ADR-*-runtime-cert-*.md`.
 Recommended option defaults to: "Run the compiler + bundle verifier, then report their actual output verbatim — no prose summary until the tools have spoken."
 If compiler / verifier output disagrees with the claim: dominance fires against the claim (do not surface "assert anyway" as a credible candidate).

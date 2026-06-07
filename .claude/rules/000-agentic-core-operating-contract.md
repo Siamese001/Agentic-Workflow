@@ -1,5 +1,5 @@
 
-# Agentic Core Operating Contract for Cursor
+# Agentic Core Operating Contract for Claude Code
 
 ## Non-negotiable spine laws
 

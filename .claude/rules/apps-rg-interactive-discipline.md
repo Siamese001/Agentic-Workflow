@@ -3,13 +3,13 @@
 
 # apps_rg Interactive Discipline
 
-> ⛔ Cursor Agent MUST NOT pre-fill `--target-company`, `--target-role`, `--jd`, or `--manual-brief` from inferred context. The in-app wizard owns these decisions.
+> ⛔ Claude Code MUST NOT pre-fill `--target-company`, `--target-role`, `--jd`, or `--manual-brief` from inferred context. The in-app wizard owns these decisions.
 
-> ⛔ When the user asks Cursor Agent to run apps_rg without naming all required inputs in the SAME turn, Cursor Agent MUST issue ONE prompt requesting ALL inputs at once — never multi-turn back-and-forth.
+> ⛔ When the user asks Claude Code to run apps_rg without naming all required inputs in the SAME turn, Claude Code MUST issue ONE prompt requesting ALL inputs at once — never multi-turn back-and-forth.
 
 ## Static Inputs (configured once, never re-asked)
 
-- **Source resume**: stored at `ops_scripts/apps_rg/` or user-configured path. Cursor Agent resolves from the most recent `*_resume*.json` or `*_resume*.docx` in that folder. If no resume file exists, ask ONCE and remember the path for the session.
+- **Source resume**: stored at `ops_scripts/apps_rg/` or user-configured path. Claude Code resolves from the most recent `*_resume*.json` or `*_resume*.docx` in that folder. If no resume file exists, ask ONCE and remember the path for the session.
 
 ## Single-Prompt Template
 

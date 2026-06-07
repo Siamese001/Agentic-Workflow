@@ -42,7 +42,7 @@ Execute continuously WITHOUT stopping UNLESS a genuine Author-Gate decision poin
 > - Markdown tables of options without `ask_user_question`
 > - "Recommended Next Phase/Step/Wave/Action" menus in prose
 >
-> These patterns produce **zero decision capture** — no ledger entry, no packet, no user-clickable interface. They are indistinguishable from Cursor Agent making the decision unilaterally.
+> These patterns produce **zero decision capture** — no ledger entry, no packet, no user-clickable interface. They are indistinguishable from Claude Code making the decision unilaterally.
 >
 > **Correct path**: If a genuine decision point exists → invoke the full pipeline: `refactor-decision-memory` → `author-gate-packet-builder` → `author-gate-ui-renderer` → `ask_user_question`. If no genuine decision exists → continue execution per the Continuous Execution Invariant above.
 >

@@ -1,7 +1,7 @@
 
 <!-- Converted from `.claude/rules/refactor-decision-memory.md`. Original Cursor trigger: `model_decision`. -->
 
-> See `.cursor/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
+> See `CLAUDE.md` for shared retrieval / enforcement guidance.
 
 # Refactor Decision Memory — Pre-Author-Gate Precedent Check
 
@@ -42,7 +42,7 @@ This rule adds a precedent-lookup layer **under** that policy.
 ## Capture
 
 After a refactor decision is resolved, the `post_cursor_agent_response` hook captures the decision
-**if and only if** Cursor Agent emitted a `DECISION_CAPTURED:` marker in the response, as required
+**if and only if** Claude Code emitted a `DECISION_CAPTURED:` marker in the response, as required
 by `author-gate-enforcement.md` step 9. Without that emission the hook finds nothing to capture.
 
 Capture is **advisory** — missed captures are acceptable. The ledger grows over time.

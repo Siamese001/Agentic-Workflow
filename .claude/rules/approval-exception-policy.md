@@ -1,7 +1,7 @@
 
 <!-- Converted from `.claude/rules/approval-exception-policy.md`. Original Cursor trigger: `model_decision`. -->
 
-> See `.cursor/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
+> See `CLAUDE.md` for shared retrieval / enforcement guidance.
 
 # Approval & Exception Policy
 

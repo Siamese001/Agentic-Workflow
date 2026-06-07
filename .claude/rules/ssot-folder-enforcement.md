@@ -12,8 +12,8 @@
 | CI gate / pre-commit check | `check_*.py`, `*_gate.py`, `validate_*.py` | `ops_scripts/ci/` |
 | Calibration / weekly report / ledger binder | `*_calibration.py`, `*_binder.py`, `*_poller.py`, `*_weekly_report.py` | `ops_scripts/calibration/` |
 | Maintenance / cleanup | `purge_*.py`, `cleanup_*.py` | `ops_scripts/maintenance/` |
-| Cursor hook script | `pre_*_*.py`, `post_*_*.py` (matching `.claude/settings.json`) | `.claude/governance/scripts/` |
-| Cursor Agent-invoked utility | other | `tools/<domain>/` |
+| Claude Code hook script | `pre_*_*.py`, `post_*_*.py` (matching `.claude/settings.json`) | `.claude/governance/scripts/` |
+| Claude Code-invoked utility | other | `tools/<domain>/` |
 | Plan | `<slug>-<6hex>.md` | `plans/` (canonical; legacy `.claude/plans/` still valid — enforced by `plan-location.md`) |
 | Report / evidence | `.md` | `docs/reports/` (enforced by `validate_report_location.py`) |
 

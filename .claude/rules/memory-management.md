@@ -1,7 +1,7 @@
 
 <!-- Converted from `.claude/rules/memory-management.md`. Original Cursor trigger: `model_decision`. -->
 
-> See `.cursor/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
+> See `CLAUDE.md` for shared retrieval / enforcement guidance.
 
 # Memory Management Rules
 
@@ -105,7 +105,7 @@ This ensures `mem_recall_session_start` has current data.
 
 | Layer | Mechanism |
 |-------|-----------|
-| **Cursor rule** | This file (`.claude/rules/memory-management.md`) |
+| **Claude Code rule** | This file (`.claude/rules/memory-management.md`) |
 | **Workflow** | `.claude/commands/memory-purge-sync.md` — invoke with `/memory-purge-sync` |
 | **CI gate** | `ops_scripts/ci/check_memory_health.py` — daily health check |
 | **Tool** | `tools/memory/purge_sync.py` — executable implementation |

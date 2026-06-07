@@ -1,7 +1,7 @@
 
 <!-- Converted from `.claude/rules/security-hardening.md`. Original Cursor trigger: `model_decision`. -->
 
-> See `.cursor/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
+> See `CLAUDE.md` for shared retrieval / enforcement guidance.
 
 # Security Hardening Rule
 

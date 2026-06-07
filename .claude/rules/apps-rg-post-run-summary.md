@@ -3,7 +3,7 @@
 
 # apps_rg Post-Run Summary — Mandatory Inline Display
 
-> ⛔ After every Cursor Agent-orchestrated apps_rg run, Cursor Agent MUST invoke `tools/apps_rg/render_run_summary.py` and surface its markdown output inline in the same response (or the immediately-following response if length forces a split).
+> ⛔ After every Claude Code-orchestrated apps_rg run, Claude Code MUST invoke `tools/apps_rg/render_run_summary.py` and surface its markdown output inline in the same response (or the immediately-following response if length forces a split).
 
 Sibling to `apps-rg-interactive-discipline.md`. This rule operationalizes the user's directive (2026-05-08): runtime evidence already exists in JSON form across `run_report.json`, `terminal_ret_packet.json`, `runtime_identity_envelope.json`, `agentic_core_l7_route_family_coverage.json`, etc., but the user can't see it without opening files manually. The renderer is the canonical surface.
 
@@ -11,8 +11,8 @@ Sibling to `apps-rg-interactive-discipline.md`. This rule operationalizes the us
 
 Any of:
 
-1. Cursor Agent invoked `python -m apps_rg ...` (with or without `--cursor_agent-prompts`).
-2. Cursor Agent invoked `python -m apps_rg.scripts.narrative_pass ...` directly.
+1. Claude Code invoked `python -m apps_rg ...` (with or without `--cursor_agent-prompts`).
+2. Claude Code invoked `python -m apps_rg.scripts.narrative_pass ...` directly.
 3. A new directory appeared under `artifacts/apps_rg/runs/` during the current turn or the immediately-prior turn.
 4. The user asks "what happened in that apps_rg run" / "show me the run summary" / "how did the resume generation go".
 
@@ -45,7 +45,7 @@ Any of:
 
 ## Failure Modes
 
-| Mode | Cursor Agent response |
+| Mode | Claude Code response |
 |---|---|
 | Render script crashes | Print stderr, then fall back to listing the run dir contents (`list_dir`) so the user sees something. |
 | No run dir found | State explicitly: "No `artifacts/apps_rg/runs/<id>/` produced this turn — apps_rg may have failed before manifest emission." Show last 30 lines of subprocess stderr. |
@@ -54,9 +54,9 @@ Any of:
 
 ## Why mandatory
 
-The runtime evidence layer exists precisely so operators can verify pipeline behavior without trusting Cursor Agent's prose. Rendering it inline:
+The runtime evidence layer exists precisely so operators can verify pipeline behavior without trusting Claude Code's prose. Rendering it inline:
 
-- Anchors Cursor Agent's claims to verifiable artifacts (e.g. "all gates passed" must be backed by a green `Per-Section Narrative Verdicts` table).
+- Anchors Claude Code's claims to verifiable artifacts (e.g. "all gates passed" must be backed by a green `Per-Section Narrative Verdicts` table).
 - Surfaces silent failures the prose might miss (e.g. `provenance.valid=false`, `Overfit escalate=true`, `R4_SINGLE_ACTION` not exercised).
 - Gives the user the substep-level detail (`E1..E5`, HOP checkpoints, per-section verdicts) without forcing manual JSON spelunking.
 

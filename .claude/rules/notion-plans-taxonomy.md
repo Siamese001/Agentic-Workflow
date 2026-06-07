@@ -220,10 +220,10 @@ NP2 allows "Lower Priority" as canonical (for intentionally parked work), but NP
 > ⛔ **Blank `Waiting For` on a `Waiting` plan is an ERROR.** A plan in Waiting state with no description of what it is waiting for is unactionable — no one can unblock it.
 
 **Gate**: `ops_scripts/ci/check_notion_plans_waiting_for.py`  
-**Audit (write-time)**: `post_cursor_agent_notion_plans_status_audit.py` — fires when a `Status=Waiting` write is detected in the Cursor Agent response without a corresponding `Waiting For` value in the same invoke body.  
+**Audit (write-time)**: `post_cursor_agent_notion_plans_status_audit.py` — fires when a `Status=Waiting` write is detected in the Claude Code response without a corresponding `Waiting For` value in the same invoke body.  
 
 **Enforcement layers**:
-1. **Write-time** — `post_cursor_agent_notion_plans_status_audit.py` logs `WAITING_EMPTY_WAITING_FOR` to `artifacts/cursor/notion_plans_status_violations.jsonl` when Cursor Agent writes `Status=Waiting` without `Waiting For` in the same API call.
+1. **Write-time** — `post_cursor_agent_notion_plans_status_audit.py` logs `WAITING_EMPTY_WAITING_FOR` to `artifacts/cursor/notion_plans_status_violations.jsonl` when Claude Code writes `Status=Waiting` without `Waiting For` in the same API call.
 2. **Live-DB** — `check_notion_plans_waiting_for.py` queries Notion for all current `Waiting` rows and reports ERROR for any with blank `Waiting For`. Runs on `--query-notion` or standalone.
 3. **CI gate NP10** — registered in `run_contract_gates.py` as advisory; flip fail-closed via `NOTION_PLANS_WAITING_FOR_FAIL_CLOSED=1`.
 

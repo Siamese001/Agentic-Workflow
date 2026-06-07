@@ -4,15 +4,15 @@
 ## Source of truth
 
 ```text
-.mcp.json                 ← EDIT HERE, project-scoped Cursor MCP config
+.mcp.json                 ← EDIT HERE, project-scoped MCP config
 OS environment variables         ← secrets and credentials only
 .claude/skills/**/SKILL.md       ← MCP usage procedures
 .claude/rules/mcp-serialization.md  ← remote MCP serialization invariant (batching / ordering)
 .claude/rules/*.mdc              ← governance invariants
-.claude/hooks/**                 ← deterministic Cursor hook checks
+.claude/hooks/**                 ← deterministic Claude Code hook checks
 ```
 
-`.mcp.json` is the repo-local Cursor MCP source of truth. It uses the native Cursor `mcpServers` JSON format. There is no second editor-specific global authority in this project folder.
+`.mcp.json` is the repo-local MCP source of truth. It uses the native `mcpServers` JSON format. There is no second editor-specific global authority in this project folder.
 
 ## Format
 

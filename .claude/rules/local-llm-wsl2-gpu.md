@@ -60,7 +60,7 @@ question flipped.
 | Lifecycle | `docker start local-qwen-vllm` / `docker stop local-qwen-vllm` |
 | Health | `curl http://localhost:8000/v1/models` (empty reply = still loading, not necessarily down) |
 
-### Cursor boot steps (operator)
+### Boot steps (operator)
 
 Briefing: [`docs/cursor/briefing_local_qwen_docker_boot_20260526.md`](../../docs/cursor/briefing_local_qwen_docker_boot_20260526.md) · Full runbook: [`docs/cursor/local_qwen_docker_boot.md`](../../docs/cursor/local_qwen_docker_boot.md).
 

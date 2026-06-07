@@ -3,7 +3,7 @@
 
 # Next-Step Capture — Invariant-Only Stub
 
-> ⛔ **When Cursor Agent suggests a next step, it MUST emit a `NEXT_STEP:` marker in the same response.** Prose-only "could do later" language is a constitutional violation (§24-bis): suggestions historically vanish between sessions.
+> ⛔ **When Claude Code suggests a next step, it MUST emit a `NEXT_STEP:` marker in the same response.** Prose-only "could do later" language is a constitutional violation (§24-bis): suggestions historically vanish between sessions.
 
 ## Invariant
 

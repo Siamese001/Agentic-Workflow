@@ -7,7 +7,7 @@
 
 ## The Rule
 
-> ⛔ **While executing a multi-wave plan, Cursor Agent MUST NOT call any Notion MCP tool. ALL Notion writes are deferred until after the final wave completes.**
+> ⛔ **While executing a multi-wave plan, Claude Code MUST NOT call any Notion MCP tool. ALL Notion writes are deferred until after the final wave completes.**
 
 ## Core Requirements (Always-On)
 

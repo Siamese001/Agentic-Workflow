@@ -141,7 +141,7 @@ band boundaries, retire the metric). Capture under
 | Schema drift | `python -m tools.ledgers.apply_schema --check` |
 | Weekly visibility | `ops_scripts/calibration/ledger_weekly_report.py` → `docs/reports/calibration/<YYYY-Www>.md` |
 | Calibration freshness | `ops_scripts/ci/check_weekly_calibration_freshness.py` (8-day window, W4.3) |
-| Notion writeback | `tools/calibration/post_weekly_summary.py` → `artifacts/calibration/weekly_summary_<week>.json` (Cursor Agent-dispatched, W4.2) |
+| Notion writeback | `tools/calibration/post_weekly_summary.py` → `artifacts/calibration/weekly_summary_<week>.json` (Claude Code-dispatched, W4.2) |
 | Calibration math | `tools/calibration/loop_metrics.py` (Wilson CI, banding, W2 SSOT) |
 | Coverage audit | `ops_scripts/ci/check_ledger_coverage.py` (future) |
 

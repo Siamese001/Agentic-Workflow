@@ -9,7 +9,7 @@ Operationalizes constitutional §18 (no hidden scope expansion).
 
 ## The Four Hard Rules
 
-1. **No gold-plating.** Don't improve code Cursor Agent "noticed needed improving" while doing something else. File a `NEXT_STEP:` marker; move on.
+1. **No gold-plating.** Don't improve code Claude Code "noticed needed improving" while doing something else. File a `NEXT_STEP:` marker; move on.
 2. **No "while I'm here" edits.** Touching an unrelated file because it's open / nearby = scope expansion — forbidden without explicit user approval this turn.
 3. **One active task at a time.** Asked for X → do X. Don't start Y because Y "also needs doing". Concurrent scopes require an explicit user turn naming both.
 4. **Out-of-scope improvements → `NEXT_STEP:` marker, NOT an edit.** Per `next-step-capture.md`, emit marker same response; hook auto-captures; DO NOT implement.

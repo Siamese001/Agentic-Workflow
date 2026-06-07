@@ -1,7 +1,7 @@
 
-# Cursor Author-Gate HITL (developer-loop)
+# Author-Gate HITL (developer-loop)
 
-> Governs **Author-Gate** when Cursor Agent needs a human choice before editing. NOT runtime production HITL (`agentic_core/L5_safety/`).
+> Governs **Author-Gate** when Claude Code needs a human choice before editing. NOT runtime production HITL (`agentic_core/L5_safety/`).
 
 ## When to stop and ask
 
@@ -39,7 +39,7 @@ echo '<spec-json>' | python tools/cursor/author_gate_prepare_ask.py
 
 ⛔ Forbidden: Markdown option menus (`**Option A**`, tables, prose lists). Forbidden: packet without `ask_user_question`. Forbidden: hand-crafted `[confidence=…]` strings.
 
-## Cursor UI option shape
+## UI option shape
 
 Each `ask_user_question` option:
 

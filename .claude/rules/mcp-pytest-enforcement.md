@@ -1,7 +1,7 @@
 
 <!-- Converted from `.claude/rules/mcp-pytest-enforcement.md`. Original Cursor trigger: `glob`. -->
 
-> See `.cursor/RULES_INDEX.md#always-on-discipline` for shared retrieval / enforcement guidance.
+> See `CLAUDE.md` for shared retrieval / enforcement guidance.
 
 # MCP PyTest Enforcement Rule
 

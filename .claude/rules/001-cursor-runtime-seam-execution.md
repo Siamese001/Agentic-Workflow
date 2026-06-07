@@ -1,7 +1,7 @@
 
-# Cursor Runtime Seam Execution Contract
+# Runtime Seam Execution Contract
 
-Cursor must behave like a bounded L2 executor, not a project manager.
+Claude Code must behave like a bounded L2 executor, not a project manager.
 
 ## Default execution shape
 
@@ -30,7 +30,7 @@ For implementation or verification work, use this shape unless the user explicit
 - A sidecar dry run is not production runtime proof.
 - A passing unit test is useful, but the runtime seam still needs the command that exercises the actual path when available.
 
-## Cursor response floor for repo work
+## Response floor for repo work
 
 Every repo-work response must include:
 

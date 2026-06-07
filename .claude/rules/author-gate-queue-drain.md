@@ -3,7 +3,7 @@
 
 # Author-Gate Queue Drain (§35)
 
-> ⛔ After ANY wave/phase completion marker, Cursor Agent MUST emit the next pending `AUTHOR_GATE_PACKET:` from `.claude/state/author_gate_queue/<plan-slug>.jsonl` in the same or immediately-following response. Queue drains to empty or explicit user stop.
+> ⛔ After ANY wave/phase completion marker, Claude Code MUST emit the next pending `AUTHOR_GATE_PACKET:` from `.claude/state/author_gate_queue/<plan-slug>.jsonl` in the same or immediately-following response. Queue drains to empty or explicit user stop.
 
 ## Invariant
 
