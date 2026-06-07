@@ -8,7 +8,7 @@ for the author-loop Author-Gate surface. Reads
 `refactor_decision_ledger.sqlite`, joins decisions ↔ outcomes, updates a
 per-class Thompson bandit (cell key = (decision_type, reason_code)), and
 persists bandit state to
-`.cursor/state/refactor_decisions/bandit_state.json` so
+`.claude/state/refactor_decisions/bandit_state.json` so
 `precedent_injector.py` can read the prior on the next packet emit.
 
 Bandit cell posterior: Beta(α, β)

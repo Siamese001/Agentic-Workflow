@@ -28,8 +28,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact
-from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract
-from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 
 APPS_RG_L2_CERT_REF: str = "apps_rg::l2::resume_generation::v1"
@@ -76,35 +74,8 @@ def _stub_sealed_from_prompt(prompt: CompiledPromptArtifact) -> SealedL2Artifact
 
 
 def _legacy_package_driven(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
-    """Run generic package-driven L2 with contracts synthesised from the CPA."""
-    from agentic_core.L2_execution.l2_package_driven_executor import l2_execute_package_driven
-
-    l5 = str(getattr(prompt, "l5_certification_ref", "") or "").strip() or APPS_RG_L2_CERT_REF
-    route = RouteContract(
-        request_id=prompt.request_id,
-        run_id=prompt.run_id,
-        app_id=getattr(prompt, "app_id", "apps_rg"),
-        trace_id=prompt.trace_id,
-        route_id="R3_SIMPLE_GROUNDED_READ",
-        l3_required=False,
-        grounding_required=True,
-        model_generation_required=True,
-        write_authority_present=False,
-        tenant_id=getattr(prompt, "tenant_id", "") or "apps_rg",
-        route_family="evidence_grounded_generation",
-        execution_form="single_step",
-        l5_certification_ref=l5,
-    )
-    fec = FinalEvidenceContract(
-        request_id=prompt.request_id,
-        run_id=prompt.run_id,
-        app_id=getattr(prompt, "app_id", "apps_rg"),
-        trace_id=prompt.trace_id,
-        tenant_id=getattr(prompt, "tenant_id", "") or "apps_rg",
-        l5_certification_ref=l5,
-        final_evidence_digest=getattr(prompt, "evidence_digest", "") or "sha256:minimal",
-    )
-    return l2_execute_package_driven(route, fec, prompt)
+    """Preserve the disabled-v4 contract with an app-local sealed fallback."""
+    return _stub_sealed_from_prompt(prompt)
 
 
 def _l2_execute_apps_rg_core(prompt: CompiledPromptArtifact) -> SealedL2Artifact:

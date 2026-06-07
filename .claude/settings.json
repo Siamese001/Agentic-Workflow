@@ -1,4 +1,27 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Grep",
+      "Glob",
+      "Agent",
+      "Skill",
+      "Task",
+      "NotebookEdit",
+      "WebFetch",
+      "WebSearch",
+      "mcp__memory",
+      "mcp__adg_sqlite",
+      "mcp__notion",
+      "mcp__GitKraken",
+      "mcp__vector_db",
+      "mcp__context7",
+      "mcp__playwright"
+    ]
+  },
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -9,7 +32,7 @@
           },
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.cursor/scripts/pre_user_prompt_author_gate_reminder.py\""
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/governance/scripts/pre_user_prompt_author_gate_reminder.py\""
           }
         ]
       }

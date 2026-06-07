@@ -21,7 +21,7 @@ GATE_PATH = REPO_ROOT / "ops_scripts" / "ci" / "check_plan_notion_wave_freshness
 
 
 def _load_gate():
-    sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
     sys.path.insert(0, str(REPO_ROOT / "ops_scripts" / "ci"))
     spec = importlib.util.spec_from_file_location(
         "check_plan_notion_wave_freshness", GATE_PATH

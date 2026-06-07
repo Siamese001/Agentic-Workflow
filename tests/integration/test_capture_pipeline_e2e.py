@@ -62,7 +62,7 @@ def isolated_pipeline(tmp_path, monkeypatch):
     """Build a full pipeline sandbox: queue dir, ledger dir, rewired paths."""
     q_dir = tmp_path / "artifacts" / "capture"
     q_dir.mkdir(parents=True)
-    ledger_dir = tmp_path / ".cursor" / "state" / "refactor_decisions"
+    ledger_dir = tmp_path / ".claude" / "state" / "refactor_decisions"
     ledger_dir.mkdir(parents=True)
     ledger_path = ledger_dir / "refactor_decision_ledger.sqlite"
 

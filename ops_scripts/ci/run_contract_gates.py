@@ -47,13 +47,13 @@ def _script(rel_path: str) -> Path:
 
 
 # PFC1 (plan-format-simplification-rca-d4f8e2 W4): forward-only canonical scope.
-# Does NOT scan all of .cursor/plans — explicit paths only (see W4 CI gate receipt).
+# Does NOT scan all of .claude/plans — explicit paths only (see W4 CI gate receipt).
 _PFC1_CANONICAL_PLAN_PATHS = (
-    ".cursor/plans/plan-format-simplification-rca-d4f8e2.md",
-    ".cursor/templates/execution-plan-template.md",
-    ".cursor/plans/acceptance-gates-master-tracking-b5c3e1.md",
-    ".cursor/plans/adg-antipattern-hardening-e5a569.md",
-    ".cursor/plans/agentic-core-signoff-hardening-b8e2c4.md",
+    ".claude/plans/plan-format-simplification-rca-d4f8e2.md",
+    ".claude/templates/execution-plan-template.md",
+    ".claude/plans/acceptance-gates-master-tracking-b5c3e1.md",
+    ".claude/plans/adg-antipattern-hardening-e5a569.md",
+    ".claude/plans/agentic-core-signoff-hardening-b8e2c4.md",
 )
 
 
@@ -78,7 +78,7 @@ def _pfc1_gate_cmd() -> list[str]:
 # PRE-WRITE HOOKS INTEGRATION
 def validate_pre_write_hooks():
     """Validate all pre-write hook skills."""
-    skills_dir = ROOT / ".cursor" / "skills"
+    skills_dir = ROOT / ".claude" / "skills"
     failed_skills: list[str] = []
     if not skills_dir.is_dir():
         print(f"❌ Skills directory missing: {skills_dir}")
@@ -157,17 +157,10 @@ def validate_mcp_health():
         return False
     print("✅ MCP config sovereignty (Rule #0) validated")
 
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_cursor_config_schema.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Cursor config schema check failed")
-        print(stdout or stderr)
-        return False
-    print("✅ Cursor config schema validated")
+    # cursor-decommission W7: check_cursor_config_schema removed (validated deleted
+    # .cursor/hooks.json + .cursor/mcp.json; Claude Code uses .claude/settings.json + root .mcp.json).
 
-    # Gate: every .cursor/skills/<name>/SKILL.md must conform to Anthropic's
+    # Gate: every .claude/skills/<name>/SKILL.md must conform to Anthropic's
     # Agent Skills authoring spec (frontmatter, name/description rules, 500-line
     # budget, third person, when-trigger, forward-slash paths).
     returncode, stdout, stderr = run_cmd(
@@ -666,7 +659,7 @@ def main():
         # NP1 — Plans DB mandatory AI Summary gate. Advisory by default;
         # flip fail-closed via NOTION_PLANS_AI_SUMMARY_FAIL_CLOSED=1.
         # Skips when NOTION_API_KEY / NOTION_TOKEN is unset (offline CI).
-        # Rule: .cursor/rules/notion-plans-taxonomy.md > Mandatory AI Summary.
+        # Rule: .claude/rules/notion-plans-taxonomy.md > Mandatory AI Summary.
         (
             "NP1 Notion Plans AI Summary (advisory)",
             "ops_scripts/ci/check_notion_plans_ai_summary.py",
@@ -674,7 +667,7 @@ def main():
         # NP2 -- Plans DB Status must use canonical option strings.
         # Advisory by default; fail-closed via NOTION_PLANS_STATUS_FAIL_CLOSED=1.
         # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .cursor/rules/notion-plans-taxonomy.md > CANONICAL Status option strings.
+        # Rule: .claude/rules/notion-plans-taxonomy.md > CANONICAL Status option strings.
         (
             "NP2 Notion Plans Status drift (advisory)",
             "ops_scripts/ci/check_notion_plans_status_drift.py",
@@ -684,7 +677,7 @@ def main():
         # Orphan count confirmed 0 (2026-05-03, plan backlog-linkage-followup-c2e9f3).
         # Ready to promote: set BACKLOG_PLAN_LINKAGE_FAIL_CLOSED=1 to enforce.
         # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .cursor/rules/notion-backlog-plan-linkage.md
+        # Rule: .claude/rules/notion-backlog-plan-linkage.md
         (
             "NP3 Notion Backlog plan linkage (advisory)",
             "ops_scripts/ci/check_notion_backlog_plan_linkage.py",
@@ -694,7 +687,7 @@ def main():
         # Advisory by default; fail-closed via NOTION_PLANS_WAVE_FAIL_CLOSED=1.
         # Bypass: NOTION_PLANS_WAVE_BYPASS=1.
         # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .cursor/rules/notion-plan-wave-deferral.md (sanctioned non-MCP path).
+        # Rule: .claude/rules/notion-plan-wave-deferral.md (sanctioned non-MCP path).
         (
             "NP4 Notion Plans wave freshness (advisory)",
             "ops_scripts/ci/check_plan_notion_wave_freshness.py",
@@ -729,7 +722,7 @@ def main():
         # changes (quick flips, identity mismatches, etc.). Advisory by default;
         # fail-closed via NOTION_PLAN_STATUS_ANOMALIES_FAIL_CLOSED=1.
         # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .cursor/rules/notion-plan-identity-verification.md
+        # Rule: .claude/rules/notion-plan-identity-verification.md
         (
             "NP8 Notion plan status anomalies (advisory)",
             "ops_scripts/ci/check_notion_plan_status_anomalies.py",
@@ -756,7 +749,7 @@ def main():
         # fail-closed via NOTION_PLANS_WAITING_FOR_FAIL_CLOSED=1.
         # Bypass: NOTION_PLANS_WAITING_FOR_BYPASS=1.
         # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .cursor/rules/notion-plans-taxonomy.md > Field Requirements.
+        # Rule: .claude/rules/notion-plans-taxonomy.md > Field Requirements.
         (
             "NP10 Notion Plans Waiting-For completeness (advisory)",
             "ops_scripts/ci/check_notion_plans_waiting_for.py",
@@ -766,7 +759,7 @@ def main():
         # fail-closed via NOTION_BACKLOG_WAITING_FOR_FAIL_CLOSED=1.
         # Bypass: NOTION_BACKLOG_WAITING_FOR_BYPASS=1.
         # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .cursor/rules/notion-plans-taxonomy.md > Field Requirements.
+        # Rule: .claude/rules/notion-plans-taxonomy.md > Field Requirements.
         (
             "NP11 Notion Backlog Waiting-For completeness (advisory)",
             "ops_scripts/ci/check_notion_backlog_waiting_for.py",
@@ -777,7 +770,7 @@ def main():
         # NOTION_PLAN_COMPLETE_FAIL_CLOSED=1.
         # Bypass: NOTION_PLAN_COMPLETE_BYPASS=1.
         # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .cursor/rules/notion-plan-wave-deferral.md.
+        # Rule: .claude/rules/notion-plan-wave-deferral.md.
         # Plan: plan-complete-marker-enforcement-d2e9f1 W2.
         (
             "NP13 Notion Plans PLAN_COMPLETE marker freshness (advisory)",
@@ -788,7 +781,7 @@ def main():
         # Advisory by default; fail-closed via NOTION_PLAN_STATUS_INITIAL_FAIL_CLOSED=1.
         # Bypass: NOTION_PLAN_STATUS_INITIAL_BYPASS=1.
         # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .cursor/rules/notion-plans-taxonomy.md > Status Creation Invariant.
+        # Rule: .claude/rules/notion-plans-taxonomy.md > Status Creation Invariant.
         # Plan: holistic-plan-status-discipline-d4e8a1 (W3).
         (
             "NP14 Notion Plans status initial (advisory)",
@@ -798,7 +791,7 @@ def main():
         # operations target existing properties before API calls are made.
         # Advisory by default; fail-closed via NOTION_SCHEMA_PREFLIGHT_FAIL_CLOSED=1.
         # Bypass: NOTION_SCHEMA_PREFLIGHT_BYPASS=1.
-        # Rule: .cursor/rules/notion-sync-enforcement.md > Schema Validation.
+        # Rule: .claude/rules/notion-sync-enforcement.md > Schema Validation.
         # Plan: notion-sync-enforcement-hardening-f5a2c1 W1.P2.
         (
             "NP12 Notion Schema Pre-flight (advisory)",
@@ -806,7 +799,7 @@ def main():
         ),
         # NP15 — Wave/Phase Convergence DB ↔ disk plan-file drift. Checks that
         # open Backlog rows whose Plan File field is set resolve to an on-disk
-        # .cursor/plans/ file. Orphan rows are reported.
+        # .claude/plans/ file. Orphan rows are reported.
         # Advisory by default; fail-closed via STRICT_DRIFT=1.
         # Bypass: PLAN_FILE_DRIFT_BYPASS=1.
         # Plan: notion-integration-consistency-audit-b2c4d8 W3.
@@ -815,7 +808,7 @@ def main():
             "ops_scripts/ci/check_notion_plan_file_drift.py",
         ),
         # NP16 — Author-Gate decision signals. SQLite ledger under
-        # ``.cursor/state/refactor_decisions/`` is SSOT; Notion Author-Gate ledger
+        # ``.claude/state/refactor_decisions/`` is SSOT; Notion Author-Gate ledger
         # archived 2026-05-02. Gate logs legacy Notion post traffic; fail-closed
         # only when NOTION_DECISION_PARITY_FAIL_CLOSED=1 and legacy posts > 0.
         # Bypass: NOTION_DECISION_PARITY_BYPASS=1.
@@ -877,7 +870,7 @@ def main():
         # Advisory by default; flip fail-closed via
         # PLAN_REGISTRATION_FAIL_CLOSED=1. Offline-safe: SKIPs when no
         # token and no local cache. Rule:
-        # .cursor/rules/plan-registration-enforcement.md.
+        # .claude/rules/plan-registration-enforcement.md.
         (
             "PR1 Plan–Notion Registration (advisory)",
             "ops_scripts/ci/check_plan_registration_freshness.py",
@@ -943,7 +936,7 @@ def main():
         # Advisory by default (exit 0 with stderr report); fail-closed via
         # APPS_DOM_FIXTURE_FRESHNESS_FAIL_CLOSED=1.
         # Bypass: APPS_DOM_FIXTURE_FRESHNESS_BYPASS=1. Plan:
-        # .cursor/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.
+        # .claude/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.
         (
             "AD1 APPS-DOM harness fixture freshness (advisory)",
             "ops_scripts/ci/check_apps_dom_fixture_freshness.py",
@@ -1176,10 +1169,11 @@ def main():
             "MCP-SCHEMA Cursor+Windsurf MCP config validation (advisory)",
             "ops_scripts/ci/check_mcp_config_schema.py --profile all",
         ),
-        # CURSOR-MCP-SCHEMA — hooks.json + mcp.json schema purity (§27).
+        # NO-CURSOR-REFS — .cursor decommission anti-regression (W7): no tracked
+        # .cursor/ files + no active .cursor/ path construction in live code.
         (
-            "CURSOR-MCP-SCHEMA Cursor hooks/mcp schema purity",
-            "ops_scripts/ci/check_cursor_config_schema.py",
+            "NO-CURSOR-REFS .cursor decommission anti-regression",
+            "ops_scripts/ci/check_no_cursor_refs.py",
         ),
         # MCP-PARITY — canonical fleet parity across editor configs.
         (
@@ -1193,7 +1187,7 @@ def main():
             "ops_scripts/ci/check_mcp_config_sovereignty.py",
         ),
         # DEFER — Deferred scope marker compliance (CI mode).
-        # Scans all .cursor/plans/*.md for prose indicating deferred work
+        # Scans all .claude/plans/*.md for prose indicating deferred work
         # without DEFERRED_SCOPE: marker. Baseline: 12 violations (advisory).
         # Advisory by default; fail-closed via DEFERRED_SCOPE_GATE_FAIL_CLOSED=1.
         # Bypass: DEFERRED_SCOPE_GATE_BYPASS=1.
@@ -1202,7 +1196,7 @@ def main():
             "ops_scripts/ci/check_deferred_scope_markers.py",
         ),
         # RULE-FMT — Rule frontmatter schema validation.
-        # Validates .cursor/rules/*.md YAML frontmatter against canonical schema.
+        # Validates .claude/rules/*.md YAML frontmatter against canonical schema.
         # Baseline: many rules lack proper frontmatter (advisory).
         # Advisory by default; fail-closed via RULE_FRONTMATTER_FAIL_CLOSED=1.
         # Bypass: RULE_FRONTMATTER_BYPASS=1.
@@ -1211,7 +1205,7 @@ def main():
             "ops_scripts/ci/check_rule_frontmatter_schema.py",
         ),
         # RULES1 — Rules filesystem integrity check.
-        # Validates .cursor/rules/*.md files for: frontmatter presence,
+        # Validates .claude/rules/*.md files for: frontmatter presence,
         # duplicate titles, kebab-case filenames, and broken internal refs.
         # Advisory by default; fail-closed via RULES_INTEGRITY_FAIL_CLOSED=1.
         # Bypass: RULES_INTEGRITY_BYPASS=1.
@@ -1487,7 +1481,7 @@ def main():
         # commit-time staged-file checks; this aggregator entry ensures CI
         # workflows that stage files (e.g., during release branches or merge
         # queues) also see the gate. Pass-through when no staged additions.
-        # Sibling Windsurf hook: .cursor/scripts/pre_write_gate.py.
+        # Sibling Windsurf hook: .claude/governance/scripts/pre_write_gate.py.
         ("§31 SSOT folder routing", "ops_scripts/ci/check_ssot_folder_routing.py"),
         # T8r — Phase E.1 advisory runtime-certification gate (ADR-080 §11).
         # Reads per-app Phase D cert-decision ledgers, compares latest
@@ -1517,7 +1511,6 @@ def main():
         # and all 3 AG audit hooks in post_cursor_agent_response have show_output=true.
         # Advisory by default; AG_HOOK_WIRING_FAIL_CLOSED=1 activates blocking.
         # Plan: author-gate-deferred-scope-b8c1d4 W3.
-        ("AG-WIRE Author-Gate hook wiring invariant (advisory)", "ops_scripts/ci/check_ag_hook_wiring.py"),
         # AG-DEFER — Deferred-scope plan guard marker parity.
         # Every plan with "do not implement without" prose MUST have a
         # DO_NOT_IMPLEMENT_GUARD: marker so the pre_user_prompt hook can surface

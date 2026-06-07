@@ -24,7 +24,7 @@ from unittest.mock import patch
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-SCRIPT_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "pre_user_prompt_author_gate_reminder.py"
+SCRIPT_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_user_prompt_author_gate_reminder.py"
 
 
 def _load_module() -> types.ModuleType:

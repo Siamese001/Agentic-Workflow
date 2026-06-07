@@ -77,7 +77,7 @@ Their skills (`pytest-mcp`, `redis-cache`, `tavily-research`, `otel-telemetry`) 
 ## Hooks
 
 Governance hooks are registered in [`.claude/settings.json`](.claude/settings.json) and implemented in
-`.claude/hooks/`. They reuse the existing governance engine under `.cursor/scripts/**` as a backend
+`.claude/hooks/`. They reuse the existing governance engine under `.claude/governance/scripts/**` as a backend
 (the one live dependency on the legacy tree). Block signal = exit code 2 + reason on stderr.
 
 ## Pytest
@@ -93,7 +93,7 @@ migration receipt. Detail: `.claude/rules/agentic-core-static.md`, `.claude/rule
 
 ## Plans & memory
 
-- Plans SSOT remains `.cursor/plans/<slug>-<6hex>.md` (plan data not migrated). See
+- Plans SSOT remains `.claude/plans/<slug>-<6hex>.md` (plan data not migrated). See
   `.claude/rules/plan-location.md`, skill [`plan-governance`](.claude/skills/plan-governance/SKILL.md).
 - Memory: first tool call each session is `mem_recall_session_start`. Detail
   `.claude/rules/memory-management.md`, skill [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md).

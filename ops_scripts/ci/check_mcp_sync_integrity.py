@@ -3,7 +3,7 @@
 
 Validates:
 1) `.cursor/mcp.json` (Cursor project SSOT) is structurally valid.
-2) AGENTS.md MCP Quick Reference matches `.cursor/scripts/sync_mcp_config.py` output.
+2) AGENTS.md MCP Quick Reference matches `.claude/governance/scripts/sync_mcp_config.py` output.
 3) Optional: global Cursor MCP mirror matches repo SSOT (`--check-global`).
 4) Optional: Windsurf mirror structural validity (`--check-windsurf-mirror`).
 
@@ -57,7 +57,7 @@ def _check_agents_sync(sync) -> list[str]:
     elif current != expected:
         issues.append(
             "AGENTS.md MCP Quick Reference drift detected; run "
-            "'python .cursor/scripts/sync_mcp_config.py'"
+            "'python .claude/governance/scripts/sync_mcp_config.py'"
         )
     return issues
 
@@ -76,7 +76,7 @@ def _check_global_sync(sync) -> list[str]:
     if repo_data != global_data:
         issues.append(
             "global Cursor MCP config drift detected; run "
-            "'python .cursor/scripts/sync_mcp_config.py'"
+            "'python .claude/governance/scripts/sync_mcp_config.py'"
         )
     return issues
 

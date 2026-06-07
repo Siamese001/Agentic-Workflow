@@ -55,6 +55,24 @@ APPS_RG_SHIM_ARTIFACTS: tuple[str, ...] = (
     "one_spine_certification_receipt.json",
 )
 
+APPS_RG_SECTION_SHIM_PREFERRED_NAMES: dict[str, str] = {
+    "validated_request.json": "apps_rg_section_validated_request.json",
+    "l1_plan_contract.json": "apps_rg_section_l1_plan_contract.json",
+    "route_contract.json": "apps_rg_section_route_contract.json",
+    "c0_fec_bridge_receipt.json": "apps_rg_section_c0_fec_bridge_receipt.json",
+    "final_evidence_contract_bridge.json": "apps_rg_section_final_evidence_contract_bridge.json",
+    "compiled_prompt_artifact.json": "apps_rg_section_compiled_prompt_artifact.json",
+    "l2_execution_packet.json": "apps_rg_section_l2_execution_packet.json",
+    "sealed_l2_artifact.json": "apps_rg_section_sealed_l2_artifact.json",
+    "exit_review_packet.json": "apps_rg_section_exit_review_packet.json",
+    "exit_disposition_receipt.json": "apps_rg_section_exit_disposition_receipt.json",
+    "runtime_exhaust_bundle.json": "apps_rg_section_runtime_exhaust_bundle.json",
+    "l6_shadow_handoff_receipt.json": "apps_rg_section_l6_shadow_handoff_receipt.json",
+    "l6_shadow_eval_package.json": "apps_rg_section_l6_shadow_eval_package.json",
+    "section_runtime_proof_bundle.json": "apps_rg_section_runtime_proof_bundle.json",
+    "one_spine_certification_receipt.json": "apps_rg_section_one_spine_certification_receipt.json",
+}
+
 # W6A: quarantine assertion (apps_rg binding; not 99 proof).
 W6A_NO_DIRECT_CHROMA_ASSERTION = "no_direct_chroma_write_bypass_assertion.json"
 
@@ -85,6 +103,8 @@ def design_law_owner_for_artifact(
         return "APP_DOMAIN_EVIDENCE"
     if filename in APPS_RG_SHIM_ARTIFACTS:
         return "APP_SHIM"
+    if filename in APPS_RG_SECTION_SHIM_PREFERRED_NAMES.values():
+        return "APP_SHIM"
     if filename == "one_spine_certification_receipt.json":
         return "APP_SHIM"
     if filename in L7_CORE_ARTIFACTS:
@@ -102,6 +122,7 @@ def design_law_owner_for_artifact(
 
 __all__ = [
     "APPS_RG_DOMAIN_ARTIFACTS",
+    "APPS_RG_SECTION_SHIM_PREFERRED_NAMES",
     "APPS_RG_SHIM_ARTIFACTS",
     "CORE_99_DESIGN_ONLY_ARTIFACTS",
     "L7_CORE_ARTIFACTS",

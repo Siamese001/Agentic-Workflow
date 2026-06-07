@@ -16,7 +16,7 @@ All four are pure functions, stdlib only, no I/O. The HealingRouter calls
 the row's prediction_json.
 
 Plan: docs/archive/windsurf/legacy-tree/plans/l2-cascade-router-closed-loop-wiring-c4d8a1.md (W1.3)
-Rule: .cursor/rules/closed-loop-router-enforcement.md (row #4 L2/cascade)
+Rule: .claude/rules/closed-loop-router-enforcement.md (row #4 L2/cascade)
 """
 
 from __future__ import annotations

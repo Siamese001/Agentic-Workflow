@@ -90,15 +90,15 @@ _EXEMPTIONS: dict[str, str] = {
     "tests/unit/": "test_fixture",
     "docs/": "documentation_example",
     "docs/reports/": "documentation_example",
-    ".cursor/plans/": "plan_documentation",
-    ".cursor/plans/_archive/": "archived_documentation",
-    # Note: .cursor/workflows/ and .cursor/skills/ are ACTIVE surfaces - NOT exempt
+    ".claude/plans/": "plan_documentation",
+    ".claude/plans/_archive/": "archived_documentation",
+    # Note: .cursor/workflows/ and .claude/skills/ are ACTIVE surfaces - NOT exempt
 }
 
 # Active surfaces that must comply
 _ACTIVE_SURFACES = {
-    ".cursor/skills/structured-reasoning/SKILL.md",
-    ".cursor/workflows/author-gate-decision-gate.md",
+    ".claude/skills/structured-reasoning/SKILL.md",
+    ".claude/commands/author-gate-decision-gate.md",
     # Note: antipattern-author-gate.md is AUTHOR_GATE path, uses AG pipeline
 }
 
@@ -467,8 +467,8 @@ def main() -> int:
     # Default paths if none provided
     if not args.paths:
         args.paths = [
-            REPO_ROOT / ".cursor" / "skills",
-            REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "workflows",
+            REPO_ROOT / ".claude" / "skills",
+            REPO_ROOT / ".claude" / "commands",
         ]
     
     # Run checks

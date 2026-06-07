@@ -16,7 +16,7 @@ Fail-closed: set env ``APPS_TEST_SURFACE_FAIL_CLOSED=1`` to exit 1 on any violat
              (same as default; exists for parity with other gate patterns).
 
 Plan: apps-test-surface-consolidation-11acd9-v2 W6.3.
-Rule: .cursor/rules/apps-test-surface-taxonomy.md.
+Rule: .claude/rules/apps-test-surface-taxonomy.md.
 """
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACT_DIR = REPO_ROOT / "artifacts" / "ci"
 
 # Ensure the windsurf scripts helper is importable when run as a script
-_WINDSURF_SCRIPTS = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
+_WINDSURF_SCRIPTS = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
 if str(_WINDSURF_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_WINDSURF_SCRIPTS))
 
@@ -98,7 +98,7 @@ def main() -> int:
             print(f"  - {v.message}", file=sys.stderr)
 
     print(
-        "\nSee .cursor/rules/apps-test-surface-taxonomy.md for remediation.",
+        "\nSee .claude/rules/apps-test-surface-taxonomy.md for remediation.",
         file=sys.stderr,
     )
     print(

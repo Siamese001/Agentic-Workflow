@@ -40,7 +40,7 @@ CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "deferred_scope_capture.jso
 
 import sys as _sys
 
-_sys.path.insert(0, str(Path(REPO_ROOT) / ".cursor" / "scripts" / "_legacy_windsurf"))
+_sys.path.insert(0, str(Path(REPO_ROOT) / ".claude" / "governance/scripts" / "_legacy_windsurf"))
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
     NOTION_HTTP_TIMEOUT_S,

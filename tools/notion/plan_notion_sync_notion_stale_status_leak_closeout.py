@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "notion-stale-status-leak-closeout-b8e4f2"
-PLAN_PATH = ".cursor/plans/notion-stale-status-leak-closeout-b8e4f2.md"
+PLAN_PATH = ".claude/plans/notion-stale-status-leak-closeout-b8e4f2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -25,7 +25,7 @@ AI_SUMMARY = """- PLAN_STATUS: Completed (2026-05-25)
 - W2: receipt + Notion Completed; user deleted stale Select options in UI
 - Receipt: docs/reports/plans/notion_stale_status_leak_closeout_receipt_20260525.md
 - Tests: test_notion_plans_status_check (70), backfill + plan_freshness (34)
-- Disk: .cursor/plans/notion-stale-status-leak-closeout-b8e4f2.md"""
+- Disk: .claude/plans/notion-stale-status-leak-closeout-b8e4f2.md"""
 
 
 def _query_page_id() -> str | None:

@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-SCRIPT = REPO_ROOT / ".cursor" / "scripts" / "post_cursor_agent_long_command_audit.py"
+SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_long_command_audit.py"
 
 
 @pytest.fixture()

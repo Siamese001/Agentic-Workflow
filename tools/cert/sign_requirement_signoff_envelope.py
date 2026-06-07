@@ -126,7 +126,7 @@ def _build_envelope(report_bytes: bytes, sidecar_sha: str | None, report: dict) 
             "Scaffold envelope — actual signing requires cosign keyless via "
             "GitHub OIDC (ADR-091 §Deferred decisions). Until then, the "
             "trust_level upgrade path SIGNED_PROOF / FINAL_SIGNED_CERTIFICATION "
-            "remains gated. See .cursor/rules/fortknox-certification-discipline.md."
+            "remains gated. See .claude/rules/fortknox-certification-discipline.md."
         ),
     }
     return envelope

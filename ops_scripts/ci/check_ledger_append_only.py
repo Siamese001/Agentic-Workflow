@@ -2,7 +2,7 @@
 """
 check_ledger_append_only.py — W4.1 CI gate.
 
-Wraps `.cursor/scripts/apply_append_only_triggers.py --check` with
+Wraps `.claude/governance/scripts/apply_append_only_triggers.py --check` with
 bypass logging. Exits 1 if any ledger is missing its BEFORE UPDATE /
 BEFORE DELETE triggers.
 
@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MIG_SCRIPT = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "apply_append_only_triggers.py"
+MIG_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "apply_append_only_triggers.py"
 BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "ledger_append_only_bypass.jsonl"
 
 

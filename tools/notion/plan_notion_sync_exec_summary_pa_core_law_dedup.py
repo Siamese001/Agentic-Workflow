@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-pa-core-law-dedup-f8e2a1"
-PLAN_PATH = ".cursor/plans/exec-summary-pa-core-law-dedup-f8e2a1.md"
+PLAN_PATH = ".claude/plans/exec-summary-pa-core-law-dedup-f8e2a1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (

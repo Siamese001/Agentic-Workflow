@@ -10,7 +10,7 @@
 |---------|----------------|----------------|
 | Rules | `.claude/rules/*.mdc` | NO (archived 2026-05-02) |
 | ADRs | `docs/architecture/adr/*.md` | NO |
-| Plans | `.cursor/plans/<slug>-<6hex>.md` | Plans DB row only |
+| Plans | `.claude/plans/<slug>-<6hex>.md` | Plans DB row only |
 | Calibration | `docs/reports/calibration/<YYYY-Www>.md` | NO |
 
 Do not sync rules or ADRs to Notion. Archived DBs: MCP Registry, Constitutional Rules, SC/AP Violations, ADR Registry, Author-Gate Ledger, Anti-Pattern Burndown — see `.claude/rules/notion-archived-databases.md`.
@@ -23,10 +23,10 @@ Five-status taxonomy, Plans invariants, Backlog Snapshot (`34b27693-f55c-81b4-93
 
 | Event | Filesystem | Notion |
 |-------|------------|--------|
-| New plan `.cursor/plans/<slug>-<6hex>.md` | Plan markdown | Plans DB via `tools.notion.plan_creation_helper.create_plan_in_notion` — Status **Not Started** |
+| New plan `.claude/plans/<slug>-<6hex>.md` | Plan markdown | Plans DB via `tools.notion.plan_creation_helper.create_plan_in_notion` — Status **Not Started** |
 | New ADR `docs/architecture/adr/` | Markdown SSOT | No write |
-| Edit `.mcp.json` | JSON SSOT | No write; run `python .cursor/scripts/sync_mcp_config.py` |
-| Author-Gate decision | `.cursor/state/refactor_decisions/*.sqlite` | No write (ledger archived) |
+| Edit `.mcp.json` | JSON SSOT | No write; run `python .claude/governance/scripts/sync_mcp_config.py` |
+| Author-Gate decision | `.claude/state/refactor_decisions/*.sqlite` | No write (ledger archived) |
 | ADG SC/AP defects | `artifacts/adg/*.sqlite` | No write |
 | Wave start | n/a | Emit `WAVE_START: plan=<slug-6hex> wave=<N>` + `python tools/windsurf/wave_execution_state.py start` / `wave-progress` |
 | Wave complete | Plan table (hook) | Emit `WAVE_COMPLETE: plan=<slug-6hex> wave=<N> note="..."` |
@@ -40,9 +40,9 @@ Full wave lifecycle: `.claude/rules/plan-lifecycle-procedures.md`, `.claude/rule
 | Strict sync | `python ops_scripts/ci/check_mcp_sync_integrity.py` |
 | Coverage | `python ops_scripts/ci/check_agents_mcp_coverage.py` |
 | Editor parity | `python ops_scripts/ci/check_mcp_editor_parity.py` |
-| Cursor SSOT check | `python .cursor/scripts/sync_mcp_config.py --check` |
+| Cursor SSOT check | `python .claude/governance/scripts/sync_mcp_config.py --check` |
 
-Regenerate: `python .cursor/scripts/sync_mcp_config.py` (refreshes AGENTS autogen blocks + global MCP copy).
+Regenerate: `python .claude/governance/scripts/sync_mcp_config.py` (refreshes AGENTS autogen blocks + global MCP copy).
 
 ## Intelligence ledgers (ADR-050)
 

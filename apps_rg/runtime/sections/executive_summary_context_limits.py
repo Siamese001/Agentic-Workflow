@@ -80,8 +80,8 @@ ENV_VERIFY_CONTEXT_WINDOW = "APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW"
 
 
 def default_provider_context_window() -> int:
-    """L0 SSOT (``QWEN_LOCAL_MAX_MODEL_LEN``); override via ``VLLM_MAX_MODEL_LEN`` in env."""
-    from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MAX_MODEL_LEN
+    """App-local Qwen context window; override via ``VLLM_MAX_MODEL_LEN`` in env."""
+    from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MAX_MODEL_LEN
 
     return int(QWEN_LOCAL_MAX_MODEL_LEN)
 

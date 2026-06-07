@@ -105,7 +105,7 @@ The user can invoke any Tavily tool explicitly with a slash command. Each maps 1
 
 - Upstream documentation: <https://docs.tavily.com/documentation/agent-skills>
 - Tavily MCP server config: `.mcp.json` → `tavily`
-- Auth gate: `.cursor/scripts/pre_mcp_gate.py::check_tavily_gate`
-- Intent detection: `.cursor/scripts/pre_prompt_classifier.py` (`_TAVILY_SIGNALS`)
+- Auth gate: `.claude/governance/scripts/pre_mcp_gate.py::check_tavily_gate`
+- Intent detection: `.claude/governance/scripts/pre_prompt_classifier.py` (`_TAVILY_SIGNALS`)
 - Authority registry: `docs/guides/MCP_Registry.md` → `tavily`
 - Sibling skill (external library docs): `context7` MCP via `resolve-library-id` → `get-library-docs`

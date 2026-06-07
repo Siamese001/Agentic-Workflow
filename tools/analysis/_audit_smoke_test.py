@@ -47,13 +47,13 @@ WAVE2_FILES = [
 
 # Wave 3 files (8 modified hooks)
 WAVE3_FILES = [
-    ".cursor/scripts/_legacy_windsurf/_notion_constants.py",
-    ".cursor/scripts/_legacy_windsurf/plan_driven_closer.py",
-    ".cursor/scripts/_legacy_windsurf/post_commit_phase_closer.py",
-    ".cursor/scripts/_legacy_windsurf/rollback_bad_patches.py",
-    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_next_step_capture.py",
-    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py",
-    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_adr_registry_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/_notion_constants.py",
+    ".claude/governance/scripts/_legacy_windsurf/plan_driven_closer.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_commit_phase_closer.py",
+    ".claude/governance/scripts/_legacy_windsurf/rollback_bad_patches.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_next_step_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_adr_registry_capture.py",
     "ops_scripts/ci/check_notion_plan_file_drift.py",
     "tools/reports/recover_deferred_scope_pendings.py",
 ]

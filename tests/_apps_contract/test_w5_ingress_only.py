@@ -140,20 +140,23 @@ class TestW5IngressOnlyConstraints:
 
 
 class TestW5CanonicalDispatchEntry:
-    """``__main__`` wires CLI primitives to ``dispatch_apps_rg_run`` (ingress-only)."""
+    """``__main__`` wires CLI primitives to the app-owned full-run seam."""
 
-    def test_imports_dispatch_apps_rg_run_from_core_entry(self) -> None:
+    def test_imports_full_run_governance_seam(self) -> None:
         tree = _parse_main_ast()
         has_import = False
         for node in ast.walk(tree):
-            if isinstance(node, ast.ImportFrom) and node.module == "agentic_core.runtime.entry.apps_rg_dispatch":
+            if (
+                isinstance(node, ast.ImportFrom)
+                and node.module == "apps_rg.runtime.orchestration.r3r4_whole_run_orchestration"
+            ):
                 for alias in node.names:
-                    if alias.name == "dispatch_apps_rg_run":
+                    if alias.name == "run_whole_run_with_route_governance":
                         has_import = True
                         break
-        assert has_import, "__main__ must import dispatch_apps_rg_run from agentic_core.runtime.entry.apps_rg_dispatch"
+        assert has_import, "__main__ must import run_whole_run_with_route_governance"
 
-    def test_main_function_body_calls_dispatch_apps_rg_run(self) -> None:
+    def test_main_function_body_calls_full_run_governance_seam(self) -> None:
         tree = _parse_main_ast()
         main_fn: ast.FunctionDef | None = None
         for node in ast.walk(tree):
@@ -165,13 +168,13 @@ class TestW5CanonicalDispatchEntry:
         for node in ast.walk(main_fn):
             if isinstance(node, ast.Call):
                 fn = node.func
-                if isinstance(fn, ast.Name) and fn.id == "dispatch_apps_rg_run":
+                if isinstance(fn, ast.Name) and fn.id == "run_whole_run_with_route_governance":
                     found = True
                     break
-                if isinstance(fn, ast.Attribute) and fn.attr == "dispatch_apps_rg_run":
+                if isinstance(fn, ast.Attribute) and fn.attr == "run_whole_run_with_route_governance":
                     found = True
                     break
-        assert found, "main() must call dispatch_apps_rg_run(...)"
+        assert found, "main() must call run_whole_run_with_route_governance(...)"
 
     def test_no_local_request_envelope_definition(self) -> None:
         """Ingress envelope construction happens inside dispatch / U0 — not in __main__."""
@@ -182,8 +185,8 @@ class TestW5CanonicalDispatchEntry:
 class TestW5IngressFlow:
     """Verify ingress flow delegates to agentic_core."""
 
-    def test_main_invokes_dispatch_apps_rg_run_at_runtime(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Behavior: main() calls the canonical dispatch seam with CLI-derived primitives."""
+    def test_main_invokes_full_run_governance_at_runtime(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Behavior: main() calls the app-owned full-run seam with CLI-derived primitives."""
         calls: list[dict[str, object]] = []
 
         def _fake_dispatch(**kwargs: object) -> dict[str, object]:
@@ -195,8 +198,9 @@ class TestW5IngressFlow:
                 "artifact_dir": "",
             }
 
+        monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
         monkeypatch.setattr(
-            "agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run",
+            "apps_rg.runtime.orchestration.r3r4_whole_run_orchestration.run_whole_run_with_route_governance",
             _fake_dispatch,
         )
         import apps_rg.__main__ as rg_main
@@ -246,8 +250,9 @@ class TestW5FailClosedBehavior:
         def _boom(**_kwargs: object) -> dict[str, object]:
             raise RuntimeError("dispatch simulated failure")
 
+        monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
         monkeypatch.setattr(
-            "agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run",
+            "apps_rg.runtime.orchestration.r3r4_whole_run_orchestration.run_whole_run_with_route_governance",
             _boom,
         )
         import apps_rg.__main__ as rg_main

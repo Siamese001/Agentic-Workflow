@@ -48,7 +48,7 @@ After ADG runs, burndown refresh, or user asks for gate status / burndown / next
 ## References
 
 - [adg_action_dispatch_playbook.md](docs/reports/cursor/adg_action_dispatch_playbook.md)
-- [adg-action-dispatch-c9e4a2.md](.cursor/plans/adg-action-dispatch-c9e4a2.md)
+- [adg-action-dispatch-c9e4a2.md](.claude/plans/adg-action-dispatch-c9e4a2.md)
 - [tools/reports/adg_burndown_report.py](tools/reports/adg_burndown_report.py)
 - [tools/reports/adg_burndown_canvas.py](tools/reports/adg_burndown_canvas.py)
 - [tools/reports/adg_action_queue.py](tools/reports/adg_action_queue.py) (W1)

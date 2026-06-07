@@ -178,6 +178,24 @@ TOOLS_DIR: Final[str] = "tools"
 DASHBOARD_DIR: Final[str] = "agentic_core/L6_observability/dashboards"
 REPORTS_DIR: Final[str] = "reports"
 
+# W0 cursor-decommission (2026-06-07) — successor SSOT targets for the
+# .cursor -> .claude migration (plan .claude/plans/cursor-decommission-a1f7c3.md).
+# CURSOR_* = current canonical location (pre-move); CLAUDE_* = post-move target.
+# Per-surface waves rewrite hardcoded ".cursor/<x>" literals to the CURSOR_*
+# symbol (via tools/migration/ssot_path_literal_migrator.py), then git-mv the
+# data and flip the consumer to the CLAUDE_* symbol. Both endpoints are exported
+# so migration tooling can reference either side explicitly.
+CURSOR_PLANS_DIR: Final[str] = ".cursor/plans"
+CURSOR_STATE_DIR: Final[str] = ".cursor/state"
+CURSOR_SCHEMAS_DIR: Final[str] = ".cursor/schemas"
+CURSOR_TEMPLATES_DIR: Final[str] = ".cursor/templates"
+CURSOR_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".cursor/scripts"
+CLAUDE_PLANS_DIR: Final[str] = ".claude/plans"
+CLAUDE_STATE_DIR: Final[str] = ".claude/state"
+CLAUDE_SCHEMAS_DIR: Final[str] = ".claude/schemas"
+CLAUDE_TEMPLATES_DIR: Final[str] = ".claude/templates"
+CLAUDE_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".claude/governance/scripts"
+
 # ============================================================================
 # DYNAMIC DIRECTORY DISCOVERY
 # ============================================================================
@@ -797,6 +815,16 @@ __all__ = [
     "TOOLS_DIR",
     "VARIABLE_DEPTH_SUBFOLDERS",
     "WINDSURF_SCRIPTS_DIR",
+    "CURSOR_PLANS_DIR",
+    "CURSOR_STATE_DIR",
+    "CURSOR_SCHEMAS_DIR",
+    "CURSOR_TEMPLATES_DIR",
+    "CURSOR_GOVERNANCE_SCRIPTS_DIR",
+    "CLAUDE_PLANS_DIR",
+    "CLAUDE_STATE_DIR",
+    "CLAUDE_SCHEMAS_DIR",
+    "CLAUDE_TEMPLATES_DIR",
+    "CLAUDE_GOVERNANCE_SCRIPTS_DIR",
     "get_all_apps_paths",
     "get_apps_directories",
     "get_validated_project_root",

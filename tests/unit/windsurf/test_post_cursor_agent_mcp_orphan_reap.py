@@ -22,7 +22,7 @@ from unittest import mock
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_mcp_orphan_reap.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_mcp_orphan_reap.py"
 
 
 def _load_hook(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):

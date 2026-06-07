@@ -1,6 +1,6 @@
 """CI gate NP4 — Plans DB freshness vs on-disk plan files.
 
-Detects drift between on-disk plan files (`.cursor/plans/*.md`) and their
+Detects drift between on-disk plan files (`.claude/plans/*.md`) and their
 Notion Plans DB row's ``last_edited_time``. If a plan file has been edited
 recently but the Notion row hasn't been touched within ``--threshold-hours``
 (default 168 = 7 days) of the file's mtime, the row is flagged as stale.
@@ -23,7 +23,7 @@ Modes
 SSOT
 ----
 - Plans DB data source: ``ac53d31b-3068-4039-9ebe-856c12caab32``
-- On-disk plans dir: ``.cursor/plans/``
+- On-disk plans dir: ``.claude/plans/``
 - Active-statuses (filtered set): ``In Progress``, ``Not Started``
 
 Out of scope
@@ -53,7 +53,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -61,7 +61,7 @@ from _notion_constants import (  # noqa: E402
     query_url,
 )
 
-PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
+PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "plan_notion_wave_freshness.json"
 
 _ACTIVE_STATUSES: frozenset[str] = frozenset({"In Progress", "Not Started"})

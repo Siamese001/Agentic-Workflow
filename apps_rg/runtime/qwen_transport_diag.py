@@ -18,9 +18,8 @@ from urllib.parse import urlsplit
 import urllib.error
 import urllib.request
 
-from agentic_core.L2_execution.healers.vllm_health_probe import VLLMHealth, probe
-
 from apps_rg.runtime.artifact_secret_redaction import redact_sensitive_mapping
+from apps_rg.runtime.qwen_vllm_health import VLLMHealth, probe
 
 from apps_rg.runtime.qwen_offline_contract_stub import (
     OFFLINE_CONTRACT_STUB_RUNTIME_STATUS,

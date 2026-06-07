@@ -11,7 +11,7 @@ from ops_scripts.ci import check_mcp_config_sovereignty as sovereignty
 
 
 def _filesystem_block(
-    launcher: str = "${env:AGENTIC_REPO_ROOT}/.cursor/scripts/filesystem_mcp_launcher.js",
+    launcher: str = "${env:AGENTIC_REPO_ROOT}/.claude/governance/scripts/filesystem_mcp_launcher.js",
     root_arg: str = "${env:AGENTIC_REPO_ROOT}",
     *,
     disabled: bool = True,
@@ -45,14 +45,14 @@ def test_missing_filesystem_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     cfg = {"mcpServers": {"memory": {"command": "python", "args": []}}}
     path = tmp_path / "mcp.json"
     path.write_text(json.dumps(cfg), encoding="utf-8")
-    violations = sovereignty.validate_profile("cursor", path, ".cursor/scripts/filesystem_mcp_launcher.js")
+    violations = sovereignty.validate_profile("cursor", path, ".claude/governance/scripts/filesystem_mcp_launcher.js")
     assert any(v.code == "MISSING_FILESYSTEM" for v in violations)
 
 
 def test_forbidden_path_fragment_fails(tmp_path: Path) -> None:
     cfg = _minimal_config(
         _filesystem_block(
-            launcher="${env:AGENTIC_REPO_ROOT}/.cursor/scripts/filesystem_mcp_launcher.js",
+            launcher="${env:AGENTIC_REPO_ROOT}/.claude/governance/scripts/filesystem_mcp_launcher.js",
         )
     )
     cfg["mcpServers"]["notion"] = {
@@ -61,7 +61,7 @@ def test_forbidden_path_fragment_fails(tmp_path: Path) -> None:
     }
     path = tmp_path / "mcp.json"
     path.write_text(json.dumps(cfg), encoding="utf-8")
-    violations = sovereignty.validate_profile("cursor", path, ".cursor/scripts/filesystem_mcp_launcher.js")
+    violations = sovereignty.validate_profile("cursor", path, ".claude/governance/scripts/filesystem_mcp_launcher.js")
     assert any(v.code == "FORBIDDEN_PATH_FRAGMENT" for v in violations)
 
 
@@ -71,7 +71,7 @@ def test_wrong_root_arg_fails(tmp_path: Path) -> None:
     )
     path = tmp_path / "mcp.json"
     path.write_text(json.dumps(cfg), encoding="utf-8")
-    violations = sovereignty.validate_profile("cursor", path, ".cursor/scripts/filesystem_mcp_launcher.js")
+    violations = sovereignty.validate_profile("cursor", path, ".claude/governance/scripts/filesystem_mcp_launcher.js")
     assert any(v.code == "FILESYSTEM_ROOT_ARG" for v in violations)
 
 
@@ -79,7 +79,7 @@ def test_shadow_disabled_still_passes_scope(tmp_path: Path) -> None:
     cfg = _minimal_config(_filesystem_block(disabled=True))
     path = tmp_path / "mcp.json"
     path.write_text(json.dumps(cfg), encoding="utf-8")
-    violations = sovereignty.validate_profile("cursor", path, ".cursor/scripts/filesystem_mcp_launcher.js")
+    violations = sovereignty.validate_profile("cursor", path, ".claude/governance/scripts/filesystem_mcp_launcher.js")
     assert violations == []
 
 
@@ -102,10 +102,10 @@ def test_main_writes_artifact(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 def test_windsurf_launcher_path_required(tmp_path: Path) -> None:
     cfg = _minimal_config(
         _filesystem_block(
-            launcher="${env:AGENTIC_REPO_ROOT}/.cursor/scripts/_legacy_windsurf/filesystem_mcp_launcher.js",
+            launcher="${env:AGENTIC_REPO_ROOT}/.claude/governance/scripts/_legacy_windsurf/filesystem_mcp_launcher.js",
         )
     )
     path = tmp_path / "mcp.json"
     path.write_text(json.dumps(cfg), encoding="utf-8")
-    violations = sovereignty.validate_profile("windsurf", path, ".cursor/scripts/_legacy_windsurf/filesystem_mcp_launcher.js")
+    violations = sovereignty.validate_profile("windsurf", path, ".claude/governance/scripts/_legacy_windsurf/filesystem_mcp_launcher.js")
     assert violations == []

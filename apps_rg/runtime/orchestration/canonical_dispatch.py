@@ -18,7 +18,7 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+from apps_rg.runtime.orchestration.integrated_spine_runner import (
     run_integrated_single_action_spine,
 )
 
@@ -454,7 +454,7 @@ def run_canonical_apps_rg_from_cli_primitives(
     )
 
 
-def _run_executive_summary_lane_from_cli(
+def execute_executive_summary_section_from_cli(
     *,
     target_company: str,
     target_role: str,
@@ -500,7 +500,7 @@ def _run_executive_summary_lane_from_cli(
 
 __all__ = [
     "build_raw_request_for_r4",
-    "_run_executive_summary_lane_from_cli",
+    "execute_executive_summary_section_from_cli",
     "run_canonical_apps_rg_from_cli_primitives",
     "run_canonical_full_resume_from_cli_primitives",
 ]

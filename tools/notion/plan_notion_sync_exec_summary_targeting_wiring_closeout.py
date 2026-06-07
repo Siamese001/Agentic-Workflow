@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-targeting-wiring-closeout-b9e2a4"
-PLAN_PATH = ".cursor/plans/exec-summary-targeting-wiring-closeout-b9e2a4.md"
+PLAN_PATH = ".claude/plans/exec-summary-targeting-wiring-closeout-b9e2a4.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -25,7 +25,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETE (2026-05-25)
 - Parent: exec-summary-targeting-ingress-u0-b8e4f1
 - Proof: docs/reports/apps_rg/exec_summary_targeting_parity_live_proof_20260524_233409_receipt.md
 - DEFERRED: X3_ALLOW certified tier → operator-ship / proof-pool Track C5
-- Disk: .cursor/plans/exec-summary-targeting-wiring-closeout-b9e2a4.md"""
+- Disk: .claude/plans/exec-summary-targeting-wiring-closeout-b9e2a4.md"""
 
 
 def _query_page_id() -> str | None:

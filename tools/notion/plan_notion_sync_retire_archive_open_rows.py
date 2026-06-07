@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Retire Notion Plans rows that point at archived plan files (not active .cursor/plans SSOT)."""
+"""Retire Notion Plans rows that point at archived plan files (not active .claude/plans SSOT)."""
 from __future__ import annotations
 
 import json
@@ -14,15 +14,15 @@ DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 RETIREMENTS: tuple[tuple[str, str, str], ...] = (
     (
         "ag-purity-open-work-remediation-roadmap",
-        ".cursor/plans/_archive/windsurf_legacy/ag-purity-open-work-remediation-roadmap.md",
+        ".claude/plans/_archive/windsurf_legacy/ag-purity-open-work-remediation-roadmap.md",
         "RETIRED 2026-05-24: Windsurf legacy archive only — AG-PURITY remediation roadmap superseded by "
-        "adg-ci workstreams; not active .cursor/plans SSOT. Do not execute from Notion backlog.",
+        "adg-ci workstreams; not active .claude/plans SSOT. Do not execute from Notion backlog.",
     ),
     (
         "nist-ai-rmf-l5-profile-e7a3c1",
-        ".cursor/plans/_archive/windsurf_legacy/nist-ai-rmf-l5-profile-e7a3c1.md",
+        ".claude/plans/_archive/windsurf_legacy/nist-ai-rmf-l5-profile-e7a3c1.md",
         "RETIRED 2026-05-24: Windsurf legacy archive only — NIST AI RMF L5 profile gap plan parked; "
-        "no active disk plan under .cursor/plans/. Re-open only via new registered plan if revived.",
+        "no active disk plan under .claude/plans/. Re-open only via new registered plan if revived.",
     ),
 )
 

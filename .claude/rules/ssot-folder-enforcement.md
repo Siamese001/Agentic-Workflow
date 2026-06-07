@@ -12,9 +12,9 @@
 | CI gate / pre-commit check | `check_*.py`, `*_gate.py`, `validate_*.py` | `ops_scripts/ci/` |
 | Calibration / weekly report / ledger binder | `*_calibration.py`, `*_binder.py`, `*_poller.py`, `*_weekly_report.py` | `ops_scripts/calibration/` |
 | Maintenance / cleanup | `purge_*.py`, `cleanup_*.py` | `ops_scripts/maintenance/` |
-| Cursor hook script | `pre_*_*.py`, `post_*_*.py` (matching `.claude/settings.json`) | `.cursor/scripts/` |
+| Cursor hook script | `pre_*_*.py`, `post_*_*.py` (matching `.claude/settings.json`) | `.claude/governance/scripts/` |
 | Cursor Agent-invoked utility | other | `tools/<domain>/` |
-| Plan | `<slug>-<6hex>.md` | `.cursor/plans/` (enforced by `plan-location.md`) |
+| Plan | `<slug>-<6hex>.md` | `.claude/plans/` (enforced by `plan-location.md`) |
 | Report / evidence | `.md` | `docs/reports/` (enforced by `validate_report_location.py`) |
 
 ## Forbidden New-File Roots
@@ -22,12 +22,12 @@
 - `scripts/<name>.py` — except allowlist (`verify_tier\d+_*_gate.py`, `verify_all_requirements_*.py`, `verify_tier_gate_hardening.py`, `c0_evidence_harness.py`, `scripts/proof/**`)
 - Repo-root `<name>.py` — except `conftest.py`
 - `tools/_oneoff/`, `tools/_oneshot/` — tombstoned
-- Hook-prefix files (`pre_*_*.py`, `post_*_*.py`) outside `.cursor/scripts/` — misroute = silent disable
+- Hook-prefix files (`pre_*_*.py`, `post_*_*.py`) outside `.claude/governance/scripts/` — misroute = silent disable
 
 ## Forbidden Patterns
 
 - ❌ `scripts/check_foo.py` → `ops_scripts/ci/check_foo.py`
-- ❌ `scripts/post_cursor_agent_bar.py` → `.cursor/scripts/post_cursor_agent_bar.py`
+- ❌ `scripts/post_cursor_agent_bar.py` → `.claude/governance/scripts/post_cursor_agent_bar.py`
 
 ## Bypass
 

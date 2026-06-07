@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "graph-skills-deferred-followup-d7f2a8"
-PLAN_PATH = ".cursor/plans/graph-skills-deferred-followup-d7f2a8.md"
+PLAN_PATH = ".claude/plans/graph-skills-deferred-followup-d7f2a8.md"
 PARENT_SLUG = "graph-skills-quality-enhancement-c4e8a1"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
@@ -29,7 +29,7 @@ AI_SUMMARY = """- Parent: graph-skills-quality-enhancement-c4e8a1 (Completed 202
 - DS-2–10: 7/7 LIVE_X3, lane X2 fixes, artifact checklists
 - DS-7: CI GHA ratchet URLs (D10/D13)
 - DS-12: claims_release_eligible only after W5
-- Disk: .cursor/plans/graph-skills-deferred-followup-d7f2a8.md"""
+- Disk: .claude/plans/graph-skills-deferred-followup-d7f2a8.md"""
 
 
 def _query_page_id(slug: str) -> str | None:

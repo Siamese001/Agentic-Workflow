@@ -103,5 +103,5 @@ When adding new `apps_qna` behavior:
 
 - Root `AGENTS.md` — Architecture law
 - `agentic_core/AGENTS.md` — Core boundary rules
-- `.cursor/rules/apps-customization.md` — App customization guidance
-- `.cursor/rules/boundary-audit-required.md` — Audit triggers
+- `.claude/rules/apps-customization.md` — App customization guidance
+- `.claude/rules/boundary-audit-required.md` — Audit triggers

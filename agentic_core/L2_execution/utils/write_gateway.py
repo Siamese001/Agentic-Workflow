@@ -390,7 +390,7 @@ def _append_ledger_entry(
     """Append a JSONL entry to the mutation ledger.
 
     Per hostile audit Section C3: one line per attempted mutation.
-    Per .cursor/rules §2.2: Evidence must be deterministic, ASCII-only.
+    Per .claude/rules §2.2: Evidence must be deterministic, ASCII-only.
     """
     global _MUTATION_SEQUENCE
     if _MUTATION_LEDGER_PATH is None:

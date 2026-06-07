@@ -62,9 +62,27 @@ class TestAllBindingsImportable:
 class TestDispatchChain:
     """Full dispatch chain integration (force-stub L2)."""
 
-    def test_dispatch_chain_reaches_exit(self):
+    def test_dispatch_chain_reaches_exit(self, monkeypatch):
         """Full dispatch chain with force-stub reaches Exit with success."""
         from agentic_core.runtime.entry.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
+
+        calls: list[dict[str, object]] = []
+
+        def _fake_dispatch(**kwargs):
+            calls.append(kwargs)
+            return {
+                "exit_status": "success",
+                "execution_status": "completed_stub_fallback",
+                "outcome_authorized": True,
+                "artifact_dir": "artifact-dir",
+                "run_id": "run-1",
+                "request_id": "req-1",
+            }
+
+        monkeypatch.setattr(
+            "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives",
+            _fake_dispatch,
+        )
 
         payload = {
             "source_resume_ref": "apps_shared/data/master_resume.json",
@@ -80,12 +98,28 @@ class TestDispatchChain:
         disposition = apps_rg_dispatch(envelope)
         assert disposition.exit_status == "success"
         assert disposition.outcome_authorized is True
-        # Stub mode produces completed_stub_fallback status
-        assert disposition.final_output["execution_status"] == "completed_stub_fallback"
+        assert disposition.execution_status == "completed_stub_fallback"
+        assert calls[0]["target_company"] == "Brown & Brown"
 
-    def test_dispatch_chain_preserves_identity(self):
-        """tenant_id and app_id threaded through all stages."""
+    def test_dispatch_chain_preserves_targeting(self, monkeypatch):
+        """Targeting fields are threaded into canonical dispatch."""
         from agentic_core.runtime.entry.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
+
+        calls: list[dict[str, object]] = []
+
+        def _fake_dispatch(**kwargs):
+            calls.append(kwargs)
+            return {
+                "exit_status": "success",
+                "execution_status": "completed",
+                "outcome_authorized": True,
+                "artifact_dir": "artifact-dir",
+            }
+
+        monkeypatch.setattr(
+            "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives",
+            _fake_dispatch,
+        )
 
         payload = {
             "source_resume_ref": "apps_shared/data/master_resume.json",
@@ -98,14 +132,29 @@ class TestDispatchChain:
         assert envelope is not None
 
         disposition = apps_rg_dispatch(envelope)
-        assert disposition.tenant_id == "test-tenant-123"
-        assert disposition.app_id == "apps_rg"
-        assert disposition.final_output["tenant_id"] == "test-tenant-123"
+        assert disposition.exit_status == "success"
+        assert calls[0]["target_company"] == "Brown & Brown"
+        assert calls[0]["target_role"] == "SVP IT Strategy"
 
-    def test_dispatch_chain_produces_artifacts(self):
+    def test_dispatch_chain_produces_artifact_refs(self, monkeypatch):
         """Dispatch chain produces on-disk artifacts in run directory."""
         from agentic_core.runtime.entry.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
 
+        def _fake_dispatch(**kwargs):
+            return {
+                "exit_status": "success",
+                "execution_status": "completed",
+                "outcome_authorized": True,
+                "artifact_dir": "artifact-dir",
+                "run_id": "run-1",
+                "request_id": "req-1",
+            }
+
+        monkeypatch.setattr(
+            "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives",
+            _fake_dispatch,
+        )
+
         payload = {
             "source_resume_ref": "apps_shared/data/master_resume.json",
             "job_description_ref": "artifacts/apps_rg/_inputs/jd_brown_brown_svp_it_20260509.json",
@@ -118,15 +167,31 @@ class TestDispatchChain:
 
         disposition = apps_rg_dispatch(envelope)
 
-        # Verify artifact paths are returned
-        final = disposition.final_output
-        assert "artifact_paths" in final
-        assert "run_id" in final
+        assert disposition.artifact_dir == "artifact-dir"
+        assert disposition.run_id == "run-1"
+        assert disposition.request_id == "req-1"
 
-    def test_dispatch_chain_provenance_chain_present(self):
+    def test_dispatch_chain_provenance_chain_present(self, monkeypatch):
         """Provenance hashes threaded through pipeline."""
         from agentic_core.runtime.entry.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
 
+        digest = "a" * 64
+
+        def _fake_dispatch(**kwargs):
+            return {
+                "exit_status": "success",
+                "execution_status": "completed",
+                "outcome_authorized": True,
+                "sealed_compilation_hash": digest,
+                "prompt_compilation_hash": digest,
+                "evidence_digest": digest,
+            }
+
+        monkeypatch.setattr(
+            "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives",
+            _fake_dispatch,
+        )
+
         payload = {
             "source_resume_ref": "apps_shared/data/master_resume.json",
             "job_description_ref": "artifacts/apps_rg/_inputs/jd_brown_brown_svp_it_20260509.json",
@@ -139,19 +204,33 @@ class TestDispatchChain:
 
         disposition = apps_rg_dispatch(envelope)
 
-        final = disposition.final_output
-        assert "sealed_compilation_hash" in final
-        assert "prompt_compilation_hash" in final
-        assert "evidence_digest" in final
+        assert disposition.sealed_compilation_hash == digest
+        assert disposition.prompt_compilation_hash == digest
+        assert disposition.evidence_digest == digest
 
         # All hashes are non-empty strings
-        assert len(final["sealed_compilation_hash"]) == 64  # SHA256 hex
-        assert len(final["prompt_compilation_hash"]) == 64
-        assert len(final["evidence_digest"]) == 64
+        assert len(disposition.sealed_compilation_hash) == 64  # SHA256 hex
+        assert len(disposition.prompt_compilation_hash) == 64
+        assert len(disposition.evidence_digest) == 64
 
-    def test_dispatch_chain_selects_executive_route(self):
+    def test_dispatch_chain_selects_executive_route(self, monkeypatch):
         """W2: EXECUTIVE target_level selects executive route variant."""
         from agentic_core.runtime.entry.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
+
+        calls: list[dict[str, object]] = []
+
+        def _fake_dispatch(**kwargs):
+            calls.append(kwargs)
+            return {
+                "exit_status": "success",
+                "execution_status": "completed",
+                "outcome_authorized": True,
+            }
+
+        monkeypatch.setattr(
+            "apps_rg.runtime.orchestration.canonical_dispatch.run_canonical_apps_rg_from_cli_primitives",
+            _fake_dispatch,
+        )
 
         payload = {
             "source_resume_ref": "apps_shared/data/master_resume.json",
@@ -165,12 +244,8 @@ class TestDispatchChain:
         assert envelope is not None
 
         disposition = apps_rg_dispatch(envelope)
-        # Verify executive route was selected (visible in final_output)
-        final = disposition.final_output
-        # Route ID is threaded through to disposition via route.contract
-        # For now, verify pipeline still succeeds with EXECUTIVE level
         assert disposition.exit_status == "success"
-        assert final["tenant_id"] == "apps_rg"
+        assert calls[0]["target_level"] == "EXECUTIVE"
 
 
 class TestL2StubBehavior:

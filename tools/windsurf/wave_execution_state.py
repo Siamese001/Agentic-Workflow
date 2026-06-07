@@ -47,7 +47,7 @@ from typing import Any
 
 # Import the shared helpers without polluting sys.path globally.
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_SCRIPTS = _REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
+_SCRIPTS = _REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(_SCRIPTS))
 
 import _wave_execution_state as wes  # noqa: E402
@@ -122,7 +122,7 @@ def _check_plan_registration(plan: str) -> int:
         "After posting, re-run this command. To force-refresh the local cache:\n"
         "  python ops_scripts/ci/check_plan_registration_freshness.py --refresh\n"
         "Bypass (rare): PLAN_REGISTRATION_BYPASS=1 (logged)\n"
-        "See .cursor/rules/plan-registration-enforcement.md · constitutional §36.",
+        "See .claude/rules/plan-registration-enforcement.md · constitutional §36.",
         file=sys.stderr,
     )
     return 2

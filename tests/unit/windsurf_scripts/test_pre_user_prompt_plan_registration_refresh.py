@@ -1,5 +1,5 @@
 """
-Unit tests for .cursor/scripts/_legacy_windsurf/pre_user_prompt_plan_registration_refresh.py.
+Unit tests for .claude/governance/scripts/_legacy_windsurf/pre_user_prompt_plan_registration_refresh.py.
 
 Plan: notion-plans-status-rca-followups-b8e3f2 (W2.P2).
 """
@@ -16,13 +16,13 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MODULE_PATH = (
-    REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "pre_user_prompt_plan_registration_refresh.py"
+    REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_user_prompt_plan_registration_refresh.py"
 )
 
 
 def _load():
     # _plan_registration is imported by the module under test.
-    sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
     spec = importlib.util.spec_from_file_location(
         "pre_user_prompt_plan_registration_refresh", MODULE_PATH
     )

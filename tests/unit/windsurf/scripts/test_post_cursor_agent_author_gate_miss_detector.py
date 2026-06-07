@@ -1,5 +1,5 @@
 # pylint: disable=protected-access
-"""Unit tests for .cursor/scripts/_legacy_windsurf/post_cursor_agent_author_gate_miss_detector.py.
+"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_cursor_agent_author_gate_miss_detector.py.
 
 Coverage:
     _extract_edited_files       - pulls .py/.md/.js/.yaml/.json paths from
@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pytest
 
-_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".cursor" / "scripts" / "_legacy_windsurf"
+_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 
 import post_cursor_agent_author_gate_miss_detector as _m  # noqa: E402

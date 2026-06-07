@@ -126,7 +126,7 @@ def main() -> int:
         print(f"  - {json.dumps(row, ensure_ascii=False)}", file=sys.stderr)
     print(
         "Resolve by emitting an AUTHOR_GATE_PACKET before the offending "
-        "ask_user_question (use .cursor/skills/author-gate-packet-builder/"
+        "ask_user_question (use .claude/skills/author-gate-packet-builder/"
         "emit_packet.py), then append {\"resolved\": true} rows or rotate the log.",
         file=sys.stderr,
     )

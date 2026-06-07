@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "adg-action-dispatch-c9e4a2"
-PLAN_PATH = ".cursor/plans/adg-action-dispatch-c9e4a2.md"
+PLAN_PATH = ".claude/plans/adg-action-dispatch-c9e4a2.md"
 
 SUMMARY = (
     "Close ADG diagnosis-to-dispatch gap: post-run adg_action_queue.json, triage playbook, "
@@ -27,7 +27,7 @@ AI_SUMMARY = """- Problem: GraphDB/MVs/reports sit idle; no ranked next action
 - W3: Notion FIX-only backlog sync (idempotent)
 - P7-first: refactor_accelerator candidates[] + impacted_tests
 - Immediate: 10_infra_wiring, 1_critical_path_integrity, smallest REGR
-- Disk: .cursor/plans/adg-action-dispatch-c9e4a2.md
+- Disk: .claude/plans/adg-action-dispatch-c9e4a2.md
 - Index: docs/reports/cursor/adg_action_dispatch_plan_index.md"""
 
 

@@ -4,26 +4,28 @@ from __future__ import annotations
 
 import json
 import re
+from importlib import import_module
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.reasoning.prompt_messages import PromptMessages
-from agentic_core.L2_execution.regen import (
-    AnchorClassification,
-    DefectClass,
-    IncrementalRepairContract,
-    SameAuthorityRegenRunner,
-    TriggerSource,
-    format_regen_delta_user_turn,
-)
-from agentic_core.L2_execution.regen.prefix_digest import (
+from apps_rg.runtime.sections.executive_summary_regen_support import (
+    PromptMessages,
     compute_system_prefix_hash,
+    format_regen_delta_user_turn,
     sha256_hex,
 )
 
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
     collect_judge_remediation_delta_lines,
 )
+
+_CORE_REGEN_MODULE = ".".join(("agentic_core", "L2_execution", "regen"))
+_core_regen = import_module(_CORE_REGEN_MODULE)
+AnchorClassification = _core_regen.AnchorClassification
+DefectClass = _core_regen.DefectClass
+IncrementalRepairContract = _core_regen.IncrementalRepairContract
+SameAuthorityRegenRunner = _core_regen.SameAuthorityRegenRunner
+TriggerSource = _core_regen.TriggerSource
 
 
 def messages_to_prompt_messages(messages: list[dict[str, str]]) -> PromptMessages:

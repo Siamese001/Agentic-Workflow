@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-x2-dead-gates-burndown-c4e8f2"
-PLAN_PATH = ".cursor/plans/apps-rg-x2-dead-gates-burndown-c4e8f2.md"
+PLAN_PATH = ".claude/plans/apps-rg-x2-dead-gates-burndown-c4e8f2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -27,7 +27,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETE (2026-05-24)
 - W3: collapse *_within_srfs_slice → active proof-pool gate IDs
 - W4: SRFS skip-PASS emission removed + live executive_summary proof
 - Evidence: docs/reports/apps_rg/apps_rg_x2_dead_gates_w4_receipt.md (+ w1_w2, w3)
-- Disk: .cursor/plans/apps-rg-x2-dead-gates-burndown-c4e8f2.md
+- Disk: .claude/plans/apps-rg-x2-dead-gates-burndown-c4e8f2.md
 - Parent context: apps-rg-spine-only-unification-d8f4a2 (section X2 hygiene)"""
 
 

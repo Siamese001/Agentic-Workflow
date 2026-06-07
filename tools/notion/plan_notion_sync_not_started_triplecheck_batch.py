@@ -13,7 +13,7 @@ sys.path.insert(0, str(REPO))
 ROWS: list[tuple[str, str, str, str, str, str]] = [
     (
         "10c-proof-bundle-current-head-a8f4c2",
-        ".cursor/plans/10c-proof-bundle-current-head-a8f4c2.md",
+        ".claude/plans/10c-proof-bundle-current-head-a8f4c2.md",
         "36127693-f55c-81e2-bb0a-cad26d5dc3cc",
         "Completed",
         "COMPLETED (2026-05-25): Regenerated 198 proof bundles at HEAD 1f8195f1; "
@@ -22,7 +22,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
     ),
     (
         "l0-l3-parent-gap-remediation-a7f3e2",
-        ".cursor/plans/l0-l3-parent-gap-remediation-a7f3e2.md",
+        ".claude/plans/l0-l3-parent-gap-remediation-a7f3e2.md",
         "36927693-f55c-812e-9828-ccb5031897fd",
         "Waiting",
         "VALID backlog: L0/L3 parent §7 validators + apps_rg l3_binding not shipped. "
@@ -31,7 +31,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
     ),
     (
         "l0-routing-v15-only-cutover-c9e2f1",
-        ".cursor/plans/l0-routing-v15-only-cutover-c9e2f1.md",
+        ".claude/plans/l0-routing-v15-only-cutover-c9e2f1.md",
         "36727693-f55c-81e9-b053-ef58e79f02fb",
         "Waiting",
         "VALID backlog: v12/v15 duality still in agentic_core/L0_routing (bridge, fallback chains). "
@@ -40,7 +40,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
     ),
     (
         "apps-rg-parallel-section-orchestration-f2a8c4",
-        ".cursor/plans/apps-rg-parallel-section-orchestration-f2a8c4.md",
+        ".claude/plans/apps-rg-parallel-section-orchestration-f2a8c4.md",
         "36627693-f55c-810f-8d37-e31d7656b46c",
         "Waiting",
         "VALID backlog: whole-run Phase-1 lanes still serial in modular_resume_generation. "
@@ -49,7 +49,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
     ),
     (
         "semantic-cache-fingerprint-proof-c9f1a3",
-        ".cursor/plans/semantic-cache-fingerprint-proof-c9f1a3.md",
+        ".claude/plans/semantic-cache-fingerprint-proof-c9f1a3.md",
         "36127693-f55c-81ce-a640-d26133b431de",
         "Waiting",
         "VALID optional backlog: no artifacts/governance fingerprint receipt per plan DoD. "
@@ -58,7 +58,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
     ),
     (
         "fortknox-runtime-dual-track-b7c4e2",
-        ".cursor/plans/fortknox-runtime-dual-track-b7c4e2.md",
+        ".claude/plans/fortknox-runtime-dual-track-b7c4e2.md",
         "36127693-f55c-811c-8ecc-db4577c8874c",
         "Waiting",
         "VALID backlog: dual-track governance W0–W4 on disk TODO. FortKnox skill + "

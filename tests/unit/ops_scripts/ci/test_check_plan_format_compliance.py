@@ -390,7 +390,7 @@ class TestW3PilotPlans:
         import subprocess
         result = subprocess.run(
             ["python", "ops_scripts/ci/check_plan_format_compliance.py",
-             "--advisory", "--paths", ".cursor/templates/execution-plan-template.md"],
+             "--advisory", "--paths", ".claude/templates/execution-plan-template.md"],
             capture_output=True,
             text=True,
         )

@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-failed-run-persistence-notion-e7c4b2"
-PLAN_PATH = ".cursor/plans/exec-summary-failed-run-persistence-notion-e7c4b2.md"
+PLAN_PATH = ".claude/plans/exec-summary-failed-run-persistence-notion-e7c4b2.md"
 
 SUMMARY = (
     "Apps_* scope: persist failed/review runs for ANY lane with X1D judge regen — "

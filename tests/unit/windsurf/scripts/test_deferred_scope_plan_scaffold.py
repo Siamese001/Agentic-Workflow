@@ -11,13 +11,13 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-SCAFFOLD_MODULE_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "_deferred_scope_plan_scaffold.py"
+SCAFFOLD_MODULE_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_deferred_scope_plan_scaffold.py"
 
 
 def _load_module():
     """Load the scaffolder module by file path.
 
-    The ``.cursor/scripts/_legacy_windsurf/`` directory is not a Python package; the hook
+    The ``.claude/governance/scripts/_legacy_windsurf/`` directory is not a Python package; the hook
     tooling imports these modules via ``sys.path`` manipulation. Tests do
     the same by spec-loading, so no conftest plumbing is required.
     """

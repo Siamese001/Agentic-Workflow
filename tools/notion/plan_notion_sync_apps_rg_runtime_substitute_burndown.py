@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-runtime-substitute-burndown-c4e8f1"
-PLAN_PATH = ".cursor/plans/apps-rg-runtime-substitute-burndown-c4e8f1.md"
+PLAN_PATH = ".claude/plans/apps-rg-runtime-substitute-burndown-c4e8f1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -26,7 +26,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETE (2026-05-25)
 - PROOF: CONTRACT_TEST_PROOF + IMPLEMENTATION_RECEIPT
 - NOT CLAIMED: RELEASE_ELIGIBLE_PROOF
 - DEFERRED: optional full X3/product_quality PASS polish
-- Disk: .cursor/plans/apps-rg-runtime-substitute-burndown-c4e8f1.md
+- Disk: .claude/plans/apps-rg-runtime-substitute-burndown-c4e8f1.md
 - Page: 36827693-f55c-8131-b393-f43334c46a10"""
 
 

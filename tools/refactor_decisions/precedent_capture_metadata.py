@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LOOKUP_SCRIPT = REPO_ROOT / ".cursor" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
+LOOKUP_SCRIPT = REPO_ROOT / ".claude" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
 
 PRECEDENT_LOOKUP_POLICY_VERSION = "lookup-rules-v1+w1-metadata-20260517"
 

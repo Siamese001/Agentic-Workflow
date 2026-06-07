@@ -184,7 +184,7 @@ class TestMigratedSurfaces:
 
     def test_structured_reasoning_skill_passes(self):
         """Structured reasoning SKILL.md passes scanner."""
-        skill_path = REPO_ROOT / ".cursor" / "skills" / "structured-reasoning" / "SKILL.md"
+        skill_path = REPO_ROOT / ".claude" / "skills" / "structured-reasoning" / "SKILL.md"
         assert skill_path.exists(), "SKILL.md should exist"
 
         scanner_path = REPO_ROOT / "ops_scripts" / "ci" / "check_enriched_choice_ui_invariants.py"

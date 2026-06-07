@@ -43,12 +43,12 @@ WAVE2 = [
 
 # Wave 3 — NOTION literal SSOT
 WAVE3 = [
-    ".cursor/scripts/_legacy_windsurf/plan_driven_closer.py",
-    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_adr_registry_capture.py",
-    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py",
-    ".cursor/scripts/_legacy_windsurf/post_cursor_agent_next_step_capture.py",
-    ".cursor/scripts/_legacy_windsurf/post_commit_phase_closer.py",
-    ".cursor/scripts/_legacy_windsurf/rollback_bad_patches.py",
+    ".claude/governance/scripts/_legacy_windsurf/plan_driven_closer.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_adr_registry_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_next_step_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_commit_phase_closer.py",
+    ".claude/governance/scripts/_legacy_windsurf/rollback_bad_patches.py",
     "ops_scripts/ci/check_notion_plan_file_drift.py",
     "tools/reports/recover_deferred_scope_pendings.py",
 ]
@@ -62,7 +62,7 @@ WAVEB = ["agentic_core/L5_safety/adapters/human_approval_adapter.py"]
 # Untracked: plan, SSOT, gates, baselines, tests, triage, analysis tools
 UNTRACKED = [
     "docs/archive/windsurf/legacy-tree/plans/audit-uncovered-gates-and-remediation-627368.md",
-    ".cursor/scripts/_legacy_windsurf/_notion_constants.py",
+    ".claude/governance/scripts/_legacy_windsurf/_notion_constants.py",
     "ops_scripts/ci/check_ssot_magic_constants.py",
     "ops_scripts/ci/check_observability_on_high_fanin.py",
     "ops_scripts/ci/check_external_service_literal_ssot.py",

@@ -50,7 +50,7 @@ def _check_block(text: str, marker: str, generator) -> list[str]:
     if current is None:
         issues.append(
             f"AGENTS.md: {status}; add the markers and run "
-            "'python .cursor/scripts/sync_mcp_config.py'"
+            "'python .claude/governance/scripts/sync_mcp_config.py'"
         )
         return issues
     try:
@@ -61,7 +61,7 @@ def _check_block(text: str, marker: str, generator) -> list[str]:
     if _normalise(current) != _normalise(expected):
         issues.append(
             f"AGENTS.md: '{marker}' autogen block drifted from SSOT; run "
-            "'python .cursor/scripts/sync_mcp_config.py' to regenerate"
+            "'python .claude/governance/scripts/sync_mcp_config.py' to regenerate"
         )
     return issues
 

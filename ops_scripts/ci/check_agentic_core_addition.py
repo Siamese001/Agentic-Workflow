@@ -48,7 +48,7 @@ if str(REPO_ROOT) not in sys.path:
 # ---------------------------------------------------------------------------
 AGENTIC_CORE_PATH = REPO_ROOT / "agentic_core"
 SESSION_STATE = REPO_ROOT / "artifacts" / "cursor" / "session_state.json"
-SCHEMA_PATH = REPO_ROOT / ".cursor" / "schemas" / "CoreAdditionAuthorGateReceipt.schema.json"
+SCHEMA_PATH = REPO_ROOT / ".claude" / "schemas" / "CoreAdditionAuthorGateReceipt.schema.json"
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "cursor" / "core_addition_gate_violations.jsonl"
 ARTIFACT_OUT = REPO_ROOT / "artifacts" / "ci" / "agentic_core_addition_gate.json"
 

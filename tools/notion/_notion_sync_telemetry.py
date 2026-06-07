@@ -145,7 +145,7 @@ def _ensure_ledger_schema() -> None:
     
     if not LEDGER_DB_PATH.exists():
         # Initialize schema from SQL file
-        schema_path = REPO_ROOT / ".cursor" / "schemas" / "sync_health_ledger.schema.sql"
+        schema_path = REPO_ROOT / ".claude" / "schemas" / "sync_health_ledger.schema.sql"
         if schema_path.exists():
             conn = sqlite3.connect(str(LEDGER_DB_PATH))
             try:

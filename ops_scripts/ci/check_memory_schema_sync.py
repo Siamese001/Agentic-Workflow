@@ -1,6 +1,6 @@
 """CI gate: Verify Memory MCP schema file matches Python constant.
 
-Ensures SSOT discipline: canonical schema in .cursor/schemas/ must match
+Ensures SSOT discipline: canonical schema in .claude/schemas/ must match
 what sqlite_memory_store.py uses at runtime.
 
 Gate ID: MEM-SYNC Memory MCP schema SSOT sync check
@@ -59,7 +59,7 @@ def check_memory_schema_sync() -> dict:
         - diff: description of any differences
     """
     repo_root = _get_repo_root()
-    schema_file = repo_root / ".cursor" / "schemas" / "knowledge_graph.schema.sql"
+    schema_file = repo_root / ".claude" / "schemas" / "knowledge_graph.schema.sql"
     python_file = repo_root / "tools" / "memory" / "sqlite_memory_store.py"
     
     if not schema_file.exists():

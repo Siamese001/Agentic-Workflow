@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import ast
 import inspect
+import os
 import sys
 import traceback
 import typing
@@ -217,6 +218,7 @@ def _live_thin_payload() -> dict[str, Any]:
         "target_level": "EXECUTIVE",
         "source_resume_text": "Sample resume content",
         "job_description_text": "Sample JD content",
+        "briefing_artifact_ref": "artifact:briefing",
     }
 
 
@@ -245,7 +247,21 @@ def check_live_path_consumption(rec: CheckRecorder) -> None:
     vr = u0_validate_apps_rg(envelope)
     plan = l1_plan_apps_rg(vr)
     route = l0_route_apps_rg(plan)
-    fec = c0_retrieve_apps_rg(route, vr)
+    old_chroma = os.environ.get("CHROMA_PERSIST_DIR")
+    old_mandatory = os.environ.get("APPS_RG_C0_DENSE_SPARSE_MANDATORY")
+    os.environ["CHROMA_PERSIST_DIR"] = ""
+    os.environ["APPS_RG_C0_DENSE_SPARSE_MANDATORY"] = "0"
+    try:
+        fec = c0_retrieve_apps_rg(route, vr)
+    finally:
+        if old_chroma is None:
+            os.environ.pop("CHROMA_PERSIST_DIR", None)
+        else:
+            os.environ["CHROMA_PERSIST_DIR"] = old_chroma
+        if old_mandatory is None:
+            os.environ.pop("APPS_RG_C0_DENSE_SPARSE_MANDATORY", None)
+        else:
+            os.environ["APPS_RG_C0_DENSE_SPARSE_MANDATORY"] = old_mandatory
     artifact = pa_compose_apps_rg(route, plan, fec, vr)
 
     # L1 — five projections populated.
@@ -293,7 +309,7 @@ def check_live_path_consumption(rec: CheckRecorder) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Hard-law gates — no ChromaDB / embedding imports or usages in bindings
+# Hard-law gates — no ChromaDB / embedding imports outside the C0 retrieval owner
 # ---------------------------------------------------------------------------
 
 #: Top-level module names whose import or runtime usage is forbidden.
@@ -383,8 +399,11 @@ def _ast_chromadb_violations(source: str, filename: str) -> list[str]:
 
 
 def check_no_chromadb_or_embeddings(rec: CheckRecorder) -> None:
-    """AST-aware gate: fail on actual imports/usage, not on comments."""
-    for binding_file in _BINDING_FILES:
+    """AST-aware gate: fail on actual imports/usage outside C0 retrieval."""
+    binding_files = tuple(
+        p for p in _BINDING_FILES if p.name != "c0_binding.py"
+    )
+    for binding_file in binding_files:
         source = binding_file.read_text(encoding="utf-8")
         violations = _ast_chromadb_violations(source, binding_file.name)
         rec.assert_(

@@ -210,7 +210,7 @@ def _query_precedent(
     Returns dict with verdict (strong/suggestive/none) and confidence adjustment.
     """
     skill_path = (
-        REPO_ROOT / ".cursor" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
+        REPO_ROOT / ".claude" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
     )
     
     try:

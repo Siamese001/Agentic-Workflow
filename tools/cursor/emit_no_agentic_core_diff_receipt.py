@@ -23,7 +23,7 @@ PLAN_SCOPE_PREFIXES: tuple[str, ...] = (
     "tools/cursor/verify_exec_summary_judge_regen_w5_artifacts.py",
     "tools/cursor/emit_no_agentic_core_diff_receipt.py",
     "docs/reports/cursor/exec_summary_judge_regen_control_loop_",
-    ".cursor/plans/exec-summary-judge-regen-control-loop-f8a3c2.md",
+    ".claude/plans/exec-summary-judge-regen-control-loop-f8a3c2.md",
 )
 
 

@@ -11,8 +11,8 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".cursor" / "scripts" / "post_cursor_agent_author_gate_ui_audit.py"
-EMIT_PATH = REPO_ROOT / ".cursor" / "skills" / "author-gate-packet-builder" / "emit_packet.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_author_gate_ui_audit.py"
+EMIT_PATH = REPO_ROOT / ".claude" / "skills" / "author-gate-packet-builder" / "emit_packet.py"
 
 
 def _load(module_name: str, path: Path):

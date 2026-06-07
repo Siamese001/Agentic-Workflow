@@ -298,7 +298,7 @@ class TestHitlCorpusTriggerRegex:
     ])
     def test_corpus_file_matches_trigger(self, filename: str) -> None:
         pattern = self._get_hitl_corpus_files_pattern()
-        path = f".cursor/rules/{filename}"
+        path = f".claude/rules/{filename}"
         assert re.search(pattern, path), (
             f"HITL corpus trigger regex {pattern!r} does not match {path!r}. "
             "Edits to this file would silently skip the corpus validator."
@@ -318,7 +318,7 @@ class TestLedgerSchemaTrigger:
         fm = re.search(r"files:\s*(\S+)", block)
         assert fm, "author-gate-ledger-schema must have a files: pattern"
         pattern = fm.group(1)
-        ddl_path = ".cursor/schemas/decision_ledger.schema.sql"
+        ddl_path = ".claude/schemas/decision_ledger.schema.sql"
         assert re.search(pattern, ddl_path), (
             f"Trigger regex {pattern!r} does not match DDL file {ddl_path!r}. "
             "Changes to the DDL alone would silently skip the schema validator."

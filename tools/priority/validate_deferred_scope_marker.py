@@ -3,7 +3,7 @@
 validate_deferred_scope_marker.py — Validate a DEFERRED_SCOPE marker string.
 
 Standalone validator for the marker contract defined in
-`.cursor/rules/deferred-scope-capture.md`. Importable as a library and
+`.claude/rules/deferred-scope-capture.md`. Importable as a library and
 runnable as a CLI. Used by:
   - pre-commit hook `ops_scripts/ci/check_deferred_scope_markers.py`
   - post_cascade hook `post_cursor_agent_deferred_scope_capture.py` (duplicates logic)

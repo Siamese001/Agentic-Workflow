@@ -8,7 +8,7 @@ Used by:
 - ``check_plan_format_compliance.py`` (per-path strict/advisory)
 - ``check_plan_wave_summary_top.py`` (repo scan)
 - ``.cursor/hooks/after_file_edit.py`` (post-edit warn/block)
-- ``.cursor/scripts/post_cursor_agent_plan_wave_summary_audit.py``
+- ``.claude/governance/scripts/post_cursor_agent_plan_wave_summary_audit.py``
 """
 
 from __future__ import annotations
@@ -54,7 +54,7 @@ _TABLE_SEP_RE = re.compile(r"^\|[\s\-:|]+\|$")
 def is_plan_wave_summary_exempt(content: str, filepath: str = "") -> bool:
     """True for dod_exempt frontmatter or archive paths."""
     norm = filepath.replace("\\", "/")
-    if "/plans/_archive/" in norm or norm.startswith(".cursor/plans/_archive/"):
+    if "/plans/_archive/" in norm or norm.startswith(".claude/plans/_archive/"):
         return True
     fm = _FRONTMATTER_RE.match(content)
     if fm and _DOD_EXEMPT_RE.search(fm.group(1)):

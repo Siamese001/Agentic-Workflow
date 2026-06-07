@@ -1,6 +1,6 @@
 """CI gate: opt-in enforcement that @requires_sealed_return classes return SealedL2Artifact.
 
-Plan: `.cursor/plans/l2-execute-v2-agent-conformance-c8e4f1.md` §W5.
+Plan: `.claude/plans/l2-execute-v2-agent-conformance-c8e4f1.md` §W5.
 Closes G-V8 from plan §5.
 
 The gate is OPT-IN: it only inspects Python classes that carry the marker

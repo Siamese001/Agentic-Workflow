@@ -23,7 +23,7 @@ must be aligned. Below 80%, reports the gap; above 80%, passes. Strict
 mode (env var ``GENAI_SEMCONV_STRICT=1`` or ``--strict``) flips below-
 threshold to exit 1.
 
-Plan: ``.cursor/plans/three-bucket-otel-view-5db409.md`` (W4.P4.2).
+Plan: ``.claude/plans/three-bucket-otel-view-5db409.md`` (W4.P4.2).
 
 USAGE
 =====

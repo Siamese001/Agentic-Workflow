@@ -27,7 +27,7 @@ Environment:
 Output:
     artifacts/ci/notion_plans_new_status.json
 
-Rule: .cursor/rules/notion-plans-taxonomy.md > "New plans MUST use Not Started"
+Rule: .claude/rules/notion-plans-taxonomy.md > "New plans MUST use Not Started"
 """
 
 from __future__ import annotations

@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-HOOK_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_next_step_capture.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_next_step_capture.py"
 
 
 def _load_module():

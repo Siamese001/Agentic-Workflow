@@ -30,7 +30,7 @@ from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES as RO
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
 from apps_rg.runtime.orchestration.canonical_dispatch import (
     _read_optional_brief,
-    _run_executive_summary_lane_from_cli,
+    execute_executive_summary_section_from_cli,
 )
 
 
@@ -94,7 +94,7 @@ def test_executive_summary_dispatch_uses_inline_briefing_not_path_resolver() -> 
         "apps_rg.runtime.sections.executive_summary_lane.run_executive_summary_execution",
         side_effect=_fake_run,
     ):
-        out = _run_executive_summary_lane_from_cli(
+        out = execute_executive_summary_section_from_cli(
             target_company="Brown & Brown",
             target_role="SVP IT Strategy",
             target_level="",

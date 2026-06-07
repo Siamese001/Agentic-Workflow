@@ -2,7 +2,7 @@
 """
 test_lookup_refactor_decisions.py
 
-Unit tests for .cursor/skills/refactor-decision-memory/lookup_refactor_decisions.py
+Unit tests for .claude/skills/refactor-decision-memory/lookup_refactor_decisions.py
 
 Coverage:
     _sanitize_fts_query — strips specials, collapses whitespace, truncates
@@ -21,7 +21,7 @@ import pytest
 
 sys.path.insert(
     0,
-    str(Path(__file__).resolve().parents[4] / ".cursor" / "skills" / "refactor-decision-memory"),
+    str(Path(__file__).resolve().parents[4] / ".claude" / "skills" / "refactor-decision-memory"),
 )
 
 import lookup_refactor_decisions as _m  # noqa: E402

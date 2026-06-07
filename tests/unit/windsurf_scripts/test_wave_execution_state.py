@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SCRIPTS_DIR = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
+SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
 CLI_PATH = REPO_ROOT / "tools" / "windsurf" / "wave_execution_state.py"
 
 sys.path.insert(0, str(SCRIPTS_DIR))

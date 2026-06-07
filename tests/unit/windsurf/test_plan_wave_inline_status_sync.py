@@ -20,7 +20,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "tools" / "windsurf"))
-sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
 
 from _plan_wave_table_updater import (  # noqa: E402
     _restore_fenced_blocks,
@@ -321,7 +321,7 @@ class TestHappyPath:
             - Status: TODO
         """), encoding="utf-8")
 
-        closer_path = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "plan_driven_closer.py"
+        closer_path = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "plan_driven_closer.py"
         spec = importlib.util.spec_from_file_location("plan_driven_closer_tc8", closer_path)
         closer = importlib.util.module_from_spec(spec)
         sys.modules["plan_driven_closer_tc8"] = closer
@@ -578,7 +578,7 @@ class TestNegativeCases:
             - Status: TODO
         """), encoding="utf-8")
 
-        closer_path = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "plan_driven_closer.py"
+        closer_path = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "plan_driven_closer.py"
         spec = importlib.util.spec_from_file_location("plan_driven_closer_tcn8", closer_path)
         closer = importlib.util.module_from_spec(spec)
         sys.modules["plan_driven_closer_tcn8"] = closer

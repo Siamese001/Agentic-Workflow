@@ -1,4 +1,4 @@
-"""Unit tests for `.cursor/scripts/_legacy_windsurf/_plan_registration.py` (§36).
+"""Unit tests for `.claude/governance/scripts/_legacy_windsurf/_plan_registration.py` (§36).
 
 Covers:
   - parse_plan_created_markers (marker grammar)
@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 HELPER_PATH = (
-    Path(__file__).resolve().parents[3] / ".cursor" / "scripts" / "_legacy_windsurf" / "_plan_registration.py"
+    Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_plan_registration.py"
 )
 
 

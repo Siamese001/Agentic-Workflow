@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "adg-three-bucket-pipeline-redesign-c8e4f1"
-PLAN_PATH = ".cursor/plans/adg-three-bucket-pipeline-redesign-c8e4f1.md"
+PLAN_PATH = ".claude/plans/adg-three-bucket-pipeline-redesign-c8e4f1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -27,7 +27,7 @@ AI_SUMMARY = """- Status: COMPLETE (2026-05-24)
 - Windows: tools/adg/safe_repo_scan.py patches consumer resolver walk (.venv/lib64 junction safe)
 - Proof: docs/reports/cursor/adg_three_bucket_pipeline_redesign_closeout.md (PASS)
 - Operator: seed with --prefer-registry-overlap before audit for triplet proof
-- Disk: .cursor/plans/adg-three-bucket-pipeline-redesign-c8e4f1.md"""
+- Disk: .claude/plans/adg-three-bucket-pipeline-redesign-c8e4f1.md"""
 
 
 def _query_page_id() -> str | None:

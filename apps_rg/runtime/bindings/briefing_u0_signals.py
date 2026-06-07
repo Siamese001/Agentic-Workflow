@@ -1,10 +1,10 @@
 """U0 briefing presence signals for apps_rg L1/L0 planning.
 
 Vocabulary split (product):
-- ``grounding_required``: resume fact evidence binding (C0.1–C0.7) — always True for
-  active apps_rg generation modes.
-- ``apps_research_call_required``: delegate company briefing to apps_research when U0 did
-  not supply an authoritative briefing artifact or inline briefing text.
+- ``grounding_required``: resume fact evidence binding (C0.1-C0.7) — always True
+  for active apps_rg generation modes.
+- ``briefing_required``: targeting briefing is mandatory for product-visible
+  active generation. apps_research delegation is disabled.
 """
 
 from __future__ import annotations
@@ -14,6 +14,10 @@ from typing import Any, Mapping
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 
 _BRIEFING_REF_KEYS = ("briefing_artifact_ref", "manual_brief_path")
+
+
+class BriefingMissingError(ValueError):
+    """Raised when product-visible apps_rg generation lacks a U0 briefing."""
 
 
 def briefing_supplied_at_u0(app_payload: Mapping[str, Any] | None) -> bool:
@@ -56,16 +60,62 @@ def apps_research_call_required_at_u0(
     *,
     active_generation_mode: bool,
 ) -> bool:
-    """True when company brief must be obtained via apps_research (no U0 briefing)."""
+    """Deprecated migration shim: apps_research delegation is disabled."""
+
+    _ = validated_request, active_generation_mode
+    return False
+
+
+def briefing_required_for_run(
+    validated_request: ValidatedRequest,
+    *,
+    active_generation_mode: bool,
+    product_visible: bool = True,
+    non_product_certified: bool = False,
+) -> bool:
+    """True when a product-visible active generation run lacks U0 briefing."""
 
     if not active_generation_mode:
+        return False
+    if not product_visible:
+        return False
+    if non_product_certified:
         return False
     return not briefing_supplied_at_u0(
         getattr(validated_request, "app_payload", None) or {}
     )
 
 
+def briefing_validate_or_raise(
+    validated_request: ValidatedRequest,
+    *,
+    active_generation_mode: bool,
+    product_visible: bool = True,
+    non_product_certified: bool = False,
+    context: str = "",
+) -> None:
+    """Fail closed when product-visible active generation lacks briefing."""
+
+    if not briefing_required_for_run(
+        validated_request,
+        active_generation_mode=active_generation_mode,
+        product_visible=product_visible,
+        non_product_certified=non_product_certified,
+    ):
+        return
+    msg = (
+        "apps_rg requires an uploaded briefing artifact or authoritative "
+        "briefing text; apps_research delegation is disabled"
+    )
+    if context:
+        msg = f"{msg}. Context: {context}"
+    raise BriefingMissingError(msg)
+
+
 __all__ = [
+    "BriefingMissingError",
+    "briefing_required_for_run",
     "briefing_supplied_at_u0",
+    "briefing_validate_or_raise",
     "apps_research_call_required_at_u0",
 ]

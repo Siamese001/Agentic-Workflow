@@ -1,6 +1,6 @@
 """Shared Cursor governance tier measurement (W0 SSOT for always-on budget).
 
-Tier-1 (Cursor-native): ``.cursor/rules/*.mdc`` with ``alwaysApply: true`` + ``AGENTS.md``.
+Tier-1 (Cursor-native): ``.claude/rules/*.mdc`` with ``alwaysApply: true`` + ``AGENTS.md``.
 Windsurf legacy ``trigger: always_on`` ``.md`` files are reported separately (not summed into Tier-1).
 """
 
@@ -14,9 +14,9 @@ from pathlib import Path
 
 THRESHOLD_BYTES = 51_200
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CURSOR_RULES_DIR = REPO_ROOT / ".cursor" / "rules"
+CURSOR_RULES_DIR = REPO_ROOT / ".claude" / "rules"
 AGENTS_MD = REPO_ROOT / "AGENTS.md"
-WINDSURF_RULES_DIR = REPO_ROOT / ".cursor" / "rules"
+WINDSURF_RULES_DIR = REPO_ROOT / ".claude" / "rules"
 INVENTORY_PATH = REPO_ROOT / "docs" / "reports" / "cursor" / "governance_tier_inventory.json"
 
 ALWAYS_APPLY_RE = re.compile(r"alwaysApply:\s*true", re.IGNORECASE)
@@ -109,7 +109,7 @@ def build_inventory(*, policy_option: str = "A", wave: str = "W0") -> dict:
         always_apply_set - OPTION_A_ALWAYS_APPLY - OPTION_A_TRANSITIONAL_EXTRAS
     )
     tier1_status = "PASS" if tier1_total <= THRESHOLD_BYTES else "FAIL"
-    plans_dir = REPO_ROOT / ".cursor" / "plans"
+    plans_dir = REPO_ROOT / ".claude" / "plans"
     active_plan_count = (
         len([p for p in plans_dir.iterdir() if p.is_file()]) if plans_dir.is_dir() else 0
     )

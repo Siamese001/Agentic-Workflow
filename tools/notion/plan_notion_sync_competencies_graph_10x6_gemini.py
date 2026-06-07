@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "competencies-graph-10x6-gemini-924516"
-PLAN_PATH = ".cursor/plans/competencies-graph-10x6-gemini-924516.md"
+PLAN_PATH = ".claude/plans/competencies-graph-10x6-gemini-924516.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -26,7 +26,7 @@ AI_SUMMARY = """- Gap: current 4-path Qwen pool, 6–8 categories, 3-judge panel
 - W2: COMPETENCIES_SC_PATH_COUNT=10 → top 6 with graph reality + min score
 - W3: Single gemini_pro X1D (competencies_pool_x1d_judge_rows); default --x1d-judges gemini_pro
 - W4: Contract tests + mock-judges smoke
-- Disk: .cursor/plans/competencies-graph-10x6-gemini-924516.md
+- Disk: .claude/plans/competencies-graph-10x6-gemini-924516.md
 - Authority: augmented_skills_graph (P2-W1A) unchanged"""
 
 

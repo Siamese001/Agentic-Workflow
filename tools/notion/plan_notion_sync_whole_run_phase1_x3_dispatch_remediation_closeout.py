@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "whole-run-phase1-x3-dispatch-remediation-f2a8c4"
-PLAN_PATH = ".cursor/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md"
+PLAN_PATH = ".claude/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -28,7 +28,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETE (2026-05-26)
 - Tests: 85 passed; test_modular_phase1_lane_dispatch_status.py edge cases
 - E2E: ops_scripts/apps_rg/run_governed_spine_e2e_proof.sh
 - Closeout: docs/reports/apps_rg/whole_run_phase1_x3_dispatch_remediation_closeout_receipt.md
-- PLAN: .cursor/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md"""
+- PLAN: .claude/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md"""
 
 
 def _query_page_id() -> str | None:

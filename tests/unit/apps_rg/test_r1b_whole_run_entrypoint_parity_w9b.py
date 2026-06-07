@@ -41,6 +41,18 @@ def _req() -> dict:
     }
 
 
+def _enable_r1b(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    model_dir = tmp_path / "bge-m3"
+    model_dir.mkdir(parents=True, exist_ok=True)
+    (model_dir / "config.json").write_text("{}\n", encoding="utf-8")
+    monkeypatch.setenv("APPS_RG_ENABLE_R1B_SEMANTIC_CACHE", "1")
+    monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
+    monkeypatch.setenv("EMBEDDING_ENABLED", "true")
+    monkeypatch.setenv("APPS_RG_EMBEDDING_ENABLED", "true")
+    monkeypatch.setenv("APPS_RG_EMBEDDING_MODEL_PATH", str(model_dir))
+    monkeypatch.setenv("CHROMA_PERSIST_DIR", str(tmp_path / "chroma"))
+
+
 def test_audit_matrix_canonical_paths_wired() -> None:
     matrix = {row["entrypoint"]: row for row in build_entrypoint_audit_matrix()}
     assert matrix[ENTRYPOINT_CANONICAL_DISPATCH]["status"] == "wired_w9b"
@@ -52,7 +64,7 @@ def test_audit_matrix_canonical_paths_wired() -> None:
 def test_production_preflight_accepted_hit(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     store = R1BSemanticCacheStore(tmp_path)
     _seed(store)
-    monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
+    _enable_r1b(monkeypatch, tmp_path)
     monkeypatch.setenv("APPS_RG_R1B_CACHE_ROOT", str(store.root))
     pf = run_whole_run_cache_preflight(
         entrypoint=ENTRYPOINT_CANONICAL_DISPATCH,
@@ -75,7 +87,7 @@ def test_production_preflight_accepted_hit(tmp_path: Path, monkeypatch: pytest.M
 def test_production_preflight_miss_fallthrough(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     store = R1BSemanticCacheStore(tmp_path)
     _seed(store)
-    monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
+    _enable_r1b(monkeypatch, tmp_path)
     monkeypatch.setenv("APPS_RG_R1B_CACHE_ROOT", str(store.root))
     pf = run_whole_run_cache_preflight(
         entrypoint=ENTRYPOINT_CANONICAL_DISPATCH,
@@ -160,7 +172,7 @@ def test_canonical_dispatch_r1b_hit_skips_pipeline(
 ) -> None:
     from apps_rg.runtime.orchestration import canonical_dispatch as cd
 
-    monkeypatch.setenv("SEMANTIC_CACHE_D2_ENABLED", "1")
+    _enable_r1b(monkeypatch, tmp_path)
     monkeypatch.setenv("APPS_RG_POLICY_HASH", "prompt_profile_w7_v1")
     monkeypatch.setenv("APPS_RG_BLUEPRINT_HASH", "gate_profile_w7_v1")
     store = R1BSemanticCacheStore(tmp_path / "r1b_store")

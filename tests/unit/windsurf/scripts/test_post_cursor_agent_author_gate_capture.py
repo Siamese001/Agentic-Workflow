@@ -2,7 +2,7 @@
 """
 test_post_cursor_agent_author_gate_capture.py
 
-Unit tests for .cursor/scripts/post_cursor_agent_author_gate_capture.py
+Unit tests for .claude/governance/scripts/post_cursor_agent_author_gate_capture.py
 
 Coverage:
     _init_db           — schema creation, idempotency
@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".cursor" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts"))
 
 import post_cursor_agent_author_gate_capture as _m  # noqa: E402  (used for monkeypatching module globals)
 
@@ -483,7 +483,7 @@ _REAL_HOOK_PAYLOAD = {
             "### Planner Response\n\n"
             "Made the wiring change to hitl-enforcement.md.\n\n"
             "DECISION_CAPTURED: type=architecture_choice, "
-            "repo_area=.cursor/rules/hitl-enforcement.md, "
+            "repo_area=.claude/rules/hitl-enforcement.md, "
             "selected=extend Execute step with emission, outcome=executed\n\n"
             "Tests pass."
         )
@@ -508,7 +508,7 @@ class TestRealPayloadEndToEnd:
             "SELECT decision_type, normalized_intent, selected_option_id FROM decisions"
         ).fetchone()
         assert row[0] == "architecture_choice"
-        assert ".cursor/rules/hitl-enforcement.md" in row[1]
+        assert ".claude/rules/hitl-enforcement.md" in row[1]
         assert row[2] == "extend Execute step with emission"
         conn.close()
 

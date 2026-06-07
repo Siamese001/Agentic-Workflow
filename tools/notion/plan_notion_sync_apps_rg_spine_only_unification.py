@@ -11,7 +11,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 SLUG = "apps-rg-spine-only-unification-d8f4a2"
-PLAN_PATH = ".cursor/plans/apps-rg-spine-only-unification-d8f4a2.md"
+PLAN_PATH = ".claude/plans/apps-rg-spine-only-unification-d8f4a2.md"
 PAGE_ID = "36927693-f55c-8190-b30b-de1f6534e2a7"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 

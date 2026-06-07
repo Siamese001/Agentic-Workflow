@@ -37,7 +37,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 LOOKUP_SCRIPT = (
-    REPO_ROOT / ".cursor" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
+    REPO_ROOT / ".claude" / "skills" / "refactor-decision-memory" / "lookup_refactor_decisions.py"
 )
 
 

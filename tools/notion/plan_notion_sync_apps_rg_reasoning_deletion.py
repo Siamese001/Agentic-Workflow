@@ -13,7 +13,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-reasoning-deletion-d4e8f1"
-PLAN_PATH = ".cursor/plans/apps-rg-reasoning-deletion-d4e8f1.md"
+PLAN_PATH = ".claude/plans/apps-rg-reasoning-deletion-d4e8f1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -27,7 +27,7 @@ AI_SUMMARY = """- STATUS: Completed (W0–W3 executed)
 - Migrated: rg_orchestrator_facade (canonical dispatch only); eval hop scenarios → SKIP
 - Proof: pytest 37 passed (quarantine + facade + authority); python -m apps_rg --help OK
 - Receipt: artifacts/apps_rg/reasoning_deletion_receipt.md
-- Disk SSOT: .cursor/plans/apps-rg-reasoning-deletion-d4e8f1.md"""
+- Disk SSOT: .claude/plans/apps-rg-reasoning-deletion-d4e8f1.md"""
 
 
 def _query_page_id() -> str | None:

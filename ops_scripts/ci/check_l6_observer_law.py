@@ -1,6 +1,6 @@
 """L6 Observer-Law CI Gate.
 
-Plan: .cursor/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W4.
+Plan: .claude/plans/l6-doctrinal-alignment-noninvasive-b9d3f5.md W4.
 
 Forbids `agentic_core/L6_system_learning/` (L6 active surface) from importing modules
 that perform write-side actions on L0..L5 runtime layers. The L6

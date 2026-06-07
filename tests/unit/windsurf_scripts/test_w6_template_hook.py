@@ -138,12 +138,12 @@ class TestW6Integration:
 
     def test_w2_helper_exists(self) -> None:
         """W2 helper exists and is importable."""
-        helper_path = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "_plan_scope_expansion_check.py"
+        helper_path = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_plan_scope_expansion_check.py"
         assert helper_path.exists(), "W2 helper not found"
 
     def test_w3_hook_exists(self) -> None:
         """W3 hook exists and is runnable."""
-        hook_path = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_plan_scope_audit.py"
+        hook_path = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_plan_scope_audit.py"
         assert hook_path.exists(), "W3 hook not found"
 
     def test_template_exists(self) -> None:

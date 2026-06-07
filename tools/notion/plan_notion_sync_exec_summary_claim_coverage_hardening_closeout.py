@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-claim-coverage-hardening-a1f3e8"
-PLAN_PATH = ".cursor/plans/exec-summary-claim-coverage-hardening-a1f3e8.md"
+PLAN_PATH = ".claude/plans/exec-summary-claim-coverage-hardening-a1f3e8.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -25,7 +25,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETED (2026-05-26)
 - Closeout: docs/reports/apps_rg/exec_summary_claim_coverage_hardening_receipt_20260526.md
 - E2E: docs/reports/apps_rg/exec_summary_e2e_test_receipt_20260526.md
 - RCA: exec_summary_20260526_183905 → W4: exec_summary_20260526_191701
-- Disk: .cursor/plans/exec-summary-claim-coverage-hardening-a1f3e8.md"""
+- Disk: .claude/plans/exec-summary-claim-coverage-hardening-a1f3e8.md"""
 
 
 def _query_page_id() -> str | None:

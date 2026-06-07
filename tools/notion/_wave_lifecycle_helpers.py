@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_CURSOR_SCRIPTS = _REPO_ROOT / ".cursor" / "scripts"
+_CURSOR_SCRIPTS = _REPO_ROOT / ".claude" / "governance/scripts"
 if str(_CURSOR_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_CURSOR_SCRIPTS))
 

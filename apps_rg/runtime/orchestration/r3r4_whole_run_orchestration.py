@@ -9,7 +9,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
+from apps_rg.runtime.orchestration.integrated_spine_runner import (
     run_integrated_single_action_spine,
 )
 
@@ -51,18 +51,8 @@ def research_delegation_enabled(
     auto_research_internal: bool,
     research_via: str | None,
 ) -> bool:
-    if os.environ.get("APPS_RG_RESEARCH_DISABLED", "").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-    ):
-        return False
-    if str(research_via or "").strip() == "apps_research":
-        return True
-    if auto_research_internal:
-        return True
-    env = os.environ.get("APPS_RG_AUTO_RESEARCH_INTERNAL", "1").strip().lower()
-    return env in ("1", "true", "yes")
+    _ = auto_research_internal, research_via
+    return False
 
 
 def briefing_input_present(manual_brief: str) -> bool:
@@ -87,16 +77,23 @@ def should_delegate_apps_research(
 
 
 def _research_bridge() -> Any:
+    import importlib
+
     if os.environ.get("APPS_RG_MOCK_RESEARCH", "").strip().lower() in (
         "1",
         "true",
         "yes",
     ):
-        from apps_rg.integrations.apps_research_bridge import MockAppsResearchBridge
-
+        MockAppsResearchBridge = getattr(
+            importlib.import_module("apps_rg.integrations.apps_research_bridge"),
+            "MockAppsResearchBridge",
+        )
         return MockAppsResearchBridge(confidence_score=0.88)
-    from apps_rg.integrations.apps_research_bridge import AppsResearchBridge
 
+    AppsResearchBridge = getattr(
+        importlib.import_module("apps_rg.integrations.apps_research_bridge"),
+        "AppsResearchBridge",
+    )
     return AppsResearchBridge(capability_ref="apps_research.v1")
 
 
@@ -182,12 +179,15 @@ def _run_r3r4_research_hop(
     target_company: str,
     target_role: str,
 ) -> tuple[bool, str, str]:
-    from apps_rg.integrations.managed_research_delegation import (
-        RequestForResumeBriefing,
-        ResearchDispatchFailure,
-        ResumeBriefingReady,
-        dispatch_resume_research_briefing,
+    import importlib
+
+    _delegation = importlib.import_module(
+        "apps_rg.integrations.managed_research_delegation"
     )
+    RequestForResumeBriefing = _delegation.RequestForResumeBriefing
+    ResearchDispatchFailure = _delegation.ResearchDispatchFailure
+    ResumeBriefingReady = _delegation.ResumeBriefingReady
+    dispatch_resume_research_briefing = _delegation.dispatch_resume_research_briefing
 
     req = RequestForResumeBriefing(
         request_id=route.request_id,

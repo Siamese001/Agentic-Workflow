@@ -18,7 +18,7 @@ from unittest.mock import patch
 import pytest
 
 # Resolve script paths relative to this test file's location.
-_SCRIPTS = Path(__file__).resolve().parents[5] / ".cursor" / "scripts"
+_SCRIPTS = Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"
 sys.path.insert(0, str(_SCRIPTS))
 
 import post_mcp_audit as _audit_module

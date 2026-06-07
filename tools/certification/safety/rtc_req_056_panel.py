@@ -23,7 +23,7 @@ This module is the ONE authoritative registry consumed by:
 Do NOT hardcode a different provider list in any of those consumers.
 Do NOT add providers to this registry without updating tests and ADR.
 
-Related rule: .cursor/rules/closed-loop-router-enforcement.md (L5/hitl).
+Related rule: .claude/rules/closed-loop-router-enforcement.md (L5/hitl).
 Attestation path (ONLY valid path for RTC-REQ-056 certification):
     artifacts/certification/integrated_runtime/consensus_jury/
         live_provider_attestation.json

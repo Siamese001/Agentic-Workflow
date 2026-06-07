@@ -58,7 +58,7 @@ from tools.runtime_cert.decisions.cert_decision_record import (
 
 APP_PREFIX: str = "apps_"
 LEDGER_DIR_REL: str = "artifacts/ledgers"
-DDL_PATH_REL: str = ".cursor/schemas/cert_decision_ledger.schema.sql"
+DDL_PATH_REL: str = ".claude/schemas/cert_decision_ledger.schema.sql"
 BYPASS_ENV_VAR: str = "CERT_DECISION_LEDGER_BYPASS"
 
 # Repo root relative to this module: tools/runtime_cert/decisions/<this>
@@ -190,7 +190,7 @@ def ledger_path_for_app(
 
 
 def _ddl_sql() -> str:
-    """Load DDL text from the repo's ``.cursor/schemas/``.
+    """Load DDL text from the repo's ``.claude/schemas/``.
 
     The DDL source is installation-fixed at ``_DEFAULT_REPO_ROOT`` (the
     repo this module was imported from). The ``repo_root`` argument on

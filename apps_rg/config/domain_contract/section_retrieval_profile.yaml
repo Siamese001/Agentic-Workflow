@@ -28,6 +28,15 @@ global_constraints:
   max_sections_to_query: 8
   max_query_budget_ms: 12000
 
+source_authority_defaults:
+  candidate_facts_as_proof: true
+  graph_as_claim_proof: false
+  graph_as_routing_support: true
+  graph_claim_proof_allowed_only_when_fact_bound: true
+  jd_as_proof_allowed: false
+  briefing_as_proof_allowed: false
+  companion_context_authority: false
+
 # Phase 2 sparse/exact lane — mandatory for apps_rg when APPS_RG_C0_DENSE_SPARSE_MANDATORY=1 (default).
 sparse_lane_defaults:
   sparse_enabled: true
@@ -63,6 +72,14 @@ sections:
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
+    source_authority:
+      candidate_facts_as_proof: true
+      graph_as_claim_proof: false
+      graph_as_routing_support: true
+      graph_claim_proof_allowed_only_when_fact_bound: true
+      jd_as_proof_allowed: false
+      briefing_as_proof_allowed: false
+      companion_context_authority: false
     headline_positioning_bundle_consumption: required
     graph_expansion_mode: headline_positioning_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
@@ -96,6 +113,14 @@ sections:
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
+    source_authority:
+      candidate_facts_as_proof: true
+      graph_as_claim_proof: false
+      graph_as_routing_support: true
+      graph_claim_proof_allowed_only_when_fact_bound: true
+      jd_as_proof_allowed: false
+      briefing_as_proof_allowed: false
+      companion_context_authority: false
     fallback_policy: use_fallback_queries_if_query_fields_empty
     expected_evidence_strata: [CANONICAL]
     source_class_allowlist: [candidate_profile]
@@ -128,6 +153,14 @@ sections:
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
+    source_authority:
+      candidate_facts_as_proof: true
+      graph_as_claim_proof: false
+      graph_as_routing_support: true
+      graph_claim_proof_allowed_only_when_fact_bound: true
+      jd_as_proof_allowed: false
+      briefing_as_proof_allowed: false
+      companion_context_authority: false
     competency_bundle_consumption: required
     graph_expansion_mode: competency_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
@@ -160,6 +193,14 @@ sections:
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
+    source_authority:
+      candidate_facts_as_proof: true
+      graph_as_claim_proof: false
+      graph_as_routing_support: true
+      graph_claim_proof_allowed_only_when_fact_bound: true
+      jd_as_proof_allowed: false
+      briefing_as_proof_allowed: false
+      companion_context_authority: false
     role_episode_bundle_consumption: required
     graph_expansion_mode: role_episode_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
@@ -194,6 +235,14 @@ sections:
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
+    source_authority:
+      candidate_facts_as_proof: true
+      graph_as_claim_proof: false
+      graph_as_routing_support: true
+      graph_claim_proof_allowed_only_when_fact_bound: true
+      jd_as_proof_allowed: false
+      briefing_as_proof_allowed: false
+      companion_context_authority: false
     role_episode_bundle_consumption: required
     graph_expansion_mode: role_episode_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
@@ -226,6 +275,14 @@ sections:
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
+    source_authority:
+      candidate_facts_as_proof: true
+      graph_as_claim_proof: false
+      graph_as_routing_support: true
+      graph_claim_proof_allowed_only_when_fact_bound: true
+      jd_as_proof_allowed: false
+      briefing_as_proof_allowed: false
+      companion_context_authority: false
     role_episode_bundle_consumption: required
     graph_expansion_mode: role_episode_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty
@@ -260,6 +317,14 @@ sections:
     freshness_profile: default
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
+    source_authority:
+      candidate_facts_as_proof: true
+      graph_as_claim_proof: false
+      graph_as_routing_support: true
+      graph_claim_proof_allowed_only_when_fact_bound: true
+      jd_as_proof_allowed: false
+      briefing_as_proof_allowed: false
+      companion_context_authority: false
     role_episode_bundle_consumption: required
     graph_expansion_mode: role_episode_bundle_only
     fallback_policy: use_fallback_queries_if_query_fields_empty

@@ -1,4 +1,4 @@
-"""Unit tests for .cursor/scripts/_legacy_windsurf/post_cursor_agent_wave_lifecycle_capture.py.
+"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_cursor_agent_wave_lifecycle_capture.py.
 
 Plan: notion-wave-lifecycle-autosync-f4a2b8 (W3.P3.1).
 
@@ -18,12 +18,12 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_wave_lifecycle_capture.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_wave_lifecycle_capture.py"
 
 
 def _load_hook_module():
     """Load the hook as a module by file path so it can be exercised standalone."""
-    sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
     sys.path.insert(0, str(REPO_ROOT))
     spec = importlib.util.spec_from_file_location(
         "post_cursor_agent_wave_lifecycle_capture", HOOK_PATH

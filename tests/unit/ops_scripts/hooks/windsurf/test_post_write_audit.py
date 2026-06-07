@@ -30,7 +30,7 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".cursor" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"))
 
 from post_write_audit import lint_mcp_config, main
 

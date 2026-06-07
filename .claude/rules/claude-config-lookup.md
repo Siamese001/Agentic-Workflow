@@ -20,9 +20,9 @@ Locate the governing surface before answering configuration questions. Keep answ
 file paths. The `.cursor/` tree is **legacy** (the prior Cursor config the `.claude/` config was
 migrated from) — treat it as historical unless a user explicitly asks about Cursor or migration
 history. The one live dependency on `.cursor/` is the governance script engine under
-`.cursor/scripts/**`, which the Claude Code hooks still invoke (see `.claude/hooks/`).
+`.claude/governance/scripts/**`, which the Claude Code hooks still invoke (see `.claude/hooks/`).
 
 ## Archive boundary
 
-`.cursor/**`, `.windsurf/**`, `.cursor/_zero_loss_originals/**`, and `.cursor/plans/_archive/**`
+`.cursor/**`, `.windsurf/**`, `.cursor/_zero_loss_originals/**`, and `.claude/plans/_archive/**`
 are historical/compatibility material unless a user explicitly asks for migration history.

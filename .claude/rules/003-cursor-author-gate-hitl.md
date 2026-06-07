@@ -56,4 +56,4 @@ Skip `ask_user_question` only when `routing.rule_applied == "dominance_fires"` A
 
 ## Detail
 
-Triggers: `author-gate-decision-points.md`. Scoring: `author-gate-enforcement.md`. Schema: `.cursor/schemas/author_gate_packet.schema.json`.
+Triggers: `author-gate-decision-points.md`. Scoring: `author-gate-enforcement.md`. Schema: `.claude/schemas/author_gate_packet.schema.json`.

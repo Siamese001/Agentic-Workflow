@@ -4,7 +4,7 @@
 Aligns Summary / AI Summary / Status with on-disk plan after post-W6 carry-forward
 close-out. Run from repo root with NOTION_TOKEN (or NOTION_API_KEY).
 
-Disk SSOT: .cursor/plans/apps-rg-agentic-core-boundary-remediation-child-f8e3c1.md
+Disk SSOT: .claude/plans/apps-rg-agentic-core-boundary-remediation-child-f8e3c1.md
 """
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ AI_SUMMARY = (
     "- L0: check_l0_app_agnostic.py --strict + baselines/l0_app_agnostic_allowlist.json\n"
     "- Receipt: artifacts/apps_rg/boundary_remediation/w6_targeted_ci_no_regression_f8e3c1.md\n"
     "- Frozen slice: 47/47 (five-module border pytest)\n"
-    "- Plan file: .cursor/plans/apps-rg-agentic-core-boundary-remediation-child-f8e3c1.md"
+    "- Plan file: .claude/plans/apps-rg-agentic-core-boundary-remediation-child-f8e3c1.md"
 )
 
 

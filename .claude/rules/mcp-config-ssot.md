@@ -38,6 +38,6 @@ Rules:
 - Keep server IDs stable unless a migration receipt explains the rename.
 - Do not rely on live `mcp0_`, `mcp1_`, or similar tool prefixes as stable identifiers.
 - Run `python -m json.tool .mcp.json` after edits.
-- Run `python .cursor/scripts/check_cursor_native_config.py --strict` before claiming completion.
+- Run `python .claude/governance/scripts/check_cursor_native_config.py --strict` before claiming completion.
 - CI gates: `check_mcp_sync_integrity.py`, `check_agents_mcp_coverage.py`, `check_mcp_config_schema.py --profile all`, `check_cursor_config_schema.py`, `check_mcp_editor_parity.py`, `check_mcp_config_sovereignty.py` (Rule #0).
-- After editing `.mcp.json`, run `python .cursor/scripts/sync_mcp_config.py` (refreshes AGENTS.md + global Cursor copy).
+- After editing `.mcp.json`, run `python .claude/governance/scripts/sync_mcp_config.py` (refreshes AGENTS.md + global Cursor copy).

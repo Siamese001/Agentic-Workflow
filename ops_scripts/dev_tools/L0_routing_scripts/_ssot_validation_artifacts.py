@@ -174,7 +174,7 @@ def _normalize_finding_id(finding: dict, validator: str, index: int) -> str:
     """Generate normalized finding ID: {validator}:{path}:{rule}:{index}.
 
     Per hostile audit Section B3: Finding IDs must be normalized and deterministic.
-    Per .cursor/rules/constitutional.md §1.7: Identical input → identical output.
+    Per .claude/rules/constitutional.md §1.7: Identical input → identical output.
     """
     import uuid as _uuid  # noqa: PLC0415
 
@@ -208,7 +208,7 @@ def _write_pre_validation_json(
 
     Per hostile audit Section C2: Pre-heal state must be captured in structured artifact.
     Per hostile audit Section B3: Findings must have normalized IDs and validator provenance.
-    Per .cursor/rules/constitutional.md §2.2: Evidence must be deterministic, ASCII-only.
+    Per .claude/rules/constitutional.md §2.2: Evidence must be deterministic, ASCII-only.
     """
     from datetime import timezone
 

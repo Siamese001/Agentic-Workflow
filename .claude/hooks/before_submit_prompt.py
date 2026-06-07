@@ -17,7 +17,7 @@ from lib.claude_hook_common import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-GREP_WARNING = REPO_ROOT / ".cursor" / "scripts" / "pre_user_prompt_grep_for_deps_warning.py"
+GREP_WARNING = REPO_ROOT / ".claude" / "governance" / "scripts" / "pre_user_prompt_grep_for_deps_warning.py"
 
 
 def _parse_payload(raw: str) -> dict[str, Any]:

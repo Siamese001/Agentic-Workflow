@@ -558,8 +558,8 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
             ".mypy.ini",
             ".pre-commit-config.yaml",
             # Windsurf workspace files
-            ".cursor/rules",
-            ".cursor/rules.bak",
+            ".claude/rules",
+            ".claude/rules.bak",
             ".windsurf.code-workspace",
             ".windsurfignore",
             # Python project files

@@ -34,7 +34,7 @@
 ## §2. MCP Registry (config or gate change)
 
 **Database ID**: `59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`
-**Trigger**: Modified `.mcp.json` or gate behavior in `.cursor/scripts/*_gate.py`
+**Trigger**: Modified `.mcp.json` or gate behavior in `.claude/governance/scripts/*_gate.py`
 
 ### New server row
 ```json
@@ -91,7 +91,7 @@
 ## §4. Backlog Items (plan status update)
 
 **Database ID**: `aa8d2507-101e-4384-81d9-60ea3fe33876` (renamed 2026-04-23 from `Wave/Phase Convergence`)
-**Trigger**: Created or status-changed `.cursor/plans/<name>-<6hex>.md`
+**Trigger**: Created or status-changed `.claude/plans/<name>-<6hex>.md`
 
 Title property is **`Phase Title`** (not `Name`). Status select options: `Todo | In Progress | Done | Blocked | Descoped | Complete`.
 

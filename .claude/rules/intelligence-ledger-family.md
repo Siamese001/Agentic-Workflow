@@ -82,8 +82,8 @@ context window and defeat the W0 design goal of a lean recall layer.
 
 ## 3. Schema Discipline
 
-- All DDL changes go through `.cursor/schemas/ledger_base.schema.sql` or
-  `.cursor/schemas/<name>_ledger.schema.sql`.
+- All DDL changes go through `.claude/schemas/ledger_base.schema.sql` or
+  `.claude/schemas/<name>_ledger.schema.sql`.
 - `tools/ledgers/apply_schema.py` is the **only** schema applier. Never
   run DDL ad-hoc.
 - Schema changes are **additive only**: `ALTER TABLE ADD COLUMN` is the
@@ -147,9 +147,9 @@ band boundaries, retire the metric). Capture under
 
 ## 7. References
 
-- **Plan**: `.cursor/plans/intelligence-ledgers-ten-a7c3e2.md`
+- **Plan**: `.claude/plans/intelligence-ledgers-ten-a7c3e2.md`
 - **ADR**: `docs/architecture/adr/ADR-050-intelligence-ledger-family.md`
-- **Base schema**: `.cursor/schemas/ledger_base.schema.sql`
+- **Base schema**: `.claude/schemas/ledger_base.schema.sql`
 - **Registry**: `tools/ledgers/schema_registry.py`
 - **Writer / Consulter / Helpers**: `tools/ledgers/{writer,consulter,hook_helpers}.py`
 - **Base consulting skill**: `.claude/skills/ledger-consulter/SKILL.md`

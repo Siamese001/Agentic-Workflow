@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
 
 try:
     from author_gate_ledger_integrity import DB_PATH, verify_chain
@@ -41,7 +41,7 @@ def main() -> int:
             unsealed = res.total_rows - res.verified_rows
             print(
                 f"[check_ledger_integrity] PASS — {res.verified_rows}/{res.total_rows} sealed; "
-                f"{unsealed} unsealed row(s). Run: python .cursor/scripts/"
+                f"{unsealed} unsealed row(s). Run: python .claude/governance/scripts/"
                 f"author_gate_ledger_integrity.py --backfill"
             )
         else:

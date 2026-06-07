@@ -130,7 +130,7 @@ AUTHOR_GATE_PACKET: {
 
 ## Validation
 
-The emitter runs every packet through `.cursor/schemas/decision_record.schema.json` before
+The emitter runs every packet through `.claude/schemas/decision_record.schema.json` before
 writing. Invalid packets are rejected with a structured error to stderr and exit 1.
 
 ## Progressive Disclosure

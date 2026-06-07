@@ -67,7 +67,7 @@ repos:
   # worktree version, eats the staged half, and `git commit` reports
   # 'Everything up-to-date'. Detects any file in dual state (staged AND
   # worktree-dirty) and aborts with a clear recovery message.
-  # Plan: .cursor/plans/adg-three-bucket-unified-c4f8e2.md (W4 P4.1).
+  # Plan: .claude/plans/adg-three-bucket-unified-c4f8e2.md (W4 P4.1).
   # Bypass: PRECOMMIT_MM_GUARD_BYPASS=1.
   - repo: local
     hooks:
@@ -167,7 +167,7 @@ repos:
         entry: py ops_scripts/ci/check_mcp_sync_integrity.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|AGENTS\.md|\.cursor/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.cursor/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
+        files: ^(\.cursor/mcp\.json|AGENTS\.md|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
         always_run: false
         require_serial: true
 
@@ -284,7 +284,7 @@ repos:
       # -- T6d: Author-Gate Ledger Schema (harness HITL W2) ---------------------------
       # Verifies decision ledger matches canonical DDL. Triggered when schema or
       # migrator changes, and when the capture script changes.
-      # TRIGGER FIX 2026-05-05: DDL file .cursor/schemas/decision_ledger.schema.sql
+      # TRIGGER FIX 2026-05-05: DDL file .claude/schemas/decision_ledger.schema.sql
       # was already in the description but missing from the files: regex — changes to
       # the DDL alone would not trigger this gate. Added explicitly.
       - id: author-gate-ledger-schema
@@ -292,7 +292,7 @@ repos:
         entry: py ops_scripts/ci/author_gate/check_ledger_schema.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/schemas/decision_ledger\.schema\.sql|\.cursor/scripts/(apply_ledger_schema|post_cursor_agent_hitl_capture|post_cursor_agent_author_gate_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
+        files: ^(\.claude/schemas/decision_ledger\.schema\.sql|\.claude/governance/scripts/(apply_ledger_schema|post_cursor_agent_hitl_capture|post_cursor_agent_author_gate_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
         always_run: false
         require_serial: true
 
@@ -305,13 +305,13 @@ repos:
         entry: py ops_scripts/ci/author_gate/check_ui_conformance.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/scripts/post_cursor_agent_author_gate_ui_audit\.py|ops_scripts/ci/author_gate/check_ui_conformance\.py|artifacts/cursor/author_gate_ui_violations\.jsonl)$
+        files: ^(\.claude/governance/scripts/post_cursor_agent_author_gate_ui_audit\.py|ops_scripts/ci/author_gate/check_ui_conformance\.py|artifacts/cursor/author_gate_ui_violations\.jsonl)$
         always_run: false
         require_serial: true
 
       # -- T6e: Skill Frontmatter (Anthropic spec) ------------------------------------
       # Enforces Anthropic Agent Skills authoring spec on every
-      # .cursor/skills/<name>/SKILL.md: YAML frontmatter with valid `name`
+      # .claude/skills/<name>/SKILL.md: YAML frontmatter with valid `name`
       # (<=64 chars, lowercase-hyphen, no reserved words) and `description`
       # (<=1024 chars, third person, includes a when-trigger), plus the 500-line
       # SKILL.md body budget and forward-slash path discipline.
@@ -321,7 +321,7 @@ repos:
         entry: py ops_scripts/ci/check_skill_frontmatter.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/skills/.+/SKILL\.md$
+        files: ^\.claude/skills/.+/SKILL\.md$
         always_run: false
         require_serial: true
 
@@ -334,7 +334,7 @@ repos:
         entry: py ops_scripts/ci/check_deferred_scope_markers.py --staged
         language: system
         pass_filenames: false
-        files: ^\.cursor/plans/.*\.md$
+        files: ^\.claude/plans/.*\.md$
         always_run: false
         require_serial: true
 
@@ -351,15 +351,10 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T6e2b: Cursor config schema purity -----------------------------------------
-      - id: cursor-config-schema
-        name: "T6e2b: Cursor Config Schema Purity"
-        entry: py ops_scripts/ci/check_cursor_config_schema.py
-        language: system
-        pass_filenames: false
-        files: ^(\.cursor/hooks\.json|\.cursor/mcp\.json)$
-        always_run: false
-        require_serial: true
+      # -- T6e2b REMOVED (cursor-decommission W7) --------------------------------------
+      # cursor-config-schema validated .cursor/hooks.json + .cursor/mcp.json structure,
+      # both deleted in the .cursor->.claude migration (Claude Code uses .claude/settings.json
+      # + root .mcp.json). Validator script removed; hook retired.
 
       # -- T6e2c: MCP editor parity (Cursor SSOT vs Windsurf mirror) -------------------
       - id: mcp-editor-parity
@@ -388,14 +383,14 @@ repos:
       # byte-identical to the SSOT generator output. Currently covers:
       #   - MCP-QUICK-REFERENCE (mcp_config.json)
       #   - NOTION-MAP          (config/notion_databases.yaml)
-      # Fix drift: `python .cursor/scripts/sync_mcp_config.py`
+      # Fix drift: `python .claude/governance/scripts/sync_mcp_config.py`
       # RENAME 2026-05-05: was labelled T6d (collision with author-gate-ledger-schema).
       - id: agents-md-autogen-sync
         name: "T6d3: AGENTS.md Autogen Sync"
         entry: py ops_scripts/ci/check_agents_md_sync.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.cursor/scripts/sync_mcp_config\.py|\.cursor/scripts/sync_mcp_config\.py)$
+        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.claude/governance/scripts/sync_mcp_config\.py|\.claude/governance/scripts/sync_mcp_config\.py)$
         always_run: false
         require_serial: true
 
@@ -413,7 +408,7 @@ repos:
         entry: py ops_scripts/ci/check_hardcoded_exclusions.py
         language: system
         pass_filenames: false
-        files: ^(agentic_core/.*\.py|apps_[^/]+/.*\.py|ops_scripts/.*\.py|tools/.*\.py|\.cursor/scripts/.*\.py|ops_scripts/ci/check_hardcoded_exclusions\.py|ops_scripts/ci/baselines/hardcoded_exclusions_baseline\.json)$
+        files: ^(agentic_core/.*\.py|apps_[^/]+/.*\.py|ops_scripts/.*\.py|tools/.*\.py|\.claude/governance/scripts/.*\.py|ops_scripts/ci/check_hardcoded_exclusions\.py|ops_scripts/ci/baselines/hardcoded_exclusions_baseline\.json)$
         always_run: false
         require_serial: true
 
@@ -465,29 +460,19 @@ repos:
         name: "T7c: HITL Packet Format"
         entry: py ops_scripts/ci/validate_hitl_format.py
         language: system
-        files: ^\.cursor/rules/(hitl-|.*hitl).*\.md$
+        files: ^\.claude/rules/(hitl-|.*hitl).*\.md$
         always_run: false
         require_serial: true
 
-      # -- T7e2: HITL Rules Corpus Validator --------------------------------------------
-      # Validates the HITL rule *corpus* (all 4 files together): §HITL-9 threshold
-      # config, §HITL-10 option shape, forbidden 2-4-count patterns, and required
-      # pipeline patterns. The validator was refactored 2026-04-19 to accept the
-      # post-consolidation split layout (enforcement.md + decision-points.md +
-      # svp-calibration.md + anti-pattern-author-gate.md). Triggers on any HITL file
-      # change; passes all 4 files together so corpus-level checks work.
-      # TRIGGER FIX 2026-05-05: regex previously only matched `hitl-*.md` and
-      # `anti-pattern-hitl*.md`, missing the actual corpus files
-      # (author-gate-enforcement.md, anti-pattern-author-gate.md, etc.).
-      # Expanded to cover all four validator-owned rule files.
-      - id: hitl-rules-corpus
-        name: "T7e2: HITL Rules Corpus"
-        entry: py ops_scripts/ci/validate_hitl_rules.py .cursor/rules/author-gate-enforcement.md .cursor/rules/author-gate-decision-points.md .cursor/rules/author-gate-svp-calibration.md .cursor/rules/anti-pattern-author-gate.md
-        language: system
-        pass_filenames: false
-        files: ^\.cursor/rules/(hitl-|anti-pattern-hitl|author-gate-enforcement|author-gate-decision-points|author-gate-svp-calibration|anti-pattern-author-gate).*\.md$
-        always_run: false
-        require_serial: true
+      # -- T7e2 REMOVED (cursor-decommission W1.2c, 2026-06-07) --------------------------
+      # The `hitl-rules-corpus` hook (ops_scripts/ci/validate_hitl_rules.py) was a dormant,
+      # never-functional gate: its `files:` glob matched `.claude/rules/*.md` but only
+      # `.mdc` ever existed there, so it never fired; and it asserts §HITL-9/§HITL-10 +
+      # "Surface 1–N options" / "LOW_CONFIDENCE_AMBIGUITY" markers that are absent from BOTH
+      # the legacy `.cursor/*.mdc` AND the `.claude/*.md` SSOT. Removed during the
+      # .cursor→.claude rules migration rather than wired to fail against the SSOT. The
+      # validator script + tests/governance/test_hitl_validators.py remain on disk pending a
+      # separate retire-or-rewrite decision.
 
       # -- T7f: Severity<->Band SSOT (Constitutional §22/§23) --------------------------
       # Forbids local severity<->band mapping dicts outside the canonical SSOT modules
@@ -504,7 +489,7 @@ repos:
         require_serial: true
 
       # -- T7g: ADG Graph-Layer Evidence (Constitutional §22) --------------------------
-      # Validates that T2/T3 refactoring plans in .cursor/plans/ include the
+      # Validates that T2/T3 refactoring plans in .claude/plans/ include the
       # ## ADG_HOTSPOT_REPORT (with archetype + surface classification) and
       # ## ADG_GRAPH_LAYER_EVIDENCE (with ≥3 materialized views + semantic edges/P-views).
       # Triggers on plan file changes only.
@@ -513,7 +498,7 @@ repos:
         entry: py ops_scripts/ci/check_graph_layer_evidence.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/plans/.*\.md|ops_scripts/ci/baselines/graph_layer_evidence_baseline\.json|ops_scripts/ci/check_graph_layer_evidence\.py)$
+        files: ^(\.claude/plans/.*\.md|ops_scripts/ci/baselines/graph_layer_evidence_baseline\.json|ops_scripts/ci/check_graph_layer_evidence\.py)$
         always_run: false
         require_serial: true
 
@@ -565,14 +550,14 @@ repos:
       # > 20. Floors are deliberately permissive (WARN-band on audit_ledger_coverage)
       # so the gate alarms on rot but doesn't block routine work.
       # Bypass: LEDGER_COVERAGE_BYPASS=1 (logged to artifacts/cursor/).
-      # Audit script SSOT: .cursor/scripts/audit_ledger_coverage.py
+      # Audit script SSOT: .claude/governance/scripts/audit_ledger_coverage.py
       - id: author-gate-ledger-coverage
         name: "T7e: Author-Gate Ledger Coverage (W4.1)"
         entry: py ops_scripts/ci/check_ledger_coverage.py
         language: system
         pass_filenames: false
         always_run: false
-        files: ^(\.cursor/scripts/(post_cursor_agent_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.cursor/skills/refactor-decision-memory/.*\.py|\.cursor/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
+        files: ^(\.claude/governance/scripts/(post_cursor_agent_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.claude/skills/refactor-decision-memory/.*\.py|\.claude/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
 
       # -- T7h: Terminal/Subprocess Cleanup (§11 + §14) ---------------------------------
       # Enforces Constitutional §11 (terminal process lifecycle) and §14 (subprocess
@@ -635,8 +620,8 @@ repos:
         require_serial: true
 
       # -- T7i: Deferred Scope Markers ----------------------------------------------
-      # Enforces the deferred-scope-capture rule (.cursor/rules/deferred-scope-capture.md).
-      # Blocks commits that add prose deferred-scope language to .cursor/plans/*.md
+      # Enforces the deferred-scope-capture rule (.claude/rules/deferred-scope-capture.md).
+      # Blocks commits that add prose deferred-scope language to .claude/plans/*.md
       # files WITHOUT an accompanying DEFERRED_SCOPE: marker. Protects against
       # scope loss between sessions — caught 2026-04-22 session-wide failure modes
       # where prose-only mentions never became Notion rows.
@@ -645,7 +630,7 @@ repos:
         entry: py ops_scripts/ci/check_deferred_scope_markers.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/plans/.*\.md$
+        files: ^\.claude/plans/.*\.md$
         always_run: false
         require_serial: true
 
@@ -660,7 +645,7 @@ repos:
         entry: py ops_scripts/ci/check_notion_schema_mece.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/scripts/post_cursor_agent_(deferred_scope|next_step)_capture\.py$
+        files: ^\.claude/governance/scripts/post_cursor_agent_(deferred_scope|next_step)_capture\.py$
         always_run: false
         require_serial: true
 
@@ -684,12 +669,12 @@ repos:
       # -- T7q: SSOT Folder Routing (Constitutional §31) -----------------------------
       # Blocks NEW Python files written into forbidden roots: scripts/,
       # repo-root, tools/_oneoff/, tools/_oneshot/, or hook-prefix files
-      # outside .cursor/scripts/. Pre-existing files are never flagged.
+      # outside .claude/governance/scripts/. Pre-existing files are never flagged.
       # Bypass: SSOT_FOLDER_BYPASS=1.
-      # Sibling Windsurf hook: .cursor/scripts/pre_write_gate.py
-      # (imports the same helper at .cursor/scripts/_ssot_folder_check.py
+      # Sibling Windsurf hook: .claude/governance/scripts/pre_write_gate.py
+      # (imports the same helper at .claude/governance/scripts/_ssot_folder_check.py
       # to keep the author-time and commit-time decisions identical).
-      # Rule SSOT: .cursor/rules/ssot-folder-enforcement.md
+      # Rule SSOT: .claude/rules/ssot-folder-enforcement.md
       - id: ssot-folder-routing
         name: "T7q: SSOT Folder Routing (§31)"
         entry: py ops_scripts/ci/check_ssot_folder_routing.py
@@ -704,7 +689,7 @@ repos:
       # file change. Advisory mode local-only via CORE_ADDITION_GATE_ADVISORY=1.
       # CI must not set advisory mode. Bypass: CORE_ADDITION_GATE_BYPASS=1 (audit-logged).
       # Artifact: artifacts/ci/agentic_core_addition_gate.json
-      # Plan: .cursor/plans/core-addition-author-gate-governance-f3b9e2.md (W4)
+      # Plan: .claude/plans/core-addition-author-gate-governance-f3b9e2.md (W4)
       - id: gov3-core-addition-author-gate
         name: "GOV-3: Core Addition Author-Gate (fail-closed)"
         entry: py ops_scripts/ci/check_agentic_core_addition.py
@@ -715,7 +700,7 @@ repos:
         require_serial: true
 
       # -- T7r: Always-On Token Budget (Anthropic two-tier compliance) -----------
-      # Sums bytes of all .cursor/rules/*.md with `trigger: always_on` and
+      # Sums bytes of all .claude/rules/*.md with `trigger: always_on` and
       # fails when total exceeds 51,200 bytes / 12,800 tokens. Per Anthropic
       # "Architecture of Agentic RAG" (Apr 2026): always-on rules >50 KB
       # trigger autonomous context compaction, where the model arbitrarily
@@ -731,35 +716,35 @@ repos:
         require_serial: true
 
       # -- T7t: Author-Gate queue seed markers (§35) ---------------------------
-      # For each staged `.cursor/plans/*.md`, counts prose mentions of future
+      # For each staged `.claude/plans/*.md`, counts prose mentions of future
       # Author-Gate decisions ("Author-Gate required for X", etc.) and compares
       # against AG_QUEUE_SEED: marker count. Fails when prose > markers so
       # scheduled AG work can't silently escape into prose. Example/quoted
       # mentions (wrapped in quotes, backticks, or parens) are excluded.
       # Bypass: AG_QUEUE_SEED_MARKERS_BYPASS=1
-      # Rule SSOT: .cursor/rules/author-gate-queue-drain.md
+      # Rule SSOT: .claude/rules/author-gate-queue-drain.md
       - id: ag-queue-seed-markers
         name: "T7t: Author-Gate Queue Seed Markers (§35)"
         entry: py ops_scripts/ci/check_ag_queue_seed_markers.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/plans/.*\.md$
+        files: ^\.claude/plans/.*\.md$
 
       # -- T7u: Plan–Notion Registration (Constitutional §36) ------------------------
-      # Blocks a commit that adds a new .cursor/plans/<slug>-<6hex>.md file
+      # Blocks a commit that adds a new .claude/plans/<slug>-<6hex>.md file
       # without a matching row in the Notion Plans DB. Advisory by default;
       # flip fail-closed via PLAN_REGISTRATION_FAIL_CLOSED=1. Offline-safe:
       # SKIPs when NOTION_API_KEY/NOTION_TOKEN is unset and no local cache
       # exists. Refreshes the local cache at
-      # .cursor/state/plan_registration_cache.json as a side effect.
+      # .claude/state/plan_registration_cache.json as a side effect.
       # Bypass: PLAN_REGISTRATION_BYPASS=1.
-      # Rule SSOT: .cursor/rules/plan-registration-enforcement.md
+      # Rule SSOT: .claude/rules/plan-registration-enforcement.md
       - id: plan-registration-freshness
         name: "T7u: Plan–Notion Registration (§36)"
         entry: py ops_scripts/ci/check_plan_registration_freshness.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/plans/.*\.md$
+        files: ^\.claude/plans/.*\.md$
 
       # -- T7s: Fort Knox Certification Integrity (Constitutional §32) ---------------
       # Three gates wired independently (separation of duties):
@@ -767,8 +752,8 @@ repos:
       #   * mutation-rejection gate: every adversarial mutation is rejected
       #   * positive-control gate: RTC-REQ-001 remains SIGNED_OFF (canary)
       # Bypass: FORTKNOX_DISCIPLINE_BYPASS=1 (all three honor the same env var).
-      # Rule SSOT: .cursor/rules/fortknox-certification-discipline.md
-      # Author-Gate trigger: .cursor/rules/author-gate-decision-points.md §1.11
+      # Rule SSOT: .claude/rules/fortknox-certification-discipline.md
+      # Author-Gate trigger: .claude/rules/author-gate-decision-points.md §1.11
       - id: fortknox-clean-bundle
         name: "T7s.1: Fort Knox clean-bundle (§32)"
         entry: py ops_scripts/ci/check_fortknox_clean_bundle.py
@@ -826,7 +811,7 @@ repos:
       # Gates: canary PASS · trust ∈ SIGNED set · signature VERIFIED ·
       #        mutation 0 accepts · 0 BLOCKED · 0 NOT_VERIFIED · live re-verify.
       # Bypass: FORTKNOX_DISCIPLINE_BYPASS=1 (shared with T7s.1/2/3).
-      # Plan SSOT: .cursor/plans/apps-fort-knox-parity-c5d9a3.md §13–§19.
+      # Plan SSOT: .claude/plans/apps-fort-knox-parity-c5d9a3.md §13–§19.
       - id: apps-fortknox-signed-proof
         name: "T7s.4: Apps_e2e Fort Knox SIGNED_PROOF (§32)"
         entry: py ops_scripts/ci/check_apps_fortknox_signed_proof.py
@@ -839,7 +824,7 @@ repos:
       # Asserts every apps_*/ top-level package imports the agentic_core spine
       # (L0_routing | L1_cognition | L2_execution). Catches the forbidden
       # `apps_* standalone mini-runtime` mode via direct ADG SQLite query.
-      # Plan: .cursor/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2 + W5 P5.1/P5.4).
+      # Plan: .claude/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2 + W5 P5.1/P5.4).
       # Default: STRICT (W5 P5.1 flip, 2026-04-30) — exit 1 on violation.
       # Rollback: APPS_SPINE_DELEGATION_GATE_MODE=advisory (exit 0, JSON only).
       # Bypass:   APPS_SPINE_DELEGATION_GATE_BYPASS=1 (skip entirely).
@@ -884,6 +869,20 @@ repos:
         always_run: false
         require_serial: true
 
+      # ---- apps_rg Import-Boundary Ratchet (Wave 2, plan apps_rg_lean_core_binding_a1b2c3) ----
+      # Blocks NEW concrete agentic_core runtime imports from apps_rg production.
+      # Baseline (docs/reports/apps_rg/apps_rg_forbidden_core_import_baseline.json) is
+      # currently 0 violations — the binding law holds. Commit-lane scoped to apps_rg
+      # python + the ratchet test/baseline; full suite also runs in CI.
+      - id: apps-rg-import-boundary-ratchet
+        name: "T7v: apps_rg Import-Boundary Ratchet (block new concrete-core imports)"
+        entry: py -m pytest tests/architecture/test_apps_rg_import_boundary_ratchet.py -q --no-header
+        language: system
+        pass_filenames: false
+        files: ^(apps_rg/.*\.py|tests/architecture/test_apps_rg_import_boundary_ratchet\.py|docs/reports/apps_rg/apps_rg_forbidden_core_import_baseline\.json)$
+        always_run: false
+        require_serial: true
+
       # ---- MANUAL / CI-ONLY LANE -----------------------------------------------
       # Run manually: pre-commit run <id> --hook-stage manual
       - id: adg-stale-guard
@@ -907,7 +906,7 @@ repos:
       # apps_shared purity — block any import from apps_shared/ into a domain app.
       # SQLite-direct query against the canonical ADG snapshot (constitutional §28).
       # Currently 0 violations; gate locks the boundary at zero.
-      # Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (W3.2)
+      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (W3.2)
       - id: check-apps-shared-purity
         name: "CI: apps_shared purity (no domain-app imports)"
         entry: py ops_scripts/ci/check_apps_shared_purity.py
@@ -921,7 +920,7 @@ repos:
       # through telemetry/logging/OTEL emit call sites. Closes Boundary 2
       # in apps_underwriting_ai + apps_lic threat models.
       # Currently 0 violations (3 explicit waivers for env-var-name-only logs).
-      # Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
+      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
       - id: check-pii-in-telemetry
         name: "CI: PII in telemetry sinks"
         entry: py ops_scripts/ci/check_pii_in_telemetry.py
@@ -936,7 +935,7 @@ repos:
       # ADR-075 decorator). Locked at 133/133 (100%) on 2026-04-30 after
       # W-OTEL-1/2/3 mass remediation (Phase A: module-load emits).
       # Phase B (per-method spans on execute() paths) is its own plan.
-      # Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (W-OTEL-1..3 done)
+      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (W-OTEL-1..3 done)
       - id: check-apps-otel-coverage
         name: "CI: apps_* OTEL coverage (locked at 100%)"
         entry: py ops_scripts/ci/check_apps_otel_coverage.py
@@ -951,7 +950,7 @@ repos:
       # marker). Removing a decorator from a manifest-listed method is
       # a breaking observability contract change requiring Author-Gate.
       # Locked at 24/24 (100%) on 2026-04-30.
-      # Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP done)
+      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP done)
       - id: check-required-spans-coverage
         name: "CI: required spans manifest (Layer 3)"
         entry: py ops_scripts/ci/check_required_spans_coverage.py

@@ -22,7 +22,7 @@ Output:
     artifacts/ci/mcp_config_schema_cursor.json
     artifacts/ci/mcp_config_schema_windsurf.json
 
-Rule: `.cursor/rules/mcp-config-ssot.mdc` + constitutional §27
+Rule: `.claude/rules/mcp-config-ssot.mdc` + constitutional §27
 """
 
 from __future__ import annotations

@@ -14,7 +14,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none  # noqa: E402
 
 PLAN_PAGE_ID = "36d27693-f55c-81e6-b0a7-ed964b7af164"
-PLAN_PATH = ".cursor/plans/complete-open-scope-closeout-c9e4a1.md"
+PLAN_PATH = ".claude/plans/complete-open-scope-closeout-c9e4a1.md"
 SLUG = "complete-open-scope-closeout-c9e4a1"
 SUMMARY = (
     "COMPLETED (2026-05-27): Notion f8a3c2 Completed; b7e4f2 Retired; "

@@ -13,7 +13,7 @@ in plan ``plan-complete-notion-status-enforcement-a7e2d1`` (W2.P1).
 
 Algorithm
 ---------
-1. Enumerate ``.cursor/plans/*.md`` (skipping ``_archive/`` and
+1. Enumerate ``.claude/plans/*.md`` (skipping ``_archive/`` and
    ``_orphan_review/`` subdirectories).
 2. For each plan, parse the Wave Structure table for status cells.
    A plan is "all-waves-done on disk" when:
@@ -46,12 +46,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "plan_done_notion_status.json"
-PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
+PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 SKIP_SUBDIRS = {"_archive", "_orphan_review"}
 
 # Notion API
 try:
-    sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
     from _notion_constants import (  # type: ignore[import-not-found]
         NOTION_API_VERSION,
         NOTION_BASE,

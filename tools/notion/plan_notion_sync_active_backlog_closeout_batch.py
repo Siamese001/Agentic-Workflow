@@ -14,35 +14,35 @@ DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 PLANS: list[tuple[str, str, str, str]] = [
     (
         "l5-fanin-architecture-reduction-e7c4a2",
-        ".cursor/plans/l5-fanin-architecture-reduction-e7c4a2.md",
+        ".claude/plans/l5-fanin-architecture-reduction-e7c4a2.md",
         "36227693-f55c-81fc-a35b-dea4f39b11d8",
         "COMPLETED (2026-05-25): L5 fan-in W3 + ratchet PASS on adg_indexed_05242026_2005.sqlite "
         "(4 improvements, 0 regressions). W4 baseline not required.",
     ),
     (
         "apps-rg-spine-only-unification-d8f4a2",
-        ".cursor/plans/apps-rg-spine-only-unification-d8f4a2.md",
+        ".claude/plans/apps-rg-spine-only-unification-d8f4a2.md",
         "36927693-f55c-8190-b30b-de1f6534e2a7",
         "COMPLETED phase-1 (2026-05-25): W1–W4+W6 single spine; bridges deleted; ExitEvalPipeline; "
         "0 single-spine gate findings. DEFERRED: W5 L3+assembly in spine; W7 core migration.",
     ),
     (
         "apps-rg-proof-pool-c0-ssot-a7f3e2",
-        ".cursor/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md",
+        ".claude/plans/apps-rg-proof-pool-c0-ssot-a7f3e2.md",
         "36927693-f55c-8173-99c1-c25da5321677",
         "COMPLETED Track B+C containment (2026-05-25): W23 RCAs; Track C synthesis gates; "
         "targeting parity exec_summary_20260524_233409. DEFERRED: X3_ALLOW; W0–W4 FEC waves.",
     ),
     (
         "apps-rg-resume-assembly-debt-burndown-56c022",
-        ".cursor/plans/apps-rg-resume-assembly-debt-burndown-56c022.md",
+        ".claude/plans/apps-rg-resume-assembly-debt-burndown-56c022.md",
         "36827693-f55c-811f-9cae-c14d491432c4",
         "COMPLETED W0–W3 (2026-05-25): JSON SSOT, lane→rg_output merge, fail-closed assembly. "
         "DEFERRED: W4 offline demotion; W5 engines/reasoning boundary.",
     ),
     (
         "apps-rg-legacy-dependency-burndown-b7e4a2",
-        ".cursor/plans/apps-rg-legacy-dependency-burndown-b7e4a2.md",
+        ".claude/plans/apps-rg-legacy-dependency-burndown-b7e4a2.md",
         "36527693-f55c-8178-8c13-f1c889dccaf1",
         "COMPLETED phases A–C (2026-05-25): competencies contract, PA parity, Rg migration. "
         "DEFERRED: D3 stub/repair hardening; Phase E archive when fan-in zero.",

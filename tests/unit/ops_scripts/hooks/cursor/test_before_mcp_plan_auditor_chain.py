@@ -15,7 +15,7 @@ if str(HOOKS_LIB) not in sys.path:
 
 from lib import cursor_hook_common  # noqa: E402
 
-AUDITOR_PATH = REPO_ROOT / ".cursor" / "scripts" / "unified_plan_creation_auditor.py"
+AUDITOR_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "unified_plan_creation_auditor.py"
 
 
 def _load_auditor():

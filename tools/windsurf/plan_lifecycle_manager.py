@@ -27,8 +27,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # State paths
 STATE_DIR = REPO_ROOT / "artifacts" / "windsurf"
-REGISTRATION_QUEUE = REPO_ROOT / ".cursor" / "state" / "plan_registration_queue.jsonl"
-REGISTRATION_CACHE = REPO_ROOT / ".cursor" / "state" / "plan_registration_cache.json"
+REGISTRATION_QUEUE = REPO_ROOT / ".claude" / "state" / "plan_registration_queue.jsonl"
+REGISTRATION_CACHE = REPO_ROOT / ".claude" / "state" / "plan_registration_cache.json"
 
 # Constants
 MAX_RESPONSE_BYTES = 512 * 1024

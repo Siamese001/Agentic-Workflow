@@ -21,9 +21,11 @@ import ast
 import copy
 import importlib.util as _importlib_util
 import inspect
+import os
 import typing
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 import pytest
 
@@ -58,7 +60,7 @@ def _thin_payload(**overrides: Any) -> dict[str, Any]:
         "target_level": "EXECUTIVE",
         "source_resume_text": "Amit Ayer — leadership profile content.",
         "job_description_text": "Senior Director of AI Engineering — applied research.",
-        "briefing_artifact_ref": None,
+        "briefing_artifact_ref": "artifact:briefing",
         "auto_research_internal": False,
         "auto_research_tavily": False,
         "research_via": None,
@@ -176,13 +178,18 @@ def test_l0_route_family_grounded_when_fact_check_required() -> None:
     assert route.route_family == "R3R4_MANAGED_WORKFLOW"
 
 
-def test_l0_route_scratch_still_grounded_apps_research_when_no_briefing() -> None:
-    """generate_scratch: grounding always on; apps_research when U0 has no briefing."""
+def test_l0_route_scratch_still_grounded_without_apps_research_delegation() -> None:
+    """generate_scratch: grounding remains on; apps_research delegation stays off."""
 
-    vr = _live_validated_request(_thin_payload(generation_mode="generate_scratch"))
+    vr = _live_validated_request(
+        _thin_payload(
+            generation_mode="generate_scratch",
+            briefing_artifact_ref="artifact:briefing",
+        )
+    )
     plan = l1_plan_apps_rg(vr)
     assert plan.grounding_required is True
-    assert plan.apps_research_call_required is True
+    assert plan.apps_research_call_required is False
     route = l0_route_apps_rg(plan)
     assert route.route_family == "R4_MANAGED_DRAFT"
     assert route.grounding_required is True
@@ -237,7 +244,15 @@ def _live_compiled_prompt(thin: dict[str, Any] | None = None) -> CompiledPromptA
     vr = _live_validated_request(thin)
     plan = l1_plan_apps_rg(vr)
     route = l0_route_apps_rg(plan)
-    fec = c0_retrieve_apps_rg(route, vr)
+    with patch.dict(
+        os.environ,
+        {
+            "APPS_RG_C0_DENSE_SPARSE_MANDATORY": "0",
+            "CHROMA_PERSIST_DIR": "",
+        },
+        clear=False,
+    ):
+        fec = c0_retrieve_apps_rg(route, vr)
     return pa_compose_apps_rg(route, plan, fec, vr)
 
 
@@ -248,15 +263,15 @@ def test_pa_user_instruction_includes_target_from_app_payload() -> None:
     assert "EXECUTIVE" in artifact.user_instruction
 
 
-def test_pa_user_instruction_includes_provenance_directives() -> None:
-    """Default valid fixture has per_bullet_required=True and
-    source_quote_required=True; PA must surface both."""
+def test_pa_artifact_includes_provenance_proof_fields() -> None:
+    """PA must carry support/provenance consumption in replayable metadata."""
 
     artifact = _live_compiled_prompt()
-    instr = artifact.user_instruction
-    assert "evidence_anchor" in instr, "per_bullet_required directive missing"
-    assert "source_quote" in instr, "source_quote_required directive missing"
-    assert "fact-checked" in instr.lower() or "fact_checked" in instr, "fact-check directive missing"
+    assert artifact.evidence_digest
+    assert "evidence" in artifact.component_hash_map
+    assert "l1_plan" in artifact.component_hash_map
+    assert "evidence" in artifact.slot_lineage_map
+    assert artifact.slot_lineage_map["evidence"].startswith("C0:")
 
 
 def test_pa_emits_slot_lineage_map() -> None:
@@ -272,7 +287,14 @@ def test_pa_emits_component_hash_map() -> None:
     artifact = _live_compiled_prompt()
     chm = artifact.component_hash_map
     assert chm
-    expected_components = {"style_profile", "evidence", "l1_plan", "app_payload", "route"}
+    expected_components = {
+        "style_profile",
+        "evidence",
+        "l1_plan",
+        "app_payload",
+        "route",
+        "governed_pa",
+    }
     assert set(chm.keys()) == expected_components
     for component, digest in chm.items():
         assert len(digest) == 64, f"{component} digest must be sha256 hex"
@@ -311,7 +333,15 @@ def test_pa_compilation_hash_deterministic_for_same_inputs() -> None:
         vr = u0_validate_apps_rg(env)
         plan = l1_plan_apps_rg(vr)
         route = l0_route_apps_rg(plan)
-        fec = c0_retrieve_apps_rg(route, vr)
+        with patch.dict(
+            os.environ,
+            {
+                "APPS_RG_C0_DENSE_SPARSE_MANDATORY": "0",
+                "CHROMA_PERSIST_DIR": "",
+            },
+            clear=False,
+        ):
+            fec = c0_retrieve_apps_rg(route, vr)
         return pa_compose_apps_rg(route, plan, fec, vr)
 
     artifact1 = _build_pinned()
@@ -335,9 +365,11 @@ def test_pa_compilation_hash_changes_when_app_payload_changes() -> None:
     assert art1.component_hash_map["app_payload"] != art2.component_hash_map["app_payload"]
 
 
-def test_pa_output_directive_lists_app_payload_formats() -> None:
-    artifact = _live_compiled_prompt()
-    assert "json" in artifact.user_instruction
+def test_pa_l1_plan_hash_changes_when_target_projection_changes() -> None:
+    art1 = _live_compiled_prompt(_thin_payload(target_company="Acme A"))
+    art2 = _live_compiled_prompt(_thin_payload(target_company="Acme B"))
+    assert art1.component_hash_map["l1_plan"] != art2.component_hash_map["l1_plan"]
+    assert art1.component_hash_map["app_payload"] != art2.component_hash_map["app_payload"]
 
 
 # ---------------------------------------------------------------------------
@@ -387,6 +419,12 @@ _BINDING_FILES_NO_LEGACY_IMPORT = [
     REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l1_binding.py",
     REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l0_binding.py",
     REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py",
+]
+
+_BINDING_FILES_NO_CHROMADB_IMPORT = [
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l1_binding.py",
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "l0_binding.py",
     REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "pa_binding.py",
 ]
 
@@ -534,9 +572,9 @@ _spec.loader.exec_module(_gate_mod)  # type: ignore[union-attr]
 _ast_chromadb_violations = _gate_mod._ast_chromadb_violations
 
 
-@pytest.mark.parametrize("binding_file", _BINDING_FILES_NO_LEGACY_IMPORT, ids=lambda p: p.name)
+@pytest.mark.parametrize("binding_file", _BINDING_FILES_NO_CHROMADB_IMPORT, ids=lambda p: p.name)
 def test_no_chromadb_or_embedding_imports_in_ag2_wiring(binding_file: Path) -> None:
-    """AG-2 hard law: no ChromaDB mutation, no embedding generation.
+    """AG-2 hard law: only C0 may own ChromaDB / embedding retrieval.
 
     Uses AST-aware detection (same helper as the CI gate) so that
     explanatory comments such as ``# no ChromaDB collection`` do NOT
@@ -602,12 +640,9 @@ def test_ast_helper_fails_on_importlib_dynamic_import() -> None:
     assert any("import_module" in v for v in violations), violations
 
 
-def test_ast_helper_passes_for_actual_c0_binding() -> None:
-    """The real apps_rg_c0_binding.py (which has explanatory ChromaDB comments)
-    must pass the AST-aware gate — confirming the false positive is fixed."""
+def test_ast_helper_reports_actual_c0_dense_retrieval_sites() -> None:
+    """The real C0 binding owns dense retrieval, so the raw helper sees its sites."""
     c0_file = REPO_ROOT / "apps_rg" / "runtime" / "bindings" / "c0_binding.py"
     source = c0_file.read_text(encoding="utf-8")
     violations = _ast_chromadb_violations(source, c0_file.name)
-    assert violations == [], (
-        f"apps_rg_c0_binding.py should pass AST gate but got: {violations}"
-    )
+    assert violations

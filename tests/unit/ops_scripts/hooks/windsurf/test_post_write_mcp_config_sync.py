@@ -11,7 +11,7 @@ from unittest.mock import patch
 # Import the module under test
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".cursor" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts"))
 from post_write_mcp_config_sync import _validate_ssot, main
 
 

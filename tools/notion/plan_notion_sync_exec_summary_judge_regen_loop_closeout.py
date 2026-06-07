@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-judge-regen-loop-closure-d8f3a1"
-PLAN_PATH = ".cursor/plans/exec-summary-judge-regen-loop-closure-d8f3a1.md"
+PLAN_PATH = ".claude/plans/exec-summary-judge-regen-loop-closure-d8f3a1.md"
 PAGE_ID = "36b27693-f55c-8186-8829-c504c6ba97ad"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 

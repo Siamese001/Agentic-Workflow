@@ -2,7 +2,7 @@
 """
 check_plan_freshness.py — CI gate: Plan freshness + unauthorized expansion detection.
 
-Reuses W2 authorization logic from `.cursor/scripts/_plan_scope_expansion_check.py`.
+Reuses W2 authorization logic from `.claude/governance/scripts/_plan_scope_expansion_check.py`.
 Does NOT duplicate marker parsing logic.
 
 Detects:
@@ -48,7 +48,7 @@ from typing import Any
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
+PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 REPORT_OUT = REPO_ROOT / "artifacts" / "ci" / "plan_freshness_gate.json"
 
 sys.path.insert(0, str(REPO_ROOT))
@@ -202,7 +202,7 @@ def import_w2_authorization_check() -> Any:
     """
     import importlib.util
 
-    helper_path = REPO_ROOT / ".cursor" / "scripts" / "_plan_scope_expansion_check.py"
+    helper_path = REPO_ROOT / ".claude" / "governance/scripts" / "_plan_scope_expansion_check.py"
     if not helper_path.exists():
         return None
 

@@ -1,4 +1,4 @@
-"""Tests for .cursor/scripts/_legacy_windsurf/post_cursor_agent_ag_queue_drain_audit.py"""
+"""Tests for .claude/governance/scripts/_legacy_windsurf/post_cursor_agent_ag_queue_drain_audit.py"""
 from __future__ import annotations
 
 import importlib.util
@@ -11,8 +11,8 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-AUDIT_SCRIPT = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_ag_queue_drain_audit.py"
-HELPER_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "_author_gate_queue.py"
+AUDIT_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_ag_queue_drain_audit.py"
+HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_author_gate_queue.py"
 
 
 def _load_helper():
@@ -50,7 +50,7 @@ def isolated_state(tmp_path, monkeypatch):
     directly, so we can't easily monkeypatch across subprocess boundaries.
     Instead, we clean up the canonical STATE_DIR before/after each test.
     """
-    canonical = REPO_ROOT / ".cursor" / "state" / "author_gate_queue"
+    canonical = REPO_ROOT / ".claude" / "state" / "author_gate_queue"
     snapshot: dict[str, str] = {}
     if canonical.exists():
         for p in canonical.iterdir():

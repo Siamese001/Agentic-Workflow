@@ -46,7 +46,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+DB_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "author_gate_v2_bypass.jsonl"
 
 # Decision types that REQUIRE v2 fields (refactor-class per AG-1).
@@ -150,7 +150,7 @@ def check(db_path: Path, window_days: int) -> tuple[int, list[str]]:
             "",
             "Remediation: ensure DECISION_CAPTURED markers carry confidence=, gap=, "
             "principle=, precedent= per author-gate-enforcement.md §Pipeline step 9.",
-            "Run: python .cursor/scripts/author_gate_ledger_integrity.py --resign",
+            "Run: python .claude/governance/scripts/author_gate_ledger_integrity.py --resign",
         ]
         return 1, msg
     return 0, [

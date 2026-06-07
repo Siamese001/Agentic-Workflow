@@ -147,7 +147,7 @@ def main() -> int:
             f"[check_post_cursor_agent_alive] FAIL — heartbeat stale ({age_h:.1f}h > "
             f"{args.max_age_hours}h). Windsurf 2.0.67 hook-dispatcher regression "
             f"suspected. Manual replay: "
-            f"python .cursor/scripts/manual_post_cursor_agent_replay.py --clipboard",
+            f"python .claude/governance/scripts/manual_post_cursor_agent_replay.py --clipboard",
             file=sys.stderr,
         )
         _log(

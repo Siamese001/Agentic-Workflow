@@ -5,7 +5,7 @@ single source of truth for the healing/remediation ladder. It is
 deliberately SEPARATE from the RTC-REQ-056 judge panel registry in
 ``tools/certification/safety/rtc_req_056_panel.py``.
 
-Hard rules (see .cursor/rules/closed-loop-router-enforcement.md and
+Hard rules (see .claude/rules/closed-loop-router-enforcement.md and
 the control-surface separation directive):
 
   - Healing outputs may propose, repair, or generate remediation

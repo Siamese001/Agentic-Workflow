@@ -4,8 +4,8 @@ check_plan_registration_freshness.py — Pre-commit gate (T7u) + cache refresher
 
 Two responsibilities:
     1. Fetch the Notion Plans DB snapshot and cache it at
-       ``.cursor/state/plan_registration_cache.json`` (TTL 1h).
-    2. On pre-commit, fail when a newly-staged ``.cursor/plans/<slug>-<6hex>.md``
+       ``.claude/state/plan_registration_cache.json`` (TTL 1h).
+    2. On pre-commit, fail when a newly-staged ``.claude/plans/<slug>-<6hex>.md``
        has no matching Notion Plans row (and the slug is not flagged as
        registered in the queue).
 
@@ -44,7 +44,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HELPER_PATH = REPO_ROOT / ".cursor" / "scripts" / "_plan_registration.py"
+HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_plan_registration.py"
 
 _PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 _NOTION_VERSION = "2025-09-03"
@@ -167,7 +167,7 @@ def _refresh_cache(helper) -> tuple[int, str | None]:
 
 
 def _staged_new_plans() -> list[str]:
-    """Return slugs of newly-added `.cursor/plans/*.md` files in the index."""
+    """Return slugs of newly-added `.claude/plans/*.md` files in the index."""
     try:
         result = subprocess.run(
             ["git", "diff", "--cached", "--name-only", "--diff-filter=A"],
@@ -184,7 +184,7 @@ def _staged_new_plans() -> list[str]:
     slugs: list[str] = []
     for line in result.stdout.splitlines():
         p = line.strip()
-        if not p.startswith(".cursor/plans/") or not p.endswith(".md"):
+        if not p.startswith(".claude/plans/") or not p.endswith(".md"):
             continue
         name = Path(p).name
         import re as _re
@@ -301,7 +301,7 @@ def main(argv: list[str] | None = None) -> int:
         "\nFix: API-post-page into Plans DB (data source "
         f"{_PLANS_DATA_SOURCE_ID})\n"
         "  with Slug, Status (Live|Draft), Exists On Disk=true, Plan File Path,\n"
-        "  Summary, AI Summary. See .cursor/rules/plan-registration-enforcement.md.\n"
+        "  Summary, AI Summary. See .claude/rules/plan-registration-enforcement.md.\n"
         "Bypass: PLAN_REGISTRATION_BYPASS=1",
         file=sys.stderr,
     )

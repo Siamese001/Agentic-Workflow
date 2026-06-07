@@ -26,7 +26,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -40,7 +40,7 @@ from tools.notion.notion_bearer_token import get_notion_bearer_token
 from tools.reports.adg_action_queue import extract_notion_fix_rows
 
 PLAN_SLUG = "adg-action-dispatch-c9e4a2"
-PLAN_FILE = ".cursor/plans/adg-action-dispatch-c9e4a2.md"
+PLAN_FILE = ".claude/plans/adg-action-dispatch-c9e4a2.md"
 WAVE_ID = "ADG-FIX"
 AUDIT_LOG = REPO_ROOT / "artifacts" / "maintenance" / "adg_fix_backlog_sync.jsonl"
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"

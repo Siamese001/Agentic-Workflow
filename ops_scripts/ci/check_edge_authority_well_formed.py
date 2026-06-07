@@ -26,7 +26,7 @@ unresolved edges specifically, see ``check_unresolved_edges_ratchet.py``.
 
 from __future__ import annotations
 
-# W4 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md
+# W4 ADG consumer mode declaration (per .claude/rules/adg-canonical-invariants.md
 # §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "proof"
 

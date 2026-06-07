@@ -18,7 +18,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
 
 from _notion_constants import NOTION_API_VERSION, NOTION_BASE  # noqa: E402
 
@@ -33,7 +33,7 @@ from tools.notion._wave_lifecycle_helpers import (  # noqa: E402
 )
 
 EXEC_SLUG = "fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2"
-EXEC_PLAN_FILE = ".cursor/plans/fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md"
+EXEC_PLAN_FILE = ".claude/plans/fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2.md"
 WAVE_PLAN_ID = "APPS-RG-CHAT-W8"
 WPC_DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 WAVE_STATUS_DONE = "Completed"

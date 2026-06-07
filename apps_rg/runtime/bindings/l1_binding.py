@@ -104,6 +104,7 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
     manifest_digest = str(pm.get("manifest_digest") or validated_request.payload_digest)
     from apps_rg.runtime.bindings.briefing_u0_signals import (
         apps_research_call_required_at_u0,
+        briefing_validate_or_raise,
     )
     from apps_rg.runtime.bindings.l1_plan_evidence import (
         build_ambiguity_register,
@@ -121,6 +122,22 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         generation_mode in _FULL_RESUME_GENERATION_MODES
         or generation_mode in _SINGLE_SECTION_MODES
     )
+    non_product_path = bool(
+        app_payload.get("fixture_dev_only")
+        or app_payload.get("non_product_certified")
+        or app_payload.get("product_visible") is False
+    )
+    apps_research_required = apps_research_call_required_at_u0(
+        validated_request,
+        active_generation_mode=active_generation,
+    )
+    briefing_validate_or_raise(
+        validated_request,
+        active_generation_mode=active_generation,
+        product_visible=not non_product_path,
+        non_product_certified=non_product_path,
+        context=f"generation_mode={generation_mode or 'unknown'}",
+    )
 
     return L1PlanContract(
         request_id=validated_request.request_id,
@@ -130,10 +147,7 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
         task_plan=task_plan,
         required_capabilities=required_capabilities,
         grounding_required=_resume_evidence_grounding_required(generation_mode),
-        apps_research_call_required=apps_research_call_required_at_u0(
-            validated_request,
-            active_generation_mode=active_generation,
-        ),
+        apps_research_call_required=apps_research_required,
         model_generation_required=_needs_model_generation(generation_mode),
         write_authority_present=False,
         profile_manifest_digest=validated_request.payload_digest,

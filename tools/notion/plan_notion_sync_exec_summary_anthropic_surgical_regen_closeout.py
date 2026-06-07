@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-anthropic-surgical-regen-f3c8d2"
-PLAN_PATH = ".cursor/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md"
+PLAN_PATH = ".claude/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 NOTION_PAGE_ID = "36c27693-f55c-81bc-a4a3-de1022a6e532"
 
@@ -28,7 +28,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETE (2026-05-26)
 - Live: exec_summary_20260526_202438 (G5v2 cycle1 pass; regen_outcome=no_acceptable_candidate)
 - Verifier: tools/cursor/verify_exec_summary_anthropic_surgical_regen.py
 - Guide: docs/apps_rg/executive_summary_operator_guide.md
-- Disk: .cursor/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md"""
+- Disk: .claude/plans/exec-summary-anthropic-surgical-regen-f3c8d2.md"""
 
 
 def _query_page_id() -> str | None:

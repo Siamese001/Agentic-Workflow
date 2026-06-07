@@ -23,7 +23,7 @@ attestation under the CSV-gate verifier). Override with
 Fail-closed: exit 1 if any canary has fewer than the required passing
 controls. Fail-open only via `FORTKNOX_DISCIPLINE_BYPASS=1`.
 
-Advisory rule: `.cursor/rules/fortknox-certification-discipline.md`.
+Advisory rule: `.claude/rules/fortknox-certification-discipline.md`.
 """
 from __future__ import annotations
 

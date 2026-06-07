@@ -127,7 +127,7 @@ class RuntimeProfileResolver:
             profile_root: Root directory for profile storage.
                          Default: {REPO_ROOT}/config/profiles/
             schema_root: Root directory for schema files.
-                        Default: {REPO_ROOT}/.cursor/schemas/
+                        Default: {REPO_ROOT}/.claude/schemas/
             validator: Optional custom validator. If None, uses schema-aware validation.
             strict_mode: If True (default), fail closed on any validation issue.
         """
@@ -155,7 +155,7 @@ class RuntimeProfileResolver:
     def _discover_schema_root(self) -> Path:
         """Discover schema root via convention."""
         repo_root = self._discover_repo_root()
-        return repo_root / ".cursor" / "schemas"
+        return repo_root / ".claude" / "schemas"
     
     def _discover_repo_root(self) -> Path:
         """Discover repository root via marker file."""

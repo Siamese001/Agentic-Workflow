@@ -12,7 +12,7 @@ import pytest
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../.cursor/scripts/_legacy_windsurf"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../.claude/governance/scripts/_legacy_windsurf"))
 
 from _notion_constants import extract_page_id, format_uuid
 

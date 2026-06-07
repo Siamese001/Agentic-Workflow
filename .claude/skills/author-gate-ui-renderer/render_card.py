@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """render_card.py — Render an Author-Gate recommendation card + enriched options.
 
-Plan: `.cursor/plans/author-gate-hardening-a3b8f2.md` W3.P3.2.
+Plan: `.claude/plans/author-gate-hardening-a3b8f2.md` W3.P3.2.
 
 Reads an AUTHOR_GATE_PACKET JSON (the `{...}` body, without the marker prefix)
 on stdin and prints:
@@ -11,7 +11,7 @@ on stdin and prints:
    the caller should pass directly to ``ask_user_question``
 
 Usage:
-    cat packet.json | python .cursor/skills/author-gate-ui-renderer/render_card.py
+    cat packet.json | python .claude/skills/author-gate-ui-renderer/render_card.py
 
 Fail policy: exits 2 on unparseable stdin; exits 0 otherwise (fail-soft).
 """

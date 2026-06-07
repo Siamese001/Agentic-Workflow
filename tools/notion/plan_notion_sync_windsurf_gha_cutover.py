@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "windsurf-gha-cutover-d9f2a7"
-PLAN_PATH = ".cursor/plans/windsurf-gha-cutover-d9f2a7.md"
+PLAN_PATH = ".claude/plans/windsurf-gha-cutover-d9f2a7.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -27,12 +27,12 @@ AI_SUMMARY = """- Tier: T3 governance / CI
 - W0: Workflow matrix + branch protection audit (no “Windsurf Governance Health” required check)
 - W1: Remove .github/workflows/_deleted/ (windsurf-governance-health calls missing script)
 - W2: Migrate author-gate-gates, notion-plan-drift, apps-e2e workflow paths
-- W3: PLANS_DIR → .cursor/plans in drift + plan registration gates
+- W3: PLANS_DIR → .claude/plans in drift + plan registration gates
 - W4: Author-Gate schemas/scripts/state SSOT under .cursor/
 - W5: docs/reports/cursor/windsurf_gha_cutover_closeout.md
 - Keep: check_windsurf_config_schema.py until .cursor/hooks.json retired
 - Out of scope: delete entire docs/archive/windsurf/legacy-tree/ tree
-- Disk SSOT: .cursor/plans/windsurf-gha-cutover-d9f2a7.md"""
+- Disk SSOT: .claude/plans/windsurf-gha-cutover-d9f2a7.md"""
 
 
 def _query_page_id() -> str | None:

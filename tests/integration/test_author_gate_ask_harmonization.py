@@ -202,7 +202,7 @@ class TestHookCLI:
         import subprocess
         
         result = subprocess.run(
-            [sys.executable, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "pre_ask_user_question_gate.py"), "--hook-mode"],
+            [sys.executable, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_ask_user_question_gate.py"), "--hook-mode"],
             capture_output=True,
             text=True,
         )
@@ -214,7 +214,7 @@ class TestHookCLI:
         import subprocess
         
         result = subprocess.run(
-            [sys.executable, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "pre_ask_user_question_gate.py"), "--test"],
+            [sys.executable, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_ask_user_question_gate.py"), "--test"],
             capture_output=True,
             text=True,
         )
@@ -235,7 +235,7 @@ class TestHookCLI:
         }
         
         result = subprocess.run(
-            [sys.executable, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "pre_ask_user_question_gate.py")],
+            [sys.executable, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_ask_user_question_gate.py")],
             input=json.dumps(input_data),
             capture_output=True,
             text=True,

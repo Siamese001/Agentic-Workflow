@@ -50,18 +50,18 @@ plan_id: test-plan-abc123
 class TestWaveSummaryAtTop:
     def test_valid_plan_passes(self):
         content = _minimal_plan()
-        violations = validate_consolidated_wave_summary_at_top(content, ".cursor/plans/x.md")
+        violations = validate_consolidated_wave_summary_at_top(content, ".claude/plans/x.md")
         fails = [v for v in violations if v.severity == WaveSummarySeverity.FAIL]
         assert fails == []
 
     def test_missing_status_tables_fails(self):
         content = _minimal_plan(with_status_tables=False)
-        violations = validate_consolidated_wave_summary_at_top(content, ".cursor/plans/x.md")
+        violations = validate_consolidated_wave_summary_at_top(content, ".claude/plans/x.md")
         assert any(v.rule_id == "WS-TOP-1" for v in violations)
 
     def test_wave_detail_before_tables_fails(self):
         content = _minimal_plan(wave_before_tables=True)
-        violations = validate_consolidated_wave_summary_at_top(content, ".cursor/plans/x.md")
+        violations = validate_consolidated_wave_summary_at_top(content, ".claude/plans/x.md")
         assert any(v.rule_id in {"WS-TOP-2", "WS-TOP-4", "WS-TOP-5", "WS-TOP-6"} for v in violations)
 
     def test_dod_exempt_skips(self):
@@ -73,14 +73,14 @@ dod_exempt: true
 
 WAVE_ID: W1
 """
-        violations = validate_consolidated_wave_summary_at_top(content, ".cursor/plans/x.md")
+        violations = validate_consolidated_wave_summary_at_top(content, ".claude/plans/x.md")
         assert violations == []
 
     def test_archive_path_skips(self):
         content = _minimal_plan(with_status_tables=False)
         violations = validate_consolidated_wave_summary_at_top(
             content,
-            ".cursor/plans/_archive/2026-05/x.md",
+            ".claude/plans/_archive/2026-05/x.md",
         )
         assert violations == []
 
@@ -109,7 +109,7 @@ WAVE_ID: W1
 WAVE_STATUS: TODO
 WAVE_COMPLETE: NO
 """
-        violations = validate_consolidated_wave_summary_at_top(content, ".cursor/plans/x.md")
+        violations = validate_consolidated_wave_summary_at_top(content, ".claude/plans/x.md")
         fails = [v for v in violations if v.severity == WaveSummarySeverity.FAIL]
         warns = [v for v in violations if v.severity == WaveSummarySeverity.WARN]
         assert fails == []

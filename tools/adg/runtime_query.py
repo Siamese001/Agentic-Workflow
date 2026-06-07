@@ -44,7 +44,7 @@ valid. This preserves the "library is safe to call from guardrails" contract.
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .claude/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 
@@ -69,7 +69,7 @@ MAX_TRAVERSAL_DEPTH: Final[int] = 5
 MAX_FANOUT_ROWS: Final[int] = 50
 
 # Archetype classification thresholds (doctrine §3; see
-# .cursor/rules/adg-canonical-invariants.md).
+# .claude/rules/adg-canonical-invariants.md).
 CENTRAL_DEPENDENCY_FAN_IN: Final[int] = 20
 ORCHESTRATOR_FAN_OUT: Final[int] = 25
 

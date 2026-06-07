@@ -79,7 +79,7 @@ class TestExemptions:
 
     def test_active_surfaces_not_exempt(self):
         """Active decision surfaces are NOT exempt."""
-        path = REPO_ROOT / ".cursor" / "skills" / "structured-reasoning" / "SKILL.md"
+        path = REPO_ROOT / ".claude" / "skills" / "structured-reasoning" / "SKILL.md"
         is_exempt, _ = _is_exempt(path)
         assert is_exempt is False
 
@@ -218,7 +218,7 @@ def emit():
     print("AUTHOR_GATE_PACKET: " + json.dumps(packet))
 '''
         # Create file in AG pipeline path
-        path = REPO_ROOT / ".cursor" / "skills" / "author-gate-packet-builder" / "emit_packet.py"
+        path = REPO_ROOT / ".claude" / "skills" / "author-gate-packet-builder" / "emit_packet.py"
         
         violations = _detect_ag_packet_outside_path(content, path)
         assert len(violations) == 0
@@ -431,7 +431,7 @@ class TestActiveSurfaceCheck:
     """Verify active surfaces are identified."""
 
     def test_structured_reasoning_is_active(self):
-        path = REPO_ROOT / ".cursor" / "skills" / "structured-reasoning" / "SKILL.md"
+        path = REPO_ROOT / ".claude" / "skills" / "structured-reasoning" / "SKILL.md"
         assert _is_active_surface(path) is True
 
     def test_decision_gate_is_active(self):

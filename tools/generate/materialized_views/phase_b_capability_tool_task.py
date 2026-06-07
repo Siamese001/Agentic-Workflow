@@ -92,13 +92,15 @@ def _build_gateway_approved_clause(col: str) -> str:
     return f"({frags})"
 
 
-def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
+def materialize_phase_b(sqlite_path: Path, *, conn: sqlite3.Connection | None = None) -> dict[str, int]:
     """Create all Phase B materialized tables. Idempotent — safe to call repeatedly.
 
     Returns:
         dict mapping table_name -> row_count for each Phase B table.
     """
-    conn = _connect_sqlite(sqlite_path)
+    _owns_conn = conn is None
+    if conn is None:
+        conn = _connect_sqlite(sqlite_path)
     conn.execute("PRAGMA cache_size = -64000")
     conn.execute("PRAGMA temp_store = MEMORY")
     cur = conn.cursor()
@@ -162,7 +164,7 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
           AND n.resolved_path NOT LIKE 'tools/%'
           AND n.resolved_path NOT LIKE 'ops_scripts/%'
           -- Non-runtime tooling / hook exclusions (2026-04-23):
-          AND n.resolved_path NOT LIKE '.cursor/scripts/_legacy_windsurf/%'
+          AND n.resolved_path NOT LIKE '.claude/governance/scripts/_legacy_windsurf/%'
           AND n.resolved_path NOT LIKE 'agentic_core/adg/%'
           AND n.resolved_path NOT LIKE 'infrastructure/%'
           -- Sanctioned gateway adapter modules ARE the capability route;
@@ -216,7 +218,7 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
           AND src.resolved_path NOT LIKE 'tools/%'
           AND src.resolved_path NOT LIKE 'ops_scripts/%'
           -- Non-runtime tooling / hook exclusions (2026-04-23, same class as W5 write_sov):
-          AND src.resolved_path NOT LIKE '.cursor/scripts/_legacy_windsurf/%'
+          AND src.resolved_path NOT LIKE '.claude/governance/scripts/_legacy_windsurf/%'
           AND src.resolved_path NOT LIKE 'agentic_core/adg/%'
           AND src.resolved_path NOT LIKE 'infrastructure/%'
           -- Pure-string stdlib symbols are scanner false-positives for invokes_provider
@@ -680,5 +682,6 @@ def materialize_phase_b(sqlite_path: Path) -> dict[str, int]:
             row = cur.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()
             counts[tbl] = row[0] if row else 0
     finally:
-        conn.close()
+        if _owns_conn:
+            conn.close()
     return counts

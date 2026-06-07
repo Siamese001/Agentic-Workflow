@@ -43,11 +43,11 @@ def main() -> int:
 
     emit = _load(
         "emit_packet_prepare",
-        REPO_ROOT / ".cursor" / "skills" / "author-gate-packet-builder" / "emit_packet.py",
+        REPO_ROOT / ".claude" / "skills" / "author-gate-packet-builder" / "emit_packet.py",
     )
     render = _load(
         "render_card_prepare",
-        REPO_ROOT / ".cursor" / "skills" / "author-gate-ui-renderer" / "render_card.py",
+        REPO_ROOT / ".claude" / "skills" / "author-gate-ui-renderer" / "render_card.py",
     )
 
     packet = emit.build_packet(spec)

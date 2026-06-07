@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gate G-REGISTRY-GRAPH-INTEGRITY — dedicated registry-graph lane.
 
-Plan: ``.cursor/plans/adg-three-graph-harness-e57cc7.md`` (W2.P1).
+Plan: ``.claude/plans/adg-three-graph-harness-e57cc7.md`` (W2.P1).
 
 Until this lane existed, the registry bucket had NO dedicated CI gate — its
 correctness was folded into the cross-bucket gap thresholds. That left

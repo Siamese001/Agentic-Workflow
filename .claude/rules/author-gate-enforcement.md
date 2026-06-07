@@ -5,7 +5,7 @@
 
 > **Terminology**: Governs **Author-Gate Decisions** (developer-loop / harness-side, per ADR-023). NOT runtime HITL (v30 step [5] in `agentic_core/L5_safety/`). Historical `HITL_PACKET:` markers retain legacy names.
 
-> **Packet shape SSOT**: `.cursor/schemas/author_gate_packet.schema.json`. This rule defines *when to fire* and *score discipline*; field-level shape defers to the schema.
+> **Packet shape SSOT**: `.claude/schemas/author_gate_packet.schema.json`. This rule defines *when to fire* and *score discipline*; field-level shape defers to the schema.
 
 ## Pipeline (Tier 1 — do not duplicate here)
 
@@ -100,7 +100,7 @@ ask_user_question(
 
 ## Where detail lives
 
-AG-10 shape: `author-gate-packet-builder` skill. Triggers: `author-gate-decision-points.md`. SVP calibration: `author-gate-svp-calibration.md`. Precedent: `refactor-decision-memory` skill. Ledger: `.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite`. Bypass: `AUTHOR_GATE_STALE_BYPASS=1`.
+AG-10 shape: `author-gate-packet-builder` skill. Triggers: `author-gate-decision-points.md`. SVP calibration: `author-gate-svp-calibration.md`. Precedent: `refactor-decision-memory` skill. Ledger: `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite`. Bypass: `AUTHOR_GATE_STALE_BYPASS=1`.
 
 ## Calibration-driven triggers
 

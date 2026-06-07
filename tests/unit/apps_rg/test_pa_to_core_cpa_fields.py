@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from agentic_core.L0_routing.config.model_registry import QWEN_LOCAL_MODEL_ID
-
 from apps_rg.l2_recipe.pa_to_core_cpa import adapt_apps_rg_cpa_for_l2_envelope
+from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MODEL_ID
 
 
 def test_adapt_maps_unspecified_model_to_ssot():

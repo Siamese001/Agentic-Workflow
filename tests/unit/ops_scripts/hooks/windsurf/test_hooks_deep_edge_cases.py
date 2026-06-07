@@ -30,8 +30,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[5]
-# Authoritative hook implementations for this repo live under `.cursor/scripts`.
-sys.path.insert(0, str(_REPO_ROOT / ".cursor" / "scripts"))
+# Authoritative hook implementations for this repo live under `.claude/governance/scripts`.
+sys.path.insert(0, str(_REPO_ROOT / ".claude" / "governance/scripts"))
 
 # Repo-relative .py path for pre_write_gate payloads — avoids SSOT repo-root-py
 # blocks on synthetic top-level names (constitutional §31 / _ssot_folder_check).

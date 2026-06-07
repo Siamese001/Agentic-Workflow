@@ -10,7 +10,7 @@ Pipeline:
          - precedent (via precedent_injector.py)
          - routing rules (dominance / low-conf / surface-top-N)
          - decision_id (ulid-like)
-    3. Validate against .cursor/schemas/decision_record.schema.json
+    3. Validate against .claude/schemas/decision_record.schema.json
     4. Emit AUTHOR_GATE_PACKET: {<json>} to stdout (with HITL_PACKET: legacy alias)
     5. Exit 0 on success, 1 on validation failure, 2 on fatal error
 
@@ -53,8 +53,8 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 # Canonical SSOT schema (plan author-gate-ssot-consolidation-b7c3e1).
 # Legacy decision_record.schema.json remains the ledger-row schema; this
 # packet schema is the emit-time SSOT shared with all 4 audit hooks.
-SCHEMA_PATH = REPO_ROOT / ".cursor" / "schemas" / "author_gate_packet.schema.json"
-RULE_PATH = REPO_ROOT / ".cursor" / "rules" / "author-gate-enforcement.mdc"
+SCHEMA_PATH = REPO_ROOT / ".claude" / "schemas" / "author_gate_packet.schema.json"
+RULE_PATH = REPO_ROOT / ".claude" / "rules" / "author-gate-enforcement.mdc"
 PRECEDENT_SCRIPT = Path(__file__).resolve().parent / "precedent_injector.py"
 
 # Shared schema loader — single import surface for emit + audits.
@@ -269,7 +269,7 @@ def _validate_schema(packet: dict[str, Any]) -> list[str]:
     """Schema-first validation against the canonical SSOT schema.
 
     Plan author-gate-ssot-consolidation-b7c3e1 W2.P2.1: prefer jsonschema lib
-    against ``.cursor/schemas/author_gate_packet.schema.json`` and fall back
+    against ``.claude/schemas/author_gate_packet.schema.json`` and fall back
     to the legacy hand-rolled checks when the lib is unavailable.
     """
     errors: list[str] = []
@@ -498,7 +498,7 @@ def _latest_calibrator_version(decision_type: str) -> str | None:
     try:
         import sqlite3 as _sqlite3  # pylint: disable=import-outside-toplevel
 
-        db = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+        db = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
         if not db.exists():
             return None
         with _sqlite3.connect(str(db), timeout=3) as conn:

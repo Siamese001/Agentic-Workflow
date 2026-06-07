@@ -22,8 +22,8 @@ NEXT_STEP: plan=<slug-or-NEW:slug> title=<short> priority=<P2..P5> est_tokens=<N
 | Concern | Location |
 |---|---|
 | Full marker contract (all fields, defaults, examples) | (this rule was the SSOT — full text preserved in git history at HEAD~1) |
-| Auto-capture flow | `.cursor/scripts/post_cursor_agent_next_step_capture.py` |
-| Plan auto-scaffold | `.cursor/scripts/_deferred_scope_plan_scaffold.py` |
+| Auto-capture flow | `.claude/governance/scripts/post_cursor_agent_next_step_capture.py` |
+| Plan auto-scaffold | `.claude/governance/scripts/_deferred_scope_plan_scaffold.py` |
 | CI gate | `ops_scripts/ci/check_notion_plan_file_drift.py` |
 | Bypass | `NEXT_STEP_CAPTURE_BYPASS=1` |
 

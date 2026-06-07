@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "c03-exec-summary-gaps-v2-a8f2e1"
-PLAN_PATH = ".cursor/plans/c03-exec-summary-gaps-v2-a8f2e1.md"
+PLAN_PATH = ".claude/plans/c03-exec-summary-gaps-v2-a8f2e1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 NOTION_PAGE_ID = "36c27693-f55c-813b-87b8-f231ed2b6cf8"
 

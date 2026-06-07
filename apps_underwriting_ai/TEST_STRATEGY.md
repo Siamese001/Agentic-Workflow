@@ -143,5 +143,5 @@ apps_underwriting_ai tests run in the standard test suite. No app-specific gates
 
 - `apps_rfp/TEST_STRATEGY.md` — sibling pattern (where extant)
 - Constitutional §1 — no test skipping
-- `.cursor/skills/testing-framework/` — test rigor invariants
+- `.claude/skills/testing-framework/` — test rigor invariants
 - Plan: `docs/archive/windsurf/legacy-tree/plans/apps-completeness-followups-287d2a.md` (this doc + contract tests)

@@ -13,7 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SCAN_ROOTS = (
     REPO_ROOT / "apps_rg",
     REPO_ROOT / "ops_scripts",
-    REPO_ROOT / ".cursor" / "rules",
+    REPO_ROOT / ".claude" / "rules",
 )
 
 # Historical closeout JSON/manifests are evidence, not operator runbooks.

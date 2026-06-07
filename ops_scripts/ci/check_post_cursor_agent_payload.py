@@ -8,7 +8,7 @@ which escapes newlines and breaks multiline regex anchors.
 
 This gate enforces:
 
-  1. Every ``.cursor/scripts/post_cursor_agent_*.py`` hook (excluding helpers
+  1. Every ``.claude/governance/scripts/post_cursor_agent_*.py`` hook (excluding helpers
      prefixed with `_` and the heartbeat which has no payload) MUST
      ``from _post_cursor_agent_payload import extract_response_text`` OR
      accept raw stdin without JSON parsing (the heartbeat/cleanup case).
@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
-_SCRIPTS = _ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
+_SCRIPTS = _ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
 
 # Hooks that legitimately do not read stdin — they are pure-side-effect writers.
 _NO_STDIN_HOOKS: frozenset[str] = frozenset(
@@ -81,7 +81,7 @@ def check_file(path: Path) -> list[str]:
         problems.append(
             f"{path.name}: reads payload.get('response') without consulting "
             f"tool_info. Replace with `{_REQUIRED_IMPORT}` (see "
-            f".cursor/scripts/_post_cursor_agent_payload.py)."
+            f".claude/governance/scripts/_post_cursor_agent_payload.py)."
         )
     elif not has_tool_info and "sys.stdin" in source:
         problems.append(
@@ -117,7 +117,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             "\nRemediation: each post_cursor_agent_*.py hook MUST use\n"
             f"    {_REQUIRED_IMPORT}\n"
-            "See .cursor/scripts/_post_cursor_agent_payload.py for the SSOT."
+            "See .claude/governance/scripts/_post_cursor_agent_payload.py for the SSOT."
         )
         return 1
 

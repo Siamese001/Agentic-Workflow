@@ -69,7 +69,7 @@ DB_PATH = REFACTOR_DECISION_LEDGER_DB
 _DEFAULT_LIMIT = 5
 _MAX_LIMIT = 20
 
-_SCRIPTS_DIR = REPO_ROOT / ".cursor" / "scripts"
+_SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance/scripts"
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 try:

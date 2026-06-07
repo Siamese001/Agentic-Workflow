@@ -17,7 +17,7 @@ import importlib.util
 
 _ep_spec = importlib.util.spec_from_file_location(
     "emit_packet_ag_w2_golden",
-    REPO / ".cursor" / "skills" / "author-gate-packet-builder" / "emit_packet.py",
+    REPO / ".claude" / "skills" / "author-gate-packet-builder" / "emit_packet.py",
 )
 assert _ep_spec and _ep_spec.loader
 ep = importlib.util.module_from_spec(_ep_spec)

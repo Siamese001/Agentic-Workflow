@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-env-kill-switch-cleanup-f8e2a3"
-PLAN_PATH = ".cursor/plans/apps-rg-env-kill-switch-cleanup-f8e2a3.md"
+PLAN_PATH = ".claude/plans/apps-rg-env-kill-switch-cleanup-f8e2a3.md"
 PARENT_SLUG = "apps-rg-runtime-substitute-burndown-c4e8f1"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 

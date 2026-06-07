@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HOOK = REPO_ROOT / ".cursor" / "scripts" / "_legacy_cursor" / "post_cursor_agent_heartbeat.py"
+HOOK = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_cursor" / "post_cursor_agent_heartbeat.py"
 
 
 def _run(env_overrides: dict[str, str] | None = None) -> subprocess.CompletedProcess:

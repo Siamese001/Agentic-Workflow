@@ -30,7 +30,7 @@ DEFAULT_QUEUE = REPO_ROOT / "artifacts" / "capture" / "markers.jsonl"
 
 # Make the capture hook importable. It's a script, not a package, so we add
 # its directory to sys.path explicitly.
-_HOOK_DIR = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
+_HOOK_DIR = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
 if str(_HOOK_DIR) not in sys.path:
     sys.path.insert(0, str(_HOOK_DIR))
 

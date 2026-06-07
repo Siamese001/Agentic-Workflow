@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "l5-pa-orchestrator-ref-forward-c7e4a1"
-PLAN_PATH = ".cursor/plans/l5-pa-orchestrator-ref-forward-c7e4a1.md"
+PLAN_PATH = ".claude/plans/l5-pa-orchestrator-ref-forward-c7e4a1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -26,7 +26,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETE (2026-05-24)
 - Root cause: runtime_route_to_orchestrator_route omitted l5_certification_ref
 - Fix: OrchRoute field + governed_pa_compose forward; pa_compose no L5CertRefViolation
 - Files: route_contract.py (L0 c0), governed_pa_compose.py, test_apps_rg_governed_pa_w5.py
-- Disk: .cursor/plans/l5-pa-orchestrator-ref-forward-c7e4a1.md"""
+- Disk: .claude/plans/l5-pa-orchestrator-ref-forward-c7e4a1.md"""
 
 
 def _query_page_id() -> str | None:

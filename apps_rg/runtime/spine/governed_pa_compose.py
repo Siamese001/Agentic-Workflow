@@ -46,6 +46,18 @@ def _sha256_hex64(payload: str) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def _sha256_json_hex64(payload: Any) -> str:
+    return _sha256_hex64(json.dumps(payload, sort_keys=True, default=str))
+
+
+def _stable_app_payload_for_hash(payload: Mapping[str, Any]) -> dict[str, Any]:
+    stable = json.loads(json.dumps(dict(payload or {}), sort_keys=True, default=str))
+    receipt = stable.get("package_validation_receipt")
+    if isinstance(receipt, dict):
+        receipt.pop("timestamp_iso", None)
+    return stable
+
+
 def _policy_hashes(route: RouteContract, plan: L1PlanContract) -> tuple[str, str]:
     policy = str(getattr(route, "route_digest", "") or "")[:32]
     blueprint = str(plan.profile_manifest_digest or "")[:32]
@@ -57,7 +69,7 @@ def _policy_hashes(route: RouteContract, plan: L1PlanContract) -> tuple[str, str
 
 
 def _map_support_status(status: str) -> Any:
-    from agentic_core.L0_routing.c0_retrieval.verdicts import SupportStatus
+    from apps_rg.runtime.spine.governed_pa_c0_contracts import SupportStatus
 
     mapping = {
         "PASS": SupportStatus.PASS,
@@ -79,17 +91,16 @@ def runtime_fec_to_orchestrator_contract(
     plan: L1PlanContract,
 ) -> Any:
     """Adapt runtime ``FinalEvidenceContract`` for core PA orchestrator."""
-    from agentic_core.L0_routing.c0_retrieval.candidate_pool import (
+    from apps_rg.runtime.spine.governed_pa_c0_contracts import (
         CandidateChunk,
-        HydrationManifest,
-    )
-    from agentic_core.L0_routing.c0_retrieval.final_contract import FinalEvidenceContract
-    from agentic_core.L0_routing.c0_retrieval.hydration import (
         ChunkBoundaryRisk,
+        FinalEvidenceContract,
         HydratedChunk,
+        HydrationManifest,
         QualityFlags,
+        RetrievalLane,
+        SourceClass,
     )
-    from agentic_core.L0_routing.c0_retrieval.verdicts import RetrievalLane, SourceClass
 
     policy_hash, blueprint_hash = _policy_hashes(route, plan)
     hydrated: list[HydratedChunk] = []
@@ -148,8 +159,11 @@ def runtime_fec_to_orchestrator_contract(
 
 
 def runtime_route_to_orchestrator_route(route: RouteContract) -> Any:
-    from agentic_core.L0_routing.c0_retrieval.route_contract import RouteContract as OrchRoute
-    from agentic_core.L0_routing.c0_retrieval.verdicts import FreshnessClass, SupportTarget
+    from apps_rg.runtime.spine.governed_pa_c0_contracts import (
+        FreshnessClass,
+        RouteContract as OrchRoute,
+        SupportTarget,
+    )
 
     policy_hash, blueprint_hash = _policy_hashes(route, L1PlanContract(
         request_id=route.request_id,
@@ -159,10 +173,14 @@ def runtime_route_to_orchestrator_route(route: RouteContract) -> Any:
         l5_certification_ref=route.l5_certification_ref,
     ))
     l5_ref = str(getattr(route, "l5_certification_ref", "") or "").strip()
+    execution_form = str(route.execution_form or "SINGLE_STEP").upper()
+    if execution_form == "MANAGED_WORKFLOW":
+        execution_form = "MANAGED_WORKFLOW_STEP"
+
     return OrchRoute(
         route_id=route.route_id,
         grounding_required=bool(route.grounding_required),
-        execution_form=str(route.execution_form or "SINGLE_STEP").upper(),
+        execution_form=execution_form,
         freshness_class=FreshnessClass.CURRENT,
         support_target=SupportTarget.SOURCE_SUMMARY,
         tenant_scope=str(route.tenant_id or "apps_rg"),
@@ -180,7 +198,7 @@ def runtime_plan_to_orchestrator_plan(
     plan: L1PlanContract,
     validated_request: ValidatedRequest,
 ) -> Any:
-    from agentic_core.L0_routing.c0_retrieval.route_contract import L1PlanContract as OrchPlan
+    from apps_rg.runtime.spine.governed_pa_c0_contracts import L1PlanContract as OrchPlan
 
     qs = dict(plan.query_spec or {})
     tgt = qs.get("target") if isinstance(qs.get("target"), dict) else {}
@@ -240,12 +258,53 @@ def envelope_to_runtime_compiled_prompt(
     gate_refs.append(f"pa_hmac:{envelope.hmac_signature[:32]}")
     gate_refs.extend(list(route.gate_verdict_refs or ()))
 
-    component_hash_map = {
-        "style_profile": envelope.manifest_hash[:32],
-        "evidence": str(getattr(fec, "final_evidence_digest", "") or "")[:32],
-        "route": str(route.route_digest or route.hmac_sig or "")[:32],
-        "governed_pa": envelope.hmac_signature[:32],
+    plan_key = {
+        "task_spec": dict(plan.task_spec or {}),
+        "query_spec": dict(plan.query_spec or {}),
+        "support_expectation": dict(plan.support_expectation or {}),
+        "output_expectation": dict(plan.output_expectation or {}),
     }
+    app_payload = _stable_app_payload_for_hash(
+        getattr(validated_request, "app_payload", None) or {}
+    )
+    route_key = {
+        "route_id": route.route_id,
+        "route_family": route.route_family,
+        "execution_form": route.execution_form,
+        "provider_model_requirement_ref": route.provider_model_requirement_ref,
+    }
+    ev_digest = str(
+        getattr(fec, "final_evidence_digest", "")
+        or getattr(fec, "compilation_hash", "")
+        or ""
+    )
+    component_hash_map = {
+        "style_profile": _sha256_json_hex64(
+            {
+                "governed_pa_mode": GOVERNED_PA_MODE_INTEGRATED,
+                "target_model": APPS_RG_TARGET_MODEL,
+                "target_provider": APPS_RG_TARGET_PROVIDER,
+            }
+        ),
+        "evidence": _sha256_hex64(ev_digest),
+        "l1_plan": _sha256_json_hex64(plan_key),
+        "app_payload": _sha256_json_hex64(app_payload),
+        "route": _sha256_json_hex64(route_key),
+        "governed_pa": _sha256_hex64(envelope.hmac_signature),
+    }
+    slot_lineage_map: dict[str, str] = {
+        "system_block_0": "PA-authored|SYSTEM_INTERNAL|core_assemble_prompt",
+        "user_block_1": "USER_INTENT|L1_PLAN_PROJECTIONS|core_assemble_prompt",
+        "evidence": f"C0:{ev_digest}",
+    }
+    for idx, row in enumerate(envelope.slot_manifest):
+        if not isinstance(row, dict):
+            continue
+        slot_id = str(row.get("slot_id") or row.get("slot") or "").strip()
+        if not slot_id:
+            continue
+        status = str(row.get("status") or "resolved")
+        slot_lineage_map[f"slot_{idx}"] = f"{slot_id}|{status}"
     rk = plan.replay_key or getattr(validated_request, "replay_key", "") or ""
 
     return CompiledPromptArtifact(
@@ -261,11 +320,7 @@ def envelope_to_runtime_compiled_prompt(
         target_provider=APPS_RG_TARGET_PROVIDER,
         evidence_digest=str(getattr(fec, "final_evidence_digest", "") or ""),
         compilation_hash=envelope.manifest_hash,
-        slot_lineage_map={
-            str(row.get("slot_id", "")): str(row.get("slot_id", ""))
-            for row in envelope.slot_manifest
-            if isinstance(row, dict)
-        },
+        slot_lineage_map=slot_lineage_map,
         component_hash_map=component_hash_map,
         replay_manifest_ref=f"replay_key:{envelope.replay_key or rk}",
         per_input_hash_map=dict(getattr(plan, "per_input_hash_map", None) or {}),

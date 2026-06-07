@@ -37,7 +37,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
 
 from _notion_constants import NOTION_API_VERSION, query_url  # noqa: E402
 from _plans_dup_detector import (  # noqa: E402
@@ -46,7 +46,7 @@ from _plans_dup_detector import (  # noqa: E402
     find_duplicate_groups,
 )
 
-CACHE_PATH = REPO_ROOT / ".cursor" / "state" / "plan_registration_cache.json"
+CACHE_PATH = REPO_ROOT / ".claude" / "state" / "plan_registration_cache.json"
 VIOLATIONS_LOG = (
     REPO_ROOT / "artifacts" / "windsurf" / "notion_plans_dup_violations.jsonl"
 )

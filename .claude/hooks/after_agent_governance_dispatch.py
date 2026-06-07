@@ -21,7 +21,7 @@ from pathlib import Path
 from lib.claude_hook_common import cursor_response_payload, read_payload
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = REPO_ROOT / ".cursor" / "scripts"
+SCRIPTS = REPO_ROOT / ".claude" / "governance" / "scripts"
 NOTION_AUDITOR = REPO_ROOT / "tools" / "notion" / "unified_notion_status_auditor.py"
 
 _SCRIPT_EXTRA_ARGS: dict[str, tuple[str, ...]] = {
@@ -72,7 +72,7 @@ def _run_dispatch(parsed_raw: str) -> None:
     import io
 
     os.environ["POST_CURSOR_AGENT_DISPATCHER"] = "1"
-    # The dispatch module imports `_post_handlers` (sibling under .cursor/scripts) and repo-root
+    # The dispatch module imports `_post_handlers` (sibling under .claude/governance/scripts) and repo-root
     # packages; ensure both are importable since the hook runs from .claude/hooks.
     for extra in (str(REPO_ROOT), str(SCRIPTS)):
         if extra not in sys.path:

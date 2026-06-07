@@ -8,10 +8,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-SCRIPTS = REPO / ".cursor" / "scripts"
+SCRIPTS = REPO / ".claude" / "governance/scripts"
 HOOKS_JSON = REPO / ".cursor" / "hooks.json"
 GOVERNANCE_DISPATCH = REPO / ".cursor" / "hooks" / "after_agent_governance_dispatch.py"
-DISPATCH_LEGACY = REPO / ".cursor" / "scripts" / "post_cursor_agent_dispatch.py"
+DISPATCH_LEGACY = REPO / ".claude" / "governance/scripts" / "post_cursor_agent_dispatch.py"
 OUT_JSON = REPO / "docs/reports/cursor/governance_w3_hook_audit_matrix.json"
 OUT_MD = REPO / "docs/reports/cursor/governance_w3_hook_audit_matrix.md"
 
@@ -121,7 +121,7 @@ def main() -> int:
             counts["duplicate_candidate"] += 1
 
         row = {
-            "script_path": f".cursor/scripts/{name}",
+            "script_path": f".claude/governance/scripts/{name}",
             "current_hook_status": "wired_via_governance_dispatch" if name in wired else "not_in_after_agent_chain",
             "recommended_disposition": disp,
             "reason": OBSOLETE_CANDIDATE.get(name, "governance W3 matrix classification"),

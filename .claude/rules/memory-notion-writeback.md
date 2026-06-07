@@ -22,10 +22,10 @@ These events fire writeback without a prompt:
 
 1. New `docs/architecture/adr/ADR-*.md` → **filesystem SSOT only** (ADR Registry archived 2026-05-02; on-disk markdown is the sole canonical record)
 2. `.mcp.json` change → **filesystem SSOT only** (MCP Registry archived 2026-05-02; no Notion write)
-3. Gate behavior change in `.cursor/scripts/*_gate.py` → commit message + Memory MCP only (MCP Registry archived 2026-05-02)
-4. Resolved scored `ask_user_question` → `.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite` via `tools/capture/append_marker.py` (Author-Gate Decision Ledger archived 2026-05-02)
+3. Gate behavior change in `.claude/governance/scripts/*_gate.py` → commit message + Memory MCP only (MCP Registry archived 2026-05-02)
+4. Resolved scored `ask_user_question` → `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite` via `tools/capture/append_marker.py` (Author-Gate Decision Ledger archived 2026-05-02)
 5. New SC/AP defects from `generate_full_adg.py` → `artifacts/adg/*.sqlite` + violation JSON (SC/AP Violation Backlog archived 2026-05-02; no Notion write)
-6. New plan file in `.cursor/plans/` → Memory `Project:<plan-slug>` + Notion Plans DB row (§36)
+6. New plan file in `.claude/plans/` → Memory `Project:<plan-slug>` + Notion Plans DB row (§36)
 7. Recurring bug or anti-pattern diagnosis → Memory `ProceduralPattern:*`
 
 ## Where the procedural detail lives
@@ -34,7 +34,7 @@ These events fire writeback without a prompt:
 |---|---|
 | Full decision table + entity types + DB IDs | `.claude/skills/writeback-discipline/SKILL.md` + `AGENTS.md` Notion Workspace Map |
 | Memory MCP usage | `.claude/skills/memory-mcp/SKILL.md` + `memory-management.md` |
-| Auto-capture hook | `.cursor/scripts/post_cursor_agent_writeback_audit.py` |
+| Auto-capture hook | `.claude/governance/scripts/post_cursor_agent_writeback_audit.py` |
 | Stale-source sniff test | (this rule was SSOT — full text preserved in git history at HEAD~1) |
 | Bypass | `WRITEBACK_AUDIT_BYPASS=1` |
 

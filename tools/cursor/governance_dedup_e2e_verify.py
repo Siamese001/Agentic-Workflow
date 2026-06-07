@@ -12,12 +12,12 @@ REPO = Path(__file__).resolve().parents[2]
 GATES: list[tuple[str, list[str]]] = [
     ("check_ag_hook_wiring", ["python", "ops_scripts/ci/check_ag_hook_wiring.py"]),
     ("check_agents_md_sync", ["python", "ops_scripts/ci/check_agents_md_sync.py"]),
-    ("check_cursor_optimized_config", ["python", ".cursor/scripts/check_cursor_optimized_config.py"]),
-    ("generate_rules_index_check", ["python", ".cursor/scripts/generate_rules_index.py", "--check"]),
+    ("check_cursor_optimized_config", ["python", ".claude/governance/scripts/check_cursor_optimized_config.py"]),
+    ("generate_rules_index_check", ["python", ".claude/governance/scripts/generate_rules_index.py", "--check"]),
     ("check_always_on_token_budget", ["python", "ops_scripts/ci/check_always_on_token_budget.py"]),
     (
         "check_cursor_native_config_strict",
-        ["python", ".cursor/scripts/check_cursor_native_config.py", "--strict"],
+        ["python", ".claude/governance/scripts/check_cursor_native_config.py", "--strict"],
     ),
     (
         "governance_w3_hook_audit_matrix",
@@ -36,8 +36,8 @@ REQUIRED_PATHS = [
     "docs/reports/cursor/plan_sprawl_inventory_20260526.csv",
     "docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md",
     ".cursor/hooks/after_agent_governance_dispatch.py",
-    ".cursor/plans/_archive/2026-05",
-    ".cursor/scripts/_legacy_cursor",
+    ".claude/plans/_archive/2026-05",
+    ".claude/governance/scripts/_legacy_cursor",
 ]
 
 CLOSEOUT_SLUG = "governance-dedup-closeout-e8a4c2"
@@ -105,7 +105,7 @@ def _structural_checks() -> list[str]:
     if scan_windsurf_always_on_md():
         errors.append("windsurf still has trigger: always_on files")
     plan_count = sum(
-        1 for p in (REPO / ".cursor/plans").iterdir() if p.is_file() and p.suffix == ".md"
+        1 for p in (REPO / ".claude/plans").iterdir() if p.is_file() and p.suffix == ".md"
     )
     if plan_count > 20:
         errors.append(f"top-level plan count {plan_count} > 20")

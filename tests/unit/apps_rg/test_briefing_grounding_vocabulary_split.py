@@ -1,12 +1,15 @@
-"""apps_rg L1 vocabulary: grounding always on; apps_research only without U0 briefing."""
+"""apps_rg L1 vocabulary: grounding on; apps_research delegation disabled."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
+
+import pytest
 
 from agentic_core.L0_routing.u0_intake_validator import AuthorityValidationReceipt
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 
 from apps_rg.runtime.bindings.briefing_u0_signals import (
+    BriefingMissingError,
     apps_research_call_required_at_u0,
     briefing_supplied_at_u0,
 )
@@ -55,7 +58,7 @@ def test_inline_briefing_text_counts_as_supplied() -> None:
     assert briefing_supplied_at_u0({"briefing": {"briefing_text": "Company context."}})
 
 
-def test_generate_scratch_still_grounded_without_briefing() -> None:
+def test_generate_scratch_product_visible_without_briefing_fails_closed() -> None:
     reset_route_profiles_cache()
     vr = _vr(
         app_payload={
@@ -63,12 +66,25 @@ def test_generate_scratch_still_grounded_without_briefing() -> None:
             "profile_manifest": _pm(),
         }
     )
+    with pytest.raises(BriefingMissingError, match="apps_research delegation is disabled"):
+        l1_plan_apps_rg(vr)
+
+
+def test_generate_scratch_non_product_still_grounded_without_research() -> None:
+    reset_route_profiles_cache()
+    vr = _vr(
+        app_payload={
+            "task_spec": {"generation_mode": "generate_scratch"},
+            "profile_manifest": _pm(),
+            "non_product_certified": True,
+        }
+    )
     plan = l1_plan_apps_rg(vr)
     assert plan.grounding_required is True
-    assert plan.apps_research_call_required is True
+    assert plan.apps_research_call_required is False
     route = l0_route_apps_rg(plan)
     assert route.grounding_required is True
-    assert route.apps_research_call_required is True
+    assert route.apps_research_call_required is False
     assert route.route_profile_ref.endswith("scratch_managed::v1")
 
 
@@ -98,4 +114,4 @@ def test_apps_research_call_helper_matches_plan() -> None:
             "profile_manifest": _pm(),
         }
     )
-    assert apps_research_call_required_at_u0(vr, active_generation_mode=True) is True
+    assert apps_research_call_required_at_u0(vr, active_generation_mode=True) is False

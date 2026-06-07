@@ -13,7 +13,7 @@ Failure modes flagged:
     real bug, since L1 + L2 gates passed).
   * Manifest YAML is malformed.
 
-Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
+Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP)
 
 Exit policy:
   - Default: **advisory** — prints violations and exits 0.

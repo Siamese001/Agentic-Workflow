@@ -82,15 +82,6 @@ APP_CONTRACT_REGISTRY = _Registry(
             result_class="EvalResult",
         ),
         AppContract(
-            app_id="apps_exec",
-            request_module="apps_exec.types",
-            request_class="ExecBriefRequest",
-            config_module="apps_exec.types",
-            config_class="ExecBriefConfig",
-            result_module="apps_exec.types",
-            result_class="ExecBriefResult",
-        ),
-        AppContract(
             app_id="apps_research",
             request_module="apps_research.types",
             request_class="ResearchRequest",

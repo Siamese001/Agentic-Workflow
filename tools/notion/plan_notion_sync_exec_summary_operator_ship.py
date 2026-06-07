@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-operator-ship-a3f7c2"
-PLAN_PATH = ".cursor/plans/exec-summary-operator-ship-a3f7c2.md"
+PLAN_PATH = ".claude/plans/exec-summary-operator-ship-a3f7c2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 NOTION_PAGE_ID = "36a27693-f55c-81ab-8c4a-e867ea5f5bfe"
 
@@ -27,7 +27,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETED (2026-05-24)
 - Certified tier: NOT achieved — best live 2/3 (125852); Claude synthesis residual FAIL
 - W0–W3: disposition, judge regen default, operator matrix tests
 - W4 P1: repair_summary consolidation — deferred
-- Disk: .cursor/plans/exec-summary-operator-ship-a3f7c2.md
+- Disk: .claude/plans/exec-summary-operator-ship-a3f7c2.md
 - Guide: docs/apps_rg/executive_summary_operator_guide.md"""
 
 

@@ -2,7 +2,7 @@
 
 > ⚠️ **GENERATED FILE** — Do not hand-edit. Regenerate with
 > `python tools/author_gate/render_template.py`. The reference below is
-> derived from `.cursor/schemas/author_gate_packet.schema.json` (canonical
+> derived from `.claude/schemas/author_gate_packet.schema.json` (canonical
 > SSOT per plan `author-gate-ssot-consolidation-b7c3e1`).
 
 This template is loaded by Claude Code when `emit_packet.py` is constructing an
@@ -137,8 +137,8 @@ for audit transparency; only filtered from the user-facing prompt.
 
 ## References
 
-- Canonical schema: `.cursor/schemas/author_gate_packet.schema.json`
+- Canonical schema: `.claude/schemas/author_gate_packet.schema.json`
 - Skill: `.claude/skills/author-gate-packet-builder/SKILL.md`
 - Renderer skill: `.claude/skills/author-gate-ui-renderer/SKILL.md`
 - Constitutional §6, §30
-- Plan: `.cursor/plans/author-gate-ssot-consolidation-b7c3e1.md`
+- Plan: `.claude/plans/author-gate-ssot-consolidation-b7c3e1.md`

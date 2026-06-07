@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "governance-dedup-closeout-e8a4c2"
-PLAN_PATH = ".cursor/plans/governance-dedup-closeout-e8a4c2.md"
+PLAN_PATH = ".claude/plans/governance-dedup-closeout-e8a4c2.md"
 PARENT_SLUG = "cursor-governance-two-tier-b4e8f2"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
@@ -30,7 +30,7 @@ AI_SUMMARY = """- Parent: cursor-governance-two-tier-b4e8f2 (Completed)
 - W3: Plan sprawl archive (86 → ≤20)
 - W4: Windsurf always_on demotion map (Option A remainder)
 - W5: governance_dedup_closeout_receipt.json + Notion Completed
-- Disk: .cursor/plans/governance-dedup-closeout-e8a4c2.md"""
+- Disk: .claude/plans/governance-dedup-closeout-e8a4c2.md"""
 
 
 def _query_page_id(slug: str) -> str | None:

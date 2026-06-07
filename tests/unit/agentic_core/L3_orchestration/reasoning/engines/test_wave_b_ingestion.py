@@ -570,7 +570,7 @@ class TestRepoEvidenceChunking:
         assert should_exclude(p)
 
     def test_should_exclude_windsurf_dir(self) -> None:
-        p = Path("c:/repo/.cursor/rules/constitutional.md")
+        p = Path("c:/repo/.claude/rules/constitutional.md")
         assert should_exclude(p)
 
     def test_should_not_exclude_docs_dir(self) -> None:

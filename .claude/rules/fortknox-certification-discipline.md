@@ -31,8 +31,8 @@ Without a matching `compile_requirement_signoff.py` invocation in the same respo
 | Compiler | `scripts/compile_requirement_signoff.py` |
 | Bundle verifier | `scripts/verify_final_requirement_signoff_bundle.py` |
 | Mutation runner | `scripts/generate_mutation_rejection_report.py` |
-| Pre-write hook (exit 2) | `.cursor/scripts/pre_write_fortknox_guard.py` |
-| Post-response audit | `.cursor/scripts/post_cursor_agent_fortknox_integrity_audit.py` → `artifacts/cursor/fortknox_integrity_violations.jsonl` |
+| Pre-write hook (exit 2) | `.claude/governance/scripts/pre_write_fortknox_guard.py` |
+| Post-response audit | `.claude/governance/scripts/post_cursor_agent_fortknox_integrity_audit.py` → `artifacts/cursor/fortknox_integrity_violations.jsonl` |
 | CI gates | `ops_scripts/ci/check_fortknox_clean_bundle.py`, `check_fortknox_mutation_rejection.py`, `check_fortknox_positive_control.py` |
 | Nightly | `.github/workflows/fortknox-nightly.yml` |
 | Author-Gate trigger | `author-gate-decision-points.md` §1.11 (`certification_claim`) |

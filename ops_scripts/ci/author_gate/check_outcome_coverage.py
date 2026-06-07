@@ -28,7 +28,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-DB_PATH = REPO_ROOT / ".cursor" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+DB_PATH = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 BASELINE_PATH = Path(__file__).resolve().parent / "baselines" / "outcome_coverage_baseline.json"
 
 DEFAULT_WINDOW_HOURS = 24
@@ -127,7 +127,7 @@ def main() -> int:
     if len(stale) > 20:
         print(f"  … {len(stale) - 20} more")
     print(
-        "\nRemediation: run `python .cursor/scripts/post_commit_outcome_binder.py` "
+        "\nRemediation: run `python .claude/governance/scripts/post_commit_outcome_binder.py` "
         "to bind outcomes from recent commits."
     )
     return 1

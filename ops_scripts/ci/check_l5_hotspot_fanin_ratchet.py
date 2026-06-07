@@ -23,7 +23,7 @@ Exit codes:
 
 from __future__ import annotations
 
-# W6 ADG consumer mode declaration (per .cursor/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
+# W6 ADG consumer mode declaration (per .claude/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
 
@@ -36,7 +36,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
-RATCHET_FILE = REPO_ROOT / ".cursor" / "config" / "l5_fanin_ratchet.json"
+RATCHET_FILE = REPO_ROOT / ".claude" / "state" / "l5_fanin_ratchet.json"
 
 # Initial baselines — captured 2026-04-29 from adg_indexed_04282026_2152.sqlite
 DEFAULT_RATCHET: dict[str, int] = {

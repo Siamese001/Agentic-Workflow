@@ -55,7 +55,7 @@ When tempted to write `python -c "..."` with embedded quotes, do **one** of:
 ## Enforcement
 
 - **Advisory tier** (this rule, always_on) — shapes Cursor Agent's command authoring
-- **Deterministic tier** — `.cursor/scripts/pre_run_gate.py`
+- **Deterministic tier** — `.claude/governance/scripts/pre_run_gate.py`
   `_check_python_dash_c_quote_hazard()` blocks at exec time (exit 2)
 - **Test coverage** —
   `tests/unit/ops_scripts/hooks/cursor/test_pre_run_gate.py::TestCheckCommandPythonDashCQuoteHazard`

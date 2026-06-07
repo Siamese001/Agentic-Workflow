@@ -9,11 +9,11 @@ consulting skill. The registry is the single source of truth consulted by:
     - ops_scripts/ci/check_ledger_writer_contract.py (W5): verifies hooks exist
 
 To add a ledger:
-    1. Write .cursor/schemas/<name>_ledger.schema.sql
+    1. Write .claude/schemas/<name>_ledger.schema.sql
     2. Add a LedgerSpec to LEDGER_REGISTRY below
     3. Run: python tools/ledgers/apply_schema.py
     4. Implement writer extension in the hook referenced by `writer_hook`
-    5. Create consulting skill at .cursor/skills/ledger-consulter-<name>/SKILL.md
+    5. Create consulting skill at .claude/skills/ledger-consulter-<name>/SKILL.md
 """
 
 from __future__ import annotations
@@ -23,8 +23,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGERS_DIR = REPO_ROOT / "artifacts" / "ledgers"
-SCHEMAS_DIR = REPO_ROOT / ".cursor" / "schemas"
-CURSOR_SCRIPTS_DIR = ".cursor/scripts"
+SCHEMAS_DIR = REPO_ROOT / ".claude" / "schemas"
+CURSOR_SCRIPTS_DIR = ".claude/governance/scripts"
 
 
 @dataclass(frozen=True)
@@ -33,7 +33,7 @@ class LedgerSpec:
 
     name: str  # short name; becomes db filename stem
     purpose: str  # one-line human-readable purpose
-    schema_file: str  # filename under .cursor/schemas/
+    schema_file: str  # filename under .claude/schemas/
     writer_hook: str  # repo-relative path of the post-hook that writes rows
     consulting_skill: str  # repo-relative path of the consulting skill SKILL.md
     wave: str  # W0–W5 assignment from the plan
@@ -54,7 +54,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="Retrieval-tool choice precision/recall; which query features → which tool.",
         schema_file="tool_routing_ledger.schema.sql",
         writer_hook=f"{CURSOR_SCRIPTS_DIR}/post_cursor_agent_adg_audit.py",
-        consulting_skill=".cursor/skills/ledger-consulter-tool-routing/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-tool-routing/SKILL.md",
         wave="W1.1",
         sunset_criterion="grep-for-deps violation rate under 1% for 90 consecutive days",
     ),
@@ -63,7 +63,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="Predicted vs actual P-count delta per refactoring wave; rollback attribution.",
         schema_file="refactor_outcome_ledger.schema.sql",
         writer_hook=f"{CURSOR_SCRIPTS_DIR}/post_commit_outcome_binder.py",
-        consulting_skill=".cursor/skills/ledger-consulter-refactor-outcome/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-refactor-outcome/SKILL.md",
         wave="W1.2",
         sunset_criterion="prediction accuracy ≥85% for 4 consecutive waves",
     ),
@@ -72,7 +72,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="T0/T1/T2/T3 prediction accuracy vs actual files-edited/lines/layers.",
         schema_file="prompt_classifier_ledger.schema.sql",
         writer_hook=f"{CURSOR_SCRIPTS_DIR}/pre_prompt_classifier.py",
-        consulting_skill=".cursor/skills/ledger-consulter-prompt-classifier/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-prompt-classifier/SKILL.md",
         wave="W2.1",
         sunset_criterion="classifier F1 ≥0.90 across all tiers for 30 consecutive days",
     ),
@@ -81,7 +81,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="Per-MCP-server latency, retries, hang attribution; drives SLO.",
         schema_file="mcp_invocation_ledger.schema.sql",
         writer_hook=f"{CURSOR_SCRIPTS_DIR}/post_mcp_audit.py",
-        consulting_skill=".cursor/skills/ledger-consulter-mcp-invocation/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-mcp-invocation/SKILL.md",
         wave="W2.2",
         sunset_criterion="upstream anthropics/claude-agent-sdk-typescript#41 closed AND p95 latency stable 30d",
     ),
@@ -90,7 +90,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="Hotspot rank vs actual 30-day defect/churn; drives impact-formula coefficients.",
         schema_file="hotspot_defect_ledger.schema.sql",
         writer_hook="ops_scripts/calibration/hotspot_defect_join.py",
-        consulting_skill=".cursor/skills/ledger-consulter-hotspot-defect/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-hotspot-defect/SKILL.md",
         wave="W3.1",
         sunset_criterion="formula coefficients stable (no ADR change) for 2 consecutive quarters",
     ),
@@ -99,7 +99,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="Computed P-band vs actual days-to-done for Wave/Phase rows; tunes scorer thresholds.",
         schema_file="deferred_scope_calibration_ledger.schema.sql",
         writer_hook="ops_scripts/calibration/deferred_scope_poller.py",
-        consulting_skill=".cursor/skills/ledger-consulter-deferred-scope-calibration/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-deferred-scope-calibration/SKILL.md",
         wave="W3.2",
         sunset_criterion="band-threshold drift under 5% for 2 consecutive quarters",
     ),
@@ -108,7 +108,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="Guardian-exemption lifecycle; RCA→exemption linkage for silent-failure attribution.",
         schema_file="guardian_exemption_ledger.schema.sql",
         writer_hook=f"{CURSOR_SCRIPTS_DIR}/post_write_audit.py",
-        consulting_skill=".cursor/skills/ledger-consulter-guardian-exemption/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-guardian-exemption/SKILL.md",
         wave="W4.1",
         sunset_criterion="zero exemption-attributed defects for 180 days",
     ),
@@ -117,7 +117,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="ProgressReporter predicted vs actual duration; calibrates subprocess timeouts.",
         schema_file="progress_eta_ledger.schema.sql",
         writer_hook="tools/progress_display.py",
-        consulting_skill=".cursor/skills/ledger-consulter-progress-eta/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-progress-eta/SKILL.md",
         wave="W4.2",
         sunset_criterion="ETA overrun ratio within ±20% for 90 consecutive days",
     ),
@@ -126,7 +126,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="Memory-MCP recalled entities vs session reference; shrinks context pollution.",
         schema_file="memory_recall_ledger.schema.sql",
         writer_hook=f"{CURSOR_SCRIPTS_DIR}/post_cursor_agent_writeback_audit.py",
-        consulting_skill=".cursor/skills/ledger-consulter-memory-recall/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-memory-recall/SKILL.md",
         wave="W4.3",
         sunset_criterion="entity hit-rate ≥0.60 after 3 calibration rounds",
     ),
@@ -135,7 +135,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         purpose="ADG-driven test triage precision/recall; actual regression coverage per change-set.",
         schema_file="test_selection_ledger.schema.sql",
         writer_hook=f"{CURSOR_SCRIPTS_DIR}/post_run_audit.py",
-        consulting_skill=".cursor/skills/ledger-consulter-test-selection/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-test-selection/SKILL.md",
         wave="W4.4",
         sunset_criterion="triage recall ≥0.95 for 2 consecutive quarters",
     ),
@@ -147,7 +147,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l2_cascade_ledger.schema.sql",
         writer_hook="agentic_core/L2_execution/healers/healing_router.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l2-cascade/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l2-cascade/SKILL.md",
         wave="W5.1",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -162,7 +162,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l1_c0_ledger.schema.sql",
         writer_hook="agentic_core/L1_cognition/reasoning/retrieval_router.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l1-c0/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l1-c0/SKILL.md",
         wave="W5.2",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -177,7 +177,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l6_promo_ledger.schema.sql",
         writer_hook="agentic_core/L6_observability/promotion_gates.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l6-promo/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l6-promo/SKILL.md",
         wave="W5.3",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -192,7 +192,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l3_sovereign_mcp_ledger.schema.sql",
         writer_hook="agentic_core/L3_orchestration/reasoning/engines/sovereign_mcp_router.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l3-sovereign-mcp/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l3-sovereign-mcp/SKILL.md",
         wave="W5.9",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -207,7 +207,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l3_reroute_ledger.schema.sql",
         writer_hook="agentic_core/L3_orchestration/exit_control/reroute_governance.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l3-reroute/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l3-reroute/SKILL.md",
         wave="W5.8",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -222,7 +222,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l5_hitl_ledger.schema.sql",
         writer_hook="agentic_core/L5_safety/runtime_gates/g06_hitl_approval.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l5-hitl/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l5-hitl/SKILL.md",
         wave="W5.8",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -237,7 +237,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l4_uwg_ledger.schema.sql",
         writer_hook="agentic_core/L4_state/uwg/durable_write_gateway.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l4-uwg/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l4-uwg/SKILL.md",
         wave="W5.7",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -252,7 +252,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l0_ensemble_ledger.schema.sql",
         writer_hook="agentic_core/L0_routing/reasoning/ensemble_router.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l0-ensemble/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l0-ensemble/SKILL.md",
         wave="W5.6",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -267,7 +267,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l0_path_ledger.schema.sql",
         writer_hook="agentic_core/L0_routing/reasoning/path_router.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l0-path/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l0-path/SKILL.md",
         wave="W5.5",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -282,7 +282,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l0_agentic_ledger.schema.sql",
         writer_hook="agentic_core/L0_routing/reasoning/agentic_router.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l0-agentic/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l0-agentic/SKILL.md",
         wave="W5.5",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -297,7 +297,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l0_bandit_ledger.schema.sql",
         writer_hook="agentic_core/L0_routing/reasoning/namespace_bandit.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l0-bandit/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l0-bandit/SKILL.md",
         wave="W5.4",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -312,7 +312,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="router_l6_regret_ledger.schema.sql",
         writer_hook="agentic_core/L6_observability/regret_accounting.py",
-        consulting_skill=".cursor/skills/ledger-consulter-router-l6-regret/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-router-l6-regret/SKILL.md",
         wave="W5.3",
         sunset_criterion=(
             "90 consecutive days with zero §29 router-enforcement violations "
@@ -329,7 +329,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="eval_harness_outcome_ledger.schema.sql",
         writer_hook="agentic_core/L3_orchestration/exit_eval/v6/pipeline.py",
-        consulting_skill=".cursor/skills/ledger-consulter-eval-harness-outcome/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-eval-harness-outcome/SKILL.md",
         wave="W5.P7",
         sunset_criterion=(
             "All 8 runtime apps green on check_app_domain_harness_parity "
@@ -344,7 +344,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="ask_user_question_ledger.schema.sql",
         writer_hook="tools/ledgers/ask_user_question_ledger.py",
-        consulting_skill=".cursor/skills/ledger-consulter-ask-user-question/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-ask-user-question/SKILL.md",
         wave="W1.5",
         sunset_criterion=(
             "recommendation acceptance rate stable ≥80% for 90 consecutive days "
@@ -361,7 +361,7 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         ),
         schema_file="apps_qna_pack_lifecycle_ledger.schema.sql",
         writer_hook="apps_qna/builder/card_pack_builder.py",
-        consulting_skill=".cursor/skills/ledger-consulter-apps-qna-pack-lifecycle/SKILL.md",
+        consulting_skill=".claude/skills/ledger-consulter-apps-qna-pack-lifecycle/SKILL.md",
         wave="W1.4",
         sunset_criterion=(
             "apps_qna spine integration plan W5 closes "

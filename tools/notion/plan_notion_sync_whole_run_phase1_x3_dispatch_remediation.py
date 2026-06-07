@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "whole-run-phase1-x3-dispatch-remediation-f2a8c4"
-PLAN_PATH = ".cursor/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md"
+PLAN_PATH = ".claude/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md"
 
 SUMMARY = (
     "Remediate integrated python -m apps_rg Phase-1 failure: executive_summary X3_ALLOW on disk "
@@ -26,7 +26,7 @@ AI_SUMMARY = """- PLAN_STATUS: Not Started (2026-05-26)
 - RC-1: executive_summary_lane x3=dict; section_cli_runners getattr(x3, pass_) -> False
 - RC-2: phase1_aborted skips resolve_latest_lane_run_dir for all lanes
 - WAVES: W1 X3 outcome helper + tests | W2 resolve/abort | W3 allow_non_allow parity | W4 whole-run proof
-- PLAN: .cursor/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md
+- PLAN: .claude/plans/whole-run-phase1-x3-dispatch-remediation-f2a8c4.md
 - SUPERSEDES_PARTIAL: fix-whole-run-executive-summary-phase1-no-run-dir-e8f1c2 (pointer/briefing only)
 - PROOF: pytest + python -m apps_rg Brown & Brown SVP + verify_governed_spine_e2e.py --integrated-dir"""
 

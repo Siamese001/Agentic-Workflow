@@ -12,7 +12,7 @@ import pytest
 
 # Ensure script is importable
 REPO_ROOT = Path(__file__).parents[3]  # tests/unit/windsurf_scripts/ -> tests/unit/ -> tests/ -> repo root
-SCRIPTS_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
+SCRIPTS_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
 if str(SCRIPTS_PATH) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_PATH))
 

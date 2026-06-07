@@ -12,7 +12,7 @@ SLUG = "governance-dedup-closeout-e8a4c2"
 OUT = REPO / "artifacts" / "cursor" / "governance_dispatch_shadow.jsonl"
 MATRIX = REPO / "docs/reports/cursor/governance_w3_hook_audit_matrix.json"
 DISPATCH_HOOK = REPO / ".cursor/hooks/after_agent_governance_dispatch.py"
-DISPATCH_PY = REPO / ".cursor/scripts/post_cursor_agent_dispatch.py"
+DISPATCH_PY = REPO / ".claude/governance/scripts/post_cursor_agent_dispatch.py"
 
 
 def _extract_ag_chain(text: str) -> list[str]:

@@ -10,7 +10,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 SLUG = "adg-action-dispatch-c9e4a2"
-PLAN_PATH = ".cursor/plans/adg-action-dispatch-c9e4a2.md"
+PLAN_PATH = ".claude/plans/adg-action-dispatch-c9e4a2.md"
 PAGE_ID = "36b27693-f55c-8136-a578-d1c743439d4c"
 
 SUMMARY = (

@@ -16,7 +16,7 @@ from pathlib import Path
 
 # Ensure the scripts dir is importable without installing the package.
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_SCRIPTS_DIR = _REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"
+_SCRIPTS_DIR = _REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 

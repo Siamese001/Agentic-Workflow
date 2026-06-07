@@ -1,6 +1,6 @@
 """CI gate: judge calibration evidence authenticity.
 
-Plan: `.cursor/plans/judge-spearman-calibration-a7e4c9.md`.
+Plan: `.claude/plans/judge-spearman-calibration-a7e4c9.md`.
 Author-Gate: `dec_19dedcd1c109ebf25` (option_a_lock_in_doctrine).
 
 Enforces: `artifacts/calibration/judge_spearman.json` MUST NOT claim

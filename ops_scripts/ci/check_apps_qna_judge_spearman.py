@@ -1,6 +1,6 @@
 """ops_scripts/ci/check_apps_qna_judge_spearman.py — Spearman calibration gate for apps_qna LLM judge.
 
-Plan: ``.cursor/plans/bge-m3-deferred-scope-remaining-c4e7a1.md`` W2.P2
+Plan: ``.claude/plans/bge-m3-deferred-scope-remaining-c4e7a1.md`` W2.P2
 
 Validates that the ``interview_card_quality_judge`` achieves Spearman rank
 correlation ≥ 0.80 against a human-labeled holdout dataset.
@@ -158,7 +158,7 @@ def run_gate(holdout_path: Path, threshold: float) -> int:
         _LOGGER.error(
             "Spearman gate FAILED: rho=%.4f < threshold=%.2f. "
             "Improve judge or expand holdout. "
-            "See .cursor/plans/bge-m3-deferred-scope-remaining-c4e7a1.md W2.P2.",
+            "See .claude/plans/bge-m3-deferred-scope-remaining-c4e7a1.md W2.P2.",
             rho,
             threshold,
         )

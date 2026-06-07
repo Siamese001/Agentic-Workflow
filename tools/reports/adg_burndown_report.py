@@ -15,7 +15,7 @@ from ``tools/generate/generate_full_adg.py``, ``tools/adg/run_full_adg_audit.py`
 
   * artifacts/adg/adg_burndown_report.md
   * docs/reports/adg/adg_burndown_report.md
-  * **stdout** — full markdown for inline Cursor chat (see ``.cursor/rules/adg-post-run-burndown.mdc``)
+  * **stdout** — full markdown for inline Cursor chat (see ``.claude/rules/adg-post-run-burndown.mdc``)
   * **Cursor Canvas** — ``adg-ci-burndown.canvas.tsx`` via ``tools/reports/adg_burndown_canvas.py``
 
 Set ``ADG_BURNDOWN_INLINE_BYPASS=1`` to suppress stdout markdown (files still written).

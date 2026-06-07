@@ -4,7 +4,7 @@ Paginate Plans DB via API-query-data-source, report rows with Status value
 outside the canonical six-option set. Advisory by default; fail-closed via
 NOTION_PLANS_STATUS_FAIL_CLOSED=1. Skips when NOTION_API_KEY/TOKEN unset.
 
-Constitutional rule: .cursor/rules/notion-plans-taxonomy.md >
+Constitutional rule: .claude/rules/notion-plans-taxonomy.md >
 "CANONICAL Status option strings" (2026-05-03).
 """
 
@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_CURSOR_SCRIPTS = _REPO_ROOT / ".cursor" / "scripts"
+_CURSOR_SCRIPTS = _REPO_ROOT / ".claude" / "governance/scripts"
 if str(_CURSOR_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_CURSOR_SCRIPTS))
 
@@ -146,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"\nCanonical set: {sorted(CANONICAL_STATUSES)}\n"
             f"Fix: API-patch-page each row with a canonical Status value.\n"
-            f"See .cursor/rules/notion-plans-taxonomy.md > CANONICAL Status option strings."
+            f"See .claude/rules/notion-plans-taxonomy.md > CANONICAL Status option strings."
         )
         if _fail_closed():
             return 1

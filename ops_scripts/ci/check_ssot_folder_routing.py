@@ -11,11 +11,11 @@ applies to NEW files only, matching the Windsurf hook behavior.
 
 Bypass: SSOT_FOLDER_BYPASS=1 (logged to stderr).
 
-SSOT logic: ``.cursor/scripts/_ssot_folder_check.py``. Both this gate and
+SSOT logic: ``.claude/governance/scripts/_ssot_folder_check.py``. Both this gate and
 the Windsurf hook ``pre_write_gate.py`` import from the same helper to
 prevent drift.
 
-Constitutional tie-in: §31 (see ``.cursor/rules/ssot-folder-enforcement.md``).
+Constitutional tie-in: §31 (see ``.claude/rules/ssot-folder-enforcement.md``).
 """
 
 from __future__ import annotations
@@ -36,8 +36,8 @@ def _repo_root() -> Path:
 
 
 def _import_helper(repo: Path):
-    """Import the canonical SSOT helper from .cursor/scripts/."""
-    helper_dir = repo / ".cursor" / "scripts" / "_legacy_windsurf"
+    """Import the canonical SSOT helper from .claude/governance/scripts/."""
+    helper_dir = repo / ".claude" / "governance/scripts" / "_legacy_windsurf"
     sys.path.insert(0, str(helper_dir))
     try:
         import _ssot_folder_check  # type: ignore[import-not-found]
@@ -123,7 +123,7 @@ def main() -> int:
     print(
         "\nFix: move the new file(s) to the suggested SSOT folder, "
         "or set SSOT_FOLDER_BYPASS=1 if the violation is intentional. "
-        "Rule: .cursor/rules/ssot-folder-enforcement.md",
+        "Rule: .claude/rules/ssot-folder-enforcement.md",
         file=sys.stderr,
     )
     return 1

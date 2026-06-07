@@ -36,7 +36,7 @@ Per-router required fields are encoded in `tools/ledgers/hook_helpers.py` — ne
 | Concern | Location |
 |---|---|
 | Full per-router field contracts, library-call invariant, code patterns | (this rule was SSOT — full text preserved in git history at HEAD~1) |
-| Audit hook | `.cursor/scripts/post_cursor_agent_router_decision_audit.py` → `artifacts/cursor/router_enforcement_violations.jsonl` |
+| Audit hook | `.claude/governance/scripts/post_cursor_agent_router_decision_audit.py` → `artifacts/cursor/router_enforcement_violations.jsonl` |
 | CI gate | `ops_scripts/ci/check_router_calibration_evidence.py` (advisory; switch to strict via `ROUTER_CI_GATE_MODE=strict`) |
 | Library helper | `tools/ledgers/hook_helpers.emit_ledger_event` |
 | Per-router consulting skills | `.claude/skills/ledger-consulter-router-l*/` (12 skills) |

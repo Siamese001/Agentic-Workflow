@@ -17,12 +17,12 @@ metadata:
 ## 1. Plan Registration (§36)
 
 ### Invariant
-Every `.cursor/plans/<slug>-<6hex>.md` MUST have a Notion Plans DB row before wave execution.
+Every `.claude/plans/<slug>-<6hex>.md` MUST have a Notion Plans DB row before wave execution.
 
 ### Required Marker
 When creating a plan:
 ```
-PLAN_CREATED: slug=<slug-6hex> path=.cursor/plans/<slug>-<6hex>.md status=Not Started|In Progress
+PLAN_CREATED: slug=<slug-6hex> path=.claude/plans/<slug>-<6hex>.md status=Not Started|In Progress
 ```
 
 ### Chokepoint Block
@@ -113,7 +113,7 @@ PLAN_COMPLETE: plan=<slug-6hex> note="<final outcome>"
 > ⛔ **NEVER call `wave_execution_state.py start` on retrospective plans.**
 
 **Correct protocol**:
-1. Write plan to `.cursor/plans/<slug>.md`
+1. Write plan to `.claude/plans/<slug>.md`
 2. Register via `API-post-page` with `status=Completed`
 3. Emit `PLAN_COMPLETE: plan=<slug>`
 4. Do NOT emit `PLAN_CREATED:`

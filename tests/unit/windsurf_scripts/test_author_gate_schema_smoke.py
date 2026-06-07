@@ -27,7 +27,7 @@ from tools.author_gate.schema_loader import (  # noqa: E402
     validate,
 )
 
-FIXTURES = REPO_ROOT / ".cursor" / "schemas" / "fixtures"
+FIXTURES = REPO_ROOT / ".claude" / "schemas" / "fixtures"
 
 
 def _load(name: str) -> dict:
@@ -75,7 +75,7 @@ def test_invalid_fixture_fails_missing_routing():
 
 def test_emit_packet_output_validates():
     """Zero-regression: a real emit_packet.build_packet() output validates."""
-    sys.path.insert(0, str(REPO_ROOT / ".cursor" / "skills" / "author-gate-packet-builder"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "skills" / "author-gate-packet-builder"))
     import emit_packet  # type: ignore
 
     spec = {

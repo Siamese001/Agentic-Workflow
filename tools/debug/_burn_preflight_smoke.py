@@ -16,7 +16,7 @@ vl_path = repo / "artifacts" / "windsurf" / "mcp_preflight_violations.jsonl"
 
 
 def _run_pre(payload: dict) -> subprocess.CompletedProcess:
-    script = repo / ".cursor" / "scripts" / "_legacy_windsurf" / "pre_mcp_gate.py"
+    script = repo / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_mcp_gate.py"
     env = os.environ.copy()
     env.pop("MCP_PREFLIGHT_BYPASS", None)
     return subprocess.run(
@@ -32,7 +32,7 @@ def _run_pre(payload: dict) -> subprocess.CompletedProcess:
 def _load_post_module():
     spec = importlib.util.spec_from_file_location(
         "post_cursor_agent_mcp_preflight_audit",
-        str(repo / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_mcp_preflight_audit.py"),
+        str(repo / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_mcp_preflight_audit.py"),
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -44,7 +44,7 @@ _ = _load_post_module()
 import importlib
 
 spec = importlib.util.spec_from_file_location(
-    "pre_mcp_gate", str(repo / ".cursor" / "scripts" / "_legacy_windsurf" / "pre_mcp_gate.py")
+    "pre_mcp_gate", str(repo / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_mcp_gate.py")
 )
 pre = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(pre)
@@ -75,7 +75,7 @@ print(f"  rc={res.returncode} (expect 0 — fresh heartbeat)")
 assert res.returncode == 0, res.stderr
 
 print("\n=== test 4: bypass env var allows ===")
-script = repo / ".cursor" / "scripts" / "_legacy_windsurf" / "pre_mcp_gate.py"
+script = repo / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_mcp_gate.py"
 env = os.environ.copy()
 env["MCP_PREFLIGHT_BYPASS"] = "1"
 hb_path.write_text(json.dumps({"adg_sqlite": 0.0}), encoding="utf-8")  # stale

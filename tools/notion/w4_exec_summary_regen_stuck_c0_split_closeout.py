@@ -17,7 +17,7 @@ from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none  # 
 NOTION_BASE = "https://api.notion.com/v1"
 NOTION_API_VERSION = "2025-09-03"
 PLAN_PAGE_ID = "36d27693-f55c-81d7-847a-c34cd7807849"
-PLAN_PATH = ".cursor/plans/exec-summary-regen-stuck-c0-split-a4f8e2.md"
+PLAN_PATH = ".claude/plans/exec-summary-regen-stuck-c0-split-a4f8e2.md"
 SLUG = "exec-summary-regen-stuck-c0-split-a4f8e2"
 CLOSEOUT_REPORT = "docs/reports/apps_rg/exec_summary_regen_stuck_c0_split_closeout_20260527.md"
 BACKLOG = (

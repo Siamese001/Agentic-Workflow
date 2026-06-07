@@ -28,7 +28,7 @@ def _ensure_w9b_fixtures() -> None:
 
 def test_canonical_dispatch_wires_whole_run_preflight() -> None:
     mod = importlib.import_module("apps_rg.runtime.orchestration.canonical_dispatch")
-    src = inspect.getsource(mod.run_canonical_apps_rg_from_cli_primitives)
+    src = inspect.getsource(mod.run_canonical_full_resume_from_cli_primitives)
     assert "run_whole_run_cache_preflight" in src
     assert "build_cache_hit_dispatch_result" in src
     assert "run_integrated_single_action_spine" in src

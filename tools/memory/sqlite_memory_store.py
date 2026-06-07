@@ -91,8 +91,8 @@ from tools.memory.memory_decay import (
 
 _DEFAULT_DB = Path(__file__).resolve().parents[2] / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
-# Schema SSOT: canonical schema lives in .cursor/schemas/
-_SCHEMA_DIR = Path(__file__).resolve().parents[2] / ".cursor" / "schemas"
+# Schema SSOT: canonical schema lives in .claude/schemas/
+_SCHEMA_DIR = Path(__file__).resolve().parents[2] / ".claude" / "schemas"
 _SCHEMA_FILE = _SCHEMA_DIR / "knowledge_graph.schema.sql"
 _MIGRATIONS_FILE = _SCHEMA_DIR / "knowledge_graph_migrations.sql"
 
@@ -109,7 +109,7 @@ ALLOWED_ENTITY_TYPES: frozenset[str] = frozenset(
 )
 
 def _load_schema() -> str:
-    """Load canonical schema from .cursor/schemas/knowledge_graph.schema.sql
+    """Load canonical schema from .claude/schemas/knowledge_graph.schema.sql
     
     Falls back to embedded schema if file not found (backward compatibility).
     """

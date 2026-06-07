@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-l2-x1d-input-parity-c4f8e1"
-PLAN_PATH = ".cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md"
+PLAN_PATH = ".claude/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -27,7 +27,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETED (2026-05-25)
 - RCA: docs/reports/apps_rg/exec_summary_l2_x1d_input_parity_rca_20260525.md
 - DoD: W0-W5 PASS; D6 live 3/3 DEFERRED → exec-summary-operator-ship-a3f7c2
 - Proof: check_exec_summary_l2_x1d_manifest_drift.py + check_section_x2_x1d_drift.py + 52 pytest
-- Disk: .cursor/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md"""
+- Disk: .claude/plans/exec-summary-l2-x1d-input-parity-c4f8e1.md"""
 
 
 def _query_page_id() -> str | None:

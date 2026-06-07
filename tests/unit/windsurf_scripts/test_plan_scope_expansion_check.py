@@ -20,7 +20,7 @@ import pytest
 
 # Load module from docs/archive/windsurf/legacy-tree directory (Python can't import from dot-prefixed names directly)
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
-MODULE_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "_plan_scope_expansion_check.py"
+MODULE_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_plan_scope_expansion_check.py"
 
 spec = importlib.util.spec_from_file_location(
     "_plan_scope_expansion_check", MODULE_PATH

@@ -3,7 +3,7 @@
 
 # Author-Gate SVP Calibration — Unique-Content Stub
 
-> Packet shape SSOT: `.cursor/schemas/author_gate_packet.schema.json` (plan `author-gate-ssot-consolidation-b7c3e1`). This file owns the **SVP recommendation lens** + **R/Y/G calibration metrics**; trigger taxonomy in `author-gate-decision-points.md`; scoring/marker mechanics in `author-gate-enforcement.md`.
+> Packet shape SSOT: `.claude/schemas/author_gate_packet.schema.json` (plan `author-gate-ssot-consolidation-b7c3e1`). This file owns the **SVP recommendation lens** + **R/Y/G calibration metrics**; trigger taxonomy in `author-gate-decision-points.md`; scoring/marker mechanics in `author-gate-enforcement.md`.
 
 > Trimmed 2026-05-01: trigger taxonomy moved to `author-gate-decision-points.md`; scoring parameters and packet format moved to `author-gate-enforcement.md`. This file retains only the SVP-recommendation lens and the calibration metrics that exist nowhere else.
 

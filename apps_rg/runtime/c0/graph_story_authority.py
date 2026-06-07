@@ -8,18 +8,9 @@ from apps_rg.runtime.proof_pool_resolver import (
     PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
     SectionProofPool,
 )
+from apps_rg.runtime.sections.section_spec import CANONICAL_SECTION_IDS
 
-GRAPH_REQUIRED_SECTIONS = frozenset(
-    {
-        "headline",
-        "executive_summary",
-        "unify_bullets",
-        "unify_narrative",
-        "ibm_bullets",
-        "ibm_narrative",
-        "competencies",
-    }
-)
+GRAPH_REQUIRED_SECTIONS = frozenset(CANONICAL_SECTION_IDS)
 
 STORY_BULLET_SECTIONS = frozenset({"unify_bullets", "ibm_bullets"})
 

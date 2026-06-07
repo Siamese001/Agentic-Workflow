@@ -12,7 +12,7 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L2_execution.types.l2_v4_contracts import (
+from apps_rg.runtime.bindings.l2_envelope_contracts import (
     ExecutionForm,
     FrozenExecutionContext,
     PrepOutput,
@@ -20,7 +20,7 @@ from agentic_core.L2_execution.types.l2_v4_contracts import (
     WorkOrderInputs,
     WriteLockAssertion,
 )
-from agentic_core.L2_execution.types.l2_v3_receipts import (
+from apps_rg.runtime.bindings.l2_envelope_contracts import (
     DeterminismBundle,
     LineageRoot,
 )
@@ -437,7 +437,7 @@ class TestE1Invariants:
 
 
 # Need to import TaskSpec for the test class
-from agentic_core.L2_execution.types.l2_v4_contracts import TaskSpec
+from apps_rg.runtime.bindings.l2_envelope_contracts import TaskSpec
 
 
 # ============================================================================
@@ -445,7 +445,7 @@ from agentic_core.L2_execution.types.l2_v4_contracts import TaskSpec
 # ============================================================================
 
 # Import E2-specific types for tests
-from agentic_core.L2_execution.types.l2_v4_contracts import (
+from apps_rg.runtime.bindings.l2_envelope_contracts import (
     ApprovedWorkOrder,
     BudgetSnapshot,
     CapabilityScopeSummary,
@@ -796,12 +796,12 @@ class TestE2Invariants:
 # ============================================================================
 
 # Import E3-specific types for tests
-from agentic_core.L2_execution.types.l2_v3_receipts import (
+from apps_rg.runtime.bindings.l2_envelope_contracts import (
     AttemptReceipt,
     ExecutionLane,
     ResultClass,
 )
-from agentic_core.L2_execution.types.l2_v4_contracts import TelemetryBundle
+from apps_rg.runtime.bindings.l2_envelope_contracts import TelemetryBundle
 
 
 class TestE3ExecutionPass:
@@ -1169,8 +1169,8 @@ class TestE3Invariants:
 # ============================================================================
 
 # Import E4-specific types for tests
-from agentic_core.L2_execution.types.l2_v3_receipts import HealReceipt, HealOutcomeStamp, RepairStatus
-from agentic_core.L2_execution.types.l2_v4_contracts import SAFE_LOCAL_REPAIRS, DISALLOWED_REPAIRS, is_repair_allowed
+from apps_rg.runtime.bindings.l2_envelope_contracts import HealReceipt, HealOutcomeStamp, RepairStatus
+from apps_rg.runtime.bindings.l2_envelope_contracts import SAFE_LOCAL_REPAIRS, DISALLOWED_REPAIRS, is_repair_allowed
 
 
 def _make_failed_attempt(

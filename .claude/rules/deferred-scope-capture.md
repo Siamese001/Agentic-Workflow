@@ -40,10 +40,10 @@ Bands: P1 ≥ 300 · P2 ≥ 150 · P3 ≥ 75 · P4 ≥ 30 · P5 < 30.
 | Concern | Location |
 |---|---|
 | Full marker contract (all fields, examples, auto-fill table) | (this rule was SSOT — full text preserved in git history at HEAD~1) |
-| Deterministic capture + auto-post | `.cursor/scripts/post_cursor_agent_deferred_scope_capture.py` |
+| Deterministic capture + auto-post | `.claude/governance/scripts/post_cursor_agent_deferred_scope_capture.py` |
 | Priority scorer SSOT | `tools/priority/deferred_scope_scorer.py` |
 | Pre-commit gate | `ops_scripts/ci/check_deferred_scope_markers.py` |
-| Session-start recovery | `.cursor/scripts/pre_user_prompt_deferred_scope_recovery.py` |
+| Session-start recovery | `.claude/governance/scripts/pre_user_prompt_deferred_scope_recovery.py` |
 | Memory pattern (cross-session recall) | `ProceduralPattern:DeferredScopeCaptureProtocol` in memory MCP |
 | Bypass | `DEFERRED_SCOPE_CAPTURE_BYPASS=1` |
 

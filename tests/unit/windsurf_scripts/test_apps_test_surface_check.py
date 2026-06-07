@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 # Make the helper importable without a package layout (mirrors sibling tests).
-_HELPER_DIR = Path(__file__).resolve().parents[3] / ".cursor" / "scripts" / "_legacy_windsurf"
+_HELPER_DIR = Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(_HELPER_DIR))
 
 from _apps_test_surface_check import ALL_APPS, ViolationKind, Violation, check  # noqa: E402

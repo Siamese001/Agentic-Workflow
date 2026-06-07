@@ -31,13 +31,15 @@ def _snapshot_id_expr() -> str:
     return "(SELECT COALESCE(value, '') FROM meta WHERE key='commit_sha' LIMIT 1)"
 
 
-def materialize_phase_e(sqlite_path: Path) -> dict[str, int]:
+def materialize_phase_e(sqlite_path: Path, *, conn: sqlite3.Connection | None = None) -> dict[str, int]:
     """Create all Phase E graph-native materialized tables.
 
     Returns:
         dict mapping table_name -> row_count for each Phase E table.
     """
-    conn = _connect_sqlite(sqlite_path)
+    _owns_conn = conn is None
+    if conn is None:
+        conn = _connect_sqlite(sqlite_path)
     conn.execute("PRAGMA cache_size = -64000")
     cur = conn.cursor()
 
@@ -290,7 +292,8 @@ def materialize_phase_e(sqlite_path: Path) -> dict[str, int]:
             row = cur.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()
             counts[tbl] = row[0] if row else 0
     finally:
-        conn.close()
+        if _owns_conn:
+            conn.close()
 
     return counts
 

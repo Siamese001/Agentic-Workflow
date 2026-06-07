@@ -17,7 +17,7 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
 
 
 # Skip all integration tests if ADG artifacts not available
@@ -62,7 +62,7 @@ def create_mock_adg(tmp_path: Path) -> Path:
         ("agentic_core/L3/pipeline.py", "module", "L3", "agentic_core/L3_orchestration/pipeline.py"),
         ("agentic_core/L5/guard.py", "module", "L5", "agentic_core/L5_safety/guard.py"),
         ("agentic_core/L0/router.py", "module", "L0", "agentic_core/L0_routing/router.py"),
-        (".cursor/rules/test.md", "file", "L_CONFIG", ".cursor/rules/test.md"),
+        (".claude/rules/test.md", "file", "L_CONFIG", ".claude/rules/test.md"),
     ]
     for node in test_nodes:
         conn.execute(
@@ -94,7 +94,7 @@ def create_mock_adg(tmp_path: Path) -> Path:
         ("agentic_core/L3/pipeline.py", 5, 5),
         ("agentic_core/L5/guard.py", 15, 15),  # High blast radius
         ("agentic_core/L0/router.py", 25, 25),  # Very high
-        (".cursor/rules/test.md", 2, 2),  # Low
+        (".claude/rules/test.md", 2, 2),  # Low
     ]
     for cent in test_centrality:
         conn.execute(
@@ -252,7 +252,7 @@ class TestADGIntegration:
         
         # Test low blast radius file (should not trigger)
         snap_low_br = ChangeSnapshot(
-            changed_files=[".cursor/rules/test.md"],  # Has fan_in=2
+            changed_files=[".claude/rules/test.md"],  # Has fan_in=2
             deleted_files=[],
             added_lines_by_file={},
         )

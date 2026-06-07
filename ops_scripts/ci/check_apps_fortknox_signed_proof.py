@@ -21,9 +21,9 @@ bundle reflects current on-disk state at commit time.
 Fail-closed: exit 1 on any FAIL. Fail-open only via
 `FORTKNOX_DISCIPLINE_BYPASS=1` (shared with the agentic_core arm).
 
-Advisory rule: `.cursor/rules/fortknox-certification-discipline.md`
-+ plan `.cursor/plans/apps-fort-knox-parity-c5d9a3.md` §13–§18.
-+ plan `.cursor/plans/apps-fortknox-evidence-repackage-30f5ab.md` W1-W3.
+Advisory rule: `.claude/rules/fortknox-certification-discipline.md`
++ plan `.claude/plans/apps-fort-knox-parity-c5d9a3.md` §13–§18.
++ plan `.claude/plans/apps-fortknox-evidence-repackage-30f5ab.md` W1-W3.
 """
 from __future__ import annotations
 

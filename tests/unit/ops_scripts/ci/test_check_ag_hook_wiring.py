@@ -59,7 +59,7 @@ def _make_hooks(
 
 def _hook(script: str, show_output: bool = True) -> dict:
     return {
-        "command": f"python .cursor/scripts/_legacy_windsurf/{script}",
+        "command": f"python .claude/governance/scripts/_legacy_windsurf/{script}",
         "working_directory": "C:\\Git\\Agentic-Workflow-FRESH",
         "show_output": show_output,
     }

@@ -18,5 +18,5 @@
 
 ## References
 
-- `.cursor/scripts/pre_mcp_gate.py` — Notion token gate, GitKraken upstream checks, wave deferral integration.
+- `.claude/governance/scripts/pre_mcp_gate.py` — Notion token gate, GitKraken upstream checks, wave deferral integration.
 - `.claude/rules/mcp-config-ssot.md` — MCP SSOT and sync gates.

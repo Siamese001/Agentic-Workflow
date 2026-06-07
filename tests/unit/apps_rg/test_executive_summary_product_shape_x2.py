@@ -17,7 +17,6 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_display_roundtrip_integrity,
 )
 from apps_rg.runtime.dispatch.executive_summary_pa import (
-    SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR,
     load_executive_summary_example_after,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import (
@@ -197,7 +196,7 @@ def test_prompt_template_authority_requires_trace(tmp_path: Path):
 def test_style_exemplars_pass_no_credential_dump_gate():
     """Gold/variant style paragraphs must not teach a trailing FSA/AWS cert sentence that fails X2."""
     for label, text in (
-        ("gold", SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR),
+        ("gold", load_executive_summary_example_after("exec_summary_base_resume_style_001")),
         ("implied", load_executive_summary_example_after("exec_summary_pos_credibility_implied_001")),
     ):
         ok, reason = check_exec_summary_no_credential_dump(text)

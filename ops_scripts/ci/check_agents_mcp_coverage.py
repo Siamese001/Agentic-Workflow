@@ -78,7 +78,7 @@ def main() -> int:
         for name in missing_cursor:
             print(f"  MISSING: {name}", flush=True)
         print(
-            "[agents_mcp_coverage] Run: python .cursor/scripts/sync_mcp_config.py",
+            "[agents_mcp_coverage] Run: python .claude/governance/scripts/sync_mcp_config.py",
             flush=True,
         )
         return 1

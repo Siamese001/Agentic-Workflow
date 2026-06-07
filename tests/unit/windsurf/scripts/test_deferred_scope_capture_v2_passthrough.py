@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[4]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-HOOK_PATH = REPO_ROOT / ".cursor" / "scripts" / "_legacy_windsurf" / "post_cursor_agent_deferred_scope_capture.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_deferred_scope_capture.py"
 spec = importlib.util.spec_from_file_location("dsc_hook", HOOK_PATH)
 hook = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
 spec.loader.exec_module(hook)  # type: ignore[union-attr]

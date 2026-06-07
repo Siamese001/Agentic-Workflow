@@ -73,16 +73,18 @@ def u0_validate_apps_rg(
     TypeError
         If the envelope type is not supported.
     """
-    from agentic_core.L0_routing.intake.reason_codes import IngressReasonCode
     from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
         AppsRgIngressPayload,
         RequestEnvelope,
         ValidatedRequest,
     )
-    from agentic_core.runtime.entry.u0_runtime_package_binding import U0PackageValidationError
 
-    from apps_rg.runtime.bindings.u0_package_ingest import ingest_apps_rg_runtime_package
+    from apps_rg.runtime.bindings.u0_package_ingest import (
+        U0PackageValidationError,
+        ingest_apps_rg_runtime_package,
+    )
     from apps_rg.runtime.bindings.u0_rejection import (
+        AppsRgIngressReasonCode,
         AppsRgU0RejectedError,
         build_u0_rejected_notice,
     )
@@ -97,7 +99,7 @@ def u0_validate_apps_rg(
         notice = build_u0_rejected_notice(
             request_id=request_id_pre,
             trace_root=trace_root_pre,
-            rejection_reason=IngressReasonCode.FIELD_TYPE_MISMATCH,
+            rejection_reason=AppsRgIngressReasonCode.FIELD_TYPE_MISMATCH,
             machine_readable_detail={
                 "missing_keys": sorted(missing),
                 "validator": "u0_validate_apps_rg",
@@ -123,7 +125,7 @@ def u0_validate_apps_rg(
         notice = build_u0_rejected_notice(
             request_id=request_id_pre,
             trace_root=trace_root_pre,
-            rejection_reason=IngressReasonCode.MALFORMED_ENVELOPE,
+            rejection_reason=AppsRgIngressReasonCode.MALFORMED_ENVELOPE,
             machine_readable_detail={
                 "field": exc.field,
                 "message": exc.message,
