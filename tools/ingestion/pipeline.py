@@ -94,7 +94,7 @@ CORE_STAGES: tuple[Stage, ...] = (
     Stage(
         name="docs_windsurf_skills",
         script="ingest_docs.py",
-        args=("--source-dir", ".cursor/skills", "--embedding-provider", "bge-m3"),
+        args=("--source-dir", ".claude/skills", "--embedding-provider", "bge-m3"),
     ),
     Stage(
         name="docs_agents_md",

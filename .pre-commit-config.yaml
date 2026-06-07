@@ -311,7 +311,7 @@ repos:
 
       # -- T6e: Skill Frontmatter (Anthropic spec) ------------------------------------
       # Enforces Anthropic Agent Skills authoring spec on every
-      # .cursor/skills/<name>/SKILL.md: YAML frontmatter with valid `name`
+      # .claude/skills/<name>/SKILL.md: YAML frontmatter with valid `name`
       # (<=64 chars, lowercase-hyphen, no reserved words) and `description`
       # (<=1024 chars, third person, includes a when-trigger), plus the 500-line
       # SKILL.md body budget and forward-slash path discipline.
@@ -321,7 +321,7 @@ repos:
         entry: py ops_scripts/ci/check_skill_frontmatter.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/skills/.+/SKILL\.md$
+        files: ^\.claude/skills/.+/SKILL\.md$
         always_run: false
         require_serial: true
 
@@ -572,7 +572,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: false
-        files: ^(\.cursor/scripts/(post_cursor_agent_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.cursor/skills/refactor-decision-memory/.*\.py|\.cursor/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
+        files: ^(\.cursor/scripts/(post_cursor_agent_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.claude/skills/refactor-decision-memory/.*\.py|\.cursor/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
 
       # -- T7h: Terminal/Subprocess Cleanup (§11 + §14) ---------------------------------
       # Enforces Constitutional §11 (terminal process lifecycle) and §14 (subprocess

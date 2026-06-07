@@ -41,7 +41,7 @@ BYPASS_LOG = REPO_ROOT / "artifacts" / "cursor" / "decision_required_bypass.json
 _FALLBACK_TRIGGER_PATHS = (
     ".cursor/scripts/",
     ".cursor/rules/",
-    ".cursor/skills/",
+    ".claude/skills/",
     "ops_scripts/ci/",
     "agentic_core/L5_safety/",
     "agentic_core/L0_routing/",

@@ -94,7 +94,7 @@ verdict = LedgerConsulter("{spec.name}").lookup(
 
 ## See Also
 
-- Base skill: `.cursor/skills/ledger-consulter/SKILL.md`
+- Base skill: `.claude/skills/ledger-consulter/SKILL.md`
 - Writer API: `tools/ledgers/writer.py`
 - Schema: `.cursor/schemas/{spec.schema_file}`
 - Plan: `.cursor/plans/_archive/windsurf_legacy_plans/intelligence-ledgers-ten-a7c3e2.md`

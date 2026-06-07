@@ -3,7 +3,7 @@
 CI gate: check_skill_description_quality.py
 
 W4 cursor-governance-two-tier — progressive-disclosure hygiene for
-``.cursor/skills/<name>/SKILL.md`` (Cursor SSOT).
+``.claude/skills/<name>/SKILL.md`` (Cursor SSOT).
 
 Enforces (beyond check_skill_frontmatter.py):
   1. Description length in a concise band (default 60–420 chars).
@@ -29,7 +29,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SKILLS_ROOT = REPO_ROOT / ".cursor" / "skills"
+SKILLS_ROOT = REPO_ROOT / ".claude" / "skills"
 EXCEPTIONS_FILE = REPO_ROOT / "ops_scripts" / "ci" / "baselines" / "skill_description_exceptions.json"
 
 DESC_MIN = 60

@@ -12063,7 +12063,7 @@
       "edge_type": "skill_supported_by_repo_evidence",
       "source_node_id": "skill_planning_prior_and_policy_context_use",
       "target_node_id": "repo_ee522e",
-      "rationale": "Repo evidence: .cursor/skills/refactor-decision-memory/",
+      "rationale": "Repo evidence: .claude/skills/refactor-decision-memory/",
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "skill_projection_not_proof",
       "validation_status": "validated"
@@ -21123,7 +21123,7 @@
         "PrecedentLookup"
       ],
       "repo_evidence_files": [
-        ".cursor/skills/refactor-decision-memory/"
+        ".claude/skills/refactor-decision-memory/"
       ],
       "source_resume_files": [],
       "source_snippets": [
@@ -32961,7 +32961,7 @@
         "PrecedentLookup"
       ],
       "repo_evidence_files": [
-        ".cursor/skills/refactor-decision-memory/"
+        ".claude/skills/refactor-decision-memory/"
       ],
       "source_resume_files": [],
       "source_snippets": [

@@ -263,7 +263,7 @@ def test_bandit_update(tmp_ledger: Path) -> None:
 
 def test_render_card_shape() -> None:
     rc = _import(
-        ".cursor/skills/author-gate-ui-renderer/render_card.py",
+        ".claude/skills/author-gate-ui-renderer/render_card.py",
         "render_card_under_test",
     )
     packet = {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""check_skill_frontmatter.py — CI gate: every ``.cursor/skills/<name>/SKILL.md``
+"""check_skill_frontmatter.py — CI gate: every ``.claude/skills/<name>/SKILL.md``
 must conform to Anthropic's Agent Skills authoring spec.
 
 Reference: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SKILLS_ROOT = REPO_ROOT / ".cursor" / "skills"
+SKILLS_ROOT = REPO_ROOT / ".claude" / "skills"
 
 NAME_MAX = 64
 DESC_MAX = 1024
@@ -184,7 +184,7 @@ def main() -> int:
     if failures:
         print("[skill_frontmatter] FAIL: the following skills violate Anthropic's authoring spec:\n")
         for name, issues in failures.items():
-            print(f"  .cursor/skills/{name}/SKILL.md")
+            print(f"  .claude/skills/{name}/SKILL.md")
             for issue in issues:
                 print(f"    - {issue}")
             print()

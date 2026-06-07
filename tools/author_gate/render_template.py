@@ -6,7 +6,7 @@ Plan: author-gate-ssot-consolidation-b7c3e1 W2.P2.2.
 Reads .cursor/schemas/author_gate_packet.schema.json and emits a
 human-readable Markdown reference at:
 
-    .cursor/skills/author-gate-packet-builder/packet_template.md
+    .claude/skills/author-gate-packet-builder/packet_template.md
 
 The header section (didactic guidance for Cascade/authors) is preserved
 verbatim from a prelude file; only the per-field reference table is
@@ -94,8 +94,8 @@ for audit transparency; only filtered from the user-facing prompt.
 ## References
 
 - Canonical schema: `.cursor/schemas/author_gate_packet.schema.json`
-- Skill: `.cursor/skills/author-gate-packet-builder/SKILL.md`
-- Renderer skill: `.cursor/skills/author-gate-ui-renderer/SKILL.md`
+- Skill: `.claude/skills/author-gate-packet-builder/SKILL.md`
+- Renderer skill: `.claude/skills/author-gate-ui-renderer/SKILL.md`
 - Constitutional §6, §30
 - Plan: `.cursor/plans/_archive/windsurf_legacy_plans/author-gate-ssot-consolidation-b7c3e1.md`
 """

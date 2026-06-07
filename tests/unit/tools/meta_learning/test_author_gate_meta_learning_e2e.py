@@ -174,7 +174,7 @@ def _build_packet_with_mocks(
     """Import emit_packet, patch BANDIT_STATE_PATH and _fetch_precedent, call build_packet."""
     mod_name = f"emit_packet_under_test_{id(tmp_path)}"
     ep = _import(
-        ".cursor/skills/author-gate-packet-builder/emit_packet.py",
+        ".claude/skills/author-gate-packet-builder/emit_packet.py",
         mod_name,
     )
     # Patch BANDIT_STATE_PATH to point to tmp_path file
@@ -311,7 +311,7 @@ def load_prior(tmp_path: Path):
     """Return the _load_bandit_prior function with BANDIT_STATE_PATH patched to tmp_path."""
     mod_name = f"emit_packet_fallback_{id(tmp_path)}"
     ep = _import(
-        ".cursor/skills/author-gate-packet-builder/emit_packet.py",
+        ".claude/skills/author-gate-packet-builder/emit_packet.py",
         mod_name,
     )
     ep.BANDIT_STATE_PATH = tmp_path / "bandit_state.json"
