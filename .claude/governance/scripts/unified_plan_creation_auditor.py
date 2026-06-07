@@ -412,7 +412,7 @@ def _process_creation(creation: dict[str, Any]) -> CorrectionEvent | AlertEvent 
 
 
 def _ensure_hook_import_path() -> None:
-    hooks = _REPO_ROOT / ".cursor" / "hooks"
+    hooks = _REPO_ROOT / ".claude" / "hooks"
     hs = str(hooks)
     if hs not in sys.path:
         sys.path.insert(0, hs)
@@ -444,7 +444,7 @@ def run_mcp_plan_auditor_stage(payload: dict[str, Any]) -> int:
         return 0
 
     _ensure_hook_import_path()
-    from lib.cursor_hook_common import (  # noqa: PLC0415
+    from lib.claude_hook_common import (  # noqa: PLC0415
         normalize_mcp_payload,
         parse_mcp_tool_input,
         resolve_mcp_server_name,

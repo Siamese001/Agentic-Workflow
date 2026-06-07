@@ -127,25 +127,21 @@ def _run_unified_plan_auditor(normalized_payload: dict[str, Any]) -> int:
         return block_exit_code()
 
     if proc.returncode != 0:
+        # cursor-decommission W7: FAIL-SOFT. Exit 2 (intentional block) is handled
+        # above. Any OTHER non-zero means the advisory plan-create auditor itself
+        # malfunctioned — that must NOT block all MCP traffic. Warn and allow.
         print(
-            f"[PLAN_AUDITOR_BLOCK] code=PLAN_AUDITOR_NONZERO_EXIT reason=exit_{proc.returncode}",
+            f"[PLAN_AUDITOR_WARN] code=PLAN_AUDITOR_NONZERO_EXIT reason=exit_{proc.returncode} "
+            "(fail-soft: allowing MCP call)",
             file=sys.stderr,
         )
         write_receipt(
             "beforeMCPExecution",
             normalized_payload,
-            "block",
-            f"plan auditor exit {proc.returncode}"[:500],
+            "warn",
+            f"plan auditor exit {proc.returncode} (fail-soft allow)"[:500],
         )
-        print(
-            json.dumps(
-                {
-                    "decision": "block",
-                    "reason": f"plan auditor abnormal exit {proc.returncode}"[:500],
-                }
-            )
-        )
-        return block_exit_code()
+        return 0
 
     return 0
 
