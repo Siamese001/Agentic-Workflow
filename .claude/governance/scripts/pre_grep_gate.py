@@ -25,7 +25,7 @@ Returns ``(0, reason)`` to allow or ``(2, reason)`` to block.
 * Structural pattern only (no breadcrumb) + ADG healthy .................. allow + WARN (stderr)
 * Otherwise .................................... allow
 
-The breadcrumb (``artifacts/cursor/_grep_deps_intent_turn.flag``) is dropped by
+The breadcrumb (``artifacts/governance/_grep_deps_intent_turn.flag``) is dropped by
 ``pre_user_prompt_grep_for_deps_warning.py`` when the user's prompt this turn asked a
 dependency question ("who uses / what depends on / fan-in / fan-out / blast radius /
 references to"). It is the high-precision signal: a structural grep *right after* a deps
@@ -47,7 +47,7 @@ from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _ADG_DIR = _REPO_ROOT / "artifacts" / "adg"
-_BREADCRUMB = _REPO_ROOT / "artifacts" / "cursor" / "_grep_deps_intent_turn.flag"
+_BREADCRUMB = _REPO_ROOT / "artifacts" / "governance" / "_grep_deps_intent_turn.flag"
 _BYPASS_ENV = "ADG_GREP_GATE_BYPASS"
 
 # A deps-intent breadcrumb older than this is treated as stale (a prior turn).

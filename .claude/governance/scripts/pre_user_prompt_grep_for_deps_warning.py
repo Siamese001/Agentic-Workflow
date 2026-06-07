@@ -29,7 +29,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[3]
-_LOG_PATH = _ROOT / "artifacts" / "cursor" / "pre_prompt_grep_warnings.jsonl"
+_LOG_PATH = _ROOT / "artifacts" / "governance" / "pre_prompt_grep_warnings.jsonl"
 _BYPASS_ENV = "PRE_PROMPT_GREP_WARNING_BYPASS"
 
 # Patterns that indicate the user wants dependency analysis.
@@ -71,7 +71,7 @@ def _detect_intent(prompt: str) -> list[str]:
     return matched
 
 
-_BREADCRUMB_PATH = _ROOT / "artifacts" / "cursor" / "_grep_deps_intent_turn.flag"
+_BREADCRUMB_PATH = _ROOT / "artifacts" / "governance" / "_grep_deps_intent_turn.flag"
 
 
 def _drop_intent_breadcrumb(matches: list[str]) -> None:
