@@ -16,15 +16,15 @@
 This revision addresses 10 hardening requirements:
 
 1. **Contract-Symbol Verification:** All illustrative code converted to requirements; only verified symbols from `agentic_core/runtime/contracts` are assumed available
-2. **Contract Inventory:** Wave 0.1 added to inventory existing contracts before facade creation
+2. **Contract Inventory:** Wave 1A added to inventory existing contracts before facade creation
 3. **Placeholder Removal:** No placeholder aliases (RejectedRequest=ValidatedRequest, ExitReviewPacket=dict, etc.)
 4. **Import-Boundary Ratchet:** Three-phase approach: (a) inventory violations, (b) block new violations via CI, (c) burn down existing violations
 5. **apps_research Migration:** Keep `apps_research_call_required=False` during migration; schema-check before field removal
 6. **SectionSpec Defaults:** Changed from `graph_as_claim_proof: true` to `graph_as_routing_support: true` with `graph_as_claim_proof: false` (unless fact-bound)
 7. **Fixture/Debug Preserved:** Briefing requirement applies only to `product_visible=True`; fixture/dev with `non_product_certified=True` bypasses briefing check
 8. **SectionFrontSpineBridge Cleanup:** Downstream artifacts moved to separate `SectionRunContractBundle`; bridge keeps only front-spine contracts
-9. **Wave Reconciliation:** Waves renumbered to 0.1-10; metadata aligned
-10. **Provider Staging:** Wave 9 restructured: 9a create abstraction, 9b validate parity, 9c make external_default target
+9. **Wave Reconciliation:** Waves renumbered to 1A, 1B, 2-12; metadata aligned
+10. **Provider Staging:** Waves 10A-C: 10A create abstraction, 10B validate parity, 10C make external_default target
 
 ---
 
@@ -36,7 +36,7 @@ This revision addresses 10 hardening requirements:
 
 **Question:** How can we lean out apps_rg to bind cleanly to spine contracts while preserving graph-grounded career arcs, section debugging, and evidence-bound resume generation?
 
-**Answer:** Execute a 10-wave zero-loss refactor (plus 0.1 inventory sub-wave) that: (0.1) inventories existing contracts, (0.2) freezes binding law, (1) creates import-boundary ratchet, (2) removes apps_research delegation, (3) disables R1B semantic cache by default, (4) unifies section/full-run contract paths, (5) consolidates section machinery, (6) documents assumptions, (7) cleans gate taxonomy, (8) minimizes judges, (9a-c) stages provider changes, (10) reduces artifacts, with comprehensive test matrix.
+**Answer:** Execute a 12-wave zero-loss refactor that: (1A) inventories existing contracts, (1B) freezes binding law, (2) creates import-boundary ratchet, (3) removes apps_research delegation, (4) disables R1B semantic cache by default, (5) unifies section/full-run contract paths, (6) consolidates section machinery, (7) documents assumptions with port-based ownership, (8) cleans gate taxonomy, (9) minimizes judges, (10A-C) stages provider changes, (11) reduces artifacts, with comprehensive test matrix.
 
 ---
 
@@ -46,21 +46,21 @@ This revision addresses 10 hardening requirements:
 
 | Wave | Focus | Status | Priority | Est. Files Changed | Blockers |
 |------|-------|--------|----------|-------------------|----------|
-| 0.1 | Contract-Symbol Inventory | NOT STARTED | P0 | 1 | None |
-| 0.2 | Inventory + Binding Law | NOT STARTED | P0 | 2 | None |
-| 1 | Import-Boundary Ratchet | NOT STARTED | P0 | 6 | Wave 0.1-0.2 |
-| 2 | Remove apps_research from Critical Path | NOT STARTED | P0 | 12 | Wave 1 |
-| 3 | Disable R1B Semantic Cache Default | NOT STARTED | P1 | 6 | Wave 2 |
-| 4 | One Contract Authority Path | NOT STARTED | P1 | 8 | Wave 3 |
-| 5 | SectionSpec + SectionRunner Consolidation | NOT STARTED | P1 | 20 | Wave 4 |
-| 6 | U0 Through Exit Assumption Ledger | NOT STARTED | P2 | 2 | Wave 5 |
-| 7 | Gate Taxonomy Reset | NOT STARTED | P2 | 10 | Wave 6 |
-| 8 | Judge Minimization + Token Efficiency | NOT STARTED | P2 | 8 | Wave 7 |
-| 9a | Provider Abstraction Creation | NOT STARTED | P2 | 4 | Wave 8 |
-| 9b | Provider Parity Validation | NOT STARTED | P2 | 3 | Wave 9a |
-| 9c | external_default Target Transition | NOT STARTED | P2 | 3 | Wave 9b |
-| 10 | Artifact Diet | NOT STARTED | P3 | 4 | Wave 9c |
-| 11 | Test Matrix Execution | NOT STARTED | P0 | 15 | Waves 0.1-10 |
+| 1A | Contract-Symbol Inventory | NOT STARTED | P0 | 1 | None |
+| 1B | Binding Law Documentation | NOT STARTED | P0 | 2 | Wave 1A |
+| 2 | Import-Boundary Ratchet | NOT STARTED | P0 | 6 | Waves 1A-1B |
+| 3 | Remove apps_research from Critical Path | NOT STARTED | P0 | 12 | Wave 2 |
+| 4 | Disable R1B Semantic Cache Default | NOT STARTED | P1 | 6 | Wave 3 |
+| 5 | One Contract Authority Path | NOT STARTED | P1 | 8 | Wave 4 |
+| 6 | SectionSpec + SectionRunner Consolidation | NOT STARTED | P1 | 20 | Wave 5 |
+| 7 | U0 Through Exit Assumption Ledger | NOT STARTED | P2 | 2 | Wave 6 |
+| 8 | Gate Taxonomy Reset | NOT STARTED | P2 | 10 | Wave 7 |
+| 9 | Judge Minimization + Token Efficiency | NOT STARTED | P2 | 8 | Wave 8 |
+| 10A | Provider Abstraction Creation | NOT STARTED | P2 | 4 | Wave 9 |
+| 10B | Provider Parity Validation | NOT STARTED | P2 | 3 | Wave 10A |
+| 10C | external_default Target Transition | NOT STARTED | P2 | 3 | Wave 10B |
+| 11 | Artifact Diet | NOT STARTED | P3 | 4 | Wave 10C |
+| 12 | Test Matrix Execution | NOT STARTED | P0 | 15 | Waves 1A-11 |
 
 ### Risk Register
 
@@ -76,7 +76,7 @@ This revision addresses 10 hardening requirements:
 
 ---
 
-## Wave 0.1 — Contract-Symbol Inventory
+## Wave 1A — Contract-Symbol Inventory
 
 ### Goal
 Verify all contract symbols in `agentic_core/runtime/contracts` before creating facade. No placeholder aliases in production code.
@@ -205,7 +205,7 @@ Verify all contract symbols in `agentic_core/runtime/contracts` before creating 
 
 ---
 
-## Wave 0.2 — Inventory + Binding Law
+## Wave 1B — Binding Law Documentation
 
 ### Goal
 Freeze the rules before refactoring. Document binding laws and create architectural guardrails.
@@ -243,7 +243,7 @@ Key additions for this revision:
 
 ---
 
-## Wave 1 — Import-Boundary Ratchet
+## Wave 2 — Import-Boundary Ratchet
 
 ### Goal
 Implement three-phase import boundary hardening: inventory violations, block new violations, then burn down existing.
@@ -625,7 +625,7 @@ class SectionExitReceipt(Protocol):
 
 ---
 
-## Wave 2 — Remove apps_research from apps_rg Critical Path
+## Wave 3 — Remove apps_research from apps_rg Critical Path
 
 ### Goal
 Eliminate cross-app research delegation and make briefing mandatory for product-visible runs only.
@@ -796,7 +796,7 @@ __all__ = [
 
 ---
 
-## Wave 3 — Disable R1B Semantic Cache by Default
+## Wave 4 — Disable R1B Semantic Cache by Default
 
 *(Unchanged from original plan - see original for details)*
 
@@ -808,7 +808,7 @@ __all__ = [
 
 ---
 
-## Wave 4 — One Contract Authority Path for Section + Full Run
+## Wave 5 — One Contract Authority Path for Section + Full Run
 
 ### Goal
 Keep section debugging, but stop sections from acting like separate mini-spines.
@@ -908,7 +908,7 @@ class SectionRunContractBundle:
 
 ---
 
-## Wave 5 — SectionSpec + SectionRunner Consolidation
+## Wave 6 — SectionSpec + SectionRunner Consolidation
 
 ### Key Revision: SectionSpec Defaults
 
@@ -924,6 +924,7 @@ class SourceAuthoritySpec:
     Revised per hardening review:
     - graph_as_routing_support: True (graph informs routing decisions)
     - graph_as_claim_proof: False (graph never proves claims)
+    - graph_claim_proof_allowed_only_when_fact_bound: True (even if graph_as_claim_proof=True, must be fact-bound)
     - candidate_facts_as_proof: True (only facts prove claims)
     """
 
@@ -937,6 +938,9 @@ class SourceAuthoritySpec:
     # NEW: Explicit graph routing support (True by default)
     graph_as_routing_support: bool = True
 
+    # NEW: Even when graph_as_claim_proof=True, only allowed when fact-bound
+    graph_claim_proof_allowed_only_when_fact_bound: bool = True
+
     # Unchanged: JD and briefing never proof
     jd_as_proof_allowed: bool = False
     briefing_as_proof_allowed: bool = False
@@ -947,25 +951,26 @@ class SourceAuthoritySpec:
 
         Claims are proven only by:
         1. candidate_facts_as_proof=True AND fact has supporting evidence
-        2. graph_as_claim_proof=True AND explicitly fact-bound (exceptional)
+        2. graph_as_claim_proof=True AND explicitly fact-bound AND graph_claim_proof_allowed_only_when_fact_bound=True
 
         Default: graph_as_claim_proof=False, so facts only.
         """
         if self.candidate_facts_as_proof and fact_bound:
             return True
-        if self.graph_as_claim_proof and fact_bound:
+        if self.graph_as_claim_proof and fact_bound and self.graph_claim_proof_allowed_only_when_fact_bound:
             return True
         return False
 ```
 
 ```yaml
 # apps_rg/runtime/sections/specs/headline.yaml
-# REVISED defaults
+# REVISED defaults per hardening review
 
 source_authority:
   candidate_facts_as_proof: true
-  graph_as_claim_proof: false        # REVISED: was true
-  graph_as_routing_support: true     # NEW: was implicit
+  graph_as_claim_proof: false                           # REVISED: was true
+  graph_as_routing_support: true                      # NEW: explicit routing support
+  graph_claim_proof_allowed_only_when_fact_bound: true # NEW: safety guard
   jd_as_proof_allowed: false
   briefing_as_proof_allowed: false
 
@@ -982,29 +987,341 @@ source_authority:
 - [ ] All seven section YAML specs use revised defaults
 - [ ] SectionSpec graph_as_claim_proof defaults to False
 - [ ] SectionSpec graph_as_routing_support defaults to True
+- [ ] SectionSpec graph_claim_proof_allowed_only_when_fact_bound defaults to True
 - [ ] Product behavior preserved (graph still informs routing)
 
 ---
 
-## Wave 6 — U0 Through Exit Assumption Ledger
+## Wave 7 — U0 Through Exit Assumption Ledger
+
+### Goal
+Re-review assumptions across U0 → Exit and remove unreasonable or duplicate gates. Use port-based ownership, not concrete runtime internals.
+
+### Deliverable
+
+**REQUIREMENT:** Create `apps_rg/runtime/contracts/apps_rg_assumptions.yaml`
+
+Each assumption specifies:
+- `assumption_id`: Unique identifier
+- `stage`: U0, L1, L0, C0, PA, L2, Exit
+- `owner`: Port interface or apps_rg binding module (NOT concrete agentic_core.runtime.*)
+- `decision_authority`: What this stage decides
+- `input_fields`: Required inputs
+- `output_contract`: Contract type produced
+- `failure_behavior`: How failures are handled
+- `gate_ids`: Associated gate identifiers
+- `x3_effect`: Impact on final X3 disposition
+- `test_ref`: Test file validating this assumption
+
+```yaml
+# apps_rg/runtime/contracts/apps_rg_assumptions.yaml
+assumptions:
+  # ============================================================================
+  # U0 STAGE - Intake Validation
+  # ============================================================================
+  - assumption_id: U0-001
+    stage: U0
+    owner: apps_rg.runtime.bindings.u0_binding  # apps_rg binding, not core
+    decision_authority: structure_validation
+    description: "U0 validates input structure only, does not route"
+    input_fields:
+      - source_resume_text
+      - job_description_text
+      - briefing_text (optional for fixture/dev)
+    output_contract: ValidatedRequest
+    failure_behavior: reject_with_explicit_error
+    gate_ids: [U0-G-001]
+    x3_effect: none  # X3 not yet reached
+    test_ref: tests/unit/apps_rg/test_u0_validation.py
+
+  - assumption_id: U0-002
+    stage: U0
+    owner: apps_rg.runtime.bindings.u0_binding
+    decision_authority: identity_digest
+    description: "U0 stamps identity/digests for traceability"
+    input_fields:
+      - request_id
+      - run_id
+      - trace_id
+      - tenant_id
+    output_contract: ValidatedRequest
+    failure_behavior: reject
+    gate_ids: [U0-G-002]
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_u0_identity.py
+
+  - assumption_id: U0-003
+    stage: U0
+    owner: apps_rg.runtime.bindings.briefing_u0_signals
+    decision_authority: briefing_presence
+    description: "U0 validates briefing for product-visible runs; fixture/dev bypass allowed"
+    input_fields:
+      - briefing_artifact_ref
+      - manual_brief_path
+      - product_visible (context)
+      - non_product_certified (context)
+    output_contract: ValidatedRequest
+    failure_behavior: fail_closed_for_product_visible
+    gate_ids: [U0-G-003]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_briefing_mandatory.py
+
+  # ============================================================================
+  # L1 STAGE - Deterministic Planning
+  # ============================================================================
+  - assumption_id: L1-001
+    stage: L1
+    owner: apps_rg.runtime.bindings.l1_binding
+    decision_authority: deterministic_planning
+    description: "L1 deterministic planning, no evidence retrieval, no model calls"
+    input_fields:
+      - ValidatedRequest
+    output_contract: L1PlanContract
+    failure_behavior: explicit_ambiguity_register
+    gate_ids: [L1-G-001]
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_l1_planning.py
+
+  - assumption_id: L1-002
+    stage: L1
+    owner: apps_rg.runtime.bindings.l1_binding
+    decision_authority: route_hints_advisory
+    description: "Route hints are advisory only, never binding authority"
+    input_fields:
+      - user_constraints.route_hint
+    output_contract: L1PlanContract
+    failure_behavior: ignore_hint_on_conflict
+    gate_ids: []
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_route_hints.py
+
+  # ============================================================================
+  # L0 STAGE - Deterministic Routing
+  # ============================================================================
+  - assumption_id: L0-001
+    stage: L0
+    owner: apps_rg.runtime.bindings.l0_binding
+    decision_authority: deterministic_route
+    description: "L0 selects one cheapest safe route deterministically"
+    input_fields:
+      - L1PlanContract
+    output_contract: RouteContract
+    failure_behavior: fail_closed
+    gate_ids: [L0-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_l0_routing.py
+
+  - assumption_id: L0-002
+    stage: L0
+    owner: apps_rg.runtime.bindings.l0_binding
+    decision_authority: no_retrieval_no_model
+    description: "L0 performs no retrieval, no model calls, R1B off by default"
+    input_fields: []
+    output_contract: RouteContract
+    failure_behavior: n/a
+    gate_ids: []
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_l0_no_model.py
+
+  # ============================================================================
+  # C0 STAGE - Evidence Resolution
+  # ============================================================================
+  - assumption_id: C0-001
+    stage: C0
+    owner: apps_rg.runtime.ports.EvidenceResolverPort  # PORT, not concrete
+    decision_authority: candidate_facts_proof
+    description: "Candidate facts prove claims; graph supports routing unless fact-bound"
+    input_fields:
+      - source_resume_facts
+      - skills_graph
+      - role_episode_graph
+      - GraphTraversePolicy
+    output_contract: FinalEvidenceContract
+    failure_behavior: empty_proof_pool
+    gate_ids: [C0-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_c0_fact_proof.py
+
+  - assumption_id: C0-002
+    stage: C0
+    owner: apps_rg.runtime.ports.EvidenceResolverPort
+    decision_authority: graph_routing_support
+    description: "Graph supports role/phase/skill routing; never proves claims unless fact-bound"
+    input_fields:
+      - GraphTraversePolicy
+      - source_authority.graph_as_routing_support
+    output_contract: FinalEvidenceContract
+    failure_behavior: fallback_to_facts_only
+    gate_ids: [C0-G-002]
+    x3_effect: ADVISORY
+    test_ref: tests/unit/apps_rg/test_c0_graph_routing.py
+
+  - assumption_id: C0-003
+    stage: C0
+    owner: apps_rg.runtime.ports.EvidenceResolverPort
+    decision_authority: targeting_only
+    description: "JD and briefing are targeting only, never proof sources"
+    input_fields:
+      - job_description_text
+      - briefing_text
+    output_contract: FinalEvidenceContract
+    failure_behavior: n/a  # Used for positioning, never proof
+    gate_ids: [C0-G-003]
+    x3_effect: none
+    test_ref: tests/unit/apps_rg/test_c0_targeting_only.py
+
+  # ============================================================================
+  # PA STAGE - Prompt Assembly
+  # ============================================================================
+  - assumption_id: PA-001
+    stage: PA
+    owner: apps_rg.runtime.ports.PromptCompilerPort  # PORT, not concrete
+    decision_authority: single_compiler_single_shape
+    description: "PA uses one compiler, one artifact shape, canonical slot order"
+    input_fields:
+      - FinalEvidenceContract
+      - SectionSpec
+    output_contract: CompiledPromptArtifact
+    failure_behavior: compilation_error
+    gate_ids: [PA-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_pa_compilation.py
+
+  # ============================================================================
+  # L2 STAGE - Model Execution
+  # ============================================================================
+  - assumption_id: L2-001
+    stage: L2
+    owner: apps_rg.runtime.ports.ProviderGatewayPort  # PORT, not concrete
+    decision_authority: provider_execution
+    description: "All model calls through ProviderGatewayPort; no direct qwen calls"
+    input_fields:
+      - CompiledPromptArtifact
+      - provider_profile
+      - token_budget
+    output_contract: SealedL2Artifact
+    failure_behavior: provider_error
+    gate_ids: [L2-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_l2_provider_port.py
+
+  - assumption_id: L2-002
+    stage: L2
+    owner: apps_rg.runtime.ports.ProviderGatewayPort
+    decision_authority: generation_attempts
+    description: "One generation attempt by default; one optional regen if SectionSpec permits"
+    input_fields:
+      - SectionSpec.max_regen_attempts
+      - SectionSpec.allowed_repair
+    output_contract: SealedL2Artifact
+    failure_behavior: fail_after_max_attempts
+    gate_ids: [L2-G-002]
+    x3_effect: REVIEW
+    test_ref: tests/unit/apps_rg/test_l2_regen_policy.py
+
+  # ============================================================================
+  # EXIT STAGE - Disposition Aggregation
+  # ============================================================================
+  - assumption_id: Exit-001
+    stage: Exit
+    owner: apps_rg.runtime.ports.ExitEvaluatorPort  # PORT, not concrete
+    decision_authority: x1_checkout
+    description: "X1 checkout before Exit evaluation"
+    input_fields:
+      - section_receipts
+      - X2 receipts from all sections
+    output_contract: X3Disposition  # Using verified core contract
+    failure_behavior: checkout_failure
+    gate_ids: [Exit-G-001]
+    x3_effect: BLOCK
+    test_ref: tests/unit/apps_rg/test_exit_x1.py
+
+  - assumption_id: Exit-002
+    stage: Exit
+    owner: apps_rg.runtime.ports.ExitEvaluatorPort
+    decision_authority: x2_aggregation
+    description: "X2 deterministic aggregation plus optional judge"
+    input_fields:
+      - X2 receipts from all sections
+      - GateSummary from each section
+    output_contract: X3Disposition
+    failure_behavior: aggregation_failure
+    gate_ids: [Exit-G-002]
+    x3_effect: REVIEW
+    test_ref: tests/unit/apps_rg/test_exit_x2.py
+
+  - assumption_id: Exit-003
+    stage: Exit
+    owner: apps_rg.runtime.ports.ExitEvaluatorPort
+    decision_authority: x3_disposition
+    description: "Exactly one X3 disposition; UNKNOWN is never PASS"
+    input_fields:
+      - aggregated_X2_results
+      - judge_evaluations (optional)
+    output_contract: X3Disposition
+    failure_behavior: explicit_error
+    gate_ids: [Exit-G-003]
+    x3_effect: FINAL
+    test_ref: tests/unit/apps_rg/test_exit_x3.py
+
+  - assumption_id: Exit-004
+    stage: Exit
+    owner: apps_rg.runtime.spine.exit_artifacts  # apps_rg binding layer
+    decision_authority: section_disposition_mapping
+    description: "Section dispositions map into same Exit model via ExitEvaluatorPort"
+    input_fields:
+      - section_exit_receipts
+    output_contract: X3Disposition
+    failure_behavior: mapping_error
+    gate_ids: [Exit-G-004]
+    x3_effect: FINAL
+    test_ref: tests/unit/apps_rg/test_section_exit_mapping.py
+```
+
+### Stage Rules Summary
+
+| Stage | Decision Authority | Key Constraint | Failure Behavior | Owner (Port-Based) |
+|-------|-------------------|----------------|------------------|-------------------|
+| U0 | structure_validation | no routing, no inference | reject explicit | apps_rg U0 binding |
+| U0 | identity_digest | stamps for traceability | reject | apps_rg U0 binding |
+| U0 | briefing_presence | mandatory for product_visible | fail closed | apps_rg briefing signals |
+| L1 | deterministic_planning | no evidence retrieval | ambiguity register | apps_rg L1 binding |
+| L1 | route_hints | advisory only | ignore on conflict | apps_rg L1 binding |
+| L0 | deterministic_route | cheapest safe | fail closed | apps_rg L0 binding |
+| L0 | no_retrieval | no model call | n/a | apps_rg L0 binding |
+| C0 | candidate_facts_proof | primary authority | empty proof pool | EvidenceResolverPort |
+| C0 | graph_routing_support | supports role/phase/skill | fallback to facts | EvidenceResolverPort |
+| C0 | targeting_only | JD/briefing never proof | n/a | EvidenceResolverPort |
+| PA | single_compiler | one artifact shape | compilation error | PromptCompilerPort |
+| L2 | provider_execution | through ProviderGatewayPort | provider error | ProviderGatewayPort |
+| L2 | generation_attempts | max 1 regen if permitted | fail after max | ProviderGatewayPort |
+| Exit | x1_checkout | checkout before eval | checkout failure | ExitEvaluatorPort |
+| Exit | x2_aggregation | deterministic + optional judge | aggregation failure | ExitEvaluatorPort |
+| Exit | x3_disposition | exactly one, UNKNOWN != PASS | explicit error | ExitEvaluatorPort |
+
+### Acceptance Criteria
+- [ ] Assumption ledger exists at `apps_rg/runtime/contracts/apps_rg_assumptions.yaml`
+- [ ] All owners are apps_rg bindings or Port interfaces (NOT concrete agentic_core.runtime.*)
+- [ ] Exit stage uses `ExitEvaluatorPort` (port interface), not `agentic_core.runtime.exit`
+- [ ] Tests reference assumptions for critical gates
+- [ ] Contradictory assumptions removed
+- [ ] No stage takes authority from another stage
+
+---
+
+## Wave 8 — Gate Taxonomy Reset
 
 *(Unchanged from original plan - see original for details)*
 
 ---
 
-## Wave 7 — Gate Taxonomy Reset
+## Wave 9 — Judge Minimization + Token Efficiency
 
 *(Unchanged from original plan - see original for details)*
 
 ---
 
-## Wave 8 — Judge Minimization + Token Efficiency
-
-*(Unchanged from original plan - see original for details)*
-
----
-
-## Wave 9a — Provider Abstraction Creation
+## Wave 10A — Provider Abstraction Creation
 
 ### Goal
 Create ProviderGateway and profile abstraction. Qwen remains functional.
@@ -1157,7 +1474,7 @@ class ExternalProvider(ModelProvider):
 
 ---
 
-## Wave 9b — Provider Parity Validation
+## Wave 10B — Provider Parity Validation
 
 ### Goal
 Validate external provider parity with Qwen before making external_default the target.
@@ -1238,7 +1555,7 @@ def test_all_sections_parity_suite(gateway):
 
 ---
 
-## Wave 9c — external_default Target Transition
+## Wave 10C — external_default Target Transition
 
 ### Goal
 Make external_default the default provider after parity proven.
@@ -1279,13 +1596,13 @@ default_provider: external_default
 
 ---
 
-## Wave 10 — Artifact Diet
+## Wave 11 — Artifact Diet
 
 *(Unchanged from original plan - see original for details)*
 
 ---
 
-## Wave 11 — Test Matrix
+## Wave 12 — Test Matrix
 
 *(Updated to include new test requirements from revisions)*
 
@@ -1388,7 +1705,7 @@ apps_rg lean-core target is complete when:
 
 ## Rollback Notes
 
-### Wave 0.1 Rollback
+### Wave 1A Rollback
 ```bash
 # If contract inventory reveals unexpected gaps:
 git checkout HEAD -- artifacts/apps_rg/contract_symbol_inventory.json
@@ -1409,12 +1726,12 @@ git checkout HEAD -- apps_rg/runtime/bindings/briefing_u0_signals.py
 # Keep apps_research_call_required returning False during investigation
 ```
 
-### Wave 9 Rollback
+### Wave 10 Rollback
 ```bash
 # If provider parity fails:
-# Stay on Wave 9a (abstraction created, both functional)
+# Stay on Wave 10A (abstraction created, both functional)
 # Fix external provider quality
-# Re-run Wave 9b before 9c
+# Re-run Wave 10B before 10C
 ```
 
 ---
@@ -1426,7 +1743,7 @@ plan_id: apps_rg_lean_core_binding_a1b2c3
 version: 2.0.0
 revision_date: 2026-06-07
 status: REGISTERED
-waves: 10 + 0.1 inventory + 9a/b/c substages
+waves: 12 (1A, 1B, 2-11, 10A/B/C substages)
 files_new: 38 (+5 from revision)
 files_modified: 60 (+2 from revision)
 files_deleted: 9
@@ -1441,16 +1758,16 @@ hardening_review: 10 points addressed
 
 ## PLAN_REVISED
 
-**PLAN_REVISED:** slug=apps_rg_lean_core_binding_a1b2c3 version=2.0.0 waves=10+0.1+9abc
+**PLAN_REVISED:** slug=apps_rg_lean_core_binding_a1b2c3 version=2.0.0 waves=12
 
 **Revision Checklist:**
 - [x] 1. Illustrative code → requirements unless symbols verified
-- [x] 2. Contract-symbol inventory added (Wave 0.1)
+- [x] 2. Contract-symbol inventory added (Wave 1A)
 - [x] 3. Placeholder aliases removed (no RejectedRequest=ValidatedRequest, etc.)
 - [x] 4. Import-boundary ratchet (Phase A/B/C)
 - [x] 5. apps_research_call_required=False during migration; schema check first
 - [x] 6. SectionSpec defaults: graph_as_routing_support=true, graph_as_claim_proof=false
 - [x] 7. Fixture/dev preserved: briefing only for product_visible
 - [x] 8. SectionRunContractBundle created; SectionFrontSpineBridge cleaned
-- [x] 9. Waves reconciled: 0.1, 0.2, 1-10, 9a/b/c
-- [x] 10. Provider staged: 9a abstraction, 9b parity, 9c external_default
+- [x] 9. Waves reconciled: 1A, 1B, 2-11, 10A/B/C
+- [x] 10. Provider staged: 10A abstraction, 10B parity, 10C external_default
