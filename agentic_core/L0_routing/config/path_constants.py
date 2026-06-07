@@ -186,7 +186,7 @@ REPORTS_DIR: Final[str] = "reports"
 # data and flip the consumer to the CLAUDE_* symbol. Both endpoints are exported
 # so migration tooling can reference either side explicitly.
 CURSOR_PLANS_DIR: Final[str] = ".cursor/plans"
-CURSOR_STATE_DIR: Final[str] = ".cursor/state"
+CURSOR_STATE_DIR: Final[str] = ".claude/state"
 CURSOR_SCHEMAS_DIR: Final[str] = ".cursor/schemas"
 CURSOR_TEMPLATES_DIR: Final[str] = ".cursor/templates"
 CURSOR_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".cursor/scripts"
