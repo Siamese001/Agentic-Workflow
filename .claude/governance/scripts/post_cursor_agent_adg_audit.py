@@ -17,7 +17,7 @@ from pathlib import Path
 
 fail_policy = "open"
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 violations_log = repo_root / "artifacts" / "cursor" / "adg_first_violations.jsonl"
 _legacy_violations_log = repo_root / "artifacts" / "windsurf" / "adg_first_violations.jsonl"
 

@@ -49,7 +49,7 @@ from typing import Any
 FAIL_POLICY = "open"
 CORROBORATION_WINDOW_MINUTES = 10
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "writeback_violations.jsonl"
 MEMORY_DB = REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 

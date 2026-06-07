@@ -32,7 +32,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 heartbeat_path = repo_root / "artifacts" / "windsurf" / "mcp_health_heartbeat.json"
 violations_log = repo_root / "artifacts" / "windsurf" / "mcp_preflight_violations.jsonl"
 ttl_config = repo_root / ".cursor" / "config" / "mcp_preflight_ttl.json"

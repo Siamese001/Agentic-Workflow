@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_plan_registration.py"
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB
 

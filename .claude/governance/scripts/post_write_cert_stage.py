@@ -17,7 +17,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 STAGER = REPO_ROOT / "tools" / "certification" / "_stage_review_bundle.ps1"
 LOG = REPO_ROOT / "artifacts" / "cursor" / "cert_stage_hook.log"
 

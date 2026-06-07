@@ -127,35 +127,14 @@ def validate_mcp_health():
         return False
     print("✅ AGENTS.md MCP coverage validated")
 
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_mcp_sync_integrity.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Cursor MCP sync integrity check failed")
-        print(stdout or stderr)
-        return False
-    print("✅ Cursor MCP sync integrity validated")
+    # cursor-decommission W7: mcp_sync_integrity + mcp_editor_parity validated the
+    # .cursor/mcp.json mirror + Cursor-vs-Windsurf editor parity. Both mirrors are
+    # retired (root .mcp.json is the sole SSOT), so these gates are obsolete and removed.
 
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_mcp_editor_parity.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ MCP editor parity check failed")
-        print(stdout or stderr)
-        return False
-    print("✅ MCP editor parity validated")
-
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_mcp_config_sovereignty.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ MCP config sovereignty (Rule #0) check failed")
-        print(stdout or stderr)
-        return False
-    print("✅ MCP config sovereignty (Rule #0) validated")
+    # cursor-decommission W7: check_mcp_config_sovereignty enforced a Cursor-era
+    # filesystem-MCP-args lock against .cursor/mcp.json. Root .mcp.json is the SSOT
+    # and intentionally omits the filesystem MCP (native file tools), so the gate's
+    # MISSING_FILESYSTEM premise no longer holds. Retired.
 
     # cursor-decommission W7: check_cursor_config_schema removed (validated deleted
     # .cursor/hooks.json + .cursor/mcp.json; Claude Code uses .claude/settings.json + root .mcp.json).

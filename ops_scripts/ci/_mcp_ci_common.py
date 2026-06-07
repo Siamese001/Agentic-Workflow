@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CURSOR_MCP_PATH = REPO_ROOT / ".cursor" / "mcp.json"
+CURSOR_MCP_PATH = REPO_ROOT / ".mcp.json"
 WINDSURF_MCP_PATH = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 AGENTS_MD = REPO_ROOT / "AGENTS.md"
 CURSOR_SYNC_SCRIPT_DIR = REPO_ROOT / ".claude" / "governance/scripts"

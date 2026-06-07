@@ -28,7 +28,7 @@ from pathlib import Path
 
 fail_policy = "closed_for_t2t3_adg"
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 # Namespaced per logical session — matches pre_mcp_gate.py and post_mcp_audit.py.
 _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
 session_state = repo_root / "artifacts" / "cursor" / f"session_state_{_session_id}.json"

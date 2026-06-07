@@ -35,7 +35,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_LOG = (
     REPO_ROOT / "artifacts" / "cursor" / "author_gate_pipeline_violations.jsonl"
 )

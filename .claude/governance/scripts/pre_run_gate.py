@@ -22,8 +22,6 @@ import sys
 
 fail_policy = "closed"
 
-powershell_patterns = ("powershell", "pwsh")
-
 # Matches pytest invocations that run the full unit test suite.
 # Handles: trailing slash, Windows backslash, optional trailing args.
 _FULL_SUITE_RE = re.compile(r"pytest\s+tests[/\\]unit[/\\]?(\s|$)")
@@ -34,18 +32,6 @@ _FULL_SUITE_RE = re.compile(r"pytest\s+tests[/\\]unit[/\\]?(\s|$)")
 _PYTEST_LEADING_RE = re.compile(r"(?:^|[;&|])\s*\"?(?:[^\s]*[/\\])?pytest(?:\.exe)?\b", re.IGNORECASE)
 _PYTEST_NARROWERS = ("-k", "-m", "--lf", "--ff", "--last-failed", "--failed-first", "::")
 
-# Script paths that are allowed to reference "powershell" in their name
-# because they are *about* PowerShell (checkers, RCA docs, etc.)
-_allowed_script_suffixes = (
-    "check_powershell_ban.py",
-    "pre_run_gate.py",
-)
-
-# Match powershell/pwsh as the leading executable in a command line.
-# Handles: bare name, .exe suffix, Unix paths (/usr/bin/pwsh),
-# Windows paths with or without spaces (C:/Program Files/PowerShell/7/pwsh.exe).
-# The pattern anchors to start of string and allows an optional path prefix
-# containing any chars except spaces — OR a quoted path.
 # Interactive / stdin-blocking commands that hang Cursor Agent's turn forever.
 # Cursor Agent's terminal cannot send keystrokes, so any command that waits for
 # keyboard input (pagers, editors, watchers, REPLs) blocks indefinitely.
@@ -176,25 +162,6 @@ def _check_python_dash_c_quote_hazard(command_line: str) -> str | None:
     return None
 
 
-_POWERSHELL_EXEC_RE = re.compile(
-    r"""
-    (?:^|(?<=\s))           # start of string or preceded by whitespace
-    (?:
-        "(?:[^"]*[/\\])?    # optional quoted path prefix
-        (powershell|pwsh)   # executable name (group 1)
-        (?:\.exe)?          # optional .exe
-        "                   # closing quote
-      |
-        (?:[^\s]*[/\\])?    # optional unquoted path prefix (no spaces)
-        (powershell|pwsh)   # executable name (group 2)
-        (?:\.exe)?          # optional .exe
-    )
-    (?:\s|$)                # followed by space or end-of-string
-    """,
-    re.IGNORECASE | re.VERBOSE,
-)
-
-
 def _exit_block(reason: str) -> int:
     print(f"[pre_run_gate] BLOCKED: {reason}", file=sys.stderr)
     return 2
@@ -202,28 +169,8 @@ def _exit_block(reason: str) -> int:
 
 def check_command(command_line: str) -> int:
     """Return 0 (allow) or 2 (block). command_line must be a non-empty string."""
-    lower = command_line.lower()
-
-    # Always check for powershell/pwsh as the leading executor first.
-    # The allowlist exempts scripts whose *path* contains a known suffix
-    # (e.g. check_powershell_ban.py) but ONLY when powershell is not the
-    # executor itself — "powershell check_powershell_ban.py" must still block.
-    if _POWERSHELL_EXEC_RE.search(command_line):
-        leading_token = lower.lstrip().split()[0] if lower.strip() else ""
-        is_allowed_script = any(
-            lower.endswith(s) or ("/" + s) in lower or ("\\" + s) in lower for s in _allowed_script_suffixes
-        )
-        # Exempt only when the leading token is NOT powershell/pwsh itself,
-        # i.e. a python invocation of a checker that mentions powershell by name.
-        if is_allowed_script and not any(pat in leading_token for pat in powershell_patterns):
-            pass  # allowed: python script whose path references powershell
-        else:
-            matched = next(pat for pat in powershell_patterns if pat in command_line.lower())
-            return _exit_block(
-                f"PowerShell is forbidden (matched '{matched}'). "
-                "Use argv list with shell=False per constitutional §0.",
-            )
-
+    # PowerShell is permitted (primary Windows shell); the legacy Windsurf-era
+    # ban was removed. The interactive/quote-hazard guards below still apply.
     quote_hazard = _check_python_dash_c_quote_hazard(command_line)
     if quote_hazard is not None:
         return _exit_block(

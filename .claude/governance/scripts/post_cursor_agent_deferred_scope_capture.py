@@ -62,7 +62,7 @@ except ImportError:  # fail-open: tqdm unavailable in hook context
     _tqdm = None  # type: ignore[assignment]
 
 FAIL_POLICY = "open"
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 CAPTURE_LOG_NAME = "deferred_scope_capture.jsonl"
 MEMORY_DB = REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 

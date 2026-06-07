@@ -40,7 +40,7 @@ _NOTION_BASE = "https://api.notion.com/v1"
 _NOTION_API_VERSION = "2025-09-03"
 _NOTION_TIMEOUT_S = 30
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
+_REPO_ROOT = Path(__file__).resolve().parents[3]
 
 # Validation constants
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*-[a-f0-9]{6}$")

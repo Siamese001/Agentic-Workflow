@@ -29,7 +29,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 LOG_PATHS = {
     "preflight": REPO_ROOT / "artifacts" / "cursor" / "mcp_preflight_violations.jsonl",
     "orphan_reap": REPO_ROOT / "artifacts" / "cursor" / "mcp_orphan_reap.jsonl",

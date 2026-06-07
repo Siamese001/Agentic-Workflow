@@ -33,7 +33,7 @@ import sys
 import time
 from pathlib import Path
 
-_ROOT = Path(__file__).resolve().parents[2]
+_ROOT = Path(__file__).resolve().parents[3]
 _HEARTBEAT_PATH = _ROOT / "artifacts" / "cursor" / "post_cursor_agent_heartbeat.jsonl"
 
 # Default stale threshold: 30 minutes. Override with

@@ -51,7 +51,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 AUDIT_LOG = REPO_ROOT / "artifacts" / "cursor" / "phase_close_audit.jsonl"
 
 import sys as _sys

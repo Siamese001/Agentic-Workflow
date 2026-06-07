@@ -37,7 +37,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _secret_patterns import is_sensitive_path  # noqa: E402
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 AUDIT_DIR = REPO_ROOT / "artifacts" / "cursor"
 AUDIT_LOG = AUDIT_DIR / "secret_scan.jsonl"
 

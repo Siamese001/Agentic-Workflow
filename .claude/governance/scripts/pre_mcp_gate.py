@@ -153,7 +153,7 @@ filesystem_write_tools = {
     "move_file",  # mcp4_move_file  — rename/relocate; mutates filesystem
 }
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 artifacts_adg = repo_root / "artifacts" / "adg"
 # Session-state isolation boundary
 #

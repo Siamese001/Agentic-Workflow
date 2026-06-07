@@ -12,7 +12,7 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 db_path = repo_root / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 ddl = """
 PRAGMA journal_mode=WAL;

@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 # Detection heuristics from plan a7e3d2
 AUTHOR_GATE_KEYWORDS = [

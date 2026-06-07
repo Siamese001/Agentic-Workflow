@@ -28,7 +28,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 LEDGER_FAMILY_GLOB = str(REPO_ROOT / "artifacts" / "ledgers" / "*.sqlite")
 AUTHOR_GATE_DB = REPO_ROOT / ".claude" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 

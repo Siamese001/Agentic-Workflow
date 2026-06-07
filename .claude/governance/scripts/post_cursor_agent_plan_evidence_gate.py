@@ -35,7 +35,7 @@ from pathlib import Path
 
 fail_policy = "closed_for_refactor_plans"
 
-_ROOT = Path(__file__).resolve().parents[2]
+_ROOT = Path(__file__).resolve().parents[3]
 _PLANS_DIR = _ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 _LOG_PATH = _ROOT / "artifacts" / "windsurf" / "plan_evidence_violations.jsonl"
 _BYPASS_ENV = "PLAN_EVIDENCE_GATE_BYPASS"

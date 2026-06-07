@@ -34,7 +34,7 @@ import sys
 import time
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 # Freshness window: plans modified in the last 24h are "active".
 PLAN_FRESHNESS_SEC = 24 * 3600

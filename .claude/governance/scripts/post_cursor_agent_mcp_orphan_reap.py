@@ -35,7 +35,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 DETECTOR = REPO_ROOT / "tools" / "debug" / "check_orphan_mcp_processes.py"
 LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "mcp_orphan_reap.jsonl"
 

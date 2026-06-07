@@ -28,7 +28,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-_ROOT = Path(__file__).resolve().parents[2]
+_ROOT = Path(__file__).resolve().parents[3]
 _LOG_PATH = _ROOT / "artifacts" / "cursor" / "pre_prompt_grep_warnings.jsonl"
 _BYPASS_ENV = "PRE_PROMPT_GREP_WARNING_BYPASS"
 

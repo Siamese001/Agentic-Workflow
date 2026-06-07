@@ -23,7 +23,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 REMINDERS_DIR = REPO_ROOT / "docs" / "archive" / "cursor" / "reminders"
 
 DUE_DATE_RE = re.compile(

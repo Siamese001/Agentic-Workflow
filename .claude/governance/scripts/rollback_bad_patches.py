@@ -23,7 +23,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 AUDIT_LOG = REPO_ROOT / "artifacts" / "cursor" / "phase_close_audit.jsonl"
 ROLLBACK_LOG = REPO_ROOT / "artifacts" / "cursor" / "phase_close_rollback.jsonl"
 

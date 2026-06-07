@@ -42,7 +42,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 HOOK_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_author_gate_capture.py"
 MARKER_RE = re.compile(r"^\s*DECISION_CAPTURED:\s.+$", re.MULTILINE)
 TIMEOUT_SECONDS = 120

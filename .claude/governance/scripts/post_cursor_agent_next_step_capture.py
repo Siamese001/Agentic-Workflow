@@ -39,7 +39,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "next_step_capture.jsonl"
 
 import sys as _sys

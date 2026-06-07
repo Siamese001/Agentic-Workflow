@@ -29,7 +29,7 @@ import stat
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 GIT_DIR = REPO_ROOT / ".git"
 HOOKS_DIR = GIT_DIR / "hooks"
 HOOK_NAME = "post-commit"

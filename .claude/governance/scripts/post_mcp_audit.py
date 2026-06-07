@@ -25,7 +25,7 @@ from pathlib import Path
 
 fail_policy = "open"
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 audit_log = repo_root / "artifacts" / "cursor" / "mcp_tool_audit.jsonl"
 gitkraken_write_audit_log = repo_root / "artifacts" / "cursor" / "gitkraken_write_audit.jsonl"
 # Supply-chain drift detection for MCP servers (W2 hardening).

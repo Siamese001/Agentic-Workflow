@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 
 
 def _get_worktree_root(payload: dict) -> Path | None:

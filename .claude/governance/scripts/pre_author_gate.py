@@ -58,7 +58,7 @@ except ImportError:
     print("[pre_author_gate] PyYAML required — pip install pyyaml", file=sys.stderr)
     sys.exit(5)
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 TRIGGERS_PATH = REPO_ROOT / ".claude" / "schemas" / "author_gate_triggers.yaml"
 ADG_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "adg"
 

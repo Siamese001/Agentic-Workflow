@@ -17,7 +17,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 repo_config = repo_root / ".cursor" / "mcp.json"
 global_config = Path.home() / ".cursor" / "cursor" / "mcp.json"
 agents_md = repo_root / "AGENTS.md"

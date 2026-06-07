@@ -43,7 +43,7 @@ except ImportError:  # guardian: allow-broad-exception -- optional dep; gate fai
 
 fail_policy = "closed"
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 session_state = repo_root / "artifacts" / "cursor" / "session_state.json"
 
 _BARE_EXCEPT_RE = re.compile(r"^\s*except\s*:", re.MULTILINE)

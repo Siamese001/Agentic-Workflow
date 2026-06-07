@@ -35,7 +35,7 @@ from typing import Any
 
 fail_policy = "open"
 
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 
 # Cursor-native paths only (W1.4).
 violations_log = repo_root / "artifacts" / "cursor" / "long_command_violations.jsonl"

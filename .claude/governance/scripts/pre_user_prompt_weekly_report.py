@@ -35,7 +35,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 STATE_DIR = REPO_ROOT / ".claude" / "state"
 REPORT_SCRIPT = REPO_ROOT / "ops_scripts" / "calibration" / "token_burn_weekly_report.py"
 TIMEOUT_SECONDS = 30

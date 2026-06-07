@@ -23,7 +23,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 VIOLATIONS_LOG = (
     REPO_ROOT / "artifacts" / "cursor" / "notion_plans_dup_violations.jsonl"

@@ -47,7 +47,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 REPO_CONFIG = REPO_ROOT / ".mcp.json"
 # cursor-decommission: the Cursor IDE user-home config is retired; root .mcp.json is the sole SSOT.
 GLOBAL_CONFIG = REPO_CONFIG
