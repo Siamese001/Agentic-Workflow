@@ -71,6 +71,24 @@ def _detect_intent(prompt: str) -> list[str]:
     return matched
 
 
+_BREADCRUMB_PATH = _ROOT / "artifacts" / "cursor" / "_grep_deps_intent_turn.flag"
+
+
+def _drop_intent_breadcrumb(matches: list[str]) -> None:
+    """Stamp a per-turn flag so pre_grep_gate.py can hard-block a structural grep
+    issued in the same turn the user asked a dependency question. Best-effort; the
+    grep gate is fail-open and treats a stale/missing flag as "no breadcrumb"."""
+    try:
+        _BREADCRUMB_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _BREADCRUMB_PATH.write_text(
+            json.dumps({"stamped_at": datetime.now(timezone.utc).isoformat(),
+                        "matched_patterns": matches}),
+            encoding="utf-8",
+        )
+    except OSError:
+        pass
+
+
 def _log_warning(prompt: str, matches: list[str]) -> None:
     try:
         _LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -116,6 +134,7 @@ def main() -> int:
         return 0
 
     _log_warning(prompt_text, matches)
+    _drop_intent_breadcrumb(matches)
 
     # Inject ADG-first reminder via stderr (Cursor surfaces pre_user_prompt
     # hook stderr into the next model turn's context).

@@ -57,6 +57,15 @@
         ]
       },
       {
+        "matcher": "Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_grep.py\""
+          }
+        ]
+      },
+      {
         "matcher": "mcp__.*",
         "hooks": [
           {
