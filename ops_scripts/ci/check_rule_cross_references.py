@@ -32,15 +32,15 @@ from typing import Optional
 # Configuration
 # ---------------------------------------------------------------------------
 
-RULES_DIR: Path = Path(".cursor/rules")
+RULES_DIR: Path = Path(".claude/rules")
 ARTIFACTS_DIR: Path = Path("artifacts/ci")
 
 # Cross-reference patterns in markdown
 REF_PATTERNS: list[tuple[str, str]] = [
     # Markdown link: [text](path/to/file.md)
     (r"\[([^\]]+)\]\(([^)]+\.md)\)", "link"),
-    # Rule citation: @.cursor/rules/file.md or @file.md
-    (r"@(?:\.cursor/rules/)?([^\s]+\.md)", "citation"),
+    # Rule citation: @.claude/rules/file.md or @file.md (legacy .cursor accepted)
+    (r"@(?:\.(?:claude|cursor)/rules/)?([^\s]+\.md)", "citation"),
     # Reference block: see `file.md` or see `path/file.md`
     (r"see\s+`([^`]+\.md)`", "reference"),
 ]
