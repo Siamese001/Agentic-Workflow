@@ -7,10 +7,16 @@ from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
-
-_ENV_OVERLAY_LOCK = threading.Lock()
 from apps_rg.runtime.section_cli_defaults import CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
+
+# Held across the entire lane dispatch (not just the os.environ mutation) so the
+# process-global MODULAR_R4_SECTIONS_ROOT overlay cannot be swapped out from under
+# an in-flight lane. This intentionally serializes concurrent wave lanes -- a
+# deliberate vLLM-safe throttle, not merely env protection. If true wave
+# parallelism is wanted later, set the (constant) sections_root once before the
+# wave and drop the per-lane overlay rather than widening this lock.
+_ENV_OVERLAY_LOCK = threading.Lock()
 
 
 @dataclass
