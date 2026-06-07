@@ -6,6 +6,11 @@ metadata:
   enforcement_timing: before_work
   enforcement_type: behavioural
 ---
+> ⚠️ Superseded W2 (claude-native-supersession-9d3f7a, ADR-094): the SR_* marker packet is
+> retired in favour of native **plan mode** (EnterPlanMode/ExitPlanMode) for the
+> no-edits-before-approval contract. This skill is retained for its retrieval-discipline and
+> decomposition guidance — use it inside plan mode, not as a marker emitter.
+
 
 # Structured Reasoning Skill
 

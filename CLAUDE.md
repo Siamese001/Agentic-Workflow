@@ -6,11 +6,16 @@
 
 ## Plan First. Execute Second.
 
-- **T2/T3** (2+ files, cross-layer, architecture, multi-file debug): first output = a plan; invoke
-  the [`structured-reasoning`](.claude/skills/structured-reasoning/SKILL.md) skill →
-  `SR_INTAKE` … `SR_VERIFY`. See `.claude/rules/sequential-thinking-enforcement.md`.
+- **T2/T3** (2+ files, cross-layer, architecture, multi-file debug): enter **plan mode**
+  (`EnterPlanMode`) and present the plan via `ExitPlanMode` for approval before any edit. The
+  [`structured-reasoning`](.claude/skills/structured-reasoning/SKILL.md) skill still offers retrieval
+  discipline for dense decomposition. See `.claude/rules/sequential-thinking-enforcement.md`.
 - **T0/T1**: single file ≤20 lines or questions — answer/edit directly.
-- **Layer separation:** Reasoning / Routing / Execution / Verification — no edits before `SR_APPROVAL`.
+- **Layer separation:** Reasoning / Routing / Execution / Verification — no edits before plan approval.
+
+> Superseded W2 (`claude-native-supersession-9d3f7a`, ADR-094): the `SR_INTAKE`…`SR_VERIFY` /
+> `SR_APPROVAL` marker scheme is retired — native plan mode is the "no edits before approval" contract.
+
 
 ## Constitutional floor (always-on)
 
