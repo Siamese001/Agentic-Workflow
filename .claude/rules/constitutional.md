@@ -22,7 +22,7 @@
 10. **Zero-loss refactor.** After removing boilerplate, check for hollow files. Gate: `zero_loss_refactor_verifier.py`.
 11. **Terminal process lifecycle.** All `run_command`/subprocess must terminate. Gate: `check_terminal_cleanup.py`.
 12. **No imports from `archives/` in production.** Gate: `check_no_archives_imports.py`.
-13. **MCP green light before T2/T3.** Redis hot cache (`adg_redis_ingest.py --check`) → `adg_health` fallback. Both red = BLOCKED.
+13. **ADG SQLite SSOT green light before T2/T3.** The ADG SQLite snapshot (`artifacts/adg/adg_indexed_*.sqlite`) is the SSOT: no readable canonical snapshot ⇒ **BLOCKED**. Redis is a non-authoritative hot cache (`adg_redis_ingest.py --check`) — cold/absent ⇒ advisory warning only, **never blocks** (a Redis hit may not substitute for an unavailable SSOT; see `adg-canonical-invariants.md` §1). Gate: `pre_user_prompt_adg_ssot_gate.py`, dispatched from `before_submit_prompt.py`. Bypass: `ADG_SSOT_GATE_BYPASS=1`. (Detail: plan `adg-redis-hotcache-enforcement-b9f4c2`.)
 14. **Subprocess timeout required** — reserved alias of §0, kept for stable numbering (sibling rules `query-progress-bar.md` and `python-dash-c-quote-hazard.md` cite "§14"; do not renumber to dedupe). See §0.
 15. **Precise exception handling.** Catch specific types. Bare `except:` and `except Exception` without guardian comment FORBIDDEN.
 16. **Query progress bar mandatory.** Operations >5s, loops >10 lines, heavy-named functions (`scan_*`/`build_*`/`query_*`) >12 lines. Gate: `check_query_progress_bar.py`. See `query-progress-bar.md`.

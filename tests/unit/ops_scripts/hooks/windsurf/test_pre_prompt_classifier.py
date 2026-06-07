@@ -362,7 +362,8 @@ class TestMain:
         assert "SR_PLAN" in captured.err
         assert "SR_APPROVAL" in captured.err
 
-    # --- T2/T3 + BOTH red: blocked (§13: only block when BOTH Redis AND SQLite unavailable) ---
+    # --- T2/T3 + SQLite SSOT red: blocked (§13: SQLite MCP is the SSOT authority;
+    #     a red SSOT blocks regardless of Redis hot-cache state) ---
     def test_t3_red_adg_blocked(self):
         payload = {"tool_info": {"user_prompt": "refactor the entire architecture"}}
         assert self._run(payload, adg_red=True, redis_down=True) == 2
@@ -403,8 +404,11 @@ class TestMain:
     # --- prompt field variants ---
     def test_prompt_field_alias_works(self):
         payload = {"tool_info": {"prompt": "refactor the architecture"}}
-        # adg_red=True, redis_down defaults False → fallback to SQLite succeeds → exit 0
-        assert self._run(payload, adg_red=True) == 0
+        # Corrected SSOT semantics (adg-redis-hotcache-enforcement-b9f4c2): the SQLite
+        # MCP is the SSOT authority. adg_red=True ⇒ BLOCK regardless of Redis — a Redis
+        # hot-cache hit may NOT substitute for an unavailable SSOT
+        # (adg-canonical-invariants.md §1). Asserts the `prompt` field alias is read.
+        assert self._run(payload, adg_red=True) == 2
 
     def test_user_prompt_takes_precedence(self):
         # user_prompt preferred over prompt
@@ -757,6 +761,50 @@ class TestDetectAdgGraphIntent:
 
     def test_what_depends_on_detected(self):
         assert _detect_adg_graph_intent("what depends on ADGService class") is True
+
+
+# ---------------------------------------------------------------------------
+# Redis URL SSOT resolution (plan adg-redis-hotcache-enforcement-b9f4c2, GAP-2)
+# The gate MUST resolve the Redis endpoint from the ADG_REDIS_URL SSOT — the same
+# var the ingest/MCP writer uses — not a hardcoded localhost literal.
+# ---------------------------------------------------------------------------
+class TestRedisUrlResolution:
+    def test_resolver_honors_env(self, monkeypatch):
+        import pre_prompt_classifier as ppc
+
+        monkeypatch.setenv("ADG_REDIS_URL", "redis://example.internal:7000/3")
+        assert ppc._resolve_redis_url() == "redis://example.internal:7000/3"
+
+    def test_resolver_falls_back_when_unset(self, monkeypatch):
+        import pre_prompt_classifier as ppc
+
+        monkeypatch.delenv("ADG_REDIS_URL", raising=False)
+        assert ppc._resolve_redis_url() == ppc._REDIS_URL_LOCAL_FALLBACK
+
+    def test_check_redis_up_uses_resolved_host_port(self, monkeypatch):
+        import pre_prompt_classifier as ppc
+
+        captured = {}
+
+        def _fake_conn(addr, timeout=None):
+            captured["addr"] = addr
+            raise ConnectionRefusedError()
+
+        monkeypatch.setenv("ADG_REDIS_URL", "redis://cache.host:6390/0")
+        monkeypatch.setattr(ppc.socket, "create_connection", _fake_conn)
+        # ConnectionRefused → Redis explicitly down (False), but we only assert the
+        # endpoint came from ADG_REDIS_URL (not hardcoded localhost:6379).
+        assert ppc.check_redis_up() is False
+        assert captured["addr"] == ("cache.host", 6390)
+
+    def test_no_hardcoded_localhost_literal_in_source(self):
+        # Regression lock: the only localhost form allowed is the named fallback const.
+        src = Path(
+            str(Path(__file__).resolve().parents[5] / ".claude" / "governance/scripts" / "pre_prompt_classifier.py")
+        ).read_text(encoding="utf-8")
+        # The socket pre-check and redis client must not pin localhost:6379 directly.
+        assert 'socket.create_connection(("localhost", 6379)' not in src
+        assert 'redis.from_url(\n            "redis://localhost:6379/0"' not in src
 
     def test_impact_analysis_detected(self):
         assert _detect_adg_graph_intent("run impact analysis on redis_cache.py") is True

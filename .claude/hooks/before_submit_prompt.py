@@ -10,6 +10,7 @@ from typing import Any
 
 from lib.claude_hook_common import (
     allow,
+    block,
     contains_legacy_execution_token,
     text_from_payload,
     warn,
@@ -18,6 +19,7 @@ from lib.claude_hook_common import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GREP_WARNING = REPO_ROOT / ".claude" / "governance" / "scripts" / "pre_user_prompt_grep_for_deps_warning.py"
+ADG_SSOT_GATE = REPO_ROOT / ".claude" / "governance" / "scripts" / "pre_user_prompt_adg_ssot_gate.py"
 
 
 def _parse_payload(raw: str) -> dict[str, Any]:
@@ -55,6 +57,35 @@ def _run_grep_for_deps_warning(raw_stdin: str) -> None:
         pass
 
 
+def _run_adg_ssot_gate(raw_stdin: str) -> int:
+    """Dispatch the ADG SQLite-SSOT green-light gate; return its exit code (0 or 2).
+
+    Surfaces the gate's stderr. Exit 2 means a T2/T3 prompt must be blocked because
+    the ADG SQLite SSOT snapshot is unavailable (constitutional §13). Fail-open: any
+    dispatch error returns 0 so a probe failure never blocks the prompt.
+    """
+    if not ADG_SSOT_GATE.is_file() or not raw_stdin.strip():
+        return 0
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(ADG_SSOT_GATE)],
+            input=raw_stdin,
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+            env={**dict(__import__("os").environ), "PYTHONPATH": str(REPO_ROOT)},
+        )
+    except (subprocess.TimeoutExpired, OSError):
+        return 0  # fail-open: do not block on dispatch failure
+    if proc.stderr:
+        sys.stderr.write(proc.stderr)
+        if not proc.stderr.endswith("\n"):
+            sys.stderr.write("\n")
+    return proc.returncode
+
+
 raw_stdin = sys.stdin.read() if not sys.stdin.isatty() else ""
 payload = _parse_payload(raw_stdin)
 text = text_from_payload(payload) or raw_stdin
@@ -69,6 +100,12 @@ if legacy:
 
 if raw_stdin.strip():
     _run_grep_for_deps_warning(raw_stdin)
+
+# Constitutional §13 ADG SQLite-SSOT green-light (Redis is advisory hot cache only).
+if _run_adg_ssot_gate(raw_stdin) == 2:
+    reason = "ADG SQLite SSOT unavailable for T2/T3 prompt — regenerate the ADG snapshot before proceeding (constitutional §13)."
+    write_receipt("beforeSubmitPrompt", payload, "block", reason)
+    raise SystemExit(block(reason))
 
 write_receipt("beforeSubmitPrompt", payload, "allow", "prompt accepted")
 raise SystemExit(allow("prompt accepted"))

@@ -21,7 +21,6 @@ import json
 import os
 import shutil
 import socket
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -556,13 +555,35 @@ def check_plan_exists(tier: str) -> bool:
     return any(d.exists() and any(d.glob("*.md")) for d in plans_dirs)
 
 
+# SSOT: the Redis hot-cache URL is owned by ADG_REDIS_URL (S-03/S-08). The writer
+# (tools/adg/cache/redis_cache.py, tools/adg/adg_redis_ingest.py) and the MCP servers
+# all resolve from this env var; the gate MUST resolve the SAME way or it probes a
+# different Redis than the one the cache lives in. The localhost form is a documented
+# last-resort fallback for unconfigured local dev only — never an authority.
+_REDIS_URL_LOCAL_FALLBACK = "redis://localhost:6379/0"
+
+
+def _resolve_redis_url() -> str:
+    """Resolve the ADG Redis URL from the ADG_REDIS_URL SSOT, falling back to local dev.
+
+    Matches RedisCache(redis_cache.py) resolution so the gate probes the same Redis the
+    ingest/MCP path writes to. No silent divergence from the env-var SSOT.
+    """
+    return os.getenv("ADG_REDIS_URL") or _REDIS_URL_LOCAL_FALLBACK
+
+
 def check_redis_up() -> bool:
     """
-    Return True if Redis is reachable on localhost:6379.
+    Return True if the ADG_REDIS_URL Redis endpoint is reachable.
     Fail-open: any socket error other than connection refused returns True (don't block).
     """
+    from urllib.parse import urlparse
+
+    parsed = urlparse(_resolve_redis_url())
+    host = parsed.hostname or "localhost"
+    port = parsed.port or 6379
     try:
-        with socket.create_connection(("localhost", 6379), timeout=2):
+        with socket.create_connection((host, port), timeout=2):
             return True  # connected — Redis is up
     except ConnectionRefusedError:
         return False  # Redis is explicitly down
@@ -574,13 +595,17 @@ def check_redis_adg_hot() -> bool:
     """
     Return True if the ADG hot cache sentinel key exists in Redis.
     This means ADG was fully ingested into Redis and is ready for queries.
-    Fail-open: any error returns False (falls back to ADG MCP probe).
+
+    The sentinel is an OPTIONAL fast-path accelerator only — a cold result NEVER
+    blocks (Redis is a non-authoritative hot cache; SQLite is the SSOT). Resolves the
+    endpoint from the ADG_REDIS_URL SSOT to stay consistent with the ingest/MCP writer.
+    Fail-open: any error returns False (cold — falls through to the advisory warning).
     """
     try:
         import redis
 
         client = redis.from_url(
-            "redis://localhost:6379/0",
+            _resolve_redis_url(),
             decode_responses=True,
             socket_connect_timeout=2,
             socket_timeout=2,
@@ -600,45 +625,50 @@ def check_redis_adg_hot() -> bool:
 
 def check_adg_health_red(repo_root: Path) -> bool:
     """
-    Return True if the adg_sqlite MCP server fails a real liveness probe.
+    Return True when the ADG SQLite SSOT is unavailable ("red"), else False.
 
-    Invokes mcp_health_check.py --server adg_sqlite --json with a 5s timeout.
-    Fail-open: any infrastructure error (timeout, missing script, etc.) returns
-    False so the gate does not block on probe unavailability.
+    SSOT semantics (adg-canonical-invariants.md §1): the canonical truth is the
+    latest ``artifacts/adg/adg_indexed_*.sqlite`` snapshot — NOT the liveness of the
+    adg_sqlite MCP *server* process. "Red" means there is no readable canonical
+    snapshot, in which case T2/T3 ADG work cannot proceed and the gate blocks
+    (constitutional §13). A present, readable snapshot is green even if the MCP
+    server is down, because the agent can read SQLite directly (constitutional §28
+    SQLite-direct fallback supersedes grep).
+
+    This replaces a prior dependency on ``ops_scripts/ci/mcp_health_check.py``, which
+    never existed in the tree and made this probe fail-open on every turn — a root
+    cause the gate never fired (plan adg-redis-hotcache-enforcement-b9f4c2, GAP-4).
+
+    Fail policy: snapshot present but corrupt/unreadable ⇒ red (block); no snapshot
+    directory wired or unexpected OS error ⇒ fail-open (do not block on probe oddity);
+    snapshot directory present but empty ⇒ red (no SSOT to work against).
     """
-    probe_script = repo_root / "ops_scripts" / "ci" / "mcp_health_check.py"
-    if not probe_script.exists():
-        return False  # fail-open: no probe script available
+    import sqlite3
 
     try:
-        result = subprocess.run(
-            [sys.executable, str(probe_script), "--server", "adg_sqlite", "--json"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-            check=False,
-            cwd=str(repo_root),
+        adg_dir = repo_root / "artifacts" / "adg"
+        if not adg_dir.is_dir():
+            return False  # fail-open: ADG artifacts not wired in this checkout
+        snapshots = sorted(
+            adg_dir.glob("adg_indexed_*.sqlite"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
         )
-    except (subprocess.TimeoutExpired, OSError):
-        return False  # fail-open: probe could not run
-
-    if result.returncode == 2:
-        return False  # config error — fail-open
-
-    try:
-        # JSON block may be preceded by human-readable lines; find the first '{'
-        stdout = result.stdout
-        json_start = stdout.find("{")
-        if json_start < 0:
-            return False  # no JSON — fail-open
-        data = json.loads(stdout[json_start:])
-        servers = data.get("servers", [])
-        for srv in servers:
-            if srv.get("name") == "adg_sqlite":
-                return bool(srv.get("status") != "ok")
-        return True  # adg_sqlite absent from probe results — treat as red
-    except (json.JSONDecodeError, KeyError):
-        return False  # parse error — fail-open (probe infrastructure error)
+        if not snapshots:
+            return True  # SSOT red: ADG dir present but no canonical snapshot
+        latest = snapshots[0]
+        # Bounded, read-only readability probe — validates the file is a usable
+        # SQLite DB without assuming a specific table name (robust to schema drift).
+        con = sqlite3.connect(f"file:{latest}?mode=ro", uri=True, timeout=2)
+        try:
+            con.execute("SELECT 1 FROM sqlite_master LIMIT 1")
+        finally:
+            con.close()
+        return False  # SSOT green: canonical snapshot present and readable
+    except sqlite3.Error:
+        return True  # SSOT red: snapshot exists but is corrupt/unreadable
+    except OSError:
+        return False  # fail-open: filesystem oddity, do not block on probe failure
 
 
 def _check_mcp_config_drift() -> None:
@@ -846,41 +876,40 @@ def main() -> int:
                 file=sys.stderr,
             )
 
-        # --- ADG health check: Redis first (preferred), ADG MCP as fallback ---
+        # --- ADG green-light: SQLite MCP is the SSOT authority; Redis is a
+        # non-authoritative hot cache. ONLY a red SQLite SSOT can BLOCK. Redis
+        # hot/cold/down is reported as advisory but NEVER blocks — SQLite serves
+        # every query correctly without it (constitutional §13;
+        # adg-canonical-invariants.md §1: SQLite=truth, Redis=hot projection).
+        if check_adg_health_red(repo_root):
+            print(
+                f"[pre_prompt_classifier] BLOCKED: {tier} prompt — adg_sqlite MCP (SSOT) is red. "
+                "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
+                file=sys.stderr,
+            )
+            return 2
+
+        # SQLite SSOT is green — surface advisory Redis hot-cache status (never blocks).
         if check_redis_up():
             if check_redis_adg_hot():
-                # Redis is up AND ADG hot cache is populated — preferred path, no ADG MCP probe needed
                 print(
-                    f"[pre_prompt_classifier] {tier}: Redis ADG hot cache confirmed — proceeding.",
+                    f"[pre_prompt_classifier] {tier}: adg_sqlite SSOT green; "
+                    "Redis ADG hot cache confirmed — proceeding.",
                     file=sys.stderr,
                 )
             else:
-                # Redis is up but ADG cache is cold — warn and fall back to ADG MCP probe
                 print(
-                    f"[pre_prompt_classifier] WARNING: {tier}: Redis is up but ADG cache is cold. "
-                    "Run: python tools/adg/adg_redis_ingest.py --force",
+                    f"[pre_prompt_classifier] {tier}: adg_sqlite SSOT green; Redis up but ADG hot "
+                    "cache cold (advisory — not blocking). Warm it: "
+                    "python tools/adg/adg_redis_ingest.py --force",
                     file=sys.stderr,
                 )
-                if check_adg_health_red(repo_root):
-                    print(
-                        f"[pre_prompt_classifier] BLOCKED: {tier} prompt — adg_sqlite MCP is also red. "
-                        "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
-                        file=sys.stderr,
-                    )
-                    return 2
         else:
-            # Redis is down — fall back entirely to ADG MCP probe
             print(
-                f"[pre_prompt_classifier] WARNING: {tier}: Redis is down — falling back to adg_sqlite MCP probe.",
+                f"[pre_prompt_classifier] {tier}: adg_sqlite SSOT green; Redis hot cache unavailable "
+                "(advisory — not blocking). SQLite serves all queries.",
                 file=sys.stderr,
             )
-            if check_adg_health_red(repo_root):
-                print(
-                    f"[pre_prompt_classifier] BLOCKED: {tier} prompt — Redis is down AND adg_sqlite MCP is red. "
-                    "Start Redis or run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
-                    file=sys.stderr,
-                )
-                return 2
 
         # Infrastructure healthy — inject structured reasoning mandate into Cursor Agent context.
         # show_output: true in hooks.json ensures Cursor Agent sees this before responding.
