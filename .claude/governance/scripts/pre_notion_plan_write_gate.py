@@ -247,7 +247,7 @@ def extract_slug_from_context(context: str) -> Optional[str]:
         return match.group(1)
     
     # Pattern 2: Plan file path
-    match = re.search(r'\.claude/plans/([a-z0-9-]+-[a-f0-9]{6,})\.md', context)
+    match = re.search(r'(?:plans|\.claude/plans)/([a-z0-9-]+-[a-f0-9]{6,})\.md', context)
     if match:
         return match.group(1)
     

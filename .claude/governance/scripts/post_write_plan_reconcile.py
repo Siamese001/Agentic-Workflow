@@ -57,8 +57,16 @@ def main() -> int:
     if not file_path:
         return 0
 
-    # Fast bail-out: only plan files trigger reconciliation
-    if ".claude/plans/" not in file_path or not file_path.endswith(".md"):
+    # Fast bail-out: only plan files trigger reconciliation.
+    # Forward-only relocation (c1a17d): accept canonical plans/ AND legacy
+    # .claude/plans/. A plan file is a *.md whose parent dir is named "plans"
+    # and is not under a reports/ tree.
+    _pp = Path(file_path)
+    if not (
+        file_path.endswith(".md")
+        and _pp.parent.name == "plans"
+        and "reports" not in _pp.parts
+    ):
         return 0
 
     plan_filename = Path(file_path).name

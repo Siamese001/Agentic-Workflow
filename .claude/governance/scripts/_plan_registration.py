@@ -62,6 +62,10 @@ STATE_DIR = REPO_ROOT / ".claude" / "state"
 QUEUE_PATH = STATE_DIR / "plan_registration_queue.jsonl"
 CACHE_PATH = STATE_DIR / "plan_registration_cache.json"
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+# Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
+# canonical NEW plans live in repo-root plans/; .claude/plans/ stays legacy-valid.
+NEW_PLANS_DIR = REPO_ROOT / "plans"
+PLAN_DIRS = [NEW_PLANS_DIR, PLANS_DIR]
 
 # Slug pattern: lowercase-slug-with-dashes-<6hex>
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*-[0-9a-f]{6}$")
@@ -103,24 +107,32 @@ def _now_epoch() -> float:
 
 def list_on_disk_plans() -> list[str]:
     """Return sorted list of plan slugs present under .claude/plans/*.md."""
-    if not PLANS_DIR.exists():
-        return []
     slugs: list[str] = []
     try:
-        for p in PLANS_DIR.iterdir():
-            if not p.is_file() or p.suffix != ".md":
+        for _d in PLAN_DIRS:
+            if not _d.exists():
                 continue
-            m = PLAN_FILE_RE.match(p.name)
-            if m:
-                slugs.append(m.group("slug"))
+            for p in _d.iterdir():
+                if not p.is_file() or p.suffix != ".md":
+                    continue
+                m = PLAN_FILE_RE.match(p.name)
+                if m:
+                    slugs.append(m.group("slug"))
     except OSError:
-        return []
-    return sorted(slugs)
+        return sorted(set(slugs))
+    return sorted(set(slugs))
 
 
 def plan_file_path(slug: str) -> str:
-    """Return repo-relative path for a slug. Does not check existence."""
-    return f".claude/plans/{slug}.md"
+    """Return repo-relative path for a slug.
+
+    Prefers the canonical new location (``plans/``); returns the legacy
+    ``.claude/plans/`` path only when that file already exists there and the
+    new-location file does not. Defaults to the canonical new location.
+    """
+    if (PLANS_DIR / f"{slug}.md").exists() and not (NEW_PLANS_DIR / f"{slug}.md").exists():
+        return f".claude/plans/{slug}.md"
+    return f"plans/{slug}.md"
 
 
 # ---------------------------------------------------------------------------

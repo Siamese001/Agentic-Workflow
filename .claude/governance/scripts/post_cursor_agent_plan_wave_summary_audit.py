@@ -52,12 +52,15 @@ def _find_edited_plans(response_text: str) -> list[Path]:
     stems = {m.group(1).lower() for m in _PLAN_PATH_RE.finditer(response_text)}
     if not stems:
         return []
-    plans_dir = _ROOT / ".claude" / "plans"
+    # Forward-only relocation (c1a17d): canonical plans/ + legacy .claude/plans/.
+    plans_dirs = [_ROOT / "plans", _ROOT / ".claude" / "plans"]
     found: list[Path] = []
     for stem in sorted(stems):
-        candidate = plans_dir / f"{stem}.md"
-        if candidate.is_file():
-            found.append(candidate)
+        for plans_dir in plans_dirs:
+            candidate = plans_dir / f"{stem}.md"
+            if candidate.is_file():
+                found.append(candidate)
+                break
     return found
 
 

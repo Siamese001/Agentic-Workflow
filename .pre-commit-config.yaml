@@ -151,15 +151,12 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T6a: No Active Windsurf Authoring ------------------------------------------
-      - id: no-active-windsurf-authoring
-        name: "T6a: No Active Windsurf Authoring"
-        entry: py ops_scripts/ci/check_no_active_windsurf_changes.py
-        language: system
-        pass_filenames: false
-        files: ^(\docs/archive/windsurf/legacy-tree/|\.cursor/windsurf_compat/|docs/archive/windsurf/)
-        always_run: false
-        require_serial: true
+      # -- T6a REMOVED (windsurf/codeium-decommission W3, 2026-06-07) -----------------
+      # `no-active-windsurf-authoring` only matched nonexistent paths
+      # (docs/archive/windsurf/legacy-tree/, .cursor/windsurf_compat/, docs/archive/windsurf/)
+      # so the hook was permanently dormant. Removed during the windsurf/codeium brand
+      # decommission (plan cursor-windsurf-codeium-decommission-dec0de). Orphaned script
+      # ops_scripts/ci/check_no_active_windsurf_changes.py left for W6 sweep.
 
       # -- T6b: MCP Config Sync Integrity ----------------------------------------------
       - id: mcp-sync-integrity

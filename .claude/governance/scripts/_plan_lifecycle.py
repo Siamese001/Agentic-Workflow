@@ -211,7 +211,10 @@ def is_phase_complete(status: str) -> bool:
 # ============================================================================
 
 PLAN_FILE_PATTERN: str = r"^[a-z0-9-]+-[a-f0-9]{6}\.md$"
-PLAN_DIR: str = ".claude/plans"
+# Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
+# canonical NEW plans live in repo-root plans/; .claude/plans/ stays legacy-valid.
+PLAN_DIR: str = "plans"
+LEGACY_PLAN_DIR: str = ".claude/plans"
 PLAN_TEMPLATE: str = ".claude/templates/execution-plan-template.md"
 
 

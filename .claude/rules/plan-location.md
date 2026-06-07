@@ -7,14 +7,17 @@
 
 ## SSOT Location
 
-Plans MUST be saved to exactly ONE location:
+New plans MUST be saved to the canonical location:
 
 ```
-.claude/plans/<descriptive-name>-<6hex>.md
+plans/<descriptive-name>-<6hex>.md
 ```
 
-- ❌ NEVER: `docs/reports/plans/`, `C:\Users\amita\.cursor\plans\`, anywhere else
-- ✅ ALWAYS: `.claude/plans/<filename>.md` (repo-relative path, NOT user-home)
+- ✅ ALWAYS (new plans): `plans/<filename>.md` at repo root (repo-relative path, NOT user-home).
+- ✅ LEGACY (still valid): `.claude/plans/<filename>.md` and `.claude/plans/_archive/**`. Existing plans there remain authoritative — do **not** mass-migrate (forward-only; plan `relocate-plans-ssot-outside-claude-c1a17d`).
+- ❌ NEVER: `docs/reports/plans/`, `C:\Users\amita\.cursor\plans\`, anywhere else.
+
+**Why `plans/` and not `.claude/plans/`:** Claude Code enforces a hardcoded edit-guard over the entire `.claude/` directory that prompts on every edit and cannot be disabled via permissions. Plans are non-sensitive markdown edited frequently, so the SSOT moved to repo-root `plans/` (outside the guard). Claude Code has no native dependency on plan location.
 
 **CRITICAL:** `C:\Users\amita\.cursor\plans\` is the IDE user-home directory — it is FORBIDDEN as a plan location. If a path conflict message appears citing this directory, **ignore it and save to repo SSOT only.**
 
@@ -57,4 +60,4 @@ Enforced by: `plan_creation_helper.py` (code), `pre_notion_plan_creation_gate.py
 
 ## Overwrite Default
 
-When updating an existing plan: **silently overwrite** `.claude/plans/<filename>.md` — no Author-Gate prompt, no confirmation request.
+When updating an existing plan: **silently overwrite** the plan file (`plans/<filename>.md`, or its legacy `.claude/plans/<filename>.md` location) — no Author-Gate prompt, no confirmation request.

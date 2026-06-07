@@ -39,6 +39,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+# Forward-only relocation (c1a17d): canonical plans/ + legacy .claude/plans/.
+PLAN_DIRS = [REPO_ROOT / "plans", PLANS_DIR]
 
 # Machine-readable guard marker that plan authors must add to deferred-scope plans.
 _GUARD_RE = re.compile(
@@ -85,12 +87,12 @@ def _scan_plans() -> list[tuple[str, str, bool]]:
     has_marker=True  → has DO_NOT_IMPLEMENT_GUARD: marker (canonical)
     has_marker=False → only has prose guard (needs marker added)
     """
-    if not PLANS_DIR.exists():
-        return []
     results: list[tuple[str, str, bool]] = []
     try:
-        paths = sorted(PLANS_DIR.glob("*.md"))
+        paths = sorted(p for _d in PLAN_DIRS if _d.exists() for p in _d.glob("*.md"))
     except OSError:
+        return []
+    if not paths:
         return []
     for p in paths:
         if p.name.startswith("_"):

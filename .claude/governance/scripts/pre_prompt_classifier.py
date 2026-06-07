@@ -551,10 +551,9 @@ def check_plan_exists(tier: str) -> bool:
     """Return True if a plan file exists in .claude/plans/ for T2/T3."""
     if tier not in ("T2", "T3"):
         return True
-    plans_dir = repo_root / ".claude" / "plans"
-    if not plans_dir.exists():
-        return False
-    return any(plans_dir.glob("*.md"))
+    # Forward-only relocation (c1a17d): canonical plans/ + legacy .claude/plans/.
+    plans_dirs = [repo_root / "plans", repo_root / ".claude" / "plans"]
+    return any(d.exists() and any(d.glob("*.md")) for d in plans_dirs)
 
 
 def check_redis_up() -> bool:

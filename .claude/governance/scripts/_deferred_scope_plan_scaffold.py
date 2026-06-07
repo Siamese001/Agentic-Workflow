@@ -2,8 +2,9 @@
 
 When a DEFERRED_SCOPE marker uses ``plan=NEW:<slug>``, the capture hook must
 also create the actual plan file on disk at
-``.claude/plans/<slug>-<6hex>.md``. This module owns that scaffolding so
-the hook itself stays compact.
+``plans/<slug>-<6hex>.md`` (canonical; legacy ``.claude/plans/`` still resolved
+for existing plans). This module owns that scaffolding so the hook itself stays
+compact.
 
 Design:
 
@@ -15,8 +16,8 @@ Design:
   hook is advisory (fail-open) so scaffolder failures are logged but never
   abort the response.
 - **No subprocess / no network** — pure filesystem + template render.
-- **Path SSOT**: respects the plan-location rule (``.claude/plans/`` only;
-  ``docs/reports/plans/`` is never used).
+- **Path SSOT**: respects the plan-location rule (canonical ``plans/``; legacy
+  ``.claude/plans/`` still valid; ``docs/reports/plans/`` is never used).
 
 Template kept intentionally minimal. Cursor Agent will expand it on the next
 session when the deferred item becomes active work; the scaffold is just
@@ -181,7 +182,9 @@ def scaffold_plan_if_needed(
     """
 
     plan_value = marker_fields.get("plan", "").strip()
-    plans_dir = repo_root / ".claude" / "plans"
+    # Forward-only relocation (c1a17d): scaffold NEW deferred plans into the
+    # canonical repo-root plans/ dir (out of .claude/ to avoid the edit-guard).
+    plans_dir = repo_root / "plans"
 
     if not plan_value:
         return ScaffoldResult(
@@ -205,6 +208,10 @@ def scaffold_plan_if_needed(
 
     if not is_new_request:
         existing = _resolve_existing_plan(plans_dir, plan_value)
+        if existing is None:
+            # Forward-only (c1a17d): also resolve plans still in legacy .claude/plans/,
+            # so an existing deferred plan there is reused, not duplicated under plans/.
+            existing = _resolve_existing_plan(repo_root / ".claude" / "plans", plan_value)
         if existing is not None:
             return ScaffoldResult(
                 plan_path=existing,

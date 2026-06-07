@@ -19,7 +19,7 @@
 ## Always-On Core
 
 The compact invariant remains in `plan-location.md`:
-- Plan file location: `.claude/plans/<slug>-<6hex>.md`
+- Plan file location: `plans/<slug>-<6hex>.md` (legacy `.claude/plans/` still valid)
 - Notion status discipline: `Status="Not Started"` for new plans
 
 ## Migration Notes

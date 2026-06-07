@@ -40,6 +40,8 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+# Forward-only relocation (c1a17d): canonical plans/ + legacy .claude/plans/.
+PLAN_DIRS = [REPO_ROOT / "plans", PLANS_DIR]
 AUDIT_LOG = REPO_ROOT / "artifacts" / "cursor" / "plan_driven_close_audit.jsonl"
 
 # SSOT: see .claude/governance/scripts/_notion_constants.py
@@ -233,7 +235,7 @@ def parse_plan_file(path: Path) -> PlanStatus:
 def parse_all_plans() -> dict[str, PlanStatus]:
     """Return {plan_filename: PlanStatus}."""
     out: dict[str, PlanStatus] = {}
-    for path in sorted(PLANS_DIR.glob("*.md")):
+    for path in sorted(p for _d in PLAN_DIRS if _d.is_dir() for p in _d.glob("*.md")):
         try:
             out[path.name] = parse_plan_file(path)
         except (OSError, UnicodeDecodeError) as exc:
@@ -468,7 +470,8 @@ def main() -> int:
         print("NOTION_TOKEN not set", file=sys.stderr)
         return 1
 
-    print(f"Parsing {len(list(PLANS_DIR.glob('*.md')))} plan files…", file=sys.stderr)
+    _n_plans = sum(len(list(_d.glob("*.md"))) for _d in PLAN_DIRS if _d.is_dir())
+    print(f"Parsing {_n_plans} plan files…", file=sys.stderr)
     plans = parse_all_plans()
     if args.plan:
         plans = {k: v for k, v in plans.items() if k == args.plan or v.plan_slug == args.plan}

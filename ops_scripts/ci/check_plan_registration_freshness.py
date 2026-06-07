@@ -184,7 +184,8 @@ def _staged_new_plans() -> list[str]:
     slugs: list[str] = []
     for line in result.stdout.splitlines():
         p = line.strip()
-        if not p.startswith(".claude/plans/") or not p.endswith(".md"):
+        # Forward-only relocation (c1a17d): canonical plans/ + legacy .claude/plans/.
+        if not (p.startswith("plans/") or p.startswith(".claude/plans/")) or not p.endswith(".md"):
             continue
         name = Path(p).name
         import re as _re

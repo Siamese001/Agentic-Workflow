@@ -1,6 +1,6 @@
 ---
 slug: relocate-plans-ssot-outside-claude-c1a17d
-status: In Progress
+status: Completed
 plan_type: governance_change
 dod_exempt: false
 ---
@@ -22,10 +22,10 @@ Claude Code has **no native concept of "plans"** — `.claude/plans/` was purely
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W1 | P1 | Authority: rules + CLAUDE.md declare `plans/` canonical, `.claude/plans/` legacy-valid | ~6k | Forward-only dual-accept | 🟡 In Progress | Rules name `plans/<slug>-<6hex>.md` as SSOT |
-| W2 | P2 | Enforcement: 6 gates + pre-commit filters + creation default accept both dirs | ~8k | Gates glob a dir | ⬜ Not started | Gates scan `plans/` ∪ `.claude/plans/`; new plans write to `plans/` |
-| W3 | P3 | Governance hooks accept both dirs | ~5k | Hooks hardcode path | ⬜ Not started | Plan hooks recognize `plans/` |
-| W4 | P4 | Verify: dummy plan in `plans/` passes gates; existing plan still passes | ~3k | — | ⬜ Not started | Both locations green |
+| W1 | P1 | Authority: rules + CLAUDE.md declare `plans/` canonical, `.claude/plans/` legacy-valid | ~6k | Forward-only dual-accept | ✅ DONE | Rules name `plans/<slug>-<6hex>.md` as SSOT |
+| W2 | P2 | Enforcement: 6 gates + pre-commit filters + creation default accept both dirs | ~8k | Gates glob a dir | ✅ DONE | Gates scan `plans/` ∪ `.claude/plans/`; new plans write to `plans/` |
+| W3 | P3 | Governance hooks accept both dirs | ~5k | Hooks hardcode path | ✅ DONE | Plan hooks recognize `plans/` |
+| W4 | P4 | Verify: new plan in `plans/` passes gates; existing plans still pass | ~3k | — | ✅ DONE | Both locations green (compileall exit 0; PLAN-DOD/WAVE-TOP exit 0; new-plan-found=True) |
 
 ### Phase-Level Summary
 

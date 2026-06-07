@@ -36,6 +36,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+# Forward-only relocation (c1a17d): canonical plans/ + legacy .claude/plans/.
+PLAN_DIRS = [REPO_ROOT / "plans", PLANS_DIR]
 # Freshness window: plans modified in the last 24h are "active".
 PLAN_FRESHNESS_SEC = 24 * 3600
 # File extensions we treat as "code/docs" for scope enforcement.
@@ -45,11 +47,9 @@ _PATH_TOKEN_RE = re.compile(r"[A-Za-z0-9_./\\-]+\.[A-Za-z0-9]+")
 
 
 def _latest_active_plan() -> Path | None:
-    if not PLANS_DIR.is_dir():
-        return None
     now = time.time()
     candidates: list[tuple[float, Path]] = []
-    for p in PLANS_DIR.glob("*.md"):
+    for p in (q for _d in PLAN_DIRS if _d.is_dir() for q in _d.glob("*.md")):
         try:
             mtime = p.stat().st_mtime
         except OSError:

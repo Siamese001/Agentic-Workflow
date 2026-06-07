@@ -14,7 +14,7 @@
 | Maintenance / cleanup | `purge_*.py`, `cleanup_*.py` | `ops_scripts/maintenance/` |
 | Cursor hook script | `pre_*_*.py`, `post_*_*.py` (matching `.claude/settings.json`) | `.claude/governance/scripts/` |
 | Cursor Agent-invoked utility | other | `tools/<domain>/` |
-| Plan | `<slug>-<6hex>.md` | `.claude/plans/` (enforced by `plan-location.md`) |
+| Plan | `<slug>-<6hex>.md` | `plans/` (canonical; legacy `.claude/plans/` still valid — enforced by `plan-location.md`) |
 | Report / evidence | `.md` | `docs/reports/` (enforced by `validate_report_location.py`) |
 
 ## Forbidden New-File Roots
