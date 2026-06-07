@@ -24,7 +24,7 @@ from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
     COMPETENCIES_FINAL_CATEGORY_COUNT,
     COMPETENCIES_SC_PATH_COUNT,
-    merge_competencies_graph_pool_top_six,
+    merge_competencies_graph_pool_top_eight,
     min_competencies_selection_score,
 )
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
@@ -283,7 +283,7 @@ def _competencies_graph_selection_prompt(
     briefing = (targeting_context or {}).get("briefing") or ""
     skills_ref = (targeting_context or {}).get("skills_graph_ref") or ""
     return (
-        "You are the sole selector for competencies (graph_10x6_v1).\n"
+        "You are the sole selector for competencies (graph_8x8_v1).\n"
         f"{n_paths} Qwen self-consistency paths produced candidate category sets (up to {n_candidate} labels). "
         f"Select exactly {n_final} categories — the top {n_final} by score that PASS graph/fact reality.\n"
         "Constraints:\n"
@@ -302,7 +302,7 @@ def _competencies_graph_selection_prompt(
         '{"selections":[{"category_label":"...","path_index":0,"score":0.85,"passes":true,"rationale":"..."}],'
         f'"pool_summary":{{"paths_scored":{n_paths},"final_category_count":{n_final},'
         f'"candidate_category_count":{n_candidate},'
-        f'"min_score_threshold":{min_score_threshold:.2f},"selector":"anthropic_claude","mode":"graph_10x6"}}}}\n\n'
+        f'"min_score_threshold":{min_score_threshold:.2f},"selector":"anthropic_claude","mode":"graph_8x8"}}}}\n\n'
         "CANDIDATE POOL:\n"
         f"{pool_text}"
     )
@@ -647,7 +647,7 @@ def _fallback_first_complete_path(
             comps = path.parsed.get("competencies") or path.parsed.get("categories")
             if isinstance(comps, list) and len(comps) >= COMPETENCIES_FINAL_CATEGORY_COUNT:
                 tc = targeting_context or {}
-                merged, source_map = merge_competencies_graph_pool_top_six(
+                merged, source_map = merge_competencies_graph_pool_top_eight(
                     paths,
                     [],
                     base_parsed=dict(path.parsed),
@@ -659,12 +659,12 @@ def _fallback_first_complete_path(
                     merged_parsed=merged,
                     selections=[],
                     judge_output=None,
-                    selection_mode="competencies_graph_top_6_heuristic",
+                    selection_mode="competencies_graph_top_8_heuristic",
                     source_path_by_slot=source_map,
                 )
     if slot_kind == "competencies":
         tc = targeting_context or {}
-        merged, source_map = merge_competencies_graph_pool_top_six(
+        merged, source_map = merge_competencies_graph_pool_top_eight(
             paths,
             [],
             base_parsed=paths[0].parsed if paths and paths[0].parsed else {},
@@ -676,7 +676,7 @@ def _fallback_first_complete_path(
             merged_parsed=merged,
             selections=[],
             judge_output=None,
-            selection_mode="competencies_graph_top_6_heuristic",
+            selection_mode="competencies_graph_top_8_heuristic",
             source_path_by_slot=source_map,
         )
     base = paths[0].parsed if paths and paths[0].parsed else {}
@@ -931,7 +931,7 @@ def run_claude_bullet_pool_selection(
         selection_mode = "claude_employment_top_n_pass"
     elif _is_competencies_graph_pool(section_id, slot_kind):
         floor = min_score_threshold or min_competencies_selection_score()
-        merged, source_map = merge_competencies_graph_pool_top_six(
+        merged, source_map = merge_competencies_graph_pool_top_eight(
             valid_paths,
             selections,
             base_parsed=base,
@@ -940,7 +940,7 @@ def run_claude_bullet_pool_selection(
             allowed_skill_ids=set(tc.get("allowed_skill_ids") or []),
             resume_support_blob_lower=str(tc.get("resume_support_blob_lower") or ""),
         )
-        selection_mode = "claude_competencies_top_6_pass"
+        selection_mode = "claude_competencies_top_8_pass"
     else:
         merged, source_map = merge_competency_selections(valid_paths, selections, base_parsed=base)
         selection_mode = "claude_per_slot_selection"

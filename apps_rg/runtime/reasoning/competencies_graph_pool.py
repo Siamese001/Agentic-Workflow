@@ -1,4 +1,4 @@
-"""Competencies graph_10x6 pool — 10 Qwen paths → top 6 graph-grounded categories."""
+"""Competencies graph_8x8 pool — 8 paths → 8 graph-grounded categories."""
 
 from __future__ import annotations
 
@@ -115,7 +115,7 @@ def build_competencies_targeting_context(
         "candidate_category_count": COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
         "final_category_count": COMPETENCIES_FINAL_CATEGORY_COUNT,
         "min_selection_score": min_competencies_selection_score(),
-        "selection_model": "graph_10x6_v1",
+        "selection_model": "graph_8x8_v1",
         "allowed_fact_ids_count": len(allowed),
         "allowed_skill_ids": sorted(skill_ids),
     }
@@ -216,7 +216,7 @@ def _collect_category_candidates(
     return out
 
 
-def merge_competencies_graph_pool_top_six(
+def merge_competencies_graph_pool_top_eight(
     paths: list[Any],
     selections: list[dict[str, Any]],
     *,
@@ -226,7 +226,7 @@ def merge_competencies_graph_pool_top_six(
     allowed_skill_ids: set[str] | None = None,
     resume_support_blob_lower: str = "",
 ) -> tuple[dict[str, Any], dict[str, int]]:
-    """Merge pool into exactly six categories (top scores, graph-reality filtered)."""
+    """Merge pool into exactly eight categories (top scores, graph-reality filtered)."""
     threshold = (
         min_score_threshold
         if min_score_threshold is not None
@@ -311,6 +311,28 @@ def merge_competencies_graph_pool_top_six(
     return merged, source_map
 
 
+def merge_competencies_graph_pool_top_six(
+    paths: list[Any],
+    selections: list[dict[str, Any]],
+    *,
+    base_parsed: dict[str, Any] | None = None,
+    min_score_threshold: float | None = None,
+    allowed_fact_ids: set[str] | None = None,
+    allowed_skill_ids: set[str] | None = None,
+    resume_support_blob_lower: str = "",
+) -> tuple[dict[str, Any], dict[str, int]]:
+    """Compatibility alias for older callers; active contract is graph_8x8/top_eight."""
+    return merge_competencies_graph_pool_top_eight(
+        paths,
+        selections,
+        base_parsed=base_parsed,
+        min_score_threshold=min_score_threshold,
+        allowed_fact_ids=allowed_fact_ids,
+        allowed_skill_ids=allowed_skill_ids,
+        resume_support_blob_lower=resume_support_blob_lower,
+    )
+
+
 def evaluate_competencies_selection_quality(
     *,
     selections: list[dict[str, Any]],
@@ -390,6 +412,7 @@ __all__ = [
     "evaluate_competencies_selection_quality",
     "is_competencies_pool_generation",
     "max_competencies_regen_rounds",
+    "merge_competencies_graph_pool_top_eight",
     "merge_competencies_graph_pool_top_six",
     "min_competencies_selection_score",
     "write_competencies_regen_artifact",

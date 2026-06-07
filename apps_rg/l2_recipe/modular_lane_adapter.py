@@ -117,9 +117,11 @@ def modular_lane_targeting_from_recipe_context(context: dict[str, Any]) -> Modul
 def build_modular_lane_argv(*, provider: str, targeting: ModularLaneTargeting | None = None) -> list[str]:
     """Argv tokens historically passed to legacy dispatch CLIs (metadata / inventories only)."""
     pv = str(provider or "").strip().lower()
-    if pv and pv != "qwen_vllm":
-        raise ValueError(f"Unsupported modular lane provider {provider!r} (expected qwen_vllm).")
-    argv: list[str] = ["--provider", "qwen_vllm", "--allow-non-allow-exit-zero"]
+    if pv and pv not in {"qwen_vllm", "external_claude"}:
+        raise ValueError(
+            f"Unsupported modular lane provider {provider!r} (expected qwen_vllm or external_claude)."
+        )
+    argv: list[str] = ["--provider", pv or "external_claude", "--allow-non-allow-exit-zero"]
     if targeting is None:
         return argv
     if targeting.target_company:
@@ -151,7 +153,7 @@ def resolve_latest_lane_run_dir(
     sections_root: Path,
     lane: str,
     *,
-    lane_provider: str = "qwen_vllm",
+    lane_provider: str = "external_claude",
 ) -> Path:
     """Pick run dir from per-lane pointers under ``sections_root/<lane>/``.
 
@@ -162,7 +164,7 @@ def resolve_latest_lane_run_dir(
         lane_run_dir_meets_product_bar,
         product_fail_closed_runtime,
     )
-    _ = str(lane_provider or "qwen_vllm").strip().lower()  # reserved for future provider-specific ordering
+    _ = str(lane_provider or "external_claude").strip().lower()  # reserved for future provider-specific ordering
     if product_fail_closed_runtime():
         ptr_order = ("latest_successful_real_run.json",)
     else:
@@ -250,7 +252,7 @@ def build_section_provider_call_record(
     if isinstance(attempted_any, bool):
         provider_call_attempted = attempted_any
     else:
-        provider_call_attempted = provider_req == "qwen_vllm"
+        provider_call_attempted = provider_req in {"qwen_vllm", "external_claude"}
 
     model_id = str(prv_resp.get("model") or prov.get("model") or "")
     max_t = prv_resp.get("max_tokens", prov.get("max_tokens", 0))

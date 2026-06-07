@@ -1,4 +1,4 @@
-"""W4 — competencies graph_10x6 pool (10 SC paths → 6 categories → single gemini_pro X1D)."""
+"""W4 — competencies graph_8x8 pool (8 paths -> 8 categories -> single gemini_pro X1D)."""
 
 from __future__ import annotations
 
@@ -38,7 +38,10 @@ def _cat(label: str, terms: list[str]) -> dict:
     }
 
 
-def _path_with_categories(path_index: int, n_categories: int = 7) -> SelfConsistencyPath:
+def _path_with_categories(
+    path_index: int,
+    n_categories: int = COMPETENCIES_FINAL_CATEGORY_COUNT,
+) -> SelfConsistencyPath:
     return SelfConsistencyPath(
         path_index=path_index,
         temperature=0.35 + path_index * 0.01,
@@ -58,13 +61,13 @@ def _path_with_categories(path_index: int, n_categories: int = 7) -> SelfConsist
 
 def test_competencies_pool_generation_mode_detected() -> None:
     assert is_competencies_pool_generation(
-        {"generation_mode": "qwen_competencies_graph_pool_claude_top_6_regen"}
+        {"generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen"}
     )
     assert not is_competencies_pool_generation({"generation_mode": "singleton"})
 
 
-def test_sc_path_count_and_targeting_context_graph_10x6() -> None:
-    # Variance-class alignment (2026-06): candidate-category pool 10 -> 8 (>= final 6).
+def test_sc_path_count_and_targeting_context_graph_8x8() -> None:
+    # Variance-class alignment (2026-06): candidate-category pool is the final exact 8.
     assert sc_path_count_for_lane("competencies") == COMPETENCIES_SC_PATH_COUNT == 8
     ctx = build_competencies_targeting_context(
         {
@@ -84,20 +87,19 @@ def test_sc_path_count_and_targeting_context_graph_10x6() -> None:
     )
     assert ctx["candidate_category_count"] == COMPETENCIES_CANDIDATE_CATEGORY_COUNT
     assert ctx["final_category_count"] == COMPETENCIES_FINAL_CATEGORY_COUNT
-    # Variance-class alignment (2026-06): candidate pool 10 -> 8 (>= final 6).
     assert ctx["pool_path_count"] == 8
     assert ctx["proof_pool_type"] == "augmented_skills_graph"
-    assert ctx["selection_model"] == "graph_10x6_v1"
+    assert ctx["selection_model"] == "graph_8x8_v1"
 
 
-def test_section_product_shape_competencies_exactly_six() -> None:
+def test_section_product_shape_competencies_exactly_eight() -> None:
     shape = section_product_shape("competencies")
     assert "x2_competencies_min_category_count" in shape.required_gate_ids
-    assert "graph_10x6" in shape.shape_summary
+    assert "graph_8x8" in shape.shape_summary
 
 
-def test_evaluate_competencies_gate_requires_six_passing_categories() -> None:
-    labels = [f"Cat_{i}" for i in range(6)]
+def test_evaluate_competencies_gate_requires_eight_passing_categories() -> None:
+    labels = [f"Cat_{i}" for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)]
     selections = [
         {"category_label": lab, "path_index": 0, "score": 0.9, "passes": True} for lab in labels
     ]
@@ -108,10 +110,10 @@ def test_evaluate_competencies_gate_requires_six_passing_categories() -> None:
         min_score=min_competencies_selection_score(),
     )
     assert gate.ok is True
-    assert gate.categories_in_merged == 6
+    assert gate.categories_in_merged == COMPETENCIES_FINAL_CATEGORY_COUNT
 
 
-def test_claude_competencies_selection_mocked_emits_six_categories() -> None:
+def test_claude_competencies_selection_mocked_emits_eight_categories() -> None:
     paths = [_path_with_categories(0)]
     pool: PoolSelectionResult = run_claude_bullet_pool_selection(
         section_id="competencies",
@@ -124,13 +126,13 @@ def test_claude_competencies_selection_mocked_emits_six_categories() -> None:
         },
         mode="mocked",
     )
-    assert pool.selection_mode == "competencies_graph_top_6_heuristic"
+    assert pool.selection_mode == "competencies_graph_top_8_heuristic"
     comps = pool.merged_parsed.get("competencies") or []
     assert len(comps) == COMPETENCIES_FINAL_CATEGORY_COUNT
 
 
 def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.MonkeyPatch) -> None:
-    paths = [_path_with_categories(i) for i in range(10)]
+    paths = [_path_with_categories(i, n_categories=COMPETENCIES_FINAL_CATEGORY_COUNT) for i in range(8)]
 
     def _fake_paths(**_: object) -> tuple[list[SelfConsistencyPath], ProviderResult]:
         return paths, ProviderResult(
@@ -160,9 +162,8 @@ def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.Monkey
     )
     assert err == ""
     assert is_competencies_pool_generation(meta)
-    # Variance-class alignment (2026-06): candidate pool 10 -> 8 (>= final 6).
     assert meta["initial_path_count"] == 8
-    assert meta["final_category_count"] == 6
+    assert meta["final_category_count"] == COMPETENCIES_FINAL_CATEGORY_COUNT
     assert parsed is not None
     assert len(parsed.get("competencies") or []) == COMPETENCIES_FINAL_CATEGORY_COUNT
     assert result is not None
@@ -171,16 +172,16 @@ def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.Monkey
 def test_competencies_pool_x1d_row_from_generation_meta(tmp_path) -> None:
     selections = [
         {"category_label": f"C{i}", "path_index": 0, "score": 0.88, "passes": True}
-        for i in range(6)
+        for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)
     ]
     (tmp_path / "bullet_pool_selection.json").write_text(
         json.dumps({"selections": selections}),
         encoding="utf-8",
     )
     gen_meta = {
-        "generation_mode": "qwen_competencies_graph_pool_claude_top_6_regen",
-        "selection_gate": {"ok": True, "categories_in_merged": 6},
-        "selection_mode": "claude_competencies_top_6_pass",
+        "generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen",
+        "selection_gate": {"ok": True, "categories_in_merged": COMPETENCIES_FINAL_CATEGORY_COUNT},
+        "selection_mode": "claude_competencies_top_8_pass",
     }
     rows = competencies_pool_x1d_judge_rows(
         artifact_dir=tmp_path,
@@ -192,7 +193,7 @@ def test_competencies_pool_x1d_row_from_generation_meta(tmp_path) -> None:
     assert rows[0]["judge_role"] == "competencies_graph_pool_selector"
 
 
-def test_apply_executive_capability_projection_trims_to_six_emit() -> None:
+def test_apply_executive_capability_projection_trims_to_eight_emit() -> None:
     from apps_rg.runtime.sections.competencies_capability_projection import (
         apply_executive_capability_projection,
     )
@@ -206,6 +207,8 @@ def test_apply_executive_capability_projection_trims_to_six_emit() -> None:
             _cat("Governance, Risk & Compliance", ["lineage", "policy"]),
             _cat("Engineering & Delivery Leadership", ["scale-out", "sre"]),
             _cat("Commercial & Operating Impact", ["gtm", "revenue"]),
+            _cat("LLMOps & Reliability", ["evaluation", "telemetry"]),
+            _cat("Distributed Infrastructure", ["lakehouse", "streaming"]),
         ],
         "change_log": [],
     }

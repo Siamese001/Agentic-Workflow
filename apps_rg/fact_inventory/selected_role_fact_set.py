@@ -20,17 +20,21 @@ from apps_rg.fact_inventory import candidate_fact_ledger as ledger_mod
 _REPO_ROOT_DEFAULT = Path(__file__).resolve().parents[2]
 
 SECTION_KEYS: tuple[str, ...] = (
-    "headline",
-    "executive_summary",
-    "unify_bullets",
-    "unify_narrative",
-    "ibm_bullets",
-    "ibm_narrative",
     "competencies",
+    "unify_bullets",
+    "ibm_bullets",
+    "insurtech_bullets",
+    "ey_bullets",
+    "unify_narrative",
+    "ibm_narrative",
+    "insurtech_narrative",
+    "ey_narrative",
+    "executive_summary",
+    "headline",
 )
 
 SelectionPolicyLiteral = Literal["role_family_keyword_v1_bounded_ledger"]
-CompanyLaneLiteral = Literal["ibm_only", "unify", "other"]
+CompanyLaneLiteral = Literal["ibm_only", "unify", "insurtech", "ey", "other"]
 VerificationStatusLiteral = Literal[
     "eligible_high_qualitative",
     "eligible_high_with_metrics_requires_source_trace",
@@ -103,6 +107,10 @@ def classify_company_lane(company_raw: str) -> CompanyLaneLiteral:
         return "unify"
     if "IBM" in u:
         return "ibm_only"
+    if "INSUR" in u or "POLICY ADMINISTRATION" in u:
+        return "insurtech"
+    if "ERNST" in u or "YOUNG" in u or u.strip() == "EY" or " EY " in f" {u} ":
+        return "ey"
     return "other"
 
 
@@ -436,6 +444,10 @@ def _suggest_confirmation_section(row: dict[str, Any]) -> str:
         return "ibm_bullets"
     if lane == "unify":
         return "unify_bullets"
+    if lane == "insurtech":
+        return "insurtech_bullets"
+    if lane == "ey":
+        return "ey_bullets"
     return "executive_summary"
 
 
@@ -527,7 +539,9 @@ def _build_selected_facts_by_role_family(
     section_map: dict[str, list[SelectedLedgerFactSlice]],
 ) -> dict[str, tuple[str, ...]]:
     order: dict[str, list[str]] = {}
-    for sec in SECTION_KEYS[:-1]:
+    for sec in SECTION_KEYS:
+        if sec == "competencies":
+            continue
         for sl in section_map.get(sec, []):
             fid = sl.candidate_fact_id
             for rf in sl.role_families_supported:
@@ -539,7 +553,9 @@ def _build_selected_facts_by_role_family(
 
 def _competencies_tags(section_map: dict[str, list[SelectedLedgerFactSlice]]) -> tuple[str, ...]:
     tags_seen: dict[str, None] = {}
-    for sec in SECTION_KEYS[:-1]:
+    for sec in SECTION_KEYS:
+        if sec == "competencies":
+            continue
         for sl in section_map.get(sec, []):
             for t in sl.capability_tags:
                 tags_seen.setdefault(t, None)
@@ -727,6 +743,16 @@ def select_candidate_facts_for_role(
         role_family_priorities=role_family_priorities,
         taxonomy=taxonomy,
     )
+    high_insurtech_sorted = sorted_high_rows_global(
+        _filter_lane(high_rows, "insurtech"),
+        role_family_priorities=role_family_priorities,
+        taxonomy=taxonomy,
+    )
+    high_ey_sorted = sorted_high_rows_global(
+        _filter_lane(high_rows, "ey"),
+        role_family_priorities=role_family_priorities,
+        taxonomy=taxonomy,
+    )
 
     confirmation_queue = tuple(
         HumanConfirmationQueueItem(
@@ -878,13 +904,85 @@ def select_candidate_facts_for_role(
         hint="ibm_narrative",
     )
 
+    ins_b_pool = merge_claim_eligible_into_lane_pool(
+        _exclude_ids(high_insurtech_sorted, used_global),
+        claim_eligible_medium_rows,
+        lane="insurtech",
+        taxonomy=taxonomy,
+        role_family_priorities=role_family_priorities,
+    )
+    ins_b_slices, used_global = _take_unique(
+        ins_b_pool,
+        min(3, len(ins_b_pool)) if ins_b_pool else 0,
+        used=used_global,
+        taxonomy=taxonomy,
+        hint="insurtech_bullets",
+    )
+    ins_bullet_ids_local = {s.candidate_fact_id for s in ins_b_slices}
+    ins_n_candidates = [
+        r
+        for r in _sorted_narrative_pool(
+            _exclude_ids(high_insurtech_sorted, ins_bullet_ids_local | used_global),
+            min_len=80,
+        )
+        if classify_company_lane(str(r.get("company") or "")) == "insurtech"
+    ]
+    insn_slices, used_global = _take_unique(
+        ins_n_candidates,
+        min(3, len(ins_n_candidates)) if ins_n_candidates else 0,
+        used=used_global,
+        taxonomy=taxonomy,
+        hint="insurtech_narrative",
+    )
+
+    ey_b_pool = merge_claim_eligible_into_lane_pool(
+        _exclude_ids(high_ey_sorted, used_global),
+        claim_eligible_medium_rows,
+        lane="ey",
+        taxonomy=taxonomy,
+        role_family_priorities=role_family_priorities,
+    )
+    ey_b_slices, used_global = _take_unique(
+        ey_b_pool,
+        min(3, len(ey_b_pool)) if ey_b_pool else 0,
+        used=used_global,
+        taxonomy=taxonomy,
+        hint="ey_bullets",
+    )
+    ey_bullet_ids_local = {s.candidate_fact_id for s in ey_b_slices}
+    ey_n_candidates = [
+        r
+        for r in _sorted_narrative_pool(
+            _exclude_ids(high_ey_sorted, ey_bullet_ids_local | used_global),
+            min_len=80,
+        )
+        if classify_company_lane(str(r.get("company") or "")) == "ey"
+    ]
+    eyn_slices, used_global = _take_unique(
+        ey_n_candidates,
+        min(3, len(ey_n_candidates)) if ey_n_candidates else 0,
+        used=used_global,
+        taxonomy=taxonomy,
+        hint="ey_narrative",
+    )
+
     selected_by_section["headline"] = headline_vals
     selected_by_section["executive_summary"] = exec_slices
     selected_by_section["unify_bullets"] = ub_slices
     selected_by_section["unify_narrative"] = un_slices
     selected_by_section["ibm_bullets"] = ib_b_slices
     selected_by_section["ibm_narrative"] = ibn_slices
-    selected_by_section["competencies"] = []
+    selected_by_section["insurtech_bullets"] = ins_b_slices
+    selected_by_section["insurtech_narrative"] = insn_slices
+    selected_by_section["ey_bullets"] = ey_b_slices
+    selected_by_section["ey_narrative"] = eyn_slices
+    selected_by_section["competencies"] = [
+        *ub_slices[:2],
+        *ib_b_slices[:2],
+        *ins_b_slices[:1],
+        *ey_b_slices[:1],
+        *headline_vals[:2],
+    ][:8]
 
     comps_tags = _competencies_tags(selected_by_section)
 
@@ -895,7 +993,19 @@ def select_candidate_facts_for_role(
         high_rows=high_rows,
     )
 
-    flat_sel = [*headline_vals, *exec_slices, *ub_slices, *un_slices, *ib_b_slices, *ibn_slices]
+    flat_sel = [
+        *headline_vals,
+        *exec_slices,
+        *ub_slices,
+        *un_slices,
+        *ib_b_slices,
+        *ibn_slices,
+        *ins_b_slices,
+        *insn_slices,
+        *ey_b_slices,
+        *eyn_slices,
+        *selected_by_section["competencies"],
+    ]
     ledger_mod.assert_selection_bounded_to_ledger([s.candidate_fact_id for s in flat_sel], ledger)
     ledger_mod.assert_selection_bounded_to_ledger([q.fact.candidate_fact_id for q in confirmation_queue], ledger)
 

@@ -65,8 +65,10 @@ FORBIDDEN_LEGACY_HEADLINE: tuple[str, ...] = (
     r"8 to 11",
 )
 FORBIDDEN_LEGACY_COMPETENCIES: tuple[str, ...] = (
-    r"Exactly\s+EIGHT",
-    r"\bexactly\s+eight\s+categories\b",
+    r"exactly\s+6\s+(?:executive\s+capability\s+)?categor",
+    r"emit\s+exactly\s+6",
+    r"across\s+the\s+6\s+categories",
+    r"graph_10x6",
 )
 FORBIDDEN_LEGACY_NARRATIVE: tuple[str, ...] = (
     r"250-character",
@@ -274,7 +276,7 @@ def _competencies_shape() -> SectionProductShape:
         x2_module_ref="apps_rg/runtime/validators/competencies_x2.py",
         display_field="competencies",
         shape_summary=(
-            f"graph_10x6: top {MIN_CATEGORY_COUNT} of {CANDIDATE_CATEGORY_COUNT} categories; "
+            f"graph_8x8: top {MIN_CATEGORY_COUNT} of {CANDIDATE_CATEGORY_COUNT} categories; "
             f"{MIN_ITEMS_PER_CATEGORY}-{MAX_ITEMS_PER_CATEGORY} terms/category; "
             "compact noun phrases; augmented_skills_graph authority"
         ),
@@ -300,7 +302,7 @@ def _competencies_shape() -> SectionProductShape:
             "x2_competencies_keyword_repetition_limit",
         ),
         required_any_text_patterns=(
-            r"graph_10x6",
+            r"graph_8x8",
             r"VERIFIED_SKILL_INVENTORY_PROJECTION",
             "augmented_skills_graph",
             str(CANDIDATE_CATEGORY_COUNT),
@@ -505,6 +507,68 @@ def _ibm_narrative_shape() -> SectionProductShape:
     )
 
 
+def _role_bullets_shape(section_id: str, *, employer_label: str, bullet_prefix: str) -> SectionProductShape:
+    pool_n = SC_PATH_COUNT_BY_LANE.get(section_id, 4)
+    return SectionProductShape(
+        section_id=section_id,
+        template_ref=f"apps_rg/prompt_assembly/templates/{section_id}_tailor_v1.yaml",
+        x2_module_ref="apps_rg/runtime/sections/role_episode_lane.py",
+        display_field="bullets",
+        shape_summary=(
+            f"3 {employer_label} bullets from {pool_n}-path pool when proof exists; "
+            f"{bullet_prefix}_* source ids only; fail closed on missing upstream evidence"
+        ),
+        bounds_gate_ids=(
+            f"x2_{section_id}_bullet_count_3",
+            f"x2_{section_id}_bullet_single_thought",
+            f"x2_{section_id}_bullet_no_embedded_newline",
+        ),
+        proof_gate_ids=(
+            f"x2_{section_id}_allowed_fact_ids_non_empty",
+            f"x2_{section_id}_source_fact_ids_supported",
+            "x2_claim_ledger_claim_text_non_empty",
+        ),
+        style_gate_ids=("x2_no_first_person", "x2_no_em_dash"),
+        required_any_text_patterns=(r"exactly\s+3", r"3\s+bullets"),
+        required_all_text_patterns=(bullet_prefix, "targeting_only", "source_fact_ids"),
+        forbidden_text_patterns=(r"JD_ONLY", r"BRIEFING_ONLY", r"TARGET_ONLY"),
+        jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
+        compile_hints=(
+            f"qwen_pool_paths={pool_n}; final_bullets=3",
+            "upstream evidence required; retries cannot repair missing proof",
+        ),
+    )
+
+
+def _role_narrative_shape(section_id: str, *, employer_label: str, bullet_prefix: str) -> SectionProductShape:
+    return SectionProductShape(
+        section_id=section_id,
+        template_ref=f"apps_rg/prompt_assembly/templates/{section_id}_v1.yaml",
+        x2_module_ref="apps_rg/runtime/sections/role_episode_lane.py",
+        display_field="narrative_sentence",
+        shape_summary=(
+            f"exactly 1 {employer_label} sentence; <= {NARRATIVE_MAX_WORDS} words; "
+            f"<= {NARRATIVE_MAX_CHARS} chars; requires finalized {bullet_prefix} bullets"
+        ),
+        bounds_gate_ids=(
+            f"x2_{section_id}_exactly_one_sentence",
+            f"x2_{section_id}_word_budget",
+            f"x2_{section_id}_char_budget",
+        ),
+        proof_gate_ids=(
+            f"x2_{section_id}_allowed_fact_ids_non_empty",
+            f"x2_{section_id}_source_fact_ids_supported",
+            "x2_claim_ledger_claim_text_non_empty",
+        ),
+        style_gate_ids=("x2_no_first_person", "x2_no_em_dash"),
+        required_any_text_patterns=(r"Exactly\s+one\s+sentence", r"exactly one sentence"),
+        required_all_text_patterns=(bullet_prefix, "targeting_only"),
+        forbidden_text_patterns=FORBIDDEN_LEGACY_NARRATIVE,
+        jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
+        compile_hints=(f"word_max={NARRATIVE_MAX_WORDS}", f"char_max={NARRATIVE_MAX_CHARS}"),
+    )
+
+
 _SECTION_BUILDERS: dict[str, Any] = {
     "executive_summary": _exec_summary_shape,
     "headline": _headline_shape,
@@ -513,6 +577,26 @@ _SECTION_BUILDERS: dict[str, Any] = {
     "unify_narrative": _unify_narrative_shape,
     "ibm_bullets": _ibm_bullets_shape,
     "ibm_narrative": _ibm_narrative_shape,
+    "insurtech_bullets": lambda: _role_bullets_shape(
+        "insurtech_bullets",
+        employer_label="InsurTech",
+        bullet_prefix="bul_insurtech",
+    ),
+    "ey_bullets": lambda: _role_bullets_shape(
+        "ey_bullets",
+        employer_label="EY",
+        bullet_prefix="bul_ey",
+    ),
+    "insurtech_narrative": lambda: _role_narrative_shape(
+        "insurtech_narrative",
+        employer_label="InsurTech",
+        bullet_prefix="bul_insurtech",
+    ),
+    "ey_narrative": lambda: _role_narrative_shape(
+        "ey_narrative",
+        employer_label="EY",
+        bullet_prefix="bul_ey",
+    ),
 }
 
 

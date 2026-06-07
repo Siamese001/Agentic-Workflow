@@ -8,6 +8,8 @@ from pathlib import Path
 import pytest
 
 from apps_rg.runtime.integrated_lane_evidence_packaging import (
+    discover_integrated_modular_lane_bundle_refs,
+    emit_integrated_lane_pre_run_failure,
     finalize_integrated_run_lane_evidence,
     maybe_finalize_lane_evidence_package,
 )
@@ -184,6 +186,73 @@ def test_finalize_integrated_run_populates_run_links_and_not_run(tmp_path: Path)
     status_path = integrated / "integrated_lane_evidence_status.json"
     assert status_path.is_file()
     assert summary["executive_summary_status"] == "NOT_RUN"
+
+
+def test_blocked_latest_real_run_is_integrated_audit_evidence(tmp_path: Path) -> None:
+    repo = tmp_path
+    _write_pipeline_defaults(repo)
+    integrated = repo / "artifacts" / "apps_rg" / "runs" / "cli_blocked_latest"
+    integrated.mkdir(parents=True)
+    _seed_parent_l7(integrated)
+
+    lane = "competencies"
+    run_id = "competencies_blocked"
+    run_dir = integrated / "modular_r4" / "sections" / lane / "real" / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "l2_output.json").write_text(
+        json.dumps(
+            {
+                "section_id": lane,
+                "run_id": run_id,
+                "runtime_generation_status": "REQUIRED_PROOF_ABSENT",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (run_dir / "run_manifest.json").write_text(
+        json.dumps(
+            {
+                "run_id": run_id,
+                "section_id": lane,
+                "command": f"python -m apps_rg --section {lane}",
+                "runtime_generation_status": "REQUIRED_PROOF_ABSENT",
+                "provider_attempted": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (run_dir / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3_BLOCK", "runtime_generation_status": "REQUIRED_PROOF_ABSENT"}),
+        encoding="utf-8",
+    )
+    (run_dir / RUN_BUNDLE_INDEX_FILENAME).write_text(
+        json.dumps({"correlation_id": integrated.name, "run_id": run_id}),
+        encoding="utf-8",
+    )
+    lane_root = integrated / "modular_r4" / "sections" / lane
+    ptr = {"run_id": run_id, "run_dir": run_dir.relative_to(repo).as_posix(), "section_id": lane}
+    (lane_root / "latest_real_run.json").write_text(json.dumps(ptr), encoding="utf-8")
+    emit_integrated_lane_pre_run_failure(
+        sections_root=integrated / "modular_r4" / "sections",
+        integrated_dir=integrated,
+        repo_root=repo,
+        lane_id=lane,
+        blocker="LANE_DISPATCH_EXIT_ERROR",
+    )
+
+    refs = discover_integrated_modular_lane_bundle_refs(repo, integrated)
+    row = next(r for r in refs if r["lane"] == lane)
+    assert row["status"] == "EXECUTED"
+    assert row["lane_outcome"] == "X3_BLOCK"
+    assert row["run_dir_resolution"] == "latest_real_run.json"
+
+    summary = finalize_integrated_run_lane_evidence(repo, integrated, correlation_id=integrated.name)
+    links = json.loads((integrated / RUN_LINKS_FILENAME).read_text(encoding="utf-8"))
+    row = next(r for r in links["lane_bundle_refs"] if r["lane"] == lane)
+    assert row["status"] == "EXECUTED"
+    assert row["lane_outcome"] == "X3_BLOCK"
+    assert row["evidence_package_index_ref"]
+    assert lane in summary["finalized_lanes"]
 
 
 def test_run_links_rejects_shadow_aggregate_as_lane_evidence(tmp_path: Path) -> None:

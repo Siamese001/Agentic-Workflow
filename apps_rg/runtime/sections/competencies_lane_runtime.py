@@ -1414,7 +1414,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--provider",
         choices=["qwen_vllm"],
-        default="qwen_vllm",
+        default="external_claude",
         help="Generation provider (qwen_vllm only). Live vLLM required; offline contract stub is disabled.",
     )
     parser.add_argument("--temperature", type=float, default=COMPETENCIES_TEMP_DEFAULT)

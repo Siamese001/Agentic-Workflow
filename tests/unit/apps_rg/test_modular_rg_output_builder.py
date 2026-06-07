@@ -22,7 +22,7 @@ def _real_status() -> str:
 
 
 def _lane_bundle() -> dict[str, dict]:
-    """Minimal valid L2 shapes for all seven lanes (REAL_LLM — not plumbing-only)."""
+    """Minimal valid L2 shapes for all generated lanes (REAL_LLM — not plumbing-only)."""
     st = _real_status()
     headline = {
         "runtime_generation_status": st,
@@ -49,6 +49,20 @@ def _lane_bundle() -> dict[str, dict]:
             "and modernization outcomes across financial services clients."
         ),
     }
+    insurtech_n = {
+        "runtime_generation_status": st,
+        "narrative_sentence": (
+            "At InsurTech Cloud Solutions, modernized regulated insurance platforms with "
+            "cloud controls, analytics enablement, and high-availability operations."
+        ),
+    }
+    ey_n = {
+        "runtime_generation_status": st,
+        "narrative_sentence": (
+            "At Ernst & Young, advised senior stakeholders on data, analytics, and "
+            "technology modernization programs for regulated enterprise clients."
+        ),
+    }
     bullet = (
         "Delivered measurable platform outcomes including reliability, cost reductions, "
         "and revenue-facing modernization aligned to enterprise controls."
@@ -69,6 +83,22 @@ def _lane_bundle() -> dict[str, dict]:
             {"text": bullet, "source_fact_id": "bul_i3", "has_metric": True},
         ],
     }
+    insurtech_b = {
+        "runtime_generation_status": st,
+        "bullets": [
+            {"text": bullet, "source_fact_id": "bul_it1", "has_metric": True},
+            {"text": bullet, "source_fact_id": "bul_it2", "has_metric": True},
+            {"text": bullet, "source_fact_id": "bul_it3", "has_metric": True},
+        ],
+    }
+    ey_b = {
+        "runtime_generation_status": st,
+        "bullets": [
+            {"text": bullet, "source_fact_id": "bul_ey1", "has_metric": True},
+            {"text": bullet, "source_fact_id": "bul_ey2", "has_metric": True},
+            {"text": bullet, "source_fact_id": "bul_ey3", "has_metric": True},
+        ],
+    }
     comp = {
         "runtime_generation_status": st,
         "competencies": [
@@ -87,8 +117,12 @@ def _lane_bundle() -> dict[str, dict]:
         "executive_summary": exec_summ,
         "unify_narrative": uni_n,
         "ibm_narrative": ibm_n,
+        "insurtech_narrative": insurtech_n,
+        "ey_narrative": ey_n,
         "unify_bullets": uni_b,
         "ibm_bullets": ibm_b,
+        "insurtech_bullets": insurtech_b,
+        "ey_bullets": ey_b,
         "competencies": comp,
     }
 
@@ -136,8 +170,7 @@ def test_builder_positive_writes_schema_valid_final_resume(tmp_path: Path) -> No
     assert "At Unify" in (unify.get("role_narrative") or "")
     assert "At IBM" in (ibm.get("role_narrative") or "")
     insur_n = str(insur.get("role_narrative") or "").strip()
-    assert len(insur_n) >= 20
-    assert "AWS" in insur_n and "SOC 2" in insur_n
+    assert "At InsurTech Cloud Solutions" in insur_n
     skill_cat = out_j["sections"]["skills"]["categories"][0]
     assert skill_cat["name"] == "Platforms"
     assert "Agentic orchestration" in skill_cat["items"]
@@ -288,7 +321,7 @@ def test_ok_for_recipe_requires_lane_outputs_and_schema() -> None:
         failure_reason="",
         provider_call_count=0,
         locked_sections_provider_calls_detected=False,
-        lanes_executed=7,
+        lanes_executed=len(GENERATED_LANES),
         lane_outputs_valid=False,
         final_merge_attempted=True,
     )
@@ -305,7 +338,7 @@ def test_ok_for_recipe_requires_lane_outputs_and_schema() -> None:
         failure_reason="",
         provider_call_count=0,
         locked_sections_provider_calls_detected=False,
-        lanes_executed=7,
+        lanes_executed=len(GENERATED_LANES),
         lane_outputs_valid=True,
         final_merge_attempted=True,
     )
@@ -436,15 +469,7 @@ def test_load_lane_l2_from_section_refs_reads_lane_files() -> None:
     root.mkdir(parents=True, exist_ok=True)
     l2 = {"runtime_generation_status": "REAL_LLM", "headline_line": "SVP | Platforms"}
     refs: dict[str, str] = {}
-    for ln in (
-        "headline",
-        "executive_summary",
-        "unify_narrative",
-        "unify_bullets",
-        "ibm_narrative",
-        "ibm_bullets",
-        "competencies",
-    ):
+    for ln in GENERATED_LANES:
         d = root / "lanes" / ln
         d.mkdir(parents=True, exist_ok=True)
         if ln == "headline":
@@ -477,7 +502,7 @@ def test_load_lane_l2_from_section_refs_reports_missing_ref() -> None:
     assert not loaded
 
 
-def test_all_seven_lane_ids_required() -> None:
+def test_all_generated_lane_ids_required() -> None:
     repo = find_repo_root()
     art = repo / "artifacts" / "apps_rg" / "runs" / f"merge_neg_{uuid.uuid4().hex[:10]}"
     art.mkdir(parents=True, exist_ok=True)

@@ -40,11 +40,15 @@ REGEN_EXTRA_PATHS_BY_LANE: Final[dict[str, int]] = {
 FINAL_BULLET_COUNT: Final[dict[str, int]] = {
     "unify_bullets": len(UNIFY_BULLET_IDS),
     "ibm_bullets": len(IBM_BULLET_IDS),
+    "insurtech_bullets": 3,
+    "ey_bullets": 3,
 }
 
 REQUIRED_BULLET_IDS: Final[dict[str, tuple[str, ...]]] = {
     "unify_bullets": UNIFY_BULLET_IDS,
     "ibm_bullets": IBM_BULLET_IDS,
+    "insurtech_bullets": ("bul_insurtech_001", "bul_insurtech_002", "bul_insurtech_003"),
+    "ey_bullets": ("bul_ey_001", "bul_ey_002", "bul_ey_003"),
 }
 
 DEFAULT_MIN_SELECTION_SCORE: Final[float] = 0.72
@@ -304,7 +308,7 @@ def competencies_pool_x1d_judge_rows(
     row["rubric_ref"] = "apps_rg/runtime/judges/competencies_x1d.py#graph_pool"
     row["rubric_version"] = JUDGE_RUBRIC_VERSION
     row["selection_mode"] = str(
-        (gen_meta or {}).get("selection_mode") or "claude_competencies_top_6_pass"
+        (gen_meta or {}).get("selection_mode") or "claude_competencies_top_8_pass"
     )
     row["final_category_count"] = n_final
     row["findings"] = [

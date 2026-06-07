@@ -1,0 +1,20 @@
+section_id: insurtech_bullets
+mode: REWRITE_FROM_FACT_POOL
+apps_rg_prompt_template_ref: apps_rg/prompt_assembly/templates/insurtech_bullets_tailor_v1.yaml
+pa_template_ref: strategic_tailor_v1
+output_schema_ref: apps_rg/rg_output_schema.json
+claim_ledger_required: true
+display_text_source_tags_allowed: false
+jd_as_proof_allowed: false
+companion_context_allowed: false
+companion_context_authority: NONE
+x2_gate_profile_ref: apps_rg/runtime/sections/role_episode_lane.py
+product_shape_ssot_ref: apps_rg/runtime/sections/section_product_shape_ssot.py
+x1d_judge_profile_ref: apps_rg/runtime/judges/role_episode_x1d.py
+locked_fields: []
+llm_generation_allowed: true
+notes: >
+  Proof binds via claim_ledger / source_fact_ids / evidence_ids only.
+  JD, target title, target company, and briefing may guide emphasis but are
+  targeting_only and never proof. The lane must fail closed when bul_insurtech
+  upstream evidence is absent; retries cannot repair missing proof.

@@ -675,16 +675,23 @@ def run_unify_bullets_execution(
     )
     from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_spine_c0_fec_for_section,
     )
+    from apps_rg.runtime.sections.upstream_evidence_block import wire_spine_c0_fec_or_block
 
-    wire_spine_c0_fec_for_section(
+    blocked = wire_spine_c0_fec_or_block(
+        repo_root=REPO_ROOT,
         artifact_dir=artifact_dir,
         section_id="unify_bullets",
         front_spine=front_spine,
         pool=pool,
         runtime_payload=runtime_payload,
+        provider=str(args.provider),
+        temperature=float(args.temperature),
+        max_tokens=UNIFY_MAX_OUTPUT_TOKENS,
+        output_filename="unify_bullets_output.txt",
     )
+    if blocked is not None:
+        return blocked
 
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
     section_compiled = compile_unify_bullets_prompt(runtime_payload, run_id=runtime_payload["run_id"])
@@ -761,13 +768,19 @@ def run_unify_bullets_execution(
         required_bullet_ids=UNIFY_BULLET_IDS,
         targeting_context=build_employment_targeting_context(runtime_payload, section_lane=LANE_KEY),
         judge_mode=judge_mode,
+        provider_profile=str(args.provider),
     )
     write_json(artifact_dir / "bullet_lane_generation.json", gen_meta)
     provider_result_data = result.to_dict() if result else {}
     runtime_generation_status = result.runtime_generation_status if result else "BLOCKED"
     write_json(artifact_dir / "provider_response.json", provider_result_data)
     parsed = parsed_in
-    if result and result.runtime_generation_status == "REAL_LLM" and parsed_in is None:
+    if (
+        str(args.provider) == "qwen_vllm"
+        and result
+        and result.runtime_generation_status == "REAL_LLM"
+        and parsed_in is None
+    ):
         raw_output, parsed_in, parse_error = retry_qwen_for_parse(
             messages, provider_payload, raw_output, parse_error
         )

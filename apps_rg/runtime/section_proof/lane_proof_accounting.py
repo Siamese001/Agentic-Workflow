@@ -24,7 +24,7 @@ def resolve_lane_placement_bucket(
     - ``mock`` — synthetic generation provider (``--provider mock``).
     - ``plumbing`` — live-ish CLI plumbing that cannot certify product proof
       (mock judges hatch and/or offline Qwen contract stub).
-    - ``real`` — default qwen_vllm lane attempts eligible for REAL_LLM rollup pointers.
+    - ``real`` — live-provider lane attempts eligible for REAL_LLM rollup pointers.
     """
     p = str(provider or "").strip().lower()
     if p == "mock":

@@ -17,15 +17,15 @@ When ``--resume`` is omitted (or empty), the CLI uses the canonical base resume 
 
 **Generation topology:** this CLI is the canonical **R4 integrated product** entry
 (``dispatch_apps_rg_run`` → governed spine). **Default** résumé body generation is
-**modular** (seven section lanes + deterministic merge) when
+**modular** (eleven section lanes + deterministic merge) when
 ``APPS_RG_R4_GENERATION_MODE`` is unset — see ``apps_rg.l2_recipe.r4_generation_route``.
 Résumé body generation is **modular section lanes only** (``APPS_RG_R4_GENERATION_MODE`` unset or ``modular_section_lanes``).
 Offline batch orchestration is library-only under ``tests.helpers.offline_lane_orchestration`` (not product proof);
 there is no separate offline orchestrate module CLI.
 
-**L2 model execution (résumé body):** by default ``APPS_RG_L2_PROVIDER_MODE`` is unset
-and the v4 envelope uses **local vLLM** (``ProviderGateway`` ``local_only``).
-Section lanes and integrated runs require **live** ``qwen_vllm`` (no offline contract stub)
+**L2 model execution (résumé body):** section lanes default to ``external_claude`` through
+``ProviderGateway`` and keep ``qwen_vllm`` explicitly selectable for local comparison.
+Section lanes and integrated runs require a **live** provider bundle (no offline contract stub)
 and **live X1D judges** (no ``--mock-judges`` on this CLI; pytest uses
 ``APPS_RG_TEST_HARNESS=1`` + ``APPS_RG_MOCK_JUDGES=1`` only).
 Set ``APPS_RG_L2_PROVIDER_MODE=live_allowed`` when the compiled
@@ -586,9 +586,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--provider",
         default=argparse.SUPPRESS,
-        choices=["qwen_vllm"],
+        choices=["qwen_vllm", "external_claude"],
         help=(
-            "Optional override for section-only lanes (qwen_vllm only); when omitted, uses "
+            "Optional override for section-only lanes (qwen_vllm or external_claude); when omitted, uses "
             "APPS_RG_MODULAR_LANE_PROVIDER (see apps_rg.l2_recipe.r4_generation_mode). "
             "Ignored for full R4 runs."
         ),
@@ -625,7 +625,7 @@ def _build_parser() -> argparse.ArgumentParser:
         type=float,
         default=0.45,
         help=(
-            "LLM temperature for qwen_vllm in section lanes including competencies "
+            "LLM temperature for section lanes including competencies "
             "(each lane enforces its own allowed range)."
         ),
     )
@@ -844,12 +844,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             print(f"pre_dispatch_preflight_receipt={receipt_path.as_posix()}", flush=True)
             return 2
 
-    # Optional local Qwen vLLM Docker restart (opt-in — see qwen_vllm_docker_restart module).
+    # Optional local Qwen vLLM Docker restart (opt-in and qwen_vllm-only).
     from apps_rg.runtime.qwen_vllm_docker_restart import maybe_restart_qwen_vllm_for_apps_rg_run
 
     _qdr = maybe_restart_qwen_vllm_for_apps_rg_run(
         running_section_lane=section_eff in section_lane_ids,
-        cli_provider=getattr(args, "provider", None),
+        cli_provider=lane_provider_eff,
     )
     if _qdr.get("performed"):
         print(
@@ -960,7 +960,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             # accept). No subprocess boundary — the harness is gone.
             # Global retry cap: attempts default to 2 max. Retries are for LOCAL repair only
             # (weak phrasing, judge tie, repairable metric drift) — never to brute-force missing
-            # upstream proof. Values above 2 are clamped so these seven content sections never
+            # upstream proof. Values above 2 are clamped so these content sections never
             # pay 4x preflight for a section whose dominant failure mode is mechanical or
             # upstream (which more attempts cannot fix).
             attempts = max(1, min(MAX_SECTION_ATTEMPTS, int(getattr(args, "attempts", 1) or 1)))
@@ -1137,27 +1137,22 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             tb_op = str((result or {}).get("token_budget_operator_message") or "").strip()
             if tb_op:
                 print(tb_op, file=sys.stderr, flush=True)
-            es_txt = str((result or {}).get("executive_summary_cli_output_text") or "").strip()
-            if es_txt:
-                print(es_txt, flush=True)
-            ub_txt = str((result or {}).get("unify_bullets_cli_output_text") or "").strip()
-            if ub_txt:
-                print(ub_txt, flush=True)
-            un_txt = str((result or {}).get("unify_narrative_cli_output_text") or "").strip()
-            if un_txt:
-                print(un_txt, flush=True)
-            ib_txt = str((result or {}).get("ibm_bullets_cli_output_text") or "").strip()
-            if ib_txt:
-                print(ib_txt, flush=True)
-            in_txt = str((result or {}).get("ibm_narrative_cli_output_text") or "").strip()
-            if in_txt:
-                print(in_txt, flush=True)
-            co_txt = str((result or {}).get("competencies_cli_output_text") or "").strip()
-            if co_txt:
-                print(co_txt, flush=True)
-            hl_txt = str((result or {}).get("headline_cli_output_text") or "").strip()
-            if hl_txt:
-                print(hl_txt, flush=True)
+            for text_key in (
+                "executive_summary_cli_output_text",
+                "unify_bullets_cli_output_text",
+                "unify_narrative_cli_output_text",
+                "ibm_bullets_cli_output_text",
+                "ibm_narrative_cli_output_text",
+                "insurtech_bullets_cli_output_text",
+                "insurtech_narrative_cli_output_text",
+                "ey_bullets_cli_output_text",
+                "ey_narrative_cli_output_text",
+                "competencies_cli_output_text",
+                "headline_cli_output_text",
+            ):
+                out_txt = str((result or {}).get(text_key) or "").strip()
+                if out_txt:
+                    print(out_txt, flush=True)
             from apps_rg.runtime.cli_exit_codes import exit_code_from_lane_result
 
             rc = exit_code_from_lane_result(res_dict, section_id=section_eff)

@@ -211,10 +211,10 @@ def build_competencies_assembly_input(
     )
 
     u0 = (
-        "MODE: Competencies graph_10x6 — target-aware, fact-constrained SELECTION and GROUPING.\n"
+        "MODE: Competencies graph_8x8 — target-aware, fact-constrained SELECTION and GROUPING.\n"
         "Do NOT seed from locked base-resume competencies or facts.skills rows. Do NOT generate from JD/briefing alone.\n"
-        "Rank up to 10 executive capability category candidates using VERIFIED_SKILL_INVENTORY_PROJECTION "
-        "(augmented_skills_graph) plus ALLOWED_SOURCE_FACT_IDS; emit exactly 6 highest-scoring categories that pass "
+        "Rank the 8 executive capability category candidates using VERIFIED_SKILL_INVENTORY_PROJECTION "
+        "(augmented_skills_graph) plus ALLOWED_SOURCE_FACT_IDS; emit exactly 8 categories that pass "
         "graph/fact reality.\n"
         "Build a professional Competencies section by selecting, grouping, and normalizing ONLY supported terms "
         "from graph projection and C0 employment facts.\n"
@@ -228,7 +228,7 @@ def build_competencies_assembly_input(
         "Do NOT use full sentences, impact narratives, metrics, or accomplishment prose inside terms.\n\n"
         "Return RAW JSON only: first character {, last character }. No ``` fences.\n\n"
         "OUTPUT CONTRACT (top-level object):\n"
-        "- categories: array of exactly 6 executive capability category objects (top-scoring of up to 10 candidates), each with:\n"
+        "- categories: array of exactly 8 executive capability category objects (the graph-backed final category set), each with:\n"
         "  - category_id: stable taxonomy id when known\n"
         "  - category_label: crisp professional label (no colon, no newlines, not a sentence; not generic "
         '"Skills" / "Competency 1")\n'
@@ -259,7 +259,7 @@ def build_competencies_assembly_input(
         "its graph_skill_node_ids. Base resume and archive competencies are calibration/provenance only "
         "— never copy or paraphrase their prose. Preserve or exceed the base resume's rigor and "
         "senior executive engineering specificity.\n"
-        "- REQUIRED FAMILY COVERAGE: across the 6 categories' terms (collectively), you MUST include "
+        "- REQUIRED FAMILY COVERAGE: across the 8 categories' terms (collectively), you MUST include "
         "fact-supported vocabulary spanning ALL 7 SVP-Engineering capability families. Do not drop any "
         "family. Use graph/fact-backed terms that name each family's mechanisms:\n"
         "    1. Agentic Platform — agentic / multi-agent orchestration, GraphRAG, agent routing\n"

@@ -1042,16 +1042,23 @@ def run_headline_execution(
     )
     from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_spine_c0_fec_for_section,
     )
+    from apps_rg.runtime.sections.upstream_evidence_block import wire_spine_c0_fec_or_block
 
-    wire_spine_c0_fec_for_section(
+    blocked = wire_spine_c0_fec_or_block(
+        repo_root=REPO_ROOT,
         artifact_dir=artifact_dir,
         section_id="headline",
         front_spine=front_spine,
         pool=pool,
         runtime_payload=runtime_payload,
+        provider=str(args.provider),
+        temperature=float(args.temperature),
+        max_tokens=HEADLINE_MAX_OUTPUT_TOKENS,
+        output_filename="headline_output.txt",
     )
+    if blocked is not None:
+        return blocked
 
     fact_lines = "\n".join(
         f"- {row['fact_id']}: {row['claim_text']}"
@@ -1132,7 +1139,14 @@ def run_headline_execution(
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
     tagged = tag_reasoning_lane(provider_payload, LANE_KEY)
-    result = call_qwen_vllm(tagged)
+    from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
+
+    result = call_section_model_provider(
+        str(args.provider),
+        tagged,
+        artifact_dir=artifact_dir,
+        run_id=str(runtime_payload.get("run_id") or ""),
+    )
     provider_result_data = result.to_dict()
     raw_output = result.raw_model_output
     provider_raw_output = raw_output
@@ -1145,7 +1159,7 @@ def run_headline_execution(
     if result.runtime_generation_status in _HEADLINE_JSON_OUTPUT_STATUSES:
         raw_model_output_original = raw_output
         parsed, parse_error = parse_model_json(raw_model_output_original)
-        if parsed is None:
+        if parsed is None and str(args.provider) == "qwen_vllm":
             raw_model_output_original, parsed, parse_error = retry_qwen_for_parse(
                 messages, provider_payload, raw_model_output_original, parse_error
             )

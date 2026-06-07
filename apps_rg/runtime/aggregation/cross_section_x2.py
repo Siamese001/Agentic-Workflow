@@ -17,8 +17,12 @@ SECTION_PRIORITY: tuple[str, ...] = (
     "executive_summary",
     "unify_narrative",
     "ibm_narrative",
+    "insurtech_narrative",
+    "ey_narrative",
     "unify_bullets",
     "ibm_bullets",
+    "insurtech_bullets",
+    "ey_bullets",
     "competencies",
 )
 
@@ -672,7 +676,12 @@ def run_cross_section_x2_gates(
     # Section intent conflict: narrative substring in bullets
     conflicts: list[str] = []
     by_id = {str(s.get("section_id")): s for s in sections}
-    for narr_sid, bullet_sid in (("unify_narrative", "unify_bullets"), ("ibm_narrative", "ibm_bullets")):
+    for narr_sid, bullet_sid in (
+        ("unify_narrative", "unify_bullets"),
+        ("ibm_narrative", "ibm_bullets"),
+        ("insurtech_narrative", "insurtech_bullets"),
+        ("ey_narrative", "ey_bullets"),
+    ):
         narr = by_id.get(narr_sid)
         bullets = by_id.get(bullet_sid)
         if not narr or not bullets:
@@ -687,7 +696,7 @@ def run_cross_section_x2_gates(
     exec_sec = by_id.get("executive_summary")
     if exec_sec:
         etext = normalize_claim_text(_section_plaintext(exec_sec))
-        for bullet_sid in ("unify_bullets", "ibm_bullets"):
+        for bullet_sid in ("unify_bullets", "ibm_bullets", "insurtech_bullets", "ey_bullets"):
             bullets = by_id.get(bullet_sid)
             if not bullets:
                 continue
@@ -837,7 +846,18 @@ def build_cross_section_warn_resolution_report(
 # ---------------------------------------------------------------------------
 
 _PRIMARY_COHERENCE_SECTIONS: frozenset[str] = frozenset(
-    {"executive_summary", "competencies", "unify_bullets", "ibm_bullets", "unify_narrative", "ibm_narrative"}
+    {
+        "executive_summary",
+        "competencies",
+        "unify_bullets",
+        "ibm_bullets",
+        "insurtech_bullets",
+        "ey_bullets",
+        "unify_narrative",
+        "ibm_narrative",
+        "insurtech_narrative",
+        "ey_narrative",
+    }
 )
 _PILLAR_COHERENCE_JACCARD_WARN_THRESHOLD = 0.4
 

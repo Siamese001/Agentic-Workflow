@@ -15,7 +15,16 @@ _ELIGIBILITY_REL = Path("apps_rg/config/fact_inventory/commercial_claim_eligibil
 
 # Bullet/narrative lanes only — headline and executive_summary remain HIGH-only.
 CLAIM_ELIGIBLE_MEDIUM_SECTIONS: frozenset[str] = frozenset(
-    {"unify_bullets", "unify_narrative", "ibm_bullets", "ibm_narrative"},
+    {
+        "unify_bullets",
+        "unify_narrative",
+        "ibm_bullets",
+        "ibm_narrative",
+        "insurtech_bullets",
+        "insurtech_narrative",
+        "ey_bullets",
+        "ey_narrative",
+    },
 )
 
 VerificationStatusLiteral = Literal[

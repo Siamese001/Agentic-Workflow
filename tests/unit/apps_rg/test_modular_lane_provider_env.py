@@ -19,9 +19,9 @@ from apps_rg.l2_recipe.steps import GenerateResumeStep
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
 
 
-def test_resolve_modular_lane_provider_default_qwen_vllm(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_resolve_modular_lane_provider_default_external_claude(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, raising=False)
-    assert resolve_apps_rg_modular_lane_provider() == "qwen_vllm"
+    assert resolve_apps_rg_modular_lane_provider() == "external_claude"
 
 
 def test_resolve_modular_lane_provider_qwen(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -61,9 +61,9 @@ def test_generate_resume_step_passes_lane_provider_from_env(
         final_schema_valid=True,
         decisive_status="PASS",
         failure_reason="",
-        provider_call_count=7,
+        provider_call_count=11,
         locked_sections_provider_calls_detected=False,
-        lanes_executed=7,
+        lanes_executed=11,
         lane_outputs_valid=True,
         final_merge_attempted=True,
         rg_output_merge_receipt_ref="modular_r4/outputs/rg_output_merge_receipt.json",

@@ -641,16 +641,23 @@ def run_unify_narrative_execution(
 
     from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_spine_c0_fec_for_section,
     )
+    from apps_rg.runtime.sections.upstream_evidence_block import wire_spine_c0_fec_or_block
 
-    wire_spine_c0_fec_for_section(
+    blocked = wire_spine_c0_fec_or_block(
+        repo_root=REPO_ROOT,
         artifact_dir=artifact_dir,
         section_id="unify_narrative",
         front_spine=front_spine,
         pool=pool,
         runtime_payload=runtime_payload,
+        provider=str(args.provider),
+        temperature=float(args.temperature),
+        max_tokens=NARRATIVE_MAX_OUTPUT_TOKENS,
+        output_filename="unify_narrative_output.txt",
     )
+    if blocked is not None:
+        return blocked
 
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
     section_compiled = compile_unify_narrative_prompt(
@@ -745,7 +752,14 @@ def run_unify_narrative_execution(
         raw_output = ""
         parsed = None
     else:
-        result = call_qwen_vllm(provider_payload)
+        from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
+
+        result = call_section_model_provider(
+            str(args.provider),
+            provider_payload,
+            artifact_dir=artifact_dir,
+            run_id=str(runtime_payload.get("run_id") or ""),
+        )
         raw_output = result.raw_model_output
         runtime_generation_status = result.runtime_generation_status
         provider_result_data = dict(result.to_dict())
@@ -753,7 +767,7 @@ def run_unify_narrative_execution(
         write_json(artifact_dir / "provider_response.json", provider_result_data)
     if runtime_generation_status in ("REAL_LLM", "MOCKED"):
         parsed_in, parse_error = parse_model_json(raw_output)
-        if parsed_in is None and runtime_generation_status == "REAL_LLM":
+        if parsed_in is None and runtime_generation_status == "REAL_LLM" and str(args.provider) == "qwen_vllm":
             raw_output, parsed_in, parse_error = retry_qwen_for_parse(
                 messages, provider_payload, raw_output, parse_error
             )

@@ -2,7 +2,8 @@
 # Plan: apps-rg-parallel-section-orchestration-f2a8c4 (W0.1)
 #
 # Dependency-ordered redesign (2026-06-06):
-#   wave 0 — upstream proof-bearing sections (competencies, unify_bullets, ibm_bullets)
+#   wave 0 — upstream proof-bearing sections
+#            (competencies, unify/IBM/InsurTech/EY bullets)
 #   wave 1 — narratives that consume finalized selected bullets
 #   wave 2 — executive_summary synthesizes finalized bullets + narratives + competencies
 #   wave 3 — headline is final positioning; must not run before exec_summary finalizes
@@ -19,6 +20,12 @@ lanes:
   - id: ibm_bullets
     weight: light
     wave: 0
+  - id: insurtech_bullets
+    weight: light
+    wave: 0
+  - id: ey_bullets
+    weight: light
+    wave: 0
   - id: unify_narrative
     weight: light
     wave: 1
@@ -29,6 +36,16 @@ lanes:
     wave: 1
     depends_on:
       - ibm_bullets
+  - id: insurtech_narrative
+    weight: light
+    wave: 1
+    depends_on:
+      - insurtech_bullets
+  - id: ey_narrative
+    weight: light
+    wave: 1
+    depends_on:
+      - ey_bullets
   - id: executive_summary
     weight: heavy
     wave: 2
@@ -36,8 +53,12 @@ lanes:
       - competencies
       - unify_bullets
       - ibm_bullets
+      - insurtech_bullets
+      - ey_bullets
       - unify_narrative
       - ibm_narrative
+      - insurtech_narrative
+      - ey_narrative
   - id: headline
     weight: light
     wave: 3
@@ -46,15 +67,17 @@ lanes:
       - competencies
       - unify_bullets
       - ibm_bullets
+      - insurtech_bullets
+      - ey_bullets
 waves:
   - id: 0
     description: upstream proof-bearing sections (competencies + bullets), parallel-eligible
-    lanes: [competencies, unify_bullets, ibm_bullets]
+    lanes: [competencies, unify_bullets, ibm_bullets, insurtech_bullets, ey_bullets]
     max_parallel_env: APPS_RG_PHASE1_MAX_PARALLEL
     default_max_parallel: 2
   - id: 1
     description: downstream narratives (after finalized companion bullets)
-    lanes: [unify_narrative, ibm_narrative]
+    lanes: [unify_narrative, ibm_narrative, insurtech_narrative, ey_narrative]
     max_parallel: 1
   - id: 2
     description: heavy downstream synthesis (executive_summary) solo

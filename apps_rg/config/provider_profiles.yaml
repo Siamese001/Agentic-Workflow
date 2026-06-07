@@ -4,10 +4,10 @@ version: "1.0.0"
 status: active
 
 wave10a_policy:
-  default_provider: qwen_vllm
-  qwen_status: default_local_provider
-  external_default_status: selectable_for_parity_not_default
-  external_default_transition_gate: Wave 10B parity PASS
+  default_provider: external_claude
+  qwen_status: selectable_local_comparison_provider
+  external_default_status: claude_default_for_apps_rg_e2e
+  external_default_transition_gate: apps_rg_e2e_external_claude_runtime_PASS
 
 profiles:
   local_generator_stub:
@@ -31,7 +31,7 @@ profiles:
     capabilities:
       - text_generation
       - structured_json_generation
-    default: true
+    default: false
 
   external_openai_generator:
     profile_id: apps_rg::provider::external_openai_generator::v1
@@ -56,8 +56,8 @@ profiles:
     capabilities:
       - text_generation
       - structured_json_generation
-    default: false
-    wave10a_status: selectable_for_parity_not_default
+    default: true
+    wave10a_status: default_for_apps_rg_e2e
 
   external_default_generator:
     profile_id: apps_rg::provider::external_default_generator::v1

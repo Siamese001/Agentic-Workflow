@@ -359,7 +359,7 @@ def augment_bound_category_family_terms(
     try:
         from apps_rg.runtime.sections.competencies_rigor import MAX_ITEMS_PER_CATEGORY, MIN_ITEMS_PER_CATEGORY
     except (ImportError, AttributeError):  # guardian: allow-default-fallback -- optional coverage augmentation
-        MIN_ITEMS_PER_CATEGORY, MAX_ITEMS_PER_CATEGORY = 3, 6
+        MIN_ITEMS_PER_CATEGORY, MAX_ITEMS_PER_CATEGORY = 2, 6
 
     allowed = {str(x) for x in (allowed_fact_ids or set())}
 

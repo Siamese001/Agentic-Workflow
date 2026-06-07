@@ -75,7 +75,7 @@ def product_pass_allows_c02_write(
 def lane_run_dir_meets_product_bar(run_dir: Path) -> tuple[bool, str]:
     """True when run_dir l2+x3 evidence meets product lane bar (REAL_LLM + PASS + X3 allow family)."""
     from apps_rg.runtime.c02_chroma_lifecycle import index_build_receipt_bound
-    from apps_rg.runtime.runtime_proof_layout import _is_accepted_real_llm_qwen_bundle
+    from apps_rg.runtime.runtime_proof_layout import _is_accepted_real_llm_provider_bundle
     from apps_rg.runtime.validators.companion_bullet_finalization import COMPANION_FINALIZED_X3_CODES
 
     room_receipt = run_dir / "c0_evidence_room_receipt.json"
@@ -111,8 +111,8 @@ def lane_run_dir_meets_product_bar(run_dir: Path) -> tuple[bool, str]:
     if "phase0_synthetic" in run_posix:
         return False, "phase0_synthetic_stub_not_product_lane"
 
-    if not _is_accepted_real_llm_qwen_bundle(run_dir):
-        return False, "not_accepted_real_llm_qwen_bundle"
+    if not _is_accepted_real_llm_provider_bundle(run_dir):
+        return False, "not_accepted_real_llm_provider_bundle"
 
     l2_path = run_dir / "l2_output.json"
     if not l2_path.is_file():

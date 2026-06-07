@@ -79,7 +79,7 @@ def _probe_timeout() -> float:
         return 1.5
 
 
-def _should_skip_for_stub_or_mock(*, running_section_lane: bool, cli_provider: str | None) -> tuple[bool, str]:
+def _should_skip_for_provider_or_stub(*, running_section_lane: bool, cli_provider: str | None) -> tuple[bool, str]:
     if _env_truthy("APPS_RG_L2_FORCE_STUB"):
         return True, "APPS_RG_L2_FORCE_STUB"
     mode = str(os.environ.get("APPS_RG_L2_PROVIDER_MODE", "") or "").strip().lower()
@@ -96,8 +96,11 @@ def _should_skip_for_stub_or_mock(*, running_section_lane: bool, cli_provider: s
         prov, _src = resolve_cli_lane_provider_with_source(cli_provider)
     except SectionCliConfigError:
         return False, ""
-    if str(prov).strip().lower() == "mock":
+    prov_norm = str(prov).strip().lower()
+    if prov_norm == "mock":
         return True, "section_lane_provider_mock"
+    if prov_norm != "qwen_vllm":
+        return True, f"section_lane_provider_{prov_norm}"
     return False, ""
 
 
@@ -172,7 +175,7 @@ def maybe_restart_qwen_vllm_for_apps_rg_run(
             ready=False,
         )
 
-    skip, skip_reason = _should_skip_for_stub_or_mock(
+    skip, skip_reason = _should_skip_for_provider_or_stub(
         running_section_lane=running_section_lane,
         cli_provider=cli_provider,
     )

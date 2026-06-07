@@ -114,6 +114,29 @@ def _not_completed_lines(section_id: str, reason: str) -> list[str]:
     return [f"[NOT COMPLETED: {section_id} — {reason}]", ""]
 
 
+def _append_generated_role(
+    *,
+    lines: list[str],
+    by_id: dict[str, dict[str, Any]],
+    narrative_id: str,
+    bullets_id: str,
+    header_key: str,
+    missing_label: str,
+) -> None:
+    narr_snap = (by_id.get(narrative_id) or {}).get("l2_output_snapshot") or {}
+    bullet_snap = (by_id.get(bullets_id) or {}).get("l2_output_snapshot") or {}
+    hdr = narr_snap.get(header_key) or bullet_snap.get(header_key) or {}
+    if hdr:
+        lines.extend(exp_header(hdr))
+        narr = str(narr_snap.get("narrative_sentence") or "").strip()
+        if narr:
+            lines.append(narr)
+        lines.extend(bullets_from_list(bullet_snap.get("bullets") or []))
+        lines.append("")
+    else:
+        lines.extend(_not_completed_lines(missing_label, "missing_generated_role_section"))
+
+
 def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
     identity = final_resume.get("candidate_identity") or {}
     contact = identity.get("header_contact") or {}
@@ -176,7 +199,24 @@ def flatten_final_resume_to_text(final_resume: dict[str, Any]) -> str:
     else:
         lines.extend(_not_completed_lines("ibm_narrative", "missing_ibm_section"))
 
-    for sid in ("insurtech", "ey", "early_career"):
+    _append_generated_role(
+        lines=lines,
+        by_id=by_id,
+        narrative_id="insurtech_narrative",
+        bullets_id="insurtech_bullets",
+        header_key="insurtech_header",
+        missing_label="insurtech",
+    )
+    _append_generated_role(
+        lines=lines,
+        by_id=by_id,
+        narrative_id="ey_narrative",
+        bullets_id="ey_bullets",
+        header_key="ey_header",
+        missing_label="ey",
+    )
+
+    for sid in ("early_career",):
         copied = (by_id.get(sid) or {}).get("copied_text_exact")
         if copied:
             lines.extend(render_locked(copied))

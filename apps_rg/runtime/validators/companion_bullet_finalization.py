@@ -294,14 +294,14 @@ def build_companion_bullets_context(
 
 
 def _narrative_upstream_spec(narrative_section_id: str) -> tuple[str, tuple[str, ...]] | None:
-    from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
-    from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
+    from apps_rg.runtime.reasoning.employment_bullet_pool import REQUIRED_BULLET_IDS
+    from apps_rg.runtime.section_execution_plan import NARRATIVE_UPSTREAM_BULLET_LANE
 
-    specs: dict[str, tuple[str, tuple[str, ...]]] = {
-        "unify_narrative": ("unify_bullets", UNIFY_BULLET_IDS),
-        "ibm_narrative": ("ibm_bullets", IBM_BULLET_IDS),
-    }
-    return specs.get(str(narrative_section_id).strip())
+    sid = str(narrative_section_id).strip()
+    upstream = NARRATIVE_UPSTREAM_BULLET_LANE.get(sid)
+    if not upstream:
+        return None
+    return upstream, tuple(REQUIRED_BULLET_IDS.get(upstream, ()))
 
 
 def evaluate_narrative_upstream_bullets_gate(

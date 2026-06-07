@@ -15,16 +15,19 @@ from typing import Any, Final, Literal
 
 CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE: Final[str] = "CLI_OVERRIDE"
 CLI_PROVIDER_RESOLUTION_ENV_APPS_RG_MODULAR_LANE_PROVIDER: Final[str] = "ENV_APPS_RG_MODULAR_LANE_PROVIDER"
-CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM: Final[str] = "DEV_DEFAULT_QWEN_VLLM"
-# Legacy alias (same string used before mock provider removal); prefer DEV_DEFAULT_QWEN_VLLM.
-CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_MOCK: Final[str] = "DEV_DEFAULT_QWEN_VLLM"
+CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE: Final[str] = "DEV_DEFAULT_EXTERNAL_CLAUDE"
+# Legacy exported Qwen name retained for older imports; value reflects the current default.
+CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM: Final[str] = CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
+# Legacy mock label remains distinct because reports use it to deny proof eligibility.
+CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_MOCK: Final[str] = "DEV_DEFAULT_MOCK"
 # Explicit label for pytest / harness runs that force a mock resolution trace (never proof_eligible).
 CLI_PROVIDER_RESOLUTION_TEST_MOCK: Final[str] = "TEST_MOCK"
 
 ProviderResolutionSource = Literal[
     "CLI_OVERRIDE",
     "ENV_APPS_RG_MODULAR_LANE_PROVIDER",
-    "DEV_DEFAULT_QWEN_VLLM",
+    "DEV_DEFAULT_EXTERNAL_CLAUDE",
+    "DEV_DEFAULT_MOCK",
     "TEST_MOCK",
 ]
 
@@ -90,6 +93,8 @@ COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = "gemini_pro"
 BULLET_COMPOSITE_DEFAULT_X1D_JUDGES: Final[str] = "anthropic_claude"
 UNIFY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 IBM_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
+INSURTECH_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
+EY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 
 # Wave 9 judge minimization policy:
 # - advisory lanes use one compact advisory judge;
@@ -101,6 +106,8 @@ _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
     "professional_competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
     "unify_bullets": UNIFY_BULLETS_DEFAULT_X1D_JUDGES,
     "ibm_bullets": IBM_BULLETS_DEFAULT_X1D_JUDGES,
+    "insurtech_bullets": INSURTECH_BULLETS_DEFAULT_X1D_JUDGES,
+    "ey_bullets": EY_BULLETS_DEFAULT_X1D_JUDGES,
 }
 
 _SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
@@ -108,9 +115,13 @@ _SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
     "professional_competencies": "single_advisory_taxonomy_judge_optional_for_proof",
     "unify_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
     "ibm_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
+    "insurtech_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
+    "ey_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
     "headline": "full_panel_required_by_x2_judge_presence_gate",
     "unify_narrative": "full_panel_required_by_x2_judge_presence_gate",
     "ibm_narrative": "full_panel_required_by_x2_judge_presence_gate",
+    "insurtech_narrative": "full_panel_required_by_x2_judge_presence_gate",
+    "ey_narrative": "full_panel_required_by_x2_judge_presence_gate",
     "executive_summary": "full_panel_required_by_x2_judge_presence_gate",
 }
 
@@ -176,7 +187,7 @@ def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, s
 
     - ``CLI_OVERRIDE`` — non-empty ``--provider``
     - ``ENV_APPS_RG_MODULAR_LANE_PROVIDER`` — CLI omitted, env var set (any allowed value)
-    - ``DEV_DEFAULT_QWEN_VLLM`` — CLI omitted, env unset (default ``qwen_vllm``)
+    - ``DEV_DEFAULT_EXTERNAL_CLAUDE`` — CLI omitted, env unset (default ``external_claude``)
     """
     from apps_rg.l2_recipe.r4_generation_mode import (
         ENV_APPS_RG_MODULAR_LANE_PROVIDER,
@@ -187,12 +198,12 @@ def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, s
         v = str(cli_value).strip().lower()
         if v == "mock":
             raise SectionCliConfigError(
-                "Invalid --provider 'mock': section lanes require qwen_vllm. "
+                "Invalid --provider 'mock': section lanes require qwen_vllm or external_claude. "
                 "Live qwen_vllm required; APPS_RG_QWEN_OFFLINE_CONTRACT_STUB is disabled on product paths."
             )
-        if v != "qwen_vllm":
+        if v not in {"qwen_vllm", "external_claude"}:
             raise SectionCliConfigError(
-                f"Invalid --provider {cli_value!r} (expected qwen_vllm)."
+                f"Invalid --provider {cli_value!r} (expected qwen_vllm or external_claude)."
             )
         return v, CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 
@@ -202,7 +213,7 @@ def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, s
         return resolved, CLI_PROVIDER_RESOLUTION_ENV_APPS_RG_MODULAR_LANE_PROVIDER
 
     resolved = resolve_apps_rg_modular_lane_provider()
-    return resolved, CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM
+    return resolved, CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
 
 
 def resolve_cli_lane_provider(cli_value: str | None) -> str:
@@ -225,7 +236,7 @@ def coalesce_lane_provider_resolution_source(
     if raw_env:
         return CLI_PROVIDER_RESOLUTION_ENV_APPS_RG_MODULAR_LANE_PROVIDER
     if str(resolved_provider).strip().lower() == "qwen_vllm" and not raw_env:
-        return CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM
+        return CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
     return CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 
 
@@ -314,6 +325,7 @@ def fill_executive_summary_cli_targets(args: Any) -> None:
 
 __all__ = [
     "CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE",
+    "CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE",
     "CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_MOCK",
     "CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM",
     "CLI_PROVIDER_RESOLUTION_ENV_APPS_RG_MODULAR_LANE_PROVIDER",

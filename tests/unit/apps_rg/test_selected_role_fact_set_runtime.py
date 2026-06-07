@@ -42,7 +42,7 @@ def _high_row(
 
 def test_section_keys_match_fact_inventory() -> None:
     assert tuple(srfs.SECTION_KEYS) == SECTION_KEYS
-    assert len(SECTION_KEYS) == 7
+    assert len(SECTION_KEYS) == 11
 
 
 @pytest.mark.parametrize("section_id", SECTION_KEYS)

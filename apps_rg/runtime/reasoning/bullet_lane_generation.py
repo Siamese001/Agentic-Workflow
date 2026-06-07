@@ -20,6 +20,8 @@ from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
     self_consistency_path_count,
 )
 from apps_rg.runtime.reasoning.competencies_graph_pool import (
+    COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
+    COMPETENCIES_FINAL_CATEGORY_COUNT,
     evaluate_competencies_selection_quality,
     max_competencies_regen_rounds,
     min_competencies_selection_score,
@@ -82,6 +84,7 @@ def _generate_employment_bullet_lane(
     required_bullet_ids: tuple[str, ...],
     targeting_context: dict[str, Any] | None,
     judge_mode: str,
+    provider_profile: str | None,
 ) -> tuple[ProviderResult | None, str, dict[str, Any] | None, str, dict[str, Any]]:
     min_score = min_selection_score_for_lane(section_lane)
     all_paths: list[SelfConsistencyPath] = []
@@ -114,6 +117,7 @@ def _generate_employment_bullet_lane(
             path_count=batch,
             path_index_start=len(all_paths),
             append_artifacts=regen_round > 0,
+            provider_profile=provider_profile,
         )
         new_paths = _normalize_selector_paths(new_paths, normalize_parsed)
         all_paths.extend(new_paths)
@@ -214,6 +218,7 @@ def _generate_competencies_graph_pool_lane(
     base_temperature: float | None,
     targeting_context: dict[str, Any] | None,
     judge_mode: str,
+    provider_profile: str | None,
 ) -> tuple[ProviderResult | None, str, dict[str, Any] | None, str, dict[str, Any]]:
     section_lane = "competencies"
     min_score = min_competencies_selection_score()
@@ -245,6 +250,7 @@ def _generate_competencies_graph_pool_lane(
             path_count=batch,
             path_index_start=len(all_paths),
             append_artifacts=regen_round > 0,
+            provider_profile=provider_profile,
         )
         new_paths = _normalize_selector_paths(new_paths, normalize_parsed)
         all_paths.extend(new_paths)
@@ -301,7 +307,7 @@ def _generate_competencies_graph_pool_lane(
     assert pool is not None
     merged = normalize_parsed(dict(pool.merged_parsed))
     meta: dict[str, Any] = {
-        "generation_mode": "qwen_competencies_graph_pool_claude_top_6_regen",
+        "generation_mode": "qwen_competencies_graph_pool_claude_top_8_regen",
         "section_lane": section_lane,
         "initial_path_count": sc_path_count_for_lane(section_lane),
         "total_paths_executed": len(all_paths),
@@ -311,8 +317,8 @@ def _generate_competencies_graph_pool_lane(
         "selection_mode": pool.selection_mode,
         "source_path_by_slot": pool.source_path_by_slot,
         "claude_selection_count": len(pool.selections),
-        "candidate_category_count": 10,
-        "final_category_count": 6,
+        "candidate_category_count": COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
+        "final_category_count": COMPETENCIES_FINAL_CATEGORY_COUNT,
     }
     if artifact_dir is not None:
         (artifact_dir / "bullet_pool_selection.json").write_text(
@@ -349,13 +355,15 @@ def generate_bullet_lane_with_sc_and_claude(
     targeting_context: dict[str, Any] | None = None,
     judge_mode: str = "blocked_if_unavailable",
     use_sc_path: bool | None = None,
+    provider_profile: str | None = "qwen_vllm",
 ) -> tuple[ProviderResult | None, str, dict[str, Any] | None, str, dict[str, Any]]:
     """
     Returns (provider_result, raw_output, parsed, parse_error, generation_meta).
 
     When SC path is active: raw_output is JSON of merged selection; meta includes pool receipt.
     """
-    from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+    from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
+    from apps_rg.runtime.providers.section_qwen_slice import tag_reasoning_lane
 
     sc_on = bullet_lane_sc_enabled(section_lane) if use_sc_path is None else bool(use_sc_path)
     lane = str(section_lane or "").strip().lower()
@@ -364,7 +372,12 @@ def generate_bullet_lane_with_sc_and_claude(
     if not sc_on:
         meta: dict[str, Any] = {"generation_mode": "singleton", "section_lane": section_lane}
         tagged = tag_reasoning_lane(dict(provider_payload), section_lane)
-        result = call_qwen_vllm(tagged, artifact_dir=artifact_dir, run_id=run_id)
+        result = call_section_model_provider(
+            provider_profile,
+            tagged,
+            artifact_dir=artifact_dir,
+            run_id=run_id,
+        )
         raw = result.raw_model_output or ""
         parsed, err = (None, "")
         if result.runtime_generation_status == "REAL_LLM":
@@ -386,6 +399,7 @@ def generate_bullet_lane_with_sc_and_claude(
             base_temperature=base_temperature,
             targeting_context=targeting_context,
             judge_mode=judge_mode,
+            provider_profile=provider_profile,
         )
 
     if is_employment_bullet_lane(lane) and slot_kind == "bullets" and bullet_ids:
@@ -401,6 +415,7 @@ def generate_bullet_lane_with_sc_and_claude(
             required_bullet_ids=bullet_ids,
             targeting_context=targeting_context,
             judge_mode=judge_mode,
+            provider_profile=provider_profile,
         )
 
     meta = {
@@ -415,6 +430,7 @@ def generate_bullet_lane_with_sc_and_claude(
         run_id=run_id,
         temperature_bounds=temperature_bounds,
         base_temperature=base_temperature,
+        provider_profile=provider_profile,
     )
     paths = _normalize_selector_paths(paths, normalize_parsed)
     completed = sum(1 for p in paths if p.parsed is not None)

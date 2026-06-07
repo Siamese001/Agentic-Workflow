@@ -2,7 +2,7 @@
 
 Covers the prompt's required test list (the half not covered by
 test_section_orchestration_dependency_order.py):
-  * competencies category-count contract (locked at 6; '8' in the prompt was illustrative)
+  * competencies category-count contract (locked at 8)
   * IBM metric drift hard rejected (forbidden HOLD/DO_NOT_PROMOTE metric scan)
   * Unify / exec unsupported claim hard rejected
   * optional adjudicator ONLY runs on tie / low-confidence / material-risk (not on confident pass)
@@ -166,24 +166,23 @@ def test_aggregation_rejects_below_pass_threshold() -> None:
     assert a.accepted is False
 
 
-# --------------------------------------------------------------- competencies category count (6)
-def test_competencies_category_count_locked_at_six() -> None:
+# --------------------------------------------------------------- competencies category count (8)
+def test_competencies_category_count_locked_at_eight() -> None:
     from apps_rg.runtime.sections.competencies_rigor import (
         MAX_CATEGORY_COUNT,
         MIN_CATEGORY_COUNT,
         check_competencies_category_count,
     )
 
-    # The prompt said "8" but the locked rigor contract is exactly 6.
-    assert MIN_CATEGORY_COUNT == 6
-    assert MAX_CATEGORY_COUNT == 6
-    six = [{"category_label": f"C{i}", "terms": []} for i in range(6)]
-    ok, _ = check_competencies_category_count(six)
-    assert ok is True
+    assert MIN_CATEGORY_COUNT == 8
+    assert MAX_CATEGORY_COUNT == 8
     eight = [{"category_label": f"C{i}", "terms": []} for i in range(8)]
-    bad, reason = check_competencies_category_count(eight)
+    ok, _ = check_competencies_category_count(eight)
+    assert ok is True
+    six = [{"category_label": f"C{i}", "terms": []} for i in range(6)]
+    bad, reason = check_competencies_category_count(six)
     assert bad is False
-    assert "category_count=8" in (reason or "")
+    assert "category_count=6" in (reason or "")
 
 
 # --------------------------------------------------------------- IBM metric drift hard rejected

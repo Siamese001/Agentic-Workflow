@@ -41,16 +41,22 @@ HARD_NO_RETRY_RUNTIME_STATUSES: Final[frozenset[str]] = frozenset(
 BULLET_LANES: Final[tuple[str, ...]] = (
     "unify_bullets",
     "ibm_bullets",
+    "insurtech_bullets",
+    "ey_bullets",
 )
 
 NARRATIVE_LANES: Final[tuple[str, ...]] = (
     "unify_narrative",
     "ibm_narrative",
+    "insurtech_narrative",
+    "ey_narrative",
 )
 
 NARRATIVE_UPSTREAM_BULLET_LANE: Final[dict[str, str]] = {
     "unify_narrative": "unify_bullets",
     "ibm_narrative": "ibm_bullets",
+    "insurtech_narrative": "insurtech_bullets",
+    "ey_narrative": "ey_bullets",
 }
 
 SECTION_EXECUTION_POLICIES: Final[dict[str, SectionExecutionPolicy]] = {
@@ -85,9 +91,31 @@ SECTION_EXECUTION_POLICIES: Final[dict[str, SectionExecutionPolicy]] = {
         composite_judge_default=True,
         optional_adjudicator=True,
     ),
+    "insurtech_bullets": SectionExecutionPolicy(
+        section_id="insurtech_bullets",
+        execution_order=40,
+        dependency_level="upstream_proof",
+        reasoning_intensity="medium",
+        sc_paths=DEFAULT_ACTIVE_SC_PATHS,
+        attempts=MAX_SECTION_ATTEMPTS,
+        mode="role_episode_bullet_generation",
+        composite_judge_default=True,
+        optional_adjudicator=True,
+    ),
+    "ey_bullets": SectionExecutionPolicy(
+        section_id="ey_bullets",
+        execution_order=50,
+        dependency_level="upstream_proof",
+        reasoning_intensity="medium",
+        sc_paths=DEFAULT_ACTIVE_SC_PATHS,
+        attempts=MAX_SECTION_ATTEMPTS,
+        mode="role_episode_bullet_generation",
+        composite_judge_default=True,
+        optional_adjudicator=True,
+    ),
     "unify_narrative": SectionExecutionPolicy(
         section_id="unify_narrative",
-        execution_order=40,
+        execution_order=60,
         dependency_level="consumes_unify_bullets",
         reasoning_intensity="medium",
         sc_paths=DEFAULT_ACTIVE_SC_PATHS,
@@ -97,7 +125,7 @@ SECTION_EXECUTION_POLICIES: Final[dict[str, SectionExecutionPolicy]] = {
     ),
     "ibm_narrative": SectionExecutionPolicy(
         section_id="ibm_narrative",
-        execution_order=50,
+        execution_order=70,
         dependency_level="consumes_ibm_bullets",
         reasoning_intensity="medium",
         sc_paths=DEFAULT_ACTIVE_SC_PATHS,
@@ -105,9 +133,29 @@ SECTION_EXECUTION_POLICIES: Final[dict[str, SectionExecutionPolicy]] = {
         mode="upstream_bullet_narrative",
         dependencies=("ibm_bullets",),
     ),
+    "insurtech_narrative": SectionExecutionPolicy(
+        section_id="insurtech_narrative",
+        execution_order=80,
+        dependency_level="consumes_insurtech_bullets",
+        reasoning_intensity="medium",
+        sc_paths=DEFAULT_ACTIVE_SC_PATHS,
+        attempts=MAX_SECTION_ATTEMPTS,
+        mode="upstream_bullet_narrative",
+        dependencies=("insurtech_bullets",),
+    ),
+    "ey_narrative": SectionExecutionPolicy(
+        section_id="ey_narrative",
+        execution_order=90,
+        dependency_level="consumes_ey_bullets",
+        reasoning_intensity="medium",
+        sc_paths=DEFAULT_ACTIVE_SC_PATHS,
+        attempts=MAX_SECTION_ATTEMPTS,
+        mode="upstream_bullet_narrative",
+        dependencies=("ey_bullets",),
+    ),
     "executive_summary": SectionExecutionPolicy(
         section_id="executive_summary",
-        execution_order=60,
+        execution_order=100,
         dependency_level="downstream_synthesis",
         reasoning_intensity="high",
         sc_paths=5,
@@ -117,13 +165,17 @@ SECTION_EXECUTION_POLICIES: Final[dict[str, SectionExecutionPolicy]] = {
             "competencies",
             "unify_bullets",
             "ibm_bullets",
+            "insurtech_bullets",
+            "ey_bullets",
             "unify_narrative",
             "ibm_narrative",
+            "insurtech_narrative",
+            "ey_narrative",
         ),
     ),
     "headline": SectionExecutionPolicy(
         section_id="headline",
-        execution_order=70,
+        execution_order=110,
         dependency_level="final_positioning",
         reasoning_intensity="standard",
         sc_paths=1,

@@ -20,7 +20,7 @@ from apps_rg.runtime.disposition_authority import (
     resolve_lane_x3_from_artifact_refs,
 )
 from apps_rg.runtime.runtime_proof_layout import (
-    is_accepted_real_llm_qwen_bundle,
+    is_accepted_real_llm_provider_bundle,
     load_latest_pointer,
     load_latest_successful_real_pointer,
     resolve_accepted_real_rollup_run_dir,
@@ -33,11 +33,11 @@ ROLLUP_DIR = RUNTIME_PROOFS / "generated_lane_rollup"
 
 # Canonical user-facing invocation (documentation only — does not execute).
 CANONICAL_QWEN_JUDGES_FLAGS: str = (
-    "--provider qwen_vllm --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude "
+    "--provider external_claude --x1d-judges gemini_pro,openai_chatgpt,anthropic_claude "
     "--allow-non-allow-exit-zero"
 )
 COMPETENCIES_CANONICAL_QWEN_JUDGES_FLAGS: str = (
-    "--provider qwen_vllm --x1d-judges gemini_pro --allow-non-allow-exit-zero"
+    "--provider external_claude --x1d-judges gemini_pro --allow-non-allow-exit-zero"
 )
 
 
@@ -98,8 +98,12 @@ GENERATED_LANES: tuple[str, ...] = (
     "competencies",
     "unify_bullets",
     "ibm_bullets",
+    "insurtech_bullets",
+    "ey_bullets",
     "unify_narrative",
     "ibm_narrative",
+    "insurtech_narrative",
+    "ey_narrative",
     "executive_summary",
     "headline",
 )
@@ -296,7 +300,7 @@ def collect_lane(
                 f"(not used as accepted real evidence)."
             )
         raise FileNotFoundError(
-            f"Lane {lane!r}: missing_successful_real_run — no accepted REAL_LLM qwen_vllm bundle "
+            f"Lane {lane!r}: missing_successful_real_run — no accepted REAL_LLM live-provider bundle "
             f"(latest_successful_real_run.json, migration scan of real/*, and legacy flat exhausted) "
             f"under {_rel(RUNTIME_PROOFS / lane)}.{attempt_tail}"
         )
@@ -427,7 +431,7 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
             rel = raw_ptr.get("run_dir") if isinstance(raw_ptr, dict) else None
             if isinstance(rel, str):
                 ptr_base = (repo / rel).resolve()
-                if ptr_base.resolve() == base.resolve() and is_accepted_real_llm_qwen_bundle(base):
+                if ptr_base.resolve() == base.resolve() and is_accepted_real_llm_provider_bundle(base):
                     accepted_real_evidence_resolution = "latest_successful_real_run.json"
         except (json.JSONDecodeError, OSError, ValueError, TypeError):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
@@ -554,7 +558,7 @@ def build_rollup(*, rollup_artifact_mode: Literal["real", "mock"] = "real") -> d
     lanes_accepted_via_migration = [
         k
         for k, v in lanes.items()
-        if v.get("accepted_real_evidence_resolution") == "migration_real_llm_qwen_vllm_scan"
+        if v.get("accepted_real_evidence_resolution") == "migration_real_llm_provider_scan"
     ]
     attempt_blocked_but_rollup_real_llm = [
         k
@@ -583,8 +587,8 @@ def build_rollup(*, rollup_artifact_mode: Literal["real", "mock"] = "real") -> d
                 "latest_mock_run.json",
             ],
             "real_only_rollup_resolves": (
-                "latest_successful_real_run.json, else newest eligible real/*/ (REAL_LLM+qwen_vllm), "
-                "else legacy flat REAL_LLM+qwen_vllm — never latest_real_run.json alone."
+                "latest_successful_real_run.json, else newest eligible real/*/ (REAL_LLM+live provider), "
+                "else legacy flat REAL_LLM+live provider — never latest_real_run.json alone."
             ),
         },
         "evidence_pack_commands": evidence_pack_commands,

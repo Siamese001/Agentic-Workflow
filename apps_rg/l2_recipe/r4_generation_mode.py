@@ -7,10 +7,8 @@ unset is ``modular_section_lanes``.
 ``APPS_RG_R4_GENERATION_MODE`` must be unset or ``modular_section_lanes`` only.
 ``legacy_full_resume`` is retired (no monolithic envelope rollback).
 
-For modular mode, section dispatch ``--provider`` defaults to ``qwen_vllm``
-(``VLLM_BASE_URL`` / ``QWEN_VLLM_MODEL`` per ``qwen_vllm_provider``). Contract
-tests may set ``APPS_RG_QWEN_OFFLINE_CONTRACT_STUB=1`` for deterministic output
-without a live server.
+For modular mode, section dispatch ``--provider`` defaults to ``external_claude``.
+``qwen_vllm`` remains explicitly selectable for local comparison runs.
 
 Invalid values fail closed with ``RuntimeError``.
 """
@@ -25,7 +23,9 @@ ENV_APPS_RG_MODULAR_LANE_PROVIDER: Final[str] = "APPS_RG_MODULAR_LANE_PROVIDER"
 MODE_MODULAR_SECTION_LANES: Final[str] = "modular_section_lanes"
 RETIRED_MODE_LEGACY_FULL_RESUME: Final[str] = "legacy_full_resume"
 
-_MODULAR_LANE_PROVIDER_ALLOWED: Final[frozenset[str]] = frozenset({"qwen_vllm"})
+_MODULAR_LANE_PROVIDER_ALLOWED: Final[frozenset[str]] = frozenset(
+    {"qwen_vllm", "external_claude"}
+)
 
 AppsRgR4GenerationMode = Literal["modular_section_lanes"]
 
@@ -57,7 +57,7 @@ def resolve_apps_rg_modular_lane_provider() -> str:
     """Section-lane provider for R4 modular Phase 1 dispatch argv (``--provider``)."""
     raw = os.environ.get(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "").strip().lower()
     if not raw:
-        return "qwen_vllm"
+        return "external_claude"
     if raw not in _MODULAR_LANE_PROVIDER_ALLOWED:
         msg = (
             f"INVALID_APPS_RG_MODULAR_LANE_PROVIDER: {raw!r} "

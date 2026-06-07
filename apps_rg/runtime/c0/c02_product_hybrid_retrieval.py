@@ -189,7 +189,13 @@ def perform_product_hybrid_retrieval(
     import chromadb
 
     client = chromadb.PersistentClient(path=chroma_path)
-    fv_col = get_precomputed_embeddings_collection_for_query(client, "fact_vectors")
+    try:
+        fv_col = get_precomputed_embeddings_collection_for_query(client, "fact_vectors")
+    except Exception as exc:  # guardian: allow-broad-exception -- Chroma collection error taxonomy varies by version; classify as C0 evidence gap.
+        raise C0EvidenceGapError(
+            f"C0.2 product hybrid dense lane required for {section_id!r} but "
+            f"fact_vectors collection is unavailable at {chroma_path!r}: {exc}"
+        ) from exc
 
     extra, _verdicts, status, sparse_refs, _scores, _traces = _perform_bounded_section_retrieval(
         chroma_path,
