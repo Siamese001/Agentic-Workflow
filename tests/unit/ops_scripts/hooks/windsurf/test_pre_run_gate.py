@@ -2,21 +2,17 @@
 EXHAUSTIVE tests for pre_run_gate.py (Phase 1.1) — PP-4, PP-9.
 
 Plan requirements verified:
-  - PowerShell ban (pwsh, powershell, mixed case, .exe suffix, with args, with path)
-  - powershell-as-executor with allowed script path still BLOCKED (allowlist bypass fix)
-  - python invoking allowed checker script still ALLOWED
+  - PowerShell ALLOWED (Windsurf-era ban lifted — pwsh/powershell is the primary Windows shell)
   - Full-suite block when ADG_REPAIR_ACTIVE set
   - Full-suite allowed when ADG_REPAIR_ACTIVE not set
   - Scoped pytest allowed even when ADG_REPAIR_ACTIVE set
   - Safe commands (python, git, ruff, pip, etc.) allowed
-  - Whitelist: checker scripts referencing 'powershell' in path allowed
   - Fail policy CLOSED: empty stdin → exit 2, malformed JSON → exit 2
   - Missing command_line field → exit 0 (allow)
   - Flat payload (no tool_info wrapper) → works
   - Unicode in command line → no crash
   - Very long command line → no crash
   - Newlines/whitespace in payload → handled
-  - All POWERSHELL_PATTERNS case-insensitive
 """
 
 import json
@@ -37,36 +33,38 @@ from pre_run_gate import check_command, main
 # ---------------------------------------------------------------------------
 
 
-class TestCheckCommandPowerShellBlock:
-    def test_blocks_powershell_lowercase(self):
-        assert check_command("powershell -Command Get-Date") == 2
+class TestCheckCommandPowerShellAllowed:
+    """PowerShell is the primary Windows shell — the legacy Windsurf ban is lifted."""
 
-    def test_blocks_pwsh_lowercase(self):
-        assert check_command("pwsh -File script.ps1") == 2
+    def test_allows_powershell_lowercase(self):
+        assert check_command("powershell -Command Get-Date") == 0
 
-    def test_blocks_PowerShell_mixed_case(self):
-        assert check_command("PowerShell -NoProfile -Command whoami") == 2
+    def test_allows_pwsh_lowercase(self):
+        assert check_command("pwsh -File script.ps1") == 0
 
-    def test_blocks_PWSH_uppercase(self):
-        assert check_command("PWSH -NonInteractive") == 2
+    def test_allows_PowerShell_mixed_case(self):
+        assert check_command("PowerShell -NoProfile -Command whoami") == 0
 
-    def test_blocks_powershell_exe(self):
-        assert check_command("powershell.exe -Command ls") == 2
+    def test_allows_PWSH_uppercase(self):
+        assert check_command("PWSH -NonInteractive") == 0
 
-    def test_blocks_pwsh_exe(self):
-        assert check_command("pwsh.exe -File run.ps1") == 2
+    def test_allows_powershell_exe(self):
+        assert check_command("powershell.exe -Command ls") == 0
 
-    def test_blocks_powershell_no_args(self):
-        assert check_command("powershell") == 2
+    def test_allows_pwsh_exe(self):
+        assert check_command("pwsh.exe -File run.ps1") == 0
 
-    def test_blocks_pwsh_no_args(self):
-        assert check_command("pwsh") == 2
+    def test_allows_powershell_no_args(self):
+        assert check_command("powershell") == 0
 
-    def test_blocks_full_path_powershell(self):
-        assert check_command("C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -Command x") == 2
+    def test_allows_pwsh_no_args(self):
+        assert check_command("pwsh") == 0
 
-    def test_blocks_full_path_pwsh(self):
-        assert check_command("C:/Program Files/PowerShell/7/pwsh.exe -Command x") == 2
+    def test_allows_full_path_powershell(self):
+        assert check_command("C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -Command x") == 0
+
+    def test_allows_full_path_pwsh(self):
+        assert check_command("C:/Program Files/PowerShell/7/pwsh.exe -Command x") == 0
 
 
 class TestCheckCommandAllowed:
@@ -105,16 +103,12 @@ class TestCheckCommandAllowed:
         # Script path contains 'powershell' — must not be blocked
         assert check_command("python ops_scripts/ci/check_powershell_ban.py") == 0
 
-    def test_powershell_as_executor_with_allowed_script_still_blocked(self):
-        # The allowlist must NOT exempt powershell itself as executor.
-        # Before the fix, "powershell check_powershell_ban.py" bypassed the gate.
-        assert check_command("powershell check_powershell_ban.py") == 2
+    def test_powershell_as_executor_allowed(self):
+        # PowerShell as executor is now permitted (ban lifted).
+        assert check_command("powershell check_powershell_ban.py") == 0
 
-    def test_pwsh_as_executor_with_allowed_script_still_blocked(self):
-        assert check_command("pwsh check_powershell_ban.py") == 2
-
-    def test_powershell_executor_with_pre_run_gate_still_blocked(self):
-        assert check_command("powershell pre_run_gate.py") == 2
+    def test_pwsh_as_executor_allowed(self):
+        assert check_command("pwsh check_powershell_ban.py") == 0
 
 
 class TestCheckCommandFullSuiteBlock:
@@ -176,13 +170,13 @@ class TestMain:
                 return main()
 
     # Blocking cases
-    def test_powershell_payload_blocked(self):
+    def test_powershell_payload_allowed(self):
         payload = json.dumps({"tool_info": {"command_line": "pwsh -File x.ps1"}})
-        assert self._run(payload) == 2
+        assert self._run(payload) == 0
 
-    def test_powershell_exe_payload_blocked(self):
+    def test_powershell_exe_payload_allowed(self):
         payload = json.dumps({"tool_info": {"command_line": "powershell.exe -Command whoami"}})
-        assert self._run(payload) == 2
+        assert self._run(payload) == 0
 
     def test_full_suite_repair_active_blocked(self):
         payload = json.dumps({"tool_info": {"command_line": "pytest tests/unit"}})
@@ -206,9 +200,9 @@ class TestMain:
         payload = json.dumps({"command_line": "git push origin main"})
         assert self._run(payload) == 0
 
-    def test_flat_payload_powershell_blocked(self):
+    def test_flat_payload_powershell_allowed(self):
         payload = json.dumps({"command_line": "powershell Get-Date"})
-        assert self._run(payload) == 2
+        assert self._run(payload) == 0
 
     def test_missing_command_line_allowed(self):
         payload = json.dumps({"tool_info": {}})

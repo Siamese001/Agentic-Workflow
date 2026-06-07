@@ -107,7 +107,7 @@ class TestPreRunGatePayloadShapes:
 
 
 class TestPreRunGatePowerShellVariants:
-    """Every PowerShell spelling that should be blocked."""
+    """Every PowerShell spelling is now ALLOWED (Windsurf-era ban lifted)."""
 
     def _check(self, cmd: str) -> int:
         from pre_run_gate import check_command
@@ -115,28 +115,28 @@ class TestPreRunGatePowerShellVariants:
         return check_command(cmd)
 
     def test_uppercase_POWERSHELL(self):
-        assert self._check("POWERSHELL -Command Get-Date") == 2
+        assert self._check("POWERSHELL -Command Get-Date") == 0
 
     def test_mixed_case_PowerShell(self):
-        assert self._check("PowerShell -Command Get-Date") == 2
+        assert self._check("PowerShell -Command Get-Date") == 0
 
     def test_lowercase_powershell_no_args(self):
-        assert self._check("powershell") == 2
+        assert self._check("powershell") == 0
 
     def test_pwsh_no_args(self):
-        assert self._check("pwsh") == 2
+        assert self._check("pwsh") == 0
 
     def test_unix_path_powershell(self):
-        assert self._check("/usr/bin/powershell -Command x") == 2
+        assert self._check("/usr/bin/powershell -Command x") == 0
 
     def test_unix_path_pwsh(self):
-        assert self._check("/usr/local/bin/pwsh -Command x") == 2
+        assert self._check("/usr/local/bin/pwsh -Command x") == 0
 
     def test_quoted_pwsh_exe(self):
-        assert self._check('"pwsh.exe" -Command x') == 2
+        assert self._check('"pwsh.exe" -Command x') == 0
 
     def test_quoted_full_path_pwsh(self):
-        assert self._check('"C:/Program Files/PowerShell/7/pwsh.exe" -Command x') == 2
+        assert self._check('"C:/Program Files/PowerShell/7/pwsh.exe" -Command x') == 0
 
     def test_git_not_blocked(self):
         assert self._check("git status") == 0
