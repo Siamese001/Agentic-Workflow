@@ -93,7 +93,7 @@ migration receipt. Detail: `.claude/rules/agentic-core-static.md`, `.claude/rule
 
 ## Plans & memory
 
-- Plans SSOT remains `.cursor/plans/<slug>-<6hex>.md` (plan data not migrated). See
+- Plans SSOT remains `.claude/plans/<slug>-<6hex>.md` (plan data not migrated). See
   `.claude/rules/plan-location.md`, skill [`plan-governance`](.claude/skills/plan-governance/SKILL.md).
 - Memory: first tool call each session is `mem_recall_session_start`. Detail
   `.claude/rules/memory-management.md`, skill [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md).

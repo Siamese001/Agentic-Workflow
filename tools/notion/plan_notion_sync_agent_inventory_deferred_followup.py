@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "agent-inventory-deferred-followup-c2a8f1"
-PLAN_PATH = ".cursor/plans/agent-inventory-deferred-followup-c2a8f1.md"
+PLAN_PATH = ".claude/plans/agent-inventory-deferred-followup-c2a8f1.md"
 PARENT_SLUG = "agent-inventory-spine-taxonomy-b4e9f2"
 
 SUMMARY = (
@@ -29,7 +29,7 @@ AI_SUMMARY = """- Parent: agent-inventory-spine-taxonomy-b4e9f2 (Completed 2026-
 - DS-3: SemanticGatekeeper, Bootstrap, PreCommitSovereign, GospelSync moves
 - DS-4: Delete RootCustomsAgent thin shim after consumer burndown
 - DS-5: A2 taxonomy proof discipline (no mock backfill)
-- Disk: .cursor/plans/agent-inventory-deferred-followup-c2a8f1.md"""
+- Disk: .claude/plans/agent-inventory-deferred-followup-c2a8f1.md"""
 
 
 def _query_page_id(slug: str) -> str | None:

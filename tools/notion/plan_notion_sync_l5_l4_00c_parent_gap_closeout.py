@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "l5-l4-00c-parent-gap-b8e4f2"
-PLAN_PATH = ".cursor/plans/l5-l4-00c-parent-gap-b8e4f2.md"
+PLAN_PATH = ".claude/plans/l5-l4-00c-parent-gap-b8e4f2.md"
 NOTION_PAGE_ID = "36927693-f55c-81c1-9831-c33eea84babd"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
@@ -29,7 +29,7 @@ AI_SUMMARY = """- STATUS: Completed (W1–W5 + edge hardening)
 - 00B: UWG receipt l5_certification_ref; sole-admission + receipt CI aliases
 - Proof: l4_uwg_runtime_proof.json + runtime_gates_runtime_proof.json PASS
 - Tests: integrated L5 + export + exhaust + UWG edge suites (53+ passed)
-- Disk SSOT: .cursor/plans/l5-l4-00c-parent-gap-b8e4f2.md"""
+- Disk SSOT: .claude/plans/l5-l4-00c-parent-gap-b8e4f2.md"""
 
 
 def _query_page_id() -> str | None:

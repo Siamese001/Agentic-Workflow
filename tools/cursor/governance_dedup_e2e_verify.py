@@ -36,7 +36,7 @@ REQUIRED_PATHS = [
     "docs/reports/cursor/plan_sprawl_inventory_20260526.csv",
     "docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md",
     ".cursor/hooks/after_agent_governance_dispatch.py",
-    ".cursor/plans/_archive/2026-05",
+    ".claude/plans/_archive/2026-05",
     ".cursor/scripts/_legacy_cursor",
 ]
 
@@ -105,7 +105,7 @@ def _structural_checks() -> list[str]:
     if scan_windsurf_always_on_md():
         errors.append("windsurf still has trigger: always_on files")
     plan_count = sum(
-        1 for p in (REPO / ".cursor/plans").iterdir() if p.is_file() and p.suffix == ".md"
+        1 for p in (REPO / ".claude/plans").iterdir() if p.is_file() and p.suffix == ".md"
     )
     if plan_count > 20:
         errors.append(f"top-level plan count {plan_count} > 20")

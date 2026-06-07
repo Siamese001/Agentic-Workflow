@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """render_card.py — Render an Author-Gate recommendation card + enriched options.
 
-Plan: `.cursor/plans/author-gate-hardening-a3b8f2.md` W3.P3.2.
+Plan: `.claude/plans/author-gate-hardening-a3b8f2.md` W3.P3.2.
 
 Reads an AUTHOR_GATE_PACKET JSON (the `{...}` body, without the marker prefix)
 on stdin and prints:

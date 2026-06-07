@@ -2,7 +2,7 @@
 """
 check_deferred_scope_markers.py — pre-commit + CI gate for DEFERRED_SCOPE marker contract.
 
-Scans plan files (`.cursor/plans/*.md`) for prose deferred-scope language.
+Scans plan files (`.claude/plans/*.md`) for prose deferred-scope language.
 If any are present AND the file lacks a matching `DEFERRED_SCOPE:` marker,
 a violation is reported.
 
@@ -13,7 +13,7 @@ Modes:
   --all: Scan all plan files on disk (CI mode)
 
 Scoped narrowly to avoid false positives:
-  - Only .cursor/plans/*.md files (where backlog is recorded)
+  - Only .claude/plans/*.md files (where backlog is recorded)
   - In --staged mode: only added lines (`+` in diff)
   - In --all mode: all lines (baseline scan)
   - Only if file lacks ANY DEFERRED_SCOPE: marker
@@ -59,7 +59,7 @@ PROSE_PATTERNS = [
 MARKER_RE = re.compile(r"^\s*DEFERRED_SCOPE:\s*", re.IGNORECASE | re.MULTILINE)
 
 # Files scoped to this gate
-PLAN_GLOB_RE = re.compile(r"^\.cursor/plans/.+\.md$")
+PLAN_GLOB_RE = re.compile(r"^\.claude/plans/.+\.md$")
 
 
 def _run(argv: list[str]) -> str:
@@ -149,7 +149,7 @@ def check_all_plans() -> dict[str, list[dict[str, Any]]]:
         if _file_has_marker_disk(path):
             continue  # file has marker — assumed compliant
         
-        rel_path = f".cursor/plans/{path.name}"
+        rel_path = f".claude/plans/{path.name}"
         for line_no, text in _file_lines(path):
             for pattern in PROSE_PATTERNS:
                 m = pattern.search(text)

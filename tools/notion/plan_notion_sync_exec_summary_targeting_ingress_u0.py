@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-targeting-ingress-u0-b8e4f1"
-PLAN_PATH = ".cursor/plans/exec-summary-targeting-ingress-u0-b8e4f1.md"
+PLAN_PATH = ".claude/plans/exec-summary-targeting-ingress-u0-b8e4f1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -27,7 +27,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETED (2026-05-24)
 - W4 live: exec_summary_20260524_233409 parity_match true (2596 chars gen == judge)
 - Ingress: 15210 → 11788 chars pre_proof_pool_u0_aligned
 - Evidence: U0 graph pool unchanged; briefing/JD non-proof only
-- Disk: .cursor/plans/exec-summary-targeting-ingress-u0-b8e4f1.md
+- Disk: .claude/plans/exec-summary-targeting-ingress-u0-b8e4f1.md
 - Receipt: docs/reports/apps_rg/exec_summary_targeting_parity_live_proof_20260524_233409_receipt.md"""
 
 

@@ -10,7 +10,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 SLUG = "unify-bullets-graph-compose-prompt-a3f7e2"
-PLAN_PATH = ".cursor/plans/unify-bullets-graph-compose-prompt-a3f7e2.md"
+PLAN_PATH = ".claude/plans/unify-bullets-graph-compose-prompt-a3f7e2.md"
 PAGE_ID = "36c27693-f55c-8122-9714-fd02e06b923c"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 

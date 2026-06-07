@@ -24,7 +24,7 @@ Consolidated skill that merges `evidence-bundle`, `ssot-write-gate`, and `progre
 - Before writing ANY `.md` plan, report, or evidence file
 - Before writing ANY `.json` artifact, registry, or snapshot
 - Before writing ANY `.py` script to a directory not yet confirmed as SSOT-approved
-- When a path contains `C:\Users\`, `.cursor/plans/`, or any absolute user-home path
+- When a path contains `C:\Users\`, `.claude/plans/`, or any absolute user-home path
 - During any long-running operation (>5s) that processes files
 - When creating evidence artifacts for phase documentation
 
@@ -40,8 +40,8 @@ Consolidated skill that merges `evidence-bundle`, `ssot-write-gate`, and `progre
 
 | Artifact Type | Canonical Path |
 |---|---|
-| Plans / evidence / RCAs | `.cursor/plans/` |
-| Governance reports | `.cursor/plans/` |
+| Plans / evidence / RCAs | `.claude/plans/` |
+| Governance reports | `.claude/plans/` |
 | Telemetry | `docs/reports/telemetry/` |
 | Freeze reports | `data/freeze_reports/` |
 | Architecture docs | `docs/architecture/` |
@@ -83,7 +83,7 @@ Every artifact reference in a response MUST use backtick citation format: `` `@<
 
 ### Evidence Contract
 
-Each phase produces exactly one evidence file under `.cursor/plans/`.
+Each phase produces exactly one evidence file under `.claude/plans/`.
 
 **Commands executed via:** `subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
 **PowerShell invocation is FORBIDDEN.**
@@ -155,10 +155,10 @@ tracker.complete(f"Processed {total_items} items")
 
 ## Constitutional Requirements Enforced
 
-- **§8:** All plans and reports MUST reside in `.cursor/plans/`
+- **§8:** All plans and reports MUST reside in `.claude/plans/`
 - **§2.1:** Evidence files MUST be within repository sovereign territories
 - **§5.3:** Query timeout & progress reporting requirements
-- **IDE system paths:** `.cursor/plans/`, `.claude/skills/`, `.claude/commands/`
+- **IDE system paths:** `.claude/plans/`, `.claude/skills/`, `.claude/commands/`
 
 ## Enforcement Scripts
 

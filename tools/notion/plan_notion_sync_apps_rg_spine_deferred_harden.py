@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-spine-deferred-harden-c8f1a2"
-PLAN_PATH = ".cursor/plans/apps-rg-spine-deferred-harden-c8f1a2.md"
+PLAN_PATH = ".claude/plans/apps-rg-spine-deferred-harden-c8f1a2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -26,7 +26,7 @@ AI_SUMMARY = """- STATUS: Completed (W1–W7 + edge-harden)
 - Proof: test_apps_rg_spine_harden_edge_cases (29) + test_apps_rg_spine_waves_w4_w7 (9) + one_pipeline_e2e (4)
 - CI: APPS-RG-SPINE-CONVERGENCE + SPAN-EMIT-SITES PASS
 - Deferred (honest): core C0.3 Graph RAG, L6 promotion gauntlet, live all-lanes provider
-- Disk SSOT: .cursor/plans/apps-rg-spine-deferred-harden-c8f1a2.md"""
+- Disk SSOT: .claude/plans/apps-rg-spine-deferred-harden-c8f1a2.md"""
 
 
 def _query_page_id() -> str | None:

@@ -14,7 +14,7 @@ c7d3f1: Cursor Agent executed multiple waves but never emitted the required
 
 Algorithm
 ---------
-1. Scan ``.cursor/plans/*.md`` for Wave Structure tables with ``🔲 TODO``
+1. Scan ``.claude/plans/*.md`` for Wave Structure tables with ``🔲 TODO``
    rows (skips plans where ALL rows are DONE or all are TODO — only flags
    mixed state, i.e. at least one ✅ DONE row alongside at least one 🔲 TODO).
    Mixed state indicates partial completion without terminal markers.
@@ -46,7 +46,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
+PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 CAPTURE_LOG = REPO_ROOT / "artifacts" / "windsurf" / "wave_lifecycle_capture.jsonl"
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "wave_marker_emission_gate.json"
 

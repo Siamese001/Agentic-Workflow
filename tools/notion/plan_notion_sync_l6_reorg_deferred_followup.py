@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "l6-reorg-deferred-followup-f3a9c2"
-PLAN_PATH = ".cursor/plans/l6-reorg-deferred-followup-f3a9c2.md"
+PLAN_PATH = ".claude/plans/l6-reorg-deferred-followup-f3a9c2.md"
 
 SUMMARY = (
     "Follow-up to COMPLETED l6-repo-reorganization-mental-model-c4e8f2. "
@@ -25,7 +25,7 @@ AI_SUMMARY = """- Parent: l6-repo-reorganization-mental-model-c4e8f2 (Completed 
 - DS-1..DS-8: passive D1-D3, L_OPS eval moves, _shared spike, engines map
 - Gravity: 86 edges documented; target ≤24 in W2 or amend ADR-085
 - Author-Gate per physical move wave
-- Disk: .cursor/plans/l6-reorg-deferred-followup-f3a9c2.md"""
+- Disk: .claude/plans/l6-reorg-deferred-followup-f3a9c2.md"""
 
 
 def main() -> int:

@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "c03-skills-graph-exec-summary-f9a2c4"
-PLAN_PATH = ".cursor/plans/c03-skills-graph-exec-summary-f9a2c4.md"
+PLAN_PATH = ".claude/plans/c03-skills-graph-exec-summary-f9a2c4.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 NOTION_PAGE_ID = "36927693-f55c-81cf-becb-f80666292408"
 
@@ -31,7 +31,7 @@ AI_SUMMARY = """- STATUS: Completed (W0–W5)
 - W4: enrich_proof_pool_with_native_c03; section_metric_receipt digest fields
 - W5: Brown sample exec_summary_20260523_215732 — LIVE_RUNTIME_PROOF; 22 pytest passed
 - Deferred follow-up: 2 more Brown runs for ≥2/3 X1D ≥4.0 quality evidence
-- Disk SSOT: .cursor/plans/c03-skills-graph-exec-summary-f9a2c4.md"""
+- Disk SSOT: .claude/plans/c03-skills-graph-exec-summary-f9a2c4.md"""
 
 
 def _query_page_id() -> str | None:

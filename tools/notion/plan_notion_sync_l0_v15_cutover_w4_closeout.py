@@ -10,7 +10,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 SLUG = "l0-routing-v15-only-cutover-c9e2f1"
-PLAN_PATH = ".cursor/plans/l0-routing-v15-only-cutover-c9e2f1.md"
+PLAN_PATH = ".claude/plans/l0-routing-v15-only-cutover-c9e2f1.md"
 PAGE_ID = "36727693-f55c-81e9-b053-ef58e79f02fb"
 
 SUMMARY = (
@@ -46,7 +46,7 @@ Receipts:
 • W3: docs/reports/agentic_core/l0_v12_retirement_w3_receipt_20260525.md
 • W4: docs/reports/agentic_core/l0_v15_only_cutover_w4_receipt_20260525.md
 
-Plan file: .cursor/plans/l0-routing-v15-only-cutover-c9e2f1.md — PLAN_STATUS COMPLETE, DEFERRED_SCOPE none."""
+Plan file: .claude/plans/l0-routing-v15-only-cutover-c9e2f1.md — PLAN_STATUS COMPLETE, DEFERRED_SCOPE none."""
 
 
 def _patch_page(page_id: str) -> bool:

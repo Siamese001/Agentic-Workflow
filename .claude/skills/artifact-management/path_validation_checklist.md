@@ -15,7 +15,7 @@ Run all five checks before writing any artifact. A single failure = STOP.
 
 | Artifact Type | Canonical Path |
 |---|---|
-| Plans / evidence / RCAs | `.cursor/plans/` |
+| Plans / evidence / RCAs | `.claude/plans/` |
 | Architecture docs | `docs/architecture/` |
 | Telemetry reports | `docs/reports/telemetry/` |
 | Freeze reports | `data/freeze_reports/` |

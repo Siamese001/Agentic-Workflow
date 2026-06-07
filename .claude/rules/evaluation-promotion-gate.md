@@ -65,5 +65,5 @@ override under SVP engineering authority.
 
 - v33 §6D — `docs/reference/_notes/agentic_process_mapping_v34.md`
 - Taxonomy — `config/judges/rubrics.yaml → eval_taxonomy`
-- Plan — `.cursor/plans/exit-eval-spine-gap-ce683b.md` §W5.1
+- Plan — `.claude/plans/exit-eval-spine-gap-ce683b.md` §W5.1
 - Anthropic — https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents

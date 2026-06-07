@@ -73,5 +73,5 @@ When moving files under `apps_*/`:
 
 - ADR: `docs/architecture/adr/ADR-082-apps-folder-taxonomy.md`
 - Canonical spec: `docs/architecture/apps-folder-taxonomy.md`
-- Plan: `.cursor/plans/apps-folder-taxonomy-unification-b7d4e1.md`
+- Plan: `.claude/plans/apps-folder-taxonomy-unification-b7d4e1.md`
 - Constitutional §31 (SSOT folder routing) — the pattern this rule extends to `apps_*/`.

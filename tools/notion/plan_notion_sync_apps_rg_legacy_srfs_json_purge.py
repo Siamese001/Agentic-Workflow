@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-legacy-srfs-json-purge-a8f3c1"
-PLAN_PATH = ".cursor/plans/apps-rg-legacy-srfs-json-purge-a8f3c1.md"
+PLAN_PATH = ".claude/plans/apps-rg-legacy-srfs-json-purge-a8f3c1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -28,7 +28,7 @@ AI_SUMMARY = """- STATUS: Completed (D1–D5)
 - D5: GRAPH_PROOF_POOL_APPENDIX; capsule/token-budget graph-only; pytest 29 pass
 - Closeout: docs/reports/apps_rg/apps_rg_legacy_srfs_json_purge_closeout_receipt.md
 - Follow-on: live qwen_vllm proof when stub_only unset (not plan-blocking)
-- Plan: .cursor/plans/apps-rg-legacy-srfs-json-purge-a8f3c1.md"""
+- Plan: .claude/plans/apps-rg-legacy-srfs-json-purge-a8f3c1.md"""
 
 
 def _query_page_id() -> str | None:

@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-qwen-regen-token-budget-c4e8a1"
-PLAN_PATH = ".cursor/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md"
+PLAN_PATH = ".claude/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md"
 RESEARCH_PATH = "docs/reports/apps_rg/executive_summary_qwen_regen_token_budget_research_20260525.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 

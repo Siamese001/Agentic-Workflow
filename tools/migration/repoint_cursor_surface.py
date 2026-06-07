@@ -35,6 +35,9 @@ DENYLIST = {
     "ops_scripts/ci/check_cursor_governance_mirror_health.py",     # obsolete gate (separate removal)
     "ops_scripts/ci/governance_w2_dedupe_report.py",         # obsolete one-time report
     "scripts/governance/verify_codex_backup.py",             # untracked peer work — do not touch
+    "ops_scripts/ci/check_no_active_windsurf_changes.py",    # legitimately inspects .cursor presence
+    "ops_scripts/ci/check_windsurf_deletion_readiness.py",   # legitimately inspects .cursor presence
+    "ops_scripts/ci/check_mcp_config_sovereignty.py",        # references legacy config surfaces by design
 }
 
 

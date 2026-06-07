@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-waves-abcd-e8f1a3"
-PLAN_PATH = ".cursor/plans/exec-summary-waves-abcd-e8f1a3.md"
+PLAN_PATH = ".claude/plans/exec-summary-waves-abcd-e8f1a3.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -29,7 +29,7 @@ AI_SUMMARY = """- STATUS: Completed (Waves A–D + verify)
 - D: APPS_RG_VLLM_AUTO_START preflight; qwen-vllm-topology doc
 - Proof: exec_summary_20260523_213853 — Basel III intact, no 8→28 dup, 23 pytest passed
 - Deferred: X3 ALLOW (Gemini/Claude below 4.0; judge regen env or C0.3 plan)
-- Disk SSOT: .cursor/plans/exec-summary-waves-abcd-e8f1a3.md"""
+- Disk SSOT: .claude/plans/exec-summary-waves-abcd-e8f1a3.md"""
 
 
 def _query_page_id() -> str | None:

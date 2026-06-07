@@ -24,5 +24,5 @@ history. The one live dependency on `.cursor/` is the governance script engine u
 
 ## Archive boundary
 
-`.cursor/**`, `.windsurf/**`, `.cursor/_zero_loss_originals/**`, and `.cursor/plans/_archive/**`
+`.cursor/**`, `.windsurf/**`, `.cursor/_zero_loss_originals/**`, and `.claude/plans/_archive/**`
 are historical/compatibility material unless a user explicitly asks for migration history.

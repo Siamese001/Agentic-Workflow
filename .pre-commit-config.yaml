@@ -67,7 +67,7 @@ repos:
   # worktree version, eats the staged half, and `git commit` reports
   # 'Everything up-to-date'. Detects any file in dual state (staged AND
   # worktree-dirty) and aborts with a clear recovery message.
-  # Plan: .cursor/plans/adg-three-bucket-unified-c4f8e2.md (W4 P4.1).
+  # Plan: .claude/plans/adg-three-bucket-unified-c4f8e2.md (W4 P4.1).
   # Bypass: PRECOMMIT_MM_GUARD_BYPASS=1.
   - repo: local
     hooks:
@@ -334,7 +334,7 @@ repos:
         entry: py ops_scripts/ci/check_deferred_scope_markers.py --staged
         language: system
         pass_filenames: false
-        files: ^\.cursor/plans/.*\.md$
+        files: ^\.claude/plans/.*\.md$
         always_run: false
         require_serial: true
 
@@ -494,7 +494,7 @@ repos:
         require_serial: true
 
       # -- T7g: ADG Graph-Layer Evidence (Constitutional §22) --------------------------
-      # Validates that T2/T3 refactoring plans in .cursor/plans/ include the
+      # Validates that T2/T3 refactoring plans in .claude/plans/ include the
       # ## ADG_HOTSPOT_REPORT (with archetype + surface classification) and
       # ## ADG_GRAPH_LAYER_EVIDENCE (with ≥3 materialized views + semantic edges/P-views).
       # Triggers on plan file changes only.
@@ -503,7 +503,7 @@ repos:
         entry: py ops_scripts/ci/check_graph_layer_evidence.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/plans/.*\.md|ops_scripts/ci/baselines/graph_layer_evidence_baseline\.json|ops_scripts/ci/check_graph_layer_evidence\.py)$
+        files: ^(\.claude/plans/.*\.md|ops_scripts/ci/baselines/graph_layer_evidence_baseline\.json|ops_scripts/ci/check_graph_layer_evidence\.py)$
         always_run: false
         require_serial: true
 
@@ -626,7 +626,7 @@ repos:
 
       # -- T7i: Deferred Scope Markers ----------------------------------------------
       # Enforces the deferred-scope-capture rule (.claude/rules/deferred-scope-capture.md).
-      # Blocks commits that add prose deferred-scope language to .cursor/plans/*.md
+      # Blocks commits that add prose deferred-scope language to .claude/plans/*.md
       # files WITHOUT an accompanying DEFERRED_SCOPE: marker. Protects against
       # scope loss between sessions — caught 2026-04-22 session-wide failure modes
       # where prose-only mentions never became Notion rows.
@@ -635,7 +635,7 @@ repos:
         entry: py ops_scripts/ci/check_deferred_scope_markers.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/plans/.*\.md$
+        files: ^\.claude/plans/.*\.md$
         always_run: false
         require_serial: true
 
@@ -694,7 +694,7 @@ repos:
       # file change. Advisory mode local-only via CORE_ADDITION_GATE_ADVISORY=1.
       # CI must not set advisory mode. Bypass: CORE_ADDITION_GATE_BYPASS=1 (audit-logged).
       # Artifact: artifacts/ci/agentic_core_addition_gate.json
-      # Plan: .cursor/plans/core-addition-author-gate-governance-f3b9e2.md (W4)
+      # Plan: .claude/plans/core-addition-author-gate-governance-f3b9e2.md (W4)
       - id: gov3-core-addition-author-gate
         name: "GOV-3: Core Addition Author-Gate (fail-closed)"
         entry: py ops_scripts/ci/check_agentic_core_addition.py
@@ -721,7 +721,7 @@ repos:
         require_serial: true
 
       # -- T7t: Author-Gate queue seed markers (§35) ---------------------------
-      # For each staged `.cursor/plans/*.md`, counts prose mentions of future
+      # For each staged `.claude/plans/*.md`, counts prose mentions of future
       # Author-Gate decisions ("Author-Gate required for X", etc.) and compares
       # against AG_QUEUE_SEED: marker count. Fails when prose > markers so
       # scheduled AG work can't silently escape into prose. Example/quoted
@@ -733,10 +733,10 @@ repos:
         entry: py ops_scripts/ci/check_ag_queue_seed_markers.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/plans/.*\.md$
+        files: ^\.claude/plans/.*\.md$
 
       # -- T7u: Plan–Notion Registration (Constitutional §36) ------------------------
-      # Blocks a commit that adds a new .cursor/plans/<slug>-<6hex>.md file
+      # Blocks a commit that adds a new .claude/plans/<slug>-<6hex>.md file
       # without a matching row in the Notion Plans DB. Advisory by default;
       # flip fail-closed via PLAN_REGISTRATION_FAIL_CLOSED=1. Offline-safe:
       # SKIPs when NOTION_API_KEY/NOTION_TOKEN is unset and no local cache
@@ -749,7 +749,7 @@ repos:
         entry: py ops_scripts/ci/check_plan_registration_freshness.py
         language: system
         pass_filenames: false
-        files: ^\.cursor/plans/.*\.md$
+        files: ^\.claude/plans/.*\.md$
 
       # -- T7s: Fort Knox Certification Integrity (Constitutional §32) ---------------
       # Three gates wired independently (separation of duties):
@@ -816,7 +816,7 @@ repos:
       # Gates: canary PASS · trust ∈ SIGNED set · signature VERIFIED ·
       #        mutation 0 accepts · 0 BLOCKED · 0 NOT_VERIFIED · live re-verify.
       # Bypass: FORTKNOX_DISCIPLINE_BYPASS=1 (shared with T7s.1/2/3).
-      # Plan SSOT: .cursor/plans/apps-fort-knox-parity-c5d9a3.md §13–§19.
+      # Plan SSOT: .claude/plans/apps-fort-knox-parity-c5d9a3.md §13–§19.
       - id: apps-fortknox-signed-proof
         name: "T7s.4: Apps_e2e Fort Knox SIGNED_PROOF (§32)"
         entry: py ops_scripts/ci/check_apps_fortknox_signed_proof.py
@@ -829,7 +829,7 @@ repos:
       # Asserts every apps_*/ top-level package imports the agentic_core spine
       # (L0_routing | L1_cognition | L2_execution). Catches the forbidden
       # `apps_* standalone mini-runtime` mode via direct ADG SQLite query.
-      # Plan: .cursor/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2 + W5 P5.1/P5.4).
+      # Plan: .claude/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2 + W5 P5.1/P5.4).
       # Default: STRICT (W5 P5.1 flip, 2026-04-30) — exit 1 on violation.
       # Rollback: APPS_SPINE_DELEGATION_GATE_MODE=advisory (exit 0, JSON only).
       # Bypass:   APPS_SPINE_DELEGATION_GATE_BYPASS=1 (skip entirely).
@@ -897,7 +897,7 @@ repos:
       # apps_shared purity — block any import from apps_shared/ into a domain app.
       # SQLite-direct query against the canonical ADG snapshot (constitutional §28).
       # Currently 0 violations; gate locks the boundary at zero.
-      # Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (W3.2)
+      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (W3.2)
       - id: check-apps-shared-purity
         name: "CI: apps_shared purity (no domain-app imports)"
         entry: py ops_scripts/ci/check_apps_shared_purity.py
@@ -911,7 +911,7 @@ repos:
       # through telemetry/logging/OTEL emit call sites. Closes Boundary 2
       # in apps_underwriting_ai + apps_lic threat models.
       # Currently 0 violations (3 explicit waivers for env-var-name-only logs).
-      # Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
+      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P3 NEXT_STEP)
       - id: check-pii-in-telemetry
         name: "CI: PII in telemetry sinks"
         entry: py ops_scripts/ci/check_pii_in_telemetry.py
@@ -926,7 +926,7 @@ repos:
       # ADR-075 decorator). Locked at 133/133 (100%) on 2026-04-30 after
       # W-OTEL-1/2/3 mass remediation (Phase A: module-load emits).
       # Phase B (per-method spans on execute() paths) is its own plan.
-      # Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (W-OTEL-1..3 done)
+      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (W-OTEL-1..3 done)
       - id: check-apps-otel-coverage
         name: "CI: apps_* OTEL coverage (locked at 100%)"
         entry: py ops_scripts/ci/check_apps_otel_coverage.py
@@ -941,7 +941,7 @@ repos:
       # marker). Removing a decorator from a manifest-listed method is
       # a breaking observability contract change requiring Author-Gate.
       # Locked at 24/24 (100%) on 2026-04-30.
-      # Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP done)
+      # Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P4 NEXT_STEP done)
       - id: check-required-spans-coverage
         name: "CI: required spans manifest (Layer 3)"
         entry: py ops_scripts/ci/check_required_spans_coverage.py

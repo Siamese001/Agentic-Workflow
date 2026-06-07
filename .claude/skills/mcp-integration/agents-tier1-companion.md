@@ -10,7 +10,7 @@
 |---------|----------------|----------------|
 | Rules | `.claude/rules/*.mdc` | NO (archived 2026-05-02) |
 | ADRs | `docs/architecture/adr/*.md` | NO |
-| Plans | `.cursor/plans/<slug>-<6hex>.md` | Plans DB row only |
+| Plans | `.claude/plans/<slug>-<6hex>.md` | Plans DB row only |
 | Calibration | `docs/reports/calibration/<YYYY-Www>.md` | NO |
 
 Do not sync rules or ADRs to Notion. Archived DBs: MCP Registry, Constitutional Rules, SC/AP Violations, ADR Registry, Author-Gate Ledger, Anti-Pattern Burndown — see `.claude/rules/notion-archived-databases.md`.
@@ -23,7 +23,7 @@ Five-status taxonomy, Plans invariants, Backlog Snapshot (`34b27693-f55c-81b4-93
 
 | Event | Filesystem | Notion |
 |-------|------------|--------|
-| New plan `.cursor/plans/<slug>-<6hex>.md` | Plan markdown | Plans DB via `tools.notion.plan_creation_helper.create_plan_in_notion` — Status **Not Started** |
+| New plan `.claude/plans/<slug>-<6hex>.md` | Plan markdown | Plans DB via `tools.notion.plan_creation_helper.create_plan_in_notion` — Status **Not Started** |
 | New ADR `docs/architecture/adr/` | Markdown SSOT | No write |
 | Edit `.mcp.json` | JSON SSOT | No write; run `python .cursor/scripts/sync_mcp_config.py` |
 | Author-Gate decision | `.cursor/state/refactor_decisions/*.sqlite` | No write (ledger archived) |

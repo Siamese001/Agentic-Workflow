@@ -6,10 +6,10 @@ Maps artifact types to their canonical SSOT directories.
 
 | Artifact Type | Canonical Directory | Notes |
 |---|---|---|
-| Execution plans | `.cursor/plans/` | Naming: `<name>-<6hex>.md` |
-| RCA documents | `.cursor/plans/` | Same dir as plans |
-| Evidence files | `.cursor/plans/` | One per phase |
-| Governance reports | `.cursor/plans/` | |
+| Execution plans | `.claude/plans/` | Naming: `<name>-<6hex>.md` |
+| RCA documents | `.claude/plans/` | Same dir as plans |
+| Evidence files | `.claude/plans/` | One per phase |
+| Governance reports | `.claude/plans/` | |
 | Architecture docs | `docs/architecture/` | ADRs in `docs/architecture/adr/` |
 | Telemetry reports | `docs/reports/telemetry/` | |
 | Freeze reports | `data/freeze_reports/` | |

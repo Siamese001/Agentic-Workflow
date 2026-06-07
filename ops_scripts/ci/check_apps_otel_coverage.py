@@ -11,7 +11,7 @@ Scans every non-stub Python module under ``apps_*/engines/`` and
 Closes the drift gap surfaced 2026-04-30: ``apps_underwriting_ai`` had
 0% OTEL coverage in its engines despite handling regulated data.
 
-Plan: .cursor/plans/apps-svp-plus-hardening-7c4e3a.md (P3 follow-up)
+Plan: .claude/plans/apps-svp-plus-hardening-7c4e3a.md (P3 follow-up)
 
 Exit policy:
   - Default: **advisory** — prints violations and exits 0 (CI contract plane).

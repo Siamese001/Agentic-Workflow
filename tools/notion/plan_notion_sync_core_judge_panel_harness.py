@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "core-judge-panel-harness-f3c8d1"
-PLAN_PATH = ".cursor/plans/core-judge-panel-harness-f3c8d1.md"
+PLAN_PATH = ".claude/plans/core-judge-panel-harness-f3c8d1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 PLAN_STATUS = "Completed"
 
@@ -27,7 +27,7 @@ AI_SUMMARY = """- STATUS: Completed (W0–W3)
 - apps_rg: x1d_panel_bridge, adapters/, core_gate_closure_map export
 - CI: check_judge_panel_harness_boundary.py; drift invokes panel boundary
 - Closeout: artifacts/apps_rg/core_judge_panel_harness_closeout_receipt.md
-- Disk: .cursor/plans/core-judge-panel-harness-f3c8d1.md"""
+- Disk: .claude/plans/core-judge-panel-harness-f3c8d1.md"""
 
 
 def _query_page_id() -> str | None:

@@ -40,8 +40,8 @@ Exit codes:
     2 — runner error (no snapshot, no manifest, schema invalid, etc.)
 
 References:
-    .cursor/plans/adg-wiring-ci-hardening-7a5d84.md  (W1.3)
-    .cursor/plans/c0-context-engine-wiring-fix-9e42a1.md
+    .claude/plans/adg-wiring-ci-hardening-7a5d84.md  (W1.3)
+    .claude/plans/c0-context-engine-wiring-fix-9e42a1.md
     config/canonical_pipelines.yaml
     config/schemas/canonical_pipeline.schema.json
 """

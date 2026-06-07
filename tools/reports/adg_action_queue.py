@@ -2,7 +2,7 @@
 
 SSOT output: ``artifacts/adg/adg_action_queue_<ts>.json``
 
-Plan: ``.cursor/plans/adg-action-dispatch-c9e4a2.md`` (W1)
+Plan: ``.claude/plans/adg-action-dispatch-c9e4a2.md`` (W1)
 Schema: ``.cursor/schemas/adg_action_queue.schema.json``
 """
 

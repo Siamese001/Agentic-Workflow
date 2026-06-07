@@ -45,7 +45,7 @@ USAGE
     python ops_scripts/ci/annotate_consumer_mode.py --apply --force-mode inventory \
         --filter tools/
 
-Plan: ``.cursor/plans/three-bucket-otel-view-5db409.md`` (W6).
+Plan: ``.claude/plans/three-bucket-otel-view-5db409.md`` (W6).
 """
 
 from __future__ import annotations

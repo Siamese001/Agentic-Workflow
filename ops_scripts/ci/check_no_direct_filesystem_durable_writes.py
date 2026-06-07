@@ -38,7 +38,7 @@ ALLOWED_PATHS = [
     "artifacts/ci/",
     "artifacts/cursor/",
     "agentic_core/L4_state/uwg/",
-    ".cursor/plans/",
+    ".claude/plans/",
     "docs/",
 ]
 

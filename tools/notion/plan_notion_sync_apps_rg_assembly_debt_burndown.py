@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-resume-assembly-debt-burndown-56c022"
-PLAN_PATH = ".cursor/plans/apps-rg-resume-assembly-debt-burndown-56c022.md"
+PLAN_PATH = ".claude/plans/apps-rg-resume-assembly-debt-burndown-56c022.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -29,7 +29,7 @@ AI_SUMMARY = """- Parent plan for assembly simplification (review / Not Started)
 - W4: build_rollup + package X3 test-only boundary
 - W5: engines/reasoning eval boundary
 - Key finding: package X3 not on integrated CLI; assembler redundant with rg_output merge
-- Plan: .cursor/plans/apps-rg-resume-assembly-debt-burndown-56c022.md
+- Plan: .claude/plans/apps-rg-resume-assembly-debt-burndown-56c022.md
 - Receipt: docs/reports/apps_rg/apps_rg_resume_assembly_debt_inventory.md"""
 
 

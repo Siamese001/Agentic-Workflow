@@ -90,8 +90,8 @@ _EXEMPTIONS: dict[str, str] = {
     "tests/unit/": "test_fixture",
     "docs/": "documentation_example",
     "docs/reports/": "documentation_example",
-    ".cursor/plans/": "plan_documentation",
-    ".cursor/plans/_archive/": "archived_documentation",
+    ".claude/plans/": "plan_documentation",
+    ".claude/plans/_archive/": "archived_documentation",
     # Note: .cursor/workflows/ and .claude/skills/ are ACTIVE surfaces - NOT exempt
 }
 

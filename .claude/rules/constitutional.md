@@ -48,7 +48,7 @@
 33. **Two-tier compliance (Anthropic).** `trigger: always_on` rules MUST sum ≤51,200 bytes. Procedural detail → skills; invariants → rules; deterministic enforcement → hooks. Gate: `check_always_on_token_budget.py` (T7r). Bypass: `ALWAYS_ON_BUDGET_BYPASS=1`.
 34. **Per-turn retrieval budgets.** `grep_search`+`code_search` ≤3/response (audit: `post_cursor_agent_grep_budget_audit.py`, bypass `GREP_BUDGET_BYPASS=1`). File reads (native `read_file`/`read_notebook`/`read_url_content` + MCP `read_text_file`/`read_file`/`read_multiple_files`) ≤10/response (audit: `post_cursor_agent_read_budget_audit.py`, bypass `READ_BUDGET_BYPASS=1`). Token-burn telemetry: `post_cursor_agent_token_telemetry.py` → `artifacts/cursor/turn_budget.jsonl`; weekly: `ops_scripts/calibration/token_burn_weekly_report.py`. Detail: `scope-containment.md`.
 35. **Author-Gate queue drain mandatory.** After ANY wave/phase completion (`WAVE_COMPLETE:`, `PHASE_COMPLETE:`, `wave_execution_state.py complete`, plan row → `✅ DONE`), Cursor Agent MUST emit next pending `AUTHOR_GATE_PACKET:` from `.cursor/state/author_gate_queue/<slug>.jsonl` same/next response. Helper: `_author_gate_queue.py`. Plan-time seeding: `AG_QUEUE_SEED:` markers (captured by `post_cursor_agent_ag_queue_seed_capture.py`). Pre-hook: `pre_user_prompt_ag_queue_surface.py`. Audit: `post_cursor_agent_ag_queue_drain_audit.py`. Pre-commit: `check_ag_queue_seed_markers.py`. Detail: `author-gate-queue-drain.md`. Bypass: `AG_QUEUE_DRAIN_BYPASS=1`.
-36. **Plan–Notion registration mandatory.** Every new `.cursor/plans/<slug>-<6hex>.md` MUST emit `PLAN_CREATED:` marker AND post Plans DB row (Slug, Status, Exists On Disk, Plan File Path, Summary, AI Summary) before wave execution. `wave_execution_state.py start` blocks unregistered plans. Cursor Agent MUST NOT claim registration without a live `API-query-data-source` call same-response. Helper: `_plan_registration.py`. Pre-commit T7u: `check_plan_registration_freshness.py`. Detail: `plan-registration-enforcement.md`. Bypass: `PLAN_REGISTRATION_BYPASS=1`.
+36. **Plan–Notion registration mandatory.** Every new `.claude/plans/<slug>-<6hex>.md` MUST emit `PLAN_CREATED:` marker AND post Plans DB row (Slug, Status, Exists On Disk, Plan File Path, Summary, AI Summary) before wave execution. `wave_execution_state.py start` blocks unregistered plans. Cursor Agent MUST NOT claim registration without a live `API-query-data-source` call same-response. Helper: `_plan_registration.py`. Pre-commit T7u: `check_plan_registration_freshness.py`. Detail: `plan-registration-enforcement.md`. Bypass: `PLAN_REGISTRATION_BYPASS=1`.
 
 ## Tier Classification
 
@@ -65,7 +65,7 @@ ADG graph is the **primary** analysis primitive. `grep_search` for dependency an
 
 ## Quick Gates
 
-- Plan SSOT: `.cursor/plans/<name>-<6hex>.md` — never `docs/reports/plans/` for plans
+- Plan SSOT: `.claude/plans/<name>-<6hex>.md` — never `docs/reports/plans/` for plans
 - Python file I/O: `encoding="utf-8"`
 - `grep_search` permitted only to confirm literals, never for dependency tracing
 

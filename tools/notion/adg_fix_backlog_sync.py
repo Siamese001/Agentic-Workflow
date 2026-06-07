@@ -40,7 +40,7 @@ from tools.notion.notion_bearer_token import get_notion_bearer_token
 from tools.reports.adg_action_queue import extract_notion_fix_rows
 
 PLAN_SLUG = "adg-action-dispatch-c9e4a2"
-PLAN_FILE = ".cursor/plans/adg-action-dispatch-c9e4a2.md"
+PLAN_FILE = ".claude/plans/adg-action-dispatch-c9e4a2.md"
 WAVE_ID = "ADG-FIX"
 AUDIT_LOG = REPO_ROOT / "artifacts" / "maintenance" / "adg_fix_backlog_sync.jsonl"
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"

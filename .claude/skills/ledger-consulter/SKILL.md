@@ -1,6 +1,6 @@
 ---
 name: ledger-consulter
-description: Base template for consulting a single intelligence ledger before acting. This skill itself is not auto-invoked; the ten per-ledger consulting skills (ledger-consulter-tool-routing, ledger-consulter-refactor-outcome, etc.) inherit this contract. See `.cursor/plans/intelligence-ledgers-ten-a7c3e2.md` for the full rollout.
+description: Base template for consulting a single intelligence ledger before acting. This skill itself is not auto-invoked; the ten per-ledger consulting skills (ledger-consulter-tool-routing, ledger-consulter-refactor-outcome, etc.) inherit this contract. See `.claude/plans/intelligence-ledgers-ten-a7c3e2.md` for the full rollout.
 trigger: manual
 ---
 

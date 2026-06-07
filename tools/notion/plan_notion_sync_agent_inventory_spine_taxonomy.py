@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "agent-inventory-spine-taxonomy-b4e9f2"
-PLAN_PATH = ".cursor/plans/agent-inventory-spine-taxonomy-b4e9f2.md"
+PLAN_PATH = ".claude/plans/agent-inventory-spine-taxonomy-b4e9f2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -30,7 +30,7 @@ AI_SUMMARY = """- Evidence: agentic_core_agent_inventory_runtime_assessment.md (
 - W0 ADR: mandatory spine/taxonomy separation statements
 - W2: Archive RootCustomsAgent; preserve L6 snapshot shim as report-gen-only (not arch evidence)
 - W3 DEFERRED: no backfill from mock harness (_spine_proof_run)
-- Disk: .cursor/plans/agent-inventory-spine-taxonomy-b4e9f2.md"""
+- Disk: .claude/plans/agent-inventory-spine-taxonomy-b4e9f2.md"""
 
 
 def _query_page_id() -> str | None:

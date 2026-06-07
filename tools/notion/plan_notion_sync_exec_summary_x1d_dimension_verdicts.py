@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-x1d-dimension-verdicts-e8f4a2"
-PLAN_PATH = ".cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md"
+PLAN_PATH = ".claude/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -26,7 +26,7 @@ AI_SUMMARY = """- PLAN_STATUS: Completed (2026-05-24)
 - W2: x1d_dimension_matrix.json on lane + operator guide
 - W3: DIMENSION_VERDICTS block in judge regen message
 - Tests: tests/unit/apps_rg/test_executive_summary_x1d_dimension_verdicts.py
-- Disk: .cursor/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md
+- Disk: .claude/plans/exec-summary-x1d-dimension-verdicts-e8f4a2.md
 - Related: exec-summary-x1d-transport-parity-d8f2a1, exec-summary-operator-ship-a3f7c2"""
 
 

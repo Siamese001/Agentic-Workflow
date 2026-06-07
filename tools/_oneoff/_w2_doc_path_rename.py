@@ -36,7 +36,7 @@ def walk_roots() -> list[Path]:
         Path("tests"),
         Path("tools"),
         Path("ops_scripts"),
-        Path(".cursor/plans/l6-repo-reorganization-mental-model-c4e8f2.md"),
+        Path(".claude/plans/l6-repo-reorganization-mental-model-c4e8f2.md"),
         Path("docs/reports/cursor"),
     ]
 

@@ -10,11 +10,11 @@
 Plans MUST be saved to exactly ONE location:
 
 ```
-.cursor/plans/<descriptive-name>-<6hex>.md
+.claude/plans/<descriptive-name>-<6hex>.md
 ```
 
 - ❌ NEVER: `docs/reports/plans/`, `C:\Users\amita\.cursor\plans\`, anywhere else
-- ✅ ALWAYS: `.cursor/plans/<filename>.md` (repo-relative path, NOT user-home)
+- ✅ ALWAYS: `.claude/plans/<filename>.md` (repo-relative path, NOT user-home)
 
 **CRITICAL:** `C:\Users\amita\.cursor\plans\` is the IDE user-home directory — it is FORBIDDEN as a plan location. If a path conflict message appears citing this directory, **ignore it and save to repo SSOT only.**
 
@@ -57,4 +57,4 @@ Enforced by: `plan_creation_helper.py` (code), `pre_notion_plan_creation_gate.py
 
 ## Overwrite Default
 
-When updating an existing plan: **silently overwrite** `.cursor/plans/<filename>.md` — no Author-Gate prompt, no confirmation request.
+When updating an existing plan: **silently overwrite** `.claude/plans/<filename>.md` — no Author-Gate prompt, no confirmation request.

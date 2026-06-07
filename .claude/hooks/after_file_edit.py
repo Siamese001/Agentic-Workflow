@@ -44,7 +44,7 @@ if legacy and "/plans/_archive/" not in file_path:
     write_receipt("afterFileEdit", payload, "warn", reason)
     raise SystemExit(warn(reason))
 
-if file_path.startswith(".cursor/plans/_archive/") or "/plans/_archive/" in file_path:
+if file_path.startswith(".claude/plans/_archive/") or "/plans/_archive/" in file_path:
     reason = "Edited archived historical plan material; confirm this was intentional reference maintenance."
     write_receipt("afterFileEdit", payload, "warn", reason)
     raise SystemExit(warn(reason))
@@ -52,7 +52,7 @@ if file_path.startswith(".cursor/plans/_archive/") or "/plans/_archive/" in file
 
 def _audit_plan_wave_summary_top(norm_path: str) -> int | None:
     """Return hook exit code when plan violates consolidated wave summary at top."""
-    if not norm_path.replace("\\", "/").startswith(".cursor/plans/"):
+    if not norm_path.replace("\\", "/").startswith(".claude/plans/"):
         return None
     if not norm_path.endswith(".md"):
         return None

@@ -6,7 +6,7 @@ provenance rule:
 
     Every entry in config/wiring_gate_waivers.yaml MUST include one of:
       * adr:  docs/architecture/adr/ADR-NNN-*.md      (file must exist)
-      * plan: .cursor/plans/<slug>-<6hex>.md        (file must exist)
+      * plan: .claude/plans/<slug>-<6hex>.md        (file must exist)
 
 And must always include:
       * gate, scope, reason, owner, expires_on (pre-existing required fields)
@@ -55,7 +55,7 @@ REQUIRED_FIELDS = ("gate", "scope", "reason", "owner", "expires_on")
 PROVENANCE_KEYS = ("adr", "plan")
 
 ADR_GLOB = f"{ADR_DIR}/ADR-*.md"
-PLAN_GLOB = ".cursor/plans/*-*.md"
+PLAN_GLOB = ".claude/plans/*-*.md"
 
 
 def _load_waivers(path: Path) -> list[dict[str, Any]]:

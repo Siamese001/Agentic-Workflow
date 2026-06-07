@@ -14,7 +14,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none  # noqa: E402
 
 SLUG = "competencies-graph-10x6-gemini-924516"
-PLAN_PATH = ".cursor/plans/competencies-graph-10x6-gemini-924516.md"
+PLAN_PATH = ".claude/plans/competencies-graph-10x6-gemini-924516.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 GAP_RECEIPT = "docs/reports/apps_rg/competencies_10x6_gemini_gap_receipt.md"
 W4_RECEIPT = "docs/reports/apps_rg/competencies_10x6_w4_closeout_receipt.md"

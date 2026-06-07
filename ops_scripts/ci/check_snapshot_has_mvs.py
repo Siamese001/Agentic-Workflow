@@ -54,7 +54,7 @@ Exit codes
 References
 ----------
     - Constitutional §22 (graph-layer evidence)
-    - .cursor/plans/adg-pipeline-e2e-5287a1.md (W1 reorder + W2 this gate)
+    - .claude/plans/adg-pipeline-e2e-5287a1.md (W1 reorder + W2 this gate)
     - .cursor/rules/adg-graph-layer-enforcement.md
 """
 

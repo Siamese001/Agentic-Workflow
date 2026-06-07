@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gate G-PRECOMMIT-MM-DUAL-STATE — block silent commit rollback on dual-state files.
 
-Plan: ``.cursor/plans/adg-three-bucket-unified-c4f8e2.md`` (W4 P4.1).
+Plan: ``.claude/plans/adg-three-bucket-unified-c4f8e2.md`` (W4 P4.1).
 
 The bug
 -------
@@ -148,7 +148,7 @@ def format_violation_message(violations: list[tuple[str, str, str]]) -> str:
         "Bypass (accept risk of silent staged-change loss):",
         "  PRECOMMIT_MM_GUARD_BYPASS=1 git commit ...",
         "",
-        "Plan: .cursor/plans/adg-three-bucket-unified-c4f8e2.md (W4 P4.1)",
+        "Plan: .claude/plans/adg-three-bucket-unified-c4f8e2.md (W4 P4.1)",
         "=" * 72,
     ]
     return "\n".join(lines)

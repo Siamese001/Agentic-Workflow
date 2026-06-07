@@ -56,7 +56,7 @@ Use for: project status, current blocker, next action. One entity per tracked pr
       "status=<active|blocked|complete>, wave=<wave-id>, phase=<phase-id>",
       "next_action: <exact-command-or-decision-needed>",
       "blocker: <what's-holding-progress OR none>",
-      "plan_path: @c:/Git/Agentic-Workflow/.cursor/plans/<name>-<6hex>.md",
+      "plan_path: @c:/Git/Agentic-Workflow/.claude/plans/<name>-<6hex>.md",
       "notion_row: <page_id-if-applicable>",
       "last_updated: <YYYY-MM-DD>"
     ]
@@ -114,7 +114,7 @@ Use for: rare one-time occurrences with long-term reference value (a historic in
       "date: <YYYY-MM-DD>",
       "what_happened: <one-line factual summary>",
       "impact: <what-it-changed>",
-      "linked_artifacts: [<docs/reports/rca/<file>.md>, <.cursor/plans/<name>-<hex>.md>]",
+      "linked_artifacts: [<docs/reports/rca/<file>.md>, <.claude/plans/<name>-<hex>.md>]",
       "resolved: <yes-with-pattern-X | no-open>"
     ]
   }]

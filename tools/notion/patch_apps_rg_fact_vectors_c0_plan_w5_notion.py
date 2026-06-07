@@ -34,7 +34,7 @@ AI_SUMMARY = (
     "- run_contract_gates: SEED-RG-FV gate + 900s timeout; --gate CHECK-RG-FACT-VECTORS "
     "runs seed prerequisite\n"
     "- Bypass seed: APPS_RG_SEED_FACT_VECTORS_BYPASS=1\n"
-    "- Disk SSOT: .cursor/plans/apps-rg-fact-vectors-c0-notion-d4e8c2.md"
+    "- Disk SSOT: .claude/plans/apps-rg-fact-vectors-c0-notion-d4e8c2.md"
 )
 
 

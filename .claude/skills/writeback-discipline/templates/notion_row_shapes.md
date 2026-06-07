@@ -91,7 +91,7 @@
 ## §4. Backlog Items (plan status update)
 
 **Database ID**: `aa8d2507-101e-4384-81d9-60ea3fe33876` (renamed 2026-04-23 from `Wave/Phase Convergence`)
-**Trigger**: Created or status-changed `.cursor/plans/<name>-<6hex>.md`
+**Trigger**: Created or status-changed `.claude/plans/<name>-<6hex>.md`
 
 Title property is **`Phase Title`** (not `Name`). Status select options: `Todo | In Progress | Done | Blocked | Descoped | Complete`.
 

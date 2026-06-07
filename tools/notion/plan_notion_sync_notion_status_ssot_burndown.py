@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "notion-status-ssot-burndown-c4e7a1"
-PLAN_PATH = ".cursor/plans/notion-status-ssot-burndown-c4e7a1.md"
+PLAN_PATH = ".claude/plans/notion-status-ssot-burndown-c4e7a1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -25,7 +25,7 @@ AI_SUMMARY = """- PLAN_STATUS: Completed (2026-05-25)
 - Receipt: docs/reports/plans/notion_status_ssot_burndown_receipt_20260525.md
 - W1: restore_plan_statuses_from_cache, repair, plan_lifecycle_manager
 - W2: CI gates + creation auditor + tests
-- Disk: .cursor/plans/notion-status-ssot-burndown-c4e7a1.md"""
+- Disk: .claude/plans/notion-status-ssot-burndown-c4e7a1.md"""
 
 
 def _query_page_id() -> str | None:

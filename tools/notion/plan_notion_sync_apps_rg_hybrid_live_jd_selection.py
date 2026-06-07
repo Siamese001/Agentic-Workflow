@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-hybrid-live-jd-selection-f8e2b3"
-PLAN_PATH = ".cursor/plans/apps-rg-hybrid-live-jd-selection-f8e2b3.md"
+PLAN_PATH = ".claude/plans/apps-rg-hybrid-live-jd-selection-f8e2b3.md"
 PARENT_SLUG = "apps-rg-runtime-substitute-burndown-c4e8f1"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 

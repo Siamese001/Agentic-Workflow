@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-x1d-transport-parity-d8f2a1"
-PLAN_PATH = ".cursor/plans/exec-summary-x1d-transport-parity-d8f2a1.md"
+PLAN_PATH = ".claude/plans/exec-summary-x1d-transport-parity-d8f2a1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 NOTION_PAGE_ID = "36a27693-f55c-8100-81af-f56aa9b4421c"
 
@@ -28,7 +28,7 @@ AI_SUMMARY = """- PLAN_STATUS: COMPLETED (2026-05-24)
 - Closeout: post-regen soft-rerun uses post-X2 packet; live run exec_summary_20260524_111311
 - Receipt: docs/reports/apps_rg/exec_summary_x1d_transport_parity_20260524_receipt.md
 - Related: exec-summary-operator-ship-a3f7c2, section-product-shape-alignment-b4e7a1
-- Disk: .cursor/plans/exec-summary-x1d-transport-parity-d8f2a1.md"""
+- Disk: .claude/plans/exec-summary-x1d-transport-parity-d8f2a1.md"""
 
 
 def _query_page_id() -> str | None:

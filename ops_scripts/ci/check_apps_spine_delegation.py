@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gate G-APPS-SPINE-DELEGATION — assert every apps_*/ package imports the spine.
 
-ADR-078. Plan: .cursor/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2,
+ADR-078. Plan: .claude/plans/adg-three-bucket-unified-c4f8e2.md (W3 P3.2,
 flipped to strict in W5 P5.4).
 
 The invariant: for every ``apps_*/`` top-level package, the ADG snapshot

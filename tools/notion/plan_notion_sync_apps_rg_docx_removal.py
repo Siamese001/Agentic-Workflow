@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-docx-output-removal-4650ff"
-PLAN_PATH = ".cursor/plans/apps-rg-docx-output-removal-4650ff.md"
+PLAN_PATH = ".claude/plans/apps-rg-docx-output-removal-4650ff.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -29,7 +29,7 @@ AI_SUMMARY = """- W0 DONE: inventory, plan, receipt on disk
 - W2 TODO: remove DocxExportStep + offline _run_docx_emit
 - W3 TODO: delete internal docx modules + prompt cleanup
 - W4 TODO: contract tests + W7 CI gate
-- Plan: .cursor/plans/apps-rg-docx-output-removal-4650ff.md
+- Plan: .claude/plans/apps-rg-docx-output-removal-4650ff.md
 - Receipt: docs/reports/apps_rg/apps_rg_docx_removal_inventory_receipt.md"""
 
 

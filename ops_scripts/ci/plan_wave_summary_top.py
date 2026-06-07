@@ -54,7 +54,7 @@ _TABLE_SEP_RE = re.compile(r"^\|[\s\-:|]+\|$")
 def is_plan_wave_summary_exempt(content: str, filepath: str = "") -> bool:
     """True for dod_exempt frontmatter or archive paths."""
     norm = filepath.replace("\\", "/")
-    if "/plans/_archive/" in norm or norm.startswith(".cursor/plans/_archive/"):
+    if "/plans/_archive/" in norm or norm.startswith(".claude/plans/_archive/"):
         return True
     fm = _FRONTMATTER_RE.match(content)
     if fm and _DOD_EXEMPT_RE.search(fm.group(1)):

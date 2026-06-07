@@ -75,5 +75,5 @@ batch runs or acknowledged experimental windows.
 
 - Anthropic — https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
 - Rubric SSOT — `config/judges/rubrics.yaml`, `config/judges/trace_rubric.yaml`
-- Plan — `.cursor/plans/exit-eval-spine-gap-ce683b.md` §W5.2
+- Plan — `.claude/plans/exit-eval-spine-gap-ce683b.md` §W5.2
 - ADR-032 — LLM judge hardening

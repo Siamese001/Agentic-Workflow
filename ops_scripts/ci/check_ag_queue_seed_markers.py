@@ -2,7 +2,7 @@
 """
 check_ag_queue_seed_markers.py — Pre-commit gate: plan-prose ↔ AG_QUEUE_SEED parity.
 
-For each staged `.cursor/plans/*.md` file, count:
+For each staged `.claude/plans/*.md` file, count:
   - Prose lines mentioning future Author-Gate decisions
     (patterns: "Author-Gate required for", "Author-Gate pending for",
                "Author-Gate needed for")
@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
+PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 
 # Prose patterns that signal a future Author-Gate decision in the plan text.
 # Skip occurrences surrounded by quotes, backticks, or parentheses (examples).
@@ -73,7 +73,7 @@ def _staged_plans() -> list[Path]:
         p = line.strip()
         if not p:
             continue
-        if p.startswith(".cursor/plans/") and p.endswith(".md"):
+        if p.startswith(".claude/plans/") and p.endswith(".md"):
             full = REPO_ROOT / p
             if full.exists():
                 out.append(full)

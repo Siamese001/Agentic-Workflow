@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "exec-summary-judge-regen-loop-closure-d8f3a1"
-PLAN_PATH = ".cursor/plans/exec-summary-judge-regen-loop-closure-d8f3a1.md"
+PLAN_PATH = ".claude/plans/exec-summary-judge-regen-loop-closure-d8f3a1.md"
 
 SUMMARY = (
     "Follow-up to COMPLETED core-same-authority-incremental-regen-e7a4b1 (W4 deferred). "
@@ -25,7 +25,7 @@ AI_SUMMARY = """- Parent: core-same-authority-incremental-regen-e7a4b1 (Complete
 - DS-1..DS-8: orchestrator, dual-path, X2 snapshots, env defaults
 - Waves: W0 AG placement, W1 lane unify, W2 X2 accept, W3 orchestrator, W4 artifacts, W5 Brown
 - Out of scope: semantic ceiling >1, 3/3 CERTIFIED (operator-ship)
-- Disk: .cursor/plans/exec-summary-judge-regen-loop-closure-d8f3a1.md"""
+- Disk: .claude/plans/exec-summary-judge-regen-loop-closure-d8f3a1.md"""
 
 
 def main() -> int:

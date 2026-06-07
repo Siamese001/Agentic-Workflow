@@ -10,7 +10,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 SLUG = "agent-inventory-spine-taxonomy-b4e9f2"
-PLAN_PATH = ".cursor/plans/agent-inventory-spine-taxonomy-b4e9f2.md"
+PLAN_PATH = ".claude/plans/agent-inventory-spine-taxonomy-b4e9f2.md"
 PAGE_ID = "36b27693-f55c-81d3-b7a7-d9b54d461f83"
 FOLLOW_UP_SLUG = "agent-inventory-deferred-followup-c2a8f1"
 

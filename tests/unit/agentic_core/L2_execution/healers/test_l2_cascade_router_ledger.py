@@ -1,6 +1,6 @@
 """Constitutional §29 — L2/cascade router closed-loop ledger wiring tests.
 
-Plan: .cursor/plans/_archive/windsurf_legacy_plans/l2-cascade-router-closed-loop-wiring-c4d8a1.md (W1.7)
+Plan: .claude/plans/_archive/windsurf_legacy_plans/l2-cascade-router-closed-loop-wiring-c4d8a1.md (W1.7)
 
 Covers:
   - cascade_calibrator math primitives (EU, Brier, Wilson, fingerprint, score band)

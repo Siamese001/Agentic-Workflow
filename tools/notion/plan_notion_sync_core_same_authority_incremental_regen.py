@@ -10,7 +10,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 SLUG = "core-same-authority-incremental-regen-e7a4b1"
-PLAN_PATH = ".cursor/plans/core-same-authority-incremental-regen-e7a4b1.md"
+PLAN_PATH = ".claude/plans/core-same-authority-incremental-regen-e7a4b1.md"
 PAGE_ID = "36b27693-f55c-81d2-a344-fded674227f6"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 

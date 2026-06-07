@@ -2,7 +2,7 @@
 """Register exec-summary-token-budget-a8f3c2 on disk + Notion; post W1–W4 as Done.
 
 Disk SSOT:
-  .cursor/plans/exec-summary-token-budget-a8f3c2.md
+  .claude/plans/exec-summary-token-budget-a8f3c2.md
   docs/reports/apps_rg/executive_summary_token_budget_waves_manifest.json
 
 Run from repo root with NOTION_TOKEN (or NOTION_API_KEY).
@@ -33,7 +33,7 @@ from tools.notion.plan_creation_helper import create_plan_in_notion  # noqa: E40
 from tools.notion.wave_lifecycle_writer import apply_spec, find_plan_page  # noqa: E402
 
 SLUG = "exec-summary-token-budget-a8f3c2"
-PLAN_FILE = ".cursor/plans/exec-summary-token-budget-a8f3c2.md"
+PLAN_FILE = ".claude/plans/exec-summary-token-budget-a8f3c2.md"
 WAVE_PLAN_ID = "EXEC-SUM-TOKEN-BUDGET"
 WPC_DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 WAVE_STATUS_DONE = "Completed"

@@ -4,7 +4,7 @@ Requires ``## Status Tables`` → ``### Wave Progress`` with a wave summary mark
 table (Wave, Focus, Status minimum; canonical 7 columns advised) **before** the first
 ``## Wave N`` detail section.
 
-Scan: ``.cursor/plans/*.md`` (top-level only; excludes ``_archive/`` trees).
+Scan: ``.claude/plans/*.md`` (top-level only; excludes ``_archive/`` trees).
 
 Exit 0 → all active non-exempt plans comply (or advisory WARN only).
 Exit 1 → violations when ``PLAN_WAVE_SUMMARY_TOP_FAIL_CLOSED=1``.
@@ -27,7 +27,7 @@ from ops_scripts.ci.plan_wave_summary_top import (
 )
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_PLANS_DIR = _REPO_ROOT / ".cursor" / "plans"
+_PLANS_DIR = _REPO_ROOT / ".claude" / "plans"
 _REPORT_PATH = _REPO_ROOT / "artifacts" / "ci" / "plan_wave_summary_top_gate.json"
 
 

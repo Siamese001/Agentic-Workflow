@@ -147,7 +147,7 @@ band boundaries, retire the metric). Capture under
 
 ## 7. References
 
-- **Plan**: `.cursor/plans/intelligence-ledgers-ten-a7c3e2.md`
+- **Plan**: `.claude/plans/intelligence-ledgers-ten-a7c3e2.md`
 - **ADR**: `docs/architecture/adr/ADR-050-intelligence-ledger-family.md`
 - **Base schema**: `.cursor/schemas/ledger_base.schema.sql`
 - **Registry**: `tools/ledgers/schema_registry.py`

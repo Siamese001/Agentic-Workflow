@@ -47,13 +47,13 @@ def _script(rel_path: str) -> Path:
 
 
 # PFC1 (plan-format-simplification-rca-d4f8e2 W4): forward-only canonical scope.
-# Does NOT scan all of .cursor/plans — explicit paths only (see W4 CI gate receipt).
+# Does NOT scan all of .claude/plans — explicit paths only (see W4 CI gate receipt).
 _PFC1_CANONICAL_PLAN_PATHS = (
-    ".cursor/plans/plan-format-simplification-rca-d4f8e2.md",
+    ".claude/plans/plan-format-simplification-rca-d4f8e2.md",
     ".cursor/templates/execution-plan-template.md",
-    ".cursor/plans/acceptance-gates-master-tracking-b5c3e1.md",
-    ".cursor/plans/adg-antipattern-hardening-e5a569.md",
-    ".cursor/plans/agentic-core-signoff-hardening-b8e2c4.md",
+    ".claude/plans/acceptance-gates-master-tracking-b5c3e1.md",
+    ".claude/plans/adg-antipattern-hardening-e5a569.md",
+    ".claude/plans/agentic-core-signoff-hardening-b8e2c4.md",
 )
 
 
@@ -806,7 +806,7 @@ def main():
         ),
         # NP15 — Wave/Phase Convergence DB ↔ disk plan-file drift. Checks that
         # open Backlog rows whose Plan File field is set resolve to an on-disk
-        # .cursor/plans/ file. Orphan rows are reported.
+        # .claude/plans/ file. Orphan rows are reported.
         # Advisory by default; fail-closed via STRICT_DRIFT=1.
         # Bypass: PLAN_FILE_DRIFT_BYPASS=1.
         # Plan: notion-integration-consistency-audit-b2c4d8 W3.
@@ -943,7 +943,7 @@ def main():
         # Advisory by default (exit 0 with stderr report); fail-closed via
         # APPS_DOM_FIXTURE_FRESHNESS_FAIL_CLOSED=1.
         # Bypass: APPS_DOM_FIXTURE_FRESHNESS_BYPASS=1. Plan:
-        # .cursor/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.
+        # .claude/plans/apps-dom-real-evidence-enhancement-c7f4d8.md W4.
         (
             "AD1 APPS-DOM harness fixture freshness (advisory)",
             "ops_scripts/ci/check_apps_dom_fixture_freshness.py",
@@ -1193,7 +1193,7 @@ def main():
             "ops_scripts/ci/check_mcp_config_sovereignty.py",
         ),
         # DEFER — Deferred scope marker compliance (CI mode).
-        # Scans all .cursor/plans/*.md for prose indicating deferred work
+        # Scans all .claude/plans/*.md for prose indicating deferred work
         # without DEFERRED_SCOPE: marker. Baseline: 12 violations (advisory).
         # Advisory by default; fail-closed via DEFERRED_SCOPE_GATE_FAIL_CLOSED=1.
         # Bypass: DEFERRED_SCOPE_GATE_BYPASS=1.

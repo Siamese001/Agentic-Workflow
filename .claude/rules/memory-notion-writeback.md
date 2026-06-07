@@ -25,7 +25,7 @@ These events fire writeback without a prompt:
 3. Gate behavior change in `.cursor/scripts/*_gate.py` → commit message + Memory MCP only (MCP Registry archived 2026-05-02)
 4. Resolved scored `ask_user_question` → `.cursor/state/refactor_decisions/refactor_decision_ledger.sqlite` via `tools/capture/append_marker.py` (Author-Gate Decision Ledger archived 2026-05-02)
 5. New SC/AP defects from `generate_full_adg.py` → `artifacts/adg/*.sqlite` + violation JSON (SC/AP Violation Backlog archived 2026-05-02; no Notion write)
-6. New plan file in `.cursor/plans/` → Memory `Project:<plan-slug>` + Notion Plans DB row (§36)
+6. New plan file in `.claude/plans/` → Memory `Project:<plan-slug>` + Notion Plans DB row (§36)
 7. Recurring bug or anti-pattern diagnosis → Memory `ProceduralPattern:*`
 
 ## Where the procedural detail lives

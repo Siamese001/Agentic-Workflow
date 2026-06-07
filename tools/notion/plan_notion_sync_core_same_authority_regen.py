@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "core-same-authority-incremental-regen-e7a4b1"
-PLAN_PATH = ".cursor/plans/core-same-authority-incremental-regen-e7a4b1.md"
+PLAN_PATH = ".claude/plans/core-same-authority-incremental-regen-e7a4b1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -31,7 +31,7 @@ AI_SUMMARY = """- Plan type: platform_core_change (touches agentic_core)
 - W2: SameAuthorityRegenRunner + RemediationDeltaMapper protocol
 - W3: apps_rg executive_summary_judge_remediation delegates to core
 - W4: Optional JudgeDirectedRegenOrchestrator + CI
-- Disk: .cursor/plans/core-same-authority-incremental-regen-e7a4b1.md"""
+- Disk: .claude/plans/core-same-authority-incremental-regen-e7a4b1.md"""
 
 
 def _query_page_id() -> str | None:

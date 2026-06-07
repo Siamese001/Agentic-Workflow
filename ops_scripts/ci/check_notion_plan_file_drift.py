@@ -4,7 +4,7 @@
 Queries the Wave/Phase Convergence Notion DB for open rows (Status not in
 ``{Done, Closed, Cancelled, Archived}``) and verifies that each row's
 ``Plan File`` property resolves to an existing file under
-``.cursor/plans/``. Orphan rows (Notion says file X, disk lacks X) are
+``.claude/plans/``. Orphan rows (Notion says file X, disk lacks X) are
 reported; missing Notion rows for on-disk plans are **not** flagged here
 (that's the inverse direction and a separate concern).
 
@@ -154,8 +154,8 @@ def _extract_phase_title(row: dict[str, Any]) -> str:
 def _plan_file_exists(filename: str) -> bool:
     """Check for a plan file. Accepts exact filename or slug-without-suffix.
 
-    Resolves top-level ``.cursor/plans/``, slug-with-hex variants, and archived
-    copies under ``.cursor/plans/_archive/**`` (W3 windsurf legacy relocation).
+    Resolves top-level ``.claude/plans/``, slug-with-hex variants, and archived
+    copies under ``.claude/plans/_archive/**`` (W3 windsurf legacy relocation).
     """
 
     if not filename:
@@ -269,7 +269,7 @@ def main() -> int:  # noqa: PLR0911
     print("", file=sys.stderr)
     print("Fix options:", file=sys.stderr)
     print(
-        "  1. Create the plan file at .cursor/plans/<plan_file> (SSOT location).",
+        "  1. Create the plan file at .claude/plans/<plan_file> (SSOT location).",
         file=sys.stderr,
     )
     print(

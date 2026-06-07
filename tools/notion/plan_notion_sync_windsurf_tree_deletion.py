@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "windsurf-tree-deletion-ci-parity-b8e4f1"
-PLAN_PATH = ".cursor/plans/windsurf-tree-deletion-ci-parity-b8e4f1.md"
+PLAN_PATH = ".claude/plans/windsurf-tree-deletion-ci-parity-b8e4f1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -30,7 +30,7 @@ AI_SUMMARY = """- Plan type: governance / CI parity
 - W3: artifacts/cursor namespace removal
 - W4: Retire mirror gates; deletion_safe true
 - W5: git rm -r docs/archive/windsurf/legacy-tree/
-- Disk: .cursor/plans/windsurf-tree-deletion-ci-parity-b8e4f1.md"""
+- Disk: .claude/plans/windsurf-tree-deletion-ci-parity-b8e4f1.md"""
 
 
 def _query_page_id() -> str | None:

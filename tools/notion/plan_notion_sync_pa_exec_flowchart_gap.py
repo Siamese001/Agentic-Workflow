@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "pa-exec-flowchart-gap-f2a8c3"
-PLAN_PATH = ".cursor/plans/pa-exec-flowchart-gap-f2a8c3.md"
+PLAN_PATH = ".claude/plans/pa-exec-flowchart-gap-f2a8c3.md"
 NOTION_PAGE_ID = "36927693-f55c-8138-afb7-fe72202f206a"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
@@ -28,7 +28,7 @@ AI_SUMMARY = """- STATUS: Completed (W0–W8 + W8-followup)
 - Tests: test_apps_rg_one_pipeline_e2e + certification_w8 + no_two_path_w9 (20 passed, harness)
 - Audit: artifacts/apps_rg/plans/apps_rg_spine_req_gap_audit.json p0_count=0
 - Deferred: full OTEL SDK, C0.3 graph RAG, L6 promotion, live LLM all-lanes
-- Disk SSOT: .cursor/plans/pa-exec-flowchart-gap-f2a8c3.md"""
+- Disk SSOT: .claude/plans/pa-exec-flowchart-gap-f2a8c3.md"""
 
 
 def _query_page_id() -> str | None:

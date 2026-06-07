@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Migrate Notion plan file paths from docs/archive/windsurf/legacy-tree/plans to .cursor/plans.
+"""Migrate Notion plan file paths from docs/archive/windsurf/legacy-tree/plans to .claude/plans.
 
 W5.D1 deferred scope for windsurf-gha-cutover-d9f2a7.
 
@@ -7,7 +7,7 @@ Patches:
   - Plans DB ``Plan File Path`` rich_text
   - Wave/Phase Convergence ``Plan File`` rich_text
 
-Only patches when the target ``.cursor/plans/<file>`` exists on disk (or slug glob).
+Only patches when the target ``.claude/plans/<file>`` exists on disk (or slug glob).
 
 Usage:
     python tools/notion/migrate_plan_paths_windsurf_to_cursor.py --dry-run
@@ -30,7 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 # Inline SSOT path — avoid ops_scripts import (ADG P0 layer_violation: tools -> L_OPS).
-CURSOR_PLANS_DIR = REPO_ROOT / ".cursor" / "plans"
+CURSOR_PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 
 NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2025-09-03"
@@ -96,21 +96,21 @@ def _audit(entry: dict) -> None:
 
 
 def _resolve_cursor_plan_path(raw: str) -> str | None:
-    """Map Notion plan file reference to .cursor/plans/ path if resolvable on disk."""
+    """Map Notion plan file reference to .claude/plans/ path if resolvable on disk."""
     if not raw or not raw.strip():
         return None
     text = raw.strip().replace("\\", "/")
     if "docs/archive/windsurf/legacy-tree/plans/" in text:
-        text = text.replace("docs/archive/windsurf/legacy-tree/plans/", ".cursor/plans/")
-    elif text.startswith(".cursor/plans/"):
+        text = text.replace("docs/archive/windsurf/legacy-tree/plans/", ".claude/plans/")
+    elif text.startswith(".claude/plans/"):
         pass
     elif "/" not in text:
-        text = f".cursor/plans/{Path(text).name}"
+        text = f".claude/plans/{Path(text).name}"
     else:
         return None
 
     rel = Path(text)
-    if not str(rel).startswith(".cursor/plans/"):
+    if not str(rel).startswith(".claude/plans/"):
         return None
     full = REPO_ROOT / rel
     if full.is_file():
@@ -122,8 +122,8 @@ def _resolve_cursor_plan_path(raw: str) -> str | None:
         if candidate.is_file():
             rel_path = candidate.relative_to(REPO_ROOT).as_posix()
             return rel_path
-    # Archive mirror under .cursor/plans/_archive
-    for candidate in (REPO_ROOT / ".cursor/plans").rglob(f"{base}*.md"):
+    # Archive mirror under .claude/plans/_archive
+    for candidate in (REPO_ROOT / ".claude/plans").rglob(f"{base}*.md"):
         if candidate.is_file():
             return candidate.relative_to(REPO_ROOT).as_posix()
     # Legacy: copy from docs/archive/windsurf/legacy-tree/plans into cursor archive (execute mode only via caller)
@@ -131,7 +131,7 @@ def _resolve_cursor_plan_path(raw: str) -> str | None:
 
 
 def _ensure_cursor_copy_from_windsurf(filename: str, *, execute: bool) -> str | None:
-    """If plan exists only under docs/archive/windsurf/legacy-tree/plans, copy to .cursor/plans/_archive/windsurf_legacy/."""
+    """If plan exists only under docs/archive/windsurf/legacy-tree/plans, copy to .claude/plans/_archive/windsurf_legacy/."""
     name = Path(filename).name
     if not name.endswith(".md"):
         name = f"{name}.md"
@@ -143,7 +143,7 @@ def _ensure_cursor_copy_from_windsurf(filename: str, *, execute: bool) -> str | 
                 break
     if not ws.is_file():
         return None
-    dest_dir = REPO_ROOT / ".cursor/plans/_archive/windsurf_legacy"
+    dest_dir = REPO_ROOT / ".claude/plans/_archive/windsurf_legacy"
     dest = dest_dir / ws.name
     rel = dest.relative_to(REPO_ROOT).as_posix()
     if dest.is_file():

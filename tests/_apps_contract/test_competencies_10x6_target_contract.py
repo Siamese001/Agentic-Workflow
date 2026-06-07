@@ -3,7 +3,7 @@
 These tests document the *desired* product constants and defaults after W2–W3.
 They MUST fail until implementation lands (TDD guardrail).
 
-Plan: .cursor/plans/competencies-graph-10x6-gemini-924516.md
+Plan: .claude/plans/competencies-graph-10x6-gemini-924516.md
 Receipt: docs/reports/apps_rg/competencies_10x6_gemini_gap_receipt.md
 """
 from __future__ import annotations

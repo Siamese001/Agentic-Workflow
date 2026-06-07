@@ -16,15 +16,18 @@ from pathlib import Path
 
 import pytest
 
-# Canonical CLI dispatch seam (same target as apps_rg.__main__ inner import).
-_DISPATCH_SEAM = "agentic_core.runtime.entry.apps_rg_dispatch.dispatch_apps_rg_run"
+# Canonical CLI full-run seam (same target as apps_rg.__main__ inner import).
+_DISPATCH_SEAM = (
+    "apps_rg.runtime.orchestration.r3r4_whole_run_orchestration."
+    "run_whole_run_with_route_governance"
+)
 
 # Historical pa_local + HOP adapter modules intentionally absent; reintroduce or
 # point tests at replacement surfaces under apps-rg-w13 backlog.
 _BACKLOG_W13_PA_SURFACES = (
     "Historical apps_rg.prompt_assembly.pa_local / integrations.hops / reasoning "
     "surfaces removed; restore or replace under apps-rg-w13. "
-    "Ref: .cursor/plans/apps-rg-w13-apps-contract-triage-c4d7e2.md"
+    "Ref: .claude/plans/apps-rg-w13-apps-contract-triage-c4d7e2.md"
 )
 
 
@@ -389,5 +392,9 @@ class TestLayerReceiptCompleteness:
         data = json.loads(path.read_text())
         # The presence of x3_disposition proves Exit V6 ran
         assert data["x3_disposition"] in ("EXIT_OK", "EXIT_PARTIAL", "EXIT_DENY")
-        # The producer_component proves it came from the R4 pipeline (which calls Exit V6)
-        assert "integrated_r4" in data["producer_component"]
+        # The producer_component proves it came from the integrated spine path
+        # that calls Exit V6.
+        assert (
+            data["producer_component"]
+            == "agentic_core.runtime.entrypoints.integrated_single_action_spine_run"
+        )

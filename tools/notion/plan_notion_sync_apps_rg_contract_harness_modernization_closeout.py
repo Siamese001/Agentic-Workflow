@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_notion
 
 SLUG = "apps-rg-contract-harness-modernization-f4e8b2"
-PLAN_PATH = ".cursor/plans/apps-rg-contract-harness-modernization-f4e8b2.md"
+PLAN_PATH = ".claude/plans/apps-rg-contract-harness-modernization-f4e8b2.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 SUMMARY = (
@@ -28,7 +28,7 @@ AI_SUMMARY = """- Parent: graph-skills-deferred-followup-d7f2a8
 - Fast: python ops_scripts/apps_rg/run_contract_harness_fast.py
 - Live: python ops_scripts/apps_rg/run_contract_harness_live.py
 - Receipt: docs/reports/apps_rg/contract_harness_modernization_w5_receipt.json
-- Plan: .cursor/plans/apps-rg-contract-harness-modernization-f4e8b2.md"""
+- Plan: .claude/plans/apps-rg-contract-harness-modernization-f4e8b2.md"""
 
 
 def _query_page_id() -> str | None:

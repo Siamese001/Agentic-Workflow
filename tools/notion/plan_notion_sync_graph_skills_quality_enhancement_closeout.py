@@ -10,7 +10,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 SLUG = "graph-skills-quality-enhancement-c4e8a1"
-PLAN_PATH = ".cursor/plans/graph-skills-quality-enhancement-c4e8a1.md"
+PLAN_PATH = ".claude/plans/graph-skills-quality-enhancement-c4e8a1.md"
 PAGE_ID = "36b27693-f55c-81c0-bb50-d8df6df2b60e"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 

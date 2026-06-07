@@ -72,7 +72,7 @@ def main() -> int:
         "docs/reports/cursor/l6_category_a_shared_spike_20260525.md",
         "docs/reports/cursor/l6_followup_w1_w4_batch_receipt_20260525.json",
         "docs/reports/cursor/l6_reorg_deferred_scope_register_20260525.md",
-        ".cursor/plans/l6-reorg-deferred-followup-f3a9c2.md",
+        ".claude/plans/l6-reorg-deferred-followup-f3a9c2.md",
         "docs/reports/cursor/l6_followup_w0_reconcile_20260525.json",
     ]
     for rel in artifacts:
@@ -125,7 +125,7 @@ def main() -> int:
     )
     check("pytest_otel_followup", otel_py.returncode == 0, (otel_py.stdout or otel_py.stderr)[-400:])
 
-    plan_text = (REPO / ".cursor/plans/l6-reorg-deferred-followup-f3a9c2.md").read_text(encoding="utf-8")
+    plan_text = (REPO / ".claude/plans/l6-reorg-deferred-followup-f3a9c2.md").read_text(encoding="utf-8")
     check("plan_status_done", "PLAN_STATUS: DONE" in plan_text)
     check("plan_wave_complete", "CURRENT_WAVE: COMPLETE" in plan_text)
 

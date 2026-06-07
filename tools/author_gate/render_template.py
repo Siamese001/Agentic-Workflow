@@ -97,7 +97,7 @@ for audit transparency; only filtered from the user-facing prompt.
 - Skill: `.claude/skills/author-gate-packet-builder/SKILL.md`
 - Renderer skill: `.claude/skills/author-gate-ui-renderer/SKILL.md`
 - Constitutional §6, §30
-- Plan: `.cursor/plans/_archive/windsurf_legacy_plans/author-gate-ssot-consolidation-b7c3e1.md`
+- Plan: `.claude/plans/_archive/windsurf_legacy_plans/author-gate-ssot-consolidation-b7c3e1.md`
 """
 
 

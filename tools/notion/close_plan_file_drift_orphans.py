@@ -2,7 +2,7 @@
 """Close Wave/Phase rows that reference missing top-level plan files.
 
 Targets rows still open (Status not in drift CLOSED_STATUSES) whose Plan File
-does not resolve under ``.cursor/plans/`` (including archive). Sets Status to
+does not resolve under ``.claude/plans/`` (including archive). Sets Status to
 Done so nightly drift stops flagging completed legacy scope.
 
 Usage:

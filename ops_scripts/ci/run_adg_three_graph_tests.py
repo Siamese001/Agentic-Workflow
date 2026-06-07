@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ADG Three-Graph Test Runner — manifest-driven harness.
 
-Plan: ``.cursor/plans/adg-three-graph-harness-e57cc7.md`` (W1.P3).
+Plan: ``.claude/plans/adg-three-graph-harness-e57cc7.md`` (W1.P3).
 
 Loads ``ops_scripts/ci/adg_gate_manifest.yaml`` and runs every selected
 gate in a deterministic order, normalizing each gate's output into the
