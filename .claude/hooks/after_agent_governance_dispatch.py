@@ -2,7 +2,8 @@
 
 Reads agent response stdin once, then runs (fail-open, exit 0):
   1. ADG-first audit
-  2. Author-Gate capture + audit chain (constitutional §30)
+  2. Post-response audits (MCP hygiene, long-command). Author-Gate capture chain
+     RETIRED W1 (claude-native-supersession-9d3f7a): native AskUserQuestion supersedes it.
   3. Notion status advisory auditor
   4. In-process post_agent_dispatch (POST_AGENT_DISPATCHER=1)
 
@@ -29,15 +30,10 @@ _SCRIPT_EXTRA_ARGS: dict[str, tuple[str, ...]] = {
     "post_agent_long_command_audit.py": ("agent_response",),
 }
 
+# [W1 claude-native-supersession-9d3f7a] Author-Gate audit members removed; native
+# AskUserQuestion supersedes the packet/marker/ledger pipeline. Only non-AG
+# post-response audits remain.
 _AG_CHAIN: tuple[str, ...] = (
-    "post_agent_author_gate_capture.py",
-    "post_agent_author_gate_miss_detector.py",
-    "post_agent_author_gate_ui_audit.py",
-    "post_agent_author_gate_schema_audit.py",
-    "post_agent_ask_user_question_packet_audit.py",
-    "post_agent_author_gate_pipeline_audit.py",
-    "post_agent_ag_queue_drain_audit.py",
-    "post_agent_ag_queue_seed_capture.py",
     "post_agent_mcp_hygiene_audit.py",
     "post_agent_long_command_audit.py",
 )

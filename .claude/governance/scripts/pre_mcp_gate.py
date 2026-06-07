@@ -1463,11 +1463,9 @@ def main() -> int:
         if rc != 0:
             return rc
 
-    # Memory-first gate: blocks non-memory tools until mem_recall_session_start is called.
-    # Degrades to open if memory MCP is unhealthy or attempt limit is reached.
-    rc = check_memory_first_gate(server_name, tool_name)
-    if rc != 0:
-        return rc
+    # [W3 claude-native-supersession-9d3f7a] Memory-first MCP gate RETIRED.
+    # Native file-based memory (memory/MEMORY.md) replaces the mandatory
+    # mem_recall_session_start ritual; MCP calls are no longer gated on it. (ADR-095)
 
     # Filesystem MCP: startup health check then write-tool block
     if server_name == filesystem_server_name:

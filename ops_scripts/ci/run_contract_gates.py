@@ -322,136 +322,15 @@ def main():
     else:
         print("✅ Judge calibration gate passed")
 
-    # Gate: Author-gate (harness HITL) — ledger schema + outcome coverage (W2)
-    print("\n[AUTHOR-GATE HARNESS HITL]")
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/author_gate/check_ledger_schema.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Author-gate ledger schema check failed")
-        print(stdout or stderr)
-        sys.exit(1)
-    print("✅ Author-gate ledger schema validated")
-
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_refactor_decision_ledger_ssot.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Refactor decision ledger SSOT check failed")
-        print(stdout or stderr)
-        sys.exit(1)
-    print("✅ Refactor decision ledger SSOT validated")
-
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/author_gate/check_outcome_coverage.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Author-gate outcome coverage check failed")
-        print(stdout or stderr)
-        sys.exit(1)
-    print("✅ Author-gate outcome coverage validated")
-
-    # Gate: Author-gate ledger hash-chain integrity (W5)
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/author_gate/check_ledger_integrity.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Author-gate ledger integrity check failed")
-        print(stdout or stderr)
-        sys.exit(1)
-
-    # Gate: ask_user_question packet vacuum-closure freshness
-    # (plan author-gate-four-req-enforcement-c4d2a8 W2.P1).
-    # Watches artifacts/governance/ask_user_question_packet_violations.jsonl
-    # produced by post_agent_ask_user_question_packet_audit.py.
-    # Bypass: ASK_PACKET_AUDIT_FRESHNESS_BYPASS=1.
-    returncode, stdout, stderr = run_cmd(
-        [
-            sys.executable,
-            str(
-                _script(
-                    "ops_scripts/ci/author_gate/check_ask_user_question_packet_freshness.py"
-                )
-            ),
-        ],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Author-gate ask_user_question packet freshness check failed")
-        print(stdout or stderr)
-        sys.exit(1)
-    print("✅ Author-gate ask_user_question packet freshness validated")
-
-    # Gate: AGP1 — Author-Gate pipeline completion freshness
-    # (plan author-gate-ui-renderer-hardening-a7f3c2 W3.P3.2).
-    # Watches artifacts/governance/author_gate_pipeline_violations.jsonl
-    # produced by post_agent_author_gate_pipeline_audit.py.
-    # Fail-closed by default; AG_PIPELINE_ADVISORY=1 downgrades to warning-only.
-    # Bypass: AG_PIPELINE_FRESHNESS_BYPASS=1.
-    returncode, stdout, stderr = run_cmd(
-        [
-            sys.executable,
-            str(
-                _script(
-                    "ops_scripts/ci/check_author_gate_pipeline_freshness.py"
-                )
-            ),
-        ],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ AGP1 Author-Gate pipeline completion freshness check failed")
-        print(stdout or stderr)
-        sys.exit(1)
-    print("✅ AGP1 Author-Gate pipeline completion freshness validated")
-
-    # Gate: Author-Gate v2/W4 completeness (plan 1f4c8a W5) — advisory by
-    # default; emits warnings without blocking. Set AUTHOR_GATE_V2_STRICT=1
-    # to fail closed once the ledger is clean for one full 7-day window.
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_author_gate_v2_completeness.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Author-gate v2 completeness check failed (strict mode)")
-        print(stdout or stderr)
-        sys.exit(1)
-    print("✅ Author-gate v2 completeness check ran")
-    print("✅ Author-gate ledger integrity validated")
-
-    # W4.1 — Author-Gate ledger anomaly heuristics (advisory by default).
-    # AUTHOR_GATE_ANOMALY_FAIL_CLOSED=1 fails on high-severity findings.
-    # AUTHOR_GATE_ANOMALY_BYPASS=1 skips.
-    returncode, stdout, stderr = run_cmd(
-        [
-            sys.executable,
-            str(_script("ops_scripts/ci/author_gate/detect_author_gate_ledger_anomalies.py")),
-        ],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Author-gate ledger anomaly detector failed (fail-closed mode?)")
-        print(stdout or stderr)
-        sys.exit(1)
-    print("✅ Author-gate ledger anomaly detector ran")
-
-    # W4.2 — governance bypass JSONL rollup (advisory; always exit 0 from script).
-    returncode, stdout, stderr = run_cmd(
-        [
-            sys.executable,
-            str(_script("ops_scripts/ci/author_gate/rollup_governance_bypass_logs.py")),
-        ],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print("❌ Governance bypass rollup failed")
-        print(stdout or stderr)
-        sys.exit(1)
-    print("✅ Governance bypass rollup refreshed")
+    # [W1 claude-native-supersession-9d3f7a] Author-Gate harness-HITL CI gates RETIRED.
+    # The 9 gates here (ledger schema/SSOT/outcome-coverage/integrity, ask_user_question
+    # packet freshness, AGP1 pipeline freshness, v2 completeness, anomaly detector,
+    # bypass rollup) enforced a bespoke packet -> render -> marker -> queue -> SQLite-ledger
+    # pipeline that emulated a structured-choice tool. Native AskUserQuestion supersedes
+    # it. Gate scripts under ops_scripts/ci/author_gate/ are dormant (uncalled); the
+    # governance hook scripts + 2 skills are dormant in place. Invariant (stop & ask before
+    # ambiguous edits) preserved in CLAUDE.md + constitutional s6.
+    # ADR: docs/architecture/adr/ADR-093-author-gate-native-ask-user-question.md
 
     # Gate: P0 two-pass (preflight + full ADG enforcement)
     # Bypass: P0_TWO_PASS_BYPASS=1 — skips this gate (log warning only).
@@ -1165,15 +1044,8 @@ def main():
             "MCP-SCOPE0 filesystem scope sovereignty (Rule #0)",
             "ops_scripts/ci/check_mcp_config_sovereignty.py",
         ),
-        # DEFER — Deferred scope marker compliance (CI mode).
-        # Scans all .claude/plans/*.md for prose indicating deferred work
-        # without DEFERRED_SCOPE: marker. Baseline: 12 violations (advisory).
-        # Advisory by default; fail-closed via DEFERRED_SCOPE_GATE_FAIL_CLOSED=1.
-        # Bypass: DEFERRED_SCOPE_GATE_BYPASS=1.
-        (
-            "DEFER Deferred scope marker compliance (advisory baseline)",
-            "ops_scripts/ci/check_deferred_scope_markers.py",
-        ),
+        # [W4 claude-native-supersession-9d3f7a] DEFER deferred-scope-marker gate RETIRED;
+        # out-of-scope work now surfaces via native spawn_task chips (ADR-096).
         # RULE-FMT — Rule frontmatter schema validation.
         # Validates .claude/rules/*.md YAML frontmatter against canonical schema.
         # Baseline: many rules lack proper frontmatter (advisory).

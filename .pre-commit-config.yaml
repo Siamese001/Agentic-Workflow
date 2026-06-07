@@ -277,35 +277,6 @@ repos:
         files: ^(docs/reports/design/10c_reconciliation/.*|docs/requirements/.*|config/crosswalk/obligations\.yaml|tools/l5_contracts/_requirement_matrix\.json|docs/reference/contracts/enforcement/ALL_REQUIREMENTS_.*)$
         always_run: false
         require_serial: true
-
-      # -- T6d: Author-Gate Ledger Schema (harness HITL W2) ---------------------------
-      # Verifies decision ledger matches canonical DDL. Triggered when schema or
-      # migrator changes, and when the capture script changes.
-      # TRIGGER FIX 2026-05-05: DDL file .claude/schemas/decision_ledger.schema.sql
-      # was already in the description but missing from the files: regex — changes to
-      # the DDL alone would not trigger this gate. Added explicitly.
-      - id: author-gate-ledger-schema
-        name: "T6d: Author-Gate Ledger Schema"
-        entry: py ops_scripts/ci/author_gate/check_ledger_schema.py
-        language: system
-        pass_filenames: false
-        files: ^(\.claude/schemas/decision_ledger\.schema\.sql|\.claude/governance/scripts/(apply_ledger_schema|post_agent_hitl_capture|post_agent_author_gate_capture|post_commit_outcome_binder)\.py|ops_scripts/ci/author_gate/.*\.py)$
-        always_run: false
-        require_serial: true
-
-      # -- T6d2: Author-Gate UI Conformance (star + confidence prefix) ----------------
-      # Enforces post_agent_author_gate_ui_audit findings are not stale-unresolved
-      # within the 7-day window. Triggered when the audit hook, this gate, or the
-      # violations log changes.
-      - id: author-gate-ui-conformance
-        name: "T6d2: Author-Gate UI Conformance"
-        entry: py ops_scripts/ci/author_gate/check_ui_conformance.py
-        language: system
-        pass_filenames: false
-        files: ^(\.claude/governance/scripts/post_agent_author_gate_ui_audit\.py|ops_scripts/ci/author_gate/check_ui_conformance\.py|artifacts/governance/author_gate_ui_violations\.jsonl)$
-        always_run: false
-        require_serial: true
-
       # -- T6e: Skill Frontmatter (Anthropic spec) ------------------------------------
       # Enforces Anthropic Agent Skills authoring spec on every
       # .claude/skills/<name>/SKILL.md: YAML frontmatter with valid `name`
@@ -321,20 +292,6 @@ repos:
         files: ^\.claude/skills/.+/SKILL\.md$
         always_run: false
         require_serial: true
-
-      # -- T6e1: Deferred Scope Marker Check (W5 implementation) ------------------------
-      # Validates that staged plan files with deferred-scope prose have
-      # DEFERRED_SCOPE: markers. Scans only added lines in staged files.
-      # Bypass: DEFERRED_SCOPE_GATE_BYPASS=1.
-      - id: deferred-scope-marker
-        name: "T6e1: Deferred Scope Marker Check"
-        entry: py ops_scripts/ci/check_deferred_scope_markers.py --staged
-        language: system
-        pass_filenames: false
-        files: ^(plans|\.claude/plans)/.*\.md$
-        always_run: false
-        require_serial: true
-
       # -- T6e2: MCP Config Schema Validation (W5 implementation) ------------------------
       # Validates .cursor/mcp.json against canonical schema.
       # Checks required servers, valid keys per constitutional §27.
@@ -540,22 +497,6 @@ repos:
         pass_filenames: false
         always_run: false
         require_serial: true
-
-      # -- W4.1: Author-Gate ledger coverage (meta-learning hardening) --------------
-      # Fails commit if outcome_bind_rate < 50% OR scope_file_path_rate < 70%
-      # OR v2_field_rate < 70% OR hash_chain_rate < 95% OR capture_violations_24h
-      # > 20. Floors are deliberately permissive (WARN-band on audit_ledger_coverage)
-      # so the gate alarms on rot but doesn't block routine work.
-      # Bypass: LEDGER_COVERAGE_BYPASS=1 (logged to artifacts/governance/).
-      # Audit script SSOT: .claude/governance/scripts/audit_ledger_coverage.py
-      - id: author-gate-ledger-coverage
-        name: "T7e: Author-Gate Ledger Coverage (W4.1)"
-        entry: py ops_scripts/ci/check_ledger_coverage.py
-        language: system
-        pass_filenames: false
-        always_run: false
-        files: ^(\.claude/governance/scripts/(post_agent_author_gate_capture|pre_author_gate|author_gate_marker_validator|audit_ledger_coverage|promote_author_gate_patterns|post_commit_outcome_binder|author_gate_ledger_integrity)\.py|\.claude/skills/refactor-decision-memory/.*\.py|\.claude/schemas/exit_criteria\.schema\.json|ops_scripts/ci/check_ledger_coverage\.py)$
-
       # -- T7h: Terminal/Subprocess Cleanup (§11 + §14) ---------------------------------
       # Enforces Constitutional §11 (terminal process lifecycle) and §14 (subprocess
       # timeout required) by catching static patterns that leak processes:
@@ -615,41 +556,6 @@ repos:
         files: ^(tools/generate/generate_full_adg\.py|ops_scripts/ci/check_pipeline_skips\.py)$
         always_run: false
         require_serial: true
-
-      # -- T7i: Deferred Scope Markers ----------------------------------------------
-      # Enforces the deferred-scope-capture rule (.claude/rules/deferred-scope-capture.md).
-      # Blocks commits that add prose deferred-scope language to .claude/plans/*.md
-      # files WITHOUT an accompanying DEFERRED_SCOPE: marker. Protects against
-      # scope loss between sessions — caught 2026-04-22 session-wide failure modes
-      # where prose-only mentions never became Notion rows.
-      - id: deferred-scope-markers
-        name: "T7i: Deferred Scope Markers"
-        entry: py ops_scripts/ci/check_deferred_scope_markers.py
-        language: system
-        pass_filenames: false
-        files: ^(plans|\.claude/plans)/.*\.md$
-        always_run: false
-        require_serial: true
-
-      # -- T7j: Notion Wave/Phase MECE v2 Schema ------------------------------------
-      # Enforces the post-2026-04-24 canonical 12-field MECE schema for Notion
-      # writers. Blocks retired-field writes (Sub-Wave, Parent Plan Summary,
-      # Blocking Items, Success Criteria, Dependencies, Coverage Gap %,
-      # Last Scored), requires Evidence, forbids [P\d]/[NEXT·P\d] in Phase Title.
-      # Advisory SSOT: ProceduralPattern:NotionBacklogMECESchemaV2 in memory MCP.
-      - id: notion-schema-mece
-        name: "T7j: Notion MECE v2 Schema"
-        entry: py ops_scripts/ci/check_notion_schema_mece.py
-        language: system
-        pass_filenames: false
-        files: ^\.claude/governance/scripts/post_agent_(deferred_scope|next_step)_capture\.py$
-        always_run: false
-        require_serial: true
-
-      # NOTE: infra_wiring_scan.py NOT wired — 5 pre-existing violations (google,
-      # chromadb, sqlite3 direct imports) need remediation first. Wired at
-      # `stages: [manual]` below for on-demand audit.
-
       # -- T7l: Wiring-CI Waiver Expiry (fast, file-scoped) ---------------------------
       # Runs the W5 waiver-expiry gate only when the waiver file, the gate itself,
       # or the harness changes. Fast — no ADG read. Blocks the commit that
@@ -711,22 +617,6 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
-
-      # -- T7t: Author-Gate queue seed markers (§35) ---------------------------
-      # For each staged `.claude/plans/*.md`, counts prose mentions of future
-      # Author-Gate decisions ("Author-Gate required for X", etc.) and compares
-      # against AG_QUEUE_SEED: marker count. Fails when prose > markers so
-      # scheduled AG work can't silently escape into prose. Example/quoted
-      # mentions (wrapped in quotes, backticks, or parens) are excluded.
-      # Bypass: AG_QUEUE_SEED_MARKERS_BYPASS=1
-      # Rule SSOT: .claude/rules/author-gate-queue-drain.md
-      - id: ag-queue-seed-markers
-        name: "T7t: Author-Gate Queue Seed Markers (§35)"
-        entry: py ops_scripts/ci/check_ag_queue_seed_markers.py
-        language: system
-        pass_filenames: false
-        files: ^(plans|\.claude/plans)/.*\.md$
-
       # -- T7u: Plan–Notion Registration (Constitutional §36) ------------------------
       # Blocks a commit that adds a new .claude/plans/<slug>-<6hex>.md file
       # without a matching row in the Notion Plans DB. Advisory by default;
