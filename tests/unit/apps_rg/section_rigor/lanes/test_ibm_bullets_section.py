@@ -12,9 +12,14 @@ from apps_rg.runtime.validators.ibm_bullets_x2 import (
 IBM_BULLETS_CRITICAL_GATES = frozenset(
     {
         "x2_ibm_bullet_count_5",
+        "x2_ibm_bullet_single_thought",
+        "x2_ibm_bullet_no_embedded_newline",
+        "x2_ibm_bullet_no_paragraph_block",
+        "x2_ibm_narrative_slot_reservation",
         "x2_claim_ledger_claim_text_non_empty",
         "x2_text_claim_coverage_integrity",
         "x2_ibm_metric_anchor_bullet_ownership",
+        "x2_no_unify_runtime_terms",
     }
 )
 

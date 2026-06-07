@@ -4,6 +4,7 @@
   "app_id": "apps_rg",
   "task_class": "resume_generation",
   "description": "Runtime gate profile for apps_rg resume_generation task class",
+  "gate_taxonomy_ref": "apps_rg/runtime/contracts/apps_rg_gate_taxonomy.yaml",
   "stages": {
     "C0": {
       "stage_id": "C0",
@@ -14,6 +15,7 @@
           "gate_id": "G_METADATA_FILTER",
           "gate_name": "Metadata Filter",
           "description": "Exact metadata filtering for fact_vectors retrieval",
+          "gate_class": "release_blocker",
           "conditional": false,
           "required": true
         },
@@ -21,6 +23,7 @@
           "gate_id": "G_SECTION_RETRIEVAL",
           "gate_name": "Bounded Section Retrieval",
           "description": "Per-section evidence retrieval from fact_vectors",
+          "gate_class": "release_blocker",
           "conditional": true,
           "condition_ref": "section_retrieval_enabled",
           "required": false
@@ -29,6 +32,7 @@
           "gate_id": "G_BRIEF_BYPASS",
           "gate_name": "Briefing Bypass",
           "description": "Manual brief evaluation for company research bypass",
+          "gate_class": "release_blocker",
           "conditional": true,
           "condition_ref": "manual_brief_path_present",
           "required": false

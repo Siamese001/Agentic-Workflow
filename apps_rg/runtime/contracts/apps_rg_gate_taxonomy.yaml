@@ -1,0 +1,205 @@
+# apps_rg Gate Taxonomy
+#
+# Plan: apps_rg_lean_core_binding_a1b2c3 (Wave 8 — Gate Taxonomy Reset)
+# Status: ACTIVE
+#
+# Gate classes:
+# - release_blocker: a failing/missing gate must prevent product PASS/ALLOW.
+# - advisory: a signal for routing/review/triage; it must not silently authorize PASS.
+# - debug_metric: diagnostics, retired gates, and observability-only counters.
+
+schema_version: apps_rg_gate_taxonomy_v1
+app_id: apps_rg
+task_class: resume_generation
+
+classes:
+  release_blocker:
+    description: "Product safety or contract gate; failure blocks PASS/ALLOW."
+    x3_effect: BLOCK_OR_REVIEW_NOT_PASS
+  advisory:
+    description: "Decision-support signal; failure may route to review but is not a product PASS gate."
+    x3_effect: REVIEW_OR_WARN
+  debug_metric:
+    description: "Diagnostic or retired metric; never product authority."
+    x3_effect: NONE
+
+explicit_gates:
+  # U0 → Exit assumption-ledger gates.
+  - gate_id: U0-G-001
+    gate_class: release_blocker
+    stage: U0
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: U0-G-002
+    gate_class: release_blocker
+    stage: U0
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: U0-G-003
+    gate_class: release_blocker
+    stage: U0
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: L1-G-001
+    gate_class: release_blocker
+    stage: L1
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: L0-G-001
+    gate_class: release_blocker
+    stage: L0
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: C0-G-001
+    gate_class: release_blocker
+    stage: C0
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: C0-G-002
+    gate_class: advisory
+    stage: C0
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: C0-G-003
+    gate_class: release_blocker
+    stage: C0
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: PA-G-001
+    gate_class: release_blocker
+    stage: PA
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: L2-G-001
+    gate_class: release_blocker
+    stage: L2
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: L2-G-002
+    gate_class: advisory
+    stage: L2
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: Exit-G-001
+    gate_class: release_blocker
+    stage: Exit
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: Exit-G-002
+    gate_class: release_blocker
+    stage: Exit
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: Exit-G-003
+    gate_class: release_blocker
+    stage: Exit
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+  - gate_id: Exit-G-004
+    gate_class: release_blocker
+    stage: Exit
+    source: apps_rg.runtime.contracts.apps_rg_assumptions
+
+  # Runtime gate profile gates.
+  - gate_id: G_METADATA_FILTER
+    gate_class: release_blocker
+    stage: C0
+    source: apps_rg.config.domain_contract.runtime_gate_profile.resume_generation.v1
+  - gate_id: G_SECTION_RETRIEVAL
+    gate_class: release_blocker
+    stage: C0
+    source: apps_rg.config.domain_contract.runtime_gate_profile.resume_generation.v1
+  - gate_id: G_BRIEF_BYPASS
+    gate_class: release_blocker
+    stage: C0
+    source: apps_rg.config.domain_contract.runtime_gate_profile.resume_generation.v1
+
+  # Retired/debug-only X2 gate ids. Exact entries override the x2_ release-blocker prefix.
+  - gate_id: x2_exec_summary_sentence_count_2_3
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_exec_summary_srfs_density_word_count
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_exec_summary_sentence_count_4_5
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_exec_summary_sentence_count_5_6
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_exec_summary_srfs_sentence_count_4_5
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_exec_summary_srfs_sentence_responsibility_shape
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_exec_summary_paragraph_word_bounds
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_unify_max_heavy_3
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_unify_rewrite_distribution_valid
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_unify_min_light_protected_1
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_unify_intensity_per_bullet_ssot
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_unify_metric_bullets_not_heavy
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_unify_protected_bullet_preserved_or_justified
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_ibm_rewrite_distribution_valid
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_ibm_heavy_rewrites_zero
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_headline_source_fact_ids_within_srfs_slice
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_executive_summary_source_fact_ids_within_srfs_slice
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_unify_bullets_source_fact_ids_within_srfs_slice
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_unify_narrative_source_fact_ids_within_srfs_slice
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_ibm_bullets_source_fact_ids_within_srfs_slice
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_ibm_narrative_source_fact_ids_within_srfs_slice
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+  - gate_id: x2_competencies_source_fact_ids_within_srfs_slice
+    gate_class: debug_metric
+    stage: X2
+    source: apps_rg.runtime.sections.section_product_shape_ssot
+
+prefix_rules:
+  - prefix: x2_
+    gate_class: release_blocker
+    source: generated_lane_x2
+    description: "Active generated-lane X2 gates are product release blockers unless explicitly retired/debug."
+  - prefix: x1d_
+    gate_class: advisory
+    source: judge_diagnostics
+    description: "Judge diagnostics inform review; deterministic X2 remains release authority."
+  - prefix: debug_
+    gate_class: debug_metric
+    source: diagnostics
+    description: "Debug metrics never authorize product PASS."

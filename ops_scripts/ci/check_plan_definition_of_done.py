@@ -34,6 +34,9 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 # SSOT: active plans live under `.claude/plans/` (plan-location.mdc). Only
 # top-level `*.md` is scanned — not `_archive/` trees — to cap gate cost.
 _PLANS_DIR = _REPO_ROOT / ".claude" / "plans"
+# Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
+# canonical NEW plans live in repo-root plans/; .claude/plans/ stays legacy-valid.
+_PLANS_DIRS = [_REPO_ROOT / "plans", _PLANS_DIR]
 _REPORT_PATH = _REPO_ROOT / "artifacts" / "ci" / "plan_dod_gate.json"
 
 _DOD_HEADING_RE = re.compile(
@@ -51,9 +54,11 @@ _FRONTMATTER_RE = re.compile(r"^---\n(.+?)\n---\n", re.DOTALL)
 
 def _scan_plan_files() -> list[Path]:
     """Return all .md files directly under .claude/plans/ excluding archive subfolders."""
-    if not _PLANS_DIR.is_dir():
-        return []
-    return [p for p in sorted(_PLANS_DIR.glob("*.md")) if p.is_file()]
+    out: list[Path] = []
+    for _d in _PLANS_DIRS:
+        if _d.is_dir():
+            out.extend(p for p in _d.glob("*.md") if p.is_file())
+    return sorted(out)
 
 
 def _is_exempt(content: str) -> bool:

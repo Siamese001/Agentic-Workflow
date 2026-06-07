@@ -62,6 +62,9 @@ from _notion_constants import (  # noqa: E402
 )
 
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+# Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
+# canonical NEW plans live in repo-root plans/; .claude/plans/ stays legacy-valid.
+PLAN_DIRS = [REPO_ROOT / "plans", PLANS_DIR]
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "plan_notion_wave_freshness.json"
 
 _ACTIVE_STATUSES: frozenset[str] = frozenset({"In Progress", "Not Started"})
@@ -145,8 +148,8 @@ def _last_edited_from_row(row: dict[str, Any]) -> datetime | None:
 
 
 def _file_mtime(slug: str) -> datetime | None:
-    path = PLANS_DIR / f"{slug}.md"
-    if not path.exists():
+    path = next((d / f"{slug}.md" for d in PLAN_DIRS if (d / f"{slug}.md").exists()), None)
+    if path is None:
         return None
     try:
         return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)

@@ -20,7 +20,10 @@ from apps_rg.runtime.orchestration.section_lane_concurrency import (
     load_section_dag_manifest,
 )
 from apps_rg.runtime.orchestration.section_lane_executor import LaneExecutionContext
-from apps_rg.runtime.section_cli_defaults import resolve_cli_x1d_judges
+from apps_rg.runtime.section_cli_defaults import (
+    resolve_cli_x1d_judges,
+    summarize_section_x1d_minimization_policy,
+)
 from apps_rg.runtime.validators.companion_bullet_finalization import (
     UPSTREAM_BLOCKED_RUNTIME_STATUSES,
     is_upstream_blocked_runtime_status,
@@ -101,6 +104,11 @@ def test_competencies_defaults_to_single_advisory_judge(monkeypatch) -> None:
     assert resolve_cli_x1d_judges(None, section_id="competencies") == "gemini_pro"
 
 
+def test_unify_bullets_defaults_to_single_composite_judge(monkeypatch) -> None:
+    monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
+    assert resolve_cli_x1d_judges(None, section_id="unify_bullets") == "anthropic_claude"
+
+
 def test_explicit_x1d_judges_override_wins_for_ibm_adjudicator() -> None:
     # The 3-provider panel is reachable as the optional adjudicator via explicit override.
     panel = "gemini_pro,openai_chatgpt,anthropic_claude"
@@ -119,6 +127,28 @@ def test_non_bullet_sections_keep_standard_panel_default(monkeypatch) -> None:
     assert resolve_cli_x1d_judges(None, section_id="executive_summary") == panel
 
 
+def test_wave9_policy_summary_marks_compact_non_repairing_defaults(monkeypatch) -> None:
+    monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
+    policy = summarize_section_x1d_minimization_policy()
+    assert set(policy) == {
+        "competencies",
+        "executive_summary",
+        "headline",
+        "ibm_bullets",
+        "ibm_narrative",
+        "unify_bullets",
+        "unify_narrative",
+        "final_aggregate_resume",
+    }
+    assert policy["unify_bullets"]["default_judge_count"] == 1
+    assert policy["ibm_bullets"]["default_judge_count"] == 1
+    assert policy["competencies"]["default_judge_count"] == 1
+    assert policy["headline"]["default_judge_count"] == 3
+    assert policy["executive_summary"]["default_judge_count"] == 3
+    assert all(v["repair_allowed"] is False for v in policy.values())
+    assert all(v["packet_scope"] == "compact_grade_only" for v in policy.values())
+
+
 # ------------------------------------------------------------ per-lane judge callable threading
 def test_lane_execution_context_resolves_per_lane_callable(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
@@ -135,6 +165,7 @@ def test_lane_execution_context_resolves_per_lane_callable(monkeypatch) -> None:
     )
     assert ctx.x1d_judges_for_lane("ibm_bullets") == "anthropic_claude"
     assert ctx.x1d_judges_for_lane("competencies") == "gemini_pro"
+    assert ctx.x1d_judges_for_lane("unify_bullets") == "anthropic_claude"
     assert ctx.x1d_judges_for_lane("headline") == "gemini_pro,openai_chatgpt,anthropic_claude"
 
 

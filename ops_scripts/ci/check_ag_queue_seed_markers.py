@@ -37,6 +37,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+# Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
+# canonical NEW plans live in repo-root plans/; .claude/plans/ stays legacy-valid.
+PLAN_DIRS = [REPO_ROOT / "plans", PLANS_DIR]
 
 # Prose patterns that signal a future Author-Gate decision in the plan text.
 # Skip occurrences surrounded by quotes, backticks, or parentheses (examples).
@@ -73,7 +76,7 @@ def _staged_plans() -> list[Path]:
         p = line.strip()
         if not p:
             continue
-        if p.startswith(".claude/plans/") and p.endswith(".md"):
+        if (p.startswith("plans/") or p.startswith(".claude/plans/")) and p.endswith(".md"):
             full = REPO_ROOT / p
             if full.exists():
                 out.append(full)

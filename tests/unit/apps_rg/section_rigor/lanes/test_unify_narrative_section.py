@@ -7,7 +7,12 @@ from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2
 UNIFY_NARRATIVE_CRITICAL_GATES = frozenset(
     {
         "x2_unify_narrative_exactly_one_sentence",
+        "x2_unify_narrative_exactly_one_sentence_mechanical",
+        "x2_unify_narrative_forbidden_opener",
+        "x2_unify_narrative_metric_cap",
+        "x2_unify_narrative_bullet_overlap_threshold",
         "x2_unify_narrative_word_budget",
+        "x2_unify_narrative_requires_finalized_bullets",
         "x2_claim_ledger_claim_text_non_empty",
     }
 )

@@ -47,6 +47,9 @@ sys.path.insert(0, str(REPO_ROOT))
 
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "plan_done_notion_status.json"
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+# Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
+# canonical NEW plans live in repo-root plans/; .claude/plans/ stays legacy-valid.
+PLAN_DIRS = [REPO_ROOT / "plans", PLANS_DIR]
 SKIP_SUBDIRS = {"_archive", "_orphan_review"}
 
 # Notion API
@@ -209,15 +212,15 @@ def run(
         _write_report({"status": "skipped_no_token", "violations": []})
         return 0
 
-    if not PLANS_DIR.is_dir():
-        print(f"[NP-DONE] WARN: plans dir not found: {PLANS_DIR}", file=sys.stderr)
+    if not any(d.is_dir() for d in PLAN_DIRS):
+        print(f"[NP-DONE] WARN: plans dir not found: {PLAN_DIRS}", file=sys.stderr)
         _write_report({"status": "skipped_no_plans_dir", "violations": []})
         return 0
 
     violations: list[dict[str, Any]] = []
     checked = 0
 
-    for plan_file in sorted(PLANS_DIR.glob("*.md")):
+    for plan_file in sorted(f for d in PLAN_DIRS if d.is_dir() for f in d.glob("*.md")):
         # Skip files in excluded subdirectories (shouldn't happen with glob("*.md")
         # at root, but guard anyway).
         if any(part in SKIP_SUBDIRS for part in plan_file.parts):

@@ -13,6 +13,9 @@ from apps_rg.runtime.validators.unify_bullets_x2 import (
 UNIFY_BULLETS_CRITICAL_GATES = frozenset(
     {
         "x2_unify_bullet_count_6",
+        "x2_unify_bullet_single_thought",
+        "x2_unify_bullet_no_embedded_newline",
+        "x2_unify_bullet_no_paragraph_block",
         "x2_claim_ledger_claim_text_non_empty",
         "x2_text_claim_coverage_integrity",
         "x2_unify_metric_anchor_bullet_ownership",

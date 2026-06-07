@@ -13,6 +13,7 @@ Ownership unchanged: apps_rg-local seam; not FEC and not a pseudo-FEC surface.
 from __future__ import annotations
 
 import errno
+import hashlib
 import json
 import os
 import re
@@ -65,6 +66,87 @@ class ProviderResult:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+def _compiled_prompt_text(compiled_prompt: Any) -> str:
+    blocks = getattr(compiled_prompt, "prompt_blocks", ()) or ()
+    if blocks:
+        return "\n".join(f"{getattr(b, 'role', '?')}: {getattr(b, 'content', '')}" for b in blocks)
+    return "\n".join(
+        part
+        for part in (
+            str(getattr(compiled_prompt, "system_preamble", "") or ""),
+            str(getattr(compiled_prompt, "user_instruction", "") or ""),
+        )
+        if part
+    ).strip()
+
+
+def _compiled_prompt_messages(compiled_prompt: Any) -> list[dict[str, str]]:
+    blocks = getattr(compiled_prompt, "prompt_blocks", ()) or ()
+    if blocks:
+        return [
+            {
+                "role": str(getattr(block, "role", "user") or "user"),
+                "content": str(getattr(block, "content", "") or ""),
+            }
+            for block in blocks
+        ]
+    system = str(getattr(compiled_prompt, "system_preamble", "") or "").strip()
+    user = str(getattr(compiled_prompt, "user_instruction", "") or "").strip()
+    messages: list[dict[str, str]] = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": user or _compiled_prompt_text(compiled_prompt)})
+    return messages
+
+
+class QwenVLLMProvider:
+    """Qwen/vLLM provider wrapper for the apps_rg Wave 10A ProviderGateway."""
+
+    provider_profile = "qwen_vllm"
+
+    def __init__(
+        self,
+        *,
+        base_url: str = DEFAULT_QWEN_BASE_URL,
+        model: str = DEFAULT_QWEN_MODEL,
+        timeout_seconds: int = DEFAULT_QWEN_TIMEOUT_SECONDS,
+    ) -> None:
+        self.base_url = base_url
+        self.model = model
+        self.timeout_seconds = timeout_seconds
+
+    def generate(
+        self,
+        compiled_prompt: Any,
+        *,
+        token_budget: int,
+        temperature: float = 0.7,
+    ) -> ProviderResult:
+        prompt_text = _compiled_prompt_text(compiled_prompt)
+        prompt_hash = str(getattr(compiled_prompt, "compilation_hash", "") or "").strip()
+        if not prompt_hash:
+            prompt_hash = hashlib.sha256(prompt_text.encode("utf-8")).hexdigest()
+        input_seed = "|".join(
+            [
+                str(getattr(compiled_prompt, "request_id", "") or ""),
+                str(getattr(compiled_prompt, "run_id", "") or ""),
+                prompt_hash,
+            ]
+        )
+        input_payload_hash = hashlib.sha256(input_seed.encode("utf-8")).hexdigest()
+        _request, payload = build_qwen_request(
+            messages=_compiled_prompt_messages(compiled_prompt),
+            prompt_hash=prompt_hash,
+            input_payload_hash=input_payload_hash,
+            temperature=temperature,
+            max_tokens=int(token_budget),
+            timeout_seconds=self.timeout_seconds,
+            base_url=self.base_url,
+            model=self.model,
+        )
+        return call_qwen_vllm(payload, base_url=self.base_url, timeout=self.timeout_seconds)
 
 
 def assert_temperature_in_profile(

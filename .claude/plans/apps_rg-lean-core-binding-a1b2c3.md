@@ -58,11 +58,11 @@ This revision addresses 10 hardening requirements:
 | 6 | SectionSpec + SectionRunner Consolidation | DONE | P1 | 20 | Wave 5 |
 | 7 | U0 Through Exit Assumption Ledger | DONE | P2 | 2 | Wave 6 |
 | 8 | Gate Taxonomy Reset | UNVERIFIED | P2 | 10 | Wave 7 |
-| 9 | Judge Minimization + Token Efficiency | UNVERIFIED | P2 | 8 | Wave 8 |
-| 10A | Provider Abstraction Creation | NOT STARTED | P2 | 4 | Wave 9 |
+| 9 | Judge Minimization + Token Efficiency | VERIFIED | P2 | 8 | Wave 8 |
+| 10A | Provider Abstraction Creation | VERIFIED | P2 | 4 | Wave 9 |
 | 10B | Provider Parity Validation | NOT STARTED | P2 | 3 | Wave 10A |
 | 10C | external_default Target Transition | NOT STARTED | P2 | 3 | Wave 10B |
-| 11 | Artifact Diet | UNVERIFIED | P3 | 4 | Wave 10C |
+| 11 | Artifact Diet | VERIFIED | P3 | 4 | Wave 10C |
 | 12 | Test Matrix Execution | PARTIAL | P0 | 15 | Waves 1A-11 |
 
 ### Rebaseline Evidence (2026-06-07)
@@ -77,12 +77,12 @@ This revision addresses 10 hardening requirements:
 | 5 | `apps_rg/runtime/spine/section_contract_bundles.py` (`SectionFrontSpineBridge` + `SectionRunContractBundle`) | — |
 | 6 | `apps_rg/runtime/sections/section_spec.py` (`graph_as_claim_proof=False`, `graph_as_routing_support=True`, fact-bound guard) | Per-section YAML spec sweep not located at planned path; SectionRunner consolidation not audited |
 | 7 | `apps_rg/runtime/contracts/apps_rg_assumptions.yaml` created (17 assumptions, U0→Exit, all 7 stages; YAML valid; 0 owners reference concrete `agentic_core.runtime.*`) | C0/PA/L2/Exit owners name Port interfaces; dedicated `ports.py` still deferred (header note documents this) |
-| 8 | not audited | — |
-| 9 | not audited | — |
-| 10A | only pre-existing `qwen_vllm_provider.py` | `provider_gateway.py` + `external_provider.py` absent |
+| 8 | `apps_rg/runtime/contracts/gate_taxonomy.py`, `apps_rg/runtime/contracts/apps_rg_gate_taxonomy.yaml`, gate taxonomy tests | Wave 8 taxonomy verified separately; final acceptance row still tracks broader gate classification audit |
+| 9 | `apps_rg/runtime/section_cli_defaults.py`, `docs/reports/apps_rg/judge_minimization_wave9.md`, Wave 9 tests | LLM judge defaults compact/non-repairing; full-panel retained only where X2 still requires it |
+| 10A | `provider_gateway.py`, `external_provider.py`, `QwenVLLMProvider`, `provider_profiles.yaml` | Qwen remains default; external profiles selectable for Wave 10B parity |
 | 10B | none | `tests/integration/providers/test_provider_parity.py` absent |
 | 10C | none | depends on 10B |
-| 11 | not audited | — |
+| 11 | `apps_rg/runtime/artifact_diet.py`, `runtime_proof_layout.py`, `docs/reports/apps_rg/artifact_diet_wave11.md`, `test_artifact_diet_wave11.py` | Executed out of dependency order as a non-destructive manifest diet: legacy links retained; compact proof links + diet receipt added |
 | 12 | ratchet + briefing-bypass tests | No consolidated test matrix |
 
 ### Risk Register
@@ -1340,7 +1340,36 @@ assumptions:
 
 ## Wave 9 — Judge Minimization + Token Efficiency
 
-*(Unchanged from original plan - see original for details)*
+### Goal
+
+Make X1D judge defaults compact and explicit without weakening proof gates.
+
+### Delivered
+
+- Centralized the lane-aware judge default policy in `apps_rg/runtime/section_cli_defaults.py`.
+- Added `summarize_section_x1d_minimization_policy()` so tests and closeout reports can inspect the policy without duplicating constants.
+- Set advisory/low-risk composite lanes to one default judge:
+  - `competencies` -> `gemini_pro`
+  - `unify_bullets` -> `anthropic_claude`
+  - `ibm_bullets` -> `anthropic_claude`
+- Preserved full-panel defaults for lanes whose X2 `x2_x1d_required_judges_present` gates still require the complete provider set:
+  - `headline`
+  - `unify_narrative`
+  - `ibm_narrative`
+  - `executive_summary`
+  - `final_aggregate_resume`
+- Preserved explicit CLI/env overrides for diagnostics and adjudicator escalation.
+- Added closeout evidence in `docs/reports/apps_rg/judge_minimization_wave9.md`.
+
+### Acceptance Criteria
+
+- [x] Judge defaults are exported from one policy surface.
+- [x] Bullet lanes default to one composite judge.
+- [x] Competencies default to one advisory judge and remain optional for proof.
+- [x] Full-panel defaults remain where X2 still requires all provider rows.
+- [x] Judge packets remain compact `GRADE_ONLY` packets.
+- [x] Judge repair/rewrite remains forbidden by packet boundary.
+- [x] CLI/env overrides still win.
 
 ---
 
@@ -1358,9 +1387,9 @@ Create ProviderGateway and profile abstraction. Qwen remains functional.
 ```python
 """Provider Gateway abstraction for model execution.
 
-Wave 9a: Create abstraction. Both qwen and external providers functional.
-Wave 9b: Parity tests validate external = qwen quality.
-Wave 9c: external_default becomes default after parity proven.
+Wave 10A: Create abstraction. Both qwen and external providers functional.
+Wave 10B: Parity tests validate external = qwen quality.
+Wave 10C: external_default becomes default after parity proven.
 """
 
 from __future__ import annotations
@@ -1374,13 +1403,13 @@ from apps_rg.runtime.spine_contracts import CompiledPromptArtifact, SealedL2Arti
 class ProviderProfile(str, Enum):
     """Provider profile selection.
 
-    Wave 9a: Both functional. Qwen remains default.
-    Wave 9c: external_default becomes default after parity tests pass.
+    Wave 10A: Both functional. Qwen remains default.
+    Wave 10C: external_default becomes default after parity tests pass.
     """
     QWEN_VLLM = "qwen_vllm"
     EXTERNAL_CLAUDE = "external_claude"
     EXTERNAL_OPENAI = "external_openai"
-    EXTERNAL_DEFAULT = "external_default"  # Wave 9c target
+    EXTERNAL_DEFAULT = "external_default"  # Wave 10C target
 
 
 @runtime_checkable
@@ -1400,7 +1429,7 @@ class ModelProvider(Protocol):
 class ProviderGateway:
     """Gateway for provider selection and execution.
 
-    Wave 9a: Creates abstraction. Both qwen and external functional.
+    Wave 10A: Creates abstraction. Both qwen and external functional.
     """
 
     def __init__(self):
@@ -1433,7 +1462,7 @@ class ProviderGateway:
 ```python
 """Qwen/vLLM provider implementation.
 
-Remains fully functional during Wave 9a-9b.
+Remains fully functional during Wave 10A-10B.
 """
 
 from apps_rg.runtime.spine_contracts import CompiledPromptArtifact, SealedL2Artifact
@@ -1471,7 +1500,7 @@ from apps_rg.runtime.providers.provider_gateway import ModelProvider
 
 
 class ExternalProvider(ModelProvider):
-    """External API provider - functional but not default in Wave 9a."""
+    """External API provider - functional but not default in Wave 10A."""
 
     def __init__(self, api_key: str | None = None, base_url: str | None = None):
         self.api_key = api_key
@@ -1489,11 +1518,20 @@ class ExternalProvider(ModelProvider):
 ```
 
 ### Acceptance Criteria
-- [ ] ProviderGateway abstraction created
-- [ ] QwenVLLMProvider wrapped and functional
-- [ ] ExternalProvider created and functional
-- [ ] Both providers can be selected via configuration
-- [ ] Qwen remains default (no change to current behavior)
+- [x] ProviderGateway abstraction created
+- [x] QwenVLLMProvider wrapped and functional
+- [x] ExternalProvider created and functional
+- [x] Both providers can be selected via configuration
+- [x] Qwen remains default (no change to current behavior)
+
+### Closeout Evidence
+
+- `apps_rg/runtime/providers/provider_gateway.py`
+- `apps_rg/runtime/providers/external_provider.py`
+- `apps_rg/runtime/providers/qwen_vllm_provider.py`
+- `apps_rg/config/provider_profiles.yaml`
+- `tests/unit/apps_rg/test_provider_gateway_wave10.py`
+- `docs/reports/apps_rg/provider_abstraction_wave10a.md`
 
 ---
 
@@ -1511,8 +1549,8 @@ Validate external provider parity with Qwen before making external_default the t
 ```python
 """Provider parity validation tests.
 
-Wave 9b: Validate external provider quality equals or exceeds Qwen.
-Must pass before Wave 9c (external_default target).
+Wave 10B: Validate external provider quality equals or exceeds Qwen.
+Must pass before Wave 10C (external_default target).
 """
 
 import pytest
@@ -1566,7 +1604,7 @@ def test_all_sections_parity_suite(gateway):
 | ... | | | | |
 
 **Overall**: PASS / FAIL
-**Recommendation**: Proceed to Wave 9c / Fix parity gaps
+**Recommendation**: Proceed to Wave 10C / Fix parity gaps
 ```
 
 ### Acceptance Criteria
@@ -1574,7 +1612,7 @@ def test_all_sections_parity_suite(gateway):
 - [ ] All 7 sections tested
 - [ ] Quality threshold defined (external >= Qwen - 0.05)
 - [ ] Parity report template
-- [ ] Wave 9c conditional on parity PASS
+- [ ] Wave 10C conditional on parity PASS
 
 ---
 
@@ -1587,15 +1625,15 @@ Make external_default the default provider after parity proven.
 
 #### 1. Update Default Provider Selection
 
-**REQUIREMENT:** Only after Wave 9b parity PASS.
+**REQUIREMENT:** Only after Wave 10B parity PASS.
 
 ```python
 # In apps_rg/config/domain_contract/provider_profiles.yaml
 
-# Wave 9a-9b:
+# Wave 10A-10B:
 default_provider: qwen_vllm
 
-# Wave 9c (after parity PASS):
+# Wave 10C (after parity PASS):
 default_provider: external_default
 ```
 
@@ -1604,7 +1642,7 @@ default_provider: external_default
 ```markdown
 # Provider Default Migration Notice
 
-**Date**: [After Wave 9c]
+**Date**: [After Wave 10C]
 **Change**: Default provider changed from Qwen to external_default
 
 **Qwen Status**: Still supported as optional local provider
@@ -1621,7 +1659,29 @@ default_provider: external_default
 
 ## Wave 11 — Artifact Diet
 
-*(Unchanged from original plan - see original for details)*
+**Status**: VERIFIED 2026-06-07.
+
+Wave 11 was executed out of dependency order after Wave 10A. Because Wave 10B provider parity and Wave 10C default transition remain open, this wave intentionally avoids destructive artifact deletion or default-provider behavior changes.
+
+### Delivered
+- Added `apps_rg/runtime/artifact_diet.py` as the artifact classification SSOT.
+- Preserved legacy `artifact_links` in runtime proof manifests and latest-run pointers.
+- Added `artifact_links_compact` for reader-facing proof surfaces.
+- Added `artifact_diet` receipt metadata with proof-core, optional-proof, heavy-diagnostic, and unknown buckets.
+- Retained heavy diagnostic artifacts on disk while excluding them from compact links:
+  - `compiled_prompt.txt`
+  - `command_output.txt`
+  - `provider_response.json`
+  - `parsed_output.json`
+  - `prompt_selection_trace.json`
+- Published receipt: `docs/reports/apps_rg/artifact_diet_wave11.md`.
+
+### Acceptance Criteria
+- [x] Runtime proof manifests expose compact artifact links.
+- [x] Latest successful real-run pointers expose compact artifact links.
+- [x] Legacy artifact links are retained for backwards compatibility.
+- [x] Heavy diagnostics are retained on disk but removed from compact proof surfaces.
+- [x] Focused Wave 11 tests cover policy classification and manifest/pointer emission.
 
 ---
 
@@ -1691,13 +1751,14 @@ apps_rg lean-core target is complete when (checkboxes rebaselined 2026-06-07 aga
 12. [~] SectionSpec + SectionRunner remove duplicated mini-spines (spec done; runner consolidation unaudited)
 13. [x] SectionSpec defaults: graph_as_routing_support=true, graph_as_claim_proof=false
 14. [ ] gates are classified as release blocker, advisory, or debug metric (Wave 8 unaudited)
-15. [ ] LLM judges are compact, rare, and non-repairing (Wave 9 unaudited)
-16. [ ] Provider abstraction created (Wave 10A — not started)
+15. [x] LLM judges are compact, rare, and non-repairing (Wave 9 policy + tests)
+16. [x] Provider abstraction created (Wave 10A verified)
 17. [ ] Provider parity validated (Wave 10B — not started)
 18. [ ] external_default becomes default after parity (Wave 10C — not started)
-19. [ ] full run emits one coherent X3 disposition (not audited this pass)
-20. [ ] no durable writes occur outside UWG (not audited this pass)
-21. [ ] L6 remains post-run only (not audited this pass)
+19. [x] Runtime proof artifacts expose a compact reader-facing surface while preserving heavy diagnostics on disk (Wave 11)
+20. [ ] full run emits one coherent X3 disposition (not audited this pass)
+21. [ ] no durable writes occur outside UWG (not audited this pass)
+22. [ ] L6 remains post-run only (not audited this pass)
 
 ---
 
@@ -1716,7 +1777,7 @@ apps_rg lean-core target is complete when (checkboxes rebaselined 2026-06-07 aga
 | lane_runtime + lane_execution split | 5 | CONSOLIDATE | SectionRunner.run() | Single lifecycle method |
 | per-lane infer_product_quality | 5 | DELETE | common X2 validator | Consolidate validators |
 | `executive_summary_judge_regen_loop.py` | 8 | QUARANTINE | Deterministic X2 | Move to calibration/tools |
-| `qwen_vllm_provider.py` direct calls | 9a | WRAP in abstraction | ProviderGateway | Qwen still functional |
+| `qwen_vllm_provider.py` direct calls | 10A | WRAP in abstraction | ProviderGateway | Qwen still functional |
 
 ---
 

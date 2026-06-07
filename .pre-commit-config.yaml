@@ -334,7 +334,7 @@ repos:
         entry: py ops_scripts/ci/check_deferred_scope_markers.py --staged
         language: system
         pass_filenames: false
-        files: ^\.claude/plans/.*\.md$
+        files: ^(plans|\.claude/plans)/.*\.md$
         always_run: false
         require_serial: true
 
@@ -498,7 +498,7 @@ repos:
         entry: py ops_scripts/ci/check_graph_layer_evidence.py
         language: system
         pass_filenames: false
-        files: ^(\.claude/plans/.*\.md|ops_scripts/ci/baselines/graph_layer_evidence_baseline\.json|ops_scripts/ci/check_graph_layer_evidence\.py)$
+        files: ^((?:plans|\.claude/plans)/.*\.md|ops_scripts/ci/baselines/graph_layer_evidence_baseline\.json|ops_scripts/ci/check_graph_layer_evidence\.py)$
         always_run: false
         require_serial: true
 
@@ -630,7 +630,7 @@ repos:
         entry: py ops_scripts/ci/check_deferred_scope_markers.py
         language: system
         pass_filenames: false
-        files: ^\.claude/plans/.*\.md$
+        files: ^(plans|\.claude/plans)/.*\.md$
         always_run: false
         require_serial: true
 
@@ -728,7 +728,7 @@ repos:
         entry: py ops_scripts/ci/check_ag_queue_seed_markers.py
         language: system
         pass_filenames: false
-        files: ^\.claude/plans/.*\.md$
+        files: ^(plans|\.claude/plans)/.*\.md$
 
       # -- T7u: Plan–Notion Registration (Constitutional §36) ------------------------
       # Blocks a commit that adds a new .claude/plans/<slug>-<6hex>.md file
@@ -744,7 +744,7 @@ repos:
         entry: py ops_scripts/ci/check_plan_registration_freshness.py
         language: system
         pass_filenames: false
-        files: ^\.claude/plans/.*\.md$
+        files: ^(plans|\.claude/plans)/.*\.md$
 
       # -- T7s: Fort Knox Certification Integrity (Constitutional §32) ---------------
       # Three gates wired independently (separation of duties):

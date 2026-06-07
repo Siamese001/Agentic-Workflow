@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 
+from apps_rg.runtime.artifact_diet import build_artifact_diet_receipt, compact_artifact_links
 from apps_rg.runtime.run_bundle_index import emit_lane_runtime_proof_bundle_index
 from apps_rg.runtime.sections_root_manifest import require_manifest_for_modular_sections_root
 
@@ -341,6 +342,8 @@ def finalize_runtime_proof_run(
     cmd = command if command is not None else " ".join(sys.argv)
     run_dir_rel = rel_posix(artifact_dir, repo)
     artifact_links = collect_runtime_proof_artifact_links(repo, artifact_dir)
+    artifact_links_compact = compact_artifact_links(artifact_links)
+    artifact_diet = build_artifact_diet_receipt(artifact_links)
 
     manifest: dict[str, Any] = {
         "run_id": run_id,
@@ -353,6 +356,8 @@ def finalize_runtime_proof_run(
         "section_id": section_id,
         "run_dir_repo_relative": run_dir_rel,
         "artifact_links": artifact_links,
+        "artifact_links_compact": artifact_links_compact,
+        "artifact_diet": artifact_diet,
     }
     manifest.update({k: v for k, v in manifest_extras.items()})
     from apps_rg.runtime.bindings.section_lane_c0_metrics import c0_metrics_run_manifest_fields
@@ -376,6 +381,8 @@ def finalize_runtime_proof_run(
         "section_id": section_id,
         "run_dir_repo_relative": run_dir_rel,
         "artifact_links": artifact_links,
+        "artifact_links_compact": artifact_links_compact,
+        "artifact_diet": artifact_diet,
     }
     if "l2_output.json" in artifact_links:
         pointer["l2_output_repo_relative"] = artifact_links["l2_output.json"]  # guardian: allow-return-none-swallow -- P2 burndown: fail-soft optional boundary

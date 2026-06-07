@@ -87,17 +87,65 @@ def resolve_phase1_lane_allow_non_allow_exit_zero(cli_flag: bool) -> bool:
 
 
 COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = "gemini_pro"
+BULLET_COMPOSITE_DEFAULT_X1D_JUDGES: Final[str] = "anthropic_claude"
+UNIFY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
+IBM_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 
-# Bullet sections use one composite LLM judge by default (deterministic hard validator +
-# ONE batched composite judge + OPTIONAL adjudicator). unify_bullets already routes through
-# the single anthropic_claude pool selector; ibm_bullets defaults to the same single composite
-# judge here so it stops running the 3-provider panel on every run. The full panel
-# (gemini_pro,openai_chatgpt,anthropic_claude) is still reachable as the optional adjudicator
-# via an explicit ``--x1d-judges`` override or ``APPS_RG_E2E_X1D_JUDGES`` when a borderline
-# candidate (judge tie / low confidence / material risk on a high-value metric bullet) needs
-# a second opinion. IBM X2's required-judges gate already only checks anthropic_claude
-# (EMPLOYMENT_BULLET_JUDGE_PROVIDERS), so this changes the DEFAULT, not the proof contract.
-IBM_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = "anthropic_claude"
+# Wave 9 judge minimization policy:
+# - advisory lanes use one compact advisory judge;
+# - bullet lanes use one composite judge plus optional adjudicator escalation;
+# - lanes whose X2 wiring gates still require the full provider set keep the full panel.
+# Explicit CLI/env overrides still win, so operators can request the full panel for diagnosis.
+_SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
+    "competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
+    "professional_competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
+    "unify_bullets": UNIFY_BULLETS_DEFAULT_X1D_JUDGES,
+    "ibm_bullets": IBM_BULLETS_DEFAULT_X1D_JUDGES,
+}
+
+_SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
+    "competencies": "single_advisory_taxonomy_judge_optional_for_proof",
+    "professional_competencies": "single_advisory_taxonomy_judge_optional_for_proof",
+    "unify_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
+    "ibm_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
+    "headline": "full_panel_required_by_x2_judge_presence_gate",
+    "unify_narrative": "full_panel_required_by_x2_judge_presence_gate",
+    "ibm_narrative": "full_panel_required_by_x2_judge_presence_gate",
+    "executive_summary": "full_panel_required_by_x2_judge_presence_gate",
+}
+
+
+def resolve_section_default_x1d_judges(section_id: str | None = None) -> str:
+    """Return the Wave 9 minimized default CSV for a section, excluding env/CLI overrides."""
+    from apps_rg.runtime.section_judge_policy import normalize_section_id
+    from apps_rg.runtime.x1d_judge_policy import APPS_RG_E2E_DEFAULT_X1D_JUDGES
+
+    sid = normalize_section_id(str(section_id or ""))
+    return _SECTION_DEFAULT_X1D_JUDGES.get(sid, APPS_RG_E2E_DEFAULT_X1D_JUDGES)
+
+
+def summarize_section_x1d_minimization_policy() -> dict[str, dict[str, Any]]:
+    """Export reader-facing Wave 9 judge defaults for tests and closeout reports."""
+    from apps_rg.runtime.section_judge_policy import all_canonical_section_policies
+
+    out: dict[str, dict[str, Any]] = {}
+    for sid, policy in all_canonical_section_policies().items():
+        default_csv = resolve_section_default_x1d_judges(sid)
+        providers = [p.strip() for p in default_csv.split(",") if p.strip()]
+        out[sid] = {
+            "default_x1d_judges": providers,
+            "default_judge_count": len(providers),
+            "reason": _SECTION_X1D_DEFAULT_REASON.get(
+                sid,
+                "full_panel_required_by_x2_judge_presence_gate",
+            ),
+            "judge_required_for_proof": policy.judge_required_for_proof,
+            "judge_tier": policy.judge_tier.value,
+            "explicit_cli_or_env_override_allowed": True,
+            "repair_allowed": False,
+            "packet_scope": "compact_grade_only",
+        }
+    return out
 
 
 def resolve_cli_x1d_judges(
@@ -115,19 +163,12 @@ def resolve_cli_x1d_judges(
     An explicit ``--x1d-judges`` CSV or ``APPS_RG_E2E_X1D_JUDGES`` always wins (this is how the
     adjudicator panel is requested for borderline cases).
     """
-    from apps_rg.runtime.x1d_judge_policy import APPS_RG_E2E_DEFAULT_X1D_JUDGES
-
     if cli_value is not None and str(cli_value).strip():
         return str(cli_value).strip()
     env_csv = (os.environ.get("APPS_RG_E2E_X1D_JUDGES") or "").strip()
     if env_csv:
         return env_csv
-    sid = str(section_id or "").strip().lower()
-    if sid == "competencies":
-        return COMPETENCIES_DEFAULT_X1D_JUDGES
-    if sid == "ibm_bullets":
-        return IBM_BULLETS_DEFAULT_X1D_JUDGES
-    return APPS_RG_E2E_DEFAULT_X1D_JUDGES
+    return resolve_section_default_x1d_judges(section_id)
 
 
 def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, str]:
@@ -288,5 +329,7 @@ __all__ = [
     "resolve_cli_lane_provider",
     "resolve_cli_lane_provider_with_source",
     "resolve_cli_x1d_judges",
+    "resolve_section_default_x1d_judges",
+    "summarize_section_x1d_minimization_policy",
     "validate_executive_summary_mandatory_inputs",
 ]

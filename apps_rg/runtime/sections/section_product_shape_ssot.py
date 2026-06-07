@@ -444,7 +444,7 @@ def _ibm_bullets_shape() -> SectionProductShape:
             "x2_claim_ledger_claim_text_non_empty",
             "x2_ibm_no_rewrite_intensity_model",
         ),
-        style_gate_ids=(),
+        style_gate_ids=("x2_no_unify_runtime_terms",),
         required_any_text_patterns=(
             r"exactly\s+5",
             r"pool",

@@ -214,7 +214,7 @@ def create_plan_in_notion(
         slug: Plan slug (kebab-case-6hex, e.g., 'my-plan-abc123')
         summary: Human-readable summary (prose)
         ai_summary: Bullet-style AI summary (high-signal format)
-        plan_file_path: Optional override. Default: .claude/plans/{slug}.md
+        plan_file_path: Optional override. Default: plans/{slug}.md
         force_status: "Completed" for retrospective plans only. Default "Not Started".
     
     Returns:
@@ -264,8 +264,10 @@ def create_plan_in_notion(
         )
         raise
     
-    # Build default path if not provided
-    effective_path = plan_file_path or f".claude/plans/{slug}.md"
+    # Build default path if not provided.
+    # Canonical SSOT is repo-root plans/ (relocated out of .claude/ to avoid the
+    # Claude Code .claude/ edit-guard); plan relocate-plans-ssot-outside-claude-c1a17d.
+    effective_path = plan_file_path or f"plans/{slug}.md"
     
     # Phase 1.3: Build payload
     payload = _build_payload(

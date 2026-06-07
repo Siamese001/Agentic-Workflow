@@ -49,6 +49,9 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
+# Forward-only relocation (plan relocate-plans-ssot-outside-claude-c1a17d):
+# canonical NEW plans live in repo-root plans/; .claude/plans/ stays legacy-valid.
+PLAN_DIRS = [REPO_ROOT / "plans", PLANS_DIR]
 REPORT_OUT = REPO_ROOT / "artifacts" / "ci" / "plan_freshness_gate.json"
 
 sys.path.insert(0, str(REPO_ROOT))
@@ -357,19 +360,19 @@ def evaluate_all_plans(config: Config) -> list[Finding]:
         )
 
     # Scan all plan files
-    if not PLANS_DIR.exists():
+    if not any(d.exists() for d in PLAN_DIRS):
         findings.append(
             Finding(
                 plan_slug="_gate_",
                 check_type="no_plans_dir",
                 severity="ERROR",
-                message=f"Plans directory not found: {PLANS_DIR}",
+                message=f"Plans directory not found: {PLAN_DIRS}",
                 reason_code="PLANS_DIR_MISSING",
             )
         )
         return findings
 
-    plan_files = list(PLANS_DIR.glob("*.md"))
+    plan_files = [f for d in PLAN_DIRS if d.is_dir() for f in d.glob("*.md")]
 
     if not plan_files:
         findings.append(
