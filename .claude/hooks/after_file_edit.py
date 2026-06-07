@@ -21,7 +21,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 def _trigger_mcp_sync(file_path: str) -> None:
     if not file_path.lower().endswith(".cursor/mcp.json"):
         return
-    sync_script = REPO_ROOT / ".cursor" / "scripts" / "post_write_mcp_config_sync.py"
+    sync_script = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_write_mcp_config_sync.py"
     if not sync_script.exists():
         return
     subprocess.run(

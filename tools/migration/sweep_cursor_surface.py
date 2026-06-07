@@ -26,7 +26,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 SCAN_ROOTS = ["ops_scripts", "tools", "agentic_core", "tests", "config",
-              ".claude/rules", ".claude/skills", ".claude/hooks", ".claude/commands"]
+              ".claude/rules", ".claude/skills", ".claude/hooks", ".claude/commands",
+              ".claude/governance"]
 SCAN_ROOT_GLOBS = ["apps_*"]
 SCAN_FILES = ["CLAUDE.md", "AGENTS.md", ".pre-commit-config.yaml"]
 
