@@ -1,0 +1,28 @@
+# apps_underwriting_ai — C0 Evidence Sufficiency Gate fixture: MALFORMED INPUT
+#
+# Scenario: the submitted_documents payload is the wrong shape. Entries are not
+# document dicts (a bare string and a null), there is no document_class on the
+# one dict present, and required classes are absent. The gate must FAIL CLOSED:
+# never raise, always return a FAIL FinalEvidenceContract with
+# evidence_sufficiency=insufficient and missing required classes flagged.
+#
+# The test loader passes `submitted_documents` straight into
+# UnderwritingC0Adapter.run(); robustness to junk entries is the point.
+#
+# SYNTHETIC-DATA NOTICE: every value below is fabricated for the demo. No real
+# applicant, lender, bank, or credit decision is represented. No real PII.
+
+fixture_id: c0-malformed-001
+data_mode: SYNTHETIC_DEMO_ONLY
+demo_policy_hash: sha256-demo-policy-standard-v1-aabbcc
+
+expected_c0:
+  c0_state: FAIL
+  evidence_sufficiency: insufficient
+  never_raises: true
+
+submitted_documents:
+  - "this is not a document dict"
+  - null
+  - average_monthly_balance: 8500.0  # no document_class key -> unclassifiable
+    account_tenure_months: 36

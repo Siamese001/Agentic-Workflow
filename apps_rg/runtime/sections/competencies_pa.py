@@ -259,6 +259,20 @@ def build_competencies_assembly_input(
         "its graph_skill_node_ids. Base resume and archive competencies are calibration/provenance only "
         "— never copy or paraphrase their prose. Preserve or exceed the base resume's rigor and "
         "senior executive engineering specificity.\n"
+        "- REQUIRED FAMILY COVERAGE: across the 6 categories' terms (collectively), you MUST include "
+        "fact-supported vocabulary spanning ALL 7 SVP-Engineering capability families. Do not drop any "
+        "family. Use graph/fact-backed terms that name each family's mechanisms:\n"
+        "    1. Agentic Platform — agentic / multi-agent orchestration, GraphRAG, agent routing\n"
+        "    2. Runtime Governance — runtime policy gates, deterministic guardrails, sandboxed execution\n"
+        "    3. Retrieval & Context — retrieval quality, vector / embedding search, context assembly\n"
+        "    4. LLMOps & Reliability — evaluation gates, telemetry, observability, monitoring, reliability\n"
+        "    5. Distributed Infrastructure — distributed cloud, microservices, Databricks Lakehouse, streaming\n"
+        "    6. Productization — platform commercialization, productization, roadmap, go-to-market\n"
+        "    7. Engineering Leadership — engineering organization, operating model, team scaling\n"
+        "  Each such term must still trace to allowed source_fact_ids (no JD-only / invented coverage). "
+        "Families 4 (LLMOps) and 5 (Distributed Infra) are frequently under-covered — explicitly include "
+        "fact-supported terms for them (e.g. \"audit-grade observability\", \"evaluation gauntlet design\" "
+        "for LLMOps; \"Lakehouse modernization\", \"distributed execution\" for Distributed Infra).\n"
     )
 
     return PromptAssemblyInput(

@@ -6,6 +6,7 @@ archive material are calibration/provenance only — never prose hydration.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -204,8 +205,18 @@ def format_competency_capability_evidence_pack(
             f"  base_rigor_family_match: {rec['base_rigor_family_match']}",
             f"  seniority_signal: {rec['seniority_signal']} | technical_density_signal: {rec['technical_density_signal']}",
             f"  target_relevance_rationale: {rec['target_relevance_rationale']}",
-            "  vocabulary_anchors (structured anchors only — no base/archive prose):",
+            "  bound_skills (graph authority — vocabulary anchors only, not proof on their own):",
         ]
+        for sk in rec.get("bound_skills") or []:
+            if not isinstance(sk, dict):
+                continue
+            sid = sk.get("skill_id")
+            phrases = ", ".join(list(sk.get("allowed_phrases") or [])[:5])
+            if phrases:
+                lines.append(f"    - {sid} | allowed_phrases: {phrases}")
+            else:
+                lines.append(f"    - {sid}")
+        lines.append("  vocabulary_anchors (structured anchors only — no base/archive prose):")
         for anchor in rec.get("vocabulary_anchors") or []:
             lines.append(f"    - {anchor}")
         if rec.get("employer_bindings") or rec.get("role_episode_bindings"):
@@ -252,9 +263,235 @@ def stamp_competency_bundle_bindings(
     return competencies
 
 
+# Map bundle capability_family -> the family key used by the X2 coverage gate
+# (apps_rg.runtime.validators.competencies_quality_x2.REQUIRED_CAPABILITY_FAMILIES).
+_BUNDLE_TO_GATE_FAMILY: dict[str, str] = {
+    "agentic_platforms": "agentic_platform",
+    "runtime_governance": "runtime_governance",
+    "retrieval_context_engineering": "retrieval_context",
+    "llmops_reliability": "llmops",
+    "distributed_systems_engineering": "distributed_infra",
+    "platform_productization": "productization",
+    "engineering_leadership": "engineering_leadership",
+}
+
+
+def _family_tokenize(text: str) -> set[str]:
+    return set(re.findall(r"[a-z0-9]+", str(text or "").lower()))
+
+
+def _make_anchor_term(rec: dict[str, Any], anchor: str, fid: str) -> dict[str, Any]:
+    display = str(anchor)
+    if display.islower():
+        display = display.title()
+    skill_ids = [str(s) for s in (rec.get("graph_skill_node_ids") or []) if str(s).strip()]
+    return {
+        "text": display,
+        "term": display,
+        "source_fact_id": fid,
+        "source_fact_ids": [fid],
+        "source_skill_ids": skill_ids,
+        "support_class": "FACT_ONLY",
+    }
+
+
+def _nonempty_term_count(cat: dict[str, Any]) -> int:
+    n = 0
+    for t in cat.get("terms") or []:
+        if isinstance(t, dict) and str(t.get("text") or t.get("term") or "").strip():
+            n += 1
+        elif isinstance(t, str) and t.strip():
+            n += 1
+    return n
+
+
+def _existing_term_norms(cat: dict[str, Any]) -> set[str]:
+    out: set[str] = set()
+    for t in cat.get("terms") or []:
+        txt = t.get("text") or t.get("term") if isinstance(t, dict) else str(t)
+        if txt:
+            out.add(str(txt).strip().lower())
+    return out
+
+
+def augment_bound_category_family_terms(
+    categories: list[dict[str, Any]],
+    *,
+    packet: dict[str, Any] | None,
+    allowed_fact_ids: set[str] | None,
+) -> list[dict[str, Any]]:
+    """Inject bundle-approved, fact-grounded anchor terms into bound categories (Author-Gate
+    dec_19e9daa115a62cf3a, anchor_injection).
+
+    The live model reliably frames the LLMOps-bound category as leadership (omitting
+    observability/evaluation vocabulary) and under-generates some categories below the 3-term
+    executive floor. This deterministic augmentation runs after bundle stamping and does two
+    fact-grounded things using each category's *bound bundle* only:
+
+    1. Capability-family coverage: when a required family is not lexically covered across the
+       emitted competencies, append one of the bound bundle's ``vocabulary_anchors`` whose tokens
+       hit that family.
+    2. Per-category term floor: top each bound category up to ``MIN_ITEMS_PER_CATEGORY`` graph-backed
+       terms using its bundle's remaining anchors.
+
+    Injected terms carry the bundle's genuine ``linked_source_fact_ids`` (restricted to the allowed
+    pool) plus its ``graph_skill_node_ids`` as ``source_skill_ids`` — so they are graph-backed and
+    not ``default_fid_backfill``. No anchor is injected when the bundle has no allowed linked fact
+    (no fabricated provenance).
+    """
+    if not isinstance(categories, list):
+        return categories
+    pkt = packet or build_competency_capability_section_packet("competencies")
+    by_id: dict[str, dict[str, Any]] = {
+        str(r.get("competency_bundle_id")): r
+        for r in (pkt.get("competency_bundles") or [])
+        if isinstance(r, dict) and r.get("competency_bundle_id")
+    }
+    if not by_id:
+        return categories
+
+    try:
+        from apps_rg.runtime.validators.competencies_quality_x2 import (
+            REQUIRED_CAPABILITY_FAMILIES as _GATE_FAMILY_TOKENS,
+        )
+    except (ImportError, AttributeError):  # guardian: allow-default-fallback -- optional coverage augmentation
+        return categories
+    try:
+        from apps_rg.runtime.sections.competencies_rigor import MAX_ITEMS_PER_CATEGORY, MIN_ITEMS_PER_CATEGORY
+    except (ImportError, AttributeError):  # guardian: allow-default-fallback -- optional coverage augmentation
+        MIN_ITEMS_PER_CATEGORY, MAX_ITEMS_PER_CATEGORY = 3, 6
+
+    allowed = {str(x) for x in (allowed_fact_ids or set())}
+
+    def _allowed_fid(rec: dict[str, Any]) -> str | None:
+        for f in rec.get("linked_source_fact_ids") or []:
+            if str(f) in allowed:
+                return str(f)
+        return None
+
+    def _append(cat: dict[str, Any], rec: dict[str, Any], anchor: str, fid: str) -> None:
+        cat.setdefault("terms", []).append(_make_anchor_term(rec, anchor, fid))
+        existing = list(cat.get("source_fact_ids") or [])
+        if fid not in existing:
+            existing.append(fid)
+        cat["source_fact_ids"] = existing
+
+    covered_tokens: set[str] = set()
+    for cat in categories:
+        if not isinstance(cat, dict):
+            continue
+        for term in cat.get("terms") or []:
+            if isinstance(term, dict):
+                covered_tokens |= _family_tokenize(term.get("text") or term.get("term") or "")
+            else:
+                covered_tokens |= _family_tokenize(str(term))
+        covered_tokens |= _family_tokenize(cat.get("category_label") or "")
+
+    # Pass 0: required-family coverage even when NO category is bound to the missing family's
+    # bundle. The live model does not deterministically bind a category to every required
+    # capability family (e.g. distributed_infra may be omitted entirely). For each required
+    # gate family not lexically covered, locate its bundle (by _BUNDLE_TO_GATE_FAMILY), then
+    # inject one of its fact-grounded vocabulary_anchors into the bound category for that
+    # bundle if present, else into the category with the most headroom — stamping the bundle
+    # binding so the injected term is graph-backed. No injection without an allowed linked fact.
+    rec_by_gate_family: dict[str, dict[str, Any]] = {}
+    for _rec in by_id.values():
+        gf = _BUNDLE_TO_GATE_FAMILY.get(str(_rec.get("capability_family") or ""))
+        if gf and gf not in rec_by_gate_family and _allowed_fid(_rec):
+            rec_by_gate_family[gf] = _rec
+    bound_gate_families: set[str] = set()
+    for cat in categories:
+        if isinstance(cat, dict):
+            _r = by_id.get(str(cat.get("competency_bundle_id") or ""))
+            if _r:
+                _gf = _BUNDLE_TO_GATE_FAMILY.get(str(_r.get("capability_family") or ""))
+                if _gf:
+                    bound_gate_families.add(_gf)
+    for gate_family, family_tokens in _GATE_FAMILY_TOKENS.items():
+        if covered_tokens & set(family_tokens):
+            continue
+        if gate_family in bound_gate_families:
+            continue  # Pass 1 will handle bound categories
+        rec = rec_by_gate_family.get(gate_family)
+        if not rec:
+            continue
+        fid = _allowed_fid(rec)
+        if not fid:
+            continue
+        anchor = next(
+            (
+                a
+                for a in (rec.get("vocabulary_anchors") or [])
+                if _family_tokenize(a) & set(family_tokens)
+            ),
+            None,
+        )
+        if not anchor:
+            continue
+        target = None
+        for cat in categories:
+            if not isinstance(cat, dict):
+                continue
+            if _nonempty_term_count(cat) < MAX_ITEMS_PER_CATEGORY and str(anchor).strip().lower() not in _existing_term_norms(cat):
+                if target is None or _nonempty_term_count(cat) < _nonempty_term_count(target):
+                    target = cat
+        if target is None:
+            continue
+        _append(target, rec, anchor, fid)
+        covered_tokens |= _family_tokenize(anchor)
+
+    # Pass 1: capability-family coverage.
+    for cat in categories:
+        if not isinstance(cat, dict):
+            continue
+        rec = by_id.get(str(cat.get("competency_bundle_id") or ""))
+        if not rec:
+            continue
+        gate_family = _BUNDLE_TO_GATE_FAMILY.get(str(rec.get("capability_family") or ""))
+        family_tokens = _GATE_FAMILY_TOKENS.get(gate_family) if gate_family else None
+        if not family_tokens or (covered_tokens & set(family_tokens)):
+            continue
+        fid = _allowed_fid(rec)
+        if not fid:
+            continue
+        seen = _existing_term_norms(cat)
+        anchor = next(
+            (
+                a
+                for a in (rec.get("vocabulary_anchors") or [])
+                if (_family_tokenize(a) & set(family_tokens)) and str(a).strip().lower() not in seen
+            ),
+            None,
+        )
+        if not anchor or _nonempty_term_count(cat) >= MAX_ITEMS_PER_CATEGORY:
+            continue
+        _append(cat, rec, anchor, fid)
+        covered_tokens |= _family_tokenize(anchor)
+
+    # Pass 2: per-category term floor (graph-backed bundle anchors only).
+    for cat in categories:
+        if not isinstance(cat, dict):
+            continue
+        rec = by_id.get(str(cat.get("competency_bundle_id") or ""))
+        if not rec:
+            continue
+        fid = _allowed_fid(rec)
+        if not fid:
+            continue
+        for anchor in rec.get("vocabulary_anchors") or []:
+            if _nonempty_term_count(cat) >= MIN_ITEMS_PER_CATEGORY:
+                break
+            if str(anchor).strip().lower() in _existing_term_norms(cat):
+                continue
+            _append(cat, rec, anchor, fid)
+
+    return categories
+
+
 __all__ = [
     "COMPETENCY_CAPABILITY_EVIDENCE_PACK_MARKER",
     "attach_competency_bundles_to_proof_pool_metadata",
+    "augment_bound_category_family_terms",
     "build_competency_capability_section_packet",
     "format_competency_capability_evidence_pack",
     "is_flat_taxonomy_only_packet",

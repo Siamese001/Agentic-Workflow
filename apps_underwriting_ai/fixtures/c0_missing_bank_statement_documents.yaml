@@ -1,0 +1,28 @@
+# apps_underwriting_ai — C0 Evidence Sufficiency Gate fixture: MISSING BANK_STATEMENT
+#
+# Scenario: required BANK_STATEMENT is absent. TAX_RETURN and CREDIT_REPORT are
+# present and clean. Because a required class is missing, the gate must NOT
+# return PASS — it returns FAIL or WEAK_WITH_CAVEATS depending on support_score,
+# and BANK_STATEMENT appears in missing_evidence_flags.
+#
+# SYNTHETIC-DATA NOTICE: every value below is fabricated for the demo. No real
+# applicant, lender, bank, or credit decision is represented. No real PII.
+
+fixture_id: c0-missing-bank-statement-001
+data_mode: SYNTHETIC_DEMO_ONLY
+demo_policy_hash: sha256-demo-policy-standard-v1-aabbcc
+
+expected_c0:
+  c0_state_not: PASS
+  missing_evidence_flags_includes: BANK_STATEMENT
+
+submitted_documents:
+  - document_class: TAX_RETURN
+    annual_gross_income: 95000.0
+    tax_year: 2025
+    filing_status: single
+  - document_class: CREDIT_REPORT
+    credit_score: 740
+    derogatory_mark_count: 0
+    utilization_rate: 0.18
+    inquiry_count_12m: 1

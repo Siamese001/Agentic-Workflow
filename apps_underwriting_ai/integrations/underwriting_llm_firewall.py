@@ -30,6 +30,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import uuid
 from dataclasses import dataclass, field
 from typing import Any
@@ -136,6 +137,67 @@ def _check_immutability(
 
 
 # ---------------------------------------------------------------------------
+# C0 bundle validation + deterministic evidence-citation allowlist
+# ---------------------------------------------------------------------------
+
+# Matches the deterministic evidence_id shape emitted by the C0 adapter,
+# e.g. "ev-BANK_STA-1a2b3c4d5e6f". Token-bounded so it does not swallow
+# trailing punctuation. This is a plain regex, NOT an LLM judge.
+_EVIDENCE_ID_PATTERN = re.compile(r"\bev-[A-Z0-9]{1,8}-[0-9a-f]{6,16}\b")
+
+_EXPECTED_C0_MODE = "SUBMITTED_DOCUMENT_EVIDENCE_ONLY"
+
+
+def _validate_c0_bundle(c0_bundle: Any) -> tuple[bool, str, set[str]]:
+    """Deterministically validate the FinalEvidenceContract bundle.
+
+    Returns (ok, failure_reason, allowed_evidence_ids).
+
+    Checks (no model call):
+      - c0_bundle is a dict with an evidence_ids list
+      - c0_bundle["open_web_blocked"] is True
+      - c0_bundle["c0_mode"] == SUBMITTED_DOCUMENT_EVIDENCE_ONLY
+      - extracted_span_map keys (if present) do not introduce IDs that are
+        absent from evidence_ids (the span map must be a subset)
+    """
+    if not isinstance(c0_bundle, dict):
+        return False, "invalid_c0_bundle", set()
+
+    evidence_ids = c0_bundle.get("evidence_ids")
+    if not isinstance(evidence_ids, list):
+        return False, "invalid_c0_bundle", set()
+    allowed = {str(e) for e in evidence_ids}
+
+    if c0_bundle.get("open_web_blocked") is not True:
+        return False, "open_web_not_blocked", allowed
+    if c0_bundle.get("c0_mode") != _EXPECTED_C0_MODE:
+        return False, "invalid_c0_mode", allowed
+
+    span_map = c0_bundle.get("extracted_span_map")
+    if isinstance(span_map, dict):
+        unsupported = {str(k) for k in span_map} - allowed
+        if unsupported:
+            return False, "span_map_not_subset_of_evidence_ids", allowed
+
+    return True, "none", allowed
+
+
+def _rationale_cites_unknown_evidence(
+    rationale: str, allowed_evidence_ids: set[str]
+) -> bool:
+    """True when the rationale cites an ``ev-…`` ID absent from the contract.
+
+    Purely deterministic string matching against the C0 evidence_id shape —
+    no second LLM, no semantic judgment. Any cited ID that is not in
+    ``allowed_evidence_ids`` is a fabricated citation.
+    """
+    for match in _EVIDENCE_ID_PATTERN.findall(rationale or ""):
+        if match not in allowed_evidence_ids:
+            return True
+    return False
+
+
+# ---------------------------------------------------------------------------
 # Core firewall class
 # ---------------------------------------------------------------------------
 
@@ -202,6 +264,24 @@ class UnderwritingLLMFirewall:
         artifact_id = f"fw-{uuid.uuid4().hex[:16]}"
         verdict_hash = _hash(verdict)
         reason_codes_hash = _hash(sorted(reason_codes))
+
+        # ------------------------------------------------------------------ #
+        # Step 0 — deterministic C0 bundle validation (before any LLM call).
+        # A malformed bundle, an open-web-not-blocked bundle, or a span map
+        # that introduces unsupported evidence IDs forces the deterministic
+        # rationale. This is the allowlist source for the post-call check.
+        # ------------------------------------------------------------------ #
+        bundle_ok, bundle_reason, allowed_evidence_ids = _validate_c0_bundle(c0_bundle)
+        if not bundle_ok:
+            return FirewallResult(
+                rationale=deterministic_rationale,
+                deterministic_fallback_used=True,
+                firewall_passed=False,
+                artifact_id=artifact_id,
+                verdict_hash=verdict_hash,
+                reason_codes_hash=reason_codes_hash,
+                failure_reason=bundle_reason,
+            )
 
         # ------------------------------------------------------------------ #
         # Step 1 — PA compilation (must precede any LLM call)
@@ -337,6 +417,29 @@ class UnderwritingLLMFirewall:
                 reason_codes_hash=reason_codes_hash,
                 failure_reason=imm_reason,
                 immutability_violation=True,
+                audit_refs=artifact.audit_refs,
+            )
+
+        # ------------------------------------------------------------------ #
+        # Step 4 — deterministic evidence-citation allowlist.
+        # The LLM owns prose only. If its rationale cites an ev-… evidence ID
+        # that is NOT in the FinalEvidenceContract's evidence_ids, the citation
+        # is fabricated and the whole rationale is rejected in favor of the
+        # deterministic one. Pure string matching — no second model.
+        # ------------------------------------------------------------------ #
+        if _rationale_cites_unknown_evidence(llm_rationale, allowed_evidence_ids):
+            _LOGGER.warning(
+                "[apps_underwriting_ai] LLM firewall rejected fabricated evidence citation."
+            )
+            return FirewallResult(
+                rationale=deterministic_rationale,
+                deterministic_fallback_used=True,
+                firewall_passed=False,
+                artifact_id=artifact_id,
+                artifact_hash=artifact.artifact_hash,
+                verdict_hash=verdict_hash,
+                reason_codes_hash=reason_codes_hash,
+                failure_reason="unsupported_evidence_id",
                 audit_refs=artifact.audit_refs,
             )
 

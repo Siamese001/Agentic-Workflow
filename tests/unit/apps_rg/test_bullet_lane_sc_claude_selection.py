@@ -39,20 +39,27 @@ from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 def test_bullet_pool_lanes_use_distinct_profile_from_narrative() -> None:
     assert section_reasoning_profile("unify_bullets").tier is ReasoningIntensityTier.T2_QUALITY_SECTION
     assert section_reasoning_profile("unify_narrative").tier is ReasoningIntensityTier.T3_CRITICAL_SECTION
+    # Variance-class redesign: bullet lanes use the Claude pool selector (generation
+    # variance handled by selection, not sampling) while narratives are single-path HTTP
+    # with SC=4 as a floor. Distinctness is now tier + pool-vs-singleton path, not SC>SC.
     assert (
         section_reasoning_profile("unify_bullets").self_consistency_samples
-        > section_reasoning_profile("unify_narrative").self_consistency_samples
+        >= section_reasoning_profile("unify_narrative").self_consistency_samples
     )
 
 
 def test_narrative_lanes_declare_single_path_sc() -> None:
+    # Variance-class redesign: exec summary SC=5 stays dominant; narrative SC floored at 4.0
+    # (was 1.0) so single-path narratives still get minimal self-consistency headroom.
     assert section_reasoning_profile("executive_summary").self_consistency_samples == 5.0
-    assert section_reasoning_profile("unify_narrative").self_consistency_samples == 1.0
+    assert section_reasoning_profile("unify_narrative").self_consistency_samples == 4.0
 
 
 def test_temperature_ladder_respects_bounds() -> None:
-    ladder = temperature_ladder(0.38, SC_PATH_COUNT_BY_LANE["unify_bullets"], bounds=(0.35, 0.55))
-    assert len(ladder) == 15
+    n_paths = SC_PATH_COUNT_BY_LANE["unify_bullets"]
+    ladder = temperature_ladder(0.38, n_paths, bounds=(0.35, 0.55))
+    # Variance-class alignment (2026-06): ladder length tracks the (reduced) SC path count.
+    assert len(ladder) == n_paths
     assert all(0.35 <= t <= 0.55 for t in ladder)
     assert ladder[0] < ladder[-1]
 
@@ -187,14 +194,17 @@ def test_claude_selection_mocked_falls_back(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_self_consistency_path_count_for_competencies() -> None:
-    assert self_consistency_path_count("competencies") == 10
+    # Variance-class alignment (2026-06): candidate-category pool 10 -> 8 (>= final 6).
+    assert self_consistency_path_count("competencies") == 8
 
 
 def test_employment_bullet_path_counts() -> None:
-    assert self_consistency_path_count("unify_bullets") == 15
-    assert self_consistency_path_count("ibm_bullets") == 12
-    assert SC_PATH_COUNT_BY_LANE["unify_bullets"] == 15
-    assert SC_PATH_COUNT_BY_LANE["ibm_bullets"] == 12
+    # Variance-class alignment (2026-06): generation SC 15/12 -> 4 over FIXED slot count
+    # (unify=6, ibm=5). Selection rigor (Claude pool selector + min_score + X2) unchanged.
+    assert self_consistency_path_count("unify_bullets") == 4
+    assert self_consistency_path_count("ibm_bullets") == 4
+    assert SC_PATH_COUNT_BY_LANE["unify_bullets"] == 4
+    assert SC_PATH_COUNT_BY_LANE["ibm_bullets"] == 4
 
 
 def test_employment_targeting_includes_jd_briefing_and_pool_contract() -> None:
@@ -211,14 +221,17 @@ def test_employment_targeting_includes_jd_briefing_and_pool_contract() -> None:
     )
     assert "jd_text" in ctx and "briefing" in ctx
     assert "rewrite_intensity" not in ctx
-    assert ctx["pool_path_count"] == 15
+    # Variance-class alignment (2026-06): pool path count 15 -> 4 over fixed 6 slots.
+    assert ctx["pool_path_count"] == 4
     assert ctx["final_bullet_count"] == 6
     assert ctx["min_selection_score"] == pytest.approx(min_selection_score_for_lane("unify_bullets"))
 
 
 def test_section_profiles_unify_15_ibm_12() -> None:
-    assert section_reasoning_profile("unify_bullets").self_consistency_samples == 15.0
-    assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 12.0
+    # Variance-class alignment (2026-06): profile SC for bullet lanes is 4.0 (was 15/12);
+    # generation variance is handled by the Claude pool selector + X2 gates, not sampling.
+    assert section_reasoning_profile("unify_bullets").self_consistency_samples == 4.0
+    assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 4.0
 
 
 def test_employment_pool_generation_mode_detected() -> None:

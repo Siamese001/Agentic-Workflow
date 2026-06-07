@@ -392,18 +392,32 @@ def run_competencies_lane_execution(
         )
         if pp_meta.get("competency_capability_bundle_consumption"):
             from apps_rg.runtime.sections.competency_capability_evidence import (
+                augment_bound_category_family_terms,
                 stamp_competency_bundle_bindings,
             )
 
             packet = pp_meta.get("competency_capability_section_packet")
+            _pkt = packet if isinstance(packet, dict) else None
             stamp_competency_bundle_bindings(
                 parsed.get("categories") or [],
-                packet=packet if isinstance(packet, dict) else None,
+                packet=_pkt,
             )
             stamp_competency_bundle_bindings(
                 parsed.get("competencies") or [],
-                packet=packet if isinstance(packet, dict) else None,
+                packet=_pkt,
             )
+            augment_bound_category_family_terms(
+                parsed.get("categories") or [],
+                packet=_pkt,
+                allowed_fact_ids=allowed_fact_ids,
+            )
+            augment_bound_category_family_terms(
+                parsed.get("competencies") or [],
+                packet=_pkt,
+                allowed_fact_ids=allowed_fact_ids,
+            )
+            # Injected anchor terms need claim_ledger rows so x2_all_terms_source_fact_ids holds.
+            rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
         _post_finalize = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
         if _post_finalize != _pre_finalize:
             record_deterministic_rewrite(

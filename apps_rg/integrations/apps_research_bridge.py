@@ -118,9 +118,10 @@ class AppsResearchBridge:
         from apps_research.integrations.governed_research_run import GovernedResearchRun
         from apps_research.types.research_types import ResearchRequest
 
-        topic = f"{company_name} company briefing for {job_title or 'target role'}"
+        # Topic is the company entity only — the role/JD live in jd_context so
+        # they never pollute company identification in the targeting route.
         research_request = ResearchRequest(
-            topic=topic,
+            topic=company_name,
             mode="brief",
             audience_style="executive",
             depth_profile="COMPANY_BRIEF_STANDARD",
@@ -132,10 +133,10 @@ class AppsResearchBridge:
                 "run_id": run_id,
                 "output_format": "apps_rg_targeting_brief_v1",
                 "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
-                "content": (
-                    f"Target company: {company_name}\n"
-                    f"Target role: {job_title or 'target role'}\n"
-                ),
+                # JD relevance context only — never used to identify the company.
+                "jd_context": {
+                    "role": job_title or "target role",
+                },
             },
         )
         runner = GovernedResearchRun()
@@ -185,12 +186,46 @@ class AppsResearchBridge:
             or getattr(raw, "support_coverage", 0.0)
             or 0.0
         )
+        # The targeting route returns a sealed, contract-valid company_brief_text.
+        # Reject missing or contract-invalid briefs (fail closed). No generic
+        # "Delegated company research briefing" evidence-label fallback.
         brief_text = str(getattr(raw, "company_brief_text", "") or "").strip()
-        if not brief_text and evidence_items:
-            lines = [f"- {ev.label}" for ev in evidence_items if ev.label]
-            brief_text = (
-                f"Delegated company research briefing.\n\n"
-                + "\n".join(lines[:40])
+        block_reason = ""
+        is_blocked = bool(getattr(raw, "is_blocked", False))
+        if not is_blocked:
+            if not brief_text:
+                is_blocked = True
+                block_reason = "missing_company_brief_text"
+            else:
+                from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
+                    validate_targeting_brief_text,
+                )
+
+                validation = validate_targeting_brief_text(brief_text)
+                if not validation.valid:
+                    is_blocked = True
+                    block_reason = (
+                        "contract_invalid_company_brief_text:"
+                        + ",".join(validation.violations[:5])
+                    )
+                    brief_text = ""
+
+        if is_blocked:
+            return ResearchResult(
+                run_id=str(getattr(raw, "run_id", run_id) or run_id),
+                trace_id=trace_id,
+                request_id=request_id,
+                is_blocked=True,
+                block_reason=block_reason or str(getattr(raw, "block_reason", "") or "blocked"),
+                is_stale=bool(getattr(raw, "is_stale", False)),
+                age_days=float(getattr(raw, "age_days", 0.0)),
+                evidence_items=evidence_items,
+                confidence_score=confidence,
+                result_hash="",
+                company_brief_hash="",
+                fetch_duration_ms=time.time() * 1000.0 - t_start,
+                audit_ref=trace_id,
+                company_brief_text="",
             )
 
         result_hash = hashlib.sha256(
@@ -252,10 +287,34 @@ class MockAppsResearchBridge(AppsResearchBridge):
             )
         ]
         self._mock_confidence = confidence_score
+        # Default mock brief is a contract-valid sealed targeting brief so the
+        # _translate validation gate (real, not mocked) passes for integration
+        # tests. Override via company_brief_text for rejection-path tests.
         self._mock_brief = company_brief_text or (
-            "Mock delegated briefing for integration test.\n"
-            "- Company: stable growth\n"
-            "- Role context: SVP technology strategy\n"
+            "Mock Co (MOCK) - SVP IT Strategy targeting brief\n"
+            "| SVP IT Strategy | comp band | Reports to CIO (2026) |\n\n"
+            "=== STRATEGIC MANDATE ===\n"
+            "- Mid-cap insurer scaling distribution after carrier roll-ups\n"
+            "- Role anchors platform consolidation across acquired books\n"
+            "- 2025 cloud-core migration shifts spend to data services\n"
+            "- Central tension: federated speed versus enterprise control\n\n"
+            "=== LEADERSHIP ===\n"
+            "- CEO drives acquisitive growth with disciplined integration\n"
+            "- CIO mandate: unify policy systems onto one platform\n"
+            "- CDO mandate: build governed shared data backbone\n\n"
+            "=== TECH & AI PLATFORM ===\n"
+            "- Mainframe-to-cloud core underway across business units\n"
+            "- Integration debt from acquisitions slows new product launch\n"
+            "- Peers investing in agentic underwriting assistance\n\n"
+            "=== BUSINESS CONTEXT (JD alignment hooks) ===\n"
+            "- Commercial lines: margin focus after rate hardening\n"
+            "- Personal lines: retention pressure from direct carriers\n"
+            "- Data priority: unify claims and policy for analytics\n"
+            "- Culture: pragmatic, integration-heavy operating model\n\n"
+            "=== EXEC SUMMARY FRAMING (not proof) ===\n"
+            "- Deliver one platform that absorbs acquired books faster\n"
+            "- Mirror CIO push for governed consolidation, not features\n"
+            "- 12-month win: single rated quote path live in two units\n"
         )
 
     def _invoke_apps_research(self, **_kwargs: Any) -> Any:

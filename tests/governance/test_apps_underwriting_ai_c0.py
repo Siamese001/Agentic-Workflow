@@ -200,7 +200,14 @@ def test_c0_fail_state_when_required_documents_missing() -> None:
     assert fec_empty.c0_state == C0_STATE_FAIL, (
         f"Empty submission must be c0_state=FAIL, got {fec_empty.c0_state!r}."
     )
-    assert set(fec_empty.missing_evidence_flags) == {"BANK_STATEMENT", "TAX_RETURN", "CREDIT_REPORT"}, (
+    # Hardening update: missing-evidence flags use the structured
+    # "MISSING_DOC:<CLASS>" form so the contract can also express
+    # "MISSING_FIELD:<CLASS>.<field>" without ambiguity.
+    assert set(fec_empty.missing_evidence_flags) == {
+        "MISSING_DOC:BANK_STATEMENT",
+        "MISSING_DOC:TAX_RETURN",
+        "MISSING_DOC:CREDIT_REPORT",
+    }, (
         f"Empty submission must flag all required classes missing, "
         f"got {fec_empty.missing_evidence_flags}."
     )
@@ -216,8 +223,8 @@ def test_c0_fail_state_when_required_documents_missing() -> None:
         f"Single-document submission missing TAX_RETURN and CREDIT_REPORT must be FAIL, "
         f"got {fec_partial.c0_state!r}. support_score={fec_partial.support_score}"
     )
-    assert "TAX_RETURN" in fec_partial.missing_evidence_flags
-    assert "CREDIT_REPORT" in fec_partial.missing_evidence_flags
+    assert "MISSING_DOC:TAX_RETURN" in fec_partial.missing_evidence_flags
+    assert "MISSING_DOC:CREDIT_REPORT" in fec_partial.missing_evidence_flags
 
 
 # ---------------------------------------------------------------------------

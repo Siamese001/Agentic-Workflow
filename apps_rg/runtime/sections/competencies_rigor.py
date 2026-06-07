@@ -12,7 +12,12 @@ from apps_rg.runtime.sections.competencies_term_phrase import term_phrase
 
 MIN_CATEGORY_COUNT = 6
 MAX_CATEGORY_COUNT = 6
-CANDIDATE_CATEGORY_COUNT = 10
+# Variance-class alignment (2026-06): candidate pool must stay >= MAX_CATEGORY_COUNT (6)
+# so the graph pool can still select the best 6 categories. Reduced 10 -> 8 (modest
+# headroom) rather than the bullet-lane SC=2/4, because here the count IS the candidate
+# selection pool, not pure generation-variance sampling. Selection rigor (min_score 0.72
+# + per-category graph_skill_node_ids X2 gate) is unchanged.
+CANDIDATE_CATEGORY_COUNT = 8
 MIN_ITEMS_PER_CATEGORY = 3
 MAX_ITEMS_PER_CATEGORY = 6
 

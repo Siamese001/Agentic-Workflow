@@ -89,12 +89,40 @@ _T2_QUALITY = SectionReasoningProfile(
     executive_lane=False,
 )
 
+# --------------------------------------------------------------------------------------------
+# VARIANCE-CLASS TAXONOMY for self_consistency_samples (apps_rg only)
+# --------------------------------------------------------------------------------------------
+# SC paths fix GENERATION variance (the model writes 15 prose variants of the same idea).
+# They do NOT fix:
+#   * mechanical-rule failures   (use deterministic guards/repairs)
+#   * evaluation variance        (use multiple judges)
+#   * low standards              (use stricter X2 / X1 criteria)
+#   * missing upstream evidence  (use a data-wave; FEC promotion)
+#
+# Tuned per dominant failure mode of each section, NOT per "how creative is this section":
+#
+#   IBM bullets        : metric preservation dominates -> SC small, deterministic anchors carry
+#                        the load. SC=4 (was 12).
+#   Unify bullets      : differentiation/angle dominates -> SC=4 angle-diverse generations,
+#                        judge picks. (was 15).
+#   Competencies       : required-anchor coverage dominates -> Pass-0 family coverage + anchor
+#                        injection is deterministic. SC near 1-2 is enough. SC=2 (was 10).
+#   Executive summary  : prose flow + 5 mechanical blockers, all deterministic-guard-addressable
+#                        in tree (sentence-count coercer, orphan-row repair, gate emission fix).
+#                        SC=5 (unchanged).
+#   Narratives         : real prose/flow uncertainty -> SC=4 is the floor (was 1).
+#   Headline           : T0_LOCKED -> deterministic. SC=1 (unchanged).
+#
+# To raise SC for a quality investigation: bump back toward 10-15 ONLY if the dominant failure
+# is generation variance (different prose, same intent). If the failure is mechanical, more
+# SC will not help — fix the deterministic guard / X2 gate / FEC instead.
+# --------------------------------------------------------------------------------------------
 _UNIFY_BULLET_POOL = SectionReasoningProfile(
     tier=ReasoningIntensityTier.T2_QUALITY_SECTION,
     temperature=0.38,
     tot_branches=1,
     tot_depth=1,
-    self_consistency_samples=15.0,
+    self_consistency_samples=4.0,
     reflexion_loops=0.0,
     executive_lane=False,
 )
@@ -104,7 +132,7 @@ _IBM_BULLET_POOL = SectionReasoningProfile(
     temperature=0.38,
     tot_branches=1,
     tot_depth=1,
-    self_consistency_samples=12.0,
+    self_consistency_samples=4.0,
     reflexion_loops=0.0,
     executive_lane=False,
 )
@@ -114,17 +142,21 @@ _COMPETENCIES_BULLET_POOL = SectionReasoningProfile(
     temperature=0.38,
     tot_branches=1,
     tot_depth=1,
-    self_consistency_samples=10.0,
+    self_consistency_samples=2.0,
     reflexion_loops=0.0,
     executive_lane=False,
 )
 
+# Narratives have real prose/flow uncertainty (story shape, positioning, transitions). Per the
+# variance-class model, SC=1 was BELOW the right floor for narratives — flow uncertainty is
+# exactly what SC helps with. Raised to 4: enough angle diversity for the X1 judge to select
+# from, without the brute-force cost of 10+ paraphrases.
 _NARRATIVE_SINGLE_PATH = SectionReasoningProfile(
     tier=ReasoningIntensityTier.T3_CRITICAL_SECTION,
     temperature=0.39,
     tot_branches=3,
     tot_depth=2,
-    self_consistency_samples=1.0,
+    self_consistency_samples=4.0,
     reflexion_loops=1.0,
     executive_lane=False,
 )

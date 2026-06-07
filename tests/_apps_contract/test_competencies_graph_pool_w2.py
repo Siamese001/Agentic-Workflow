@@ -28,10 +28,18 @@ def test_resolve_cli_x1d_judges_competencies_defaults_gemini_pro() -> None:
 
 
 def test_competencies_sc_path_count_and_profile() -> None:
-    assert COMPETENCIES_SC_PATH_COUNT == 10
-    assert POOL_SC == 10
+    # Two distinct knobs:
+    #  * COMPETENCIES_SC_PATH_COUNT / POOL_SC — the DETERMINISTIC selection-grouping generator
+    #    (candidate groupings -> merge top 6 categories). This is mechanical grouping, NOT
+    #    creative variance. Variance-class alignment (2026-06): 10 -> 8 candidate groupings,
+    #    keeping >= final 6 with selection headroom (selection rigor unchanged).
+    #  * section_reasoning_profile(...).self_consistency_samples — the CREATIVE self-consistency
+    #    sampling knob. Per the variance-class redesign (competencies dominant risk = "missing
+    #    required anchored terms", solved by deterministic inclusion rules), this is "very low".
+    assert COMPETENCIES_SC_PATH_COUNT == 8
+    assert POOL_SC == 8
     prof = section_reasoning_profile("competencies")
-    assert prof.self_consistency_samples == 10.0
+    assert prof.self_consistency_samples == 2.0
 
 
 def test_competencies_pool_x1d_judge_rows_gemini_pro_single_row(tmp_path) -> None:

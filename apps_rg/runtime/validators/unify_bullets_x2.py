@@ -802,6 +802,20 @@ def run_unify_bullets_x2_gates(
         # Also accept known Unify canonical metrics ($22M, 20%, 8, 28) as self-attesting
         unify_canonical_tokens = ("$22m", "20%", "8 to 28", "six months to three weeks")
         metric_supported = metric_supported or any(tok in mr_u_lower for tok in unify_canonical_tokens)
+        # Accept an approved metric_outcome_id (the canonical source identifier the role-episode
+        # bundle binds) used directly as metric_raw — traceable to an approved outcome, not weakened.
+        approved_metric_ids = {
+            str(x).strip().lower()
+            for x in (
+                (proof_pool_metadata or {}).get("approved_metric_outcome_ids") or []
+            )
+            if str(x).strip()
+        }
+        mr_tokens = [t.strip() for t in re.split(r"[,;]", mr_u_lower) if t.strip()]
+        metric_supported = metric_supported or (
+            bool(mr_tokens) and bool(approved_metric_ids)
+            and all(t in approved_metric_ids for t in mr_tokens)
+        )
         if not metric_supported:
             bullets_metric_unsupported_u.append(
                 f"{bid_mu}:metric_raw={mr_u!r}_not_in_proof_bundle"

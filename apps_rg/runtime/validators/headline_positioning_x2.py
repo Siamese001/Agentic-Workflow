@@ -36,18 +36,54 @@ def headline_positioning_consumption_active(meta: dict[str, Any] | None) -> bool
     return bool(isinstance(meta, dict) and meta.get("headline_positioning_bundle_consumption"))
 
 
-def _collect_bindings(parsed_output: dict[str, Any] | None) -> dict[str, list[str]]:
-    """Gather positioning bundle ids, graph skill ids, source fact/lineage ids from output."""
+def _extend_ids(dst: list[str], val: Any) -> None:
+    if isinstance(val, str) and val.strip():
+        dst.append(val.strip())
+    elif isinstance(val, list):
+        dst.extend(str(x).strip() for x in val if str(x).strip())
+
+
+def _cited_source_fact_ids(parsed_output: dict[str, Any] | None) -> set[str]:
+    """Every source_fact_id the model actually cited in claim_ledger / selected_fact_plan / change_log."""
+    po = parsed_output if isinstance(parsed_output, dict) else {}
+    cited: list[str] = []
+    for entry in po.get("claim_ledger") or []:
+        if isinstance(entry, dict):
+            _extend_ids(cited, entry.get("source_fact_ids"))
+    sfp = po.get("selected_fact_plan")
+    if isinstance(sfp, dict):
+        _extend_ids(cited, sfp.get("selected_claim_fact_ids"))
+        _extend_ids(cited, sfp.get("selected_required_fact_ids"))
+        _extend_ids(cited, sfp.get("required_fact_ids"))
+        for fact in sfp.get("facts") or []:
+            if isinstance(fact, dict):
+                _extend_ids(cited, fact.get("fact_id"))
+    for entry in po.get("change_log") or []:
+        if isinstance(entry, dict):
+            _extend_ids(cited, entry.get("canonical_source_fact_ids"))
+            _extend_ids(cited, entry.get("source_fact_ids"))
+    return {c for c in cited if c}
+
+
+def _collect_bindings(
+    parsed_output: dict[str, Any] | None,
+    meta: dict[str, Any] | None = None,
+) -> dict[str, list[str]]:
+    """Gather positioning bundle ids, graph skill ids, source fact/lineage ids.
+
+    Authority model (derive_from_cited_facts, Author-Gate dec_19e9c91073ae4b5ab): a positioning
+    bundle is *bound* when the model cited at least one of its linked_source_fact_ids. We resolve
+    bundle_id + graph_skill_node_ids deterministically from the attached proof-pool bundles by
+    intersecting the model's cited source_fact_ids with each bundle's linked_source_fact_ids. This
+    verifies the output is grounded in bundle-linked facts rather than trusting a self-declared id.
+    Explicitly echoed bindings in the model output are still honored when present.
+    """
     bundle_ids: list[str] = []
     skill_ids: list[str] = []
     fact_or_lineage: list[str] = []
     po = parsed_output if isinstance(parsed_output, dict) else {}
 
-    def _extend(dst: list[str], val: Any) -> None:
-        if isinstance(val, str) and val.strip():
-            dst.append(val.strip())
-        elif isinstance(val, list):
-            dst.extend(str(x).strip() for x in val if str(x).strip())
+    _extend = _extend_ids
 
     _extend(bundle_ids, po.get("headline_positioning_bundle_ids"))
     _extend(bundle_ids, po.get("headline_positioning_bundle_id"))
@@ -69,6 +105,22 @@ def _collect_bindings(parsed_output: dict[str, Any] | None) -> dict[str, list[st
     if isinstance(ja, dict):
         _extend(bundle_ids, ja.get("headline_positioning_bundle_ids"))
         _extend(skill_ids, ja.get("graph_skill_node_ids"))
+
+    # Derive bindings from the attached positioning bundles via cited-fact intersection.
+    m = meta if isinstance(meta, dict) else {}
+    bundles = m.get("headline_positioning_bundles")
+    if isinstance(bundles, list) and bundles:
+        cited = _cited_source_fact_ids(parsed_output)
+        if cited:
+            for rec in bundles:
+                if not isinstance(rec, dict):
+                    continue
+                linked = {str(f).strip() for f in (rec.get("linked_source_fact_ids") or []) if str(f).strip()}
+                matched = cited & linked
+                if matched:
+                    _extend(bundle_ids, rec.get("headline_positioning_bundle_id"))
+                    _extend(skill_ids, rec.get("graph_skill_node_ids"))
+                    fact_or_lineage.extend(sorted(matched))
 
     return {
         "bundle_ids": sorted(set(bundle_ids)),
@@ -104,7 +156,7 @@ def run_headline_positioning_x2_gates(
         None if bundles_present else "Headline proof pool missing positioning bundles.",
     )
 
-    bindings = _collect_bindings(parsed_output)
+    bindings = _collect_bindings(parsed_output, meta)
     add(
         "x2_headline_positioning_bundle_id_required",
         bool(bindings["bundle_ids"]),

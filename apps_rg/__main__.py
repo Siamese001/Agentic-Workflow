@@ -438,6 +438,72 @@ def _semantic_cache_r1b_enabled() -> bool:
     return semantic_cache_r1b_eligible()
 
 
+# Mapping from section id to its primary text-output artifact name. Pinned sections all live
+# under artifacts/apps_rg/_pinned/<section>/ with the same filename the lane writes during
+# normal runs — see runtime_proofs/<section>/real/<run>/ for reference.
+_PINNED_SECTION_TEXT_FILES: tuple[tuple[str, str, str], ...] = (
+    ("headline", "headline_output.txt", "Headline"),
+    ("executive_summary", "resume_display_text.txt", "Executive Summary"),
+    ("competencies", "competencies_display.txt", "Core Competencies"),
+    ("unify_bullets", "unify_bullets_output.txt", "Unify (Bullets)"),
+    ("unify_narrative", "unify_narrative_output.txt", "Unify (Narrative)"),
+    ("ibm_bullets", "ibm_bullets_output.txt", "IBM (Bullets)"),
+    ("ibm_narrative", "ibm_narrative_output.txt", "IBM (Narrative)"),
+)
+
+
+def _assemble_from_pinned_dirs(repo_root: Path, artifact_dir: str) -> int:
+    """Stitch artifacts/apps_rg/_pinned/<section>/ outputs into a single markdown resume.
+
+    Each pinned dir is the result of ``--section <id> --attempts N --pin`` accepting at
+    REAL_LLM with --accept allow|review. Assembly is mechanical: read the section's
+    canonical text artifact, drop empty/missing sections with a clear note, write the
+    combined markdown plus a small status JSON. No re-validation of X2/X3 — the pin already
+    encoded the disposition.
+    """
+    pin_root = repo_root / "artifacts" / "apps_rg" / "_pinned"
+    out_dir = (
+        Path(artifact_dir)
+        if str(artifact_dir or "").strip()
+        else (repo_root / "artifacts" / "apps_rg" / "_pinned" / "_assembled")
+    )
+    out_dir.mkdir(parents=True, exist_ok=True)
+    md_lines: list[str] = []
+    status: dict[str, Any] = {"sections": {}, "missing": [], "assembled_at": out_dir.as_posix()}
+    for section_id, fname, label in _PINNED_SECTION_TEXT_FILES:
+        sec_dir = pin_root / section_id
+        text_path = sec_dir / fname
+        x3_path = sec_dir / "x3_disposition.json"
+        x3_code = ""
+        if x3_path.is_file():
+            try:
+                x3_code = str(json.loads(x3_path.read_text(encoding="utf-8")).get("x3_code") or "")
+            except (json.JSONDecodeError, OSError):
+                x3_code = "UNREADABLE"
+        if not text_path.is_file():
+            status["missing"].append(section_id)
+            status["sections"][section_id] = {"present": False, "x3": x3_code}
+            md_lines.append(f"## {label}\n\n_(no pinned artifact for `{section_id}`)_\n")
+            continue
+        body = text_path.read_text(encoding="utf-8").strip()
+        status["sections"][section_id] = {
+            "present": True,
+            "x3": x3_code,
+            "source": text_path.as_posix(),
+            "chars": len(body),
+        }
+        md_lines.append(f"## {label}\n\n{body}\n")
+    md = "# Resume (assembled from pinned sections)\n\n" + "\n".join(md_lines)
+    md_path = out_dir / "resume_assembled.md"
+    md_path.write_text(md, encoding="utf-8")
+    status_path = out_dir / "assemble_status.json"
+    status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
+    print(f"ASSEMBLED resume_md={md_path.as_posix()}", flush=True)
+    print(f"ASSEMBLE_STATUS missing={','.join(status['missing']) or 'none'}", flush=True)
+    print(f"assemble_status={status_path.as_posix()}", flush=True)
+    return 0 if not status["missing"] else 4
+
+
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="apps_rg",
@@ -569,6 +635,32 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     p.add_argument("--artifact-dir", default="", help="Override artifact output directory")
+    # In-process best-of-N pin loop (collapses ops_scripts/apps_rg/best_of_n_section_harness.py).
+    # Runs the section pipeline up to N times and stops on the first attempt whose runtime
+    # disposition matches --accept. No subprocess parsing, no out-of-band re-scanning of
+    # timestamped artifact dirs — the lane already returns the artifact dir in result.
+    p.add_argument(
+        "--attempts",
+        type=int,
+        default=1,
+        help="Best-of-N attempts for a single --section run. Stops on first accepting attempt.",
+    )
+    p.add_argument(
+        "--accept",
+        choices=("allow", "review", "any"),
+        default="allow",
+        help="Acceptance policy for --attempts: allow=X3_ALLOW only; review=ALLOW+SOFT_FAIL; any=any REAL_LLM.",
+    )
+    p.add_argument(
+        "--pin",
+        action="store_true",
+        help="On accepting attempt, copy the artifact dir to artifacts/apps_rg/_pinned/<section>/.",
+    )
+    p.add_argument(
+        "--assemble-from-pinned",
+        action="store_true",
+        help="Stitch artifacts/apps_rg/_pinned/<section>/ outputs into a single resume markdown and exit.",
+    )
     return p
 
 
@@ -588,6 +680,13 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
 
     parser = _build_parser()
     args = parser.parse_args(argv)
+    # Short-circuit: assemble previously-pinned section artifacts into a single resume.md.
+    # Bypasses preflight/provider/qwen — pinning already proved REAL_LLM eligibility.
+    if bool(getattr(args, "assemble_from_pinned", False)):
+        return _assemble_from_pinned_dirs(
+            repo_root=find_repo_root(),
+            artifact_dir=str(getattr(args, "artifact_dir", "") or ""),
+        )
     if getattr(args, "executive_summary", False):
         args.section = "executive_summary"
     if getattr(args, "unify_bullets", False):
@@ -858,24 +957,135 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 bool(getattr(args, "allow_non_allow_exit_zero", False))
             )
 
-            result = run_canonical_apps_rg_from_cli_primitives(
-                target_company=args.target_company,
-                target_role=args.target_role,
-                target_level=args.target_level,
-                jd=args.jd,
-                manual_brief=args.manual_brief,
-                resume_path=args.resume,
-                generation_mode=args.generation_mode,
-                artifact_dir=args.artifact_dir,
-                section=section_eff,
-                lane_provider=lane_provider_eff,
-                lane_provider_resolution_source=lane_provider_resolution_source,
-                lane_temperature=args.temperature,
-                lane_x1d_judges=lane_judges_eff,
-                lane_mock_judges=lane_mock_eff,
-                lane_allow_non_allow_exit_zero=bool(getattr(args, "allow_non_allow_exit_zero", False)),
-                lane_allow_test_mock_judges=lane_allow_test_mock_eff,
+            # Best-of-N: rerun the lane up to args.attempts times, stopping on first
+            # disposition matching --accept. Each call writes its own timestamped artifact
+            # dir; we only PIN the last accepting one (or the final attempt's dir if none
+            # accept). No subprocess boundary — the harness is gone.
+            from apps_rg.runtime.validators.companion_bullet_finalization import (
+                is_upstream_blocked_runtime_status,
             )
+
+            # Global retry cap: attempts default to 2 max. Retries are for LOCAL repair only
+            # (weak phrasing, judge tie, repairable metric drift) — never to brute-force missing
+            # upstream proof. Values above 2 are clamped so these seven content sections never
+            # pay 4x preflight for a section whose dominant failure mode is mechanical or
+            # upstream (which more attempts cannot fix).
+            _MAX_SECTION_ATTEMPTS = 2
+            attempts = max(1, min(_MAX_SECTION_ATTEMPTS, int(getattr(args, "attempts", 1) or 1)))
+            accept_mode = str(getattr(args, "accept", "allow") or "allow").lower()
+            accepting_dispositions: set[str] = {"X3_ALLOW"}
+            if accept_mode in ("review", "any"):
+                accepting_dispositions.add("X3_REVIEW_JUDGE_SOFT_FAIL")
+                accepting_dispositions.add("X3_REVIEW")
+            attempt_history: list[dict[str, Any]] = []
+            result = None
+            for _attempt_idx in range(1, attempts + 1):
+                result = run_canonical_apps_rg_from_cli_primitives(
+                    target_company=args.target_company,
+                    target_role=args.target_role,
+                    target_level=args.target_level,
+                    jd=args.jd,
+                    manual_brief=args.manual_brief,
+                    resume_path=args.resume,
+                    generation_mode=args.generation_mode,
+                    artifact_dir=args.artifact_dir,
+                    section=section_eff,
+                    lane_provider=lane_provider_eff,
+                    lane_provider_resolution_source=lane_provider_resolution_source,
+                    lane_temperature=args.temperature,
+                    lane_x1d_judges=lane_judges_eff,
+                    lane_mock_judges=lane_mock_eff,
+                    lane_allow_non_allow_exit_zero=bool(
+                        getattr(args, "allow_non_allow_exit_zero", False)
+                    ),
+                    lane_allow_test_mock_judges=lane_allow_test_mock_eff,
+                )
+                _res = result if isinstance(result, dict) else {}
+                _ad = str(_res.get("artifact_dir") or "")
+                # Authoritative source of truth: the section's x3_disposition.json. The CLI
+                # result dict may not surface ``runtime_generation_status`` in every dispatch
+                # path, but the disposition file always carries both fields.
+                _x3 = str(_res.get("x3_disposition") or "")
+                _gen = ""
+                if _ad:
+                    _disp_path = Path(_ad) / "x3_disposition.json"
+                    if _disp_path.is_file():
+                        try:
+                            _disp_blob = json.loads(_disp_path.read_text(encoding="utf-8"))
+                            _gen = str(_disp_blob.get("runtime_generation_status") or "")
+                            if not _x3:
+                                _x3 = str(_disp_blob.get("x3_code") or "")
+                        except (json.JSONDecodeError, OSError):
+                            pass
+                if not _gen:
+                    _gen = str(_res.get("runtime_generation_status") or "")
+                _accept_any = (accept_mode == "any" and _gen == "REAL_LLM")
+                _accept_match = (_gen == "REAL_LLM" and _x3 in accepting_dispositions)
+                attempt_history.append(
+                    {
+                        "attempt": _attempt_idx,
+                        "x3": _x3,
+                        "runtime_generation_status": _gen,
+                        "artifact_dir": _ad,
+                        "accepted": bool(_accept_match or _accept_any),
+                    }
+                )
+                if attempts > 1:
+                    print(
+                        f"[apps_rg --attempts] section={section_eff} "
+                        f"attempt {_attempt_idx}/{attempts}: x3={_x3 or 'UNKNOWN'} "
+                        f"gen={_gen or 'UNKNOWN'} accepted={_accept_match or _accept_any}",
+                        flush=True,
+                    )
+                if _accept_match or _accept_any:
+                    break
+                # Variance-class triage: upstream-block runtime statuses are missing-evidence
+                # failures (mental model: SC fixes generation variance, more judges fix
+                # evaluation variance, deterministic gates fix mechanical rules, UPSTREAM FIXES
+                # fix missing evidence). Retrying the same section with the same upstream state
+                # cannot resolve any of them — break early so the sweep proceeds to the next
+                # section instead of paying preflight again for a guaranteed-fail. The
+                # dependency-ordered execution (competencies->bullets->narratives->exec->headline)
+                # ensures dependent downstream sections also surface their own upstream block
+                # rather than retrying.
+                if is_upstream_blocked_runtime_status(_gen):
+                    print(
+                        f"[apps_rg --attempts] section={section_eff} "
+                        f"upstream_blocked_after_attempt_{_attempt_idx} (status={_gen}) — "
+                        f"stopping retries; resolve upstream and re-run.",
+                        flush=True,
+                    )
+                    break
+            if bool(getattr(args, "pin", False)) and isinstance(result, dict):
+                _accepting = bool(attempt_history and attempt_history[-1].get("accepted"))
+                _pin_src = str(result.get("artifact_dir") or "")
+                if _accepting and _pin_src:
+                    from shutil import copytree, rmtree
+
+                    _pin_dst = (
+                        find_repo_root() / "artifacts" / "apps_rg" / "_pinned" / section_eff
+                    )
+                    _pin_dst.parent.mkdir(parents=True, exist_ok=True)
+                    if _pin_dst.exists():
+                        rmtree(_pin_dst, ignore_errors=True)
+                    try:
+                        copytree(_pin_src, _pin_dst)
+                        print(
+                            f"PINNED section={section_eff} -> {_pin_dst.as_posix()}",
+                            flush=True,
+                        )
+                    except OSError as _exc:
+                        print(
+                            f"PIN_FAILED section={section_eff} reason={_exc}",
+                            file=sys.stderr,
+                            flush=True,
+                        )
+                else:
+                    print(
+                        f"PIN_SKIPPED section={section_eff} reason=no_accepting_attempt "
+                        f"attempts={len(attempt_history)}",
+                        flush=True,
+                    )
         else:
             from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import (
                 run_whole_run_with_route_governance,

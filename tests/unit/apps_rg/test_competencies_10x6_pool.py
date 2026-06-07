@@ -64,7 +64,8 @@ def test_competencies_pool_generation_mode_detected() -> None:
 
 
 def test_sc_path_count_and_targeting_context_graph_10x6() -> None:
-    assert sc_path_count_for_lane("competencies") == COMPETENCIES_SC_PATH_COUNT == 10
+    # Variance-class alignment (2026-06): candidate-category pool 10 -> 8 (>= final 6).
+    assert sc_path_count_for_lane("competencies") == COMPETENCIES_SC_PATH_COUNT == 8
     ctx = build_competencies_targeting_context(
         {
             "target_title": "SVP",
@@ -83,7 +84,8 @@ def test_sc_path_count_and_targeting_context_graph_10x6() -> None:
     )
     assert ctx["candidate_category_count"] == COMPETENCIES_CANDIDATE_CATEGORY_COUNT
     assert ctx["final_category_count"] == COMPETENCIES_FINAL_CATEGORY_COUNT
-    assert ctx["pool_path_count"] == 10
+    # Variance-class alignment (2026-06): candidate pool 10 -> 8 (>= final 6).
+    assert ctx["pool_path_count"] == 8
     assert ctx["proof_pool_type"] == "augmented_skills_graph"
     assert ctx["selection_model"] == "graph_10x6_v1"
 
@@ -158,7 +160,8 @@ def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.Monkey
     )
     assert err == ""
     assert is_competencies_pool_generation(meta)
-    assert meta["initial_path_count"] == 10
+    # Variance-class alignment (2026-06): candidate pool 10 -> 8 (>= final 6).
+    assert meta["initial_path_count"] == 8
     assert meta["final_category_count"] == 6
     assert parsed is not None
     assert len(parsed.get("competencies") or []) == COMPETENCIES_FINAL_CATEGORY_COUNT

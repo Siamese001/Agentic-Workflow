@@ -21,6 +21,8 @@ class LaneExecutionContext:
     job_description_text: str
     manual_brief: str
     lane_provider: str
+    # str (same judges for every lane) OR Callable[[lane_id], str] for per-lane composite-judge
+    # defaults (competencies -> gemini_pro, ibm_bullets -> anthropic_claude, else panel).
     lane_x1d_judges: Any
     lane_mock_judges: bool
     lane_allow_non_allow_exit_zero: bool = False
@@ -28,6 +30,13 @@ class LaneExecutionContext:
 
     def env_overlay(self) -> dict[str, str | None]:
         return {MODULAR_R4_SECTIONS_ROOT_ENV: self.sections_root}
+
+    def x1d_judges_for_lane(self, lane: str) -> Any:
+        """Resolve the X1D judge CSV for ``lane`` (honors a per-lane callable)."""
+        judges = self.lane_x1d_judges
+        if callable(judges):
+            return judges(lane)
+        return judges
 
 
 @dataclass
@@ -65,7 +74,7 @@ def run_lane_in_context(
             lane_provider=ctx.lane_provider,
             lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
             lane_temperature=default_temperature_for_section(lane),
-            lane_x1d_judges=ctx.lane_x1d_judges,
+            lane_x1d_judges=ctx.x1d_judges_for_lane(lane),
             lane_mock_judges=ctx.lane_mock_judges,
             lane_allow_non_allow_exit_zero=bool(ctx.lane_allow_non_allow_exit_zero),
         )

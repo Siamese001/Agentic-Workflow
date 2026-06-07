@@ -1,0 +1,161 @@
+{
+ "report": "apps_rg_runtime_bundle_certification",
+ "run_date": "2026-06-06",
+ "status": "PARTIAL",
+ "sections_x3_allow": 3,
+ "sections_total": 6,
+ "plan": ".cursor/plans/resume-100-done-7b3e90.md",
+ "provider": "qwen_vllm",
+ "provider_probe": "pass",
+ "target": {
+  "company": "AIG",
+  "role": "VP, Global Head of Agentic AI Solutions"
+ },
+ "inputs": {
+  "jd": "apps_rg/config/targeting/aig_vp_global_head_agentic_ai_jd.txt",
+  "manual_brief": "apps_rg/config/targeting/aig_vp_global_head_agentic_ai_briefing.md"
+ },
+ "author_gate_decisions": [
+  {
+   "decision_id": "dec_19e9c91073ae4b5ab",
+   "type": "architecture_choice",
+   "selected": "derive_from_cited_facts",
+   "confidence": 0.82
+  },
+  {
+   "decision_id": "dec_19e9daa115a62cf3a",
+   "type": "architecture_choice",
+   "selected": "anchor_injection",
+   "confidence": 0.82,
+   "scope": "competencies capability-family + term-floor coverage"
+  },
+  {
+   "decision_id": "dec_19e9e034f6c0ca64d",
+   "type": "architecture_choice",
+   "selected": "bundle_binding_grounding",
+   "confidence": 0.86,
+   "scope": "headline x2_headline_xyz_literal_grounding + canonical segment citation drift",
+   "precedent": "none (cold corpus)"
+  }
+ ],
+ "whole_run_envelope": "artifacts/apps_rg/runtime_proofs/full_resume_7ec23069bce2",
+ "files_changed": [
+  "apps_rg/runtime/validators/headline_positioning_x2.py",
+  "apps_rg/runtime/validators/unify_role_episode_x2.py",
+  "apps_rg/runtime/validators/unify_bullets_x2.py",
+  "apps_rg/runtime/validators/bullet_quality_floor_x2.py",
+  "apps_rg/runtime/sections/competency_capability_evidence.py",
+  "apps_rg/runtime/sections/competencies_lane_execution.py",
+  "apps_rg/runtime/sections/competencies_pa.py",
+  "apps_rg/config/competencies/executive_capability_taxonomy.yaml",
+  "apps_rg/runtime/sections/unify_narrative_pa.py",
+  "tests/unit/apps_rg/test_remaining_resume_rigor_finish.py"
+ ],
+ "no_agentic_core_diff": true,
+ "x2_x3_weakened": false,
+ "sections": [
+  {
+   "section": "unify_bullets",
+   "x3": "X3_ALLOW",
+   "x2": "69/69 PASS",
+   "decisive_judge_failures": [],
+   "proof_classification": "LIVE_RUNTIME_PROOF",
+   "quality_classification": "PASS_RUNTIME_QUALITY",
+   "remaining_blocker": null
+  },
+  {
+   "section": "unify_narrative",
+   "x3": "X3_ALLOW",
+   "x2": "64/64 PASS",
+   "decisive_judge_failures": [],
+   "proof_classification": "LIVE_RUNTIME_PROOF",
+   "quality_classification": "PASS_RUNTIME_QUALITY",
+   "remaining_blocker": null,
+   "fix": "PA de-recap steer (explicit no-4-consecutive-words rule + reworked examples) cleared x2_no_companion_ngram_copy"
+  },
+  {
+   "section": "competencies",
+   "x3": "X3_ALLOW",
+   "x2": "76/76 PASS",
+   "decisive_judge_failures": [],
+   "proof_classification": "LIVE_RUNTIME_PROOF",
+   "quality_classification": "PASS_RUNTIME_QUALITY",
+   "remaining_blocker": null,
+   "fix": "fact-grounded anchor_injection covers LLMOps family + 3-term graph-backed floor; 7/7 families"
+  },
+  {
+   "section": "headline",
+   "x3": "X3_BLOCK",
+   "x2": "FAIL (x2_headline_xyz_literal_grounding)",
+   "decisive_judge_failures": [
+    "gemini_pro(1.0)",
+    "openai_chatgpt(2.0)",
+    "anthropic_claude(2.8)"
+   ],
+   "proof_classification": "LIVE_RUNTIME_PROOF (X3_BLOCK)",
+   "quality_classification": "FAIL_JUDGE_BOUND",
+   "blocker_class": "judge_bound_plus_gate",
+   "remaining_blocker": "canonical fact fact_engineering_platform_001 absent from headline proof pool (no resolvable claim text) AND all 3 judges decisively reject (<4.0)",
+   "deterministic_fix": "bundle-aware grounding + registry re-citation landed (run full_resume_0bbe95e5d8d2); non-weakening, 15 unit tests pass"
+  },
+  {
+   "section": "ibm_bullets",
+   "x3": "X3_BLOCK",
+   "x2": "FAIL",
+   "decisive_judge_failures": [
+    "gemini_pro",
+    "openai_chatgpt",
+    "anthropic_claude"
+   ],
+   "proof_classification": "LIVE_RUNTIME_PROOF",
+   "quality_classification": "BLOCKED_JUDGE_AND_CONTENT",
+   "blocker_class": "judge_bound_plus_content",
+   "remaining_blocker": "x2_ibm_metric_anchor_bullet_ownership, x2_ibm_metric_outcome_id_required_when_has_metric, x2_bullet_technical_specificity_floor, x2_no_generic_consulting_substitution"
+  },
+  {
+   "section": "executive_summary",
+   "x3": "X3_BLOCK",
+   "x2": "FAIL",
+   "proof_classification": "LIVE_RUNTIME_PROOF",
+   "quality_classification": "NOT_TRIAGED_THIS_WAVE"
+  }
+ ],
+ "pre_existing_failures": [
+  {
+   "test": "tests/unit/apps_rg/validators/test_headline_x2_fixed_prefix_contract.py::test_valid_canonical_derived_passes",
+   "class": "gate_contract_maintenance",
+   "material_to_certification": false
+  },
+  {
+   "test": "tests/unit/apps_rg/validators/test_headline_x2_fixed_prefix_contract.py::test_mocked_runtime_with_passing_x2_still_not_x3_allow",
+   "class": "gate_contract_maintenance",
+   "material_to_certification": false
+  },
+  {
+   "test": "tests/unit/apps_rg/section_rigor/test_section_complexity_budget.py::test_ci_complexity_baseline_gate_passes_on_clean_tree",
+   "class": "stale_baseline_maintenance",
+   "material_to_certification": false
+  },
+  {
+   "test": "tests/unit/apps_rg/section_rigor/test_section_gate_coverage.py::test_weak_fail_cases_reference_valid_lanes_and_critical_gates",
+   "class": "gate_coverage_maintenance",
+   "material_to_certification": false
+  },
+  {
+   "test": "tests/unit/apps_rg/section_rigor/test_section_gate_coverage.py::test_all_lane_critical_gates_have_weak_or_dedicated_coverage",
+   "class": "gate_coverage_maintenance",
+   "material_to_certification": false
+  }
+ ],
+ "tests_gates": {
+  "compileall_apps_rg": "exit_0",
+  "finish_wave_passed": 26,
+  "agentic_core_diff": "empty"
+ },
+ "judge_bound_ceiling": "proof_eligible_allow_requires=every_configured_x1d_judge_model_backed_pass; headline+ibm_bullets blocked by decisive external judges (not deterministically forceable without weakening X3).",
+ "metrics_blocked": [
+  "no HOLD/disputed metric promoted",
+  "only approved metric_outcome_ids used"
+ ],
+ "latest_whole_run": "full_resume_0bbe95e5d8d2"
+}

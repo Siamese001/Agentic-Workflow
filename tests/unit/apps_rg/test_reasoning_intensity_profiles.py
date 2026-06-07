@@ -40,9 +40,13 @@ def test_bullet_pool_sections_map_to_t2_with_sc() -> None:
     for lane in ("competencies", "unify_bullets", "ibm_bullets"):
         prof = section_reasoning_profile(lane)
         assert prof.tier is ReasoningIntensityTier.T2_QUALITY_SECTION
-    assert section_reasoning_profile("competencies").self_consistency_samples == 10.0
-    assert section_reasoning_profile("unify_bullets").self_consistency_samples == 15.0
-    assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 12.0
+    # Variance-class redesign SC values: bullet sections are dominated by mechanical /
+    # deterministic failure modes (metric drift, missing anchor), not generation variance, so
+    # SC is small (4) and competencies (deterministic grouping) is very low (2). SC creates
+    # candidate options; the composite judge + deterministic validators decide what lives.
+    assert section_reasoning_profile("competencies").self_consistency_samples == 2.0
+    assert section_reasoning_profile("unify_bullets").self_consistency_samples == 4.0
+    assert section_reasoning_profile("ibm_bullets").self_consistency_samples == 4.0
 
 
 def test_headline_singleton_lane_is_t0_locked_fact() -> None:

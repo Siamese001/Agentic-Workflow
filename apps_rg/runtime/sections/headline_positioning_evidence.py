@@ -189,9 +189,6 @@ def format_headline_positioning_evidence_pack(
 
     blocks: list[str] = []
     for rec in packet["headline_positioning_bundles"]:
-        bound = ", ".join(
-            f"{s['skill_id']}" for s in (rec.get("bound_skills") or [])
-        ) or "(none materialized)"
         lines = [
             f"POSITIONING_BUNDLE {rec['headline_positioning_bundle_id']} "
             f"({rec['positioning_family']}):",
@@ -202,9 +199,21 @@ def format_headline_positioning_evidence_pack(
             f"  graph_lineage_refs: {rec['graph_lineage_refs']}",
             f"  seniority_signal: {rec['seniority_signal']} | platform_signal: {rec['platform_signal']} "
             f"| governance_signal: {rec['governance_signal']}",
-            f"  bound_skills: {bound}",
-            f"  target_relevance_rationale: {rec['target_relevance_rationale']}",
+            "  bound_skills (graph authority — vocabulary anchors only, not proof on their own):",
         ]
+        _bound = list(rec.get("bound_skills") or [])
+        if not _bound:
+            lines.append("    - (none materialized)")
+        for s in _bound:
+            if not isinstance(s, dict):
+                continue
+            sid = s.get("skill_id")
+            phrases = ", ".join(list(s.get("allowed_phrases") or [])[:5])
+            if phrases:
+                lines.append(f"    - {sid} | allowed_phrases: {phrases}")
+            else:
+                lines.append(f"    - {sid}")
+        lines.append(f"  target_relevance_rationale: {rec['target_relevance_rationale']}")
         blocks.append("\n".join(lines))
 
     out = "\n".join(header_lines) + "\n\n" + "\n\n".join(blocks)

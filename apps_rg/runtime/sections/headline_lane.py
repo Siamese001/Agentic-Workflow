@@ -75,6 +75,7 @@ from apps_rg.runtime.validators.headline_x2 import (
     headline_runtime_self_check_truth,
     headline_word_count,
     polish_claim_text_when_headline_has_no_metrics,
+    recite_canonical_segments_to_bundle_facts,
     repair_headline_segment_citations_for_grounding,
     run_headline_x2_gates,
     validate_raw_headline_claim_ledger,
@@ -1258,6 +1259,45 @@ def run_headline_execution(
             fact_id_resolution_receipt = _fid_rec
     headline_line = str((parsed or {}).get("headline_line") or "").strip()
     claim_ledger = list((parsed or {}).get("claim_ledger") or [])
+    # Pre-X2 registry repair: canonical positioning segments ("Agentic AI Platforms",
+    # "Distributed AI Infrastructure", "Runtime Governance") are authored from the
+    # headline_positioning_bundles registry, which is also the citation authority for those
+    # phrases. Qwen routinely emits the right display phrase but cites the wrong fact (in
+    # full_resume_7ec23069bce2 every citation was shifted one slot vs the registry). Re-cite
+    # each canonical segment to its bundle.linked_source_fact_ids before X2/judges so the
+    # claim_ledger, canonical ledger, fact-plan match, and judge packet all align with the
+    # registry. Runs BEFORE the lexical-coverage repair below.
+    _positioning_bundles_meta = (
+        proof_pool_metadata.get("headline_positioning_bundles")
+        if isinstance(proof_pool_metadata, dict)
+        else None
+    )
+    if isinstance(parsed, dict) and claim_ledger and headline_line and isinstance(
+        _positioning_bundles_meta, list
+    ):
+        recited_ledger, bundle_recite_receipt = recite_canonical_segments_to_bundle_facts(
+            headline_line=headline_line,
+            claim_ledger=claim_ledger,
+            positioning_bundles=_positioning_bundles_meta,
+            allowed_fact_ids=allowed_fact_ids,
+        )
+        if bundle_recite_receipt.get("any_changed"):
+            claim_ledger = recited_ledger
+            parsed["claim_ledger"] = recited_ledger
+            # Re-sync selected_fact_plan.required_fact_ids to the new ledger union so
+            # x2_headline_selected_fact_plan_matches_ledger stays consistent after re-citation.
+            sync_selected_fact_plan_required_ids(parsed, runtime_payload, allowed_fact_ids)
+            write_json(
+                artifact_dir / "headline_bundle_recitation_receipt.json",
+                bundle_recite_receipt,
+            )
+            change_log = parsed.setdefault("change_log", [])
+            if isinstance(change_log, list):
+                change_log.append({
+                    "operation": "recite_canonical_segments_to_bundle_facts",
+                    "reason": "canonical positioning segments re-cited to registry linked_source_fact_ids",
+                    "receipt_ref": "headline_bundle_recitation_receipt.json",
+                })
     # Pre-X2 repair: re-cite mis-bound segments to facts whose claim_text actually contains
     # their content nouns. Qwen sometimes binds a segment to a fact_id from the allowed set
     # that has zero shared tokens (e.g. "Microservices Telemetry" → fact_quant_hpc_002 where

@@ -21,15 +21,20 @@ EMPLOYMENT_BULLET_LANES: Final[frozenset[str]] = frozenset({"unify_bullets", "ib
 # Employment bullets: Claude pool selector is the sole X1D judge (not the 3-provider panel).
 EMPLOYMENT_BULLET_JUDGE_PROVIDERS: Final[tuple[str, ...]] = ("anthropic_claude",)
 
+# Variance-class alignment (2026-06): bullet lanes generate over a FIXED slot count
+# (unify=6, ibm=5). Generation variance is handled by the Claude pool selector +
+# min_selection_score floor + employment X2 metric/anchor gates, NOT by brute-force
+# sampling. SC lowered 15/12 -> 4 to match section_reasoning_intensity.py profile
+# (the prior variance-class redesign that had not reached the execution path).
 SC_PATH_COUNT_BY_LANE: Final[dict[str, int]] = {
-    "unify_bullets": 15,
-    "ibm_bullets": 12,
+    "unify_bullets": 4,
+    "ibm_bullets": 4,
 }
 
 REGEN_EXTRA_PATHS_BY_LANE: Final[dict[str, int]] = {
-    "unify_bullets": 5,
-    "ibm_bullets": 4,
-    "competencies": 5,
+    "unify_bullets": 3,
+    "ibm_bullets": 3,
+    "competencies": 4,
 }
 
 FINAL_BULLET_COUNT: Final[dict[str, int]] = {

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -221,6 +222,31 @@ def run_section_c0_evidence_room(
     )
     vector_query["chroma_write_in_c02"] = section_chroma_write_in_c02()
     _write_json(artifact_dir / C02_VECTOR_QUERY_ARTIFACT, vector_query)
+
+    # C0 PROPOSES (not commits): emit the per-section intent vector + query output as an inert
+    # durable artifact. Post-Exit UWG -> L4 reads this and attaches it to the L4 namespace
+    # object + governed Chroma read surface (apps_rg/cache/r1b_governed_receipt_emission.py).
+    from apps_rg.runtime.c0.c02_semantic_cache_payload import (
+        build_c02_semantic_cache_payload,
+        write_c02_semantic_cache_payload,
+    )
+
+    _sc_company = ""
+    if isinstance(app_payload, dict):
+        _sc_company = str(app_payload.get("target_company") or app_payload.get("company") or "")
+    _sc_jd_digest = hashlib.sha256((jd_text or "").encode("utf-8")).hexdigest()[:32] if jd_text else ""
+    _sc_payload = build_c02_semantic_cache_payload(
+        section_id=section_id,
+        atoms=atoms,
+        vector_query_receipt=vector_query,
+        target_company=_sc_company,
+        target_role=target_role,
+        jd_digest=_sc_jd_digest,
+        run_id=str(runtime_payload.get("run_id") or artifact_dir.name),
+    )
+    write_c02_semantic_cache_payload(artifact_dir, _sc_payload)
+    c02["c02_semantic_cache_payload_present"] = True
+    c02["c02_semantic_cache_intent_digest"] = _sc_payload.get("intent_digest", "")
 
     from apps_rg.runtime.c02_chroma_lifecycle import build_c02_chroma_query_receipt
 

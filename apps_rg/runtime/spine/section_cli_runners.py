@@ -82,7 +82,7 @@ def run_section_competencies_spine(
         base_resume_ref=str(resume_path or ""),
     )
 
-    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    override = Path(artifact_dir) if (artifact_dir is not None and str(artifact_dir).strip()) else None
     ctx = lane.run_competencies_lane_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
     x3 = ctx["x3"]
@@ -167,7 +167,7 @@ def run_section_headline_spine(
         base_resume_ref=str(resume_path or ""),
     )
 
-    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    override = Path(artifact_dir) if (artifact_dir is not None and str(artifact_dir).strip()) else None
     ctx = lane.run_headline_lane_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
     x3 = ctx["x3"]
@@ -351,7 +351,7 @@ def run_section_executive_summary_spine(
                 "terminal_r5": False,
             }
 
-    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    override = Path(artifact_dir) if (artifact_dir is not None and str(artifact_dir).strip()) else None
     ctx = lane.run_executive_summary_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
     from apps_rg.runtime.embedding_settings import (
@@ -464,7 +464,7 @@ def run_section_unify_bullets_spine(
                 "terminal_r5": False,
             }
 
-    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    override = Path(artifact_dir) if (artifact_dir is not None and str(artifact_dir).strip()) else None
     ctx = lane.run_unify_bullets_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
 
@@ -566,7 +566,7 @@ def run_section_unify_narrative_spine(
                 "terminal_r5": False,
             }
 
-    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    override = Path(artifact_dir) if (artifact_dir is not None and str(artifact_dir).strip()) else None
     ctx = lane.run_unify_narrative_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
 
@@ -670,7 +670,7 @@ def run_section_ibm_bullets_spine(
                 "terminal_r5": False,
             }
 
-    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    override = Path(artifact_dir) if (artifact_dir is not None and str(artifact_dir).strip()) else None
     ctx = lane.run_ibm_bullets_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
 
@@ -774,7 +774,7 @@ def run_section_ibm_narrative_spine(
                 "terminal_r5": False,
             }
 
-    override = Path(artifact_dir) if str(artifact_dir).strip() else None
+    override = Path(artifact_dir) if (artifact_dir is not None and str(artifact_dir).strip()) else None
     ctx = lane.run_ibm_narrative_lane_execution(args, artifact_dir_override=override)
     artifact_path = Path(ctx["artifact_dir"])
 

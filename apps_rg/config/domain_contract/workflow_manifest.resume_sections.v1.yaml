@@ -1,43 +1,66 @@
 # Phase-1 section lane DAG — apps_rg whole-run parallel orchestration SSOT
 # Plan: apps-rg-parallel-section-orchestration-f2a8c4 (W0.1)
+#
+# Dependency-ordered redesign (2026-06-06):
+#   wave 0 — upstream proof-bearing sections (competencies, unify_bullets, ibm_bullets)
+#   wave 1 — narratives that consume finalized selected bullets
+#   wave 2 — executive_summary synthesizes finalized bullets + narratives + competencies
+#   wave 3 — headline is final positioning; must not run before exec_summary finalizes
+#
+# Every lane `depends_on` must sit in a strictly earlier wave (assert_section_dag_wave_order).
 schema_version: resume_sections_dag_v1
 lanes:
-  - id: headline
+  - id: competencies
     weight: light
-    wave: 1
-  - id: executive_summary
-    weight: heavy
     wave: 0
   - id: unify_bullets
     weight: light
-    wave: 1
-  - id: unify_narrative
-    weight: light
-    wave: 2
-    depends_on:
-      - unify_bullets
+    wave: 0
   - id: ibm_bullets
     weight: light
+    wave: 0
+  - id: unify_narrative
+    weight: light
     wave: 1
+    depends_on:
+      - unify_bullets
   - id: ibm_narrative
     weight: light
-    wave: 2
+    wave: 1
     depends_on:
       - ibm_bullets
-  - id: competencies
+  - id: executive_summary
+    weight: heavy
+    wave: 2
+    depends_on:
+      - competencies
+      - unify_bullets
+      - ibm_bullets
+      - unify_narrative
+      - ibm_narrative
+  - id: headline
     weight: light
-    wave: 1
+    wave: 3
+    depends_on:
+      - executive_summary
+      - competencies
+      - unify_bullets
+      - ibm_bullets
 waves:
   - id: 0
-    description: heavy lane solo (executive_summary)
-    lanes: [executive_summary]
-    max_parallel: 1
-  - id: 1
-    description: parallel-eligible light lanes (+ optional headline)
-    lanes: [headline, unify_bullets, ibm_bullets, competencies]
+    description: upstream proof-bearing sections (competencies + bullets), parallel-eligible
+    lanes: [competencies, unify_bullets, ibm_bullets]
     max_parallel_env: APPS_RG_PHASE1_MAX_PARALLEL
     default_max_parallel: 2
-  - id: 2
-    description: serial downstream narratives (after finalized companion bullets)
+  - id: 1
+    description: downstream narratives (after finalized companion bullets)
     lanes: [unify_narrative, ibm_narrative]
+    max_parallel: 1
+  - id: 2
+    description: heavy downstream synthesis (executive_summary) solo
+    lanes: [executive_summary]
+    max_parallel: 1
+  - id: 3
+    description: final positioning (headline) after exec_summary finalized
+    lanes: [headline]
     max_parallel: 1

@@ -105,6 +105,96 @@ def _exec_summary_shape_ok(resume_display_text: str, parsed: dict[str, Any]) -> 
     return True, ""
 
 
+def _first_sentence_of_claim(claim_text: str) -> str:
+    """Return the first display sentence of a fact claim, normalized to one period-terminated unit."""
+    raw = str(claim_text or "").strip()
+    if not raw:
+        return ""
+    sents = [s for s in split_sentences(raw) if str(s).strip()]
+    out = sents[0].strip() if sents else raw
+    if out and not out.rstrip().endswith((".", "!", "?")):
+        out = out.rstrip() + "."
+    return out
+
+
+def repair_exec_summary_orphan_rows_with_unused_required_facts(
+    parsed: dict[str, Any],
+    *,
+    allowed_fact_ids: set[str],
+    plan_facts: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Replace orphan ledger-row sentences with unused required-fact claims (in place).
+
+    Closes the dominant executive_summary X3_BLOCK cascade on non-strategy lanes where the model
+    emits a generic, uncited bridge sentence (e.g. "That foundation informs data governance and AI
+    strategy at scale") while leaving a required allowed fact (e.g. fact_engineering_platform_006,
+    the $22M IP-led revenue / 20% margin / team 8->28 platform-commercialization fact) unused. One
+    honest repair simultaneously:
+      * fills the orphan row's ``source_fact_ids`` (clears orphan/coverage/unsupported gates),
+      * lengthens the under-length bridge sentence (clears evidence_utilization), and
+      * materializes the unused required fact (clears allowed_fact_utilization).
+    No fabricated content: the replacement sentence is the fact's own ``claim_text``. Returns the
+    list of applied repair records (empty when nothing was repairable).
+    """
+    repairs: list[dict[str, Any]] = []
+    if not isinstance(parsed, dict):
+        return repairs
+    text = str(parsed.get("resume_display_text") or "").strip()
+    ledger = parsed.get("claim_ledger")
+    if not text or not isinstance(ledger, list) or not ledger:
+        return repairs
+    sentences = [s for s in split_sentences(text) if str(s).strip()]
+    if len(sentences) != len(ledger):
+        return repairs  # only repair when rows map 1:1 to sentences
+
+    allowed = {str(x).strip() for x in (allowed_fact_ids or []) if str(x).strip()}
+    fact_by_id = {
+        str(f.get("fact_id") or "").strip(): f
+        for f in (plan_facts or [])
+        if isinstance(f, dict) and str(f.get("fact_id") or "").strip()
+    }
+    cited: set[str] = set()
+    for row in ledger:
+        if isinstance(row, dict):
+            for sid in row.get("source_fact_ids") or []:
+                cited.add(str(sid).split("_metric_", 1)[0])
+    unused_required = [
+        fid for fid in allowed if fid in fact_by_id and fid not in cited
+    ]
+    if not unused_required:
+        return repairs
+
+    for idx, row in enumerate(ledger):
+        if not isinstance(row, dict):
+            continue
+        if [str(x) for x in (row.get("source_fact_ids") or []) if str(x).strip()]:
+            continue  # row already cited
+        if not unused_required:
+            break
+        fid = unused_required.pop(0)
+        fact = fact_by_id.get(fid) or {}
+        replacement = _first_sentence_of_claim(str(fact.get("claim_text") or ""))
+        if not replacement:
+            continue
+        sentences[idx] = replacement
+        row["source_fact_ids"] = [fid]
+        row["claim"] = replacement
+        row["claim_text"] = str(fact.get("claim_text") or replacement)
+        repairs.append(
+            {
+                "operation": "repair_orphan_row_with_unused_required_fact",
+                "reason": f"orphan_row_{idx + 1}_materialized_fact:{fid}",
+            }
+        )
+
+    if repairs:
+        parsed["resume_display_text"] = " ".join(sentences).strip()
+        clog = list(parsed.get("change_log") or [])
+        clog.extend(repairs)
+        parsed["change_log"] = clog
+    return repairs
+
+
 def apply_exec_summary_display_authority_repairs(
     parsed: dict[str, Any],
     *,
@@ -119,6 +209,40 @@ def apply_exec_summary_display_authority_repairs(
     text = str(parsed.get("resume_display_text") or "").strip()
     if not text:
         return parsed
+    # Orphan-row / unused-required-fact repair: runs first so its materialized sentence is in
+    # the display text before the shape + graph-fallback checks below.
+    _orphan_facts = plan_facts
+    if _orphan_facts is None:
+        _sfp = parsed.get("selected_fact_plan")
+        if isinstance(_sfp, dict):
+            _orphan_facts = list(_sfp.get("facts") or [])
+    _orphan_allowed = allowed_fact_ids
+    if _orphan_allowed is None and _orphan_facts:
+        _orphan_allowed = {
+            str(f.get("fact_id") or "").strip()
+            for f in _orphan_facts
+            if isinstance(f, dict) and str(f.get("fact_id") or "").strip()
+        }
+    if _orphan_facts and _orphan_allowed:
+        _orphan_repairs = repair_exec_summary_orphan_rows_with_unused_required_facts(
+            parsed,
+            allowed_fact_ids=set(_orphan_allowed),
+            plan_facts=_orphan_facts,
+        )
+        if _orphan_repairs and artifact_dir is not None:
+            from apps_rg.runtime.section_repair_ledger import (
+                KIND_DETERMINISTIC_REWRITE,
+                record_repair,
+            )
+
+            record_repair(
+                artifact_dir,
+                kind=KIND_DETERMINISTIC_REWRITE,
+                operation="repair_orphan_row_with_unused_required_fact",
+                reason=str(_orphan_repairs[0].get("reason") or "")[:240],
+                replaced_l2=True,
+            )
+        text = str(parsed.get("resume_display_text") or "").strip()
     clog = list(parsed.get("change_log") or [])
     repaired, removed = strip_exec_summary_credential_dump_sentences(text)
     if removed and repaired != text:

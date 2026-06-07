@@ -77,6 +77,30 @@ An underwriting run is misbehaving
 2. Bisect against last 24h commits to `apps_underwriting_ai/engines/`.
 3. Check observability events for the failing run.
 
+## §6 Evidence Sufficiency Gate Triage
+
+**Scope:** the C0 Submitted-Document Evidence Sufficiency Gate
+(`integrations/underwriting_c0_adapter.py`, emits `FinalEvidenceContract`).
+Case study: `docs/EVIDENCE_SUFFICIENCY_GATE_CASE_STUDY.md`.
+
+> Reproduce locally by instantiating the gate directly and inspecting the contract:
+> `UnderwritingC0Adapter().run(submitted_documents, demo_policy_hash=...)`, then
+> read `fec.to_dict()`. The gate is deterministic and writes nothing, so triage is safe.
+
+| Symptom | Likely cause | Triage steps | Likely files |
+|---|---|---|---|
+| **Unexpected `PASS`** | All required classes AND required fields were present, no contradiction fired, and score ≥ 0.80 — confirm that's actually correct. A false PASS usually means a contradiction rule didn't fire (one field missing) or an alias mis-classified a document. | Confirm `fec.missing_evidence_flags == []` (no `MISSING_DOC:`/`MISSING_FIELD:`); inspect `fec.document_coverage_map`; confirm `fec.contradiction_flags == []` is correct; recompute `support_score` from `_compute_support_score_breakdown`. | `underwriting_c0_adapter.py` (`_classify_document`, `_detect_contradictions`, `_required_fields_for_class`, `_compute_support_score_breakdown`) |
+| **Unexpected `FAIL`/`WEAK`** | A required class is missing/unclassifiable (`MISSING_DOC:`), or a required field of a present class was not extracted (`MISSING_FIELD:<CLASS>.<field>`) — note PASS now requires required *fields*, not just required document *classes*. | Inspect `fec.missing_evidence_flags` for `MISSING_DOC:`/`MISSING_FIELD:` entries; check each submitted doc has a recognized `document_class`; check the required fields per class in `_DOCUMENT_FIELD_SCHEMA` are actually present (remember `0`/`False` count as present). | `underwriting_c0_adapter.py` (`_classify_document`, `_extract_spans`, `_get_submitted_field_value`) |
+| **Contradiction flags present** | Cross-document inconsistency — by design. Confirm it's real, not a unit/scale bug (e.g. monthly vs annual income). | Read `fec.contradiction_flags`; for each flag, pull the two cited fields from `fec.extracted_span_map` and re-apply the threshold by hand (see §7 of the case study). | `underwriting_c0_adapter.py` (`_CONTRADICTION_RULES`, `_detect_contradictions`) |
+| **LLM rationale cites missing evidence** | The firewall fell open, or a caller bypassed it. The served rationale should never contain an `ev-…` evidence ID absent from `fec.evidence_ids` — the deterministic citation allowlist rejects those with `failure_reason="unsupported_evidence_id"`. | Check `firewall_result.firewall_passed` / `deterministic_fallback_used` / `failure_reason`; confirm the firewall received the real `FinalEvidenceContract` dict as `c0_bundle` (or, on the legacy path, a no-evidence fallback bundle) and not a raw `feature_summary`; confirm `APPS_UW_FIREWALL_DISABLED` is unset; confirm the rationale went through `DecisionPacketAssembler.run_pa_firewall`/`assemble(c0_bundle=...)` and not a raw LLM call. | `underwriting_llm_firewall.py` (`_validate_c0_bundle`, `_rationale_cites_unknown_evidence`), `engines/decision_packet_assembler.py`, `prompt_assembly/underwriting_pa_compiler.py` |
+| **`support_score` changed between runs** | Non-determinism leaked in — dict ordering, an unstable field value, time, or randomness in the input payload. | Run the determinism test (`test_same_input_produces_same_ids_across_runs`); diff `fec.to_dict()` across two runs; confirm the input documents are byte-identical (the score is a pure function of coverage + spans). | `underwriting_c0_adapter.py` (`_compute_support_score_breakdown`, `_compute_contract_id`, `_compute_evidence_id`) |
+
+**Invariants that must always hold (escalate if violated):**
+- `fec.open_web_blocked is True` on every contract, in every state.
+- Malformed input returns a `FAIL` contract — it must never raise.
+- A contradiction flag or a missing required class makes `PASS` unreachable.
+- `fec.extracted_span_map` contains only fields that were actually submitted (no inferred fields).
+
 ## Rollback Procedure
 
 apps_underwriting_ai produces decisions as artifacts. Rollback affects only future decisions.

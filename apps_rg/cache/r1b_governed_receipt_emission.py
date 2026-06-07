@@ -183,6 +183,7 @@ def _write_l4_namespace_ref(
     run_id: str,
     candidate: R1BCachePromotionCandidate | None = None,
 ) -> None:
+    # artifact_dir is the section run dir; used to attach the C0 cache payload below.
     l4_payload: dict[str, Any] = {
         "target_l4_namespace": R1B_UWG_TARGET_SURFACE,
         "target_state_object": str(sd.after_candidate) if sd else "",
@@ -205,6 +206,19 @@ def _write_l4_namespace_ref(
         )
         l4_payload["chroma_collection"] = "apps_rg_r1b_semantic_cache_projection"
         l4_payload["chroma_persist_dir_env"] = "CHROMA_PERSIST_DIR"
+        # Attach the per-section C0 intent vector + query output (proposed by C0; this is
+        # the UWG-committed durable record that carries them into L4).
+        from apps_rg.runtime.c0.c02_semantic_cache_payload import (
+            read_c02_semantic_cache_payload,
+        )
+
+        _c0_sc = read_c02_semantic_cache_payload(artifact_dir)
+        if _c0_sc:
+            l4_payload["c0_section_intent_vector"] = _c0_sc.get("intent_vector") or {}
+            l4_payload["c0_section_intent_digest"] = _c0_sc.get("intent_digest") or ""
+            l4_payload["c0_query_output"] = _c0_sc.get("query_output") or []
+            l4_payload["c0_query_output_count"] = _c0_sc.get("query_output_count") or 0
+            l4_payload["c0_dense_search_refs"] = _c0_sc.get("dense_search_refs") or []
     _write_envelope(
         artifact_dir / L4_NAMESPACE_OBJECT_REF_ARTIFACT,
         l4_payload,

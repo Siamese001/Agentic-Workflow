@@ -70,7 +70,8 @@ def test_graph_proof_pool_supports_graph_10x6_product_shape() -> None:
         jd_text=HYBRID_JD,
     )
     assert MIN_CATEGORY_COUNT == MAX_CATEGORY_COUNT == 6
-    assert CANDIDATE_CATEGORY_COUNT == 10
+    # Variance-class alignment (2026-06): candidate pool 10 -> 8 (>= final 6).
+    assert CANDIDATE_CATEGORY_COUNT == 8
     assert pool.proof_pool_metadata.get("proof_pool_type") == "augmented_skills_graph"
     assert isinstance(pool.proof_pool_metadata.get("selected_skill_rows"), list)
 

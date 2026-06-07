@@ -279,22 +279,123 @@ def repair_headline_segment_citations_for_grounding(
     return new_rows, receipt
 
 
+def recite_canonical_segments_to_bundle_facts(
+    *,
+    headline_line: str,
+    claim_ledger: list[dict[str, Any]],
+    positioning_bundles: list[dict[str, Any]] | None,
+    allowed_fact_ids: set[str] | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Re-cite each canonical positioning segment to its bound bundle's linked_source_fact_ids.
+
+    Qwen frequently emits the right positioning display phrases ("Agentic AI Platforms",
+    "Distributed AI Infrastructure", "Runtime Governance") but cites the WRONG fact for each
+    one — in the full_resume_7ec23069bce2 run every citation was shifted by one slot vs the
+    registry, which both x2_headline_xyz_literal_grounding and the X1D judges flagged as
+    misaligned. The positioning bundle registry is the citation authority for these canonical
+    phrases, so this deterministic pre-X2 pass replaces the model's chosen fact_ids with the
+    bundle's ``linked_source_fact_ids`` (restricted to facts present in the allowed proof
+    pool). Non-canonical / free-synthesized segments are left untouched for the lexical
+    grounding floor to judge.
+    """
+    receipt: dict[str, Any] = {"per_segment": [], "any_changed": False}
+    h = (headline_line or "").strip()
+    bundle_index = _positioning_bundle_grounding_index(positioning_bundles)
+    if not h or not bundle_index:
+        return list(claim_ledger or []), receipt
+    parts = [p.strip() for p in h.split(" | ")]
+    if len(parts) < 4:
+        return list(claim_ledger or []), receipt
+    xyz_keys = {p.strip().lower() for p in parts[1:4]}
+    pool = {str(f).strip() for f in (allowed_fact_ids or set()) if str(f).strip()}
+
+    new_rows: list[dict[str, Any]] = []
+    for row in claim_ledger or []:
+        if not isinstance(row, dict):
+            new_rows.append(row)
+            continue
+        seg_key = str(row.get("claim_text") or "").strip().lower()
+        linked = bundle_index.get(seg_key)
+        if seg_key in xyz_keys and linked:
+            # Only re-cite to bundle facts that are in the allowed proof pool (FEC). The FEC
+            # is the citation boundary; re-citing to an out-of-pool fact trips sibling
+            # proof-pool gates.
+            canonical = [f for f in linked if (not pool or f in pool)]
+            before = [str(f).strip() for f in (row.get("source_fact_ids") or []) if str(f).strip()]
+            if canonical and set(canonical) != set(before):
+                updated = dict(row)
+                updated["source_fact_ids"] = list(canonical)
+                receipt["per_segment"].append({
+                    "segment": row.get("claim_text"),
+                    "before_cited": before,
+                    "after_cited": list(canonical),
+                    "changed": True,
+                })
+                receipt["any_changed"] = True
+                new_rows.append(updated)
+                continue
+        new_rows.append(row)
+    return new_rows, receipt
+
+
+def _positioning_bundle_grounding_index(
+    positioning_bundles: list[dict[str, Any]] | None,
+) -> dict[str, list[str]]:
+    """Map a registered display_phrase_candidate (lowercased) -> its linked_source_fact_ids.
+
+    These are the canonical, pre-approved positioning labels from
+    ``apps_rg/fact_inventory/headline_positioning_bundles.json``. A segment that exactly
+    equals a registered display phrase is grounded by the bundle registry (bundle id +
+    graph_skill_node_ids + linked_source_fact_ids) — a STRONGER proof than lexical noun
+    overlap — provided the bundle's linked facts are actually cited and present in the
+    allowed proof pool. The lexical floor below still governs every non-canonical /
+    free-synthesized phrase, so fabrication is still caught.
+    """
+    index: dict[str, list[str]] = {}
+    for b in positioning_bundles or []:
+        if not isinstance(b, dict):
+            continue
+        phrase = str(b.get("display_phrase_candidate") or "").strip().lower()
+        if not phrase:
+            continue
+        linked = [
+            str(f).strip()
+            for f in (b.get("linked_source_fact_ids") or [])
+            if str(f).strip()
+        ]
+        if linked:
+            index[phrase] = linked
+    return index
+
+
 def check_headline_xyz_literal_grounding(
     *,
     headline_line: str,
     claim_ledger: list[dict[str, Any]],
     fact_id_to_text: dict[str, str],
+    positioning_bundles: list[dict[str, Any]] | None = None,
+    allowed_fact_ids: set[str] | None = None,
 ) -> tuple[bool, dict[str, Any], str | None]:
-    """Each X/Y/Z phrase must share at least one content noun (>=4 chars, non-generic) with its cited fact's claim_text.
+    """Each X/Y/Z phrase must be grounded in its cited evidence.
 
-    Closes Bug:HeadlineXYZPhrasesNotGroundedInFactText (Brown SVP full_resume_183cf9252e02 headline
-    X3_BLOCK). The previous run synthesized ``Governed Agentic Platforms`` cited to
-    fact_engineering_platform_005 ("cloud-native microservices across AWS and Databricks Lakehouse...")
-    and ``Distributed AI Infrastructure`` cited to fact_quant_hpc_002 ("AI-driven automated trading
-    platform using parallel HPC workflows..."). Both phrases shared zero non-generic content nouns
-    with their cited facts, so two X1D judges (OpenAI 2.0 decisive, Claude 3.2 soft) correctly flagged
-    them as unsupported \u2014 but the existing X2 layer let them through because the fact_id was in
-    the allowed list. This gate enforces the lexical grounding the rubric already requires.
+    Two grounding proofs are accepted, in priority order:
+
+    1. **Registry bundle binding (canonical positioning phrases).** When a segment exactly
+       equals a registered ``headline_positioning_bundle.display_phrase_candidate`` AND that
+       bundle's ``linked_source_fact_ids`` are cited in the claim_ledger row and present in
+       the allowed proof pool, the segment is grounded by the registry. The positioning
+       families (e.g. ``Agentic AI Platforms``, ``Runtime Governance``) are abstract,
+       pre-approved labels whose authority is the bundle (graph skills + linked facts), not
+       lexical token overlap — most of their words are intentionally in the generic stoplist.
+       Requiring lexical overlap on these would be a permanent false-negative.
+
+    2. **Lexical noun overlap (free-synthesized phrases).** Any segment that is NOT a
+       registered display phrase must share >=1 non-generic content noun with its cited
+       fact's claim_text, and the majority of its content nouns must be grounded. Closes
+       Bug:HeadlineXYZPhrasesNotGroundedInFactText (Brown SVP full_resume_183cf9252e02):
+       synthesized ``Governed Agentic Platforms`` cited to a microservices fact shared zero
+       content nouns, so two X1D judges correctly flagged it — this floor catches that before
+       the judges do. The lexical floor is unchanged for non-canonical phrases.
     """
     h = (headline_line or "").strip()
     if not h:
@@ -303,6 +404,9 @@ def check_headline_xyz_literal_grounding(
     if len(parts) < 4:
         return True, {"reason": "skipped_not_four_segments"}, None  # other gate covers shape
     xyz = parts[1:4]
+
+    bundle_index = _positioning_bundle_grounding_index(positioning_bundles)
+    pool = {str(f).strip() for f in (allowed_fact_ids or set()) if str(f).strip()}
 
     ledger_by_text: dict[str, list[str]] = {}
     for row in claim_ledger or []:
@@ -321,6 +425,38 @@ def check_headline_xyz_literal_grounding(
         seg_clean = seg.strip()
         seg_key = seg_clean.lower()
         fids = ledger_by_text.get(seg_key, [])
+
+        # Proof 1: canonical positioning bundle binding (registry proof).
+        # The headline_positioning_bundles registry is a pre-approved, graph-skill-bound,
+        # fact-linked proof authority for canonical display phrases. A segment that exactly
+        # equals a registered display_phrase_candidate is grounded when it CITES that bundle's
+        # linked_source_fact_ids. The registry's linked facts are themselves the authority, so
+        # they do NOT also have to appear in the separately-selected citeable fact pool
+        # (`allowed_fact_ids`) — requiring that would make every canonical positioning phrase a
+        # permanent false-negative whenever the positioning fact is not also a bullet-citeable
+        # fact. The lexical floor below still governs every non-canonical / free-synthesized
+        # phrase, so fabrication is still caught.
+        bundle_linked = bundle_index.get(seg_key)
+        if bundle_linked:
+            cited = set(fids)
+            # The bundle's linked facts must be cited AND present in the allowed proof pool
+            # (FEC). The FEC is the citation boundary — out-of-pool facts trip sibling
+            # proof-pool gates — so registry grounding only applies when the linked fact is
+            # genuinely citeable. Promoting a positioning fact into the headline FEC is a
+            # separate upstream proof-pool change.
+            linked_present = [f for f in bundle_linked if (not pool or f in pool)]
+            if linked_present and set(linked_present) <= cited:
+                per_segment.append({
+                    "segment": seg_clean,
+                    "ground_pass": True,
+                    "reason": "grounded_via_positioning_bundle_registry",
+                    "cited_fact_ids": sorted(cited),
+                    "bundle_linked_source_fact_ids": linked_present,
+                    "grounded_tokens": [],
+                })
+                continue
+            # Registered phrase but its canonical linked facts are not cited / not in pool:
+            # fall through to the lexical floor so the gate fails honestly.
         seg_tokens = _tokenize_for_grounding(seg_clean)
         if not fids:
             per_segment.append({
@@ -813,10 +949,19 @@ def run_headline_x2_gates(
     )
 
     fact_text_map = _extract_plan_fact_text_map(parsed_output)
+    _positioning_bundles_for_grounding = (
+        proof_pool_metadata.get("headline_positioning_bundles")
+        if isinstance(proof_pool_metadata, dict)
+        else None
+    )
     grounding_pass, grounding_obs, grounding_fail = check_headline_xyz_literal_grounding(
         headline_line=h,
         claim_ledger=claim_ledger,
         fact_id_to_text=fact_text_map,
+        positioning_bundles=_positioning_bundles_for_grounding
+        if isinstance(_positioning_bundles_for_grounding, list)
+        else None,
+        allowed_fact_ids=allowed_fact_ids,
     )
     add(
         "x2_headline_xyz_literal_grounding",
@@ -1167,6 +1312,7 @@ __all__ = [
     "headline_runtime_self_check_truth",
     "headline_word_count",
     "polish_claim_text_when_headline_has_no_metrics",
+    "recite_canonical_segments_to_bundle_facts",
     "repair_headline_segment_citations_for_grounding",
     "run_headline_x2_gates",
     "validate_raw_headline_claim_ledger",

@@ -88,6 +88,17 @@ def resolve_phase1_lane_allow_non_allow_exit_zero(cli_flag: bool) -> bool:
 
 COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = "gemini_pro"
 
+# Bullet sections use one composite LLM judge by default (deterministic hard validator +
+# ONE batched composite judge + OPTIONAL adjudicator). unify_bullets already routes through
+# the single anthropic_claude pool selector; ibm_bullets defaults to the same single composite
+# judge here so it stops running the 3-provider panel on every run. The full panel
+# (gemini_pro,openai_chatgpt,anthropic_claude) is still reachable as the optional adjudicator
+# via an explicit ``--x1d-judges`` override or ``APPS_RG_E2E_X1D_JUDGES`` when a borderline
+# candidate (judge tie / low confidence / material risk on a high-value metric bullet) needs
+# a second opinion. IBM X2's required-judges gate already only checks anthropic_claude
+# (EMPLOYMENT_BULLET_JUDGE_PROVIDERS), so this changes the DEFAULT, not the proof contract.
+IBM_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = "anthropic_claude"
+
 
 def resolve_cli_x1d_judges(
     cli_value: str | None,
@@ -96,7 +107,13 @@ def resolve_cli_x1d_judges(
 ) -> str:
     """Honor ``APPS_RG_E2E_X1D_JUDGES`` when CLI omits ``--x1d-judges``.
 
-    Competencies lane defaults to a single ``gemini_pro`` pool judge (not the triple panel).
+    Per-section composite-judge defaults (one judge, not the triple panel):
+      * ``competencies``  -> single ``gemini_pro`` advisory judge.
+      * ``ibm_bullets``   -> single ``anthropic_claude`` composite bullet judge (matches the
+        unify_bullets Claude pool selector). The 3-provider panel is the optional adjudicator.
+
+    An explicit ``--x1d-judges`` CSV or ``APPS_RG_E2E_X1D_JUDGES`` always wins (this is how the
+    adjudicator panel is requested for borderline cases).
     """
     from apps_rg.runtime.x1d_judge_policy import APPS_RG_E2E_DEFAULT_X1D_JUDGES
 
@@ -105,8 +122,11 @@ def resolve_cli_x1d_judges(
     env_csv = (os.environ.get("APPS_RG_E2E_X1D_JUDGES") or "").strip()
     if env_csv:
         return env_csv
-    if str(section_id or "").strip().lower() == "competencies":
+    sid = str(section_id or "").strip().lower()
+    if sid == "competencies":
         return COMPETENCIES_DEFAULT_X1D_JUDGES
+    if sid == "ibm_bullets":
+        return IBM_BULLETS_DEFAULT_X1D_JUDGES
     return APPS_RG_E2E_DEFAULT_X1D_JUDGES
 
 

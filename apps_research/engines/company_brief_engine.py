@@ -216,10 +216,31 @@ class CompanyBriefEngine(BaseResearchEngine):
         brief["_sub_stages"] = _sub_stages
         if jd_context:
             brief["_jd_context"] = dict(jd_context)
-        targeting_md = str(synthesized.get("apps_rg_targeting_brief_markdown") or "").strip()
-        if targeting_md:
-            brief["apps_rg_targeting_brief_text"] = targeting_md
-            brief["company_brief_text"] = targeting_md
+        # apps_rg targeting brief: fail closed on a failing C0 support gate.
+        # A brief produced before the gate result is only promoted to
+        # company_brief_text when the gate did not fail; otherwise we surface
+        # a sealed BLOCKED disposition and emit NO company_brief_text.
+        targeting_disposition = str(synthesized.get("targeting_brief_disposition") or "").strip()
+        if targeting_disposition:
+            targeting_md = str(synthesized.get("apps_rg_targeting_brief_markdown") or "").strip()
+            gate_blocks = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
+            if targeting_md and not gate_blocks and targeting_disposition == "SEALED":
+                brief["apps_rg_targeting_brief_text"] = targeting_md
+                brief["company_brief_text"] = targeting_md
+                brief["targeting_brief_disposition"] = "SEALED"
+            else:
+                brief["targeting_brief_disposition"] = (
+                    "BLOCKED" if gate_blocks else targeting_disposition
+                )
+                brief["targeting_brief_block_reason"] = (
+                    f"c0_support_gate={gate_verdict}"
+                    if gate_blocks
+                    else str(synthesized.get("targeting_brief_block_reason") or "")
+                )
+                if synthesized.get("targeting_brief_violations"):
+                    brief["targeting_brief_violations"] = list(
+                        synthesized["targeting_brief_violations"]
+                    )
         _sub_stages.append({
             "sub_stage_id": "research.assemble",
             "sub_stage_name": "Brief Assembly",
@@ -644,27 +665,81 @@ class CompanyBriefEngine(BaseResearchEngine):
         findings: Dict[str, str],
         jd_context: Dict[str, Any],
         jd_anchor: Optional[Path],
+        gate_verdict: str = "",
+        gate_reason: str = "",
     ) -> Dict[str, Any]:
-        """Synthesize apps_rg === SECTION === targeting brief (plain markdown)."""
+        """Synthesize the apps_rg targeting brief as a sealed plain-markdown artifact.
+
+        The company is identified strictly from ``company_name`` (falls back to
+        ``topic`` only when absent) so the JD/role never pollutes company
+        identification. The JD is passed as relevance context only.
+
+        Fail-closed: when grounding is insufficient (no research findings or a
+        failing C0 gate) or the generated markdown does not satisfy the
+        :mod:`apps_research.types.apps_rg_targeting_brief_contract`, this method
+        returns a synthesis dict WITHOUT ``apps_rg_targeting_brief_markdown`` and
+        carries a ``targeting_brief_disposition`` (BLOCKED/DEGRADED) plus
+        ``targeting_brief_block_reason``. The caller therefore never surfaces a
+        placeholder or generic brief as a successful ``company_brief_text``.
+        """
         from apps_research.prompt_assembly.apps_rg_targeting_brief import (  # noqa: PLC0415
             build_targeting_brief_prompt,
             extract_jd_text,
             format_research_findings,
         )
+        from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
+            BriefStatus,
+            seal_targeting_brief,
+        )
 
+        company_name = str(jd_context.get("company_name") or "").strip() or topic
         jd_text = extract_jd_text(jd_context=jd_context, jd_anchor=jd_anchor)
         research_notes = format_research_findings(findings)
+
+        stub = self._stub_synthesis(topic=company_name, jd_facets=[])
+        stub["synthesis_template"] = "apps_rg_targeting_brief_synthesis_v1"
+
+        # Fail closed when there is no grounded research to synthesize from, or
+        # when the C0 support gate already failed. Never invent a brief.
+        has_research = bool(research_notes.strip())
+        gate_failed = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
+        if not has_research or gate_failed:
+            stub["targeting_brief_disposition"] = BriefStatus.BLOCKED.value
+            stub["targeting_brief_block_reason"] = (
+                gate_reason
+                or ("c0_support_gate_failed" if gate_failed else "no_grounded_research_for_company")
+            )
+            return stub
+
         prompt = build_targeting_brief_prompt(
             jd_text=jd_text,
             research_notes=research_notes,
-            target_entity=topic,
+            target_entity=company_name,
         )
-        markdown = self._call_llm_plain_markdown(prompt)
-        if not markdown.strip():
-            markdown = self._stub_targeting_brief_markdown(topic=topic, jd_text=jd_text)
-        stub = self._stub_synthesis(topic=topic, jd_facets=[])
-        stub["apps_rg_targeting_brief_markdown"] = markdown.strip()
-        stub["synthesis_template"] = "apps_rg_targeting_brief_synthesis_v1"
+        markdown = self._call_llm_plain_markdown(prompt).strip()
+
+        if not markdown or markdown.upper().startswith("BLOCKED:"):
+            stub["targeting_brief_disposition"] = BriefStatus.BLOCKED.value
+            stub["targeting_brief_block_reason"] = (
+                markdown[:120] if markdown else "synthesis_returned_empty"
+            )
+            return stub
+
+        sealed = seal_targeting_brief(
+            markdown,
+            company_name=company_name,
+            jd_text=jd_text,
+        )
+        if not sealed.is_sealed:
+            stub["targeting_brief_disposition"] = sealed.status.value
+            stub["targeting_brief_block_reason"] = sealed.block_reason
+            stub["targeting_brief_violations"] = list(sealed.violations)
+            return stub
+
+        stub["apps_rg_targeting_brief_markdown"] = sealed.company_brief_text
+        stub["targeting_brief_disposition"] = BriefStatus.SEALED.value
+        stub["targeting_brief_char_count"] = sealed.char_count
+        stub["targeting_brief_bullet_count"] = sealed.bullet_count
         return stub
 
     def _call_llm_plain_markdown(self, prompt: str) -> str:
@@ -771,43 +846,6 @@ class CompanyBriefEngine(BaseResearchEngine):
             if text:
                 return text
         return None
-
-    @staticmethod
-    def _stub_targeting_brief_markdown(*, topic: str, jd_text: str) -> str:
-        role_line = "target role"
-        for line in jd_text.splitlines()[:8]:
-            low = line.lower()
-            if "title" in low or "role" in low or "position" in low:
-                role_line = line.strip()[:80] or role_line
-                break
-        return (
-            f"{topic} (TBD) - {role_line} targeting brief\n"
-            "| TBD | TBD | Reports to TBD (TBD) |\n\n"
-            "=== STRATEGIC MANDATE ===\n"
-            f"- {topic} (stub synthesis — research unavailable)\n"
-            "- Core strategic pressure TBD pending verified research\n"
-            "- Recent AI or platform move TBD\n"
-            "- Central tension: growth vs control TBD\n\n"
-            "=== LEADERSHIP ===\n"
-            "- CEO: TBD\n"
-            "- Technology leader: TBD\n"
-            "- Data or AI leader: TBD\n"
-            "- Key EVP: TBD\n\n"
-            "=== TECH & AI PLATFORM ===\n"
-            "- Platform posture TBD\n"
-            "- Cloud or integration angle TBD\n"
-            "- M&A or transformation fact TBD\n"
-            "- Peer move TBD\n\n"
-            "=== BUSINESS CONTEXT (JD alignment hooks) ===\n"
-            "- Segment 1: TBD\n"
-            "- Segment 2: TBD\n"
-            "- AI or data priority TBD\n"
-            "- Culture or execution hook TBD\n\n"
-            "=== EXEC SUMMARY FRAMING (not proof) ===\n"
-            "- Lead with commercial outcome TBD\n"
-            "- Mirror verified company priority TBD\n"
-            "- 12-month win TBD\n"
-        )
 
     @staticmethod
     def _build_synthesis_prompt(

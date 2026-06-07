@@ -13,11 +13,27 @@ from apps_rg.runtime.orchestration.section_lane_concurrency import (
 from apps_rg.runtime.orchestration.section_lane_executor import LaneExecutionContext
 
 
-def test_build_phase1_waves_includes_exec_solo_wave() -> None:
+def test_build_phase1_waves_wave0_is_upstream_proof_bearing() -> None:
+    # Dependency-ordered DAG: wave 0 holds the upstream proof-bearing sections
+    # (competencies + bullets); executive_summary is downstream synthesis (later wave).
     waves = build_phase1_waves()
     assert waves
     wave0 = waves[0]
-    assert "executive_summary" in wave0.lanes
+    assert set(wave0.lanes) == {"competencies", "unify_bullets", "ibm_bullets"}
+    assert "executive_summary" not in wave0.lanes
+
+
+def test_build_phase1_waves_exec_summary_is_downstream_solo() -> None:
+    waves = build_phase1_waves()
+    lane_wave = {lane: w.wave_id for w in waves for lane in w.lanes}
+    es_wave = next(w for w in waves if "executive_summary" in w.lanes)
+    assert es_wave.lanes == ("executive_summary",)
+    assert es_wave.max_parallel == 1
+    # exec_summary runs after every upstream proof-bearing + narrative lane.
+    for upstream in ("competencies", "unify_bullets", "ibm_bullets", "unify_narrative", "ibm_narrative"):
+        assert lane_wave[upstream] < lane_wave["executive_summary"]
+    # headline is final positioning, strictly after exec_summary.
+    assert lane_wave["executive_summary"] < lane_wave["headline"]
 
 
 def test_section_dag_narrative_never_precedes_companion_bullets() -> None:
@@ -33,14 +49,17 @@ def test_section_dag_narrative_never_precedes_companion_bullets() -> None:
 
     assert lane_wave["unify_narrative"] > lane_wave["unify_bullets"]
     assert lane_wave["ibm_narrative"] > lane_wave["ibm_bullets"]
-    assert "ibm_narrative" not in (manifest["waves"][1].get("lanes") or [])
+    # Narratives are never scheduled in the wave-0 (upstream proof-bearing) bucket.
+    wave0_lanes = manifest["waves"][0].get("lanes") or []
+    assert "ibm_narrative" not in wave0_lanes
+    assert "unify_narrative" not in wave0_lanes
 
 
-def test_build_phase1_waves_wave2_serial_narratives() -> None:
+def test_build_phase1_waves_narratives_serial_after_bullets() -> None:
     waves = build_phase1_waves()
-    wave2 = next(w for w in waves if w.wave_id == 2)
-    assert wave2.lanes == ("unify_narrative", "ibm_narrative")
-    assert wave2.max_parallel == 1
+    nar_wave = next(w for w in waves if "unify_narrative" in w.lanes)
+    assert set(nar_wave.lanes) == {"unify_narrative", "ibm_narrative"}
+    assert nar_wave.max_parallel == 1
 
 
 def test_dispatch_serial_mock() -> None:

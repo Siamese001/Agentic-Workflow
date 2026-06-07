@@ -11,6 +11,22 @@ UpstreamBulletsGateStatus = Literal["NOT_APPLICABLE", "PASS", "BLOCKED"]
 UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS = "BLOCKED_UPSTREAM_NOT_FINALIZED"
 PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER = "UPSTREAM_BULLETS_NOT_FINALIZED"
 
+# Failure classes that retries cannot fix. Per the variance-class mental model: SC fixes
+# generation variance, more judges fix evaluation variance, deterministic gates fix mechanical
+# rules, and UPSTREAM FIXES fix missing evidence. When a section reports one of these, the
+# upstream state is unchanged on a re-run with the same inputs — so the best-of-N retry loop
+# must EARLY-EXIT (break) instead of paying preflight again for a guaranteed-fail. Dependent
+# downstream sections (narratives -> exec_summary -> headline) skip via the dependency order.
+UPSTREAM_BLOCKED_RUNTIME_STATUSES: frozenset[str] = frozenset(
+    {
+        UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,  # BLOCKED_UPSTREAM_NOT_FINALIZED
+        "UPSTREAM_EVIDENCE_MISSING",
+        "FEC_NOT_FINALIZED",
+        "REQUIRED_PROOF_ABSENT",
+        "REQUIRED_DEPENDENCY_EMPTY",
+    }
+)
+
 # Upstream bullets may proceed to narrative when L2+X2 product proof passed but a judge provider blocked.
 COMPANION_FINALIZED_X3_CODES: frozenset[str] = frozenset(
     {
@@ -336,11 +352,18 @@ def evaluate_narrative_upstream_bullets_gate(
     )
 
 
+def is_upstream_blocked_runtime_status(runtime_generation_status: str | None) -> bool:
+    """True when a section's runtime_generation_status is a non-retryable upstream block."""
+    return str(runtime_generation_status or "").strip().upper() in UPSTREAM_BLOCKED_RUNTIME_STATUSES
+
+
 __all__ = [
     "ACCEPTED_FINALIZED_COMPANION_STATUS",
     "COMPANION_FINALIZED_X3_CODES",
     "PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER",
+    "UPSTREAM_BLOCKED_RUNTIME_STATUSES",
     "UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS",
+    "is_upstream_blocked_runtime_status",
     "build_companion_bullets_context",
     "companion_accepted_in_modular_sections_root",
     "companion_allow_legacy_stale_fallback",

@@ -4,6 +4,60 @@ A 5-stage HOP pipeline that emits a structured underwriting decision packet from
 
 > **Maturity status (2026-05-02):** wired skeleton. The 5 pipeline stages and all canonical surfaces (engines / integrations / outputs / config / docs) are in place and run end-to-end. Real underwriting domain logic — actuarial scoring, regulatory checks, risk-tier mapping — is **out of scope** for this skeleton and lives behind well-defined seams. See `SVP_ENGINEERING_REVIEW.md` for the seam map.
 
+## Focused production-grade slice: Submitted-Document Evidence Sufficiency Gate
+
+> **Honesty note:** production-*grade* / client-*style*, built and tested against
+> **synthetic** documents. No real customer deployment, no real PII, no real binding
+> credit/insurance decision.
+
+**What it does.** A deterministic gate (`UnderwritingC0Adapter`) that sits between intake
+and decision/rationale assembly. It inspects submitted documents, checks required/optional
+evidence coverage, extracts fields from submitted documents only (including falsy values like
+`0`), assigns a deterministic, value-aware evidence ID to each field, computes an explainable
+support score, detects contradictions (two cross-document rules + one intra-document
+`CREDIT_REPORT` rule), and emits an immutable `FinalEvidenceContract`
+(`PASS / WEAK_WITH_CAVEATS / FAIL`). `PASS` requires all required document classes present,
+all required fields extracted, no contradictions, and `support_score >= 0.80`. Downstream
+rationale generation must consume that contract; the LLM owns prose only and cannot change the
+verdict or invent evidence — a **deterministic** citation allowlist (not a second LLM judge)
+in the firewall rejects any rationale citing an evidence ID absent from the contract. The
+`evidence_contract_id` is value-aware, so changing any submitted value changes the ID. It
+fails closed on malformed/non-list input and never touches the open web.
+
+**Run the focused demo / tests.**
+
+```bash
+# The anchor test suite for this slice (PASS, missing-required, contradictions,
+# malformed input, determinism, no-open-web, no-inferred-fields, firewall guard):
+python -m pytest tests/apps_underwriting_ai/test_c0_evidence_sufficiency_gate.py -v
+
+# Pre-existing governance coverage for the same gate + firewall:
+python -m pytest tests/governance/test_apps_underwriting_ai_c0.py tests/governance/test_apps_underwriting_ai_llm_firewall.py -v
+```
+
+Instantiate the gate directly from Python:
+
+```python
+from apps_underwriting_ai.integrations.underwriting_c0_adapter import UnderwritingC0Adapter
+
+fec = UnderwritingC0Adapter().run(
+    submitted_documents=[
+        {"document_class": "BANK_STATEMENT", "average_monthly_balance": 8500.0, "account_tenure_months": 36},
+        {"document_class": "TAX_RETURN", "annual_gross_income": 95000.0, "tax_year": 2025},
+        {"document_class": "CREDIT_REPORT", "credit_score": 740, "derogatory_mark_count": 0},
+    ],
+    demo_policy_hash="sha256-demo-policy-standard-v1-aabbcc",
+)
+print(fec.c0_state, fec.support_score, fec.evidence_ids)
+```
+
+**Where the code lives.** Gate + `FinalEvidenceContract`: `integrations/underwriting_c0_adapter.py` ·
+firewall: `integrations/underwriting_llm_firewall.py` · fixtures: `fixtures/c0_*_documents.yaml`.
+
+**Where the case study lives.** `docs/EVIDENCE_SUFFICIENCY_GATE_CASE_STUDY.md` — interview-ready
+write-up (business problem, data contract, scoring, contradiction rules, failure modes,
+production controls, 90-second + 5-minute talk track, 15 Q&A pairs).
+
 ## Design Patterns at Work
 
 - **Imperative + Declarative Twin Drivers** — the **same** 5-stage pipeline ships in two forms: an imperative `UnderwritingEngine.run(request)` for direct use, and a declarative `UnderwritingHopOrchestrator.run(context)` over the shared `HopPipelineExecutor` with replay support. They are interchangeable; tests prove parity.

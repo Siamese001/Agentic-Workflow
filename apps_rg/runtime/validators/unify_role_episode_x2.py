@@ -58,22 +58,50 @@ def unify_role_episode_consumption_active(meta: dict[str, Any] | None) -> bool:
     )
 
 
-def _collect_change_log_bindings(parsed_output: dict[str, Any] | None) -> dict[str, Any]:
+def _bundle_index_by_fact(meta: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """Role episode bundle records (id + linked facts/skills/metrics) from proof_pool_metadata."""
+    m = meta if isinstance(meta, dict) else {}
+    bundles = m.get("role_episode_bundles")
+    out: list[dict[str, Any]] = []
+    if isinstance(bundles, list):
+        for rec in bundles:
+            if isinstance(rec, dict) and rec.get("role_episode_bundle_id"):
+                out.append(rec)
+    return out
+
+
+def _collect_change_log_bindings(
+    parsed_output: dict[str, Any] | None,
+    meta: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Collect role episode bindings from model output + derive from cited facts.
+
+    derive_from_cited_facts (Author-Gate dec_19e9c91073ae4b5ab): a role episode bundle is *bound*
+    to a bullet when the bullet cites one of the bundle's linked_source_fact_ids. We resolve
+    role_episode_bundle_id + graph_skill_node_ids + matched source facts + approved
+    metric_outcome_ids deterministically from the attached bundles, in addition to any binding the
+    model echoed in change_log. The model variously emits source facts under `source_fact_ids` or
+    `fact_ids_used`; both are honored.
+    """
     bundle_ids: list[str] = []
     skill_ids: list[str] = []
     fact_or_lineage: list[str] = []
     metric_ids: list[str] = []
     per_bullet: dict[str, dict[str, Any]] = {}
     po = parsed_output if isinstance(parsed_output, dict) else {}
+
+    def _bullet_cited_facts(entry: dict[str, Any]) -> list[str]:
+        return [str(x) for x in (entry.get("source_fact_ids") or [])] + [
+            str(x) for x in (entry.get("fact_ids_used") or [])
+        ] + [str(x) for x in (entry.get("graph_lineage_refs") or [])]
+
     for entry in po.get("change_log") or []:
         if not isinstance(entry, dict):
             continue
         bid = str(entry.get("bullet_id") or "")
         reb = str(entry.get("role_episode_bundle_id") or "").strip()
         sk = [str(x) for x in (entry.get("graph_skill_node_ids") or entry.get("skill_ids_used") or [])]
-        srcs = [str(x) for x in (entry.get("source_fact_ids") or [])] + [
-            str(x) for x in (entry.get("graph_lineage_refs") or [])
-        ]
+        srcs = _bullet_cited_facts(entry)
         mids = [str(x) for x in (entry.get("metric_outcome_ids") or [])]
         if reb:
             bundle_ids.append(reb)
@@ -83,10 +111,81 @@ def _collect_change_log_bindings(parsed_output: dict[str, Any] | None) -> dict[s
         if bid:
             per_bullet[bid] = {
                 "role_episode_bundle_id": reb,
-                "graph_skill_node_ids": sk,
-                "source_fact_ids": srcs,
-                "metric_outcome_ids": mids,
+                "graph_skill_node_ids": list(sk),
+                "source_fact_ids": list(srcs),
+                "metric_outcome_ids": list(mids),
             }
+
+    # Per-bullet source facts also live on the bullets list (bullet_text payload).
+    for bullet in po.get("bullets") or []:
+        if not isinstance(bullet, dict):
+            continue
+        bid = str(bullet.get("bullet_id") or "")
+        if not bid:
+            continue
+        slot = per_bullet.setdefault(
+            bid,
+            {"role_episode_bundle_id": "", "graph_skill_node_ids": [], "source_fact_ids": [], "metric_outcome_ids": []},
+        )
+        slot["source_fact_ids"].extend(str(x) for x in (bullet.get("source_fact_ids") or []))
+
+    # Aggregate facts cited in claim_ledger (narrative cites here, not in change_log).
+    claim_ledger_facts: list[str] = []
+    for entry in po.get("claim_ledger") or []:
+        if isinstance(entry, dict):
+            claim_ledger_facts.extend(str(x) for x in (entry.get("source_fact_ids") or []))
+    top_ids = po.get("role_episode_bundle_ids")
+    if isinstance(top_ids, list):
+        bundle_ids.extend(str(x) for x in top_ids if str(x).strip())
+
+    # Derive bindings from attached bundles via cited-fact intersection.
+    bundles = _bundle_index_by_fact(meta)
+
+    # Narrative path: cited finalized bullet-slot ids (bul_unify_*) carry graph lineage to bundles
+    # via the slot->bundle map; resolve bundle_id + skills + lineage from them.
+    if claim_ledger_facts:
+        from apps_rg.runtime.sections.unify_role_episode_evidence import (
+            UNIFY_BULLET_SLOT_BUNDLE_MAP,
+        )
+
+        bundle_by_id = {str(r.get("role_episode_bundle_id")): r for r in bundles}
+        for fid in claim_ledger_facts:
+            rid = UNIFY_BULLET_SLOT_BUNDLE_MAP.get(fid)
+            rec = bundle_by_id.get(rid) if rid else None
+            if rec:
+                bundle_ids.append(str(rid))
+                skill_ids.extend(str(x) for x in (rec.get("graph_skill_node_ids") or []))
+                fact_or_lineage.append(fid)
+            else:
+                for rec2 in bundles:
+                    linked = {str(f).strip() for f in (rec2.get("linked_source_fact_ids") or []) if str(f).strip()}
+                    if fid in linked:
+                        bundle_ids.append(str(rec2.get("role_episode_bundle_id")))
+                        skill_ids.extend(str(x) for x in (rec2.get("graph_skill_node_ids") or []))
+                        fact_or_lineage.append(fid)
+
+    if bundles:
+        for bid, slot in per_bullet.items():
+            cited = {f for f in slot.get("source_fact_ids") or [] if f}
+            if not cited:
+                continue
+            for rec in bundles:
+                linked = {str(f).strip() for f in (rec.get("linked_source_fact_ids") or []) if str(f).strip()}
+                matched = cited & linked
+                if not matched:
+                    continue
+                rid = str(rec.get("role_episode_bundle_id"))
+                if not slot.get("role_episode_bundle_id"):
+                    slot["role_episode_bundle_id"] = rid
+                bundle_ids.append(rid)
+                rsk = [str(x) for x in (rec.get("graph_skill_node_ids") or [])]
+                slot["graph_skill_node_ids"].extend(rsk)
+                skill_ids.extend(rsk)
+                fact_or_lineage.extend(sorted(matched))
+                rmids = [str(x) for x in (rec.get("linked_metric_outcome_ids") or [])]
+                slot["metric_outcome_ids"].extend(rmids)
+                metric_ids.extend(rmids)
+
     return {
         "bundle_ids": sorted(set(bundle_ids)),
         "skill_ids": sorted(set(skill_ids)),
@@ -141,7 +240,7 @@ def run_unify_bullets_role_episode_x2_gates(
         else None,
     )
 
-    b = _collect_change_log_bindings(parsed_output)
+    b = _collect_change_log_bindings(parsed_output, meta)
     combined = "\n".join(str(x.get("bullet_text", "")) for x in (bullets or []))
 
     add(
@@ -274,7 +373,7 @@ def run_unify_narrative_role_episode_x2_gates(
         else None,
     )
 
-    b = _collect_change_log_bindings(parsed_output)
+    b = _collect_change_log_bindings(parsed_output, meta)
     # Narrative may also carry top-level bundle ids.
     po = parsed_output if isinstance(parsed_output, dict) else {}
     top_bundle_ids = po.get("role_episode_bundle_ids") or []

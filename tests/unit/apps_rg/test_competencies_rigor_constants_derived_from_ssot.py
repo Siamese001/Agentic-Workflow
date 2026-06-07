@@ -18,8 +18,9 @@ def test_competencies_rigor_matches_ssot() -> None:
     assert competencies_rigor.MAX_CATEGORY_COUNT == MAX_CATEGORY_COUNT
     assert competencies_rigor.MIN_ITEMS_PER_CATEGORY == MIN_ITEMS_PER_CATEGORY
     assert competencies_rigor.MAX_ITEMS_PER_CATEGORY == MAX_ITEMS_PER_CATEGORY
-    assert competencies_rigor.CANDIDATE_CATEGORY_COUNT == 10
-    assert CANDIDATE_CATEGORY_COUNT == 10
+    # Variance-class alignment (2026-06): candidate pool 10 -> 8 (>= final 6).
+    assert competencies_rigor.CANDIDATE_CATEGORY_COUNT == 8
+    assert CANDIDATE_CATEGORY_COUNT == 8
 
 
 def test_competencies_shape_gate_ids_include_rigor_anchors() -> None:

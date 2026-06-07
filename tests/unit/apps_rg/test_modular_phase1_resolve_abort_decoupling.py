@@ -96,7 +96,12 @@ def test_phase1_resolves_executive_summary_despite_dispatch_exit_error(monkeypat
 
 
 def test_phase1_materialize_runs_all_lanes_when_first_missing_pointer(monkeypatch: pytest.MonkeyPatch) -> None:
-    """headline missing pointer must not skip executive_summary resolve (GENERATED_LANES order)."""
+    """First-lane missing pointer must not skip a later lane's (executive_summary) resolve.
+
+    Order-agnostic: asserts the *first* lane in GENERATED_LANES gets PHASE1_NO_RUN_DIR while a
+    later lane that wrote its bundle still materializes — the invariant the dependency-ordered
+    serial loop must preserve regardless of which lane is first.
+    """
     repo = find_repo_root()
     art = repo / "artifacts" / "apps_rg" / "runs" / f"phase1_resolve_{uuid.uuid4().hex[:10]}"
     art.mkdir(parents=True, exist_ok=True)
@@ -122,8 +127,12 @@ def test_phase1_materialize_runs_all_lanes_when_first_missing_pointer(monkeypatc
                 validate_rg_output_fixture=False,
             ),
         )
-    assert GENERATED_LANES[0] == "headline"
+    first_lane = GENERATED_LANES[0]
+    assert first_lane != "executive_summary"  # exec_summary is the lane that writes its bundle
     raw = json.loads((art / res.section_provider_calls_ref).read_text(encoding="utf-8"))
     records = {r["section_lane"]: r for r in raw["records"]}
+    # The lane that wrote its bundle materializes despite the first lane having no run dir.
     assert records["executive_summary"].get("provider_call_attempted") is True
-    assert records["headline"]["decisive_reason_code"] == "PHASE1_NO_RUN_DIR"
+    # The first lane in the order (no bundle written) surfaces PHASE1_NO_RUN_DIR — proving the
+    # serial loop does not abort at the first missing lane.
+    assert records[first_lane]["decisive_reason_code"] == "PHASE1_NO_RUN_DIR"

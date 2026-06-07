@@ -406,11 +406,49 @@ def _exit_finalize_apps_rg_impl(
         final_output=getattr(sealed, "generated_content", None),
     )
 
+    # Exit CLEARS and PROPOSES the semantic-cache write (UWG commits, L4 stores). The proposal
+    # is inert evidence: it names the per-section C0 intent vector + query output that the
+    # post-Exit UWG -> L4 chain will durably admit. Only emitted when the run is authorized.
+    cache_proposals: tuple[SectionCacheWriteProposal, ...] = ()
+    if outcome_authorized:
+        section_id = _exit_section_id(fec, sealed)
+        intent_digest = _exit_c0_intent_digest(fec)
+        content = getattr(sealed, "generated_content", "") or ""
+        content_digest = str(getattr(sealed, "compilation_hash", "") or "") or str(
+            hash(content)
+        )
+        cache_proposals = (
+            SectionCacheWriteProposal(
+                section_id=section_id,
+                cache_key=intent_digest or f"c0_intent:{run_id}:{section_id}",
+                content_digest=content_digest,
+                metadata_ref=f"virtual/apps_rg/runs/{run_id}/c02_semantic_cache_payload.json",
+                proposal_status="PENDING_UWG",
+            ),
+        )
+
     return ExitResult(
         disposition=disposition,
         artifact_commit_candidates=[run_metadata_candidate],
-        cache_write_proposals=(),
+        cache_write_proposals=cache_proposals,
     )
+
+
+def _exit_section_id(fec: Optional[FinalEvidenceContract], sealed: SealedL2Artifact) -> str:
+    """Best-effort section id for the cache proposal (FEC first, then sealed app_id)."""
+    for src in (fec, sealed):
+        sid = getattr(src, "section_id", "") if src is not None else ""
+        if isinstance(sid, str) and sid.strip():
+            return sid.strip()
+    return ""
+
+
+def _exit_c0_intent_digest(fec: Optional[FinalEvidenceContract]) -> str:
+    """C0 section intent digest if surfaced on the FEC (else empty)."""
+    if fec is None:
+        return ""
+    val = getattr(fec, "c0_section_intent_digest", "") or ""
+    return str(val).strip()
 
 
 def build_exhaust_bundle_from_exit(

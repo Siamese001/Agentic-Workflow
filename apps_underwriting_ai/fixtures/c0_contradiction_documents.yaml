@@ -1,0 +1,35 @@
+# apps_underwriting_ai — C0 Evidence Sufficiency Gate fixture: CONTRADICTIONS
+#
+# Scenario: all 3 required document classes present, but the packet is
+# internally inconsistent across documents:
+#   - annual_gross_income (150000) vs average_monthly_balance (200)
+#     -> ratio 750x >> 20x -> INCOME_BALANCE_MISMATCH
+#   - credit_score (730) with derogatory_mark_count (4)
+#     -> score >= 720 with >= 3 derogatories -> CREDIT_SCORE_DEROGATORY_MISMATCH
+# A contradiction must never yield a clean PASS — the gate returns
+# WEAK_WITH_CAVEATS with the contradiction_flags populated.
+#
+# SYNTHETIC-DATA NOTICE: every value below is fabricated for the demo. No real
+# applicant, lender, bank, or credit decision is represented. No real PII.
+
+fixture_id: c0-contradiction-001
+data_mode: SYNTHETIC_DEMO_ONLY
+demo_policy_hash: sha256-demo-policy-standard-v1-aabbcc
+
+expected_c0:
+  c0_state_not: PASS
+  contradiction_flags_includes:
+    - INCOME_BALANCE_MISMATCH
+    - CREDIT_SCORE_DEROGATORY_MISMATCH
+
+submitted_documents:
+  - document_class: BANK_STATEMENT
+    average_monthly_balance: 200.0
+    account_tenure_months: 12
+  - document_class: TAX_RETURN
+    annual_gross_income: 150000.0
+    tax_year: 2025
+  - document_class: CREDIT_REPORT
+    credit_score: 730
+    derogatory_mark_count: 4
+    utilization_rate: 0.20

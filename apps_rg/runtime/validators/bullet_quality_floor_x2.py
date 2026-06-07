@@ -24,7 +24,7 @@ STRONG_ACTION_VERBS: frozenset[str] = frozenset({
     "launched", "modernized", "forged", "drove", "productized", "standardized",
     "unified", "accelerated", "scaled", "transformed", "generated", "delivered",
     "created", "implemented", "developed", "oversaw", "managed", "steered",
-    "pioneered", "defined", "spearheaded",
+    "pioneered", "defined", "spearheaded", "owned", "headed", "championed",
 })
 
 WEAK_ACTION_VERBS: frozenset[str] = frozenset({

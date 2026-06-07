@@ -2170,27 +2170,33 @@ def run_x2_gates(
         "self_check_implies_coverage_pass",
         self_check_reason,
     )
+    # Ledger/display parity gates are lane-agnostic rigor invariants (row count == sentence
+    # count; each ledger claim materializes in the display body). They are listed as
+    # rigor-critical for the lane in section_product_shape_ssot, so they must be emitted on
+    # EVERY lane — not only the strategy-executive lane — otherwise the rigor convergence audit
+    # injects a deterministic ``rigor_critical_gate_missing_from_runtime_bundle`` BLOCK for any
+    # non-strategy target title (e.g. "VP, Global Head of Agentic AI Solutions").
+    row_count_ok, row_count_reason = check_claim_ledger_row_count_matches_sentence_count(
+        resume_display_text, claim_ledger
+    )
+    add(
+        "x2_claim_ledger_row_count_matches_sentence_count",
+        row_count_ok,
+        row_count_reason or "ok",
+        "sentences_eq_ledger_rows",
+        row_count_reason,
+    )
+    claim_map_ok, claim_map_reason = check_claim_field_maps_to_display_sentence(
+        resume_display_text, claim_ledger
+    )
+    add(
+        "x2_claim_field_maps_to_display_sentence",
+        claim_map_ok,
+        claim_map_reason or "ok",
+        "each_claim_in_display",
+        claim_map_reason,
+    )
     if strategy_lane:
-        row_count_ok, row_count_reason = check_claim_ledger_row_count_matches_sentence_count(
-            resume_display_text, claim_ledger
-        )
-        add(
-            "x2_claim_ledger_row_count_matches_sentence_count",
-            row_count_ok,
-            row_count_reason or "ok",
-            "sentences_eq_ledger_rows",
-            row_count_reason,
-        )
-        claim_map_ok, claim_map_reason = check_claim_field_maps_to_display_sentence(
-            resume_display_text, claim_ledger
-        )
-        add(
-            "x2_claim_field_maps_to_display_sentence",
-            claim_map_ok,
-            claim_map_reason or "ok",
-            "each_claim_in_display",
-            claim_map_reason,
-        )
         from apps_rg.runtime.sections.executive_summary_operator_reporting import (
             check_exec_summary_s5_no_derivatives_inventory,
             check_self_check_s5_no_derivatives_inventory,

@@ -67,6 +67,7 @@ class DecisionPacketAssembler:
         register: EvidenceRegister | None = None,
         features: RiskFeatures | None = None,
         reconciliation: ReconciliationResult | None = None,
+        c0_bundle: dict[str, Any] | None = None,
     ) -> DecisionPacket:
         """Assemble a DecisionPacket from the four upstream stage outputs.
 
@@ -81,6 +82,13 @@ class DecisionPacketAssembler:
             register: Evidence register from stage 1.
             features: Risk features from stage 3.
             reconciliation: Reconciliation result from stage 2.
+            c0_bundle: Optional FinalEvidenceContract dict (``fec.to_dict()``)
+                from the C0 evidence sufficiency gate. When supplied, it is
+                handed verbatim to the LLM firewall as the evidence allowlist
+                source. When omitted, a legacy fallback bundle is synthesized
+                (``__legacy_fallback_bundle__=True``) that carries no evidence
+                IDs, so the firewall cannot accept any LLM evidence citation —
+                full C0->assembler wiring remains a documented integration seam.
 
         Returns:
             DecisionPacket with verdict, rationale, and audit fields populated.
@@ -147,12 +155,18 @@ class DecisionPacketAssembler:
         # W4.1 — LLM Firewall gate: PA compiler MUST run before any Qwen call.
         # The firewall binds verdict_hash + reason_codes_hash into the artifact.
         # On PromptAssemblyError, firewall returns deterministic_fallback_used=True.
+        #
+        # Evidence allowlist source: prefer the real FinalEvidenceContract dict
+        # when the caller supplies it; otherwise synthesize a legacy fallback
+        # bundle that is firewall-valid but carries NO evidence IDs (so no LLM
+        # evidence citation can ever be accepted on the legacy path).
+        firewall_bundle = c0_bundle if c0_bundle is not None else self._legacy_fallback_bundle()
         firewall_result = self._run_firewall_gate(
             verdict=breakdown.verdict,
             reason_codes=list(breakdown.reason_code_bundle)
             if hasattr(breakdown, "reason_code_bundle")
             else [],
-            c0_bundle=feature_summary,
+            c0_bundle=firewall_bundle,
             deterministic_rationale=breakdown.rationale,
             request_id=request_id,
         )
@@ -232,6 +246,23 @@ class DecisionPacketAssembler:
             llm_callable=llm_callable,
             slot_overrides=slot_overrides,
         )
+
+    @staticmethod
+    def _legacy_fallback_bundle() -> dict[str, Any]:
+        """Synthesize a firewall-valid C0 bundle for the no-C0 legacy path.
+
+        It satisfies the firewall's structural checks (open_web_blocked,
+        c0_mode, an evidence_ids list) but carries NO evidence IDs, so any LLM
+        attempt to cite evidence is rejected. This keeps the legacy assembler
+        path safe without claiming it carries a real FinalEvidenceContract.
+        """
+        return {
+            "c0_mode": "SUBMITTED_DOCUMENT_EVIDENCE_ONLY",
+            "open_web_blocked": True,
+            "evidence_ids": [],
+            "extracted_span_map": {},
+            "__legacy_fallback_bundle__": True,
+        }
 
     @staticmethod
     def _run_firewall_gate(

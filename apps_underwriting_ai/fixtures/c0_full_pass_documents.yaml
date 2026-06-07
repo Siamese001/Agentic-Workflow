@@ -1,0 +1,43 @@
+# apps_underwriting_ai — C0 Evidence Sufficiency Gate fixture: FULL PASS
+#
+# Scenario: complete packet — all 3 required document classes present, every
+# required field extractable, no cross-field contradictions. Expected C0 state
+# is PASS with evidence_sufficiency=sufficient.
+#
+# SYNTHETIC-DATA NOTICE: every value below is fabricated for the demo. No real
+# applicant, lender, bank, or credit decision is represented. No real PII.
+#
+# Schema note: the C0 adapter (UnderwritingC0Adapter.run) reads FLAT field
+# key-value pairs off each document dict, keyed by 'document_class'. This is a
+# deliberately different (simpler) shape than the demo_*_packet.yaml fixtures
+# which exercise the full 5-stage HOP pipeline.
+
+fixture_id: c0-full-pass-001
+data_mode: SYNTHETIC_DEMO_ONLY
+demo_policy_hash: sha256-demo-policy-standard-v1-aabbcc
+
+expected_c0:
+  c0_state: PASS
+  evidence_sufficiency: sufficient
+  contradiction_flags: []
+  missing_evidence_flags: []
+
+submitted_documents:
+  - document_class: BANK_STATEMENT
+    average_monthly_balance: 8500.0
+    account_tenure_months: 36
+    overdraft_count_12m: 0
+    deposit_consistency_score: 0.95
+  - document_class: TAX_RETURN
+    annual_gross_income: 95000.0
+    tax_year: 2025
+    filing_status: single
+  - document_class: CREDIT_REPORT
+    credit_score: 740
+    derogatory_mark_count: 0
+    utilization_rate: 0.18
+    inquiry_count_12m: 1
+  - document_class: EMPLOYMENT_VERIFICATION
+    employer_name: Synth Corp
+    employment_status: EMPLOYED
+    tenure_months: 48

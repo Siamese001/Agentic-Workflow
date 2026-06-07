@@ -144,15 +144,17 @@ def dispatch_resume_research_briefing(
             dispatch_duration_ms=_utc_ms() - t_start,
         )
 
+    # Fail closed: the delegated briefing MUST be a sealed, contract-valid
+    # company_brief_text. No evidence-label or generic-heading fallback.
     briefing_text = str(research_result.company_brief_text or "").strip()
     if not briefing_text:
-        lines = [
-            f"- {getattr(ev, 'label', '')}: {getattr(ev, 'uri', '')}"
-            for ev in research_result.evidence_items
-        ]
-        briefing_text = (
-            f"# Company research briefing: {request.company_name}\n\n"
-            + "\n".join(lines)
+        return ResearchDispatchFailure(
+            request_id=request.request_id,
+            run_id=request.run_id,
+            trace_id=request.trace_id,
+            r5_reason_code=ResearchFailureReason.APPS_RESEARCH_EMPTY.value,
+            detail="missing company_brief_text (no valid delegated briefing)",
+            dispatch_duration_ms=_utc_ms() - t_start,
         )
 
     lineage = tuple(

@@ -82,14 +82,26 @@ def _collect_freshness(lane: str, base: Path, l2: Mapping[str, Any]) -> dict[str
     }
 
 
+# Canonical serial EXECUTION order (dependency-ordered).
+#
+# Proof flows upstream -> downstream:
+#   1. upstream proof-bearing sections (competencies, unify_bullets, ibm_bullets) generate first;
+#   2. narratives consume their finalized selected bullets;
+#   3. executive_summary synthesizes finalized bullets + narratives + competencies;
+#   4. headline is FINAL positioning and must not run before upstream proof / exec_summary finalize.
+#
+# This ordering is consumed as the serial Phase-1 loop in modular_resume_generation.py and as
+# SECTION_ORDER in lane_batch.py. The rollup readers (build_rollup / build_modular_lane_rollup)
+# aggregate by set membership, so order only affects display, not status. The parallel wave DAG
+# lives in workflow_manifest.resume_sections.v1.yaml and mirrors this dependency order.
 GENERATED_LANES: tuple[str, ...] = (
-    "headline",
-    "executive_summary",
-    "unify_bullets",
-    "unify_narrative",
-    "ibm_bullets",
-    "ibm_narrative",
     "competencies",
+    "unify_bullets",
+    "ibm_bullets",
+    "unify_narrative",
+    "ibm_narrative",
+    "executive_summary",
+    "headline",
 )
 
 REQUIRED_RELATIVE = (

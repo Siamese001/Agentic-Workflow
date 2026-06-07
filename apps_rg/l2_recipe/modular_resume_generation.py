@@ -542,7 +542,14 @@ def run_modular_resume_generation(
         tr = str(lane_targeting.target_title or "") if lane_targeting is not None else ""
         jd_ref, jd_txt = phase1_jd_dispatch_refs(lane_targeting)
         br_dispatch = phase1_manual_brief_for_dispatch(lane_targeting)
+        # Per-lane composite-judge default: competencies -> gemini_pro, ibm_bullets ->
+        # anthropic_claude, everything else -> standard panel. Resolving WITHOUT a section_id
+        # would force the 3-provider panel onto every lane in whole-run mode, defeating the
+        # one-composite-judge default for the bullet/competency lanes. Resolve per-lane below.
         x1d_eff = resolve_cli_x1d_judges(None)
+
+        def _lane_x1d_judges(lane_id: str) -> str:
+            return resolve_cli_x1d_judges(None, section_id=lane_id)
         prev_whole_run_env = os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE")
         prev_corr_env = os.environ.get("APPS_RG_CORRELATED_CLI_RUN")
         os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = "1"
@@ -649,7 +656,7 @@ def run_modular_resume_generation(
                 job_description_text=jd_txt,
                 manual_brief=br_dispatch,
                 lane_provider=profile.phase1_lane_provider,
-                lane_x1d_judges=x1d_eff,
+                lane_x1d_judges=_lane_x1d_judges,
                 lane_mock_judges=lane_mock_j_for_phase1,
                 lane_allow_non_allow_exit_zero=_phase1_allow_exit,
             )
@@ -729,11 +736,11 @@ def run_modular_resume_generation(
                             section=lane,
                             lane_provider=profile.phase1_lane_provider,
                             lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
-                            lane_temperature=default_temperature_for_section(lane),
-                            lane_x1d_judges=x1d_eff,
-                            lane_mock_judges=lane_mock_j_for_phase1,
-                            lane_allow_non_allow_exit_zero=_phase1_allow_exit,
-                        )
+                        lane_temperature=default_temperature_for_section(lane),
+                        lane_x1d_judges=_lane_x1d_judges(lane),
+                        lane_mock_judges=lane_mock_j_for_phase1,
+                        lane_allow_non_allow_exit_zero=_phase1_allow_exit,
+                    )
                         lane_dispatch_results[lane] = dict(result) if isinstance(result, dict) else {}
                         lane_exec_status[lane] = _phase1_lane_dispatch_status(lane_dispatch_results[lane])
                         if product_fail_closed_runtime() and phase1_dispatch_hard_failed(

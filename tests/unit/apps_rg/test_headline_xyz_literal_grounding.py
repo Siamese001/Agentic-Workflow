@@ -16,7 +16,29 @@ from __future__ import annotations
 from apps_rg.runtime.validators.headline_x2 import (
     _tokenize_for_grounding,
     check_headline_xyz_literal_grounding,
+    recite_canonical_segments_to_bundle_facts,
 )
+
+
+def _positioning_bundles() -> list[dict[str, object]]:
+    """Subset of apps_rg/fact_inventory/headline_positioning_bundles.json display->facts."""
+    return [
+        {
+            "headline_positioning_bundle_id": "hpb_agentic_ai_platforms",
+            "display_phrase_candidate": "Agentic AI Platforms",
+            "linked_source_fact_ids": ["fact_engineering_platform_001"],
+        },
+        {
+            "headline_positioning_bundle_id": "hpb_distributed_ai_infrastructure",
+            "display_phrase_candidate": "Distributed AI Infrastructure",
+            "linked_source_fact_ids": ["fact_engineering_platform_002"],
+        },
+        {
+            "headline_positioning_bundle_id": "hpb_runtime_governance",
+            "display_phrase_candidate": "Runtime Governance",
+            "linked_source_fact_ids": ["fact_engineering_platform_001"],
+        },
+    ]
 
 
 def _brown_svp_fact_pool() -> dict[str, str]:
@@ -149,3 +171,104 @@ def test_metric_suffixed_fact_id_still_resolves_to_base_fact_text() -> None:
         fact_id_to_text=_brown_svp_fact_pool(),
     )
     assert ok is True, f"metric-suffixed fact_id should resolve to base text, got failure={failure!r}"
+
+
+def test_canonical_positioning_headline_grounded_via_bundle_registry() -> None:
+    """All-stoplisted canonical display phrases ground via registry bundle binding."""
+    headline = (
+        "SVP Engineering | Agentic AI Platforms | "
+        "Distributed AI Infrastructure | Runtime Governance"
+    )
+    claim_ledger = [
+        {"claim_text": "Agentic AI Platforms", "source_fact_ids": ["fact_engineering_platform_001"]},
+        {"claim_text": "Distributed AI Infrastructure", "source_fact_ids": ["fact_engineering_platform_002"]},
+        {"claim_text": "Runtime Governance", "source_fact_ids": ["fact_engineering_platform_001"]},
+    ]
+    allowed = {"fact_engineering_platform_001", "fact_engineering_platform_002"}
+    ok, observed, failure = check_headline_xyz_literal_grounding(
+        headline_line=headline,
+        claim_ledger=claim_ledger,
+        fact_id_to_text={},
+        positioning_bundles=_positioning_bundles(),
+        allowed_fact_ids=allowed,
+    )
+    assert ok is True, f"canonical positioning headline should ground via registry, failure={failure!r}"
+    assert all(seg["ground_pass"] for seg in observed["segments"])
+    assert all(
+        seg.get("reason") == "grounded_via_positioning_bundle_registry"
+        for seg in observed["segments"]
+    )
+
+
+def test_registered_phrase_with_wrong_citation_still_fails_via_lexical_floor() -> None:
+    """A canonical display phrase that does NOT cite its bundle's linked facts must not get a free pass."""
+    headline = (
+        "SVP Engineering | Agentic AI Platforms | "
+        "Distributed AI Infrastructure | Runtime Governance"
+    )
+    # 'Agentic AI Platforms' cited to the wrong fact (not its bundle's linked fact)
+    claim_ledger = [
+        {"claim_text": "Agentic AI Platforms", "source_fact_ids": ["fact_quant_hpc_002"]},
+        {"claim_text": "Distributed AI Infrastructure", "source_fact_ids": ["fact_engineering_platform_002"]},
+        {"claim_text": "Runtime Governance", "source_fact_ids": ["fact_engineering_platform_001"]},
+    ]
+    allowed = {
+        "fact_engineering_platform_001",
+        "fact_engineering_platform_002",
+        "fact_quant_hpc_002",
+    }
+    ok, _observed, failure = check_headline_xyz_literal_grounding(
+        headline_line=headline,
+        claim_ledger=claim_ledger,
+        fact_id_to_text=_brown_svp_fact_pool(),
+        positioning_bundles=_positioning_bundles(),
+        allowed_fact_ids=allowed,
+    )
+    assert ok is False, "registered phrase missing its bundle's linked fact must fall to lexical floor and fail"
+    assert "Agentic AI Platforms" in (failure or "")
+
+
+def test_recite_canonical_segments_to_bundle_facts_repairs_citation_drift() -> None:
+    """Model citation drift (each segment shifted one slot) is repaired to registry facts."""
+    headline = (
+        "SVP Engineering | Agentic AI Platforms | "
+        "Distributed AI Infrastructure | Runtime Governance"
+    )
+    drifted = [
+        {"claim_text": "Agentic AI Platforms", "source_fact_ids": ["fact_engineering_platform_002"]},
+        {"claim_text": "Distributed AI Infrastructure", "source_fact_ids": ["fact_engineering_platform_003"]},
+        {"claim_text": "Runtime Governance", "source_fact_ids": ["fact_quant_hpc_001"]},
+    ]
+    allowed = {"fact_engineering_platform_001", "fact_engineering_platform_002"}
+    repaired, receipt = recite_canonical_segments_to_bundle_facts(
+        headline_line=headline,
+        claim_ledger=drifted,
+        positioning_bundles=_positioning_bundles(),
+        allowed_fact_ids=allowed,
+    )
+    assert receipt["any_changed"] is True
+    by_seg = {r["claim_text"]: r["source_fact_ids"] for r in repaired}
+    assert by_seg["Agentic AI Platforms"] == ["fact_engineering_platform_001"]
+    assert by_seg["Distributed AI Infrastructure"] == ["fact_engineering_platform_002"]
+    assert by_seg["Runtime Governance"] == ["fact_engineering_platform_001"]
+
+
+def test_recite_does_not_touch_non_canonical_segments() -> None:
+    """Free-synthesized phrases are left for the lexical floor, not re-cited."""
+    headline = (
+        "SVP Engineering | Lakehouse Microservices | "
+        "AI Lifecycle Standardization | HPC Trading Workflows"
+    )
+    ledger = [
+        {"claim_text": "Lakehouse Microservices", "source_fact_ids": ["fact_engineering_platform_005"]},
+        {"claim_text": "AI Lifecycle Standardization", "source_fact_ids": ["fact_engineering_platform_004"]},
+        {"claim_text": "HPC Trading Workflows", "source_fact_ids": ["fact_quant_hpc_002"]},
+    ]
+    repaired, receipt = recite_canonical_segments_to_bundle_facts(
+        headline_line=headline,
+        claim_ledger=ledger,
+        positioning_bundles=_positioning_bundles(),
+        allowed_fact_ids={"fact_engineering_platform_005"},
+    )
+    assert receipt["any_changed"] is False
+    assert repaired == ledger

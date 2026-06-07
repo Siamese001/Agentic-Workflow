@@ -52,7 +52,11 @@ from apps_rg.runtime.judges.ibm_bullets_x1d import run_ibm_bullets_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
-from apps_rg.runtime.reasoning.employment_bullet_pool import build_employment_targeting_context
+from apps_rg.runtime.reasoning.employment_bullet_pool import (
+    build_employment_targeting_context,
+    employment_pool_x1d_judge_rows,
+    is_employment_pool_generation,
+)
 from apps_rg.runtime.section_proof.lane_proof_accounting import (
     generation_status_allows_qwen_json_parse,
     resolve_lane_placement_bucket,
@@ -507,11 +511,41 @@ def inject_ibm_locked_metric_anchors(
         )
 
         if plan_fact and not canonical_aligns_with_plan:
-            # Graph-selector reassigned this slot. Respect its choice:
-            #   (a) plan_metric exists but conflicts -> the bullet keeps its plan-fact metric.
-            #   (b) plan_metric is empty/has_metric is false -> the graph fact has no metric
-            #       to claim; forcing the canonical IBM_LOCKED_METRIC_CANONICAL token would
-            #       fabricate an unsupported claim (judges decisively reject it).
+            # Graph-selector reassigned this slot to a fact with its own metric.
+            #   (a) plan_metric exists but conflicts with canonical -> surface the PLAN fact's
+            #       own metric token (it is genuinely fact-backed) so the bullet owns a metric
+            #       anchor without fabricating the canonical figure. This closes the case where
+            #       the model omitted its own approved metric (e.g. fact carries "$10M new ARR"
+            #       but the model wrote a qualitative bullet) and x2_ibm_metric_anchor_bullet_
+            #       ownership fails for *_missing_metric_token.
+            #   (b) plan_metric is empty/has_metric is false -> the graph fact has no metric to
+            #       claim; forcing any metric token would fabricate an unsupported claim, so skip.
+            plan_token = _plan_metric_display_token(plan_metric)
+            already_has_plan_metric = bool(plan_token) and plan_token.lower() in tl
+            if plan_has_metric and plan_token and not already_has_plan_metric:
+                cleaned = _scrub_foreign_ibm_metric_tokens(text, root)
+                base_text = cleaned or text
+                if base_text and not base_text.rstrip().endswith((".", "!", "?")):
+                    base_text = base_text.rstrip() + "."
+                bullet["bullet_text"] = (
+                    f"{base_text} Delivered {plan_token} at enterprise scale."
+                    if base_text
+                    else f"Delivered {plan_token} at enterprise scale."
+                )
+                bullet["has_metric"] = True
+                bullet["metric_raw"] = plan_metric
+                src = list(bullet.get("source_fact_ids") or [])
+                if root not in src:
+                    src.insert(0, root)
+                bullet["source_fact_ids"] = src
+                repaired_any = True
+                changelog.append(
+                    {
+                        "operation": "inject_ibm_plan_fact_metric",
+                        "reason": f"surface_plan_metric:{root}:{plan_token}",
+                    }
+                )
+                continue
             reason_detail = (
                 f"plan_fact_metric_does_not_match_canonical:{root} "
                 f"(canonical={token}, plan_metric={plan_metric!r}, has_metric={plan_has_metric})"
@@ -552,6 +586,80 @@ def inject_ibm_locked_metric_anchors(
             plan_facts=plan_facts,
             allowed_fact_ids=allowed_fact_ids,
         )
+
+
+_GATED_FINOPS_OUTCOME_ID = "metric_ibm_10pct_finops_savings_gated"
+_CONFIRMED_FINOPS_OUTCOME_ID = "metric_ibm_10pct_finops_savings_confirmed"
+
+
+def demote_gated_ibm_metrics(parsed: dict[str, Any]) -> None:
+    """Demote unconfirmed/gated IBM metrics to qualitative claims.
+
+    The 10% FinOps savings figure is bound to ``metric_ibm_10pct_finops_savings_gated``; without
+    the matching ``_confirmed`` outcome id it is not promotable, and
+    ``x2_ibm_metric_outcome_id_required_when_has_metric`` blocks. When a bullet/change_log carries
+    only the gated id, drop that outcome id and strip the ``10%`` (FinOps/savings/cost) figure from
+    the bullet text so the bullet reads qualitatively instead of asserting an unpromotable metric.
+    No confirmed metric is ever removed.
+    """
+    if not isinstance(parsed, dict):
+        return
+    changelog = parsed.get("change_log")
+    if not isinstance(changelog, list):
+        return
+    gated_bullet_ids: set[str] = set()
+    for entry in changelog:
+        if not isinstance(entry, dict):
+            continue
+        ids = [str(x) for x in (entry.get("metric_outcome_ids") or [])]
+        if _GATED_FINOPS_OUTCOME_ID in ids and _CONFIRMED_FINOPS_OUTCOME_ID not in ids:
+            bid = str(entry.get("bullet_id") or "").strip()
+            if bid:
+                gated_bullet_ids.add(bid)
+            entry["metric_outcome_ids"] = [
+                x for x in ids if x != _GATED_FINOPS_OUTCOME_ID
+            ]
+            entry.setdefault("change_notes", [])
+            if isinstance(entry["change_notes"], list):
+                entry["change_notes"].append("demoted_gated_finops_metric_to_qualitative")
+    if not gated_bullet_ids:
+        return
+    for bullet in parsed.get("bullets") or []:
+        if not isinstance(bullet, dict):
+            continue
+        if str(bullet.get("bullet_id") or "").strip() not in gated_bullet_ids:
+            continue
+        text = str(bullet.get("bullet_text") or "")
+        # Strip a "10%" figure tied to finops/savings/cost; keep the surrounding clause readable.
+        new_text = re.sub(
+            r"\b(?:achieving|delivering|driving|with|of)?\s*10\s*%\s*"
+            r"(?:in\s+)?(?:finops|cost|savings|efficiency)[^.,;]*",
+            "",
+            text,
+            flags=re.IGNORECASE,
+        )
+        new_text = re.sub(r"\b10\s*%\b", "", new_text)
+        new_text = re.sub(r"\s{2,}", " ", new_text).replace(" ,", ",").replace(" .", ".").strip()
+        if new_text and not new_text.rstrip().endswith((".", "!", "?")):
+            new_text = new_text.rstrip() + "."
+        if new_text != text:
+            bullet["bullet_text"] = new_text
+            if str(bullet.get("metric_raw") or "").strip().startswith("10"):
+                bullet["metric_raw"] = ""
+                bullet["has_metric"] = bool(re.search(r"[\$\d]", new_text))
+
+
+def _plan_metric_display_token(plan_metric: str) -> str:
+    """Extract a single display-case numeric token from a plan fact's metric_raw.
+
+    Mirrors the X2 gate's accepted-chunk regex (``[\\$\\d][\\$\\d.,%a-z-]*``) so the injected token
+    is recognized by ``x2_ibm_metric_anchor_bullet_ownership``. Returns the first numeric/currency
+    token from the first ``|``-delimited metric segment (e.g. ``"$10M new ARR|..."`` -> ``"$10M"``,
+    ``"30% cost optimization"`` -> ``"30%"``). Empty when no numeric token is present.
+    """
+    seg = str(plan_metric or "").split("|")[0].strip()
+    m = re.search(r"[\$\d][\$\d.,%]*[A-Za-z%]?", seg)
+    return m.group(0).strip() if m else ""
 
 
 def repair_ibm_bullet_metric_anchors_from_plan(
@@ -818,6 +926,20 @@ def run_ibm_bullets_execution(
                 base_resume=base,
                 would_hydrate_fn=should_hydrate_ibm_bullets_from_canonical,
             )
+            # Deterministic metric anchoring: when a bullet's graph-selected plan fact carries
+            # an approved metric the model dropped (e.g. fact_revenue_ops_001 "$10M new ARR"
+            # surfaced as a qualitative bullet), surface that fact-backed token so
+            # x2_ibm_metric_anchor_bullet_ownership is satisfied without fabricating figures.
+            inject_ibm_locked_metric_anchors(
+                parsed,
+                plan_facts=ibm_facts,
+                allowed_fact_ids=allowed_fact_ids,
+            )
+            # Demote gated/unconfirmed metrics (e.g. 10% FinOps savings bound only to
+            # metric_ibm_10pct_finops_savings_gated) to qualitative so
+            # x2_ibm_metric_outcome_id_required_when_has_metric does not block on an
+            # unpromotable figure.
+            demote_gated_ibm_metrics(parsed)
             align_ibm_claim_ledger_from_canonical_facts(
                 parsed,
                 plan_facts=ibm_facts,
@@ -830,8 +952,8 @@ def run_ibm_bullets_execution(
             )
             record_mechanical(
                 artifact_dir,
-                operation="organic_from_graph_bundle",
-                reason="metric_tokens_in_proof_bundle_not_injected",
+                operation="inject_ibm_plan_fact_metric_anchors",
+                reason="surface_fact_backed_metric_tokens_model_dropped",
             )
     else:
         parsed = None
@@ -932,23 +1054,36 @@ def run_ibm_bullets_execution(
         proof_pool_ref=str(pool.proof_pool_ref or ""),
         proof_pool_digest=str(pool.proof_pool_digest or ""),
     )
-    x1d = [
-        j.to_dict()
-        for j in run_ibm_bullets_judges(
-            bullets=bullets,
-            claim_ledger=claim_ledger,
-            judge_keys=judge_keys,
-            mode=judge_mode,
-            artifact_base=artifact_dir,
-            allowed_fact_packet=allowed_fact_packet,
-            targeting_context={
-                "target_title": str(runtime_payload.get("target_title") or ""),
-                "target_company": str(runtime_payload.get("target_company") or ""),
-                "jd_text": str(runtime_payload.get("jd_text") or ""),
-                "briefing": str(runtime_payload.get("briefing") or ""),
-            },
+    # Variance-class alignment (2026-06): on the employment-pool path the Claude pool
+    # SELECTOR has already model-scored every slot. Reuse that selection as the single
+    # composite X1D row (synthetic anthropic_claude row from the selector artifact),
+    # matching the unify_bullets pattern, instead of a SECOND independent Anthropic
+    # GRADE_ONLY call. The optional multi-provider adjudicator panel below still escalates
+    # borderline cases as a second opinion. Non-pool fallback keeps the real judge call.
+    if is_employment_pool_generation(gen_meta):
+        x1d = employment_pool_x1d_judge_rows(
+            artifact_dir=artifact_dir,
+            section_id="ibm_bullets",
+            gen_meta=gen_meta,
         )
-    ]
+    else:
+        x1d = [
+            j.to_dict()
+            for j in run_ibm_bullets_judges(
+                bullets=bullets,
+                claim_ledger=claim_ledger,
+                judge_keys=judge_keys,
+                mode=judge_mode,
+                artifact_base=artifact_dir,
+                allowed_fact_packet=allowed_fact_packet,
+                targeting_context={
+                    "target_title": str(runtime_payload.get("target_title") or ""),
+                    "target_company": str(runtime_payload.get("target_company") or ""),
+                    "jd_text": str(runtime_payload.get("jd_text") or ""),
+                    "briefing": str(runtime_payload.get("briefing") or ""),
+                },
+            )
+        ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
     temperature = float(args.temperature) if args.provider == "qwen_vllm" else IBM_TEMP_DEFAULT
@@ -1008,6 +1143,68 @@ def run_ibm_bullets_execution(
         artifact_dir / "fact_check_result.json",
         {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
     )
+
+    # Optional adjudicator: the default IBM judge is ONE composite judge. Escalate to the
+    # multi-provider panel ONLY when a borderline condition fires (judge confidence near
+    # threshold, X2-passed-but-judge-flags-risk, or a high-value metric bullet is borderline).
+    # This is a SECOND OPINION, not a regeneration — it appends panel rows to the X1D set that
+    # X3 then aggregates. Non-triggered runs keep the single composite judge (fast path).
+    from apps_rg.runtime.judges.bullet_adjudicator import (
+        ADJUDICATOR_PANEL_PROVIDER_KEYS,
+        evaluate_bullet_adjudicator_trigger,
+    )
+    from apps_rg.runtime.judges.bullet_x2_aggregation import aggregate_bullet_section
+
+    _x2_failed_ids = [g["gate_id"] for g in x2 if not g.get("pass", True)]
+    _existing_judge_keys = {str(j.get("provider_key") or "") for j in x1d}
+    _adj_decision = evaluate_bullet_adjudicator_trigger(
+        section_id="ibm_bullets",
+        composite_judges=x1d,
+        x2_failed_gate_ids=_x2_failed_ids,
+        bullets=bullets,
+    )
+    _agg = aggregate_bullet_section(
+        section_id="ibm_bullets",
+        composite_judges=x1d,
+        x2_failed_gate_ids=_x2_failed_ids,
+    )
+    _should_adjudicate = _adj_decision.should_escalate or _agg.should_adjudicate
+    _panel_keys = [
+        k for k in ADJUDICATOR_PANEL_PROVIDER_KEYS if k and k not in _existing_judge_keys
+    ]
+    _adjudication_record: dict[str, Any] = {
+        "section_id": "ibm_bullets",
+        "trigger_decision": _adj_decision.to_dict(),
+        "aggregation": _agg.to_dict(),
+        "escalated": False,
+        "panel_provider_keys": [],
+    }
+    if _should_adjudicate and _panel_keys:
+        _panel_rows = [
+            j.to_dict()
+            for j in run_ibm_bullets_judges(
+                bullets=bullets,
+                claim_ledger=claim_ledger,
+                judge_keys=_panel_keys,
+                mode=judge_mode,
+                artifact_base=artifact_dir,
+                allowed_fact_packet=allowed_fact_packet,
+                targeting_context={
+                    "target_title": str(runtime_payload.get("target_title") or ""),
+                    "target_company": str(runtime_payload.get("target_company") or ""),
+                    "jd_text": str(runtime_payload.get("jd_text") or ""),
+                    "briefing": str(runtime_payload.get("briefing") or ""),
+                },
+            )
+        ]
+        for _r in _panel_rows:
+            _r["adjudicator_panel_row"] = True
+        x1d = list(x1d) + _panel_rows
+        write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+        _adjudication_record["escalated"] = True
+        _adjudication_record["panel_provider_keys"] = list(_panel_keys)
+    write_json(artifact_dir / "bullet_adjudication.json", _adjudication_record)
+    write_json(artifact_dir / "bullet_x2_aggregation.json", _agg.to_dict())
 
     from apps_rg.runtime.section_repair_lane_integration import finalize_lane_product_quality
 

@@ -122,6 +122,54 @@ def test_headline_requires_bundle_id_binding():
     assert not gates["x2_headline_positioning_bundle_id_required"].passed
 
 
+def test_headline_binding_derived_from_cited_facts():
+    """derive_from_cited_facts (Author-Gate dec_19e9c91073ae4b5ab): a positioning bundle is bound
+    when the model cites one of its linked_source_fact_ids — no explicit bundle id echo required."""
+    from apps_rg.runtime.sections.headline_positioning_registry import get_all_bundles
+    from apps_rg.runtime.validators.headline_positioning_x2 import (
+        run_headline_positioning_x2_gates,
+    )
+
+    bundle = next(b for b in get_all_bundles() if b.get("linked_source_fact_ids"))
+    linked_fact = bundle["linked_source_fact_ids"][0]
+
+    out = {
+        "headline_line": "SVP Engineering | Agentic AI Platforms | Regulated Enterprise AI | Runtime Governance",
+        "claim_ledger": [{"claim_text": "Agentic AI Platforms", "source_fact_ids": [linked_fact]}],
+        "change_log": [],
+    }
+    gates = _gate_map(
+        run_headline_positioning_x2_gates(
+            headline_line=out["headline_line"],
+            parsed_output=out,
+            proof_pool_metadata=_headline_proof_meta(),
+        )
+    )
+    assert gates["x2_headline_positioning_bundle_id_required"].passed
+    assert gates["x2_headline_graph_skill_node_ids_required"].passed
+    assert gates["x2_headline_source_fact_or_graph_lineage_required"].passed
+
+
+def test_headline_binding_fails_when_cited_fact_not_bundle_linked():
+    from apps_rg.runtime.validators.headline_positioning_x2 import (
+        run_headline_positioning_x2_gates,
+    )
+
+    out = {
+        "headline_line": "SVP Engineering | Agentic AI Platforms | Regulated Enterprise AI | Runtime Governance",
+        "claim_ledger": [{"claim_text": "X", "source_fact_ids": ["fact_not_in_any_bundle_zzz"]}],
+        "change_log": [],
+    }
+    gates = _gate_map(
+        run_headline_positioning_x2_gates(
+            headline_line=out["headline_line"],
+            parsed_output=out,
+            proof_pool_metadata=_headline_proof_meta(),
+        )
+    )
+    assert not gates["x2_headline_positioning_bundle_id_required"].passed
+
+
 def test_headline_rejects_generic_it_strategy_demotion_and_seniority_loss():
     from apps_rg.runtime.validators.headline_positioning_x2 import (
         run_headline_positioning_x2_gates,
@@ -335,6 +383,9 @@ def test_unify_bullets_rejects_generic_consulting_and_missing_bundle_id():
 
 
 def test_unify_bullets_rejects_metric_without_outcome_id():
+    """Under derive_from_cited_facts (dec_19e9c91073ae4b5ab) a has_metric bullet must bind a bundle
+    with an approved metric_outcome_id. A metric bullet that echoes no outcome id AND cites no
+    bundle-linked fact (so no bundle/metric can be derived) must fail."""
     from apps_rg.runtime.validators.unify_role_episode_x2 import (
         run_unify_bullets_role_episode_x2_gates,
     )
@@ -342,6 +393,8 @@ def test_unify_bullets_rejects_metric_without_outcome_id():
     bullets, parsed = _good_unify_bullets()
     for entry in parsed["change_log"]:
         entry.pop("metric_outcome_ids", None)
+        # Sever fact citations so no bundle (and thus no approved metric) can be derived.
+        entry["source_fact_ids"] = ["fact_not_in_any_bundle_zzz"]
     gates = _gate_map(
         run_unify_bullets_role_episode_x2_gates(
             bullets=bullets, parsed_output=parsed, proof_pool_metadata=_unify_bullets_proof_meta()
@@ -534,3 +587,72 @@ def test_cross_section_guards_detect_signals():
     assert detect_jd_only_phrases("alpha beta gamma delta epsilon zeta", "x alpha beta gamma delta epsilon zeta y", min_run=6)
     assert is_flat_skill_only_graph_packet({"graph_skill_node_ids": ["s"]})
     assert not is_flat_skill_only_graph_packet({"role_episode_bundles": [{"x": 1}]})
+
+
+# ---------------------------------------------------------------------------
+# Competencies capability-family anchor injection (Author-Gate dec_19e9daa115a62cf3a)
+# ---------------------------------------------------------------------------
+
+
+def _llmops_packet():
+    return {
+        "competency_bundles": [
+            {
+                "competency_bundle_id": "ccb_llmops_reliability",
+                "capability_family": "llmops_reliability",
+                "graph_skill_node_ids": ["skill_audit_grade_observability"],
+                "linked_source_fact_ids": ["fact_engineering_platform_004"],
+                "vocabulary_anchors": [
+                    "audit-grade observability",
+                    "evaluation gauntlet design",
+                ],
+            }
+        ]
+    }
+
+
+def test_competencies_anchor_injection_covers_uncovered_family():
+    from apps_rg.runtime.sections.competency_capability_evidence import (
+        augment_bound_category_family_terms,
+    )
+
+    # A leadership-framed category bound to the LLMOps bundle with NO observability vocabulary.
+    cats = [
+        {
+            "category_label": "Engineering & Delivery Leadership",
+            "competency_bundle_id": "ccb_llmops_reliability",
+            "terms": [
+                {"text": "Engineering organization scale-out", "source_fact_ids": ["fact_exec_002"]},
+            ],
+        }
+    ]
+    augment_bound_category_family_terms(
+        cats,
+        packet=_llmops_packet(),
+        allowed_fact_ids={"fact_engineering_platform_004", "fact_exec_002"},
+    )
+    texts = " ".join(str(t.get("text") or "") for t in cats[0]["terms"]).lower()
+    assert "observability" in texts  # LLMOps family now lexically covered
+    injected = [t for t in cats[0]["terms"] if "observability" in str(t.get("text") or "").lower()]
+    assert injected and injected[0]["source_fact_id"] == "fact_engineering_platform_004"
+    assert injected[0].get("source_skill_ids")  # graph-backed, not default_fid
+
+
+def test_competencies_anchor_injection_no_fabrication_without_allowed_fact():
+    from apps_rg.runtime.sections.competency_capability_evidence import (
+        augment_bound_category_family_terms,
+    )
+
+    cats = [
+        {
+            "category_label": "Engineering & Delivery Leadership",
+            "competency_bundle_id": "ccb_llmops_reliability",
+            "terms": [{"text": "Engineering organization scale-out", "source_fact_ids": ["fact_exec_002"]}],
+        }
+    ]
+    before = len(cats[0]["terms"])
+    # No allowed linked fact -> no injection (no fabricated provenance).
+    augment_bound_category_family_terms(
+        cats, packet=_llmops_packet(), allowed_fact_ids={"fact_exec_002"}
+    )
+    assert len(cats[0]["terms"]) == before

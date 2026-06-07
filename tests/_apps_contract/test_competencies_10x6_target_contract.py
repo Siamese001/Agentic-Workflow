@@ -13,16 +13,16 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 APPS_RG = REPO_ROOT / "apps_rg"
 
-# --- Target constants (W2) ---
-TARGET_SC_PATH_COUNT = 10
+# --- Target constants (W2; variance-class alignment 2026-06: candidate pool 10 -> 8) ---
+TARGET_SC_PATH_COUNT = 8
 TARGET_FINAL_CATEGORY_COUNT = 6
-TARGET_CANDIDATE_CATEGORY_COUNT = 10
+TARGET_CANDIDATE_CATEGORY_COUNT = 8
 
 # --- Target judge default (W3) ---
 TARGET_DEFAULT_X1D_JUDGES = "gemini_pro"
 
 
-def test_competencies_sc_path_count_is_10() -> None:
+def test_competencies_sc_path_count_matches_candidate_pool() -> None:
     from apps_rg.runtime.reasoning.employment_bullet_pool import COMPETENCIES_SC_PATH_COUNT
 
     assert COMPETENCIES_SC_PATH_COUNT == TARGET_SC_PATH_COUNT
