@@ -21,6 +21,10 @@ LANE_DISPLAY_TXT_CANDIDATES: dict[str, tuple[str, ...]] = {
     "unify_narrative": ("unify_narrative_output.txt", "command_output.txt"),
     "ibm_bullets": ("ibm_bullets_output.txt", "command_output.txt"),
     "ibm_narrative": ("ibm_narrative_output.txt", "command_output.txt"),
+    "insurtech_bullets": ("insurtech_bullets_output.txt", "command_output.txt"),
+    "insurtech_narrative": ("insurtech_narrative_output.txt", "command_output.txt"),
+    "ey_bullets": ("ey_bullets_output.txt", "command_output.txt"),
+    "ey_narrative": ("ey_narrative_output.txt", "command_output.txt"),
     "competencies": ("competencies_display.txt", "command_output.txt"),
 }
 

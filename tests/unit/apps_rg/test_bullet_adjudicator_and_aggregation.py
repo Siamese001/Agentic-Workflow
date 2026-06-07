@@ -2,7 +2,7 @@
 
 Covers the prompt's required test list (the half not covered by
 test_section_orchestration_dependency_order.py):
-  * competencies category-count contract (locked at 6; '8' in the prompt was illustrative)
+  * competencies category-count contract (locked at 8)
   * IBM metric drift hard rejected (forbidden HOLD/DO_NOT_PROMOTE metric scan)
   * Unify / exec unsupported claim hard rejected
   * optional adjudicator ONLY runs on tie / low-confidence / material-risk (not on confident pass)
@@ -66,10 +66,21 @@ def test_adjudicator_escalates_on_low_confidence_borderline() -> None:
     assert TRIGGER_JUDGE_CONFIDENCE_LOW in d.triggers
 
 
-def test_adjudicator_escalates_when_x2_passes_but_judge_flags_risk() -> None:
+def test_adjudicator_does_not_escalate_when_risk_finding_is_confident_pass() -> None:
     d = evaluate_bullet_adjudicator_trigger(
         section_id="unify_bullets",
         composite_judges=[_judge(0.95, findings=["vague ai strategy fluff"])],
+        x2_failed_gate_ids=[],
+        bullets=[],
+    )
+    assert d.should_escalate is False
+    assert TRIGGER_X2_PASS_JUDGE_RISK not in d.triggers
+
+
+def test_adjudicator_escalates_when_x2_passes_and_risk_is_borderline() -> None:
+    d = evaluate_bullet_adjudicator_trigger(
+        section_id="unify_bullets",
+        composite_judges=[_judge(0.81, findings=["vague ai strategy fluff"])],
         x2_failed_gate_ids=[],
         bullets=[],
     )
@@ -155,24 +166,23 @@ def test_aggregation_rejects_below_pass_threshold() -> None:
     assert a.accepted is False
 
 
-# --------------------------------------------------------------- competencies category count (6)
-def test_competencies_category_count_locked_at_six() -> None:
+# --------------------------------------------------------------- competencies category count (8)
+def test_competencies_category_count_locked_at_eight() -> None:
     from apps_rg.runtime.sections.competencies_rigor import (
         MAX_CATEGORY_COUNT,
         MIN_CATEGORY_COUNT,
         check_competencies_category_count,
     )
 
-    # The prompt said "8" but the locked rigor contract is exactly 6.
-    assert MIN_CATEGORY_COUNT == 6
-    assert MAX_CATEGORY_COUNT == 6
-    six = [{"category_label": f"C{i}", "terms": []} for i in range(6)]
-    ok, _ = check_competencies_category_count(six)
-    assert ok is True
+    assert MIN_CATEGORY_COUNT == 8
+    assert MAX_CATEGORY_COUNT == 8
     eight = [{"category_label": f"C{i}", "terms": []} for i in range(8)]
-    bad, reason = check_competencies_category_count(eight)
+    ok, _ = check_competencies_category_count(eight)
+    assert ok is True
+    six = [{"category_label": f"C{i}", "terms": []} for i in range(6)]
+    bad, reason = check_competencies_category_count(six)
     assert bad is False
-    assert "category_count=8" in (reason or "")
+    assert "category_count=6" in (reason or "")
 
 
 # --------------------------------------------------------------- IBM metric drift hard rejected

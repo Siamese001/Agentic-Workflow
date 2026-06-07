@@ -85,6 +85,58 @@ def _append_block_to_last_message(compiled: SectionCompiledPrompt, block: str) -
     )
 
 
+def _format_graph_binding_materiality_block(summary: dict[str, Any]) -> str:
+    return "\n".join(
+        [
+            "GRAPH_BINDING_MATERIALITY_SUMMARY (deterministic JSON):",
+            json.dumps(summary, ensure_ascii=False, sort_keys=True),
+        ]
+    )
+
+
+def augment_section_compiled_with_graph_binding_materiality(
+    compiled: SectionCompiledPrompt,
+    *,
+    runtime_payload: dict[str, Any],
+) -> SectionCompiledPrompt:
+    """Append compact graph materiality metadata for PA and later judge parity."""
+    from apps_rg.runtime.c0.c03_graph_ref_policy import extract_c03_bindings_from_runtime_payload
+    from apps_rg.runtime.graph_skills_utilization_scorer import (
+        build_graph_binding_materiality_summary,
+    )
+
+    pp_meta = runtime_payload.get("proof_pool_metadata")
+    has_graph_context = any(
+        key in runtime_payload
+        for key in (
+            "allowed_fact_ids",
+            "canonical_final_evidence_contract_snapshot",
+            "graph_targeting_for_pa",
+            "proof_pool_digest",
+        )
+    )
+    if not isinstance(pp_meta, dict) and not has_graph_context:
+        return compiled
+    summary = build_graph_binding_materiality_summary(
+        section_id=compiled.section_id,
+        runtime_payload=runtime_payload,
+        graph_bindings=extract_c03_bindings_from_runtime_payload(runtime_payload),
+        proof_pool_metadata=pp_meta if isinstance(pp_meta, dict) else None,
+        parsed_output=runtime_payload.get("parsed_output")
+        if isinstance(runtime_payload.get("parsed_output"), dict)
+        else None,
+        candidate_output=runtime_payload.get("candidate_output")
+        if isinstance(runtime_payload.get("candidate_output"), dict)
+        else None,
+        claim_ledger=runtime_payload.get("claim_ledger")
+        if isinstance(runtime_payload.get("claim_ledger"), list)
+        else None,
+    )
+    if summary.get("status") == "NO_GRAPH_BINDING_METADATA":
+        return compiled
+    return _append_block_to_last_message(compiled, _format_graph_binding_materiality_block(summary))
+
+
 def augment_section_compiled_with_product_shape(compiled: SectionCompiledPrompt) -> SectionCompiledPrompt:
     """Append PRODUCT_SHAPE block for generated lanes (X2-aligned bounds)."""
     if compiled.section_id not in GENERATED_LANES:
@@ -100,27 +152,6 @@ def format_graph_binding_materiality_prompt_block(summary: dict[str, Any]) -> st
         f"{json.dumps(payload, ensure_ascii=False, sort_keys=True)}\n"
         "Use this only to prioritize and de-duplicate C0.3 graph-backed skills; "
         "do not treat JD or briefing text as claim proof."
-    )
-
-
-def augment_section_compiled_with_graph_binding_materiality(
-    compiled: SectionCompiledPrompt,
-    *,
-    runtime_payload: dict[str, Any],
-) -> SectionCompiledPrompt:
-    from apps_rg.runtime.c0.c03_graph_ref_policy import extract_c03_bindings_from_runtime_payload
-    from apps_rg.runtime.graph_skills_utilization_scorer import (
-        build_graph_binding_materiality_summary,
-    )
-
-    summary = build_graph_binding_materiality_summary(
-        section_id=compiled.section_id,
-        runtime_payload=runtime_payload,
-        graph_bindings=extract_c03_bindings_from_runtime_payload(runtime_payload),
-    )
-    return _append_block_to_last_message(
-        compiled,
-        format_graph_binding_materiality_prompt_block(summary),
     )
 
 

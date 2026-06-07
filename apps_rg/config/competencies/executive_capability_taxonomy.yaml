@@ -3,10 +3,10 @@ purpose: |
   Approved executive capability category architecture for competencies v3.
   JD and briefing may reorder or emphasize categories only — never proof.
 
-min_categories: 6
-max_categories: 6
-default_category_count: 6
-candidate_category_count: 10  # graph+JD-ranked pool; runtime emits top 6 by score (graph_10x6)
+min_categories: 8
+max_categories: 8
+default_category_count: 8
+candidate_category_count: 8  # graph-ranked final category set (graph_8x8)
 
 categories:
   - category_id: tech_strategy_innovation
@@ -36,6 +36,12 @@ categories:
     aliases:
       - Engineering Leadership
       - Distributed Systems Engineering
+  - category_id: llmops_reliability
+    category_label: LLMOps & Reliability
+    aliases:
+      - LLMOps and Reliability
+      - Evaluation & Reliability
+      - AI Observability
   - category_id: commercial_operating_impact
     category_label: Commercial & Operating Impact
     aliases:
@@ -48,6 +54,7 @@ categories:
     aliases:
       - Strategic Partnerships & Ecosystem Execution
       - Cloud and Distributed Infrastructure
+      - Distributed Infrastructure
       - Partnerships & GTM
 
 # Executive capability phrases approved for deterministic backfill (never credentials/fragments).
@@ -88,9 +95,11 @@ backfill_capabilities:
   # fact_engineering_platform_003/004). Lead this category so the LLMOps,
   # Evaluation & Reliability capability family is covered for SVP-Engineering scope.
   - term: Audit-grade observability
-    category_id: engineering_delivery_leadership
+    category_id: llmops_reliability
   - term: Evaluation gauntlet design
-    category_id: engineering_delivery_leadership
+    category_id: llmops_reliability
+  - term: Reliability telemetry controls
+    category_id: llmops_reliability
   - term: Engineering organization scale-out
     category_id: engineering_delivery_leadership
   - term: Cross-functional delivery governance

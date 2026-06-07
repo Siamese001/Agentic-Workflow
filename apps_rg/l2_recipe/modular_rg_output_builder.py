@@ -333,6 +333,10 @@ def build_rg_output_from_modular_sections(
     uni_n = lane_l2_by_id["unify_narrative"]
     ibm_b = lane_l2_by_id["ibm_bullets"]
     ibm_n = lane_l2_by_id["ibm_narrative"]
+    insurtech_b = lane_l2_by_id["insurtech_bullets"]
+    insurtech_n = lane_l2_by_id["insurtech_narrative"]
+    ey_b = lane_l2_by_id["ey_bullets"]
+    ey_n = lane_l2_by_id["ey_narrative"]
     comp_l2 = lane_l2_by_id["competencies"]
 
     for label, blob in (
@@ -342,6 +346,10 @@ def build_rg_output_from_modular_sections(
         ("unify_narrative", uni_n),
         ("ibm_bullets", ibm_b),
         ("ibm_narrative", ibm_n),
+        ("insurtech_bullets", insurtech_b),
+        ("insurtech_narrative", insurtech_n),
+        ("ey_bullets", ey_b),
+        ("ey_narrative", ey_n),
         ("competencies", comp_l2),
     ):
         if not isinstance(blob, dict):
@@ -350,6 +358,8 @@ def build_rg_output_from_modular_sections(
 
     uni_narrative_sentence = str(uni_n.get("narrative_sentence") or "").strip()
     ibm_narrative_sentence = str(ibm_n.get("narrative_sentence") or "").strip()
+    insurtech_narrative_sentence = str(insurtech_n.get("narrative_sentence") or "").strip()
+    ey_narrative_sentence = str(ey_n.get("narrative_sentence") or "").strip()
 
     hl = str(headline.get("headline_line") or "").strip()
     if not hl:
@@ -378,6 +388,8 @@ def build_rg_output_from_modular_sections(
     for lab, sent in (
         ("unify_narrative", uni_narrative_sentence),
         ("ibm_narrative", ibm_narrative_sentence),
+        ("insurtech_narrative", insurtech_narrative_sentence),
+        ("ey_narrative", ey_narrative_sentence),
     ):
         if len(sent) < 20:
             receipt["failure"] = f"missing_or_short_{lab}"
@@ -404,6 +416,24 @@ def build_rg_output_from_modular_sections(
     )
     if ibm_lane_bullets is None:
         receipt["failure"] = f"ibm_bullets_invalid:{ierr}"
+        return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
+
+    insurtech_lane_bullets, inerr = _lane_bullets_to_rg(
+        list(insurtech_b.get("bullets") or []),
+        max_bullets=5,
+        export_warnings=export_warnings,
+    )
+    if insurtech_lane_bullets is None:
+        receipt["failure"] = f"insurtech_bullets_invalid:{inerr}"
+        return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
+
+    ey_lane_bullets, eyerr = _lane_bullets_to_rg(
+        list(ey_b.get("bullets") or []),
+        max_bullets=5,
+        export_warnings=export_warnings,
+    )
+    if ey_lane_bullets is None:
+        receipt["failure"] = f"ey_bullets_invalid:{eyerr}"
         return RgOutputBuildResult(None, False, receipt["failure"], False, receipt["failure"], receipt)
 
     employment = list(_facts(base_resume).get("employment") or [])
@@ -451,6 +481,12 @@ def build_rg_output_from_modular_sections(
         elif fact_id == "exp_ibm_001":
             bullets = ibm_lane_bullets
             role_narrative = ibm_narrative_sentence
+        elif fact_id == "exp_insurtech_001":
+            bullets = insurtech_lane_bullets
+            role_narrative = insurtech_narrative_sentence
+        elif fact_id == "exp_ey_001":
+            bullets = ey_lane_bullets
+            role_narrative = ey_narrative_sentence
         else:
             bullets = _locked_bullet_rows(emp)
             locked_rn = str(emp.get("role_narrative") or "").strip()
@@ -496,6 +532,8 @@ def build_rg_output_from_modular_sections(
     skill_c_json = json.dumps(skills["categories"], ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     uni_b_json = json.dumps(uni_lane_bullets, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     ibm_b_json = json.dumps(ibm_lane_bullets, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    insurtech_b_json = json.dumps(insurtech_lane_bullets, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    ey_b_json = json.dumps(ey_lane_bullets, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
     hl_out = hl if len(hl) <= 240 else hl[:240]
     contact_info = _contact_from_base(base_resume)
@@ -525,6 +563,8 @@ def build_rg_output_from_modular_sections(
                 "C0": f"modular_comp_sha:{_fp16(skill_c_json)}",
                 "U0": f"modular_unify_b_sha:{_fp16(uni_b_json)}",
                 "Y0": f"modular_ibm_b_sha:{_fp16(ibm_b_json)}",
+                "T0": f"modular_insurtech_b_sha:{_fp16(insurtech_b_json)}",
+                "E0": f"modular_ey_b_sha:{_fp16(ey_b_json)}",
                 "R0": run_id,
             },
         },

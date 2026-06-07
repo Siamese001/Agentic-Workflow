@@ -1,0 +1,3619 @@
+{
+  "created_at": "20260518T1100Z",
+  "source": "Phase I Resumes Archive plus base Unify bullets pasted in conversation",
+  "status": "candidate_ledger_requires_human_confirmation",
+  "role_families": [
+    "ENGINEERING_PLATFORM",
+    "AI_SOLUTIONS_ARCHITECTURE",
+    "PARTNERSHIPS_GTM",
+    "SALES_STRATEGIC_ACCOUNTS",
+    "REVENUE_OPERATIONS",
+    "CUSTOMER_SUCCESS",
+    "PRODUCT_TECHNICAL_STRATEGY",
+    "AI_GOVERNANCE_RISK",
+    "DATA_ANALYTICS_LEADERSHIP",
+    "STRATEGIC_FINANCE",
+    "QUANT_TRADING_HPC",
+    "CONSULTING_DELIVERY_LEADERSHIP",
+    "EXECUTIVE_LEADERSHIP"
+  ],
+  "candidate_facts": [
+    {
+      "candidate_fact_id": "fact_engineering_platform_001",
+      "domain_family": "ENGINEERING_PLATFORM",
+      "capability_tags": [
+        "agentic_ai_platform",
+        "deterministic_routing",
+        "multi_agent_orchestration",
+        "graphrag",
+        "policy_gating"
+      ],
+      "claim_text": "Designed and operationalized a governed agentic AI platform for regulated enterprise workflows, improving control-plane delivery, validation discipline, and audit-ready execution.",
+      "metric_values": [],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt",
+        "CTO Resume - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Grounded in current base bullets plus AI/CTO variants; confirm exact wording before canonical ledger promotion.",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "proof_text": "Designed and operationalized governed agentic AI platform capabilities for regulated enterprise workflows, including deterministic routing, multi-agent orchestration, GraphRAG retrieval, sandboxed execution, policy gating, validation controls, and replayable execution traces.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_002",
+      "domain_family": "ENGINEERING_PLATFORM",
+      "capability_tags": [
+        "dependency_graph",
+        "legacy_modernization",
+        "refactor_risk"
+      ],
+      "claim_text": "Built and applied software dependency graph intelligence to accelerate legacy-system analysis, expose dependency chains, improve architecture visibility, and reduce refactor risk.",
+      "metric_values": [],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Chief Technology Officer - Amit Ayer.txt",
+        "CTO Resume - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_003",
+      "domain_family": "ENGINEERING_PLATFORM",
+      "capability_tags": [
+        "retrieval_quality",
+        "context_assembly",
+        "eval_gates",
+        "telemetry",
+        "rollback",
+        "ai_cicd"
+      ],
+      "claim_text": "Strengthened retrieval quality, context assembly, evaluation gates, telemetry instrumentation, rollback controls, and AI CI/CD standards to make AI behavior more traceable, supportable, and repeatable.",
+      "metric_values": [],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_004",
+      "domain_family": "ENGINEERING_PLATFORM",
+      "capability_tags": [
+        "ai_lifecycle",
+        "production_adoption",
+        "auditability"
+      ],
+      "claim_text": "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation, reducing lab-to-production cycle time from six months to three weeks while preserving auditability and runtime stability.",
+      "metric_values": [
+        "6 months to 3 weeks"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Strong base claim; verify exact source before canonical ledger promotion.",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_005",
+      "domain_family": "ENGINEERING_PLATFORM",
+      "capability_tags": [
+        "cloud_native",
+        "aws",
+        "databricks",
+        "microservices",
+        "vector_services",
+        "api_gateway",
+        "identity"
+      ],
+      "claim_text": "Architected cloud-native microservices across AWS and Databricks Lakehouse, integrating enterprise data pipelines, vector services, API gateways, identity controls, and highly available execution layers.",
+      "metric_values": [],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Head of Data & Analytics - Amit Ayer.txt",
+        "Chief Technology Officer - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_engineering_platform_006",
+      "domain_family": "ENGINEERING_PLATFORM",
+      "capability_tags": [
+        "commercialization",
+        "platform_services",
+        "reusable_primitives",
+        "engineering_leadership"
+      ],
+      "claim_text": "Productized agentic AI primitives into reusable platform services, generating $22M in IP-led revenue, expanding gross margins by 20%, and scaling the ML engineering organization from 8 to 28 specialists.",
+      "metric_values": [
+        "$22M IP-led revenue",
+        "20% gross margin expansion",
+        "team 8 to 28"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "High-value claim; preserve exact metric relationships.",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "PARTNERSHIPS_GTM"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_001",
+      "domain_family": "PARTNERSHIPS_GTM",
+      "capability_tags": [
+        "partner_strategy",
+        "channel_program",
+        "ai_channel",
+        "co_marketing"
+      ],
+      "claim_text": "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue.",
+      "metric_values": [
+        "$3M partner-derived revenue"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Amit Ayer Resume - Partner Development Manager.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "EXECUTIVE_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_002",
+      "domain_family": "PARTNERSHIPS_GTM",
+      "capability_tags": [
+        "aws_alliance",
+        "joint_revenue",
+        "ai_sales_motion",
+        "financial_services"
+      ],
+      "claim_text": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM-AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%.",
+      "metric_values": [
+        "20% joint revenue boost"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "Amit Ayer Resume - Partner Development Manager.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_003",
+      "domain_family": "PARTNERSHIPS_GTM",
+      "capability_tags": [
+        "strategic_alliances",
+        "data_providers",
+        "co_sell",
+        "subscription_offerings"
+      ],
+      "claim_text": "Established strategic alliances with leading data providers, combining co-sell arrangements and subscription-based offerings to drive new financial-services revenue streams.",
+      "metric_values": [],
+      "company": "IBM / Unify Consulting",
+      "source_resume_variants": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_004",
+      "domain_family": "PARTNERSHIPS_GTM",
+      "capability_tags": [
+        "cloud_vendor_partnerships",
+        "ai_vendor_partnerships",
+        "joint_roadmaps"
+      ],
+      "claim_text": "Forged relationships with cloud and AI vendors, combining market influence with solution roadmaps and joint go-to-market strategies to accelerate enterprise adoption of advanced analytics and platform services.",
+      "metric_values": [],
+      "company": "Multiple",
+      "source_resume_variants": [
+        "Sales - Amit Ayer.txt",
+        "Chief Technology Officer - Amit Ayer.txt",
+        "Field CTO - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_partnerships_gtm_005",
+      "domain_family": "PARTNERSHIPS_GTM",
+      "capability_tags": [
+        "partner_stakeholders",
+        "governance_council",
+        "solution_architecture"
+      ],
+      "claim_text": "Facilitated an executive governance council with partner stakeholders to align solution architecture, data security protocols, and regulatory mandates.",
+      "metric_values": [],
+      "company": "TraderSense",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_001",
+      "domain_family": "SALES_STRATEGIC_ACCOUNTS",
+      "capability_tags": [
+        "enterprise_sales",
+        "acv",
+        "generative_ai",
+        "cfo_alignment"
+      ],
+      "claim_text": "Drove $5M in annual contract value by aligning generative AI workflows with CFO priorities and facilitating enterprise-wide adoption of data-driven decision-making.",
+      "metric_values": [
+        "$5M ACV / new revenue"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Amit Ayer Resume - Strategic Account Executive.txt",
+        "Sales - Amit Ayer.txt",
+        "Amit Ayer Resume - VP Finance Sales & Marketing.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_002",
+      "domain_family": "SALES_STRATEGIC_ACCOUNTS",
+      "capability_tags": [
+        "modernization_deals",
+        "hpc_roi",
+        "financial_services"
+      ],
+      "claim_text": "Closed multi-year modernization deals exceeding $15M by demonstrating ROI on HPC simulations for stress testing and cutting scenario runtimes by 40%.",
+      "metric_values": [
+        ">$15M deals",
+        "40% scenario runtime reduction"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "Amit Ayer Resume - Strategic Account Executive.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "QUANT_TRADING_HPC",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_003",
+      "domain_family": "SALES_STRATEGIC_ACCOUNTS",
+      "capability_tags": [
+        "distributed_sales_team",
+        "global_accounts",
+        "financial_institutions"
+      ],
+      "claim_text": "Oversaw strategic sales engagements for top-tier financial institutions across EMEA, APAC, and North America, guiding a 20-member distributed sales team and securing multimillion-dollar transactions.",
+      "metric_values": [
+        "20-member distributed sales team"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "Sales - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "EXECUTIVE_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_004",
+      "domain_family": "SALES_STRATEGIC_ACCOUNTS",
+      "capability_tags": [
+        "renewals",
+        "saas_licensing",
+        "sales_cycles"
+      ],
+      "claim_text": "Used consumption-based SaaS licensing models to support generative-AI adoption, shorten sales cycles, and achieve a 93% annual renewal rate.",
+      "metric_values": [
+        "93% annual renewal rate"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Sales - Amit Ayer.txt"
+      ],
+      "confidence": "NEEDS_VERIFICATION",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "CUSTOMER_SUCCESS",
+        "REVENUE_OPERATIONS"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_sales_accounts_005",
+      "domain_family": "SALES_STRATEGIC_ACCOUNTS",
+      "capability_tags": [
+        "cloud_vendor_bundle",
+        "upsell",
+        "forecasting"
+      ],
+      "claim_text": "Partnered with cloud and streaming vendors to bundle AI and data-ingestion services, increasing upsell opportunities by 30% and improving CRM-based forecasting accuracy by 15%.",
+      "metric_values": [
+        "30% upsell opportunities",
+        "15% forecasting accuracy"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Sales - Amit Ayer.txt"
+      ],
+      "confidence": "NEEDS_VERIFICATION",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "PARTNERSHIPS_GTM",
+        "REVENUE_OPERATIONS"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_001",
+      "domain_family": "REVENUE_OPERATIONS",
+      "capability_tags": [
+        "salesforce_analytics",
+        "pipeline_prioritization",
+        "arr"
+      ],
+      "claim_text": "Designed analytics in Salesforce to prioritize high-potential deals, generating $10M in new annual recurring revenue and refining GTM strategies.",
+      "metric_values": [
+        "$10M new ARR"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "Strategic Finance - Amit Ayer.txt",
+        "Amit Ayer Resume - VP Finance Sales & Marketing.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_002",
+      "domain_family": "REVENUE_OPERATIONS",
+      "capability_tags": [
+        "client_portfolio_growth",
+        "salesforce_pipeline",
+        "forecasting"
+      ],
+      "claim_text": "Expanded client portfolios by 50% through targeted relationship-building and maintained a Salesforce forecast pipeline that drove $10M in net-new revenue.",
+      "metric_values": [
+        "50% portfolio expansion",
+        "$10M net-new revenue"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "Amit Ayer Resume - VP Finance Sales & Marketing.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_003",
+      "domain_family": "STRATEGIC_FINANCE",
+      "capability_tags": [
+        "usage_based_forecasting",
+        "subscription_pricing",
+        "renewals"
+      ],
+      "claim_text": "Developed AI-enhanced usage-based forecasting models to optimize subscription pricing and renewals, adding $5M in recurring revenue.",
+      "metric_values": [
+        "$5M recurring revenue"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "STRATEGIC_FINANCE",
+        "REVENUE_OPERATIONS",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_004",
+      "domain_family": "STRATEGIC_FINANCE",
+      "capability_tags": [
+        "cost_optimization",
+        "budget_dashboards",
+        "forecasting"
+      ],
+      "claim_text": "Deployed transparent budget dashboards and microservices to reallocate underused resources and drive 30% cost optimization for senior finance teams.",
+      "metric_values": [
+        "30% cost optimization"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "Strategic Finance - Amit Ayer.txt",
+        "Amit Ayer Resume - VP Finance Sales & Marketing.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "STRATEGIC_FINANCE",
+        "REVENUE_OPERATIONS",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_revenue_ops_005",
+      "domain_family": "STRATEGIC_FINANCE",
+      "capability_tags": [
+        "ma_synergy",
+        "due_diligence",
+        "integration_costs"
+      ],
+      "claim_text": "Conducted preliminary M&A due diligence and developed synergy models to quantify technology integration costs and revenue opportunities.",
+      "metric_values": [],
+      "company": "IBM",
+      "source_resume_variants": [
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "STRATEGIC_FINANCE",
+        "EXECUTIVE_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_solutions_001",
+      "domain_family": "AI_SOLUTIONS_ARCHITECTURE",
+      "capability_tags": [
+        "field_cto",
+        "executive_value",
+        "roi_translation"
+      ],
+      "claim_text": "Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.",
+      "metric_values": [],
+      "company": "Multiple",
+      "source_resume_variants": [
+        "Field CTO - Amit Ayer.txt",
+        "Industry Solutions - Amit Ayer.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_solutions_002",
+      "domain_family": "AI_SOLUTIONS_ARCHITECTURE",
+      "capability_tags": [
+        "joint_solution_development",
+        "reference_architecture",
+        "industry_solutions"
+      ],
+      "claim_text": "Developed industry-specific AI, analytics, and cloud modernization solutions across financial-services risk, compliance, fraud, and regulatory use cases.",
+      "metric_values": [],
+      "company": "IBM / EY / Unify Consulting",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "AI_GOVERNANCE_RISK"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_customer_success_001",
+      "domain_family": "CUSTOMER_SUCCESS",
+      "capability_tags": [
+        "customer_success",
+        "adoption",
+        "renewal",
+        "stakeholder_alignment"
+      ],
+      "claim_text": "Positioned technical delivery and stakeholder alignment as adoption levers for AI/cloud programs, with resume variants emphasizing customer success, renewal, and measurable business outcomes.",
+      "metric_values": [],
+      "company": null,
+      "source_resume_variants": [
+        "Head of Customer Success - Amit Ayer.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "confidence": "LOW",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "The archive has a Customer Success variant, but claims need finer extraction and verification before strong use.",
+      "role_families_supported": [
+        "CUSTOMER_SUCCESS",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_governance_001",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "data_governance",
+        "usage_controls",
+        "compliance_checkpoints"
+      ],
+      "claim_text": "Steered enterprise AI rollout for a major banking client, establishing data usage controls and compliance checkpoints that lowered regulatory findings by 35% in the first year.",
+      "metric_values": [
+        "35% reduction in regulatory findings"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_governance_002",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "llm_document_intelligence",
+        "compliance_reviews",
+        "regulatory_submission"
+      ],
+      "claim_text": "Deployed LLM-based document intelligence to automate compliance reviews and accelerate regulatory submissions by 40%.",
+      "metric_values": [
+        "40% faster regulatory submissions"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_governance_003",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "basel",
+        "ccar",
+        "data_lineage",
+        "reporting_errors"
+      ],
+      "claim_text": "Implemented Basel III / CCAR data lineage, cataloging, and automated validation frameworks that cut regulatory reporting errors by 40%.",
+      "metric_values": [
+        "40% reporting error reduction"
+      ],
+      "company": "EY / IBM",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_governance_004",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "audit_readiness",
+        "documentation",
+        "data_catalogs"
+      ],
+      "claim_text": "Defined documentation standards and centralized data catalogs that expedited audits by 20%.",
+      "metric_values": [
+        "20% faster audits / filing"
+      ],
+      "company": "EY",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_governance_005",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "model_explainability",
+        "data_security",
+        "executive_ai_council"
+      ],
+      "claim_text": "Established executive AI governance councils and model-explainability/data-security standards to reinforce stakeholder trust and compliance in automated financial decisions.",
+      "metric_values": [],
+      "company": "TraderSense / Unify Consulting",
+      "source_resume_variants": [
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_data_analytics_001",
+      "domain_family": "DATA_ANALYTICS_LEADERSHIP",
+      "capability_tags": [
+        "data_governance",
+        "latency_governance",
+        "risk_metrics"
+      ],
+      "claim_text": "Unified data latency governance processes across three business units, enabling standardized risk metrics and more consistent CCAR compliance.",
+      "metric_values": [],
+      "company": "IBM",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "AI_GOVERNANCE_RISK"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_data_analytics_002",
+      "domain_family": "DATA_ANALYTICS_LEADERSHIP",
+      "capability_tags": [
+        "streaming_analytics",
+        "aws",
+        "market_data",
+        "real_time_validation"
+      ],
+      "claim_text": "Launched AWS streaming microservices / streaming analytics ecosystems to validate market data in near real time and increase decision capacity by about 25%.",
+      "metric_values": [
+        "~25% increased capacity"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_data_analytics_003",
+      "domain_family": "DATA_ANALYTICS_LEADERSHIP",
+      "capability_tags": [
+        "confluent",
+        "real_time_risk",
+        "streaming_pipelines"
+      ],
+      "claim_text": "Unified disparate infrastructures under Confluent-based pipelines, enabling real-time risk scoring and reducing downtime by 25%.",
+      "metric_values": [
+        "25% downtime reduction"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "Amit Ayer Resume - Strategic Account Executive.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_data_analytics_004",
+      "domain_family": "DATA_ANALYTICS_LEADERSHIP",
+      "capability_tags": [
+        "executive_reporting",
+        "financial_operational_data",
+        "capital_allocation"
+      ],
+      "claim_text": "Instituted governance frameworks linking financial and operational datasets, giving leadership near-real-time insights into revenue trends, churn risk, and capital allocation.",
+      "metric_values": [],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "STRATEGIC_FINANCE",
+        "REVENUE_OPERATIONS"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_quant_hpc_001",
+      "domain_family": "QUANT_TRADING_HPC",
+      "capability_tags": [
+        "hpc",
+        "risk_calculation",
+        "stress_testing"
+      ],
+      "claim_text": "Re-architected monolithic risk analytics with containerized microservices and HPC, trimming calculation or stress-testing cycles by 40% and enabling real-time stress testing.",
+      "metric_values": [
+        "40% faster calculations / stress testing"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Amit Ayer Resume - Strategic Account Executive.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "ENGINEERING_PLATFORM",
+        "STRATEGIC_FINANCE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_quant_hpc_002",
+      "domain_family": "QUANT_TRADING_HPC",
+      "capability_tags": [
+        "automated_trading",
+        "hpc",
+        "latency",
+        "ml_insights"
+      ],
+      "claim_text": "Engineered an AI-driven automated trading platform using parallel HPC workflows, reducing end-to-end latency by 50% while enabling real-time ML insights and dynamic risk monitoring.",
+      "metric_values": [
+        "50% latency reduction"
+      ],
+      "company": "TraderSense",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Sales - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "ENGINEERING_PLATFORM",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_quant_hpc_003",
+      "domain_family": "QUANT_TRADING_HPC",
+      "capability_tags": [
+        "derivatives_pricing",
+        "multi_greek_hedging",
+        "capital_modeling",
+        "fsa"
+      ],
+      "claim_text": "Built quantitative rigor through derivatives pricing, capital modeling, and portfolio stress analytics across early-career actuarial roles.",
+      "metric_values": [],
+      "company": "Early Career",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Quantitative Research & Trading - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "proof_text": "Built advanced quantitative foundation through derivatives pricing, multi-Greek hedging, capital modeling, and FSA credential across Towers Perrin, ING, and Aetna.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_quant_hpc_004",
+      "domain_family": "QUANT_TRADING_HPC",
+      "capability_tags": [
+        "fraud_detection",
+        "anomaly_detection",
+        "false_positives"
+      ],
+      "claim_text": "Developed or deployed AI/ML anomaly and fraud-detection models that reduced false positives by 20% and surfaced market or derivative irregularities earlier.",
+      "metric_values": [
+        "20% false-positive reduction"
+      ],
+      "company": "EY / Unify Consulting",
+      "source_resume_variants": [
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Sales - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_exec_001",
+      "domain_family": "EXECUTIVE_LEADERSHIP",
+      "capability_tags": [
+        "c_suite_alignment",
+        "cross_functional",
+        "ai_strategy"
+      ],
+      "claim_text": "Partnered with C-suite executives and cross-functional leaders to align AI, analytics, cloud, risk, and financial strategies with measurable business outcomes.",
+      "metric_values": [],
+      "company": "Multiple",
+      "source_resume_variants": [
+        "Strategic Finance - Amit Ayer.txt",
+        "Sales - Amit Ayer.txt",
+        "AI and Data Governance - Amit Ayer.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_exec_002",
+      "domain_family": "EXECUTIVE_LEADERSHIP",
+      "capability_tags": [
+        "team_leadership",
+        "ml_engineering",
+        "platform_leads"
+      ],
+      "claim_text": "Scaled ML engineering organization from 8 to 28 specialists, including senior engineers and platform leads.",
+      "metric_values": [
+        "team 8 to 28"
+      ],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Base Unify bullets provided in conversation",
+        "Chief AI Officer - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_consulting_001",
+      "domain_family": "CONSULTING_DELIVERY_LEADERSHIP",
+      "capability_tags": [
+        "regulatory_transformation",
+        "legacy_modernization",
+        "financial_services"
+      ],
+      "claim_text": "Directed large-scale regulatory IT transformations and legacy-modernization programs for major financial institutions across risk, compliance, data, cloud, and architecture domains.",
+      "metric_values": [],
+      "company": "EY / IBM",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt",
+        "Strategic Finance - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "AI_GOVERNANCE_RISK",
+        "ENGINEERING_PLATFORM"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_consulting_002",
+      "domain_family": "CONSULTING_DELIVERY_LEADERSHIP",
+      "capability_tags": [
+        "post_ma",
+        "risk_model_consolidation",
+        "governance"
+      ],
+      "claim_text": "Facilitated post-M&A risk-model consolidation for a $1B asset portfolio, ensuring cohesive compliance controls and unified governance.",
+      "metric_values": [
+        "$1B asset portfolio"
+      ],
+      "company": "EY",
+      "source_resume_variants": [
+        "AI and Data Governance - Amit Ayer.txt",
+        "Amit Ayer Resume - AI Financial Services.txt"
+      ],
+      "confidence": "MEDIUM",
+      "allowed_resume_use": "needs_review",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "AI_GOVERNANCE_RISK",
+        "STRATEGIC_FINANCE"
+      ]
+    },
+    {
+      "candidate_fact_id": "fact_certs_001",
+      "domain_family": "EXECUTIVE_LEADERSHIP",
+      "capability_tags": [
+        "aws_ml",
+        "aws_solutions_architect",
+        "databricks",
+        "fsa"
+      ],
+      "claim_text": "Holds AWS Certified Machine Learning Engineer - Associate, AWS Certified Solutions Architect - Professional, Databricks Lakehouse Fundamentals, and Fellow of the Society of Actuaries credentials.",
+      "metric_values": [],
+      "company": "Credentials",
+      "source_resume_variants": [
+        "All Phase I resume variants"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Candidate fact from Phase I resume variants; confirm before treating as canonical.",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "REVENUE_OPERATIONS",
+        "CUSTOMER_SUCCESS",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "STRATEGIC_FINANCE",
+        "QUANT_TRADING_HPC",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "EXECUTIVE_LEADERSHIP"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "capability_id": "cap_acv",
+      "capability_name": "Acv",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_001"
+      ],
+      "strongest_metrics": [
+        "$5M ACV / new revenue"
+      ],
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_adoption",
+      "capability_name": "Adoption",
+      "domain_families": [
+        "CUSTOMER_SUCCESS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_customer_success_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CUSTOMER_SUCCESS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_agentic_ai_platform",
+      "capability_name": "Agentic Ai Platform",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_ai_channel",
+      "capability_name": "Ai Channel",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_001"
+      ],
+      "strongest_metrics": [
+        "$3M partner-derived revenue"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_ai_cicd",
+      "capability_name": "Ai Cicd",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_ai_lifecycle",
+      "capability_name": "Ai Lifecycle",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_004"
+      ],
+      "strongest_metrics": [
+        "6 months to 3 weeks"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_ai_sales_motion",
+      "capability_name": "Ai Sales Motion",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_002"
+      ],
+      "strongest_metrics": [
+        "20% joint revenue boost"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_ai_strategy",
+      "capability_name": "Ai Strategy",
+      "domain_families": [
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_exec_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_ai_vendor_partnerships",
+      "capability_name": "Ai Vendor Partnerships",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_004"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_anomaly_detection",
+      "capability_name": "Anomaly Detection",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_004"
+      ],
+      "strongest_metrics": [
+        "20% false-positive reduction"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "QUANT_TRADING_HPC"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_api_gateway",
+      "capability_name": "Api Gateway",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_arr",
+      "capability_name": "Arr",
+      "domain_families": [
+        "REVENUE_OPERATIONS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_001"
+      ],
+      "strongest_metrics": [
+        "$10M new ARR"
+      ],
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_audit_readiness",
+      "capability_name": "Audit Readiness",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_004"
+      ],
+      "strongest_metrics": [
+        "20% faster audits / filing"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_auditability",
+      "capability_name": "Auditability",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_004"
+      ],
+      "strongest_metrics": [
+        "6 months to 3 weeks"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_automated_trading",
+      "capability_name": "Automated Trading",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_002"
+      ],
+      "strongest_metrics": [
+        "50% latency reduction"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM",
+        "QUANT_TRADING_HPC"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_aws",
+      "capability_name": "Aws",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_005",
+        "fact_data_analytics_002"
+      ],
+      "strongest_metrics": [
+        "~25% increased capacity"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_aws_alliance",
+      "capability_name": "Aws Alliance",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_002"
+      ],
+      "strongest_metrics": [
+        "20% joint revenue boost"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_aws_ml",
+      "capability_name": "Aws Ml",
+      "domain_families": [
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_certs_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "CUSTOMER_SUCCESS",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "QUANT_TRADING_HPC",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_aws_solutions_architect",
+      "capability_name": "Aws Solutions Architect",
+      "domain_families": [
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_certs_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "CUSTOMER_SUCCESS",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "QUANT_TRADING_HPC",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_basel",
+      "capability_name": "Basel",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_003"
+      ],
+      "strongest_metrics": [
+        "40% reporting error reduction"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_budget_dashboards",
+      "capability_name": "Budget Dashboards",
+      "domain_families": [
+        "STRATEGIC_FINANCE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_004"
+      ],
+      "strongest_metrics": [
+        "30% cost optimization"
+      ],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_c_suite_alignment",
+      "capability_name": "C Suite Alignment",
+      "domain_families": [
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_exec_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_capital_allocation",
+      "capability_name": "Capital Allocation",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_004"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_capital_modeling",
+      "capability_name": "Capital Modeling",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_ccar",
+      "capability_name": "Ccar",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_003"
+      ],
+      "strongest_metrics": [
+        "40% reporting error reduction"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_cfo_alignment",
+      "capability_name": "Cfo Alignment",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_001"
+      ],
+      "strongest_metrics": [
+        "$5M ACV / new revenue"
+      ],
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_channel_program",
+      "capability_name": "Channel Program",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_001"
+      ],
+      "strongest_metrics": [
+        "$3M partner-derived revenue"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_client_portfolio_growth",
+      "capability_name": "Client Portfolio Growth",
+      "domain_families": [
+        "REVENUE_OPERATIONS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_002"
+      ],
+      "strongest_metrics": [
+        "50% portfolio expansion",
+        "$10M net-new revenue"
+      ],
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_cloud_native",
+      "capability_name": "Cloud Native",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_cloud_vendor_bundle",
+      "capability_name": "Cloud Vendor Bundle",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_005"
+      ],
+      "strongest_metrics": [
+        "30% upsell opportunities",
+        "15% forecasting accuracy"
+      ],
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_cloud_vendor_partnerships",
+      "capability_name": "Cloud Vendor Partnerships",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_004"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_co_marketing",
+      "capability_name": "Co Marketing",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_001"
+      ],
+      "strongest_metrics": [
+        "$3M partner-derived revenue"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_co_sell",
+      "capability_name": "Co Sell",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_commercialization",
+      "capability_name": "Commercialization",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
+      "strongest_metrics": [
+        "$22M IP-led revenue",
+        "20% gross margin expansion",
+        "team 8 to 28"
+      ],
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_compliance_checkpoints",
+      "capability_name": "Compliance Checkpoints",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_001"
+      ],
+      "strongest_metrics": [
+        "35% reduction in regulatory findings"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_compliance_reviews",
+      "capability_name": "Compliance Reviews",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_002"
+      ],
+      "strongest_metrics": [
+        "40% faster regulatory submissions"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_confluent",
+      "capability_name": "Confluent",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_003"
+      ],
+      "strongest_metrics": [
+        "25% downtime reduction"
+      ],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_context_assembly",
+      "capability_name": "Context Assembly",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_cost_optimization",
+      "capability_name": "Cost Optimization",
+      "domain_families": [
+        "STRATEGIC_FINANCE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_004"
+      ],
+      "strongest_metrics": [
+        "30% cost optimization"
+      ],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_cross_functional",
+      "capability_name": "Cross Functional",
+      "domain_families": [
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_exec_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_customer_success",
+      "capability_name": "Customer Success",
+      "domain_families": [
+        "CUSTOMER_SUCCESS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_customer_success_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CUSTOMER_SUCCESS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_data_catalogs",
+      "capability_name": "Data Catalogs",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_004"
+      ],
+      "strongest_metrics": [
+        "20% faster audits / filing"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_data_governance",
+      "capability_name": "Data Governance",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_001",
+        "fact_data_analytics_001"
+      ],
+      "strongest_metrics": [
+        "35% reduction in regulatory findings"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_data_lineage",
+      "capability_name": "Data Lineage",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_003"
+      ],
+      "strongest_metrics": [
+        "40% reporting error reduction"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_data_providers",
+      "capability_name": "Data Providers",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_data_security",
+      "capability_name": "Data Security",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_databricks",
+      "capability_name": "Databricks",
+      "domain_families": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_005",
+        "fact_certs_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "CUSTOMER_SUCCESS",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "QUANT_TRADING_HPC",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_dependency_graph",
+      "capability_name": "Dependency Graph",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_002"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_derivatives_pricing",
+      "capability_name": "Derivatives Pricing",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_deterministic_routing",
+      "capability_name": "Deterministic Routing",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_distributed_sales_team",
+      "capability_name": "Distributed Sales Team",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_003"
+      ],
+      "strongest_metrics": [
+        "20-member distributed sales team"
+      ],
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_documentation",
+      "capability_name": "Documentation",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_004"
+      ],
+      "strongest_metrics": [
+        "20% faster audits / filing"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_due_diligence",
+      "capability_name": "Due Diligence",
+      "domain_families": [
+        "STRATEGIC_FINANCE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_engineering_leadership",
+      "capability_name": "Engineering Leadership",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
+      "strongest_metrics": [
+        "$22M IP-led revenue",
+        "20% gross margin expansion",
+        "team 8 to 28"
+      ],
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_enterprise_sales",
+      "capability_name": "Enterprise Sales",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_001"
+      ],
+      "strongest_metrics": [
+        "$5M ACV / new revenue"
+      ],
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_eval_gates",
+      "capability_name": "Eval Gates",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_executive_ai_council",
+      "capability_name": "Executive Ai Council",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_executive_reporting",
+      "capability_name": "Executive Reporting",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_004"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_executive_value",
+      "capability_name": "Executive Value",
+      "domain_families": [
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_solutions_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_false_positives",
+      "capability_name": "False Positives",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_004"
+      ],
+      "strongest_metrics": [
+        "20% false-positive reduction"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "QUANT_TRADING_HPC"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_field_cto",
+      "capability_name": "Field Cto",
+      "domain_families": [
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_solutions_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_financial_institutions",
+      "capability_name": "Financial Institutions",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_003"
+      ],
+      "strongest_metrics": [
+        "20-member distributed sales team"
+      ],
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_financial_operational_data",
+      "capability_name": "Financial Operational Data",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_004"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_financial_services",
+      "capability_name": "Financial Services",
+      "domain_families": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_002",
+        "fact_sales_accounts_002",
+        "fact_consulting_001"
+      ],
+      "strongest_metrics": [
+        "20% joint revenue boost",
+        ">$15M deals",
+        "40% scenario runtime reduction"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "ENGINEERING_PLATFORM",
+        "PARTNERSHIPS_GTM",
+        "QUANT_TRADING_HPC",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_forecasting",
+      "capability_name": "Forecasting",
+      "domain_families": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_005",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_004"
+      ],
+      "strongest_metrics": [
+        "30% upsell opportunities",
+        "15% forecasting accuracy",
+        "50% portfolio expansion",
+        "$10M net-new revenue",
+        "30% cost optimization"
+      ],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_fraud_detection",
+      "capability_name": "Fraud Detection",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_004"
+      ],
+      "strongest_metrics": [
+        "20% false-positive reduction"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "QUANT_TRADING_HPC"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_fsa",
+      "capability_name": "Fsa",
+      "domain_families": [
+        "EXECUTIVE_LEADERSHIP",
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_003",
+        "fact_certs_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "CUSTOMER_SUCCESS",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "QUANT_TRADING_HPC",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_generative_ai",
+      "capability_name": "Generative Ai",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_001"
+      ],
+      "strongest_metrics": [
+        "$5M ACV / new revenue"
+      ],
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_global_accounts",
+      "capability_name": "Global Accounts",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_003"
+      ],
+      "strongest_metrics": [
+        "20-member distributed sales team"
+      ],
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_governance",
+      "capability_name": "Governance",
+      "domain_families": [
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_consulting_002"
+      ],
+      "strongest_metrics": [
+        "$1B asset portfolio"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_governance_council",
+      "capability_name": "Governance Council",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_graphrag",
+      "capability_name": "Graphrag",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_hpc",
+      "capability_name": "Hpc",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_001",
+        "fact_quant_hpc_002"
+      ],
+      "strongest_metrics": [
+        "40% faster calculations / stress testing",
+        "50% latency reduction"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM",
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_hpc_roi",
+      "capability_name": "Hpc Roi",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_002"
+      ],
+      "strongest_metrics": [
+        ">$15M deals",
+        "40% scenario runtime reduction"
+      ],
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "QUANT_TRADING_HPC",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_identity",
+      "capability_name": "Identity",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_industry_solutions",
+      "capability_name": "Industry Solutions",
+      "domain_families": [
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_solutions_002"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_integration_costs",
+      "capability_name": "Integration Costs",
+      "domain_families": [
+        "STRATEGIC_FINANCE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_joint_revenue",
+      "capability_name": "Joint Revenue",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_002"
+      ],
+      "strongest_metrics": [
+        "20% joint revenue boost"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_joint_roadmaps",
+      "capability_name": "Joint Roadmaps",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_004"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_joint_solution_development",
+      "capability_name": "Joint Solution Development",
+      "domain_families": [
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_solutions_002"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_latency",
+      "capability_name": "Latency",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_002"
+      ],
+      "strongest_metrics": [
+        "50% latency reduction"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM",
+        "QUANT_TRADING_HPC"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_latency_governance",
+      "capability_name": "Latency Governance",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_legacy_modernization",
+      "capability_name": "Legacy Modernization",
+      "domain_families": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_002",
+        "fact_consulting_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_llm_document_intelligence",
+      "capability_name": "Llm Document Intelligence",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_002"
+      ],
+      "strongest_metrics": [
+        "40% faster regulatory submissions"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_ma_synergy",
+      "capability_name": "Ma Synergy",
+      "domain_families": [
+        "STRATEGIC_FINANCE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "EXECUTIVE_LEADERSHIP",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_market_data",
+      "capability_name": "Market Data",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_002"
+      ],
+      "strongest_metrics": [
+        "~25% increased capacity"
+      ],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_microservices",
+      "capability_name": "Microservices",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_ml_engineering",
+      "capability_name": "Ml Engineering",
+      "domain_families": [
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_exec_002"
+      ],
+      "strongest_metrics": [
+        "team 8 to 28"
+      ],
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_ml_insights",
+      "capability_name": "Ml Insights",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_002"
+      ],
+      "strongest_metrics": [
+        "50% latency reduction"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM",
+        "QUANT_TRADING_HPC"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_model_explainability",
+      "capability_name": "Model Explainability",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_modernization_deals",
+      "capability_name": "Modernization Deals",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_002"
+      ],
+      "strongest_metrics": [
+        ">$15M deals",
+        "40% scenario runtime reduction"
+      ],
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "QUANT_TRADING_HPC",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_multi_agent_orchestration",
+      "capability_name": "Multi Agent Orchestration",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_multi_greek_hedging",
+      "capability_name": "Multi Greek Hedging",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_partner_stakeholders",
+      "capability_name": "Partner Stakeholders",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_partner_strategy",
+      "capability_name": "Partner Strategy",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_001"
+      ],
+      "strongest_metrics": [
+        "$3M partner-derived revenue"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_pipeline_prioritization",
+      "capability_name": "Pipeline Prioritization",
+      "domain_families": [
+        "REVENUE_OPERATIONS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_001"
+      ],
+      "strongest_metrics": [
+        "$10M new ARR"
+      ],
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_platform_leads",
+      "capability_name": "Platform Leads",
+      "domain_families": [
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_exec_002"
+      ],
+      "strongest_metrics": [
+        "team 8 to 28"
+      ],
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_platform_services",
+      "capability_name": "Platform Services",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
+      "strongest_metrics": [
+        "$22M IP-led revenue",
+        "20% gross margin expansion",
+        "team 8 to 28"
+      ],
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_policy_gating",
+      "capability_name": "Policy Gating",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_post_ma",
+      "capability_name": "Post Ma",
+      "domain_families": [
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_consulting_002"
+      ],
+      "strongest_metrics": [
+        "$1B asset portfolio"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_production_adoption",
+      "capability_name": "Production Adoption",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_004"
+      ],
+      "strongest_metrics": [
+        "6 months to 3 weeks"
+      ],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_real_time_risk",
+      "capability_name": "Real Time Risk",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_003"
+      ],
+      "strongest_metrics": [
+        "25% downtime reduction"
+      ],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_real_time_validation",
+      "capability_name": "Real Time Validation",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_002"
+      ],
+      "strongest_metrics": [
+        "~25% increased capacity"
+      ],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_refactor_risk",
+      "capability_name": "Refactor Risk",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_002"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_reference_architecture",
+      "capability_name": "Reference Architecture",
+      "domain_families": [
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_solutions_002"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_regulatory_submission",
+      "capability_name": "Regulatory Submission",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_002"
+      ],
+      "strongest_metrics": [
+        "40% faster regulatory submissions"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_regulatory_transformation",
+      "capability_name": "Regulatory Transformation",
+      "domain_families": [
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_consulting_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_renewal",
+      "capability_name": "Renewal",
+      "domain_families": [
+        "CUSTOMER_SUCCESS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_customer_success_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CUSTOMER_SUCCESS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_renewals",
+      "capability_name": "Renewals",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_004",
+        "fact_revenue_ops_003"
+      ],
+      "strongest_metrics": [
+        "93% annual renewal rate",
+        "$5M recurring revenue"
+      ],
+      "role_families_supported": [
+        "CUSTOMER_SUCCESS",
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_reporting_errors",
+      "capability_name": "Reporting Errors",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_003"
+      ],
+      "strongest_metrics": [
+        "40% reporting error reduction"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_retrieval_quality",
+      "capability_name": "Retrieval Quality",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_reusable_primitives",
+      "capability_name": "Reusable Primitives",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
+      "strongest_metrics": [
+        "$22M IP-led revenue",
+        "20% gross margin expansion",
+        "team 8 to 28"
+      ],
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_risk_calculation",
+      "capability_name": "Risk Calculation",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_001"
+      ],
+      "strongest_metrics": [
+        "40% faster calculations / stress testing"
+      ],
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_risk_metrics",
+      "capability_name": "Risk Metrics",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_risk_model_consolidation",
+      "capability_name": "Risk Model Consolidation",
+      "domain_families": [
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_consulting_002"
+      ],
+      "strongest_metrics": [
+        "$1B asset portfolio"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_roi_translation",
+      "capability_name": "Roi Translation",
+      "domain_families": [
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_solutions_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "FIELD_SOLUTIONS_ARCHITECTURE",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_rollback",
+      "capability_name": "Rollback",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_saas_licensing",
+      "capability_name": "Saas Licensing",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_004"
+      ],
+      "strongest_metrics": [
+        "93% annual renewal rate"
+      ],
+      "role_families_supported": [
+        "CUSTOMER_SUCCESS",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_sales_cycles",
+      "capability_name": "Sales Cycles",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_004"
+      ],
+      "strongest_metrics": [
+        "93% annual renewal rate"
+      ],
+      "role_families_supported": [
+        "CUSTOMER_SUCCESS",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_salesforce_analytics",
+      "capability_name": "Salesforce Analytics",
+      "domain_families": [
+        "REVENUE_OPERATIONS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_001"
+      ],
+      "strongest_metrics": [
+        "$10M new ARR"
+      ],
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_salesforce_pipeline",
+      "capability_name": "Salesforce Pipeline",
+      "domain_families": [
+        "REVENUE_OPERATIONS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_002"
+      ],
+      "strongest_metrics": [
+        "50% portfolio expansion",
+        "$10M net-new revenue"
+      ],
+      "role_families_supported": [
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_solution_architecture",
+      "capability_name": "Solution Architecture",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_stakeholder_alignment",
+      "capability_name": "Stakeholder Alignment",
+      "domain_families": [
+        "CUSTOMER_SUCCESS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_customer_success_001"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CUSTOMER_SUCCESS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_strategic_alliances",
+      "capability_name": "Strategic Alliances",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_streaming_analytics",
+      "capability_name": "Streaming Analytics",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_002"
+      ],
+      "strongest_metrics": [
+        "~25% increased capacity"
+      ],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_streaming_pipelines",
+      "capability_name": "Streaming Pipelines",
+      "domain_families": [
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_data_analytics_003"
+      ],
+      "strongest_metrics": [
+        "25% downtime reduction"
+      ],
+      "role_families_supported": [
+        "DATA_ANALYTICS_LEADERSHIP",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_stress_testing",
+      "capability_name": "Stress Testing",
+      "domain_families": [
+        "QUANT_TRADING_HPC"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_quant_hpc_001"
+      ],
+      "strongest_metrics": [
+        "40% faster calculations / stress testing"
+      ],
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "QUANT_TRADING_HPC",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_subscription_offerings",
+      "capability_name": "Subscription Offerings",
+      "domain_families": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_partnerships_gtm_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_subscription_pricing",
+      "capability_name": "Subscription Pricing",
+      "domain_families": [
+        "STRATEGIC_FINANCE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_003"
+      ],
+      "strongest_metrics": [
+        "$5M recurring revenue"
+      ],
+      "role_families_supported": [
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_team_leadership",
+      "capability_name": "Team Leadership",
+      "domain_families": [
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_exec_002"
+      ],
+      "strongest_metrics": [
+        "team 8 to 28"
+      ],
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_telemetry",
+      "capability_name": "Telemetry",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    },
+    {
+      "capability_id": "cap_upsell",
+      "capability_name": "Upsell",
+      "domain_families": [
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_sales_accounts_005"
+      ],
+      "strongest_metrics": [
+        "30% upsell opportunities",
+        "15% forecasting accuracy"
+      ],
+      "role_families_supported": [
+        "PARTNERSHIPS_GTM",
+        "REVENUE_OPERATIONS",
+        "SALES_STRATEGIC_ACCOUNTS"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_usage_based_forecasting",
+      "capability_name": "Usage Based Forecasting",
+      "domain_families": [
+        "STRATEGIC_FINANCE"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_revenue_ops_003"
+      ],
+      "strongest_metrics": [
+        "$5M recurring revenue"
+      ],
+      "role_families_supported": [
+        "PRODUCT_TECHNICAL_STRATEGY",
+        "REVENUE_OPERATIONS",
+        "STRATEGIC_FINANCE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_usage_controls",
+      "capability_name": "Usage Controls",
+      "domain_families": [
+        "AI_GOVERNANCE_RISK"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_governance_001"
+      ],
+      "strongest_metrics": [
+        "35% reduction in regulatory findings"
+      ],
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "confidence": "MEDIUM"
+    },
+    {
+      "capability_id": "cap_vector_services",
+      "capability_name": "Vector Services",
+      "domain_families": [
+        "ENGINEERING_PLATFORM"
+      ],
+      "supporting_candidate_fact_ids": [
+        "fact_engineering_platform_005"
+      ],
+      "strongest_metrics": [],
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "confidence": "HIGH"
+    }
+  ],
+  "metadata": {
+    "claim_proof_split_schema_version": "master_skills_arsenal_claim_proof_v2"
+  }
+}

@@ -1,4 +1,4 @@
-"""Execute Qwen self-consistency sample paths for bullet-pool lanes (apps_rg only)."""
+"""Execute self-consistency sample paths for bullet-pool lanes (apps_rg only)."""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ from pathlib import Path
 from typing import Any, Callable
 
 from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
+from apps_rg.runtime.providers.section_qwen_slice import tag_reasoning_lane
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     EMPLOYMENT_BULLET_LANES,
     sc_path_count_for_lane,
@@ -18,10 +19,11 @@ from apps_rg.runtime.reasoning.section_reasoning_intensity import (
     profile_to_requested_kw,
     section_reasoning_profile,
 )
+from apps_rg.runtime.section_execution_plan import BULLET_LANES
 
 ParseFn = Callable[[str], tuple[dict[str, Any] | None, str]]
 
-BULLET_POOL_LANES: frozenset[str] = frozenset({"unify_bullets", "ibm_bullets", "competencies"})
+BULLET_POOL_LANES: frozenset[str] = frozenset((*BULLET_LANES, "competencies"))
 
 
 def bullet_lane_sc_enabled(section_lane: str) -> bool:
@@ -84,8 +86,9 @@ def run_qwen_self_consistency_paths(
     path_count: int | None = None,
     path_index_start: int = 0,
     append_artifacts: bool = False,
+    provider_profile: str | None = "qwen_vllm",
 ) -> tuple[list[SelfConsistencyPath], ProviderResult | None]:
-    """Run N Qwen completions at staggered temperatures; return all paths + last provider result."""
+    """Run N completions at staggered temperatures; return all paths + last provider result."""
     prof_kw = profile_to_requested_kw(section_reasoning_profile(section_lane))
     base = float(base_temperature if base_temperature is not None else prof_kw["temperature"])
     n_paths = path_count if path_count is not None else self_consistency_path_count(section_lane)
@@ -109,7 +112,8 @@ def run_qwen_self_consistency_paths(
                     msgs, path_index=idx, temperature=temp
                 ),
             }
-        result = call_qwen_vllm(
+        result = call_section_model_provider(
+            provider_profile,
             tagged,
             artifact_dir=artifact_dir,
             run_id=run_id,
@@ -188,9 +192,9 @@ def _write_paths_artifact(
         "section_lane": section_lane,
         "path_count": len(merged_entries),
         "generation_mode": (
-            f"qwen_employment_bullet_pool_{SC_PATH_COUNT_BY_LANE.get(section_lane, 'n')}"
+            f"provider_employment_bullet_pool_{SC_PATH_COUNT_BY_LANE.get(section_lane, 'n')}"
             if section_lane in EMPLOYMENT_BULLET_LANES
-            else "qwen_self_consistency"
+            else "provider_self_consistency"
         ),
         "paths": merged_entries,
     }

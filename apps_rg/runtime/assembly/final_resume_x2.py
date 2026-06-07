@@ -17,8 +17,10 @@ CANONICAL_ASSEMBLED_SECTION_ORDER: tuple[str, ...] = (
     "unify_bullets",
     "ibm_narrative",
     "ibm_bullets",
-    "insurtech",
-    "ey",
+    "insurtech_narrative",
+    "insurtech_bullets",
+    "ey_narrative",
+    "ey_bullets",
     "early_career",
     "competencies",
     "education",
@@ -26,8 +28,6 @@ CANONICAL_ASSEMBLED_SECTION_ORDER: tuple[str, ...] = (
 )
 
 LOCKED_EMBEDDED_ORDER_IDS: tuple[str, ...] = (
-    "insurtech",
-    "ey",
     "early_career",
     "education",
     "certifications",
@@ -42,6 +42,10 @@ GENERATED_LANE_IDS: tuple[str, ...] = (
     "unify_bullets",
     "ibm_narrative",
     "ibm_bullets",
+    "insurtech_narrative",
+    "insurtech_bullets",
+    "ey_narrative",
+    "ey_bullets",
     "competencies",
 )
 

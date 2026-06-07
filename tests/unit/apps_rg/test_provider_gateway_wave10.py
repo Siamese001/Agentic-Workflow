@@ -28,22 +28,22 @@ def _prompt() -> SimpleNamespace:
     )
 
 
-def test_wave10a_provider_profiles_config_keeps_qwen_default() -> None:
+def test_provider_profiles_config_uses_external_claude_default() -> None:
     data = load_provider_profiles_config()
-    assert data["wave10a_policy"]["default_provider"] == "qwen_vllm"
-    assert data["wave10a_policy"]["external_default_status"] == "selectable_for_parity_not_default"
+    assert data["wave10a_policy"]["default_provider"] == "external_claude"
+    assert data["wave10a_policy"]["external_default_status"] == "claude_default_for_apps_rg_e2e"
     profiles = data["profiles"]
-    assert profiles["local_qwen_generator"]["default"] is True
+    assert profiles["local_qwen_generator"]["default"] is False
     assert profiles["local_qwen_generator"]["provider_profile"] == "qwen_vllm"
     assert profiles["external_openai_generator"]["default"] is False
-    assert profiles["external_claude_generator"]["default"] is False
+    assert profiles["external_claude_generator"]["default"] is True
 
 
-def test_wave10a_provider_profile_resolution_defaults_to_qwen(monkeypatch) -> None:
+def test_provider_profile_resolution_defaults_to_external_claude(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_PROVIDER_PROFILE", raising=False)
     selected = resolve_provider_profile()
-    assert selected.profile == ProviderProfile.QWEN_VLLM
-    assert selected.source == "wave10a_default_qwen_vllm"
+    assert selected.profile == ProviderProfile.EXTERNAL_CLAUDE
+    assert selected.source == "apps_rg_default_external_claude"
 
 
 def test_wave10a_provider_profile_env_selects_external(monkeypatch) -> None:

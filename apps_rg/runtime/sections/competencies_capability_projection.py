@@ -408,7 +408,7 @@ def _trim_categories_to_emit_count(
     max_count: int,
     priority_category_ids: set[str] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """graph_10x6: taxonomy has 7 buckets; product emits top ``max_count`` by pool/graph signal."""
+    """graph_8x8: product emits the top ``max_count`` categories by pool/graph signal."""
     if max_count <= 0 or len(categories) <= max_count:
         return categories, []
     priority = priority_category_ids or set()
@@ -577,7 +577,7 @@ def apply_executive_capability_projection(
     if dropped:
         changelog.append(
             {
-                "operation": "trim_taxonomy_to_graph_10x6_emit",
+                "operation": "trim_taxonomy_to_graph_8x8_emit",
                 "kept": max_emit,
                 "dropped_category_ids": [
                     str(c.get("category_id") or "") for c in dropped if isinstance(c, dict)

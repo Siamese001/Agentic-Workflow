@@ -42,7 +42,7 @@ def _high_row(
 
 def test_section_keys_match_fact_inventory() -> None:
     assert tuple(srfs.SECTION_KEYS) == SECTION_KEYS
-    assert len(SECTION_KEYS) == 7
+    assert len(SECTION_KEYS) == 11
 
 
 @pytest.mark.parametrize("section_id", SECTION_KEYS)
@@ -145,7 +145,7 @@ def test_build_exec_summary_plan_from_in_memory_doc() -> None:
 def test_load_selected_role_fact_set_raises(tmp_path: Path) -> None:
     p = tmp_path / "gone.json"
     p.write_text("{}")
-    with pytest.raises(RuntimeError, match="load_selected_role_fact_set removed"):
+    with pytest.raises(ValueError, match="SelectedRoleFactSet JSON missing keys"):
         srfs.load_selected_role_fact_set(p)
 
 

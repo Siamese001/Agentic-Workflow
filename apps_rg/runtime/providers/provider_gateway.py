@@ -1,9 +1,8 @@
 """apps_rg ProviderGateway abstraction (Wave 10A).
 
-This is the app-local provider selection surface. It keeps ``qwen_vllm`` as the
-default provider while making external provider profiles selectable for Wave 10B
-parity work. Section runtimes still call their existing Qwen transport paths
-until later consolidation waves.
+This is the app-local provider selection surface. ``external_claude`` is the
+default apps_rg E2E provider while ``qwen_vllm`` remains explicitly selectable
+for local comparison runs.
 """
 from __future__ import annotations
 
@@ -16,7 +15,7 @@ from typing import Any, Mapping, Protocol, runtime_checkable
 from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
 
 ENV_APPS_RG_PROVIDER_PROFILE = "APPS_RG_PROVIDER_PROFILE"
-DEFAULT_PROVIDER_PROFILE = "qwen_vllm"
+DEFAULT_PROVIDER_PROFILE = "external_claude"
 CONFIG_PROVIDER_PROFILES = Path(__file__).resolve().parents[2] / "config" / "provider_profiles.yaml"
 
 
@@ -31,8 +30,7 @@ class ProviderProfileNotRegisteredError(ProviderGatewayError):
 class ProviderProfile(str, Enum):
     """Provider profile selection.
 
-    Wave 10A: Qwen remains default; external profiles are selectable.
-    Wave 10C: ``external_default`` may become the target only after parity passes.
+    External Claude is the apps_rg E2E default; Qwen remains selectable.
     """
 
     QWEN_VLLM = "qwen_vllm"
@@ -70,7 +68,7 @@ class ProviderProfileSelection:
 def normalize_provider_profile(value: str | ProviderProfile | None) -> ProviderProfile:
     raw = str(value.value if isinstance(value, ProviderProfile) else value or "").strip().lower()
     if not raw:
-        return ProviderProfile.QWEN_VLLM
+        return ProviderProfile.EXTERNAL_CLAUDE
     aliases = {
         "local_qwen": ProviderProfile.QWEN_VLLM,
         "local_qwen_generator": ProviderProfile.QWEN_VLLM,
@@ -110,8 +108,8 @@ def resolve_provider_profile(
             raw_value=env_raw,
         )
     return ProviderProfileSelection(
-        profile=ProviderProfile.QWEN_VLLM,
-        source="wave10a_default_qwen_vllm",
+        profile=ProviderProfile.EXTERNAL_CLAUDE,
+        source="apps_rg_default_external_claude",
         raw_value=DEFAULT_PROVIDER_PROFILE,
     )
 

@@ -801,3 +801,109 @@ def run_section_ibm_narrative_spine(
     }
 
 
+def _run_section_role_episode_spine(
+    section_id: str,
+    *,
+    target_company: str,
+    target_role: str,
+    target_level: str,
+    jd: str,
+    job_description_ref: str,
+    job_description_text: str,
+    manual_brief: str,
+    resume_path: str,
+    source_resume_text: str,
+    generation_mode: str,
+    artifact_dir: str,
+    lane_provider: str,
+    lane_temperature: float,
+    lane_x1d_judges: str,
+    lane_mock_judges: bool,
+    lane_allow_test_mock_judges: bool = False,
+    lane_allow_non_allow_exit_zero: bool = False,
+) -> dict[str, Any]:
+    """Section-only generic role episode lane for InsurTech/EY bullets/narratives."""
+    from apps_rg.runtime.sections import role_episode_lane as lane
+
+    raw_request = build_raw_request_for_r4(
+        target_company=target_company,
+        target_role=target_role,
+        target_level=target_level,
+        jd=jd,
+        job_description_ref=job_description_ref,
+        job_description_text=job_description_text,
+        manual_brief=manual_brief,
+        resume_path=resume_path,
+        source_resume_text=source_resume_text,
+        generation_mode=generation_mode,
+    )
+    jp = raw_request.get("jd_payload") if isinstance(raw_request.get("jd_payload"), dict) else {}
+    jd_text = str(jp.get("description") or jp.get("title") or "").strip()
+    briefing = _read_optional_brief(manual_brief)
+    if not str(briefing).strip():
+        briefing = _resolve_lane_manual_brief(raw_request)
+
+    args = lane.build_role_episode_lane_args(
+        provider=_effective_lane_provider(lane_provider),
+        temperature=float(lane_temperature),
+        x1d_judges=str(lane_x1d_judges),
+        mock_judges=bool(lane_mock_judges),
+        allow_test_mock_judges=bool(lane_allow_test_mock_judges),
+        allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
+        target_title=str(target_role).strip(),
+        target_company=str(target_company).strip(),
+        jd_text=jd_text,
+        briefing=briefing,
+        target_role=str(target_role).strip() or None,
+        base_resume_ref=str(resume_path or ""),
+    )
+    override = Path(artifact_dir) if (artifact_dir is not None and str(artifact_dir).strip()) else None
+    ctx = lane.run_role_episode_lane_execution(section_id, args, artifact_dir_override=override)
+    artifact_path = Path(ctx["artifact_dir"])
+    x3 = ctx["x3"]
+    outcome_authorized, exit_status, x3_code = _lane_dispatch_status_from_x3(x3)
+    output_field = f"{section_id}_cli_output_text"
+    out = {
+        "exit_status": exit_status,
+        "execution_status": "completed" if outcome_authorized else "failed",
+        "outcome_authorized": outcome_authorized,
+        "x3_disposition": x3_code,
+        "fault": "",
+        "artifact_dir": str(artifact_path),
+        "run_id": str(ctx["runtime_payload"].get("run_id", "")),
+        "request_id": "",
+        "l7_how_trace_emitted": False,
+        "terminal_r5": False,
+        "executive_summary_cli_output_text": "",
+        "headline_cli_output_text": "",
+        "unify_bullets_cli_output_text": "",
+        "unify_narrative_cli_output_text": "",
+        "ibm_bullets_cli_output_text": "",
+        "ibm_narrative_cli_output_text": "",
+        "insurtech_bullets_cli_output_text": "",
+        "insurtech_narrative_cli_output_text": "",
+        "ey_bullets_cli_output_text": "",
+        "ey_narrative_cli_output_text": "",
+    }
+    out[output_field] = str(ctx.get("output_text") or "")
+    return out
+
+
+def run_section_insurtech_bullets_spine(**kwargs: Any) -> dict[str, Any]:
+    kwargs.pop("lane_provider_resolution_source", None)
+    return _run_section_role_episode_spine("insurtech_bullets", **kwargs)
+
+
+def run_section_ey_bullets_spine(**kwargs: Any) -> dict[str, Any]:
+    kwargs.pop("lane_provider_resolution_source", None)
+    return _run_section_role_episode_spine("ey_bullets", **kwargs)
+
+
+def run_section_insurtech_narrative_spine(**kwargs: Any) -> dict[str, Any]:
+    kwargs.pop("lane_provider_resolution_source", None)
+    return _run_section_role_episode_spine("insurtech_narrative", **kwargs)
+
+
+def run_section_ey_narrative_spine(**kwargs: Any) -> dict[str, Any]:
+    kwargs.pop("lane_provider_resolution_source", None)
+    return _run_section_role_episode_spine("ey_narrative", **kwargs)

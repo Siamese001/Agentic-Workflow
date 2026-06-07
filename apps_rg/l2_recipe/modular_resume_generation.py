@@ -50,10 +50,11 @@ from apps_rg.runtime.section_cli_defaults import (
     CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
     resolve_cli_x1d_judges,
 )
+from apps_rg.runtime.section_execution_plan import BULLET_LANES, NARRATIVE_LANES
 from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 from apps_rg.runtime.sections_root_manifest import emit_sections_root_manifest, log_sections_manifest_write_failed
 
-# Same seven modules as ``apps_rg.runtime.internal.lane_batch`` (single SSOT).
+# Canonical lane modules as ``apps_rg.runtime.internal.lane_batch`` (single SSOT).
 # competencies_dispatch remains listed for legacy argparse/import tooling parity — canonical lane runtime:
 # apps_rg.runtime.sections.competencies_lane (selected-section entry via python -m apps_rg --section competencies).
 LANE_DISPATCH_MODULES: Final[tuple[str, ...]] = (
@@ -63,6 +64,7 @@ LANE_DISPATCH_MODULES: Final[tuple[str, ...]] = (
     "apps_rg.runtime.sections.unify_narrative_lane",
     "apps_rg.runtime.sections.ibm_bullets_lane",
     "apps_rg.runtime.sections.ibm_narrative_lane",
+    "apps_rg.runtime.sections.role_episode_lane",
     "apps_rg.runtime.sections.competencies_lane",
 )
 
@@ -278,14 +280,14 @@ def _minimal_l2_blob(lane: str, *, run_id: str) -> dict[str, Any]:
                 "Phase0 synthetic executive summary for modular R4 API readiness proof only."
             ),
         }
-    if lane in ("unify_narrative", "ibm_narrative"):
+    if lane in NARRATIVE_LANES:
         return {
             **common,
             "narrative_sentence": (
                 "Phase0 synthetic narrative sentence with sufficient length for assembly proof."
             ),
         }
-    if lane in ("unify_bullets", "ibm_bullets"):
+    if lane in BULLET_LANES:
         return {
             **common,
             "bullets": [
@@ -422,7 +424,7 @@ class ModularResumeProfile:
     run_phase0_synthetic_assembly: bool = True
     validate_rg_output_fixture: bool = True
     phase1_invoke_real_lanes: bool = False
-    phase1_lane_provider: str = "qwen_vllm"
+    phase1_lane_provider: str = "external_claude"
     self_consistency_requested: int = 0
     parallel_phase1_lanes: bool = False
     phase1_max_parallel: int = 2
@@ -563,12 +565,12 @@ def run_modular_resume_generation(
                 PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER,
                 companion_accepted_in_modular_sections_root,
             )
-            from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
-            from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
+            from apps_rg.runtime.reasoning.employment_bullet_pool import REQUIRED_BULLET_IDS
+            from apps_rg.runtime.section_execution_plan import NARRATIVE_UPSTREAM_BULLET_LANE
 
             _narrative_upstream: dict[str, tuple[str, tuple[str, ...]]] = {
-                "unify_narrative": ("unify_bullets", UNIFY_BULLET_IDS),
-                "ibm_narrative": ("ibm_bullets", IBM_BULLET_IDS),
+                narrative: (upstream, tuple(REQUIRED_BULLET_IDS.get(upstream, ())))
+                for narrative, upstream in NARRATIVE_UPSTREAM_BULLET_LANE.items()
             }
 
             from apps_rg.runtime.product_output_policy import (

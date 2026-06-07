@@ -13,10 +13,15 @@ from apps_rg.runtime.judges.employment_bullet_judge_rubric import (
     pool_selector_dimension_ids,
 )
 from apps_rg.runtime.reasoning.competencies_graph_pool import COMPETENCIES_SC_PATH_COUNT
+from apps_rg.runtime.section_execution_plan import (
+    BULLET_LANES,
+    DEFAULT_ACTIVE_SC_PATHS,
+    MAX_SECTION_ATTEMPTS,
+)
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 
-EMPLOYMENT_BULLET_LANES: Final[frozenset[str]] = frozenset({"unify_bullets", "ibm_bullets"})
+EMPLOYMENT_BULLET_LANES: Final[frozenset[str]] = frozenset(BULLET_LANES)
 
 # Employment bullets: Claude pool selector is the sole X1D judge (not the 3-provider panel).
 EMPLOYMENT_BULLET_JUDGE_PROVIDERS: Final[tuple[str, ...]] = ("anthropic_claude",)
@@ -26,25 +31,24 @@ EMPLOYMENT_BULLET_JUDGE_PROVIDERS: Final[tuple[str, ...]] = ("anthropic_claude",
 # min_selection_score floor + employment X2 metric/anchor gates, NOT by brute-force
 # sampling. SC lowered 15/12 -> 4 to match section_reasoning_intensity.py profile
 # (the prior variance-class redesign that had not reached the execution path).
-SC_PATH_COUNT_BY_LANE: Final[dict[str, int]] = {
-    "unify_bullets": 4,
-    "ibm_bullets": 4,
-}
+SC_PATH_COUNT_BY_LANE: Final[dict[str, int]] = {lane: DEFAULT_ACTIVE_SC_PATHS for lane in BULLET_LANES}
 
 REGEN_EXTRA_PATHS_BY_LANE: Final[dict[str, int]] = {
-    "unify_bullets": 3,
-    "ibm_bullets": 3,
-    "competencies": 4,
-}
+    lane: 3 for lane in BULLET_LANES
+} | {"competencies": 4}
 
 FINAL_BULLET_COUNT: Final[dict[str, int]] = {
     "unify_bullets": len(UNIFY_BULLET_IDS),
     "ibm_bullets": len(IBM_BULLET_IDS),
+    "insurtech_bullets": 3,
+    "ey_bullets": 3,
 }
 
 REQUIRED_BULLET_IDS: Final[dict[str, tuple[str, ...]]] = {
     "unify_bullets": UNIFY_BULLET_IDS,
     "ibm_bullets": IBM_BULLET_IDS,
+    "insurtech_bullets": ("bul_insurtech_001", "bul_insurtech_002", "bul_insurtech_003"),
+    "ey_bullets": ("bul_ey_001", "bul_ey_002", "bul_ey_003"),
 }
 
 DEFAULT_MIN_SELECTION_SCORE: Final[float] = 0.72
@@ -108,7 +112,10 @@ def regen_extra_path_count_for_lane(section_lane: str) -> int:
 
 
 def max_employment_regen_rounds() -> int:
-    raw = os.environ.get("APPS_RG_EMPLOYMENT_BULLET_MAX_REGEN_ROUNDS", "2").strip()
+    raw = os.environ.get(
+        "APPS_RG_EMPLOYMENT_BULLET_MAX_REGEN_ROUNDS",
+        str(max(0, MAX_SECTION_ATTEMPTS - 1)),
+    ).strip()
     try:
         return max(0, int(raw))
     except ValueError:
@@ -137,6 +144,7 @@ def build_employment_targeting_context(
     """JD + briefing + skills proof metadata for Claude selection (targeting only, not proof)."""
     pp = runtime_payload.get("proof_pool_metadata") or {}
     lane = str(section_lane or "").strip().lower()
+    allowed_fact_ids = [str(x) for x in (runtime_payload.get("allowed_fact_ids") or []) if str(x).strip()]
     ctx: dict[str, Any] = {
         "target_title": runtime_payload.get("target_title"),
         "target_company": runtime_payload.get("target_company"),
@@ -150,6 +158,8 @@ def build_employment_targeting_context(
         "pool_path_count": sc_path_count_for_lane(lane),
         "min_selection_score": min_selection_score_for_lane(lane),
         "final_bullet_count": FINAL_BULLET_COUNT.get(lane, 0),
+        "allowed_fact_ids": allowed_fact_ids,
+        "selector_requires_valid_candidates": bool(allowed_fact_ids),
     }
     return ctx
 
@@ -298,7 +308,7 @@ def competencies_pool_x1d_judge_rows(
     row["rubric_ref"] = "apps_rg/runtime/judges/competencies_x1d.py#graph_pool"
     row["rubric_version"] = JUDGE_RUBRIC_VERSION
     row["selection_mode"] = str(
-        (gen_meta or {}).get("selection_mode") or "claude_competencies_top_6_pass"
+        (gen_meta or {}).get("selection_mode") or "claude_competencies_top_8_pass"
     )
     row["final_category_count"] = n_final
     row["findings"] = [

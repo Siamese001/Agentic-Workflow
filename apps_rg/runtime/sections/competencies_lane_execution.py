@@ -103,16 +103,23 @@ def run_competencies_lane_execution(
     )
     from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_spine_c0_fec_for_section,
     )
+    from apps_rg.runtime.sections.upstream_evidence_block import wire_spine_c0_fec_or_block
 
-    wire_spine_c0_fec_for_section(
+    blocked = wire_spine_c0_fec_or_block(
+        repo_root=REPO_ROOT,
         artifact_dir=artifact_dir,
         section_id="competencies",
         front_spine=front_spine,
         pool=pool,
         runtime_payload=runtime_payload,
+        provider=str(args.provider),
+        temperature=float(args.temperature),
+        max_tokens=COMPETENCIES_MAX_OUTPUT_TOKENS,
+        output_filename="competencies_display.txt",
     )
+    if blocked is not None:
+        return blocked
 
     fact_lines = "\n".join(
         f"- {row['fact_id']}: {row['claim_text']}"
@@ -240,6 +247,7 @@ def run_competencies_lane_execution(
         required_bullet_ids=None,
         targeting_context=targeting_context,
         judge_mode=judge_mode,
+        provider_profile=str(args.provider),
     )
     write_json(artifact_dir / "bullet_lane_generation.json", gen_meta)
     raw_model_output_original = raw_output

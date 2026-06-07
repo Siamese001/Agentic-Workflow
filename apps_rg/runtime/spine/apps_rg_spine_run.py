@@ -10,10 +10,14 @@ from typing import Any, Literal
 
 from apps_rg.runtime.spine.section_cli_runners import (
     run_section_competencies_spine,
+    run_section_ey_bullets_spine,
+    run_section_ey_narrative_spine,
     run_section_executive_summary_spine,
     run_section_headline_spine,
     run_section_ibm_bullets_spine,
     run_section_ibm_narrative_spine,
+    run_section_insurtech_bullets_spine,
+    run_section_insurtech_narrative_spine,
     run_section_unify_bullets_spine,
     run_section_unify_narrative_spine,
 )
@@ -25,6 +29,10 @@ _SECTION_RUNNERS: dict[str, Any] = {
     "unify_narrative": run_section_unify_narrative_spine,
     "ibm_bullets": run_section_ibm_bullets_spine,
     "ibm_narrative": run_section_ibm_narrative_spine,
+    "insurtech_bullets": run_section_insurtech_bullets_spine,
+    "insurtech_narrative": run_section_insurtech_narrative_spine,
+    "ey_bullets": run_section_ey_bullets_spine,
+    "ey_narrative": run_section_ey_narrative_spine,
     "competencies": run_section_competencies_spine,
 }
 
@@ -122,7 +130,10 @@ def run_apps_rg_spine(
             "lane_allow_test_mock_judges": lane_allow_test_mock_judges,
         }
         accepted = inspect.signature(runner).parameters
-        filtered = {k: v for k, v in section_kwargs.items() if k in accepted}
+        if any(p.kind == inspect.Parameter.VAR_KEYWORD for p in accepted.values()):
+            filtered = dict(section_kwargs)
+        else:
+            filtered = {k: v for k, v in section_kwargs.items() if k in accepted}
         return runner(**filtered)
 
     from apps_rg.runtime.orchestration.canonical_dispatch import (

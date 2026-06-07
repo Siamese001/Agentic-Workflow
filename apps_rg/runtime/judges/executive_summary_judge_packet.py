@@ -588,6 +588,8 @@ def build_executive_summary_judge_packet(
     deterministic_gate_summary: dict[str, Any] | None = None,
     graph_targeting_capsule: dict[str, Any] | None = None,
     graph_bindings: list[dict[str, Any]] | None = None,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    graph_binding_materiality_summary: dict[str, Any] | None = None,
     repo_root: Any = None,
 ) -> dict[str, Any]:
     """Build canonical GRADE_ONLY JudgePacket dict for executive_summary X1D."""
@@ -609,8 +611,16 @@ def build_executive_summary_judge_packet(
         build_graph_binding_materiality_summary,
     )
 
+    cited_fact_ids = _collect_source_fact_ids(claim_ledger)
     graph_binding_materiality_summary = build_graph_binding_materiality_summary(
         section_id="executive_summary",
+        proof_pool_metadata=proof_pool_metadata,
+        candidate_output={
+            "resume_display_text": resume_display_text,
+            "source_fact_ids": cited_fact_ids,
+        },
+        claim_ledger=claim_ledger,
+        parsed_output=parsed_output,
         runtime_payload={
             "section_id": "executive_summary",
             "allowed_fact_ids": sorted(allowed_fact_ids),
@@ -619,7 +629,6 @@ def build_executive_summary_judge_packet(
         graph_bindings=graph_bindings or [],
     )
     unused_fact_ids = collect_unused_allowed_fact_ids(claim_ledger, allowed_fact_ids)
-    cited_fact_ids = _collect_source_fact_ids(claim_ledger)
     from apps_rg.runtime.validators.executive_summary_x2 import (
         check_judge_packet_display_override_parity,
     )
@@ -634,6 +643,22 @@ def build_executive_summary_judge_packet(
             "pass": parity_ok,
             "detail": parity_reason or "ok",
         }
+    materiality = dict(graph_binding_materiality_summary or {})
+    if not materiality and isinstance(proof_pool_metadata, dict):
+        from apps_rg.runtime.graph_skills_utilization_scorer import (
+            build_graph_binding_materiality_summary,
+        )
+
+        materiality = build_graph_binding_materiality_summary(
+            section_id="executive_summary",
+            proof_pool_metadata=proof_pool_metadata,
+            candidate_output={
+                "resume_display_text": resume_display_text,
+                "source_fact_ids": cited_fact_ids,
+            },
+            claim_ledger=claim_ledger,
+            parsed_output=parsed_output,
+        )
     return {
         "judge_packet_version": JUDGE_PACKET_VERSION,
         "section": "executive_summary",
@@ -671,7 +696,9 @@ def build_executive_summary_judge_packet(
             "claims_must_be_supported_by_allowed_fact_packet": True,
             "judges_must_not_rewrite": True,
             "judges_must_not_generate_replacement_summary": True,
+            "metadata_only_graph_context_is_insufficient": True,
         },
+        "graph_binding_materiality_summary": materiality,
         "deterministic_gate_summary": gate_summary,
         "rubric_ref": rubric_ref,
         "rubric": rubric,
@@ -732,6 +759,9 @@ def render_judge_prompt_from_packet(packet: dict[str, Any]) -> str:
         "",
         "PROOF_BOUNDARY:",
         json.dumps(packet.get("proof_boundary") or {}, indent=2),
+        "",
+        "GRAPH_BINDING_MATERIALITY_SUMMARY:",
+        json.dumps(packet.get("graph_binding_materiality_summary") or {}, indent=2),
         "",
         "DETERMINISTIC_GATE_SUMMARY (AUTHORITATIVE — do not contradict pass=true gates):",
         json.dumps(packet.get("deterministic_gate_summary") or {}, indent=2),

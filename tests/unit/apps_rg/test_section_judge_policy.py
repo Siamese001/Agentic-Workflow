@@ -35,8 +35,12 @@ def test_section_judge_policy_matrix() -> None:
     assert matrix["headline"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["unify_bullets"]["judge_tier"] == JudgeTier.BULLET_REWRITE_QUALITY.value
     assert matrix["ibm_bullets"]["judge_tier"] == JudgeTier.BULLET_REWRITE_QUALITY.value
+    assert matrix["insurtech_bullets"]["judge_tier"] == JudgeTier.BULLET_REWRITE_QUALITY.value
+    assert matrix["ey_bullets"]["judge_tier"] == JudgeTier.BULLET_REWRITE_QUALITY.value
     assert matrix["unify_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["ibm_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
+    assert matrix["insurtech_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
+    assert matrix["ey_narrative"]["judge_tier"] == JudgeTier.STANDARD_REASONING.value
     assert matrix["competencies"]["judge_required_for_proof"] is False
     assert matrix["competencies"]["judge_tier"] == JudgeTier.OPTIONAL_ADVISORY_TAXONOMY_ONLY.value
     assert matrix["final_aggregate_resume"]["judge_tier"] == JudgeTier.ENHANCED_REASONING.value

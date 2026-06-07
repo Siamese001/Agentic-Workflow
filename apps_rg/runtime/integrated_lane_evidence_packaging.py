@@ -164,15 +164,13 @@ def _resolve_lane_run_dir(
     """Return (run_dir, resolution_tag, pointer_run_id)."""
     lane_base = integrated_dir / "modular_r4" / "sections" / lane
     pre_run = load_integrated_lane_pre_run_failure(integrated_dir, lane)
-    if pre_run and str(pre_run.get("blocker") or "").strip():
-        return None, "pre_run_blocked", None
     if not lane_base.is_dir():
         return None, "lane_section_root_absent", None
 
     from apps_rg.runtime.product_output_policy import product_fail_closed_runtime
 
     ptr_names = (
-        ("latest_successful_real_run.json",)
+        ("latest_successful_real_run.json", "latest_real_run.json")
         if product_fail_closed_runtime()
         else ("latest_successful_real_run.json", "latest_real_run.json")
     )
@@ -189,6 +187,9 @@ def _resolve_lane_run_dir(
             rd = (repo_root / rel).resolve() if not Path(rel).is_absolute() else Path(rel).resolve()
             if rd.is_dir():
                 return rd, ptr_name, rid
+
+    if pre_run and str(pre_run.get("blocker") or "").strip():
+        return None, "pre_run_blocked", None
 
     if product_fail_closed_runtime():
         return None, "no_run_dir_product_fail_closed", None

@@ -1,0 +1,21 @@
+template_id: ey_bullets_tailor_v1
+section_id: ey_bullets
+purpose: >
+  Generate exactly 3 EY bullets from the active FinalEvidenceContract proof
+  pool. Use only bul_ey source_fact_ids supplied by the section runtime. JD and
+  briefing material are targeting_only and may never become claim evidence.
+output_contract:
+  format: json_object
+  required_keys:
+    - bullets
+    - claim_ledger
+    - jd_alignment
+  bullets:
+    count: 3
+    fields: [bullet_id, bullet_text, source_fact_ids]
+    source_fact_id_prefix: bul_ey
+proof_contract:
+  source_fact_ids: required
+  targeting_only: true
+  jd_used_as_proof: false
+  retries_cannot_repair_missing_upstream_evidence: true

@@ -3,7 +3,7 @@ non-retryable upstream-block early-exit, and attempts clamp.
 
 Covers the 2026-06-06 redesign:
   * GENERATED_LANES serial order = dependency order
-    (competencies -> unify_bullets -> ibm_bullets -> unify_narrative -> ibm_narrative
+    (competencies -> unify/IBM/InsurTech/EY bullets -> matching narratives
      -> executive_summary -> headline)
   * Phase-1 wave DAG mirrors the dependency order (bullets before narratives before
     exec_summary before headline) and passes the wave-order validator.
@@ -24,6 +24,11 @@ from apps_rg.runtime.section_cli_defaults import (
     resolve_cli_x1d_judges,
     summarize_section_x1d_minimization_policy,
 )
+from apps_rg.runtime.section_execution_plan import (
+    GENERATED_CONTENT_LANES,
+    HARD_NO_RETRY_RUNTIME_STATUSES,
+    is_hard_no_retry_runtime_status,
+)
 from apps_rg.runtime.validators.companion_bullet_finalization import (
     UPSTREAM_BLOCKED_RUNTIME_STATUSES,
     is_upstream_blocked_runtime_status,
@@ -33,8 +38,12 @@ _EXPECTED_ORDER = (
     "competencies",
     "unify_bullets",
     "ibm_bullets",
+    "insurtech_bullets",
+    "ey_bullets",
     "unify_narrative",
     "ibm_narrative",
+    "insurtech_narrative",
+    "ey_narrative",
     "executive_summary",
     "headline",
 )
@@ -43,10 +52,11 @@ _EXPECTED_ORDER = (
 # ----------------------------------------------------------------------------- execution order
 def test_generated_lanes_is_dependency_order() -> None:
     assert glr.GENERATED_LANES == _EXPECTED_ORDER
+    assert GENERATED_CONTENT_LANES == _EXPECTED_ORDER
 
 
-def test_generated_lanes_has_exactly_seven_content_sections() -> None:
-    assert len(glr.GENERATED_LANES) == 7
+def test_generated_lanes_has_exactly_eleven_content_sections() -> None:
+    assert len(glr.GENERATED_LANES) == 11
     assert set(glr.GENERATED_LANES) == set(_EXPECTED_ORDER)
 
 
@@ -54,12 +64,24 @@ def test_bullets_precede_their_narratives_in_serial_order() -> None:
     order = list(glr.GENERATED_LANES)
     assert order.index("unify_bullets") < order.index("unify_narrative")
     assert order.index("ibm_bullets") < order.index("ibm_narrative")
+    assert order.index("insurtech_bullets") < order.index("insurtech_narrative")
+    assert order.index("ey_bullets") < order.index("ey_narrative")
 
 
 def test_executive_summary_after_all_bullets_and_narratives() -> None:
     order = list(glr.GENERATED_LANES)
     es = order.index("executive_summary")
-    for upstream in ("competencies", "unify_bullets", "ibm_bullets", "unify_narrative", "ibm_narrative"):
+    for upstream in (
+        "competencies",
+        "unify_bullets",
+        "ibm_bullets",
+        "insurtech_bullets",
+        "ey_bullets",
+        "unify_narrative",
+        "ibm_narrative",
+        "insurtech_narrative",
+        "ey_narrative",
+    ):
         assert order.index(upstream) < es, f"{upstream} must precede executive_summary"
 
 
@@ -82,12 +104,16 @@ def test_wave_dag_bullets_before_narratives_before_exec_before_headline() -> Non
     assert lane_wave["competencies"] < lane_wave["unify_narrative"]
     assert lane_wave["unify_bullets"] < lane_wave["unify_narrative"]
     assert lane_wave["ibm_bullets"] < lane_wave["ibm_narrative"]
+    assert lane_wave["insurtech_bullets"] < lane_wave["insurtech_narrative"]
+    assert lane_wave["ey_bullets"] < lane_wave["ey_narrative"]
     assert lane_wave["unify_narrative"] < lane_wave["executive_summary"]
     assert lane_wave["ibm_narrative"] < lane_wave["executive_summary"]
+    assert lane_wave["insurtech_narrative"] < lane_wave["executive_summary"]
+    assert lane_wave["ey_narrative"] < lane_wave["executive_summary"]
     assert lane_wave["executive_summary"] < lane_wave["headline"]
 
 
-def test_wave_dag_covers_all_seven_lanes() -> None:
+def test_wave_dag_covers_all_eleven_lanes() -> None:
     waves = build_phase1_waves()
     covered = {lane for w in waves for lane in w.lanes}
     assert covered == set(_EXPECTED_ORDER)
@@ -107,6 +133,12 @@ def test_competencies_defaults_to_single_advisory_judge(monkeypatch) -> None:
 def test_unify_bullets_defaults_to_single_composite_judge(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
     assert resolve_cli_x1d_judges(None, section_id="unify_bullets") == "anthropic_claude"
+
+
+def test_new_role_bullets_default_to_single_composite_judge(monkeypatch) -> None:
+    monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
+    assert resolve_cli_x1d_judges(None, section_id="insurtech_bullets") == "anthropic_claude"
+    assert resolve_cli_x1d_judges(None, section_id="ey_bullets") == "anthropic_claude"
 
 
 def test_explicit_x1d_judges_override_wins_for_ibm_adjudicator() -> None:
@@ -136,12 +168,18 @@ def test_wave9_policy_summary_marks_compact_non_repairing_defaults(monkeypatch) 
         "headline",
         "ibm_bullets",
         "ibm_narrative",
+        "insurtech_bullets",
+        "insurtech_narrative",
+        "ey_bullets",
+        "ey_narrative",
         "unify_bullets",
         "unify_narrative",
         "final_aggregate_resume",
     }
     assert policy["unify_bullets"]["default_judge_count"] == 1
     assert policy["ibm_bullets"]["default_judge_count"] == 1
+    assert policy["insurtech_bullets"]["default_judge_count"] == 1
+    assert policy["ey_bullets"]["default_judge_count"] == 1
     assert policy["competencies"]["default_judge_count"] == 1
     assert policy["headline"]["default_judge_count"] == 3
     assert policy["executive_summary"]["default_judge_count"] == 3
@@ -196,7 +234,9 @@ def test_upstream_blocked_status_set_includes_all_failure_classes() -> None:
         "REQUIRED_DEPENDENCY_EMPTY",
     ):
         assert cls in UPSTREAM_BLOCKED_RUNTIME_STATUSES
+        assert cls in HARD_NO_RETRY_RUNTIME_STATUSES
         assert is_upstream_blocked_runtime_status(cls) is True
+        assert is_hard_no_retry_runtime_status(cls) is True
 
 
 def test_real_llm_is_not_upstream_blocked() -> None:

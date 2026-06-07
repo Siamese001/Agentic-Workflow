@@ -17,6 +17,10 @@ _SECTION_COMPANY_HINTS: dict[str, tuple[str, ...]] = {
     "ibm_bullets": ("ibm",),
     "ibm_narrative": ("ibm",),
     "unify_narrative": ("unify",),
+    "insurtech_bullets": ("insur", "policy administration"),
+    "insurtech_narrative": ("insur", "policy administration"),
+    "ey_bullets": ("ey", "ernst", "young", "regulatory", "audit"),
+    "ey_narrative": ("ey", "ernst", "young", "regulatory", "audit"),
 }
 
 _SECTION_MIN_FACTS: dict[str, int] = {
@@ -24,6 +28,10 @@ _SECTION_MIN_FACTS: dict[str, int] = {
     "ibm_narrative": 6,
     "unify_bullets": 6,
     "unify_narrative": 6,
+    "insurtech_bullets": 3,
+    "insurtech_narrative": 3,
+    "ey_bullets": 3,
+    "ey_narrative": 3,
 }
 
 

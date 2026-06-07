@@ -112,16 +112,23 @@ def run_ibm_narrative_lane_execution(
     )
     from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_spine_c0_fec_for_section,
     )
+    from apps_rg.runtime.sections.upstream_evidence_block import wire_spine_c0_fec_or_block
 
-    wire_spine_c0_fec_for_section(
+    blocked = wire_spine_c0_fec_or_block(
+        repo_root=REPO_ROOT,
         artifact_dir=artifact_dir,
         section_id="ibm_narrative",
         front_spine=front_spine,
         pool=pool,
         runtime_payload=runtime_payload,
+        provider=str(args.provider),
+        temperature=float(args.temperature),
+        max_tokens=NARRATIVE_MAX_OUTPUT_TOKENS,
+        output_filename="ibm_narrative_output.txt",
     )
+    if blocked is not None:
+        return blocked
 
     input_payload_hash = sha16(json.dumps(runtime_payload, sort_keys=True))
     section_compiled = compile_ibm_narrative_prompt(
@@ -246,14 +253,21 @@ def run_ibm_narrative_lane_execution(
         parsed = None
         parse_error = result.exact_provider_error or "preflight_blocked"
     elif not upstream_companion_blocked:
-        result = call_qwen_vllm(tag_reasoning_lane(provider_payload, LANE_KEY))
+        from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
+
+        result = call_section_model_provider(
+            str(args.provider),
+            tag_reasoning_lane(provider_payload, LANE_KEY),
+            artifact_dir=artifact_dir,
+            run_id=str(runtime_payload.get("run_id") or ""),
+        )
         provider_result_data = result.to_dict()
         raw_output = result.raw_model_output
         runtime_generation_status = result.runtime_generation_status
         write_json(artifact_dir / "provider_response.json", provider_result_data)
         if _generation_status_allows_structure_parse(result.runtime_generation_status):
             parsed, parse_error = parse_model_json(raw_output)
-            if parsed is None:
+            if parsed is None and str(args.provider) == "qwen_vllm":
                 raw_output, parsed, parse_error = retry_qwen_for_parse(
                     messages, provider_payload, raw_output, parse_error
                 )

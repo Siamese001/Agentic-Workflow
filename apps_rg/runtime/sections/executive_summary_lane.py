@@ -1715,16 +1715,23 @@ def run_executive_summary_execution(
     write_json(artifact_dir / "targeting_context_receipt.json", _tc_receipt)
     from apps_rg.runtime.spine.c0_fec_compose import (
         merge_compiled_prompt_artifact_fec_fields,
-        wire_spine_c0_fec_for_section,
     )
+    from apps_rg.runtime.sections.upstream_evidence_block import wire_spine_c0_fec_or_block
 
-    wire_spine_c0_fec_for_section(
+    blocked = wire_spine_c0_fec_or_block(
+        repo_root=REPO_ROOT,
         artifact_dir=artifact_dir,
         section_id="executive_summary",
         front_spine=front_spine,
         pool=pool,
         runtime_payload=runtime_payload,
+        provider=str(args.provider),
+        temperature=float(args.temperature),
+        max_tokens=resolve_scratch_max_output_tokens(),
+        output_filename="resume_display_text.txt",
     )
+    if blocked is not None:
+        return blocked
     from apps_rg.runtime.spine.section_c0_graph_lane_ensure import (
         ensure_section_c0_graph_lane_receipt,
     )
@@ -2093,7 +2100,10 @@ def run_executive_summary_execution(
     ):
         pass
     else:
-        result = call_qwen_vllm(
+        from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
+
+        result = call_section_model_provider(
+            str(args.provider),
             provider_payload,
             artifact_dir=artifact_dir,
             run_id=str(runtime_payload.get("run_id") or "") or None,
@@ -2106,7 +2116,7 @@ def run_executive_summary_execution(
     _composition_plan_early: dict[str, Any] | None = None
     if result.runtime_generation_status == "REAL_LLM":
         parsed, parse_error = parse_model_json(raw_output)
-        if parsed:
+        if parsed and str(args.provider) == "qwen_vllm":
             from apps_rg.runtime.sections.executive_summary_pa import (
                 is_strategy_executive_target_title,
             )

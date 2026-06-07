@@ -6,6 +6,11 @@ import json
 from pathlib import Path
 from typing import Any, Literal, Mapping
 
+from apps_rg.runtime.section_execution_plan import (
+    HARD_NO_RETRY_RUNTIME_STATUSES,
+    is_hard_no_retry_runtime_status,
+)
+
 ACCEPTED_FINALIZED_COMPANION_STATUS = "ACCEPTED_FINALIZED"
 UpstreamBulletsGateStatus = Literal["NOT_APPLICABLE", "PASS", "BLOCKED"]
 UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS = "BLOCKED_UPSTREAM_NOT_FINALIZED"
@@ -17,15 +22,7 @@ PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER = "UPSTREAM_BULLETS_NOT_FINALIZED"
 # upstream state is unchanged on a re-run with the same inputs — so the best-of-N retry loop
 # must EARLY-EXIT (break) instead of paying preflight again for a guaranteed-fail. Dependent
 # downstream sections (narratives -> exec_summary -> headline) skip via the dependency order.
-UPSTREAM_BLOCKED_RUNTIME_STATUSES: frozenset[str] = frozenset(
-    {
-        UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,  # BLOCKED_UPSTREAM_NOT_FINALIZED
-        "UPSTREAM_EVIDENCE_MISSING",
-        "FEC_NOT_FINALIZED",
-        "REQUIRED_PROOF_ABSENT",
-        "REQUIRED_DEPENDENCY_EMPTY",
-    }
-)
+UPSTREAM_BLOCKED_RUNTIME_STATUSES: frozenset[str] = HARD_NO_RETRY_RUNTIME_STATUSES
 
 # Upstream bullets may proceed to narrative when L2+X2 product proof passed but a judge provider blocked.
 COMPANION_FINALIZED_X3_CODES: frozenset[str] = frozenset(
@@ -297,14 +294,14 @@ def build_companion_bullets_context(
 
 
 def _narrative_upstream_spec(narrative_section_id: str) -> tuple[str, tuple[str, ...]] | None:
-    from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
-    from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
+    from apps_rg.runtime.reasoning.employment_bullet_pool import REQUIRED_BULLET_IDS
+    from apps_rg.runtime.section_execution_plan import NARRATIVE_UPSTREAM_BULLET_LANE
 
-    specs: dict[str, tuple[str, tuple[str, ...]]] = {
-        "unify_narrative": ("unify_bullets", UNIFY_BULLET_IDS),
-        "ibm_narrative": ("ibm_bullets", IBM_BULLET_IDS),
-    }
-    return specs.get(str(narrative_section_id).strip())
+    sid = str(narrative_section_id).strip()
+    upstream = NARRATIVE_UPSTREAM_BULLET_LANE.get(sid)
+    if not upstream:
+        return None
+    return upstream, tuple(REQUIRED_BULLET_IDS.get(upstream, ()))
 
 
 def evaluate_narrative_upstream_bullets_gate(
@@ -354,7 +351,7 @@ def evaluate_narrative_upstream_bullets_gate(
 
 def is_upstream_blocked_runtime_status(runtime_generation_status: str | None) -> bool:
     """True when a section's runtime_generation_status is a non-retryable upstream block."""
-    return str(runtime_generation_status or "").strip().upper() in UPSTREAM_BLOCKED_RUNTIME_STATUSES
+    return is_hard_no_retry_runtime_status(runtime_generation_status)
 
 
 __all__ = [
