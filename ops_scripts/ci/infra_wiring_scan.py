@@ -159,6 +159,8 @@ SANCTIONED_ADAPTER_FILES = {
     "c02_fact_vector_ingest.py",  # apps_rg C0.2 fact-vector upsert — chromadb at sanctioned ingest seam
     "c02_product_hybrid_retrieval.py",  # apps_rg C0.2 product hybrid retrieval — chromadb query seam
     "augmented_skills_graph_sqlite.py",  # apps_rg fact_inventory — canonical C0.3 graph materialization adapter (sqlite3)
+    # 2026-06-07 — apps_01 bank-grade-servicing L4 store (self-contained app, 0 agentic_core deps)
+    "ledger.py",  # apps_01 L4 durable archive — sole UWG-gated writer ("Exit decides, UWG commits, L4 stores"); peer of apps_lic/persistence/reply_ledger_store.py + cadence_state_store.py. Also covers apps_research/provenance/ledger.py (same persistence/provenance-ledger sanctioned class).
 }
 
 # Subdirectories within agentic_core that are infrastructure tooling
