@@ -24,10 +24,10 @@ SUMMARY = (
 AI_SUMMARY = """- Plan type: governance / CI parity
 - SSOT: .cursor/ only after completion
 - Prerequisite: windsurf-gha-cutover-d9f2a7 (COMPLETED)
-- Today: deletion_safe false (artifacts/cursor/windsurf_deletion_readiness.json)
+- Today: deletion_safe false (artifacts/governance/windsurf_deletion_readiness.json)
 - W1: Retarget check_skill_frontmatter, check_hook_consolidation, pre-commit MCP
 - W2: Remove duplicate docs/archive/windsurf/legacy-tree/plans scripts skills
-- W3: artifacts/cursor namespace removal
+- W3: artifacts/governance namespace removal
 - W4: Retire mirror gates; deletion_safe true
 - W5: git rm -r docs/archive/windsurf/legacy-tree/
 - Disk: .claude/plans/windsurf-tree-deletion-ci-parity-b8e4f1.md"""

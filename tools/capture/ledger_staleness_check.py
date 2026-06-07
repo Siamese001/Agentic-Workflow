@@ -51,7 +51,7 @@ Remediation:
   1. Drain any pending markers:   python tools/capture/queue_to_ledger.py
   2. Re-check ledger age:          python tools/capture/ledger_staleness_check.py
   3. If step 1 yields zero rows:   investigate Windsurf hook health
-     - Check:    artifacts/cursor/post_cursor_agent_heartbeat.jsonl (tail)
+     - Check:    artifacts/governance/post_agent_heartbeat.jsonl (tail)
      - Reference: docs/reports/rcas/rca-author-gate-capture-outage-20260427-a7c3b2.md
   4. Confirm pipeline end-to-end:  python tools/capture/append_marker.py --marker "DECISION_CAPTURED: type=test_strategy, repo_area=diagnostic, selected=manual-probe, outcome=executed, principle=test, precedent=none"
                                    python tools/capture/queue_to_ledger.py

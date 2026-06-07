@@ -9,10 +9,10 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 SLUG = "governance-dedup-closeout-e8a4c2"
-OUT = REPO / "artifacts" / "cursor" / "governance_dispatch_shadow.jsonl"
+OUT = REPO / "artifacts" / "governance" / "governance_dispatch_shadow.jsonl"
 MATRIX = REPO / "docs/reports/cursor/governance_w3_hook_audit_matrix.json"
 DISPATCH_HOOK = REPO / ".cursor/hooks/after_agent_governance_dispatch.py"
-DISPATCH_PY = REPO / ".claude/governance/scripts/post_cursor_agent_dispatch.py"
+DISPATCH_PY = REPO / ".claude/governance/scripts/post_agent_dispatch.py"
 
 
 def _extract_ag_chain(text: str) -> list[str]:
@@ -25,7 +25,7 @@ def _extract_ag_chain(text: str) -> list[str]:
         if in_chain:
             if line.strip() == ")":
                 break
-            m = re.search(r"(post_cursor_agent_[\w]+\.py)", line)
+            m = re.search(r"(post_agent_[\w]+\.py)", line)
             if m:
                 names.append(m.group(1))
     return names
@@ -41,7 +41,7 @@ def _extract_legacy(text: str) -> list[str]:
         if in_legacy:
             if line.strip() == "]":
                 break
-            m = re.search(r"(post_cursor_agent_[\w]+\.py)", line)
+            m = re.search(r"(post_agent_[\w]+\.py)", line)
             if m:
                 names.append(m.group(1))
     return names
@@ -57,7 +57,7 @@ def main() -> int:
         "started_at": started.isoformat(),
         "eligible_for_w1_script_archive_at": (started + timedelta(days=7)).isoformat(),
         "shadow_days_required": 7,
-        "post_cursor_agent_dispatcher_env": "POST_CURSOR_AGENT_DISPATCHER=1",
+        "post_agent_dispatcher_env": "POST_AGENT_DISPATCHER=1",
         "hooks_json_after_agent_response": ["after_agent_governance_dispatch.py"],
         "matrix_generated_at": matrix.get("generated_at"),
         "matrix_counts": matrix.get("counts"),

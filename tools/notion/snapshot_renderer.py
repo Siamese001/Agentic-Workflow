@@ -48,7 +48,7 @@ PARENT_PAGE_ID = "33f27693-f55c-8134-9041-d34b6dc11425"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PAGE_ID_FILE = REPO_ROOT / "tools" / "notion" / ".snapshot_page_id"
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "notion_snapshot_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "notion_snapshot_audit.jsonl"
 
 TOP_N = 25
 

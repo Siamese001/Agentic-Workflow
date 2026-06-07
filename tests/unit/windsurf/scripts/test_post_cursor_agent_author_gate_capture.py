@@ -1,8 +1,8 @@
 # pylint: disable=protected-access
 """
-test_post_cursor_agent_author_gate_capture.py
+test_post_agent_author_gate_capture.py
 
-Unit tests for .claude/governance/scripts/post_cursor_agent_author_gate_capture.py
+Unit tests for .claude/governance/scripts/post_agent_author_gate_capture.py
 
 Coverage:
     _init_db           — schema creation, idempotency
@@ -24,9 +24,9 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts"))
 
-import post_cursor_agent_author_gate_capture as _m  # noqa: E402  (used for monkeypatching module globals)
+import post_agent_author_gate_capture as _m  # noqa: E402  (used for monkeypatching module globals)
 
-from post_cursor_agent_author_gate_capture import (  # noqa: E402
+from post_agent_author_gate_capture import (  # noqa: E402
     _ddl,
     _extract_response_text,
     _infer_decision_type,
@@ -204,9 +204,9 @@ class TestExtractResponseText:
         assert result == json.dumps({"unknown_key": "val"})
 
     def test_tool_info_response_key(self):
-        """Real post_cursor_agent_response format: text lives at tool_info.response."""
+        """Real post_agent_response format: text lives at tool_info.response."""
         payload = {
-            "agent_action_name": "post_cursor_agent_response",
+            "agent_action_name": "post_agent_response",
             "trajectory_id": "traj-abc123",
             "tool_info": {"response": "the actual cursor agent response text"},
         }
@@ -474,7 +474,7 @@ class TestStructuredMarkerCapture:
 # ---------------------------------------------------------------------------
 
 _REAL_HOOK_PAYLOAD = {
-    "agent_action_name": "post_cursor_agent_response",
+    "agent_action_name": "post_agent_response",
     "trajectory_id": "traj-test-0001",
     "execution_id": "exec-test-0001",
     "timestamp": "2026-04-11T15:00:00+00:00",

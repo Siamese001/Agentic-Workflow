@@ -2,7 +2,7 @@
 _plans_dup_detector.py — pure logic for Plans-DB duplicate POST detection.
 
 Imported by both:
-  - .claude/governance/scripts/post_cursor_agent_plans_dup_audit.py  (advisory hook)
+  - .claude/governance/scripts/post_agent_plans_dup_audit.py  (advisory hook)
   - ops_scripts/ci/check_notion_plans_no_duplicates.py (fail-closed CI gate)
 
 Pure: no I/O at import. Deterministic. Specific exceptions only.

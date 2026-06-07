@@ -39,8 +39,8 @@ from tools.refactor_decisions.ledger_paths import (  # noqa: E402
     REFACTOR_DECISION_LEDGER_DB_WINDSURF_LEGACY,
 )
 
-BYPASS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "refactor_ledger_ssot_bypass.jsonl"
-DRIFT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "refactor_ledger_ssot_drift.jsonl"
+BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "refactor_ledger_ssot_bypass.jsonl"
+DRIFT_LOG = REPO_ROOT / "artifacts" / "governance" / "refactor_ledger_ssot_drift.jsonl"
 
 # Tuple-style paths copy-pasted into writers before W2 (forbid reintroduction).
 _FORBIDDEN_TOKENS = (

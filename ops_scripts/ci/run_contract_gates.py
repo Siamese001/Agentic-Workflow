@@ -328,7 +328,7 @@ def main():
     # bypass rollup) enforced a bespoke packet -> render -> marker -> queue -> SQLite-ledger
     # pipeline that emulated a structured-choice tool. Native AskUserQuestion supersedes
     # it. Gate scripts under ops_scripts/ci/author_gate/ are dormant (uncalled); the
-    # governance hook scripts + 2 skills are archived. Invariant (stop & ask before
+    # governance hook scripts + 2 skills are dormant in place. Invariant (stop & ask before
     # ambiguous edits) preserved in CLAUDE.md + constitutional s6.
     # ADR: docs/architecture/adr/ADR-093-author-gate-native-ask-user-question.md
 
@@ -568,7 +568,7 @@ def main():
             "ops_scripts/ci/check_notion_backlog_no_duplicates.py",
         ),
         # NP7 -- Plans-DB write telemetry log size gate (DS-4).
-        # Fails when artifacts/cursor/plans_db_writes.jsonl exceeds 10 MB
+        # Fails when artifacts/governance/plans_db_writes.jsonl exceeds 10 MB
         # without rotation. Advisory by default; fail-closed via
         # NOTION_TELEMETRY_LOG_SIZE_FAIL_CLOSED=1.
         # Plan: notion-plans-db-hygiene-deferred-scope-d4f7c1 DS-4.
@@ -844,12 +844,12 @@ def main():
             "ops_scripts/ci/check_pii_in_telemetry.py",
         ),
         # -- Cursor Agent violation log freshness backstops (2026-05-05) ---------------
-        # Windsurf post_cursor_agent_* hooks write persistent violation logs. These
+        # Windsurf post_agent_* hooks write persistent violation logs. These
         # gates ensure CI surfaces stale unresolved violations — same pattern
         # as check_ask_user_question_packet_freshness.py. Advisory by default.
         #
-        # ADG-first violations: post_cursor_agent_adg_audit.py writes
-        # artifacts/cursor/adg_first_violations.jsonl (see gate script).
+        # ADG-first violations: post_agent_adg_audit.py writes
+        # artifacts/governance/adg_first_violations.jsonl (see gate script).
         # Advisory by default; fail-closed: ADG_FIRST_VIOLATIONS_FRESHNESS_FAIL_CLOSED=1.
         # Bypass: ADG_FIRST_VIOLATIONS_FRESHNESS_BYPASS=1.
         (
@@ -1359,7 +1359,7 @@ def main():
         ("DS-R5 Judge Spearman calibration gate (advisory)", "ops_scripts/ci/check_judge_spearman_gate.py"),
         # AG-WIRE — Author-Gate hook wiring invariant.
         # Enforces AG-WIRE-1..4: pre_user_prompt reminder hook present+visible,
-        # and all 3 AG audit hooks in post_cursor_agent_response have show_output=true.
+        # and all 3 AG audit hooks in post_agent_response have show_output=true.
         # Advisory by default; AG_HOOK_WIRING_FAIL_CLOSED=1 activates blocking.
         # Plan: author-gate-deferred-scope-b8c1d4 W3.
         # AG-DEFER — Deferred-scope plan guard marker parity.

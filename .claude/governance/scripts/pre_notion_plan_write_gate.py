@@ -26,7 +26,7 @@ Bypass
 Logging
 -------
     All verification attempts append to:
-        artifacts/cursor/plan_identity_verifications.jsonl
+        artifacts/governance/plan_identity_verifications.jsonl
 
 Example usage in pre-hook:
     result = verify_plan_identity("my-plan-slug", "35b27693...")
@@ -84,7 +84,7 @@ def _ids_match(id1: str, id2: str) -> bool:
 
 def _log_verification(result: VerificationResult) -> None:
     """Append verification result to audit log."""
-    log_dir = Path("artifacts/cursor")
+    log_dir = Path("artifacts/governance")
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / "plan_identity_verifications.jsonl"
     

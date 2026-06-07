@@ -1,4 +1,4 @@
-"""Tests for `.claude/governance/scripts/_legacy_windsurf/post_cursor_agent_router_decision_audit.py`.
+"""Tests for `.claude/governance/scripts/_legacy_windsurf/post_agent_router_decision_audit.py`.
 
 Constitutional §28 / closed-loop-router-enforcement.md.
 Audits Cursor Agent responses for missing/malformed router-decision evidence.
@@ -14,11 +14,11 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-SCRIPT = REPO / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_router_decision_audit.py"
+SCRIPT = REPO / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_router_decision_audit.py"
 
 
 def _load_module():
-    spec = importlib.util.spec_from_file_location("post_cursor_agent_router_decision_audit", SCRIPT)
+    spec = importlib.util.spec_from_file_location("post_agent_router_decision_audit", SCRIPT)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)

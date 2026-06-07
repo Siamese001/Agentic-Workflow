@@ -19,7 +19,7 @@ CLI:
     python plan_driven_closer.py --show-drift           # dump full drift report
     python plan_driven_closer.py --plan <slug>          # target one plan
 
-Audit log: artifacts/cursor/plan_driven_close_audit.jsonl
+Audit log: artifacts/governance/plan_driven_close_audit.jsonl
 Fail policy: OPEN — errors logged, exit 0.
 Bypass:     PLAN_DRIVEN_CLOSE_BYPASS=1
 """
@@ -42,7 +42,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 # Forward-only relocation (c1a17d): canonical plans/ + legacy .claude/plans/.
 PLAN_DIRS = [REPO_ROOT / "plans", PLANS_DIR]
-AUDIT_LOG = REPO_ROOT / "artifacts" / "cursor" / "plan_driven_close_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "plan_driven_close_audit.jsonl"
 
 # SSOT: see .claude/governance/scripts/_notion_constants.py
 import sys

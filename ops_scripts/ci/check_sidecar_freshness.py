@@ -2,7 +2,7 @@
 """
 check_sidecar_freshness.py — CI gate: author_gate_precedent.json freshness (W2.2).
 
-`pre_author_gate.py` writes `artifacts/cursor/author_gate_precedent.json`
+`pre_author_gate.py` writes `artifacts/governance/author_gate_precedent.json`
 when a gate fires AND clears it on gate-pass. A stale sidecar indicates a
 crashed/killed pre-hook run and can leak precedent from a prior unrelated
 decision into the next Author-Gate packet.
@@ -29,7 +29,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-STATE_DIR = REPO_ROOT / "artifacts" / "windsurf"
+STATE_DIR = REPO_ROOT / "artifacts" / "governance"
 SIDECAR = STATE_DIR / "author_gate_precedent.json"
 SESSION_STATE = STATE_DIR / "author_gate_session_state.json"
 BYPASS_LOG = STATE_DIR / "sidecar_freshness_bypass.jsonl"

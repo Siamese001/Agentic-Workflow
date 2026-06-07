@@ -5,7 +5,7 @@ Reads agent response stdin once, then runs (fail-open, exit 0):
   2. Post-response audits (MCP hygiene, long-command). Author-Gate capture chain
      RETIRED W1 (claude-native-supersession-9d3f7a): native AskUserQuestion supersedes it.
   3. Notion status advisory auditor
-  4. In-process post_cursor_agent_dispatch (POST_CURSOR_AGENT_DISPATCHER=1)
+  4. In-process post_agent_dispatch (POST_AGENT_DISPATCHER=1)
 
 Replaces three separate subprocess hook wrappers to cut spawn overhead while
 preserving deterministic coverage. AG-WIRE CI recognizes this file as the
@@ -26,16 +26,16 @@ SCRIPTS = REPO_ROOT / ".claude" / "governance" / "scripts"
 NOTION_AUDITOR = REPO_ROOT / "tools" / "notion" / "unified_notion_status_auditor.py"
 
 _SCRIPT_EXTRA_ARGS: dict[str, tuple[str, ...]] = {
-    "post_cursor_agent_mcp_hygiene_audit.py": ("agent_response",),
-    "post_cursor_agent_long_command_audit.py": ("agent_response",),
+    "post_agent_mcp_hygiene_audit.py": ("agent_response",),
+    "post_agent_long_command_audit.py": ("agent_response",),
 }
 
 # [W1 claude-native-supersession-9d3f7a] Author-Gate audit members removed; native
 # AskUserQuestion supersedes the packet/marker/ledger pipeline. Only non-AG
 # post-response audits remain.
 _AG_CHAIN: tuple[str, ...] = (
-    "post_cursor_agent_mcp_hygiene_audit.py",
-    "post_cursor_agent_long_command_audit.py",
+    "post_agent_mcp_hygiene_audit.py",
+    "post_agent_long_command_audit.py",
 )
 
 
@@ -67,19 +67,19 @@ def _run_dispatch(parsed_raw: str) -> None:
     import importlib.util
     import io
 
-    os.environ["POST_CURSOR_AGENT_DISPATCHER"] = "1"
+    os.environ["POST_AGENT_DISPATCHER"] = "1"
     # The dispatch module imports `_post_handlers` (sibling under .claude/governance/scripts) and repo-root
     # packages; ensure both are importable since the hook runs from .claude/hooks.
     for extra in (str(REPO_ROOT), str(SCRIPTS)):
         if extra not in sys.path:
             sys.path.insert(0, extra)
-    dispatch = SCRIPTS / "post_cursor_agent_dispatch.py"
+    dispatch = SCRIPTS / "post_agent_dispatch.py"
     if not dispatch.is_file():
         return
     saved_stdin = sys.stdin
     try:
         sys.stdin = io.StringIO(parsed_raw)
-        spec = importlib.util.spec_from_file_location("post_cursor_agent_dispatch", dispatch)
+        spec = importlib.util.spec_from_file_location("post_agent_dispatch", dispatch)
         if spec is None or spec.loader is None:
             return
         mod = importlib.util.module_from_spec(spec)
@@ -104,7 +104,7 @@ def main() -> int:
     env = {**os.environ, "PYTHONPATH": str(REPO_ROOT)}
     env.setdefault("NOTION_STATUS_VIOLATIONS_VENDOR", "cursor")
 
-    _run_script("post_cursor_agent_adg_audit.py", raw, env)
+    _run_script("post_agent_adg_audit.py", raw, env)
 
     for name in _AG_CHAIN:
         _run_script(name, raw, env)

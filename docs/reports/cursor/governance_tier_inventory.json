@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-07T12:23:09.220261+00:00",
+  "generated_at": "2026-06-07T21:36:52.031416+00:00",
   "plan_id": "cursor-governance-two-tier-b4e8f2",
   "wave": "W0",
   "policy_option_selected": "A",
@@ -48,7 +48,7 @@
     "file_count": 0,
     "files": []
   },
-  "active_plans_top_level_count": 40,
+  "active_plans_top_level_count": 46,
   "explicit_non_claims": [
     "W1-W5 not executed",
     "no semantic rule consolidation performed",

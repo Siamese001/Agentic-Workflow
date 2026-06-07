@@ -28,7 +28,7 @@ from ops_scripts.ci import check_notion_plan_file_drift as drift  # noqa: E402
 NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2025-09-03"
 THROTTLE_S = 0.35
-AUDIT = REPO_ROOT / "artifacts" / "cursor" / "close_plan_file_drift_orphans.jsonl"
+AUDIT = REPO_ROOT / "artifacts" / "governance" / "close_plan_file_drift_orphans.jsonl"
 
 
 def _token() -> str:

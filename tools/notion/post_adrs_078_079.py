@@ -31,7 +31,7 @@ ADR_REGISTRY_DS_ID = "e59d7640-dc09-48f9-8bdc-b0c94bf98c2a"
 ADR_REGISTRY_DB_ID = "6ed25e12-bd92-4352-ac7a-3a971311f024"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "post_adrs_078_079_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "post_adrs_078_079_audit.jsonl"
 
 ADR_PAYLOADS: list[dict[str, Any]] = [
     {

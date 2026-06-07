@@ -7,7 +7,7 @@ Reads JSON payload from stdin. Payload fields:
   tool_info.cwd           — working directory of the command
 
 Behavior (ADVISORY ONLY — always exits 0):
-  - Appends command tracking record to artifacts/cursor/spawned_processes.jsonl
+  - Appends command tracking record to artifacts/governance/spawned_processes.jsonl
   - PID: best-effort OS process table lookup; null if unavailable
   - Cursor does NOT provide a native PID in the post_run_command payload
 
@@ -23,7 +23,7 @@ from pathlib import Path
 fail_policy = "open"
 
 repo_root = Path(__file__).resolve().parents[3]
-process_log = repo_root / "artifacts" / "cursor" / "spawned_processes.jsonl"
+process_log = repo_root / "artifacts" / "governance" / "spawned_processes.jsonl"
 
 
 def _get_pid_best_effort(command_line: str, cwd: str) -> int | None:

@@ -21,7 +21,7 @@ def _load():
 
 def test_rollup_counts_lines(tmp_path: Path, monkeypatch):
     _m = _load()
-    art = tmp_path / "artifacts" / "windsurf"
+    art = tmp_path / "artifacts" / "governance"
     art.mkdir(parents=True)
     log = art / "foo_bypass.jsonl"
     log.write_text(
@@ -34,8 +34,8 @@ def test_rollup_counts_lines(tmp_path: Path, monkeypatch):
         _m,
         "ARTIFACT_ROOTS",
         (
-            tmp_path / "artifacts" / "windsurf",
-            tmp_path / "artifacts" / "cursor",
+            tmp_path / "artifacts" / "governance",
+            tmp_path / "artifacts" / "governance",
             tmp_path / "artifacts" / "ci",
         ),
     )

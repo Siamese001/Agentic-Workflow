@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit tests for post_cursor_agent_notion_plans_status_audit.py — Waiting-For path.
+"""Unit tests for post_agent_notion_plans_status_audit.py — Waiting-For path.
 
 Covers the WAITING_EMPTY_WAITING_FOR detection path added in NP10 (DS-6).
 
@@ -22,7 +22,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
 
 import pytest
 
-from post_cursor_agent_notion_plans_status_audit import detect_violations  # type: ignore
+from post_agent_notion_plans_status_audit import detect_violations  # type: ignore
 
 # ---------------------------------------------------------------------------
 # Helpers for building minimal invoke bodies.
@@ -369,48 +369,48 @@ class TestExtractResponseText:
     """_extract_response_text handles all Windsurf payload shapes."""
 
     def test_plain_string_passthrough(self):
-        from post_cursor_agent_notion_plans_status_audit import _extract_response_text
+        from post_agent_notion_plans_status_audit import _extract_response_text
         assert _extract_response_text("hello world") == "hello world"
 
     def test_dict_with_response_key(self):
-        from post_cursor_agent_notion_plans_status_audit import _extract_response_text
+        from post_agent_notion_plans_status_audit import _extract_response_text
         payload = {"response": "some text"}
         assert _extract_response_text(payload) == "some text"
 
     def test_dict_with_text_key(self):
-        from post_cursor_agent_notion_plans_status_audit import _extract_response_text
+        from post_agent_notion_plans_status_audit import _extract_response_text
         payload = {"text": "some text"}
         assert _extract_response_text(payload) == "some text"
 
     def test_dict_with_content_key(self):
-        from post_cursor_agent_notion_plans_status_audit import _extract_response_text
+        from post_agent_notion_plans_status_audit import _extract_response_text
         payload = {"content": "some text"}
         assert _extract_response_text(payload) == "some text"
 
     def test_nested_tool_info_response(self):
-        from post_cursor_agent_notion_plans_status_audit import _extract_response_text
+        from post_agent_notion_plans_status_audit import _extract_response_text
         payload = {"tool_info": {"response": "inner text"}}
         assert _extract_response_text(payload) == "inner text"
 
     def test_nested_tool_info_text(self):
-        from post_cursor_agent_notion_plans_status_audit import _extract_response_text
+        from post_agent_notion_plans_status_audit import _extract_response_text
         payload = {"tool_info": {"text": "inner text"}}
         assert _extract_response_text(payload) == "inner text"
 
     def test_empty_dict_falls_through_to_json_dump(self):
-        from post_cursor_agent_notion_plans_status_audit import _extract_response_text
+        from post_agent_notion_plans_status_audit import _extract_response_text
         result = _extract_response_text({})
         assert isinstance(result, str)
 
     def test_non_string_non_dict_returns_empty(self):
-        from post_cursor_agent_notion_plans_status_audit import _extract_response_text
+        from post_agent_notion_plans_status_audit import _extract_response_text
         assert _extract_response_text(42) == ""  # type: ignore[arg-type]
         assert _extract_response_text(None) == ""  # type: ignore[arg-type]
         assert _extract_response_text([]) == ""  # type: ignore[arg-type]
 
     def test_dict_prefers_response_over_text(self):
         """When both 'response' and 'text' keys exist, 'response' wins (iteration order)."""
-        from post_cursor_agent_notion_plans_status_audit import _extract_response_text
+        from post_agent_notion_plans_status_audit import _extract_response_text
         payload = {"response": "first", "text": "second"}
         result = _extract_response_text(payload)
         assert result in {"first", "second"}  # order-agnostic; just verify one wins
@@ -420,29 +420,29 @@ class TestIsPlansId:
     """_is_plans_id tolerance for dashed/undashed, uppercase IDs."""
 
     def test_plans_db_id_dashed(self):
-        from post_cursor_agent_notion_plans_status_audit import _is_plans_id
+        from post_agent_notion_plans_status_audit import _is_plans_id
         assert _is_plans_id("6aba34d9-4d0b-4f4c-b956-b2bdea541ca9") is True
 
     def test_plans_db_id_undashed(self):
-        from post_cursor_agent_notion_plans_status_audit import _is_plans_id
+        from post_agent_notion_plans_status_audit import _is_plans_id
         assert _is_plans_id("6aba34d94d0b4f4cb956b2bdea541ca9") is True
 
     def test_plans_db_id_uppercase(self):
-        from post_cursor_agent_notion_plans_status_audit import _is_plans_id
+        from post_agent_notion_plans_status_audit import _is_plans_id
         assert _is_plans_id("6ABA34D9-4D0B-4F4C-B956-B2BDEA541CA9") is True
 
     def test_plans_data_source_id_matches(self):
-        from post_cursor_agent_notion_plans_status_audit import _is_plans_id
+        from post_agent_notion_plans_status_audit import _is_plans_id
         assert _is_plans_id("ac53d31b-3068-4039-9ebe-856c12caab32") is True
 
     def test_backlog_db_id_matches(self):
-        from post_cursor_agent_notion_plans_status_audit import _is_plans_id
+        from post_agent_notion_plans_status_audit import _is_plans_id
         assert _is_plans_id("aa8d2507-101e-4384-81d9-60ea3fe33876") is True
 
     def test_unrelated_id_rejected(self):
-        from post_cursor_agent_notion_plans_status_audit import _is_plans_id
+        from post_agent_notion_plans_status_audit import _is_plans_id
         assert _is_plans_id("aaaabbbb-cccc-dddd-eeee-ffffaaaabbbb") is False
 
     def test_empty_string_rejected(self):
-        from post_cursor_agent_notion_plans_status_audit import _is_plans_id
+        from post_agent_notion_plans_status_audit import _is_plans_id
         assert _is_plans_id("") is False

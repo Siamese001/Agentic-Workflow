@@ -48,7 +48,7 @@ def test_main_skips_when_no_snapshot(
     rc = GATE.main()
     assert rc == 0
     report = json.loads(
-        (tmp_path / "artifacts" / "windsurf" / "l6_layer_tag_violations.json").read_text(
+        (tmp_path / "artifacts" / "governance" / "l6_layer_tag_violations.json").read_text(
             encoding="utf-8"
         )
     )
@@ -76,7 +76,7 @@ def test_main_skips_stale_snapshot(
     rc = GATE.main()
     assert rc == 0
     report = json.loads(
-        (tmp_path / "artifacts" / "windsurf" / "l6_layer_tag_violations.json").read_text(
+        (tmp_path / "artifacts" / "governance" / "l6_layer_tag_violations.json").read_text(
             encoding="utf-8"
         )
     )
@@ -109,7 +109,7 @@ def test_main_reports_full_coverage(
     rc = GATE.main()
     assert rc == 0
     report = json.loads(
-        (tmp_path / "artifacts" / "windsurf" / "l6_layer_tag_violations.json").read_text(
+        (tmp_path / "artifacts" / "governance" / "l6_layer_tag_violations.json").read_text(
             encoding="utf-8"
         )
     )
@@ -140,7 +140,7 @@ def test_main_reports_missing_module(
     rc = GATE.main()
     assert rc == 0  # advisory
     report = json.loads(
-        (tmp_path / "artifacts" / "windsurf" / "l6_layer_tag_violations.json").read_text(
+        (tmp_path / "artifacts" / "governance" / "l6_layer_tag_violations.json").read_text(
             encoding="utf-8"
         )
     )

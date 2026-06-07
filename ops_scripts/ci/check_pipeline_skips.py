@@ -61,7 +61,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = ROOT / "artifacts" / "adg"
-LOG_DIR = ROOT / "artifacts" / "windsurf"
+LOG_DIR = ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "pipeline_skip_violations.jsonl"
 
 ACCEPT_IMPORT_ERROR = os.environ.get(

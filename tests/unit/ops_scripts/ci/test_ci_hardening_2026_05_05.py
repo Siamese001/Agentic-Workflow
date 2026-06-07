@@ -148,7 +148,7 @@ class TestWorkingDirectoryValidation:
         """A hooks.json entry pointing to a nonexistent absolute path fails the gate."""
         stale_path = "C:\\Git\\Agentic-Workflow"  # stale clone — does not match tmp_path
         hooks = {
-            "post_cursor_agent_response": [
+            "post_agent_response": [
                 {"command": "python script.py", "working_directory": stale_path, "show_output": False}
             ]
         }
@@ -161,7 +161,7 @@ class TestWorkingDirectoryValidation:
     def test_repo_root_aligned_path_passes(self, tmp_path: Path) -> None:
         """A hooks.json entry with working_directory pointing to the tmp repo root passes."""
         hooks = {
-            "post_cursor_agent_response": [
+            "post_agent_response": [
                 {
                     "command": "python script.py",
                     "working_directory": str(tmp_path),
@@ -177,7 +177,7 @@ class TestWorkingDirectoryValidation:
     def test_relative_path_passes(self, tmp_path: Path) -> None:
         """A relative working_directory is always acceptable (resolved by Windsurf against workspace)."""
         hooks = {
-            "post_cursor_agent_response": [
+            "post_agent_response": [
                 {"command": "python script.py", "working_directory": ".", "show_output": False}
             ]
         }
@@ -188,7 +188,7 @@ class TestWorkingDirectoryValidation:
         """An entry with _local_only_waiver: true is exempt from absolute path validation."""
         stale_path = "C:\\Git\\Agentic-Workflow"
         hooks = {
-            "post_cursor_agent_response": [
+            "post_agent_response": [
                 {
                     "command": "python script.py",
                     "working_directory": stale_path,

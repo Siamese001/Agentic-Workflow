@@ -223,7 +223,7 @@ class TestLogging:
         )
         gate._log_verification(result)
 
-        log_file = tmp_path / "artifacts" / "windsurf" / "plan_identity_verifications.jsonl"
+        log_file = tmp_path / "artifacts" / "governance" / "plan_identity_verifications.jsonl"
         assert log_file.exists(), "Audit JSONL was not created"
 
         lines = log_file.read_text(encoding="utf-8").strip().splitlines()
@@ -251,7 +251,7 @@ class TestLogging:
         )
         gate._log_verification(result)
 
-        log_file = tmp_path / "artifacts" / "windsurf" / "plan_identity_verifications.jsonl"
+        log_file = tmp_path / "artifacts" / "governance" / "plan_identity_verifications.jsonl"
         assert log_file.exists()
         entry = json.loads(log_file.read_text(encoding="utf-8").strip().splitlines()[-1])
         assert entry["ok"] is False

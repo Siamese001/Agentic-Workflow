@@ -1,4 +1,4 @@
-"""W1.4 — post-agent long-command audit (``post_cursor_agent_long_command_audit agent_response``)."""
+"""W1.4 — post-agent long-command audit (``post_agent_long_command_audit agent_response``)."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_long_command_audit.py"
+SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_long_command_audit.py"
 
 
 @pytest.fixture()
@@ -123,9 +123,9 @@ class TestAfterAgentChainOrdering:
     def test_long_command_after_mcp_hygiene_author_gate_first(self) -> None:
         hook = REPO_ROOT / ".cursor" / "hooks" / "after_agent_governance_dispatch.py"
         text = hook.read_text(encoding="utf-8")
-        capture_pos = text.index("post_cursor_agent_author_gate_capture.py")
-        mcp_pos = text.rindex("post_cursor_agent_mcp_hygiene_audit.py")
-        long_pos = text.rindex("post_cursor_agent_long_command_audit.py")
+        capture_pos = text.index("post_agent_author_gate_capture.py")
+        mcp_pos = text.rindex("post_agent_mcp_hygiene_audit.py")
+        long_pos = text.rindex("post_agent_long_command_audit.py")
         assert capture_pos < mcp_pos < long_pos
         assert "_SCRIPT_EXTRA_ARGS" in text
-        assert '"post_cursor_agent_long_command_audit.py"' in text
+        assert '"post_agent_long_command_audit.py"' in text

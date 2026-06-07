@@ -1,4 +1,4 @@
-"""E2E: real Windsurf post_cursor_agent_response payload shape must capture markers.
+"""E2E: real Windsurf post_agent_response payload shape must capture markers.
 
 Regression guard for the 2026-04-23 RCA: two hooks only checked top-level
 response keys and silently dropped markers delivered in the documented
@@ -8,7 +8,7 @@ payload shape and asserts each hook extracts the embedded text.
 Per the Windsurf docs:
 
     {
-      "agent_action_name": "post_cursor_agent_response",
+      "agent_action_name": "post_agent_response",
       "tool_info": { "response": "<full assistant text>" }
     }
 """
@@ -25,7 +25,7 @@ REPO = Path(__file__).resolve().parents[3]
 SCRIPTS = REPO / ".claude" / "governance/scripts" / "_legacy_windsurf"
 sys.path.insert(0, str(SCRIPTS))
 
-from _post_cursor_agent_payload import extract_response_text  # noqa: E402
+from _post_agent_payload import extract_response_text  # noqa: E402
 
 
 DEFERRED_SAMPLE = (
@@ -37,7 +37,7 @@ DEFERRED_SAMPLE = (
 )
 
 WINDSURF_PAYLOAD = {
-    "agent_action_name": "post_cursor_agent_response",
+    "agent_action_name": "post_agent_response",
     "tool_info": {"response": DEFERRED_SAMPLE},
 }
 
@@ -89,7 +89,7 @@ class TestDeferredScopeCaptureHook:
             "PATH": __import__("os").environ.get("PATH", ""),
             "SYSTEMROOT": __import__("os").environ.get("SYSTEMROOT", ""),
         }
-        hook = SCRIPTS / "post_cursor_agent_deferred_scope_capture.py"
+        hook = SCRIPTS / "post_agent_deferred_scope_capture.py"
         proc = subprocess.run(
             [sys.executable, str(hook)],
             input=json.dumps(WINDSURF_PAYLOAD),

@@ -7,7 +7,7 @@ Implements the W5 deliverable:
   - canonicalize_row   → stable JSON serialization, excluding self-referential columns
   - verify_chain       → walks the ledger in order, reports first break
   - backfill_chain     → one-shot populator for existing NULL-hash rows
-  - ensure_row_hash    → INSERT-time helper (called by post_cursor_agent_author_gate_capture)
+  - ensure_row_hash    → INSERT-time helper (called by post_agent_author_gate_capture)
 
 INVARIANTS
 ----------
@@ -602,7 +602,7 @@ def resign_chain(db_path: Path = DB_PATH) -> ChainResult:
 
 
 # ===================================================================== #
-# INSERT helper (called by post_cursor_agent_author_gate_capture.py on write)       #
+# INSERT helper (called by post_agent_author_gate_capture.py on write)       #
 # ===================================================================== #
 
 

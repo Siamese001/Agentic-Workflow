@@ -28,8 +28,8 @@ WARN_BYTES = 5 * 1024 * 1024   # 5 MB
 ERROR_BYTES = 20 * 1024 * 1024  # 20 MB
 
 WATCHED_LOGS = [
-    REPO_ROOT / "artifacts" / "windsurf" / "plans_db_writes.jsonl",
-    REPO_ROOT / "artifacts" / "windsurf" / "wave_lifecycle_notion.jsonl",
+    REPO_ROOT / "artifacts" / "governance" / "plans_db_writes.jsonl",
+    REPO_ROOT / "artifacts" / "governance" / "wave_lifecycle_notion.jsonl",
 ]
 
 REPORT_PATH = REPO_ROOT / "artifacts" / "ci" / "notion_telemetry_log_size.json"

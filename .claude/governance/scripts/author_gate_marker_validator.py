@@ -3,11 +3,11 @@
 author_gate_marker_validator.py — Validate DECISION_CAPTURED marker completeness.
 
 Audits every capture event for the v2 marker grammar. Missing required fields
-are logged to artifacts/cursor/author_gate_capture_violations.jsonl so the
+are logged to artifacts/governance/author_gate_capture_violations.jsonl so the
 coverage gate can alarm on capture rot.
 
 CALLED BY
-    - post_cursor_agent_author_gate_capture.py (advisory — logs then proceeds)
+    - post_agent_author_gate_capture.py (advisory — logs then proceeds)
     - audit_ledger_coverage.py (retrospective audit of existing rows)
     - CLI: python .claude/governance/scripts/author_gate_marker_validator.py --marker "<text>"
 
@@ -44,7 +44,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "cursor" / "author_gate_capture_violations.jsonl"
+VIOLATIONS_PATH = REPO_ROOT / "artifacts" / "governance" / "author_gate_capture_violations.jsonl"
 
 # Decision types for which v2 calibration fields are required
 _REFACTOR_CLASS_TYPES = frozenset({

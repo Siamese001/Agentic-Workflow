@@ -489,7 +489,7 @@ class TestToolHandlersAutoReload:
 
 
 # ---------------------------------------------------------------------------
-# Test 6 — Silent degraded fallback detection in post_cursor_agent_adg_audit.py
+# Test 6 — Silent degraded fallback detection in post_agent_adg_audit.py
 # ---------------------------------------------------------------------------
 
 
@@ -504,7 +504,7 @@ class TestSilentDegradedFallbackDetection:
         scripts_dir = str(Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts")
         if scripts_dir not in sys.path:
             sys.path.insert(0, scripts_dir)
-        from post_cursor_agent_adg_audit import detect_violations
+        from post_agent_adg_audit import detect_violations
 
         return detect_violations
 
@@ -574,7 +574,7 @@ class TestSilentDegradedFallbackDetection:
         """Cursor native Grep for imports with no ADG → critical when snapshot exists."""
         detect_violations = self._get_detect_violations()
         monkeypatch.setattr(
-            "post_cursor_agent_adg_audit._adg_snapshot_available",
+            "post_agent_adg_audit._adg_snapshot_available",
             lambda: True,
         )
         response = 'CallMcpTool Grep pattern="from apps_rg import" glob="*.py"'
@@ -586,7 +586,7 @@ class TestSilentDegradedFallbackDetection:
         """adg_sqlite MCP usage alongside Grep → warning not critical."""
         detect_violations = self._get_detect_violations()
         monkeypatch.setattr(
-            "post_cursor_agent_adg_audit._adg_snapshot_available",
+            "post_agent_adg_audit._adg_snapshot_available",
             lambda: True,
         )
         response = (

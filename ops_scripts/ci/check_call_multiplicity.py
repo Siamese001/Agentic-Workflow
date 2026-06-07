@@ -61,7 +61,7 @@ PRODUCTION_PACKAGE_ROOTS = (
 
 DEFAULT_THRESHOLD = 5
 
-LOG_DIR = REPO_ROOT / "artifacts" / "windsurf"
+LOG_DIR = REPO_ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "call_multiplicity_violations.jsonl"
 BASELINE_DIR = REPO_ROOT / "ops_scripts" / "ci" / "baselines"
 BASELINE_FILE = BASELINE_DIR / "call_multiplicity_ratchet.json"

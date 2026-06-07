@@ -1,6 +1,6 @@
 import json, pathlib
 
-p = pathlib.Path("artifacts/cursor/deferred_scope_capture.jsonl")
+p = pathlib.Path("artifacts/governance/deferred_scope_capture.jsonl")
 if not p.exists():
     print("NO LOG FILE at", p)
     raise SystemExit

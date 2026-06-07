@@ -59,7 +59,7 @@ class TestRejectsUnknownFieldInHooks:
 
         # Tampered hooks.json with an unknown `powershell` field.
         tampered = {
-            "post_cursor_agent_response": [
+            "post_agent_response": [
                 {
                     "command": "echo hi",
                     "working_directory": ".",

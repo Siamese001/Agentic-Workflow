@@ -31,7 +31,7 @@ fail_policy = "closed_for_t2t3_adg"
 repo_root = Path(__file__).resolve().parents[3]
 # Namespaced per logical session — matches pre_mcp_gate.py and post_mcp_audit.py.
 _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
-session_state = repo_root / "artifacts" / "cursor" / f"session_state_{_session_id}.json"
+session_state = repo_root / "artifacts" / "governance" / f"session_state_{_session_id}.json"
 
 t3_keywords = {
     "architecture",
@@ -734,7 +734,7 @@ def main() -> int:
 
     # W2.1 — prompt_classifier ledger: capture every tier prediction.
     # Actual tier outcome (files_edited, lines_changed, layers_touched) is bound
-    # later by the post_commit/post_cursor_agent pipeline via bind_outcome().
+    # later by the post_commit/post_agent pipeline via bind_outcome().
     try:
         from tools.ledgers.hook_helpers import emit_ledger_event
         import hashlib as _hashlib

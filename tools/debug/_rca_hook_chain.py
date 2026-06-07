@@ -4,8 +4,8 @@ Collects four signals:
 1. Last heartbeat timestamp vs now → time since hook chain last fired.
 2. Last deferred_scope_capture timestamp → confirms the capture-specific
    hook is also dead, not just heartbeat.
-3. Current hooks.json config for post_cursor_agent_response → what SHOULD be firing.
-4. Any error rows recorded anywhere under artifacts/cursor/ today.
+3. Current hooks.json config for post_agent_response → what SHOULD be firing.
+4. Any error rows recorded anywhere under artifacts/governance/ today.
 """
 
 from __future__ import annotations
@@ -15,10 +15,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-HB = ROOT / "artifacts" / "windsurf" / "post_cursor_agent_heartbeat.jsonl"
-DSC = ROOT / "artifacts" / "windsurf" / "deferred_scope_capture.jsonl"
+HB = ROOT / "artifacts" / "governance" / "post_agent_heartbeat.jsonl"
+DSC = ROOT / "artifacts" / "governance" / "deferred_scope_capture.jsonl"
 HOOKS = ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
-WSDIR = ROOT / "artifacts" / "windsurf"
+WSDIR = ROOT / "artifacts" / "governance"
 
 
 def _last_iso(path: Path, key: str) -> str | None:
@@ -65,10 +65,10 @@ def main() -> None:
         lines = DSC.read_text(encoding="utf-8").strip().splitlines()
         print(f"    Total entries: {len(lines)}")
 
-    print(f"\n[3] hooks.json post_cursor_agent_response config:")
+    print(f"\n[3] hooks.json post_agent_response config:")
     if HOOKS.exists():
         data = json.loads(HOOKS.read_text(encoding="utf-8"))
-        post = data.get("hooks", {}).get("post_cursor_agent_response")
+        post = data.get("hooks", {}).get("post_agent_response")
         if isinstance(post, list):
             for i, h in enumerate(post):
                 flags = ", ".join(f"{k}={v}" for k, v in h.items() if k not in ("description",))

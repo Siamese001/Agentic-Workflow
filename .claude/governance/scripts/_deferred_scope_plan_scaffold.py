@@ -111,7 +111,7 @@ def _render_template(
     return f"""---
 plan_id: {plan_id}
 plan_type: tracker
-# Auto-scaffolded {now_iso} by .claude/governance/scripts/post_cursor_agent_deferred_scope_capture.py
+# Auto-scaffolded {now_iso} by .claude/governance/scripts/post_agent_deferred_scope_capture.py
 # from a DEFERRED_SCOPE marker. Cursor Agent should expand this plan on the next
 # session before execution starts.
 ---

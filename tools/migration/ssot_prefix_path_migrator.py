@@ -46,7 +46,7 @@ from pathlib import Path
 # literal -> (canonical_symbol, canonical_module)
 SSOT_MAP: dict[str, tuple[str, str]] = {
     "artifacts/adg": ("ADG_ARTIFACTS_DIR", "agentic_core.L0_routing.config.path_constants"),
-    "artifacts/cursor": ("WINDSURF_ARTIFACTS_DIR", "agentic_core.L0_routing.config.path_constants"),
+    "artifacts/governance": ("WINDSURF_ARTIFACTS_DIR", "agentic_core.L0_routing.config.path_constants"),
     "docs/archive/windsurf/legacy-tree/plans": ("WINDSURF_PLANS_DIR", "agentic_core.L0_routing.config.path_constants"),
     ".claude/governance/scripts/_legacy_windsurf": ("WINDSURF_SCRIPTS_DIR", "agentic_core.L0_routing.config.path_constants"),
     "docs/reports": ("DOCS_REPORTS_DIR", "agentic_core.L0_routing.config.path_constants"),

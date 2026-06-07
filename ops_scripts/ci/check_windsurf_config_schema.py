@@ -9,7 +9,7 @@ error surfaced to the user.
 
 Precedent (2026-04-23):
     A `powershell` field added to 23 hook entries silently disabled the
-    entire `post_cursor_agent_response` chain across a full Windsurf restart.
+    entire `post_agent_response` chain across a full Windsurf restart.
     Detected only via heartbeat-log forensics.
 
 Bypass (Cursor-only / no Windsurf mirror maintenance):

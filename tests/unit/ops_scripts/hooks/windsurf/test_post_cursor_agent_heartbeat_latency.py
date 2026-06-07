@@ -1,4 +1,4 @@
-"""Smoke tests for post_cursor_agent_heartbeat latency telemetry (P5)."""
+"""Smoke tests for post_agent_heartbeat latency telemetry (P5)."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HOOK = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_cursor" / "post_cursor_agent_heartbeat.py"
+HOOK = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_cursor" / "post_agent_heartbeat.py"
 
 
 def _run(env_overrides: dict[str, str] | None = None) -> subprocess.CompletedProcess:
@@ -34,7 +34,7 @@ def test_heartbeat_writes_record_with_latency_field():
     a chain_latency_ms field. Order-independent: scans the tail for the
     expected schema rather than asserting line-count deltas (the log file
     is shared state and is truncated at MAX_LINES under xdist parallel)."""
-    log_path = REPO_ROOT / "artifacts" / "windsurf" / "post_cursor_agent_heartbeat.jsonl"
+    log_path = REPO_ROOT / "artifacts" / "governance" / "post_agent_heartbeat.jsonl"
 
     r1 = _run()
     assert r1.returncode == 0
@@ -64,7 +64,7 @@ def test_heartbeat_disable_env_returns_zero_with_no_output():
     """Disable env short-circuits before any I/O. Order-independent: only
     asserts on exit code + stdout/stderr, not on shared log-file state
     (which may race under pytest-xdist parallel runners)."""
-    r = _run(env_overrides={"POST_CURSOR_AGENT_HEARTBEAT_DISABLE": "1"})
+    r = _run(env_overrides={"POST_AGENT_HEARTBEAT_DISABLE": "1"})
     assert r.returncode == 0
     # No warning should be printed when the script no-ops on disable.
     assert "WARN" not in r.stderr

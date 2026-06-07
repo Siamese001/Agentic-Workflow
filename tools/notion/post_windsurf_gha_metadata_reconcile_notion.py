@@ -48,7 +48,7 @@ def _create_child_page(token: str) -> str:
         _bullet("docs/reports/cursor/windsurf_gha_inventory.json"),
         _bullet("docs/reports/cursor/windsurf_gha_cutover_closeout.md"),
         _bullet("docs/reports/cursor/windsurf_gha_deferred_scope_closeout.md"),
-        _bullet("artifacts/cursor/windsurf_deletion_readiness.json"),
+        _bullet("artifacts/governance/windsurf_deletion_readiness.json"),
         _paragraph("DoD-4: python ops_scripts/ci/run_contract_gates.py -> exit 1"),
         _bullet("exec-summary-l2-x1d-input-parity-c4f8e1.md (unknown plan_type remediation)"),
         _bullet("exec-summary-operator-ship-a3f7c2.md (unknown plan_type product)"),

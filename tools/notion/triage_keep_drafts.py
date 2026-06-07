@@ -37,7 +37,7 @@ BACKLOG_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
 PLANS_DB_ID = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "triage_keep_drafts_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "triage_keep_drafts_audit.jsonl"
 
 # --- bucket signal regexes --------------------------------------------------
 A_SIGNALS = re.compile(

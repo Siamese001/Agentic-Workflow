@@ -33,7 +33,7 @@ pytestmark = pytest.mark.integration
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 # os.getpid() here == os.getppid() as seen by any subprocess this test spawns.
-SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / f"session_state_{os.getpid()}.json"
+SESSION_STATE = REPO_ROOT / "artifacts" / "governance" / f"session_state_{os.getpid()}.json"
 PRE_MCP_GATE = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_mcp_gate.py"
 POST_MCP_AUDIT = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_mcp_audit.py"
 

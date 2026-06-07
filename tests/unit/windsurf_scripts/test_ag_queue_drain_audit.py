@@ -1,4 +1,4 @@
-"""Tests for .claude/governance/scripts/_legacy_windsurf/post_cursor_agent_ag_queue_drain_audit.py"""
+"""Tests for .claude/governance/scripts/_legacy_windsurf/post_agent_ag_queue_drain_audit.py"""
 from __future__ import annotations
 
 import importlib.util
@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-AUDIT_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_cursor_agent_ag_queue_drain_audit.py"
+AUDIT_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_ag_queue_drain_audit.py"
 HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_author_gate_queue.py"
 
 
@@ -58,7 +58,7 @@ def isolated_state(tmp_path, monkeypatch):
                 snapshot[p.name] = p.read_text(encoding="utf-8")
                 p.unlink()
     # Clean violation log
-    vlog = REPO_ROOT / "artifacts" / "windsurf" / "ag_queue_drain_violations.jsonl"
+    vlog = REPO_ROOT / "artifacts" / "governance" / "ag_queue_drain_violations.jsonl"
     vlog_snapshot = vlog.read_text(encoding="utf-8") if vlog.exists() else None
     if vlog.exists():
         vlog.unlink()

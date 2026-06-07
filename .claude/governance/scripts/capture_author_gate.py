@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """In-response DECISION_CAPTURED marker capture helper.
 
-Bypass for the Cursor 2.0.67 bug where ``post_cursor_agent_response`` hooks
+Bypass for the Cursor 2.0.67 bug where ``post_agent_response`` hooks
 silently stop firing mid-session. When the heartbeat log shows the hook
 chain is dark, Cursor Agent invokes this script directly via ``run_command``
 in the same response that emits the marker — guaranteeing the Author-Gate
@@ -9,7 +9,7 @@ ledger captures the decision without depending on the broken hook channel.
 
 This script is an exact analog of ``.claude/governance/scripts/defer.py`` for the
 DEFERRED_SCOPE capture path: it wraps each marker in the Cursor payload
-shape and invokes ``post_cursor_agent_author_gate_capture.py`` directly.
+shape and invokes ``post_agent_author_gate_capture.py`` directly.
 
 USAGE
 -----
@@ -43,7 +43,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_author_gate_capture.py"
+HOOK_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_author_gate_capture.py"
 MARKER_RE = re.compile(r"^\s*DECISION_CAPTURED:\s.+$", re.MULTILINE)
 TIMEOUT_SECONDS = 120
 

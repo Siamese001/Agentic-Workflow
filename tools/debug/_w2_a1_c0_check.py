@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-LOG = Path("artifacts/cursor/wiring_gate_violations.jsonl")
+LOG = Path("artifacts/governance/wiring_gate_violations.jsonl")
 lines = LOG.read_text(encoding="utf-8").strip().splitlines()
 a1_runs = [json.loads(line) for line in lines if "A1_orphan" in line]
 assert a1_runs, "no A1 runs logged"

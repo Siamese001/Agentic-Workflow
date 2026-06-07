@@ -65,7 +65,7 @@ def main() -> int:
     notion_slugs: Set[str] = set()
     
     # Read from file if exists (for testing)
-    notion_cache = REPO_ROOT / "artifacts" / "windsurf" / "notion_plan_slugs.json"
+    notion_cache = REPO_ROOT / "artifacts" / "governance" / "notion_plan_slugs.json"
     if notion_cache.exists():
         notion_slugs = set(json.loads(notion_cache.read_text()))
     

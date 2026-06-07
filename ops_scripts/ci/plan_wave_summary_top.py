@@ -8,7 +8,7 @@ Used by:
 - ``check_plan_format_compliance.py`` (per-path strict/advisory)
 - ``check_plan_wave_summary_top.py`` (repo scan)
 - ``.cursor/hooks/after_file_edit.py`` (post-edit warn/block)
-- ``.claude/governance/scripts/post_cursor_agent_plan_wave_summary_audit.py``
+- ``.claude/governance/scripts/post_agent_plan_wave_summary_audit.py``
 """
 
 from __future__ import annotations

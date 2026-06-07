@@ -60,7 +60,7 @@ from _notion_constants import (  # noqa: E402
 # Telemetry (W3.P2 hook point — every Plans-DB write lands here)
 # ---------------------------------------------------------------------------
 
-LOG_PATH = REPO_ROOT / "artifacts" / "windsurf" / "plans_db_writes.jsonl"
+LOG_PATH = REPO_ROOT / "artifacts" / "governance" / "plans_db_writes.jsonl"
 
 # HTTP knobs (mirrors wave_lifecycle_writer.py).
 DEFAULT_TIMEOUT_S = 15.0
@@ -148,7 +148,7 @@ def log_plans_db_write(
         detail: Free-form message (HTTP error string, reason code, etc.).
         **extra: Additional fields merged into the row.
 
-    Writes to ``artifacts/cursor/plans_db_writes.jsonl``. Never raises.
+    Writes to ``artifacts/governance/plans_db_writes.jsonl``. Never raises.
 
     RCA NOTION_PLANS_STATUS_RCA_2026-05-10 §8 (telemetry mandate).
     """

@@ -4,7 +4,7 @@ unified_plan_creation_auditor.py — Consolidated plan creation validation (W2.P
 
 Merges:
 - pre_notion_plan_creation_gate.py (pre-flight blocking validation)
-- post_cursor_agent_plan_creation_audit.py (post-flight advisory audit with auto-correction)
+- post_agent_plan_creation_audit.py (post-flight advisory audit with auto-correction)
 
 Result: Single unified hook providing defense-in-depth for plan creation.
 
@@ -59,8 +59,8 @@ FORBIDDEN_AT_CREATION = {
 }
 
 # Audit log paths (repo-root anchored — hook cwd is usually repo root but this stays correct)
-_AUDIT_LOG_PATH = _REPO_ROOT / "artifacts" / "cursor" / "plan_creation_corrections.jsonl"
-_ALERT_LOG_PATH = _REPO_ROOT / "artifacts" / "cursor" / "plan_creation_alerts.jsonl"
+_AUDIT_LOG_PATH = _REPO_ROOT / "artifacts" / "governance" / "plan_creation_corrections.jsonl"
+_ALERT_LOG_PATH = _REPO_ROOT / "artifacts" / "governance" / "plan_creation_alerts.jsonl"
 
 # Plans DB identifiers
 PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
@@ -234,7 +234,7 @@ def _check_payload(payload: dict[str, Any]) -> tuple[bool, list[str]]:
 
 
 # =============================================================================
-# POST-FLIGHT AUDIT (from post_cursor_agent_plan_creation_audit)
+# POST-FLIGHT AUDIT (from post_agent_plan_creation_audit)
 # =============================================================================
 
 def _notion_token() -> str | None:

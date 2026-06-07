@@ -8,7 +8,7 @@ Reads JSON payload from stdin. Payload fields:
   tool_info.duration_ms      — response time in milliseconds (optional)
 
 Behavior (ADVISORY ONLY — always exits 0):
-  - Appends telemetry record to artifacts/cursor/mcp_tool_audit.jsonl
+  - Appends telemetry record to artifacts/governance/mcp_tool_audit.jsonl
   - Records: server, tool, timestamp, duration_ms
 
 Fail policy: OPEN — any error → exit 0 silently.
@@ -26,21 +26,21 @@ from pathlib import Path
 fail_policy = "open"
 
 repo_root = Path(__file__).resolve().parents[3]
-audit_log = repo_root / "artifacts" / "cursor" / "mcp_tool_audit.jsonl"
-gitkraken_write_audit_log = repo_root / "artifacts" / "cursor" / "gitkraken_write_audit.jsonl"
+audit_log = repo_root / "artifacts" / "governance" / "mcp_tool_audit.jsonl"
+gitkraken_write_audit_log = repo_root / "artifacts" / "governance" / "gitkraken_write_audit.jsonl"
 # Supply-chain drift detection for MCP servers (W2 hardening).
 # Tracks SHA256 of mcpServers block + per-server (command, args, env keys)
 # between sessions. Writes a drift record whenever the fingerprint changes.
 mcp_config_path = repo_root / ".cursor" / "mcp.json"
-mcp_fingerprint_path = repo_root / "artifacts" / "cursor" / "mcp_config_fingerprint.json"
-mcp_drift_log = repo_root / "artifacts" / "cursor" / "mcp_drift.jsonl"
+mcp_fingerprint_path = repo_root / "artifacts" / "governance" / "mcp_config_fingerprint.json"
+mcp_drift_log = repo_root / "artifacts" / "governance" / "mcp_drift.jsonl"
 # Namespaced per logical session — matches pre_mcp_gate.py and pre_prompt_classifier.py.
 _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
-session_state = repo_root / "artifacts" / "cursor" / f"session_state_{_session_id}.json"
+session_state = repo_root / "artifacts" / "governance" / f"session_state_{_session_id}.json"
 
 gitkraken_server_name = "GitKraken"
 notion_server_name = "notion"
-notion_audit_log = repo_root / "artifacts" / "cursor" / "notion_tool_audit.jsonl"
+notion_audit_log = repo_root / "artifacts" / "governance" / "notion_tool_audit.jsonl"
 
 # Notion tool classification — tool names as the MCP exposes them (without mcp6_ prefix)
 _NOTION_WRITE_TOOLS: frozenset[str] = frozenset(

@@ -30,7 +30,7 @@ from triage_keep_drafts import (  # type: ignore[import-not-found]
     NOTION_API, REPO_ROOT,
 )
 
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "adg_verified_closure_audit.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "adg_verified_closure_audit.jsonl"
 
 # Claim extraction regexes
 FILE_PATH_RE = re.compile(r"\b((?:agentic_core|apps_\w+|ops_scripts|tools|config|scripts|certification|docs|tests)/[\w\-_/]+\.(?:py|yaml|yml|md|json))\b")

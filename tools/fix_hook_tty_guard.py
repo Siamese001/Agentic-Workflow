@@ -33,10 +33,10 @@ TARGETS = [
     "post_setup_worktree.py",
     "post_run_audit.py",
     "post_mcp_audit.py",
-    "post_cursor_agent_writeback_audit.py",
-    "post_cursor_agent_long_command_audit.py",
-    "post_cursor_agent_author_gate_capture.py",
-    "post_cursor_agent_adg_audit.py",
+    "post_agent_writeback_audit.py",
+    "post_agent_long_command_audit.py",
+    "post_agent_author_gate_capture.py",
+    "post_agent_adg_audit.py",
 ]
 
 GUARD_MARKER = "sys.stdin.isatty()"

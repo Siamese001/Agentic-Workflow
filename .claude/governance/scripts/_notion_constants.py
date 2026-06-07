@@ -31,7 +31,7 @@ PLANS_DATA_SOURCE_ID: str = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 
 # ADR Registry DB — ARCHIVED 2026-05-02 (commit b11200e833; filesystem SSOT only)
-# Retained for reference; post_cursor_agent_adr_registry_capture.py now logs to filesystem only.
+# Retained for reference; post_agent_adr_registry_capture.py now logs to filesystem only.
 ADR_REGISTRY_DB_ID: str = "6ed25e12-bd92-4352-ac7a-3a971311f024"
 ADR_REGISTRY_DS_ID: str = "e59d7640-dc09-48f9-8bdc-b0c94bf98c2a"
 

@@ -39,7 +39,7 @@ from _plan_registration import CACHE_TTL_SECONDS  # noqa: E402
 
 CACHE_PATH = REPO_ROOT / ".claude" / "state" / "plan_registration_cache.json"
 REFRESH_SCRIPT = REPO_ROOT / "ops_scripts" / "ci" / "check_plan_registration_freshness.py"
-LOG_PATH = REPO_ROOT / "artifacts" / "cursor" / "plan_cache_refresh.jsonl"
+LOG_PATH = REPO_ROOT / "artifacts" / "governance" / "plan_cache_refresh.jsonl"
 
 
 def _read_cache_local() -> dict | None:

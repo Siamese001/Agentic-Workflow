@@ -3,7 +3,7 @@
 rollback_bad_patches.py — revert Status=Done patches made by
 post_commit_phase_closer when a bare-wave trigger over-fanned out.
 
-Reads the last run from artifacts/cursor/phase_close_audit.jsonl. For each
+Reads the last run from artifacts/governance/phase_close_audit.jsonl. For each
 patch where `via` matches an over-broad bare wave (W1, W2, W3, W5, E1), reverts
 the Notion page Status to Todo and strips the appended [AUTO-CLOSE ...] line
 from Blocking Items.
@@ -24,8 +24,8 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-AUDIT_LOG = REPO_ROOT / "artifacts" / "cursor" / "phase_close_audit.jsonl"
-ROLLBACK_LOG = REPO_ROOT / "artifacts" / "cursor" / "phase_close_rollback.jsonl"
+AUDIT_LOG = REPO_ROOT / "artifacts" / "governance" / "phase_close_audit.jsonl"
+ROLLBACK_LOG = REPO_ROOT / "artifacts" / "governance" / "phase_close_rollback.jsonl"
 
 import sys as _sys
 

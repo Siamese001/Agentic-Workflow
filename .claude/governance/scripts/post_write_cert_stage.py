@@ -19,7 +19,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 STAGER = REPO_ROOT / "tools" / "certification" / "_stage_review_bundle.ps1"
-LOG = REPO_ROOT / "artifacts" / "cursor" / "cert_stage_hook.log"
+LOG = REPO_ROOT / "artifacts" / "governance" / "cert_stage_hook.log"
 
 # Paths that, when written, should trigger a restage. All repo-relative, forward slashes.
 TRIGGER_PREFIXES = (

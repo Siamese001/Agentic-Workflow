@@ -36,7 +36,7 @@ FORBIDDEN_OPEN_MODES = {"w", "wb", "a", "ab", "x"}
 ALLOWED_PATHS = [
     "tests/",
     "artifacts/ci/",
-    "artifacts/cursor/",
+    "artifacts/governance/",
     "agentic_core/L4_state/uwg/",
     ".claude/plans/",
     "docs/",

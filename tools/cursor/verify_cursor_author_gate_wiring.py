@@ -44,7 +44,7 @@ def main() -> int:
 
     cap = _load(
         "capture_verify",
-        REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_author_gate_capture.py",
+        REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_author_gate_capture.py",
     )
     cpath2 = str(cap.DB_PATH).replace("\\", "/")
     if ".claude/state/refactor_decisions/refactor_decision_ledger.sqlite" not in cpath2:
@@ -120,7 +120,7 @@ def main() -> int:
         tdb = Path(td) / "ledger.sqlite"
         cap_mod = _load(
             "cap_run",
-            REPO_ROOT / ".claude" / "governance/scripts" / "post_cursor_agent_author_gate_capture.py",
+            REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_author_gate_capture.py",
         )
         cap_mod.DB_DIR = tdb.parent
         cap_mod.DB_PATH = tdb

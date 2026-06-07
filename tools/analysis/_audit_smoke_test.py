@@ -51,9 +51,9 @@ WAVE3_FILES = [
     ".claude/governance/scripts/_legacy_windsurf/plan_driven_closer.py",
     ".claude/governance/scripts/_legacy_windsurf/post_commit_phase_closer.py",
     ".claude/governance/scripts/_legacy_windsurf/rollback_bad_patches.py",
-    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_next_step_capture.py",
-    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_deferred_scope_capture.py",
-    ".claude/governance/scripts/_legacy_windsurf/post_cursor_agent_adr_registry_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_agent_next_step_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_agent_deferred_scope_capture.py",
+    ".claude/governance/scripts/_legacy_windsurf/post_agent_adr_registry_capture.py",
     "ops_scripts/ci/check_notion_plan_file_drift.py",
     "tools/reports/recover_deferred_scope_pendings.py",
 ]
