@@ -265,12 +265,31 @@ def _load_mcp_whitelist() -> set[str]:
         return set()
 
 
+# Claude Code harness-provided MCP servers are environment-managed (session
+# management, scheduling, directory, registry, computer-use, etc.) — they are NOT
+# declared in the repo .mcp.json and must never be repo-gated. Allow by exact name
+# or by the `ccd_` (Claude Code daemon) prefix.
+_BUILTIN_MCP_SERVERS: frozenset[str] = frozenset(
+    {
+        "ccd_session",
+        "ccd_session_mgmt",
+        "ccd_directory",
+        "scheduled-tasks",
+        "mcp-registry",
+        "computer-use",
+    }
+)
+
+
 def check_mcp_whitelist(server_name: str, tool_name: str) -> int:
-    """Block calls to MCP servers not declared in repo mcp.json.
+    """Block calls to MCP servers not declared in repo .mcp.json.
 
     Fail-open when whitelist cannot be loaded (empty set → every call passes).
-    This matches prior gate conventions: hard-block only on explicit violations.
+    Claude Code harness built-in servers bypass the gate (not repo-managed).
+    Hard-block only on explicit violations.
     """
+    if server_name in _BUILTIN_MCP_SERVERS or server_name.startswith("ccd_"):
+        return 0
     allowed = _load_mcp_whitelist()
     if not allowed:
         # Unable to load config → don't risk bricking the session.
@@ -278,9 +297,9 @@ def check_mcp_whitelist(server_name: str, tool_name: str) -> int:
     if server_name not in allowed:
         return _exit_block(
             f"MCP server {server_name!r} is not in the repo whitelist "
-            f"(.cursor/mcp.json mcpServers keys). "
+            f"(.mcp.json mcpServers keys). "
             f"Tool {tool_name!r} refused. "
-            f"Add the server to mcp.json (via .claude/governance/scripts/sync_mcp_config.py) "
+            f"Add the server to .mcp.json (via .claude/governance/scripts/sync_mcp_config.py) "
             f"or verify you are not invoking a rogue user-home config override."
         )
     return 0

@@ -1,1 +1,0 @@
-DECISION_CAPTURED: timestamp=2026-05-09T08:57:00-04:00 plan=apps-rg-declarative-ingress-only-spinal-governance-c8b3e1 wave=W3 status=DONE test_results="21/21 passed" profiles_created="6 YAML/JSON files"
