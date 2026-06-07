@@ -1,0 +1,8 @@
+{
+  "apps_checked": 10,
+  "exit_code": 0,
+  "gate": "TSP1",
+  "script": "ops_scripts/ci/check_apps_test_surface_parity.py",
+  "timestamp_utc": "20260607T105514Z",
+  "violation_count": 0
+}
