@@ -1,12 +1,22 @@
 ---
 slug: cursor-decommission-a1f7c3
-status: Not Started
+status: Completed
 plan_type: platform_core_change
 tier: T3
 created: 2026-06-07
+completed: 2026-06-07
 end_state: zero `.cursor` directory; `.claude/` is the sole SSOT tree
 decision_ref: "DECISION_CAPTURED architecture_choice selected=full_relocation_zero_cursor confidence=0.78"
 ---
+
+> ✅ **COMPLETED 2026-06-07, merged to main (`5b13233ff2`).** `.cursor` → `.claude` relocation done:
+> engine → `.claude/governance/scripts`, plans → `.claude/plans`, state+ledger → `.claude/state`,
+> schemas/templates → `.claude/`; `.cursor` = 0 tracked files; anti-regression gate
+> `ops_scripts/ci/check_no_cursor_refs.py` added + wired into `run_contract_gates`.
+> (On-disk `status:` was stale `Not Started`; corrected to `Completed` to match the authoritative
+> Notion Plans row on 2026-06-07.) The **windsurf/codeium** brand removal this plan did NOT cover is
+> handled by [cursor-windsurf-codeium-decommission-dec0de](cursor-windsurf-codeium-decommission-dec0de.md)
+> — complementary, not superseded.
 
 # Cursor Decommission — Full Relocation to `.claude/` SSOT
 

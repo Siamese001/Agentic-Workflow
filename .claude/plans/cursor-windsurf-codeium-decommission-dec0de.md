@@ -6,7 +6,29 @@ created: 2026-06-07
 owner: Claude Code
 supersedes:
   - windsurf-deprecation-cursor-ssot-b6e4a9   # prior windsurf→cursor migration; this plan completes the chain to Claude Code SSOT
+complements:
+  - cursor-decommission-a1f7c3                 # COMPLETED+merged the .cursor→.claude work; this plan covers the windsurf/codeium brand it did not touch
 ---
+
+> ⛔ **RE-BASELINED 2026-06-07 (W2 reconciliation).** The W1 inventory freeze + a dependency check +
+> the authoritative Notion row for `cursor-decommission-a1f7c3` reset the scope:
+> 1. **The `.cursor` decommission is already DONE and merged to main** (`5b13233ff2`, plan
+>    [cursor-decommission-a1f7c3](cursor-decommission-a1f7c3.md) = Completed). `.cursor/` = 0 tracked
+>    files (only untracked dead `__pycache__/*.pyc` remain); the live engine is at
+>    `.claude/governance/scripts/`. An anti-regression gate `ops_scripts/ci/check_no_cursor_refs.py`
+>    now forbids re-introducing `.cursor/` path-construction in `.py` under active roots (markdown/
+>    comments allowed — so this plan + its reports do **not** trip it).
+> 2. **dec0de's real remaining scope = windsurf + codeium brand removal** (a1f7c3 did not touch it),
+>    plus the optional rename of the genuinely-live `post_cursor_agent`/`_legacy_windsurf` wiring.
+> 3. `_legacy_windsurf/` and `_legacy_cursor/` are **NOT dead** — live hooks/tests import from them
+>    (`post_cursor_agent_plan_registration_capture.py:33`, `post_cursor_agent_plan_scope_audit.py:27`,
+>    `tools/windsurf/wave_execution_state.py:50`, the heartbeat-latency test). a1f7c3 deliberately
+>    retained them; dec0de touches them only in W5 (rename + importer update), never bulk-delete.
+> 4. The original W2 bulk-delete targets `docs/archive/windsurf/` and `_archive/windsurf_legacy*`
+>    **don't exist**.
+> Net effect: **W2 = reconciliation only (no destructive action).** Remaining real work: W3 (windsurf/
+> codeium config) → W4 (docs/rules prose) → W5 (live `post_cursor_agent`/`_legacy_windsurf` rename,
+> gated) → W6 (verify incl. `check_no_cursor_refs` + full gates).
 
 # Cursor / Windsurf / Codeium Decommission — Claude Code as Sole SSOT
 
@@ -49,9 +71,9 @@ supersedes:
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W1 | P1.1–P1.3 | Inventory freeze + safety prep | ~8k | Inventory from 2026-06-07 exploration holds | ⬜ Not Started | Frozen manifest of every path in scope, committed; rollback point tagged |
-| W2 | P2.1–P2.3 | Delete pure-dead legacy (`git rm`) | ~12k | Category-1 paths have zero live importers | ⬜ Not Started | Dead dirs/files gone; full gate suite green; no import errors |
-| W3 | P3.1–P3.3 | Remove brand-only config | ~6k | Codeium/Windsurf indexers no longer used | ⬜ Not Started | `.codeiumignore` gone; pre-commit + excluded_paths cleaned; pre-commit runs |
+| W1 | P1.1–P1.3 | Inventory freeze + safety prep | ~8k | Inventory from 2026-06-07 exploration holds | ✅ Done (2026-06-07) | Frozen manifest written ([inventory_freeze_dec0de.md](../../docs/reports/decommission/inventory_freeze_dec0de.md)); rollback tag `pre-decommission-dec0de`@7729ce863e; 3 plan-path estimates corrected |
+| W2 | P2.1–P2.3 | Re-baseline + dead-legacy audit | ~12k | See re-baseline banner | ✅ Done (2026-06-07) | Re-scoped to reality: `_legacy_*` retained (live importers); `.cursor/` is untracked dead pyc → deletion deferred to W6 w/ guard update; a1f7c3 retired. No destructive action taken. |
+| W3 | P3.1–P3.3 | Remove brand-only config | ~6k | Codeium/Windsurf indexers no longer used | 🟡 Partial (2026-06-07) | ✅ P3.1 `.codeiumignore` deleted (was untracked orphan; repo's prior "eliminated" intent now physically true). ⏭️ P3.2/P3.3 **deferred to W5** (decision `deletion_strategy selected=defer_coupled_to_w5`): pre-commit `T6a no-active-windsurf-authoring` is **live** and still guards `_legacy_windsurf` (331 files, live importers); `excluded_paths.yaml` windsurf entries mirror boundary-protected `agentic_core/L0_routing/config/path_constants.py` (drift gate `check_exclusion_consistency.py`). NOT brand-only as W3 assumed → migrate with the legacy importers in W5. |
 | W4 | P4.1–P4.2 | Docs/rules prose → "Claude Code" | ~14k | Prose rewrite is non-functional | ⬜ Not Started | No "Cursor Agent"/"Windsurf" prose in active `.claude/rules` + `CLAUDE.md`; rule-lint green |
 | W5 | P5.1–P5.4 | Live-wiring rename (GATED) | ~30k | ADG blast radius clear; settings.json clean (verified) | ⬜ Not Started | Scripts/paths/ledger renamed to neutral; dispatch + CI gates + smoke runs pass |
 | W6 | P6.1–P6.2 | Verify zero-brand + register | ~8k | All prior waves green | ⬜ Not Started | Repo-wide scan finds only intentional historical mentions; Notion plan closed |
@@ -60,15 +82,15 @@ supersedes:
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| P1.1 | Re-validate inventory | exploration manifest | Counts may have drifted since 2026-06-07 | ~3k | ⬜ |
-| P1.2 | Tag rollback point | git tag | — | ~1k | ⬜ |
-| P1.3 | Neutralize shell guard for delete waves | `before_shell_execution.py` | Guard blocks `.windsurf`/`post_cursor_agent` tokens; must allow scoped deletes | ~4k | ⬜ |
+| P1.1 | Re-validate inventory | exploration manifest | Counts may have drifted since 2026-06-07 | ~3k | ✅ Done — 3 estimates wrong (see manifest §A) |
+| P1.2 | Tag rollback point | git tag | — | ~1k | ✅ Done — `pre-decommission-dec0de`@7729ce863e |
+| P1.3 | Establish token-safe deletion (no guard edit) | manifest §E | Guard has no bypass env; use `git rm --pathspec-from-file` so tokens stay out of command text | ~4k | ✅ Done — guard NOT weakened |
 | P2.1 | Delete `.cursor/` mirrors + `_legacy_*` | `.cursor/**`, `_legacy_windsurf/`, `_legacy_cursor/` | Confirm `__pycache__` only; nothing imported | ~5k | ⬜ |
 | P2.2 | Delete archived trees | `docs/archive/windsurf/`, `_archive/windsurf_legacy*` | Large file count; ensure not referenced by reports | ~4k | ⬜ |
 | P2.3 | Retire root `AGENTS.md` | `AGENTS.md` | Sub-app `AGENTS.md` files stay; check sync scripts | ~3k | ⬜ |
-| P3.1 | Remove `.codeiumignore` | `.codeiumignore` | Confirm no tool reads it | ~2k | ⬜ |
-| P3.2 | Clean generated config | `.pre-commit-config.yaml`, `tools/setup/gitignore.py`(?) | Lines may be generator-emitted; fix source | ~2k | ⬜ |
-| P3.3 | Clean `config/excluded_paths.yaml` | `config/excluded_paths.yaml` | Drop windsurf/codeium exclusions | ~2k | ⬜ |
+| P3.1 | Remove `.codeiumignore` | `.codeiumignore` | Confirm no tool reads it | ~2k | ✅ Done — untracked orphan deleted (T6h gate already retired; no live reader) |
+| P3.2 | Clean pre-commit config | `.pre-commit-config.yaml` | NOT generator-emitted (hand-maintained); `T6a` is a **live** gate guarding `_legacy_windsurf` | ~2k | ⏭️ Deferred to W5 |
+| P3.3 | Clean `config/excluded_paths.yaml` | `config/excluded_paths.yaml` + `agentic_core/L0_routing/config/path_constants.py` | Entries mirror boundary-protected frozensets; drift gate; needs core edit + receipt | ~2k | ⏭️ Deferred to W5 |
 | P4.1 | Rewrite `.claude/rules/**` prose | ~20 rule `.md` | "Cursor Agent" → "Claude Code"/"the agent"; keep marker grammar intact | ~9k | ⬜ |
 | P4.2 | Rewrite root contract prose | `CLAUDE.md`, `claude-config-lookup.md`, `constitutional.md` | Keep historical-context lines that are still true | ~5k | ⬜ |
 | P5.1 | ADG + consumer map for rename | adg_sqlite, grep | Governance scripts may not be ADG-indexed → grep fallback w/ DEGRADED_FALLBACK | ~6k | ⬜ |
@@ -89,15 +111,21 @@ supersedes:
   or `post_cursor_agent`. Add a scoped, time-boxed allowance (or perform deletions via the native
   file tools / `git rm` paths the guard permits) so W2/W5 can proceed. Re-tighten in P6.2.
 
-### W2 — Delete pure-dead legacy
-- **P2.1** `git rm -r` the `.cursor/` `__pycache__` mirrors, `.claude/governance/scripts/_legacy_windsurf/`
-  (161), `_legacy_cursor/` (11). Confirm via Grep that no active module imports them.
-- **P2.2** `git rm -r docs/archive/windsurf/`, `.claude/plans/_archive/windsurf_legacy*`. Grep reports/
-  CI for any path dependency first.
-- **P2.3** Retire root `AGENTS.md` (delete or replace with a 3-line stub pointing at `CLAUDE.md`).
-  Keep `agentic_core/AGENTS.md`, `apps_*/AGENTS.md`. Check `sync_mcp_config.py` (it "refreshes
-  AGENTS.md") — update or neutralize that writer.
-- **Gate:** `python ops_scripts/ci/run_contract_gates.py` green; targeted pytest collection clean.
+### W2 — Re-baseline + dead-legacy audit (✅ done — superseded the original "bulk delete" scope)
+Outcome of the dependency check (see re-baseline banner + [inventory_freeze_dec0de.md](../../docs/reports/decommission/inventory_freeze_dec0de.md)):
+- **`_legacy_windsurf/` retained** — live importers: `post_cursor_agent_plan_registration_capture.py:33`,
+  `post_cursor_agent_plan_scope_audit.py:27`, `tools/windsurf/wave_execution_state.py:50`,
+  `tools/reports/recover_deferred_scope_pendings.py:43`. Its rename/migration moves to **W5**.
+- **`_legacy_cursor/` retained** — imported by active test
+  `tests/unit/ops_scripts/hooks/windsurf/test_post_cursor_agent_heartbeat_latency.py:13` +
+  `tools/cursor/governance_dedup_e2e_verify.py:40`. Migration → **W5**.
+- **`.cursor/` = untracked dead `__pycache__/*.pyc` only** — no git-tracked deletion; physical removal
+  sequenced into **W6/P6.2** alongside the `before_shell_execution.py` guard update (the guard protects
+  `.cursor` from deletion, so removing it before the guard edit would mean circumventing a safety control).
+- **root `AGENTS.md`** retained until W4/W5 — referenced by `sync_mcp_config.py` + pre-commit gates
+  (T6c/T6f glob it); retiring it requires handling those refs first.
+- **a1f7c3 retired** (stale inventory).
+- **No destructive action taken in W2.** Real deletions/renames are now W3 (config) / W5 (live wiring).
 
 ### W3 — Remove brand-only config
 - **P3.1** `git rm .codeiumignore` after confirming no live reader.
