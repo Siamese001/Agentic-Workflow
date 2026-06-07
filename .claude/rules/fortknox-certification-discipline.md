@@ -1,0 +1,43 @@
+
+<!-- Converted from `.claude/rules/fortknox-certification-discipline.md`. Original Cursor trigger: `model_decision`. -->
+
+# Fort Knox Certification — Invariant-Only Stub
+
+> ⛔ Runtime certification claims are admissible ONLY when produced by the canonical compiler from atomic, schema-validated, artifact-bound assertions. Hand-edited reports, XLSX-driven status, `all_pass` rollups, parent-walk req_id inference are FORBIDDEN.
+
+## The five hard invariants
+
+1. **Compiler is the only status authority.** `computed_status` for any RTC-REQ-* row is set exclusively by `scripts/compile_requirement_signoff.py` consuming `certification/evidence_assertions.jsonl`.
+2. **Atomic assertions only.** One row = one `req_id` + one `control` + one artifact-backed fact. Schema: `certification/schemas/evidence_assertion.schema.json`.
+3. **Hostile verifier invariant.** Compiler MUST NOT import XLSX, trust prior report state, walk pointer parents, or default-allow an artifact class. Each check re-derives from disk bytes.
+4. **Approved producer paths only.** Assertions MAY emerge ONLY from `tools/cert/*.py`, `scripts/verify_*_gate.py`, `scripts/verify_rtc_*.py`. Runtime code (`agentic_core/`, `apps_*/`, `system_learning/`) MUST NOT emit assertions.
+5. **Positive control canary.** `RTC-REQ-001` MUST remain `SIGNED_OFF` — regression blocks commit.
+
+## Forbidden direct writes (pre_write_fortknox_guard blocks at exit 2)
+
+- `artifacts/certification/final_requirement_signoff_report.{json,sha256,merkle.json,signature.json}`
+- Any `certification/*.xlsx`
+
+## Forbidden prose claims (post_cursor_agent audit logs to violations file)
+
+Without a matching `compile_requirement_signoff.py` invocation in the same response: "rows are signed off", "trust level upgraded to X", "acceptance complete", "all requirements pass", "all_pass" or "linked_req_ids" outside a forbidden-pattern quote.
+
+## Where the procedural detail lives
+
+| Concern | Location |
+|---|---|
+| Full assertion contract + forbidden-pattern table + producer allowlist | `.claude/skills/fortknox-evidence/SKILL.md` (canonical procedural SSOT) |
+| Schema | `certification/schemas/evidence_assertion.schema.json` |
+| Compiler | `scripts/compile_requirement_signoff.py` |
+| Bundle verifier | `scripts/verify_final_requirement_signoff_bundle.py` |
+| Mutation runner | `scripts/generate_mutation_rejection_report.py` |
+| Pre-write hook (exit 2) | `.cursor/scripts/pre_write_fortknox_guard.py` |
+| Post-response audit | `.cursor/scripts/post_cursor_agent_fortknox_integrity_audit.py` → `artifacts/cursor/fortknox_integrity_violations.jsonl` |
+| CI gates | `ops_scripts/ci/check_fortknox_clean_bundle.py`, `check_fortknox_mutation_rejection.py`, `check_fortknox_positive_control.py` |
+| Nightly | `.github/workflows/fortknox-nightly.yml` |
+| Author-Gate trigger | `author-gate-decision-points.md` §1.11 (`certification_claim`) |
+| Bypass | `FORTKNOX_DISCIPLINE_BYPASS=1` |
+
+## Constitutional cross-reference
+
+§32 (Fort Knox certification integrity). Auto-retires when L3 in-toto attestation replaces the bespoke compiler — see ADR-091.

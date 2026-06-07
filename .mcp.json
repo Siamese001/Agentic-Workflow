@@ -1,0 +1,94 @@
+{
+  "mcpServers": {
+    "GitKraken": {
+      "command": "${GITKRAKEN_GK_PATH}",
+      "args": ["mcp", "--host=cursor", "--source=gitlens", "--scheme=cursor"]
+    },
+    "adg_sqlite": {
+      "command": "python",
+      "args": ["-u", "-m", "tools.adg.mcp.server"],
+      "env": {
+        "ADG_DIR": "${AGENTIC_REPO_ROOT}/artifacts/adg",
+        "ADG_REDIS_URL": "${ADG_REDIS_URL}",
+        "PYTHONPATH": "${AGENTIC_REPO_ROOT}"
+      }
+    },
+    "deepwiki": {
+      "url": "https://mcp.deepwiki.com/mcp"
+    },
+    "memory": {
+      "command": "python",
+      "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/memory/adg_memory_server.py"],
+      "env": {
+        "ADG_REDIS_URL": "${ADG_REDIS_URL}",
+        "MEMORY_DB": "${AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite",
+        "PYTHONPATH": "${AGENTIC_REPO_ROOT}"
+      }
+    },
+    "vector_db": {
+      "command": "python",
+      "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/vector_db_server.py"],
+      "env": {
+        "PYTHONPATH": "${AGENTIC_REPO_ROOT}",
+        "VECTOR_DB_CHROMA_PATH": "${AGENTIC_REPO_ROOT}/data/cache/chromadb",
+        "VECTOR_DB_EMBEDDING_MODEL": "BAAI/bge-m3",
+        "VECTOR_DB_ALLOW_MODEL_DOWNLOAD": "0",
+        "HF_HUB_OFFLINE": "1",
+        "VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT": "90",
+        "VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT": "15",
+        "MCP_MAX_THREADPOOL_WORKERS": "2"
+      }
+    },
+    "otel_mcp": {
+      "command": "python",
+      "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/otel/otel_mcp_server.py"],
+      "env": {
+        "PYTHONPATH": "${AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED": "1",
+        "OTEL_MCP_RUNTIME_ADG_DIR": "${AGENTIC_REPO_ROOT}/agentic_core/L4_state/memory/runtime_adg"
+      }
+    },
+    "redis": {
+      "command": "python",
+      "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/redis_mcp_server.py"],
+      "env": {
+        "REDIS_DB": "0",
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": "6379",
+        "REDIS_TIMEOUT": "5",
+        "PYTHONPATH": "${AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "pytest_mcp": {
+      "command": "python",
+      "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/pytest_server.py"],
+      "env": {
+        "PYTHONPATH": "${AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "notion": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        "NOTION_TOKEN": "${NOTION_TOKEN}"
+      }
+    },
+    "tavily": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "tavily-mcp"],
+      "env": {
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}"
+      }
+    },
+    "context7": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@upstash/context7-mcp"]
+    },
+    "playwright": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@playwright/mcp"]
+    }
+  }
+}
