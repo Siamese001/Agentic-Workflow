@@ -21,10 +21,31 @@ Make the ADG generation pipeline run every CI gate, materialized-view (MV) phase
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W3
-LAST_COMPLETED_WAVE: W2
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: DONE
+LAST_COMPLETED_WAVE: W4
 LAST_UPDATED: 2026-06-07
+
+## Finalization (2026-06-07)
+
+Delivered + committed (`08453ed391`, 9 files): **W1.1** dispatcher snapshot pin,
+**W1.2** MV fail-fast guard + MV-present probe, **W1.3** MV progress bar, **W2.1**
+single shared WAL connection across MV phases A–F. Verified: 191 unit tests pass,
+manifest 16-gate contract intact, `materialize_all_views` produced all 52 MV
+tables on the live snapshot.
+
+**Deferred / reverted with evidence** — `W2.2` (P0-check conn coalesce: not worth
+rewriting a safety-gate's fail-closed flow for 2 opens/run); `W3.1` (dispatcher
+threading: **REVERTED**, warm parallel ~50s vs serial ~42.5s, GIL-bound gates —
+determinism passed but no speedup); `W3.2` (witness de-dup: coverage-only
+follow-up, not started per user "finalize now").
+
+**Corrected finding:** total ADG run is dominated by MV materialization (~530s
+sequential `CREATE TABLE AS SELECT`); the dispatcher (~45s) is a small slice and
+not profitably threadable. The pipeline was already well-optimized for
+throughput; the available wins were correctness/coverage, now delivered.
+
+PLAN_COMPLETE: plan=adg-gate-pipeline-efficiency-e4b1c7 note="W1+W2.1 delivered+committed; W2.2/W3.2 deferred, W3.1 reverted (measured slower); ADG perf is MV-dominated"
 
 ---
 
@@ -46,7 +67,7 @@ LAST_UPDATED: 2026-06-07
 | W1 | Correctness & coverage (snapshot pin, MV guard, MV progress bar) | ✅ DONE | 0 (191 existing pass) | 2 |
 | W2 | SQLite connection consolidation (MV single-conn ✅; inline P0 coalesce ⏸ deferred) | ✅ DONE | 0 | 7 |
 | W3 | Throughput & de-dup — W3.1 ❌ REVERTED (measured slower); W3.2 ⏳ pending decision | 🔄 IN PROGRESS | 0 | 0 |
-| W4 | Verification & evidence (timed smoke run, manifest contract, tests) | 🔲 TODO | — | — |
+| W4 | Verification & evidence (manifest contract ✅, 191 tests ✅, live MV run ✅; full cert regen deferred — parallel tree work) | ✅ DONE | 0 | 0 |
 
 ### Phase Progress
 
