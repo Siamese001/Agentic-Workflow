@@ -674,6 +674,21 @@ def run_modular_resume_generation(
                 )
                 for lane, oc in _outcomes.items():
                     lane_dispatch_results[lane] = dict(oc.dispatch_result)
+                    if oc.exec_status.startswith("pre_run_blocked:"):
+                        # Wave skipped after a prior-lane fail-closed abort: preserve the
+                        # blocker semantics the serial path records. Don't let the generic
+                        # status recompute downgrade it to dispatch_error/LANE_DISPATCH_EXIT_ERROR.
+                        lane_exec_status[lane] = oc.exec_status
+                        emit_integrated_lane_pre_run_failure(
+                            sections_root=sections_root,
+                            integrated_dir=art,
+                            repo_root=repo,
+                            lane_id=lane,
+                            blocker=PHASE1_PRIOR_LANE_FAILED_BLOCKER,
+                            dispatch_result=lane_dispatch_results[lane],
+                            lane_exec_status=oc.exec_status,
+                        )
+                        continue
                     lane_exec_status[lane] = _phase1_lane_dispatch_status(
                         lane_dispatch_results[lane]
                     )

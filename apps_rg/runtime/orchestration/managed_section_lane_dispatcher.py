@@ -16,9 +16,14 @@ _WAVE_ABORT_EXEC_STATUS = f"pre_run_blocked:{PHASE1_PRIOR_LANE_FAILED_BLOCKER}"
 
 
 def _skipped_prior_lane_abort(lane: str) -> LaneDispatchOutcome:
+    # Skipped wave after a prior-lane fail-closed abort. The lane never ran, so it
+    # carries no real dispatch exit_status -- the blocker lives in exec_status
+    # (pre_run_blocked:...) and dispatch_result["prior_abort"]. Emitting a generic
+    # exit_status="error" here would let downstream status recompute mislabel the
+    # skip as LANE_DISPATCH_EXIT_ERROR instead of PHASE1_PRIOR_LANE_FAILED.
     return LaneDispatchOutcome(
         lane=lane,
-        dispatch_result={"prior_abort": PHASE1_PRIOR_LANE_FAILED_BLOCKER, "exit_status": "error"},
+        dispatch_result={"prior_abort": PHASE1_PRIOR_LANE_FAILED_BLOCKER},
         exec_status=_WAVE_ABORT_EXEC_STATUS,
     )
 

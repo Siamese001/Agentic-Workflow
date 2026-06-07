@@ -150,3 +150,7 @@ def test_parallel_dispatch_skips_later_waves_after_abort() -> None:
     assert "unify_narrative" not in calls
     assert out["unify_narrative"].exec_status.startswith("pre_run_blocked:")
     assert out["unify_narrative"].dispatch_result.get("prior_abort")
+    # A skipped wave never ran, so it must not carry a generic dispatch exit_status:
+    # that would let downstream status recompute mislabel it as LANE_DISPATCH_EXIT_ERROR
+    # instead of preserving the PHASE1_PRIOR_LANE_FAILED blocker (see PR #251 review).
+    assert out["unify_narrative"].dispatch_result.get("exit_status") is None
