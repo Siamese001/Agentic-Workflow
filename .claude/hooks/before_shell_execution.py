@@ -1,4 +1,4 @@
-from lib.claude_hook_common import allow, block, contains_legacy_execution_token, read_payload, text_from_payload, warn, write_receipt
+from lib.claude_hook_common import allow, block, contains_legacy_execution_token, read_payload, text_from_payload, write_receipt
 
 payload = read_payload()
 text = text_from_payload(payload)
@@ -16,11 +16,6 @@ if risky:
     reason = "Shell command risks deleting active Cursor controls: " + ", ".join(risky)
     write_receipt("beforeShellExecution", payload, "block", reason)
     raise SystemExit(block(reason))
-
-if "powershell" in text.lower() or "pwsh" in text.lower():
-    reason = "Prefer bash/python argv commands for repo automation; PowerShell is warning-only here."
-    write_receipt("beforeShellExecution", payload, "warn", reason)
-    raise SystemExit(warn(reason))
 
 write_receipt("beforeShellExecution", payload, "allow", "command accepted")
 raise SystemExit(allow("command accepted"))

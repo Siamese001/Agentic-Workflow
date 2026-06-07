@@ -3,14 +3,13 @@
 pre_run_gate.py — Cursor pre_run_command hard gate (Phase 1.1).
 
 Reads JSON payload from stdin. Blocks (exit 2) on:
-  - PowerShell commands (powershell, pwsh — case-insensitive, any path prefix, .exe suffix)
+  - python -c quote hazards (pwsh tokenizer hangs)
+  - Interactive / stdin-blocking commands (pagers, editors, watchers, bare REPLs)
   - Full test-suite run during ADG repair (ADG_REPAIR_ACTIVE env var)
 
-SSOT for PowerShell ban enforcement (2026-04-08):
-  Pre-commit T7.8 file scanner (check_powershell_ban.py) was archived because
-  retroactive file scanning caused 7,244 false positives. This hook is the
-  single enforcement point — blocks Cursor Agent from running pwsh/powershell at
-  execution time, which is where the actual hang risk exists.
+PowerShell ban removed (Windsurf-era legacy): PowerShell is the primary Windows
+  shell and is permitted. The interactive/quote-hazard guards below remain — they
+  protect against turn-hanging commands regardless of shell.
 
 Fail policy: CLOSED — malformed/missing JSON → exit 2 with diagnostic.
 Zero hardcoded paths.
