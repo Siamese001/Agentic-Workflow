@@ -59,7 +59,7 @@ from apps_rg.runtime.sections.companion_lane_context import (
 )
 from apps_rg.runtime.sections.competencies_lane_defaults import (
     BRIEFING_DEFAULT,
-    COMPETENCIES_QWEN_MAX_TOKENS,
+    COMPETENCIES_MAX_OUTPUT_TOKENS,
     COMPETENCIES_TEMP_DEFAULT,
     JD_TEXT_DEFAULT,
     LANE_KEY,
@@ -1180,7 +1180,7 @@ def retry_qwen_for_parse(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(
         tag_reasoning_lane(repair_payload, LANE_KEY),
         artifact_dir=artifact_dir,
@@ -1369,7 +1369,7 @@ def retry_qwen_competency_restatement(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(
         tag_reasoning_lane(repair_payload, LANE_KEY),
         artifact_dir=artifact_dir,

@@ -77,8 +77,18 @@ def test_resolve_provider_context_window_matches_l0(monkeypatch: pytest.MonkeyPa
 
 
 def test_regen_output_capped_by_scratch(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS", "1024")
-    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS", "3000")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS", "1024")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", "3000")
     importlib.reload(limits)
     assert limits.resolve_scratch_max_output_tokens() == 1024
+    assert limits.resolve_regen_max_output_tokens() == 1024
+
+
+def test_legacy_qwen_output_envs_remain_supported(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS", raising=False)
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", raising=False)
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS", "1536")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS", "1024")
+    importlib.reload(limits)
+    assert limits.resolve_scratch_max_output_tokens() == 1536
     assert limits.resolve_regen_max_output_tokens() == 1024

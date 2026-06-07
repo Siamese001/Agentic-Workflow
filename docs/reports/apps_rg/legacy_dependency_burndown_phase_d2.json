@@ -44,7 +44,7 @@
         "TARGET_*",
         "JD_TEXT_DEFAULT",
         "BRIEFING_DEFAULT",
-        "COMPETENCIES_QWEN_MAX_TOKENS",
+        "COMPETENCIES_MAX_OUTPUT_TOKENS",
         "REPO_ROOT",
         "LANE_KEY"
       ],
@@ -58,7 +58,7 @@
         "TARGET_*",
         "JD_TEXT_DEFAULT",
         "BRIEFING_DEFAULT",
-        "NARRATIVE_QWEN_MAX_TOKENS",
+        "NARRATIVE_MAX_OUTPUT_TOKENS",
         "REPO_ROOT",
         "LANE_KEY"
       ],

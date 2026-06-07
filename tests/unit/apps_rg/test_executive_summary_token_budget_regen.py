@@ -21,15 +21,18 @@ from apps_rg.runtime.sections.executive_summary_token_budget import (
 
 
 def test_regen_max_output_defaults_and_cap(monkeypatch) -> None:
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", raising=False)
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS", raising=False)
     assert resolve_scratch_max_output_tokens() == 2048
     assert resolve_regen_max_output_tokens() == 2048
-    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS", "3000")
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", "3000")
     assert resolve_regen_max_output_tokens() == 2048
 
 
 def test_regen_dispatch_blocks_when_thread_exceeds_window(monkeypatch) -> None:
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "1")
     monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "4096")
     huge = "word " * 20000
     messages = [{"role": "system", "content": huge}, {"role": "user", "content": huge}]
@@ -41,6 +44,7 @@ def test_regen_dispatch_blocks_when_thread_exceeds_window(monkeypatch) -> None:
 
 
 def test_budgeted_regen_fail_closed_before_transport(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "1")
     monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "4096")
     clear_regen_budget_ledger(tmp_path)
     messages = [{"role": "user", "content": "x " * 50000}]

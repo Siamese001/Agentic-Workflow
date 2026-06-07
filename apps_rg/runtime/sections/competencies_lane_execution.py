@@ -187,7 +187,7 @@ def run_competencies_lane_execution(
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
-        max_tokens=COMPETENCIES_QWEN_MAX_TOKENS,
+        max_tokens=COMPETENCIES_MAX_OUTPUT_TOKENS,
         timeout_seconds=competencies_vllm_chat_timeout_s(),
     )
     provider_request_data = provider_req.to_dict()
@@ -726,7 +726,7 @@ def run_competencies_lane_execution(
     write_json(artifact_dir / "l2_output.json", l2_output)
 
     l6_temp = float(args.temperature)
-    l6_max = COMPETENCIES_QWEN_MAX_TOKENS
+    l6_max = COMPETENCIES_MAX_OUTPUT_TOKENS
     gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,

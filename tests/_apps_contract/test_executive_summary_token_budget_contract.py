@@ -118,7 +118,7 @@ def test_provider_request_mock_fallback_not_introduced_by_token_budget():
 def test_live_run_writes_token_budget_receipt():
     env = {
         **os.environ,
-        "APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS": "1024",
+        "APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS": "1024",
         "APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO": "1",
     }
     result = subprocess.run(

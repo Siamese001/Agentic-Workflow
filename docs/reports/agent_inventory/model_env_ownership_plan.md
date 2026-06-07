@@ -55,7 +55,7 @@ Planning-only — no env defaults changed in this pass.
 | Env var | Purpose |
 |---------|---------|
 | `QWEN_VLLM_MODEL`, `VLLM_*` | Section lanes via [qwen_vllm_provider.py](../../apps_rg/runtime/providers/qwen_vllm_provider.py) |
-| `APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS` | Lane-specific caps |
+| `APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS` | Lane-specific caps |
 | `APPS_RG_L2_PROVIDER_MODE` | `stub_only` / `live_allowed` — CI vs external API |
 | `APPS_RG_QWEN_OFFLINE_CONTRACT_STUB` | Deterministic offline only |
 | `APPS_RG_R4_GENERATION_MODE` | `modular_section_lanes` (default) vs `legacy_full_resume` rollback |

@@ -13,7 +13,7 @@ TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
 BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
-NARRATIVE_QWEN_MAX_TOKENS = 1200
+NARRATIVE_MAX_OUTPUT_TOKENS = 1200
 LANE_KEY = "ibm_narrative"
 
 

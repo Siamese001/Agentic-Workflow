@@ -12,7 +12,7 @@ SCOPE_DRIFT: none — proof-only wave, no code changes
 
 | Command | Exit code |
 |---------|----------:|
-| `$env:APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS='1024'; python -m apps_rg --section executive_summary --target-company "Brown & Brown" --target-role "Senior Vice President, IT Strategy & Innovation" --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.txt` | **0** (CLI inspection path; L2 generation **BLOCKED**) |
+| `$env:APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS='1024'; python -m apps_rg --section executive_summary --target-company "Brown & Brown" --target-role "Senior Vice President, IT Strategy & Innovation" --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.txt` | **0** (CLI inspection path; L2 generation **BLOCKED**) |
 
 No `--allow-non-allow-exit-zero` used.
 

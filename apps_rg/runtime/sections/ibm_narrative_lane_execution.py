@@ -191,7 +191,7 @@ def run_ibm_narrative_lane_execution(
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
-        max_tokens=NARRATIVE_QWEN_MAX_TOKENS,
+        max_tokens=NARRATIVE_MAX_OUTPUT_TOKENS,
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
@@ -658,7 +658,7 @@ def run_ibm_narrative_lane_execution(
     write_json(artifact_dir / "l2_output.json", l2_output)
 
     l6_temp = float(args.temperature)
-    l6_max = NARRATIVE_QWEN_MAX_TOKENS
+    l6_max = NARRATIVE_MAX_OUTPUT_TOKENS
     gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,

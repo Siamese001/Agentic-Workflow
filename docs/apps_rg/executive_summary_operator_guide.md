@@ -108,8 +108,8 @@ All **post-scratch** regen/repair Qwen calls go through `budgeted_qwen_regen_cal
 |----------|-----------|---------|
 | `VLLM_MAX_MODEL_LEN` | `24576` (must match Docker `--max-model-len`) | Operator-declared context window |
 | `APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW` | `0` (off) | `=1` probes `/v1/models` for `max_model_len` metadata (W2.1) |
-| `APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS` | `2048` | Scratch generation cap only |
-| `APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS` | `2048` | All synthesis/judge/X2-repair regen (≤ scratch cap) |
+| `APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS` | `2048` | Scratch generation cap only; legacy `APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS` is still accepted |
+| `APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS` | `2048` | All synthesis/judge/X2-repair regen (≤ scratch cap); legacy `APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS` is still accepted |
 | `APPS_RG_QWEN_TIMEOUT_SECONDS` | `90`–`120` | **Transport** timeout per chat completion (not token budget) |
 | `APPS_RG_QWEN_TRANSPORT_MAX_ATTEMPTS` | `3` | HTTP retries on transient failures only (not semantic regen attempts) |
 | `APPS_RG_QWEN_MODELS_PROBE_TIMEOUT_SECONDS` | `5` | `/v1/models` probe when verify flag is on |

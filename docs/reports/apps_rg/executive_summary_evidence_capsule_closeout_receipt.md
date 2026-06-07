@@ -18,7 +18,7 @@ SCOPE_DRIFT: none (no agentic_core, no judge thresholds, no unrelated lanes)
 | Command | Exit code |
 |---------|----------:|
 | `python -m pytest tests/unit/.../test_executive_summary_evidence_capsule.py tests/_apps_contract/test_executive_summary_evidence_capsule_contract.py tests/unit/.../test_executive_summary_token_budget.py tests/_apps_contract/test_executive_summary_token_budget_contract.py -q` | 0 — **14 passed**, 1 skipped |
-| `$env:APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS='1024'; python -m apps_rg --section executive_summary ...` (Brown & Brown) | 0 — L2 **BLOCKED** `TOKEN_BUDGET_EXCEEDED_AFTER_TRIM` |
+| `$env:APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS='1024'; python -m apps_rg --section executive_summary ...` (Brown & Brown) | 0 — L2 **BLOCKED** `TOKEN_BUDGET_EXCEEDED_AFTER_TRIM` |
 
 ## TESTS_GATES
 

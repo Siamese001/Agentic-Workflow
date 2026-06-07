@@ -87,7 +87,7 @@ from apps_rg.runtime.validators.unify_bullets_x2 import (
 PROMPT_ID = "unify_bullet_tailor_v1"
 UNIFY_TEMP_DEFAULT = 0.45
 UNIFY_TEMP_RANGE = (0.35, 0.55)
-UNIFY_QWEN_MAX_TOKENS = 2400
+UNIFY_MAX_OUTPUT_TOKENS = 2400
 TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
@@ -482,7 +482,7 @@ def retry_qwen_for_parse(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": UNIFY_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": UNIFY_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
@@ -740,7 +740,7 @@ def run_unify_bullets_execution(
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
-        max_tokens=UNIFY_QWEN_MAX_TOKENS,
+        max_tokens=UNIFY_MAX_OUTPUT_TOKENS,
         temperature_bounds=UNIFY_TEMP_RANGE,
     )
     provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
@@ -1054,7 +1054,7 @@ def run_unify_bullets_execution(
     )
 
     l6_temp = float(args.temperature)
-    l6_max = UNIFY_QWEN_MAX_TOKENS
+    l6_max = UNIFY_MAX_OUTPUT_TOKENS
     gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6_base = build_l6_shadow_package(
         artifact_dir=artifact_dir,
@@ -1240,7 +1240,7 @@ __all__ = [
     "REPO_ROOT",
     "TARGET_COMPANY_DEFAULT",
     "TARGET_TITLE_DEFAULT",
-    "UNIFY_QWEN_MAX_TOKENS",
+    "UNIFY_MAX_OUTPUT_TOKENS",
     "UNIFY_TEMP_DEFAULT",
     "UNIFY_TEMP_RANGE",
     "build_mock_output",

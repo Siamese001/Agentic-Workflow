@@ -90,7 +90,7 @@ UNIFY_NARRATIVE_C0_BULLET_PRIORITY: tuple[str, ...] = (
 PROMPT_ID = "unify_position_narrative_v1"
 NARRATIVE_TEMP_DEFAULT = 0.45
 NARRATIVE_TEMP_RANGE = (0.35, 0.55)
-NARRATIVE_QWEN_MAX_TOKENS = 1200
+NARRATIVE_MAX_OUTPUT_TOKENS = 1200
 TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
@@ -459,7 +459,7 @@ def retry_qwen_for_parse(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
@@ -711,7 +711,7 @@ def run_unify_narrative_execution(
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
-        max_tokens=NARRATIVE_QWEN_MAX_TOKENS,
+        max_tokens=NARRATIVE_MAX_OUTPUT_TOKENS,
         temperature_bounds=NARRATIVE_TEMP_RANGE,
     )
     provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
@@ -1030,7 +1030,7 @@ def run_unify_narrative_execution(
     )
 
     l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT
-    l6_max = NARRATIVE_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
+    l6_max = NARRATIVE_MAX_OUTPUT_TOKENS if args.provider == "qwen_vllm" else None
     gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,
@@ -1190,7 +1190,7 @@ __all__ = [
     "BRIEFING_DEFAULT",
     "JD_TEXT_DEFAULT",
     "LANE_KEY",
-    "NARRATIVE_QWEN_MAX_TOKENS",
+    "NARRATIVE_MAX_OUTPUT_TOKENS",
     "NARRATIVE_TEMP_DEFAULT",
     "NARRATIVE_TEMP_RANGE",
     "PROMPT_ID",

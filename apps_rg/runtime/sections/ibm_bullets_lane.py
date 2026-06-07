@@ -112,7 +112,7 @@ BULLET_ID_ALIASES = {
     **{f"B{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
     **{f"b{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
 }
-IBM_QWEN_MAX_TOKENS = 2200
+IBM_MAX_OUTPUT_TOKENS = 2200
 
 
 def _find_repo_root() -> Path:
@@ -330,7 +330,7 @@ def retry_qwen_for_parse(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": IBM_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": IBM_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if not generation_status_allows_qwen_json_parse(result.runtime_generation_status):
         return raw_output, None, parse_error
@@ -882,7 +882,7 @@ def run_ibm_bullets_execution(
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
-        max_tokens=IBM_QWEN_MAX_TOKENS,
+        max_tokens=IBM_MAX_OUTPUT_TOKENS,
         temperature_bounds=IBM_TEMP_RANGE,
     )
     provider_request_data = provider_req.to_dict()
@@ -1257,7 +1257,7 @@ def run_ibm_bullets_execution(
     write_json(artifact_dir / "l2_output.json", l2_output)
 
     l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else IBM_TEMP_DEFAULT
-    l6_max = IBM_QWEN_MAX_TOKENS if args.provider == "qwen_vllm" else None
+    l6_max = IBM_MAX_OUTPUT_TOKENS if args.provider == "qwen_vllm" else None
     gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6_base = build_l6_shadow_package(
         artifact_dir=artifact_dir,
@@ -1412,7 +1412,7 @@ __all__ = [
     "DEFAULT_INTENSITY_BY_BULLET",
     "IBM_BULLET_IDS",
     "IBM_DEFAULT_DISTRIBUTION",
-    "IBM_QWEN_MAX_TOKENS",
+    "IBM_MAX_OUTPUT_TOKENS",
     "IBM_TEMP_DEFAULT",
     "IBM_TEMP_RANGE",
     "JD_TEXT_DEFAULT",

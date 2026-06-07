@@ -16,7 +16,7 @@ Wave 1 inspects the four blocker runs cited in [live_qwen_all_section_outputs.js
 
 **Root cause:** Transport timeout under prompt bloat + very high completion budget (4096 tokens), not skills-graph regression. The PA injects a large `VERIFIED_SKILL_INVENTORY_PROJECTION` block (12k-char cap) on top of employment facts.
 
-**Planned fix (Wave 2):** Lower `COMPETENCIES_QWEN_MAX_TOKENS` to 1600, cap projection inject to 4500 chars, competencies-only chat timeout 120s (`APPS_RG_COMPETENCIES_QWEN_CHAT_TIMEOUT_SECONDS`).
+**Planned fix (Wave 2):** Lower `COMPETENCIES_MAX_OUTPUT_TOKENS` to 1600, cap projection inject to 4500 chars, competencies-only chat timeout 120s (`APPS_RG_COMPETENCIES_QWEN_CHAT_TIMEOUT_SECONDS`).
 
 ## IBM bullets (`ibm_bullets_20260518_234400`)
 

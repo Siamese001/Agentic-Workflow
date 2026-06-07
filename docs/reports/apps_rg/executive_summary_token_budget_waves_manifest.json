@@ -78,5 +78,5 @@
     }
   ],
   "supersedes_run": "artifacts/apps_rg/runtime_proofs/executive_summary/real/exec_summary_20260520_134924",
-  "canonical_proof_command": "APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS=1024 python -m apps_rg --section executive_summary --target-company \"Brown & Brown\" --target-role \"Senior Vice President, IT Strategy & Innovation\" --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.txt"
+  "canonical_proof_command": "APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS=1024 python -m apps_rg --section executive_summary --target-company \"Brown & Brown\" --target-role \"Senior Vice President, IT Strategy & Innovation\" --jd apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt --manual-brief apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing_exec.txt"
 }
