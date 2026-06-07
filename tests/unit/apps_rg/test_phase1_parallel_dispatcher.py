@@ -19,7 +19,13 @@ def test_build_phase1_waves_wave0_is_upstream_proof_bearing() -> None:
     waves = build_phase1_waves()
     assert waves
     wave0 = waves[0]
-    assert set(wave0.lanes) == {"competencies", "unify_bullets", "ibm_bullets"}
+    assert set(wave0.lanes) == {
+        "competencies",
+        "unify_bullets",
+        "ibm_bullets",
+        "insurtech_bullets",
+        "ey_bullets",
+    }
     assert "executive_summary" not in wave0.lanes
 
 
@@ -58,7 +64,12 @@ def test_section_dag_narrative_never_precedes_companion_bullets() -> None:
 def test_build_phase1_waves_narratives_serial_after_bullets() -> None:
     waves = build_phase1_waves()
     nar_wave = next(w for w in waves if "unify_narrative" in w.lanes)
-    assert set(nar_wave.lanes) == {"unify_narrative", "ibm_narrative"}
+    assert set(nar_wave.lanes) == {
+        "unify_narrative",
+        "ibm_narrative",
+        "insurtech_narrative",
+        "ey_narrative",
+    }
     assert nar_wave.max_parallel == 1
 
 
@@ -97,3 +108,49 @@ def test_phase1_parallel_env_default_off(monkeypatch) -> None:
     assert phase1_parallel_enabled(profile_flag=False) is False
     monkeypatch.setenv("APPS_RG_PARALLEL_PHASE1_LANES", "1")
     assert phase1_parallel_enabled(profile_flag=False) is True
+
+
+def test_parallel_dispatch_skips_later_waves_after_abort() -> None:
+    """A later wave must not run when an earlier wave sets should_skip_remaining_waves (fail-closed parity).
+
+    Lanes are chosen to span two waves under build_phase1_waves(): unify_bullets is in
+    wave 0, unify_narrative in wave 1. Aborting on the wave-0 lane must skip the wave-1 lane.
+    """
+    calls: list[str] = []
+    aborted = False
+
+    def _fn(**kwargs: object) -> dict[str, str]:
+        lane = str(kwargs.get("section") or "")
+        calls.append(lane)
+        if lane == "unify_bullets":
+            nonlocal aborted
+            aborted = True
+            return {"section": lane, "exit_status": "error", "fault": "dispatch_failed"}
+        return {"section": lane, "exit_status": "ok"}
+
+    ctx = LaneExecutionContext(
+        sections_root="/tmp/sections",
+        target_company="Acme",
+        target_role="VP",
+        job_description_ref="",
+        job_description_text="",
+        manual_brief="",
+        lane_provider="mock",
+        lane_x1d_judges=(),
+        lane_mock_judges=True,
+    )
+    out = dispatch_phase1_lanes_managed(
+        ("unify_bullets", "unify_narrative"),
+        ctx,
+        dispatch_fn=_fn,
+        parallel=True,
+        max_parallel=2,
+        should_skip_remaining_waves=lambda: aborted,
+    )
+    assert "unify_narrative" not in calls
+    assert out["unify_narrative"].exec_status.startswith("pre_run_blocked:")
+    assert out["unify_narrative"].dispatch_result.get("prior_abort")
+    # A skipped wave never ran, so it must not carry a generic dispatch exit_status:
+    # that would let downstream status recompute mislabel it as LANE_DISPATCH_EXIT_ERROR
+    # instead of preserving the PHASE1_PRIOR_LANE_FAILED blocker (see PR #251 review).
+    assert out["unify_narrative"].dispatch_result.get("exit_status") is None
