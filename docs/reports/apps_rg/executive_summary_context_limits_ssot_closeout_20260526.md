@@ -40,6 +40,6 @@ pytest tests/unit/apps_rg/runtime/sections/test_executive_summary_context_limits
 
 ## Out of scope (unchanged)
 
-- Per-section lane `*_QWEN_MAX_TOKENS` (headline, unify, ibm)
+- Per-section lane `*_MAX_OUTPUT_TOKENS` (headline, unify, ibm)
 - `agentic_core` repair_policy regen flags
 - Mandatory new `.env` keys (catalog in `.env.example` only)

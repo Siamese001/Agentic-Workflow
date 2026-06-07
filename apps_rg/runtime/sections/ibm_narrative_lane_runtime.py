@@ -54,7 +54,7 @@ from apps_rg.runtime.sections.ibm_narrative_lane_defaults import (
     BRIEFING_DEFAULT,
     JD_TEXT_DEFAULT,
     LANE_KEY,
-    NARRATIVE_QWEN_MAX_TOKENS,
+    NARRATIVE_MAX_OUTPUT_TOKENS,
     NARRATIVE_TEMP_DEFAULT,
     PROMPT_ID,
     REPO_ROOT,
@@ -403,7 +403,7 @@ def retry_qwen_for_parse(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
@@ -439,7 +439,7 @@ def retry_qwen_for_metric_budget(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, parsed
@@ -566,5 +566,4 @@ def __getattr__(name: str) -> Any:
 
 def __dir__() -> list[str]:
     return sorted(set(globals().keys()) | _LANE_EXEC_EXPORTS)
-
 

@@ -34,7 +34,7 @@ Token policy for `apps_rg` executive summary is **strong for the first Qwen call
 
 ### 2. Output cap (scratch — adequate)
 
-- `APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS` default **2048** ([executive_summary_lane.py](../../apps_rg/runtime/sections/executive_summary_lane.py) L38–40)
+- `APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS` default **2048** ([executive_summary_lane.py](../../apps_rg/runtime/sections/executive_summary_lane.py) L38–40)
 - Replaced stale `build_qwen_request` default of **700**
 - Typical completion (6 sentences + `claim_ledger` + `self_check` + `executive_strategy_thesis`): ~800–1400 tokens
 
@@ -89,7 +89,7 @@ Operators must set env to match **actual** vLLM deployment.
 
 See plan [exec-summary-qwen-regen-token-budget-c4e8a1.md](../../.cursor/plans/exec-summary-qwen-regen-token-budget-c4e8a1.md).
 
-1. **W1** — `estimate_regen_thread_tokens`, fail-closed regen guard, `APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS=1024`, judge thread cap  
+1. **W1** — `estimate_regen_thread_tokens`, fail-closed regen guard, `APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS=1024`, judge thread cap
 2. **W2** — Align `VLLM_MAX_MODEL_LEN`; first-pass ≤85% fill policy  
 3. **W3** — `executive_summary_qwen_call_plan.json` + operator guide  
 4. **W4** — Optional apps env for `max_delta_tokens` (≤768)
@@ -108,8 +108,8 @@ See plan [exec-summary-qwen-regen-token-budget-c4e8a1.md](../../.cursor/plans/ex
 
 ```text
 VLLM_MAX_MODEL_LEN=16384          # or 32768 if server supports it
-APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS=2048
-APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS=1024   # proposed
+APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS=2048
+APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS=1024   # proposed
 APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS=1        # 3 for soak
 APPS_RG_QWEN_TIMEOUT_SECONDS=90
 APPS_RG_QWEN_TRANSPORT_MAX_ATTEMPTS=3

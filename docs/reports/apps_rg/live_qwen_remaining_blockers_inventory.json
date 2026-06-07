@@ -22,7 +22,7 @@
         "skills_authority_status": "PASS"
       },
       "planned_fix": [
-        "Reduce COMPETENCIES_QWEN_MAX_TOKENS to 1600",
+        "Reduce COMPETENCIES_MAX_OUTPUT_TOKENS to 1600",
         "Cap skill projection inject to 4500 chars",
         "Raise competencies chat timeout to 120s via APPS_RG_COMPETENCIES_QWEN_CHAT_TIMEOUT_SECONDS"
       ]

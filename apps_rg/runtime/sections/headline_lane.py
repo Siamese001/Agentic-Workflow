@@ -90,7 +90,7 @@ TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
 BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
-HEADLINE_QWEN_MAX_TOKENS = 900
+HEADLINE_MAX_OUTPUT_TOKENS = 900
 
 # Parse/normalize model JSON for live Qwen and for offline contract stub (same payload shape).
 _HEADLINE_JSON_OUTPUT_STATUSES: frozenset[str] = frozenset({"REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS})
@@ -693,7 +693,7 @@ def retry_qwen_for_parse(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
@@ -728,7 +728,7 @@ def retry_headline_word_and_pipe(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, parsed, None
@@ -842,7 +842,7 @@ def retry_headline_proof_shape(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_QWEN_MAX_TOKENS}
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
     result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, failed_snapshot, None
@@ -1126,7 +1126,7 @@ def run_headline_execution(
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
         temperature=args.temperature,
-        max_tokens=HEADLINE_QWEN_MAX_TOKENS,
+        max_tokens=HEADLINE_MAX_OUTPUT_TOKENS,
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
@@ -1721,7 +1721,7 @@ def run_headline_execution(
     write_json(artifact_dir / "section_metric_receipt.json", _smr_h)
 
     l6_temp = float(args.temperature)
-    l6_max = HEADLINE_QWEN_MAX_TOKENS
+    l6_max = HEADLINE_MAX_OUTPUT_TOKENS
     gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,
