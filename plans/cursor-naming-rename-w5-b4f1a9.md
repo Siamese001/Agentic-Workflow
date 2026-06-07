@@ -45,11 +45,11 @@ relates_to:
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W1 | R1.1–R1.2 | Safety prep + ledger-drift resolution | ~8k | `.cursor/state` vs `.claude/state` resolvable from refs | ⬜ Not Started | Rollback tag set; authoritative ledger location decided + documented |
+| W1 | R1.1–R1.2 | Safety prep + ledger-drift resolution | ~8k | `.cursor/state` vs `.claude/state` resolvable from refs | ✅ Done (2026-06-07) | Tag `pre-w5-rename-b4f1a9`@d345db6 set. **Ledger drift RESOLVED:** authoritative = `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite` (live 188KB, `ledger_paths.py` SSOT, §30). `.cursor/state/` is empty; `path_constants.CURSOR_STATE_DIR` is a dead constant → **W5 needs no data migration** (see R1.2 note). |
 | W2 | R2.1–R2.2 | `tools/windsurf/` → `tools/plan_lifecycle/` (lowest risk) | ~10k | Compat shim viable; prior `rewrite_windsurf_refs_to_cursor.py` map reusable | ⬜ Not Started | 3 tools moved + shim; importlib consumer + CLI + companion updated; smoke run exits 0 |
 | W3 | R3.1–R3.2 | `post_cursor_agent_*.py` → `post_agent_*.py` | ~14k | Dispatch + deny-token guard editable atomically | ⬜ Not Started | Scripts renamed; dispatch/CI/tests updated; after-agent chain fires; gates green |
 | W4 | R4.1–R4.3 | `artifacts/cursor/` → `artifacts/governance/` (highest risk) | ~16k | Dual-read migration preserves in-flight session-state | ⬜ Not Started | Dual-read live; writers updated; no lost session-state; gates green |
-| W5 | R5.1–R5.3 | `.cursor/state/` → `.claude/state/` ledger (core + CI) | ~12k | Author-Gate approves core edit; GH-workflow edit atomic | ⬜ Not Started | Ledger migrated; `path_constants` + workflow updated; AG ledger intact; CI upload works |
+| W5 | R5.1–R5.3 | Ledger **dead-pointer cleanup** (core + CI) — *risk downgraded by R1.2* | ~6k | Data already at `.claude/state`; no migration | ⬜ Not Started | Dead `path_constants.CURSOR_STATE_DIR` removed (Author-Gate); GH workflow repointed to `.claude/state`; schema-doc comment fixed; empty `.cursor/state` deleted |
 | W6 | R6.1–R6.2 | Deferred dec0de W3 config + final guard restore | ~8k | `_legacy_windsurf` importers migrated by now | ⬜ Not Started | `excluded_paths`/`path_constants` mirror cleaned + drift gate green; `T6a` retired or repointed; shell guard restored at new tokens |
 | W7 | R7.1 | Verify zero-brand + close | ~4k | All prior waves green | ⬜ Not Started | Repo scan: only intentional history remains; both plans closed |
 
@@ -57,8 +57,8 @@ relates_to:
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| R1.1 | Rollback tag | git tag | — | ~1k | ⬜ |
-| R1.2 | Resolve ledger drift | `path_constants.py`, `.github/workflows/author-gate-gates.yml`, `decision_ledger.schema.sql`, `.cursor/state/**`, `.claude/state/**` | Two locations referenced; must pick authoritative + reconcile data | ~7k | ⬜ |
+| R1.1 | Rollback tag | git tag | — | ~1k | ✅ Done — `pre-w5-rename-b4f1a9`@d345db6 |
+| R1.2 | Resolve ledger drift | `path_constants.py`, `.github/workflows/author-gate-gates.yml`, `decision_ledger.schema.sql`, `.cursor/state/**`, `.claude/state/**` | Two locations referenced; must pick authoritative + reconcile data | ~7k | ✅ Done — authoritative=`.claude/state`; `.cursor/state` empty; no data migration needed |
 | R2.1 | Move `tools/windsurf/` → `tools/plan_lifecycle/` + compat shim | `tools/windsurf/**` (3 tools) | Sunset shim; importlib string consumer | ~6k | ⬜ |
 | R2.2 | Update consumers | `post_cursor_agent_wave_lifecycle_capture.py`, `agents-tier1-companion.md`, CLI refs, CI gates | importlib module string | ~4k | ⬜ |
 | R3.1 | Rename `post_cursor_agent_*.py` → `post_agent_*.py` | ~30 scripts + `_legacy_cursor/` | Atomic with dispatch + deny-token | ~9k | ⬜ |
@@ -75,11 +75,19 @@ relates_to:
 
 ## Wave Detail
 
-### W1 — Safety prep + ledger-drift resolution
-- **R1.1** `git tag pre-w5-rename-b4f1a9` before any change.
-- **R1.2** Determine the authoritative Author-Gate ledger: enumerate readers/writers of `.cursor/state/`
-  vs `.claude/state/`; confirm which path the live capture chain actually writes/reads at runtime;
-  document the decision. This MUST precede W5 (ledger rename) — wrong choice loses capture history.
+### W1 — Safety prep + ledger-drift resolution ✅ DONE (2026-06-07)
+- **R1.1** ✅ `git tag pre-w5-rename-b4f1a9` @ `d345db6`.
+- **R1.2** ✅ **RESOLVED. Authoritative ledger = `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite`.**
+  Evidence (DIRECTLY OBSERVED): (1) only ledger DB on disk is at `.claude/state/...` (188 KB, mtime 2026-06-07 15:06);
+  (2) `tools/refactor_decisions/ledger_paths.py:3,16` declares the writable SSOT there; (3) `ops_scripts/ci/_governance_paths.py:17`
+  resolves `CURSOR_STATE_DIR → .claude/state`; (4) constitutional §30.
+  - `.cursor/state/` on disk = empty (only an empty `author_gate_queue/`). **No live ledger data there.**
+  - `agentic_core/L0_routing/config/path_constants.py:189 CURSOR_STATE_DIR=".cursor/state"` is a **dead constant**
+    (only refs: its own def + `__all__` export; no functional importer — the live code uses `ledger_paths.py` / `_governance_paths.py`).
+  - `.github/workflows/author-gate-gates.yml` uploads from `.cursor/state/...` → **already a broken/empty-path upload**.
+  - **Correction to P5.1 / dec0de W2:** the earlier "deleting `.cursor/` destroys the live ledger" warning was DERIVED from
+    stale path *references*; disk truth shows `.cursor/state` is empty. W5 ledger work is therefore **dead-pointer cleanup**, not
+    data migration — `.cursor/state` is safe to delete.
 
 ### W2 — `tools/windsurf/` → `tools/plan_lifecycle/` (lowest risk first)
 - **R2.1** `git mv` the 3 tools; leave a compat shim at `tools/windsurf/` for the sunset window.
