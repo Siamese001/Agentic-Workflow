@@ -69,6 +69,11 @@ from apps_rg.runtime.cli_section_execution_report import (
 from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
 from apps_rg.runtime.runtime_proof_layout import find_repo_root
 from apps_rg.runtime.section_cli_defaults import SectionCliConfigError
+from apps_rg.runtime.section_execution_plan import (
+    GENERATED_CONTENT_LANES,
+    MAX_SECTION_ATTEMPTS,
+    is_hard_no_retry_runtime_status,
+)
 
 __all__ = [
     "_assert_artifact_matches_company",
@@ -545,7 +550,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--section",
         default="",
-        choices=["", "headline", "executive_summary", "unify_bullets", "unify_narrative", "ibm_bullets", "ibm_narrative", "competencies"],
+        choices=("", *GENERATED_CONTENT_LANES),
         help="Run a single section lane through the apps_rg orchestrator (default: full R4 product).",
     )
     p.add_argument(
@@ -706,15 +711,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         if dr:
             args.resume = dr
 
-    section_lane_ids = (
-        "headline",
-        "executive_summary",
-        "unify_bullets",
-        "unify_narrative",
-        "ibm_bullets",
-        "ibm_narrative",
-        "competencies",
-    )
+    section_lane_ids = GENERATED_CONTENT_LANES
     section_eff = str(getattr(args, "section", "") or "").strip().lower()
 
     from apps_rg.runtime.qwen_live_only_guard import assert_production_runtime, is_test_harness
@@ -961,17 +958,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             # disposition matching --accept. Each call writes its own timestamped artifact
             # dir; we only PIN the last accepting one (or the final attempt's dir if none
             # accept). No subprocess boundary — the harness is gone.
-            from apps_rg.runtime.validators.companion_bullet_finalization import (
-                is_upstream_blocked_runtime_status,
-            )
-
             # Global retry cap: attempts default to 2 max. Retries are for LOCAL repair only
             # (weak phrasing, judge tie, repairable metric drift) — never to brute-force missing
             # upstream proof. Values above 2 are clamped so these seven content sections never
             # pay 4x preflight for a section whose dominant failure mode is mechanical or
             # upstream (which more attempts cannot fix).
-            _MAX_SECTION_ATTEMPTS = 2
-            attempts = max(1, min(_MAX_SECTION_ATTEMPTS, int(getattr(args, "attempts", 1) or 1)))
+            attempts = max(1, min(MAX_SECTION_ATTEMPTS, int(getattr(args, "attempts", 1) or 1)))
             accept_mode = str(getattr(args, "accept", "allow") or "allow").lower()
             accepting_dispositions: set[str] = {"X3_ALLOW"}
             if accept_mode in ("review", "any"):
@@ -1048,7 +1040,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 # dependency-ordered execution (competencies->bullets->narratives->exec->headline)
                 # ensures dependent downstream sections also surface their own upstream block
                 # rather than retrying.
-                if is_upstream_blocked_runtime_status(_gen):
+                if is_hard_no_retry_runtime_status(_gen):
                     print(
                         f"[apps_rg --attempts] section={section_eff} "
                         f"upstream_blocked_after_attempt_{_attempt_idx} (status={_gen}) — "

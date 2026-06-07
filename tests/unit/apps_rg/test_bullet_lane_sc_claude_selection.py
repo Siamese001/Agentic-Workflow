@@ -14,6 +14,7 @@ from apps_rg.runtime.judges.bullet_pool_claude_selector import (
 )
 from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
+    BULLET_POOL_LANES,
     SelfConsistencyPath,
     bullet_lane_sc_enabled,
     self_consistency_path_count,
@@ -67,6 +68,12 @@ def test_temperature_ladder_respects_bounds() -> None:
 def test_bullet_lane_sc_disable_env() -> None:
     with patch.dict("os.environ", {"APPS_RG_BULLET_SC_DISABLE": "1"}):
         assert bullet_lane_sc_enabled("unify_bullets") is False
+
+
+def test_bullet_lane_sc_enabled_for_registered_role_bullet_lanes() -> None:
+    assert {"unify_bullets", "ibm_bullets"} <= set(BULLET_POOL_LANES)
+    for lane in ("unify_bullets", "ibm_bullets"):
+        assert bullet_lane_sc_enabled(lane) is True
 
 
 def test_merge_bullet_selections_enforces_min_score() -> None:
@@ -216,6 +223,7 @@ def test_employment_targeting_includes_jd_briefing_and_pool_contract() -> None:
             "target_company": "Acme",
             "proof_pool_metadata": {"graph_ref": "skills/graph.json"},
             "selected_fact_plan": {"selection_method": "augmented_skills_graph"},
+            "allowed_fact_ids": ["fact_alpha"],
         },
         section_lane="unify_bullets",
     )
@@ -225,6 +233,58 @@ def test_employment_targeting_includes_jd_briefing_and_pool_contract() -> None:
     assert ctx["pool_path_count"] == 4
     assert ctx["final_bullet_count"] == 6
     assert ctx["min_selection_score"] == pytest.approx(min_selection_score_for_lane("unify_bullets"))
+    assert ctx["allowed_fact_ids"] == ["fact_alpha"]
+    assert ctx["selector_requires_valid_candidates"] is True
+
+
+def test_selector_filters_candidates_outside_allowed_fact_set(tmp_path) -> None:
+    paths = [
+        SelfConsistencyPath(
+            0,
+            0.38,
+            "REAL_LLM",
+            "",
+            {
+                "bullets": [
+                    {
+                        "bullet_id": "bul_unify_001",
+                        "bullet_text": "Source-backed good candidate.",
+                        "source_fact_ids": ["fact_good"],
+                    },
+                    {
+                        "bullet_id": "bul_unify_002",
+                        "bullet_text": "Unsupported candidate.",
+                        "source_fact_ids": ["fact_bad"],
+                    },
+                ],
+                "claim_ledger": [
+                    {"claim_text": "good", "source_fact_ids": ["fact_good"]},
+                    {"claim_text": "bad", "source_fact_ids": ["fact_bad"]},
+                ],
+            },
+            "",
+            None,
+        )
+    ]
+    pool = run_claude_bullet_pool_selection(
+        section_id="unify_bullets",
+        slot_kind="bullets",
+        paths=paths,
+        required_bullet_ids=("bul_unify_001", "bul_unify_002"),
+        targeting_context={
+            "allowed_fact_ids": ["fact_good"],
+            "selector_requires_valid_candidates": True,
+        },
+        artifact_dir=tmp_path,
+        mode="mocked",
+    )
+    assert pool.selection_mode == "fallback_empty"
+    bullets = pool.merged_parsed.get("bullets") or []
+    assert [b["bullet_id"] for b in bullets] == ["bul_unify_001"]
+    receipt = json.loads((tmp_path / "bullet_pool_candidate_validity.json").read_text(encoding="utf-8"))
+    assert receipt["strict"] is True
+    assert receipt["paths"][0]["eligible_bullet_count"] == 1
+    assert any(r["reason"] == "source_fact_id_not_allowed" for r in receipt["paths"][0]["rejections"])
 
 
 def test_section_profiles_unify_15_ibm_12() -> None:

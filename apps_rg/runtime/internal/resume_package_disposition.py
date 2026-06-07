@@ -183,6 +183,78 @@ def _load_optional_json(path: Path) -> dict[str, Any] | None:
         return None
 
 
+def summarize_graph_skills_product_closeout(
+    cross_section_x2: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Product-facing closeout summary for W5/W6 graph-skills materiality."""
+    blob = cross_section_x2 if isinstance(cross_section_x2, Mapping) else {}
+    graph_gate: Mapping[str, Any] | None = None
+    for row in blob.get("gates") or []:
+        if isinstance(row, Mapping) and str(row.get("gate_id") or "") == "x2_cross_section_graph_coherence":
+            graph_gate = row
+            break
+
+    if graph_gate is None:
+        return {
+            "schema": "apps_rg.graph_skills_product_closeout.v1",
+            "product_proof_closeout_status": "MISSING",
+            "ready_for_product_proof_support": False,
+            "cross_section_graph_gate_present": False,
+            "cross_section_graph_gate_verdict": "MISSING",
+            "active_section_count": 0,
+            "native_c03_section_count": 0,
+            "role_episode_section_count": 0,
+            "unique_graph_skill_node_count": 0,
+            "warning_count": None,
+            "does_not_upgrade_package_x3": True,
+            "explicit_non_claims": [
+                "Graph-skills closeout is product-facing evidence only; it is not integrated Exit X3.",
+                "Missing graph closeout must not upgrade package rollup proof classification.",
+            ],
+        }
+
+    observed = graph_gate.get("observed")
+    receipt = observed if isinstance(observed, Mapping) else {}
+    status = str(receipt.get("status") or graph_gate.get("verdict") or "UNKNOWN")
+    warnings = receipt.get("warnings") if isinstance(receipt.get("warnings"), list) else []
+    gate_pass = graph_gate.get("pass") is True or str(graph_gate.get("verdict") or "") == "PASS"
+    ready = status == "PASS" and gate_pass and not warnings
+    closeout_status = "READY" if ready else ("ADVISORY_WARN" if status == "WARN" else "MISSING")
+    if status not in ("PASS", "WARN"):
+        closeout_status = "MISSING"
+
+    return {
+        "schema": "apps_rg.graph_skills_product_closeout.v1",
+        "product_proof_closeout_status": closeout_status,
+        "ready_for_product_proof_support": ready,
+        "cross_section_graph_gate_present": True,
+        "cross_section_graph_gate_verdict": str(graph_gate.get("verdict") or status),
+        "cross_section_graph_gate_pass": bool(graph_gate.get("pass")),
+        "active_section_count": int(receipt.get("active_section_count") or 0),
+        "native_c03_section_count": int(receipt.get("native_c03_section_count") or 0),
+        "role_episode_section_count": int(receipt.get("role_episode_section_count") or 0),
+        "unique_graph_skill_node_count": int(receipt.get("unique_graph_skill_node_count") or 0),
+        "unique_source_fact_id_count": int(receipt.get("unique_source_fact_id_count") or 0),
+        "unique_role_episode_bundle_count": int(receipt.get("unique_role_episode_bundle_count") or 0),
+        "warning_count": len(warnings),
+        "warning_reason_codes": sorted(
+            {
+                str(w.get("reason_code") or w.get("section_id") or "graph_materiality_warning")
+                for w in warnings
+                if isinstance(w, Mapping)
+            }
+        ),
+        "active_section_ids": list(receipt.get("active_section_ids") or []),
+        "native_c03_section_ids": list(receipt.get("native_c03_section_ids") or []),
+        "role_episode_section_ids": list(receipt.get("role_episode_section_ids") or []),
+        "does_not_upgrade_package_x3": True,
+        "explicit_non_claims": [
+            "Graph-skills closeout summarizes W5/W6 materiality for product review.",
+            "Package rollup X3 remains non-product proof unless integrated Exit X3 authorizes it.",
+        ],
+    }
+
+
 def evaluate_resume_package(
     *,
     paths: ResumePackageProofPaths,
@@ -668,6 +740,7 @@ def evaluate_resume_package(
         raw_warn = cross_section_x2.get("warn_policy")
         if isinstance(raw_warn, Mapping):
             warn_blob = dict(raw_warn)
+    graph_skills_closeout = summarize_graph_skills_product_closeout(cross_section_x2)
 
     assembly_product_allow = bool(asm.get("product_allow_claimed"))
     cross_product_pass = bool(asm.get("cross_section_x2_product_pass"))
@@ -702,6 +775,7 @@ def evaluate_resume_package(
         "structural_x2_all_pass": structural_x2_pass,
         "cross_section_x2_structural_pass": cross_structural_pass,
         "cross_section_x2_product_pass": cross_product_pass,
+        "graph_skills_closeout": graph_skills_closeout,
         "aggregation_receipt_v2_complete": bool(asm.get("receipt_id") == "final_resume_assembly_receipt_v2"),
         "aggregate_full_resume_coherence_pass": aggregate_coherence_pass,
         "product_review_required": product_review_required,
@@ -711,6 +785,7 @@ def evaluate_resume_package(
         "warn_policy": warn_blob,
         "explicit_non_claims": list(asm.get("explicit_non_claims") or []) + list(rlp.get("explicit_non_claims") or []),
     }
+    disposition["graph_skills_product_proof_closeout"] = graph_skills_closeout
     disposition["block_notes_sorted_unique"] = sorted(set(block_notes))
 
     return disposition
@@ -827,6 +902,14 @@ def emit_resume_package_artifacts(
         }
     )
     receipt["product_review_required"] = bool(agg_proof.get("product_review_required"))
+    graph_closeout = agg_proof.get("graph_skills_closeout") if isinstance(agg_proof, Mapping) else {}
+    if isinstance(graph_closeout, Mapping):
+        receipt["graph_skills_product_proof_closeout_status"] = graph_closeout.get(
+            "product_proof_closeout_status"
+        )
+        receipt["graph_skills_ready_for_product_proof_support"] = bool(
+            graph_closeout.get("ready_for_product_proof_support")
+        )
     receipt["review_lane_policy_json"] = _repo_rel(rr, assembly_dir / "review_lane_policy.json")
     receipt["coherent_rollup_policy_json"] = _repo_rel(rr, assembly_dir / "coherent_rollup_policy.json")
     rc_path.write_text(json.dumps(receipt, indent=2, sort_keys=False) + "\n", encoding="utf-8")
@@ -840,5 +923,4 @@ def emit_resume_package_artifacts(
         "resume_package_x3_disposition_path": x3_path,
         "resume_package_receipt_path": rc_path,
     }
-
 

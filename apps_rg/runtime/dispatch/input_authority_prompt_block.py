@@ -85,6 +85,46 @@ def _append_block_to_last_message(compiled: SectionCompiledPrompt, block: str) -
     )
 
 
+def _format_graph_binding_materiality_block(summary: dict[str, Any]) -> str:
+    return "\n".join(
+        [
+            "GRAPH_BINDING_MATERIALITY_SUMMARY (deterministic JSON):",
+            json.dumps(summary, ensure_ascii=False, sort_keys=True),
+        ]
+    )
+
+
+def augment_section_compiled_with_graph_binding_materiality(
+    compiled: SectionCompiledPrompt,
+    *,
+    runtime_payload: dict[str, Any],
+) -> SectionCompiledPrompt:
+    """Append compact graph materiality metadata for PA and later judge parity."""
+    from apps_rg.runtime.graph_skills_utilization_scorer import (
+        build_graph_binding_materiality_summary,
+    )
+
+    pp_meta = runtime_payload.get("proof_pool_metadata")
+    if not isinstance(pp_meta, dict):
+        return compiled
+    summary = build_graph_binding_materiality_summary(
+        section_id=compiled.section_id,
+        proof_pool_metadata=pp_meta,
+        parsed_output=runtime_payload.get("parsed_output")
+        if isinstance(runtime_payload.get("parsed_output"), dict)
+        else None,
+        candidate_output=runtime_payload.get("candidate_output")
+        if isinstance(runtime_payload.get("candidate_output"), dict)
+        else None,
+        claim_ledger=runtime_payload.get("claim_ledger")
+        if isinstance(runtime_payload.get("claim_ledger"), list)
+        else None,
+    )
+    if summary.get("status") == "NO_GRAPH_BINDING_METADATA":
+        return compiled
+    return _append_block_to_last_message(compiled, _format_graph_binding_materiality_block(summary))
+
+
 def augment_section_compiled_with_product_shape(compiled: SectionCompiledPrompt) -> SectionCompiledPrompt:
     """Append PRODUCT_SHAPE block for generated lanes (X2-aligned bounds)."""
     if compiled.section_id not in GENERATED_LANES:
@@ -113,6 +153,7 @@ def augment_section_compiled_with_input_authority(
         from apps_rg.runtime.graph_skill_phrase_capsule import augment_section_compiled_with_skill_phrase_capsule
 
         out = augment_section_compiled_with_skill_phrase_capsule(out, runtime_payload=runtime_payload)
+        out = augment_section_compiled_with_graph_binding_materiality(out, runtime_payload=runtime_payload)
     return out
 
 
@@ -137,6 +178,7 @@ def finalize_section_compiled_with_proof_pool(
     from apps_rg.runtime.graph_skill_phrase_capsule import augment_section_compiled_with_skill_phrase_capsule
 
     out = augment_section_compiled_with_skill_phrase_capsule(out, runtime_payload=runtime_payload)
+    out = augment_section_compiled_with_graph_binding_materiality(out, runtime_payload=runtime_payload)
     last_content = ""
     if out.artifact.messages:
         last_content = str(out.artifact.messages[-1].get("content") or "")
@@ -163,6 +205,7 @@ def proof_pool_mode_from_metadata(metadata: dict[str, Any] | None) -> str:
 
 
 __all__ = [
+    "augment_section_compiled_with_graph_binding_materiality",
     "augment_section_compiled_with_input_authority",
     "augment_section_compiled_with_product_shape",
     "finalize_section_compiled_with_proof_pool",

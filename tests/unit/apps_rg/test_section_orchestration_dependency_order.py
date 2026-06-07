@@ -24,6 +24,11 @@ from apps_rg.runtime.section_cli_defaults import (
     resolve_cli_x1d_judges,
     summarize_section_x1d_minimization_policy,
 )
+from apps_rg.runtime.section_execution_plan import (
+    GENERATED_CONTENT_LANES,
+    HARD_NO_RETRY_RUNTIME_STATUSES,
+    is_hard_no_retry_runtime_status,
+)
 from apps_rg.runtime.validators.companion_bullet_finalization import (
     UPSTREAM_BLOCKED_RUNTIME_STATUSES,
     is_upstream_blocked_runtime_status,
@@ -43,6 +48,7 @@ _EXPECTED_ORDER = (
 # ----------------------------------------------------------------------------- execution order
 def test_generated_lanes_is_dependency_order() -> None:
     assert glr.GENERATED_LANES == _EXPECTED_ORDER
+    assert GENERATED_CONTENT_LANES == _EXPECTED_ORDER
 
 
 def test_generated_lanes_has_exactly_seven_content_sections() -> None:
@@ -196,7 +202,9 @@ def test_upstream_blocked_status_set_includes_all_failure_classes() -> None:
         "REQUIRED_DEPENDENCY_EMPTY",
     ):
         assert cls in UPSTREAM_BLOCKED_RUNTIME_STATUSES
+        assert cls in HARD_NO_RETRY_RUNTIME_STATUSES
         assert is_upstream_blocked_runtime_status(cls) is True
+        assert is_hard_no_retry_runtime_status(cls) is True
 
 
 def test_real_llm_is_not_upstream_blocked() -> None:

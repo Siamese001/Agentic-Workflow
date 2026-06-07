@@ -66,10 +66,21 @@ def test_adjudicator_escalates_on_low_confidence_borderline() -> None:
     assert TRIGGER_JUDGE_CONFIDENCE_LOW in d.triggers
 
 
-def test_adjudicator_escalates_when_x2_passes_but_judge_flags_risk() -> None:
+def test_adjudicator_does_not_escalate_when_risk_finding_is_confident_pass() -> None:
     d = evaluate_bullet_adjudicator_trigger(
         section_id="unify_bullets",
         composite_judges=[_judge(0.95, findings=["vague ai strategy fluff"])],
+        x2_failed_gate_ids=[],
+        bullets=[],
+    )
+    assert d.should_escalate is False
+    assert TRIGGER_X2_PASS_JUDGE_RISK not in d.triggers
+
+
+def test_adjudicator_escalates_when_x2_passes_and_risk_is_borderline() -> None:
+    d = evaluate_bullet_adjudicator_trigger(
+        section_id="unify_bullets",
+        composite_judges=[_judge(0.81, findings=["vague ai strategy fluff"])],
         x2_failed_gate_ids=[],
         bullets=[],
     )

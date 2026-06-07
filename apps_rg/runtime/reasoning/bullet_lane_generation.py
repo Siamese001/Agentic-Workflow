@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 import json
 from pathlib import Path
 from typing import Any, Callable
@@ -36,6 +37,20 @@ from apps_rg.runtime.reasoning.employment_bullet_pool import (
 
 NormalizeFn = Callable[[dict[str, Any]], dict[str, Any]]
 ParseFn = Callable[[str], tuple[dict[str, Any] | None, str]]
+
+
+def _normalize_selector_paths(
+    paths: list[SelfConsistencyPath],
+    normalize_parsed: NormalizeFn,
+) -> list[SelfConsistencyPath]:
+    """Canonicalize parsed path payloads before selector ranking sees them."""
+    normalized: list[SelfConsistencyPath] = []
+    for path in paths:
+        if isinstance(path.parsed, dict):
+            normalized.append(replace(path, parsed=normalize_parsed(dict(path.parsed))))
+        else:
+            normalized.append(path)
+    return normalized
 
 
 def _write_employment_regen_artifact(artifact_dir: Path, doc: dict[str, Any]) -> None:
@@ -100,6 +115,7 @@ def _generate_employment_bullet_lane(
             path_index_start=len(all_paths),
             append_artifacts=regen_round > 0,
         )
+        new_paths = _normalize_selector_paths(new_paths, normalize_parsed)
         all_paths.extend(new_paths)
 
         regen_note = ""
@@ -230,6 +246,7 @@ def _generate_competencies_graph_pool_lane(
             path_index_start=len(all_paths),
             append_artifacts=regen_round > 0,
         )
+        new_paths = _normalize_selector_paths(new_paths, normalize_parsed)
         all_paths.extend(new_paths)
 
         regen_note = ""
@@ -399,6 +416,7 @@ def generate_bullet_lane_with_sc_and_claude(
         temperature_bounds=temperature_bounds,
         base_temperature=base_temperature,
     )
+    paths = _normalize_selector_paths(paths, normalize_parsed)
     completed = sum(1 for p in paths if p.parsed is not None)
     patch_receipt_samples_executed(
         last_result,

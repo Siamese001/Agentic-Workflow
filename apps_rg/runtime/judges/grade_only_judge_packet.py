@@ -67,6 +67,8 @@ def build_grade_only_judge_packet(
     targeting_context: dict[str, Any] | None = None,
     deterministic_gate_summary: dict[str, Any] | None = None,
     source_fact_ids: list[str] | None = None,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    graph_binding_materiality_summary: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build canonical GRADE_ONLY JudgePacket for any section."""
     sid = normalize_section_id(section_id)
@@ -75,6 +77,18 @@ def build_grade_only_judge_packet(
         raise ValueError("policy invariant: grade_only_required implies no replacement generation")
 
     targeting = dict(targeting_context or {})
+    materiality = dict(graph_binding_materiality_summary or {})
+    if not materiality and isinstance(proof_pool_metadata, dict):
+        from apps_rg.runtime.graph_skills_utilization_scorer import (
+            build_graph_binding_materiality_summary,
+        )
+
+        materiality = build_graph_binding_materiality_summary(
+            section_id=sid,
+            proof_pool_metadata=proof_pool_metadata,
+            candidate_output=candidate_output,
+            claim_ledger=claim_ledger,
+        )
     packet = {
         "judge_packet_version": JUDGE_PACKET_VERSION,
         "section": sid,
@@ -94,7 +108,9 @@ def build_grade_only_judge_packet(
             "briefing_is_targeting_context_only": True,
             "claims_must_be_supported_by_allowed_fact_packet": True,
             "judges_must_not_rewrite": True,
+            "metadata_only_graph_context_is_insufficient": True,
         },
+        "graph_binding_materiality_summary": materiality,
         "deterministic_gate_summary": ensure_panel_gate_summary(
             deterministic_gate_summary, section_id=sid
         ),
@@ -145,6 +161,12 @@ def render_judge_prompt_from_packet(packet: dict[str, Any]) -> str:
             + json.dumps(packet.get("targeting_context") or {}, ensure_ascii=False, indent=2),
             "PROOF_BOUNDARY:\n"
             + json.dumps(packet.get("proof_boundary") or {}, ensure_ascii=False, indent=2),
+            "GRAPH_BINDING_MATERIALITY_SUMMARY:\n"
+            + json.dumps(
+                packet.get("graph_binding_materiality_summary") or {},
+                ensure_ascii=False,
+                indent=2,
+            ),
             "DETERMINISTIC_GATE_SUMMARY:\n"
             + json.dumps(packet.get("deterministic_gate_summary") or {}, ensure_ascii=False, indent=2),
         ]

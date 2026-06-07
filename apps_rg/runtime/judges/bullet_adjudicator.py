@@ -10,9 +10,9 @@ Implemented triggers (all use data that already exists on the composite judge ro
   1. JUDGE_CONFIDENCE_LOW   — the composite judge's normalized_score sits within a narrow band
                                of its threshold (borderline pass or borderline fail). One judge's
                                opinion near the boundary is exactly where a second opinion helps.
-  2. X2_PASS_JUDGE_RISK     — every hard X2 gate passed, but the judge surfaced material risk
-                               (decisive_failure, soft-fail, or non-empty findings/quality_flags).
-                               Deterministic rules said "ok"; the judge disagrees -> adjudicate.
+  2. X2_PASS_JUDGE_RISK     — every hard X2 gate passed, the judge surfaced material risk, AND
+                               the score is already borderline. Confident accepts stay fast-path;
+                               adjudication is for uncertainty, not routine commentary.
   3. METRIC_BULLET_BORDERLINE (IBM) — a high-value metric-bearing bullet is present AND the judge
                                score is borderline. Metric bullets are the highest-cost place to
                                accept a wrong single-judge verdict.
@@ -171,11 +171,12 @@ def evaluate_bullet_adjudicator_trigger(
     if borderline_any:
         triggers.append(TRIGGER_JUDGE_CONFIDENCE_LOW)
 
-    # Trigger 2: hard validator passed but the judge flags material risk.
+    # Trigger 2: hard validator passed, the judge flags material risk, and the score is already
+    # borderline. A confident pass with ordinary findings remains the fast path.
     if x2_all_pass:
         risk_flagged = any(_judge_flags_material_risk(j) for j in model_rows)
         detail["x2_pass_judge_risk"] = risk_flagged
-        if risk_flagged:
+        if risk_flagged and borderline_any:
             triggers.append(TRIGGER_X2_PASS_JUDGE_RISK)
 
     # Trigger 3 (IBM): a high-value metric bullet is present AND the judge is borderline.

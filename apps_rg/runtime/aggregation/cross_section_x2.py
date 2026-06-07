@@ -6,7 +6,7 @@ import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping, Sequence
 
 from apps_rg.runtime.aggregation._digest_utils import normalize_claim_text, sha256_utf8, tokenize
 from apps_rg.runtime.assembly.final_resume_x2 import GENERATED_LANE_IDS
@@ -32,6 +32,9 @@ VERDICT_PASS = "PASS"
 VERDICT_FAIL = "FAIL"
 VERDICT_WARN = "WARN"
 VERDICT_UNKNOWN = "UNKNOWN"
+
+GRAPH_COHERENCE_MIN_ACTIVE_SECTIONS = 3
+GRAPH_COHERENCE_MIN_UNIQUE_SKILLS = 4
 
 
 @dataclass
@@ -162,6 +165,232 @@ def _allowed_fact_union(sealed_index: dict[str, Any], repo: Path) -> set[str]:
         except (OSError, json.JSONDecodeError, ValueError):
             continue
     return allowed
+
+
+def _iter_mappings(value: Any):
+    if isinstance(value, Mapping):
+        yield value
+        for inner in value.values():
+            yield from _iter_mappings(inner)
+    elif isinstance(value, (list, tuple)):
+        for inner in value:
+            yield from _iter_mappings(inner)
+
+
+def _collect_string_values(value: Any) -> set[str]:
+    out: set[str] = set()
+    if isinstance(value, str):
+        text = value.strip()
+        if text:
+            out.add(text)
+    elif isinstance(value, (list, tuple, set)):
+        for inner in value:
+            out.update(_collect_string_values(inner))
+    return out
+
+
+def _collect_values_for_keys(payloads: Sequence[Any], keys: set[str]) -> set[str]:
+    out: set[str] = set()
+    for payload in payloads:
+        for row in _iter_mappings(payload):
+            for key in keys:
+                if key in row:
+                    out.update(_collect_string_values(row.get(key)))
+    return out
+
+
+def _load_runtime_payload_for_section(
+    *,
+    repo: Path,
+    sealed_index: dict[str, Any],
+    section_id: str,
+) -> dict[str, Any]:
+    ptrs = sealed_index.get("pointers") or []
+    for ptr in ptrs:
+        if not isinstance(ptr, dict) or str(ptr.get("lane") or "") != section_id:
+            continue
+        artifact_dir = str(ptr.get("artifact_dir") or "").replace("\\", "/")
+        if not artifact_dir:
+            return {}
+        payload_path = repo / artifact_dir / "runtime_payload.json"
+        if not payload_path.is_file():
+            return {}
+        try:
+            blob = json.loads(payload_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError, ValueError):
+            return {}
+        return blob if isinstance(blob, dict) else {}
+    return {}
+
+
+def build_cross_section_graph_coherence_receipt(
+    *,
+    repo: Path,
+    final_resume_blob: dict[str, Any],
+    sealed_index: dict[str, Any],
+) -> dict[str, Any]:
+    """Aggregate C0.3 / role-episode graph use across generated sections."""
+    from apps_rg.runtime.graph_skills_utilization_scorer import (
+        build_graph_binding_materiality_summary,
+    )
+
+    sections = [s for s in (final_resume_blob.get("sections") or []) if isinstance(s, dict)]
+    section_rows: list[dict[str, Any]] = []
+    active_section_ids: set[str] = set()
+    native_section_ids: set[str] = set()
+    role_section_ids: set[str] = set()
+    unique_skill_ids: set[str] = set()
+    unique_fact_ids: set[str] = set()
+    unique_bundle_ids: set[str] = set()
+    materiality_warnings: list[dict[str, Any]] = []
+
+    for sec in sections:
+        if sec.get("section_kind") != "generated_lane":
+            continue
+        sid = str(sec.get("section_id") or "")
+        if not sid:
+            continue
+        snap = sec.get("l2_output_snapshot") if isinstance(sec.get("l2_output_snapshot"), dict) else {}
+        runtime_payload = _load_runtime_payload_for_section(
+            repo=repo,
+            sealed_index=sealed_index,
+            section_id=sid,
+        )
+        meta = runtime_payload.get("proof_pool_metadata")
+        if not isinstance(meta, dict):
+            meta = snap.get("proof_pool_metadata") if isinstance(snap.get("proof_pool_metadata"), dict) else {}
+        claim_ledger = snap.get("claim_ledger") if isinstance(snap.get("claim_ledger"), list) else []
+        summary = build_graph_binding_materiality_summary(
+            section_id=sid,
+            proof_pool_metadata=meta,
+            candidate_output=snap,
+            claim_ledger=claim_ledger,
+            parsed_output=snap,
+        )
+        if summary.get("status") == "NO_GRAPH_BINDING_METADATA":
+            continue
+
+        active_section_ids.add(sid)
+        if summary.get("native_c03_active"):
+            native_section_ids.add(sid)
+        if summary.get("role_episode_active"):
+            role_section_ids.add(sid)
+
+        payloads = [snap, claim_ledger]
+        unique_skill_ids.update(
+            _collect_values_for_keys(payloads, {"graph_skill_node_ids", "source_skill_ids", "skill_ids_used"})
+        )
+        unique_fact_ids.update(
+            _collect_values_for_keys(payloads, {"source_fact_ids", "fact_ids", "cited_fact_ids"})
+        )
+        unique_bundle_ids.update(
+            _collect_values_for_keys(payloads, {"role_episode_bundle_id", "role_episode_bundle_ids"})
+        )
+
+        if str(summary.get("status") or "") == "FAIL":
+            materiality_warnings.append(
+                {
+                    "section_id": sid,
+                    "status": summary.get("status"),
+                    "violations": summary.get("violations") or [],
+                }
+            )
+        section_rows.append(
+            {
+                "section_id": sid,
+                "status": summary.get("status"),
+                "native_c03_active": bool(summary.get("native_c03_active")),
+                "role_episode_active": bool(summary.get("role_episode_active")),
+                "native_c03_cited_fact_count": int(summary.get("native_c03_cited_fact_count") or 0),
+                "role_episode_bundle_intersection_count": int(
+                    summary.get("role_episode_bundle_intersection_count") or 0
+                ),
+                "role_episode_skill_intersection_count": int(
+                    summary.get("role_episode_skill_intersection_count") or 0
+                ),
+                "role_episode_fact_intersection_count": int(
+                    summary.get("role_episode_fact_intersection_count") or 0
+                ),
+            }
+        )
+
+    warnings: list[dict[str, Any]] = list(materiality_warnings)
+    if active_section_ids and len(active_section_ids) < GRAPH_COHERENCE_MIN_ACTIVE_SECTIONS:
+        warnings.append(
+            {
+                "reason_code": "graph_metadata_breadth_below_floor",
+                "observed": len(active_section_ids),
+                "threshold": GRAPH_COHERENCE_MIN_ACTIVE_SECTIONS,
+            }
+        )
+    if active_section_ids and len(unique_skill_ids) < GRAPH_COHERENCE_MIN_UNIQUE_SKILLS:
+        warnings.append(
+            {
+                "reason_code": "unique_graph_skill_breadth_below_floor",
+                "observed": len(unique_skill_ids),
+                "threshold": GRAPH_COHERENCE_MIN_UNIQUE_SKILLS,
+            }
+        )
+
+    if not active_section_ids:
+        status = VERDICT_UNKNOWN
+    elif warnings:
+        status = VERDICT_WARN
+    else:
+        status = VERDICT_PASS
+
+    return {
+        "schema": "apps_rg.cross_section_graph_coherence_receipt.v1",
+        "status": status,
+        "active_section_count": len(active_section_ids),
+        "native_c03_section_count": len(native_section_ids),
+        "role_episode_section_count": len(role_section_ids),
+        "unique_graph_skill_node_count": len(unique_skill_ids),
+        "unique_source_fact_id_count": len(unique_fact_ids),
+        "unique_role_episode_bundle_count": len(unique_bundle_ids),
+        "active_section_ids": sorted(active_section_ids),
+        "native_c03_section_ids": sorted(native_section_ids),
+        "role_episode_section_ids": sorted(role_section_ids),
+        "unique_graph_skill_node_ids": sorted(unique_skill_ids)[:64],
+        "unique_role_episode_bundle_ids": sorted(unique_bundle_ids)[:64],
+        "sections": section_rows,
+        "warnings": warnings,
+        "thresholds": {
+            "min_active_sections": GRAPH_COHERENCE_MIN_ACTIVE_SECTIONS,
+            "min_unique_graph_skill_node_ids": GRAPH_COHERENCE_MIN_UNIQUE_SKILLS,
+        },
+    }
+
+
+def check_cross_section_graph_coherence(
+    *,
+    repo: Path,
+    final_resume_blob: dict[str, Any],
+    sealed_index: dict[str, Any],
+) -> CrossSectionGateResult:
+    receipt = build_cross_section_graph_coherence_receipt(
+        repo=repo,
+        final_resume_blob=final_resume_blob,
+        sealed_index=sealed_index,
+    )
+    status = str(receipt.get("status") or VERDICT_UNKNOWN)
+    if status == VERDICT_PASS:
+        reason = "cross-section graph metadata is materially used with sufficient breadth"
+        verdict = VERDICT_PASS
+    elif status == VERDICT_WARN:
+        reason = f"graph coherence warnings: {len(receipt.get('warnings') or [])}"
+        verdict = VERDICT_WARN
+    else:
+        reason = "no generated section graph metadata available for cross-section coherence"
+        verdict = VERDICT_WARN
+    return CrossSectionGateResult(
+        gate_id="x2_cross_section_graph_coherence",
+        verdict=verdict,
+        decisive_reason=reason,
+        threshold=receipt.get("thresholds"),
+        observed=receipt,
+        evidence_refs=["cross_section_x2_gate_outputs.json::graph_coherence_receipt"],
+    )
 
 
 def _overlap_class_fully_dispositioned(
@@ -508,6 +737,13 @@ def run_cross_section_x2_gates(
             verdict=VERDICT_PASS if has_claims else VERDICT_UNKNOWN,
             decisive_reason=None if has_claims else "no claim rows extracted from generated sections",
             observed={"kept": len(kept), "removed": len(removed), "rewritten": len(rewritten)},
+        ),
+    )
+    gates.append(
+        check_cross_section_graph_coherence(
+            repo=repo,
+            final_resume_blob=final_resume_blob,
+            sealed_index=sealed_index,
         ),
     )
 

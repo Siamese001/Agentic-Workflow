@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Literal
 
@@ -107,6 +107,151 @@ def inject_positional_bullet_ids_into_pool(
             row.setdefault("bullet_id_origin", "positional_pool_fallback")
             injected += 1
     return injected
+
+
+def _as_str_list(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return [str(x).strip() for x in value if str(x).strip()]
+    if isinstance(value, tuple):
+        return [str(x).strip() for x in value if str(x).strip()]
+    if isinstance(value, str) and value.strip():
+        return [value.strip()]
+    return []
+
+
+def _allowed_fact_ids_from_context(targeting_context: dict[str, Any] | None) -> set[str]:
+    return set(_as_str_list((targeting_context or {}).get("allowed_fact_ids")))
+
+
+def _source_id_allowed(source_id: str, allowed_fact_ids: set[str]) -> bool:
+    sid = str(source_id or "").strip()
+    if not sid:
+        return False
+    if not allowed_fact_ids:
+        return True
+    if sid in allowed_fact_ids:
+        return True
+    root = sid.split("_metric_", 1)[0]
+    return root in allowed_fact_ids
+
+
+def _candidate_source_ids(row: dict[str, Any]) -> list[str]:
+    ids: list[str] = []
+    ids.extend(_as_str_list(row.get("source_fact_ids")))
+    ids.extend(_as_str_list(row.get("source_fact_id")))
+    return ids
+
+
+def _filter_claim_ledger_for_allowed_sources(
+    claim_ledger: Any,
+    allowed_fact_ids: set[str],
+) -> list[dict[str, Any]]:
+    if not isinstance(claim_ledger, list):
+        return []
+    out: list[dict[str, Any]] = []
+    for row in claim_ledger:
+        if not isinstance(row, dict):
+            continue
+        sids = _candidate_source_ids(row)
+        if not allowed_fact_ids or (sids and all(_source_id_allowed(s, allowed_fact_ids) for s in sids)):
+            out.append(dict(row))
+    return out
+
+
+def _selector_requires_valid_candidates(
+    *,
+    slot_kind: SlotKind,
+    targeting_context: dict[str, Any] | None,
+) -> bool:
+    if slot_kind != "bullets":
+        return False
+    tc = targeting_context or {}
+    return bool(tc.get("selector_requires_valid_candidates")) and bool(
+        _allowed_fact_ids_from_context(tc)
+    )
+
+
+def _selector_valid_bullet_paths(
+    paths: list[SelfConsistencyPath],
+    *,
+    required_bullet_ids: tuple[str, ...],
+    targeting_context: dict[str, Any] | None,
+) -> tuple[list[SelfConsistencyPath], dict[str, Any]]:
+    """Return selector-visible paths after deterministic source/FEC eligibility filtering."""
+    allowed_fact_ids = _allowed_fact_ids_from_context(targeting_context)
+    strict = _selector_requires_valid_candidates(
+        slot_kind="bullets",
+        targeting_context=targeting_context,
+    )
+    receipt: dict[str, Any] = {
+        "strict": strict,
+        "allowed_fact_id_count": len(allowed_fact_ids),
+        "required_bullet_ids": list(required_bullet_ids),
+        "paths": [],
+    }
+    if not strict:
+        return paths, receipt
+
+    required = set(required_bullet_ids)
+    filtered_paths: list[SelfConsistencyPath] = []
+    for path in paths:
+        parsed = path.parsed
+        path_row: dict[str, Any] = {
+            "path_index": path.path_index,
+            "input_bullet_count": 0,
+            "eligible_bullet_count": 0,
+            "rejections": [],
+        }
+        if not isinstance(parsed, dict):
+            path_row["rejections"].append({"reason": "parsed_missing"})
+            filtered_paths.append(replace(path, parsed=None))
+            receipt["paths"].append(path_row)
+            continue
+
+        eligible_bullets: list[dict[str, Any]] = []
+        bullets = parsed.get("bullets") if isinstance(parsed.get("bullets"), list) else []
+        path_row["input_bullet_count"] = len(bullets)
+        for bullet in bullets:
+            if not isinstance(bullet, dict):
+                path_row["rejections"].append({"reason": "bullet_not_object"})
+                continue
+            bid = str(bullet.get("bullet_id") or "").strip()
+            if bid not in required:
+                path_row["rejections"].append(
+                    {"bullet_id": bid, "reason": "bullet_id_not_required"}
+                )
+                continue
+            source_ids = _candidate_source_ids(bullet)
+            if not source_ids:
+                path_row["rejections"].append(
+                    {"bullet_id": bid, "reason": "missing_source_fact_ids"}
+                )
+                continue
+            blocked = [sid for sid in source_ids if not _source_id_allowed(sid, allowed_fact_ids)]
+            if blocked:
+                path_row["rejections"].append(
+                    {
+                        "bullet_id": bid,
+                        "reason": "source_fact_id_not_allowed",
+                        "source_fact_ids": blocked,
+                    }
+                )
+                continue
+            eligible_bullets.append(dict(bullet))
+
+        path_row["eligible_bullet_count"] = len(eligible_bullets)
+        next_parsed: dict[str, Any] | None = None
+        if eligible_bullets:
+            next_parsed = dict(parsed)
+            next_parsed["bullets"] = eligible_bullets
+            next_parsed["claim_ledger"] = _filter_claim_ledger_for_allowed_sources(
+                parsed.get("claim_ledger"),
+                allowed_fact_ids,
+            )
+        filtered_paths.append(replace(path, parsed=next_parsed))
+        receipt["paths"].append(path_row)
+
+    return filtered_paths, receipt
 
 
 def _category_by_label(parsed: dict[str, Any], label: str) -> dict[str, Any] | None:
@@ -685,8 +830,31 @@ def run_claude_bullet_pool_selection(
             targeting_context=targeting_context,
         )
 
+    validity_receipt: dict[str, Any] | None = None
     if slot_kind == "bullets":
         inject_positional_bullet_ids_into_pool(valid_paths, required_bullet_ids)
+        valid_paths, validity_receipt = _selector_valid_bullet_paths(
+            valid_paths,
+            required_bullet_ids=required_bullet_ids or (),
+            targeting_context=targeting_context,
+        )
+        valid_paths = [p for p in valid_paths if p.parsed is not None]
+        if artifact_dir is not None and validity_receipt is not None:
+            (artifact_dir / "bullet_pool_candidate_validity.json").write_text(
+                json.dumps(validity_receipt, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+        if not valid_paths and _selector_requires_valid_candidates(
+            slot_kind=slot_kind,
+            targeting_context=targeting_context,
+        ):
+            return PoolSelectionResult(
+                merged_parsed={},
+                selections=[],
+                judge_output=None,
+                selection_mode="blocked_no_selector_eligible_candidates",
+                source_path_by_slot={},
+            )
         pool_text = _format_bullet_pool(valid_paths, required_bullet_ids or ())
     else:
         pool_text = _format_competency_pool(valid_paths)
@@ -704,7 +872,7 @@ def run_claude_bullet_pool_selection(
 
     if mode == "mocked":
         return _fallback_first_complete_path(
-            paths,
+            valid_paths,
             slot_kind=slot_kind,
             required_bullet_ids=required_bullet_ids,
             targeting_context=targeting_context,
@@ -714,7 +882,7 @@ def run_claude_bullet_pool_selection(
     api_key = os.environ.get(str(meta.get("env", "ANTHROPIC_API_KEY")), "").strip()
     if not api_key:
         return _fallback_first_complete_path(
-            paths,
+            valid_paths,
             slot_kind=slot_kind,
             required_bullet_ids=required_bullet_ids,
             targeting_context=targeting_context,
@@ -740,7 +908,7 @@ def run_claude_bullet_pool_selection(
         parsed_sel = _load_selection_doc_from_judge_artifacts(judge_out, artifact_dir)
     if parsed_sel is None and judge_out.pass_ is False:
         return _fallback_first_complete_path(
-            paths,
+            valid_paths,
             slot_kind=slot_kind,
             required_bullet_ids=required_bullet_ids,
             targeting_context=targeting_context,
@@ -754,7 +922,7 @@ def run_claude_bullet_pool_selection(
         if floor is None and is_employment_bullet_lane(section_id):
             floor = min_selection_score_for_lane(section_id)
         merged, source_map = merge_bullet_selections(
-            paths,
+            valid_paths,
             selections,
             required_bullet_ids=required_bullet_ids,
             base_parsed=base,
@@ -764,7 +932,7 @@ def run_claude_bullet_pool_selection(
     elif _is_competencies_graph_pool(section_id, slot_kind):
         floor = min_score_threshold or min_competencies_selection_score()
         merged, source_map = merge_competencies_graph_pool_top_six(
-            paths,
+            valid_paths,
             selections,
             base_parsed=base,
             min_score_threshold=floor,
@@ -774,7 +942,7 @@ def run_claude_bullet_pool_selection(
         )
         selection_mode = "claude_competencies_top_6_pass"
     else:
-        merged, source_map = merge_competency_selections(paths, selections, base_parsed=base)
+        merged, source_map = merge_competency_selections(valid_paths, selections, base_parsed=base)
         selection_mode = "claude_per_slot_selection"
 
     return PoolSelectionResult(

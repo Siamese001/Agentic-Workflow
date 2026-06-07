@@ -24,6 +24,8 @@ def run_policy_section_judges(
     allowed_fact_packet: dict[str, Any] | list[dict[str, Any]] | None = None,
     targeting_context: dict[str, Any] | None = None,
     deterministic_gate_summary: dict[str, Any] | None = None,
+    proof_pool_metadata: dict[str, Any] | None = None,
+    graph_binding_materiality_summary: dict[str, Any] | None = None,
     resume_display_text: str = "",
     mode: str = "blocked_if_unavailable",
     artifact_base: Path | None = None,
@@ -41,6 +43,8 @@ def run_policy_section_judges(
         allowed_fact_packet=allowed_fact_packet,
         targeting_context=targeting_context,
         deterministic_gate_summary=deterministic_gate_summary,
+        proof_pool_metadata=proof_pool_metadata,
+        graph_binding_materiality_summary=graph_binding_materiality_summary,
     )
     packet_ref: str | None = None
     if judge_packet_path is not None:

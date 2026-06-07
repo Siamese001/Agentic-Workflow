@@ -86,6 +86,141 @@ def _cited_fact_ids(text_claim_coverage: Mapping[str, Any] | None) -> set[str]:
     return cited
 
 
+def _iter_mappings(value: Any):
+    if isinstance(value, Mapping):
+        yield value
+        for inner in value.values():
+            yield from _iter_mappings(inner)
+    elif isinstance(value, (list, tuple)):
+        for inner in value:
+            yield from _iter_mappings(inner)
+
+
+def _collect_string_values(value: Any) -> set[str]:
+    out: set[str] = set()
+    if isinstance(value, str):
+        text = value.strip()
+        if text:
+            out.add(text)
+    elif isinstance(value, (list, tuple, set)):
+        for inner in value:
+            out.update(_collect_string_values(inner))
+    return out
+
+
+def _collect_values_for_keys(payloads: Sequence[Any], keys: set[str]) -> set[str]:
+    out: set[str] = set()
+    for payload in payloads:
+        for row in _iter_mappings(payload):
+            for key in keys:
+                if key in row:
+                    out.update(_collect_string_values(row.get(key)))
+    return out
+
+
+def _role_episode_bundles_from_metadata(meta: Mapping[str, Any]) -> tuple[set[str], set[str], set[str]]:
+    bundle_ids = _collect_values_for_keys([meta], {"role_episode_bundle_ids", "role_episode_bundle_id"})
+    skill_ids = set(_collect_values_for_keys([meta], {"graph_skill_node_ids", "source_skill_ids"}))
+    linked_fact_ids = set(_collect_values_for_keys([meta], {"linked_source_fact_ids", "source_fact_ids"}))
+    for row in meta.get("role_episode_bundles") or []:
+        if not isinstance(row, Mapping):
+            continue
+        bundle_ids.update(_collect_values_for_keys([row], {"role_episode_bundle_id"}))
+        skill_ids.update(_collect_values_for_keys([row], {"graph_skill_node_ids", "source_skill_ids"}))
+        linked_fact_ids.update(_collect_values_for_keys([row], {"linked_source_fact_ids", "source_fact_ids"}))
+    return bundle_ids, skill_ids, linked_fact_ids
+
+
+def build_graph_binding_materiality_summary(
+    *,
+    section_id: str,
+    proof_pool_metadata: Mapping[str, Any] | None = None,
+    candidate_output: Mapping[str, Any] | None = None,
+    claim_ledger: Sequence[Mapping[str, Any]] | None = None,
+    parsed_output: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Compact PA/judge summary proving graph metadata is materially consumed."""
+    meta = proof_pool_metadata if isinstance(proof_pool_metadata, Mapping) else {}
+    candidate = candidate_output if isinstance(candidate_output, Mapping) else {}
+    parsed = parsed_output if isinstance(parsed_output, Mapping) else {}
+    ledger = list(claim_ledger or [])
+    usage_payloads: list[Any] = [candidate, parsed, ledger]
+
+    native = meta.get("native_c03_final_evidence")
+    native_meta = meta.get("c03_pa_metadata") if isinstance(meta.get("c03_pa_metadata"), Mapping) else {}
+    native_active = isinstance(native, Mapping) or str(meta.get("native_c03_status") or "") == "EMITTED"
+    native_fact_ids = set()
+    if isinstance(native, Mapping):
+        native_fact_ids.update(_collect_values_for_keys([native], {"selected_source_fact_ids"}))
+    native_fact_ids.update(_collect_values_for_keys([native_meta], {"c03_allowed_fact_ids"}))
+
+    role_active = bool(meta.get("role_episode_bundle_consumption") or meta.get("role_episode_bundles"))
+    role_bundle_ids, role_skill_ids, role_fact_ids = _role_episode_bundles_from_metadata(meta)
+
+    used_fact_ids = _collect_values_for_keys(usage_payloads, {"source_fact_ids", "fact_ids", "cited_fact_ids"})
+    used_bundle_ids = _collect_values_for_keys(
+        usage_payloads, {"role_episode_bundle_id", "role_episode_bundle_ids"}
+    )
+    used_skill_ids = _collect_values_for_keys(
+        usage_payloads, {"graph_skill_node_ids", "source_skill_ids", "skill_ids_used"}
+    )
+
+    has_candidate_material = bool(candidate or parsed or ledger)
+    violations: list[dict[str, str]] = []
+    native_matched = sorted(native_fact_ids & used_fact_ids)
+    role_bundle_matched = sorted(role_bundle_ids & used_bundle_ids)
+    role_skill_matched = sorted(role_skill_ids & used_skill_ids)
+    role_fact_matched = sorted(role_fact_ids & used_fact_ids)
+
+    if has_candidate_material:
+        if native_active and native_fact_ids and not native_matched:
+            violations.append(
+                {
+                    "reason_code": "native_c03_metadata_without_cited_fact_use",
+                    "detail": "native C0.3 selected_source_fact_ids were not cited by candidate output",
+                }
+            )
+        if role_active and role_bundle_ids and not role_bundle_matched:
+            violations.append(
+                {
+                    "reason_code": "role_episode_metadata_without_bundle_use",
+                    "detail": "role_episode_bundle_ids were not present in candidate output",
+                }
+            )
+        if role_active and role_skill_ids and not (role_skill_matched or role_fact_matched):
+            violations.append(
+                {
+                    "reason_code": "role_episode_metadata_without_skill_or_fact_use",
+                    "detail": "role episode graph_skill_node_ids or linked_source_fact_ids were not used",
+                }
+            )
+
+    if not (native_active or role_active):
+        status = "NO_GRAPH_BINDING_METADATA"
+    elif not has_candidate_material:
+        status = "PENDING_CANDIDATE_OUTPUT"
+    else:
+        status = "FAIL" if violations else "PASS"
+
+    return {
+        "schema": "apps_rg_graph_binding_materiality_summary_v1",
+        "section_id": section_id,
+        "status": status,
+        "violation_count": len(violations),
+        "violations": violations,
+        "native_c03_active": native_active,
+        "native_c03_selected_fact_count": len(native_fact_ids),
+        "native_c03_cited_fact_count": len(native_matched),
+        "native_c03_cited_fact_ids": native_matched[:24],
+        "role_episode_active": role_active,
+        "role_episode_bundle_count": len(role_bundle_ids),
+        "role_episode_bundle_intersection_count": len(role_bundle_matched),
+        "role_episode_skill_intersection_count": len(role_skill_matched),
+        "role_episode_fact_intersection_count": len(role_fact_matched),
+        "judge_instruction": "metadata-only graph context is insufficient; require candidate citations or bindings",
+    }
+
+
 def _skill_rows_to_maps(
     skill_rows: Sequence[dict[str, Any]],
     *,
@@ -249,6 +384,7 @@ def _phrases_from_row(row: dict[str, Any]) -> list[str]:
 
 
 __all__ = [
+    "build_graph_binding_materiality_summary",
     "PLAN_ID",
     "RECEIPT_SCHEMA",
     "SEMANTIC_VARIANT_MAP",

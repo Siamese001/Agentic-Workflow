@@ -18,10 +18,11 @@ from apps_rg.runtime.reasoning.section_reasoning_intensity import (
     profile_to_requested_kw,
     section_reasoning_profile,
 )
+from apps_rg.runtime.section_execution_plan import BULLET_LANES
 
 ParseFn = Callable[[str], tuple[dict[str, Any] | None, str]]
 
-BULLET_POOL_LANES: frozenset[str] = frozenset({"unify_bullets", "ibm_bullets", "competencies"})
+BULLET_POOL_LANES: frozenset[str] = frozenset((*BULLET_LANES, "competencies"))
 
 
 def bullet_lane_sc_enabled(section_lane: str) -> bool:
