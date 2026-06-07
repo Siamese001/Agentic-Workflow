@@ -11,6 +11,17 @@ relates_to:
 
 # Cursor/Windsurf Live-Wiring Rename — Neutral Names for the Governance Engine
 
+> ## COMPLETION STATUS (2026-06-07) — W1-W7 done; W6 config de-brand deferred to dec0de
+> - W1 done: rollback tag + ledger-drift resolved (authoritative = .claude/state).
+> - W2 done: tools/windsurf -> tools/plan_lifecycle (+ compat shims). Merged to main (#246).
+> - W3 done: post_cursor_agent_* -> post_agent_* (34 renames, 646 refs, stale guard token dropped). Live dispatch verified.
+> - W4 done: artifacts/cursor + artifacts/windsurf -> artifacts/governance (401 refs); fixed long-dead alive-gate (dir + timestamp field). E2E PASS.
+> - W5 done: .cursor/state pointers -> .claude/state (path_constants value + GH workflow + schema doc).
+> - W6 deferred-to-dec0de: guard already correct (W3 dropped stale token; remaining legacy-IDE-name blocks valid). Config exclusion de-brand needs dec0de's legacy scripts-tree migration first (the legacy scripts-dir constant is live-consumed by static_scanner + 2 gates and points to a still-present frozen tree). Exclusion drift gate green.
+> - W7 done: E2E PASS (dispatch chain, alive, payload, exclusion drift, plan-lifecycle CLI, ledger SSOT). Zero-brand: live residual = only intentional W2 compat shims; rest is frozen legacy/_archive/docs (dec0de domain).
+> - Concurrency note: a separate agent was switching branches/editing apps_rg during execution; all decommission work committed + pushed to origin/w5/w3-script-rename.
+
+
 > Split out of [cursor-windsurf-codeium-decommission-dec0de](../.claude/plans/cursor-windsurf-codeium-decommission-dec0de.md)
 > at its W5 gate (2026-06-07, decision `deletion_strategy selected=split_w5_to_own_plan`). The parent
 > plan already delivered a **brand-free prose surface** (W3 P3.1 + W4). What remains is the
