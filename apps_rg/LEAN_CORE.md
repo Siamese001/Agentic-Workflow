@@ -220,6 +220,29 @@ export APPS_RG_ENABLE_R1B_SEMANTIC_CACHE=1
 - L6 never mutates in-progress runs
 - L6 outputs inform future runs, not current run
 
+### 14. No placeholder type aliases in production facade.
+
+- `spine_contracts.py` exports only verified contract symbols
+- No `RejectedRequest = ValidatedRequest` aliases
+- No `ExitReviewPacket = dict` workarounds
+- If a symbol is needed but not found, request core addition or defer usage
+- Placeholders create false type safety and brittle contracts
+
+### 15. Import-boundary ratchet: inventory → block new → burn down.
+
+- Phase A: Inventory all existing violations
+- Phase B: CI guard blocks NEW violations (existing grandfathered)
+- Phase C: Burn down existing violations per sprint plan
+- Never add new forbidden imports to production code
+- Migration tickets required for each existing violation
+
+### 16. Contract-symbol verification before facade creation.
+
+- All symbols in `spine_contracts.py` must be verified to exist in `agentic_core/runtime/contracts`
+- Inventory generated before facade creation via `tools/apps_rg/inventory_contract_symbols.py`
+- Symbol inventory stored at `artifacts/apps_rg/contract_symbol_inventory.json`
+- Unverified symbols deferred until core addition or proper definition
+
 ---
 
 ## Product Ownership
@@ -383,3 +406,4 @@ To amend this binding law:
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.0.0 | 2026-06-07 | Initial binding law for lean-core refactor | Cursor Agent |
+| 1.1.0 | 2026-06-07 | Hardening revision: Rules 14-16 added (no aliases, import ratchet, symbol verification) | Cursor Agent |
