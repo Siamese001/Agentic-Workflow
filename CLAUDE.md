@@ -28,7 +28,7 @@ Full text: [`.claude/rules/constitutional.md`](.claude/rules/constitutional.md).
 - **ADG before structural grep** — ingest `artifacts/adg/*.sqlite` before T2/T3 query/edit; grep only for literals/TODOs.
 - **No app leakage into `agentic_core`** without a migration receipt; no imports from `archives/` in production.
 - **Author-Gate for ambiguous decisions** (see below). **CI enforces all of this**: `python ops_scripts/ci/run_contract_gates.py`.
-- **Memory lifecycle** — call `mem_recall_session_start` at session start; write back significant decisions.
+- **Memory lifecycle** — recall project memory at session start and write back significant decisions to native file memory (`memory/`); knowledge-graph MCP optional. (W3/ADR-095)
 
 ## Proof contract — PASS / PARTIAL / FAIL / BLOCKED
 

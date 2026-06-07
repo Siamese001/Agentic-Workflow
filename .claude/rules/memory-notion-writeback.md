@@ -1,3 +1,9 @@
+> ⚠️ Superseded W3 (`claude-native-supersession-9d3f7a`, ADR-095): the mandatory
+> `mem_recall_session_start` first-call ritual and the MCP purge/staleness gates are retired.
+> Native **file-based memory** (`memory/MEMORY.md` + per-fact files) is the SSOT; the
+> knowledge-graph MCP is optional for genuine graph queries. The maintenance guidance below
+> applies only when the MCP is in use.
+
 
 <!-- Converted from `.claude/rules/memory-notion-writeback.md`. Original Cursor trigger: `model_decision`. -->
 

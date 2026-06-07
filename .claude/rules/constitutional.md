@@ -26,7 +26,7 @@
 14. **Subprocess timeout required.** See §0.
 15. **Precise exception handling.** Catch specific types. Bare `except:` and `except Exception` without guardian comment FORBIDDEN.
 16. **Query progress bar mandatory.** Operations >5s, loops >10 lines, heavy-named functions (`scan_*`/`build_*`/`query_*`) >12 lines. Gate: `check_query_progress_bar.py`. See `query-progress-bar.md`.
-17. **Memory lifecycle mandatory.** Call `mem_recall_session_start` at session start. Write back significant decisions / patterns via `create_entities`/`add_observations`. See AGENTS.md Memory Lifecycle.
+17. **Memory lifecycle (native file memory).** Recall project memory at session start and write back significant decisions/patterns. SSOT is native file memory (`memory/MEMORY.md` + per-fact files); the knowledge-graph MCP is optional for genuine graph queries. W3 supersession (ADR-095) retired the mandatory `mem_recall_session_start` first-call ritual and the purge/staleness gates.
 
 ### Process Discipline (§18–§21)
 
