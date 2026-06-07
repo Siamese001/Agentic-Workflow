@@ -28,7 +28,7 @@ Five-status taxonomy, Plans invariants, Backlog Snapshot (`34b27693-f55c-81b4-93
 | Edit `.mcp.json` | JSON SSOT | No write; run `python .claude/governance/scripts/sync_mcp_config.py` |
 | Author-Gate decision | `.claude/state/refactor_decisions/*.sqlite` | No write (ledger archived) |
 | ADG SC/AP defects | `artifacts/adg/*.sqlite` | No write |
-| Wave start | n/a | Emit `WAVE_START: plan=<slug-6hex> wave=<N>` + `python tools/windsurf/wave_execution_state.py start` / `wave-progress` |
+| Wave start | n/a | Emit `WAVE_START: plan=<slug-6hex> wave=<N>` + `python tools/plan_lifecycle/wave_execution_state.py start` / `wave-progress` |
 | Wave complete | Plan table (hook) | Emit `WAVE_COMPLETE: plan=<slug-6hex> wave=<N> note="..."` |
 
 Full wave lifecycle: `.claude/rules/plan-lifecycle-procedures.md`, `.claude/rules/wave-completion-discipline.md`.
