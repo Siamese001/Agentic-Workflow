@@ -15,15 +15,42 @@ Cursor's `${env:VAR}` syntax.
 ## Auth-gated servers
 - **notion** — requires `NOTION_TOKEN` (`setx NOTION_TOKEN secret_...`). Internal integration token
   from https://www.notion.so/my-integrations . Plans + Backlog DBs only (five DBs archived → filesystem SSOT).
-- **tavily** — requires `TAVILY_API_KEY` (`setx TAVILY_API_KEY tvly-...`). Key from
-  https://app.tavily.com/home . Free tier: 1000 credits/month.
 - **context7** — no key required on free tier; optional `CONTEXT7_API_KEY` raises rate limits.
 
-## Servers NOT migrated (were `disabled: true` in Cursor — active-only scope)
+## Servers dropped after the needs-review (2026-06-07) — native substitute exists
+Dropped because Claude Code's native tooling covers them; re-add the block to `.mcp.json` if you
+want the structured surface back. (`tavily` also needs `TAVILY_API_KEY` from https://app.tavily.com/home.)
+
+```jsonc
+"pytest_mcp": {                         // substitute: `python -m pytest` via Bash
+  "command": "python",
+  "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/pytest_server.py"],
+  "env": { "PYTHONPATH": "${AGENTIC_REPO_ROOT}", "PYTHONUNBUFFERED": "1" }
+},
+"redis": {                              // substitute: `redis-cli` via Bash
+  "command": "python",
+  "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/redis_mcp_server.py"],
+  "env": { "REDIS_DB": "0", "REDIS_HOST": "localhost", "REDIS_PORT": "6379",
+           "REDIS_TIMEOUT": "5", "PYTHONPATH": "${AGENTIC_REPO_ROOT}", "PYTHONUNBUFFERED": "1" }
+},
+"otel_mcp": {                           // on-demand: runtime trace/anomaly debugging (collector must be up)
+  "command": "python",
+  "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/otel/otel_mcp_server.py"],
+  "env": { "PYTHONPATH": "${AGENTIC_REPO_ROOT}", "PYTHONUNBUFFERED": "1",
+           "OTEL_MCP_RUNTIME_ADG_DIR": "${AGENTIC_REPO_ROOT}/agentic_core/L4_state/memory/runtime_adg" }
+},
+"tavily": {                             // substitute: native WebSearch / WebFetch
+  "command": "cmd",
+  "args": ["/c", "npx", "-y", "tavily-mcp"],
+  "env": { "TAVILY_API_KEY": "${TAVILY_API_KEY}" }
+}
+```
+
+## Servers never migrated (were `disabled: true` in Cursor)
 - **filesystem** — shadow-disabled 2026-05-02 (Author-Gate F4, ADR-095): native file tools
-  (Read/Write/Edit/Glob/Grep) fully substitute. Re-add to `.mcp.json` if needed.
+  (Read/Write/Edit/Glob/Grep) fully substitute.
 - **task_manager** — shadow-disabled 2026-05-02: `structured-reasoning` skill covers multi-step
-  workflow needs. Re-add to `.mcp.json` if needed.
+  workflow needs.
 
 ## Notes carried over
 - **GitKraken** is the project SSOT for git/PR MCP. GitLens duplicate disabled via

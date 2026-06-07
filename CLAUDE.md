@@ -62,18 +62,17 @@ explicit instructions.
 | `adg_sqlite` | Dependency graph, blast radius, layer analysis | `adg_health`, `adg_edge_fanin`, `adg_nodes_by_file`, `adg_violations` | [`adg-sqlite`](.claude/skills/adg-sqlite/SKILL.md) |
 | `memory` | Cross-session knowledge graph | `mem_recall_session_start`, `create_entities`, `search_nodes` | [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md) |
 | `vector_db` | Semantic search / embeddings | `semantic_search`, `query_collection`, `vector_stats` | [`vector-db`](.claude/skills/vector-db/SKILL.md) |
-| `pytest_mcp` | Test discovery, runs, coverage | `discover_tests`, `run_tests`, `analyze_test_coverage` | [`pytest-mcp`](.claude/skills/pytest-mcp/SKILL.md) |
-| `redis` | Hot-cache health, keys, TTL | `redis_health`, `redis_keys`, `redis_namespace_stats` | [`redis-cache`](.claude/skills/redis-cache/SKILL.md) |
-| `otel_mcp` | Telemetry, traces, runtime ADG | `otel_server_info`, `otel_trace`, `otel_anomalies` | [`otel-telemetry`](.claude/skills/otel-telemetry/SKILL.md) |
 | `notion` | Plans + Backlog DBs only | `API-query-data-source`, `API-post-page`, `API-patch-page` | [`notion`](.claude/skills/notion/SKILL.md) |
-| `tavily` | Web search/extract/crawl | `tavily-search`, `tavily-extract`, `tavily-crawl` | [`tavily-research`](.claude/skills/tavily-research/SKILL.md) |
 | `deepwiki` | External GitHub repo docs Q&A | `read_wiki_contents`, `ask_question` | [`deepwiki`](.claude/skills/deepwiki/SKILL.md) |
 | `context7` | Versioned external library docs | `resolve-library-id`, `get-library-docs` | [`context7`](.claude/skills/context7/SKILL.md) |
 | `playwright` | Browser automation / E2E | `browser_navigate`, `browser_snapshot`, `browser_click` | [`playwright`](.claude/skills/playwright/SKILL.md) |
 
-Procedural MCP SSOT: [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) §1–§13. (`filesystem`
-and `task_manager` MCP servers were intentionally not migrated — native tools / `structured-reasoning`
-substitute; see `.claude/mcp-notes.md`.)
+Procedural MCP SSOT: [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) §1–§13.
+
+**Not in `.mcp.json` (use the native substitute; re-add from [`.claude/mcp-notes.md`](.claude/mcp-notes.md) if needed):**
+`pytest_mcp` → `python -m pytest` via Bash · `redis` → `redis-cli` via Bash · `tavily` → native WebSearch/WebFetch ·
+`otel_mcp` → on-demand (runtime trace debugging) · `filesystem`/`task_manager` → native file tools / `structured-reasoning`.
+Their skills (`pytest-mcp`, `redis-cache`, `tavily-research`, `otel-telemetry`) remain as dormant reference until you re-add the server.
 
 ## Hooks
 

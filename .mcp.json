@@ -39,47 +39,11 @@
         "MCP_MAX_THREADPOOL_WORKERS": "2"
       }
     },
-    "otel_mcp": {
-      "command": "python",
-      "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/otel/otel_mcp_server.py"],
-      "env": {
-        "PYTHONPATH": "${AGENTIC_REPO_ROOT}",
-        "PYTHONUNBUFFERED": "1",
-        "OTEL_MCP_RUNTIME_ADG_DIR": "${AGENTIC_REPO_ROOT}/agentic_core/L4_state/memory/runtime_adg"
-      }
-    },
-    "redis": {
-      "command": "python",
-      "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/redis_mcp_server.py"],
-      "env": {
-        "REDIS_DB": "0",
-        "REDIS_HOST": "localhost",
-        "REDIS_PORT": "6379",
-        "REDIS_TIMEOUT": "5",
-        "PYTHONPATH": "${AGENTIC_REPO_ROOT}",
-        "PYTHONUNBUFFERED": "1"
-      }
-    },
-    "pytest_mcp": {
-      "command": "python",
-      "args": ["-u", "${AGENTIC_REPO_ROOT}/tools/mcp/pytest_server.py"],
-      "env": {
-        "PYTHONPATH": "${AGENTIC_REPO_ROOT}",
-        "PYTHONUNBUFFERED": "1"
-      }
-    },
     "notion": {
       "command": "cmd",
       "args": ["/c", "npx", "-y", "@notionhq/notion-mcp-server"],
       "env": {
         "NOTION_TOKEN": "${NOTION_TOKEN}"
-      }
-    },
-    "tavily": {
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "tavily-mcp"],
-      "env": {
-        "TAVILY_API_KEY": "${TAVILY_API_KEY}"
       }
     },
     "context7": {
