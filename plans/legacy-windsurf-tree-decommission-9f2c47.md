@@ -1,7 +1,7 @@
 ---
 slug: legacy-windsurf-tree-decommission-9f2c47
 plan_type: platform_core_change
-status: Not Started
+status: In Progress
 created: 2026-06-07
 owner: Claude Code
 supersedes: []
@@ -10,7 +10,25 @@ relates_to:
   - cursor-naming-rename-w5-b4f1a9                   # finished the surface rename; deferred the legacy-tree to here
 ---
 
+FORMAT_VERSION: simplified-plan-format-v1
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W1
+LAST_UPDATED: 2026-06-08
+
 # Legacy `_legacy_windsurf` / `_legacy_cursor` Tree Decommission
+
+> **L1 COMPLETE 2026-06-08 (IDE_archive).** Rollback tag
+> `pre-legacy-tree-decommission-9f2c47` exists, and the frozen inventory lives at
+> [legacy_tree_classification_9f2c47.md](../docs/reports/decommission/legacy_tree_classification_9f2c47.md)
+> with machine-readable detail in
+> [legacy_tree_classification_9f2c47.json](../docs/reports/decommission/legacy_tree_classification_9f2c47.json).
+> Actual clean-PR tree size is 167 `_legacy_windsurf` files and 13 `_legacy_cursor` files.
+> Classification result: 42 LIVE_HELPER, 138 DEAD_ARCHIVE.
+> No legacy-tree files were moved or deleted in L1. Lifecycle start required the documented
+> `PLAN_REGISTRATION_BYPASS=1` because `tools/plan_lifecycle/wave_execution_state.py` still imports
+> the stale `_legacy_windsurf/_plan_registration.py`, which reads `.windsurf/state` instead of
+> `.claude/state`; fixing that importer is L2 work.
 
 > Created 2026-06-07 as the **deferred tail** of the decommission. The naming-rename plan
 > [cursor-naming-rename-w5-b4f1a9](cursor-naming-rename-w5-b4f1a9.md) de-branded the live surface
@@ -63,20 +81,20 @@ relates_to:
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| L1 | P1.1–P1.3 | Inventory + classify (live-helper vs dead-archive) + rollback tag | ~10k | Importer set from 2026-06-07 grep holds | ⬜ Not Started | Frozen manifest: every `_legacy_*` file tagged LIVE_HELPER \| DEAD_ARCHIVE; rollback tag set |
-| L2 | P2.1–P2.3 | Promote live-helper subset → neutral home + rewrite importers | ~18k | Helpers are self-contained or co-movable | ⬜ Not Started | Helpers at `.claude/governance/scripts/_helpers/` (neutral); all live importers updated; no `_legacy_*` import remains in live code |
-| L3 | P3.1 | Verify chain + tooling + gates fire post-move | ~6k | — | ⬜ Not Started | Live dispatch fires; ledger capture works; Notion wave-lifecycle import OK; CI gates green |
-| L4 | P4.1–P4.2 | De-brand boundary constant + scanner/gate consumers | ~8k | `WINDSURF_SCRIPTS_DIR` re-pointable to neutral home | ⬜ Not Started | `path_constants` constant renamed/repointed (Author-Gate + receipt); static_scanner + 2 gates updated; ADG scan parity |
-| L5 | P5.1–P5.3 | Delete dead-archive bulk + `_legacy_cursor`; retire `T6a`; guard cleanup | ~8k | L2–L4 green; no remaining importer | ⬜ Not Started | `_legacy_windsurf`/`_legacy_cursor` deleted; `T6a` retired or repointed; shell-guard legacy tokens pruned |
-| L6 | P6.1 | Zero-brand verify + hand `.cursor/` to dec0de + close | ~5k | All prior waves green | ⬜ Not Started | Repo scan: only intentional history remains; dec0de notified for `.cursor/` removal; plan closed |
+| W1/L1 | P1.1–P1.3 | Inventory + classify (live-helper vs dead-archive) + rollback tag | ~10k | Actual tree differs from stale plan estimate | ✅ Done (2026-06-08) | Frozen manifest written; rollback tag set; no legacy-tree move/delete |
+| W2/L2 | P2.1–P2.3 | Promote live-helper subset → neutral home + rewrite importers | ~18k | Helpers are self-contained or co-movable | ⬜ Not Started | Helpers at `.claude/governance/scripts/_helpers/` (neutral); all live importers updated; no `_legacy_*` import remains in live code |
+| W3/L3 | P3.1 | Verify chain + tooling + gates fire post-move | ~6k | — | ⬜ Not Started | Live dispatch fires; ledger capture works; Notion wave-lifecycle import OK; CI gates green |
+| W4/L4 | P4.1–P4.2 | De-brand boundary constant + scanner/gate consumers | ~8k | `WINDSURF_SCRIPTS_DIR` re-pointable to neutral home | ⬜ Not Started | `path_constants` constant renamed/repointed (Author-Gate + receipt); static_scanner + 2 gates updated; ADG scan parity |
+| W5/L5 | P5.1–P5.3 | Delete dead-archive bulk + `_legacy_cursor`; retire `T6a`; guard cleanup | ~8k | L2–L4 green; no remaining importer | ⬜ Not Started | `_legacy_windsurf`/`_legacy_cursor` deleted; `T6a` retired or repointed; shell-guard legacy tokens pruned |
+| W6/L6 | P6.1 | Zero-brand verify + hand `.cursor/` to dec0de + close | ~5k | All prior waves green | ⬜ Not Started | Repo scan: only intentional history remains; dec0de notified for `.cursor/` removal; plan closed |
 
 ### Phase-Level Summary
 
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |----------|-------|---------------|-------------|-------------|--------|
-| P1.1 | Rollback tag | git tag | — | ~1k | ⬜ |
-| P1.2 | Classify `_legacy_windsurf` (331) | manifest | Distinguish live-helper from dead `post_cascade_*` archive; trace every importer | ~6k | ⬜ |
-| P1.3 | Classify `_legacy_cursor` (25) | manifest | heartbeat-latency test + dedup-verify consumer | ~3k | ⬜ |
+| P1.1 | Rollback tag | git tag | — | ~1k | ✅ Done: `pre-legacy-tree-decommission-9f2c47` |
+| P1.2 | Classify `_legacy_windsurf` (167 on disk) | manifest | Distinguish live-helper from dead `post_cascade_*` archive; trace every importer | ~6k | ✅ Done: 42 LIVE_HELPER / 125 DEAD_ARCHIVE |
+| P1.3 | Classify `_legacy_cursor` (13 on disk) | manifest | heartbeat-latency test + dedup-verify consumer | ~3k | ✅ Done: 0 LIVE_HELPER / 13 DEAD_ARCHIVE |
 | P2.1 | Create neutral home `_helpers/` + move live helpers | `_legacy_windsurf/_*.py` → `.claude/governance/scripts/_helpers/` | `sys.path.insert` consumers vs package imports; co-move transitive deps | ~8k | ⬜ |
 | P2.2 | Rewrite hook importers | `post_agent_plan_registration_capture.py`, `post_agent_plan_scope_audit.py`, `_post_handlers/*` | HELPER_PATH / W2_MODULE_PATH literals | ~5k | ⬜ |
 | P2.3 | Rewrite tools importers | `tools/plan_lifecycle/wave_execution_state.py`, `tools/capture/queue_to_ledger.py`, `tools/notion/{wave_lifecycle_writer,_plan_registration_helpers,apply_plan_derived_status,triage_plans_duplicates}.py` | sys.path inserts | ~5k | ⬜ |
@@ -95,6 +113,10 @@ relates_to:
 - **P1.2/P1.3** Walk both trees; for each file record `classification` (LIVE_HELPER if any non-frozen
   importer exists, else DEAD_ARCHIVE) + the importer paths. Trace transitive imports between helpers
   (a moved helper may import a sibling). Write frozen manifest to `docs/reports/decommission/`.
+- **Completed 2026-06-08:** see
+  `docs/reports/decommission/legacy_tree_classification_9f2c47.{md,json}`. Direct ADG SQLite
+  snapshot was consulted before deterministic text/AST fallback. The manifest records directory-level
+  wildcard anchors separately from file-level importer evidence.
 
 ### L2 — Promote live-helper subset
 - **P2.1** Create neutral package `.claude/governance/scripts/_helpers/` (`__init__.py`); `git mv` the
@@ -157,3 +179,6 @@ import-clean). The physical `.cursor/` dir removal stays owned by dec0de (do not
   do each wave as commit+push cycles on an isolated branch; merge (not destructive squash) if main diverges.
 - **Known bug to fix in transit:** `_legacy_windsurf/_notion_plans_status_check.py` dead `.cursor/scripts`
   import path.
+
+WAVE_COMPLETE: YES
+WAVE_COMPLETE_NOTE: plan=legacy-windsurf-tree-decommission-9f2c47 wave=W1/L1 date=2026-06-08 artifacts=docs/reports/decommission/legacy_tree_classification_9f2c47.md,docs/reports/decommission/legacy_tree_classification_9f2c47.json note="rollback tag plus frozen classification manifest; no legacy-tree move/delete"

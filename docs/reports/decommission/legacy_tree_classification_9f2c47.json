@@ -1,0 +1,3733 @@
+{
+  "actual_tree_counts": {
+    ".claude/governance/scripts/_legacy_cursor": 13,
+    ".claude/governance/scripts/_legacy_windsurf": 167
+  },
+  "adg_evidence": {
+    "legacy_edges_source_file": 1,
+    "legacy_module_entrypoints": 176,
+    "legacy_module_origins": 176,
+    "notes": [
+      "Direct SQLite snapshot used before deterministic text/AST fallback per graph-analysis hierarchy.",
+      "SQLite snapshot is an ignored local artifact read from C:/Git/IDE_archive because the clean PR worktree does not carry artifacts/adg snapshots."
+    ],
+    "sqlite_path": "C:\\Git\\IDE_archive\\artifacts\\adg\\adg_indexed_06082026_1423.sqlite",
+    "used": true
+  },
+  "branch": "codex/ide-archive-decommission-plans",
+  "classification_policy": {
+    "dead_archive": "No active non-frozen importer or transitive dependency found by direct SQLite plus deterministic text/AST scan.",
+    "excluded_reference_surfaces": [
+      "docs/**",
+      "plans/**",
+      ".claude/plans/**",
+      "tests/_archived_obsolete/**",
+      "legacy trees themselves"
+    ],
+    "labels": [
+      "LIVE_HELPER",
+      "DEAD_ARCHIVE"
+    ],
+    "live_helper": "Any legacy file with a direct reference from active non-frozen code/config/tests, or an intra-legacy transitive dependency of such a file.",
+    "non_importer_directory_refs": "Directory-level or wildcard references are recorded separately and do not by themselves mark every file live."
+  },
+  "files": [
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/README.md",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "809ea972cf281c515fdd808a28e913ee374b0c8e93efccb9ebd2566d7be36994",
+      "size_bytes": 1641,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_adr_registry_capture.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "530e03599fe0ed3625a98993b756743f0e1240635d1d3334c6afdb56f20995bd",
+      "size_bytes": 17253,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_author_gate_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "49f6e0bbf6f61fb2aac0467e9c1fe8868661e2a934419d16eb7ad3e14df1f32a",
+      "size_bytes": 20631,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_author_gate_suite.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "13d098da92c08b4da2c4f7098999852f6da2737151a42a21626ef4ecfa54a64a",
+      "size_bytes": 2756,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_cleanup.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "716fe1a15a144bc571a68158b4f6594e56c0a132406a7cc0481b05501117dedf",
+      "size_bytes": 3071,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_grep_budget_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ded1753bae1cbdcdacb7ba9cd6f73568ddc81cf7b1c30d53eec39e400c6e46f2",
+      "size_bytes": 4175,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_heartbeat.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "0a0c39ee87bae40f9078522df2e269e0a6754b8a5114c4062015ef22642681c7",
+      "size_bytes": 3812,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_notion_plans_status_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "8b81f7753953558db6c44a853beb408970e82c2438ab3774fe4fa89d03cf3303",
+      "size_bytes": 20526,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_plan_complete_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "26746db17bfde0574b2f146b943f393464b53cff47ee3fb59f837dc372f4ae86",
+      "size_bytes": 4265,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_plan_creation_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "d136a67df7e1775ae21b93aa984614664cc4f1eb1f4ec2314975c92f633524f8",
+      "size_bytes": 12060,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_plans_dup_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "f8543dd1088f070c5d3c0ee96673358b5f21524175875941e2664cc3796b4189",
+      "size_bytes": 6786,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_read_budget_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "5522d092f7dbd6a5de345cf302bbc04cd584d67724afac753d3c6d54728ae472",
+      "size_bytes": 4903,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_cursor/post_cursor_agent_token_telemetry.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "29d939e17bf35893a33a8b066f578cee70e6a8ea71b357fa99913e8f86d09b99",
+      "size_bytes": 4561,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_cursor"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "ci_or_maintenance",
+          "module": "_apps_test_surface_check",
+          "path": "ops_scripts/ci/check_apps_test_surface_parity.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_apps_test_surface_check",
+          "path": "tests/unit/windsurf_scripts/test_apps_test_surface_check.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_apps_test_surface_check.py",
+      "reason": "direct_active_reference:ci_or_maintenance,test",
+      "sha256": "790967a31042f43dc0d471884acaf82ef835b79e70e80fd367cfb6a225815a57",
+      "size_bytes": 5272,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_author_gate_pipeline_check",
+          "path": "tests/unit/windsurf_scripts/test_author_gate_pipeline_check.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_author_gate_pipeline_check.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "26c12ec9f52f6d1d144744d1633242d99dc00d0366bacb91002ef77db3310fcf",
+      "size_bytes": 7249,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 15,
+          "path": "tests/unit/windsurf_scripts/test_ag_queue_drain_audit.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_author_gate_queue.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_author_gate_queue.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 12,
+          "path": "tests/unit/windsurf_scripts/test_author_gate_queue.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_author_gate_queue.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "b5f1741470ebeb2241317297afa2cfc9391916e71b13855d4ebb8c87dcdceaf4",
+      "size_bytes": 6737,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_bypass_boilerplate.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "089e1c377f9c12ec3d61847b167ec45bff1c56e6be30830b4f9eda3e3ca8a998",
+      "size_bytes": 5667,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 14,
+          "path": "tests/unit/windsurf/scripts/test_deferred_scope_plan_scaffold.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_deferred_scope_plan_scaffold.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "4a6677e96971141a07b76e62e8a0ddf90bbce2c0357f4be5593ea2dbd1f45b63",
+      "size_bytes": 9593,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_notion_canonical.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "9ffb1f6348e85b9124dd6a5d01eb8291041175789294e0f9e62e396caa3b0aa3",
+      "size_bytes": 7176,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "ci_or_maintenance",
+          "module": "_notion_constants",
+          "path": "ops_scripts/ci/check_notion_backlog_no_duplicates.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "ci_or_maintenance",
+          "module": "_notion_constants",
+          "path": "ops_scripts/ci/check_notion_backlog_plan_linkage.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "ci_or_maintenance",
+          "module": "_notion_constants",
+          "path": "ops_scripts/ci/check_notion_plans_no_duplicates.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 243,
+          "path": "tests/unit/ops_scripts/ci/test_audit_gates.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 243,
+          "path": "tests/unit/ops_scripts/ci/test_audit_gates.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_notion_constants",
+          "path": "tests/unit/windsurf_scripts/test_notion_constants_url_extract.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 11,
+          "path": "tools/analysis/_audit_diagnose_audit3.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 11,
+          "path": "tools/analysis/_audit_diagnose_audit3.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 25,
+          "path": "tools/analysis/_audit_diagnose_audit6.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 25,
+          "path": "tools/analysis/_audit_diagnose_audit6.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 80,
+          "path": "tools/analysis/_audit_finalize_validation.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 80,
+          "path": "tools/analysis/_audit_finalize_validation.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 50,
+          "path": "tools/analysis/_audit_smoke_test.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 50,
+          "path": "tools/analysis/_audit_smoke_test.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 65,
+          "path": "tools/analysis/_audit_stage_for_commit.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 65,
+          "path": "tools/analysis/_audit_stage_for_commit.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/_plan_registration_helpers.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/apply_orphan_disposition.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/apply_plan_derived_status.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/audit_backlog_fill_rates.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/audit_backlog_plan_derived.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/backfill_backlog_outliers.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/backfill_backlog_plan_relation.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/backfill_backlog_scores.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/backfill_historical_plan_statuses.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/register_ondisk_plans_batch.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/repair_notion_plan_statuses.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/repair_notion_plan_summaries.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/restore_plan_statuses_from_cache.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/triage_plans_duplicates.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/notion/wave_lifecycle_writer.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_constants",
+          "path": "tools/reports/recover_deferred_scope_pendings.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_notion_constants.py",
+      "reason": "direct_active_reference:ci_or_maintenance,test,tooling",
+      "sha256": "8977594282b43a25c87dd4bccd0eac78d3d4265e82c0d35eefcfa77d06f93f24",
+      "size_bytes": 5059,
+      "transitive_from": [
+        ".claude/governance/scripts/_legacy_windsurf/plan_driven_closer.py",
+        ".claude/governance/scripts/_legacy_windsurf/post_commit_phase_closer.py",
+        ".claude/governance/scripts/_legacy_windsurf/rollback_bad_patches.py"
+      ],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "ci_or_maintenance",
+          "module": "_notion_plans_status_check",
+          "path": "ops_scripts/ci/check_notion_schema_preflight.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_notion_plans_status_check",
+          "path": "tests/unit/windsurf_scripts/test_notion_plans_status_check.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_notion_plans_status_check",
+          "path": "tests/unit/windsurf_scripts/test_notion_status_transitions.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_plans_status_check",
+          "path": "tools/notion/backfill_historical_plan_statuses.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_plans_status_check",
+          "path": "tools/notion/repair_notion_plan_statuses.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_plans_status_check",
+          "path": "tools/notion/restore_plan_statuses_from_cache.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_notion_plans_status_check",
+          "path": "tools/notion/unified_notion_status_auditor.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_notion_plans_status_check.py",
+      "reason": "direct_active_reference:ci_or_maintenance,test,tooling",
+      "sha256": "72ea322c75b39ca6a76fe92d9f3c5c454ede5fa55423672ce150409fccb7f598",
+      "size_bytes": 1763,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_plan_lifecycle.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "11995004b833c74e2332c15227529f62ce02a5fc6703410b4b1afed182e4750f",
+      "size_bytes": 9803,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "governance_runtime",
+          "line": 33,
+          "path": ".claude/governance/scripts/post_agent_plan_registration_capture.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "ci_or_maintenance",
+          "line": 38,
+          "path": "ops_scripts/calibration/plan_registration_weekly_report.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_plan_registration.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_plan_registration.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 23,
+          "path": "tests/unit/windsurf_scripts/test_plan_registration.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_plan_registration",
+          "path": "tools/plan_lifecycle/wave_execution_state.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_plan_registration.py",
+      "reason": "direct_active_reference:ci_or_maintenance,governance_runtime,test,tooling",
+      "sha256": "076cc2baf93ad862e3ac08d38284f8675e54eeb674cee2dfe504c409ab4bdb19",
+      "size_bytes": 15229,
+      "transitive_from": [
+        ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_plan_registration_refresh.py"
+      ],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "governance_runtime",
+          "module": "_plan_scope_expansion_check",
+          "path": ".claude/governance/scripts/post_agent_plan_scope_audit.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "governance_runtime",
+          "line": 27,
+          "path": ".claude/governance/scripts/post_agent_plan_scope_audit.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_plan_scope_expansion_check",
+          "path": "tests/unit/windsurf_scripts/test_plan_scope_expansion_check.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 23,
+          "path": "tests/unit/windsurf_scripts/test_plan_scope_expansion_check.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 141,
+          "path": "tests/unit/windsurf_scripts/test_w6_template_hook.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_plan_scope_expansion_check.py",
+      "reason": "direct_active_reference:governance_runtime,test",
+      "sha256": "63b8ad5f5b51d3f55035f13d7d6f0a227e339fa61fe8633a27e8f4f5fa7603ab",
+      "size_bytes": 23114,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "ci_or_maintenance",
+          "module": "_plans_dup_detector",
+          "path": "ops_scripts/ci/check_notion_plans_no_duplicates.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 2,
+          "path": "tests/unit/windsurf_scripts/test_plans_dup_detector.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 2,
+          "path": "tests/unit/windsurf_scripts/test_plans_dup_detector.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 15,
+          "path": "tests/unit/windsurf_scripts/test_plans_dup_detector.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_plans_dup_detector.py",
+      "reason": "direct_active_reference:ci_or_maintenance,test",
+      "sha256": "449c572d26df18fa1f13cb41d5e4eb84a875a867189a55352298ca224630e622",
+      "size_bytes": 5356,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_post_cascade_payload.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "0def14e64da4ede3c1e983fea1e980d07481cc618758420c992fb9d4bb57360f",
+      "size_bytes": 2818,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_post_cascade_payload.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "0def14e64da4ede3c1e983fea1e980d07481cc618758420c992fb9d4bb57360f",
+      "size_bytes": 2818,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_post_handlers",
+          "path": "tests/unit/windsurf_scripts/test_read_budget.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_post_handlers",
+          "path": "tests/unit/windsurf_scripts/test_token_telemetry.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_post_handlers/__init__.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "f2b0b03312ac9e4c0f18578c752b5c16bc50e3c62afcf6f541ba0f659799bb0c",
+      "size_bytes": 1348,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_post_handlers/cleanup.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "98110e8c00eb0306f85128029b5a2543ee959624dd57670efd161cd6f3153cf8",
+      "size_bytes": 1760,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_post_handlers/grep_budget.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "dfa4d85d2842d8b45cd33cc673f39f2932f67da0829fbe312ed5effa9ae1f870",
+      "size_bytes": 2106,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_post_handlers/heartbeat.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "adaae8e1af8817362e64a9f73faef0540b846779dcbe4f7e1180ca72810a41a6",
+      "size_bytes": 2247,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_post_handlers.read_budget",
+          "path": "tests/unit/windsurf_scripts/test_read_budget.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "read_budget",
+          "path": "tests/unit/windsurf_scripts/test_read_budget.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_read_budget.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_read_budget.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_post_handlers/read_budget.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "8399050fdc84b81ced770b1059ff8a01f9bb7ed9fab51a43c3d394a17244c429",
+      "size_bytes": 2904,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_post_handlers.token_telemetry",
+          "path": "tests/unit/windsurf_scripts/test_token_telemetry.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "token_telemetry",
+          "path": "tests/unit/windsurf_scripts/test_token_telemetry.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_token_telemetry.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_token_telemetry.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_post_handlers/token_telemetry.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "c2d18c323e6933a5654fd15db41b1850f3da0322c84acfe10764d926a925302b",
+      "size_bytes": 2811,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_progress_reporter.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "bade353ba4c4c378dd5e943809c3477e5f9bfd60959860a89c665a0d3716d598",
+      "size_bytes": 7839,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_secret_patterns.py",
+      "reason": "transitive_dependency_of_live_helper",
+      "sha256": "796ea15e59f9b0233d3df4b9fdc5e0ee1291fd7db91c114038e852c12e3d47ba",
+      "size_bytes": 6765,
+      "transitive_from": [
+        ".claude/governance/scripts/_legacy_windsurf/pre_write_gate.py"
+      ],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_serialization_sentinel.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "278147f0f55877543827c53896681c2ceea1be487f0295d217fbd451f7510b49",
+      "size_bytes": 8763,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_session_id_shared.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "a96663a2cf7a99f455f9933f62318a39c3fbbfd3df0b421ed268272b3a712430",
+      "size_bytes": 1901,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "ci_or_maintenance",
+          "module": "_ssot_folder_check",
+          "path": "ops_scripts/ci/check_ssot_folder_routing.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_ssot_folder_check",
+          "path": "tests/unit/windsurf_scripts/test_ssot_folder_check.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_ssot_folder_check.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 1,
+          "path": "tests/unit/windsurf_scripts/test_ssot_folder_check.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_ssot_folder_check.py",
+      "reason": "direct_active_reference:ci_or_maintenance,test",
+      "sha256": "3895beac02bb70f9a55f764dac26dd071024852223d116ba52f28a305dfdfb1c",
+      "size_bytes": 10967,
+      "transitive_from": [
+        ".claude/governance/scripts/_legacy_windsurf/pre_write_gate.py"
+      ],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "_wave_execution_state",
+          "path": "tests/unit/windsurf_scripts/test_wave_execution_state.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "tooling",
+          "module": "_wave_execution_state",
+          "path": "tools/plan_lifecycle/wave_execution_state.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/_wave_execution_state.py",
+      "reason": "direct_active_reference:test,tooling",
+      "sha256": "613a73d4fecfb7a2fee6dc205aba217b9c5f735dc2aa10b6ec1312cdd0eb4315",
+      "size_bytes": 3292,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "ci_or_maintenance",
+          "line": 22,
+          "path": "ops_scripts/ci/check_ledger_append_only.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 158,
+          "path": "tools/refactor_decisions/rebind_outcomes_from_git.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 158,
+          "path": "tools/refactor_decisions/rebind_outcomes_from_git.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/apply_append_only_triggers.py",
+      "reason": "direct_active_reference:ci_or_maintenance,tooling",
+      "sha256": "fbf8a203dfb9c61e76450185ee53b0ec53b9b8fcc6620b192fca4e4123ccdd0e",
+      "size_bytes": 5991,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/apply_ledger_schema.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "c846f306c6655eeb0346f578c988919a2c0fa7fe5a2a7189694670dd623c62b7",
+      "size_bytes": 8989,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "ci_or_maintenance",
+          "line": 33,
+          "path": "ops_scripts/ci/check_ledger_coverage.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/audit_ledger_coverage.py",
+      "reason": "direct_active_reference:ci_or_maintenance",
+      "sha256": "0ca5cd8a95cba86aec8fa859fe736ff6c18baf1178ccee972d0b5e9015449db7",
+      "size_bytes": 11954,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "author_gate_ledger_integrity",
+          "path": "tests/unit/windsurf/scripts/test_author_gate_ledger_integrity.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 2,
+          "path": "tests/unit/windsurf/scripts/test_author_gate_ledger_integrity.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 2,
+          "path": "tests/unit/windsurf/scripts/test_author_gate_ledger_integrity.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/author_gate_ledger_integrity.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "814a68bec1179d99a82e625133aece25a54a2c4b57f79c08b41517f8b855152a",
+      "size_bytes": 27944,
+      "transitive_from": [
+        ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_capture.py"
+      ],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/author_gate_marker_validator.py",
+      "reason": "transitive_dependency_of_live_helper",
+      "sha256": "8071c14132e5b2c89a07ae220bfcfc672656ddb085b787daeaa04db53b0515d8",
+      "size_bytes": 7295,
+      "transitive_from": [
+        ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_capture.py"
+      ],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/backfill_cat4_decisions.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "2208944faa9b9058f62079ad32cde94dba550dddb5964ccc5c59c7663c1cfaa7",
+      "size_bytes": 14397,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/capture_author_gate.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "35f9e45daa7152c9ab76159b8d9e1ede654e6789bc92908ab9d1a9c76b09c0ce",
+      "size_bytes": 5171,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/defer.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "6e20eb24f949ccb4b997fd38c23edce0547d54f8f9ce5445ad8907d478c45b8b",
+      "size_bytes": 4518,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 105,
+          "path": "tests/unit/ops_scripts/ci/test_check_mcp_config_sovereignty.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 105,
+          "path": "tests/unit/ops_scripts/ci/test_check_mcp_config_sovereignty.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 110,
+          "path": "tests/unit/ops_scripts/ci/test_check_mcp_config_sovereignty.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 110,
+          "path": "tests/unit/ops_scripts/ci/test_check_mcp_config_sovereignty.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 42,
+          "path": "tests/unit/tools/debug/test_check_orphan_mcp_processes.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 42,
+          "path": "tests/unit/tools/debug/test_check_orphan_mcp_processes.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/filesystem_mcp_launcher.js",
+      "reason": "direct_active_reference:test",
+      "sha256": "df09895c34e4f93a1fb2d4c85d38a0c0ce563cdbf320c87752d0595e418666fa",
+      "size_bytes": 8669,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 4,
+          "path": "tools/calibration/loop_metrics.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 4,
+          "path": "tools/calibration/loop_metrics.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/generate_calibration_report.py",
+      "reason": "direct_active_reference:tooling",
+      "sha256": "c860aada1a9facb3c52b5b78e7bb4fa53de50b23efffbfda1af0b004382e085d",
+      "size_bytes": 18330,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "ci_or_maintenance",
+          "line": 27,
+          "path": "ops_scripts/ci/check_rules_index_freshness.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/generate_rules_index.py",
+      "reason": "direct_active_reference:ci_or_maintenance",
+      "sha256": "f9fa2cb94727c74237c087c1826f34ea161c563e90ca8553b958f4d0078b6c3d",
+      "size_bytes": 22254,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/install_git_hooks.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "f3648ae99e6cbee390faa034346066ed5bd67e95d2299fe1073cbbc84bb83447",
+      "size_bytes": 6129,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/install_post_commit_phase_closer.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "0c8c51e748d9df7474cb4445e89f545ee9efdc628a6161fbbe104d227bfd978c",
+      "size_bytes": 4131,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/manual_post_cascade_replay.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "60bbaaa64c0df5dfd2489e4a82d3e0a1c1a62291ab466743d2d995cd1ec59975",
+      "size_bytes": 5747,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/manual_post_cascade_replay.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "60bbaaa64c0df5dfd2489e4a82d3e0a1c1a62291ab466743d2d995cd1ec59975",
+      "size_bytes": 5747,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 136,
+          "path": "tools/mcp/mcp_bootstrap.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 136,
+          "path": "tools/mcp/mcp_bootstrap.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/mcp_fleet_health.py",
+      "reason": "direct_active_reference:tooling",
+      "sha256": "da3bddd43bd4353e4537b1f6008bcb983c9c0761f67fc0fe00c330d5b6e4023d",
+      "size_bytes": 12790,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/mcp_python_heartbeat.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "498c5137f9fcbce159fec231e7aae495ac84df1c2f46d50fc940e0b2f83ed727",
+      "size_bytes": 6162,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 23,
+          "path": "tests/windsurf/scripts/test_mcp_supervisor.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/mcp_python_supervisor.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "93d0d39677f04de2e95899aa359b308388f3a47aaf786d914cd7c860fca9ba24",
+      "size_bytes": 10770,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 324,
+          "path": "tests/unit/windsurf/test_plan_wave_inline_status_sync.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 581,
+          "path": "tests/unit/windsurf/test_plan_wave_inline_status_sync.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 51,
+          "path": "tools/analysis/_audit_smoke_test.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 51,
+          "path": "tools/analysis/_audit_smoke_test.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 46,
+          "path": "tools/analysis/_audit_stage_for_commit.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 46,
+          "path": "tools/analysis/_audit_stage_for_commit.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/plan_driven_closer.py",
+      "reason": "direct_active_reference:test,tooling",
+      "sha256": "be982677619f82163ed4bca8b6c415e9742479572c90ed6c5c56698726fd68f0",
+      "size_bytes": 21803,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_adg_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ba42c9273a96ccc6d130ecc60e29080757be30f84db0024f2ba279b758e5e509",
+      "size_bytes": 18774,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_adg_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ba42c9273a96ccc6d130ecc60e29080757be30f84db0024f2ba279b758e5e509",
+      "size_bytes": 18774,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_adr_registry_capture.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "b817f1087756fc2f5236b682fa45b06f282692f15465129a2642ad03b88f38ca",
+      "size_bytes": 17230,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_adr_registry_capture.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "b817f1087756fc2f5236b682fa45b06f282692f15465129a2642ad03b88f38ca",
+      "size_bytes": 17230,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_ag_queue_drain_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "0e9aa0bd0b01ee68eb61f69af39b678d317bc9b68c1c9e108a6ba346f0b3c7ce",
+      "size_bytes": 5800,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_ag_queue_drain_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "0e9aa0bd0b01ee68eb61f69af39b678d317bc9b68c1c9e108a6ba346f0b3c7ce",
+      "size_bytes": 5800,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_ag_queue_seed_capture.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "fee1e216c748563b2fa872a5a2e78574a05133c91ba1b3b7293b4379a7c5e978",
+      "size_bytes": 4626,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_ag_queue_seed_capture.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "fee1e216c748563b2fa872a5a2e78574a05133c91ba1b3b7293b4379a7c5e978",
+      "size_bytes": 4626,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_ask_user_question_packet_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "7fc8f11061fa42aa00e5fe70a03ede46d23f66a8929fb649fb6ed71c34f58bc1",
+      "size_bytes": 6960,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_ask_user_question_packet_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "7fc8f11061fa42aa00e5fe70a03ede46d23f66a8929fb649fb6ed71c34f58bc1",
+      "size_bytes": 6960,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "b64c7bf00549f67bb82a71280115e76b5dbf77364490b3f2f7a7f46027b2b070",
+      "size_bytes": 20423,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "b64c7bf00549f67bb82a71280115e76b5dbf77364490b3f2f7a7f46027b2b070",
+      "size_bytes": 20423,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_capture.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "02264b021407356f16d4ae4933672799bd7c299aa1b519b5dbefb6d505b910de",
+      "size_bytes": 37426,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 81,
+          "path": "tools/refactor_decisions/migrate_w1_author_gate_feedback_columns.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 75,
+          "path": "tools/refactor_decisions/migrate_w2_author_gate_signal_columns.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_capture.py",
+      "reason": "direct_active_reference:tooling",
+      "sha256": "02264b021407356f16d4ae4933672799bd7c299aa1b519b5dbefb6d505b910de",
+      "size_bytes": 37426,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_miss_detector.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "2ef12a3cdea0e4a112de948256bc6f1bcc741e0613634b3a87a7c4be0a19bde3",
+      "size_bytes": 12804,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_miss_detector.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "2ef12a3cdea0e4a112de948256bc6f1bcc741e0613634b3a87a7c4be0a19bde3",
+      "size_bytes": 12804,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_pipeline_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "3560a5ea9e085974eddda787b5e8b0b7f7c85be79712554e09e15099afad7e42",
+      "size_bytes": 3741,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_pipeline_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "3560a5ea9e085974eddda787b5e8b0b7f7c85be79712554e09e15099afad7e42",
+      "size_bytes": 3741,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_schema_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "bb3467d556058c769617fb238e780c4bddb46088962b821d6797f3afa4dc3162",
+      "size_bytes": 14379,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_schema_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "bb3467d556058c769617fb238e780c4bddb46088962b821d6797f3afa4dc3162",
+      "size_bytes": 14379,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_suite.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "206f40e8bf7936044805a7fc8938c2037150b4743641ca08bd26204029a0d7f7",
+      "size_bytes": 2666,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_suite.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "206f40e8bf7936044805a7fc8938c2037150b4743641ca08bd26204029a0d7f7",
+      "size_bytes": 2666,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_ui_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "c208dfb6e41b6ba037a8da31cdd50b3849bc6e2a8c4de4e2596505f372f622e5",
+      "size_bytes": 13657,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_author_gate_ui_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "c208dfb6e41b6ba037a8da31cdd50b3849bc6e2a8c4de4e2596505f372f622e5",
+      "size_bytes": 13657,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_cleanup.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "5426378fbeece4ef85a98ccc62cf40b7c3d6d96cfc37a0e5235884a3575e61f3",
+      "size_bytes": 3063,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_cleanup.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "5426378fbeece4ef85a98ccc62cf40b7c3d6d96cfc37a0e5235884a3575e61f3",
+      "size_bytes": 3063,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_deferred_scope_capture.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "6d0a12f8e903ce2e115157dbdcc17da85ff285302b5e7567dc7d22e633e107f2",
+      "size_bytes": 25104,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_deferred_scope_capture.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "6d0a12f8e903ce2e115157dbdcc17da85ff285302b5e7567dc7d22e633e107f2",
+      "size_bytes": 25104,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_dispatch.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "f3460256c49017345a1b5f59cd3a6024d2d4261e100402264d806d59194c6087",
+      "size_bytes": 8079,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_dispatch.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "f3460256c49017345a1b5f59cd3a6024d2d4261e100402264d806d59194c6087",
+      "size_bytes": 8079,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_fortknox_integrity_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "bf9f057f2e6563d5c91aff8259edfce88866fcbfa4671b0429128d227d2f693b",
+      "size_bytes": 5781,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_fortknox_integrity_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "bf9f057f2e6563d5c91aff8259edfce88866fcbfa4671b0429128d227d2f693b",
+      "size_bytes": 5781,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_grep_budget_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "fde329f65182b937e13175dee297a98c0e9147db7664a06924bab11ef6ca21c3",
+      "size_bytes": 4142,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_grep_budget_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "fde329f65182b937e13175dee297a98c0e9147db7664a06924bab11ef6ca21c3",
+      "size_bytes": 4142,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_heartbeat.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "da8ebe354904d9f680fd69f125b00887ebe6dc48d4e43f4a208e5f36dd437a84",
+      "size_bytes": 3755,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_heartbeat.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "da8ebe354904d9f680fd69f125b00887ebe6dc48d4e43f4a208e5f36dd437a84",
+      "size_bytes": 3755,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_long_command_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "1878a1c2f2ff98d6151fdfbb9b1f2eab600f5c757cf8f0222b88acf2f45bb788",
+      "size_bytes": 7711,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_long_command_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "1878a1c2f2ff98d6151fdfbb9b1f2eab600f5c757cf8f0222b88acf2f45bb788",
+      "size_bytes": 7711,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_mcp_hygiene_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "8dcf4f8a9094aedf10163617fdfa7b932768832d5533c8686095d3768767de93",
+      "size_bytes": 4268,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_mcp_hygiene_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "8dcf4f8a9094aedf10163617fdfa7b932768832d5533c8686095d3768767de93",
+      "size_bytes": 4268,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_mcp_orphan_reap.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ba85eeb096ff635ec3bc0ecf90a2a23d27545aa52ac0448f6161f5b47bf8b9fd",
+      "size_bytes": 4213,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_mcp_orphan_reap.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ba85eeb096ff635ec3bc0ecf90a2a23d27545aa52ac0448f6161f5b47bf8b9fd",
+      "size_bytes": 4213,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_mcp_preflight_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ff8051e7fad2bad0e9ec50028f48d6e8d16423bd471981bb6abfda16994dbe12",
+      "size_bytes": 13509,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_mcp_preflight_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ff8051e7fad2bad0e9ec50028f48d6e8d16423bd471981bb6abfda16994dbe12",
+      "size_bytes": 13509,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_mcp_serialization_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "8e683417611d6787e1d9c965a764aeb4fdac598f5fdd151473c38d1c6cafb842",
+      "size_bytes": 13000,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_mcp_serialization_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "8e683417611d6787e1d9c965a764aeb4fdac598f5fdd151473c38d1c6cafb842",
+      "size_bytes": 13000,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_next_step_capture.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "dca7e0fc4e653e7175be38d30eb1cedb29ddfca795f8f1617f158a38a231f6fb",
+      "size_bytes": 17640,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_next_step_capture.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "dca7e0fc4e653e7175be38d30eb1cedb29ddfca795f8f1617f158a38a231f6fb",
+      "size_bytes": 17640,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_next_step_miss_detector.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "c6cd4849585cbff59bd7d7fa7992afcf9a939a2720e4191454cb3d1fcfae8452",
+      "size_bytes": 8818,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_next_step_miss_detector.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "c6cd4849585cbff59bd7d7fa7992afcf9a939a2720e4191454cb3d1fcfae8452",
+      "size_bytes": 8818,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_notion_plan_identity_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "0f685e4eb8420f7244e52a38cd5ee81b23f13528ec2ece38f7cd3ff994fab459",
+      "size_bytes": 9132,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_notion_plan_identity_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "0f685e4eb8420f7244e52a38cd5ee81b23f13528ec2ece38f7cd3ff994fab459",
+      "size_bytes": 9132,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_notion_plans_status_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "4a8260739b66ea91ec677d29cb4f3b158c73e78d0f990d6c22404ed545c9cecc",
+      "size_bytes": 20212,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_notion_plans_status_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "4a8260739b66ea91ec677d29cb4f3b158c73e78d0f990d6c22404ed545c9cecc",
+      "size_bytes": 20212,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_complete_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "77dc402e941de6cde72513d13e1e31537ef9347a79ba9228b12481d7ef5d500d",
+      "size_bytes": 4247,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_complete_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "77dc402e941de6cde72513d13e1e31537ef9347a79ba9228b12481d7ef5d500d",
+      "size_bytes": 4247,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_creation_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "4d1a44b719713aabfcd138a936f8fdff17cf47127fecfa51f86110e32b252d7f",
+      "size_bytes": 12031,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_creation_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "4d1a44b719713aabfcd138a936f8fdff17cf47127fecfa51f86110e32b252d7f",
+      "size_bytes": 12031,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_evidence_gate.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "6eaf23b60bcc3496910100fde4a25eb9b1c823decb235f597c7200f2bff17651",
+      "size_bytes": 5728,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_evidence_gate.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "6eaf23b60bcc3496910100fde4a25eb9b1c823decb235f597c7200f2bff17651",
+      "size_bytes": 5728,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_lifecycle_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "52c4539cdab9880366b63ca6f5fdea1dcfda5c9f3201faae5b2c293e60d01d9c",
+      "size_bytes": 17101,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_lifecycle_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "52c4539cdab9880366b63ca6f5fdea1dcfda5c9f3201faae5b2c293e60d01d9c",
+      "size_bytes": 17101,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_registration_capture.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ddb2290ad62e9ed3b844d2ca2ed80a3da61abf4be56da5b8906b37826bf43153",
+      "size_bytes": 3579,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_registration_capture.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ddb2290ad62e9ed3b844d2ca2ed80a3da61abf4be56da5b8906b37826bf43153",
+      "size_bytes": 3579,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_scope_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "fd456893849f0eb64e7fd58474120d8b97d4c9701906a76fbed76e893fafda27",
+      "size_bytes": 12324,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plan_scope_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "fd456893849f0eb64e7fd58474120d8b97d4c9701906a76fbed76e893fafda27",
+      "size_bytes": 12324,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plans_dup_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "67c5fecafd0ab51935267163ced0294818356bb041d4dff402cbbba6a1d78a5b",
+      "size_bytes": 6775,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_plans_dup_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "67c5fecafd0ab51935267163ced0294818356bb041d4dff402cbbba6a1d78a5b",
+      "size_bytes": 6775,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_read_budget_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "17a921ec9e65232e7531c3a33ce912d6550eafe1f97c530bf1b0ea30cd081b6a",
+      "size_bytes": 4870,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_read_budget_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "17a921ec9e65232e7531c3a33ce912d6550eafe1f97c530bf1b0ea30cd081b6a",
+      "size_bytes": 4870,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_resource_budget_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "e91a75a5d818ca538dcd45959633ccd03a1e8376f5b1ea59b26feb22135d3d4e",
+      "size_bytes": 3726,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_resource_budget_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "e91a75a5d818ca538dcd45959633ccd03a1e8376f5b1ea59b26feb22135d3d4e",
+      "size_bytes": 3726,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_router_decision_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "cb3754b0a6d486e6b9334d11c3b9175d0b97b57063a11d46218280c963d06dc8",
+      "size_bytes": 12885,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_router_decision_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "cb3754b0a6d486e6b9334d11c3b9175d0b97b57063a11d46218280c963d06dc8",
+      "size_bytes": 12885,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_scope_drift_detector.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "5092861999bdb8376dacc82f38bd39740f5ad7c6bd618b7547c60d423e1c7feb",
+      "size_bytes": 6123,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_scope_drift_detector.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "5092861999bdb8376dacc82f38bd39740f5ad7c6bd618b7547c60d423e1c7feb",
+      "size_bytes": 6123,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_token_telemetry.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "b5cefa85c9108547af0f05209056978affc8e034826b7d9f58e9458de33dd975",
+      "size_bytes": 4558,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_token_telemetry.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "b5cefa85c9108547af0f05209056978affc8e034826b7d9f58e9458de33dd975",
+      "size_bytes": 4558,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_wave_completion_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "86831d3ce5ee989aacedc986b1068503c1a1ab09722a8d0522558ac8f26804fd",
+      "size_bytes": 4686,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_wave_completion_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "86831d3ce5ee989aacedc986b1068503c1a1ab09722a8d0522558ac8f26804fd",
+      "size_bytes": 4686,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_wave_lifecycle_capture.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "c7b4bcd0d7a8d0ad4fb0613b4d03138d9b680caf05794192598420073087e753",
+      "size_bytes": 10841,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_wave_lifecycle_capture.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "c7b4bcd0d7a8d0ad4fb0613b4d03138d9b680caf05794192598420073087e753",
+      "size_bytes": 10841,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_writeback_audit.active_archive_1.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "cca8c72a156fcc13e657b60a46c2266062770e2f5a9e739e30321f320204e316",
+      "size_bytes": 11943,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_cascade_writeback_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "cca8c72a156fcc13e657b60a46c2266062770e2f5a9e739e30321f320204e316",
+      "size_bytes": 11943,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_commit_outcome_binder.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "cc2d4b0a3ec8e23b43b9c6959961603ab6ec38c084cc11e61a08b4eb3a8ca5d9",
+      "size_bytes": 18793,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 52,
+          "path": "tools/analysis/_audit_smoke_test.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 52,
+          "path": "tools/analysis/_audit_smoke_test.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 50,
+          "path": "tools/analysis/_audit_stage_for_commit.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 50,
+          "path": "tools/analysis/_audit_stage_for_commit.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_commit_phase_closer.py",
+      "reason": "direct_active_reference:tooling",
+      "sha256": "ed9b80161bacbd693d19806967a4bfcd15b6602f8c900f225d2252073501fabd",
+      "size_bytes": 18662,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 38,
+          "path": "tests/integration/test_memory_first_gate_e2e.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_mcp_audit.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "17469698adc5a7b7cc75391baa8fea79cd629b786fe2eb59f9867528ffa7bad2",
+      "size_bytes": 18440,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_run_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "57ea7ea605101efb8e976fb2161e3f0b23a9c524616f6964488db84d96a8d6ac",
+      "size_bytes": 4766,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_setup_worktree.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "8d7747d2b24d111a9bf67524d4950d47905f85440f0653c25562a3b0c7983049",
+      "size_bytes": 4242,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_write_audit.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "b10b09e8d3b16b49b25a96ffce82a9916f9b06eddb4087f72eb323cc8b45c4f8",
+      "size_bytes": 6096,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_write_cert_stage.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "6a7ed0b43b5edad7218dd423a82f7429b0449c69c49d3b06e0195d252e01288b",
+      "size_bytes": 3919,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "ci_or_maintenance",
+          "line": 95,
+          "path": "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "ci_or_maintenance",
+          "line": 96,
+          "path": "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_write_mcp_config_sync.py",
+      "reason": "direct_active_reference:ci_or_maintenance",
+      "sha256": "ecfed35dcaa71c61c0f836eccf84f9200538b219064f75a085df8abe77441fe7",
+      "size_bytes": 5799,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/post_write_plan_reconcile.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "1dca00415368fe38afc65ad7863e589779cd2fb767c577f0ebfb7663d8891fb4",
+      "size_bytes": 3351,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "governance_runtime",
+          "line": 21,
+          "path": ".claude/governance/scripts/pre_ask_user_question_recommendation_gate.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 205,
+          "path": "tests/integration/test_author_gate_ask_harmonization.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 217,
+          "path": "tests/integration/test_author_gate_ask_harmonization.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 238,
+          "path": "tests/integration/test_author_gate_ask_harmonization.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 21,
+          "path": "tests/unit/windsurf_scripts/test_pre_ask_user_question_gate.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_ask_user_question_gate.py",
+      "reason": "direct_active_reference:governance_runtime,test",
+      "sha256": "cb4ddb7f8ae6dc786787f0bd34068304b34178793434c54eb8b44d7f11d620d4",
+      "size_bytes": 9841,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "pre_author_gate",
+          "path": "tests/unit/windsurf_scripts/test_pre_author_gate.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 272,
+          "path": "tests/unit/windsurf_scripts/test_pre_author_gate.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 272,
+          "path": "tests/unit/windsurf_scripts/test_pre_author_gate.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_author_gate.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "31b7834038d97d7b68f771339854243417a941036775f64de27611be724530a6",
+      "size_bytes": 45248,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "ci_or_maintenance",
+          "line": 99,
+          "path": "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 37,
+          "path": "tests/integration/test_memory_first_gate_e2e.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "pre_mcp_gate",
+          "path": "tests/unit/tools/adg/test_adg_mcp_fixes.py"
+        },
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "pre_mcp_gate",
+          "path": "tests/unit/windsurf_scripts/test_wave_execution_state.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 19,
+          "path": "tools/debug/_burn_preflight_smoke.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 47,
+          "path": "tools/debug/_burn_preflight_smoke.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 78,
+          "path": "tools/debug/_burn_preflight_smoke.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_mcp_gate.py",
+      "reason": "direct_active_reference:ci_or_maintenance,test,tooling",
+      "sha256": "15bf6961af640ffd84b599cec4037f6ce32c325a65b38f4ab895c929212ad54c",
+      "size_bytes": 1001,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_notion_plan_creation_gate.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "1f71f2becf10052a7ef379f02eaa7168bafb76c71f0803a693938b1db29980df",
+      "size_bytes": 9411,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "pre_notion_plan_write_gate",
+          "path": "tests/unit/windsurf_scripts/test_pre_notion_plan_write_gate.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_notion_plan_write_gate.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "6140fd34befe64c233bbe7742b4746589342f850a0e10aa548399c51dbcb86c8",
+      "size_bytes": 11002,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_prompt_classifier.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "7d2b177b896004712a421046d06faae7c4b428098ef0211a6470538be7712b2c",
+      "size_bytes": 36768,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_read_gate.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "b69228bd0c8703aae22196180c7380b696d42fe468e510bd11407c378da96e8c",
+      "size_bytes": 5992,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "configuration",
+          "line": 25,
+          "path": "config/crosswalk/obligations.yaml"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "configuration",
+          "line": 25,
+          "path": "config/crosswalk/obligations.yaml"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "configuration",
+          "line": 33,
+          "path": "config/crosswalk/obligations.yaml"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "configuration",
+          "line": 33,
+          "path": "config/crosswalk/obligations.yaml"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "configuration",
+          "line": 40,
+          "path": "config/crosswalk/obligations.yaml"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "configuration",
+          "line": 40,
+          "path": "config/crosswalk/obligations.yaml"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "configuration",
+          "line": 51,
+          "path": "config/crosswalk/obligations.yaml"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "configuration",
+          "line": 51,
+          "path": "config/crosswalk/obligations.yaml"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 38,
+          "path": "tests/negative_controls/test_constitutional_negatives.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 38,
+          "path": "tests/negative_controls/test_constitutional_negatives.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_run_gate.py",
+      "reason": "direct_active_reference:configuration,test",
+      "sha256": "f3be125022043e9009ba1d6b8e3a6f420becdfdba787258151ea288cadb1d62b",
+      "size_bytes": 13538,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_ag_queue_surface.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "eed195b9b60a7c064b242153c5be886fca3a165f42f3c32b2f886d0c518051e8",
+      "size_bytes": 2277,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 27,
+          "path": "tests/unit/windsurf/scripts/test_pre_user_prompt_author_gate_reminder.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_author_gate_reminder.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "3379adb290285685a2f00282d4cc6da2950b8270fc20584f4ceb2770584e2537",
+      "size_bytes": 9915,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 24,
+          "path": "tests/unit/windsurf_scripts/test_pre_user_prompt_deferred_plan_gate.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_deferred_plan_gate.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "7d96b5c4596caeca40bbf09ebac97779be5175aaa561c072995ae9393e65d09f",
+      "size_bytes": 4353,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_deferred_scope_recovery.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "2df743d78829baa487b304ce06449da1cc2ed1ed25434dededb63ba669ed5f19",
+      "size_bytes": 3937,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_grep_for_deps_warning.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "eb85868659f42c859f745192aa4ce7226b320ad2e0d3f0d11f37a999fd3f1d70",
+      "size_bytes": 4697,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_hook_health_check.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "24f7d32154b00fca6ac238eaa7827ae2a171636dca2c4dad2595498a5cbfef7c",
+      "size_bytes": 5926,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 2,
+          "path": "tests/unit/windsurf_scripts/test_pre_user_prompt_plan_registration_refresh.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "test",
+          "line": 2,
+          "path": "tests/unit/windsurf_scripts/test_pre_user_prompt_plan_registration_refresh.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "test",
+          "line": 19,
+          "path": "tests/unit/windsurf_scripts/test_pre_user_prompt_plan_registration_refresh.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_plan_registration_refresh.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "afce593a612b266eb9ab1762f74faf7ce9b3a105a58e2918e099d0e45ee6e4ab",
+      "size_bytes": 6213,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_plan_registration_surface.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "3c3d629255fe1df3db4ef0ccd975c6f2f244f02a1086e403732c65128072ea7a",
+      "size_bytes": 2577,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_plans_dup_surface.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "dedbd6370dfb4a80ec278c4add8b94e846e6ccb15c014e634272e82675406518",
+      "size_bytes": 4035,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_reminder_check.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "3c9e2ab9132c9d94ab8957e41f7159c9c1715d05b9e46e4cd9442b773f09a3f7",
+      "size_bytes": 2805,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_user_prompt_weekly_report.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "fcd93597bc54458424bc812860b418a5b5759c1ba920a4407edfe81bb2b6bd49",
+      "size_bytes": 3872,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_write_fortknox_guard.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "d120b40586ec9cc1a45f8a37cd6325057da45dffa2360058ad23bb6056f93835",
+      "size_bytes": 584,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "test",
+          "module": "pre_write_gate",
+          "path": "tests/unit/windsurf_scripts/test_pre_write_gate_core_guard.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_write_gate.py",
+      "reason": "direct_active_reference:test",
+      "sha256": "fdbccceca09306606ec82f08c0d7c7dff3fb5d6e81e9086d48f25b711d3ae0d8",
+      "size_bytes": 23645,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/pre_write_plan_scope_gate.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "15fa2219acf3eba59b81c07b1bda9f3a968704724ec251d72f00e279feed4890",
+      "size_bytes": 6432,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/promote_author_gate_patterns.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "7cabdd96c09380be79b115a0391e01e373ab3037be89795dea39af05ff7a363a",
+      "size_bytes": 13291,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/refresh-windsurf-docs.active_archive_1.ps1",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "10016ca5632e4616ad123d3ca519dfab4df087646cc288a973f7963dad3d9b19",
+      "size_bytes": 2450,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "governance_runtime",
+          "line": 3,
+          "path": ".claude/governance/scripts/refresh-windsurf-docs.ps1"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/refresh-windsurf-docs.ps1",
+      "reason": "direct_active_reference:governance_runtime",
+      "sha256": "10016ca5632e4616ad123d3ca519dfab4df087646cc288a973f7963dad3d9b19",
+      "size_bytes": 2450,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 53,
+          "path": "tools/analysis/_audit_smoke_test.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 53,
+          "path": "tools/analysis/_audit_smoke_test.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 51,
+          "path": "tools/analysis/_audit_stage_for_commit.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 51,
+          "path": "tools/analysis/_audit_stage_for_commit.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/rollback_bad_patches.py",
+      "reason": "direct_active_reference:tooling",
+      "sha256": "5d0a8632608b98ed84d2a4fd553fee28ee5a6e5dfa344dc830d2913aa545522b",
+      "size_bytes": 6070,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_dir_literal_plus_python_import",
+          "kind": "ci_or_maintenance",
+          "module": "sync_mcp_config",
+          "path": "ops_scripts/ci/_mcp_ci_common.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "ci_or_maintenance",
+          "line": 103,
+          "path": "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py"
+        },
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 87,
+          "path": "tools/adg/mcp/OPERATIONS.md"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 87,
+          "path": "tools/adg/mcp/OPERATIONS.md"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/sync_mcp_config.py",
+      "reason": "direct_active_reference:ci_or_maintenance,tooling",
+      "sha256": "ac084f757735a4829d8911680f7f5cc4f704866dade4b9fb26da64ab90462402",
+      "size_bytes": 20980,
+      "transitive_from": [
+        ".claude/governance/scripts/_legacy_windsurf/post_write_mcp_config_sync.py"
+      ],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "LIVE_HELPER",
+      "direct_importers": [
+        {
+          "evidence": "legacy_tree_literal_plus_filename",
+          "kind": "tooling",
+          "line": 8,
+          "path": "tools/notion/unified_notion_status_auditor.py"
+        },
+        {
+          "evidence": "exact_repo_relative_path",
+          "kind": "tooling",
+          "line": 8,
+          "path": "tools/notion/unified_notion_status_auditor.py"
+        }
+      ],
+      "path": ".claude/governance/scripts/_legacy_windsurf/unified_notion_status_auditor.py",
+      "reason": "direct_active_reference:tooling",
+      "sha256": "8bf09c6c744df3e858cf8be144f3dd841d7f5dc1ebb9df8884d3f2657daf0aa6",
+      "size_bytes": 548,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    },
+    {
+      "classification": "DEAD_ARCHIVE",
+      "direct_importers": [],
+      "path": ".claude/governance/scripts/_legacy_windsurf/unified_plan_creation_auditor.py",
+      "reason": "no active non-frozen importer or transitive live dependency found",
+      "sha256": "ae6ee72a902d6ef289458fea16f51aea51988577d7bf993525d367c7a6e9ede6",
+      "size_bytes": 16252,
+      "transitive_from": [],
+      "tree": ".claude/governance/scripts/_legacy_windsurf"
+    }
+  ],
+  "generated_at_utc": "2026-06-08T19:22:56.432464+00:00",
+  "head": "02ddd60717dfb4703fd8f1b51f7cb5cbfc0ed204",
+  "plan": "legacy-windsurf-tree-decommission-9f2c47",
+  "rollback_tag": {
+    "exists": true,
+    "name": "pre-legacy-tree-decommission-9f2c47",
+    "note": "Tag points at the original IDE_archive HEAD that preceded L1 inventory changes; tags are repository-local unless explicitly pushed.",
+    "revision": "f39dfe63bb0ba995916138e0da5db9882291beff"
+  },
+  "summary": {
+    "active_files_scanned": 11562,
+    "active_files_with_legacy_markers": 142,
+    "by_classification": {
+      "DEAD_ARCHIVE": 138,
+      "LIVE_HELPER": 42
+    },
+    "by_tree": {
+      ".claude/governance/scripts/_legacy_cursor": {
+        "DEAD_ARCHIVE": 13
+      },
+      ".claude/governance/scripts/_legacy_windsurf": {
+        "DEAD_ARCHIVE": 125,
+        "LIVE_HELPER": 42
+      }
+    },
+    "direct_importer_kinds": {
+      "ci_or_maintenance": {
+        "LIVE_HELPER": 16
+      },
+      "configuration": {
+        "LIVE_HELPER": 8
+      },
+      "governance_runtime": {
+        "LIVE_HELPER": 5
+      },
+      "test": {
+        "LIVE_HELPER": 67
+      },
+      "tooling": {
+        "LIVE_HELPER": 59
+      }
+    },
+    "directory_level_references": [
+      {
+        "importer": ".claude/governance/scripts/_post_handlers/heartbeat.py",
+        "importer_kind": "governance_runtime",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_cursor"
+      },
+      {
+        "importer": ".claude/governance/scripts/generate_rules_index.py",
+        "importer_kind": "governance_runtime",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_cursor"
+      },
+      {
+        "importer": ".claude/governance/scripts/post_agent_plan_registration_capture.py",
+        "importer_kind": "governance_runtime",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": ".claude/governance/scripts/post_agent_plan_scope_audit.py",
+        "importer_kind": "governance_runtime",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": ".claude/governance/scripts/pre_ask_user_question_recommendation_gate.py",
+        "importer_kind": "governance_runtime",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": ".claude/governance/scripts/pre_user_prompt_hook_health_check.py",
+        "importer_kind": "governance_runtime",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_cursor"
+      },
+      {
+        "importer": ".claude/governance/scripts/refresh-windsurf-docs.ps1",
+        "importer_kind": "governance_runtime",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "agentic_core/L0_routing/config/path_constants.py",
+        "importer_kind": "core",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "config/crosswalk/obligations.yaml",
+        "importer_kind": "configuration",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "config/excluded_paths.yaml",
+        "importer_kind": "configuration",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "config/wiring_dynamic_dispatch_anchors.yaml",
+        "importer_kind": "configuration",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/calibration/plan_registration_weekly_report.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/_mcp_ci_common.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_apps_test_surface_parity.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_ledger_append_only.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_ledger_coverage.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_no_active_windsurf_changes.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_notion_backlog_no_duplicates.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_notion_backlog_plan_linkage.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_notion_plans_no_duplicates.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_notion_schema_preflight.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_post_agent_payload.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_refactor_decision_ledger_ssot.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_rules_index_freshness.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_ssot_folder_routing.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/ci/check_windsurf_deletion_readiness.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/maintenance/rewrite_cascade_to_cursor.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/maintenance/rewrite_cascade_to_cursor.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_cursor"
+      },
+      {
+        "importer": "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py",
+        "importer_kind": "ci_or_maintenance",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_cursor"
+      },
+      {
+        "importer": "tests/_scratch/smoke_pipeline_audit.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/integration/test_author_gate_ask_harmonization.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/integration/test_memory_first_gate_e2e.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/negative_controls/test_constitutional_negatives.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/ops_scripts/ci/test_audit_gates.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/ops_scripts/ci/test_check_ag_hook_wiring.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/ops_scripts/ci/test_check_graph_reach_archival.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/ops_scripts/ci/test_check_mcp_config_sovereignty.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/ops_scripts/ci/test_check_plan_notion_wave_freshness.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/ops_scripts/hooks/cursor/test_mcp_before_hygiene.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/ops_scripts/hooks/windsurf/test_post_cursor_agent_cleanup.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/ops_scripts/hooks/windsurf/test_post_cursor_agent_heartbeat_latency.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_cursor"
+      },
+      {
+        "importer": "tests/unit/tools/adg/test_adg_mcp_fixes.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/tools/debug/test_check_orphan_mcp_processes.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/scripts/test_author_gate_ledger_integrity.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/scripts/test_author_gate_prose_options_detection.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/scripts/test_deferred_scope_capture_v2_passthrough.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/scripts/test_deferred_scope_plan_scaffold.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/scripts/test_next_step_capture.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/scripts/test_post_cursor_agent_adr_registry_capture.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/scripts/test_post_cursor_agent_author_gate_miss_detector.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/scripts/test_post_cursor_agent_heartbeat.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/scripts/test_pre_user_prompt_author_gate_reminder.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/test_plan_wave_inline_status_sync.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/test_post_cursor_agent_chain_e2e.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/test_post_cursor_agent_mcp_orphan_reap.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/test_post_cursor_agent_payload_e2e.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf/test_post_cursor_agent_router_decision_audit.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_ag_queue_drain_audit.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_apps_test_surface_check.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_author_gate_pipeline_check.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_author_gate_queue.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_deferred_scope_capture_verify.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_notion_constants_url_extract.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_notion_plans_status_check.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_notion_status_transitions.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_plan_registration.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_plan_scope_expansion_check.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_plan_wave_table_updater.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_plans_dup_detector.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_post_cursor_agent_notion_plans_status_audit.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_post_cursor_agent_plan_complete_audit.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_post_cursor_agent_plan_scope_audit.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_post_cursor_agent_wave_lifecycle_capture.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_pre_ask_user_question_gate.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_pre_author_gate.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_pre_author_gate_integration.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_pre_notion_plan_write_gate.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_pre_user_prompt_deferred_plan_gate.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_pre_user_prompt_plan_registration_refresh.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_pre_write_gate_core_guard.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_read_budget.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_ssot_folder_check.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_token_telemetry.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_w6_template_hook.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_wave_completion_audit.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/unit/windsurf_scripts/test_wave_execution_state.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/windsurf/scripts/test_mcp_supervisor.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tests/windsurf/scripts/test_post_cursor_agent_next_step_miss_detector.py",
+        "importer_kind": "test",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/_oneoff/replace_allow_specific.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/adg/mcp/OPERATIONS.md",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/analysis/_adg_redundancy_audit.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/analysis/_audit_diagnose_audit3.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/analysis/_audit_diagnose_audit6.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/analysis/_audit_finalize_validation.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/analysis/_audit_smoke_test.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/analysis/_audit_stage_for_commit.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/analysis/_audit_wave3_notion_ssot.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/calibration/loop_metrics.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/capture/queue_to_ledger.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/cursor/governance_dedup_e2e_verify.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_cursor"
+      },
+      {
+        "importer": "tools/debug/_backlog_two_pass.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/debug/_burn_preflight_smoke.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/debug/_dead_dup_scan2.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/debug/_fanin_scorer_pipeline.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/debug/_replay_layer_b_markers.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/debug/_w5_singleton_sites.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/debug/_w5_ssot_hardcoding_probe.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/debug/_w5_token_inventory.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/debug/_w6_2bc_runner.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/fix_hook_tty_guard.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/generate/gate_self_test_scanner.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/generate/materialized_views/phase_a_path_authority.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/generate/materialized_views/phase_b_capability_tool_task.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/generate/materialized_views/phase_c_trace_drift_debt.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/generate/truth_expansion_enricher.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/mcp/mcp_bootstrap.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/migration/deprecate_windsurf_refs.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/migration/ssot_path_literal_migrator.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/migration/ssot_prefix_path_migrator.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/_plan_registration_helpers.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/apply_orphan_disposition.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/apply_plan_derived_status.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/audit_backlog_fill_rates.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/audit_backlog_plan_derived.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/backfill_backlog_outliers.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/backfill_backlog_plan_relation.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/backfill_backlog_scores.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/backfill_historical_plan_statuses.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/register_ondisk_plans_batch.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/repair_notion_plan_statuses.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/repair_notion_plan_summaries.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/restore_plan_statuses_from_cache.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/triage_plans_duplicates.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/unified_notion_status_auditor.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/notion/wave_lifecycle_writer.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/plan_lifecycle/wave_execution_state.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/policy/decisions/__init__.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/priority/deferred_scope_scorer.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/refactor_decisions/migrate_w1_author_gate_feedback_columns.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/refactor_decisions/migrate_w2_author_gate_signal_columns.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/refactor_decisions/rebind_outcomes_from_git.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/reports/recover_deferred_scope_pendings.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      },
+      {
+        "importer": "tools/test_hook_tty_guard.py",
+        "importer_kind": "tooling",
+        "reason": "legacy_directory_literal",
+        "tree": ".claude/governance/scripts/_legacy_windsurf"
+      }
+    ],
+    "total_files": 180
+  },
+  "worktree": "C:\\Git\\IDE_archive-clean-pr"
+}
