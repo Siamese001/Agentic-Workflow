@@ -4,6 +4,29 @@
 > Gate tables are **markdown**, not a 500-line JSON blob inside `.canvas.tsx`.  
 > **Next action** comes from the action queue when present; otherwise burndown § Fix now + [playbook](docs/reports/cursor/adg_action_dispatch_playbook.md).
 
+## ⛔ Completion Gate (mandatory — non-bypassable)
+
+> **A `generate_full_adg` / `run_full_adg_audit` / `adg_gates/run.py` run MUST NOT be
+> reported as `PASS` or "completed" in chat unless the SAME response renders BOTH inline:**
+>
+> 1. **ADG CI summary** — overall verdict + `FIX`/`TRACK`/`CLEAR` counts + the P0–P3
+>    **Burndown by Severity Band** table (gross / guardian / net / diff).
+> 2. **ADG CI gates table** — per-gate rows (`Gate · Band · Verdict · Findings ·
+>    Recommended Next Step`) for at minimum every **FIX** and **TRACK** gate (CLEAR gates
+>    may be collapsed to a name list).
+>
+> Emitting "ADG generated, exit 0" — or any completion claim — **without** the inline
+> summary + gates table is a **proof-contract violation** (`002-pass-blocked-proof-contract`):
+> the run is at most **PARTIAL** until the table is surfaced in chat. The source of truth is
+> [artifacts/adg/adg_burndown_report.md](artifacts/adg/adg_burndown_report.md) (mirror:
+> `docs/reports/adg/adg_burndown_report.md`), emitted on every run by
+> `emit_mandatory_adg_burndown_report()`; render it inline, do not paraphrase the counts.
+>
+> Deterministic backstop: `post_agent_adg_burndown_inline_audit.py` logs a violation to
+> `artifacts/governance/adg_burndown_inline_violations.jsonl` when a generate/audit run
+> appears in a response with no inline burndown. Bypass: `ADG_BURNDOWN_INLINE_BYPASS=1`
+> (suppresses the stdout markdown AND silences this gate — scripted batch runs only).
+
 ## When this rule fires
 
 After ADG runs, burndown refresh, or user asks for gate status / burndown / next action.
