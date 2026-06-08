@@ -37,7 +37,9 @@ truthful end-to-end generation from a clean checkout. Load-bearing decisions for
 10. Skills/competencies are **graph-selected + ledger-proven** (C0.3 `augmented_skills_graph` +
     candidate fact ledger / proof pool); the base resume is never a source for them.
 
-### Wave summary
+## Status Tables
+
+### Wave Progress
 
 | Wave | Focus | Status | Success criteria |
 |---|---|---|---|
