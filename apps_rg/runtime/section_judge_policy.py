@@ -54,7 +54,6 @@ _SINGLE_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro",)
 # policy panels, not a separately maintained roster.
 REQUIRED_JUDGE_PROVIDER_KEYS: tuple[str, ...] = _DUAL_JUDGE_PANEL
 
-
 def _enhanced_providers() -> tuple[str, ...]:
     # executive_summary + final_aggregate_resume: dual cross-provider (both must pass).
     return _DUAL_JUDGE_PANEL

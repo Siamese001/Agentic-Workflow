@@ -380,9 +380,15 @@ def audit_score_normalization_provider_neutral() -> list[TransportViolation]:
 
 
 def audit_policy_sections_proof_judge_roster() -> list[TransportViolation]:
-    """Sections requiring proof judges must use the same three provider keys."""
+    """Proof sections must use a non-empty CROSS-PROVIDER roster that excludes the generator family.
+
+    Recalibrated 2026-06-08: Claude Sonnet 4.6 is the generator for every lane, so ``anthropic_claude``
+    must NOT appear in any judge roster (a self-judge shares the generator's blind spots). Each roster
+    must be a non-empty subset of the available proof providers (``PROOF_JUDGE_PROVIDER_KEYS``). Panel
+    SIZE is per-section policy (the 3-provider panel was Qwen-era and is no longer required).
+    """
     violations: list[TransportViolation] = []
-    expected = frozenset(PROOF_JUDGE_PROVIDER_KEYS)
+    available = frozenset(PROOF_JUDGE_PROVIDER_KEYS)
     for section in (
         "executive_summary",
         "headline",
@@ -395,11 +401,29 @@ def audit_policy_sections_proof_judge_roster() -> list[TransportViolation]:
         if not policy.judge_required_for_proof:
             continue
         roster = frozenset(policy.required_judge_providers)
-        if roster != expected:
+        if not roster:
             violations.append(
                 TransportViolation(
-                    code="section_judge_roster_drift",
-                    detail=f"{section} roster={sorted(roster)} expected={sorted(expected)}",
+                    code="section_judge_roster_empty",
+                    detail=f"{section} requires proof judges but has an empty roster",
+                    path="apps_rg/runtime/section_judge_policy.py",
+                )
+            )
+            continue
+        unknown = roster - available
+        if unknown:
+            violations.append(
+                TransportViolation(
+                    code="section_judge_roster_unknown_provider",
+                    detail=f"{section} roster has unknown providers {sorted(unknown)}",
+                    path="apps_rg/runtime/section_judge_policy.py",
+                )
+            )
+        if "anthropic_claude" in roster:
+            violations.append(
+                TransportViolation(
+                    code="section_judge_self_judge",
+                    detail=f"{section} roster includes anthropic_claude — self-judge (Claude is the generator)",
                     path="apps_rg/runtime/section_judge_policy.py",
                 )
             )

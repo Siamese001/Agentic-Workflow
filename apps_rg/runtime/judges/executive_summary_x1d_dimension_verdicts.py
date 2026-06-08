@@ -366,8 +366,14 @@ def build_x1d_dimension_matrix(judges: list[Any]) -> dict[str, Any]:
                 by_dimension[dim]["pass_count"] += 1
         provider_rows.append(row)
 
+    # Panel-relative consensus. The hardcoded ">= 2" assumed a 3-provider panel; with the recalibrated
+    # Claude-base panels (1 or 2 cross-provider judges) a dimension fails when the panel does not
+    # unanimously pass it (<=2 judges) or a majority fails it (>=3). Prevents a 1-judge panel from
+    # becoming non-gating (a single fail must still fail). Recalibrated 2026-06-08.
+    n_judges = len(provider_rows)
+    fail_threshold = 1 if n_judges <= 2 else (n_judges // 2 + 1)
     for dim, agg in by_dimension.items():
-        agg["consensus_fail"] = agg["fail_count"] >= 2
+        agg["consensus_fail"] = agg["fail_count"] >= fail_threshold
 
     return {
         "schema": "executive_summary_x1d_dimension_matrix_v1",

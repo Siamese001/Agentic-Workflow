@@ -122,7 +122,8 @@ def test_wave_dag_covers_all_eleven_lanes() -> None:
 # ----------------------------------------------------------------- composite-judge defaults
 def test_ibm_bullets_defaults_to_single_composite_judge(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
-    assert resolve_cli_x1d_judges(None, section_id="ibm_bullets") == "anthropic_claude"
+    # Claude-base recalibration: single cross-provider judge (no anthropic_claude self-judge).
+    assert resolve_cli_x1d_judges(None, section_id="ibm_bullets") == "gemini_pro"
 
 
 def test_competencies_defaults_to_single_advisory_judge(monkeypatch) -> None:
@@ -132,13 +133,15 @@ def test_competencies_defaults_to_single_advisory_judge(monkeypatch) -> None:
 
 def test_unify_bullets_defaults_to_single_composite_judge(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
-    assert resolve_cli_x1d_judges(None, section_id="unify_bullets") == "anthropic_claude"
+    # Claude-base recalibration: single cross-provider judge (no anthropic_claude self-judge).
+    assert resolve_cli_x1d_judges(None, section_id="unify_bullets") == "gemini_pro"
 
 
 def test_new_role_bullets_default_to_single_composite_judge(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
-    assert resolve_cli_x1d_judges(None, section_id="insurtech_bullets") == "anthropic_claude"
-    assert resolve_cli_x1d_judges(None, section_id="ey_bullets") == "anthropic_claude"
+    # Claude-base recalibration: single cross-provider judge (no anthropic_claude self-judge).
+    assert resolve_cli_x1d_judges(None, section_id="insurtech_bullets") == "gemini_pro"
+    assert resolve_cli_x1d_judges(None, section_id="ey_bullets") == "gemini_pro"
 
 
 def test_explicit_x1d_judges_override_wins_for_ibm_adjudicator() -> None:
@@ -154,7 +157,9 @@ def test_env_x1d_judges_override_wins_for_ibm(monkeypatch) -> None:
 
 def test_non_bullet_sections_keep_standard_panel_default(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
-    panel = "gemini_pro,openai_chatgpt,anthropic_claude"
+    # Claude-base recalibration: headline / executive_summary -> dual cross-provider panel
+    # (was the 3-provider qwen-era panel; anthropic_claude dropped as a self-judge).
+    panel = "gemini_pro,openai_chatgpt"
     assert resolve_cli_x1d_judges(None, section_id="headline") == panel
     assert resolve_cli_x1d_judges(None, section_id="executive_summary") == panel
 
@@ -181,8 +186,9 @@ def test_wave9_policy_summary_marks_compact_non_repairing_defaults(monkeypatch) 
     assert policy["insurtech_bullets"]["default_judge_count"] == 1
     assert policy["ey_bullets"]["default_judge_count"] == 1
     assert policy["competencies"]["default_judge_count"] == 1
-    assert policy["headline"]["default_judge_count"] == 3
-    assert policy["executive_summary"]["default_judge_count"] == 3
+    # Claude-base recalibration: headline / executive_summary -> dual cross-provider panel.
+    assert policy["headline"]["default_judge_count"] == 2
+    assert policy["executive_summary"]["default_judge_count"] == 2
     assert all(v["repair_allowed"] is False for v in policy.values())
     assert all(v["packet_scope"] == "compact_grade_only" for v in policy.values())
 
@@ -201,10 +207,11 @@ def test_lane_execution_context_resolves_per_lane_callable(monkeypatch) -> None:
         lane_x1d_judges=lambda lane: resolve_cli_x1d_judges(None, section_id=lane),
         lane_mock_judges=False,
     )
-    assert ctx.x1d_judges_for_lane("ibm_bullets") == "anthropic_claude"
+    # Claude-base recalibration: bullets -> single cross-provider judge; headline -> dual.
+    assert ctx.x1d_judges_for_lane("ibm_bullets") == "gemini_pro"
     assert ctx.x1d_judges_for_lane("competencies") == "gemini_pro"
-    assert ctx.x1d_judges_for_lane("unify_bullets") == "anthropic_claude"
-    assert ctx.x1d_judges_for_lane("headline") == "gemini_pro,openai_chatgpt,anthropic_claude"
+    assert ctx.x1d_judges_for_lane("unify_bullets") == "gemini_pro"
+    assert ctx.x1d_judges_for_lane("headline") == "gemini_pro,openai_chatgpt"
 
 
 def test_lane_execution_context_passthrough_string() -> None:

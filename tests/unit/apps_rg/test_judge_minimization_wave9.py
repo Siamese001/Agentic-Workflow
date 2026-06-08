@@ -12,19 +12,26 @@ from apps_rg.runtime.section_cli_defaults import (
 def test_wave9_minimized_defaults_match_lane_x2_requirements(monkeypatch) -> None:
     monkeypatch.delenv("APPS_RG_E2E_X1D_JUDGES", raising=False)
 
+    # Cross-provider only (no anthropic_claude self-judge) after the Claude-base recalibration.
     assert resolve_section_default_x1d_judges("competencies") == "gemini_pro"
-    assert resolve_section_default_x1d_judges("unify_bullets") == "anthropic_claude"
-    assert resolve_section_default_x1d_judges("ibm_bullets") == "anthropic_claude"
+    assert resolve_section_default_x1d_judges("unify_bullets") == "gemini_pro"
+    assert resolve_section_default_x1d_judges("ibm_bullets") == "gemini_pro"
 
-    full_panel = "gemini_pro,openai_chatgpt,anthropic_claude"
+    # All bullets + all narratives -> single cross-provider judge.
     for section_id in (
-        "headline",
+        "insurtech_bullets",
+        "ey_bullets",
         "unify_narrative",
         "ibm_narrative",
-        "executive_summary",
-        "final_aggregate_resume",
+        "insurtech_narrative",
+        "ey_narrative",
     ):
-        assert resolve_section_default_x1d_judges(section_id) == full_panel
+        assert resolve_section_default_x1d_judges(section_id) == "gemini_pro"
+
+    # Summaries / headline / aggregate -> dual cross-provider panel.
+    dual_panel = "gemini_pro,openai_chatgpt"
+    for section_id in ("headline", "executive_summary", "final_aggregate_resume"):
+        assert resolve_section_default_x1d_judges(section_id) == dual_panel
 
 
 def test_wave9_overrides_preserve_diagnostic_full_panel(monkeypatch) -> None:
@@ -43,15 +50,31 @@ def test_wave9_policy_summary_is_rare_non_repairing_and_compact(monkeypatch) -> 
 
     assert summary["competencies"]["judge_required_for_proof"] is False
     assert summary["competencies"]["default_x1d_judges"] == ["gemini_pro"]
-    assert summary["unify_bullets"]["default_x1d_judges"] == ["anthropic_claude"]
-    assert summary["ibm_bullets"]["default_x1d_judges"] == ["anthropic_claude"]
+    # Recalibrated: cross-provider single judge for bullets (no anthropic_claude self-judge).
+    assert summary["unify_bullets"]["default_x1d_judges"] == ["gemini_pro"]
+    assert summary["ibm_bullets"]["default_x1d_judges"] == ["gemini_pro"]
+    # No judge roster includes the generator family (anthropic_claude).
+    assert all(
+        "anthropic_claude" not in row["default_x1d_judges"] for row in summary.values()
+    )
 
     minimized = [
         sid
         for sid, row in summary.items()
         if row["default_judge_count"] == 1
     ]
-    assert set(minimized) == {"competencies", "unify_bullets", "ibm_bullets"}
+    # Single-judge lanes: competencies (advisory) + all 4 bullets + all 4 narratives.
+    assert set(minimized) == {
+        "competencies",
+        "unify_bullets",
+        "ibm_bullets",
+        "insurtech_bullets",
+        "ey_bullets",
+        "unify_narrative",
+        "ibm_narrative",
+        "insurtech_narrative",
+        "ey_narrative",
+    }
     assert all(row["repair_allowed"] is False for row in summary.values())
     assert all(row["packet_scope"] == "compact_grade_only" for row in summary.values())
 
