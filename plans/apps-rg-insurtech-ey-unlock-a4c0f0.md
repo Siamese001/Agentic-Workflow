@@ -2,8 +2,8 @@
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W1
-LAST_COMPLETED_WAVE: none
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W1
 LAST_UPDATED: 2026-06-08
 
 Plan ID: `apps-rg-insurtech-ey-unlock-a4c0f0`
@@ -40,7 +40,7 @@ Parent: spun out of `apps-rg-aig-e2e-remediation-e4b7c1` W6 (user-authorized sco
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| W1 | P1 | InsurTech + EY role-episode **bundle** data files (dependency root) | ~40k | base-resume identity verbatim; graph skill nodes exist for both periods | In Progress | Both bundle JSONs validate; every `graph_skill_node_id` resolves in the skills graph |
+| W1 | P1 | InsurTech + EY role-episode **bundle** data files (dependency root) | ~40k | base-resume identity verbatim; graph skill nodes exist for both periods | DONE | Both bundle JSONs validate; every `graph_skill_node_id` resolves in the skills graph — 5 tests green |
 | W2 | P2 | **Registry + proof-pool wiring** so lanes resolve non-empty proof | ~35k | `ibm_graph_role_episode_registry` is a clean template | Not Started | `insurtech/ey_bullets` proof pool is non-empty; no more `REQUIRED_PROOF_ABSENT` |
 | W3 | P3 | **Bullet lanes** (lane + PA + graph-evidence + hydration) for both | ~60k | bullet generation parameterized by employer | Not Started | `insurtech_bullets`/`ey_bullets` generate candidates → top-3 |
 | W4 | P4 | **X2 Exit Gates** for both bullet lanes (+ narrative if separate) | ~45k | mirror `ibm_bullets_x2` with 3-bullet count | Not Started | X2 runs; bullet-count + metric-anchor + scope-isolation gates pass on valid output |

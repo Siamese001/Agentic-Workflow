@@ -1,0 +1,124 @@
+{
+  "schema": "ey_role_episode_bundles_v1",
+  "generated_at": "2026-06-08T10:00:00Z",
+  "generated_by": "apps-rg-insurtech-ey-unlock-a4c0f0 (W1/P1)",
+  "employer": "Ernst & Young",
+  "employer_node_id": "employment_exp_ey_001",
+  "time_window": "2009-10 to 2014-03",
+  "invariants": {
+    "archive_prose_excluded": true,
+    "base_resume_hydration_excluded": false,
+    "base_resume_identity_verbatim": true,
+    "hold_metrics_not_promoted": true,
+    "do_not_promote_metrics_excluded": true,
+    "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+    "config_enablement_condition": "ey_bullets and ey_narrative graph_expansion_allowed may be enabled only when section generation consumes role_episode_bundle_id, not flat skill lists.",
+    "identity_source": "base_resume amit_ayer_base_resume_v1 employment block exp_ey_001 (company/title/location/dates verbatim); skills grounded in master_skills_arsenal_ledger graph nodes for the 2009-2014 window."
+  },
+  "excluded_metrics_by_policy": [],
+  "promotable_metrics": [],
+  "bundles": [
+    {
+      "role_episode_bundle_id": "reb_ey_regulatory_analytics_modernization",
+      "employer": "Ernst & Young",
+      "title": "Principal",
+      "time_window": "2009-10 to 2014-03",
+      "employer_node_id": "employment_exp_ey_001",
+      "bundle_theme": "Regulatory Analytics Modernization for Global Banks",
+      "executive_scope_signals": [
+        "Led a regulatory analytics modernization program for global banks",
+        "Transformed cost-center audit functions into value-added predictive risk capabilities"
+      ],
+      "architecture_scope_signals": [
+        "Predictive risk modeling across audit and regulatory workflows",
+        "Data lineage and controls modernization",
+        "Cost-center-to-value-added transformation of audit functions"
+      ],
+      "graph_skill_node_ids": [
+        "pillar_regulatory_governance",
+        "domain_replay_observability_audit",
+        "skill_risk_model_risk"
+      ],
+      "linked_source_fact_ids": ["exp_ey_001"],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [],
+      "held_metrics": [
+        "$15M transformation program (HOLD - base_resume canonical single source bul_ey_001; promote only if archive-corroborated)"
+      ],
+      "excluded_metrics": [],
+      "operating_context": "Regulatory analytics modernization program for global banks; transformation of cost-center audit functions into value-added predictive risk capabilities with stronger lineage and controls.",
+      "bullet_intent": "Frame as regulatory analytics transformation leadership; metrics only from base-resume anchored fact_id (bul_ey_001).",
+      "section_eligibility": ["ey_bullets", "ey_narrative"],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Anchors base-resume bullet bul_ey_001 (Regulatory Analytics Modernization). Graph skills grounded in the 2009-2014 EY Principal window."
+    },
+    {
+      "role_episode_bundle_id": "reb_ey_commercial_turnaround_lineage",
+      "employer": "Ernst & Young",
+      "title": "Principal",
+      "time_window": "2009-10 to 2014-03",
+      "employer_node_id": "employment_exp_ey_001",
+      "bundle_theme": "Audit Remediation Cost Turnaround via Automated Lineage & Predictive Risk",
+      "executive_scope_signals": [
+        "Reduced audit remediation costs through automation",
+        "Commercial turnaround of regulatory workflow economics"
+      ],
+      "architecture_scope_signals": [
+        "Automated data lineage across regulatory workflows",
+        "Predictive risk modeling replacing manual remediation",
+        "Controls automation for audit and regulatory processes"
+      ],
+      "graph_skill_node_ids": [
+        "skill_risk_enterprise_risk_controls",
+        "domain_replay_observability_audit",
+        "skill_risk_model_risk"
+      ],
+      "linked_source_fact_ids": ["exp_ey_001"],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [],
+      "held_metrics": [
+        "40% reduction in audit remediation costs (HOLD - base_resume canonical single source bul_ey_002; promote only if archive-corroborated)"
+      ],
+      "excluded_metrics": [],
+      "operating_context": "Implementation of automated data lineage and predictive risk modeling across regulatory workflows, reducing audit remediation costs.",
+      "bullet_intent": "Frame as commercial/operational turnaround through automation; metrics only from base-resume anchored fact_id (bul_ey_002).",
+      "section_eligibility": ["ey_bullets", "ey_narrative"],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Anchors base-resume bullet bul_ey_002 (Commercial Turnaround). Graph skills grounded in the 2009-2014 EY Principal window."
+    },
+    {
+      "role_episode_bundle_id": "reb_ey_capital_optimization_solvency",
+      "employer": "Ernst & Young",
+      "title": "Principal",
+      "time_window": "2009-10 to 2014-03",
+      "employer_node_id": "employment_exp_ey_001",
+      "bundle_theme": "Capital Optimization under Solvency II / AG43",
+      "executive_scope_signals": [
+        "Optimized capital reserve requirements for insurance clients",
+        "Maintained full regulatory compliance while reducing redundant capital"
+      ],
+      "architecture_scope_signals": [
+        "Solvency II and AG43 capital modeling",
+        "Actuarial reserve and capital optimization",
+        "Regulatory-capital compliance for insurance clients"
+      ],
+      "graph_skill_node_ids": [
+        "skill_capital_regulatory_capital",
+        "skill_capital_capital_modeling",
+        "skill_capital_pricing_actuarial"
+      ],
+      "linked_source_fact_ids": ["exp_ey_001"],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [],
+      "held_metrics": [
+        "12% reduction in redundant capital holdings (HOLD - base_resume canonical single source bul_ey_003; promote only if archive-corroborated)"
+      ],
+      "excluded_metrics": [],
+      "operating_context": "Optimization of capital reserve requirements under Solvency II and AG43, reducing redundant capital holdings for insurance clients while maintaining full compliance.",
+      "bullet_intent": "Frame as actuarial/capital optimization leadership under regulatory regimes; metrics only from base-resume anchored fact_id (bul_ey_003).",
+      "section_eligibility": ["ey_bullets", "ey_narrative"],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Anchors base-resume bullet bul_ey_003 (Capital Optimization). Graph skills grounded in the 2009-2014 EY Principal window."
+    }
+  ]
+}
