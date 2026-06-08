@@ -19,6 +19,10 @@ class ResearchEngine:
     def execute(self, context: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         chunks = context.get("retrieval_chunks") or []
         features = context.get("profile_features") or {}
+        support_status = str(context.get("c0_support_status", "") or "")
+        evidence_sufficiency_score = float(
+            context.get("c0_evidence_sufficiency_score", 0.0) or 0.0
+        )
 
         evidence_items: list[dict[str, Any]] = []
         for idx, chunk in enumerate(chunks):
@@ -41,6 +45,8 @@ class ResearchEngine:
                 "items": evidence_items,
                 "count": len(evidence_items),
                 "archetype_hint": features.get("archetype_hint", "GENERIC"),
+                "support_status": support_status,
+                "evidence_sufficiency_score": evidence_sufficiency_score,
             },
         }
 

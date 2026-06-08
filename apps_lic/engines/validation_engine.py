@@ -102,9 +102,15 @@ class ValidationEngine:
     def execute(self, context: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         draft = context.get("draft_message") or {}
         evidence = context.get("evidence_bundle") or {}
+        reasoning_policy = (
+            context.get("reasoning_policy")
+            or draft.get("reasoning_policy")
+            or {}
+        )
 
         issues: list[str] = []
         body = str(draft.get("message_text") or draft.get("body") or "")
+        support_status = str(evidence.get("support_status", "") or "").upper()
         paragraphs = [
             para.strip()
             for para in re.split(r"\n\s*\n", body.strip())
@@ -142,6 +148,15 @@ class ValidationEngine:
             issues.append("candidate_proof_missing")
         if _has_unverified_candidate_metric(body):
             issues.append("unverified_candidate_metric")
+        if (
+            bool(reasoning_policy.get("fail_closed_on_empty_evidence", True))
+            and support_status in {"WEAK", "EMPTY"}
+        ):
+            issues.append(f"evidence_support_{support_status.lower()}_fail_closed")
+        if support_status in {"WEAK", "EMPTY"} and int(
+            reasoning_policy.get("max_candidates", 1) or 1
+        ) > 1:
+            issues.append("sc_escalation_forbidden_on_weak_evidence")
 
         evidence_count = int(evidence.get("count", 0))
         # Non-fatal advisory when evidence bundle is empty — generation was
@@ -162,6 +177,10 @@ class ValidationEngine:
                 "aig_operating_insight": _has_aig_operating_insight(body),
                 "candidate_proof": _has_candidate_proof(body),
                 "unverified_candidate_metric": _has_unverified_candidate_metric(body),
+                "evidence_support_status": support_status,
+                "reasoning_policy": dict(reasoning_policy)
+                if isinstance(reasoning_policy, dict)
+                else {},
             },
         }
 

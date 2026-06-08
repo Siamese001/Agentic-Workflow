@@ -36,6 +36,10 @@ from apps_lic.runtime.dispatch.runtime_proof_bundle import (
     FILENAME_RUNTIME_PROOF_BUNDLE,
     write_runtime_proof_bundle,
 )
+from apps_lic.policy.reasoning_intensity import (
+    apply_evidence_support,
+    policy_from_reason_codes,
+)
 
 ROUTE_FAMILY_R4 = ROUTE_FAMILY_R4_MANAGED_DRAFT
 ROUTE_FAMILY_R3R4 = ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT  # deprecated guard only
@@ -189,9 +193,7 @@ def build_cli_ingress_raw(
             "audit_refs": [],
         },
         "runtime_customization_package": {
-            "package_digest": (
-                "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
-            ),
+            "package_digest": "",
         },
         "payload_digest": "",
     }
@@ -296,6 +298,7 @@ def run_canonical_apps_lic_spine(
     validated_request = _inject_context_signals(validated_request, raw_ingress)
     l1 = l1_plan_apps_lic(validated_request)
     route = l0_route_apps_lic(l1)
+    route_reasoning_policy = policy_from_reason_codes(route.reason_codes)
 
     run_id = route.run_id
     artifact_dir = artifact_root or (
@@ -342,6 +345,13 @@ def run_canonical_apps_lic_spine(
         "l3_required": route.l3_required,
         "reason_codes": list(route.reason_codes),
         "apps_research_invoked": False,
+        "reasoning_policy": route_reasoning_policy,
+        "sc_level": route_reasoning_policy["sc_level"],
+        "reasoning_intensity": route_reasoning_policy["reasoning_intensity"],
+        "judge_profile": route_reasoning_policy["judge_profile"],
+        "active_judges": list(route_reasoning_policy["judges"]),
+        "judge_count": len(route_reasoning_policy["judges"]),
+        "max_candidates": route_reasoning_policy["max_candidates"],
     }
     will_c0 = bool(l1.grounding_required)
     will_pa = bool(l1.model_generation_required and will_c0)
@@ -425,6 +435,10 @@ def run_canonical_apps_lic_spine(
     if l1.grounding_required:
         fec = c0_retrieve_apps_lic(route, validated_request)
         c0_invoked = True
+        route_reasoning_policy = apply_evidence_support(
+            route_reasoning_policy,
+            str(fec.support_status or ""),
+        )
         c0_path = _sr.write_stage_receipt(
             artifact_dir / _sr.FILENAME_C0_FEC,
             _sr.build_c0_receipt(fec),
@@ -499,6 +513,17 @@ def run_canonical_apps_lic_spine(
     )
     manifest = {
         **route_payload,
+        "reasoning_policy": route_reasoning_policy,
+        "sc_level": route_reasoning_policy["sc_level"],
+        "reasoning_intensity": route_reasoning_policy["reasoning_intensity"],
+        "judge_profile": route_reasoning_policy["judge_profile"],
+        "active_judges": list(route_reasoning_policy["judges"]),
+        "judge_count": len(route_reasoning_policy["judges"]),
+        "max_candidates": route_reasoning_policy["max_candidates"],
+        "evidence_support_status": route_reasoning_policy.get(
+            "evidence_support_status", ""
+        ),
+        "evidence_action": route_reasoning_policy.get("evidence_action", ""),
         "request_id": route.request_id,
         "run_id": route.run_id,
         "trace_id": route.trace_id,

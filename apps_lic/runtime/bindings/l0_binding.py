@@ -260,6 +260,30 @@ def _build_reason_codes(
         f"channel={l1_plan.task_spec.get('channel', 'linkedin')}",
         f"cache_eligibility={json.dumps(cache_eligibility, sort_keys=True)}",
     ]
+    reasoning_policy = l1_plan.task_spec.get("reasoning_policy") or {}
+    if reasoning_policy:
+        codes.extend(
+            [
+                f"sc_level={reasoning_policy.get('sc_level', 'SC-1')}",
+                (
+                    "reasoning_intensity="
+                    f"{reasoning_policy.get('reasoning_intensity', 'R1_STANDARD')}"
+                ),
+                f"judge_profile={reasoning_policy.get('judge_profile', 'normal_default')}",
+                f"max_candidates={int(reasoning_policy.get('max_candidates', 1) or 1)}",
+                (
+                    "validation_repair_passes="
+                    f"{int(reasoning_policy.get('validation_repair_passes', 1) or 0)}"
+                ),
+                (
+                    "fail_closed_on_empty_evidence="
+                    f"{bool(reasoning_policy.get('fail_closed_on_empty_evidence', True))}"
+                ),
+                f"no_send_authority={bool(reasoning_policy.get('no_send_authority', True))}",
+            ]
+        )
+        for trigger in reasoning_policy.get("escalation_triggers", ()):
+            codes.append(f"reasoning_escalation_trigger={trigger}")
     if l1_plan.task_spec.get("research_disabled_by_policy"):
         codes.append("research_disabled_by_policy=true")
     if l1_plan.task_spec.get("research_requested_but_disabled"):

@@ -17,6 +17,8 @@ from dataclasses import dataclass
 from typing import Any
 from urllib import request as urllib_request
 
+from apps_lic.policy.reasoning_intensity import compact_policy, default_reasoning_policy
+
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "http://localhost:8000/v1"
@@ -50,6 +52,9 @@ class GenerationEngine:
     def execute(self, context: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         prompt = str(context.get("generation_prompt", ""))
         persona = context.get("sender_persona") or {}
+        reasoning_policy = compact_policy(
+            context.get("reasoning_policy") or default_reasoning_policy()
+        )
         register = str(persona.get("voice_register", "professional") or "professional")
         recipient_class = _normalise_recipient_class(
             persona.get("recipient_class") or _prompt_recipient_class(prompt)
@@ -70,6 +75,7 @@ class GenerationEngine:
                     target_contact=target_contact,
                     template_signature=template_sig,
                     settings=settings,
+                    reasoning_policy=reasoning_policy,
                 )
             }
 
@@ -78,6 +84,7 @@ class GenerationEngine:
             register=register,
             recipient_class=recipient_class,
             settings=settings,
+            reasoning_policy=reasoning_policy,
         )
         draft = _draft_from_model_text(
             qwen_text,
@@ -86,6 +93,7 @@ class GenerationEngine:
             target_contact=target_contact,
             template_signature=template_sig,
             settings=settings,
+            reasoning_policy=reasoning_policy,
         )
         if draft:
             return {"draft_message": draft}
@@ -111,6 +119,14 @@ class GenerationEngine:
                 "register": register,
                 "template_signature": template_sig,
                 "attempts": 1,
+                "sc_level": reasoning_policy["sc_level"],
+                "reasoning_intensity": reasoning_policy["reasoning_intensity"],
+                "judge_profile": reasoning_policy["judge_profile"],
+                "reasoning_policy": reasoning_policy,
+                "max_candidates": reasoning_policy["max_candidates"],
+                "candidate_count": 0,
+                "candidate_selection_strategy": "none_provider_unavailable",
+                "validation_repair_passes": reasoning_policy["validation_repair_passes"],
                 "generation_temperature": settings.temperature,
                 "top_p": settings.top_p,
                 "max_generation_attempts": settings.max_generation_attempts,
@@ -128,6 +144,7 @@ class GenerationEngine:
         register: str,
         recipient_class: str,
         settings: ProviderSettings,
+        reasoning_policy: dict[str, Any],
     ) -> str:
         """Run prompt through local Qwen/vLLM and return raw assistant text."""
         if not prompt.strip():
@@ -167,6 +184,12 @@ class GenerationEngine:
                             f"The target recipient category is {recipient_class}. "
                             "Amit is a candidate/senior AI engineering leader, not a vendor. "
                             "Write like a thoughtful operator, not a generic job seeker. "
+                            "Use the selected reasoning policy only to improve candidate wording "
+                            "and selection; never use it to add unsupported evidence. "
+                            f"SC level is {reasoning_policy['sc_level']}; "
+                            f"reasoning intensity is {reasoning_policy['reasoning_intensity']}; "
+                            f"consider at most {reasoning_policy['max_candidates']} candidate(s) "
+                            "internally and return the single best selected message. "
                             "Return one JSON object only with message_text, intended_next_step, "
                             "claims_used, unsupported_claims, omitted_claims, qa_notes, "
                             "provider_profile, and model. No markdown, no subject, no em dash. "
@@ -300,6 +323,7 @@ def _draft_from_model_text(
     target_contact: dict[str, Any],
     template_signature: str,
     settings: ProviderSettings,
+    reasoning_policy: dict[str, Any],
 ) -> dict[str, Any]:
     if not text.strip():
         return {}
@@ -340,6 +364,14 @@ def _draft_from_model_text(
         "register": register,
         "template_signature": template_signature,
         "attempts": 1,
+        "sc_level": reasoning_policy["sc_level"],
+        "reasoning_intensity": reasoning_policy["reasoning_intensity"],
+        "judge_profile": reasoning_policy["judge_profile"],
+        "reasoning_policy": reasoning_policy,
+        "max_candidates": reasoning_policy["max_candidates"],
+        "candidate_count": reasoning_policy["max_candidates"],
+        "candidate_selection_strategy": "single_best_selected_by_policy",
+        "validation_repair_passes": reasoning_policy["validation_repair_passes"],
         "generation_temperature": settings.temperature,
         "top_p": settings.top_p,
         "max_generation_attempts": settings.max_generation_attempts,
@@ -357,6 +389,7 @@ def _stub_draft(
     target_contact: dict[str, Any],
     template_signature: str,
     settings: ProviderSettings,
+    reasoning_policy: dict[str, Any],
 ) -> dict[str, Any]:
     target_name = str(target_contact.get("verified_name", "") or "").strip()
     target_title = str(target_contact.get("title", "") or "").strip()
@@ -385,6 +418,14 @@ def _stub_draft(
         "register": register,
         "template_signature": template_signature,
         "attempts": 1,
+        "sc_level": reasoning_policy["sc_level"],
+        "reasoning_intensity": reasoning_policy["reasoning_intensity"],
+        "judge_profile": reasoning_policy["judge_profile"],
+        "reasoning_policy": reasoning_policy,
+        "max_candidates": reasoning_policy["max_candidates"],
+        "candidate_count": reasoning_policy["max_candidates"],
+        "candidate_selection_strategy": "deterministic_stub_single_best",
+        "validation_repair_passes": reasoning_policy["validation_repair_passes"],
         "generation_temperature": settings.temperature,
         "top_p": settings.top_p,
         "max_generation_attempts": settings.max_generation_attempts,

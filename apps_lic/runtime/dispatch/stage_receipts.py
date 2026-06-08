@@ -192,6 +192,8 @@ def build_c0_summary(fec: Any) -> dict[str, Any]:
     return {
         "compilation_hash": fec.compilation_hash,
         "item_count": len(fec.evidence_items),
+        "support_status": fec.support_status,
+        "evidence_sufficiency_score": fec.evidence_sufficiency_score,
         "request_id": fec.request_id,
         "run_id": fec.run_id,
         "trace_id": fec.trace_id,

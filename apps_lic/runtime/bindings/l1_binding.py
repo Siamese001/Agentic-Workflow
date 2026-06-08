@@ -51,6 +51,12 @@ from typing import Any, Mapping
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 
+from apps_lic.policy.reasoning_intensity import (
+    POLICY_REF as REASONING_POLICY_REF,
+    compact_policy,
+    select_reasoning_policy,
+)
+
 
 APPS_LIC_L1_CERT_REF: str = "l1-apps-lic-outreach-message-ag8-w4-f3c2e1"
 
@@ -147,6 +153,7 @@ def _build_app_payload_projections(
     output_fmt = app_payload.get("output_format", {})
     personalization = app_payload.get("personalization", {})
     generation_hints = app_payload.get("generation_hints", {})
+    reasoning_policy = compact_policy(select_reasoning_policy(app_payload))
 
     # Derive canonical flags from payload
     grounding_required: bool = bool(campaign.get("grounding_required", True))
@@ -210,6 +217,11 @@ def _build_app_payload_projections(
         "briefing_fresh": briefing_fresh,
         "lead_profile_valid": lead_profile_valid,
         "context_grounded": context_grounded,
+        "reasoning_policy": reasoning_policy,
+        "sc_level": reasoning_policy["sc_level"],
+        "reasoning_intensity": reasoning_policy["reasoning_intensity"],
+        "judge_profile": reasoning_policy["judge_profile"],
+        "max_candidates": reasoning_policy["max_candidates"],
     }
 
     # ── 2. query_spec ─────────────────────────────────────────────────────────
@@ -247,6 +259,11 @@ def _build_app_payload_projections(
         "antipattern_detection_enabled": bool(antipattern.get("enabled", True)),
         "source_lineage_required": bool(source_lineage.get("source_lineage_required", True)),
         "halt_on_validation_failure": bool(gate_policy.get("halt_on_validation_failure", True)),
+        "reasoning_policy": reasoning_policy,
+        "fail_closed_on_empty_evidence": bool(
+            reasoning_policy.get("fail_closed_on_empty_evidence", True)
+        ),
+        "no_send_authority": bool(reasoning_policy.get("no_send_authority", True)),
     }
 
     # ── 4. output_expectation ─────────────────────────────────────────────────
@@ -257,6 +274,13 @@ def _build_app_payload_projections(
         "formality_level": tone.get("formality_level"),
         "output_format": dict(output_fmt),
         "generation_hints": dict(generation_hints),
+        "reasoning_policy": reasoning_policy,
+        "sc_level": reasoning_policy["sc_level"],
+        "reasoning_intensity": reasoning_policy["reasoning_intensity"],
+        "judge_profile": reasoning_policy["judge_profile"],
+        "active_judges": list(reasoning_policy["judges"]),
+        "max_candidates": reasoning_policy["max_candidates"],
+        "validation_repair_passes": reasoning_policy["validation_repair_passes"],
         "gate_halt_on_validation_failure": bool(
             gate_policy.get("halt_on_validation_failure", True)
         ),
@@ -271,6 +295,7 @@ def _build_app_payload_projections(
         "source_lineage_ref": "apps_lic/config/l0_policy.yaml#source_lineage",
         "capability_profile_ref": "apps_lic/config/domain_contract/capability_profiles.yaml",
         "route_profile_ref": "apps_lic/config/domain_contract/route_profiles.yaml",
+        "reasoning_intensity_policy_ref": REASONING_POLICY_REF,
         "intake_policy_ref": "apps_lic/config/intake_policy.yaml",
     }
 
@@ -280,6 +305,9 @@ def _build_app_payload_projections(
         "channel": _coerce_str(campaign.get("channel", "email")),
         "request_type": _coerce_str(campaign.get("request_type", "outreach_draft")),
         "ab_test_profile": app_payload.get("ab_test", {}).get("ab_test_profile"),
+        "reasoning_policy": reasoning_policy,
+        "sc_level": reasoning_policy["sc_level"],
+        "reasoning_intensity": reasoning_policy["reasoning_intensity"],
         "advisory": True,
     }
 
@@ -368,6 +396,11 @@ def l1_plan_apps_lic(validated_request: ValidatedRequest) -> L1PlanContract:
 
     lead_anchor = query_spec.get("lead_anchor") or {}
     target_level = str(lead_anchor.get("seniority_class", "") or "")
+    reasoning_policy = task_spec.get("reasoning_policy") or {}
+    judges = tuple(str(v) for v in reasoning_policy.get("judges", ()))
+    escalation_triggers = tuple(
+        str(v) for v in reasoning_policy.get("escalation_triggers", ())
+    )
 
     return L1PlanContract(
         request_id=validated_request.request_id,
@@ -387,6 +420,14 @@ def l1_plan_apps_lic(validated_request: ValidatedRequest) -> L1PlanContract:
         support_expectation=support_expectation,
         output_expectation=output_expectation,
         policy_refs=policy_refs,
+        candidate_generation_expected_hint=(
+            int(reasoning_policy.get("max_candidates", 1) or 1) > 1
+        ),
+        per_unit_quality_selection_hint=(
+            str(reasoning_policy.get("sc_level", "SC-1")) in {"SC-2", "SC-3"}
+        ),
+        judge_eval_expectation_refs=judges,
+        ambiguity_register=escalation_triggers,
         replay_key=validated_request.replay_key,
         planning_timestamp=datetime.now(timezone.utc).isoformat(),
         schema_version="AG-8.W4.f3c2e1",

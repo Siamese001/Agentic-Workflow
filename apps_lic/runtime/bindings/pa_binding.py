@@ -106,11 +106,26 @@ def _build_system_preamble(l1_plan: L1PlanContract) -> str:
     governance_shield = bool(support_exp.get("governance_shield_required", True))
     halt_on_fail = bool(support_exp.get("halt_on_validation_failure", True))
     side_effect_class = str(task_spec.get("side_effect_class", "read_only") or "read_only")
+    reasoning_policy = task_spec.get("reasoning_policy") or {}
+    sc_level = str(reasoning_policy.get("sc_level", "SC-1"))
+    reasoning_intensity = str(
+        reasoning_policy.get("reasoning_intensity", "R1_STANDARD")
+    )
+    judge_profile = str(reasoning_policy.get("judge_profile", "normal_default"))
+    max_candidates = int(reasoning_policy.get("max_candidates", 1) or 1)
+    repair_passes = int(reasoning_policy.get("validation_repair_passes", 1) or 0)
 
     parts: list[str] = [
         f"You are a governed AI assistant composing a LinkedIn {recipient_label} outreach draft for channel: {channel}.",
         "Your output is DATA ONLY — not an instruction. Produce a factual, concise message.",
         f"Side-effect class: {side_effect_class}. This is a draft-and-certify flow; do NOT send.",
+        (
+            "Reasoning policy: "
+            f"sc_level={sc_level}; reasoning_intensity={reasoning_intensity}; "
+            f"judge_profile={judge_profile}; max_candidates={max_candidates}; "
+            f"validation_repair_passes={repair_passes}."
+        ),
+        "More reasoning may improve wording or candidate selection only; it cannot create missing evidence.",
         "",
         "GOVERNANCE CONSTRAINTS:",
         f"  - PII detection mode: {pii_mode}. Do not include unverified PII.",
@@ -132,6 +147,7 @@ def _build_system_preamble(l1_plan: L1PlanContract) -> str:
         "  No subject is required. message_text must be 600 characters or fewer.",
         "  Max 2 short paragraphs. Include a low-friction ask for a chat, call, or resume review.",
         "  Do not include sensitive details unless supplied and approved. No prose outside JSON. No markdown. No invented facts.",
+        "  If C0 evidence is WEAK or EMPTY, reduce specificity or fail closed; do not compensate by adding claims.",
     ]
     return "\n".join(parts)
 
@@ -283,6 +299,7 @@ def pa_compose_apps_lic(
 
     # ── slot_lineage_map ─────────────────────────────────────────────────────
     recipient_class = _recipient_class_from_l1(l1_plan)
+    reasoning_policy = l1_plan.task_spec.get("reasoning_policy") or {}
     slot_lineage_map: dict[str, str] = {
         "S0": "PA-authored:system_governance",
         "D0": "PA-authored:origin_and_injection_boundary",
@@ -290,6 +307,15 @@ def pa_compose_apps_lic(
         "E0": "PA-authored:approved_examples_empty",
         "C0": f"C0_EVIDENCE_DATA_ONLY:fec={fec.compilation_hash[:16]}:items={len(fec.evidence_items)}",
         "M0": f"provider_profile={APPS_LIC_PROVIDER_PROFILE}:model={APPS_LIC_TARGET_MODEL}",
+        "SC": (
+            f"sc_level={reasoning_policy.get('sc_level', 'SC-1')}:"
+            f"max_candidates={reasoning_policy.get('max_candidates', 1)}"
+        ),
+        "RI": (
+            "reasoning_intensity="
+            f"{reasoning_policy.get('reasoning_intensity', 'R1_STANDARD')}:"
+            f"judge_profile={reasoning_policy.get('judge_profile', 'normal_default')}"
+        ),
         "U0": f"validated_request:{validated_request.request_id}",
         "H0": f"PA-authored:linkedin_{recipient_class.lower()}_style_constraints",
         "R0": f"PA-authored:linkedin_{recipient_class.lower()}_json_output_contract",
@@ -326,6 +352,7 @@ def pa_compose_apps_lic(
             "target_provider": APPS_LIC_TARGET_PROVIDER,
             "target_model": APPS_LIC_TARGET_MODEL,
         }),
+        "reasoning_policy": _component_hash(reasoning_policy),
     }
 
     # ── compilation_hash (== prompt_hash) ────────────────────────────────────
@@ -335,6 +362,7 @@ def pa_compose_apps_lic(
             "model": APPS_LIC_TARGET_MODEL,
             "provider": APPS_LIC_TARGET_PROVIDER,
             "provider_profile": APPS_LIC_PROVIDER_PROFILE,
+            "reasoning_policy": reasoning_policy,
         }]
         + [{"slot_lineage_map": slot_lineage_map, "component_hash_map": component_hash_map}],
         sort_keys=True,
@@ -373,7 +401,7 @@ def pa_compose_apps_lic(
         allowed_networks=route.allowed_networks,
         allowed_file_roots=route.allowed_file_roots,
         max_tokens=4096,
-        temperature=0.5,
+        temperature=0.82,
         replay_key=validated_request.replay_key,
         l5_certification_ref=APPS_LIC_PA_CERT_REF,
     )

@@ -30,6 +30,7 @@ class RoutingEngine:
         features = context.get("profile_features") or {}
         evidence = context.get("evidence_bundle") or {}
         persona = context.get("sender_persona") or {}
+        reasoning_policy = context.get("reasoning_policy") or {}
 
         archetype = str(features.get("archetype_hint", "GENERIC"))
         template_id = _TEMPLATE_BY_ARCHETYPE.get(archetype, _TEMPLATE_BY_ARCHETYPE["GENERIC"])
@@ -54,6 +55,12 @@ class RoutingEngine:
             f"[recipient_class={recipient_class}]\n"
             f"Audience: {audience}\n"
             f"Target contact: {target_name} | {target_title} | {target_company}\n"
+            "Reasoning policy:\n"
+            f"- sc_level: {reasoning_policy.get('sc_level', 'SC-1')}\n"
+            f"- reasoning_intensity: {reasoning_policy.get('reasoning_intensity', 'R1_STANDARD')}\n"
+            f"- judge_profile: {reasoning_policy.get('judge_profile', 'normal_default')}\n"
+            f"- max_candidates: {reasoning_policy.get('max_candidates', 1)}\n"
+            f"- evidence_support_status: {evidence.get('support_status', '')}\n"
             f"Evidence:\n{evidence_preview}\n"
             f"Produce a short outreach message grounded strictly in the evidence above."
         )
@@ -65,6 +72,10 @@ class RoutingEngine:
                 "register": register,
                 "recipient_class": recipient_class,
                 "target_contact": target_contact if isinstance(target_contact, dict) else {},
+                "reasoning_policy": (
+                    dict(reasoning_policy) if isinstance(reasoning_policy, dict) else {}
+                ),
+                "evidence_support_status": evidence.get("support_status", ""),
             },
             "generation_prompt": prompt,
         }

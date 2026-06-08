@@ -19,6 +19,7 @@ class IntegrationEngine:
         draft = context.get("draft_message") or {}
         report = context.get("validation_report") or {}
         qa = context.get("qa_report") or {}
+        reasoning_policy = context.get("reasoning_policy") or draft.get("reasoning_policy") or {}
 
         config = self._attr(req, "config", None)
 
@@ -36,6 +37,24 @@ class IntegrationEngine:
                 "generator": str(draft.get("generator", "unknown")),
                 "provider_profile": str(draft.get("provider_profile", "")),
                 "model": str(draft.get("model", "")),
+                "reasoning_policy": dict(reasoning_policy)
+                if isinstance(reasoning_policy, dict)
+                else {},
+                "sc_level": str(
+                    draft.get("sc_level")
+                    or qa.get("sc_level")
+                    or self._attr(reasoning_policy, "sc_level", "")
+                ),
+                "reasoning_intensity": str(
+                    draft.get("reasoning_intensity")
+                    or qa.get("reasoning_intensity")
+                    or self._attr(reasoning_policy, "reasoning_intensity", "")
+                ),
+                "judge_profile": str(
+                    draft.get("judge_profile")
+                    or qa.get("judge_profile")
+                    or self._attr(reasoning_policy, "judge_profile", "")
+                ),
             },
         }
 

@@ -49,6 +49,11 @@ from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 from agentic_core.runtime.contracts.origin import Origin
 from agentic_core.L3_orchestration.doctrine.contracts_l3_7 import L3StepContract
 
+from apps_lic.policy.reasoning_intensity import (
+    apply_evidence_support,
+    policy_from_reason_codes,
+)
+
 _LOGGER = logging.getLogger(__name__)
 
 APPS_LIC_L2_CERT_REF: str = "l2-apps-lic-outreach-message-ag8-w6-f3c2e1"
@@ -206,6 +211,10 @@ def _invoke_hop_pipeline(
     target_contact = _target_contact_from_fec(fec)
     recipient_class = classify_recipient_profile(target_contact)
     target_audience = recipient_class.lower()
+    reasoning_policy = apply_evidence_support(
+        policy_from_reason_codes(route.reason_codes),
+        str(fec.support_status or ""),
+    )
 
     # Build the initial context from FEC + prompt + route
     context: dict[str, Any] = {
@@ -222,10 +231,17 @@ def _invoke_hop_pipeline(
         "allowed_models": list(route.allowed_models),
         "allowed_networks": list(route.allowed_networks),
         "allowed_file_roots": list(route.allowed_file_roots),
+        "reasoning_policy": reasoning_policy,
+        "c0_support_status": str(fec.support_status or ""),
+        "c0_evidence_sufficiency_score": float(fec.evidence_sufficiency_score or 0.0),
         # C0 evidence as data only — no instruction authority
         "evidence_bundle": {
             "compilation_hash": fec.compilation_hash,
             "tenant_id": fec.tenant_id,
+            "support_status": str(fec.support_status or ""),
+            "evidence_sufficiency_score": float(
+                fec.evidence_sufficiency_score or 0.0
+            ),
             "evidence_items": [
                 {
                     "source_id": item.source_id,
@@ -249,6 +265,8 @@ def _invoke_hop_pipeline(
                 "target_audience": target_audience,
                 "recipient_class": recipient_class,
                 "target_contact": target_contact,
+                "reasoning_policy": reasoning_policy,
+                "c0_support_status": str(fec.support_status or ""),
                 "compliance_level": "standard",
                 "name": f"linkedin_{target_audience}_outreach_draft",
             },

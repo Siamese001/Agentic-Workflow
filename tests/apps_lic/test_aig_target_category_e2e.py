@@ -10,6 +10,13 @@ import pytest
 from apps_lic.engines.qa_report_engine import QaReportEngine
 from apps_lic.engines.profile_analysis_engine import classify_recipient_profile
 from apps_lic.engines.validation_engine import ValidationEngine
+from apps_lic.policy.reasoning_intensity import (
+    JUDGE_EVIDENCE_SUPPORT,
+    JUDGE_LINKEDIN_TONE,
+    JUDGE_SAFETY_NO_FABRICATION,
+    R3_STRICT,
+    SC_3,
+)
 from apps_lic.runtime.dispatch.canonical_dispatch import (
     build_cli_ingress_raw,
     run_canonical_apps_lic_spine,
@@ -125,6 +132,8 @@ def test_aig_public_profile_e2e_generates_target_category_draft(
     assert draft["top_p"] >= 0.9
     assert draft["attempts"] == 1
     assert draft["max_generation_attempts"] == 1
+    assert draft["max_candidates"] >= 1
+    assert draft["candidate_count"] == draft["max_candidates"]
     assert "potential synergies" not in message.lower()
     assert "i noticed your role" not in message.lower()
     assert "i believe my background aligns" not in message.lower()
@@ -171,7 +180,22 @@ def test_qa_report_exposes_judges_and_one_shot_quality_contract() -> None:
         "top_p": 0.92,
         "attempts": 1,
         "max_generation_attempts": 1,
+        "candidate_count": 3,
         "generator": "test_provider_stub",
+        "reasoning_policy": {
+            "sc_level": SC_3,
+            "reasoning_intensity": R3_STRICT,
+            "judge_profile": "high_risk_strict",
+            "judges": [
+                JUDGE_EVIDENCE_SUPPORT,
+                JUDGE_LINKEDIN_TONE,
+                JUDGE_SAFETY_NO_FABRICATION,
+            ],
+            "max_candidates": 3,
+            "validation_repair_passes": 1,
+            "fail_closed_on_empty_evidence": True,
+            "no_send_authority": True,
+        },
     }
 
     qa = QaReportEngine().execute({
@@ -181,15 +205,34 @@ def test_qa_report_exposes_judges_and_one_shot_quality_contract() -> None:
     })["qa_report"]
 
     assert qa["composite_score"] >= 0.8
-    assert qa["judge_scores"]["response_likelihood"] >= 0.5
-    assert qa["judge_scores"]["asymmetric_insight"] >= 0.65
-    assert qa["judge_scores"]["ask_friction"] <= 0.5
+    assert qa["judge_count"] == 3
+    assert qa["active_judges"] == [
+        JUDGE_EVIDENCE_SUPPORT,
+        JUDGE_LINKEDIN_TONE,
+        JUDGE_SAFETY_NO_FABRICATION,
+    ]
+    assert qa["judge_scores"][JUDGE_EVIDENCE_SUPPORT] >= 0.5
+    assert qa["judge_scores"][JUDGE_LINKEDIN_TONE] >= 0.5
     assert qa["quality_contract"] == {
         "generation_temperature": 0.82,
         "top_p": 0.92,
-        "self_consistency_samples": 1,
+        "self_consistency_samples": 3,
+        "sc_level": SC_3,
+        "reasoning_intensity": R3_STRICT,
+        "judge_profile": "high_risk_strict",
+        "active_judges": [
+            JUDGE_EVIDENCE_SUPPORT,
+            JUDGE_LINKEDIN_TONE,
+            JUDGE_SAFETY_NO_FABRICATION,
+        ],
+        "judge_count": 3,
+        "max_candidates": 3,
+        "candidate_count": 3,
+        "validation_repair_passes": 1,
         "generation_attempts": 1,
         "max_generation_attempts": 1,
         "x1_x2_x3_exit_retries": 0,
-        "retry_policy": "one_shot_fail_closed",
+        "retry_policy": "one_exit_decision_no_x_retry",
+        "fail_closed_on_empty_evidence": True,
+        "no_send_authority": True,
     }
