@@ -2,7 +2,7 @@
 """
 MCP Config Schema Validation Gate (MCP-SCHEMA)
 
-Validates `.cursor/mcp.json` (Cursor SSOT) and `.cursor/mcp.json` (mirror):
+Validates root `.mcp.json` (Claude Code SSOT) and optional deprecated compatibility mirrors:
 - Required servers present: GitKraken, adg_sqlite, memory, notion, otel_mcp, pytest_mcp, redis, vector_db
 - Each server has required fields: command, args (array)
 - Optional fields valid: env (object), disabled (boolean), url (for remote)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""MCP editor parity gate — Cursor SSOT plus optional compatibility copy.
+"""MCP editor parity gate — root MCP SSOT plus optional compatibility copy.
 
-Ensures the Cursor config declares the canonical MCP fleet. A deprecated
+Ensures the root MCP config declares the canonical MCP fleet. A deprecated
 Windsurf compatibility copy is checked only when it exists.
 
 Bypass: MCP_EDITOR_PARITY_BYPASS=1
@@ -67,7 +67,7 @@ def main() -> int:
         for issue in issues:
             print(f"  - {issue}", file=sys.stderr)
         print(
-            "[check_mcp_editor_parity] Fix: align .cursor/mcp.json (Cursor SSOT); "
+            "[check_mcp_editor_parity] Fix: align root .mcp.json; "
             "deprecated compatibility copies are non-authoritative.",
             file=sys.stderr,
         )

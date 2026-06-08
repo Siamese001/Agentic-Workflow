@@ -2,7 +2,7 @@
 """Fail-closed MCP sync integrity gate.
 
 Validates:
-1) `.cursor/mcp.json` (Cursor project SSOT) is structurally valid.
+1) Root `.mcp.json` (Claude Code project SSOT) is structurally valid.
 2) AGENTS.md MCP Quick Reference matches `.claude/governance/scripts/sync_mcp_config.py` output.
 3) Optional: global Cursor MCP mirror matches repo SSOT (`--check-global`).
 4) Optional: Windsurf mirror structural validity (`--check-windsurf-mirror`).
@@ -39,7 +39,7 @@ def _check_repo_config(sync) -> list[str]:
     try:
         data = sync.load_repo_config(sync.REPO_CONFIG)
     except (OSError, json.JSONDecodeError, ValueError) as exc:
-        return [f"could not load Cursor MCP config: {exc}"]
+        return [f"could not load root MCP config: {exc}"]
 
     issues.extend(sync.validate_config(data))
     return issues
@@ -115,7 +115,7 @@ def main() -> int:
         return 1
 
     print(
-        "[mcp_sync_integrity] OK: .cursor/mcp.json + AGENTS Quick Reference are in sync.",
+        "[mcp_sync_integrity] OK: .mcp.json + AGENTS Quick Reference are in sync.",
         flush=True,
     )
     if args.check_global:

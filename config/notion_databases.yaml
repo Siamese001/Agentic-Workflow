@@ -68,7 +68,7 @@ databases:
     archived: true
     archived_date: "2026-05-02"
     read_trigger: "\u274c **ARCHIVED 2026-05-02**"
-    write_trigger: "Filesystem SSOT: `.cursor/mcp.json` only. Deprecated Windsurf compatibility copies are non-authoritative."
+    write_trigger: "Filesystem SSOT: root `.mcp.json` only. Deprecated Cursor/Windsurf compatibility copies are non-authoritative."
 
   # ADR Registry RETIRED 2026-05-02 — consolidated in commit b11200e833
   # "chore(notion): consolidate 4 mirror DBs; migrate value-add to SSOT".

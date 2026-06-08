@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate and sync the repo MCP config to Cursor's global config and AGENTS.md.
+"""Validate and sync the repo MCP config to AGENTS.md and optional editor mirrors.
 
 Usage:
     python .claude/governance/scripts/sync_mcp_config.py
@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 repo_root = Path(__file__).resolve().parents[3]
-repo_config = repo_root / ".cursor" / "mcp.json"
+repo_config = repo_root / ".mcp.json"
 global_config = Path.home() / ".cursor" / "cursor" / "mcp.json"
 agents_md = repo_root / "AGENTS.md"
 notion_databases_yaml = repo_root / "config" / "notion_databases.yaml"
@@ -186,8 +186,8 @@ def generate_agents_quick_reference() -> str:
     lines.append("## MCP Quick Reference")
     lines.append("")
     lines.append(
-        "> Stable IDs are the `mcpServers` keys in `.cursor/mcp.json` (Cursor project SSOT). "
-        "Deprecated Windsurf compatibility copies are non-authoritative. Live tool prefixes like `mcp0_`, `mcp1_`, "
+        "> Stable IDs are the `mcpServers` keys in root `.mcp.json` (Claude Code project SSOT). "
+        "Deprecated Cursor/Windsurf compatibility copies are non-authoritative. Live tool prefixes like `mcp0_`, `mcp1_`, "
         "and so on can shift when server order changes. Resolve the live prefix from the "
         "current tool list in-session."
     )

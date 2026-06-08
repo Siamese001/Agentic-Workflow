@@ -1,6 +1,6 @@
 """Verify the thin Codex backup adapter for Agentic-Workflow.
 
-This script checks presence and anchor references only. Claude/Cursor governance
+This script checks presence and anchor references only. Claude Code governance
 remains authoritative; this verifier guards the Codex adapter against drift.
 """
 
@@ -15,12 +15,11 @@ CODEX_SKILLS_ROOT = Path.home() / ".codex" / "skills"
 REQUIRED_REPO_FILES = [
     "AGENTS.md",
     "docs/codex-backup-adapter.md",
-    ".cursor/rules/sequential-thinking-enforcement.mdc",
-    ".cursor/skills/structured-reasoning/SKILL.md",
-    ".cursor/skills/mcp-integration/SKILL.md",
-    ".cursor/skills/plan-governance/SKILL.md",
-    ".cursor/mcp.json",
-    ".cursor/hooks.json",
+    ".claude/skills/structured-reasoning/SKILL.md",
+    ".claude/skills/mcp-integration/SKILL.md",
+    ".claude/skills/plan-governance/SKILL.md",
+    ".mcp.json",
+    ".claude/settings.json",
 ]
 
 REQUIRED_CODEX_SKILLS = [
@@ -35,16 +34,16 @@ REQUIRED_ANCHORS = {
         "scripts/governance/verify_codex_backup.py",
     ],
     "docs/codex-backup-adapter.md": [
-        ".cursor/skills/structured-reasoning/SKILL.md",
-        ".cursor/skills/mcp-integration/SKILL.md",
+        ".claude/skills/structured-reasoning/SKILL.md",
+        ".claude/skills/mcp-integration/SKILL.md",
         "agentic-workflow-verification",
     ],
 }
 
 REQUIRED_SKILL_ANCHORS = {
     "agentic-workflow-governance/SKILL.md": [
-        ".cursor/skills/structured-reasoning/SKILL.md",
-        ".cursor/skills/mcp-integration/SKILL.md",
+        ".claude/skills/structured-reasoning/SKILL.md",
+        ".claude/skills/mcp-integration/SKILL.md",
         "SR_INTAKE",
     ],
     "agentic-workflow-verification/SKILL.md": [

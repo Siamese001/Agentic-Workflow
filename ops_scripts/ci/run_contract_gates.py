@@ -116,7 +116,7 @@ def validate_mcp_health():
     """Validate MCP server health."""
     print("\n[MCP HEALTH CHECK]")
 
-    # Gate: AGENTS.md Quick Reference must document every server in .cursor/mcp.json
+    # Gate: AGENTS.md Quick Reference must document every server in root .mcp.json
     returncode, stdout, stderr = run_cmd(
         [sys.executable, str(_script("ops_scripts/ci/check_agents_mcp_coverage.py"))],
         cwd=ROOT,
@@ -128,16 +128,16 @@ def validate_mcp_health():
     print("✅ AGENTS.md MCP coverage validated")
 
     # cursor-decommission W7: mcp_sync_integrity + mcp_editor_parity validated the
-    # .cursor/mcp.json mirror + Cursor-vs-Windsurf editor parity. Both mirrors are
+    # deprecated editor mirrors and parity checks. Both mirrors are
     # retired (root .mcp.json is the sole SSOT), so these gates are obsolete and removed.
 
     # cursor-decommission W7: check_mcp_config_sovereignty enforced a Cursor-era
-    # filesystem-MCP-args lock against .cursor/mcp.json. Root .mcp.json is the SSOT
+    # filesystem-MCP-args lock against root .mcp.json.
     # and intentionally omits the filesystem MCP (native file tools), so the gate's
     # MISSING_FILESYSTEM premise no longer holds. Retired.
 
     # cursor-decommission W7: check_cursor_config_schema removed (validated deleted
-    # .cursor/hooks.json + .cursor/mcp.json; Claude Code uses .claude/settings.json + root .mcp.json).
+    # deleted Cursor-era hooks/MCP config; Claude Code uses .claude/settings.json + root .mcp.json).
 
     # Gate: every .claude/skills/<name>/SKILL.md must conform to Anthropic's
     # Agent Skills authoring spec (frontmatter, name/description rules, 500-line
@@ -1018,7 +1018,7 @@ def main():
             "W6ECE1 emit-contract enrichment 9-concern gate (advisory)",
             "ops_scripts/ci/check_w6_emit_contract_enrichment.py",
         ),
-        # MCP-SCHEMA — .cursor/mcp.json + .cursor/mcp.json validation.
+        # MCP-SCHEMA — root .mcp.json validation.
         # Verifies required servers present, valid keys per constitutional §27,
         # and proper server configuration (command/args for local, url for remote).
         # Advisory by default; fail-closed via MCP_CONFIG_SCHEMA_FAIL_CLOSED=1.

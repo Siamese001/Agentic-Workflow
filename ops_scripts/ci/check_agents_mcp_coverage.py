@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-check_agents_mcp_coverage.py — CI gate: every MCP server in .cursor/mcp.json
+check_agents_mcp_coverage.py — CI gate: every MCP server in root .mcp.json
 must be documented in the AGENTS.md MCP Quick Reference table.
 
 Exit 0: all servers covered.
@@ -48,9 +48,15 @@ def load_documented_servers(agents_path: Path) -> set[str]:
     return set(_SERVER_REF_RE.findall(text))
 
 
-def _check_config(label: str, config_path: Path, documented: set[str]) -> list[str]:
+def _check_config(
+    label: str,
+    config_path: Path,
+    documented: set[str],
+    *,
+    required: bool = True,
+) -> list[str]:
     if not config_path.exists():
-        return [f"{label} config missing at {config_path}"]
+        return [f"{label} config missing at {config_path}"] if required else []
     registered = load_registered_servers(config_path)
     return [name for name in registered if name not in documented]
 
@@ -66,13 +72,18 @@ def main() -> int:
         print(f"[agents_mcp_coverage] FAIL: {exc}", flush=True)
         return 1
 
-    missing_cursor = _check_config("Cursor", CURSOR_MCP_PATH, documented)
-    missing_windsurf = _check_config("Windsurf", WINDSURF_MCP_PATH, documented)
+    missing_cursor = _check_config("root", CURSOR_MCP_PATH, documented)
+    missing_windsurf = _check_config(
+        "deprecated Windsurf mirror",
+        WINDSURF_MCP_PATH,
+        documented,
+        required=False,
+    )
 
     if missing_cursor:
         print(
-            f"[agents_mcp_coverage] FAIL: {len(missing_cursor)} Cursor MCP server(s) "
-            "registered in .cursor/mcp.json but NOT documented in AGENTS.md:",
+            f"[agents_mcp_coverage] FAIL: {len(missing_cursor)} root MCP server(s) "
+            "registered in .mcp.json but NOT documented in AGENTS.md:",
             flush=True,
         )
         for name in missing_cursor:
@@ -96,7 +107,7 @@ def main() -> int:
 
     cursor_count = len(load_registered_servers(CURSOR_MCP_PATH))
     print(
-        f"[agents_mcp_coverage] OK: all {cursor_count} Cursor MCP server(s) documented in AGENTS.md.",
+        f"[agents_mcp_coverage] OK: all {cursor_count} root MCP server(s) documented in AGENTS.md.",
         flush=True,
     )
     return 0

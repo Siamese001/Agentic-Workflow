@@ -155,7 +155,7 @@ gates:
       - "edges WHERE bucket='registry'"
       - "nodes WHERE entity_type='registry_node'"
       - "mcp_config_servers"
-      - ".cursor/mcp.json"
+      - ".mcp.json"
       - "agent_specs/*.yaml"
     evidence_mode: proof
     enforcement_mode: strict

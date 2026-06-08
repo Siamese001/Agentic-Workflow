@@ -164,7 +164,7 @@ repos:
         entry: py ops_scripts/ci/check_mcp_sync_integrity.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|AGENTS\.md|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
+        files: ^(\.mcp\.json|AGENTS\.md|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync)\.py|\.claude/governance/scripts/(sync_mcp_config|post_write_mcp_config_sync|pre_prompt_classifier)\.py)$
         always_run: false
         require_serial: true
 
@@ -183,7 +183,7 @@ repos:
         require_serial: true
 
       # -- T6c: AGENTS.md MCP Coverage --------------------------------------------------
-      # Ensures every `mcpServers` key in mcp_config.json has a row in the
+      # Ensures every `mcpServers` key in .mcp.json has a row in the
       # AGENTS.md MCP Quick Reference table. Complements T6b (strict integrity):
       # T6b checks content, T6c checks coverage. Both are cheap (no subprocess).
       - id: agents-mcp-coverage
@@ -191,7 +191,7 @@ repos:
         entry: py ops_scripts/ci/check_agents_mcp_coverage.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md)$
+        files: ^(\.mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md)$
         always_run: false
         require_serial: true
 
@@ -292,50 +292,24 @@ repos:
         files: ^\.claude/skills/.+/SKILL\.md$
         always_run: false
         require_serial: true
-      # -- T6e2: MCP Config Schema Validation (W5 implementation) ------------------------
-      # Validates .cursor/mcp.json against canonical schema.
-      # Checks required servers, valid keys per constitutional §27.
-      # Bypass: MCP_CONFIG_SCHEMA_BYPASS=1.
-      - id: mcp-config-schema
-        name: "T6e2: MCP Config Schema Validation"
-        entry: py ops_scripts/ci/check_mcp_config_schema.py --profile all
-        language: system
-        pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json)$
-        always_run: false
-        require_serial: true
+      # -- T6e2 REMOVED (cursor-decommission W7) ---------------------------------------
+      # mcp-config-schema validated a Cursor-era all-server profile plus optional
+      # deprecated mirrors. Root .mcp.json is now validated by mcp-sync-integrity
+      # and agents-mcp-coverage; schema/parity/sovereignty mirror gates are obsolete.
 
       # -- T6e2b REMOVED (cursor-decommission W7) --------------------------------------
-      # cursor-config-schema validated .cursor/hooks.json + .cursor/mcp.json structure,
+      # cursor-config-schema validated deleted Cursor-era hooks/MCP structure,
       # both deleted in the .cursor->.claude migration (Claude Code uses .claude/settings.json
       # + root .mcp.json). Validator script removed; hook retired.
 
-      # -- T6e2c: MCP editor parity (Cursor SSOT vs Windsurf mirror) -------------------
-      - id: mcp-editor-parity
-        name: "T6e2c: MCP Editor Parity"
-        entry: py ops_scripts/ci/check_mcp_editor_parity.py
-        language: system
-        pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json)$
-        always_run: false
-        require_serial: true
-
-      # -- T11: MCP Config Sovereignty (Constitutional Rule #0) ------------------------
-      # Filesystem MCP args locked to repo root; no out-of-repo path fragments.
-      # Bypass: MCP_CONFIG_SOVEREIGNTY_BYPASS=1
-      - id: mcp-config-sovereignty
-        name: "T11: MCP Config Sovereignty (Rule #0)"
-        entry: py ops_scripts/ci/check_mcp_config_sovereignty.py
-        language: system
-        pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json)$
-        always_run: false
-        require_serial: true
+      # -- T6e2c / T11 REMOVED (cursor-decommission W7) --------------------------------
+      # mcp-editor-parity and mcp-config-sovereignty depended on deprecated editor
+      # mirrors and a filesystem MCP entry that root .mcp.json intentionally omits.
 
       # -- T6d3: AGENTS.md Autogen Block Integrity -------------------------------------
       # Validates every <!-- MARKER:START/END --> autogen block in AGENTS.md is
       # byte-identical to the SSOT generator output. Currently covers:
-      #   - MCP-QUICK-REFERENCE (mcp_config.json)
+      #   - MCP-QUICK-REFERENCE (.mcp.json)
       #   - NOTION-MAP          (config/notion_databases.yaml)
       # Fix drift: `python .claude/governance/scripts/sync_mcp_config.py`
       # RENAME 2026-05-05: was labelled T6d (collision with author-gate-ledger-schema).
@@ -344,7 +318,7 @@ repos:
         entry: py ops_scripts/ci/check_agents_md_sync.py
         language: system
         pass_filenames: false
-        files: ^(\.cursor/mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.claude/governance/scripts/sync_mcp_config\.py|\.claude/governance/scripts/sync_mcp_config\.py)$
+        files: ^(\.mcp\.json|\docs/archive/windsurf/legacy-tree/mcp_config\.json|AGENTS\.md|config/notion_databases\.yaml|\.claude/governance/scripts/sync_mcp_config\.py|\.claude/governance/scripts/sync_mcp_config\.py)$
         always_run: false
         require_serial: true
 
@@ -507,7 +481,7 @@ repos:
       # 2026-04-23 shows 0 violations (verified: `python
       # ops_scripts/ci/check_terminal_cleanup.py --verbose` → "scanned 3966
       # files, no violations"). The server-side mirror
-      # `.github/workflows/subprocess-timeout-gate.yml` runs the full-repo
+      # `contract-gates.yml` runs the full-repo
       # scan on every PR to close the `--no-verify` bypass.
       - id: terminal-cleanup
         name: "T7h: Terminal/Subprocess Cleanup (§11 + §14)"

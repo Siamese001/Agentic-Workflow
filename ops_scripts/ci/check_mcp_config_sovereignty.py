@@ -9,7 +9,7 @@ repo root only:
 - No forbidden out-of-repo path fragments in any server string field
 - ``disabled: true`` is allowed (shadow-disable policy; scope is still structural)
 
-Profile: ``.cursor/mcp.json`` (Cursor SSOT).
+Profile: root ``.mcp.json`` (Claude Code SSOT).
 
 Bypass: ``MCP_CONFIG_SOVEREIGNTY_BYPASS=1``
 Artifact: ``artifacts/ci/mcp_config_sovereignty.json``
