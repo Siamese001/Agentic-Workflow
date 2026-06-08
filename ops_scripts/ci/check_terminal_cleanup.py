@@ -22,6 +22,8 @@ Exit codes:
 
 Usage:
     python ops_scripts/ci/check_terminal_cleanup.py [--verbose] [--staged] [file ...]
+    python ops_scripts/ci/check_terminal_cleanup.py --changed-files-only --base-ref main
+    python ops_scripts/ci/check_terminal_cleanup.py --ratchet-baseline docs/reports/ci/terminal_cleanup_backlog.json
 
 Guardian exemption:
     # guardian: allow-popen-leak -- <specific justification>
@@ -100,6 +102,13 @@ class Violation:
         except ValueError:
             rel = self.path
         return f"{rel}:{self.lineno}: {self.message}"
+
+    def baseline_key(self) -> str:
+        try:
+            rel = self.path.relative_to(_ROOT).as_posix()
+        except ValueError:
+            rel = self.path.as_posix()
+        return f"{rel}::{self.message}"
 
 
 def _should_skip(path: Path) -> bool:
@@ -291,6 +300,62 @@ def collect_staged_files() -> list[Path]:
     return files
 
 
+def collect_changed_files(base_ref: str) -> list[Path]:
+    """Collect changed Python files relative to a base ref for PR ratchets."""
+    candidates = [
+        f"{base_ref}...HEAD",
+        f"origin/{base_ref}...HEAD",
+        "HEAD~1...HEAD",
+    ]
+    names: list[str] = []
+    for revspec in candidates:
+        try:
+            result = subprocess.run(
+                ["git", "diff", "--name-only", "--diff-filter=ACMR", revspec],
+                cwd=_ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=30,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+        if result.returncode == 0 and result.stdout.strip():
+            names = result.stdout.splitlines()
+            break
+
+    files: list[Path] = []
+    for line in names:
+        line = line.strip()
+        if not line.endswith(".py"):
+            continue
+        path = _ROOT / line
+        if path.is_file() and not _should_skip(path):
+            files.append(path)
+    return files
+
+
+def _load_baseline_keys(path: Path) -> set[str]:
+    """Load known violation keys from the checked-in backlog JSON."""
+    try:
+        import json
+
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return set()
+
+    entries = raw.get("violations", []) if isinstance(raw, dict) else raw
+    keys: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        rel_path = str(entry.get("path", "")).replace("\\", "/")
+        message = str(entry.get("message", ""))
+        if rel_path and message:
+            keys.add(f"{rel_path}::{message}")
+    return keys
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Static check: terminal/subprocess cleanup (Constitutional §11)"
@@ -301,11 +366,33 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Only scan files staged for commit (for pre-commit hook)",
     )
+    parser.add_argument(
+        "--changed-files-only",
+        action="store_true",
+        help="Only scan Python files changed relative to --base-ref (for PR CI)",
+    )
+    parser.add_argument(
+        "--fail-on-new-only",
+        action="store_true",
+        help="Alias for --changed-files-only; preserves old debt while blocking new changed-file debt",
+    )
+    parser.add_argument(
+        "--base-ref",
+        default="main",
+        help="Base branch/ref for --changed-files-only and --fail-on-new-only",
+    )
+    parser.add_argument(
+        "--ratchet-baseline",
+        type=Path,
+        help="Scan the repo but fail only for violations absent from this backlog JSON",
+    )
     parser.add_argument("files", nargs="*", type=Path)
     args = parser.parse_args(argv)
 
     if args.files:
         paths = [p for p in args.files if p.is_file()]
+    elif args.changed_files_only or args.fail_on_new_only:
+        paths = collect_changed_files(args.base_ref)
     elif args.staged:
         paths = collect_staged_files()
     else:
@@ -319,6 +406,21 @@ def main(argv: list[str] | None = None) -> int:
     all_violations: list[Violation] = []
     for path in paths:
         all_violations.extend(check_file(path))
+
+    if args.ratchet_baseline:
+        baseline_path = args.ratchet_baseline
+        if not baseline_path.is_absolute():
+            baseline_path = _ROOT / baseline_path
+        baseline_keys = _load_baseline_keys(baseline_path)
+        new_violations = [v for v in all_violations if v.baseline_key() not in baseline_keys]
+        if not new_violations:
+            if args.verbose:
+                print(
+                    f"[check_terminal_cleanup] OK: {len(all_violations)} known "
+                    f"violation(s), no new violations vs {baseline_path.relative_to(_ROOT)}"
+                )
+            return 0
+        all_violations = new_violations
 
     if all_violations:
         print(

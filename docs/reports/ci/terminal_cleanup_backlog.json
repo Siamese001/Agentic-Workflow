@@ -1,0 +1,233 @@
+{
+  "generated_from": "python ops_scripts/ci/check_terminal_cleanup.py",
+  "captured_on": "2026-06-08",
+  "violation_count": 43,
+  "file_count": 32,
+  "policy": "Known debt is tracked here; PR CI uses --fail-on-new-only so changed files cannot introduce terminal cleanup debt.",
+  "triage_order": [
+    "agentic_core",
+    "apps_rg",
+    "ops_scripts",
+    "tools/debug",
+    "tools/demos",
+    "tools/notion",
+    "tools/_oneoff"
+  ],
+  "violations": [
+    {
+      "path": "agentic_core/L2_execution/utils/safe_subprocess.py",
+      "line": 265,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "agentic_core/L2_execution/utils/safe_subprocess.py",
+      "line": 361,
+      "message": "subprocess.Popen without .wait/.terminate/.kill/.communicate or `with` context \u2014 will leak process on error"
+    },
+    {
+      "path": "agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py",
+      "line": 292,
+      "message": "subprocess.Popen without .wait/.terminate/.kill/.communicate or `with` context \u2014 will leak process on error"
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/GitHygieneAgent.py",
+      "line": 101,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "agentic_core/L5_safety/utils/subprocess_security_util.py",
+      "line": 387,
+      "message": "subprocess.Popen without .wait/.terminate/.kill/.communicate or `with` context \u2014 will leak process on error"
+    },
+    {
+      "path": "apps_rg/fact_inventory/run_materialize_augmented_skills_graph_sqlite.py",
+      "line": 27,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "apps_rg/fact_inventory/run_w14b_taxonomy_track_weight_wiring.py",
+      "line": 48,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
+      "line": 874,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
+      "line": 881,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "apps_rg/runtime/windows_sac_delegate.py",
+      "line": 92,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/collect_blocker_rerun_wave.py",
+      "line": 106,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/collect_live_qwen_section_wave.py",
+      "line": 164,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/collect_live_qwen_section_wave.py",
+      "line": 290,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/collect_live_qwen_section_wave.py",
+      "line": 142,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/run_contract_harness_fast.py",
+      "line": 75,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/run_contract_harness_live.py",
+      "line": 52,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/apps_rg/run_live_section_authority_proof.py",
+      "line": 72,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/check_judge_panel_harness_boundary.py",
+      "line": 17,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/check_judge_panel_harness_boundary.py",
+      "line": 22,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/check_no_cursor_refs.py",
+      "line": 59,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/check_prompt_assembly_ssot.py",
+      "line": 32,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/check_prompt_assembly_ssot.py",
+      "line": 68,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/check_section_x2_x1d_drift.py",
+      "line": 54,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/prove_apps_rg_c0_runtime.py",
+      "line": 59,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/prove_apps_rg_c0_runtime.py",
+      "line": 135,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/prove_apps_rg_native_core_e2e.py",
+      "line": 62,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/verify_l5_cross_child_consistency_validator.py",
+      "line": 23,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/verify_l5_no_write_validator.py",
+      "line": 23,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "ops_scripts/ci/verify_uwg_sole_admission_validator.py",
+      "line": 24,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/adg/_seed_wiring_ratchets.py",
+      "line": 55,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/analysis/_audit_check_p0_overlap2.py",
+      "line": 33,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/debug/_adg_verify_archival.py",
+      "line": 25,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/debug/_adg_verify_archival.py",
+      "line": 45,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/debug/_adg_verify_archival.py",
+      "line": 35,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/debug/_adg_verify_archival2.py",
+      "line": 20,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/debug/_adg_verify_archival2.py",
+      "line": 38,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/debug/_adg_verify_archival2.py",
+      "line": 29,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/debug/_wave_c3_move.py",
+      "line": 17,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/debug/_wave_d_move.py",
+      "line": 16,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/demos/otel_distributed_tracing_proof.py",
+      "line": 182,
+      "message": "subprocess.Popen without .wait/.terminate/.kill/.communicate or `with` context \u2014 will leak process on error"
+    },
+    {
+      "path": "tools/notion/patch_cursor_governance_two_tier_completed.py",
+      "line": 133,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/notion/plan_notion_sync_apps_rg_spine_only_unification.py",
+      "line": 120,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    },
+    {
+      "path": "tools/_oneoff/gen_filter_repo_p1_paths.py",
+      "line": 14,
+      "message": "subprocess.run without timeout= kwarg \u2014 unbounded runtime (constitutional \u00a714)"
+    }
+  ]
+}

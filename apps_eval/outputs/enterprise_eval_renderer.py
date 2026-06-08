@@ -37,12 +37,12 @@ def write_evaluation_markdown(result: EnterpriseEvalResult, path: Path) -> None:
     lines.append("## Executive Summary")
     lines.append("")
     eval_results = result.evaluation_results
+    gates_icon = "\u2705" if result.gate_result.get("gates_passed") else "\u274c"
+    validation = "\u2705 PASSED" if result.validation_result.get("passed") else "\u26a0\ufe0f REVIEW"
     lines.append(f"- **Overall Score:** {eval_results.get('overall_score', 0):.0%}")
     lines.append(f"- **Agents Executed:** {eval_results.get('agents_executed', 0)}")
-    lines.append(f"- **Gates Passed:** {'\u2705' if result.gate_result.get('gates_passed') else '\u274c'}")
-    lines.append(
-        f"- **Validation:** {'\u2705 PASSED' if result.validation_result.get('passed') else '\u26a0\ufe0f REVIEW'}"
-    )
+    lines.append(f"- **Gates Passed:** {gates_icon}")
+    lines.append(f"- **Validation:** {validation}")
     lines.append("")
 
     # Test plan summary
