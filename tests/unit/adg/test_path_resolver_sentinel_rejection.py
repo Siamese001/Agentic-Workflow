@@ -39,7 +39,9 @@ def test_sentinel_file_rejected_by_timestamp_validation(temp_adg_dir: Path) -> N
 
     # Set ADG_DIR to temp directory
     original_adg_dir = os.environ.get("ADG_DIR")
+    original_allow_external = os.environ.get("ADG_ALLOW_EXTERNAL_DIR")
     os.environ["ADG_DIR"] = str(temp_adg_dir)
+    os.environ["ADG_ALLOW_EXTERNAL_DIR"] = "1"
 
     try:
         # The sentinel should be rejected because 99999999 doesn't match %m%d%Y_%H%M
@@ -53,6 +55,10 @@ def test_sentinel_file_rejected_by_timestamp_validation(temp_adg_dir: Path) -> N
             os.environ.pop("ADG_DIR", None)
         else:
             os.environ["ADG_DIR"] = original_adg_dir
+        if original_allow_external is None:
+            os.environ.pop("ADG_ALLOW_EXTERNAL_DIR", None)
+        else:
+            os.environ["ADG_ALLOW_EXTERNAL_DIR"] = original_allow_external
 
 
 def test_sentinel_only_directory_returns_none(temp_adg_dir: Path) -> None:
@@ -66,7 +72,9 @@ def test_sentinel_only_directory_returns_none(temp_adg_dir: Path) -> None:
     sentinel2.write_bytes(b"sentinel 2")
 
     original_adg_dir = os.environ.get("ADG_DIR")
+    original_allow_external = os.environ.get("ADG_ALLOW_EXTERNAL_DIR")
     os.environ["ADG_DIR"] = str(temp_adg_dir)
+    os.environ["ADG_ALLOW_EXTERNAL_DIR"] = "1"
 
     try:
         result = latest_sqlite()
@@ -77,6 +85,10 @@ def test_sentinel_only_directory_returns_none(temp_adg_dir: Path) -> None:
             os.environ.pop("ADG_DIR", None)
         else:
             os.environ["ADG_DIR"] = original_adg_dir
+        if original_allow_external is None:
+            os.environ.pop("ADG_ALLOW_EXTERNAL_DIR", None)
+        else:
+            os.environ["ADG_ALLOW_EXTERNAL_DIR"] = original_allow_external
 
 
 def test_multiple_valid_files_returns_latest_by_mtime(temp_adg_dir: Path) -> None:
@@ -96,7 +108,9 @@ def test_multiple_valid_files_returns_latest_by_mtime(temp_adg_dir: Path) -> Non
     os.utime(file2, (time.time(), time.time()))
 
     original_adg_dir = os.environ.get("ADG_DIR")
+    original_allow_external = os.environ.get("ADG_ALLOW_EXTERNAL_DIR")
     os.environ["ADG_DIR"] = str(temp_adg_dir)
+    os.environ["ADG_ALLOW_EXTERNAL_DIR"] = "1"
 
     try:
         result = latest_sqlite()
@@ -108,6 +122,10 @@ def test_multiple_valid_files_returns_latest_by_mtime(temp_adg_dir: Path) -> Non
             os.environ.pop("ADG_DIR", None)
         else:
             os.environ["ADG_DIR"] = original_adg_dir
+        if original_allow_external is None:
+            os.environ.pop("ADG_ALLOW_EXTERNAL_DIR", None)
+        else:
+            os.environ["ADG_ALLOW_EXTERNAL_DIR"] = original_allow_external
 
 
 def test_require_nodes_table_skips_files_without_nodes(temp_adg_dir: Path) -> None:
@@ -143,7 +161,9 @@ def test_require_nodes_table_skips_files_without_nodes(temp_adg_dir: Path) -> No
     os.utime(valid_file, (time.time(), time.time()))
 
     original_adg_dir = os.environ.get("ADG_DIR")
+    original_allow_external = os.environ.get("ADG_ALLOW_EXTERNAL_DIR")
     os.environ["ADG_DIR"] = str(temp_adg_dir)
+    os.environ["ADG_ALLOW_EXTERNAL_DIR"] = "1"
 
     try:
         # Without require_nodes_table, should return the newest by mtime
@@ -160,6 +180,10 @@ def test_require_nodes_table_skips_files_without_nodes(temp_adg_dir: Path) -> No
             os.environ.pop("ADG_DIR", None)
         else:
             os.environ["ADG_DIR"] = original_adg_dir
+        if original_allow_external is None:
+            os.environ.pop("ADG_ALLOW_EXTERNAL_DIR", None)
+        else:
+            os.environ["ADG_ALLOW_EXTERNAL_DIR"] = original_allow_external
         # Ensure connections are closed before cleanup
         gc.collect()
 
@@ -169,7 +193,9 @@ def test_empty_directory_returns_none(temp_adg_dir: Path) -> None:
     from tools.adg.shared_modules.path_resolver import latest_sqlite
 
     original_adg_dir = os.environ.get("ADG_DIR")
+    original_allow_external = os.environ.get("ADG_ALLOW_EXTERNAL_DIR")
     os.environ["ADG_DIR"] = str(temp_adg_dir)
+    os.environ["ADG_ALLOW_EXTERNAL_DIR"] = "1"
 
     try:
         result = latest_sqlite()
@@ -179,3 +205,45 @@ def test_empty_directory_returns_none(temp_adg_dir: Path) -> None:
             os.environ.pop("ADG_DIR", None)
         else:
             os.environ["ADG_DIR"] = original_adg_dir
+        if original_allow_external is None:
+            os.environ.pop("ADG_ALLOW_EXTERNAL_DIR", None)
+        else:
+            os.environ["ADG_ALLOW_EXTERNAL_DIR"] = original_allow_external
+
+
+def test_out_of_repo_adg_dir_falls_back_to_repo_root(
+    temp_adg_dir: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A stale ADG_DIR from another checkout must not silently cross repos."""
+    from tools.adg.shared_modules.path_resolver import get_adg_dir
+
+    repo_root = temp_adg_dir / "repo"
+    external = temp_adg_dir / "other" / "artifacts" / "adg"
+    repo_root.mkdir()
+    external.mkdir(parents=True)
+
+    monkeypatch.setenv("ADG_REPO_ROOT", str(repo_root))
+    monkeypatch.setenv("ADG_DIR", str(external))
+    monkeypatch.delenv("ADG_ALLOW_EXTERNAL_DIR", raising=False)
+
+    assert get_adg_dir() == repo_root / "artifacts" / "adg"
+
+
+def test_external_adg_dir_escape_hatch(
+    temp_adg_dir: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Operators can still opt into an external ADG_DIR explicitly."""
+    from tools.adg.shared_modules.path_resolver import get_adg_dir
+
+    repo_root = temp_adg_dir / "repo"
+    external = temp_adg_dir / "other" / "artifacts" / "adg"
+    repo_root.mkdir()
+    external.mkdir(parents=True)
+
+    monkeypatch.setenv("ADG_REPO_ROOT", str(repo_root))
+    monkeypatch.setenv("ADG_DIR", str(external))
+    monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
+
+    assert get_adg_dir() == external.resolve()

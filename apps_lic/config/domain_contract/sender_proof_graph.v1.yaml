@@ -1,0 +1,76 @@
+schema_version: apps_lic.sender_proof_graph.v1
+wave: W5
+authority: C0_3_PROOF_GRAPH
+purpose: Select approved sender proof points with graph relevance before PA/L2 generation.
+
+inputs:
+  required:
+    - standing_sender_corpus
+    - recipient_class_derivation
+    - message_requirement_gate_result
+    - campaign_objective
+  supporting:
+    - company_context
+    - desired_next_step
+    - apps_lic_company_facts
+    - apps_lic_jd_facts
+    - apps_lic_company_trigger_facts
+    - apps_lic_role_ownership_facts
+
+standing_corpus:
+  namespace: apps_lic_sender_facts
+  graph_links_required: true
+  approved_proof_points_min: 1
+  approved_proof_points_max: 3
+  unsupported_claim_policy: block
+
+permission_decisions:
+  allowed_values:
+    - allow
+    - omit
+    - escalate
+    - block
+  block_reasons:
+    - claim_permission_not_allow
+    - unsupported_sender_claim
+    - claim_not_in_c03_packet
+    - recipient_class_not_derived
+    - message_requirements_not_passed
+    - sender_corpus_readiness_error
+  omit_reasons:
+    - not_allowed_for_message_scope
+    - lower_relevance_than_selected
+
+relevance_scoring:
+  factors:
+    - claim_strength
+    - recipient_class
+    - message_type
+    - skill_tag_matches
+    - graph_link_matches
+    - company_context
+    - jd_role_family
+    - campaign_objective
+    - desired_next_step
+  deterministic: true
+  provider_free: true
+
+pa_envelope:
+  schema_version: apps_lic.pa_sender_proof_envelope.v1
+  required_fields:
+    - proof_packet_id
+    - allowed_claim_ids
+    - approved_sender_proof_points
+    - source_lineage
+    - graph_links
+    - claim_permission_map_hash
+    - omitted_claims
+    - blocked_claims
+    - instruction_data_boundary_receipt
+
+acceptance:
+  - PA receives one to three approved sender proof points when proof is required and evidence is ready.
+  - Unsupported or scope-disallowed sender claims are omitted or blocked before generation.
+  - Any L2 claim not present in the C0.3 proof packet is detected by X2-style validation.
+  - C0.3 cannot compensate for missing recipient_class or failed message requirements.
+  - C0.3 is read-only and provider-free.

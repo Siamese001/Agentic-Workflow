@@ -1,0 +1,166 @@
+schema_version: apps_lic.validation_exit.v1
+wave: W7
+authority: X2_X1D_EXIT
+purpose: Make apps_lic validation authoritative, risk-scaled, and auditable.
+
+governance:
+  provider_calls_in_w7_scaffold: false
+  durable_writes_allowed: false
+  auto_send_allowed: false
+  x1d_runs_only_after_x2_pass: true
+  x1d_can_override_x2: false
+  x1d_can_override_c0_evidence: false
+  x1d_can_override_no_send: false
+  exit_is_final_clearance_authority: true
+
+exit:
+  allowed_dispositions:
+    - clear_draft
+    - review_required
+    - blocked
+    - abstain
+  default_disposition: blocked
+  proof_bundle_required_fields:
+    - request_id
+    - candidate_id
+    - disposition
+    - x2_gates
+    - x1d_judges
+    - no_send_receipt
+    - proof_packet_id
+    - prompt_contract_id
+
+x2_gates:
+  universal:
+    - schema_gate
+    - no_send_gate
+    - recipient_class_present_and_derived_gate
+    - prompt_injection_neutralization_gate
+    - whole_message_shape_gate
+    - message_type_recipient_length_gate
+    - unsupported_claim_gate
+  conditional:
+    - candidate_selection_gate
+    - jd_required_gate
+    - position_name_required_gate
+    - requisition_number_required_gate
+    - application_status_gate
+    - referral_context_gate
+    - relationship_evidence_gate
+    - prior_thread_gate
+    - company_trigger_gate
+    - role_ownership_fit_gate
+
+x1d:
+  default_model: Claude Sonnet 4.6
+  default_provider: claude
+  judge_temperature: 0.10
+  depth_labels:
+    none: 0
+    one: 1
+    two: 2
+  independence_policy:
+    low_risk: optional
+    normal: required_when_x1d_depth_gt_zero
+    high_risk: required_for_every_judge
+    generator_provider: vllm
+    generator_model: Qwen/Qwen2.5-32B-Instruct-AWQ
+  availability_policy:
+    missing_or_unavailable_required_judge: blocked
+    non_live_required_judge: blocked
+    non_independent_required_judge: blocked
+    failed_required_judge: review_required
+  live_call_policy:
+    required_for_clearance: true
+    required_transport_provenance: live_claude_api_call
+    required_transport_provider: anthropic_messages_api
+    required_raw_response_digest: true
+    mock_or_fake_transport_allowed: false
+  preflight_policy:
+    required_transport_model_id: claude-sonnet-4-6
+    modes:
+      - fake
+      - live
+      - unavailable-expected
+    fake_mode_can_clear_exit: false
+    unavailable_expected_mode_can_clear_exit: false
+    live_mode_requires:
+      - ANTHROPIC_API_KEY
+      - anthropic_sdk
+      - claude-sonnet-4-6
+      - minimal_rubric_json_parse
+      - raw_response_digest
+  rubric_profiles:
+    linkedin_tone_channel_quality_x1d:
+      role: LinkedIn tone, channel fit, readability, and non-generic phrasing.
+      threshold: 0.82
+    linkedin_tone_non_generic_x1d:
+      role: Lightweight LinkedIn tone, non-generic wording, and recruiter-channel fit.
+      threshold: 0.84
+    evidence_claim_support_x1d:
+      role: Evidence support, claim grounding, and specificity discipline.
+      threshold: 0.86
+    ceo_attention_originality_x1d:
+      role: CEO/C-level attention value, originality, and strategic sharpness.
+      threshold: 0.88
+    ceo_evidence_overclaim_risk_x1d:
+      role: CEO/C-level evidence support, overclaim risk, and no-fabrication review.
+      threshold: 0.90
+
+risk_matrix:
+  recruiter_general_intro:
+    sc_level: SC-1
+    llm_judge_depth: none
+    clearance: X2-only can clear when all gates pass.
+  recruiter_role_specific:
+    sc_level: SC-2
+    llm_judge_depth: one
+    required_judges:
+      - evidence_claim_support_x1d
+    conditional_judges:
+      provider_backed_or_similarity_risk:
+        - linkedin_tone_non_generic_x1d
+    clearance: Requires candidate selection and one independent evidence judge pass; adds tone/non-generic judge for provider-backed or similarity-risk paths.
+  senior_ta_role_specific:
+    sc_level: SC-2
+    llm_judge_depth: one
+    required_judges:
+      - evidence_claim_support_x1d
+    conditional_judges:
+      provider_backed_or_similarity_risk:
+        - linkedin_tone_non_generic_x1d
+    clearance: Requires JD fields and one independent evidence judge pass; adds tone/non-generic judge for provider-backed or similarity-risk paths.
+  hiring_manager_role_specific:
+    sc_level: SC-2
+    llm_judge_depth: two
+    required_judges:
+      - evidence_claim_support_x1d
+      - linkedin_tone_non_generic_x1d
+    clearance: Requires evidence support plus role-specific tone/non-generic judge passes.
+  executive_cto_vp_eng_trigger:
+    sc_level: SC-2_or_SC-3
+    llm_judge_depth: one_or_two
+    required_judges:
+      - linkedin_tone_channel_quality_x1d
+    conditional_judges:
+      jd_or_technical_proof:
+        - evidence_claim_support_x1d
+    clearance: Requires tone/channel judge; adds evidence support when JD or technical proof is used.
+  executive_or_c_level:
+    sc_level: SC-3
+    llm_judge_depth: two
+    required_judges:
+      - ceo_attention_originality_x1d
+      - ceo_evidence_overclaim_risk_x1d
+    clearance: CEO/C_LEVEL requires two independent LLM judge passes for clear_draft.
+
+acceptance:
+  - Recruiter general_intro can clear with X2-only if low risk.
+  - CEO/C-level requires two LLM judge passes for clear_draft.
+  - Hiring-manager role-specific messages require evidence and tone/non-generic X1D.
+  - Recruiter and Senior TA role-specific messages require evidence X1D by default and add tone/non-generic X1D for provider-backed or similarity-risk paths.
+  - Executive/CTO/VP_ENG messages require tone/channel X1D and add evidence X1D when JD or technical proof is used.
+  - Required X1D judges must come from a live Anthropic Claude transport receipt; fake/mock/manual artifacts block.
+  - X1D cannot run if X2 failed.
+  - X1D cannot override C0 evidence, X2 hard gates, no-send, or Exit.
+  - Proof bundle reports each gate, judge, model, provider, threshold, pass/fail, and clearance.

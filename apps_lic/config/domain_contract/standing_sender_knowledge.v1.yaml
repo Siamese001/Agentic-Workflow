@@ -1,0 +1,246 @@
+schema_version: apps_lic.standing_sender_knowledge.v1
+namespace: apps_lic_sender_facts
+collection:
+  name: apps_lic_sender_facts
+  kind: standing_sender_fact_namespace
+  backend: config_seed_pending_governed_vector_ingestion
+  write_policy: no_inference_writes
+  freshness_class: standing_sender_profile
+  source_corpus: apps_shared/data/master_resume.json
+  status: seeded_static_corpus
+
+sender_profile:
+  sender_id: amit_ayer
+  name: Amit Ayer
+  current_title: SVP Engineering, Agentic AI Platforms
+  headline: SVP Engineering | Agentic AI Platforms | AI Runtime Governance | Distributed AI Infrastructure
+  source_ids:
+    - apps_shared/data/master_resume.json:owner
+    - apps_shared/data/master_resume.json:executive_summary
+
+writing_preferences:
+  channel_default: linkedin
+  voice:
+    - concise
+    - specific
+    - thoughtful
+    - executive_native_when_needed
+  avoid:
+    - generic_bs
+    - pasted_job_descriptions
+    - excessive_formality
+    - multi_ask_endings
+    - unsupported_metrics
+  preferred_ask_style: one_low_friction_next_step
+
+no_send_policy:
+  auto_send_allowed: false
+  allowed_send_modes:
+    - draft_only
+    - review_required
+  forbidden_send_modes:
+    - send
+    - send_now
+    - auto_send
+    - post
+    - auto_post
+
+claim_permission_map:
+  map_id: apps_lic_sender_claim_permission_map.v1
+  default_policy: block
+  unsupported_claim_policy: block
+  permissions:
+    sp_agentic_platform: allow
+    sp_runtime_reliability: allow
+    sp_platform_commercialization: allow
+    sp_cloud_ai_transformation: allow
+    sp_quant_governance_foundation: allow
+    sp_unapproved_placeholder: block
+
+resume_project_facts:
+  - fact_id: fact_agentic_platform
+    fact_text: Designed and operationalized a governed agentic AI platform for regulated enterprise workflows.
+    source_ids:
+      - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[0]
+  - fact_id: fact_runtime_reliability
+    fact_text: Strengthened retrieval quality, evaluation gates, telemetry, rollback controls, and AI CI/CD standards.
+    source_ids:
+      - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[2]
+  - fact_id: fact_platform_commercialization
+    fact_text: Productized agentic AI primitives into reusable platform services, generating IP-led revenue and expanding margins.
+    source_ids:
+      - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[5]
+  - fact_id: fact_cloud_ai_transformation
+    fact_text: Architected cloud-native AI and analytics platforms for regulated financial environments.
+    source_ids:
+      - apps_shared/data/master_resume.json:professional_experience[1].bullet_pool[0]
+  - fact_id: fact_quant_governance
+    fact_text: Fellow of the Society of Actuaries with advanced training in causal inference, statistics, and distributed systems engineering.
+    source_ids:
+      - apps_shared/data/master_resume.json:executive_summary
+
+graph_skill_links:
+  - proof_id: sp_agentic_platform
+    links:
+      - relation: PROVES_SKILL
+        target: skill:agentic_ai_platforms
+      - relation: SUPPORTS_USE_CASE
+        target: use_case:regulated_enterprise_ai
+      - relation: EVIDENCED_BY
+        target: fact:fact_agentic_platform
+  - proof_id: sp_runtime_reliability
+    links:
+      - relation: PROVES_SKILL
+        target: skill:ai_runtime_governance
+      - relation: SUPPORTS_USE_CASE
+        target: use_case:production_reliability
+      - relation: EVIDENCED_BY
+        target: fact:fact_runtime_reliability
+  - proof_id: sp_platform_commercialization
+    links:
+      - relation: PROVES_SKILL
+        target: skill:platform_productization
+      - relation: SUPPORTS_USE_CASE
+        target: use_case:executive_value_creation
+      - relation: EVIDENCED_BY
+        target: fact:fact_platform_commercialization
+  - proof_id: sp_cloud_ai_transformation
+    links:
+      - relation: PROVES_SKILL
+        target: skill:cloud_ai_architecture
+      - relation: SUPPORTS_USE_CASE
+        target: use_case:regulated_data_platforms
+      - relation: EVIDENCED_BY
+        target: fact:fact_cloud_ai_transformation
+  - proof_id: sp_quant_governance_foundation
+    links:
+      - relation: PROVES_SKILL
+        target: skill:quantitative_governance
+      - relation: SUPPORTS_USE_CASE
+        target: use_case:risk_aware_ai_systems
+      - relation: EVIDENCED_BY
+        target: fact:fact_quant_governance
+
+approved_sender_proof_points:
+  - proof_id: sp_agentic_platform
+    permission: allow
+    claim_strength: strong
+    claim_text: Designed and operationalized a governed agentic AI platform for regulated enterprise workflows.
+    allowed_message_types:
+      - general_intro
+      - role_specific
+      - trigger_based_insight
+      - referral_ask
+      - follow_up
+    allowed_recipient_classes:
+      - RECRUITER
+      - SENIOR_TA
+      - HIRING_MANAGER
+      - EXECUTIVE
+      - C_LEVEL
+      - CEO
+      - CTO
+      - VP_ENG
+    skill_tags:
+      - agentic-platform
+      - governance
+      - regulated
+      - graphrag
+    source_ids:
+      - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[0]
+  - proof_id: sp_runtime_reliability
+    permission: allow
+    claim_strength: strong
+    claim_text: Strengthened enterprise retrieval quality, evaluation gates, telemetry, rollback controls, and AI CI/CD standards.
+    allowed_message_types:
+      - role_specific
+      - trigger_based_insight
+      - referral_ask
+      - follow_up
+    allowed_recipient_classes:
+      - HIRING_MANAGER
+      - EXECUTIVE
+      - C_LEVEL
+      - CEO
+      - CTO
+      - VP_ENG
+      - SENIOR_TA
+    skill_tags:
+      - reliability
+      - evaluation-gates
+      - telemetry
+      - ai-cicd
+    source_ids:
+      - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[2]
+  - proof_id: sp_platform_commercialization
+    permission: allow
+    claim_strength: strong
+    claim_text: Productized agentic AI primitives into reusable platform services and scaled them into enterprise adoption.
+    allowed_message_types:
+      - general_intro
+      - trigger_based_insight
+      - referral_ask
+    allowed_recipient_classes:
+      - EXECUTIVE
+      - C_LEVEL
+      - CEO
+      - CTO
+      - VP_ENG
+      - SENIOR_TA
+    skill_tags:
+      - productization
+      - leadership
+      - platform-economics
+    source_ids:
+      - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[5]
+  - proof_id: sp_cloud_ai_transformation
+    permission: allow
+    claim_strength: medium
+    claim_text: Architected cloud-native AI and analytics platforms for regulated financial environments.
+    allowed_message_types:
+      - role_specific
+      - trigger_based_insight
+      - referral_ask
+    allowed_recipient_classes:
+      - HIRING_MANAGER
+      - EXECUTIVE
+      - C_LEVEL
+      - CEO
+      - CTO
+      - VP_ENG
+    skill_tags:
+      - cloud-native
+      - decision-systems
+      - regulated
+      - data-platform
+    source_ids:
+      - apps_shared/data/master_resume.json:professional_experience[1].bullet_pool[0]
+  - proof_id: sp_quant_governance_foundation
+    permission: allow
+    claim_strength: medium
+    claim_text: Brings actuarial and statistical training to risk-aware AI platform governance.
+    allowed_message_types:
+      - general_intro
+      - trigger_based_insight
+      - referral_ask
+    allowed_recipient_classes:
+      - EXECUTIVE
+      - C_LEVEL
+      - CEO
+      - CTO
+      - VP_ENG
+      - HIRING_MANAGER
+    skill_tags:
+      - quantitative-governance
+      - statistics
+      - risk
+    source_ids:
+      - apps_shared/data/master_resume.json:executive_summary
+  - proof_id: sp_unapproved_placeholder
+    permission: block
+    claim_strength: blocked
+    claim_text: Placeholder for claims not approved by the standing corpus.
+    allowed_message_types: []
+    allowed_recipient_classes: []
+    skill_tags: []
+    source_ids: []

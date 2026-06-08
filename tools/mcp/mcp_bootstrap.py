@@ -238,6 +238,23 @@ def guard_single_instance(
     deferred: list[int] = []
     logger = logging.getLogger("mcp_bootstrap")
 
+    def _looks_like_python_mcp_process(proc_name: str, cmdline: list[Any]) -> bool:
+        """Return True only for plausible Python MCP server processes.
+
+        Process command lines can contain arbitrary inline script text. A
+        parent shell running a probe may include the server module string in
+        that text even though it is not the MCP server. The guard is for Python
+        stdio MCP siblings, so do not terminate non-Python launchers.
+        """
+        name = Path(str(proc_name or "")).name.lower()
+        if name.startswith(("python", "py.")) or name in {"py", "py.exe"}:
+            return True
+        if cmdline:
+            part_name = Path(str(cmdline[0])).name.lower()
+            if part_name.startswith(("python", "py.")) or part_name in {"py", "py.exe"}:
+                return True
+        return False
+
     # Heartbeat-aware sibling check (2026-04-23 RCA hardening; F5.1 strict
     # authority: liveness verified against process table, not just file mtime).
     # `MCP_GUARD_FORCE_KILL=1` bypasses and restores the pre-hardening
@@ -269,6 +286,17 @@ def guard_single_instance(
                 if matched_marker is not None:
                     break
             if matched_marker is None:
+                continue
+
+            if not _looks_like_python_mcp_process(str(proc.info.get("name") or ""), cmdline):
+                logger.warning(
+                    "GUARD_SKIP_NON_PYTHON: pid=%d cmdline=%s "
+                    "(matched=%s marker=%s)",
+                    proc.info["pid"],
+                    " ".join(str(c) for c in cmdline)[:200],
+                    matched_marker,
+                    marker_display,
+                )
                 continue
 
             # If a fresh heartbeat is present AND force_kill is not set, defer

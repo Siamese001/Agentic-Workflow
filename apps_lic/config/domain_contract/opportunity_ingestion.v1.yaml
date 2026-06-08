@@ -1,0 +1,146 @@
+schema_version: apps_lic.opportunity_ingestion.v1
+wave: W2
+purpose: Governed on-demand ingestion for contact, company, JD, trigger, role ownership, relationship, referral, and prior-thread facts.
+
+governance:
+  inference_may_write: false
+  uncontrolled_web_search_allowed: false
+  write_authority_required: governed_opportunity_ingestion
+  default_write_enabled: false
+  idempotency_required: true
+  source_lineage_required: true
+  freshness_required: true
+  on_demand_ingestion_outside_inference: true
+
+profile_evidence_input:
+  required_fields:
+    - profile_id
+    - name
+    - title_headline_seed
+    - linkedin_public_url
+    - company
+    - expected_opportunity_scope
+  optional_fields:
+    - role_ownership_seed
+    - source_lineage
+    - confidence
+    - collected_at
+
+baseline_vector_collections:
+  standing_sender_corpus:
+    collection: apps_lic_sender_facts
+    purpose: Reusable Amit sender profile, approved proof points, graph skills, and claim policy.
+  aig_company_facts:
+    collection: apps_lic_company_facts
+    purpose: Reusable AIG company facts and company context for personalization.
+  aig_jd_facts:
+    collection: apps_lic_jd_facts
+    purpose: AIG JD facts including position name, requisition number, location, and role family.
+  per_contact_public_evidence_facts:
+    collection: apps_lic_contact_facts
+    purpose: Per-contact public profile snippets, title/headline seed, and source lineage.
+  role_ownership_facts:
+    collection: apps_lic_role_ownership_facts
+    purpose: Recruiting, TA leadership, hiring-owner, and executive ownership signals.
+
+readiness_statuses:
+  ready: C0_READY
+  missing: C0_OPPORTUNITY_INGESTION_REQUIRED
+  stale: C0_EVIDENCE_STALE
+  conflicted: C0_EVIDENCE_CONFLICTED
+  blocked: C0_EVIDENCE_BLOCKED
+
+namespaces:
+  contact:
+    collection: apps_lic_contact_facts
+    freshness_days: 90
+    required_fields:
+      - name
+      - title
+      - company
+  company:
+    collection: apps_lic_company_facts
+    freshness_days: 90
+    required_fields:
+      - company
+  jd:
+    collection: apps_lic_jd_facts
+    freshness_days: 45
+    required_fields:
+      - position_name
+      - requisition_number
+      - company
+      - description
+  company_trigger:
+    collection: apps_lic_company_trigger_facts
+    freshness_days: 30
+    required_fields:
+      - trigger_text
+      - source_id
+  role_ownership:
+    collection: apps_lic_role_ownership_facts
+    freshness_days: 90
+    required_fields:
+      - ownership_signal
+      - source_id
+  relationship:
+    collection: apps_lic_relationship_facts
+    freshness_days: 180
+    required_fields:
+      - relationship_context
+      - permission_scope
+  referral:
+    collection: apps_lic_referral_facts
+    freshness_days: 180
+    required_fields:
+      - referrer_name
+      - permission_scope
+  prior_thread:
+    collection: apps_lic_prior_thread_facts
+    freshness_days: 365
+    required_fields:
+      - thread_summary
+      - last_touch_date
+
+jd_normalization:
+  compatible_with_apps_rg_precedent: true
+  extended_fields:
+    - position_name
+    - job_title
+    - requisition_number
+    - company
+    - location
+    - role_family
+    - description
+    - jd_digest
+  accepted_aliases:
+    position_name:
+      - position_name
+      - job_title
+      - title
+      - role
+    requisition_number:
+      - requisition_number
+      - req_id
+      - requisition_id
+      - job_id
+      - job_number
+
+write_receipt:
+  required_fields:
+    - request_id
+    - trace_root
+    - idempotency_key
+    - write_authority
+    - namespace_counts
+    - source_snapshot_ids
+    - no_inference_write_receipt
+
+profile_readiness_receipt:
+  required_fields:
+    - profile_id
+    - status
+    - vector_collection_name
+    - source_count
+    - source_snapshot_ids
+    - ingestion_required_reason

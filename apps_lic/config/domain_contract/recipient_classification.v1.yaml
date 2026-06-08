@@ -1,0 +1,150 @@
+schema_version: apps_lic.recipient_classification.v1
+wave: W3
+authority: C0
+purpose: Derive mandatory recipient_class from public/contact evidence, not from U0 authority.
+
+u0_policy:
+  recipient_class_input: hint_only
+  may_seed:
+    - title
+    - headline
+    - company
+    - linkedin_url
+    - public_profile_url
+    - user_notes
+  may_not_authorize:
+    - derived_recipient_class
+    - confidence
+    - proof_claims
+
+canonical_classes:
+  - RECRUITER
+  - SENIOR_TA
+  - HIRING_MANAGER
+  - EXECUTIVE
+  - C_LEVEL
+  - CEO
+  - CTO
+  - VP_ENG
+  - REFERRAL_CONTACT
+  - UNKNOWN
+
+confidence_thresholds:
+  RECRUITER: 0.60
+  SENIOR_TA: 0.65
+  HIRING_MANAGER: 0.60
+  EXECUTIVE: 0.62
+  C_LEVEL: 0.66
+  CEO: 0.66
+  CTO: 0.66
+  VP_ENG: 0.66
+  REFERRAL_CONTACT: 0.60
+
+evidence_sources:
+  required_for_classification:
+    - apps_lic_contact_facts
+  supporting:
+    - apps_lic_role_ownership_facts
+    - apps_lic_company_facts
+    - apps_lic_relationship_facts
+    - apps_lic_referral_facts
+  supporting_only:
+    - apps_lic_jd_facts
+    - apps_lic_company_trigger_facts
+
+output_contract:
+  required_fields:
+    - derived_recipient_class
+    - recipient_class_confidence
+    - class_reason_codes
+    - source_snapshot_ids
+    - supporting_facts
+    - contradicted_facts
+    - contradiction_status
+    - hitl_required
+    - u0_hint_used_as_authority
+
+target_eligibility:
+  output_values:
+    - ELIGIBLE
+    - ELIGIBLE_WITH_ALTERNATE_MESSAGE_MODE
+    - NOT_TARGETABLE
+    - C0_EVIDENCE_REQUIRED
+  alternate_message_modes:
+    - general_intro_no_jd
+    - company_context_intro
+    - peer_networking_intro
+  peer_networking_intro_policy: explicitly_allowed_only
+  no_send_rules:
+    blocked_strict_jd_specific_draft_user_visible: false
+    alternate_general_intro_no_jd_must_omit_jd_reference: true
+    unknown_or_ic_profiles_cannot_be_forced_to_recruiter_hiring_manager_or_executive: true
+  required_fields:
+    - target_eligibility
+    - alternate_message_mode
+    - no_send_required
+    - user_visible_draft_allowed
+    - strict_jd_user_visible_draft_allowed
+    - reason_codes
+    - blocked_copy_terms
+
+fail_closed:
+  missing_contact_evidence:
+    status: C0_OPPORTUNITY_INGESTION_REQUIRED
+    derived_recipient_class: UNKNOWN
+    hitl_required: true
+  low_confidence:
+    status: RECIPIENT_CLASS_LOW_CONFIDENCE
+    derived_recipient_class: UNKNOWN
+    hitl_required: true
+  conflicted:
+    status: RECIPIENT_CLASS_CONFLICTED
+    derived_recipient_class: UNKNOWN
+    hitl_required: true
+
+signal_examples:
+  RECRUITER:
+    - recruiter
+    - technical recruiter
+    - sourcer
+    - talent acquisition specialist
+    - talent acquisition partner
+  SENIOR_TA:
+    - global head of talent acquisition
+    - director talent acquisition
+    - talent acquisition manager
+    - talent acquisition leader
+    - vp talent acquisition
+    - owns recruiting strategy
+    - leads executive hiring
+  HIRING_MANAGER:
+    - engineering manager
+    - director of engineering
+    - head of eDiscovery
+    - head of broker services
+    - hiring manager
+    - owns hiring for team
+  EXECUTIVE:
+    - svp
+    - evp
+    - president
+    - general manager
+    - managing director
+  C_LEVEL:
+    - chief data officer
+    - chief information officer
+    - chief marketing and communications officer
+    - chief operating officer
+  CEO:
+    - chief executive officer
+    - founder and ceo
+  CTO:
+    - chief technology officer
+    - cto
+  VP_ENG:
+    - vice president engineering
+    - vp engineering
+  REFERRAL_CONTACT:
+    - referrer
+    - mutual connection
+    - former colleague
