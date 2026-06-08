@@ -48,7 +48,7 @@ LAST_UPDATED: 2026-01-01
 > PLAN-WAVE-TOP and `after_file_edit` enforce consolidated wave summary at top.
 > Canonical wave columns: Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 
-> These tables are auto-updated by `post_cursor_agent_wave_lifecycle_capture.py` when
+> These tables are auto-updated by `post_agent_wave_lifecycle_capture.py` when
 > `WAVE_COMPLETE:` / `PHASE_COMPLETE:` / `PLAN_COMPLETE:` markers are emitted.
 > Status tokens: `✅ DONE` · `🔄 IN PROGRESS` · `🔲 TODO` · `❌ BLOCKED`
 > Test/scope columns are populated from the `note=` field on `WAVE_COMPLETE:` markers
@@ -241,7 +241,7 @@ PLAN_COMPLETE: plan=<plan_id> note="<final outcome>"
 
 > **Auto-maintained**: `WAVE_STATUS`, `WAVE_COMPLETE`, `PHASE_STATUS`, `PHASE_COMPLETE`,
 > wave table ✅/🔲/🔄 status cells, and DoD `- Status:` fields are updated automatically
-> by `post_cursor_agent_wave_lifecycle_capture.py`. Manual edits only needed if hook was
+> by `post_agent_wave_lifecycle_capture.py`. Manual edits only needed if hook was
 > bypassed (`WAVE_TABLE_UPDATE_BYPASS=1`).
 >
 > **note= format for auto-capture**: `note="+N tests, N files, scope=<one-word>"` — the

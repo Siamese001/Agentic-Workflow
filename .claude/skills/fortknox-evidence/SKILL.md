@@ -89,7 +89,7 @@ python -c "import json,pathlib; r=json.loads(pathlib.Path('artifacts/certificati
 | `ops_scripts/ci/check_fortknox_mutation_rejection.py` | All mutations rejected; clean bundle unchanged |
 | `ops_scripts/ci/check_fortknox_positive_control.py` | `RTC-REQ-001` remains `SIGNED_OFF` |
 | `.claude/governance/scripts/pre_write_fortknox_guard.py` | Blocks direct report edits (exit 2) |
-| `.claude/governance/scripts/post_cursor_agent_fortknox_integrity_audit.py` | Retroactive claim-without-compiler detection |
+| `.claude/governance/scripts/post_agent_fortknox_integrity_audit.py` | Retroactive claim-without-compiler detection |
 | `.github/workflows/fortknox-nightly.yml` | Nightly regression scan + issue filing |
 
 ## Bypass

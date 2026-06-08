@@ -18,7 +18,7 @@
 - `artifacts/certification/final_requirement_signoff_report.{json,sha256,merkle.json,signature.json}`
 - Any `certification/*.xlsx`
 
-## Forbidden prose claims (post_cursor_agent audit logs to violations file)
+## Forbidden prose claims (post_agent audit logs to violations file)
 
 Without a matching `compile_requirement_signoff.py` invocation in the same response: "rows are signed off", "trust level upgraded to X", "acceptance complete", "all requirements pass", "all_pass" or "linked_req_ids" outside a forbidden-pattern quote.
 
@@ -32,7 +32,7 @@ Without a matching `compile_requirement_signoff.py` invocation in the same respo
 | Bundle verifier | `scripts/verify_final_requirement_signoff_bundle.py` |
 | Mutation runner | `scripts/generate_mutation_rejection_report.py` |
 | Pre-write hook (exit 2) | `.claude/governance/scripts/pre_write_fortknox_guard.py` |
-| Post-response audit | `.claude/governance/scripts/post_cursor_agent_fortknox_integrity_audit.py` → `artifacts/cursor/fortknox_integrity_violations.jsonl` |
+| Post-response audit | `.claude/governance/scripts/post_agent_fortknox_integrity_audit.py` → `artifacts/governance/fortknox_integrity_violations.jsonl` |
 | CI gates | `ops_scripts/ci/check_fortknox_clean_bundle.py`, `check_fortknox_mutation_rejection.py`, `check_fortknox_positive_control.py` |
 | Nightly | `.github/workflows/fortknox-nightly.yml` |
 | Author-Gate trigger | `author-gate-decision-points.md` §1.11 (`certification_claim`) |

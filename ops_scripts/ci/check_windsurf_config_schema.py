@@ -266,7 +266,7 @@ def main() -> int:
             "\nWhy this matters: Windsurf's config parser silently rejects "
             "entries with unknown fields. The hook or MCP server goes dark "
             "with no error surfaced. See constitutional §26 and the "
-            "2026-04-23 post_cascade hook-chain failure RCA."
+            "2026-04-23 post-agent hook-chain failure RCA."
         )
         return 1
 

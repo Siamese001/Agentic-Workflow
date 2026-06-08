@@ -18,7 +18,7 @@ Every packet emitted by this skill:
 2. Carries a `context_fingerprint` matching the pending change (for gate correlation)
 3. Includes 3 didactic fields per option: `principle_at_stake`, `what_youd_miss`, `what_would_flip`
 4. Embeds precedent verdict from `refactor-decision-memory` skill
-5. Is captured by `post_cursor_agent_author_gate_capture.py` into the decision ledger
+5. Is captured by `post_agent_author_gate_capture.py` into the decision ledger
 
 ## When to Invoke
 
@@ -34,7 +34,7 @@ Invoke BEFORE `ask_user_question` whenever the decision matches any §AG-1 class
 
 Do NOT invoke for T0/T1 edits, pure lints, or formatting-only changes.
 
-> ⛔ **Pipeline Completion Invariant**: the emitted `AUTHOR_GATE_PACKET:` block **MUST** be followed by `ask_user_question` **in the same Claude Code response**. Emitting the packet and ending the response without `ask_user_question` is a critical violation. Enforcement: `post_cursor_agent_author_gate_pipeline_audit.py`. See plan `author-gate-ui-renderer-hardening-a7f3c2`.
+> ⛔ **Pipeline Completion Invariant**: the emitted `AUTHOR_GATE_PACKET:` block **MUST** be followed by `ask_user_question` **in the same Claude Code response**. Emitting the packet and ending the response without `ask_user_question` is a critical violation. Enforcement: `post_agent_author_gate_pipeline_audit.py`. See plan `author-gate-ui-renderer-hardening-a7f3c2`.
 
 ## Files
 
@@ -71,7 +71,7 @@ echo '{
 }' | python .claude/skills/author-gate-packet-builder/emit_packet.py
 ```
 
-Output (stdout): an `AUTHOR_GATE_PACKET:` block (JSON) that `post_cursor_agent_author_gate_capture.py` scans for. The legacy `HITL_PACKET:` alias is emitted alongside for back-compat with older scanners.
+Output (stdout): an `AUTHOR_GATE_PACKET:` block (JSON) that `post_agent_author_gate_capture.py` scans for. The legacy `HITL_PACKET:` alias is emitted alongside for back-compat with older scanners.
 
 ### Precedent-only lookup (without packet emit)
 
@@ -82,7 +82,7 @@ echo '{"decision_type": "refactor_scope", "normalized_intent": "..."}' | \
 
 ## Output Shape (AUTHOR_GATE_PACKET block)
 
-Emitted to stdout, fenced. Consumed by `post_cursor_agent_author_gate_capture.py`:
+Emitted to stdout, fenced. Consumed by `post_agent_author_gate_capture.py`:
 
 ```
 AUTHOR_GATE_PACKET: {

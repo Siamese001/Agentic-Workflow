@@ -50,4 +50,4 @@ Triggers: different top-level dir, layer (L0→L4), app (apps_qna→apps_rg), ta
 
 ## Enforcement
 
-`post_cursor_agent_grep_budget_audit.py` (text-search cap) · `post_cursor_agent_read_budget_audit.py` (file-read cap) · `post_cursor_agent_token_telemetry.py` (telemetry). `scope-containment` skill for detailed procedure. Constitutional §18, §28, §31. Siblings: `next-step-capture.md`, `deferred-scope-capture.md`, `global_rules.md`.
+`post_agent_grep_budget_audit.py` (text-search cap) · `post_agent_read_budget_audit.py` (file-read cap) · `post_agent_token_telemetry.py` (telemetry). `scope-containment` skill for detailed procedure. Constitutional §18, §28, §31. Siblings: `next-step-capture.md`, `deferred-scope-capture.md`, `global_rules.md`.

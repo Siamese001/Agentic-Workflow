@@ -40,7 +40,7 @@ These events fire writeback without a prompt:
 |---|---|
 | Full decision table + entity types + DB IDs | `.claude/skills/writeback-discipline/SKILL.md` + `AGENTS.md` Notion Workspace Map |
 | Memory MCP usage | `.claude/skills/memory-mcp/SKILL.md` + `memory-management.md` |
-| Auto-capture hook | `.claude/governance/scripts/post_cursor_agent_writeback_audit.py` |
+| Auto-capture hook | `.claude/governance/scripts/post_agent_writeback_audit.py` |
 | Stale-source sniff test | (this rule was SSOT — full text preserved in git history at HEAD~1) |
 | Bypass | `WRITEBACK_AUDIT_BYPASS=1` |
 

@@ -43,16 +43,16 @@ SCAN_ROOTS = (
     "tools",
 )
 ALLOW_PREFIXES = (
-    ".cursor/plans/_archive/",
-    ".cursor/scripts/_legacy_windsurf/",
-    ".cursor/windsurf_compat/",
+    ".claude/plans/_archive/",
     ".windsurf/",
     "docs/archive/windsurf/",
 )
 ALLOW_FILES = {
     "ops_scripts/ci/check_no_active_windsurf_changes.py",
     "ops_scripts/ci/check_windsurf_deletion_readiness.py",
+    "tools/migration/cursor_reference_map.py",
     "tools/migration/deprecate_windsurf_refs.py",
+    "tools/migration/sweep_cursor_surface.py",
 }
 LOCAL_WINDSURF_PATH_RE = re.compile(r"(?<![A-Za-z0-9_])\.windsurf(?=[$/\\\"' )},\]])")
 
@@ -84,7 +84,7 @@ def _active_windsurf_references() -> list[str]:
             text = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        if LOCAL_WINDSURF_PATH_RE.search(text) or "artifacts/governance" in text:
+        if LOCAL_WINDSURF_PATH_RE.search(text) or "artifacts/windsurf" in text:
             refs.append(rel)
     return sorted(set(refs))
 

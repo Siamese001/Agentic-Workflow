@@ -50,7 +50,7 @@ Ten SQLite ledgers under `artifacts/ledgers/`. Consult via `LedgerConsulter("<na
 
 | Ledger | Writer | Consulting skill |
 |--------|--------|------------------|
-| tool_routing | post_cursor_agent_adg_audit | ledger-consulter-tool-routing |
+| tool_routing | post_agent_adg_audit | ledger-consulter-tool-routing |
 | refactor_outcome | post_commit_outcome_binder | ledger-consulter-refactor-outcome |
 | prompt_classifier | pre_prompt_classifier + binder | ledger-consulter-prompt-classifier |
 | mcp_invocation | post_mcp_audit | ledger-consulter-mcp-invocation |
@@ -58,7 +58,7 @@ Ten SQLite ledgers under `artifacts/ledgers/`. Consult via `LedgerConsulter("<na
 | deferred_scope_calibration | deferred_scope_poller | ledger-consulter-deferred-scope-calibration |
 | guardian_exemption | post_write_audit | ledger-consulter-guardian-exemption |
 | progress_eta | tools/progress_display | ledger-consulter-progress-eta |
-| memory_recall | post_cursor_agent_writeback_audit | ledger-consulter-memory-recall |
+| memory_recall | post_agent_writeback_audit | ledger-consulter-memory-recall |
 | test_selection | post_run_audit + binder | ledger-consulter-test-selection |
 
 Invariants: `tools/ledgers/hook_helpers.emit_ledger_event` only; fail-soft; idempotent. Rule: `.claude/rules/intelligence-ledger-family.md`. Weekly: `python ops_scripts/calibration/ledger_weekly_report.py`.

@@ -1,4 +1,4 @@
-"""Post-Cursor-Agent dispatcher — single-process replacement for the 16-script chain.
+"""Post-agent dispatcher — single-process replacement for the 16-script chain.
 
 Per W4 design notes in plan rules-hooks-memories-consolidation-48b4d6.md:
 - All 16 standalone post_agent_*.py scripts read sys.stdin once
@@ -19,7 +19,7 @@ When unset → no-op; existing standalone scripts run unchanged via hooks.json.
 
 Per constitutional §30 risk floor (96-hour silent capture outage precedent),
 operators MUST run the dispatcher in shadow mode for ≥7 days before removing
-any standalone script entry from `.cursor/hooks.json`.
+any standalone script entry from `.claude/settings.json`.
 
 Fail policy: OPEN — any handler error is logged and swallowed. One handler
 must never break sibling handlers.

@@ -129,7 +129,7 @@ def check_write_payload(
 def check_payloads_in_response(response_text: str) -> list[dict[str, Any]]:
     """Scan response text for Notion API payloads and validate them.
     
-    This is used by post-cursor-agent audits to check what Cursor Agent wrote.
+    This is used by post-agent audits to check what the agent wrote.
     """
     violations: list[dict[str, Any]] = []
     

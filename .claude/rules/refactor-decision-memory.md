@@ -41,7 +41,7 @@ This rule adds a precedent-lookup layer **under** that policy.
 
 ## Capture
 
-After a refactor decision is resolved, the `post_cursor_agent_response` hook captures the decision
+After a refactor decision is resolved, the `post_agent_response` hook captures the decision
 **if and only if** Claude Code emitted a `DECISION_CAPTURED:` marker in the response, as required
 by `author-gate-enforcement.md` step 9. Without that emission the hook finds nothing to capture.
 

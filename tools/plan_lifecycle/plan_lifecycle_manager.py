@@ -118,7 +118,7 @@ class PlanLifecycleManager:
     Replaces:
     - _wave_execution_state.py (state persistence)
     - _plan_registration.py (registration tracking)
-    - 11 post_cascade hooks (marker capture)
+    - 11 post-agent hooks (marker capture)
     - 4 pre_user_prompt hooks (pre-flight checks)
     """
     

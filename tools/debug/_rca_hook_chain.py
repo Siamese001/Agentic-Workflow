@@ -1,4 +1,4 @@
-"""One-shot RCA probe for the dead post_cascade hook chain.
+"""One-shot RCA probe for the dead post-agent hook chain.
 
 Collects four signals:
 1. Last heartbeat timestamp vs now → time since hook chain last fired.

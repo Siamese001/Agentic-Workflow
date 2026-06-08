@@ -92,6 +92,6 @@ Proceed with standard Author-Gate.
 
 `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite`
 
-Auto-created on first Author-Gate capture by the `post_cursor_agent_response` hook.
+Auto-created on first Author-Gate capture by the `post_agent_response` hook.
 
 Schema tables: `decisions`, `decision_scope`, `decision_outcomes`, `decisions_fts` (FTS5 virtual).

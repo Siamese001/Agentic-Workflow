@@ -1,7 +1,7 @@
 ---
 slug: legacy-windsurf-tree-decommission-9f2c47
 plan_type: platform_core_change
-status: In Progress
+status: Completed
 created: 2026-06-07
 owner: Claude Code
 supersedes: []
@@ -11,9 +11,9 @@ relates_to:
 ---
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W6
-LAST_COMPLETED_WAVE: W5
+PLAN_STATUS: DONE
+CURRENT_WAVE: COMPLETE
+LAST_COMPLETED_WAVE: W6
 LAST_UPDATED: 2026-06-08
 
 # Legacy `_legacy_windsurf` / `_legacy_cursor` Tree Decommission
@@ -29,6 +29,12 @@ LAST_UPDATED: 2026-06-08
 > `PLAN_REGISTRATION_BYPASS=1` because `tools/plan_lifecycle/wave_execution_state.py` still imports
 > the stale `_legacy_windsurf/_plan_registration.py`, which reads `.windsurf/state` instead of
 > `.claude/state`; fixing that importer is L2 work.
+
+> **PLAN COMPLETE 2026-06-08 (IDE_archive).** W6 verified that the deleted legacy trees and `.cursor/`
+> directory are absent on disk and from tracked files. Active stale hook-name references were repointed
+> to `post_agent_*`; the only active targeted residual is the compatibility CLI alias
+> `--max-post-cursor-agent` in `check_hook_consolidation.py`. Evidence:
+> [legacy_tree_w6_zero_brand_9f2c47.md](../docs/reports/decommission/legacy_tree_w6_zero_brand_9f2c47.md).
 
 > Created 2026-06-07 as the **deferred tail** of the decommission. The naming-rename plan
 > [cursor-naming-rename-w5-b4f1a9](cursor-naming-rename-w5-b4f1a9.md) de-branded the live surface
@@ -86,7 +92,7 @@ LAST_UPDATED: 2026-06-08
 | W3/L3 | P3.1 | Verify chain + tooling + gates fire post-move | ~6k | — | ✅ Done (2026-06-08) | Live dispatch fires; heartbeat fresh; wired payload gate scans 17 active hooks; lifecycle/ledger/import smokes green |
 | W4/L4 | P4.1–P4.2 | De-brand boundary constant + scanner/gate consumers | ~8k | Neutral `.claude/governance/scripts` SSOT already exists | ✅ Done (2026-06-08) | `GOVERNANCE_SCRIPTS_DIR` added; deprecated alias repointed; static_scanner + 2 gates updated; ADG scan-root parity green |
 | W5/L5 | P5.1–P5.3 | Delete dead-archive bulk + `_legacy_cursor`; retire `T6a`; guard cleanup | ~8k | L2–L4 green; no remaining importer | ✅ Done (2026-06-08) | `_legacy_windsurf`/`_legacy_cursor` deleted; active tests/consumers repointed; shell-guard legacy tokens pruned |
-| W6/L6 | P6.1 | Zero-brand verify + hand `.cursor/` to dec0de + close | ~5k | All prior waves green | ⬜ Not Started | Repo scan: only intentional history remains; dec0de notified for `.cursor/` removal; plan closed |
+| W6/L6 | P6.1 | Zero-brand verify + hand `.cursor/` to dec0de + close | ~5k | All prior waves green | ✅ Done (2026-06-08) | Repo scan allowlisted; `.cursor/` absent on disk/tracked files; plan closed |
 
 ### Phase-Level Summary
 
@@ -104,7 +110,7 @@ LAST_UPDATED: 2026-06-08
 | P5.1 | Delete dead-archive bulk | `_legacy_windsurf/post_cascade_*` etc. | Confirm zero importer post-L2 | ~3k | ✅ Done |
 | P5.2 | Delete `_legacy_cursor` | `_legacy_cursor/**` + consumers | migrate test + dedup-verify first | ~3k | ✅ Done |
 | P5.3 | Retire `T6a` + guard cleanup | `.pre-commit-config.yaml`, `before_shell_execution`/`claude_hook_common` | guard tokens (`.windsurf`/`Windsurf`) once trees gone | ~2k | ✅ Done |
-| P6.1 | Zero-brand verify + close | whole repo, Notion | hand `.cursor/` dir to dec0de | ~5k | ⬜ |
+| P6.1 | Zero-brand verify + close | whole repo, Notion | hand `.cursor/` dir to dec0de | ~5k | ✅ Done |
 
 ## Wave Detail
 
@@ -212,6 +218,18 @@ LAST_UPDATED: 2026-06-08
 - **P6.1** Repo-wide scan; remaining `windsurf`/`cursor` hits must be intentional history. Hand the now-
   empty `.cursor/` dir to dec0de (its W6 owns the physical `.cursor/` removal + `before_shell_execution`
   `.cursor` delete-guard). Emit `PLAN_COMPLETE:`; flip Notion row to Completed.
+- **Completed 2026-06-08:** W6 evidence is recorded in
+  `docs/reports/decommission/legacy_tree_w6_zero_brand_9f2c47.md`. `git ls-files` returned no entries
+  for `.cursor`, `.windsurf`, `_legacy_windsurf`, or `_legacy_cursor`, and all four paths are absent on
+  disk in this worktree. Active stale hook-name references in `.claude/templates`, `.claude/skills`,
+  `.claude/rules`, root `AGENTS.md`, active CI helpers, config, and debug utilities were repointed to
+  `post_agent_*` / post-agent wording. The only active targeted residual is
+  `check_hook_consolidation.py` retaining `--max-post-cursor-agent` as a compatibility alias for the
+  new `--max-post-agent`; broader residuals are historical docs/ADRs, explicit migration tools, or
+  compatibility tests. `check_no_cursor_refs.py` and `check_windsurf_deletion_readiness.py` are green.
+  Broad `run_contract_gates.py` was attempted and is blocked by a pre-existing unrelated
+  `apps_lic/engines/x1d_claude_judge_adapter.py:277` direct `anthropic` import that is not in this
+  wave's diff.
 
 ## Definition of Done
 
@@ -246,4 +264,5 @@ import-clean). The physical `.cursor/` dir removal stays owned by dec0de (do not
   import path.
 
 WAVE_COMPLETE: YES
-WAVE_COMPLETE_NOTE: plan=legacy-windsurf-tree-decommission-9f2c47 wave=W5/L5 date=2026-06-08 artifacts=docs/reports/decommission/legacy_tree_classification_9f2c47.md,docs/reports/decommission/legacy_tree_classification_9f2c47.json note="deleted _legacy_windsurf/_legacy_cursor trees; archived obsolete legacy-layout tests; repointed active tests/tools to live SSOTs; broad W5 governance pytest, changed-file exclusion/terminal gates, and hook/ledger smokes passed"
+WAVE_COMPLETE_NOTE: plan=legacy-windsurf-tree-decommission-9f2c47 wave=W6/L6 date=2026-06-08 artifacts=docs/reports/decommission/legacy_tree_w6_zero_brand_9f2c47.md note="verified .cursor/.windsurf/_legacy_* absence; repointed active stale hook-name references; no-cursor and windsurf-deletion readiness gates green; residuals are historical docs, migration tooling, compatibility tests, or a backwards-compatible CLI alias"
+PLAN_COMPLETE: plan=legacy-windsurf-tree-decommission-9f2c47 note="Legacy _legacy_windsurf/_legacy_cursor tree decommission completed in IDE_archive; active helper importers promoted, dead trees deleted, W6 zero-brand verification recorded."

@@ -44,7 +44,7 @@ Before writing any execution plan:
 5. Include **Phase-Level Summary table** with columns: `| Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |` — under `## Status Tables` or before the Gap Register section.
 6. Include a **`## Definition of Done`** section with at least 5 DoD rows + Verification-vs-Deferral table. Plans touching an executable surface MUST have a smoke-run DoD row (`python -m <module> [args]` exits 0). Use `dod_exempt: true` frontmatter for RCA/doc/observational plans. Enforced by CI gate `check_plan_definition_of_done.py` (PLAN-DOD).
 
-Enforcement: `ops_scripts/ci/check_plan_wave_summary_top.py` (PLAN-WAVE-TOP, advisory repo scan), `check_plan_format_compliance.py` (per-path strict), `.claude/hooks/after_file_edit.py` (warn; `PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT=1` to block), `post_cursor_agent_plan_wave_summary_audit.py` (post-agent).
+Enforcement: `ops_scripts/ci/check_plan_wave_summary_top.py` (PLAN-WAVE-TOP, advisory repo scan), `check_plan_format_compliance.py` (per-path strict), `.claude/hooks/after_file_edit.py` (warn; `PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT=1` to block), `post_agent_plan_wave_summary_audit.py` (post-agent).
 
 A plan missing the top consolidated wave summary, phase-level summary table, or `## Definition of Done` (without `dod_exempt: true`) is **invalid and must not be marked Completed in Notion**.
 
@@ -54,7 +54,7 @@ All new plans MUST be created in Notion with `Status="Not Started"`. Only except
 
 **Canonical path**: `from tools.notion.plan_creation_helper import create_plan_in_notion` — helper enforces correct status, validates slug, populates required fields.
 
-Enforced by: `plan_creation_helper.py` (code), `pre_notion_plan_creation_gate.py` (hook), `post_cursor_agent_plan_creation_audit.py` (audit), NP14 CI gate.
+Enforced by: `plan_creation_helper.py` (code), `pre_notion_plan_creation_gate.py` (hook), `post_agent_plan_creation_audit.py` (audit), NP14 CI gate.
 
 **Bypass**: `NOTION_PLAN_STATUS_INITIAL_BYPASS=1` — logs warning but allows.
 
