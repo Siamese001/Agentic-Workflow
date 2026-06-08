@@ -1,6 +1,6 @@
 {
   "gate_id": "G_REACH_l0_reachability",
-  "count": 2784,
+  "count": 2910,
   "seeded_at": "2026-04-23T15:00:00+00:00",
   "snapshot": "shadow_reach_proof.sqlite",
   "notes": "H2 baseline. 1993 production modules not L0-reachable via 'imports' edges. Many are legit (utility libs, plugins, indirect dispatch targets). Ratchet: new orphans fail. After C0 wiring fix lands, planned W6 follow-up to flip tier R->B and prune baseline.",
@@ -38,8 +38,8 @@
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-05-25T14:04:20.460145+00:00",
-  "last_run_snapshot": "shadow_reach_proof.sqlite",
+  "last_run_at": "2026-06-08T12:38:01.283886+00:00",
+  "last_run_snapshot": "adg_indexed_06072026_2219.sqlite",
   "loosen_history": [
     {
       "at": "2026-04-28T18:49:35+00:00",
@@ -82,7 +82,14 @@
       "from": 2784,
       "to": 2792,
       "reason": "post-regen absorb adg_indexed_05252026_0634"
+    },
+    {
+      "at": "2026-06-08T12:37:25.432223+00:00",
+      "snapshot": "adg_indexed_06072026_2219.sqlite",
+      "from": 2784,
+      "to": 2910,
+      "reason": "Re-baseline +126 absorbing new L0-unreachable orphans created by #256 qwen-removal module deletions (removing modules breaks import paths -> orphans). Per existing baseline note 'many are legit'; count-ratchet, new orphans not isolable from prior snapshot. Operator-approved 2026-06-08."
     }
   ],
-  "loosened_at": "2026-05-25T10:57:31.565645+00:00"
+  "loosened_at": "2026-06-08T12:37:25.432223+00:00"
 }

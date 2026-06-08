@@ -75,7 +75,7 @@ from .gates import GateReport, run_all_gates
 # once per request immediately after preflight. See canonical pipeline
 # manifest stage `C01_acl_gate` and Author-Gate decision 2026-04-30
 # (refactor_scope, selected=finish_two_items_introduced_this_chat).
-from agentic_core.knowledge.gates.preretrieval_gate import (
+from agentic_core.knowledge.gates import (
     AccessDecision,
     GateDecision,
     check_access,
