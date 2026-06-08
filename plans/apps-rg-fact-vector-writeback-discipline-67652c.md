@@ -87,6 +87,34 @@ Gate: write-backs land in a **staging** collection (off the hot path), pass a **
 `promote_staged_fact_vectors` commits to live (auto unless HITL env set). Receipt gains `operations`
 (counts per op), `routed_to_semantic_cache`, `rejected`, `staged_count`, `promoted_count`, `held_count`.
 
+## Phase 0 — fact_vectors seed (PREREQUISITE; exists, verified 2026-06-08)
+
+The write-back discipline governs **runtime augmentation**; it presumes `fact_vectors` is already
+populated. Per `c02_chroma_lifecycle.py`, product runs **consume a pre-built governed index** and must
+not depend on same-run upsert. So `fact_vectors` MUST be seeded offline first (cold-start / fresh
+worktree has none — same gitignored-runtime-data class as `.env`/ChromaDB/sparse).
+
+**Phase 0 seed EXISTS:** `tools/apps_rg/build_section_fact_vectors.py` walks the canonical candidate
+fact ledger and upserts one BGE-M3 chunk per HIGH/proof-eligible fact into live `fact_vectors`. It
+reuses `atoms_to_fact_vector_chunks` → `upsert_fact_vector_chunks` (so the write-back discipline applies
+— ledger atoms classify as EXTRACT and pass; verified no regression: 42 facts → 13 grounded chunks).
+
+**Cold-start bootstrap sequence (verified end-to-end 2026-06-08):**
+```
+CHROMA_PERSIST_DIR=<store> python tools/apps_rg/build_section_fact_vectors.py --execute   # seed fact_vectors
+CHROMA_PERSIST_DIR=<store> python tools/generate/ingestion/build_sparse_index.py --collection fact_vectors  # sparse sidecar
+CHROMA_PERSIST_DIR=<store> python -m apps_rg --section <lane> ...                          # run
+```
+Seeding a fresh worktree store from the ledger (13 chunks) + building its sparse sidecar **cleared**
+the `Collection [fact_vectors] does not exist` and sparse-`UNAVAILABLE` errors.
+
+**Open finding (seed coverage):** a pure 13-fact seed yields `FEC support_status='WEAK'` for
+`insurtech_bullets` — the candidate skills ledger has no InsurTech/EY *employment* facts (those live in
+the base resume, surfaced authoritatively by the W3 base-resume role-episode planner; `fact_vectors` is
+non-authoritative dense *enrichment*). The richer main store passed. Closing this requires either
+extending the Phase 0 seed to also ingest base-resume employment bullets, or treating seed-coverage as
+an operational pre-req. Captured under `## Deferred Follow-ups`.
+
 ## Definition of Done
 
 | # | Criterion | Verification |
@@ -116,3 +144,10 @@ off-hot-path buffer; promotion is callable as a separate batch step.
   best-effort promotion becomes a hot-path cost.
 - Wiring promotion through the formal UWG commit path (spine law alignment) if `fact_vectors` is
   reclassified as UWG-governed durable state rather than a rebuildable C0 cache.
+- **Phase 0 seed coverage for InsurTech/EY:** `build_section_fact_vectors.py` seeds only the candidate
+  skills ledger, so a pure cold-start seed gives `FEC support_status='WEAK'` for `insurtech_bullets`/
+  `ey_bullets` (no employment facts in that ledger). Options: (a) extend the seed to also ingest the
+  base-resume employment bullets (`base['facts']['employment']`, reusing the W3 base-resume extraction)
+  as grounded EXTRACT chunks; (b) document seed-coverage as an operational pre-req and rely on
+  accumulated runtime augmentation; (c) relax the FEC mandatory-grounding threshold for sections whose
+  authoritative proof comes from the base-resume planner. Different blast radius — pending decision.
