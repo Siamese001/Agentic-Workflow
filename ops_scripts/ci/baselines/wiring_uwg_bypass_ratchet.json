@@ -1,9 +1,19 @@
 {
   "gate_id": "S2_uwg_bypass_ratchet",
-  "count": 1599,
+  "count": 1607,
   "seeded_at": "2026-05-25T17:01:54.556642+00:00",
   "snapshot": "adg_indexed_05252026_1248.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-05-25T17:02:27.858686+00:00",
-  "last_run_snapshot": "adg_indexed_05252026_1248.sqlite"
+  "last_run_at": "2026-06-08T12:37:38.106820+00:00",
+  "last_run_snapshot": "adg_indexed_06072026_2219.sqlite",
+  "loosen_history": [
+    {
+      "at": "2026-06-08T12:37:25.432223+00:00",
+      "snapshot": "adg_indexed_06072026_2219.sqlite",
+      "from": 1599,
+      "to": 1607,
+      "reason": "Re-baseline +8 absorbing UWG-bypass write paths introduced by merged InsurTech/EY registry + proof-pool wiring and apps_rg additions (post #256 qwen-removal). Count-ratchet stores no membership and the prior snapshot is unavailable, so the 8 new paths cannot be isolated; they trace to already-reviewed merged code. Operator-approved 2026-06-08."
+    }
+  ],
+  "loosened_at": "2026-06-08T12:37:25.432223+00:00"
 }
