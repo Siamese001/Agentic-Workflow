@@ -1,9 +1,9 @@
 # apps_rg AIG E2E Failure Remediation (Hardened)
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W0
-LAST_COMPLETED_WAVE: none
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W1
 LAST_UPDATED: 2026-06-07
 
 Plan ID: `apps-rg-aig-e2e-remediation-e4b7c1`
@@ -44,8 +44,8 @@ This plan was hardened on 2026-06-07 by verifying each original RCA claim agains
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| W0 | W0.P1-W0.P3 | Evidence harness + truthful instrumentation (summarizer, traceback persistence, fixtures) | 4k | Current RCA artifacts remain available | TODO | Summarizer + fixtures cover all observed blockers; tracebacks persisted per lane |
-| W1 | W1.P1-W1.P3 | **Unblock integrated dispatch**: ChromaDB client lifecycle (E2E-11) + three-state lane classification & per-lane exception isolation (E2E-05) | 8k | Chroma dense retrieval is required, not removable | TODO | Integrated run no longer dies on `RustBindingsAPI.bindings`; one lane failure cannot poison independent lanes; executed-X3_BLOCK ≠ never-attempted |
+| W0 | W0.P1-W0.P3 | Evidence harness + truthful instrumentation (summarizer, traceback persistence, fixtures) | 4k | Current RCA artifacts remain available | DONE | Summarizer + fixtures cover all observed blockers; tracebacks persisted per lane |
+| W1 | W1.P1-W1.P3 | **Unblock integrated dispatch**: ChromaDB client lifecycle (E2E-11) + three-state lane classification & per-lane exception isolation (E2E-05) | 8k | Chroma dense retrieval is required, not removable | DONE | Integrated run no longer dies on `RustBindingsAPI.bindings`; one lane failure cannot poison independent lanes; executed-X3_BLOCK ≠ never-attempted |
 | W2 | W2.P1-W2.P4 | Provider-receipt fidelity (E2E-02) + env-bootstrap residual & embedding verify-only (E2E-03, E2E-04) | 6k | Provider selection remains external Claude default; preflight already correct | TODO | `provider_request.json` names the selected provider; `provider_request==provider_response` invariant test; apps_rg embedding fail-closed guard green |
 | W3 | W3.P1-W3.P2 | Executive-summary crash (E2E-06) | 2k | Token-budget policy retained | TODO | No `UnboundLocalError`; `executive_summary` reaches provider + X1D artifacts |
 | W4 | W4.P1-W4.P4 | Competencies bundle/term data gap + X1D guard (E2E-07, E2E-08 reframed) | 9k | JD/briefing stay targeting-only | TODO | `competencies` zero X2 failures; every taxonomy category carries lineage; X1D empty-selection guarded (no repoint) |

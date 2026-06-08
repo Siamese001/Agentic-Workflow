@@ -116,6 +116,48 @@ class ChromaVectorStore:
             return False
         return self._loader.is_loading()
 
+    @staticmethod
+    def _client_is_alive(client: Any) -> bool:
+        """Cheap liveness probe; ``False`` when the client's backend was torn down.
+
+        A ChromaDB ``PersistentClient`` whose shared system was stopped (e.g. a
+        sibling client reset it between sequential lane queries) raises
+        ``'RustBindingsAPI' object has no attribute 'bindings'`` on its next call.
+        ``heartbeat()`` is the cheapest call that touches those bindings, so a
+        raised exception here means the client is dead and must be rebuilt.
+        """
+        probe = getattr(client, "heartbeat", None)
+        if not callable(probe):
+            return True  # cannot probe — assume alive
+        try:
+            probe()
+            return True
+        except Exception:  # guardian: allow-broad-exception -- any probe failure => rebuild
+            return False
+
+    @staticmethod
+    def _clear_chroma_system_cache(client: Any) -> None:
+        """Drop ChromaDB's process-wide SharedSystemClient cache before a rebuild.
+
+        A stopped shared system can stay cached (its dict entry only pops when the
+        refcount reaches 0), so a naive ``PersistentClient(same_path)`` would reuse the
+        dead system and the rebuilt client would raise on its next call. Clearing the
+        cache forces a fresh system. Best-effort; reaches a chromadb-internal API.
+        """
+        clear = getattr(client, "clear_system_cache", None)
+        if callable(clear):
+            try:
+                clear()
+                return
+            except Exception:  # guardian: allow-broad-exception -- best-effort cache reset
+                pass
+        try:
+            from chromadb.api.shared_system_client import SharedSystemClient
+
+            SharedSystemClient.clear_system_cache()
+        except Exception:  # guardian: allow-broad-exception -- chromadb internal, best-effort
+            pass
+
     def ensure_client(self) -> Any:
         if self._client_override is not None:
             return self._client_override
@@ -126,6 +168,19 @@ class ChromaVectorStore:
                     "ChromaDB is still initializing. Retry shortly and check stderr for DEFERRED_LOAD logs."
                 )
             raise VectorUnavailableError("ChromaDB client is unavailable.")
+        if not self._client_is_alive(client):
+            # The cached client was torn down mid-process (shared-system stop deleted its
+            # rust bindings). Clear ChromaDB's system cache so the rebuild gets a fresh
+            # system, then rebuild. Re-probe once and fail cleanly with a bounded
+            # VectorUnavailableError rather than returning a still-dead client whose raw
+            # AttributeError would cascade-abort the integrated run
+            # (apps_rg E2E remediation, E2E-11).
+            logger.warning("CHROMA_CLIENT_DEAD: cached client failed liveness probe — rebuilding")
+            self._clear_chroma_system_cache(client)
+            self._loader.invalidate()
+            client = self._loader.get(wait_timeout=self.init_timeout)
+            if client is None or not self._client_is_alive(client):
+                raise VectorUnavailableError("ChromaDB client unavailable after rebuild attempt.")
         return client
 
     def list_collections(self) -> list[Any]:

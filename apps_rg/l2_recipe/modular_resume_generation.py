@@ -179,6 +179,33 @@ def _phase1_lane_dispatch_status(result: dict[str, Any] | None) -> str:
     return f"dispatch_status:{exit_st or 'unknown'}"
 
 
+def _derive_pre_run_blocker(dispatch: dict[str, Any] | None) -> str:
+    """Classify a lane's pre-run blocker from its dispatch_result, most-specific first.
+
+    A lane that ran to an X3 verdict but failed the product bar (e.g. competencies
+    X3_BLOCK) must NOT be mislabeled ``LANE_DISPATCH_EXIT_ERROR`` -- it executed.
+    Precedence: executed-to-X3 > prior-abort > transport fault > dispatch exit error >
+    no run dir (apps_rg E2E remediation, E2E-05).
+
+    The fault branch returns the verbatim fault string so the artifact ``blocker`` field
+    preserves the specific cause; ``tools/apps_rg/summarize_e2e_run.classify_lane_state``
+    independently buckets the same dispatch into the coarser ``PRE_RUN_BLOCKED`` *state*.
+    They intentionally label different fields (specific blocker vs. summary state).
+    """
+    res = dispatch if isinstance(dispatch, dict) else {}
+    x3 = str(res.get("x3_disposition") or "").strip()
+    if x3:
+        return f"EXECUTED_{x3}"
+    if res.get("prior_abort"):
+        return "MISSING_NOT_ATTEMPTED"
+    fault = str(res.get("fault") or "").strip()
+    if fault:
+        return fault
+    if str(res.get("exit_status") or "").lower() == "error":
+        return "LANE_DISPATCH_EXIT_ERROR"
+    return "PHASE1_NO_RUN_DIR"
+
+
 def _phase1_materialize_lane_run_dir(
     *,
     repo: Path,
@@ -211,10 +238,7 @@ def _phase1_materialize_lane_run_dir(
             "|"
         )
         dispatch = lane_dispatch_results.get(lane) or {}
-        fault = str(dispatch.get("fault") or "").strip()
-        blocker = fault or "PHASE1_NO_RUN_DIR"
-        if not fault and str(dispatch.get("exit_status") or "").lower() == "error":
-            blocker = "LANE_DISPATCH_EXIT_ERROR"
+        blocker = _derive_pre_run_blocker(dispatch)
         emit_integrated_lane_pre_run_failure(
             sections_root=sections_root,
             integrated_dir=integrated_dir,

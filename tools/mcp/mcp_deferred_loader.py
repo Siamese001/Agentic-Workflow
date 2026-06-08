@@ -199,6 +199,25 @@ class DeferredLoader:
     def is_loading(self) -> bool:
         return self._loading
 
+    def invalidate(self) -> None:
+        """Drop the cached resource so the next ``get()`` rebuilds it.
+
+        Used when a cached resource is detected dead (e.g. a ChromaDB
+        ``PersistentClient`` whose shared system was stopped, deleting its rust
+        bindings -- surfacing as ``'RustBindingsAPI' object has no attribute
+        'bindings'``). Thread-safe; a no-op if nothing is cached.
+
+        Single-flight, not strict-consistency: under concurrent ``get()``/``invalidate()``
+        (parallel callers sharing one loader) a stale in-flight factory result may be read
+        once, bounded by ``timeout`` (the caller re-probes on its next call). The sequential
+        rebuild path that motivates this method does not hit that race.
+        """
+        with self._load_gate:
+            self._result.clear()
+            self._loading = False
+            self._last_error = None
+            self._ready.clear()
+
     def require(self) -> Any:
         value = self.get()
         if value is not None:
