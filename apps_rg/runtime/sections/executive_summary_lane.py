@@ -47,6 +47,9 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     normalize_exec_summary_claim_ledger,
 )
 from apps_rg.runtime.sections.executive_summary_pa import compile_executive_summary_prompt
+from apps_rg.runtime.sections.executive_summary_context_limits import (
+    resolve_scratch_max_output_tokens,
+)
 from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
     attach_lane_proof_bundle_fields,
     compute_lane_proof_bundle,
@@ -1867,9 +1870,6 @@ def run_executive_summary_execution(
 
     token_budget_block_reason: str | None = None
     token_budget_receipt: dict[str, Any] | None = None
-    from apps_rg.runtime.sections.executive_summary_context_limits import (
-        resolve_scratch_max_output_tokens,
-    )
 
     max_out_tokens = resolve_scratch_max_output_tokens()
     if not evidence_capsule_block_reason:
