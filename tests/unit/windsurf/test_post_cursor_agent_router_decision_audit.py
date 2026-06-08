@@ -1,4 +1,4 @@
-"""Tests for `.claude/governance/scripts/_legacy_windsurf/post_agent_router_decision_audit.py`.
+"""Tests for `.claude/governance/scripts/post_agent_router_decision_audit.py`.
 
 Constitutional §28 / closed-loop-router-enforcement.md.
 Audits Cursor Agent responses for missing/malformed router-decision evidence.
@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-SCRIPT = REPO / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_router_decision_audit.py"
+SCRIPT = REPO / ".claude" / "governance" / "scripts" / "post_agent_router_decision_audit.py"
 
 
 def _load_module():

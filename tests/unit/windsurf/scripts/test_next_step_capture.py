@@ -1,4 +1,4 @@
-"""Unit tests for :mod:`.windsurf.scripts.post_agent_next_step_capture`."""
+"""Unit tests for :mod:`.claude.governance.scripts.post_agent_next_step_capture`."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_next_step_capture.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_next_step_capture.py"
 
 
 def _load_module():
@@ -146,7 +146,7 @@ def test_process_marker_without_token_returns_pending(tmp_path, monkeypatch) -> 
     record = HOOK._process_marker(_marker(), token=None)  # noqa: SLF001
     assert record["kind"] == "pending_no_token"
     # Scaffolder should still have created the plan file.
-    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+    plans_dir = tmp_path / "plans"
     assert plans_dir.exists()
     created = list(plans_dir.glob("next-step-unit-*.md"))
     assert len(created) == 1
@@ -175,14 +175,14 @@ def test_process_marker_populates_defaults(tmp_path, monkeypatch) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_build_payload_has_next_prefix() -> None:
+def test_build_payload_uses_mece_v2_shape() -> None:
     fields = _marker(priority="P2")
     fields = {**fields, "wave": "W-NEXT", "phase": "NEXT-abc12345"}
     payload = HOOK._build_notion_payload(fields, "next-step-unit-123456.md")  # noqa: SLF001
     props = payload["properties"]
     title_chunks = props["Phase Title"]["title"]
-    assert title_chunks[0]["text"]["content"].startswith("[NEXT·P2]")
-    assert props["Sub-Wave"]["rich_text"][0]["text"]["content"].endswith("-NEXT-AUTO")
+    assert title_chunks[0]["text"]["content"] == "Add nightly CI drift check"
+    assert "Sub-Wave" not in props
     assert props["P-Band"]["select"]["name"] == "P2"
     assert props["Impact Score"]["number"] == 0.0
     assert props["Plan File"]["rich_text"][0]["text"]["content"] == "next-step-unit-123456.md"

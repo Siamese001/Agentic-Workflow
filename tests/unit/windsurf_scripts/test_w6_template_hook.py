@@ -1,11 +1,10 @@
-"""W6.P6 tests: Template authorization section and hook registration verification."""
+"""W6.P6 tests: Template authorization section and active hook registration verification."""
 
 from __future__ import annotations
 
 import json
 import sys
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -21,7 +20,7 @@ class TestTemplateScopeExpansionAuthorization:
     @pytest.fixture
     def template_content(self) -> str:
         """Read the execution plan template."""
-        template_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "templates" / "execution-plan-template.md"
+        template_path = REPO_ROOT / ".claude" / "templates" / "execution-plan-template.md"
         if not template_path.exists():
             pytest.skip("Template file not found")
         return template_path.read_text(encoding="utf-8")
@@ -32,14 +31,10 @@ class TestTemplateScopeExpansionAuthorization:
 
     def test_contains_four_step_protocol(self, template_content: str) -> None:
         """Template documents the four-step protocol."""
-        # Step 1
-        assert "DISCOVERED_SCOPE marker" in template_content
-        # Step 2
-        assert "AUTHORIZATION_DECISION marker" in template_content
-        # Step 3
-        assert "Plan file updates" in template_content
-        # Step 4
-        assert "SCOPE_EXPANSION marker" in template_content
+        assert "emit markers in order" in template_content
+        assert "DISCOVERED_SCOPE:" in template_content
+        assert "AUTHORIZATION_DECISION:" in template_content
+        assert "SCOPE_EXPANSION:" in template_content
 
     def test_contains_all_marker_names(self, template_content: str) -> None:
         """Template references all three marker types."""
@@ -53,22 +48,21 @@ class TestTemplateScopeExpansionAuthorization:
         for decision in decisions:
             assert decision in template_content, f"Missing decision: {decision}"
 
-    def test_contains_required_updates_checklist(self, template_content: str) -> None:
-        """Template includes the required update checklist."""
+    def test_contains_required_update_surfaces(self, template_content: str) -> None:
+        """Template includes the required plan update surfaces."""
         checklist_items = [
-            "Refresh `last_updated`",
-            "Add/modify Wave Structure row",
-            "Add/modify Phase-Level Summary row",
-            "Add/modify Gap Register row",
-            "Add/modify DoD criterion",
-            "Append to Scope Expansion Authorization Log",
+            "### Wave Progress",
+            "### Phase Progress",
+            "## Gap Register",
+            "## Definition of Done",
+            "## Scope Expansion Authorization",
         ]
         for item in checklist_items:
             assert item in template_content, f"Missing checklist item: {item}"
 
     def test_contains_retroactive_authorization_warning(self, template_content: str) -> None:
-        """Template mentions RETROACTIVE_AUTHORIZATION_DETECTED."""
-        assert "RETROACTIVE_AUTHORIZATION_DETECTED" in template_content
+        """Template warns that retroactive updates are not authorization."""
+        assert "Retroactive plan updates are not governance" in template_content
 
     def test_contains_negative_control_language(self, template_content: str) -> None:
         """Template has documentation-does-not-equal-authorization warning."""
@@ -81,56 +75,32 @@ class TestTemplateScopeExpansionAuthorization:
         assert "SCOPE_EXPANSION: plan=" in template_content
 
 
-class TestHooksJsonRegistration:
-    """Test that hooks.json registers the plan scope audit hook."""
+class TestActiveScopeAudit:
+    """Test that the active plan scope audit hook is available and advisory by default."""
 
-    @pytest.fixture
-    def hooks_config(self) -> dict[str, Any]:
-        """Read and parse hooks.json."""
-        hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
-        if not hooks_path.exists():
-            pytest.skip("hooks.json not found")
-        content = hooks_path.read_text(encoding="utf-8")
-        return json.loads(content)
+    def test_post_agent_plan_scope_audit_exists(self) -> None:
+        """Hook post_agent_plan_scope_audit.py exists as an active script."""
+        hook_path = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_plan_scope_audit.py"
+        assert hook_path.exists()
 
-    def test_post_agent_plan_scope_audit_registered(
-        self, hooks_config: dict[str, Any]
-    ) -> None:
-        """Hook post_agent_plan_scope_audit.py is in post_agent_response list."""
-        post_cascade = hooks_config.get("hooks", {}).get("post_agent_response", [])
-        commands = [h.get("command", "") for h in post_cascade]
-        
-        audit_hooks = [c for c in commands if "post_agent_plan_scope_audit.py" in c]
-        assert len(audit_hooks) >= 1, "post_agent_plan_scope_audit.py not registered"
+    def test_hook_is_advisory_not_strict(self) -> None:
+        """Hook runs in advisory mode by default."""
+        script = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_plan_scope_audit.py"
+        text = script.read_text(encoding="utf-8")
+        assert "PLAN_SCOPE_AUDIT_STRICT" in text
+        assert "--strict" not in text
 
-    def test_hook_is_advisory_not_strict(self, hooks_config: dict[str, Any]) -> None:
-        """Hook runs in advisory mode (show_output=true, no strict flag)."""
-        post_cascade = hooks_config.get("hooks", {}).get("post_agent_response", [])
-        
-        for hook in post_cascade:
-            if "post_agent_plan_scope_audit.py" in hook.get("command", ""):
-                # Default advisory: show_output=true for visibility
-                assert hook.get("show_output") is True
-                # No strict enforcement by default
-                command = hook.get("command", "")
-                assert "--strict" not in command
-                assert "PLAN_SCOPE_AUDIT_STRICT" not in command
-                break
-        else:
-            pytest.fail("post_agent_plan_scope_audit.py hook not found")
-
-    def test_hook_has_correct_working_directory(
-        self, hooks_config: dict[str, Any]
-    ) -> None:
-        """Hook uses {repo_root} as working directory."""
-        post_cascade = hooks_config.get("hooks", {}).get("post_agent_response", [])
-        
-        for hook in post_cascade:
-            if "post_agent_plan_scope_audit.py" in hook.get("command", ""):
-                assert hook.get("working_directory") == "{repo_root}"
-                break
-        else:
-            pytest.fail("post_agent_plan_scope_audit.py hook not found")
+    def test_stop_hook_routes_to_governance_dispatcher(self) -> None:
+        """Claude Stop hook routes through the active governance dispatcher."""
+        settings_path = REPO_ROOT / ".claude" / "settings.json"
+        settings = json.loads(settings_path.read_text(encoding="utf-8"))
+        commands = [
+            entry["command"]
+            for hook in settings["hooks"]["Stop"]
+            for entry in hook.get("hooks", [])
+            if "command" in entry
+        ]
+        assert any("after_agent_governance_dispatch.py" in command for command in commands)
 
 
 class TestW6Integration:
@@ -148,13 +118,13 @@ class TestW6Integration:
 
     def test_template_exists(self) -> None:
         """Execution plan template exists."""
-        template_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "templates" / "execution-plan-template.md"
+        template_path = REPO_ROOT / ".claude" / "templates" / "execution-plan-template.md"
         assert template_path.exists(), "Template not found"
 
-    def test_hooks_json_valid_json(self) -> None:
-        """hooks.json is valid JSON."""
-        hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
-        content = hooks_path.read_text(encoding="utf-8")
+    def test_settings_json_valid_json(self) -> None:
+        """Active Claude settings JSON is valid."""
+        settings_path = REPO_ROOT / ".claude" / "settings.json"
+        content = settings_path.read_text(encoding="utf-8")
         config = json.loads(content)
         assert "hooks" in config
-        assert "post_agent_response" in config["hooks"]
+        assert "Stop" in config["hooks"]

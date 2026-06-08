@@ -22,9 +22,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Load W2 module via importlib (can't import from dot-prefixed docs/archive/windsurf/legacy-tree directly)
-REPO_ROOT = Path(__file__).parent.parent.parent
-W2_MODULE_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_plan_scope_expansion_check.py"
+# Load the sibling W2 module via importlib so this hook also works when run by
+# file path from the Stop dispatcher.
+SCRIPTS_DIR = Path(__file__).resolve().parent
+W2_MODULE_PATH = SCRIPTS_DIR / "_plan_scope_expansion_check.py"
 
 _w2_spec = importlib.util.spec_from_file_location(
     "_plan_scope_expansion_check", W2_MODULE_PATH

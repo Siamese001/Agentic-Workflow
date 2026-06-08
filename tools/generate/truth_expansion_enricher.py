@@ -147,7 +147,7 @@ GOVERNANCE_ASSERTION_PATTERNS: set[str] = {
 }
 
 # Entrypoint heuristics
-HOOK_PATH_PATTERNS = (".claude/governance/scripts/_legacy_windsurf/", "/hooks/", "_hook.py")
+HOOK_PATH_PATTERNS = (".claude/governance/scripts/post_agent_", "/hooks/", "_hook.py")
 CI_PATH_PATTERNS = ("ops_scripts/ci/check_", "/ci/", ".github/workflows/")
 MCP_PATH_PATTERNS = ("/mcp_", "_mcp_server.py", "tools/mcp/")
 

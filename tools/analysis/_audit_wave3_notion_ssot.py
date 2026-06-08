@@ -6,8 +6,7 @@ from pathlib import Path
 
 # Files still needing the SSOT replacement
 TARGETS = [
-    Path(".claude/governance/scripts/_legacy_windsurf/post_agent_deferred_scope_capture.py"),
-    Path(".claude/governance/scripts/_legacy_windsurf/post_agent_adr_registry_capture.py"),
+    Path(".claude/governance/scripts/post_agent_deferred_scope_capture.py"),
     Path("ops_scripts/ci/check_notion_plan_file_drift.py"),
     Path("tools/migration/notion_create_plans_db.py"),
     Path("tools/notion/snapshot_renderer.py"),
@@ -27,7 +26,7 @@ LITERAL_REPLACEMENTS = [
     (r'^ADR_REGISTRY_DS_ID\s*=\s*"e59d7640-dc09-48f9-8bdc-b0c94bf98c2a"\s*$', "ADR_REGISTRY_DS_ID"),
 ]
 
-# Bootstrap snippet — same for .claude/governance/scripts/_legacy_windsurf/* and other roots
+# Bootstrap snippet — same for .claude/governance/scripts/* and other roots
 BOOTSTRAP_WINDSURF = """\
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -37,7 +36,7 @@ from _notion_constants import (  # noqa: E402
 """
 BOOTSTRAP_OUTSIDE = """\
 import sys as _sys
-_sys.path.insert(0, str(Path(REPO_ROOT) / ".claude" / "governance/scripts" / "_legacy_windsurf"))
+_sys.path.insert(0, str(Path(REPO_ROOT) / ".claude" / "governance" / "scripts"))
 from _notion_constants import (  # noqa: E402
 {names}
 )
@@ -62,9 +61,9 @@ def transform(path: Path) -> tuple[str, str, list[str]]:
     if not imports_needed:
         return text, text, []
 
-    # Decide bootstrap flavor: if file path starts with .claude/governance/scripts/_legacy_windsurf, use WINDSURF; else OUTSIDE
+    # Decide bootstrap flavor: if file path starts with .claude/governance/scripts, use HOOK; else OUTSIDE
     rel_posix = path.as_posix()
-    is_windsurf = rel_posix.startswith(".claude/governance/scripts/_legacy_windsurf/")
+    is_windsurf = rel_posix.startswith(".claude/governance/scripts/")
     if not is_windsurf and not find_repo_root_in_file(new_text):
         # Need to add REPO_ROOT definition. Locate first `from pathlib import Path` and add after.
         m = re.search(r"^from pathlib import Path\s*$", new_text, re.MULTILINE)
@@ -75,7 +74,7 @@ def transform(path: Path) -> tuple[str, str, list[str]]:
     name_lines = "\n".join(f"    {n}," for n in sorted(imports_needed))
     bootstrap = (BOOTSTRAP_WINDSURF if is_windsurf else BOOTSTRAP_OUTSIDE).format(names=name_lines)
 
-    # Insert bootstrap block. For .claude/governance/scripts/_legacy_windsurf, after REPO_ROOT lines or after imports.
+    # Insert bootstrap block. For .claude/governance/scripts, after REPO_ROOT lines or after imports.
     # For simplicity: insert after the LAST occurrence of `from pathlib import Path` line (or `Path(__file__)` definition).
     # Actually best: insert after first blank-line-following-REPO_ROOT, or after imports block.
 

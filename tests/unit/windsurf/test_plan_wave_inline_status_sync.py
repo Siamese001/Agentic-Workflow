@@ -19,7 +19,7 @@ import pytest
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO_ROOT / "tools" / "windsurf"))
+sys.path.insert(0, str(REPO_ROOT / "tools" / "plan_lifecycle"))
 sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
 
 from _plan_wave_table_updater import (  # noqa: E402
@@ -116,11 +116,18 @@ def _make_3wave_plan(
 
 
 def _write_plan(tmp_path: Path, slug: str, content: str) -> Path:
-    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
-    plans_dir.mkdir(parents=True, exist_ok=True)
-    plan_file = plans_dir / f"{slug}.md"
+    plan_file = _plan_path(tmp_path, slug)
+    plan_file.parent.mkdir(parents=True, exist_ok=True)
     plan_file.write_text(content, encoding="utf-8")
     return plan_file
+
+
+def _plan_path(tmp_path: Path, slug: str) -> Path:
+    return tmp_path / ".claude" / "plans" / f"{slug}.md"
+
+
+def _read_plan(tmp_path: Path, slug: str) -> str:
+    return _plan_path(tmp_path, slug).read_text(encoding="utf-8")
 
 
 # ===========================================================================
@@ -138,7 +145,7 @@ class TestHappyPath:
         ok, msg = update_wave_in_plan(tmp_path, slug, 2, "wave_complete")
         assert ok, msg
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         # W2 inline fields updated
         lines = result.splitlines()
@@ -165,12 +172,12 @@ class TestHappyPath:
         slug = "test-plan-tc2"
         content = _make_3wave_plan(w1_status="DONE", w1_complete="YES")
         _write_plan(tmp_path, slug, content)
-        original = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        original = _read_plan(tmp_path, slug)
 
         ok, msg = update_wave_in_plan(tmp_path, slug, 1, "wave_complete")
         assert ok
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
         # Inline fields should not have changed (already terminal)
         # last_updated may differ; compare inline field values specifically
         assert "WAVE_STATUS: DONE" in result
@@ -191,7 +198,7 @@ class TestHappyPath:
         ok, msg = _update_phase_in_plan(tmp_path, slug, "W1.1", "phase_complete")
         assert ok, msg
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         # W1.1 line updated
         w1_1_lines = [l for l in result.splitlines() if "W1.1" in l]
@@ -214,7 +221,7 @@ class TestHappyPath:
         ok, msg = update_wave_in_plan(tmp_path, slug, -1, "plan_complete")
         assert ok, msg
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         # All WAVE_STATUS → DONE, WAVE_COMPLETE → YES
         assert result.count("WAVE_STATUS: DONE") >= 3
@@ -237,7 +244,7 @@ class TestHappyPath:
         ok, msg = update_wave_in_plan(tmp_path, slug, 3, "wave_start")
         assert ok, msg
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         lines = result.splitlines()
         w3_start = next(i for i, l in enumerate(lines) if "## Wave 3" in l)
@@ -255,7 +262,7 @@ class TestHappyPath:
         ok, msg = update_wave_in_plan(tmp_path, slug, 2, "wave_complete")
         assert ok, msg
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         # The pipe-table row for W2 should have ✅ DONE
         # Match rows that start with | and contain W2 but not the header separator
@@ -279,7 +286,7 @@ class TestHappyPath:
         ok, msg = update_wave_in_plan(tmp_path, slug, 2, "wave_complete")
         assert ok, msg
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         lines = result.splitlines()
         w1_start = next(i for i, l in enumerate(lines) if "## Wave 1" in l)
@@ -299,7 +306,7 @@ class TestHappyPath:
         reconcile emits plan_header_inline_drift."""
         import importlib.util
 
-        plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+        plans_dir = tmp_path / ".claude" / "plans"
         plans_dir.mkdir(parents=True, exist_ok=True)
 
         stale_plan = plans_dir / "stale-plan-tc8.md"
@@ -377,7 +384,7 @@ class TestNegativeCases:
         ok, msg = update_wave_in_plan(tmp_path, slug, 1, "wave_complete")
         assert ok, msg
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         # Extract fenced block boundaries
         import re as _re
@@ -434,7 +441,7 @@ class TestNegativeCases:
         ok, msg = update_wave_in_plan(tmp_path, slug, 1, "wave_start")
         assert ok
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         lines = result.splitlines()
         w1_start = next(i for i, l in enumerate(lines) if "## Wave 1" in l)
@@ -455,7 +462,7 @@ class TestNegativeCases:
         ok, msg = _update_phase_in_plan(tmp_path, slug, "W1.1", "phase_start")
         assert ok
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         w1_1_lines = [l for l in result.splitlines() if "W1.1" in l]
         assert w1_1_lines
@@ -471,7 +478,7 @@ class TestNegativeCases:
         ok, msg = update_wave_in_plan(tmp_path, slug, 2, "wave_complete")
         assert ok, msg
 
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
 
         # W2 WAVE fields updated
         lines = result.splitlines()
@@ -506,14 +513,14 @@ class TestNegativeCases:
             | W1 | 🔲 TODO |
         """)
         _write_plan(tmp_path, slug, content)
-        original = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        original = _read_plan(tmp_path, slug)
 
         _, changed, msg = _update_inline_fields_in_plan(content, slug, 3, "wave_complete")
         assert not changed
         assert "no matching wave section for wave=3" in msg
 
         # File unchanged (no-op)
-        result = (tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans" / f"{slug}.md").read_text(encoding="utf-8")
+        result = _read_plan(tmp_path, slug)
         assert result == original
 
     def test_tcn7_duplicate_wave_sections_warn_and_noop(
@@ -552,7 +559,7 @@ class TestNegativeCases:
         """TC-N8: parse_plan_file detects PHASE_STATUS, PHASE_COMPLETE, and DoD - Status: drift."""
         import importlib.util
 
-        plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+        plans_dir = tmp_path / ".claude" / "plans"
         plans_dir.mkdir(parents=True, exist_ok=True)
 
         stale_plan = plans_dir / "stale-plan-tcn8.md"

@@ -3,7 +3,7 @@
 Plan: notion-wave-lifecycle-autosync-f4a2b8 (W4.P4.2).
 
 Network is fully mocked. NOTION_TOKEN is mocked via env. The on-disk plans
-directory is mocked via monkeypatched ``PLANS_DIR``.
+directory is mocked via monkeypatched ``PLAN_DIRS``.
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ GATE_PATH = REPO_ROOT / "ops_scripts" / "ci" / "check_plan_notion_wave_freshness
 
 
 def _load_gate():
-    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
     sys.path.insert(0, str(REPO_ROOT / "ops_scripts" / "ci"))
     spec = importlib.util.spec_from_file_location(
         "check_plan_notion_wave_freshness", GATE_PATH
@@ -98,7 +98,7 @@ class TestEvaluate:
             yield _make_row("demo-plan-abc123", "In Progress", notion_iso)
 
         with patch.object(gate, "_query_plans", side_effect=fake_rows), patch.object(
-            gate, "PLANS_DIR", plans_dir
+            gate, "PLAN_DIRS", [plans_dir]
         ):
             report = gate.evaluate(threshold_hours=24)
         assert report["status"] == "ok"
@@ -120,7 +120,7 @@ class TestEvaluate:
             yield _make_row("stale-plan-bbbbbb", "In Progress", notion_iso)
 
         with patch.object(gate, "_query_plans", side_effect=fake_rows), patch.object(
-            gate, "PLANS_DIR", plans_dir
+            gate, "PLAN_DIRS", [plans_dir]
         ):
             report = gate.evaluate(threshold_hours=24)
 
@@ -145,7 +145,7 @@ class TestEvaluate:
             yield _make_row("old-plan-cccccc", "Archived", notion_iso)
 
         with patch.object(gate, "_query_plans", side_effect=fake_rows), patch.object(
-            gate, "PLANS_DIR", plans_dir
+            gate, "PLAN_DIRS", [plans_dir]
         ):
             report = gate.evaluate(threshold_hours=24)
         assert report["status"] == "ok"
@@ -162,7 +162,7 @@ class TestEvaluate:
             yield _make_row("ghost-plan-dddddd", "In Progress", notion_iso)
 
         with patch.object(gate, "_query_plans", side_effect=fake_rows), patch.object(
-            gate, "PLANS_DIR", plans_dir
+            gate, "PLAN_DIRS", [plans_dir]
         ):
             report = gate.evaluate(threshold_hours=24)
         assert report["status"] == "ok"

@@ -283,7 +283,7 @@ class TestTierBypass:
 
     def test_windows_path_normalization(self):
         """_is_sensitive_path normalizes Windows backslashes."""
-        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules\\test.md") is True
+        assert _is_sensitive_path(".claude\\rules\\test.md") is True
 
 
 # =============================================================================
@@ -296,15 +296,15 @@ class TestWindowsPathCoverage:
     # Standard Windows backslash paths
     def test_windows_backslash_rules_path(self):
         """Windows backslash path matches rules pattern."""
-        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules\\ssot-folder-enforcement.md") is True
+        assert _is_sensitive_path(".claude\\rules\\ssot-folder-enforcement.md") is True
 
     def test_windows_backslash_schemas_path(self):
         """Windows backslash path matches schemas pattern."""
-        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\schemas\\author_gate_triggers.yaml") is True
+        assert _is_sensitive_path(".claude\\schemas\\author_gate_triggers.yaml") is True
 
     def test_windows_backslash_pre_author_gate(self):
         """Windows backslash path matches pre_author_gate.py."""
-        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\scripts\\pre_author_gate.py") is True
+        assert _is_sensitive_path(".claude\\governance\\scripts\\pre_author_gate.py") is True
 
     def test_windows_backslash_l5_safety(self):
         """Windows backslash path matches L5_safety."""
@@ -322,7 +322,7 @@ class TestWindowsPathCoverage:
     def test_mixed_separator_rules_path(self):
         """Mixed / and \\ separators still match."""
         assert _is_sensitive_path(".claude/rules\\test.md") is True
-        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules/test.md") is True
+        assert _is_sensitive_path(".claude\\rules/test.md") is True
 
     def test_mixed_separator_nested(self):
         """Mixed separators in deeply nested path."""
@@ -355,7 +355,7 @@ class TestWindowsPathCoverage:
 
     def test_trailing_backslash(self):
         """Trailing backslash in sensitive directory."""
-        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules\\") is True
+        assert _is_sensitive_path(".claude\\rules\\") is True
 
     def test_trailing_slash(self):
         """Trailing slash in sensitive directory."""
@@ -364,8 +364,8 @@ class TestWindowsPathCoverage:
     def test_case_sensitivity(self):
         """Case-sensitive matching (paths are case-sensitive on POSIX)."""
         # Uppercase should NOT match lowercase patterns
-        assert _is_sensitive_path(".WINDSURF/rules/test.md") is False
-        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree/RULES/test.md") is False
+        assert _is_sensitive_path(".CLAUDE/rules/test.md") is False
+        assert _is_sensitive_path(".claude/RULES/test.md") is False
 
     def test_partial_match_rejection(self):
         """Partial directory names don't match."""
@@ -375,7 +375,7 @@ class TestWindowsPathCoverage:
 
     def test_deeply_nested_sensitive(self):
         """Deeply nested paths within sensitive directories match."""
-        assert _is_sensitive_path("docs/archive/windsurf/legacy-tree\\rules\\very\\deep\\nested\\file.md") is True
+        assert _is_sensitive_path(".claude\\rules\\very\\deep\\nested\\file.md") is True
         assert _is_sensitive_path("agentic_core\\L5_safety\\sub\\module\\guard.py") is True
 
     def test_relative_path_prefix(self):
@@ -390,7 +390,7 @@ class TestWindowsPathCoverage:
     def test_absolute_windows_path(self):
         """Absolute Windows paths with drive letters."""
         # Should match based on the path suffix
-        assert _is_sensitive_path("C:\\Git\\Agentic-Workflow\\docs/archive/windsurf/legacy-tree\\rules\\test.md") is True
+        assert _is_sensitive_path("C:\\Git\\Agentic-Workflow\\.claude\\rules\\test.md") is True
         assert _is_sensitive_path("D:\\projects\\agentic_core\\L5_safety\\guard.py") is True
 
     # Pattern-specific edge cases

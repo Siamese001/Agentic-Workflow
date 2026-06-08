@@ -12,8 +12,8 @@ relates_to:
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W5
-LAST_COMPLETED_WAVE: W4
+CURRENT_WAVE: W6
+LAST_COMPLETED_WAVE: W5
 LAST_UPDATED: 2026-06-08
 
 # Legacy `_legacy_windsurf` / `_legacy_cursor` Tree Decommission
@@ -85,7 +85,7 @@ LAST_UPDATED: 2026-06-08
 | W2/L2 | P2.1–P2.3 | Promote live-helper subset → neutral home + rewrite importers | ~18k | Neutral active helper copies already exist at `.claude/governance/scripts/` | ✅ Done (2026-06-08) | W1 direct-importer paths retargeted to `.claude/governance/scripts/`; lifecycle and Notion import smoke green; no legacy-tree move/delete |
 | W3/L3 | P3.1 | Verify chain + tooling + gates fire post-move | ~6k | — | ✅ Done (2026-06-08) | Live dispatch fires; heartbeat fresh; wired payload gate scans 17 active hooks; lifecycle/ledger/import smokes green |
 | W4/L4 | P4.1–P4.2 | De-brand boundary constant + scanner/gate consumers | ~8k | Neutral `.claude/governance/scripts` SSOT already exists | ✅ Done (2026-06-08) | `GOVERNANCE_SCRIPTS_DIR` added; deprecated alias repointed; static_scanner + 2 gates updated; ADG scan-root parity green |
-| W5/L5 | P5.1–P5.3 | Delete dead-archive bulk + `_legacy_cursor`; retire `T6a`; guard cleanup | ~8k | L2–L4 green; no remaining importer | ⬜ Not Started | `_legacy_windsurf`/`_legacy_cursor` deleted; `T6a` retired or repointed; shell-guard legacy tokens pruned |
+| W5/L5 | P5.1–P5.3 | Delete dead-archive bulk + `_legacy_cursor`; retire `T6a`; guard cleanup | ~8k | L2–L4 green; no remaining importer | ✅ Done (2026-06-08) | `_legacy_windsurf`/`_legacy_cursor` deleted; active tests/consumers repointed; shell-guard legacy tokens pruned |
 | W6/L6 | P6.1 | Zero-brand verify + hand `.cursor/` to dec0de + close | ~5k | All prior waves green | ⬜ Not Started | Repo scan: only intentional history remains; dec0de notified for `.cursor/` removal; plan closed |
 
 ### Phase-Level Summary
@@ -101,9 +101,9 @@ LAST_UPDATED: 2026-06-08
 | P3.1 | Verify | dispatch + gates | Hook support library was missing from clean tree; payload gate still scanned frozen legacy dir | ~6k | ✅ Done: live hook lib restored, dispatch/payload/heartbeat checks green |
 | P4.1 | Boundary constant | `agentic_core/L0_routing/config/path_constants.py` (`WINDSURF_SCRIPTS_DIR`) | Author-Gate + migration receipt; rename vs value-repoint | ~4k | ✅ Done: neutral `GOVERNANCE_SCRIPTS_DIR` added; branded alias repointed for compatibility |
 | P4.2 | Scanner/gate consumers | `static_scanner.py`, `check_hardcoded_exclusions.py`, `check_terminal_cleanup.py` | ADG scan parity (exclusion semantics) | ~4k | ✅ Done: live consumers import neutral constant |
-| P5.1 | Delete dead-archive bulk | `_legacy_windsurf/post_cascade_*` etc. | Confirm zero importer post-L2 | ~3k | ⬜ |
-| P5.2 | Delete `_legacy_cursor` | `_legacy_cursor/**` + consumers | migrate test + dedup-verify first | ~3k | ⬜ |
-| P5.3 | Retire `T6a` + guard cleanup | `.pre-commit-config.yaml`, `before_shell_execution`/`claude_hook_common` | guard tokens (`.windsurf`/`Windsurf`) once trees gone | ~2k | ⬜ |
+| P5.1 | Delete dead-archive bulk | `_legacy_windsurf/post_cascade_*` etc. | Confirm zero importer post-L2 | ~3k | ✅ Done |
+| P5.2 | Delete `_legacy_cursor` | `_legacy_cursor/**` + consumers | migrate test + dedup-verify first | ~3k | ✅ Done |
+| P5.3 | Retire `T6a` + guard cleanup | `.pre-commit-config.yaml`, `before_shell_execution`/`claude_hook_common` | guard tokens (`.windsurf`/`Windsurf`) once trees gone | ~2k | ✅ Done |
 | P6.1 | Zero-brand verify + close | whole repo, Notion | hand `.cursor/` dir to dec0de | ~5k | ⬜ |
 
 ## Wave Detail
@@ -183,6 +183,30 @@ LAST_UPDATED: 2026-06-08
   consumers (test + `governance_dedup_e2e_verify.py`), then `git rm` `_legacy_cursor/`. **P5.3** Retire
   `T6a no-active-windsurf-authoring` (no tree left to guard) or repoint; prune now-dead guard tokens
   from `claude_hook_common.LEGACY_EXECUTION_TOKENS` once `.windsurf`/legacy refs are gone.
+- **Completed 2026-06-08:** Removed all tracked files under
+  `.claude/governance/scripts/_legacy_windsurf/` and
+  `.claude/governance/scripts/_legacy_cursor/`, then verified both directories are absent and
+  `git ls-files` returns no entries for either path. Obsolete legacy-layout tests were moved under
+  `tests/_archived_obsolete/legacy_tree/`; active tests and tool snapshots were repointed to
+  `.claude/governance/scripts/`, `.claude/templates/`, root `plans/`, or `.claude/plans/` according
+  to each live consumer's current SSOT.
+- **P5.3 note:** `T6a no-active-windsurf-authoring` was already absent in the clean PR branch before
+  this wave, so W5 verified the absence rather than editing `.pre-commit-config.yaml`. W5 pruned
+  bare `_legacy_windsurf` / `_legacy_cursor` execution tokens from `claude_hook_common` while
+  retaining broader compatibility/history guards that still apply outside this physical tree.
+- **Verification passed:** legacy directories absent; tracked legacy paths absent; active deleted-path
+  scan found no `_legacy_windsurf` / `_legacy_cursor` script-tree references outside archived/doc/plan
+  artifacts; changed-Python `py_compile` (59 files) passed; focused hook/Notion/path tests passed
+  (130 passed); broad W5 governance family passed
+  (`tests/unit/windsurf_scripts`, `tests/unit/windsurf`, `tests/windsurf/scripts`,
+  `test_check_plan_notion_wave_freshness.py`, `test_check_graph_reach_archival.py`: 1035 passed,
+  7 skipped). `check_terminal_cleanup.py --changed-files-only --base-ref origin/main` and bounded
+  changed-file `check_hardcoded_exclusions.py` passed; the full repo hardcoded-exclusion scan still
+  reports pre-existing global shadow-exclusion sets outside W5 scope. Dispatch smoke exited 0;
+  `check_post_agent_alive.py`, `check_post_agent_payload.py`,
+  `tools.plan_lifecycle.wave_execution_state status`, `queue_to_ledger.py --dry-run`, and
+  `check_refactor_decision_ledger_ssot.py` all passed. Dispatch still emits the known non-blocking
+  ADG ledger warning (`tool_routing append failed: no such table: events`).
 
 ### L6 — Verify + close
 - **P6.1** Repo-wide scan; remaining `windsurf`/`cursor` hits must be intentional history. Hand the now-
@@ -222,4 +246,4 @@ import-clean). The physical `.cursor/` dir removal stays owned by dec0de (do not
   import path.
 
 WAVE_COMPLETE: YES
-WAVE_COMPLETE_NOTE: plan=legacy-windsurf-tree-decommission-9f2c47 wave=W4/L4 date=2026-06-08 artifacts=docs/reports/decommission/legacy_tree_classification_9f2c47.md,docs/reports/decommission/legacy_tree_classification_9f2c47.json,docs/reports/decommission/legacy_tree_decommission_w4_core_addition_receipt.json note="boundary constant de-branded via GOVERNANCE_SCRIPTS_DIR; static scanner and CI gates consume neutral root; direct gate imports bootstrapped to current worktree"
+WAVE_COMPLETE_NOTE: plan=legacy-windsurf-tree-decommission-9f2c47 wave=W5/L5 date=2026-06-08 artifacts=docs/reports/decommission/legacy_tree_classification_9f2c47.md,docs/reports/decommission/legacy_tree_classification_9f2c47.json note="deleted _legacy_windsurf/_legacy_cursor trees; archived obsolete legacy-layout tests; repointed active tests/tools to live SSOTs; broad W5 governance pytest, changed-file exclusion/terminal gates, and hook/ledger smokes passed"

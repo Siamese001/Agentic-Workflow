@@ -1,11 +1,11 @@
-"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_agent_wave_completion_audit.py.
+"""Unit tests for .claude/governance/scripts/post_agent_wave_completion_audit.py.
 
 RCA: rca-wave-marker-emission-gap-c7d3f1 W4.P1.
 
 Key invariants verified:
 - GAP-1 fix: audit fires WITHOUT requiring wave_execution_state.py start
   (i.e. _has_active_plan guard is gone — main() must not import or call it)
-- GAP-2 fix: hook is registered with show_output=true in hooks.json
+- GAP-2 fix: hook is registered in the active post-agent dispatcher
 - GAP-3 fix: EDIT_PATTERNS detects the actual Windsurf tool-call shapes
 - Advisory fires when write_count >= 3 and no markers
 - Advisory does NOT fire when write_count < 3
@@ -26,12 +26,12 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_wave_completion_audit.py"
-HOOKS_JSON = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_wave_completion_audit.py"
+DISPATCH_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_dispatch.py"
 
 
 def _load_module():
-    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
     sys.path.insert(0, str(REPO_ROOT))
     spec = importlib.util.spec_from_file_location(
         "post_agent_wave_completion_audit", HOOK_PATH
@@ -42,6 +42,14 @@ def _load_module():
     if key in sys.modules:
         del sys.modules[key]
     sys.modules[key] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _load_dispatch_module():
+    spec = importlib.util.spec_from_file_location("post_agent_dispatch", DISPATCH_PATH)
+    assert spec and spec.loader
+    mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
 
@@ -87,23 +95,13 @@ class TestGap1GuardRemoved:
 
 
 # ---------------------------------------------------------------------------
-# GAP-2: hooks.json must register audit hook with show_output=true
+# GAP-2: active dispatcher must register audit hook
 # ---------------------------------------------------------------------------
 
-class TestGap2HooksJson:
-    def test_show_output_true_in_hooks_json(self):
-        """post_agent_wave_completion_audit.py must have show_output=true."""
-        data = json.loads(HOOKS_JSON.read_text(encoding="utf-8"))
-        post_hooks = data.get("hooks", {}).get("post_agent_response", [])
-        audit_entries = [
-            h for h in post_hooks
-            if "post_agent_wave_completion_audit" in h.get("command", "")
-        ]
-        assert audit_entries, "post_agent_wave_completion_audit.py not found in hooks.json"
-        for entry in audit_entries:
-            assert entry.get("show_output") is True, (
-                f"show_output must be true for {entry['command']} (GAP-2 fix)"
-            )
+class TestGap2ActiveDispatch:
+    def test_registered_in_post_agent_dispatch_chain(self):
+        dispatch = _load_dispatch_module()
+        assert "post_agent_wave_completion_audit.py" in dispatch.LEGACY_SCRIPTS
 
 
 # ---------------------------------------------------------------------------

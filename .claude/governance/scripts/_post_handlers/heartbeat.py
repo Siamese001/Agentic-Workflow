@@ -1,6 +1,6 @@
 """Heartbeat handler — writes one line per response to the heartbeat log.
 
-In-process equivalent of archived `.claude/governance/scripts/_legacy_cursor/post_agent_heartbeat.py`.
+In-process replacement for the old standalone post-agent heartbeat hook.
 Mirrors that script's contract exactly so the standalone hook can be
 removed once the dispatcher is fully cut over.
 """

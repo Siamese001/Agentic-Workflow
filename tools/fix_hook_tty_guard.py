@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
+SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance" / "scripts"
 
 TARGETS = [
     "pre_write_gate.py",

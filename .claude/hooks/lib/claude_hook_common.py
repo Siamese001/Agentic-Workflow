@@ -38,8 +38,6 @@ LEGACY_EXECUTION_TOKENS: tuple[str, ...] = (
     ".windsurf",
     "docs/archive/windsurf/legacy-tree",
     ".cursor/scripts/_legacy_windsurf",
-    "_legacy_windsurf",
-    "_legacy_cursor",
 )
 
 

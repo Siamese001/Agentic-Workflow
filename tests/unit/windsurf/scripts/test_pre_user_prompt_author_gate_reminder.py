@@ -275,9 +275,9 @@ class TestPipelineReminderContent:
 
     def test_pipeline_reminder_names_forbidden_pattern(self, mod):
         reminder = mod.PIPELINE_REMINDER
-        assert "FORBIDDEN" in reminder
+        assert "Do not hand-build options" in reminder
 
     def test_pipeline_reminder_shows_format_contract(self, mod):
         reminder = mod.PIPELINE_REMINDER
-        assert "confidence=" in reminder
-        assert "trade-off:" in reminder
+        assert "OPTIONS_JSON verbatim" in reminder
+        assert "author-gate-ui-renderer" in reminder

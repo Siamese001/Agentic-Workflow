@@ -115,7 +115,7 @@ class TestScanPlans:
             plans_dir, "my-deferred-abc123.md",
             "DO_NOT_IMPLEMENT_GUARD: plan=my-deferred-abc123 reason=gate required\n"
         )
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         results = mod._scan_plans()
         assert len(results) == 1
         slug, reason, has_marker = results[0]
@@ -130,7 +130,7 @@ class TestScanPlans:
             plans_dir, "prose-plan-def456.md",
             "Nothing here should be implemented without a separate Author-Gate.\n"
         )
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         results = mod._scan_plans()
         assert len(results) == 1
         slug, reason, has_marker = results[0]
@@ -144,7 +144,7 @@ class TestScanPlans:
             plans_dir, "normal-plan-aaa111.md",
             "# Normal Plan\nThis plan implements feature X.\n"
         )
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         results = mod._scan_plans()
         assert results == []
 
@@ -155,7 +155,7 @@ class TestScanPlans:
             plans_dir, "_archive-plan-bbb222.md",
             "DO_NOT_IMPLEMENT_GUARD: plan=_archive-plan-bbb222 reason=archived\n"
         )
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         results = mod._scan_plans()
         assert results == []
 
@@ -170,12 +170,12 @@ class TestScanPlans:
             plans_dir, "plan-b-bbb222.md",
             "Nothing here should be implemented without Author-Gate.\n"
         )
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         results = mod._scan_plans()
         assert len(results) == 2
 
     def test_missing_plans_dir_returns_empty(self, mod, tmp_path, monkeypatch):
-        monkeypatch.setattr(mod, "PLANS_DIR", tmp_path / "nonexistent")
+        monkeypatch.setattr(mod, "PLAN_DIRS", [tmp_path / "nonexistent"])
         assert mod._scan_plans() == []
 
 
@@ -191,7 +191,7 @@ class TestMain:
             "DO_NOT_IMPLEMENT_GUARD: plan=guarded-ccc333 reason=gate required\n",
             encoding="utf-8",
         )
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         monkeypatch.delenv("DEFERRED_PLAN_GATE_BYPASS", raising=False)
         rc = mod.main()
         assert rc == 0
@@ -206,7 +206,7 @@ class TestMain:
             "Nothing here should be implemented without Author-Gate.\n",
             encoding="utf-8",
         )
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         monkeypatch.delenv("DEFERRED_PLAN_GATE_BYPASS", raising=False)
         rc = mod.main()
         assert rc == 0
@@ -218,7 +218,7 @@ class TestMain:
         plans_dir = tmp_path / "plans"
         plans_dir.mkdir()
         (plans_dir / "clean-eee555.md").write_text("# Normal Plan\n", encoding="utf-8")
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         monkeypatch.delenv("DEFERRED_PLAN_GATE_BYPASS", raising=False)
         rc = mod.main()
         assert rc == 0
@@ -232,7 +232,7 @@ class TestMain:
             "DO_NOT_IMPLEMENT_GUARD: plan=guarded-fff666 reason=blocked\n",
             encoding="utf-8",
         )
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         monkeypatch.setenv("DEFERRED_PLAN_GATE_BYPASS", "1")
         rc = mod.main()
         assert rc == 0
@@ -242,7 +242,7 @@ class TestMain:
     def test_empty_plans_dir_no_output(self, mod, tmp_path, monkeypatch, capsys):
         plans_dir = tmp_path / "plans"
         plans_dir.mkdir()
-        monkeypatch.setattr(mod, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(mod, "PLAN_DIRS", [plans_dir])
         monkeypatch.delenv("DEFERRED_PLAN_GATE_BYPASS", raising=False)
         rc = mod.main()
         assert rc == 0
