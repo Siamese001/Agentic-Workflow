@@ -270,6 +270,15 @@ def _build_reason_codes(
                     f"{reasoning_policy.get('reasoning_intensity', 'R1_STANDARD')}"
                 ),
                 f"judge_profile={reasoning_policy.get('judge_profile', 'normal_default')}",
+                (
+                    "x2_deterministic_gates="
+                    f"{','.join(reasoning_policy.get('x2_deterministic_gates', ()))}"
+                ),
+                (
+                    "x1d_llm_judges="
+                    f"{','.join(reasoning_policy.get('x1d_llm_judges', ()))}"
+                ),
+                f"x1d_enabled={bool(reasoning_policy.get('x1d_enabled', True))}",
                 f"max_candidates={int(reasoning_policy.get('max_candidates', 1) or 1)}",
                 (
                     "validation_repair_passes="

@@ -351,6 +351,10 @@ def run_canonical_apps_lic_spine(
         "judge_profile": route_reasoning_policy["judge_profile"],
         "active_judges": list(route_reasoning_policy["judges"]),
         "judge_count": len(route_reasoning_policy["judges"]),
+        "x2_deterministic_gates": list(route_reasoning_policy["x2_deterministic_gates"]),
+        "x2_deterministic_gate_count": len(route_reasoning_policy["x2_deterministic_gates"]),
+        "x1d_llm_judges": list(route_reasoning_policy["x1d_llm_judges"]),
+        "x1d_llm_judge_count": len(route_reasoning_policy["x1d_llm_judges"]),
         "max_candidates": route_reasoning_policy["max_candidates"],
     }
     will_c0 = bool(l1.grounding_required)
@@ -519,6 +523,10 @@ def run_canonical_apps_lic_spine(
         "judge_profile": route_reasoning_policy["judge_profile"],
         "active_judges": list(route_reasoning_policy["judges"]),
         "judge_count": len(route_reasoning_policy["judges"]),
+        "x2_deterministic_gates": list(route_reasoning_policy["x2_deterministic_gates"]),
+        "x2_deterministic_gate_count": len(route_reasoning_policy["x2_deterministic_gates"]),
+        "x1d_llm_judges": list(route_reasoning_policy["x1d_llm_judges"]),
+        "x1d_llm_judge_count": len(route_reasoning_policy["x1d_llm_judges"]),
         "max_candidates": route_reasoning_policy["max_candidates"],
         "evidence_support_status": route_reasoning_policy.get(
             "evidence_support_status", ""

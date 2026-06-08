@@ -11,10 +11,12 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from apps_lic.engines.judges.lic_x1d_llm_judge import run_lic_x1d_llm_judge
 from apps_lic.policy.reasoning_intensity import (
     JUDGE_CANDIDATE_SELECTION,
     JUDGE_EVIDENCE_SUPPORT,
     JUDGE_LINKEDIN_TONE,
+    JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     JUDGE_SAFETY_NO_FABRICATION,
     JUDGE_SCHEMA_POLICY_NO_SEND,
     compact_policy,
@@ -35,7 +37,7 @@ class QaReportEngine:
             or report.get("reasoning_policy")
             or default_reasoning_policy()
         )
-        judge_scores, judge_refs = _run_targeted_judges(
+        judge_scores, judge_refs, x2_gate_summary, x1d_outputs = _run_targeted_judges(
             draft=draft,
             report=report,
             evidence=evidence,
@@ -76,6 +78,14 @@ class QaReportEngine:
                 "judge_count": len(policy["judges"]),
                 "judge_scores": judge_scores,
                 "judge_evidence_refs": judge_refs,
+                "x2_deterministic_gates": list(policy["x2_deterministic_gates"]),
+                "x2_deterministic_gate_count": len(policy["x2_deterministic_gates"]),
+                "x2_gate_summary": x2_gate_summary,
+                "x2_gates_passed": _x2_gates_passed(report, x2_gate_summary),
+                "x1d_llm_judges": list(policy["x1d_llm_judges"]),
+                "x1d_llm_judge_count": len(policy["x1d_llm_judges"]),
+                "x1d_llm_judge_outputs": x1d_outputs,
+                "x1d_model_backed_pass": _x1d_model_backed_pass(x1d_outputs),
                 "quality_contract": {
                     "generation_temperature": draft.get("generation_temperature"),
                     "top_p": draft.get("top_p"),
@@ -85,6 +95,15 @@ class QaReportEngine:
                     "judge_profile": policy["judge_profile"],
                     "active_judges": list(policy["judges"]),
                     "judge_count": len(policy["judges"]),
+                    "x2_deterministic_gates": list(policy["x2_deterministic_gates"]),
+                    "x2_deterministic_gate_count": len(policy["x2_deterministic_gates"]),
+                    "x2_gates_passed": _x2_gates_passed(report, x2_gate_summary),
+                    "x1d_llm_judges": list(policy["x1d_llm_judges"]),
+                    "x1d_llm_judge_count": len(policy["x1d_llm_judges"]),
+                    "x1d_runs_after_x2": bool(policy.get("x1d_runs_after_x2", True)),
+                    "x1d_max_attempts": int(policy.get("x1d_max_attempts", 1) or 1),
+                    "x1d_failure_policy": str(policy.get("x1d_failure_policy", "")),
+                    "x1d_model_backed_pass": _x1d_model_backed_pass(x1d_outputs),
                     "max_candidates": int(policy["max_candidates"]),
                     "candidate_count": int(draft.get("candidate_count") or 0),
                     "validation_repair_passes": int(
@@ -115,10 +134,18 @@ def _run_targeted_judges(
     report: dict[str, Any],
     evidence: dict[str, Any],
     policy: dict[str, Any],
-) -> tuple[dict[str, float], dict[str, list[str]]]:
+) -> tuple[
+    dict[str, float],
+    dict[str, list[str]],
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+]:
     scores: dict[str, float] = {}
     refs: dict[str, list[str]] = {}
-    for judge_name in policy.get("judges", ()):
+    x2_gate_summary: dict[str, dict[str, Any]] = {}
+    x1d_outputs: dict[str, dict[str, Any]] = {}
+
+    for judge_name in policy.get("x2_deterministic_gates", ()):
         if judge_name == JUDGE_SCHEMA_POLICY_NO_SEND:
             score, evidence_refs = _judge_schema_policy_no_send(draft, report, policy)
         elif judge_name == JUDGE_LINKEDIN_TONE:
@@ -133,7 +160,36 @@ def _run_targeted_judges(
             score, evidence_refs = 0.0, [f"unknown_judge:{judge_name}"]
         scores[str(judge_name)] = round(float(score), 3)
         refs[str(judge_name)] = list(evidence_refs)
-    return scores, refs
+        threshold = _x2_gate_threshold(str(judge_name))
+        x2_gate_summary[str(judge_name)] = {
+            "score": round(float(score), 3),
+            "threshold": threshold,
+            "pass": float(score) >= threshold,
+            "evidence_refs": list(evidence_refs),
+            "authority": "x2_deterministic_gate",
+        }
+
+    x2_passed = _x2_gates_passed(report, x2_gate_summary)
+    if bool(policy.get("x1d_enabled", True)):
+        for judge_name in policy.get("x1d_llm_judges", ()):
+            if judge_name != JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D:
+                scores[str(judge_name)] = 0.0
+                refs[str(judge_name)] = [f"unknown_x1d_judge:{judge_name}"]
+                continue
+            output = run_lic_x1d_llm_judge(
+                draft=draft,
+                report=report,
+                evidence=evidence,
+                policy=policy,
+                x2_gate_summary=x2_gate_summary,
+                x2_gates_passed=x2_passed,
+            )
+            output_dict = output.to_dict()
+            score = output.normalized_score if output.normalized_score is not None else 0.0
+            scores[str(judge_name)] = round(float(score), 3)
+            refs[str(judge_name)] = list(output.findings or output.quality_flags or [])
+            x1d_outputs[str(judge_name)] = output_dict
+    return scores, refs, x2_gate_summary, x1d_outputs
 
 
 def _judge_schema_policy_no_send(
@@ -233,6 +289,31 @@ def _judge_quality_score(scores: dict[str, float]) -> float:
     if not scores:
         return 0.0
     return round(sum(scores.values()) / len(scores), 3)
+
+
+def _x2_gate_threshold(gate_name: str) -> float:
+    if gate_name == JUDGE_LINKEDIN_TONE:
+        return 0.65
+    if gate_name == JUDGE_CANDIDATE_SELECTION:
+        return 1.0
+    return 0.80
+
+
+def _x2_gates_passed(report: dict[str, Any], summary: dict[str, dict[str, Any]]) -> bool:
+    if not report.get("passed"):
+        return False
+    if not summary:
+        return False
+    return all(bool(item.get("pass")) for item in summary.values())
+
+
+def _x1d_model_backed_pass(outputs: dict[str, dict[str, Any]]) -> bool:
+    if not outputs:
+        return False
+    return any(
+        out.get("evaluator_mode") == "MODEL_BACKED" and out.get("pass") is True
+        for out in outputs.values()
+    )
 
 
 def _has_low_friction_ask(lowered: str) -> bool:
