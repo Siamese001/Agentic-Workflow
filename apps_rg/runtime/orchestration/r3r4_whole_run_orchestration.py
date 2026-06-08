@@ -22,6 +22,7 @@ from apps_rg.runtime.full_resume_review_bundle import (
     REVIEW_BUNDLE_FILENAME,
     emit_full_resume_review_bundle,
 )
+from apps_rg.runtime.proof.x3_disposition_normalize import normalize_x3_code
 from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
 from apps_rg.runtime.runtime_proof_layout import (
     allocate_full_resume_artifact_dir,
@@ -32,6 +33,21 @@ from apps_rg.runtime.runtime_proof_layout import (
 ROUTE_FAMILY_R3R4 = "R3R4_MANAGED_WORKFLOW"
 DRAFT_LEG_ROUTE_FAMILY = "R4_SINGLE_ACTION"
 _SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
+
+
+def _aggregate_x3_for_outcome(raw_x3: str | None, *, outcome: bool) -> str:
+    """G16: a whole run that authorized zero lanes surfaces an explicit BLOCK.
+
+    The frozen AIG/Brown failure reported ``X3A`` (which normalizes to UNKNOWN — never an allow)
+    while every lane was ``X3_BLOCK``. When the run is not authorized AND the disposition is the
+    ambiguous UNKNOWN bucket, force an explicit ``X3_BLOCK`` so the aggregate reads honestly and
+    matches the lanes. Authorized runs, and runs with an already-explicit block/review/allow
+    disposition, are left untouched.
+    """
+    x3 = str(raw_x3 or "")
+    if not outcome and normalize_x3_code(x3) == "UNKNOWN":
+        return "X3_BLOCK"
+    return x3
 
 
 def _default_artifact_dir(explicit: str) -> Path:
@@ -299,7 +315,7 @@ def _failure_payload(
         "research_delegation_outcome": reason,
         "route_decision": route_decision,
         "terminal_r5": True,
-        "x3_disposition": "X3A",
+        "x3_disposition": "X3_BLOCK",
         "exit_status": "error",
         "outcome_authorized": False,
     }
@@ -308,7 +324,7 @@ def _failure_payload(
         "exit_status": "error",
         "execution_status": "failed",
         "outcome_authorized": False,
-        "x3_disposition": "X3A",
+        "x3_disposition": "X3_BLOCK",
         "fault": reason,
         "artifact_dir": str(artifact_dir),
         "route_family": ROUTE_FAMILY_R3R4,
@@ -577,11 +593,12 @@ def run_whole_run_with_route_governance(
             review_zip = None
 
     outcome = result.fault == "" and result.x3_disposition in _SUCCESS_X3
+    aggregate_x3 = _aggregate_x3_for_outcome(result.x3_disposition, outcome=outcome)
     payload: dict[str, Any] = {
         "exit_status": "success" if outcome else "error",
         "execution_status": "completed" if outcome else "failed",
         "outcome_authorized": outcome,
-        "x3_disposition": result.x3_disposition,
+        "x3_disposition": aggregate_x3,
         "fault": result.fault,
         "artifact_dir": str(art),
         "run_id": result.run_id,
