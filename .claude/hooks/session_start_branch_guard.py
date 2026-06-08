@@ -1,47 +1,52 @@
-"""SessionStart — branch-per-chat guard.
+"""SessionStart — worktree-per-chat guard.
 
-Constitutional intent: every chat works on its own fresh branch cut from the
-default branch (``main``), never directly on ``main``/``master``. This hook runs
-at session start and, when HEAD is on a protected branch, creates a new
-``chat/<UTC-stamp>-<session-hex>`` branch off the *current* default-branch tip.
-Any uncommitted work in the tree is carried onto the new branch by ``git switch
--c`` (nothing is lost).
+Intent (per user directive 2026-06-08): every chat/feature gets its own **git
+worktree** cut from the default branch, rather than just a new branch in the
+primary checkout. When HEAD is on a protected branch (``main``/``master``), this
+hook creates a fresh ``chat/<stamp>-<hex>`` branch in a sibling worktree under
+``<repo-parent>/.chat-worktrees/`` and instructs the assistant to perform all
+work for the chat inside that worktree.
 
-Behavior:
-* HEAD on a protected branch (``main``/``master``) -> create + switch to a new
-  chat branch; emit additionalContext so the assistant knows the new branch.
-* HEAD already on a non-protected branch -> no-op (chat is already isolated).
-* Not a git repo / git unavailable / dirty edge cases -> fail-soft (allow).
+KNOWN CONSTRAINT (documented, accepted): a SessionStart hook is a subprocess and
+**cannot relocate the already-running session's working directory** into the new
+worktree. It therefore creates the worktree and emits ``additionalContext`` telling
+the assistant to ``cd`` into the worktree path and target files there. The hard
+teeth live in ``before_file_edit_branch_guard.py``, which is worktree-aware: it
+allows edits whose owning working tree is on a non-protected branch (i.e. inside
+the chat worktree) and blocks edits to the primary checkout while it is on a
+protected branch — nudging all mutation into the worktree.
 
-This is the *proactive* half. The hard enforcement teeth live in
-``before_file_edit_branch_guard.py`` (PreToolUse Edit|Write|MultiEdit), which
-blocks edits whenever HEAD is on a protected branch — so even a resumed session
-or a manual ``git checkout main`` cannot silently mutate the default branch.
+Behaviour:
+* HEAD on a protected branch -> create worktree + chat branch; emit context.
+* HEAD already on a non-protected branch -> no-op (already isolated).
+* Worktree/branch already exists, git unavailable, not a repo -> fail-soft (allow).
 
-Bypass: ``BRANCH_PER_CHAT_BYPASS=1``.
+Self-contained: does not depend on ``lib.claude_hook_common`` (absent in some
+checkouts). Always exits 0 (proactive half; never blocks session start).
+
+Bypass: ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master,release`` (csv).
+Worktree root override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default ``<repo-parent>/.chat-worktrees``).
 """
 
 from __future__ import annotations
 
+import datetime as _dt
 import json
 import os
 import subprocess
 import sys
 from pathlib import Path
 
-from lib.claude_hook_common import read_payload, write_receipt
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PROTECTED = ("main", "master")
 
 
-def _git(*args: str) -> tuple[int, str]:
-    """Run a git command (shell=False, bounded). Returns (returncode, stdout-stripped)."""
+def _git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
     try:
         proc = subprocess.run(
             ["git", *args],
-            cwd=str(REPO_ROOT),
+            cwd=str(cwd or REPO_ROOT),
             capture_output=True,
             text=True,
             timeout=30,
@@ -59,8 +64,33 @@ def _protected() -> set[str]:
     return set(DEFAULT_PROTECTED)
 
 
+def _bypass() -> bool:
+    return (
+        os.environ.get("BRANCH_PER_CHAT_BYPASS") == "1"
+        or os.environ.get("WORKTREE_PER_CHAT_BYPASS") == "1"
+    )
+
+
+def _worktree_root() -> Path:
+    override = os.environ.get("CHAT_WORKTREE_ROOT", "").strip()
+    if override:
+        return Path(override)
+    return REPO_ROOT.parent / ".chat-worktrees"
+
+
+def _read_payload() -> dict:
+    try:
+        raw = sys.stdin.read()
+    except OSError:
+        return {}
+    try:
+        obj = json.loads(raw) if raw.strip() else {}
+        return obj if isinstance(obj, dict) else {}
+    except json.JSONDecodeError:
+        return {}
+
+
 def _emit_context(message: str) -> None:
-    """SessionStart additionalContext is surfaced to the assistant at chat start."""
     out = {
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
@@ -71,54 +101,58 @@ def _emit_context(message: str) -> None:
 
 
 def main() -> int:
-    payload = read_payload()
+    payload = _read_payload()
 
-    if os.environ.get("BRANCH_PER_CHAT_BYPASS") == "1":
-        write_receipt("sessionStartBranchGuard", payload, "allow", "bypass env set")
+    if _bypass():
         return 0
 
     rc, branch = _git("rev-parse", "--abbrev-ref", "HEAD")
     if rc != 0 or not branch:
-        # Not a git repo or git unavailable — fail soft.
-        write_receipt("sessionStartBranchGuard", payload, "allow", "no git branch")
-        return 0
+        return 0  # not a git repo / git unavailable — fail-soft
+    if branch not in _protected():
+        return 0  # already on an isolated branch — nothing to do
 
-    protected = _protected()
-    if branch not in protected:
-        write_receipt(
-            "sessionStartBranchGuard", payload, "allow", f"already on isolated branch '{branch}'"
-        )
-        return 0
-
-    # On a protected branch — cut a fresh chat branch off the current tip.
     session_id = str(payload.get("session_id") or payload.get("sessionId") or "")
     hexpart = (session_id.replace("-", "")[:8]) or "00000000"
-    # SessionStart payload carries no wall clock we trust; derive a stamp from git.
-    rc_ts, stamp = _git("show", "-s", "--format=%cd", "--date=format:%Y%m%d-%H%M%S", "HEAD")
-    if rc_ts != 0 or not stamp:
-        stamp = "session"
+    stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%d-%H%M%S")
     new_branch = f"chat/{stamp}-{hexpart}"
+    wt_dirname = f"chat-{stamp}-{hexpart}"
+    wt_path = _worktree_root() / wt_dirname
 
-    rc_sw, _ = _git("switch", "-c", new_branch)
-    if rc_sw != 0:
-        # Name collision or other failure — try a uniquified name once.
-        rc_sw, _ = _git("switch", "-c", f"{new_branch}-{os.getpid()}")
-        if rc_sw != 0:
-            msg = (
-                f"branch-per-chat: still on protected branch '{branch}'. Auto-create failed; "
-                f"create a working branch before editing (e.g. `git switch -c chat/<topic>`)."
-            )
-            write_receipt("sessionStartBranchGuard", payload, "warn", msg)
-            sys.stderr.write("[HOOK WARN] " + msg + "\n")
-            _emit_context(msg)
-            return 0
+    try:
+        _worktree_root().mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
+
+    # Create the worktree on a fresh chat branch cut from the current (protected) tip.
+    rc_wt, out_wt = _git("worktree", "add", str(wt_path), "-b", new_branch)
+    if rc_wt != 0:
+        # Retry once with a PID-uniquified branch/dir (collision), else fail-soft.
         new_branch = f"{new_branch}-{os.getpid()}"
+        wt_path = _worktree_root() / f"{wt_dirname}-{os.getpid()}"
+        rc_wt, out_wt = _git("worktree", "add", str(wt_path), "-b", new_branch)
+    if rc_wt != 0:
+        msg = (
+            f"worktree-per-chat: still on protected branch '{branch}'. Auto-worktree "
+            f"failed ({out_wt or 'unknown error'}). Create one manually before editing:\n"
+            f"    git worktree add {_worktree_root() / wt_dirname} -b {new_branch}\n"
+            f"then `cd` into it. (Set WORKTREE_PER_CHAT_BYPASS=1 for an intentional "
+            f"on-primary change.)"
+        )
+        sys.stderr.write("[HOOK WARN] " + msg + "\n")
+        _emit_context(msg)
+        return 0
 
     msg = (
-        f"branch-per-chat: this chat was on protected branch '{branch}'. Created and switched to "
-        f"'{new_branch}' (cut from '{branch}'). All work for this chat lands here, not on '{branch}'."
+        f"worktree-per-chat: this chat was on protected branch '{branch}'. Created a git "
+        f"worktree for the feature at:\n    {wt_path}\n"
+        f"on branch '{new_branch}' (cut from '{branch}').\n\n"
+        f"⚠️ ALL work for this chat must happen inside that worktree — the primary checkout "
+        f"({REPO_ROOT}) stays on '{branch}' and edits to it are blocked. First action: "
+        f"`cd {wt_path}` for shell commands, and target file edits at paths under {wt_path}. "
+        f"Commit and push from the worktree; open the PR from branch '{new_branch}'."
     )
-    write_receipt("sessionStartBranchGuard", payload, "allow", msg)
+    sys.stderr.write("[HOOK] " + msg + "\n")
     _emit_context(msg)
     return 0
 
