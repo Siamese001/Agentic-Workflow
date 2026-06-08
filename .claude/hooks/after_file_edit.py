@@ -40,11 +40,16 @@ if file_path.startswith(".claude/plans/_archive/") or "/plans/_archive/" in file
 
 def _audit_plan_wave_summary_top(norm_path: str) -> int | None:
     """Return hook exit code when plan violates consolidated wave summary at top."""
-    if not norm_path.replace("\\", "/").startswith(".claude/plans/"):
+    # Forward-only relocation (c1a17d): canonical repo-root plans/ + legacy
+    # .claude/plans/. A plan file is a *.md whose parent dir is named "plans"
+    # and is not under an _archive/ or reports/ tree (matches
+    # post_write_plan_reconcile.py / plan_driven_closer.py).
+    _np = norm_path.replace("\\", "/")
+    if Path(_np).parent.name != "plans" or "reports" in Path(_np).parts:
         return None
     if not norm_path.endswith(".md"):
         return None
-    if "/plans/_archive/" in norm_path.replace("\\", "/"):
+    if "/plans/_archive/" in _np:
         return None
 
     plan_file = REPO_ROOT / norm_path.replace("/", os.sep)
