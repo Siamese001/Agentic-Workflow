@@ -47,6 +47,18 @@ truthful end-to-end generation from a clean checkout. Load-bearing decisions for
 | W3 | `fact_vectors` bootstrap from graph/proof-pool | ✅ Completed | `python -m apps_rg bootstrap fact-vectors --strict` builds 13 atoms from the tracked **candidate fact ledger** (NOT base resume — G14) across all generated lanes; idempotent (stable ids); manifest + checksum; strict fail-loud. **doctor flips exit 2→0** (fact_vectors present, live-proven). EY/InsurTech recorded locked-deterministic (constitutional floor). 7 tests. Note: C0.3 graph-expansion enrichment deferred (ledger build satisfies G2/G3/G10) |
 | W4 | Exit / report / artifact / aggregation contract | 🔄 Partial | ✅ G16 aggregate disposition truth — a zero-authorized whole run now surfaces an explicit `X3_BLOCK` (not the ambiguous `X3A`→UNKNOWN the W0 fixture froze); `_failure_payload` X3A→X3_BLOCK too. ⏳ G17 run_report-always, G18 whole-resume aggregation gates, G19 aggregate-blocks-X3, G20 fallback-not-success → closeout (need a live integrated run now that C0.2 is unblocked) |
 | W5 | Product-mode tests + vestigial artifact cleanup | 🔄 Partial | ✅ G12 base-resume n-gram is advisory/WARN (locked: high-overlap bullet still passes), ✅ G15 DOCX-not-required (locked: defaults False); G11 done (W2); all W0–W5 tests run product-mode (no `APPS_RG_TEST_HARNESS`). ⏳ G13 generate-N/select-X receipts + G21 CI product-mode job → need live integrated run |
+| W6 | E2E live-run closeout — full AIG resume | 🔄 In progress | The live AIG run (JD + briefing) after W1–W5 unblocked dense C0.2 and surfaced the remaining blocker chain. **Success = `python -m apps_rg` for AIG produces `generated_resume.json` with the generated lanes authorized.** Covers the E2E-discovered gaps: **G22** sparse/BM25 index build (current blocker — all lanes block on `sparse UNAVAILABLE`), **G23** JD propagation to lanes, **G9b** stale alias `sentence-transformers/bge-m3-v1` in the L2_CACHE path, **G16b** core-spine terminal receipt still `X3A`, **G17** emit `run_report.json`, + any further blocker the iteration reveals. Fix · re-run · repeat until green |
+
+### W6 — E2E gap register (discovered by the live AIG run, 2026-06-08)
+
+| ID | Sev | Gap | Evidence | Status |
+|---|---|---|---|---|
+| G22 | CRITICAL | Sparse/BM25 lane independently mandatory but the BM25 sidecar for `fact_vectors` is not built → every generated lane blocks `sparse UNAVAILABLE:hits=0` | `full_resume_d69c149b4c7d` competencies `provider_response.json` | 🔄 active blocker |
+| G9c | HIGH | `assert_collection_embedding_parity` applied truthiness to a numpy `peek()` array → `PRE_RUN:exception` on a populated collection | `full_resume_a0c41812fbd0` competencies pre-run | ✅ Fixed (`468bacc446`) |
+| G23 | HIGH | `--jd <file>` does not propagate to lane generation (`DEFAULT_SSOT: no run-specific JD provided`) despite a loaded `jd_payload` | `aig_w4_validation2.log` | ⏳ pending |
+| G9b | MEDIUM | Stale alias `sentence-transformers/bge-m3-v1` in the L2_CACHE / semantic-cache path → "using ChromaDB default EF" | both validation logs | ⏳ pending |
+| G16b | MEDIUM | Core-spine terminal receipt still emits `X3A` (apps_rg payload fixed in G16, but the spine emission is deeper) | render_run_summary X3=`X3A` | ⏳ pending |
+| G17b | MEDIUM | `run_report.json` not emitted → renderer cannot show narrative HOPs / per-section verdicts | render_run_summary | ⏳ pending |
 
 ## Current failure summary
 

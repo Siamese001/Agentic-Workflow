@@ -127,6 +127,28 @@ def _reset_collection(chroma_path: str, collection_name: str = "fact_vectors") -
     return count
 
 
+def _build_sparse_sidecar(chroma_path: str, manifest: dict[str, Any]) -> None:
+    """G22: build the FTS5/BM25 sparse sidecar so the mandatory C0.2 sparse lane is available.
+
+    Reads the just-upserted fact_vectors collection and writes data/cache/sparse/fact_vectors.db
+    (read by agentic_core.L4_state.utils.memory.bm25_store.get_sparse_index). Best-effort; the
+    outcome is recorded in the manifest so --strict can gate on it.
+    """
+    try:
+        from tools.generate.ingestion import build_sparse_index as sparse_builder
+
+        sparse_builder.CHROMA_PATH = Path(chroma_path)
+        stats = sparse_builder.build_for_collection("fact_vectors")
+        from agentic_core.L4_state.utils.memory.bm25_store import sparse_sidecar_exists
+
+        manifest["sparse_sidecar_built"] = bool(sparse_sidecar_exists("fact_vectors"))
+        manifest["sparse_doc_count"] = int(stats.get("doc_count") or 0)
+        manifest["sparse_term_count"] = int(stats.get("term_count") or 0)
+    except Exception as exc:  # guardian: allow-broad-exception -- sparse build is best-effort; recorded in manifest for strict gating
+        manifest["sparse_sidecar_built"] = False
+        manifest["sparse_sidecar_error"] = f"{type(exc).__name__}: {exc}"
+
+
 def _collection_count(chroma_path: str, collection_name: str = "fact_vectors") -> int:
     import chromadb
 
@@ -191,6 +213,7 @@ def run_bootstrap_fact_vectors(
         "chunks_built": 0,
         "upserted_count": 0,
         "collection_count_after": None,
+        "sparse_sidecar_built": False,
     }
 
     if not dry_run:
@@ -205,6 +228,9 @@ def run_bootstrap_fact_vectors(
         manifest["chunk_skipped"] = chunk_skipped[:50]
         manifest["upserted_count"] = upserted
         manifest["collection_count_after"] = _collection_count(chroma)
+        # G22 (W6): the C0.2 sparse lane is independently mandatory — build its FTS5/BM25 sidecar
+        # from the same fact_vectors collection so generated lanes are not blocked on sparse.
+        _build_sparse_sidecar(chroma, manifest)
 
     manifest["manifest_checksum"] = _sha256_json(
         {k: v for k, v in manifest.items() if k != "manifest_checksum"}
@@ -216,6 +242,8 @@ def run_bootstrap_fact_vectors(
         if int(summary.get("eligible_atoms") or 0) == 0:
             exit_code = EXIT_GENERIC_FAILURE
         elif not dry_run and int(manifest.get("collection_count_after") or 0) <= 0:
+            exit_code = EXIT_GENERIC_FAILURE
+        elif not dry_run and not manifest.get("sparse_sidecar_built"):
             exit_code = EXIT_GENERIC_FAILURE
     return manifest, exit_code
 
