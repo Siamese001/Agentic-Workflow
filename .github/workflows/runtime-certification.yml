@@ -78,6 +78,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install -e .
           pip install pytest pytest-timeout
 
       # ── RTC-REQ-001 + RTC-REQ-030 + RTC-REQ-033 + RTC-REQ-124 (matrix universe)
@@ -501,6 +502,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e .
           pip install jsonschema cryptography pytest pytest-timeout pyyaml
 
       # Regen L7 plane evidence from existing chain bundles
