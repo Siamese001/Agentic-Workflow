@@ -36,6 +36,7 @@ _SCRIPT_EXTRA_ARGS: dict[str, tuple[str, ...]] = {
 _AG_CHAIN: tuple[str, ...] = (
     "post_agent_mcp_hygiene_audit.py",
     "post_agent_long_command_audit.py",
+    "post_agent_adg_burndown_inline_audit.py",
 )
 
 
