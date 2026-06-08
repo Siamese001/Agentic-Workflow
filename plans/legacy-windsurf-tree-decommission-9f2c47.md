@@ -12,8 +12,8 @@ relates_to:
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W4
-LAST_COMPLETED_WAVE: W3
+CURRENT_WAVE: W5
+LAST_COMPLETED_WAVE: W4
 LAST_UPDATED: 2026-06-08
 
 # Legacy `_legacy_windsurf` / `_legacy_cursor` Tree Decommission
@@ -84,7 +84,7 @@ LAST_UPDATED: 2026-06-08
 | W1/L1 | P1.1–P1.3 | Inventory + classify (live-helper vs dead-archive) + rollback tag | ~10k | Actual tree differs from stale plan estimate | ✅ Done (2026-06-08) | Frozen manifest written; rollback tag set; no legacy-tree move/delete |
 | W2/L2 | P2.1–P2.3 | Promote live-helper subset → neutral home + rewrite importers | ~18k | Neutral active helper copies already exist at `.claude/governance/scripts/` | ✅ Done (2026-06-08) | W1 direct-importer paths retargeted to `.claude/governance/scripts/`; lifecycle and Notion import smoke green; no legacy-tree move/delete |
 | W3/L3 | P3.1 | Verify chain + tooling + gates fire post-move | ~6k | — | ✅ Done (2026-06-08) | Live dispatch fires; heartbeat fresh; wired payload gate scans 17 active hooks; lifecycle/ledger/import smokes green |
-| W4/L4 | P4.1–P4.2 | De-brand boundary constant + scanner/gate consumers | ~8k | `WINDSURF_SCRIPTS_DIR` re-pointable to neutral home | ⬜ Not Started | `path_constants` constant renamed/repointed (Author-Gate + receipt); static_scanner + 2 gates updated; ADG scan parity |
+| W4/L4 | P4.1–P4.2 | De-brand boundary constant + scanner/gate consumers | ~8k | Neutral `.claude/governance/scripts` SSOT already exists | ✅ Done (2026-06-08) | `GOVERNANCE_SCRIPTS_DIR` added; deprecated alias repointed; static_scanner + 2 gates updated; ADG scan-root parity green |
 | W5/L5 | P5.1–P5.3 | Delete dead-archive bulk + `_legacy_cursor`; retire `T6a`; guard cleanup | ~8k | L2–L4 green; no remaining importer | ⬜ Not Started | `_legacy_windsurf`/`_legacy_cursor` deleted; `T6a` retired or repointed; shell-guard legacy tokens pruned |
 | W6/L6 | P6.1 | Zero-brand verify + hand `.cursor/` to dec0de + close | ~5k | All prior waves green | ⬜ Not Started | Repo scan: only intentional history remains; dec0de notified for `.cursor/` removal; plan closed |
 
@@ -99,8 +99,8 @@ LAST_UPDATED: 2026-06-08
 | P2.2 | Rewrite hook importers | `post_agent_plan_registration_capture.py`, `post_agent_plan_scope_audit.py`, `_post_handlers/*` | HELPER_PATH / W2_MODULE_PATH literals | ~5k | ✅ Done |
 | P2.3 | Rewrite tools importers | `tools/plan_lifecycle/wave_execution_state.py`, `tools/capture/queue_to_ledger.py`, `tools/notion/{wave_lifecycle_writer,_plan_registration_helpers,apply_plan_derived_status,triage_plans_duplicates}.py` | sys.path inserts | ~5k | ✅ Done |
 | P3.1 | Verify | dispatch + gates | Hook support library was missing from clean tree; payload gate still scanned frozen legacy dir | ~6k | ✅ Done: live hook lib restored, dispatch/payload/heartbeat checks green |
-| P4.1 | Boundary constant | `agentic_core/L0_routing/config/path_constants.py` (`WINDSURF_SCRIPTS_DIR`) | Author-Gate + migration receipt; rename vs value-repoint | ~4k | ⬜ |
-| P4.2 | Scanner/gate consumers | `static_scanner.py`, `check_hardcoded_exclusions.py`, `check_terminal_cleanup.py` | ADG scan parity (exclusion semantics) | ~4k | ⬜ |
+| P4.1 | Boundary constant | `agentic_core/L0_routing/config/path_constants.py` (`WINDSURF_SCRIPTS_DIR`) | Author-Gate + migration receipt; rename vs value-repoint | ~4k | ✅ Done: neutral `GOVERNANCE_SCRIPTS_DIR` added; branded alias repointed for compatibility |
+| P4.2 | Scanner/gate consumers | `static_scanner.py`, `check_hardcoded_exclusions.py`, `check_terminal_cleanup.py` | ADG scan parity (exclusion semantics) | ~4k | ✅ Done: live consumers import neutral constant |
 | P5.1 | Delete dead-archive bulk | `_legacy_windsurf/post_cascade_*` etc. | Confirm zero importer post-L2 | ~3k | ⬜ |
 | P5.2 | Delete `_legacy_cursor` | `_legacy_cursor/**` + consumers | migrate test + dedup-verify first | ~3k | ⬜ |
 | P5.3 | Retire `T6a` + guard cleanup | `.pre-commit-config.yaml`, `before_shell_execution`/`claude_hook_common` | guard tokens (`.windsurf`/`Windsurf`) once trees gone | ~2k | ⬜ |
@@ -165,6 +165,18 @@ LAST_UPDATED: 2026-06-08
   `WINDSURF_SCRIPTS_DIR` to the neutral `_helpers/` path (or remove if the tree is gone by sequencing).
 - **P4.2** Update `static_scanner.py` (3×), `check_hardcoded_exclusions.py`, `check_terminal_cleanup.py`.
   Re-run ADG static scan; confirm exclusion-set parity (no new/missing nodes).
+- **Completed 2026-06-08:** The clean tree already had the neutral
+  `.claude/governance/scripts` root, so L4 added `GOVERNANCE_SCRIPTS_DIR` as the active exported
+  SSOT and repointed the deprecated `WINDSURF_SCRIPTS_DIR` alias to it for compatibility. The ADG
+  static scanner, `check_hardcoded_exclusions.py`, and `check_terminal_cleanup.py` now consume the
+  neutral symbol. The two CI gates also bootstrap their own repo root before importing constants so
+  direct script execution cannot resolve a sibling worktree's `agentic_core`. Core-boundary receipt:
+  `docs/reports/decommission/legacy_tree_decommission_w4_core_addition_receipt.json`.
+- **Verification passed:** focused path/scanner tests (29 passed), direct hardcoded-exclusion and
+  terminal-cleanup gates on touched files, static scanner root parity smoke, `py_compile`,
+  live-consumer token scan, `git diff --check`, and strict plan-format compliance. A broader
+  `test_path_constants.py` run still has pre-existing unrelated failures in healing routing SSOT
+  checks (`HEALING_CONFIDENCE_X` exposure and missing `routing_thresholds_ssot` module).
 
 ### L5 — Delete dead bulk + retire gate
 - **P5.1** `git rm` the DEAD_ARCHIVE files (confirm zero importer). **P5.2** Migrate `_legacy_cursor`
@@ -210,4 +222,4 @@ import-clean). The physical `.cursor/` dir removal stays owned by dec0de (do not
   import path.
 
 WAVE_COMPLETE: YES
-WAVE_COMPLETE_NOTE: plan=legacy-windsurf-tree-decommission-9f2c47 wave=W3/L3 date=2026-06-08 artifacts=docs/reports/decommission/legacy_tree_classification_9f2c47.md,docs/reports/decommission/legacy_tree_classification_9f2c47.json note="live dispatch, heartbeat, payload gate, queue dry-run, lifecycle/import smokes verified; hook support lib restored"
+WAVE_COMPLETE_NOTE: plan=legacy-windsurf-tree-decommission-9f2c47 wave=W4/L4 date=2026-06-08 artifacts=docs/reports/decommission/legacy_tree_classification_9f2c47.md,docs/reports/decommission/legacy_tree_classification_9f2c47.json,docs/reports/decommission/legacy_tree_decommission_w4_core_addition_receipt.json note="boundary constant de-branded via GOVERNANCE_SCRIPTS_DIR; static scanner and CI gates consume neutral root; direct gate imports bootstrapped to current worktree"

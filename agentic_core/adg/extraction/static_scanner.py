@@ -82,11 +82,11 @@ from agentic_core.adg.extraction.visitors import (
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     INFRASTRUCTURE_DIR,
+    GOVERNANCE_SCRIPTS_DIR,
     OPS_SCRIPTS_DIR,
     SYSTEM_LEARNING_DIR,
     TESTS_DIR,
     TOOLS_DIR,
-    WINDSURF_SCRIPTS_DIR,
     get_apps_directories,
 )
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
@@ -303,7 +303,7 @@ _NON_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
     TOOLS_DIR,
     TESTS_DIR,  # H1
     OPS_SCRIPTS_DIR,  # H1
-    WINDSURF_SCRIPTS_DIR,  # Cascade hook scripts
+    GOVERNANCE_SCRIPTS_DIR,  # Governance hook scripts
 )
 
 # Phase 1.1: Coverage-only scan roots for test files with structural_only mode
@@ -557,8 +557,9 @@ def _is_scannable_static_path(rel_path: str, include_tests: bool, scan_mode: str
         return False
     if include_tests:
         return True
-    # Windsurf hook scripts are operational infrastructure — exempt from runtime-only subdir filter
-    if normalized.startswith(f"{WINDSURF_SCRIPTS_DIR}/"):
+    # Governance hook scripts are operational infrastructure; exempt them from
+    # the runtime-only subdir filter.
+    if normalized.startswith(f"{GOVERNANCE_SCRIPTS_DIR}/"):
         return True
     parts = tuple(part for part in normalized.split("/") if part)
     return not any(part in _RUNTIME_ONLY_SCAN_SUBDIRS for part in parts)

@@ -38,9 +38,12 @@ import ast
 import subprocess  # noqa: S404 -- this file audits subprocess usage, so import is required
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import WINDSURF_SCRIPTS_DIR
 
 _ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from agentic_core.L0_routing.config.path_constants import GOVERNANCE_SCRIPTS_DIR
 
 _SCAN_DIRS = [
     "agentic_core",
@@ -55,7 +58,7 @@ _SCAN_DIRS = [
     "ops_scripts",
     "tools",
     "system_learning",
-    WINDSURF_SCRIPTS_DIR,
+    GOVERNANCE_SCRIPTS_DIR,
 ]
 
 _SKIP_PATTERNS = (

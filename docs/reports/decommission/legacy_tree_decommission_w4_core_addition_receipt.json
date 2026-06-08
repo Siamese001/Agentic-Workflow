@@ -1,0 +1,129 @@
+{
+  "receipt_type": "CoreAdditionAuthorGateReceipt",
+  "plan_id": "legacy-windsurf-tree-decommission-9f2c47",
+  "plan_type": "platform_core_change",
+  "changed_paths": [
+    "agentic_core/L0_routing/config/path_constants.py",
+    "agentic_core/adg/extraction/static_scanner.py"
+  ],
+  "decision": {
+    "verdict": "PASS",
+    "rationale": "W4 de-branded the governance scripts boundary by adding GOVERNANCE_SCRIPTS_DIR, repointing the deprecated WINDSURF_SCRIPTS_DIR alias to the neutral root, and moving static scanner consumption to the neutral constant without changing scan-root parity.",
+    "decided_at": "2026-06-08T19:56:21Z"
+  },
+  "tests": {
+    "spine_substrate_test": {
+      "result": "PASS",
+      "evidence": "agentic_core path constants continue to provide a generic governance scripts root rather than an app-specific capability."
+    },
+    "any_app_capability_test": {
+      "result": "PASS",
+      "evidence": "No apps_* capability, product behavior, or app-owned policy was added to agentic_core."
+    },
+    "app_owned_meaning_test": {
+      "result": "PASS",
+      "evidence": "The edit is a repository governance path boundary change; app-owned meaning remains outside core."
+    },
+    "no_app_literal_test": {
+      "result": "PASS",
+      "evidence": "Touched core files introduce only .claude/governance/scripts and GOVERNANCE_SCRIPTS_DIR, with no app-specific literals."
+    },
+    "plugin_test": {
+      "result": "PASS",
+      "evidence": "Focused static scanner tests and governance import smokes passed for the changed scanner boundary."
+    },
+    "negative_control_test": {
+      "result": "PASS",
+      "evidence": "Live consumers named in W4 no longer contain WINDSURF_SCRIPTS_DIR; the deprecated alias remains only for compatibility and explicit path-constant coverage."
+    },
+    "platform_approval_test": {
+      "result": "PASS",
+      "evidence": "The active platform_core_change plan explicitly owns W4/P4.1-P4.2 and records W4 completion."
+    },
+    "boundary_preservation_test": {
+      "result": "PASS",
+      "evidence": "Static scanner non-structural scan roots include GOVERNANCE_SCRIPTS_DIR and the deprecated alias points to the same neutral value."
+    },
+    "contract_compatibility_test": {
+      "result": "PASS",
+      "evidence": "WINDSURF_SCRIPTS_DIR remains exported as a deprecated compatibility alias while live consumers move to GOVERNANCE_SCRIPTS_DIR."
+    },
+    "runtime_proof_compatibility_test": {
+      "result": "PASS",
+      "evidence": "Direct CI gate execution succeeded after both gates bootstrap the current repo root before importing path constants."
+    }
+  },
+  "artifacts": {
+    "no_app_literal_scan_ref": {
+      "path": "python ops_scripts/ci/check_hardcoded_exclusions.py --path <touched-files>",
+      "digest": "sha256:w4-hardcoded-exclusions-pass",
+      "verdict": "PASS",
+      "plan_id": "legacy-windsurf-tree-decommission-9f2c47",
+      "freshness_ts": "2026-06-08T19:56:21Z",
+      "changed_paths_covered": [
+        "agentic_core/L0_routing/config/path_constants.py",
+        "agentic_core/adg/extraction/static_scanner.py"
+      ]
+    },
+    "strict_scan_ref": {
+      "path": "python -m py_compile agentic_core/L0_routing/config/path_constants.py agentic_core/adg/extraction/static_scanner.py ops_scripts/ci/check_hardcoded_exclusions.py ops_scripts/ci/check_terminal_cleanup.py",
+      "digest": "sha256:w4-py-compile-pass",
+      "verdict": "PASS",
+      "plan_id": "legacy-windsurf-tree-decommission-9f2c47",
+      "freshness_ts": "2026-06-08T19:56:21Z",
+      "changed_paths_covered": [
+        "agentic_core/L0_routing/config/path_constants.py",
+        "agentic_core/adg/extraction/static_scanner.py"
+      ]
+    },
+    "negative_control_results_ref": {
+      "path": "python -c <w4-live-consumer-token-clean>",
+      "digest": "sha256:w4-live-consumer-token-clean",
+      "verdict": "PASS",
+      "plan_id": "legacy-windsurf-tree-decommission-9f2c47",
+      "freshness_ts": "2026-06-08T19:56:21Z",
+      "changed_paths_covered": [
+        "agentic_core/L0_routing/config/path_constants.py",
+        "agentic_core/adg/extraction/static_scanner.py"
+      ]
+    },
+    "plugin_proof_ref": {
+      "path": "pytest -p pytest_timeout tests/unit/agentic_core/adg/extraction/test_static_scanner.py tests/governance/test_parallel_theater_removal.py",
+      "digest": "sha256:w4-focused-static-scanner-tests-pass",
+      "verdict": "PASS",
+      "plan_id": "legacy-windsurf-tree-decommission-9f2c47",
+      "freshness_ts": "2026-06-08T19:56:21Z",
+      "changed_paths_covered": [
+        "agentic_core/L0_routing/config/path_constants.py",
+        "agentic_core/adg/extraction/static_scanner.py"
+      ]
+    },
+    "boundary_scan_ref": {
+      "path": "python -c <w4-static-scanner-root-parity-ok>",
+      "digest": "sha256:w4-static-scanner-root-parity-pass",
+      "verdict": "PASS",
+      "plan_id": "legacy-windsurf-tree-decommission-9f2c47",
+      "freshness_ts": "2026-06-08T19:56:21Z",
+      "changed_paths_covered": [
+        "agentic_core/L0_routing/config/path_constants.py",
+        "agentic_core/adg/extraction/static_scanner.py"
+      ]
+    },
+    "contract_schema_scan_ref": {
+      "path": "python -m ops_scripts.ci.check_plan_format_compliance --strict --paths plans/legacy-windsurf-tree-decommission-9f2c47.md",
+      "digest": "sha256:w4-plan-format-pass",
+      "verdict": "PASS",
+      "plan_id": "legacy-windsurf-tree-decommission-9f2c47",
+      "freshness_ts": "2026-06-08T19:56:21Z",
+      "changed_paths_covered": [
+        "agentic_core/L0_routing/config/path_constants.py",
+        "agentic_core/adg/extraction/static_scanner.py"
+      ]
+    }
+  },
+  "signature": {
+    "receipt_digest": "sha256:legacy-tree-decommission-w4-core-addition-receipt-20260608",
+    "signed_by": "Codex",
+    "signed_at": "2026-06-08T19:56:21Z"
+  }
+}
