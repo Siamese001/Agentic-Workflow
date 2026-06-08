@@ -243,14 +243,27 @@ def stamp_competency_bundle_bindings(
         return competencies
     pkt = packet or build_competency_capability_section_packet("competencies")
     by_category: dict[str, dict[str, Any]] = {}
+    by_family: dict[str, dict[str, Any]] = {}
     for rec in pkt.get("competency_bundles") or []:
         for cat_id in rec.get("target_taxonomy_category_ids") or []:
             by_category.setdefault(str(cat_id), rec)
+        # Family fallback: a category whose id/label names a capability family (e.g.
+        # "llmops_reliability") but is not a bundle taxonomy *target* still binds to that
+        # family's bundle (ccb_llmops_reliability) — it is graph-backed, just not a top taxonomy slot.
+        fam = str(rec.get("capability_family") or "").strip()
+        if fam:
+            by_family.setdefault(fam, rec)
+        bid = str(rec.get("competency_bundle_id") or "").strip()
+        if bid.startswith("ccb_"):
+            by_family.setdefault(bid[len("ccb_"):], rec)
     for cat in competencies:
         if not isinstance(cat, dict):
             continue
         cid = str(cat.get("category_id") or "").strip()
-        rec = by_category.get(cid)
+        rec = by_category.get(cid) or by_family.get(cid)
+        if not rec:
+            label_key = re.sub(r"[^a-z0-9]+", "_", str(cat.get("category_label") or "").lower()).strip("_")
+            rec = by_family.get(label_key)
         if not rec:
             continue
         cat["competency_bundle_id"] = rec["competency_bundle_id"]
