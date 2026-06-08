@@ -71,11 +71,13 @@ class TestRealFetch:
         index_file.write_text(json.dumps(_make_index(vectors)), encoding="utf-8")
         return index_file
 
-    def test_returns_empty_when_index_missing(self, tmp_path: Path) -> None:
+    def test_returns_empty_when_retrieval_missing(self, tmp_path: Path) -> None:
         import apps_qna.c0_adapter as mod
 
         mod._reset_index_cache()
-        with patch.object(mod, "_INDEX_FILE", tmp_path / "nonexistent.json"):
+        with patch.object(mod, "_INDEX_FILE", tmp_path / "nonexistent.json"), \
+             patch.object(mod, "_load_chroma_collection", return_value=None), \
+             patch.object(mod, "_embed_query", return_value=_unit_vec()):
             result = mod._real_fetch("test query", "runtime_root_senior")
         assert result == []
 
@@ -113,7 +115,11 @@ class TestRealFetch:
         mock_embedder.is_available.return_value = True
         mock_embedder.embed.return_value = query_embedding
 
-        with patch.object(mod, "_INDEX_FILE", idx):
+        collection = MagicMock()
+        collection.query.return_value = {"ids": [[]], "distances": [[]], "metadatas": [[]]}
+
+        with patch.object(mod, "_INDEX_FILE", idx), \
+             patch.object(mod, "_load_chroma_collection", return_value=collection):
             with patch.dict(
                 "sys.modules",
                 {"tools.embedders": MagicMock(get_embedder=lambda: mock_embedder)},
@@ -133,8 +139,9 @@ class TestRealFetch:
         mod._reset_index_cache()
         idx = self._patch_index(tmp_path, [_make_card("card_a")])
 
-        with patch.object(mod, "_INDEX_FILE", idx):
-            # Embedder not patched — will fail gracefully
+        with patch.object(mod, "_INDEX_FILE", idx), \
+             patch.object(mod, "_load_chroma_collection", return_value=None), \
+             patch.object(mod, "_embed_query", return_value=_unit_vec()):
             result = mod._real_fetch("", "card_a")
         assert isinstance(result, list)
 
@@ -174,12 +181,74 @@ class TestRealFetch:
         mock_embedder.is_available.return_value = True
         mock_embedder.embed.return_value = query_embedding
 
-        with patch.object(mod, "_INDEX_FILE", idx):
+        with patch.object(mod, "_INDEX_FILE", idx), \
+             patch.object(mod, "_load_chroma_collection", return_value=None):
             with patch("tools.embedders.get_embedder", return_value=mock_embedder):
                 result = mod._real_fetch("test", "good")
 
         ids = [r["id"] for r in result]
         assert "bad" not in ids
+
+    def test_chroma_fetch_preferred_over_flat_fallback(self) -> None:
+        """Canonical Chroma hits win without consulting the flat index."""
+        import apps_qna.c0_adapter as mod
+
+        mod._reset_index_cache()
+        collection = MagicMock()
+        collection.query.return_value = {
+            "ids": [["chroma_card"]],
+            "distances": [[0.25]],
+            "metadatas": [[{"card_id": "chroma_card", "base_card_type": "runtime_root"}]],
+        }
+
+        with patch.object(mod, "_load_chroma_collection", return_value=collection), \
+             patch.object(mod, "_load_index") as load_index, \
+             patch.object(mod, "_embed_query", return_value=_unit_vec()):
+            result = mod._real_fetch("question text", "runtime_root_senior")
+
+        assert result == [
+            {
+                "id": "chroma_card",
+                "score": 0.75,
+                "metadata": {"card_id": "chroma_card", "base_card_type": "runtime_root"},
+            }
+        ]
+        load_index.assert_not_called()
+
+    def test_flat_fallback_used_when_chroma_misses_and_enabled(self, tmp_path: Path, monkeypatch) -> None:
+        """W2 keeps flat fallback available through the rollout gate."""
+        import apps_qna.c0_adapter as mod
+
+        mod._reset_index_cache()
+        monkeypatch.setenv(mod._FLAT_FALLBACK_ENV, "1")
+        idx = self._patch_index(tmp_path, [_make_card("flat_card")])
+        collection = MagicMock()
+        collection.query.return_value = {"ids": [[]], "distances": [[]], "metadatas": [[]]}
+
+        with patch.object(mod, "_INDEX_FILE", idx), \
+             patch.object(mod, "_load_chroma_collection", return_value=collection), \
+             patch.object(mod, "_embed_query", return_value=_unit_vec()):
+            result = mod._real_fetch("question text", "runtime_root_senior")
+
+        assert result
+        assert result[0]["id"] == "flat_card"
+
+    def test_flat_fallback_can_be_disabled_after_chroma_miss(self, monkeypatch) -> None:
+        """The external flat index path is gated and can be disabled explicitly."""
+        import apps_qna.c0_adapter as mod
+
+        mod._reset_index_cache()
+        monkeypatch.setenv(mod._FLAT_FALLBACK_ENV, "0")
+        collection = MagicMock()
+        collection.query.return_value = {"ids": [[]], "distances": [[]], "metadatas": [[]]}
+
+        with patch.object(mod, "_load_chroma_collection", return_value=collection), \
+             patch.object(mod, "_load_index") as load_index, \
+             patch.object(mod, "_embed_query", return_value=_unit_vec()):
+            result = mod._real_fetch("question text", "runtime_root_senior")
+
+        assert result == []
+        load_index.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
