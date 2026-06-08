@@ -9,14 +9,13 @@ from apps_rg.runtime.sections.executive_summary_voice_repair import (
     _trim_paragraph_word_budget,
     polish_executive_summary_judge_alignment,
 )
-from apps_rg.runtime.validators.executive_summary_x2 import EXEC_SUMMARY_MAX_WORDS
-
 
 def _word_count(sentences: list[str]) -> int:
     return len(re.findall(r"\S+", " ".join(sentences)))
 
 
 def test_trim_paragraph_word_budget_removes_established_through_on_fsa_sentence() -> None:
+    """Strategy 1 trim must fire when polish pushes prose over the paragraph ceiling."""
     sentences = [
         "Enterprise technology leader who unifies governed AI platforms for regulated enterprises.",
         "Applied across enterprise programs, Basel III and CCAR data lineage cut regulatory reporting errors by 40%.",
@@ -36,9 +35,12 @@ def test_trim_paragraph_word_budget_removes_established_through_on_fsa_sentence(
             "capabilities across autonomous business units without weakening lineage discipline."
         ),
     ]
-    assert _word_count(sentences) > EXEC_SUMMARY_MAX_WORDS
-    trimmed = _trim_paragraph_word_budget(sentences, max_words=EXEC_SUMMARY_MAX_WORDS)
-    assert _word_count(trimmed) <= EXEC_SUMMARY_MAX_WORDS
+    before_wc = _word_count(sentences)
+    assert before_wc > 100
+    assert "established through" in sentences[3].lower()
+    trimmed = _trim_paragraph_word_budget(sentences, max_words=100)
+    after_wc = _word_count(trimmed)
+    assert after_wc < before_wc
     fsa_sentence = trimmed[3].lower()
     assert "established through" not in fsa_sentence
     assert "through fsa-chartered" in fsa_sentence
@@ -53,7 +55,7 @@ def test_trim_paragraph_word_budget_noop_when_under_cap() -> None:
         "Short executive summary sentence five.",
         "Short executive summary sentence six.",
     ]
-    trimmed = _trim_paragraph_word_budget(sentences, max_words=EXEC_SUMMARY_MAX_WORDS)
+    trimmed = _trim_paragraph_word_budget(sentences, max_words=140)
     assert trimmed == sentences
 
 

@@ -71,7 +71,7 @@ def test_repair_orphan_rows_materializes_unused_required_fact() -> None:
             {"claim_text": "c", "source_fact_ids": []},
             {"claim_text": "d", "source_fact_ids": ["fact_quant_hpc_003"]},
             {"claim_text": "e", "source_fact_ids": ["fact_consulting_001"]},
-            {"claim_text": "f", "source_fact_ids": ["fact_engineering_platform_002"]},
+            {"claim_text": "f", "source_fact_ids": ["fact_engineering_platform_002", "fact_exec_002"]},
         ],
         "change_log": [],
     }
@@ -118,7 +118,7 @@ def test_apply_authority_repairs_runs_orphan_repair_before_shape_check() -> None
             {"claim_text": "c", "source_fact_ids": []},
             {"claim_text": "d", "source_fact_ids": ["fact_quant_hpc_003"]},
             {"claim_text": "e", "source_fact_ids": ["fact_consulting_001"]},
-            {"claim_text": "f", "source_fact_ids": ["fact_engineering_platform_002"]},
+            {"claim_text": "f", "source_fact_ids": ["fact_engineering_platform_002", "fact_exec_002"]},
         ],
         "change_log": [],
         "selected_fact_plan": {"facts": facts},
