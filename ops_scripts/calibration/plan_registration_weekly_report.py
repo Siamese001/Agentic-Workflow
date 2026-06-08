@@ -35,7 +35,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_plan_registration.py"
+HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_plan_registration.py"
 GATE_PATH = REPO_ROOT / "ops_scripts" / "ci" / "check_plan_registration_freshness.py"
 REPORT_DIR = REPO_ROOT / "docs" / "reports" / "plan_registration"
 

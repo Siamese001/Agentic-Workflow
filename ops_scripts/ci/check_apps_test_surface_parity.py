@@ -30,7 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACT_DIR = REPO_ROOT / "artifacts" / "ci"
 
 # Ensure the windsurf scripts helper is importable when run as a script
-_WINDSURF_SCRIPTS = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
+_WINDSURF_SCRIPTS = REPO_ROOT / ".claude" / "governance/scripts"
 if str(_WINDSURF_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_WINDSURF_SCRIPTS))
 

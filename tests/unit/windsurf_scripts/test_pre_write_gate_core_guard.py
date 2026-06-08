@@ -148,7 +148,7 @@ def gate(tmp_path, monkeypatch):
     """
     # Ensure the module is freshly imported each test (avoids state bleed)
     scripts_dir = str(
-        pathlib.Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts" / "_legacy_windsurf"
+        pathlib.Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts"
     )
     if scripts_dir not in sys.path:
         sys.path.insert(0, scripts_dir)

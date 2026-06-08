@@ -29,8 +29,8 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
 
-# Add .claude/governance/scripts/_legacy_windsurf to path
-sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
+# Add .claude/governance/scripts to path
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
 
 # Import pre_author_gate module
 import pre_author_gate
@@ -269,7 +269,7 @@ class TestTierBypass:
         """_is_sensitive_path correctly identifies governance paths."""
         assert _is_sensitive_path(".claude/rules/ssot-folder-enforcement.md") is True
         assert _is_sensitive_path(".claude/schemas/author_gate_triggers.yaml") is True
-        assert _is_sensitive_path(".claude/governance/scripts/_legacy_windsurf/pre_author_gate.py") is True
+        assert _is_sensitive_path(".claude/governance/scripts/pre_author_gate.py") is True
         assert _is_sensitive_path("apps_rg/config/specs.yaml") is True
         assert _is_sensitive_path("agentic_core/L5_safety/guard.py") is True
         assert _is_sensitive_path("docs/architecture/adr/ADR-001.md") is True

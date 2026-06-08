@@ -1,6 +1,6 @@
 # refresh-windsurf-docs.ps1
 # Idempotent script to download Windsurf documentation into docs/cursor/.
-# Run from the repo root: .\.cursor\scripts\_legacy_windsurf\refresh-windsurf-docs.ps1
+# Run from the repo root: .\.claude\governance\scripts\refresh-windsurf-docs.ps1
 
 $ErrorActionPreference = "Stop"
 

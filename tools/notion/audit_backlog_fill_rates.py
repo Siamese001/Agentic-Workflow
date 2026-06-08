@@ -12,7 +12,7 @@ import sys
 import urllib.request
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1].parent / ".claude" / "governance/scripts" / "_legacy_windsurf"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1].parent / ".claude" / "governance/scripts"))
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
     NOTION_BASE,

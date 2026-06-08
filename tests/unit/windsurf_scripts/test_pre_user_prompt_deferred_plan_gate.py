@@ -21,7 +21,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_user_prompt_deferred_plan_gate.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "pre_user_prompt_deferred_plan_gate.py"
 
 
 def _load_module():

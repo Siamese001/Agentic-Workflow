@@ -15,10 +15,10 @@ sys.path.insert(0, str(REPO_ROOT))
 
 import importlib.util
 
-# Load module directly from .claude/governance/scripts/_legacy_windsurf
+# Load module directly from .claude/governance/scripts
 gate_spec = importlib.util.spec_from_file_location(
     "pre_ask_user_question_gate",
-    REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_ask_user_question_gate.py"
+    REPO_ROOT / ".claude" / "governance/scripts" / "pre_ask_user_question_gate.py"
 )
 gate_module = importlib.util.module_from_spec(gate_spec)
 sys.modules["pre_ask_user_question_gate"] = gate_module

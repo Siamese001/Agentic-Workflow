@@ -33,7 +33,7 @@ REPLACEMENTS: list[tuple[str, str]] = [
     (".cursor/rules/", ".cursor/rules/"),
     ("docs/archive/windsurf/legacy-tree/plans/", ".cursor/plans/"),
     (".cursor/state/", ".cursor/state/"),
-    (".cursor/scripts/_legacy_windsurf/", ".cursor/scripts/"),
+    (".claude/governance/scripts/", ".cursor/scripts/"),
     (".cursor/skills/", ".cursor/skills/"),
     ("docs/archive/windsurf/legacy-tree/config/", ".cursor/config/"),
     (' / "docs/archive/windsurf/legacy-tree" / "config" / ', ' / ".cursor" / "config" / '),
@@ -92,15 +92,15 @@ PHRASE_REPLACEMENTS: list[tuple[str, str]] = [
         "2. **Cursor Rules** — Static analysis and editing-time guidance",
     ),
     (
-        "Sync Windsurf mirror via `.cursor/scripts/_legacy_windsurf/post_write_mcp_config_sync.py` when using Windsurf",
-        "Sync Windsurf mirror via `.cursor/scripts/_legacy_windsurf/post_write_mcp_config_sync.py` when using Windsurf (optional)",
+        "Sync Windsurf mirror via `.claude/governance/scripts/post_write_mcp_config_sync.py` when using Windsurf",
+        "Sync Windsurf mirror via `.claude/governance/scripts/post_write_mcp_config_sync.py` when using Windsurf (optional)",
     ),
     (
-        "Change gate behavior in `.cursor/scripts/_legacy_windsurf/pre_mcp_gate.py`",
+        "Change gate behavior in `.claude/governance/scripts/pre_mcp_gate.py`",
         "Change gate behavior in `.cursor/scripts/pre_mcp_gate.py`",
     ),
     (
-        "python .cursor/scripts/_legacy_windsurf/sync_mcp_config.py",
+        "python .claude/governance/scripts/sync_mcp_config.py",
         "python .cursor/scripts/sync_mcp_config.py",
     ),
     (

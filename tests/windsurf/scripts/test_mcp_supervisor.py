@@ -20,7 +20,7 @@ from typing import Any
 
 import pytest
 
-_SUPERVISOR_PATH = Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts" / "_legacy_windsurf" / "mcp_python_supervisor.py"
+_SUPERVISOR_PATH = Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts" / "mcp_python_supervisor.py"
 
 _spec = importlib.util.spec_from_file_location("_mcp_supervisor_under_test", _SUPERVISOR_PATH)
 assert _spec is not None and _spec.loader is not None

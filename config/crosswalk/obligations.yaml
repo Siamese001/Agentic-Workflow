@@ -22,7 +22,7 @@ obligations:
   - id: const_0_no_powershell
     source: ".claude/rules/constitutional.md §0"
     description: "PowerShell forbidden; subprocess.run(argv, shell=False, timeout=...)"
-    gate_script: ".claude/governance/scripts/_legacy_windsurf/pre_run_gate.py"
+    gate_script: ".claude/governance/scripts/pre_run_gate.py"
     test_ids:
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[powershell_explicit]"
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[pwsh_explicit]"
@@ -30,14 +30,14 @@ obligations:
   - id: const_14_subprocess_timeout
     source: ".claude/rules/constitutional.md §14"
     description: "Subprocess calls must specify timeout"
-    gate_script: ".claude/governance/scripts/_legacy_windsurf/pre_run_gate.py"
+    gate_script: ".claude/governance/scripts/pre_run_gate.py"
     test_ids:
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[bare_python_repl]"
 
   - id: const_26_no_interactive_pagers
     source: ".claude/rules/constitutional.md §26"
     description: "Interactive pagers (more, less, vim, top) hang Cascade — block at run_command"
-    gate_script: ".claude/governance/scripts/_legacy_windsurf/pre_run_gate.py"
+    gate_script: ".claude/governance/scripts/pre_run_gate.py"
     test_ids:
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[pipe_to_more]"
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[pipe_to_less]"
@@ -48,7 +48,7 @@ obligations:
   - id: const_python_dash_c_quote_hazard
     source: ".claude/rules/python-dash-c-quote-hazard.md"
     description: "python -c with escaped triple-quote hangs pwsh"
-    gate_script: ".claude/governance/scripts/_legacy_windsurf/pre_run_gate.py"
+    gate_script: ".claude/governance/scripts/pre_run_gate.py"
     test_ids:
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[python_dash_c_escaped_triple_quote]"
       - "tests/negative_controls/test_constitutional_negatives.py::test_gate_blocks_bad_input[python_dash_c_escaped_dquote]"

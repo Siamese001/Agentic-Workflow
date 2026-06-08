@@ -12,7 +12,7 @@ CURSOR_MCP_PATH = REPO_ROOT / ".mcp.json"
 WINDSURF_MCP_PATH = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
 AGENTS_MD = REPO_ROOT / "AGENTS.md"
 CURSOR_SYNC_SCRIPT_DIR = REPO_ROOT / ".claude" / "governance/scripts"
-WINDSURF_SYNC_SCRIPT_DIR = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
+WINDSURF_SYNC_SCRIPT_DIR = REPO_ROOT / ".claude" / "governance/scripts"
 
 PLAYWRIGHT_ALIASES = frozenset({"playwright", "io.windsurf/mcp-playwright"})
 

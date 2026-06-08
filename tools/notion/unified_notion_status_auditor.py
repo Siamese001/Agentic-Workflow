@@ -5,7 +5,7 @@ unified_notion_status_auditor.py — Consolidated Notion Plans DB status auditor
 SSOT implementation. Thin entrypoints live at:
 
 - ``.claude/governance/scripts/unified_notion_status_auditor.py`` (sets vendor ``cursor``)
-- ``.claude/governance/scripts/_legacy_windsurf/unified_notion_status_auditor.py`` (sets vendor ``windsurf``)
+- ``.claude/governance/scripts/unified_notion_status_auditor.py`` (sets vendor ``windsurf``)
 
 Violations log path: ``artifacts/<vendor>/notion_plans_status_violations.jsonl`` where
 ``vendor`` is ``NOTION_STATUS_VIOLATIONS_VENDOR`` (``cursor`` or ``windsurf``, default ``cursor``).

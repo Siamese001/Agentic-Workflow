@@ -92,9 +92,9 @@ _NAME_ROUTING = [
     (re.compile(r"^cleanup_.+\.py$"), "ops_scripts/maintenance/"),
 
     # Cursor hook scripts
-    (re.compile(r"^pre_(read|write|run|user_prompt|mcp_tool_use|author|prompt|cursor_agent)_.+\.py$"),
+    (re.compile(r"^pre_(read|write|run|user_prompt|mcp_tool_use|author|prompt|agent|cursor_agent)_.+\.py$"),
      ".claude/governance/scripts/"),
-    (re.compile(r"^post_(read|write|run|cursor_agent|mcp|setup|commit)_.+\.py$"),
+    (re.compile(r"^post_(read|write|run|agent|cursor_agent|mcp|setup|commit)_.+\.py$"),
      ".claude/governance/scripts/"),
 ]
 
@@ -218,7 +218,7 @@ def _check_hook_script_misroute(rel: str) -> Violation | None:
         return None
     filename = PurePosixPath(rel).name
     if re.match(r"^(pre|post)_(read|write|run|user_prompt|mcp_tool_use|"
-                r"author|prompt|cursor_agent|mcp|setup|commit)_.+\.py$", filename):
+                r"author|prompt|agent|cursor_agent|mcp|setup|commit)_.+\.py$", filename):
         return Violation(
             path=rel,
             forbidden="hook-script-misroute",
