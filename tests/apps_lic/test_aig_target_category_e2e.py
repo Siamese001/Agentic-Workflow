@@ -13,6 +13,7 @@ from apps_lic.engines.validation_engine import ValidationEngine
 from apps_lic.policy.reasoning_intensity import (
     JUDGE_EVIDENCE_SUPPORT,
     JUDGE_LINKEDIN_TONE,
+    JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     JUDGE_SAFETY_NO_FABRICATION,
     R3_STRICT,
     SC_3,
@@ -84,8 +85,9 @@ def test_aig_public_profile_e2e_generates_target_category_draft(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     contact: dict[str, object],
-) -> None:
+    ) -> None:
     monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
+    monkeypatch.setenv("APPS_LIC_TEST_X1D_JUDGE_STUB", "1")
     briefing = AIG_BRIEFING.read_text(encoding="utf-8")
     expected_category = str(contact["expected_category"])
     lead_profile = dict(contact["lead_profile"])
@@ -165,7 +167,10 @@ def test_validation_blocks_generic_bs_message() -> None:
     assert "antipattern:GENERIC_SYNERGY_ASK" in report["issues"]
 
 
-def test_qa_report_exposes_judges_and_one_shot_quality_contract() -> None:
+def test_qa_report_exposes_x2_x1d_judges_and_one_shot_quality_contract(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("APPS_LIC_TEST_X1D_JUDGE_STUB", "1")
     draft = {
         "message_text": (
             "Hi Scott, AIG's Agentic AI role reads like an operating-model "
@@ -190,6 +195,15 @@ def test_qa_report_exposes_judges_and_one_shot_quality_contract() -> None:
                 JUDGE_EVIDENCE_SUPPORT,
                 JUDGE_LINKEDIN_TONE,
                 JUDGE_SAFETY_NO_FABRICATION,
+                JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
+            ],
+            "x2_deterministic_gates": [
+                JUDGE_EVIDENCE_SUPPORT,
+                JUDGE_LINKEDIN_TONE,
+                JUDGE_SAFETY_NO_FABRICATION,
+            ],
+            "x1d_llm_judges": [
+                JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
             ],
             "max_candidates": 3,
             "validation_repair_passes": 1,
@@ -201,18 +215,29 @@ def test_qa_report_exposes_judges_and_one_shot_quality_contract() -> None:
     qa = QaReportEngine().execute({
         "draft_message": draft,
         "validation_report": {"passed": True, "issues": []},
-        "evidence_bundle": {"count": 4},
+        "evidence_bundle": {"count": 4, "support_status": "PASS"},
     })["qa_report"]
 
     assert qa["composite_score"] >= 0.8
-    assert qa["judge_count"] == 3
+    assert qa["judge_count"] == 4
     assert qa["active_judges"] == [
         JUDGE_EVIDENCE_SUPPORT,
         JUDGE_LINKEDIN_TONE,
         JUDGE_SAFETY_NO_FABRICATION,
+        JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     ]
     assert qa["judge_scores"][JUDGE_EVIDENCE_SUPPORT] >= 0.5
     assert qa["judge_scores"][JUDGE_LINKEDIN_TONE] >= 0.5
+    assert qa["judge_scores"][JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D] >= 0.8
+    assert qa["x2_deterministic_gate_count"] == 3
+    assert qa["x1d_llm_judge_count"] == 1
+    assert qa["x2_gates_passed"] is True
+    assert (
+        qa["x1d_llm_judge_outputs"][
+            JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D
+        ]["provider_status"]
+        == "TEST_STUB_PASS"
+    )
     assert qa["quality_contract"] == {
         "generation_temperature": 0.82,
         "top_p": 0.92,
@@ -224,8 +249,24 @@ def test_qa_report_exposes_judges_and_one_shot_quality_contract() -> None:
             JUDGE_EVIDENCE_SUPPORT,
             JUDGE_LINKEDIN_TONE,
             JUDGE_SAFETY_NO_FABRICATION,
+            JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
         ],
-        "judge_count": 3,
+        "judge_count": 4,
+        "x2_deterministic_gates": [
+            JUDGE_EVIDENCE_SUPPORT,
+            JUDGE_LINKEDIN_TONE,
+            JUDGE_SAFETY_NO_FABRICATION,
+        ],
+        "x2_deterministic_gate_count": 3,
+        "x2_gates_passed": True,
+        "x1d_llm_judges": [
+            JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
+        ],
+        "x1d_llm_judge_count": 1,
+        "x1d_runs_after_x2": True,
+        "x1d_max_attempts": 1,
+        "x1d_failure_policy": "quality_block_not_exit_override",
+        "x1d_model_backed_pass": False,
         "max_candidates": 3,
         "candidate_count": 3,
         "validation_repair_passes": 1,

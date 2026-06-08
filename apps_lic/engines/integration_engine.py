@@ -55,6 +55,10 @@ class IntegrationEngine:
                     or qa.get("judge_profile")
                     or self._attr(reasoning_policy, "judge_profile", "")
                 ),
+                "active_judges": list(qa.get("active_judges") or []),
+                "x2_deterministic_gates": list(qa.get("x2_deterministic_gates") or []),
+                "x1d_llm_judges": list(qa.get("x1d_llm_judges") or []),
+                "x1d_model_backed_pass": bool(qa.get("x1d_model_backed_pass", False)),
             },
         }
 
