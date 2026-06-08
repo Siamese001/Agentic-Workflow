@@ -69,7 +69,8 @@
         "Compliance-by-design for regulated insurance workloads"
       ],
       "graph_skill_node_ids": [
-        "domain_security_governance_compliance",
+        "skill_soc2_zero_trust_security",
+        "skill_sr_insurtech_regulated_insurer_controls",
         "skill_sr_cloud_data_platform_engineering"
       ],
       "linked_source_fact_ids": ["exp_insurtech_001"],

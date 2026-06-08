@@ -35,8 +35,8 @@
         "Cost-center-to-value-added transformation of audit functions"
       ],
       "graph_skill_node_ids": [
-        "pillar_regulatory_governance",
-        "domain_replay_observability_audit",
+        "skill_sr_basel_ccar_lineage_regulatory",
+        "skill_audit_grade_observability",
         "skill_risk_model_risk"
       ],
       "linked_source_fact_ids": ["exp_ey_001"],
@@ -70,7 +70,7 @@
       ],
       "graph_skill_node_ids": [
         "skill_risk_enterprise_risk_controls",
-        "domain_replay_observability_audit",
+        "skill_audit_grade_observability",
         "skill_risk_model_risk"
       ],
       "linked_source_fact_ids": ["exp_ey_001"],

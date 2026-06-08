@@ -570,6 +570,18 @@ def _resolve_generic_section_graph_skills_proof_pool(
         )
 
         meta = _attach_unify_reb(meta, section_id=section_id, repo_root=root)
+    if section_id in ("insurtech_bullets", "insurtech_narrative"):
+        from apps_rg.runtime.sections.insurtech_role_episode_evidence import (
+            attach_role_episode_bundles_to_proof_pool_metadata as _attach_insurtech_reb,
+        )
+
+        meta = _attach_insurtech_reb(meta, section_id=section_id, repo_root=root)
+    if section_id in ("ey_bullets", "ey_narrative"):
+        from apps_rg.runtime.sections.ey_role_episode_evidence import (
+            attach_role_episode_bundles_to_proof_pool_metadata as _attach_ey_reb,
+        )
+
+        meta = _attach_ey_reb(meta, section_id=section_id, repo_root=root)
     if section_id == "headline":
         from apps_rg.runtime.sections.headline_positioning_evidence import (
             attach_headline_positioning_bundles_to_proof_pool_metadata,

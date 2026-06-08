@@ -50,8 +50,13 @@ CASES = [
 
 
 def _real_graph_node_ids() -> set[str]:
+    """A graph skill node is real if it resolves in EITHER the graph_nodes index (node_id) OR
+    the skill_rows index (skill_id). The role-episode evidence module enriches bound_skills from
+    skill_rows; higher-level nodes live in graph_nodes. Either is a valid grounding reference."""
     led = json.loads(LEDGER.read_text(encoding="utf-8"))
-    return {str(n.get("node_id")) for n in led.get("graph_nodes", []) if isinstance(n, dict)}
+    nodes = {str(n.get("node_id")) for n in led.get("graph_nodes", []) if isinstance(n, dict)}
+    rows = {str(r.get("skill_id")) for r in led.get("skill_rows", []) if isinstance(r, dict)}
+    return nodes | rows
 
 
 def _base_employment(fact_id: str) -> dict:
