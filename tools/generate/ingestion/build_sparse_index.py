@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sqlite3
 import sys
@@ -47,7 +48,29 @@ def _safe_unlink(path: Path) -> None:
 
 
 REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
-CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
+
+
+def _resolve_chroma_path() -> Path:
+    """ChromaDB source for the sparse build.
+
+    Honors ``CHROMA_PERSIST_DIR`` (absolute or repo-relative) so the builder can read a
+    relocated/pointed store — e.g. when run from a git worktree whose own
+    ``data/cache/chromadb`` is empty but the canonical store lives elsewhere. Mirrors
+    ``agentic_core.L4_state.config.chroma_paths.canonical_persist_dir``. Falls back to the
+    repo-local ``data/cache/chromadb``.
+    """
+    override = os.environ.get("CHROMA_PERSIST_DIR", "").strip()
+    if override:
+        p = Path(override)
+        if not p.is_absolute():
+            p = REPO_ROOT / p
+        return p.resolve()
+    return REPO_ROOT / "data" / "cache" / "chromadb"
+
+
+CHROMA_PATH = _resolve_chroma_path()
+# Sparse sidecars are read by bm25_store from ``<repo_root>/data/cache/sparse`` (no env
+# override there), so we always WRITE to the repo-local sparse dir to keep reads/writes aligned.
 SPARSE_PATH = REPO_ROOT / "data" / "cache" / "sparse"
 
 TARGET_COLLECTIONS = [
