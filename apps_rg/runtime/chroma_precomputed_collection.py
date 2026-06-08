@@ -78,6 +78,40 @@ def _collection_embedding_function() -> ForbidChromaDefaultEmbeddingFunction | N
     return ForbidChromaDefaultEmbeddingFunction()
 
 
+# Canonical BAAI/bge-m3 dimensionality. Stored apps_rg vectors must match this; a 384-dim
+# Chroma DefaultEmbeddingFunction (MiniLM) collection would silently return zero/garbage hits.
+EXPECTED_BGE_DIMENSION = 1024
+
+
+def assert_collection_embedding_parity(
+    collection: Any, *, expected_dim: int = EXPECTED_BGE_DIMENSION
+) -> None:
+    """Fail loud when a collection's STORED vectors do not match the canonical BGE-M3 dimension (G9).
+
+    A stale embedding alias or a collection accidentally built with Chroma's DefaultEmbeddingFunction
+    (384-dim MiniLM) silently returns zero/garbage hits against 1024-dim BGE queries (plan
+    apps-rg-e2e-gap-remediation-7e2d9c). We peek one stored vector and compare dimensions. An empty
+    collection — or a Chroma version whose ``peek`` omits embeddings — is left to the emptiness gates
+    (G2/G6); parity is only assertable when stored vectors exist.
+    """
+    try:
+        peek = collection.peek(limit=1)
+    except Exception:  # guardian: allow-broad-exception -- peek API varies by Chroma version; parity is a best-effort diagnostic, never a crash
+        return
+    embeddings = peek.get("embeddings") if isinstance(peek, dict) else None
+    if not embeddings:
+        return
+    first = embeddings[0]
+    stored_dim = len(first) if first is not None else 0
+    if stored_dim and stored_dim != int(expected_dim):
+        raise RuntimeError(
+            f"C0.2 embedding parity violation: fact_vectors stores {stored_dim}-dim vectors but "
+            f"apps_rg queries with {expected_dim}-dim BGE-M3. A stale embedding alias or a "
+            f"DefaultEmbeddingFunction-built collection causes silent zero/garbage retrieval. "
+            f"Rebuild with: python -m apps_rg bootstrap fact-vectors --strict."
+        )
+
+
 def get_precomputed_embeddings_collection_for_query(client: Any, name: str) -> Any:
     """Open an existing collection for query-only paths (explicit ``query_embeddings`` only).
 

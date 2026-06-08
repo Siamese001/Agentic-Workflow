@@ -182,6 +182,7 @@ def perform_product_hybrid_retrieval(
         _perform_bounded_section_retrieval,
     )
     from apps_rg.runtime.chroma_precomputed_collection import (
+        assert_collection_embedding_parity,
         get_precomputed_embeddings_collection_for_query,
     )
     from apps_rg.runtime.embedding_settings import (
@@ -213,6 +214,15 @@ def perform_product_hybrid_retrieval(
             + _C0_REMEDIATION_HINT
         ) from exc
 
+    # G9: fail loud on stored-vs-query embedding dimension mismatch before querying — a stale alias
+    # or DefaultEmbeddingFunction collection would otherwise return silent zero/garbage hits.
+    try:
+        assert_collection_embedding_parity(fv_col)
+    except RuntimeError as exc:
+        raise C0EvidenceGapError(
+            f"C0.2 product hybrid dense lane for {section_id!r}: {exc}"
+        ) from exc
+
     extra, _verdicts, status, sparse_refs, _scores, _traces = _perform_bounded_section_retrieval(
         chroma_path,
         payload,
@@ -222,7 +232,16 @@ def perform_product_hybrid_retrieval(
         section_id_filter=section_id,
     )
 
-    dense_completed = status == "PASS" and bool(extra)
+    selected_count = len(extra)
+    # G6: a dense lane completes ONLY with selected evidence. _perform_bounded_section_retrieval
+    # guarantees status=="PASS" <=> selected_count>0; assert it so a future regression that emits
+    # PASS-but-empty fails loud instead of silently mapping to a not_run lane.
+    if status == "PASS" and selected_count == 0:
+        raise C0EvidenceGapError(
+            f"C0.2 dense lane for {section_id!r} reported PASS with zero selected evidence — "
+            f"PASS-but-empty is invalid. " + _C0_REMEDIATION_HINT
+        )
+    dense_completed = status == "PASS" and selected_count > 0
     sparse_refs_list = list(sparse_refs)
     metadata_completed = dense_completed
     lanes = _lane_status_from_refs(
