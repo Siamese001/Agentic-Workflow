@@ -335,8 +335,37 @@ DoD:
 ## Wave 6 - Role Episode Proof Slices (InsurTech/EY)
 
 WAVE_ID: W6
-WAVE_STATUS: TODO
+WAVE_STATUS: BLOCKED — needs user-provided resume-sourced facts + locked-content authorization + an architectural decision
 WAVE_COMPLETE: NO
+
+> **2026-06-08 BLOCKED (worktree `aig-e2e-continue`):** W6 cannot proceed safely. Findings:
+> - **InsurTech and EY are locked-copy deterministic sections.** `locked_copy_manifest.py`
+>   (lines 14-15, 117-127) builds them from the base-resume canonical employment blocks; the
+>   `apps_rg` operating contract lists InsurTech/EY under "locked deterministic copy — do not
+>   rewrite unless explicitly authorized."
+> - **No InsurTech/EY proof inventory exists.** There are `ibm_/unify_role_episode_bundles.json`
+>   but **no** `insurtech_role_episode_bundles.json` / `ey_role_episode_bundles.json`, and no
+>   InsurTech/EY rows in the candidate fact inventory. The generated lanes
+>   (`insurtech_bullets`/`ey_bullets`/`insurtech_narrative`/`ey_narrative`, active in
+>   `section_execution_plan.py`) therefore return `REQUIRED_PROOF_ABSENT`.
+> - **The plan's data step is uninventable by design.** W6.P1-P2 says "author HIGH-confidence
+>   InsurTech/EY candidate facts ... facts are not inventable." Fabricating them would violate
+>   the constitutional no-fabrication + locked-copy rules.
+> - **Stale references:** the planned error site `section_graph_skills_proof_pool.py:410` no
+>   longer exists at that path post qwen-removal.
+>
+> **Three things are required to unblock, all the user's to provide:**
+> 1. **The actual resume-sourced InsurTech + EY facts** (HIGH-confidence, with employers/dates),
+>    OR a pointer to where they already live.
+> 2. **Explicit authorization** to touch locked InsurTech/EY content.
+> 3. **An architectural decision:** should InsurTech/EY render from the existing **locked-copy
+>    deterministic** path (no generated proof needed — arguably the generated lanes should be
+>    descoped for these employers), OR become **generated proof-pool lanes** (needs 1+2)? These
+>    are mutually exclusive and change blast radius. This is an `architecture_choice` Author-Gate.
+>
+> No fabrication, no locked-content rewrite without authorization. Original scope retained below.
+
+Original scope (for provenance):
 
 Scope (split data / code; ~12k — the largest, riskiest wave):
 - **W6.P1-P2 (data, resume-sourced — facts are not inventable):** author HIGH-confidence InsurTech and EY candidate facts into `master_candidate_skills_fact_ledger_*.json`; populate `company_lane`/`company`/`domain_family` so `_ledger_rows_matching_company_hints` matches reliably (today all rows have empty `company_lane`). Author `insurtech_role_episode_bundles.json` + `ey_role_episode_bundles.json` mirroring `ibm_/unify_role_episode_bundles.json`.
