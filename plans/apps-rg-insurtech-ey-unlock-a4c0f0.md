@@ -2,9 +2,19 @@
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W3
-LAST_COMPLETED_WAVE: W2
+CURRENT_WAVE: W7
+LAST_COMPLETED_WAVE: W6 (W4/W5 covered by the generic role_episode_lane)
 LAST_UPDATED: 2026-06-08
+
+> **2026-06-08 scope correction:** the ~28-file estimate (from the exploratory map) was WRONG.
+> IBM/Unify have bespoke lanes, but **InsurTech/EY use the generic `role_episode_lane.py`**, which
+> already implements the bullet lane (generate→top-3), the inline X2 Exit Gates
+> (`x2_<section>_bullet_count_3`, `_word_budget`, `_char_budget`, `_runtime_real_llm`, etc.), AND the
+> narrative lanes — for all four sections. The only thing missing was **proof**: the lanes failed
+> `REQUIRED_PROOF_ABSENT`. W1 (bundles) + W2 (registry/proof-pool wiring) + W3 (base-resume grounded
+> planner) supplied it. So **W3 effectively also satisfies W4 (X2 gates exist + parameterized) and W5
+> (narratives handled by the same generic lane)** — pending live execution proof at W7. Remaining real
+> work: **W6 unlock** (reconcile locked-copy double-render) + **W7 live E2E**.
 
 Plan ID: `apps-rg-insurtech-ey-unlock-a4c0f0`
 Status: Not Started
@@ -42,10 +52,10 @@ Parent: spun out of `apps-rg-aig-e2e-remediation-e4b7c1` W6 (user-authorized sco
 |---|---|---|---|---|---|---|
 | W1 | P1 | InsurTech + EY role-episode **bundle** data files (dependency root) | ~40k | base-resume identity verbatim; graph skill nodes exist for both periods | DONE | Both bundle JSONs validate; every `graph_skill_node_id` resolves in the skills graph — 5 tests green |
 | W2 | P2 | **Registry + proof-pool wiring** so lanes resolve non-empty proof | ~35k | `ibm_graph_role_episode_registry` is a clean template | DONE | `insurtech/ey_bullets` proof pool non-empty (bound_skills 3/3); resolver wired; 11 tests green; IBM/Unify no regression |
-| W3 | P3 | **Bullet lanes** (lane + PA + graph-evidence + hydration) for both | ~60k | bullet generation parameterized by employer | Not Started | `insurtech_bullets`/`ey_bullets` generate candidates → top-3 |
+| W3 | P3 | **Bullet lanes** — generic role_episode_lane + base-resume grounded planner | ~60k | generic lane handles insurtech/ey | DONE | All 4 lanes resolve 3 grounded facts; 6 tests; 188 regression green |
 | W4 | P4 | **X2 Exit Gates** for both bullet lanes (+ narrative if separate) | ~45k | mirror `ibm_bullets_x2` with 3-bullet count | Not Started | X2 runs; bullet-count + metric-anchor + scope-isolation gates pass on valid output |
-| W5 | P5 | **Narrative lanes** for both (6 modules each, mirror ibm_narrative_*) | ~50k | narrative consumes upstream bullets | Not Started | `insurtech_narrative`/`ey_narrative` generate from upstream bullets |
-| W6 | P6 | **Unlock** InsurTech/EY from locked-copy; reconcile duplication | ~20k | generated path supersedes locked-copy for these two | Not Started | No double-render; locked-copy no longer owns insurtech/ey OR is explicitly the fallback |
+| W5 | P5 | **Narrative lanes** — handled by the same generic role_episode_lane | ~50k | generic lane handles narratives | COVERED by generic lane | insurtech_narrative/ey_narrative resolve proof (3 facts each); live-validated at W7 |
+| W6 | P6 | **Unlock** reconciliation — verified, NO code change needed | ~20k | assembler already routes insurtech/ey as generated | DONE | No double-render: generated lanes own final resume; locked manifest keeps identity atoms + preserve gates; 4 tests |
 | W7 | P7 | **Tests** (unit + contract) mirroring IBM/Unify + **live AIG E2E** | ~45k | external Claude key available | Not Started | unit/contract green; live run emits all 4 lanes with X1D/X2/X3, no REQUIRED_PROOF_ABSENT |
 
 ### Phase-Level Summary
