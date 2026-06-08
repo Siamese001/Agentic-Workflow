@@ -98,6 +98,27 @@ def test_parse_dedup_across_sources():
     assert mod.parse_supersedes(text) == ["foo-1abc12"]
 
 
+def test_parse_ignores_fenced_example():
+    # A fenced EXAMPLE table naming a real slug must not be treated as a
+    # declaration when the actual ## Supersedes section says net-new.
+    text = (
+        "---\nsupersedes: []\n---\n# Plan\n\n"
+        "> Grammar:\n"
+        "```markdown\n## Supersedes\n| Predecessor slug | Reason |\n|---|---|\n"
+        "| apps-lic-redesign-refactor-plan-v2-consolidated | x |\n```\n\n"
+        "## Supersedes\n\n_None — net-new plan._\n"
+    )
+    assert mod.parse_supersedes(text) == []
+
+
+def test_parse_real_section_outside_fence_still_found():
+    text = (
+        "Example:\n```\n## Supersedes\n| ghost-000000 |\n```\n\n"
+        "## Supersedes\n| Predecessor slug |\n|---|\n| real-1abc12 |\n"
+    )
+    assert mod.parse_supersedes(text) == ["real-1abc12"]
+
+
 # ---------------------------------------------------------------------------
 # reconcile
 # ---------------------------------------------------------------------------
@@ -163,6 +184,22 @@ def test_comment_idempotent_when_marker_present():
     # Only the pre-existing comment remains; no duplicate POST /comments.
     assert len(fake.comments["pid-pred-aaaaaa"]) == 1
     assert not any(m == "POST" and p == "/comments" for m, p, _b in fake.calls)
+
+
+def test_retire_preserves_long_summary():
+    # Existing Summary well over the 2000-char per-segment cap must survive,
+    # with the retire note appended (nothing dropped, nothing overwritten away).
+    long_existing = "X" * 2500
+    fake = FakeNotion({"pred-aaaaaa": _page("pred-aaaaaa", "In Progress", long_existing)})
+    res = mod.reconcile(
+        execute=True, token="t", declarations={"succ-bbbbbb": ["pred-aaaaaa"]}, request_fn=fake
+    )
+    assert res.actions[0].outcome == "retired"
+    chunks = fake.pages["pred-aaaaaa"]["properties"]["Summary"]["rich_text"]
+    combined = "".join(c["text"]["content"] for c in chunks)
+    assert combined.count("X") == 2500  # original content fully preserved
+    assert mod.SUMMARY_MARKER in combined and "succ-bbbbbb" in combined
+    assert all(len(c["text"]["content"]) <= 2000 for c in chunks)  # within Notion cap
 
 
 def test_retire_payload_shape():

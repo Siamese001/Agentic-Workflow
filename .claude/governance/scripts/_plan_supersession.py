@@ -75,6 +75,14 @@ _FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 _SUPERSEDES_SECTION_RE = re.compile(
     r"^##\s+Supersedes\s*$(.*?)(?=^##\s|\Z)", re.MULTILINE | re.DOTALL
 )
+# Fenced code blocks (``` ... ``` or ~~~ ... ~~~). A plan may show an EXAMPLE
+# `## Supersedes` table inside a fence (docs/templates do this); those must NOT
+# be parsed as real declarations.
+_FENCE_RE = re.compile(r"(```|~~~).*?\1", re.DOTALL)
+
+
+def _strip_fenced_blocks(text: str) -> str:
+    return _FENCE_RE.sub("", text)
 # Plan slugs are kebab-case (optionally with a -<6hex> suffix, but not required:
 # e.g. apps-lic-redesign-refactor-plan-v2-consolidated has none).
 _SLUG_TOKEN_RE = re.compile(r"[a-z0-9][a-z0-9-]{3,}")
@@ -89,9 +97,14 @@ def parse_supersedes(text: str) -> list[str]:
 
     Reads both the ``supersedes:`` frontmatter list and the ``## Supersedes``
     table. Returns a de-duplicated list of slug tokens (order preserved).
-    A section whose only content is "None"/"N/A" yields an empty list.
+    A section whose only content is "None"/"N/A" yields an empty list. Fenced
+    code blocks (example tables in docs/templates) are ignored.
     """
     found: list[str] = []
+
+    # Strip fenced examples first so an illustrative ``## Supersedes`` table
+    # inside a code fence is never treated as a real declaration.
+    text = _strip_fenced_blocks(text)
 
     fm = _FRONTMATTER_RE.match(text)
     if fm:
@@ -261,20 +274,36 @@ def build_reason(successor_slug: str) -> str:
     )
 
 
+def _rich_text_chunks(text: str, limit: int = 1900) -> list[dict]:
+    """Split text into Notion rich_text segments, each within the 2000-char
+    per-object cap, so no content is dropped when appending the retire note."""
+    if not text:
+        return [{"type": "text", "text": {"content": ""}}]
+    return [
+        {"type": "text", "text": {"content": text[i : i + limit]}}
+        for i in range(0, len(text), limit)
+    ]
+
+
 def retire_predecessor(
     page_id: str, successor_slug: str, token: str, existing_summary: str
 ) -> bool:
-    """Patch Status->Retired and append a dated Summary note (idempotent append)."""
+    """Patch Status->Retired and append a dated Summary note (idempotent append).
+
+    The combined Summary is emitted as multiple rich_text segments rather than a
+    single truncated 2000-char slice, so neither the existing Summary nor the
+    newly appended retire note is ever silently dropped.
+    """
     reason = build_reason(successor_slug)
     if SUMMARY_MARKER in existing_summary:
         new_summary = existing_summary  # note already present; just ensure status
     else:
         joiner = "\n\n" if existing_summary.strip() else ""
-        new_summary = (existing_summary + joiner + reason)[:2000]
+        new_summary = existing_summary + joiner + reason
     body = {
         "properties": {
             "Status": {"select": {"name": "Retired"}},
-            "Summary": {"rich_text": [{"type": "text", "text": {"content": new_summary}}]},
+            "Summary": {"rich_text": _rich_text_chunks(new_summary)},
         }
     }
     resp = notion_request("PATCH", f"/pages/{page_id}", token, body)
