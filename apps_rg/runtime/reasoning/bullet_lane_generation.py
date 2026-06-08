@@ -55,6 +55,60 @@ def _normalize_selector_paths(
     return normalized
 
 
+SELECTOR_EMPTY_BLOCK_REASON = "selector_returned_no_candidates_above_threshold"
+
+
+def truthful_block_reason(
+    result: ProviderResult | None,
+    runtime_generation_status: str,
+    parse_error: str,
+) -> str:
+    """Truthful block reason that does NOT claim 'provider blocked' when the provider actually
+    produced output (REAL_LLM).
+
+    E2E-09/10: an empty selector result or a parse failure on REAL_LLM output was being labeled
+    'provider blocked', which is false — the provider succeeded; the block is downstream
+    (selector returned no candidates above threshold, or JSON parse failed).
+    """
+    if result is not None and getattr(result, "exact_provider_error", None):
+        return str(result.exact_provider_error)
+    status = str(runtime_generation_status or "").upper()
+    if status == "REAL_LLM":
+        return str(parse_error or "") or "selector_returned_no_candidates_or_parse_failed"
+    return str(parse_error or "") or "provider blocked"
+
+
+def summarize_selector_emptiness(*, pool: PoolSelectionResult, gate: Any) -> dict[str, Any]:
+    """Detect an empty bullet/competency selection and capture the sub-threshold scores so a
+    downstream block is truthful and the < 0.72 selector scores are observable (W5 containment).
+
+    Returns meta fields (not a control-flow change): ``selector_empty`` flags the empty case,
+    ``selector_block_reason`` names it, ``subthreshold_scores`` records the scores that failed
+    the gate so the deferred content-quality follow-up has data.
+    """
+    selections = list(getattr(pool, "selections", []) or [])
+    selection_mode = str(getattr(pool, "selection_mode", "") or "")
+    bullets_in_merged = int(getattr(gate, "bullets_in_merged", 0) or 0)
+    empty = (not selections) or bullets_in_merged == 0 or selection_mode == "fallback_empty"
+    subthreshold_scores: list[float] = []
+    for s in selections:
+        if isinstance(s, dict):
+            try:
+                subthreshold_scores.append(round(float(s.get("score") or 0.0), 4))
+            except (TypeError, ValueError):  # guardian: allow-silent-swallow -- non-numeric score is skipped, not fatal
+                continue
+    out: dict[str, Any] = {
+        "selector_empty": bool(empty),
+        "selector_selection_mode": selection_mode,
+        "selector_bullets_in_merged": bullets_in_merged,
+        "selector_selection_count": len(selections),
+        "selector_subthreshold_scores": subthreshold_scores,
+    }
+    if empty:
+        out["selector_block_reason"] = SELECTOR_EMPTY_BLOCK_REASON
+    return out
+
+
 def _write_employment_regen_artifact(artifact_dir: Path, doc: dict[str, Any]) -> None:
     path = artifact_dir / "employment_bullet_regen.json"
     prior: list[dict[str, Any]] = []
@@ -187,6 +241,7 @@ def _generate_employment_bullet_lane(
         "source_path_by_slot": pool.source_path_by_slot,
         "claude_selection_count": len(pool.selections),
     }
+    meta.update(summarize_selector_emptiness(pool=pool, gate=gate))
     if artifact_dir is not None:
         (artifact_dir / "bullet_pool_selection.json").write_text(
             json.dumps(
@@ -320,6 +375,7 @@ def _generate_competencies_graph_pool_lane(
         "candidate_category_count": COMPETENCIES_CANDIDATE_CATEGORY_COUNT,
         "final_category_count": COMPETENCIES_FINAL_CATEGORY_COUNT,
     }
+    meta.update(summarize_selector_emptiness(pool=pool, gate=gate))
     if artifact_dir is not None:
         (artifact_dir / "bullet_pool_selection.json").write_text(
             json.dumps(

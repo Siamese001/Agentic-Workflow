@@ -51,7 +51,10 @@ from apps_rg.runtime.exit.ibm_bullets_x3 import aggregate_x3 as _aggregate_ibm_b
 from apps_rg.runtime.judges.ibm_bullets_x1d import run_ibm_bullets_judges
 from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
 from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
-from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
+from apps_rg.runtime.reasoning.bullet_lane_generation import (
+    generate_bullet_lane_with_sc_and_claude,
+    truthful_block_reason,
+)
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     build_employment_targeting_context,
     employment_pool_x1d_judge_rows,
@@ -965,7 +968,9 @@ def run_ibm_bullets_execution(
             )
     else:
         parsed = None
-        parse_error = result.exact_provider_error or "provider blocked"
+        # E2E-09/10: do not label REAL_LLM output as 'provider blocked' — the provider
+        # produced output; an empty selection / parse failure is the real downstream cause.
+        parse_error = truthful_block_reason(result, runtime_generation_status, parse_error)
 
     bullets = list((parsed or {}).get("bullets") or [])
     claim_ledger_raw = list((parsed or {}).get("claim_ledger") or [])

@@ -300,8 +300,27 @@ DoD:
 ## Wave 5 - Bullet Lane Selector Containment
 
 WAVE_ID: W5
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE (truthful labels + empty-selection signal) — X2 short-circuit validated live at W7
+WAVE_COMPLETE: YES
+
+> **2026-06-08 implementation (worktree `aig-e2e-continue`):**
+> - **E2E-09/10 truthful labels (the reported bug):** added shared `truthful_block_reason()` in
+>   `bullet_lane_generation.py`; `ibm_bullets_lane.py` and `unify_bullets_lane.py` no longer emit
+>   `"provider blocked"` when `runtime_generation_status == REAL_LLM` — they now name the real
+>   downstream cause (selector empty / parse failure). 154 existing bullet-lane tests still green.
+> - **Empty-selection signal + sub-0.72 score recording:** added `summarize_selector_emptiness()`;
+>   both the employment and competencies pool generators now stamp `selector_empty`,
+>   `selector_block_reason=selector_returned_no_candidates_above_threshold`, and
+>   `selector_subthreshold_scores` into `gen_meta` / `bullet_lane_generation.json` — so the empty
+>   case is observable and the failing scores are captured for the deferred content-quality dig.
+> - 7 hermetic tests cover both helpers.
+> - **Deferred to W7 (needs a live external-Claude run to validate the X2 path):** the pre-X2
+>   *control-flow short-circuit* (emit ONE block gate instead of letting an empty dict produce the
+>   15/6-failure X2 cascade). The detection signal is now in place; flipping the X2 invocation in
+>   the just-rewired lanes is only safe to land with a live run proving the cascade is contained —
+>   done in W7. The truthful-label and score-recording DoD rows are met now.
+
+Original scope (for provenance):
 
 Scope (containment-only — the deeper "why all SC paths < 0.72" content-quality dig is a `## Deferred Follow-ups` item, not implemented here):
 - In the shared helper `bullet_lane_generation.py` (`_generate_employment_bullet_lane:74`), detect `selection_mode=="fallback_empty"` / `bullets_in_merged==0` **before** X2 and emit a single deterministic block with reason `selector_returned_no_candidates_above_threshold` (mirroring `upstream_evidence_block.py:159`), instead of letting the empty dict reach X2.

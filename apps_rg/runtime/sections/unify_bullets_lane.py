@@ -59,7 +59,10 @@ from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges  #
 from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
 from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
-from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
+from apps_rg.runtime.reasoning.bullet_lane_generation import (
+    generate_bullet_lane_with_sc_and_claude,
+    truthful_block_reason,
+)
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     build_employment_targeting_context,
     employment_pool_x1d_judge_rows,
@@ -814,7 +817,9 @@ def run_unify_bullets_execution(
         parsed_in, parse_error = parse_model_json(raw_output)
         parsed = normalize_unify_parsed_without_ledger_synthesis(parsed_in, runtime_payload) if parsed_in else None
     elif not parsed:
-        parse_error = (result.exact_provider_error if result else None) or parse_error or "provider blocked"
+        # E2E-09/10: do not label REAL_LLM output as 'provider blocked' — an empty selection /
+        # parse failure on real provider output is a downstream cause, not a provider block.
+        parse_error = truthful_block_reason(result, runtime_generation_status, parse_error)
 
     bullets = list((parsed or {}).get("bullets") or [])
     claim_ledger_raw = list((parsed or {}).get("claim_ledger") or []) if parsed else []
