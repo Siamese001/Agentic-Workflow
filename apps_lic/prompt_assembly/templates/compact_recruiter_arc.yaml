@@ -33,16 +33,14 @@ input_contract:
     - competitive_landscape_context  # P2 optional
 required_slots:
   - S0
-  - I0
-  - C0
-  - U0
   - D0
+  - I0
   - E0
-  - Y0
+  - C0
+  - M0
+  - U0
+  - H0
   - R0
-  - N0  # P2: NarrativeArc (optional)
-  - A0  # P2: ArchetypeToneCalibration (optional)
-  - L0  # P2: CompetitiveLandscapeContext (optional)
 forbidden_behaviors:
   - invent_relationship
   - invent_application_status
@@ -107,80 +105,76 @@ slot_bodies:
     {{approved_examples}}
 
     Examples are style references only.
-  Y0: |
+  M0: |
+    Model/provider contract:
+    - provider_profile: qwen_vllm
+    - model: Qwen/Qwen2.5-32B-Instruct-AWQ
+    - Return JSON only.
+  H0: |
     Approved writing preferences:
     - Direct, efficient, credential-forward.
     - Avoid AI-sounding phrasing.
     - No em dashes.
     - Links must be plain text.
-    - Signature block (shortened for recruiters):
-      Amit Ayer
-      Chief Agentic AI Officer
-      www.linkedin.com/in/amitayer1/
+    - Signature is optional and must be short.
   N0: |
     Narrative Arc guidance (P2 optional):
     {{narrative_arc_context}}
-    
+
     For recruiters, use the compact arc only:
-    - opener → hook → ask (skip proof if arc_coherence < 0.7)
+    - opener, hook, ask
     - Max 2 sections total
-    
-    If no narrative arc context, use default compact structure.
+
+    If no narrative arc context, proceed without this guidance.
   A0: |
     Archetype Tone Calibration (P2 optional):
     {{archetype_tone_calibration}}
-    
+
     For recruiters, prefer direct-credible tone regardless of archetype.
     Suppress overly formal or ornate vocabulary.
-    
-    If no calibration, default to direct-credible.
+
+    If no calibration, proceed without this guidance.
   L0: |
     Competitive Landscape Context (P2 optional):
     {{competitive_landscape_context}}
-    
+
     For recruiters, competitive differentiators are rarely relevant.
-    Include only if:
-    - confidence >= 0.8
-    - explicitly requested by user
-    - recipient is external executive recruiter (not in-house)
-    
-    If no competitive context, omit.
+    Include only if confidence is high and the user explicitly requested it.
+
+    If no competitive context, proceed without this guidance.
   R0: |
-    Output exactly one OutreachDraft JSON object with:
-    - subject
-    - message_body
+    Output exactly one JSON object with:
+    - message_text
     - channel
     - recipient_class
-    - relationship_posture
     - intended_next_step
     - claims_used
     - unsupported_claims
     - omitted_claims
-    - personalization_confidence
-    - tone_risk_flags
-    - hitl_questions
-    - signature_block
-    - metadata
-    - send_mode
+    - qa_notes
+    - provider_profile
+    - model
 
-    send_mode allowed values:
-    - draft_only
-    - review_required
-    - send_ready_candidate
+    Required values:
+    - channel: linkedin
+    - recipient_class: recruiter
+    - provider_profile: qwen_vllm
+    - model: Qwen/Qwen2.5-32B-Instruct-AWQ
 
-    Forbidden send_mode values:
-    - send_now
-    - auto_send
-    - connector_send
+    message_text rules:
+    - 600 characters or fewer
+    - Max 2 short paragraphs
+    - Low-friction ask for a chat, call, or resume review
+    - No subject line
+    - No send mode
 output_contract:
-  type: OutreachDraft
+  type: LinkedInRecruiterOutreachDraft
   format: json
 validation_rules:
-  - all_claims_in_message_body_must_appear_in_claims_used
+  - all_claims_in_message_text_must_appear_in_claims_used
   - claims_used_must_have_source_refs
-  - omitted_claims_must_not_appear_in_message_body
-  - unsupported_claims_must_not_appear_in_message_body
-  - send_mode_must_be_allowed
+  - omitted_claims_must_not_appear_in_message_text
+  - unsupported_claims_must_not_appear_in_message_text
   - no_em_dash
   - no_markdown_links
   - within_channel_ceiling

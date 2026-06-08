@@ -36,6 +36,7 @@ APPS_LIC_INGRESS_CONTRACT_VERSION: str = "v1"
 
 class RequestType(str, enum.Enum):
     OUTREACH_DRAFT = "outreach_draft"
+    LINKEDIN_RECRUITER_OUTREACH_DRAFT = "linkedin_recruiter_outreach_draft"
     CAMPAIGN_BATCH = "campaign_batch"
     DRY_RUN = "dry_run"
 
@@ -312,6 +313,10 @@ class ResearchRequirementsSection(_ImmutableModel):
     """Research stage hints."""
 
     allow_research: bool = False
+    research_disabled_by_policy: bool = False
+    deprecation_reason: str = ""
+    requested_but_disabled: bool = False
+    apps_research_deprecated: bool = False
     required_evidence_types: List[str] = Field(default_factory=list)
     freshness_class: str = "any"
     max_sources: Optional[int] = None
@@ -330,7 +335,7 @@ class ValidationPolicySection(_ImmutableModel):
     """ValidationEngine policy hints."""
 
     min_body_length: int = 20
-    max_body_length: int = 4000
+    max_body_length: int = 600
     require_grounded: bool = True
     evidence_coverage_min: float = 0.0
 
@@ -519,7 +524,6 @@ class RoutePolicy(_ImmutableModel):
     allowed_route_families: List[str] = Field(
         default_factory=lambda: [
             "R4_MANAGED_DRAFT",
-            "R3R4_MANAGED_RESEARCH_THEN_DRAFT",
             "R5_FALLBACK",
         ]
     )
@@ -540,7 +544,7 @@ class RoutePolicy(_ImmutableModel):
         if found_forbidden:
             raise ValueError(
                 f"allowed_route_families contains forbidden old route names: {sorted(found_forbidden)}. "
-                f"Use only: R4_MANAGED_DRAFT, R3R4_MANAGED_RESEARCH_THEN_DRAFT, R5_FALLBACK"
+                f"Use only: R4_MANAGED_DRAFT, R5_FALLBACK"
             )
         return v
 
@@ -550,7 +554,7 @@ class RoutePolicy(_ImmutableModel):
         if v:
             raise ValueError(
                 "briefing_only_route_allowed must be False for apps_lic — "
-                "briefing-only requests must route to apps_research directly"
+                "briefing-only requests are deprecated and fail closed"
             )
         return v
 
@@ -652,8 +656,9 @@ class RuntimeCustomizationPackageSection(_ImmutableModel):
 
     Route fields use FINAL L0 model names only:
     - R4_MANAGED_DRAFT
-    - R3R4_MANAGED_RESEARCH_THEN_DRAFT
     - R5_FALLBACK
+    R3R4_MANAGED_RESEARCH_THEN_DRAFT is deprecated compatibility only and is
+    not an allowed live route family.
     """
 
     # Profile references

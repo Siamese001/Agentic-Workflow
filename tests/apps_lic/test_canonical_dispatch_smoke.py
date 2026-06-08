@@ -19,7 +19,8 @@ def test_build_cli_ingress_r4_fresh_context() -> None:
     assert inputs.get("manual_brief")
 
 
-def test_canonical_spine_r4_managed_workflow(tmp_path: Path) -> None:
+def test_canonical_spine_r4_managed_workflow(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
     raw = build_cli_ingress_raw(
         run_id="phase0_canonical_lic_01",
         request_id="req_phase0_canonical_lic_01",

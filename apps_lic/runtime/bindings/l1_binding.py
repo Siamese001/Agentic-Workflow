@@ -169,6 +169,18 @@ def _build_app_payload_projections(
     # ── 1. task_spec ─────────────────────────────────────────────────────────
     # Research authorization flags (read from research_requirements sub-section)
     allow_research: bool = bool(research_req.get("allow_research", False))
+    research_disabled_by_policy: bool = bool(
+        research_req.get("research_disabled_by_policy", False)
+    )
+    research_requested_but_disabled: bool = bool(
+        research_req.get("requested_but_disabled", False)
+    )
+    apps_research_deprecated: bool = bool(
+        research_req.get("apps_research_deprecated", False)
+    )
+    research_deprecation_reason: str = _coerce_str(
+        research_req.get("deprecation_reason", "")
+    )
     research_evidence_types: list[str] = list(
         research_req.get("research_evidence_types", research_req.get("required_evidence_types", []))
     )
@@ -189,6 +201,10 @@ def _build_app_payload_projections(
         "campaign_objective": campaign.get("campaign_objective", ""),
         # Research authorization (L0 routing decision inputs)
         "allow_research": allow_research,
+        "research_disabled_by_policy": research_disabled_by_policy,
+        "research_requested_but_disabled": research_requested_but_disabled,
+        "apps_research_deprecated": apps_research_deprecated,
+        "research_deprecation_reason": research_deprecation_reason,
         "research_evidence_types": research_evidence_types,
         # Context freshness (L0 routing decision inputs)
         "briefing_fresh": briefing_fresh,
@@ -350,13 +366,16 @@ def l1_plan_apps_lic(validated_request: ValidatedRequest) -> L1PlanContract:
         write_authority_present,
     ) = _build_app_payload_projections(validated_request.app_payload)
 
+    lead_anchor = query_spec.get("lead_anchor") or {}
+    target_level = str(lead_anchor.get("seniority_class", "") or "")
+
     return L1PlanContract(
         request_id=validated_request.request_id,
         run_id=validated_request.run_id,
         app_id=validated_request.app_id,
         trace_id=validated_request.trace_id,
         tenant_id=validated_request.tenant_id,
-        target_level="",  # apps_lic has no executive-variant routing at L0; left blank
+        target_level=target_level,
         task_plan=_OUTREACH_MESSAGE_TASK_PLAN,
         required_capabilities=_OUTREACH_MESSAGE_REQUIRED_CAPABILITIES,
         grounding_required=grounding_required,

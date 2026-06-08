@@ -40,6 +40,7 @@ _STAGE_SPECS: list[HopStageSpec] = [
         stage_name="research",
         engine_module="apps_lic.engines.research_engine",
         engine_class="ResearchEngine",
+        # Bounded C0/manual/preloaded evidence only; no live research delegation.
         inputs=("profile_features", "retrieval_chunks"),
         outputs=("evidence_bundle",),
         required=True,

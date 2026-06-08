@@ -27,11 +27,15 @@ class IntegrationEngine:
                 "campaign_id": str(self._attr(req, "campaign_id", "")),
                 "target_audience": str(self._attr(config, "target_audience", "")),
                 "compliance_level": str(self._attr(config, "compliance_level", "standard")),
-                "draft_body": str(draft.get("body", "")),
+                "draft_body": str(draft.get("message_text") or draft.get("body", "")),
+                "channel": str(draft.get("channel", "linkedin")),
+                "recipient_class": str(draft.get("recipient_class", "recruiter")),
                 "validation_passed": bool(report.get("passed", False)),
                 "composite_score": float(qa.get("composite_score", 0.0)),
                 "issues": list(report.get("issues") or []),
                 "generator": str(draft.get("generator", "unknown")),
+                "provider_profile": str(draft.get("provider_profile", "")),
+                "model": str(draft.get("model", "")),
             },
         }
 

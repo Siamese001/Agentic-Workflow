@@ -3,21 +3,18 @@
 L0 is the THIRD stage of the U0 -> L1 -> L0 -> [C0] -> [PA] -> L3/L2 -> Exit
 pipeline. Its job is to consume the L1PlanContract app_payload-derived
 projections and emit a single deterministic RouteContract using the FINAL
-L0 routing model (R4/R3R4/R5).
+L0 routing model (R4/R5). R3R4 is retained only as a deprecated constant for
+stale callers and always maps to R5.
 
 FINAL L0 ROUTING MODEL (W2):
-    L0 reads L1PlanContract ONLY and emits exactly one of:
+    L0 reads L1PlanContract ONLY and emits exactly one live route family:
 
     1. R4_MANAGED_DRAFT
-       Condition: fresh, valid outreach context exists; no apps_research support needed
+       Condition: fresh, valid outreach context exists; no external research support needed
        Path: U0 -> L1 -> L0 -> R4 -> execution_form=MANAGED_WORKFLOW -> L3 HOP draft workflow -> L2 -> Exit
 
-    2. R3R4_MANAGED_RESEARCH_THEN_DRAFT
-       Condition: fresh context missing/stale/incomplete; research authorized
-       Path: U0 -> L1 -> L0 -> R3R4 -> L3 apps_research support -> L3 validates context -> L3 HOP -> L2 -> Exit
-
-    3. R5_FALLBACK
-       Condition: no valid context; research not authorized; policy/consent/evidence/channel invalid
+    2. R5_FALLBACK
+       Condition: no valid context, deprecated research requested, or policy/consent/evidence/channel invalid
        Path: U0/L1/L0/L3/L2 failure -> R5 terminal packet -> Exit -> bounded fail-closed / abstain / no-draft outcome
 
     OLD ROUTE NAMES REMOVED:
@@ -29,11 +26,11 @@ FINAL L0 ROUTING MODEL (W2):
 HARD LAWS:
     - L0 does NOT retrieve, execute, assemble prompts, or write L4.
     - L0 does NOT call ChromaDB, embedding models, or any external I/O.
-    - L0 emits exactly ONE route (R4, R3R4, or R5 only).
-    - execution_form='managed_workflow' for R4 and R3R4; 'terminal_fallback' for R5
+    - L0 emits exactly ONE live route (R4 or R5 only).
+    - execution_form='managed_workflow' for R4; 'terminal_fallback' for R5
       (canonical casing emitted by l0_route_apps_lic regardless of profile map casing).
     - Cache bypass for final drafts: R1A exact and R1B semantic always bypassed.
-    - Briefing-only requests route to apps_research directly, never through apps_lic L0.
+    - Briefing-only or managed-research requests fail closed; no apps_research delegation.
 
 Plan: docs/archive/windsurf/legacy-tree/plans/apps-lic-u0-runtime-package-complete-f8e2a1.md (W2)
 """
@@ -53,13 +50,12 @@ from agentic_core.L0_routing.generic_route_policy_interpreter import (
     derive_l3_required_from_profile,
     derive_cache_eligibility_from_policy,
     _check_fresh_context,
-    _check_research_authorized,
 )
 
 
 APPS_LIC_L0_CERT_REF: str = "l0-apps-lic-outreach-message-w2-final-routing-f8e2a1"
 
-# Final L0 route families (R4/R3R4/R5 model)
+# Live L0 route families. R3R4 is deprecated compatibility only.
 ROUTE_FAMILY_R4_MANAGED_DRAFT: str = "R4_MANAGED_DRAFT"
 ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT: str = "R3R4_MANAGED_RESEARCH_THEN_DRAFT"
 ROUTE_FAMILY_R5_FALLBACK: str = "R5_FALLBACK"
@@ -81,9 +77,9 @@ _EXECUTION_FORM_TERMINAL: str = "terminal_fallback"
 
 # Stable aliases used by W4 tests (map to canonical R4/R3R4/R5 model)
 APPS_LIC_DEFAULT_ROUTE_ID: str = ROUTE_ID_R4_DEFAULT
-APPS_LIC_COLD_ROUTE_ID: str = ROUTE_ID_R3R4_WITH_RESEARCH
+APPS_LIC_COLD_ROUTE_ID: str = ROUTE_ID_R5_FALLBACK
 APPS_LIC_WARM_ROUTE_ID: str = ROUTE_ID_R4_DEFAULT
-APPS_LIC_FOLLOW_UP_ROUTE_ID: str = ROUTE_ID_R3R4_WITH_RESEARCH
+APPS_LIC_FOLLOW_UP_ROUTE_ID: str = ROUTE_ID_R5_FALLBACK
 
 _ROUTE_PROFILE_RELPATH: str = (
     "apps_lic/config/domain_contract/l0_route_profile.outreach_message.v1.json"
@@ -134,7 +130,13 @@ def _get_cache_policy() -> dict:
 
 def _derive_route_family(l1_plan: L1PlanContract) -> str:
     """Thin adapter: delegates to generic route policy interpreter using apps_lic profile."""
-    return derive_route_family_from_profile(l1_plan, _get_route_profile())
+    route_family = derive_route_family_from_profile(l1_plan, _get_route_profile())
+    if (
+        route_family == ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT
+        or _research_deprecated_requested(l1_plan)
+    ):
+        return ROUTE_FAMILY_R5_FALLBACK
+    return route_family
 
 
 def _has_fresh_valid_context(l1_plan: L1PlanContract) -> bool:
@@ -147,24 +149,32 @@ def _has_fresh_valid_context(l1_plan: L1PlanContract) -> bool:
 
 
 def _is_research_authorized(l1_plan: L1PlanContract) -> bool:
-    """Thin adapter: delegates to generic research-authorization check using profile conditions."""
-    profile = _get_route_profile()
-    cond = profile.get("route_selection_conditions", {}).get(
-        ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT, {}
+    """Deprecated compatibility helper. Managed research is never authorized."""
+    return False
+
+
+def _research_deprecated_requested(l1_plan: L1PlanContract) -> bool:
+    """Return True when the caller requested deprecated research behavior."""
+    task_spec = l1_plan.task_spec or {}
+    return bool(
+        task_spec.get("research_requested_but_disabled")
+        or (
+            task_spec.get("allow_research")
+            and task_spec.get("research_disabled_by_policy")
+        )
     )
-    return _check_research_authorized(l1_plan.task_spec or {}, cond)
 
 
 def _derive_route_id(l1_plan: L1PlanContract, route_family: str) -> str:
     """Select route_id based on route_family — thin mapping, no app logic in core.
 
     R4 -> ROUTE_ID_R4_DEFAULT (HOP draft workflow)
-    R3R4 -> ROUTE_ID_R3R4_WITH_RESEARCH (apps_research support then HOP)
+    R3R4 -> ROUTE_ID_R5_FALLBACK (deprecated route blocked)
     R5 -> ROUTE_ID_R5_FALLBACK (terminal fallback, no draft)
     """
     _route_id_map = {
         ROUTE_FAMILY_R4_MANAGED_DRAFT: ROUTE_ID_R4_DEFAULT,
-        ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT: ROUTE_ID_R3R4_WITH_RESEARCH,
+        ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT: ROUTE_ID_R5_FALLBACK,
         ROUTE_FAMILY_R5_FALLBACK: ROUTE_ID_R5_FALLBACK,
     }
     return _route_id_map.get(route_family, ROUTE_ID_R5_FALLBACK)
@@ -172,6 +182,8 @@ def _derive_route_id(l1_plan: L1PlanContract, route_family: str) -> str:
 
 def _derive_execution_form(route_family: str) -> str:
     """Thin adapter: derives canonical execution form from apps_lic route profile."""
+    if route_family == ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT:
+        return _EXECUTION_FORM_TERMINAL
     profile_form = derive_execution_form_from_profile(route_family, _get_route_profile())
     return _canonicalize_execution_form(profile_form)
 
@@ -188,6 +200,8 @@ def _canonicalize_execution_form(profile_execution_form: str) -> str:
 
 def _derive_l3_required(route_family: str) -> bool:
     """Thin adapter: derives l3_required from apps_lic route profile."""
+    if route_family == ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT:
+        return False
     return derive_l3_required_from_profile(route_family, _get_route_profile())
 
 
@@ -243,9 +257,17 @@ def _build_reason_codes(
         f"grounding_required={l1_plan.grounding_required}",
         f"action_required={action_required}",
         f"side_effect_class={side_effect_class}",
-        f"channel={l1_plan.task_spec.get('channel', 'email')}",
+        f"channel={l1_plan.task_spec.get('channel', 'linkedin')}",
         f"cache_eligibility={json.dumps(cache_eligibility, sort_keys=True)}",
     ]
+    if l1_plan.task_spec.get("research_disabled_by_policy"):
+        codes.append("research_disabled_by_policy=true")
+    if l1_plan.task_spec.get("research_requested_but_disabled"):
+        codes.append("research_requested_but_disabled=true")
+    if l1_plan.task_spec.get("apps_research_deprecated"):
+        codes.append("apps_research_deprecated=true")
+    if l1_plan.task_spec.get("research_deprecation_reason"):
+        codes.append(f"research_deprecation_reason={l1_plan.task_spec['research_deprecation_reason']}")
     hitl = l1_plan.support_expectation.get("hitl_required", True)
     codes.append(f"hitl_required={hitl}")
     pii_mode = l1_plan.support_expectation.get("pii_detection_mode", "strict")
@@ -293,8 +315,15 @@ def l0_route_apps_lic(l1_plan: L1PlanContract) -> RouteContract:
     cache_eligibility = _derive_cache_eligibility(route_family)
     side_effect_class = _derive_side_effect_class(l1_plan)
 
-    # FINAL L0 MODEL hard law: R4 and R3R4 must produce managed_workflow; R5 terminal_fallback.
-    if route_family in (ROUTE_FAMILY_R4_MANAGED_DRAFT, ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT):
+    if _research_deprecated_requested(l1_plan):
+        route_family = ROUTE_FAMILY_R5_FALLBACK
+        route_id = ROUTE_ID_R5_FALLBACK
+        execution_form = _EXECUTION_FORM_TERMINAL
+        l3_required = False
+        cache_eligibility = _derive_cache_eligibility(route_family)
+
+    # FINAL L0 MODEL hard law: R4 produces managed_workflow; R5 terminal_fallback.
+    if route_family == ROUTE_FAMILY_R4_MANAGED_DRAFT:
         if execution_form != _EXECUTION_FORM_MANAGED:
             raise ValueError(
                 f"l0_route_apps_lic: route_family={route_family} but execution_form "

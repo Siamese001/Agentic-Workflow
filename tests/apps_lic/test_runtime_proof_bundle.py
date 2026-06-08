@@ -25,7 +25,8 @@ def _load_proof_bundle(run_dir: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def test_r4_managed_workflow_writes_passing_proof_bundle(tmp_path: Path) -> None:
+def test_r4_managed_workflow_writes_passing_proof_bundle(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
     raw = build_cli_ingress_raw(
         run_id="proof_r4_01",
         request_id="req_proof_r4_01",

@@ -95,7 +95,6 @@
     "route_policy": {
       "allowed_route_families": [
         "R4_MANAGED_DRAFT",
-        "R3R4_MANAGED_RESEARCH_THEN_DRAFT",
         "R5_FALLBACK"
       ],
       "default_route_family": "R4_MANAGED_DRAFT",
@@ -124,7 +123,7 @@
     "description": "Master runtime customization package for apps_lic outreach_message",
     "author": "agentic_core",
     "created_at": "2026-05-11",
-    "route_model": "FINAL L0: R4_MANAGED_DRAFT / R3R4_MANAGED_RESEARCH_THEN_DRAFT / R5_FALLBACK",
-    "briefing_only_policy": "FORBIDDEN in apps_lic — route to apps_research directly"
+    "route_model": "FINAL L0: R4_MANAGED_DRAFT / R5_FALLBACK",
+    "briefing_only_policy": "FORBIDDEN in apps_lic; deprecated research requests fail closed"
   }
 }

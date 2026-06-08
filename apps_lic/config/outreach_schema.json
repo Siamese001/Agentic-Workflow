@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "OutreachRequest",
-  "description": "apps_lic outreach request schema. Schema version: apps_lic_outreach_v1. Plan: apps-lic-canonical-spine-wireup-e7c2a5 W4 P12.",
+  "description": "apps_lic LinkedIn recruiter outreach draft request schema. Schema version: apps_lic_outreach_v1. Live path drafts only; managed research delegation is deprecated.",
   "type": "object",
   "required": ["recipient_id", "channel", "outreach_mode"],
   "properties": {
@@ -63,7 +63,7 @@
     "briefing_only": {
       "type": "boolean",
       "default": false,
-      "description": "If true: route to R3_SIMPLE_GROUNDED_READ (briefing artifact only, no outreach draft)."
+      "description": "Deprecated for apps_lic. Briefing-only and managed research requests fail closed instead of delegating to another app."
     },
     "source_channel": {
       "type": "string",

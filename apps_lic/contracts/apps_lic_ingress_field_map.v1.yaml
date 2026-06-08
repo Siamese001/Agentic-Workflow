@@ -338,6 +338,31 @@ mappings:
     target: apps_lic C0 binding (W5)
     reason: "Research requirements consumed by C0 retrieval binding — wired in W5"
 
+  /research_requirements/allow_research:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.research_requirements.allow_research
+    reason: "Deprecated compatibility flag preserved for L1/L0 fail-closed routing; it no longer authorizes external research"
+
+  /research_requirements/research_disabled_by_policy:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.research_requirements.research_disabled_by_policy
+    reason: "Policy marker consumed by L1/L0 to prove managed research delegation is disabled"
+
+  /research_requirements/deprecation_reason:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.research_requirements.deprecation_reason
+    reason: "Terminal R5 reason propagated when stale callers request managed research"
+
+  /research_requirements/requested_but_disabled:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.research_requirements.requested_but_disabled
+    reason: "Backward-compatible CLI/request marker for deprecated research requests"
+
+  /research_requirements/apps_research_deprecated:
+    status: MAPPED
+    target: ValidatedRequest.app_payload.research_requirements.apps_research_deprecated
+    reason: "Explicit no-delegation marker consumed by L1/L0 and test receipts"
+
   /research_requirements/freshness_class:
     status: DEFERRED
     target: apps_lic C0 binding (W5)

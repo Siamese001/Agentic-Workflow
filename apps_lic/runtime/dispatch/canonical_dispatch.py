@@ -110,8 +110,9 @@ def build_cli_ingress_raw(
         "allow_research": False,
         "research_disabled_by_policy": True,
         "deprecation_reason": _APPS_RESEARCH_DEPRECATED_REASON,
+        "apps_research_deprecated": True,
     }
-    if allow_research and not has_brief:
+    if allow_research:
         research_req["requested_but_disabled"] = True
 
     return {
@@ -130,8 +131,6 @@ def build_cli_ingress_raw(
             "campaign_objective": campaign_objective or _DEFAULT_CAMPAIGN_OBJECTIVE,
             "channel": normalized_channel,
             "audience_segment": audience_segment,
-            "recipient_class": normalized_recipient_class,
-            "outreach_mode": normalized_outreach_mode,
             "action_required": "draft_and_cert",
             "workflow_required": "managed_workflow_hop",
             "grounding_required": True,
@@ -164,13 +163,13 @@ def build_cli_ingress_raw(
         "generation_hints": {},
         "tone_constraints": {},
         "output_format": {
-            "format": "linkedin_message_json",
-            "message_text_max_chars": 600,
-            "subject_required": False,
+            "include_subject_line": False,
+            "max_paragraphs": 2,
+            "output_schema_ref": "apps_lic.linkedin_recruiter_outreach.v1",
         },
         "research_requirements": research_req,
-        "routing_policy": {},
-        "validation_policy": {},
+        "routing_policy": {"outreach_mode": normalized_outreach_mode},
+        "validation_policy": {"max_body_length": 600},
         "gate_decision_policy": {"halt_on_validation_failure": True},
         "qa_report": {},
         "integration_target": None,
@@ -255,7 +254,15 @@ def _write_terminal_manifest(
         "exit_stage_policy": exit_stage_policy,
         "producer_component": "apps_lic.runtime.dispatch.canonical_dispatch",
         "apps_research_invoked": False,
+        "r3r4_research_invoked": False,
         "deprecated_route_family": deprecated_route_family or "",
+        "l3_participated": False,
+        "c0_invoked": False,
+        "pa_invoked": False,
+        "l2_executed": False,
+        "no_send_assertion": True,
+        "no_l4_write_assertion": True,
+        "no_connector_post_assertion": True,
         "stage_receipt_refs": list(stage_refs),
     }
     manifest_path = _sr.write_stage_receipt(
@@ -380,7 +387,12 @@ def run_canonical_apps_lic_spine(
         )
 
     if route.execution_form == _EXECUTION_TERMINAL or route.route_family == ROUTE_FAMILY_R5:
-        terminal_reason = "route_family=R5_FALLBACK"
+        if any("apps_research_deprecated" in code for code in route.reason_codes):
+            terminal_reason = _APPS_RESEARCH_DEPRECATED_REASON
+        elif any("research_requested_but_disabled" in code for code in route.reason_codes):
+            terminal_reason = _APPS_RESEARCH_DEPRECATED_REASON
+        else:
+            terminal_reason = "route_family=R5_FALLBACK"
         _write_terminal_manifest(
             artifact_dir=artifact_dir,
             artifacts=artifacts,
@@ -400,7 +412,7 @@ def run_canonical_apps_lic_spine(
             execution_form=route.execution_form,
             x3_disposition="DENY",
             terminal_r5=True,
-            terminal_r5_reason="R5_TERMINAL_FALLBACK",
+            terminal_r5_reason=terminal_reason,
             artifact_dir=artifact_dir,
             artifacts=tuple(artifacts),
         )
@@ -497,10 +509,16 @@ def run_canonical_apps_lic_spine(
         "l3_participated": True,
         "c0_invoked": c0_invoked,
         "pa_invoked": pa_invoked,
+        "l2_executed": True,
         "l2_execution_status": l2_status,
         "l3_receipt_id": getattr(l3_receipt, "deterministic_digest", "")[:32],
         "producer_component": "apps_lic.runtime.dispatch.canonical_dispatch",
         "apps_research_invoked": False,
+        "r3r4_research_invoked": False,
+        "no_send_assertion": True,
+        "no_l4_write_assertion": True,
+        "no_connector_post_assertion": True,
+        "research_note": "",
         "stage_receipt_refs": list(stage_refs),
     }
     manifest_path = _sr.write_stage_receipt(artifact_dir / _sr.FILENAME_SPINE_MANIFEST, manifest)
@@ -527,6 +545,7 @@ def run_canonical_apps_lic_spine(
         l3_participated=True,
         c0_invoked=c0_invoked,
         pa_invoked=pa_invoked,
+        l2_executed=True,
         l2_execution_status=l2_status,
         exit_status=x3_exit_status,
         outcome_authorized=x3_outcome_authorized,

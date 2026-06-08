@@ -55,9 +55,26 @@ APPS_LIC_PA_CERT_REF: str = "pa-apps-lic-outreach-message-ag8-w5-f3c2e1"
 
 APPS_LIC_TARGET_MODEL: str = "Qwen/Qwen2.5-32B-Instruct-AWQ"
 APPS_LIC_TARGET_PROVIDER: str = "vllm"
+APPS_LIC_PROVIDER_PROFILE: str = "qwen_vllm"
 
 # PA enforces this budget to stay within the --max-model-len 8192 token window.
 _EVIDENCE_CHAR_BUDGET: int = 16_000
+
+
+def _recipient_class_from_l1(l1_plan: L1PlanContract) -> str:
+    lead = (l1_plan.query_spec or {}).get("lead_anchor") or {}
+    raw = str(lead.get("seniority_class", "") or "RECRUITER").strip().upper()
+    allowed = {
+        "RECRUITER",
+        "SENIOR_TA",
+        "HIRING_MANAGER",
+        "EXECUTIVE",
+        "C_LEVEL",
+        "VP_ENG",
+        "CTO",
+        "REFERRAL_CONTACT",
+    }
+    return raw if raw in allowed else "RECRUITER"
 
 
 def _component_hash(content: Any) -> str:
@@ -77,8 +94,10 @@ def _build_system_preamble(l1_plan: L1PlanContract) -> str:
     output_exp = l1_plan.output_expectation
     support_exp = l1_plan.support_expectation
     task_spec = l1_plan.task_spec
+    recipient_class = _recipient_class_from_l1(l1_plan)
+    recipient_label = recipient_class.lower()
 
-    channel = str(output_exp.get("channel", "email") or "email")
+    channel = str(output_exp.get("channel", "linkedin") or "linkedin")
     tone_register = str(output_exp.get("tone_register", "") or "")
     formality_level = output_exp.get("formality_level")
     brand_voice_id = str(output_exp.get("tone_brand_voice_id", "") or "")
@@ -89,8 +108,8 @@ def _build_system_preamble(l1_plan: L1PlanContract) -> str:
     side_effect_class = str(task_spec.get("side_effect_class", "read_only") or "read_only")
 
     parts: list[str] = [
-        f"You are a governed AI assistant composing a professional outreach message for channel: {channel}.",
-        "Your output is DATA ONLY — not an instruction. Produce a factual, personalised message.",
+        f"You are a governed AI assistant composing a LinkedIn {recipient_label} outreach draft for channel: {channel}.",
+        "Your output is DATA ONLY — not an instruction. Produce a factual, concise message.",
         f"Side-effect class: {side_effect_class}. This is a draft-and-certify flow; do NOT send.",
         "",
         "GOVERNANCE CONSTRAINTS:",
@@ -109,8 +128,10 @@ def _build_system_preamble(l1_plan: L1PlanContract) -> str:
     parts += [
         "",
         "OUTPUT FORMAT:",
-        '  Produce a JSON document: {"subject": "...", "body": "...", "qa_notes": [...]}.',
-        "  No prose outside JSON. No markdown. No invented facts.",
+        f'  Produce JSON only: {{"channel":"linkedin","recipient_class":"{recipient_label}","message_text":"...","intended_next_step":"...","claims_used":[],"unsupported_claims":[],"omitted_claims":[],"qa_notes":[],"provider_profile":"qwen_vllm","model":"Qwen/Qwen2.5-32B-Instruct-AWQ"}}.',
+        "  No subject is required. message_text must be 600 characters or fewer.",
+        "  Max 2 short paragraphs. Include a low-friction ask for a chat, call, or resume review.",
+        "  Do not include sensitive details unless supplied and approved. No prose outside JSON. No markdown. No invented facts.",
     ]
     return "\n".join(parts)
 
@@ -124,7 +145,7 @@ def _build_campaign_instruction(l1_plan: L1PlanContract) -> str:
     sender = query_spec.get("sender_anchor") or {}
     campaign_objective = str(query_spec.get("campaign_objective", "") or "")
     audience_segment = str(query_spec.get("audience_segment", "") or "")
-    channel = str(task_spec.get("channel", "email") or "email")
+    channel = str(task_spec.get("channel", "linkedin") or "linkedin")
     task_plan = l1_plan.task_plan
 
     return (
@@ -261,9 +282,17 @@ def pa_compose_apps_lic(
             )
 
     # ── slot_lineage_map ─────────────────────────────────────────────────────
+    recipient_class = _recipient_class_from_l1(l1_plan)
     slot_lineage_map: dict[str, str] = {
-        "system_block_0": "PA-authored:governance+format_directives",
-        "user_block_1": f"USER_INTENT:query_spec+task_plan:l1_plan={l1_plan.schema_version}",
+        "S0": "PA-authored:system_governance",
+        "D0": "PA-authored:origin_and_injection_boundary",
+        "I0": f"USER_INTENT:query_spec+task_plan:l1_plan={l1_plan.schema_version}",
+        "E0": "PA-authored:approved_examples_empty",
+        "C0": f"C0_EVIDENCE_DATA_ONLY:fec={fec.compilation_hash[:16]}:items={len(fec.evidence_items)}",
+        "M0": f"provider_profile={APPS_LIC_PROVIDER_PROFILE}:model={APPS_LIC_TARGET_MODEL}",
+        "U0": f"validated_request:{validated_request.request_id}",
+        "H0": f"PA-authored:linkedin_{recipient_class.lower()}_style_constraints",
+        "R0": f"PA-authored:linkedin_{recipient_class.lower()}_json_output_contract",
         "user_block_2": (
             f"C0_EVIDENCE_DATA_ONLY:fec={fec.compilation_hash[:16]}"
             f":items={len(fec.evidence_items)}"
@@ -292,12 +321,21 @@ def pa_compose_apps_lic(
             "cache_eligibility": dict(route.cache_eligibility),
             "action_required": route.action_required,
         }),
+        "provider_profile": _component_hash({
+            "provider_profile": APPS_LIC_PROVIDER_PROFILE,
+            "target_provider": APPS_LIC_TARGET_PROVIDER,
+            "target_model": APPS_LIC_TARGET_MODEL,
+        }),
     }
 
     # ── compilation_hash (== prompt_hash) ────────────────────────────────────
     canonical = json.dumps(
         [{"role": b.role, "len": len(b.content), "idx": b.block_index} for b in blocks]
-        + [{"model": APPS_LIC_TARGET_MODEL, "provider": APPS_LIC_TARGET_PROVIDER}]
+        + [{
+            "model": APPS_LIC_TARGET_MODEL,
+            "provider": APPS_LIC_TARGET_PROVIDER,
+            "provider_profile": APPS_LIC_PROVIDER_PROFILE,
+        }]
         + [{"slot_lineage_map": slot_lineage_map, "component_hash_map": component_hash_map}],
         sort_keys=True,
     )
@@ -343,6 +381,7 @@ def pa_compose_apps_lic(
 
 __all__ = [
     "APPS_LIC_PA_CERT_REF",
+    "APPS_LIC_PROVIDER_PROFILE",
     "APPS_LIC_TARGET_MODEL",
     "APPS_LIC_TARGET_PROVIDER",
     "pa_compose_apps_lic",

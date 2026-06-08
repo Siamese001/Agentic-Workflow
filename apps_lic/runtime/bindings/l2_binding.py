@@ -143,6 +143,46 @@ def _build_provider_receipts(run_record_id: str) -> tuple[str, ...]:
     return (f"prov:apps_lic:{digest}",)
 
 
+def _fec_retrieval_chunks(fec: FinalEvidenceContract) -> list[dict[str, Any]]:
+    """Expose C0 evidence to the HOP research stage as bounded data chunks."""
+    chunks: list[dict[str, Any]] = []
+    for item in fec.evidence_items:
+        chunks.append(
+            {
+                "id": item.evidence_id,
+                "text": item.content,
+                "source": item.source,
+                "source_id": item.source_id,
+                "citation_anchor": item.citation_anchor,
+                "support_status": item.support_status,
+                "score": item.support_score,
+            }
+        )
+    return chunks
+
+
+def _target_contact_from_fec(fec: FinalEvidenceContract) -> dict[str, Any]:
+    """Recover the target contact profile from C0 lead-profile evidence."""
+    for item in fec.evidence_items:
+        if getattr(item, "source_id", "") != "apps_lic.app_payload.entity_refs.lead_profile":
+            continue
+        try:
+            parsed = json.loads(str(item.content or "{}"))
+        except json.JSONDecodeError:
+            return {}
+        return parsed if isinstance(parsed, dict) else {}
+    return {}
+
+
+def _normalize_generated_content(generated_content: Any) -> str:
+    """Serialize HOP output into SealedL2Artifact.generated_content."""
+    if isinstance(generated_content, str):
+        return generated_content
+    if generated_content is None:
+        return ""
+    return json.dumps(generated_content, sort_keys=True, separators=(",", ":"))
+
+
 def _invoke_hop_pipeline(
     step: L3StepContract,
     route: RouteContract,
@@ -161,6 +201,12 @@ def _invoke_hop_pipeline(
     from apps_lic.config.hop_pipeline import REGISTRY
     from apps_shared.orchestration import HopPipelineExecutor
 
+    from apps_lic.engines.profile_analysis_engine import classify_recipient_profile
+
+    target_contact = _target_contact_from_fec(fec)
+    recipient_class = classify_recipient_profile(target_contact)
+    target_audience = recipient_class.lower()
+
     # Build the initial context from FEC + prompt + route
     context: dict[str, Any] = {
         "run_id": route.run_id,
@@ -174,6 +220,8 @@ def _invoke_hop_pipeline(
         "sandbox_envelope": step.sandbox_envelope_requirement,
         "allowed_tools": list(route.allowed_tools),
         "allowed_models": list(route.allowed_models),
+        "allowed_networks": list(route.allowed_networks),
+        "allowed_file_roots": list(route.allowed_file_roots),
         # C0 evidence as data only — no instruction authority
         "evidence_bundle": {
             "compilation_hash": fec.compilation_hash,
@@ -188,6 +236,7 @@ def _invoke_hop_pipeline(
                 for item in fec.evidence_items
             ],
         },
+        "retrieval_chunks": _fec_retrieval_chunks(fec),
         # PA prompt artifact (data only, carried by reference)
         "prompt_artifact_digest": (
             prompt.compilation_hash if prompt is not None else ""
@@ -196,6 +245,13 @@ def _invoke_hop_pipeline(
             "route_id": route.route_id,
             "execution_form": route.execution_form,
             "route_family": route.route_family,
+            "config": {
+                "target_audience": target_audience,
+                "recipient_class": recipient_class,
+                "target_contact": target_contact,
+                "compliance_level": "standard",
+                "name": f"linkedin_{target_audience}_outreach_draft",
+            },
         },
     }
 
@@ -349,7 +405,7 @@ def l2_execute_apps_lic(
         app_id=route.app_id,
         trace_id=route.trace_id,
         execution_status=execution_status,
-        generated_content=generated_content or "",
+        generated_content=_normalize_generated_content(generated_content),
         generated_content_origin=generated_content_origin,
         proposed_state_diff={},                   # inert — no durable commit
         state_diff_authorized=False,              # hard law: no L4 write authority

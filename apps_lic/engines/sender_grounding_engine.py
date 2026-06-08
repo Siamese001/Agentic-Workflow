@@ -30,6 +30,8 @@ class SenderGroundingEngine:
         compliance_level = str(self._attr(config, "compliance_level", "standard"))
         campaign_name = str(self._attr(config, "name", ""))
         target_audience = str(self._attr(config, "target_audience", ""))
+        recipient_class = str(self._attr(config, "recipient_class", target_audience or "RECRUITER"))
+        target_contact = self._attr(config, "target_contact", {})
 
         register = _REGISTER_BY_COMPLIANCE.get(
             compliance_level.lower(), "professional"
@@ -39,6 +41,8 @@ class SenderGroundingEngine:
             "sender_persona": {
                 "campaign_name": campaign_name,
                 "target_audience": target_audience,
+                "recipient_class": recipient_class,
+                "target_contact": target_contact if isinstance(target_contact, dict) else {},
                 "voice_register": register,
                 "compliance_level": compliance_level,
                 "disclosure_required": compliance_level.lower() in ("strict", "elevated"),

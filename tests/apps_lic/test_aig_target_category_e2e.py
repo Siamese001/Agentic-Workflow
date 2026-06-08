@@ -1,0 +1,195 @@
+"""AIG public-profile target category E2E tests for apps_lic."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from apps_lic.engines.qa_report_engine import QaReportEngine
+from apps_lic.engines.profile_analysis_engine import classify_recipient_profile
+from apps_lic.engines.validation_engine import ValidationEngine
+from apps_lic.runtime.dispatch.canonical_dispatch import (
+    build_cli_ingress_raw,
+    run_canonical_apps_lic_spine,
+)
+
+
+AIG_BRIEFING = Path("apps_rg/config/targeting/aig_vp_global_head_agentic_ai_briefing.md")
+
+AIG_CONTACTS = [
+    {
+        "case_id": "scott_hallworth_exec",
+        "expected_category": "EXECUTIVE",
+        "expected_phrase": "operating-model rewrite",
+        "source_url": "https://www.linkedin.com/posts/aig_we-are-pleased-to-welcome-scott-hallworth-activity-7369388053229903872-OtUM",
+        "lead_profile": {
+            "verified_name": "Scott Hallworth",
+            "title": "Executive Vice President and Chief Digital Officer",
+            "seniority_class": "",
+            "company_name": "AIG",
+            "industry": "Insurance",
+            "consent_attested": True,
+        },
+    },
+    {
+        "case_id": "daisuke_hayashi_senior_ta",
+        "expected_category": "SENIOR_TA",
+        "expected_phrase": "not slideware",
+        "source_url": "https://jp.linkedin.com/in/daisuke-hayashi-5a308353",
+        "lead_profile": {
+            "verified_name": "Daisuke Hayashi",
+            "title": "Head of Talent Acquisition | Inclusion",
+            "seniority_class": "",
+            "company_name": "AIG",
+            "industry": "Insurance",
+            "consent_attested": True,
+        },
+    },
+    {
+        "case_id": "nina_k_recruiter",
+        "expected_category": "RECRUITER",
+        "expected_phrase": "production ai",
+        "source_url": "https://www.linkedin.com/in/nkshatri",
+        "lead_profile": {
+            "verified_name": "Nina K.",
+            "title": "Strategic technical recruiter and Sourcer",
+            "seniority_class": "",
+            "company_name": "AIG",
+            "industry": "Insurance",
+            "consent_attested": True,
+        },
+    },
+]
+
+
+@pytest.mark.parametrize("contact", AIG_CONTACTS, ids=lambda c: c["case_id"])
+def test_public_aig_contact_profile_classification(contact: dict[str, object]) -> None:
+    assert (
+        classify_recipient_profile(contact["lead_profile"])
+        == contact["expected_category"]
+    )
+
+
+@pytest.mark.parametrize("contact", AIG_CONTACTS, ids=lambda c: c["case_id"])
+def test_aig_public_profile_e2e_generates_target_category_draft(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    contact: dict[str, object],
+) -> None:
+    monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
+    briefing = AIG_BRIEFING.read_text(encoding="utf-8")
+    expected_category = str(contact["expected_category"])
+    lead_profile = dict(contact["lead_profile"])
+
+    raw = build_cli_ingress_raw(
+        run_id=f"run_aig_{contact['case_id']}",
+        request_id=f"req_aig_{contact['case_id']}",
+        recipient_class=expected_category,
+        channel="linkedin",
+        outreach_mode="cold",
+        manual_brief=briefing,
+        lead_profile=lead_profile,
+        campaign_objective=(
+            "Draft a concise LinkedIn message about AIG's VP Global Head of "
+            "Agentic AI Solutions opportunity."
+        ),
+        audience_segment=expected_category.lower(),
+    )
+
+    result = run_canonical_apps_lic_spine(
+        raw,
+        artifact_root=tmp_path / str(contact["case_id"]),
+    )
+
+    assert result.terminal_r5 is False
+    assert result.l2_execution_status == "completed"
+
+    manifest = json.loads((result.artifact_dir / "spine_run_manifest.json").read_text())
+    assert manifest["no_send_assertion"] is True
+    assert manifest["no_l4_write_assertion"] is True
+    assert manifest["apps_research_invoked"] is False
+
+    l2 = json.loads((result.artifact_dir / "l2_execution_receipt.json").read_text())
+    draft = json.loads(l2["payload"]["generated_content"])
+    message = draft["message_text"]
+
+    assert draft["recipient_category"] == expected_category
+    assert draft["recipient_class"] == expected_category.lower()
+    assert draft["target_contact_name"] == lead_profile["verified_name"]
+    assert draft["target_contact_title"] == lead_profile["title"]
+    assert message.startswith(f"Hi {lead_profile['verified_name'].split()[0]},")
+    assert str(contact["expected_phrase"]) in message.lower()
+    assert draft["generation_temperature"] >= 0.8
+    assert draft["top_p"] >= 0.9
+    assert draft["attempts"] == 1
+    assert draft["max_generation_attempts"] == 1
+    assert "potential synergies" not in message.lower()
+    assert "i noticed your role" not in message.lower()
+    assert "i believe my background aligns" not in message.lower()
+    assert len(message) <= 600
+    assert "—" not in message
+
+
+def test_validation_blocks_generic_bs_message() -> None:
+    generic_draft = {
+        "message_text": (
+            "Dear Scott, I noticed your role at AIG. I believe my background "
+            "aligns well and could contribute significantly. Could we discuss "
+            "potential synergies?"
+        ),
+        "body": "",
+        "channel": "linkedin",
+        "recipient_class": "executive",
+        "unsupported_claims": [],
+    }
+
+    report = ValidationEngine().execute({
+        "draft_message": generic_draft,
+        "evidence_bundle": {"count": 4},
+    })["validation_report"]
+
+    assert report["passed"] is False
+    assert "antipattern:GENERIC_ROLE_OPENER" in report["issues"]
+    assert "antipattern:GENERIC_ALIGNMENT_CLAIM" in report["issues"]
+    assert "antipattern:GENERIC_SYNERGY_ASK" in report["issues"]
+
+
+def test_qa_report_exposes_judges_and_one_shot_quality_contract() -> None:
+    draft = {
+        "message_text": (
+            "Hi Scott, AIG's Agentic AI role reads like an operating-model "
+            "rewrite across underwriting and claims. I have built governed "
+            "agent workflows with evals and telemetry baked in. Worth a brief "
+            "call on proof I could bring to the rollout?"
+        ),
+        "body": "",
+        "recipient_category": "EXECUTIVE",
+        "recipient_class": "executive",
+        "generation_temperature": 0.82,
+        "top_p": 0.92,
+        "attempts": 1,
+        "max_generation_attempts": 1,
+        "generator": "test_provider_stub",
+    }
+
+    qa = QaReportEngine().execute({
+        "draft_message": draft,
+        "validation_report": {"passed": True, "issues": []},
+        "evidence_bundle": {"count": 4},
+    })["qa_report"]
+
+    assert qa["composite_score"] >= 0.8
+    assert qa["judge_scores"]["response_likelihood"] >= 0.5
+    assert qa["judge_scores"]["asymmetric_insight"] >= 0.65
+    assert qa["judge_scores"]["ask_friction"] <= 0.5
+    assert qa["quality_contract"] == {
+        "generation_temperature": 0.82,
+        "top_p": 0.92,
+        "self_consistency_samples": 1,
+        "generation_attempts": 1,
+        "max_generation_attempts": 1,
+        "x1_x2_x3_exit_retries": 0,
+        "retry_policy": "one_shot_fail_closed",
+    }

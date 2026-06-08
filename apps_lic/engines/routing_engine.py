@@ -15,6 +15,8 @@ from typing import Any
 
 _TEMPLATE_BY_ARCHETYPE = {
     "RECRUITER": "lic.outreach.recruiter.v1",
+    "SENIOR_TA": "lic.outreach.senior_ta.v1",
+    "HIRING_MANAGER": "lic.outreach.hiring_manager.v1",
     "EXECUTIVE": "lic.outreach.executive.v1",
     "ENGINEER": "lic.outreach.engineer.v1",
     "GENERIC": "lic.outreach.generic.v1",
@@ -31,6 +33,15 @@ class RoutingEngine:
 
         archetype = str(features.get("archetype_hint", "GENERIC"))
         template_id = _TEMPLATE_BY_ARCHETYPE.get(archetype, _TEMPLATE_BY_ARCHETYPE["GENERIC"])
+        recipient_class = str(features.get("recipient_class") or archetype or "GENERIC")
+        target_contact = features.get("target_contact") or {}
+        target_name = ""
+        target_title = ""
+        target_company = ""
+        if isinstance(target_contact, dict):
+            target_name = str(target_contact.get("verified_name", "") or "")
+            target_title = str(target_contact.get("title", "") or "")
+            target_company = str(target_contact.get("company_name", "") or "")
 
         evidence_preview = self._top_evidence_text(evidence, n=3)
         audience = persona.get("target_audience", "") or features.get(
@@ -39,8 +50,10 @@ class RoutingEngine:
         register = persona.get("voice_register", "professional")
 
         prompt = (
-            f"[template={template_id}] [register={register}]\n"
+            f"[template={template_id}] [register={register}] "
+            f"[recipient_class={recipient_class}]\n"
             f"Audience: {audience}\n"
+            f"Target contact: {target_name} | {target_title} | {target_company}\n"
             f"Evidence:\n{evidence_preview}\n"
             f"Produce a short outreach message grounded strictly in the evidence above."
         )
@@ -50,6 +63,8 @@ class RoutingEngine:
                 "archetype": archetype,
                 "template_id": template_id,
                 "register": register,
+                "recipient_class": recipient_class,
+                "target_contact": target_contact if isinstance(target_contact, dict) else {},
             },
             "generation_prompt": prompt,
         }
@@ -61,5 +76,5 @@ class RoutingEngine:
         if not top:
             return "(no evidence available)"
         return "\n".join(
-            f"- [{it.get('id', '?')}] {it.get('text', '')[:240]}" for it in top
+            f"- [{it.get('id', '?')}] {it.get('text', '')[:900]}" for it in top
         )

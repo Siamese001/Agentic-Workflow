@@ -1,9 +1,9 @@
-"""HOP2 research — assemble an evidence bundle from retrieval + features.
+"""HOP2 evidence normalization from C0/manual/preloaded data.
 
 Consumes ``context["profile_features"]`` (from HOP1) and
-``context["retrieval_chunks"]`` (injected by the outer substrate's C0
-retrieval phase) and emits ``context["evidence_bundle"]`` — a normalized
-list of citation-bearing evidence items for downstream grounding.
+``context["retrieval_chunks"]`` (bounded C0 evidence injected by L2) and emits
+``context["evidence_bundle"]``. This stage performs no live web search, no
+cross-app delegation, and no research-app calls.
 
 Re-derived per Wave 2 Phase 2.2.
 """

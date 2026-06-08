@@ -3,13 +3,13 @@
   "app_id": "apps_lic",
   "task_class": "outreach_message",
   "version": "v1",
-  "routing_model": "final_l0_three_way",
+  "routing_model": "final_l0_live_r4_r5",
   "allowed_route_families": [
     "R4_MANAGED_DRAFT",
-    "R3R4_MANAGED_RESEARCH_THEN_DRAFT",
     "R5_FALLBACK"
   ],
   "forbidden_route_families": [
+    "R3R4_MANAGED_RESEARCH_THEN_DRAFT",
     "evidence_grounded_generation",
     "ungrounded_generation",
     "R3_grounded_read",
@@ -20,60 +20,66 @@
   "route_selection_rules": {
     "R4_MANAGED_DRAFT": {
       "condition": "fresh_valid_context_exists",
-      "description": "Fresh, valid outreach context exists; no apps_research support needed",
-      "path": "U0 -> L1 -> L0 -> R4 -> MANAGED_WORKFLOW -> L3 HOP -> L2 -> Exit",
+      "description": "Fresh, valid outreach context exists; no external research support needed",
+      "path": "U0 -> L1 -> L0 -> C0 -> PA -> L3 -> L2 -> Exit",
       "cache_bypass": "R1A exact and R1B semantic bypassed for final drafts"
     },
-    "R3R4_MANAGED_RESEARCH_THEN_DRAFT": {
-      "condition": "research_authorized_for_missing_context",
-      "description": "Fresh context missing/stale/incomplete; research authorized",
-      "path": "U0 -> L1 -> L0 -> R3R4 -> L3 apps_research support -> L3 validates context -> L3 HOP -> L2 -> Exit",
-      "note": "apps_research is support step only, not final output"
-    },
     "R5_FALLBACK": {
-      "condition": "no_valid_context_and_research_not_authorized",
-      "description": "No valid context; research not authorized; policy/consent/evidence/channel invalid",
-      "path": "U0/L1/L0/L3/L2 failure -> R5 terminal packet -> Exit -> bounded fail-closed / abstain / no-draft outcome",
+      "condition": "no_valid_context_or_deprecated_research_requested",
+      "description": "No valid context, policy/consent/evidence/channel invalid, or deprecated managed research requested",
+      "path": "U0/L1/L0 failure -> R5 terminal packet -> bounded fail-closed / no-draft outcome",
       "posture": "fail closed, no draft generated"
     }
   },
   "briefing_only_policy": {
     "allowed_in_apps_lic": false,
-    "routing_instruction": "Route briefing-only requests to apps_research directly, or reject/fail closed from apps_lic",
-    "reason": "apps_lic only uses research as support for outreach-message generation"
+    "routing_instruction": "Reject/fail closed from apps_lic",
+    "reason": "apps_lic is now a draft-only LinkedIn recruiter outreach path"
   },
   "execution_form_mapping": {
     "R4_MANAGED_DRAFT": "MANAGED_WORKFLOW",
-    "R3R4_MANAGED_RESEARCH_THEN_DRAFT": "MANAGED_WORKFLOW",
+    "R3R4_MANAGED_RESEARCH_THEN_DRAFT": "NON_EXECUTABLE_DEPRECATED",
     "R5_FALLBACK": "TERMINAL_FALLBACK"
   },
   "route_selection_conditions": {
     "R4_MANAGED_DRAFT": {
       "requires_fresh_context": true,
-      "fresh_context_fields": ["briefing_fresh", "lead_profile_valid", "campaign_objective"],
+      "fresh_context_fields": [
+        "briefing_fresh",
+        "lead_profile_valid",
+        "campaign_objective"
+      ],
       "grounding_satisfied_when_not_required": true,
       "grounding_context_field": "context_grounded"
     },
-    "R3R4_MANAGED_RESEARCH_THEN_DRAFT": {
-      "requires_fresh_context": false,
-      "requires_research_authorization": true,
-      "research_allow_field": "allow_research",
-      "research_types_field": "research_evidence_types",
-      "research_disabled_field": "research_disabled_by_policy"
-    },
     "R5_FALLBACK": {
       "is_terminal_default": true,
-      "briefing_only_request_types": ["briefing_only", "briefing-only"],
-      "request_type_field": "request_type"
+      "briefing_only_request_types": [
+        "briefing_only",
+        "briefing-only"
+      ],
+      "request_type_field": "request_type",
+      "deprecated_research_reason": "APPS_RESEARCH_DEPRECATED"
     }
   },
-  "l3_required_for_families": ["R4_MANAGED_DRAFT", "R3R4_MANAGED_RESEARCH_THEN_DRAFT"],
-  "terminal_execution_families": ["R5_FALLBACK"],
+  "deprecated_route_families": {
+    "R3R4_MANAGED_RESEARCH_THEN_DRAFT": {
+      "replacement": "R5_FALLBACK",
+      "terminal_r5_reason": "APPS_RESEARCH_DEPRECATED",
+      "notes": "Retained only so stale callers fail closed instead of executing managed research."
+    }
+  },
+  "l3_required_for_families": [
+    "R4_MANAGED_DRAFT"
+  ],
+  "terminal_execution_families": [
+    "R5_FALLBACK"
+  ],
   "cache_bypass_policy_ref": "apps_lic/config/domain_contract/final_draft_cache_policy.outreach_message.v1.json",
   "metadata": {
-    "description": "L0 routing profile for apps_lic outreach_message — FINAL MODEL with R4/R3R4/R5",
+    "description": "L0 routing profile for apps_lic LinkedIn recruiter outreach drafts with live R4/R5 only",
     "author": "agentic_core",
     "created_at": "2026-05-11",
-    "note": "OLD ROUTE NAMES FORBIDDEN: evidence_grounded_generation, ungrounded_generation, R3_grounded_read, briefing-only"
+    "note": "R3R4_MANAGED_RESEARCH_THEN_DRAFT is deprecated compatibility only; OLD ROUTE NAMES FORBIDDEN: evidence_grounded_generation, ungrounded_generation, R3_grounded_read, briefing-only"
   }
 }

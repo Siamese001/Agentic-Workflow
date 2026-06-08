@@ -48,6 +48,7 @@ class SpineRunResult:
     l3_participated: bool = False
     c0_invoked: bool = False
     pa_invoked: bool = False
+    l2_executed: bool = False
     l2_execution_status: str = ""
     exit_status: str = ""
     outcome_authorized: bool = False
@@ -72,6 +73,7 @@ class SpineRunResult:
             "l3_participated": self.l3_participated,
             "c0_invoked": self.c0_invoked,
             "pa_invoked": self.pa_invoked,
+            "l2_executed": self.l2_executed,
             "l2_execution_status": self.l2_execution_status,
             "fault": self.fault,
             "artifacts": list(self.artifacts),

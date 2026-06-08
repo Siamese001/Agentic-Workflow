@@ -41,19 +41,19 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     """Parse CLI arguments into namespace."""
     parser = argparse.ArgumentParser(
         prog="apps_lic",
-        description="Generate governed professional outreach drafts.",
+        description="Draft governed LinkedIn recruiter outreach messages.",
     )
     parser.add_argument(
         "--recipient-class", type=str, default="",
-        help="Target recipient class (executive, hiring_manager, etc.)",
+        help="Target recipient class (default: recruiter)",
     )
     parser.add_argument(
         "--channel", type=str, default="",
-        help="Outreach channel (linkedin, email, etc.)",
+        help="Outreach channel (default: linkedin)",
     )
     parser.add_argument(
         "--outreach-mode", type=str, default="",
-        help="Outreach mode (cold, warm, referral, etc.)",
+        help="Outreach mode (cold, warm, reengagement)",
     )
     parser.add_argument(
         "--manifest-id", type=str, default="",
@@ -82,16 +82,15 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--manual-brief", type=str, default="",
         help=(
-            "Path to pre-generated company/recipient briefing JSON. "
-            "When provided, skips R3R4 managed workflow."
+            "Path to a pre-generated briefing file or inline brief text. "
+            "Live research delegation is disabled."
         ),
     )
     parser.add_argument(
         "--auto-research",
         action="store_true",
         help=(
-            "Authorize R3R4 managed workflow via apps_research when no manual brief "
-            "(requires live AppsResearchBridge; not compatible with release mock env)."
+            "Deprecated and disabled. Emits terminal R5 with APPS_RESEARCH_DEPRECATED."
         ),
     )
     return parser.parse_args(argv)
@@ -108,10 +107,8 @@ def _load_manual_brief_text(manual_brief: str) -> str:
 
 
 def _allow_research_from_args(args: argparse.Namespace, manual_brief_text: str) -> bool:
-    """True when CLI or wizard explicitly authorizes R3R4 research (no manual brief)."""
-    if manual_brief_text.strip():
-        return False
-    return bool(getattr(args, "auto_research", False))
+    """Managed research is deprecated; retained for old call sites."""
+    return False
 
 
 def _emit_r5_terminal_via_exit(
@@ -153,29 +150,28 @@ def _interactive_wizard(args: Any) -> None:
     if not args.recipient_class:
         fields.append(WizardField(
             "recipient_class",
-            "Recipient class (executive, hiring_manager, recruiter, etc.)",
+            "Recipient class (recruiter)",
             kind="string",
         ))
     if not args.channel:
         fields.append(WizardField(
             "channel",
-            "Outreach channel (linkedin, email, text)",
+            "Outreach channel (linkedin)",
             kind="string",
         ))
     if not args.outreach_mode:
         fields.append(WizardField(
             "outreach_mode",
-            "Outreach mode (cold, warm, referral, followup)",
+            "Outreach mode (cold, warm, reengagement)",
             kind="string",
         ))
     fields.append(
         WizardField(
             "briefing",
             "Company/recipient briefing document",
-            kind="multiline_or_file_or_auto",
+            kind="multiline_or_file",
             choices_help=(
-                "auto delegates to apps_research via L3 managed workflow; "
-                "@path loads an existing JSON brief; paste JSON or freeform text"
+                "@path loads an existing brief; paste JSON or freeform text"
             ),
         )
     )
@@ -203,13 +199,9 @@ def _interactive_wizard(args: Any) -> None:
     brief = values["briefing"]
     assert isinstance(brief, dict)
     mode = brief.get("mode")
-    if mode == "auto":
-        args.manual_brief = ""
-        args.auto_research = True  # type: ignore[attr-defined]
-        print("      → auto-research ENABLED; L3 managed workflow will produce briefing")
-    elif mode == "file":
+    if mode == "file":
         args.manual_brief = brief.get("source")
-        print(f"      → manual_brief = {args.manual_brief}")
+        print(f"      -> manual_brief = {args.manual_brief}")
     elif mode == "paste":
         text = brief.get("text") or ""
         try:
@@ -225,11 +217,11 @@ def _interactive_wizard(args: Any) -> None:
             json.dumps(brief_payload, indent=2), encoding="utf-8",
         )
         args.manual_brief = str(wizard_brief_path)
-        print(f"      → wrote briefing to {args.manual_brief}")
+        print(f"      -> wrote briefing to {args.manual_brief}")
 
     print(f"Ready: recipient_class={args.recipient_class!r} channel={args.channel!r}")
     print(f"       outreach_mode={args.outreach_mode!r}")
-    print(f"       brief={'auto-research' if mode == 'auto' else args.manual_brief}")
+    print(f"       brief={args.manual_brief}")
     print()
 
 
@@ -244,11 +236,18 @@ def main() -> int:
 
     args = _parse_args(sys.argv[1:])
 
+    if args.auto_research:
+        _emit_r5_terminal_via_exit(
+            reason_code="APPS_RESEARCH_DEPRECATED",
+            detail="--auto-research is deprecated and disabled for apps_lic.",
+            exit_code=2,
+        )
+
     if (
         not args.recipient_class
         or not args.channel
         or not args.outreach_mode
-        or (not args.manual_brief and not args.auto_research)
+        or not args.manual_brief
     ):
         _interactive_wizard(args)
 
@@ -263,6 +262,9 @@ def main() -> int:
 
         raw_ingress = build_cli_ingress_raw(
             request_id=args.request_id or None,
+            recipient_class=args.recipient_class or "recruiter",
+            channel=args.channel or "linkedin",
+            outreach_mode=args.outreach_mode or "cold",
             manual_brief=manual_brief_text,
             allow_research=allow_research,
         )

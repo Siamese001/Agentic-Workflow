@@ -115,7 +115,8 @@ class TestX3ManifestFieldsHelper:
 
 
 class TestCanonicalSpineManifestX3Integration:
-    def test_spine_manifest_matches_exit_not_unknown(self, tmp_path: Path) -> None:
+    def test_spine_manifest_matches_exit_not_unknown(self, tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
         raw = build_cli_ingress_raw(
             run_id="pytest_manifest_x3_01",
             request_id="req_pytest_manifest_x3_01",
@@ -135,7 +136,8 @@ class TestCanonicalSpineManifestX3Integration:
         assert manifest["outcome_authorized"] is True
         assert manifest["x3_disposition"] == "X3D"
 
-    def test_r4_managed_workflow_writes_per_stage_receipts(self, tmp_path: Path) -> None:
+    def test_r4_managed_workflow_writes_per_stage_receipts(self, tmp_path: Path, monkeypatch) -> None:
+        monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
         raw = build_cli_ingress_raw(
             run_id="pytest_stage_receipts_01",
             request_id="req_pytest_stage_receipts_01",
