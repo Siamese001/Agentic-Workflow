@@ -99,10 +99,19 @@ def assert_collection_embedding_parity(
     except Exception:  # guardian: allow-broad-exception -- peek API varies by Chroma version; parity is a best-effort diagnostic, never a crash
         return
     embeddings = peek.get("embeddings") if isinstance(peek, dict) else None
-    if not embeddings:
+    # peek() may return embeddings as a numpy array — never apply truthiness to an array
+    # (``if not embeddings`` raises "truth value of an array is ambiguous"). Use len() instead.
+    try:
+        n_rows = len(embeddings) if embeddings is not None else 0
+    except TypeError:
+        n_rows = 0
+    if n_rows == 0:
         return
     first = embeddings[0]
-    stored_dim = len(first) if first is not None else 0
+    try:
+        stored_dim = len(first) if first is not None else 0
+    except TypeError:
+        stored_dim = 0
     if stored_dim and stored_dim != int(expected_dim):
         raise RuntimeError(
             f"C0.2 embedding parity violation: fact_vectors stores {stored_dim}-dim vectors but "

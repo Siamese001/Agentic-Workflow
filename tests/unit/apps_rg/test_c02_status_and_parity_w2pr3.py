@@ -58,6 +58,20 @@ def test_parity_fail_soft_when_peek_unavailable() -> None:
     assert assert_collection_embedding_parity(_PeekCollection([], raise_on_peek=True)) is None
 
 
+def test_parity_handles_numpy_embeddings_without_truthiness_error() -> None:
+    """Regression: Chroma peek() returns embeddings as a numpy array — must not raise
+    'truth value of an array is ambiguous' (live AIG run, full_resume_a0c41812fbd0)."""
+    np = pytest.importorskip("numpy")
+    # Canonical dim as a 2-D numpy array -> no error, no raise.
+    ok = _PeekCollection(np.zeros((1, EXPECTED_BGE_DIMENSION), dtype="float32"))
+    assert assert_collection_embedding_parity(ok) is None
+    # Wrong dim as a numpy array -> the parity violation still fires (not a truthiness crash).
+    bad = _PeekCollection(np.zeros((1, 384), dtype="float32"))
+    with pytest.raises(RuntimeError) as excinfo:
+        assert_collection_embedding_parity(bad)
+    assert "parity violation" in str(excinfo.value)
+
+
 # --------------------------- G6: PASS-but-empty ---------------------------
 
 def test_pass_but_empty_dense_lane_raises(monkeypatch, tmp_path) -> None:
