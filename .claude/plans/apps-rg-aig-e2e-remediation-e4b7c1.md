@@ -335,8 +335,16 @@ DoD:
 ## Wave 6 - Role Episode Proof Slices (InsurTech/EY)
 
 WAVE_ID: W6
-WAVE_STATUS: BLOCKED — needs user-provided resume-sourced facts + locked-content authorization + an architectural decision
-WAVE_COMPLETE: NO
+WAVE_STATUS: SPUN OUT — user chose "unlock + build like Unify/IBM"; now its own plan `apps-rg-insurtech-ey-unlock-a4c0f0`
+WAVE_COMPLETE: NO (tracked in spin-out plan)
+
+> **2026-06-08 resolution:** user authorized **unlocking InsurTech/EY** and building them as full
+> generated role-episode lanes exactly like Unify/IBM (generate N bullets → top-3, graph-skill
+> grounding tied to employment dates, Exit Gates; company/location/dates verbatim from base resume).
+> This is a ~28-file T3 build — spun out to dedicated plan
+> [`apps-rg-insurtech-ey-unlock-a4c0f0`](../../plans/apps-rg-insurtech-ey-unlock-a4c0f0.md). The
+> earlier BLOCKED rationale (below) is superseded: facts are no longer "invented" — identity is
+> verbatim base-resume, skills are graph-node-backed, and locked-content authorization was granted.
 
 > **2026-06-08 BLOCKED (worktree `aig-e2e-continue`):** W6 cannot proceed safely. Findings:
 > - **InsurTech and EY are locked-copy deterministic sections.** `locked_copy_manifest.py`
