@@ -14,7 +14,6 @@ from apps_rg.runtime.providers.provider_gateway import (
     normalize_provider_profile,
     resolve_provider_profile,
 )
-from apps_rg.runtime.providers.qwen_vllm_provider import QwenVLLMProvider
 
 __all__ = [
     "DEFAULT_PROVIDER_PROFILE",
@@ -26,7 +25,6 @@ __all__ = [
     "ProviderProfile",
     "ProviderProfileNotRegisteredError",
     "ProviderProfileSelection",
-    "QwenVLLMProvider",
     "load_provider_profiles_config",
     "normalize_provider_profile",
     "resolve_provider_profile",

@@ -28,7 +28,7 @@ LATEST_SUCCESSFUL_REAL_FILENAME = "latest_successful_real_run.json"
 LATEST_PLUMBING_RUN_FILENAME = "latest_plumbing_run.json"
 FULL_RESUME_DIR_PREFIX = "full_resume_"
 ACCEPTED_REAL_LLM_PROVIDER_PROFILES: frozenset[str] = frozenset(
-    {"qwen_vllm", "external_claude"}
+    {"external_claude"}
 )
 
 # When set (absolute or repo-relative), lane prepare/finalize and optional dependency

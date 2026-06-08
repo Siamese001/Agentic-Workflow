@@ -95,7 +95,7 @@ def run_competencies_lane_execution(
     )
     (artifact_dir / "companion_generated_sections.txt").write_text(companion_context or "(none)\n", encoding="utf-8")
 
-    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+    from apps_rg.runtime.sections.section_generation import merge_transport_context
 
     merge_transport_context(
         artifact_dir=str(artifact_dir.resolve()),
@@ -189,7 +189,7 @@ def run_competencies_lane_execution(
         provider_lane=str(args.provider),
     )
 
-    provider_req, provider_payload = build_qwen_request(
+    provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
@@ -199,7 +199,7 @@ def run_competencies_lane_execution(
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
+    req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
     _run_id = str(runtime_payload.get("run_id") or "")
     base_url = str(provider_request_data.get("provider_url") or "")
     pre_timeout = competencies_vllm_preflight_timeout_s()

@@ -104,7 +104,7 @@ def run_ibm_narrative_lane_execution(
     (artifact_dir / "companion_ibm_bullets_context.txt").write_text(
         companion_text or "(none)\n", encoding="utf-8"
     )
-    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+    from apps_rg.runtime.sections.section_generation import merge_transport_context
 
     merge_transport_context(
         artifact_dir=str(artifact_dir.resolve()),
@@ -193,7 +193,7 @@ def run_ibm_narrative_lane_execution(
         provider_lane=str(args.provider),
     )
 
-    provider_req, provider_payload = build_qwen_request(
+    provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
@@ -202,7 +202,7 @@ def run_ibm_narrative_lane_execution(
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
+    req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
 
     from apps_rg.runtime.validators.companion_bullet_finalization import (
         UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,
@@ -267,7 +267,7 @@ def run_ibm_narrative_lane_execution(
         write_json(artifact_dir / "provider_response.json", provider_result_data)
         if _generation_status_allows_structure_parse(result.runtime_generation_status):
             parsed, parse_error = parse_model_json(raw_output)
-            if parsed is None and str(args.provider) == "qwen_vllm":
+            if parsed is None and str(args.provider) == "external_claude":
                 raw_output, parsed, parse_error = retry_qwen_for_parse(
                     messages, provider_payload, raw_output, parse_error
                 )

@@ -332,7 +332,7 @@ def run_section_executive_summary_spine(
         target_role=tr,
         base_resume_ref=str(resume_path or ""),
     )
-    if eff_prov == "qwen_vllm":
+    if eff_prov == "external_claude":
         lo, hi = lane.EXEC_SUMMARY_TEMP_RANGE
         if args.temperature < lo or args.temperature > hi:
             return {
@@ -445,7 +445,7 @@ def run_section_unify_bullets_spine(
         allow_test_mock_judges=bool(lane_allow_test_mock_judges),
         base_resume_ref=str(resume_path or ""),
     )
-    if lane_provider_eff == "qwen_vllm":
+    if lane_provider_eff == "external_claude":
         lo, hi = lane.UNIFY_TEMP_RANGE
         if args.temperature < lo or args.temperature > hi:
             return {
@@ -547,7 +547,7 @@ def run_section_unify_narrative_spine(
         briefing=briefing,
         base_resume_ref=str(resume_path or ""),
     )
-    if lane_provider_eff == "qwen_vllm":
+    if lane_provider_eff == "external_claude":
         lo, hi = lane.NARRATIVE_TEMP_RANGE
         if args.temperature < lo or args.temperature > hi:
             return {
@@ -651,7 +651,7 @@ def run_section_ibm_bullets_spine(
         briefing=briefing,
         base_resume_ref=str(resume_path or ""),
     )
-    if lane_provider_eff == "qwen_vllm":
+    if lane_provider_eff == "external_claude":
         lo, hi = lane.IBM_TEMP_RANGE
         if args.temperature < lo or args.temperature > hi:
             return {
@@ -755,7 +755,7 @@ def run_section_ibm_narrative_spine(
         allow_non_allow_exit_zero=bool(lane_allow_non_allow_exit_zero),
         base_resume_ref=str(resume_path or ""),
     )
-    if lane_provider_eff == "qwen_vllm":
+    if lane_provider_eff == "external_claude":
         lo, hi = lane.IBM_NARRATIVE_TEMP_RANGE
         if args.temperature < lo or args.temperature > hi:
             return {

@@ -55,12 +55,13 @@ from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
     compute_lane_proof_bundle,
 )
 from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
-from apps_rg.runtime.providers.qwen_vllm_provider import (
-    DEFAULT_QWEN_MODEL,
-    ProviderResult,
-    build_qwen_request,
+from apps_rg.runtime.providers.provider_contract import ProviderResult
+from apps_rg.runtime.sections.section_generation import (
+    SECTION_MODEL_ID,
+    build_section_request,
+    generate_section,
+    tag_reasoning_lane,
 )
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
 from apps_rg.runtime.judges.executive_summary_judge_packet import (
     build_executive_summary_judge_packet,
@@ -1760,7 +1761,7 @@ def run_executive_summary_execution(
         "canonical_exit_claimed": False,
         "product_certification": "NOT_CLAIMED",
     }
-    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+    from apps_rg.runtime.sections.section_generation import merge_transport_context
 
     merge_transport_context(
         artifact_dir=str(artifact_dir.resolve()),
@@ -1878,7 +1879,7 @@ def run_executive_summary_execution(
                 section_compiled,
                 runtime_payload=runtime_payload,
                 provider=str(args.provider),
-                model=str(os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL)),
+                model=SECTION_MODEL_ID,
                 requested_max_output_tokens=max_out_tokens,
             )
             write_token_budget_receipt(artifact_dir, token_budget_receipt)
@@ -2023,7 +2024,7 @@ def run_executive_summary_execution(
             provider_available=False,
             exact_provider_error=f"L2_BLOCK:{evidence_capsule_block_reason}",
             runtime_generation_status="BLOCKED",
-            model=str(os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL)),
+            model=SECTION_MODEL_ID,
             raw_model_output="",
             provider_response={
                 "pre_l2_blocked": True,
@@ -2034,7 +2035,7 @@ def run_executive_summary_execution(
                 "reason": evidence_capsule_block_reason,
             },
         )
-        req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
+        req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
     elif token_budget_block_reason:
         _tb_op_summary = ""
         if isinstance(token_budget_receipt, dict):
@@ -2058,7 +2059,7 @@ def run_executive_summary_execution(
                 f"L2_BLOCK:{_tb_op_summary or token_budget_block_reason}"
             ),
             runtime_generation_status="BLOCKED",
-            model=str(os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL)),
+            model=SECTION_MODEL_ID,
             raw_model_output="",
             provider_response={
                 "token_budget_blocked": True,
@@ -2071,9 +2072,9 @@ def run_executive_summary_execution(
                 ),
             },
         )
-        req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
+        req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
     else:
-        provider_req, provider_payload = build_qwen_request(
+        provider_req, provider_payload = build_section_request(
             messages=messages,
             prompt_hash=prompt_hash,
             input_payload_hash=input_payload_hash,
@@ -2092,7 +2093,7 @@ def run_executive_summary_execution(
                 "provider_context_window": token_budget_receipt.get("provider_context_window"),
             }
         write_json(artifact_dir / "provider_request.json", provider_request_data)
-        req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
+        req_model = str(provider_payload.get("model", SECTION_MODEL_ID))
     if (
         evidence_capsule_block_reason
         or token_budget_block_reason
@@ -2116,7 +2117,7 @@ def run_executive_summary_execution(
     _composition_plan_early: dict[str, Any] | None = None
     if result.runtime_generation_status == "REAL_LLM":
         parsed, parse_error = parse_model_json(raw_output)
-        if parsed and str(args.provider) == "qwen_vllm":
+        if parsed and str(args.provider) == "external_claude":
             from apps_rg.runtime.sections.executive_summary_pa import (
                 is_strategy_executive_target_title,
             )

@@ -10,7 +10,7 @@ from typing import Any, Callable
 
 from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
-from apps_rg.runtime.providers.section_qwen_slice import tag_reasoning_lane
+from apps_rg.runtime.sections.section_generation import tag_reasoning_lane
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     EMPLOYMENT_BULLET_LANES,
     sc_path_count_for_lane,
@@ -86,7 +86,7 @@ def run_qwen_self_consistency_paths(
     path_count: int | None = None,
     path_index_start: int = 0,
     append_artifacts: bool = False,
-    provider_profile: str | None = "qwen_vllm",
+    provider_profile: str | None = "external_claude",
 ) -> tuple[list[SelfConsistencyPath], ProviderResult | None]:
     """Run N completions at staggered temperatures; return all paths + last provider result."""
     prof_kw = profile_to_requested_kw(section_reasoning_profile(section_lane))

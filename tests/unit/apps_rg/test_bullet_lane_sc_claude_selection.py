@@ -12,7 +12,7 @@ from apps_rg.runtime.judges.bullet_pool_claude_selector import (
     merge_bullet_selections,
     run_claude_bullet_pool_selection,
 )
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
     BULLET_POOL_LANES,
     SelfConsistencyPath,
@@ -143,9 +143,9 @@ def test_evaluate_employment_gate_requires_score_floor() -> None:
 def test_generate_singleton_when_sc_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("APPS_RG_BULLET_SC_DISABLE", "1")
 
-    def _stub(payload: dict, **_: object) -> ProviderResult:
+    def _stub(*_a: object, **_: object) -> ProviderResult:
         return ProviderResult(
-            provider_requested="qwen_vllm",
+            provider_requested="external_claude",
             provider_attempted=True,
             provider_available=True,
             exact_provider_error=None,
@@ -156,7 +156,7 @@ def test_generate_singleton_when_sc_disabled(monkeypatch: pytest.MonkeyPatch) ->
         )
 
     with patch(
-        "apps_rg.runtime.providers.section_qwen_slice.call_qwen_vllm",
+        "apps_rg.runtime.providers.section_provider_call.call_section_model_provider",
         side_effect=_stub,
     ):
         result, raw, parsed, err, meta = generate_bullet_lane_with_sc_and_claude(
