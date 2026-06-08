@@ -12,6 +12,9 @@ C0_AUTHORITY_MODE = C0_AUTHORITY_LEDGER_GRAPH_PRIMARY
 
 AUTHORITY_CLASS_LEDGER_GRAPH_PROOF = "LEDGER_GRAPH_PROOF"
 AUTHORITY_CLASS_SPINE_ENRICHMENT = "SPINE_ENRICHMENT_NON_AUTHORITATIVE"
+# G11/G14 (plan apps-rg-e2e-gap-remediation-7e2d9c): base-resume / JD / briefing context contributes
+# identity + targeting only — never proof authority for generated content.
+AUTHORITY_CLASS_NON_PROOF_CONTEXT = "NON_PROOF_CONTEXT_NON_AUTHORITATIVE"
 
 C01_ARTIFACT = "c01_retrieval_plan.json"
 C02_ATOMS_ARTIFACT = "c02_atoms.json"
@@ -56,6 +59,32 @@ def proof_support_target() -> SupportTarget:
     )
 
 
+def is_non_proof_context_source(source: str) -> bool:
+    """True when an evidence source is base-resume / JD / briefing context — identity/targeting only."""
+    s = str(source or "")
+    return any(s == prefix or s.startswith(prefix) for prefix in NON_PROOF_CONTEXT_PREFIXES)
+
+
+def assert_base_resume_identity_only(evidence_items: Any) -> None:
+    """Enforce ``base_resume_static_anchors_only``: non-proof context never carries proof authority.
+
+    Base-resume / JD / briefing items contribute identity + targeting context only; they must never
+    be tagged ``LEDGER_GRAPH_PROOF`` or otherwise admitted as proof evidence for generated content
+    (gaps G11/G14). The prefix scheme already excludes them from ``proof_support_target``; this guard
+    locks the declared constraint so a future change that mistags them as proof fails loud.
+    """
+    for item in evidence_items or ():
+        source = str(getattr(item, "source", "") or "")
+        if not is_non_proof_context_source(source):
+            continue
+        authority = str(getattr(item, "authority_class", "") or "")
+        if authority == AUTHORITY_CLASS_LEDGER_GRAPH_PROOF:
+            raise ValueError(
+                f"base-resume/JD context source {source!r} is tagged proof authority "
+                f"{authority!r}; base resume contributes identity only, never proof (G11/G14)."
+            )
+
+
 def bridge_authority_fields() -> dict[str, Any]:
     return {
         "c0_authority_mode": C0_AUTHORITY_MODE,
@@ -68,7 +97,10 @@ def bridge_authority_fields() -> dict[str, Any]:
 
 __all__ = [
     "AUTHORITY_CLASS_LEDGER_GRAPH_PROOF",
+    "AUTHORITY_CLASS_NON_PROOF_CONTEXT",
     "AUTHORITY_CLASS_SPINE_ENRICHMENT",
+    "assert_base_resume_identity_only",
+    "is_non_proof_context_source",
     "C01_ARTIFACT",
     "C02_ATOMS_ARTIFACT",
     "C02_VECTOR_QUERY_ARTIFACT",

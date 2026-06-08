@@ -428,6 +428,13 @@ def c0_retrieve_apps_rg(
             raise C0EvidenceGapError(emb_settings.decisive_reason)
 
     if not merged_items and validated_request is not None:
+        # G11/G14: base-resume + JD enter C0 as identity/targeting CONTEXT only — explicitly tagged
+        # non-authoritative so they can never be admitted as proof for generated content.
+        from apps_rg.runtime.c0.c0_section_authority import (
+            AUTHORITY_CLASS_NON_PROOF_CONTEXT,
+            assert_base_resume_identity_only,
+        )
+
         app_payload = getattr(validated_request, "app_payload", None) or {}
         jd_payload = app_payload.get("jd_payload", {})
         if jd_payload and "jd_text" in jd_payload:
@@ -438,6 +445,8 @@ def c0_retrieve_apps_rg(
                     source_type="app_payload_inline",
                     retrieval_timestamp=ts,
                     allowed_prompt_slot=ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
+                    authority_class=AUTHORITY_CLASS_NON_PROOF_CONTEXT,
+                    source_owner_or_authority="jd_targeting_non_authoritative",
                 )
             )
         resume_payload = app_payload.get("resume_payload", {})
@@ -449,8 +458,13 @@ def c0_retrieve_apps_rg(
                     source_type="app_payload_inline",
                     retrieval_timestamp=ts,
                     allowed_prompt_slot=ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
+                    authority_class=AUTHORITY_CLASS_NON_PROOF_CONTEXT,
+                    source_owner_or_authority="base_resume_identity_non_authoritative",
                 )  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             )
+        # Lock the declared base_resume_static_anchors_only constraint: non-proof context must
+        # never carry proof authority. Fails loud if a future change mistags it.
+        assert_base_resume_identity_only(merged_items)
 
     chroma_lane_items: list[EvidenceItem] = []
     section_gate_verdicts: list[Any] = []
