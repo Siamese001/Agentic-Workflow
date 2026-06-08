@@ -35,6 +35,12 @@ import re
 import sys
 from pathlib import Path
 
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
+
+from _post_agent_payload import extract_response_text
+
 
 _SIGNOFF_CLAIM_RE = re.compile(
     r"\b(SIGNED_OFF|FINAL_SIGNED_CERTIFICATION|trust[-_ ]level[- ]upgraded"
@@ -93,7 +99,7 @@ def _read_response(args: argparse.Namespace) -> str:
             return ""
     if not sys.stdin.isatty():
         try:
-            return sys.stdin.read()
+            return extract_response_text(sys.stdin.read())
         except (OSError, UnicodeDecodeError):
             return ""
     return ""

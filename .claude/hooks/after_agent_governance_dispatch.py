@@ -19,6 +19,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+_HOOKS_DIR = Path(__file__).resolve().parent
+if str(_HOOKS_DIR) not in sys.path:
+    sys.path.insert(0, str(_HOOKS_DIR))
+
 from lib.claude_hook_common import cursor_response_payload, read_payload
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

@@ -92,17 +92,16 @@ class TestRunAllDoesNotReap:
 
 class TestAfterAgentChainWiring:
     def test_mcp_hygiene_before_long_command_with_agent_response_argv(self) -> None:
-        text = (REPO_ROOT / ".cursor" / "hooks" / "after_agent_governance_dispatch.py").read_text(encoding="utf-8")
+        text = (REPO_ROOT / ".claude" / "hooks" / "after_agent_governance_dispatch.py").read_text(encoding="utf-8")
         assert "post_agent_mcp_hygiene_audit.py" in text
         assert "post_agent_long_command_audit.py" in text
         assert "agent_response" in text
-        capture_pos = text.index("post_agent_author_gate_capture.py")
         mcp_pos = text.rindex("post_agent_mcp_hygiene_audit.py")
         long_pos = text.rindex("post_agent_long_command_audit.py")
-        assert capture_pos < mcp_pos < long_pos
+        burndown_pos = text.rindex("post_agent_adg_burndown_inline_audit.py")
+        assert mcp_pos < long_pos < burndown_pos
 
-    def test_author_gate_scripts_unchanged_order(self) -> None:
-        text = (REPO_ROOT / ".cursor" / "hooks" / "after_agent_governance_dispatch.py").read_text(encoding="utf-8")
-        seeds_pos = text.rindex("post_agent_ag_queue_seed_capture.py")
-        mcp_pos = text.rindex("post_agent_mcp_hygiene_audit.py")
-        assert seeds_pos < mcp_pos
+    def test_author_gate_scripts_retired_from_direct_chain(self) -> None:
+        text = (REPO_ROOT / ".claude" / "hooks" / "after_agent_governance_dispatch.py").read_text(encoding="utf-8")
+        assert "post_agent_author_gate_capture.py" not in text
+        assert "post_agent_ag_queue_seed_capture.py" not in text

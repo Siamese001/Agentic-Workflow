@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
-_SCRIPTS = _ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
+_SCRIPTS = _ROOT / ".claude" / "governance/scripts"
 
 # Hooks that legitimately do not read stdin — they are pure-side-effect writers.
 _NO_STDIN_HOOKS: frozenset[str] = frozenset(
@@ -37,6 +37,30 @@ _NO_STDIN_HOOKS: frozenset[str] = frozenset(
         "post_agent_heartbeat.py",
         "post_agent_cleanup.py",
         "post_agent_hitl_capture.py",  # thin shim, no payload reading
+        "post_agent_plan_supersession_retire.py",  # drains stdin; scans plan files
+    }
+)
+
+_WIRED_HOOKS: frozenset[str] = frozenset(
+    {
+        "post_agent_adg_audit.py",
+        "post_agent_mcp_hygiene_audit.py",
+        "post_agent_long_command_audit.py",
+        "post_agent_adg_burndown_inline_audit.py",
+        "post_agent_dispatch.py",
+        "post_agent_scope_drift_detector.py",
+        "post_agent_writeback_audit.py",
+        "post_agent_deferred_scope_capture.py",
+        "post_agent_next_step_capture.py",
+        "post_agent_next_step_miss_detector.py",
+        "post_agent_wave_lifecycle_capture.py",
+        "post_agent_wave_completion_audit.py",
+        "post_agent_mcp_preflight_audit.py",
+        "post_agent_plan_evidence_gate.py",
+        "post_agent_plan_wave_summary_audit.py",
+        "post_agent_plan_registration_capture.py",
+        "post_agent_plan_supersession_retire.py",
+        "post_agent_fortknox_integrity_audit.py",
     }
 )
 
@@ -100,7 +124,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args(argv)
 
-    targets = sorted(p for p in _SCRIPTS.glob("post_agent_*.py") if _should_check(p))
+    targets = sorted(
+        p for p in (_SCRIPTS / name for name in _WIRED_HOOKS) if p.is_file() and _should_check(p)
+    )
     if args.verbose:
         print(f"[check_post_agent_payload] scanning {len(targets)} hook(s)")
         for t in targets:

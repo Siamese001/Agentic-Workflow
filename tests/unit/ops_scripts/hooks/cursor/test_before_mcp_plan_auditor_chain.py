@@ -9,11 +9,11 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HOOKS_LIB = REPO_ROOT / ".cursor" / "hooks"
+HOOKS_LIB = REPO_ROOT / ".claude" / "hooks"
 if str(HOOKS_LIB) not in sys.path:
     sys.path.insert(0, str(HOOKS_LIB))
 
-from lib import cursor_hook_common  # noqa: E402
+from lib import claude_hook_common as cursor_hook_common  # noqa: E402
 
 AUDITOR_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "unified_plan_creation_auditor.py"
 
@@ -62,8 +62,8 @@ class TestCursorHookCommonMcpParsing:
     def test_normalize_infers_server_from_command_key(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         mcp = {"mcpServers": {"notion": {"command": "npx"}}}
         root = tmp_path / "proj"
-        (root / ".cursor").mkdir(parents=True)
-        (root / ".cursor" / "mcp.json").write_text(json.dumps(mcp), encoding="utf-8")
+        root.mkdir(parents=True)
+        (root / ".mcp.json").write_text(json.dumps(mcp), encoding="utf-8")
         monkeypatch.setattr(cursor_hook_common, "_REPO_ROOT_FOR_MCP", root)
         cursor_hook_common.mcp_config_server_keys.cache_clear()
         payload = {"command": "notion", "tool_name": "API-post-page", "tool_input": "{}"}
@@ -74,8 +74,8 @@ class TestCursorHookCommonMcpParsing:
     def test_resolve_server_from_command_key(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         mcp = {"mcpServers": {"notion": {"command": "npx"}}}
         root = tmp_path / "proj"
-        (root / ".cursor").mkdir(parents=True)
-        (root / ".cursor" / "mcp.json").write_text(json.dumps(mcp), encoding="utf-8")
+        root.mkdir(parents=True)
+        (root / ".mcp.json").write_text(json.dumps(mcp), encoding="utf-8")
         monkeypatch.setattr(cursor_hook_common, "_REPO_ROOT_FOR_MCP", root)
 
         cursor_hook_common.mcp_config_server_keys.cache_clear()
@@ -147,7 +147,7 @@ class TestRunMcpPlanAuditorStage:
 
 class TestBeforeMcpHookScriptOrdering:
     def test_gate_invoked_before_auditor_in_source(self) -> None:
-        path = REPO_ROOT / ".cursor" / "hooks" / "before_mcp_execution.py"
+        path = REPO_ROOT / ".claude" / "hooks" / "before_mcp_execution.py"
         text = path.read_text(encoding="utf-8")
         gate_call = text.index("gate_rc = _run_pre_mcp_gate")
         auditor_call = text.index("auditor_rc = _run_unified_plan_auditor")

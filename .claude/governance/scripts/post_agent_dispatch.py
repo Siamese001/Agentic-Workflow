@@ -46,6 +46,7 @@ from _post_handlers import grep_budget as h_grep_budget  # noqa: E402
 from _post_handlers import heartbeat as h_heartbeat  # noqa: E402
 from _post_handlers import read_budget as h_read_budget  # noqa: E402
 from _post_handlers import token_telemetry as h_token_telemetry  # noqa: E402
+from _post_agent_payload import extract_response_text  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Native handlers (Phase A — refactored to ParsedResponse contract)
@@ -97,6 +98,10 @@ def _parse_stdin() -> ParsedResponse:
     parsed = ParsedResponse(raw=raw)
     if not raw.strip():
         return parsed
+
+    extracted = extract_response_text(raw)
+    if extracted:
+        parsed.response_text = extracted
 
     try:
         obj = json.loads(raw)

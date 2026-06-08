@@ -19,6 +19,7 @@ See also: ``.cursor/hooks/after_agent_governance_dispatch.py`` (chain invokes
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import os
@@ -28,6 +29,12 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
+
+from _post_agent_payload import extract_response_text
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 LOG_PATHS = {
@@ -129,12 +136,7 @@ def cmd_agent_response(args: argparse.Namespace) -> int:
         print("[MCP_HYGIENE_POST] NOT_APPLICABLE reason=empty_stdin", file=sys.stderr)
         return 0
 
-    try:
-        parsed: object = json.loads(raw)
-    except json.JSONDecodeError:
-        parsed = raw
-
-    text = _extract_agent_response_text(parsed)
+    text = extract_response_text(raw)
     digest = hashlib.sha256(raw.encode("utf-8", errors="replace")).hexdigest()[:12]
 
     if not _response_has_mcp_surface(text):

@@ -12,8 +12,8 @@ relates_to:
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W3
-LAST_COMPLETED_WAVE: W2
+CURRENT_WAVE: W4
+LAST_COMPLETED_WAVE: W3
 LAST_UPDATED: 2026-06-08
 
 # Legacy `_legacy_windsurf` / `_legacy_cursor` Tree Decommission
@@ -83,7 +83,7 @@ LAST_UPDATED: 2026-06-08
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1/L1 | P1.1–P1.3 | Inventory + classify (live-helper vs dead-archive) + rollback tag | ~10k | Actual tree differs from stale plan estimate | ✅ Done (2026-06-08) | Frozen manifest written; rollback tag set; no legacy-tree move/delete |
 | W2/L2 | P2.1–P2.3 | Promote live-helper subset → neutral home + rewrite importers | ~18k | Neutral active helper copies already exist at `.claude/governance/scripts/` | ✅ Done (2026-06-08) | W1 direct-importer paths retargeted to `.claude/governance/scripts/`; lifecycle and Notion import smoke green; no legacy-tree move/delete |
-| W3/L3 | P3.1 | Verify chain + tooling + gates fire post-move | ~6k | — | ⬜ Not Started | Live dispatch fires; ledger capture works; Notion wave-lifecycle import OK; CI gates green |
+| W3/L3 | P3.1 | Verify chain + tooling + gates fire post-move | ~6k | — | ✅ Done (2026-06-08) | Live dispatch fires; heartbeat fresh; wired payload gate scans 17 active hooks; lifecycle/ledger/import smokes green |
 | W4/L4 | P4.1–P4.2 | De-brand boundary constant + scanner/gate consumers | ~8k | `WINDSURF_SCRIPTS_DIR` re-pointable to neutral home | ⬜ Not Started | `path_constants` constant renamed/repointed (Author-Gate + receipt); static_scanner + 2 gates updated; ADG scan parity |
 | W5/L5 | P5.1–P5.3 | Delete dead-archive bulk + `_legacy_cursor`; retire `T6a`; guard cleanup | ~8k | L2–L4 green; no remaining importer | ⬜ Not Started | `_legacy_windsurf`/`_legacy_cursor` deleted; `T6a` retired or repointed; shell-guard legacy tokens pruned |
 | W6/L6 | P6.1 | Zero-brand verify + hand `.cursor/` to dec0de + close | ~5k | All prior waves green | ⬜ Not Started | Repo scan: only intentional history remains; dec0de notified for `.cursor/` removal; plan closed |
@@ -98,7 +98,7 @@ LAST_UPDATED: 2026-06-08
 | P2.1 | Canonicalize neutral helper home | Active copies under `.claude/governance/scripts/` | Older `_helpers/` wording was stale; root helper copies are newer than legacy tree copies | ~8k | ✅ Done: no duplicate `_helpers/` package created |
 | P2.2 | Rewrite hook importers | `post_agent_plan_registration_capture.py`, `post_agent_plan_scope_audit.py`, `_post_handlers/*` | HELPER_PATH / W2_MODULE_PATH literals | ~5k | ✅ Done |
 | P2.3 | Rewrite tools importers | `tools/plan_lifecycle/wave_execution_state.py`, `tools/capture/queue_to_ledger.py`, `tools/notion/{wave_lifecycle_writer,_plan_registration_helpers,apply_plan_derived_status,triage_plans_duplicates}.py` | sys.path inserts | ~5k | ✅ Done |
-| P3.1 | Verify | dispatch + gates | Notion writer import chain; `_notion_plans_status_check` dead-path bug fix | ~6k | ⬜ |
+| P3.1 | Verify | dispatch + gates | Hook support library was missing from clean tree; payload gate still scanned frozen legacy dir | ~6k | ✅ Done: live hook lib restored, dispatch/payload/heartbeat checks green |
 | P4.1 | Boundary constant | `agentic_core/L0_routing/config/path_constants.py` (`WINDSURF_SCRIPTS_DIR`) | Author-Gate + migration receipt; rename vs value-repoint | ~4k | ⬜ |
 | P4.2 | Scanner/gate consumers | `static_scanner.py`, `check_hardcoded_exclusions.py`, `check_terminal_cleanup.py` | ADG scan parity (exclusion semantics) | ~4k | ⬜ |
 | P5.1 | Delete dead-archive bulk | `_legacy_windsurf/post_cascade_*` etc. | Confirm zero importer post-L2 | ~3k | ⬜ |
@@ -147,6 +147,18 @@ LAST_UPDATED: 2026-06-08
 - **P3.1** Run the after-agent dispatch (audit rows + heartbeat written); run `queue_to_ledger`
   smoke; import `tools.notion.wave_lifecycle_writer`; run `check_post_agent_alive` / `check_post_agent_payload`;
   run plan-lifecycle CLI. All green.
+- **Completed 2026-06-08:** W3 found and fixed two live-chain defects before closing:
+  `.claude/hooks/after_agent_governance_dispatch.py` and sibling hooks imported a missing
+  `lib.claude_hook_common` support package, and `check_post_agent_payload.py` still scanned the
+  frozen `_legacy_windsurf` tree. W3 restored the live hook support library under
+  `.claude/hooks/lib/`, repointed hook tests to `.claude/hooks`, made the payload gate scan the wired
+  active chain (17 hooks), and converted active payload readers to `_post_agent_payload`.
+  Verification passed: 34 hook tests; `check_post_agent_payload.py --verbose`; dispatch smoke via
+  `.claude/hooks/after_agent_governance_dispatch.py`; `check_post_agent_alive.py`; `queue_to_ledger.py
+  --dry-run`; `tools.plan_lifecycle.wave_execution_state status`; and import smoke for
+  `tools.notion.wave_lifecycle_writer`, `tools.capture.queue_to_ledger`, and the dispatch hook.
+  Dispatch still surfaces a non-blocking ADG audit warning (`tool_routing append failed: no such
+  table: events`), but the dispatcher exits 0 and heartbeat freshness passes.
 
 ### L4 — De-brand boundary constant + consumers
 - **P4.1** Author-Gate (`platform_core_change`) + migration receipt; rename/repoint
@@ -198,4 +210,4 @@ import-clean). The physical `.cursor/` dir removal stays owned by dec0de (do not
   import path.
 
 WAVE_COMPLETE: YES
-WAVE_COMPLETE_NOTE: plan=legacy-windsurf-tree-decommission-9f2c47 wave=W2/L2 date=2026-06-08 artifacts=docs/reports/decommission/legacy_tree_classification_9f2c47.md,docs/reports/decommission/legacy_tree_classification_9f2c47.json note="active live-helper importers canonicalized to .claude/governance/scripts; no legacy-tree move/delete"
+WAVE_COMPLETE_NOTE: plan=legacy-windsurf-tree-decommission-9f2c47 wave=W3/L3 date=2026-06-08 artifacts=docs/reports/decommission/legacy_tree_classification_9f2c47.md,docs/reports/decommission/legacy_tree_classification_9f2c47.json note="live dispatch, heartbeat, payload gate, queue dry-run, lifecycle/import smokes verified; hook support lib restored"
