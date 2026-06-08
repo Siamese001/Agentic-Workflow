@@ -89,18 +89,22 @@ def resolve_phase1_lane_allow_non_allow_exit_zero(cli_flag: bool) -> bool:
     return resolve_allow_non_allow_exit_zero(cli_flag)
 
 
-COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = "gemini_pro"
-BULLET_COMPOSITE_DEFAULT_X1D_JUDGES: Final[str] = "anthropic_claude"
+# Judges are CROSS-PROVIDER ONLY (never anthropic_claude). Claude Sonnet 4.6 is the GENERATOR for
+# every lane, so a Claude judge is a self-judge with correlated blind spots. Recalibrated 2026-06-08
+# for the Claude base — the prior 3-provider panel (and the anthropic_claude bullet judge) was
+# Qwen-era. See .claude/rules/judge-calibration-cadence.md. Explicit CLI/env overrides still win.
+_DUAL_X1D_JUDGES: Final[str] = "gemini_pro,openai_chatgpt"
+_SINGLE_X1D_JUDGE: Final[str] = "gemini_pro"
+COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = _SINGLE_X1D_JUDGE
+BULLET_COMPOSITE_DEFAULT_X1D_JUDGES: Final[str] = _SINGLE_X1D_JUDGE
 UNIFY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 IBM_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 INSURTECH_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 EY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 
-# Wave 9 judge minimization policy:
-# - advisory lanes use one compact advisory judge;
-# - bullet lanes use one composite judge plus optional adjudicator escalation;
-# - lanes whose X2 wiring gates still require the full provider set keep the full panel.
-# Explicit CLI/env overrides still win, so operators can request the full panel for diagnosis.
+# Recalibrated judge panels (Claude Sonnet 4.6 base; cross-provider only):
+#   executive_summary / headline / final_aggregate_resume -> 2 (gemini_pro + openai_chatgpt)
+#   all bullets + all narratives -> 1 (gemini_pro); competencies -> 1 advisory (gemini_pro)
 _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
     "competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
     "professional_competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
@@ -108,21 +112,29 @@ _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
     "ibm_bullets": IBM_BULLETS_DEFAULT_X1D_JUDGES,
     "insurtech_bullets": INSURTECH_BULLETS_DEFAULT_X1D_JUDGES,
     "ey_bullets": EY_BULLETS_DEFAULT_X1D_JUDGES,
+    "unify_narrative": _SINGLE_X1D_JUDGE,
+    "ibm_narrative": _SINGLE_X1D_JUDGE,
+    "insurtech_narrative": _SINGLE_X1D_JUDGE,
+    "ey_narrative": _SINGLE_X1D_JUDGE,
+    "headline": _DUAL_X1D_JUDGES,
+    "executive_summary": _DUAL_X1D_JUDGES,
+    "final_aggregate_resume": _DUAL_X1D_JUDGES,
 }
 
 _SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
     "competencies": "single_advisory_taxonomy_judge_optional_for_proof",
     "professional_competencies": "single_advisory_taxonomy_judge_optional_for_proof",
-    "unify_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
-    "ibm_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
-    "insurtech_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
-    "ey_bullets": "single_composite_bullet_judge_optional_adjudicator_escalation",
-    "headline": "full_panel_required_by_x2_judge_presence_gate",
-    "unify_narrative": "full_panel_required_by_x2_judge_presence_gate",
-    "ibm_narrative": "full_panel_required_by_x2_judge_presence_gate",
-    "insurtech_narrative": "full_panel_required_by_x2_judge_presence_gate",
-    "ey_narrative": "full_panel_required_by_x2_judge_presence_gate",
-    "executive_summary": "full_panel_required_by_x2_judge_presence_gate",
+    "unify_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
+    "ibm_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
+    "insurtech_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
+    "ey_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
+    "unify_narrative": "single_cross_provider_narrative_judge_claude_base_recalibrated",
+    "ibm_narrative": "single_cross_provider_narrative_judge_claude_base_recalibrated",
+    "insurtech_narrative": "single_cross_provider_narrative_judge_claude_base_recalibrated",
+    "ey_narrative": "single_cross_provider_narrative_judge_claude_base_recalibrated",
+    "headline": "dual_cross_provider_panel_claude_base_recalibrated",
+    "executive_summary": "dual_cross_provider_panel_claude_base_recalibrated",
+    "final_aggregate_resume": "dual_cross_provider_panel_claude_base_recalibrated",
 }
 
 

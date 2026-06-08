@@ -50,12 +50,23 @@ class SectionJudgePolicy:
         return self.judge_required_for_proof
 
 
+# Cross-provider judges ONLY — never anthropic_claude. Claude Sonnet 4.6 is the GENERATOR for every
+# lane, so a same-family judge has correlated blind spots (a self-judge that won't catch the
+# generator's systematic errors). Recalibrated 2026-06-08 for the Claude base — the 3-provider panel
+# was Qwen-era insurance against a weak local generator. See .claude/rules/judge-calibration-cadence.md.
+_DUAL_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro", "openai_chatgpt")
+_SINGLE_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro",)
+
+
 def _enhanced_providers() -> tuple[str, ...]:
-    return REQUIRED_JUDGE_PROVIDER_KEYS
+    # executive_summary + final_aggregate_resume: dual cross-provider (both must pass).
+    return _DUAL_JUDGE_PANEL
 
 
 def _standard_providers() -> tuple[str, ...]:
-    return REQUIRED_JUDGE_PROVIDER_KEYS
+    # bullets + narratives: single cross-provider backstop — the deterministic C0.3 graph + X2
+    # lineage gates carry the proof; the judge is a light independent check, not the proof itself.
+    return _SINGLE_JUDGE_PANEL
 
 
 _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
@@ -76,7 +87,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
         generator_model_class=GeneratorModelClass.QWEN,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.STANDARD_REASONING,
-        required_judge_providers=_standard_providers(),
+        required_judge_providers=_DUAL_JUDGE_PANEL,
         proof_eligible_model_classes=frozenset({"standard_frontier", "standard_reasoning"}),
         advisory_model_classes=frozenset({"flash", "mini", "haiku", "advisory", "mock", "stub"}),
         judge_packet_required=True,

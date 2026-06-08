@@ -313,20 +313,26 @@ def test_openai_retry_attempt_token_budget_escalates_bounded() -> None:
 
 
 @pytest.mark.parametrize(
-    "section_id",
+    "section_id,expected_providers",
     [
-        "executive_summary",
-        "headline",
-        "unify_bullets",
-        "ibm_bullets",
-        "unify_narrative",
-        "ibm_narrative",
+        # Claude Sonnet 4.6 base recalibration: summaries/headline -> dual cross-provider
+        # panel; bullets/narratives -> single cross-provider judge. No anthropic_claude
+        # self-judge (Claude is the generator, so it cannot also be a proof judge).
+        ("executive_summary", ("gemini_pro", "openai_chatgpt")),
+        ("headline", ("gemini_pro", "openai_chatgpt")),
+        ("unify_bullets", ("gemini_pro",)),
+        ("ibm_bullets", ("gemini_pro",)),
+        ("unify_narrative", ("gemini_pro",)),
+        ("ibm_narrative", ("gemini_pro",)),
     ],
 )
-def test_proof_section_three_judge_roster(section_id: str) -> None:
+def test_proof_section_recalibrated_judge_roster(
+    section_id: str, expected_providers: tuple[str, ...]
+) -> None:
     policy = get_section_judge_policy(section_id)
     assert policy.judge_required_for_proof
-    assert frozenset(policy.required_judge_providers) == frozenset(PROOF_JUDGE_PROVIDER_KEYS)
+    assert frozenset(policy.required_judge_providers) == frozenset(expected_providers)
+    assert "anthropic_claude" not in policy.required_judge_providers
 
 
 # --- Score normalization (provider-neutral pass math) -------------------------
