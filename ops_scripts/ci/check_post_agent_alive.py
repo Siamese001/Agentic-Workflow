@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-check_post_agent_alive.py — W5.6 post_cascade hook heartbeat gate.
+check_post_agent_alive.py — W5.6 post-agent hook heartbeat gate.
 
 Windsurf 2.0.67 has a documented bug where post_agent_response hooks
 silently stop firing mid-session. The post-hook chain writes a heartbeat
@@ -109,7 +109,7 @@ def _has_recent_commits(grace_hours: int) -> bool:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="post_cascade heartbeat (W5.6)")
+    ap = argparse.ArgumentParser(description="post-agent heartbeat (W5.6)")
     ap.add_argument("--max-age-hours", type=int, default=6)
     ap.add_argument(
         "--grace-hours", type=int, default=6, help="Consider repo idle if no commits in this many hours"

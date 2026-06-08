@@ -1,4 +1,4 @@
-"""Tests for .claude/governance/scripts/_legacy_windsurf/post_agent_ag_queue_drain_audit.py"""
+"""Tests for .claude/governance/scripts/post_agent_ag_queue_drain_audit.py"""
 from __future__ import annotations
 
 import importlib.util
@@ -11,8 +11,8 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-AUDIT_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_ag_queue_drain_audit.py"
-HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_author_gate_queue.py"
+AUDIT_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_ag_queue_drain_audit.py"
+HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_author_gate_queue.py"
 
 
 def _load_helper():

@@ -20,7 +20,7 @@
 
 ## What Changed
 
-- `post_cursor_agent_adr_registry_capture.py` — now logs `kind: adr_filesystem_only` to JSONL; no Notion write
+- `post_agent_adr_registry_capture.py` — now logs `kind: adr_filesystem_only` to JSONL; no Notion write
 - `post_write_mcp_config_sync.py` — Notion MCP Registry sync block removed
 - `memory-notion-writeback.md` auto-routing triggers 1–5 — updated to filesystem paths
 - `mcp-config-ssot.md` Sync Contract — step 4 (Notion MCP Registry upsert) removed

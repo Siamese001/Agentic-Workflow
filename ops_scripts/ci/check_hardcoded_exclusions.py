@@ -41,9 +41,13 @@ import json
 import sys
 from pathlib import Path
 from typing import Iterable
-from agentic_core.L0_routing.config.path_constants import WINDSURF_SCRIPTS_DIR
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from agentic_core.L0_routing.config.path_constants import GOVERNANCE_SCRIPTS_DIR
+
 BASELINE_PATH = REPO_ROOT / "ops_scripts" / "ci" / "baselines" / "hardcoded_exclusions_baseline.json"
 
 # Canonical exclusion tokens: any literal set containing >= MIN_HITS of these
@@ -176,7 +180,7 @@ DEFAULT_SCAN_ROOTS: tuple[str, ...] = (
     "apps_",  # Prefix match via glob
     "ops_scripts",
     "tools",
-    WINDSURF_SCRIPTS_DIR,
+    GOVERNANCE_SCRIPTS_DIR,
 )
 
 

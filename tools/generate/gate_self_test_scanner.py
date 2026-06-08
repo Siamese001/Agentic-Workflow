@@ -1,6 +1,6 @@
 """A12: Gate Self-Test Detector.
 
-Scans gate scripts (.claude/governance/scripts/_legacy_windsurf/*_gate.py, ops_scripts/ci/*.py)
+Scans gate scripts (.claude/governance/scripts/*_gate.py, ops_scripts/ci/*.py)
 for inconsistencies between docstring claims and actual enforcement logic.
 
 Detects:
@@ -27,7 +27,7 @@ REPO = Path(__file__).resolve().parents[2]
 
 # Directories to scan for gate scripts
 _GATE_DIRS = [
-    REPO / ".claude" / "governance/scripts" / "_legacy_windsurf",
+    REPO / ".claude" / "governance" / "scripts",
     REPO / "ops_scripts" / "ci",
 ]
 

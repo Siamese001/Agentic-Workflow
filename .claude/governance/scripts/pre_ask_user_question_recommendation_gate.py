@@ -17,9 +17,8 @@ AskUserQuestion calls shipped with neither a ``(Recommended)`` marker nor a conf
 signal).
 
 This gate re-adds the missing deterministic control on the *native tool input*. It is the
-post-supersession successor to the retired routing gate
-(``_legacy_windsurf/pre_ask_user_question_gate.py``) — distinct name on purpose so the two
-are never confused. It inspects the proposed ``AskUserQuestion`` options and flags when:
+post-supersession successor to the retired legacy AskUserQuestion routing gate. It inspects
+the proposed ``AskUserQuestion`` options and flags when:
 
 * no option label ends with ``(Recommended)`` — the §6 marker is absent (Finding 1);
 * the recommended option's description carries no confidence signal — the retired

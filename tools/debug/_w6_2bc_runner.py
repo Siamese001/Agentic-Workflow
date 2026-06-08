@@ -31,7 +31,7 @@ def main() -> int:
         ("docs/reports", "W6.2b-docs-reports"),
         ("docs/architecture/adr", "W6.2c-adr"),
         ("docs/archive/windsurf/legacy-tree/plans", "W6.2c-plans"),
-        (".claude/governance/scripts/_legacy_windsurf", "W6.2c-scripts"),
+        (".claude/governance/scripts", "W6.2c-scripts"),
         ("artifacts/governance", "W6.2c-windsurf"),
     ]
     max_rc = 0

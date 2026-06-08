@@ -22,7 +22,8 @@ from unittest import mock
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_mcp_orphan_reap.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_mcp_orphan_reap.py"
+HYGIENE_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_mcp_hygiene_audit.py"
 
 
 def _load_hook(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
@@ -211,16 +212,11 @@ def test_malformed_detector_json_still_exits_zero(tmp_path: Path, monkeypatch: p
     assert records[0]["orphan_count"] is None
 
 
-# ---- hooks.json wiring --------------------------------------------------
+# ---- active hygiene wiring ---------------------------------------------
 
 
-def test_hook_is_registered_in_hooks_json() -> None:
-    """Regression guard: the hook must be wired into post_agent_response."""
-    hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
-    data = json.loads(hooks_path.read_text(encoding="utf-8"))
-    entries = data["hooks"]["post_agent_response"]
-    commands = [e["command"] for e in entries]
-    assert any("post_agent_mcp_orphan_reap.py" in c for c in commands), (
-        "post_agent_mcp_orphan_reap.py must be registered in "
-        ".cursor/hooks.json post_agent_response chain"
-    )
+def test_hygiene_audit_keeps_orphan_reap_explicit_only() -> None:
+    """Regression guard: orphan reap stays available but not automatic."""
+    hygiene_text = HYGIENE_PATH.read_text(encoding="utf-8")
+    assert "orphan_reap" in hygiene_text
+    assert "explicit subcommand only" in hygiene_text

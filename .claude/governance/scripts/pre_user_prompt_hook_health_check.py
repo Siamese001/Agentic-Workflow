@@ -1,7 +1,7 @@
 """Pre-user-prompt hook-health check (W7.1 session-start recovery).
 
 Reads the latest heartbeat written by
-``_post_handlers/heartbeat`` (in-process dispatch) / legacy ``_legacy_cursor/post_agent_heartbeat.py`` — warns when
+``_post_handlers/heartbeat`` (in-process dispatch) — warns when
 the prior session's post_agent_response chain did not fire.
 
 Detection logic:

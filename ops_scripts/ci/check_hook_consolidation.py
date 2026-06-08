@@ -2,7 +2,7 @@
 Hook Consolidation / Growth CI Gate
 
 Detects hook proliferation and validates hook metadata integrity.
-Parses .cursor/hooks.json to report statistics and detect growth risks.
+Parses .claude/settings.json to report statistics and detect growth risks.
 
 Usage:
     python ops_scripts/ci/check_hook_consolidation.py [--advisory|--strict] [options]
@@ -15,6 +15,7 @@ Exit Codes:
 
 import argparse
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -22,12 +23,67 @@ from typing import Dict, List, Optional, Set, Tuple
 
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-HOOKS_JSON_PATH = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
+HOOKS_CONFIG_PATH = REPO_ROOT / ".claude" / "settings.json"
 
 # Default thresholds
 DEFAULT_MAX_HOOKS = 70  # Allow some growth from current 59
 DEFAULT_MAX_LIFECYCLE_STAGES = 12  # Current: 10
 DEFAULT_MAX_POST_CASCADE = 35  # Current: 27
+
+
+def _script_id(command: str, stage_name: str, matcher: str, index: int) -> str:
+    match = re.search(r"([^/\\\"']+\.py)\b", command)
+    script_name = match.group(1) if match else f"hook_{index}"
+    matcher_part = f":{matcher}" if matcher else ""
+    return f"{stage_name}{matcher_part}:{script_name}:{index}"
+
+
+def _parse_hook_groups(stage_name: str, hook_list: list) -> list[dict]:
+    parsed_hooks = []
+    for index, entry in enumerate(hook_list):
+        if not isinstance(entry, dict):
+            continue
+        # Historical hooks.json schema: one hook object directly in the stage list.
+        if "command" in entry or "script_path" in entry or "hook_id" in entry:
+            parsed_hooks.append(
+                {
+                    "stage": stage_name,
+                    "hook_id": entry.get("hook_id") or _script_id(
+                        entry.get("command", "") or entry.get("script_path", ""),
+                        stage_name,
+                        "",
+                        index,
+                    ),
+                    "script_path": entry.get("script_path") or entry.get("command"),
+                    "survivor": entry.get("survivor", False),
+                    "replacement_for": entry.get("replacement_for", []),
+                    "metadata": entry.get("metadata", {}),
+                    "raw": entry,
+                }
+            )
+            continue
+
+        # Current Claude settings schema: stage entries contain a matcher and nested hooks.
+        matcher = str(entry.get("matcher") or "")
+        for inner_index, hook in enumerate(entry.get("hooks", [])):
+            if not isinstance(hook, dict):
+                continue
+            command = str(hook.get("command") or "")
+            parsed_hooks.append(
+                {
+                    "stage": stage_name,
+                    "hook_id": _script_id(command, stage_name, matcher, inner_index),
+                    "script_path": command,
+                    "survivor": False,
+                    "replacement_for": [],
+                    "metadata": {
+                        "matcher": matcher,
+                        "type": hook.get("type"),
+                    },
+                    "raw": hook,
+                }
+            )
+    return parsed_hooks
 
 
 def parse_hooks_json() -> Tuple[bool, Optional[Dict], str]:
@@ -37,41 +93,25 @@ def parse_hooks_json() -> Tuple[bool, Optional[Dict], str]:
     Returns:
         (success, hooks_data, error_message)
     """
-    if not HOOKS_JSON_PATH.exists():
-        return False, None, f"hooks.json not found: {HOOKS_JSON_PATH}"
+    if not HOOKS_CONFIG_PATH.exists():
+        return False, None, f"hooks config not found: {HOOKS_CONFIG_PATH}"
     
     try:
-        content = HOOKS_JSON_PATH.read_text(encoding="utf-8")
+        content = HOOKS_CONFIG_PATH.read_text(encoding="utf-8")
         data = json.loads(content)
         
         hooks_by_stage = data.get("hooks", {})
         if not isinstance(hooks_by_stage, dict):
             return False, None, "hooks.json 'hooks' field is not a dict"
         
-        # Parse all hooks
         all_hooks = []
         hooks_by_stage_parsed = {}
         
         for stage_name, hook_list in hooks_by_stage.items():
             if not isinstance(hook_list, list):
                 continue
-            
-            parsed_hooks = []
-            for hook in hook_list:
-                if not isinstance(hook, dict):
-                    continue
-                
-                parsed_hook = {
-                    "stage": stage_name,
-                    "hook_id": hook.get("hook_id"),
-                    "script_path": hook.get("script_path"),
-                    "survivor": hook.get("survivor", False),
-                    "replacement_for": hook.get("replacement_for", []),
-                    "metadata": hook.get("metadata", {}),
-                    "raw": hook,
-                }
-                parsed_hooks.append(parsed_hook)
-                all_hooks.append(parsed_hook)
+            parsed_hooks = _parse_hook_groups(stage_name, hook_list)
+            all_hooks.extend(parsed_hooks)
             
             hooks_by_stage_parsed[stage_name] = parsed_hooks
         
@@ -85,9 +125,9 @@ def parse_hooks_json() -> Tuple[bool, Optional[Dict], str]:
         return True, result, ""
     
     except json.JSONDecodeError as e:
-        return False, None, f"Invalid JSON in hooks.json: {e}"
+        return False, None, f"Invalid JSON in hooks config: {e}"
     except Exception as e:
-        return False, None, f"Error reading hooks.json: {e}"
+        return False, None, f"Error reading hooks config: {e}"
 
 
 def analyze_hooks(hooks_data: Dict) -> Dict:
@@ -196,7 +236,7 @@ def analyze_hooks(hooks_data: Dict) -> Dict:
             shim_count += 1
     
     # Detect growth risks
-    post_agent_count = stage_counts.get("post_agent_response", 0)
+    post_agent_count = stage_counts.get("post_agent_response", stage_counts.get("Stop", 0))
     
     return {
         "counts": {
@@ -338,7 +378,7 @@ def generate_receipt(
         "has_errors": any(v.get("severity") == "error" for v in violations),
         "has_warnings": any(v.get("severity") == "warning" for v in violations),
         "paths": {
-            "hooks_json": str(HOOKS_JSON_PATH.relative_to(REPO_ROOT)),
+            "hooks_config": str(HOOKS_CONFIG_PATH.relative_to(REPO_ROOT)),
         },
     }
 
@@ -352,7 +392,7 @@ Examples:
     %(prog)s --advisory                    # Report issues but exit 0
     %(prog)s --strict                      # Exit nonzero on issues
     %(prog)s --max-hooks 65                # Custom hook threshold
-    %(prog)s --max-post-cursor-agent 30         # Custom post-cursor-agent threshold
+    %(prog)s --max-post-agent 30               # Custom post-agent threshold
     %(prog)s --artifact result.json        # Write JSON receipt
         """,
     )
@@ -380,7 +420,9 @@ Examples:
         help=f"Maximum allowed lifecycle stages (default: {DEFAULT_MAX_LIFECYCLE_STAGES})",
     )
     parser.add_argument(
+        "--max-post-agent",
         "--max-post-cursor-agent",
+        dest="max_post_agent",
         type=int,
         default=DEFAULT_MAX_POST_CASCADE,
         help=f"Maximum allowed post_agent_response hooks (default: {DEFAULT_MAX_POST_CASCADE})",
@@ -496,7 +538,7 @@ Examples:
         print(f"Threshold Status:")
         print(f"  Max hooks:          {hooks_data['hook_entry_count']}/{args.max_hooks} {'✓' if hooks_data['hook_entry_count'] <= args.max_hooks else '✗'}")
         print(f"  Max stages:         {hooks_data['lifecycle_stage_count']}/{args.max_lifecycle_stages} {'✓' if hooks_data['lifecycle_stage_count'] <= args.max_lifecycle_stages else '✗'}")
-        print(f"  Max post-cursor-agent:   {analysis['counts']['post_agent_count']}/{args.max_post_agent} {'✓' if analysis['counts']['post_agent_count'] <= args.max_post_agent else '✗'}")
+        print(f"  Max post-agent:   {analysis['counts']['post_agent_count']}/{args.max_post_agent} {'✓' if analysis['counts']['post_agent_count'] <= args.max_post_agent else '✗'}")
         print(f"")
         
         # Show v2 metadata status

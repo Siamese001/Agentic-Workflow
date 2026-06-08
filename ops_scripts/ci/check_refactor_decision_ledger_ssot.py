@@ -60,7 +60,6 @@ _ALLOWLIST_FILES = frozenset(
 _ALLOWLIST_DIR_PREFIXES = (
     "tests/",
     "docs/",
-    ".claude/governance/scripts/_legacy_windsurf/",
 )
 
 

@@ -257,7 +257,7 @@ def audit_hook_gate(phase: str, title: str) -> dict:
     candidates = re.findall(r"[a-z_]+(?:_gate|_classifier|_audit|_cleanup|_dispatcher)\b", title_lower)
     found_files = []
     for cand in candidates:
-        for p in (ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf").glob(f"*{cand}*.py"):
+        for p in (ROOT / ".claude" / "governance" / "scripts").glob(f"*{cand}*.py"):
             found_files.append(p.name)
     hooks_text = hooks_json_text()
     in_hooks = [f for f in found_files if f in hooks_text]

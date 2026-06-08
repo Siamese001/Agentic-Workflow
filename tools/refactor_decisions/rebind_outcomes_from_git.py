@@ -155,7 +155,7 @@ def rebind(db_path: Path, max_walk: int, dry_run: bool) -> dict[str, int]:
     conn.row_factory = sqlite3.Row
     # Append-only triggers (W4.1) bypass: set sentinel user_version before
     # UPDATEs, restore the original on exit. This is the documented escape
-    # hatch in .claude/governance/scripts/_legacy_windsurf/apply_append_only_triggers.py for
+    # hatch in .claude/governance/scripts/apply_append_only_triggers.py for
     # administrative writers (rebinder, resign, schema migrations).
     original_user_version = int(conn.execute("PRAGMA user_version").fetchone()[0])
     conn.execute("PRAGMA user_version = 99999")

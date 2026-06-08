@@ -17,11 +17,11 @@ from ops_scripts.ci import check_graph_reach_archival as mod
 def test_matches_anchor_basic_globs() -> None:
     patterns = [
         "tests/**/*.py",
-        ".claude/governance/scripts/_legacy_windsurf/*.py",
+        ".claude/governance/scripts/post_agent_*.py",
         "**/__init__.py",
     ]
     assert mod.matches_anchor("tests/unit/foo.py", patterns)
-    assert mod.matches_anchor(".claude/governance/scripts/_legacy_windsurf/bar.py", patterns)
+    assert mod.matches_anchor(".claude/governance/scripts/post_agent_bar.py", patterns)
     assert mod.matches_anchor("agentic_core/__init__.py", patterns)
     assert not mod.matches_anchor("agentic_core/foo.py", patterns)
 
@@ -139,7 +139,7 @@ def test_find_archival_orphans_filters_anchors(tmp_path: Path) -> None:
                 "id": 5,
                 "entity_type": "module",
                 "layer": "L2",
-                "resolved_path": ".claude/governance/scripts/_legacy_windsurf/post_something.py",
+                "resolved_path": ".claude/governance/scripts/post_agent_something.py",
             },
         ],
         edges=[
@@ -152,7 +152,7 @@ def test_find_archival_orphans_filters_anchors(tmp_path: Path) -> None:
             conn,
             anchor_patterns=[
                 "tests/**/*.py",
-                ".claude/governance/scripts/_legacy_windsurf/*.py",
+                ".claude/governance/scripts/post_agent_*.py",
             ],
         )
     finally:

@@ -1,7 +1,7 @@
 ---
 slug: cursor-windsurf-codeium-decommission-dec0de
 plan_type: platform_core_change
-status: Not Started
+status: Completed
 created: 2026-06-07
 owner: Claude Code
 supersedes:
@@ -9,6 +9,20 @@ supersedes:
 complements:
   - cursor-decommission-a1f7c3                 # COMPLETED+merged the .cursor→.claude work; this plan covers the windsurf/codeium brand it did not touch
 ---
+
+FORMAT_VERSION: simplified-plan-format-v1
+PLAN_STATUS: DONE
+CURRENT_WAVE: COMPLETE
+LAST_COMPLETED_WAVE: W6
+LAST_UPDATED: 2026-06-08
+
+> **CLOSEOUT 2026-06-08 (IDE_archive).** Parent/baseline decommission is complete as a
+> scoped parent plan: W1/W2 established the inventory and re-baseline, W3/W4/W6 delivered
+> the low-risk surface cleanup and verification, and W5 remains intentionally split to
+> [cursor-naming-rename-w5-b4f1a9](../../plans/cursor-naming-rename-w5-b4f1a9.md) with the
+> legacy tree tail in [legacy-windsurf-tree-decommission-9f2c47](../../plans/legacy-windsurf-tree-decommission-9f2c47.md).
+> Verification rerun in `IDE_archive`: `check_no_cursor_refs.py`, `check_always_on_token_budget.py`,
+> `check_exclusion_consistency.py`, active-prose scans, legacy-path absence checks.
 
 > ⛔ **RE-BASELINED 2026-06-07 (W2 reconciliation).** The W1 inventory freeze + a dependency check +
 > the authoritative Notion row for `cursor-decommission-a1f7c3` reset the scope:
@@ -229,3 +243,5 @@ string-literal path/script-name references, not Python import edges, so ADG cann
 ## Supersedes
 - `windsurf-deprecation-cursor-ssot-b6e4a9` (prior windsurf→cursor migration) — flip to Retired when
   this plan reaches W6.
+
+PLAN_COMPLETE: plan=cursor-windsurf-codeium-decommission-dec0de note="Parent/baseline decommission complete in IDE_archive; W5 split and legacy-tree tail remain tracked by child plans."

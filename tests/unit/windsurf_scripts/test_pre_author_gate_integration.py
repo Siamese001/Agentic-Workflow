@@ -17,7 +17,7 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
 
 
 # Skip all integration tests if ADG artifacts not available

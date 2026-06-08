@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts" / "_legacy_windsurf"
+_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".claude" / "governance" / "scripts"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 
 from post_agent_author_gate_miss_detector import (  # noqa: E402

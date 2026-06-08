@@ -37,7 +37,7 @@ REQUIRED_PATHS = [
     "docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md",
     ".cursor/hooks/after_agent_governance_dispatch.py",
     ".claude/plans/_archive/2026-05",
-    ".claude/governance/scripts/_legacy_cursor",
+    "docs/reports/decommission/legacy_tree_classification_9f2c47.json",
 ]
 
 CLOSEOUT_SLUG = "governance-dedup-closeout-e8a4c2"

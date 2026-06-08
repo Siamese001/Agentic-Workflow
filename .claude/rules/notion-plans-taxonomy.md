@@ -97,7 +97,7 @@
 | Rule ID | Condition | Action | Enforced By |
 |---------|-----------|--------|-------------|
 | T1 | `In Progress` + no file edit >14d | Auto-flip to `Retired` with reason "stale since YYYY-MM-DD" | `check_notion_plans_status_canonical.py --query-notion` |
-| T2 | `Waiting` + empty `Waiting For` (immediate) | ERROR: populate blocker description before or with the status write | `check_notion_plans_waiting_for.py` (NP10) + `post_cursor_agent_notion_plans_status_audit.py` |
+| T2 | `Waiting` + empty `Waiting For` (immediate) | ERROR: populate blocker description before or with the status write | `check_notion_plans_waiting_for.py` (NP10) + `post_agent_notion_plans_status_audit.py` |
 | T3 | `Lower Priority` >30d without resume | INFO: review for retirement | Advisory only (manual decision) |
 | T4 | `Not Started` >30d without start | INFO: review for retirement | Advisory only |
 | T5 | `In Progress` + deferred scope items >7d old + empty `Waiting For` | Recommend flip to `Waiting` | `check_notion_plans_status_canonical.py --query-notion` |
@@ -180,7 +180,7 @@ Use `API-query-data-source` on Wave/Phase Convergence only when you need a speci
 
 **Gate**: `ops_scripts/ci/check_notion_plans_status_canonical.py`  
 **Hook**: `pre_mcp_gate.py` validates `API-post-page`/`API-patch-page` payloads  
-**Audit**: `post_cursor_agent_notion_status_audit.py` logs violations to `artifacts/cursor/notion_status_violations.jsonl`
+**Audit**: `post_agent_notion_status_audit.py` logs violations to `artifacts/governance/notion_status_violations.jsonl`
 
 ### Pre-MCP Validation
 
@@ -227,10 +227,10 @@ NP2 allows "Lower Priority" as canonical (for intentionally parked work), but NP
 > ⛔ **Blank `Waiting For` on a `Waiting` plan is an ERROR.** A plan in Waiting state with no description of what it is waiting for is unactionable — no one can unblock it.
 
 **Gate**: `ops_scripts/ci/check_notion_plans_waiting_for.py`  
-**Audit (write-time)**: `post_cursor_agent_notion_plans_status_audit.py` — fires when a `Status=Waiting` write is detected in the Claude Code response without a corresponding `Waiting For` value in the same invoke body.  
+**Audit (write-time)**: `post_agent_notion_plans_status_audit.py` — fires when a `Status=Waiting` write is detected in the Claude Code response without a corresponding `Waiting For` value in the same invoke body.
 
 **Enforcement layers**:
-1. **Write-time** — `post_cursor_agent_notion_plans_status_audit.py` logs `WAITING_EMPTY_WAITING_FOR` to `artifacts/cursor/notion_plans_status_violations.jsonl` when Claude Code writes `Status=Waiting` without `Waiting For` in the same API call.
+1. **Write-time** — `post_agent_notion_plans_status_audit.py` logs `WAITING_EMPTY_WAITING_FOR` to `artifacts/governance/notion_plans_status_violations.jsonl` when Claude Code writes `Status=Waiting` without `Waiting For` in the same API call.
 2. **Live-DB** — `check_notion_plans_waiting_for.py` queries Notion for all current `Waiting` rows and reports ERROR for any with blank `Waiting For`. Runs on `--query-notion` or standalone.
 3. **CI gate NP10** — registered in `run_contract_gates.py` as advisory; flip fail-closed via `NOTION_PLANS_WAITING_FOR_FAIL_CLOSED=1`.
 

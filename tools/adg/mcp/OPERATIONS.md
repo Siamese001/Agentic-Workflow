@@ -84,7 +84,7 @@ Use this sequence when the ADG needs full regeneration while Windsurf is running
 `post_write_code` hook auto-syncs `.cursor/mcp.json` → `~/.codeium/windsurf/mcp_config.json` whenever the repo file is written (detected via mtime within 10 s). Manual fallback:
 
 ```
-python .claude/governance/scripts/_legacy_windsurf/sync_mcp_config.py
+python .claude/governance/scripts/sync_mcp_config.py
 ```
 
 The hook output confirms sync: `[mcp_sync] Synced N servers to global config.`

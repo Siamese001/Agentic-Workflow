@@ -44,7 +44,7 @@ After Context (SCQA), every execution plan MUST include:
 2. `### Wave Progress` with canonical wave table (Wave, Focus, Status minimum)
 3. Table **before** the first `## Wave N` detail section
 
-Enforcement: `check_plan_wave_summary_top.py` (advisory repo scan), `check_plan_format_compliance.py` (strict per path), `after_file_edit` hook (warn; `PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT=1` blocks), `post_cursor_agent_plan_wave_summary_audit.py`.
+Enforcement: `check_plan_wave_summary_top.py` (advisory repo scan), `check_plan_format_compliance.py` (strict per path), `after_file_edit` hook (warn; `PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT=1` blocks), `post_agent_plan_wave_summary_audit.py`.
 
 ---
 

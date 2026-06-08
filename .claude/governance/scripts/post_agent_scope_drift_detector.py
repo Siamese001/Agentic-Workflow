@@ -26,6 +26,12 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
+
+from _post_agent_payload import extract_response_text
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "scope_drift_violations.jsonl"
@@ -112,17 +118,7 @@ def _read_response() -> str:
         return ""
     if not raw.strip():
         return ""
-    try:
-        payload = json.loads(raw)
-        if isinstance(payload, dict):
-            for key in ("response_text", "response", "text", "content"):
-                v = payload.get(key)
-                if isinstance(v, str):
-                    return v
-            return json.dumps(payload)
-        return raw
-    except (ValueError, TypeError):
-        return raw
+    return extract_response_text(raw)
 
 
 def _extract_written_paths(text: str) -> list[tuple[str, str]]:

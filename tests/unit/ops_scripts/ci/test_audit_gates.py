@@ -240,7 +240,7 @@ def test_audit3_excludes_ssot_allowlisted_files(tmp_path, monkeypatch):
     # Insert a violation in the SSOT module itself — should be excluded
     conn.execute(
         "INSERT INTO violations (id, edge_id, category, evidence, file_path, line_no, disposition, severity) "
-        "VALUES (1, 1, 'antipattern', '2025-09-03', '.claude/governance/scripts/_legacy_windsurf/_notion_constants.py', 14, 'untriaged', 'LOW')"
+        "VALUES (1, 1, 'antipattern', '2025-09-03', '.claude/governance/scripts/_notion_constants.py', 14, 'untriaged', 'LOW')"
     )
     # Insert one in a non-allowlisted file — should be flagged
     conn.execute(

@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-HOOKS_LIB = REPO_ROOT / ".cursor" / "hooks"
+HOOKS_LIB = REPO_ROOT / ".claude" / "hooks"
 if str(HOOKS_LIB) not in sys.path:
     sys.path.insert(0, str(HOOKS_LIB))
 
@@ -67,14 +67,14 @@ class TestMcpBeforeHygiene:
 
 class TestBeforeMcpFullChainOrdering:
     def test_stage_order_in_source(self) -> None:
-        text = (REPO_ROOT / ".cursor" / "hooks" / "before_mcp_execution.py").read_text(encoding="utf-8")
+        text = (REPO_ROOT / ".claude" / "hooks" / "before_mcp_execution.py").read_text(encoding="utf-8")
         g = text.index("gate_rc = _run_pre_mcp_gate")
         a = text.index("auditor_rc = _run_unified_plan_auditor")
         h = text.index("hygiene_rc = run_mcp_before_hygiene_stage")
         assert g < a < h
 
     def test_pre_mcp_gate_failure_exits_before_later_stages(self) -> None:
-        text = (REPO_ROOT / ".cursor" / "hooks" / "before_mcp_execution.py").read_text(encoding="utf-8")
+        text = (REPO_ROOT / ".claude" / "hooks" / "before_mcp_execution.py").read_text(encoding="utf-8")
         gate_exit = text.index("if gate_rc != 0:")
         auditor_assign = text.index("auditor_rc = ")
         assert gate_exit < auditor_assign

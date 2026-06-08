@@ -4,7 +4,7 @@ Validates the gate passes on the live config and fails when an unknown
 field is injected into a hooks.json copy. Required because §27 was
 previously gate-only with no test coverage — a 2026-04-23 regression
 (``powershell`` field added to 23 hook entries) silently disabled the
-post_cascade hook chain across a full Windsurf restart.
+post-agent hook chain across a full Windsurf restart.
 """
 
 from __future__ import annotations

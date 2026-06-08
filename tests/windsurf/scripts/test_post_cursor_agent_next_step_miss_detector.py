@@ -24,7 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def _load_detector():
-    path = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_next_step_miss_detector.py"
+    path = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_next_step_miss_detector.py"
     spec = importlib.util.spec_from_file_location("_nsmd_under_test", path)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)

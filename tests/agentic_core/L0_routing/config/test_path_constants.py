@@ -37,6 +37,7 @@ from agentic_core.L0_routing.config.path_constants import (
     HEALING_BACKUPS_DIR,
     OPS_ARCHIVES_DIR,
     OPS_SCRIPTS_DIR,
+    GOVERNANCE_SCRIPTS_DIR,
     SCRIPTS_DIR,
     SYSTEM_LEARNING_DIR,
     TESTS_DIR,
@@ -229,7 +230,9 @@ class TestDirectoryConstants:
         assert isinstance(SCRIPTS_DIR, str)
         assert isinstance(SYSTEM_LEARNING_DIR, str)
         assert isinstance(TESTS_DIR, str)
+        assert isinstance(GOVERNANCE_SCRIPTS_DIR, str)
         assert isinstance(WINDSURF_SCRIPTS_DIR, str)
+        assert WINDSURF_SCRIPTS_DIR == GOVERNANCE_SCRIPTS_DIR
         assert isinstance(TESTS_UNIT_DIR, str)
         assert isinstance(TOOLS_DIR, str)
         assert isinstance(DASHBOARD_DIR, str)

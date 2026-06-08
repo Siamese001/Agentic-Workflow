@@ -11,7 +11,7 @@ metadata:
 
 **PURPOSE:** Produce ready-to-paste Memory entity shapes and Notion row shapes so writebacks are correct, consistent, and fast — no freestyling.
 
-This skill is **templates + routing logic only**. Policy SSOT is `memory-notion-writeback.md` rule; deterministic enforcement is the `post_cursor_agent_writeback_audit.py` hook.
+This skill is **templates + routing logic only**. Policy SSOT is `memory-notion-writeback.md` rule; deterministic enforcement is the `post_agent_writeback_audit.py` hook.
 
 ## When to Invoke
 
@@ -34,7 +34,7 @@ Invoke this skill when ANY of these triggers fire in the current response:
 2. **Open the referenced template section(s)**.
 3. **Fill in the shape verbatim** — do not reshape fields; Notion validation will 400 on schema drift.
 4. **Execute the write** via `memory.create_entities` / `memory.add_observations` / `notion.API-post-page` / `notion.API-patch-page`.
-5. **Verify** by echoing the returned ID back in the response so the post_cursor_agent hook can confirm the writeback landed.
+5. **Verify** by echoing the returned ID back in the response so the post_agent hook can confirm the writeback landed.
 
 ## Files
 
@@ -43,7 +43,7 @@ Invoke this skill when ANY of these triggers fire in the current response:
 
 ## Writeback Receipt Format
 
-After every writeback, emit a compact receipt line so `post_cursor_agent_writeback_audit.py` sees it:
+After every writeback, emit a compact receipt line so `post_agent_writeback_audit.py` sees it:
 
 ```
 WRITEBACK: target=<memory|notion>, kind=<entity_type|database_name>, id=<entity_name|page_id>

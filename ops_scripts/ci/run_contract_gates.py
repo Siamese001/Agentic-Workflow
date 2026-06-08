@@ -1070,7 +1070,7 @@ def main():
         ),
         # HK-CONS — Hook consolidation and growth monitoring gate (W5.P3).
         # Parses hooks.json to report hook statistics and detect growth risks:
-        # hook count thresholds, lifecycle stage thresholds, post_cascade growth,
+        # hook count thresholds, lifecycle stage thresholds, post-agent growth,
         # missing v2 metadata, duplicate hook_ids, invalid replacement references.
         # Advisory by default (59 hooks, 10 stages, 22 replacement mappings baseline);
         # fail-closed via HOOK_CONSOLIDATION_FAIL_CLOSED=1.

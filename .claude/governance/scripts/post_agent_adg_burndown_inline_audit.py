@@ -32,6 +32,12 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
+
+from _post_agent_payload import extract_response_text
+
 fail_policy = "open"
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -74,20 +80,7 @@ def _read_response() -> str:
         return ""
     if not raw:
         return ""
-    # Payload may be a JSON envelope or raw text; pull common text fields if JSON.
-    stripped = raw.lstrip()
-    if stripped[:1] in "{[":
-        try:
-            obj = json.loads(raw)
-        except json.JSONDecodeError:
-            return raw
-        if isinstance(obj, dict):
-            for key in ("response_text", "response", "text", "content", "message"):
-                val = obj.get(key)
-                if isinstance(val, str) and val:
-                    return val
-            return json.dumps(obj)
-    return raw
+    return extract_response_text(raw)
 
 
 def _any(text: str, patterns: tuple[re.Pattern[str], ...]) -> bool:

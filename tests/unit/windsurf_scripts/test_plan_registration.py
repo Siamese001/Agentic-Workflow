@@ -1,4 +1,4 @@
-"""Unit tests for `.claude/governance/scripts/_legacy_windsurf/_plan_registration.py` (§36).
+"""Unit tests for `.claude/governance/scripts/_plan_registration.py` (§36).
 
 Covers:
   - parse_plan_created_markers (marker grammar)
@@ -20,7 +20,7 @@ from pathlib import Path
 import pytest
 
 HELPER_PATH = (
-    Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_plan_registration.py"
+    Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts" / "_plan_registration.py"
 )
 
 
@@ -41,12 +41,16 @@ def pr(tmp_path, monkeypatch):
 
     state = tmp_path / "state"
     plans = tmp_path / "plans"
+    new_plans = tmp_path / "root_plans"
     state.mkdir()
     plans.mkdir()
+    new_plans.mkdir()
     monkeypatch.setattr(mod, "STATE_DIR", state)
     monkeypatch.setattr(mod, "QUEUE_PATH", state / "plan_registration_queue.jsonl")
     monkeypatch.setattr(mod, "CACHE_PATH", state / "plan_registration_cache.json")
     monkeypatch.setattr(mod, "PLANS_DIR", plans)
+    monkeypatch.setattr(mod, "NEW_PLANS_DIR", new_plans)
+    monkeypatch.setattr(mod, "PLAN_DIRS", [new_plans, plans])
     return mod
 
 
@@ -75,7 +79,7 @@ def test_parse_multiple_markers(pr):
     assert len(out) == 2
     assert out[0]["status"] == "In Progress"
     assert out[1]["slug"] == "plan-two-bbbbbb"
-    assert out[1]["path"] == "docs/archive/windsurf/legacy-tree/plans/plan-two-bbbbbb.md"
+    assert out[1]["path"] == "plans/plan-two-bbbbbb.md"
     assert out[1]["status"] == "Not Started"  # default
 
 

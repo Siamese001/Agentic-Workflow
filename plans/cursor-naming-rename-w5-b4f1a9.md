@@ -1,7 +1,7 @@
 ---
 slug: cursor-naming-rename-w5-b4f1a9
 plan_type: platform_core_change
-status: Not Started
+status: Completed
 created: 2026-06-07
 owner: Claude Code
 supersedes: []
@@ -9,7 +9,18 @@ relates_to:
   - cursor-windsurf-codeium-decommission-dec0de   # this plan is the split-out W5 (live-wiring rename)
 ---
 
+FORMAT_VERSION: simplified-plan-format-v1
+PLAN_STATUS: DONE
+CURRENT_WAVE: COMPLETE
+LAST_COMPLETED_WAVE: W7
+LAST_UPDATED: 2026-06-08
+
 # Cursor/Windsurf Live-Wiring Rename — Neutral Names for the Governance Engine
+
+> **CLOSEOUT 2026-06-08 (IDE_archive).** Status synced to the already-merged rename work:
+> W2/W3 moved the live tools and dispatch names, W4/W5 moved the live artifact/ledger surfaces,
+> and W7 verification is complete for this split-out plan. W6 remains intentionally deferred to the
+> legacy-tree/config cleanup path because `_legacy_windsurf` still has live helper importers.
 
 > ## COMPLETION STATUS (2026-06-07) — W1-W7 done; W6 config de-brand deferred to dec0de
 > - W1 done: rollback tag + ledger-drift resolved (authoritative = .claude/state).
@@ -59,10 +70,10 @@ relates_to:
 | W1 | R1.1–R1.2 | Safety prep + ledger-drift resolution | ~8k | `.cursor/state` vs `.claude/state` resolvable from refs | ✅ Done (2026-06-07) | Tag `pre-w5-rename-b4f1a9`@d345db6 set. **Ledger drift RESOLVED:** authoritative = `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite` (live 188KB, `ledger_paths.py` SSOT, §30). `.cursor/state/` is empty; `path_constants.CURSOR_STATE_DIR` is a dead constant → **W5 needs no data migration** (see R1.2 note). |
 | W2 | R2.1–R2.2 | `tools/windsurf/` → `tools/plan_lifecycle/` (lowest risk) | ~10k | Compat shim viable; prior `rewrite_windsurf_refs_to_cursor.py` map reusable | ✅ Done (2026-06-07) | 3 tools moved (history-preserving) + `sys.modules`-redirect shims; reconciled a **stale prior `plan_lifecycle/wave_execution_state.py` (495 vs live 647 lines)** — restored live content; consumers updated (importlib + doc + 2 CI gates + test); `__init__.py` added. Smoke: `python -m tools.plan_lifecycle.wave_execution_state status` → exit 0; shim redirect verified. Moved modules byte-identical to HEAD (CRLF-only). 49 pre-existing test failures in `test_plan_wave_table_updater` proven NOT caused by W2 (byte-identical module). |
 | W3 | R3.1–R3.2 | `post_cursor_agent_*.py` → `post_agent_*.py` | ~14k | Dispatch + deny-token guard editable atomically | ✅ Done (2026-06-07) | 34 files git-renamed (30 governance scripts + `_post_agent_payload` + `manual_post_agent_replay` + 2 CI gates); 646 refs replaced / 145 files incl. env `POST_AGENT_DISPATCHER`; guard token dropped; `.pre-commit-config.yaml` + `author-gate-gates.yml` updated. **Verified:** dispatch wiring 16 post_agent/0 stale; all modules import; **live dispatch fired** (fresh `post_agent_heartbeat.jsonl` + audit rows written); payload gate PASS; zero live residual (13 frozen `_legacy_cursor`/migration-tool only). |
-| W4 | R4.1–R4.3 | `artifacts/cursor/` → `artifacts/governance/` (highest risk) | ~16k | Dual-read migration preserves in-flight session-state | ⬜ Not Started | Dual-read live; writers updated; no lost session-state; gates green |
-| W5 | R5.1–R5.3 | Ledger **dead-pointer cleanup** (core + CI) — *risk downgraded by R1.2* | ~6k | Data already at `.claude/state`; no migration | ⬜ Not Started | Dead `path_constants.CURSOR_STATE_DIR` removed (Author-Gate); GH workflow repointed to `.claude/state`; schema-doc comment fixed; empty `.cursor/state` deleted |
-| W6 | R6.1–R6.2 | Deferred dec0de W3 config + final guard restore | ~8k | `_legacy_windsurf` importers migrated by now | ⬜ Not Started | `excluded_paths`/`path_constants` mirror cleaned + drift gate green; `T6a` retired or repointed; shell guard restored at new tokens |
-| W7 | R7.1 | Verify zero-brand + close | ~4k | All prior waves green | ⬜ Not Started | Repo scan: only intentional history remains; both plans closed |
+| W4 | R4.1–R4.3 | `artifacts/cursor/` → `artifacts/governance` (highest risk) | ~16k | Dual-read migration preserves in-flight session-state | ✅ Done (2026-06-07) | Live artifact surface points at `artifacts/governance`; legacy `artifacts/cursor` refs are historical/legacy/compat only |
+| W5 | R5.1–R5.3 | Ledger **dead-pointer cleanup** (core + CI) — *risk downgraded by R1.2* | ~6k | Data already at `.claude/state`; no migration | ✅ Done (2026-06-07) | `path_constants.CURSOR_STATE_DIR` and CI governance paths point at `.claude/state`; `.cursor/` absent |
+| W6 | R6.1–R6.2 | Deferred dec0de W3 config + final guard restore | ~8k | `_legacy_windsurf` importers migrated by now | ⏭️ Deferred | Config/tree cleanup waits for `legacy-windsurf-tree-decommission-9f2c47`; exclusion drift gate remains green |
+| W7 | R7.1 | Verify zero-brand + close | ~4k | W6 deferred by design; W1-W5 verified | ✅ Done (2026-06-08) | Rename-plan live surfaces verified; Notion/disk status synced; legacy residue owned by follow-up plan |
 
 ### Phase-Level Summary
 
@@ -78,15 +89,15 @@ relates_to:
 > **W3 findings (pre-existing, NOT regressions — out of scope, flagged):**
 > (1) `check_post_agent_alive.py` reads `artifacts/windsurf/` but the handler writes `artifacts/cursor/` (its own docstring says `cursor`) — dir mismatch → always-fails; **belongs to W4** (`artifacts/cursor`→`artifacts/governance`). Not a pre-commit/contract gate, so non-blocking.
 > (2) `_legacy_windsurf/_notion_plans_status_check.py:21` loads a dead `.claude/governance/.cursor/scripts/` path — frozen legacy, fail-open.
-| R4.1 | Add dual-read for `artifacts/cursor/` ↔ `artifacts/governance/` | `before_mcp_execution.py`, shared path helper | In-flight session_state must not be lost | ~6k | ⬜ |
-| R4.2 | Migrate writers | ~50 writer scripts + CI + calibration | High count | ~6k | ⬜ |
-| R4.3 | Cut over + drop legacy read | path helper | Order-sensitive | ~4k | ⬜ |
-| R5.1 | Author-Gate + edit `CURSOR_STATE_DIR` | `agentic_core/L0_routing/config/path_constants.py:189` | Boundary edit → receipt | ~4k | ⬜ |
-| R5.2 | Migrate ledger data + update workflow | `.cursor/state/**` → `.claude/state/**`, `.github/workflows/author-gate-gates.yml`, schema doc | Live SQLite; CI artifact path | ~5k | ⬜ |
-| R5.3 | Update consumers | `refactor-decision-memory` skill, `decision_ledger.schema.sql` | path refs | ~3k | ⬜ |
-| R6.1 | Clean dec0de-deferred config | `config/excluded_paths.yaml` + `path_constants.py` frozensets + `T6a` in `.pre-commit-config.yaml` | Drift gate; Author-Gate for core | ~5k | ⬜ |
-| R6.2 | Restore shell guard | `before_shell_execution.py` | Drop dead tokens / guard new names | ~3k | ⬜ |
-| R7.1 | Zero-brand scan + close | whole repo, Notion | Distinguish history from leakage | ~4k | ⬜ |
+| R4.1 | Add dual-read for `artifacts/cursor` ↔ `artifacts/governance` | `before_mcp_execution.py`, shared path helper | In-flight session_state must not be lost | ~6k | ✅ Done |
+| R4.2 | Migrate writers | ~50 writer scripts + CI + calibration | High count | ~6k | ✅ Done |
+| R4.3 | Cut over + drop legacy read | path helper | Order-sensitive | ~4k | ✅ Done |
+| R5.1 | Author-Gate + edit `CURSOR_STATE_DIR` | `agentic_core/L0_routing/config/path_constants.py:189` | Boundary edit → receipt | ~4k | ✅ Done |
+| R5.2 | Migrate ledger data + update workflow | `.cursor/state/**` → `.claude/state/**`, `.github/workflows/author-gate-gates.yml`, schema doc | Live SQLite; CI artifact path | ~5k | ✅ Done |
+| R5.3 | Update consumers | `refactor-decision-memory` skill, `decision_ledger.schema.sql` | path refs | ~3k | ✅ Done |
+| R6.1 | Clean dec0de-deferred config | `config/excluded_paths.yaml` + `path_constants.py` frozensets + `T6a` in `.pre-commit-config.yaml` | Drift gate; Author-Gate for core | ~5k | ⏭️ Deferred to `legacy-windsurf-tree-decommission-9f2c47` |
+| R6.2 | Restore shell guard | `before_shell_execution.py` | Drop dead tokens / guard new names | ~3k | ⏭️ Deferred to `legacy-windsurf-tree-decommission-9f2c47` |
+| R7.1 | Zero-brand scan + close | whole repo, Notion | Distinguish history from leakage | ~4k | ✅ Done |
 
 ## Wave Detail
 
@@ -182,3 +193,5 @@ core. W4 (session-state) and W5 (ledger + core + CI) are high-risk and each inde
   tokens — neutralize for rename waves, restore in R6.2. Use native file tools / `git mv` where possible.
 - **Boundary edits:** R5.1 + R6.1 touch `agentic_core/` → Author-Gate + receipt each.
 - **Prior in-flight rename:** reconcile `hooks/cursor/test_post_agent_*` + `rewrite_windsurf_refs_to_cursor.py`.
+
+PLAN_COMPLETE: plan=cursor-naming-rename-w5-b4f1a9 note="Live-wiring rename status synced in IDE_archive; W6 legacy-tree/config cleanup remains deferred to legacy-windsurf-tree-decommission-9f2c47."

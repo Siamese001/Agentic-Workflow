@@ -1,5 +1,5 @@
 # pylint: disable=protected-access
-"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_agent_author_gate_miss_detector.py.
+"""Unit tests for .claude/governance/scripts/post_agent_author_gate_miss_detector.py.
 
 Coverage:
     _extract_edited_files       - pulls .py/.md/.js/.yaml/.json paths from
@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pytest
 
-_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts" / "_legacy_windsurf"
+_SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".claude" / "governance" / "scripts"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 
 import post_agent_author_gate_miss_detector as _m  # noqa: E402
@@ -188,7 +188,7 @@ class TestComputeMissScore:
         assert "sr_plan_without_approval" not in report["positive_signals"]
 
     def test_plan_file_touched_adds_signal(self):
-        text = 'docs/archive/windsurf/legacy-tree/plans/foo-ab1234.md edit(file_path="a.py") edit(file_path="b.py") refactor'
+        text = 'plans/foo-ab1234.md edit(file_path="a.py") edit(file_path="b.py") refactor'
         _score, report = _compute_miss_score(text)
         assert "plan_file_touched" in report["positive_signals"]
 

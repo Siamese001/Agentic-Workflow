@@ -19,10 +19,10 @@
 
 version: 1
 anchors:
-  # ---------- Hook-dispatched scripts (Windsurf pre/post hooks) ----------
-  - pattern: ".claude/governance/scripts/_legacy_windsurf/*.py"
-    reason: "Windsurf hooks invoked by IDE, not imported."
-    issued: 2026-04-23
+  # ---------- Hook-dispatched scripts (Claude governance hooks) ----------
+  - pattern: ".claude/governance/scripts/post_agent_*.py"
+    reason: "Post-agent governance scripts invoked by dispatcher, not imported."
+    issued: 2026-06-08
 
   # ---------- CI gate scripts (CLI invocation) ----------
   - pattern: "ops_scripts/ci/check_*.py"

@@ -20,9 +20,9 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-# Load module from docs/archive/windsurf/legacy-tree directory
+# Load module from the active governance scripts directory.
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
-MODULE_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_plan_scope_audit.py"
+MODULE_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_plan_scope_audit.py"
 
 spec = importlib.util.spec_from_file_location(
     "post_agent_plan_scope_audit", MODULE_PATH

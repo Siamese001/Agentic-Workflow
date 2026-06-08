@@ -24,7 +24,7 @@ from unittest.mock import patch
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-SCRIPT_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "pre_user_prompt_author_gate_reminder.py"
+SCRIPT_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "pre_user_prompt_author_gate_reminder.py"
 
 
 def _load_module() -> types.ModuleType:
@@ -275,9 +275,9 @@ class TestPipelineReminderContent:
 
     def test_pipeline_reminder_names_forbidden_pattern(self, mod):
         reminder = mod.PIPELINE_REMINDER
-        assert "FORBIDDEN" in reminder
+        assert "Do not hand-build options" in reminder
 
     def test_pipeline_reminder_shows_format_contract(self, mod):
         reminder = mod.PIPELINE_REMINDER
-        assert "confidence=" in reminder
-        assert "trade-off:" in reminder
+        assert "OPTIONS_JSON verbatim" in reminder
+        assert "author-gate-ui-renderer" in reminder

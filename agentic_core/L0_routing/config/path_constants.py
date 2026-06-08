@@ -169,7 +169,6 @@ OPS_SCRIPTS_DIR: Final[str] = "ops_scripts"
 SCRIPTS_DIR: Final[str] = "scripts"
 SYSTEM_LEARNING_DIR: Final[str] = "system_learning"
 TESTS_DIR: Final[str] = "tests"
-WINDSURF_SCRIPTS_DIR: Final[str] = ".cursor/scripts/_legacy_windsurf"
 TESTS_UNIT_DIR: Final[str] = "tests/unit"
 APPS_TEST_UNIT_DIR: Final[str] = "tests/unit"
 APPS_TEST_INTEGRATION_DIR: Final[str] = "tests"
@@ -195,6 +194,10 @@ CLAUDE_STATE_DIR: Final[str] = ".claude/state"
 CLAUDE_SCHEMAS_DIR: Final[str] = ".claude/schemas"
 CLAUDE_TEMPLATES_DIR: Final[str] = ".claude/templates"
 CLAUDE_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".claude/governance/scripts"
+GOVERNANCE_SCRIPTS_DIR: Final[str] = CLAUDE_GOVERNANCE_SCRIPTS_DIR
+# Deprecated compatibility alias for callers that have not completed the
+# legacy-tree rename yet. New code must use GOVERNANCE_SCRIPTS_DIR.
+WINDSURF_SCRIPTS_DIR: Final[str] = GOVERNANCE_SCRIPTS_DIR
 
 # ============================================================================
 # DYNAMIC DIRECTORY DISCOVERY
@@ -780,6 +783,7 @@ __all__ = [
     "FORBIDDEN_FOLDER_PATTERN",
     "FORBIDDEN_ROOT_FOLDERS",
     "GLOBAL_EXCLUDED_DIRS",
+    "GOVERNANCE_SCRIPTS_DIR",
     "HEALING_CONFIDENCE_X",
     "HEALING_CONFIDENCE_Y",
     "L0_MAINTENANCE_DIR",

@@ -27,7 +27,7 @@
 ## Forbidden Patterns
 
 - ❌ `scripts/check_foo.py` → `ops_scripts/ci/check_foo.py`
-- ❌ `scripts/post_cursor_agent_bar.py` → `.claude/governance/scripts/post_cursor_agent_bar.py`
+- ❌ `scripts/post_agent_bar.py` → `.claude/governance/scripts/post_agent_bar.py`
 
 ## Bypass
 

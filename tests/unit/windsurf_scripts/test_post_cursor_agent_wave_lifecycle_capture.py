@@ -1,4 +1,4 @@
-"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_agent_wave_lifecycle_capture.py.
+"""Unit tests for .claude/governance/scripts/post_agent_wave_lifecycle_capture.py.
 
 Plan: notion-wave-lifecycle-autosync-f4a2b8 (W3.P3.1).
 
@@ -18,12 +18,13 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HOOK_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "post_agent_wave_lifecycle_capture.py"
+HOOK_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_wave_lifecycle_capture.py"
+DISPATCH_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_dispatch.py"
 
 
 def _load_hook_module():
     """Load the hook as a module by file path so it can be exercised standalone."""
-    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
     sys.path.insert(0, str(REPO_ROOT))
     spec = importlib.util.spec_from_file_location(
         "post_agent_wave_lifecycle_capture", HOOK_PATH
@@ -31,6 +32,14 @@ def _load_hook_module():
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["post_agent_wave_lifecycle_capture"] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _load_dispatch_module():
+    spec = importlib.util.spec_from_file_location("post_agent_dispatch", DISPATCH_PATH)
+    assert spec is not None and spec.loader is not None
+    mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
 
@@ -176,36 +185,25 @@ class TestMainMarkerProcessing:
 
 
 # ---------------------------------------------------------------------------
-# Hook registration in hooks.json
+# Active dispatcher/settings registration
 # ---------------------------------------------------------------------------
 
 
-class TestHooksJsonRegistration:
-    def test_hook_registered_in_post_agent_response(self):
-        hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
-        data = json.loads(hooks_path.read_text(encoding="utf-8"))
-        commands = [
-            entry["command"]
-            for entry in data["hooks"]["post_agent_response"]
-        ]
-        assert any(
-            "post_agent_wave_lifecycle_capture.py" in c for c in commands
-        ), "hook not registered in .cursor/hooks.json"
+class TestActiveDispatcherRegistration:
+    def test_hook_registered_in_post_agent_dispatch_chain(self):
+        dispatch = _load_dispatch_module()
+        assert "post_agent_wave_lifecycle_capture.py" in dispatch.LEGACY_SCRIPTS
 
-    def test_hook_entry_schema_pure(self):
-        # Constitutional §27 — hooks.json entries may only contain
-        # ``command`` / ``working_directory`` / ``show_output``.
-        hooks_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
-        data = json.loads(hooks_path.read_text(encoding="utf-8"))
-        allowed = {"command", "working_directory", "show_output"}
-        for entry in data["hooks"]["post_agent_response"]:
-            if "post_agent_wave_lifecycle_capture.py" in entry.get("command", ""):
-                assert set(entry.keys()) <= allowed, (
-                    f"non-schema keys present: {set(entry.keys()) - allowed}"
-                )
-                break
-        else:
-            pytest.fail("hook entry not found")
+    def test_stop_hook_routes_to_governance_dispatcher(self):
+        settings_path = REPO_ROOT / ".claude" / "settings.json"
+        data = json.loads(settings_path.read_text(encoding="utf-8"))
+        stop_commands = [
+            entry["command"]
+            for hook in data["hooks"]["Stop"]
+            for entry in hook.get("hooks", [])
+            if "command" in entry
+        ]
+        assert any("after_agent_governance_dispatch.py" in command for command in stop_commands)
 
 
 # ---------------------------------------------------------------------------

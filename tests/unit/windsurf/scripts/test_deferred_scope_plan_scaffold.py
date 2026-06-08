@@ -11,13 +11,13 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-SCAFFOLD_MODULE_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_deferred_scope_plan_scaffold.py"
+SCAFFOLD_MODULE_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_deferred_scope_plan_scaffold.py"
 
 
 def _load_module():
     """Load the scaffolder module by file path.
 
-    The ``.claude/governance/scripts/_legacy_windsurf/`` directory is not a Python package; the hook
+    The ``.claude/governance/scripts/`` directory is not a Python package; the hook
     tooling imports these modules via ``sys.path`` manipulation. Tests do
     the same by spec-loading, so no conftest plumbing is required.
     """
@@ -70,7 +70,7 @@ def test_new_slug_is_idempotent(tmp_path: Path) -> None:
 
 
 def test_existing_plan_resolves_without_creating(tmp_path: Path) -> None:
-    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+    plans_dir = tmp_path / "plans"
     plans_dir.mkdir(parents=True)
     existing = plans_dir / "authored-plan-abcdef.md"
     existing.write_text("# existing", encoding="utf-8")
@@ -85,7 +85,7 @@ def test_existing_plan_resolves_without_creating(tmp_path: Path) -> None:
 
 
 def test_existing_plan_exact_filename_resolves(tmp_path: Path) -> None:
-    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+    plans_dir = tmp_path / "plans"
     plans_dir.mkdir(parents=True)
     existing = plans_dir / "my-plan-123abc.md"
     existing.write_text("x", encoding="utf-8")
@@ -135,7 +135,7 @@ def test_scaffolded_file_has_required_plan_frontmatter(tmp_path: Path) -> None:
 
 def test_path_traversal_in_existing_plan_is_contained(tmp_path: Path) -> None:
     # A plan value containing a relative path must not escape the plans dir.
-    plans_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+    plans_dir = tmp_path / "plans"
     plans_dir.mkdir(parents=True)
     (plans_dir / "legit-plan-aaaaaa.md").write_text("x", encoding="utf-8")
 

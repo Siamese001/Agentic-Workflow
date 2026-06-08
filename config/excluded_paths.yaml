@@ -169,7 +169,7 @@ sovereign_excluded_folders:
 
 # Mirrors path_constants.GLOBAL_EXCLUDED_DIRS
 # NOTE: includes "docs/archive/windsurf/legacy-tree" — runtime scanners skip it entirely even though
-# git tracks .claude/rules, docs/archive/windsurf/legacy-tree/plans, .claude/governance/scripts/_legacy_windsurf, etc. Review
+# git tracks .claude/rules, docs/archive/windsurf/legacy-tree/plans, active governance scripts, etc. Review
 # flagged as drift risk in docs/reports/exclusion-ssot-consolidated-review-2026-04-19.md §2.1.
 global_excluded_dirs:
   - ".git"

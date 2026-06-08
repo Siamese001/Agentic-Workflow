@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""post_agent_notion_plan_identity_audit.py — Post-cursor-agent audit for plan identity verification.
+"""post_agent_notion_plan_identity_audit.py — Post-agent audit for plan identity verification.
 
-Scans Cursor Agent response text for mcp7_API-patch-page calls targeting the Plans DB,
+Scans agent response text for mcp7_API-patch-page calls targeting the Plans DB,
 extracts intended plan slug from context and targeted page_id from the API call,
 queries Notion DB to verify the match, and logs any mismatches.
 
-This is a post-cursor-agent audit (not a pre-hook) because pre_mcp_tool_use hooks
+This is a post-agent audit (not a pre-hook) because pre_mcp_tool_use hooks
 cannot see tool arguments per pre_mcp_gate.py:1042-1051.
 
 Contract
 --------
     audit_response(response_text: str, context_text: str) -> list[IdentityViolation]
-        response_text  — The full Cursor Agent response text containing API calls
+        response_text  — The full agent response text containing API calls
         context_text   — Prior context (plan slugs, file paths, etc.)
 
     Returns list of IdentityViolation objects for any detected mismatches.
@@ -27,7 +27,7 @@ Bypass
 
 Integration
 -------------
-    **Not** registered in ``.cursor/hooks.json`` (Cursor relies on CI NP* gates
+    **Not** registered in ``.claude/settings.json`` (Claude Code relies on CI NP* gates
     and optional ``after_agent_notion_status_audit`` which delegates to
     ``tools.notion.unified_notion_status_auditor``). Safe to import from tests or
     run manually after an agent turn.

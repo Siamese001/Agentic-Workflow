@@ -21,8 +21,8 @@ Procedural execution guide for the `scope-containment` always-on rule. Use this 
 
 | Cap | Limit | Audit Hook | Bypass |
 |-----|-------|------------|--------|
-| `grep_search` + `code_search` | 3/response | `post_cursor_agent_grep_budget_audit.py` | `GREP_BUDGET_BYPASS=1` |
-| File reads (native + MCP) | 10/response | `post_cursor_agent_read_budget_audit.py` | `READ_BUDGET_BYPASS=1` |
+| `grep_search` + `code_search` | 3/response | `post_agent_grep_budget_audit.py` | `GREP_BUDGET_BYPASS=1` |
+| File reads (native + MCP) | 10/response | `post_agent_read_budget_audit.py` | `READ_BUDGET_BYPASS=1` |
 
 **Rule**: Read named files; don't grep "to be sure". Plan names files → read directly.  
 **ADG > grep**: Never grep "who imports X / what depends on Y". Use `adg_edge_fanin` / `adg_edge_fanout`.
@@ -62,18 +62,18 @@ Chunks served their purpose (locating files); paths are the durable artifact.
 
 | Marker | Use When | Captured By |
 |--------|----------|-------------|
-| `NEXT_STEP:` | Optional follow-up ideas, out-of-scope improvements | `post_cursor_agent_next_step_capture.py` |
+| `NEXT_STEP:` | Optional follow-up ideas, out-of-scope improvements | `post_agent_next_step_capture.py` |
 | `SCOPE_RESET:` | Cross-turn topic transitions | This rule |
-| `DEFERRED_SCOPE:` | Wave/phase descoping decisions | `post_cursor_agent_deferred_scope_capture.py` |
+| `DEFERRED_SCOPE:` | Wave/phase descoping decisions | `post_agent_deferred_scope_capture.py` |
 
 ## Enforcement Layer Mapping
 
 | Layer | Component |
 |-------|-----------|
 | Composition | `scope-containment.md` rule (always_on, advisory) |
-| Text-search cap | `post_cursor_agent_grep_budget_audit.py` → `artifacts/cursor/grep_budget_violations.jsonl` |
-| File-read cap | `post_cursor_agent_read_budget_audit.py` → `artifacts/cursor/read_budget_violations.jsonl` |
-| Token telemetry | `post_cursor_agent_token_telemetry.py` → `artifacts/cursor/turn_budget.jsonl` |
+| Text-search cap | `post_agent_grep_budget_audit.py` → `artifacts/governance/grep_budget_violations.jsonl` |
+| File-read cap | `post_agent_read_budget_audit.py` → `artifacts/governance/read_budget_violations.jsonl` |
+| Token telemetry | `post_agent_token_telemetry.py` → `artifacts/governance/turn_budget.jsonl` |
 | Out-of-scope ideas | `NEXT_STEP:` marker (`next-step-capture.md`) |
 | Topic transitions | `SCOPE_RESET:` marker |
 
