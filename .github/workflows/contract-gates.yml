@@ -37,6 +37,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -51,7 +53,7 @@ jobs:
       # Mirrors T7h pre-commit hook server-side to close the --no-verify
       # bypass loophole. Constitutional §11 + §14.
       - name: §11 + §14 — terminal cleanup / subprocess timeout
-        run: python ops_scripts/ci/check_terminal_cleanup.py --verbose
+        run: python ops_scripts/ci/check_terminal_cleanup.py --verbose --fail-on-new-only --base-ref "${{ github.base_ref || 'main' }}"
 
       # ── Pytest Config SSOT (was pytest-config-ssot.yml)
       - name: Validate pytest config SSOT

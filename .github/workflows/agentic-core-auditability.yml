@@ -1,7 +1,7 @@
 name: agentic-core-auditability
 # Mandatory L7_AUDITABILITY + integrated-runtime spine-proof gate.
 #
-# Runs on every PR + push to main touching agentic_core spine code,
+# Runs on push to main, nightly, and manual dispatch for agentic_core spine code,
 # verifier code, regen scripts, or the L7_AUDITABILITY plane. Regenerates
 # both the R1B (terminal-shortcircuit) and MANAGED_WORKFLOW (structural)
 # chains, then runs the full fail-closed verifier suite for each.
@@ -24,18 +24,8 @@ on:
       - "scripts/regen_integrated_runtime_latest.py"
       - "tools/certification/regen_mw_latest.py"
       - ".github/workflows/agentic-core-auditability.yml"
-  pull_request:
-    paths:
-      - "agentic_core/**"
-      - "agentic_core/L7_auditability/**"
-      - "agentic_core/runtime/contracts/**"
-      - "agentic_core/runtime/artifacts/**"
-      - "agentic_core/runtime/entrypoints/**"
-      - "agentic_core/L3_orchestration/**"
-      - "ops_scripts/ci/**"
-      - "scripts/regen_integrated_runtime_latest.py"
-      - "tools/certification/regen_mw_latest.py"
-      - ".github/workflows/agentic-core-auditability.yml"
+  schedule:
+    - cron: "17 6 * * *"
   workflow_dispatch: {}
 
 permissions:

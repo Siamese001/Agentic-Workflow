@@ -2,7 +2,7 @@ name: ADG CI Gates (Wave 0)
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
     paths:
       - 'agentic_core/**'
       - 'apps_shared/**'
@@ -58,7 +58,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/common-setup
+
+      - name: Syntax and import sanity (changed Python files)
+        run: python ops_scripts/ci/check_python_syntax.py --verbose --base-ref "${{ github.base_ref || 'main' }}"
+        env:
+          PYTHONPATH: .
 
       - name: Install extra dependencies for ADG
         run: |

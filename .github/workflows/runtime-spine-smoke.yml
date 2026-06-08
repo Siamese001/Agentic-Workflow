@@ -1,0 +1,45 @@
+name: runtime-spine-smoke
+
+on:
+  pull_request:
+    branches: ["**"]
+    paths:
+      - "agentic_core/runtime/**"
+      - "agentic_core/L2_execution/**"
+      - "agentic_core/L3_orchestration/**"
+      - "agentic_core/L5_safety/**"
+      - "agentic_core/L7_auditability/**"
+      - "ops_scripts/ci/*runtime*.py"
+      - "ops_scripts/ci/*spine*.py"
+      - "ops_scripts/ci/verify_runtime_certification_matrix_schema.py"
+      - "ops_scripts/ci/verify_runtime_certification_acceptance.py"
+      - "ops_scripts/ci/verify_source_divergence.py"
+      - ".github/workflows/runtime-spine-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-spine-smoke:
+    name: runtime-spine-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install smoke dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-timeout
+
+      - name: Runtime spine representative smoke
+        run: |
+          python ops_scripts/ci/verify_runtime_certification_matrix_schema.py
+          python ops_scripts/ci/verify_runtime_certification_acceptance.py
+          python ops_scripts/ci/verify_source_divergence.py
