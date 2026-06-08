@@ -5,7 +5,8 @@ check_plan_registration_freshness.py — Pre-commit gate (T7u) + cache refresher
 Two responsibilities:
     1. Fetch the Notion Plans DB snapshot and cache it at
        ``.claude/state/plan_registration_cache.json`` (TTL 1h).
-    2. On pre-commit, fail when a newly-staged ``.claude/plans/<slug>-<6hex>.md``
+    2. On pre-commit, fail when a newly-staged ``plans/<slug>-<6hex>.md``
+       or legacy ``.claude/plans/<slug>-<6hex>.md``
        has no matching Notion Plans row (and the slug is not flagged as
        registered in the queue).
 

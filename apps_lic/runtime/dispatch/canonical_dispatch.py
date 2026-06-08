@@ -345,6 +345,8 @@ def run_canonical_apps_lic_spine(
         "l3_required": route.l3_required,
         "reason_codes": list(route.reason_codes),
         "apps_research_invoked": False,
+        "allowed_models": list(route.allowed_models),
+        "allowed_networks": list(route.allowed_networks),
         "reasoning_policy": route_reasoning_policy,
         "sc_level": route_reasoning_policy["sc_level"],
         "reasoning_intensity": route_reasoning_policy["reasoning_intensity"],

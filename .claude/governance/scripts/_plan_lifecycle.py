@@ -3,7 +3,8 @@ _plan_lifecycle.py
 Pure extraction: Plan state transitions and lifecycle constants.
 
 This module centralizes plan lifecycle management extracted from
-.claude/plans/ execution patterns and wave state management.
+root plans/ plus legacy .claude/plans/ execution patterns and wave state
+management.
 
 W1 SCOPE: Pure extraction only. No new states. No policy changes.
 """

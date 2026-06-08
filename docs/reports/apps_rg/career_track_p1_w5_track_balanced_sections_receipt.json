@@ -1,6 +1,6 @@
 {
   "schema": "career_track_p1_w5_track_balanced_sections_receipt_v1",
-  "generated_at": "2026-05-27T19:18:11Z",
+  "generated_at": "2026-06-08T08:49:07Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W5",
   "selected_tracks": [
@@ -794,7 +794,7 @@
       "tests/_apps_contract/test_career_track_p1_w4_weighted_expansion_contract.py",
       "docs/reports/apps_rg/career_track_p1_w4",
       "docs/reports/apps_rg/fixtures/p1_w4",
-      ".cursor/plans/graph-skills-hardening-f3a8c1.md"
+      ".claude/plans/graph-skills-hardening-f3a8c1.md"
     ],
     "workspace_guard_clean": true,
     "isolation_verdict": "CLEAN",

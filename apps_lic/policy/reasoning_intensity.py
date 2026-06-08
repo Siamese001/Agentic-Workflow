@@ -121,7 +121,7 @@ def default_reasoning_policy() -> dict[str, Any]:
         "x1d_max_attempts": 1,
         "x1d_temperature": 0.1,
         "x1d_failure_policy": "quality_block_not_exit_override",
-        "x1d_provider_profile": "qwen_vllm_x1d",
+        "x1d_provider_profile": "anthropic_claude_sonnet_4_6_x1d",
         "max_candidates": 1,
         "validation_repair_passes": 1,
         "fail_closed_on_empty_evidence": True,
@@ -264,7 +264,7 @@ def compact_policy(policy: Mapping[str, Any]) -> dict[str, Any]:
         data.get("x1d_failure_policy") or "quality_block_not_exit_override"
     )
     data["x1d_provider_profile"] = str(
-        data.get("x1d_provider_profile") or "qwen_vllm_x1d"
+        data.get("x1d_provider_profile") or "anthropic_claude_sonnet_4_6_x1d"
     )
     data = _sync_judge_axes(data)
     data["max_candidates"] = int(data.get("max_candidates") or 1)

@@ -194,7 +194,7 @@ def _warn_unresolvable_slugs(markers: list[Any]) -> None:
             msg = (
                 f"[wave_lifecycle_capture] WARN: slug '{slug}' in marker "
                 f"kind={marker.kind} could not be resolved to a plan file under "
-                f".claude/plans/. The wave/phase status table was NOT updated. "
+                f"plans/ or legacy .claude/plans/. The wave/phase status table was NOT updated. "
                 f"Check that the plan_id: frontmatter or filename matches the slug "
                 f"used in the WAVE_COMPLETE:/PHASE_COMPLETE: marker."
             )

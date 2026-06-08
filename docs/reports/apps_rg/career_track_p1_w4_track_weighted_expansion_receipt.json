@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-27T19:18:11Z",
+  "generated_at": "2026-06-08T08:49:07Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4",
   "closeout_wave": "P1-W4-CLOSEOUT",
@@ -1209,7 +1209,7 @@
       },
       {
         "id": "skill_risk_greek_stress_testing",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_capital_reserving",
@@ -1340,10 +1340,6 @@
         "reason": "not_active:DRAFT"
       },
       {
-        "id": "skill_confluent_streaming_platforms",
-        "reason": "not_active:DRAFT"
-      },
-      {
         "id": "skill_watson_studio_fraud_aml",
         "reason": "not_active:DRAFT"
       },
@@ -1405,7 +1401,7 @@
       },
       {
         "id": "skill_risk_greek_stress_testing",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_capital_reserving",
@@ -1544,10 +1540,6 @@
         "reason": "not_active:DRAFT"
       },
       {
-        "id": "skill_confluent_streaming_platforms",
-        "reason": "not_active:DRAFT"
-      },
-      {
         "id": "skill_watson_studio_fraud_aml",
         "reason": "not_active:DRAFT"
       },
@@ -1566,6 +1558,22 @@
       {
         "id": "skill_credit_adjudication_default_risk",
         "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_ibm_automated_release_pipelines",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "id": "skill_ibm_devsecops_pipeline_security",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "id": "skill_ibm_metadata_audit_rbac",
+        "reason": "empty_fact_id_links"
+      },
+      {
+        "id": "skill_ibm_watson_studio_analytics",
+        "reason": "empty_fact_id_links"
       },
       {
         "id": "skill_derivatives_exotic_options",
@@ -1609,7 +1617,7 @@
       },
       {
         "id": "skill_risk_greek_stress_testing",
-        "reason": "not_active:DRAFT"
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_capital_reserving",
@@ -1737,10 +1745,6 @@
       },
       {
         "id": "skill_saas_arr_ltv_cac_metrics",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_confluent_streaming_platforms",
         "reason": "not_active:DRAFT"
       },
       {
@@ -1880,7 +1884,7 @@
     },
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:db95cdec12c1d10f",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:bef19f90a66b1c28",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -1936,7 +1940,7 @@
     "c03_graphrag_bound_document": {
       "schema_version": "c03_graphrag_bound_v1",
       "section_id": "executive_summary",
-      "generated_at_utc": "2026-05-27T19:18:11.396920+00:00",
+      "generated_at_utc": "2026-06-08T08:49:07.605288+00:00",
       "c03_graphrag_bound_status": "BOUND",
       "source_authority": "augmented_skills_graph",
       "graph_expansion_allowed": true,
@@ -2008,8 +2012,8 @@
       ],
       "graph_lineage_refs": [
         "ref:graph:version:master_skills_arsenal_graph_v1",
-        "ref:graph:node_count:236",
-        "ref:graph:edge_count:1421",
+        "ref:graph:node_count:240",
+        "ref:graph:edge_count:1441",
         "ref:graph:fact_lineage:fact_certs_001",
         "ref:graph:fact_lineage:fact_consulting_001",
         "ref:graph:fact_lineage:fact_engineering_platform_001",
@@ -2026,9 +2030,9 @@
         "ref:graph:fact_lineage:fact_revenue_ops_004",
         "ref:graph:fact_lineage:fact_revenue_ops_005"
       ],
-      "graph_sig": "b47a8821a03879a8fb6e6bfc126cd691",
+      "graph_sig": "fa3625f6e394ed89581fb118e03da62d",
       "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-      "graph_digest": "db95cdec12c1d10f3e3fbdd4477fc9a96c068f0446aac22afc6c7ad0bedaeda8",
+      "graph_digest": "bef19f90a66b1c285d7f32280b0caaed91c56d5ce4a3a6551f4b0398ce08e6b6",
       "graph_version": "master_skills_arsenal_graph_v1",
       "evidence_items_count": 15,
       "final_evidence_contract_snapshot": {
@@ -2108,8 +2112,8 @@
         ],
         "graph_lineage_refs": [
           "ref:graph:version:master_skills_arsenal_graph_v1",
-          "ref:graph:node_count:236",
-          "ref:graph:edge_count:1421",
+          "ref:graph:node_count:240",
+          "ref:graph:edge_count:1441",
           "ref:graph:fact_lineage:fact_certs_001",
           "ref:graph:fact_lineage:fact_consulting_001",
           "ref:graph:fact_lineage:fact_engineering_platform_001",
@@ -2126,9 +2130,9 @@
           "ref:graph:fact_lineage:fact_revenue_ops_004",
           "ref:graph:fact_lineage:fact_revenue_ops_005"
         ],
-        "graph_sig": "b47a8821a03879a8fb6e6bfc126cd691",
+        "graph_sig": "fa3625f6e394ed89581fb118e03da62d",
         "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-        "graph_digest": "db95cdec12c1d10f3e3fbdd4477fc9a96c068f0446aac22afc6c7ad0bedaeda8",
+        "graph_digest": "bef19f90a66b1c285d7f32280b0caaed91c56d5ce4a3a6551f4b0398ce08e6b6",
         "graph_version": "master_skills_arsenal_graph_v1",
         "evidence_items": [
           {
@@ -2267,7 +2271,7 @@
             "career_track": "track_data_tech_cloud_ml"
           }
         ],
-        "evidence_collection_timestamp": "2026-05-27T19:18:11.396920+00:00",
+        "evidence_collection_timestamp": "2026-06-08T08:49:07.605288+00:00",
         "fec_shape_only": true,
         "canonical_final_evidence_contract_emitted": false,
         "recommended_artifact_name": "section_graph_binding_fec_snapshot.json"
@@ -2325,13 +2329,13 @@
       "graph_hop_bounds_policy_note": "graph_hop_bounds in native_c03_final_evidence.json is ACL policy max depth; exec-summary c03_graphrag_bound materializes TRACK_WEIGHTED_MULTI_HOP paths when pool resolves"
     },
     "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-    "graph_digest": "db95cdec12c1d10f3e3fbdd4477fc9a96c068f0446aac22afc6c7ad0bedaeda8",
+    "graph_digest": "bef19f90a66b1c285d7f32280b0caaed91c56d5ce4a3a6551f4b0398ce08e6b6",
     "graph_version": "master_skills_arsenal_graph_v1"
   },
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:db95cdec12c1d10f",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:bef19f90a66b1c28",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -2360,7 +2364,7 @@
       "tests/_apps_contract/test_career_track_p1_w4_weighted_expansion_contract.py",
       "docs/reports/apps_rg/career_track_p1_w4",
       "docs/reports/apps_rg/fixtures/p1_w4",
-      ".cursor/plans/graph-skills-hardening-f3a8c1.md"
+      ".claude/plans/graph-skills-hardening-f3a8c1.md"
     ],
     "workspace_guard_clean": true,
     "isolation_verdict": "CLEAN",

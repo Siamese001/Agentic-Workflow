@@ -4,7 +4,8 @@ Requires ``## Status Tables`` → ``### Wave Progress`` with a wave summary mark
 table (Wave, Focus, Status minimum; canonical 7 columns advised) **before** the first
 ``## Wave N`` detail section.
 
-Scan: ``.claude/plans/*.md`` (top-level only; excludes ``_archive/`` trees).
+Scan: root ``plans/*.md`` plus legacy ``.claude/plans/*.md`` (top-level only;
+excludes ``_archive/`` trees).
 
 Exit 0 → all active non-exempt plans comply (or advisory WARN only).
 Exit 1 → violations when ``PLAN_WAVE_SUMMARY_TOP_FAIL_CLOSED=1``.

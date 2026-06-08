@@ -22,9 +22,9 @@ Inline field sync (plan-wave-inline-status-sync-8b4d2f):
     Updates are monotonic (never downgrade), idempotent, section-scoped, and
     code-fence-excluding.
 
-The plan file is located by scanning .claude/plans/<slug>.md. The slug
-must match the SLUG_RE pattern from _wave_lifecycle_helpers (alphanum-dash
-ending in 6 hex chars).
+The plan file is located by scanning root plans/<slug>.md, then legacy
+.claude/plans/<slug>.md. The slug must match the SLUG_RE pattern from
+_wave_lifecycle_helpers (alphanum-dash ending in 6 hex chars).
 
 Fail policy: OPEN — all errors are returned as (False, reason) tuples.
 Never raises publicly.
@@ -321,39 +321,41 @@ def _find_plan_file(repo_root: Path, slug: str) -> Path | None:
     """Resolve slug -> plan .md file. Return None if not found.
 
     Resolution order:
-    1. Exact match: .claude/plans/<slug>.md
-    2. Numeric-prefix match: .claude/plans/NN_<slug>.md (e.g. 01_<slug>.md)
-    3. Frontmatter scan: any .claude/plans/*.md whose ``plan_id:`` value
+    1. Exact match: plans/<slug>.md, then .claude/plans/<slug>.md
+    2. Numeric-prefix match: plans/NN_<slug>.md, then .claude/plans/NN_<slug>.md
+    3. Frontmatter scan: any plans/*.md or .claude/plans/*.md whose ``plan_id:`` value
        matches slug (exact) or whose filename stem (strip numeric prefix) matches.
     """
-    plans_dir = repo_root / ".claude" / "plans"
+    plan_dirs = (repo_root / "plans", repo_root / ".claude" / "plans")
 
     # 1. Exact match
-    candidate = plans_dir / f"{slug}.md"
-    if candidate.is_file():
-        return candidate
+    for plans_dir in plan_dirs:
+        candidate = plans_dir / f"{slug}.md"
+        if candidate.is_file():
+            return candidate
 
     # 2. Numeric-prefix scan (NN_<slug>.md or NN-<slug>.md)
-    import glob as _glob
-    for path in sorted(plans_dir.glob("*.md")):
-        stem = path.stem
-        # Strip leading digits + separator (e.g. "01_", "02-")
-        bare = re.sub(r"^\d+[_-]", "", stem)
-        if bare == slug:
-            return path
+    for plans_dir in plan_dirs:
+        for path in sorted(plans_dir.glob("*.md")):
+            stem = path.stem
+            # Strip leading digits + separator (e.g. "01_", "02-")
+            bare = re.sub(r"^\d+[_-]", "", stem)
+            if bare == slug:
+                return path
 
     # 3. Frontmatter plan_id: <slug> scan (handles slugs without 6-hex suffix)
     _PLAN_ID_RE = re.compile(r"^plan_id:\s*(\S+)", re.MULTILINE)
-    for path in sorted(plans_dir.glob("*.md")):
-        if path.name.startswith("_"):  # skip archive/orphan subdirs
-            continue
-        try:
-            head = path.read_text(encoding="utf-8", errors="ignore")[:1024]
-        except OSError:
-            continue
-        m = _PLAN_ID_RE.search(head)
-        if m and m.group(1).strip() == slug:
-            return path
+    for plans_dir in plan_dirs:
+        for path in sorted(plans_dir.glob("*.md")):
+            if path.name.startswith("_"):  # skip archive/orphan subdirs
+                continue
+            try:
+                head = path.read_text(encoding="utf-8", errors="ignore")[:1024]
+            except OSError:
+                continue
+            m = _PLAN_ID_RE.search(head)
+            if m and m.group(1).strip() == slug:
+                return path
 
     return None
 

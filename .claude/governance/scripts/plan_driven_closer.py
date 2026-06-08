@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 plan_driven_closer.py — reconcile Notion Wave/Phase Convergence Status against
-the status declared in .claude/plans/*.md files.
+the status declared in root plans/*.md files, with legacy .claude/plans/*.md
+still accepted.
 
 This is the structured complement to post_commit_phase_closer.py. Rather than
 guessing completion from commit messages, it parses each plan's Wave and

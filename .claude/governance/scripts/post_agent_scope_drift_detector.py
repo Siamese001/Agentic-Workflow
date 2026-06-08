@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+PLAN_DIRS = (REPO_ROOT / "plans", REPO_ROOT / ".claude" / "plans")
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "governance" / "scope_drift_violations.jsonl"
 PLAN_FRESHNESS_SEC = 24 * 3600
 
@@ -48,17 +48,18 @@ _PATH_TOKEN_RE = re.compile(r"[A-Za-z0-9_./\\-]+\.[A-Za-z0-9]+")
 
 
 def _latest_active_plan() -> Path | None:
-    if not PLANS_DIR.is_dir():
-        return None
     now = time.time()
     candidates = []
-    for p in PLANS_DIR.glob("*.md"):
-        try:
-            mtime = p.stat().st_mtime
-        except OSError:
+    for plans_dir in PLAN_DIRS:
+        if not plans_dir.is_dir():
             continue
-        if (now - mtime) <= PLAN_FRESHNESS_SEC:
-            candidates.append((mtime, p))
+        for p in plans_dir.glob("*.md"):
+            try:
+                mtime = p.stat().st_mtime
+            except OSError:
+                continue
+            if (now - mtime) <= PLAN_FRESHNESS_SEC:
+                candidates.append((mtime, p))
     if not candidates:
         return None
     candidates.sort(reverse=True)

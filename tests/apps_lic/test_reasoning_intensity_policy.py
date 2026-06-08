@@ -5,6 +5,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from apps_lic.engines.judges.lic_x1d_llm_judge import (
+    DEFAULT_MODEL as DEFAULT_X1D_JUDGE_MODEL,
+    DEFAULT_PROVIDER_PROFILE as DEFAULT_X1D_PROVIDER_PROFILE,
+)
 from apps_lic.engines.qa_report_engine import QaReportEngine
 from apps_lic.engines.validation_engine import ValidationEngine
 from apps_lic.policy.reasoning_intensity import (
@@ -53,6 +57,7 @@ def test_default_policy_is_sc1_r1_with_x2_gates_and_x1d_judge() -> None:
         JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     ]
     assert policy["x1d_runs_after_x2"] is True
+    assert policy["x1d_provider_profile"] == DEFAULT_X1D_PROVIDER_PROFILE
     assert policy["max_candidates"] == 1
     assert policy["validation_repair_passes"] == 1
     assert policy["fail_closed_on_empty_evidence"] is True
@@ -248,6 +253,12 @@ def test_qa_default_and_strict_profiles_use_x2_x1d_hybrid_counts(monkeypatch) ->
         ]["provider_status"]
         == "TEST_STUB_PASS"
     )
+    assert (
+        strict_qa["x1d_llm_judge_outputs"][
+            JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D
+        ]["model_name"]
+        == DEFAULT_X1D_JUDGE_MODEL
+    )
 
 
 def test_x1d_judge_skips_when_x2_gates_fail() -> None:
@@ -330,6 +341,7 @@ def test_default_reasoning_policy_e2e_manifest(tmp_path: Path, monkeypatch) -> N
     assert draft["sc_level"] == SC_1
     assert draft["reasoning_intensity"] == R1_STANDARD
     assert draft["candidate_count"] == 1
+    assert manifest["reasoning_policy"]["x1d_provider_profile"] == DEFAULT_X1D_PROVIDER_PROFILE
 
 
 def test_strict_reasoning_policy_e2e_manifest_for_executive(
@@ -370,4 +382,5 @@ def test_strict_reasoning_policy_e2e_manifest_for_executive(
     assert manifest["evidence_support_status"] == "PASS"
     assert draft["sc_level"] == SC_3
     assert draft["reasoning_intensity"] == R3_STRICT
+    assert manifest["reasoning_policy"]["x1d_provider_profile"] == DEFAULT_X1D_PROVIDER_PROFILE
     assert draft["candidate_count"] == 3

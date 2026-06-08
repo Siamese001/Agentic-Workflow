@@ -12,7 +12,7 @@ Marker grammar (one per line)::
 
     PLAN_CREATED: slug=<slug-6hex> path=<repo-relative-path> status=Not Started|In Progress
 
-``path`` defaults to ``.claude/plans/<slug>.md``. ``status`` defaults to
+``path`` defaults to ``plans/<slug>.md``. ``status`` defaults to
 ``Not Started``.
 
 Fail policy: OPEN (exit 0). Never blocks. Bypass: PLAN_REGISTRATION_CAPTURE_BYPASS=1.
@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_plan_registration.py"
+HELPER_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "_plan_registration.py"
 MAX_RESPONSE_BYTES = 1_048_576  # 1 MB
 
 

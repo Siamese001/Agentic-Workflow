@@ -19,6 +19,7 @@ import re
 import time
 from dataclasses import asdict, dataclass, field
 from typing import Any, Mapping
+from urllib import error as urllib_error
 from urllib import request as urllib_request
 
 from apps_lic.policy.reasoning_intensity import (
@@ -31,9 +32,10 @@ JUDGE_RUBRIC_VERSION = "lic_message_x1d_v1"
 DEFAULT_THRESHOLD = 4.0
 DEFAULT_TEMPERATURE = 0.1
 DEFAULT_MAX_OUTPUT_TOKENS = 700
-DEFAULT_BASE_URL = "http://localhost:8000/v1"
-DEFAULT_MODEL = "Qwen/Qwen2.5-32B-Instruct-AWQ"
-DEFAULT_PROVIDER_PROFILE = "qwen_vllm_x1d"
+DEFAULT_BASE_URL = "https://api.anthropic.com/v1/messages"
+DEFAULT_MODEL = "claude-sonnet-4-6"
+DEFAULT_PROVIDER_PROFILE = "anthropic_claude_sonnet_4_6_x1d"
+DEFAULT_ANTHROPIC_VERSION = "2023-06-01"
 
 _TRUTHY = frozenset({"1", "true", "yes", "on"})
 
@@ -127,22 +129,11 @@ def run_lic_x1d_llm_judge(
             settings=settings,
         )
 
-    if settings["healthcheck_enabled"] and not _healthcheck_vllm(settings):
+    if not settings["api_key"]:
         return _blocked_output(
             "BLOCKED_PROVIDER_UNAVAILABLE",
-            "VLLM_HEALTHCHECK_FAILED",
-            "Qwen/vLLM healthcheck failed for LIC X1D judge.",
-            packet_hash=packet_hash,
-            settings=settings,
-        )
-
-    try:
-        import openai  # type: ignore  # noqa: PLC0415
-    except ImportError:
-        return _blocked_output(
-            "BLOCKED_PROVIDER_UNAVAILABLE",
-            "OPENAI_SDK_UNAVAILABLE",
-            "openai SDK unavailable for local vLLM judge transport.",
+            "ANTHROPIC_API_KEY_UNAVAILABLE",
+            f"No Anthropic API key found in {settings['api_key_env_candidates']!r}.",
             packet_hash=packet_hash,
             settings=settings,
         )
@@ -150,22 +141,18 @@ def run_lic_x1d_llm_judge(
     prompt = render_lic_x1d_judge_prompt(packet)
     started = time.time()
     try:
-        client = openai.OpenAI(
-            base_url=settings["base_url"],
-            api_key="not-needed",
-            timeout=settings["timeout_seconds"],
+        text = _call_anthropic_messages(
+            prompt=prompt,
+            settings=settings,
         )
-        response = client.chat.completions.create(
-            model=settings["model"],
-            messages=[
-                {"role": "system", "content": _system_prompt()},
-                {"role": "user", "content": prompt},
-            ],
-            temperature=settings["temperature"],
-            max_tokens=settings["max_output_tokens"],
-            response_format={"type": "json_object"},
-        )
-    except Exception as exc:  # guardian: allow-broad-exception -- OpenAI-over-vLLM raises heterogeneous transport/API errors; normalize to blocked judge output
+    except (
+        OSError,
+        TimeoutError,
+        TypeError,
+        ValueError,
+        urllib_error.URLError,
+        urllib_error.HTTPError,
+    ) as exc:
         _LOGGER.info("[apps_lic.x1d_judge] provider call failed: %s", exc)
         return _blocked_output(
             "BLOCKED_PROVIDER_UNAVAILABLE",
@@ -176,7 +163,6 @@ def run_lic_x1d_llm_judge(
             latency_ms=(time.time() - started) * 1000.0,
         )
 
-    text = (response.choices[0].message.content or "") if response.choices else ""
     parsed = _extract_json(text)
     if not parsed:
         return _blocked_output(
@@ -251,7 +237,7 @@ def build_lic_x1d_judge_packet(
 
 
 def render_lic_x1d_judge_prompt(packet: Mapping[str, Any]) -> str:
-    """Render the compact JSON-only prompt for Qwen/vLLM."""
+    """Render the compact JSON-only prompt for Claude Sonnet 4.6."""
     return (
         f"{_rubric()}\n\n"
         "Return ONLY one compact JSON object with this shape:\n"
@@ -288,17 +274,15 @@ def _rubric() -> str:
 def _resolve_settings(policy: Mapping[str, Any]) -> dict[str, Any]:
     base_url = (
         os.environ.get("APPS_LIC_X1D_JUDGE_BASE_URL")
-        or os.environ.get("APPS_LIC_VLLM_BASE_URL")
-        or os.environ.get("VLLM_BASE_URL")
         or DEFAULT_BASE_URL
     )
     model = (
         os.environ.get("APPS_LIC_X1D_JUDGE_MODEL")
-        or os.environ.get("APPS_LIC_QWEN_MODEL")
-        or os.environ.get("APPS_LIC_TARGET_MODEL")
-        or os.environ.get("QWEN_VLLM_MODEL")
+        or os.environ.get("APPS_LIC_ANTHROPIC_JUDGE_MODEL")
+        or os.environ.get("ANTHROPIC_MODEL")
         or DEFAULT_MODEL
     )
+    api_key, api_key_env_candidates = _resolve_anthropic_api_key()
     return {
         "base_url": base_url,
         "model": model,
@@ -307,6 +291,10 @@ def _resolve_settings(policy: Mapping[str, Any]) -> dict[str, Any]:
             or os.environ.get("APPS_LIC_X1D_JUDGE_PROVIDER_PROFILE")
             or DEFAULT_PROVIDER_PROFILE
         ),
+        "api_key": api_key,
+        "api_key_env_candidates": api_key_env_candidates,
+        "anthropic_version": os.environ.get("APPS_LIC_X1D_ANTHROPIC_VERSION")
+        or DEFAULT_ANTHROPIC_VERSION,
         "temperature": _float_env(
             "APPS_LIC_X1D_JUDGE_TEMPERATURE",
             float(policy.get("x1d_temperature") or DEFAULT_TEMPERATURE),
@@ -316,8 +304,56 @@ def _resolve_settings(policy: Mapping[str, Any]) -> dict[str, Any]:
             DEFAULT_MAX_OUTPUT_TOKENS,
         ),
         "timeout_seconds": _float_env("APPS_LIC_X1D_JUDGE_TIMEOUT_SECONDS", 45.0),
-        "healthcheck_enabled": _truthy_env("APPS_LIC_X1D_JUDGE_HEALTHCHECK_ENABLED", default=True),
     }
+
+
+def _resolve_anthropic_api_key() -> tuple[str, list[str]]:
+    candidates = ["APPS_LIC_X1D_JUDGE_API_KEY", "ANTHROPIC_API_KEY"]
+    for name in candidates:
+        raw = str(os.environ.get(name) or "").strip()
+        if raw:
+            return raw, candidates
+    return "", candidates
+
+
+def _call_anthropic_messages(
+    *,
+    prompt: str,
+    settings: Mapping[str, Any],
+) -> str:
+    payload = {
+        "model": settings["model"],
+        "max_tokens": int(settings["max_output_tokens"]),
+        "temperature": float(settings["temperature"]),
+        "system": _system_prompt(),
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+    }
+    req = urllib_request.Request(
+        str(settings["base_url"]),
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "x-api-key": str(settings["api_key"]),
+            "anthropic-version": str(settings["anthropic_version"]),
+        },
+        method="POST",
+    )
+    with urllib_request.urlopen(req, timeout=float(settings["timeout_seconds"])) as resp:
+        raw = resp.read().decode("utf-8", errors="replace")
+    data = json.loads(raw)
+    parts = data.get("content") if isinstance(data, dict) else None
+    if not isinstance(parts, list):
+        return ""
+    text_parts: list[str] = []
+    for part in parts:
+        if isinstance(part, Mapping) and part.get("type") == "text":
+            text_parts.append(str(part.get("text") or ""))
+    return "\n".join(text_parts).strip()
 
 
 def _model_backed_output(
@@ -524,16 +560,6 @@ def _extract_json(text: str) -> dict[str, Any] | None:
         except json.JSONDecodeError:
             return None
     return None
-
-
-def _healthcheck_vllm(settings: Mapping[str, Any]) -> bool:
-    endpoint = f"{str(settings['base_url']).rstrip('/')}/models"
-    try:
-        with urllib_request.urlopen(endpoint, timeout=min(float(settings["timeout_seconds"]), 5.0)) as response:
-            return 200 <= int(response.status) < 500
-    except Exception as exc:  # guardian: allow-broad-exception -- local vLLM healthcheck surfaces heterogeneous transport errors; normalize to judge blocked
-        _LOGGER.info("[apps_lic.x1d_judge] vLLM healthcheck failed: %s", exc)
-        return False
 
 
 def _stable_hash(payload: Mapping[str, Any]) -> str:

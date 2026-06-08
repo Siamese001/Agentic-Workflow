@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Post-agent audit: plan edits must keep consolidated wave summary at top.
 
-Scans Cursor Agent response text for ``.claude/plans/*.md`` paths, validates each
-file on disk via ``plan_wave_summary_top`` shared module.
+Scans Cursor Agent response text for root ``plans/*.md`` paths (plus legacy
+``.claude/plans/*.md`` paths), validates each file on disk via
+``plan_wave_summary_top`` shared module.
 
 Bypass: ``PLAN_WAVE_SUMMARY_TOP_AUDIT_BYPASS=1``.
 Strict (stderr + exit 2): ``PLAN_WAVE_SUMMARY_TOP_AUDIT_STRICT=1``.
@@ -23,7 +24,7 @@ _BYPASS_ENV = "PLAN_WAVE_SUMMARY_TOP_AUDIT_BYPASS"
 _STRICT_ENV = "PLAN_WAVE_SUMMARY_TOP_AUDIT_STRICT"
 
 _PLAN_PATH_RE = re.compile(
-    r"(?:[\\/]|^)\.cursor[\\/]plans[\\/]([A-Za-z0-9_\-]+-[0-9a-f]{6})\.md",
+    r"(?P<path>(?:[A-Za-z]:)?[A-Za-z0-9_./\\:\-]*(?:\.claude[\\/])?plans[\\/](?P<slug>[A-Za-z0-9_\-]+-[0-9a-f]{6})\.md)",
     re.IGNORECASE,
 )
 
@@ -49,13 +50,23 @@ def _extract_response_text(payload: object) -> str:
 
 
 def _find_edited_plans(response_text: str) -> list[Path]:
-    stems = {m.group(1).lower() for m in _PLAN_PATH_RE.finditer(response_text)}
-    if not stems:
+    root = str(_ROOT).replace("\\", "/").rstrip("/")
+    slugs: set[str] = set()
+    for match in _PLAN_PATH_RE.finditer(response_text):
+        token = match.group("path").replace("\\", "/")
+        if token.startswith(root + "/"):
+            token = token[len(root) + 1 :]
+        if token.startswith("./"):
+            token = token[2:]
+        if token.startswith("plans/") or token.startswith(".claude/plans/"):
+            if "/plans/_archive/" not in token:
+                slugs.add(match.group("slug").lower())
+    if not slugs:
         return []
     # Forward-only relocation (c1a17d): canonical plans/ + legacy .claude/plans/.
     plans_dirs = [_ROOT / "plans", _ROOT / ".claude" / "plans"]
     found: list[Path] = []
-    for stem in sorted(stems):
+    for stem in sorted(slugs):
         for plans_dir in plans_dirs:
             candidate = plans_dir / f"{stem}.md"
             if candidate.is_file():

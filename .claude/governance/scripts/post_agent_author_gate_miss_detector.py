@@ -11,7 +11,7 @@ Signals (any one is a candidate; count must exceed threshold to flag):
     - explicit decision-class keywords in prose ("refactor", "delete", "archive",
       "bare except", "subprocess", "cross-layer", "blast radius")
     - structural-reasoning SR_PLAN markers without SR_APPROVAL / DECISION_CAPTURED
-    - plan files created/modified under .claude/plans/
+    - plan files created/modified under plans/ or legacy .claude/plans/
     - prose options menus (bold **Option A/B/C**, "Recommended Next Phase" + sibling)
       without any DECISION_CAPTURED / AUTHOR_GATE_PACKET anti-signal
 
@@ -206,7 +206,7 @@ def _compute_miss_score(text: str) -> tuple[int, dict[str, Any]]:
         positive_signals.append(f"keyword:{kws[0]}")
 
     # Signal 3: plan file creation
-    plan_hits = re.findall(r".cursor[/\\]plans[/\\][^\s\"']+\.md", text)
+    plan_hits = re.findall(r"(?:^|[\s\"'`(])(?:\.claude[/\\])?plans[/\\][^\s\"']+\.md", text)
     if plan_hits:
         score += 1
         positive_signals.append("plan_file_touched")

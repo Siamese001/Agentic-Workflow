@@ -22,7 +22,7 @@ Row shape (queue)::
 
     {
       "slug": "my-plan-abc123",
-      "path": ".claude/plans/my-plan-abc123.md",
+      "path": "plans/my-plan-abc123.md",
       "declared_status": "Not Started",
       "captured_at": "2026-05-03T11:00:00Z",
       "registered": false,
@@ -106,7 +106,7 @@ def _now_epoch() -> float:
 
 
 def list_on_disk_plans() -> list[str]:
-    """Return sorted list of plan slugs present under .claude/plans/*.md."""
+    """Return sorted list of plan slugs present under plans/*.md and legacy .claude/plans/*.md."""
     slugs: list[str] = []
     try:
         for _d in PLAN_DIRS:

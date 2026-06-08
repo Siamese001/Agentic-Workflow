@@ -3,7 +3,7 @@
 post_agent_plan_evidence_gate.py — Stop-equivalent plan evidence gate (P2).
 
 Reads the Cursor Agent response from stdin. When the response edited or created
-any ``.claude/plans/*.md`` file, runs the canonical graph-layer evidence
+any root ``plans/*.md`` file (or legacy ``.claude/plans/*.md`` file), runs the canonical graph-layer evidence
 check (``ops_scripts/ci/check_graph_layer_evidence.py``) against that plan
 file immediately — closing the loop for plans that would otherwise only
 be validated at commit time.
@@ -36,14 +36,14 @@ from pathlib import Path
 fail_policy = "closed_for_refactor_plans"
 
 _ROOT = Path(__file__).resolve().parents[3]
-_PLANS_DIR = _ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+_PLAN_DIRS = (_ROOT / "plans", _ROOT / ".claude" / "plans")
 _LOG_PATH = _ROOT / "artifacts" / "governance" / "plan_evidence_violations.jsonl"
 _BYPASS_ENV = "PLAN_EVIDENCE_GATE_BYPASS"
 
 # Matches any plan file path mentioned in a Cursor Agent response (edit/write tool
 # invocations reference them). Absolute, backslash, or forward-slash forms.
 _PLAN_PATH_RE = re.compile(
-    r"[\\/\.]windsurf[\\/]plans[\\/]([A-Za-z0-9_\-]+-[0-9a-f]{6})\.md",
+    r"(?P<path>(?:[A-Za-z]:)?[A-Za-z0-9_./\\:\-]*(?:\.claude[\\/])?plans[\\/](?P<slug>[A-Za-z0-9_\-]+-[0-9a-f]{6})\.md)",
     re.IGNORECASE,
 )
 
@@ -79,7 +79,26 @@ def _extract_response_text(payload: object) -> str:
 
 def _find_edited_plans(response_text: str) -> list[str]:
     """Return list of unique plan slugs referenced in the response."""
-    return sorted(set(_PLAN_PATH_RE.findall(response_text)))
+    slugs: set[str] = set()
+    root = str(_ROOT).replace("\\", "/").rstrip("/")
+    for match in _PLAN_PATH_RE.finditer(response_text):
+        token = match.group("path").replace("\\", "/")
+        if token.startswith(root + "/"):
+            token = token[len(root) + 1 :]
+        if token.startswith("./"):
+            token = token[2:]
+        if token.startswith("plans/") or token.startswith(".claude/plans/"):
+            if "/plans/_archive/" not in token:
+                slugs.add(match.group("slug").lower())
+    return sorted(slugs)
+
+
+def _plan_file_for_slug(slug: str) -> Path | None:
+    for plans_dir in _PLAN_DIRS:
+        candidate = plans_dir / f"{slug}.md"
+        if candidate.exists():
+            return candidate
+    return None
 
 
 def _plan_file_valid(plan_path: Path) -> tuple[bool, str]:
@@ -134,8 +153,8 @@ def main() -> int:
 
     violations: list[dict] = []
     for slug in edited_plans:
-        plan_path = _PLANS_DIR / f"{slug}.md"
-        if not plan_path.exists():
+        plan_path = _plan_file_for_slug(slug)
+        if plan_path is None:
             continue
         ok, reason = _plan_file_valid(plan_path)
         if not ok:

@@ -1,6 +1,6 @@
 {
   "schema": "graph_skills_hardening_p2_rebaseline_v1",
-  "generated_at": "2026-05-27T19:18:08Z",
+  "generated_at": "2026-06-08T08:49:06Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "sprint": "P2-ACCELERATED-CLOSEOUT",
   "p2_w0_completed": true,
@@ -9,13 +9,17 @@
   "p2_w1_opt_in_superseded": true,
   "competencies_only_scope_superseded": true,
   "sections_in_scope": [
-    "headline",
-    "executive_summary",
+    "competencies",
     "unify_bullets",
-    "unify_narrative",
     "ibm_bullets",
+    "insurtech_bullets",
+    "ey_bullets",
+    "unify_narrative",
     "ibm_narrative",
-    "competencies"
+    "insurtech_narrative",
+    "ey_narrative",
+    "executive_summary",
+    "headline"
   ],
   "default_skills_authority": "augmented_skills_graph",
   "broad_skills_ledger_product_authority_prohibited": true,

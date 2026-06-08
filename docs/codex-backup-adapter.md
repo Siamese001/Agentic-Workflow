@@ -13,7 +13,7 @@ Use these repo files as authoritative:
 | Structured reasoning | `.claude/skills/structured-reasoning/SKILL.md` |
 | MCP routing | `.mcp.json` and `.claude/skills/mcp-integration/SKILL.md` |
 | Hook behavior | `.claude/settings.json` and `.claude/hooks/*.py` |
-| Plan lifecycle | `.claude/skills/plan-governance/SKILL.md` and `.claude/plans/*.md` |
+| Plan lifecycle | `.claude/skills/plan-governance/SKILL.md` and `plans/*.md` (legacy `.claude/plans/*.md` accepted for existing plans) |
 
 ## Codex-specific layer
 

@@ -46,7 +46,7 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 | Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |
 |----------|-----------------------|----------------------|--------------|----------------------------|
 | Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. Post-hook `post_cascade_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band. |
-| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `.claude/plans/<slug>-<6hex>.md`. Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set. |
+| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `plans/<slug>-<6hex>.md` (legacy `.claude/plans/` still accepted for existing plans). Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set. |
 | SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
 | Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.claude/rules/*.mdc`. No Notion write. |
 | MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: root `.mcp.json` only. Deprecated Cursor/Windsurf compatibility copies are non-authoritative. |
@@ -74,7 +74,7 @@ First tool call each session: `mem_recall_session_start` (§17). Writeback major
 
 ## Cursor config & plans
 
-Lookup: `.claude/rules/cursor-config-lookup.mdc` · docs mirror `docs/cursor/`. Plans SSOT: `.claude/plans/<name>-<6hex>.md` only.
+Lookup: `.claude/rules/cursor-config-lookup.mdc` · docs mirror `docs/cursor/`. Plans SSOT: `plans/<name>-<6hex>.md`; legacy `.claude/plans/` remains valid for existing plans only.
 
 ## Pytest
 

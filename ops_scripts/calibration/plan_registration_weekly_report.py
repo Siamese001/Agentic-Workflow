@@ -3,7 +3,7 @@
 plan_registration_weekly_report.py — Weekly drift report (§36).
 
 Scans both directions of the Plan↔Notion registration mapping and reports:
-  - On-disk plans (`docs/archive/windsurf/legacy-tree/plans/*.md`) without a Notion Plans row.
+  - On-disk plans (`plans/*.md`, plus legacy `.claude/plans/*.md`) without a Notion Plans row.
   - Notion Plans rows with Status in {Live, Draft, Waiting} whose ``Exists On Disk``
     checkbox is true but whose file is actually missing from the working tree.
   - Stale items in the registration queue (``registered=false`` older than 7 days).
@@ -35,7 +35,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf" / "_plan_registration.py"
+HELPER_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "_plan_registration.py"
 GATE_PATH = REPO_ROOT / "ops_scripts" / "ci" / "check_plan_registration_freshness.py"
 REPORT_DIR = REPO_ROOT / "docs" / "reports" / "plan_registration"
 
@@ -158,7 +158,7 @@ def main(argv: list[str] | None = None) -> int:
         lines.append("_None._")
     else:
         for slug in on_disk_missing:
-            lines.append(f"- `{slug}` — `docs/archive/windsurf/legacy-tree/plans/{slug}.md`")
+            lines.append(f"- `{slug}` — `{helper.plan_file_path(slug)}`")
     lines.append("")
 
     lines.append("## Notion Orphans (Active Row, No File)")

@@ -15,7 +15,7 @@ Detection signals (any one fires → writeback due):
     2. Response mentions editing `.cursor/mcp.json`
     3. Response mentions editing `.claude/governance/scripts/*_gate.py`
     4. Response resolved a scored `ask_user_question` (DECISION_CAPTURED marker)
-    5. Response mentions creating/editing `.claude/plans/*-<6hex>.md`
+    5. Response mentions creating/editing `plans/*-<6hex>.md` (or legacy `.claude/plans/*-<6hex>.md`)
     6. Response contains recurring-bug language (fix recipes, RCA, root cause)
     7. Response mentions SC/AP defect emission from ADG run
 
@@ -80,7 +80,7 @@ SIGNALS: list[tuple[str, re.Pattern[str], str]] = [
     ),
     (
         "plan_created_or_modified",
-        re.compile(r".cursor[/\\]plans[/\\][\w\-]+-[0-9a-f]{6}\.md", re.IGNORECASE),
+        re.compile(r"(?:^|[\s\"'`(])(?:\.claude[/\\])?plans[/\\][\w\-]+-[0-9a-f]{6}\.md", re.IGNORECASE),
         "memory:Project:* + notion:Wave/Phase Convergence",
     ),
     (
