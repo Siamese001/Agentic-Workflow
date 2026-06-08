@@ -14,6 +14,16 @@ Implementation branch: the active per-chat branch (branch-per-chat cuts a fresh 
 Scope boundary: **apps_rg only.** No `agentic_core` edits, no other `apps_*`. Any generic-core residue is captured under `## Out Of Scope` / `## Deferred Follow-ups`, never implemented here.
 Notion: https://app.notion.com/p/37827693f55c819d8ca1d5e8fee2941d
 
+> **Execution status (2026-06-08) — W2/W4/W5/W6 PAUSED.** W0, W1, W3 are implemented,
+> tested, and pushed to `main` (`c7b1cdacdb` / `b6682b5dec` / `c66fc476d7`). The remaining
+> waves are paused because a **concurrent apps_rg Qwen-removal refactor** (see
+> `plans/apps-rg-qwen-removal-b3d9f7.md`, new `apps_rg/runtime/providers/provider_contract.py`)
+> is actively modifying the provider / bullet-lane / role-episode files those waves target
+> (`qwen_vllm_provider.py`, `external_provider.py`, `bullet_lane_generation.py`,
+> `bullet_lane_self_consistency.py`, `role_episode_lane.py`). **W2 (E2E-02 Qwen leakage) is
+> likely superseded** by the qwen-removal — re-validate before resuming. Do not edit the
+> concurrently-modified files until that refactor lands.
+
 ## Context
 
 Situation: AIG VP Global Head of Agentic AI end-to-end testing was run against:
