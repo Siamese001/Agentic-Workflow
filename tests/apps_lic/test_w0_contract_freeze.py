@@ -24,6 +24,7 @@ AIG_30_RESULTS_PATH = (
     / "e2e_aig_30_linkedin_profiles_20260608"
     / "results.json"
 )
+AIG_30_FIXTURE_PATH = ROOT / "tests" / "apps_lic" / "fixtures" / "aig_30_profiles.json"
 
 
 def load_contract() -> dict:
@@ -32,6 +33,9 @@ def load_contract() -> dict:
 
 
 def load_aig_30_rows() -> list[dict]:
+    if not AIG_30_RESULTS_PATH.exists():
+        with AIG_30_FIXTURE_PATH.open(encoding="utf-8") as handle:
+            return json.load(handle)["profiles"]
     with AIG_30_RESULTS_PATH.open(encoding="utf-8") as handle:
         return json.load(handle)["rows"]
 
