@@ -8,6 +8,7 @@ touches_plan_templates: false   # true when modifying .cursor/templates/*.md
 core_addition_author_gate_required: false   # true when touches_agentic_core=true; receipt ref required
 author_gate_receipt_ref: ""   # path to CoreAdditionAuthorGateReceipt JSON (required when core_addition_author_gate_required=true)
 dod_exempt: false   # true for RCA-only, doc-only, audit observation plans (exempt from PLAN-DOD gate)
+supersedes: []   # [<predecessor-slug>, ...] — predecessors this plan replaces; auto-Retired in Notion (see ## Supersedes)
 ---
 
 # [Plan Title]
@@ -208,6 +209,23 @@ SCOPE_EXPANSION: plan=<plan_id> reason="<summary>" added="<waves/phases>" author
 | REJECTED | Gold-plating | Yes, original scope |
 
 > **Documentation ≠ Authorization.** Retroactive plan updates are not governance.
+
+---
+
+## Supersedes
+
+> If this plan replaces an earlier one, list each predecessor's slug here. On the
+> next agent turn (and in CI), each named predecessor still in a non-terminal Notion
+> status is flipped to `Retired` with a dated Summary note + a posted comment linking
+> this plan — by `post_agent_plan_supersession_retire.py` / `check_plan_supersession_consistency.py`.
+> Leave as `_None — net-new plan._` if this plan supersedes nothing. Keep in sync with
+> the `supersedes:` frontmatter list.
+
+| Predecessor slug | Reason |
+|---|---|
+| <predecessor-slug> | <why this plan replaces it> |
+
+_None — net-new plan._
 
 ---
 

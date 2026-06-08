@@ -136,7 +136,14 @@ When discussing statuses in prose or dashboards, the 🟢In Progress / ⚪Not St
 - A row with `Status = In Progress` MUST have `Exists On Disk = true`
 - A row with `Status = In Progress` MUST have been edited within the last 14 days (otherwise flip to `Retired` with reason "stale since YYYY-MM-DD")
 - A row whose plan file was deleted from disk MUST have `Exists On Disk = false` AND `Status ∈ {Retired, Completed, Archived}`
-- A plan that explicitly supersedes another (via `Supersedes` table in plan body) flips the predecessor to `Retired` in the same response
+- A plan that explicitly supersedes another **MUST** declare it via a `## Supersedes` table in the plan body (and/or a `supersedes: [<slug>, ...]` frontmatter list) — the canonical machine-readable trigger. Grammar:
+  ```markdown
+  ## Supersedes
+  | Predecessor slug | Reason |
+  |---|---|
+  | <predecessor-slug> | <why this plan replaces it> |
+  ```
+  Declared predecessors are flipped to `Retired` automatically — with a dated `Summary` note **and** a posted Notion comment linking the successor — by the post-agent hook `post_agent_plan_supersession_retire.py`. The CI sweep gate `check_plan_supersession_consistency.py` (PLAN-SUPERSEDE) backstops cross-session/cross-worktree/Notion-only misses the live hook cannot observe. A net-new plan declares an empty section (`_None — net-new plan._`). Bypass: `PLAN_SUPERSESSION_RETIRE_BYPASS=1` (hook) / `PLAN_SUPERSESSION_GATE_BYPASS=1` (gate); enforce in CI via `PLAN_SUPERSESSION_GATE_FAIL_CLOSED=1`.
 - **Mandatory `AI Summary` (added 2026-05-03)**: every Plans row with `Status ∈ {In Progress, Not Started, Lower Priority, Waiting, Completed}` MUST have a non-empty `AI Summary` property. Content MUST be **one single sentence, ≤ 12 words, scope + why-it-matters** — NOT bullet-style, NOT a prose recap of the `Summary` field. The DB grid shows only the first line; density per pixel is the goal. Examples: `"Completes apps_* spine migration; soak period before strict ADG certification flip."` (12 words), `"Turns ADG audit into two-stage certification so silent skips can't hide failures."` (12 words). Rows in `Retired`/`Archived` are exempt. Empty `AI Summary` is a reviewability violation — a reader scanning the DB learns nothing from a row without one. Enforcement: `ops_scripts/ci/check_notion_plans_ai_summary.py` checks presence (always) and ≤ 15-word length (advisory soft-cap on top of the 12-word target). Fail-closed via `NOTION_PLANS_AI_SUMMARY_FAIL_CLOSED=1`.
 
 **Canonical Status option strings (updated 2026-05-10)**:
