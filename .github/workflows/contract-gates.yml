@@ -44,6 +44,7 @@ jobs:
       - name: Install pytest + pyyaml (targeted-tests harness + config gates)
         run: |
           python -m pip install --upgrade pip
+          python -m pip install -e .
           python -m pip install pytest pyyaml
 
       # ── Subprocess Timeout / Terminal Cleanup (was subprocess-timeout-gate.yml)

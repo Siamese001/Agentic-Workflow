@@ -63,6 +63,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e .
           pip install pyyaml pytest pytest-timeout
 
       - name: Regen R1B chain (latest/)
@@ -139,6 +140,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e .
           pip install pyyaml pytest pytest-timeout
 
       - name: Regen MW chain (mw_latest/)
@@ -235,6 +237,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e .
           pip install pyyaml pytest pytest-timeout
       - name: Regen R1A chain
         run: python tools/certification/regen_r1a_latest.py
@@ -285,6 +288,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e .
           pip install pyyaml pytest pytest-timeout
       - name: Regen R5 chain
         run: python tools/certification/regen_r5_latest.py
@@ -335,6 +339,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e .
           pip install pyyaml pytest pytest-timeout
       - name: Regen UWG_BLOCK chain
         run: python tools/certification/regen_uwg_block_latest.py
