@@ -1,0 +1,93 @@
+schema_version: apps_lic.message_type_requirements.v1
+wave: W4
+authority: C0
+purpose: Resolve apps_lic message_type after recipient_class derivation and gate required evidence before generation.
+
+canonical_message_types:
+  - general_intro
+  - role_specific
+  - trigger_based_insight
+  - referral_ask
+  - follow_up
+
+message_type_policy:
+  general_intro:
+    default_allowed_without_jd: true
+    required_namespaces: []
+  role_specific:
+    default_allowed_without_jd: false
+    required_namespaces:
+      - apps_lic_jd_facts
+  trigger_based_insight:
+    default_allowed_without_jd: true
+    required_namespaces:
+      - apps_lic_company_trigger_facts
+  referral_ask:
+    default_allowed_without_jd: true
+    required_namespaces:
+      - apps_lic_referral_facts
+      - apps_lic_relationship_facts
+  follow_up:
+    default_allowed_without_jd: true
+    required_namespaces:
+      - apps_lic_prior_thread_facts
+
+modifiers:
+  uses_jd:
+    meaning: Message copy will reference a job, role, JD, position, opening, requisition, or job ID.
+  application_status_claimed:
+    meaning: Message copy will say the sender applied, was referred, is interviewing, or has a concrete status.
+  uses_company_trigger:
+    meaning: Message copy will use a recent company signal, announcement, market trigger, or public post.
+  uses_referral_context:
+    meaning: Message copy will reference a referrer, warm intro, or relationship bridge.
+  uses_prior_thread:
+    meaning: Message copy will reference previous outreach or a prior conversation thread.
+  uses_sensitive_constraints:
+    meaning: Message intent mentions visa, compensation, salary, remote, hybrid, relocation, location, or similar constraints.
+
+class_specific_requirements:
+  RECRUITER:
+    role_specific:
+      required_fields:
+        - jd
+        - position_name
+        - requisition_number
+  SENIOR_TA:
+    role_specific:
+      required_fields:
+        - jd
+        - position_name
+        - requisition_number
+  HIRING_MANAGER:
+    role_specific:
+      required_fields:
+        - jd
+        - position_name
+
+missing_field_statuses:
+  - RECIPIENT_CLASS_NOT_DERIVED
+  - MISSING_JD_FACTS
+  - MISSING_POSITION_NAME
+  - MISSING_REQUISITION_NUMBER
+  - MISSING_APPLICATION_STATUS
+  - MISSING_PRIOR_THREAD
+  - MISSING_REFERRER_CONTEXT
+  - MISSING_RELATIONSHIP_CONTEXT
+  - MISSING_COMPANY_TRIGGER
+
+gate_statuses:
+  pass: MESSAGE_REQUIREMENTS_PASS
+  blocked: MESSAGE_REQUIREMENTS_BLOCKED
+
+decision_rules:
+  - C0-B runs only after W3 recipient_class is RECIPIENT_CLASS_DERIVED.
+  - U0 message_type may seed intent but canonical resolution is deterministic.
+  - general_intro may proceed without JD when no modifier requires job-specific evidence.
+  - recruiter and senior TA role_specific messages require JD facts, position_name, and requisition_number.
+  - hiring manager role_specific messages require JD facts and position_name.
+  - follow_up requires prior-thread evidence.
+  - referral_ask requires referrer and relationship context evidence.
+  - trigger_based_insight requires company-trigger evidence.
+  - application status claims require explicit application_status evidence.
+  - missing required evidence blocks generation or forces upstream ingestion/HITL; SC paths cannot compensate.

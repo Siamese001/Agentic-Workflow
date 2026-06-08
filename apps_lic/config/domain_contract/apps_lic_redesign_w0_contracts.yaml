@@ -1,0 +1,689 @@
+schema_version: apps_lic.redesign_w0_contracts.v1
+source_plan:
+  title: apps-lic-redesign-refactor-plan-v2-consolidated
+  notion_page_id: 37927693f55c8125bd57cdf3fc395b13
+  source_url: https://app.notion.com/p/apps-lic-redesign-refactor-plan-v2-consolidated-37927693f55c8125bd57cdf3fc395b13
+w0_status:
+  wave: W0
+  objective: Baseline And Contract Freeze
+  implemented_as_contract_freeze_only: true
+  no_runtime_behavior_changes: true
+  generated_on: '2026-06-08'
+
+e2e_acceptance_modes:
+  default_mode: strict_target_fit
+  modes:
+    strict_target_fit:
+      purpose: Accept current policy behavior for mixed eligible and non-targetable profile matrices.
+      accepts:
+        - clear_draft rows that pass Exit.
+        - policy-correct no-send blocks for non-targetable, unknown, weak-evidence, or opportunity-mismatched contacts.
+      current_aig_30_expected:
+        profile_count: 30
+        clear_draft_count: 24
+        policy_correct_block_count: 6
+        policy_correct_block_ids:
+          - daisuke_hayashi
+          - kathleen_gerstner
+          - dennis_najar
+          - anirudh_r
+          - karthikeya_gowd
+          - indu_sri
+      must_report:
+        - accepted_clear
+        - policy_correct_block
+        - unexpected_gap
+    all_clear_eligible:
+      purpose: Prove every included profile is eligible, evidence-supported, opportunity-fit, and Exit-clear.
+      accepts:
+        - clear_draft rows only for included profiles.
+        - explicit exclusions for profiles marked not targetable or requiring C0 evidence.
+        - explicit alternate message mode only when the alternate route itself clears Exit.
+      current_aig_30_expected:
+        full_30_without_remediation_passes: false
+        remediation_required_count: 6
+      must_report:
+        - accepted_clear
+        - excluded_from_all_clear_eligible
+        - all_clear_remediation_required
+
+no_weakening_invariants:
+  required_gate_ids:
+    - recipient_class_present_and_derived_gate
+    - role_ownership_fit_gate
+  rules:
+    - recipient_class_present_and_derived_gate_must_remain_enabled
+    - role_ownership_fit_gate_must_remain_enabled
+    - sc_or_extra_judges_must_not_compensate_for_missing_c0_evidence
+    - x1d_must_not_override_c0_x2_no_send_or_exit
+
+runtime_boundary:
+  apps_lic_may_customize:
+    - contracts
+    - config/domain_contract
+    - schemas
+    - runtime_customization_package_references
+    - route_profiles
+    - retrieval_profiles
+    - prompt_profiles
+    - exit_profiles
+    - judge_profiles
+    - threshold_profiles
+    - tests
+  apps_lic_must_not_own:
+    - separate_exit_implementation
+    - direct_x3_emission
+    - direct_l4_writes
+    - auto_send_or_post_actions
+    - app_specific_agentic_core_logic
+
+canonical_message_types:
+  values:
+    - general_intro
+    - role_specific
+    - trigger_based_insight
+    - referral_ask
+    - follow_up
+  recommendation: five_types_are_optimal_for_v2
+  rationale:
+    - general_intro covers low-claim recruiter and networking drafts without forcing JD context.
+    - role_specific isolates JD and requisition gates for recruiter, senior TA, and hiring-owner outreach.
+    - trigger_based_insight covers executive asymmetric insight without overloading recruiter copy.
+    - referral_ask separates relationship proof and referrer evidence from generic warm outreach.
+    - follow_up separates prior-thread evidence and chronology from new-contact outreach.
+
+recipient_classes:
+  canonical_values:
+    - RECRUITER
+    - SENIOR_TA
+    - HIRING_MANAGER
+    - EXECUTIVE
+    - C_LEVEL
+    - VP_ENG
+    - CTO
+    - CEO
+    - OTHER_EXECUTIVE
+    - UNKNOWN
+  mandatory: true
+  derivation_authority: C0
+  u0_values_are: evidence_inputs_or_hints_only
+
+outreach_modes:
+  canonical_values:
+    - cold
+    - warm
+    - referral
+    - followup
+  current_v1_gap: current ingress supports cold, warm, and reengagement only.
+
+send_modes:
+  canonical_values:
+    - draft_only
+    - review_required
+  forbidden_values:
+    - send
+    - post
+    - auto_send
+    - auto_post
+  no_send_authority: true
+
+u0_seed_contract:
+  purpose: User-supplied seed facts and user-approved constraints before C0 retrieval.
+  required:
+    - channel
+    - outreach_mode
+    - campaign_objective
+    - sender_profile
+    - send_mode
+  conditionally_required:
+    manual_brief:
+      required_when:
+        - live_research_delegation_disabled
+        - user_selects_manual_brief_mode
+    target_contact_seed:
+      required_when:
+        - user_requests_named_contact_or_company_personalization
+      fields:
+        - name
+        - title
+        - company
+        - linkedin_url
+        - public_profile_url
+        - user_supplied_profile_summary
+    job_description_seed:
+      required_when:
+        - user_supplies_role_specific_request_before_classification
+        - message_type_hint_is_role_specific
+      fields:
+        - jd_text
+        - jd_url
+        - position_name
+        - requisition_number
+    relationship_context:
+      required_when:
+        - outreach_mode_is_warm
+        - message_type_is_referral_ask
+    prior_thread_messages:
+      required_when:
+        - message_type_is_follow_up
+    application_status:
+      required_when:
+        - draft_mentions_applied
+        - draft_mentions_referred
+        - draft_mentions_interviewing
+        - draft_mentions_existing_process_status
+  optional:
+    - company_context
+    - desired_next_step
+    - constraints_to_consider
+    - recipient_recent_signal_seed
+    - company_trigger_seed
+    - writing_preferences
+  authority_limits:
+    recipient_class: hint_only_must_be_derived_by_c0
+    public_profile_snippets: seed_evidence_only_must_be_verified_or_confidence_tagged_by_c0
+    sender_proof_points: candidate_claims_only_must_be_approved_by_c03
+    jd_fields: seed_evidence_only_must_be_normalized_by_c0
+    send_action: never_authorized
+
+c0_evidence_packet_contract:
+  authority: C0_PUBLIC_EVIDENCE
+  purpose: Ground contact, company, JD, and public role-ownership facts before message generation.
+  inference_may_write_vectors: false
+  silent_evidence_acquisition: denied
+  governed_ingestion_boundary:
+    ingestion_is_separate_from_inference: true
+    c0_may_request_ingestion: true
+    c0_may_silently_browse_or_write_vectors: false
+  readiness_status_values:
+    - C0_READY
+    - C0_OPPORTUNITY_INGESTION_REQUIRED
+    - C0_EVIDENCE_STALE
+    - C0_EVIDENCE_CONFLICTED
+    - C0_EVIDENCE_BLOCKED
+    - C0_VECTOR_BACKEND_UNAVAILABLE
+  support_status_values:
+    - PASS
+    - WEAK
+    - EMPTY
+    - CONFLICTED
+    - STALE
+    - BLOCKED
+  required_fields:
+    - evidence_packet_id
+    - target_contact
+    - company
+    - source_lineage
+    - freshness
+    - confidence
+    - support_status
+    - readiness_status
+    - recipient_class_derivation
+  evidence_families:
+    - public_profile_snippets
+    - linkedin_about_or_headline
+    - public_background_facts
+    - public_role_descriptions
+    - role_ownership_signals
+    - company_context
+    - jd_facts
+    - recent_company_trigger
+    - relationship_or_referral_evidence
+    - prior_thread_evidence
+  fail_closed_rule: C0_EMPTY_or_BLOCKED_cannot_be_upgraded_by_more_reasoning
+
+c03_sender_proof_packet_contract:
+  authority: C0_3_PROOF_GRAPH
+  purpose: Select approved Amit proof points that the draft may use.
+  graph_skills_required: true
+  required_fields:
+    - proof_packet_id
+    - selected_proof_points
+    - proof_ids
+    - source_lineage
+    - permission_decisions
+    - confidence
+  selected_proof_points:
+    min: 1
+    max: 3
+  permission_values:
+    - allow
+    - omit
+    - escalate
+    - block
+  blocked_claim_behavior: omit_or_block_based_on_claim_permission_map
+
+jd_facts_contract:
+  authority: C0_JD_FACTS
+  globally_optional: true
+  required_after_classification_when:
+    - message_type_is_role_specific
+    - recipient_class_is_RECRUITER_and_message_type_is_role_specific
+    - recipient_class_is_SENIOR_TA_and_message_type_is_role_specific
+    - recipient_class_is_HIRING_MANAGER_and_message_type_is_role_specific
+    - application_status_is_applied_referred_interviewing
+    - referral_ask_mentions_a_specific_role
+    - follow_up_mentions_a_specific_role
+  required_fields_for_recruiter_or_senior_ta_role_specific:
+    - position_name
+    - requisition_number
+  normalized_fields:
+    - position_name
+    - requisition_number
+    - company
+    - location
+    - remote_hybrid_onsite
+    - role_level
+    - function
+    - must_have_skills
+    - preferred_skills
+    - source_lineage
+    - freshness
+  missing_required_behavior: block_or_review_required_before_generation
+
+recipient_class_derivation:
+  authority: C0
+  required: true
+  u0_may_supply:
+    - title
+    - headline
+    - company
+    - linkedin_url
+    - public_profile_url
+    - user_supplied_profile_summary
+  c0_must_use:
+    - title
+    - headline
+    - company
+    - public_profile_snippets
+    - linkedin_about_or_background
+    - public_role_descriptions
+    - role_ownership_signals
+    - source_lineage
+    - confidence
+  supporting_only:
+    - optional_jd_context
+    - optional_company_context
+  class_signal_examples:
+    RECRUITER:
+      - recruiter
+      - talent acquisition recruiter
+      - sourcing specialist
+    SENIOR_TA:
+      - head of talent acquisition
+      - director talent acquisition
+      - global recruiting leader
+      - owns recruiting strategy
+    HIRING_MANAGER:
+      - engineering manager
+      - product leader hiring for team
+      - role owner
+    EXECUTIVE:
+      - president
+      - svp
+      - general manager
+    C_LEVEL:
+      - chief
+      - ceo
+      - cto
+      - cio
+      - ciso
+    VP_ENG:
+      - vp engineering
+      - vice president engineering
+    CTO:
+      - chief technology officer
+    CEO:
+      - chief executive officer
+      - founder and ceo
+  low_confidence_behavior: review_required_or_blocked
+
+message_type_requirement_matrix:
+  general_intro:
+    jd_required: false
+    evidence_required:
+      - recipient_identity
+      - company_identity
+      - recipient_class
+    allowed_specificity: low_claim
+    default_length_budget_key: linkedin_general_intro
+    default_reasoning_key: low_risk_default
+  role_specific:
+    jd_required: true
+    evidence_required:
+      - recipient_identity
+      - company_identity
+      - recipient_class
+      - jd_facts
+    requirements_by_recipient_class:
+      RECRUITER:
+        required_fields:
+          - position_name
+          - requisition_number
+      SENIOR_TA:
+        required_fields:
+          - position_name
+          - requisition_number
+      HIRING_MANAGER:
+        required_fields:
+          - position_name
+      EXECUTIVE:
+        required_fields:
+          - position_name
+    default_length_budget_key: linkedin_role_specific
+    default_reasoning_key: named_recruiter_or_role
+  trigger_based_insight:
+    jd_required: false
+    evidence_required:
+      - recipient_identity
+      - company_identity
+      - recipient_class
+      - company_trigger
+      - sender_proof_packet
+    required_when_using:
+      - recent_company_signal
+      - executive_asymmetric_insight
+    default_length_budget_key: linkedin_exec_insight
+    default_reasoning_key: executive_high_scrutiny
+  referral_ask:
+    jd_required: conditional
+    jd_required_when:
+      - ask_mentions_specific_role
+      - referral_is_for_open_req
+    evidence_required:
+      - recipient_identity
+      - relationship_or_referral_context
+      - sender_proof_packet
+    default_length_budget_key: linkedin_referral_ask
+    default_reasoning_key: relationship_sensitive
+  follow_up:
+    jd_required: conditional
+    jd_required_when:
+      - prior_thread_mentions_specific_role
+      - follow_up_mentions_specific_req
+    evidence_required:
+      - recipient_identity
+      - prior_thread_messages
+      - chronology
+    default_length_budget_key: linkedin_follow_up
+    default_reasoning_key: prior_thread_sensitive
+
+length_budgets:
+  linkedin_general_intro:
+    sentences: 2-3
+    words: 45-70
+    characters: 300-450
+  linkedin_role_specific:
+    sentences: 3-4
+    words: 65-95
+    characters: 420-650
+    must_fit_fields:
+      - position_name
+      - requisition_number
+  linkedin_exec_insight:
+    sentences: 3-5
+    words: 80-130
+    characters: 550-900
+  linkedin_referral_ask:
+    sentences: 3-4
+    words: 60-95
+    characters: 420-650
+  linkedin_follow_up:
+    sentences: 2-4
+    words: 45-80
+    characters: 300-550
+  length_gate_behavior:
+    hard_fail_above_max_by_more_than_percent: 10
+    repair_allowed_once: true
+    repair_may_not_add_facts: true
+
+reasoning_policy:
+  core_rule: More reasoning may improve wording and selection, but cannot override C0 evidence, L0 route authority, X2 gates, no-send policy, or Exit clearance.
+  default:
+    sc_level: SC-1
+    reasoning_intensity: R1_STANDARD
+    max_candidates: 1
+    repair_passes: 1
+    judges:
+      - deterministic_schema_policy_no_send_judge
+      - linkedin_tone_channel_quality_judge
+  sc_levels:
+    SC-0:
+      candidates: 1
+      validation_repair_passes: 0
+      use_when: deterministic_generic_low_risk
+    SC-1:
+      candidates: 1
+      validation_repair_passes: 1
+      use_when: default_linkedin_message
+    SC-2:
+      candidates: 2
+      validation_repair_passes: 1
+      use_when: named_recruiter_company_or_role_specific
+    SC-3:
+      candidates: 3
+      validation_repair_passes: 1
+      use_when: sensitive_claim_heavy_executive_or_high_stakes
+  reasoning_levels:
+    R0_MINIMAL: deterministic_generic_low_risk_one_shot
+    R1_STANDARD: default_one_draft_plus_validation_repair
+    R2_DELIBERATE: named_recruiter_company_role_or_candidate_comparison
+    R3_STRICT: sensitive_claims_metrics_referral_prior_relationship_compensation_visa_executive_or_high_stakes
+  generator_temperature:
+    low_risk_default: 0.75-0.9
+    named_recruiter_or_role: 0.85-1.0
+    executive_high_scrutiny: 0.9-1.1
+    repair: 0.2-0.4
+  policy_by_message_and_recipient:
+    general_intro:
+      RECRUITER:
+        sc_level: SC-1
+        reasoning_intensity: R1_STANDARD
+        x1d_llm_judges: 0
+      SENIOR_TA:
+        sc_level: SC-1
+        reasoning_intensity: R1_STANDARD
+        x1d_llm_judges: 0
+      EXECUTIVE:
+        sc_level: SC-2
+        reasoning_intensity: R2_DELIBERATE
+        x1d_llm_judges: 1
+      C_LEVEL:
+        sc_level: SC-3
+        reasoning_intensity: R3_STRICT
+        x1d_llm_judges: 2
+      CEO:
+        sc_level: SC-3
+        reasoning_intensity: R3_STRICT
+        x1d_llm_judges: 2
+    role_specific:
+      RECRUITER:
+        sc_level: SC-2
+        reasoning_intensity: R2_DELIBERATE
+        x1d_llm_judges: 0
+      SENIOR_TA:
+        sc_level: SC-2
+        reasoning_intensity: R2_DELIBERATE
+        x1d_llm_judges: 1
+      HIRING_MANAGER:
+        sc_level: SC-2
+        reasoning_intensity: R2_DELIBERATE
+        x1d_llm_judges: 1
+      EXECUTIVE:
+        sc_level: SC-3
+        reasoning_intensity: R3_STRICT
+        x1d_llm_judges: 1
+    trigger_based_insight:
+      EXECUTIVE:
+        sc_level: SC-3
+        reasoning_intensity: R3_STRICT
+        x1d_llm_judges: 1
+      C_LEVEL:
+        sc_level: SC-3
+        reasoning_intensity: R3_STRICT
+        x1d_llm_judges: 2
+      CEO:
+        sc_level: SC-3
+        reasoning_intensity: R3_STRICT
+        x1d_llm_judges: 2
+    referral_ask:
+      default:
+        sc_level: SC-2
+        reasoning_intensity: R2_DELIBERATE
+        x1d_llm_judges: 1
+    follow_up:
+      default:
+        sc_level: SC-1
+        reasoning_intensity: R1_STANDARD
+        x1d_llm_judges: 0
+      sensitive_or_executive:
+        sc_level: SC-2
+        reasoning_intensity: R2_DELIBERATE
+        x1d_llm_judges: 1
+
+x2_gate_contract:
+  runs_before_x1d: true
+  x1d_may_not_override_x2_block: true
+  universal_gates:
+    - schema_gate
+    - channel_length_gate
+    - no_send_gate
+    - unsupported_claim_gate
+    - prompt_injection_neutralization_gate
+    - recipient_class_present_and_derived_gate
+  conditional_gates:
+    - jd_required_gate
+    - position_name_required_gate
+    - requisition_number_required_gate
+    - role_ownership_fit_gate
+    - relationship_evidence_gate
+    - referral_context_gate
+    - prior_thread_gate
+    - company_trigger_freshness_gate
+    - metrics_support_gate
+    - compensation_visa_sensitive_claim_gate
+  blocked_output_values:
+    - review_required
+    - blocked
+    - abstain
+
+x1d_judge_contract:
+  role: advisory_llm_quality_and_thoughtfulness_judge_after_x2
+  default_model: Claude Sonnet 4.6
+  independence_required_from_generator: true
+  generator_may_be_vllm_qwen: true
+  judge_must_be_separate_provider_or_model_for_x1d: true
+  unavailable_behavior: review_required
+  output_schema:
+    fields:
+      - judge_id
+      - model
+      - pass_fail
+      - score
+      - issues
+      - required_repairs
+      - no_send_recommendation
+      - rationale_summary
+  narrow_roles:
+    - linkedin_tone_channel_quality_judge
+    - evidence_claim_support_judge
+    - safety_fabrication_no_send_judge
+    - candidate_selection_judge
+  llm_judge_depth:
+    recruiter_low_claim: 0
+    recruiter_role_specific: 0
+    senior_ta_role_specific: 1
+    hiring_manager_role_specific: 1
+    executive: 1
+    c_level: 2
+    ceo: 2
+  clear_draft_requires:
+    ceo_or_c_level: two_llm_judges_pass_when_x1d_enabled
+    all_cases: x2_pass_and_exit_clearance
+
+exit_contract:
+  allowed_final_dispositions:
+    - clear_draft
+    - review_required
+    - blocked
+    - abstain
+  forbidden_final_dispositions:
+    - sent
+    - posted
+    - auto_sent
+  exit_is_final_authority: true
+
+proof_bundle_contract:
+  required_fields:
+    - final_message
+    - message_type
+    - recipient_class
+    - length_budget_key
+    - reasoning_policy_key
+    - c0_evidence_packet_id
+    - c03_proof_packet_id
+    - jd_facts_id
+    - x2_gate_results
+    - x1d_judge_results
+    - exit_disposition
+  must_include_source_lineage_for_claims: true
+  must_not_include_hidden_chain_of_thought: true
+
+rollout_switches:
+  APPS_LIC_C0_EVIDENCE_REQUIRED: true
+  APPS_LIC_GOVERNED_INGESTION_ENABLED: false
+  APPS_LIC_SILENT_INGESTION_DENY: true
+  APPS_LIC_C03_PROOF_GRAPH_REQUIRED: true
+  APPS_LIC_X2_STRICT: true
+  APPS_LIC_X1D_ENABLED_BY_RISK: true
+  APPS_LIC_AUTO_SEND_DISABLED: true
+  APPS_LIC_ALLOW_GENERIC_LOW_CLAIM_FALLBACK: true
+
+fail_closed_matrix:
+  empty_c0_evidence:
+    action: generic_low_claim_if_allowed_else_block
+    may_escalate_sc: false
+  weak_c0_evidence:
+    action: reduce_specificity_or_review_required
+    may_escalate_sc: false
+  missing_required_jd:
+    action: block_or_review_required_before_generation
+    may_escalate_sc: false
+  stale_trigger:
+    action: block_or_remove_trigger_specificity
+    may_escalate_sc: false
+  relationship_or_referral_unproven:
+    action: block_relationship_language
+    may_escalate_sc: false
+  judge_unavailable_when_required:
+    action: review_required
+    may_escalate_sc: false
+
+negative_fixture_manifest:
+  required_cases:
+    - ambiguous_title_requires_review_or_unknown_recipient_class
+    - senior_ta_role_specific_missing_req_blocks_or_requires_review
+    - recruiter_general_intro_without_jd_allowed_low_claim
+    - hiring_manager_role_specific_missing_jd_blocks_or_requires_review
+    - ceo_message_requires_two_llm_judges_for_clear_draft
+    - x1d_unavailable_returns_review_required_when_required
+    - stale_company_trigger_removed_or_blocked
+    - relationship_claim_without_evidence_blocked
+    - referral_claim_without_referrer_context_blocked
+    - follow_up_without_prior_thread_blocked
+    - unsupported_sender_claim_omitted_or_blocked
+    - jd_link_or_pasted_text_normalized_and_length_gated
+    - empty_vectors_do_not_trigger_silent_write
+    - chroma_unavailable_returns_c0_vector_backend_unavailable
+    - same_model_generator_and_judge_rejected_for_independent_x1d
+
+current_gap_map:
+  vector_readiness: not_wired_to_canonical_c0
+  c03_graph: stub_only
+  recipient_class_derivation: not_implemented
+  message_type_taxonomy: not_implemented
+  jd_requirement_gate: not_implemented
+  linked_in_length_budget_by_message_type: not_implemented
+  sc_candidate_paths: not_implemented
+  claude_sonnet_4_6_x1d: not_implemented
+  no_runtime_behavior_change_in_w0: true
