@@ -52,7 +52,7 @@ from apps_rg.runtime.exit.headline_x3 import aggregate_x3 as _aggregate_headline
 from apps_rg.runtime.judges.headline_x1d import run_headline_judges
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
-from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.shadow.headline_l6 import (
     build_l6_shadow_package,
     emit_headline_l6_shadow_learning_outputs,

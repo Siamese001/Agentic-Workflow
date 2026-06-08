@@ -82,10 +82,10 @@ ENV_VERIFY_CONTEXT_WINDOW = "APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW"
 
 
 def default_provider_context_window() -> int:
-    """App-local Qwen context window; override via ``VLLM_MAX_MODEL_LEN`` in env."""
-    from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MAX_MODEL_LEN
+    """App-local section context window; override via ``APPS_RG_SECTION_MAX_MODEL_LEN`` in env."""
+    from apps_rg.runtime.section_model_limits import SECTION_MODEL_MAX_MODEL_LEN
 
-    return int(QWEN_LOCAL_MAX_MODEL_LEN)
+    return int(SECTION_MODEL_MAX_MODEL_LEN)
 
 
 def resolve_provider_context_window() -> int:

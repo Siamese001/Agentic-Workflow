@@ -31,7 +31,7 @@ from apps_rg.runtime.providers import (
     ProviderProfile,
     QwenVLLMProvider,
 )
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
     prepare_runtime_proof_run_dir,

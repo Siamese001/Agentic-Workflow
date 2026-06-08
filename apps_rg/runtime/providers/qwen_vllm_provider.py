@@ -20,52 +20,15 @@ import re
 import time
 import urllib.error
 import urllib.request
-from dataclasses import dataclass, asdict
 from typing import Any
 
-from apps_rg.runtime.artifact_secret_redaction import redact_sensitive_mapping
+from apps_rg.runtime.providers.provider_contract import ProviderRequest, ProviderResult
 from apps_rg.runtime.validators.executive_summary_x2 import ALLOWED_MODELS
 
 
 DEFAULT_QWEN_BASE_URL = os.environ.get("VLLM_BASE_URL", "http://localhost:8000/v1")
 DEFAULT_QWEN_MODEL = os.environ.get("QWEN_VLLM_MODEL", "Qwen/Qwen2.5-32B-Instruct-AWQ")
 DEFAULT_QWEN_TIMEOUT_SECONDS = int(os.environ.get("APPS_RG_QWEN_TIMEOUT_SECONDS", "60"))
-
-
-@dataclass
-class ProviderRequest:
-    provider_requested: str
-    provider_attempted: bool
-    provider_url: str
-    model: str
-    temperature: float
-    max_tokens: int
-    timeout_seconds: int
-    prompt_hash: str
-    input_payload_hash: str
-    mock_fallback_allowed: bool
-
-    def to_dict(self) -> dict[str, Any]:
-        return redact_sensitive_mapping(asdict(self))
-
-
-@dataclass
-class ProviderResult:
-    provider_requested: str
-    provider_attempted: bool
-    provider_available: bool
-    exact_provider_error: str | None
-    runtime_generation_status: str  # REAL_LLM | BLOCKED | MOCKED | STUBBED
-    model: str
-    raw_model_output: str
-    provider_response: dict[str, Any] | None
-    reasoning_execution_receipt: dict[str, Any] | None = None
-    stub: bool = False
-    apps_rg_qwen_preflight_blocked: bool = False
-    apps_rg_last_probe_snapshot: dict[str, Any] | None = None
-
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
 
 
 def _compiled_prompt_text(compiled_prompt: Any) -> str:

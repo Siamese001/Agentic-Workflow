@@ -81,9 +81,10 @@ from apps_rg.runtime.ibm_narrative_proof_accounting import (
 )
 from apps_rg.runtime.judges.executive_summary_x1d import _make_blocked_output
 from apps_rg.runtime.judges.ibm_narrative_x1d import JUDGE_RUBRIC_VERSION, run_ibm_narrative_judges
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, ProviderResult, build_qwen_request
+from apps_rg.runtime.providers.provider_contract import ProviderResult
+from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
-from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.shadow.ibm_narrative_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage

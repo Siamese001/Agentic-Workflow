@@ -11,7 +11,7 @@ from apps_rg.runtime.judges.bullet_pool_claude_selector import (
     PoolSelectionResult,
     run_claude_bullet_pool_selection,
 )
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
     SelfConsistencyPath,
     bullet_lane_sc_enabled,
