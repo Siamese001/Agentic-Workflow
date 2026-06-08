@@ -48,9 +48,17 @@ def get_adg_dir() -> Path:
 
     Uses ADG_DIR env var if set, otherwise derives from repo root.
     """
+    repo_root = get_repo_root()
     if env_dir := os.environ.get("ADG_DIR"):
-        return Path(env_dir).resolve()
-    return get_repo_root() / "artifacts" / "adg"
+        resolved = Path(env_dir).resolve()
+        if os.environ.get("ADG_ALLOW_EXTERNAL_DIR") == "1":
+            return resolved
+        try:
+            resolved.relative_to(repo_root)
+            return resolved
+        except ValueError:
+            return repo_root / "artifacts" / "adg"
+    return repo_root / "artifacts" / "adg"
 
 
 def _has_nodes_table(path: Path) -> bool:

@@ -634,7 +634,7 @@ def generate_full_adg(
         print("[ADG] Warning: Git repo tree hash unavailable; in-scan concurrent-change guard is skipped")
 
     cache_path = adg_artifacts_dir / "cache" / "scan_result_cache.json"
-    cache_path.parent.mkdir(exist_ok=True)
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
     scanner = ADGStaticScanner(repo_root=ROOT, include_tests=True, cache_path=cache_path)
 
     try:

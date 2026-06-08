@@ -16,9 +16,16 @@ import pytest
 from tools.mcp import mcp_bootstrap as mod
 
 
+@pytest.fixture(autouse=True)
+def _force_guard_kill_path(monkeypatch: pytest.MonkeyPatch):
+    """Keep tests focused on matching semantics, not live heartbeat state."""
+    monkeypatch.setenv("MCP_GUARD_FORCE_KILL", "1")
+    monkeypatch.setenv("MCP_HEARTBEAT_DISABLE", "1")
+
+
 class _FakeProc:
-    def __init__(self, pid: int, cmdline: list[str]) -> None:
-        self.info = {"pid": pid, "name": "python.exe", "cmdline": cmdline}
+    def __init__(self, pid: int, cmdline: list[str], name: str = "python.exe") -> None:
+        self.info = {"pid": pid, "name": name, "cmdline": cmdline}
         self.terminated = False
         self.killed = False
 
@@ -93,6 +100,28 @@ def test_tuple_markers_match_slash_form(
         ("tools.adg.mcp.server", "tools/adg/mcp/server"),
     )
     assert p.terminated
+
+
+def test_marker_inside_parent_shell_text_is_not_killed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    parent = _FakeProc(
+        41,
+        [
+            "pwsh.exe",
+            "-Command",
+            "probe text mentions python -m tools.adg.mcp.server",
+        ],
+        name="pwsh.exe",
+    )
+    sibling = _FakeProc(42, ["python.exe", "-u", "-m", "tools.adg.mcp.server"])
+    _install_fake_psutil(monkeypatch, [parent, sibling])
+    monkeypatch.setattr(os, "getpid", lambda: 1)
+    mod.guard_single_instance(
+        ("tools.adg.mcp.server", "tools/adg/mcp/server"),
+    )
+    assert not parent.terminated
+    assert sibling.terminated
 
 
 def test_list_markers_accepted(monkeypatch: pytest.MonkeyPatch) -> None:

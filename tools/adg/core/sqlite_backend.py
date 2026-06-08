@@ -150,9 +150,12 @@ class SQLiteBackend:
 
     def _connect(self) -> None:
         """Establish read-only connection to latest SQLite file."""
-        sqlite_file = latest_sqlite()
+        sqlite_file = latest_sqlite(require_nodes_table=True)
         if sqlite_file is None:
-            raise RuntimeError("No ADG SQLite file found")
+            raise RuntimeError(
+                f"No ADG SQLite file with a nodes table found under {get_adg_dir()}. "
+                "Run: python -m tools.generate.generate_full_adg"
+            )
 
         self._sqlite_path = sqlite_file
         self._last_mtime = self._sqlite_path.stat().st_mtime

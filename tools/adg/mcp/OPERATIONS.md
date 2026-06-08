@@ -8,8 +8,12 @@ python -m tools.adg.mcp.server
 
 This is the only supported launch path — configured in `.cursor/mcp.json` as:
 ```json
-"command": "python", "args": ["-m", "tools.adg.mcp.server"]
+"command": "cmd", "args": ["/c", "tools\\adg\\mcp\\run_server.bat"]
 ```
+
+The project launcher resolves the repository root from its own path and sets
+`PYTHONPATH` from that root. Do not pass `ADG_DIR` from a global
+`AGENTIC_REPO_ROOT`; stale values can point the MCP at another checkout.
 
 `tools/adg/mcp/server_launcher.py` and `tools/adg/adg_mcp_entry.py` are **deprecated** legacy wrappers retained for emergency use only. Do not add them to `mcp_config.json`.
 
