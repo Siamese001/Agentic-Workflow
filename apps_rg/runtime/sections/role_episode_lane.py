@@ -29,9 +29,8 @@ from apps_rg.runtime.providers import (
     ProviderGateway,
     ProviderGatewayError,
     ProviderProfile,
-    QwenVLLMProvider,
 )
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
     prepare_runtime_proof_run_dir,
@@ -333,7 +332,6 @@ def _provider_gateway() -> ProviderGateway:
     openai_url = os.environ.get("APPS_RG_EXTERNAL_OPENAI_BASE_URL", "")
     return ProviderGateway(
         {
-            ProviderProfile.QWEN_VLLM: QwenVLLMProvider(),
             ProviderProfile.EXTERNAL_CLAUDE: ExternalProvider(
                 provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
                 model=claude_model,

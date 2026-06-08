@@ -80,11 +80,12 @@ def contract_harness_fast() -> bool:
 
 
 def qwen_live_available() -> bool:
-    from apps_rg.runtime.providers.competencies_live_provider_gate import qwen_vllm_http_models_preflight
+    """True when the external generation provider (Claude) is credentialed for live CLI lanes.
 
-    url = os.environ.get("VLLM_BASE_URL") or os.environ.get("APPS_RG_QWEN_OPENAI_BASE") or "http://127.0.0.1:8000/v1"
-    ok, _detail, _snap = qwen_vllm_http_models_preflight(provider_url=url, timeout_s=10.0)
-    return ok
+    The local Qwen/vLLM provider was removed; live CLI contract lanes now require a real
+    ``ANTHROPIC_API_KEY`` for the external generation model.
+    """
+    return bool(str(os.environ.get("ANTHROPIC_API_KEY") or "").strip())
 
 
 def should_skip_contract_live_lane() -> bool:
@@ -98,7 +99,8 @@ def live_lane_skip_reason(section: str = "") -> str:
             "unset for nightly live proof"
         )
     return (
-        f"{section or 'lane'} CLI contract tests require live qwen_vllm (mock provider removed)"
+        f"{section or 'lane'} CLI contract tests require a live external generation provider "
+        "(ANTHROPIC_API_KEY); mock provider removed"
     )
 
 

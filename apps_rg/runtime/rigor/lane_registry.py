@@ -84,7 +84,7 @@ def lane_specs() -> tuple[LaneRigorSpec, ...]:
         provider_mode: ProviderMode = "qwen_live"
         targeting = (*jd_common, *brief_default)
         style = STYLE_CRITICAL_GATES if lane != "executive_summary" else frozenset()
-        extra = (*targeting_company, *targeting, "--provider", "qwen_vllm", *common_tail)
+        extra = (*targeting_company, *targeting, "--provider", "external_claude", *common_tail)
         specs.append(
             LaneRigorSpec(
                 lane=lane,

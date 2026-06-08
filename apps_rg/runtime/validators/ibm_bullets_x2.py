@@ -978,7 +978,7 @@ def run_ibm_bullets_x2_gates(
         "match",
         "Provider requested does not match attempted.",
     )
-    no_silent_mock = not (provider_requested == "qwen_vllm" and runtime_generation_status == "MOCKED")
+    no_silent_mock = not (provider_requested == "external_claude" and runtime_generation_status == "MOCKED")
     add(
         "x2_no_silent_mock_fallback",
         no_silent_mock,

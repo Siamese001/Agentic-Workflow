@@ -138,46 +138,13 @@ def evaluate_qwen_readiness(
     lane_provider: str,
     docker_restart_audit: dict[str, Any] | None = None,
 ) -> tuple[QwenGateStatus, QwenGateStatus, str | None]:
-    """Return ``(qwen_health_status, qwen_model_ready_status, detail)``."""
-    from apps_rg.runtime.section_cli_preflight import (
-        _docker_container_running,
-        _http_models_health_check,
-        _qwen_container_name,
-        should_skip_qwen_vllm_health_gate,
-    )
+    """Local-provider readiness gate removed with the Qwen/vLLM provider.
 
-    prov = str(lane_provider or "").strip().lower()
-    if prov != "qwen_vllm":
-        return "NOT_APPLICABLE", "NOT_APPLICABLE", None
-
-    if should_skip_qwen_vllm_health_gate():
-        return "SKIPPED", "SKIPPED", None
-
-    audit = dict(docker_restart_audit or {})
-    if audit.get("performed") and not audit.get("ready"):
-        detail = str(
-            audit.get("probe_error") or audit.get("decisive_reason") or "readiness_probe_failed"
-        )
-        return "FAIL", "FAIL", detail
-    if audit.get("restart_requested") and audit.get("reason") == "model_readiness_failed":
-        detail = str(
-            audit.get("decisive_reason") or audit.get("readiness_status") or "model_readiness_failed"
-        )
-        return "FAIL", "FAIL", detail
-
-    container = _qwen_container_name()
-    ok_docker, docker_err = _docker_container_running(container)
-    if not ok_docker:
-        return "FAIL", "NOT_APPLICABLE", f"docker:{docker_err}"
-
-    ok_http, http_err = _http_models_health_check()
-    if not ok_http:
-        err_lower = (http_err or "").lower()
-        if "model" in err_lower or "wrong_or_missing" in err_lower:
-            return "PASS", "FAIL", http_err
-        return "FAIL", "FAIL", http_err
-
-    return "PASS", "PASS", None
+    The external generation provider owns its own transport and surfaces a BLOCKED
+    ``ProviderResult`` on failure, so there is no pre-dispatch local-container readiness
+    check. Always ``NOT_APPLICABLE``.
+    """
+    return "NOT_APPLICABLE", "NOT_APPLICABLE", None
 
 
 @dataclass(frozen=True, slots=True)

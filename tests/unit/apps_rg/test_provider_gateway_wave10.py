@@ -11,11 +11,10 @@ from apps_rg.runtime.providers import (
     ProviderGateway,
     ProviderProfile,
     ProviderProfileNotRegisteredError,
-    QwenVLLMProvider,
     load_provider_profiles_config,
     resolve_provider_profile,
 )
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 
 
 def _prompt() -> SimpleNamespace:
@@ -34,10 +33,9 @@ def test_provider_profiles_config_uses_external_claude_default() -> None:
     assert data["wave10a_policy"]["default_provider"] == "external_claude"
     assert data["wave10a_policy"]["external_default_status"] == "claude_default_for_apps_rg_e2e"
     profiles = data["profiles"]
-    assert profiles["local_qwen_generator"]["default"] is False
-    assert profiles["local_qwen_generator"]["provider_profile"] == "qwen_vllm"
     assert profiles["external_openai_generator"]["default"] is False
     assert profiles["external_claude_generator"]["default"] is True
+    assert "local_qwen_generator" not in profiles
 
 
 def test_provider_profile_resolution_defaults_to_external_claude(monkeypatch) -> None:
@@ -56,11 +54,11 @@ def test_wave10a_provider_profile_env_selects_external(monkeypatch) -> None:
 
 def test_provider_gateway_dispatches_registered_provider() -> None:
     class _Provider:
-        provider_profile = ProviderProfile.QWEN_VLLM
+        provider_profile = ProviderProfile.EXTERNAL_CLAUDE
 
         def generate(self, compiled_prompt, *, token_budget: int, temperature: float = 0.7):
             return ProviderResult(
-                provider_requested="qwen_vllm",
+                provider_requested="external_claude",
                 provider_attempted=True,
                 provider_available=True,
                 exact_provider_error=None,
@@ -70,8 +68,8 @@ def test_provider_gateway_dispatches_registered_provider() -> None:
                 provider_response={},
             )
 
-    gateway = ProviderGateway({ProviderProfile.QWEN_VLLM: _Provider()})
-    result = gateway.generate(ProviderProfile.QWEN_VLLM, _prompt(), token_budget=123, temperature=0.2)
+    gateway = ProviderGateway({ProviderProfile.EXTERNAL_CLAUDE: _Provider()})
+    result = gateway.generate(ProviderProfile.EXTERNAL_CLAUDE, _prompt(), token_budget=123, temperature=0.2)
     assert result.raw_model_output == "run-1:123:0.2"
 
 
@@ -79,39 +77,6 @@ def test_provider_gateway_blocks_unregistered_profile() -> None:
     gateway = ProviderGateway()
     with pytest.raises(ProviderProfileNotRegisteredError):
         gateway.generate(ProviderProfile.EXTERNAL_OPENAI, _prompt(), token_budget=10)
-
-
-def test_qwen_provider_wrapper_delegates_to_existing_transport(monkeypatch) -> None:
-    captured: dict[str, object] = {}
-
-    def _fake_call(payload, *, base_url: str, timeout: int | None = None):
-        captured["payload"] = payload
-        captured["base_url"] = base_url
-        captured["timeout"] = timeout
-        return ProviderResult(
-            provider_requested="qwen_vllm",
-            provider_attempted=True,
-            provider_available=True,
-            exact_provider_error=None,
-            runtime_generation_status="REAL_LLM",
-            model=str(payload["model"]),
-            raw_model_output='{"ok": true}',
-            provider_response={"stub": False},
-        )
-
-    monkeypatch.setattr("apps_rg.runtime.providers.qwen_vllm_provider.call_qwen_vllm", _fake_call)
-    provider = QwenVLLMProvider(base_url="http://127.0.0.1:8000/v1", model="Qwen/Test", timeout_seconds=7)
-
-    result = provider.generate(_prompt(), token_budget=321, temperature=0.3)
-
-    assert result.runtime_generation_status == "REAL_LLM"
-    assert captured["base_url"] == "http://127.0.0.1:8000/v1"
-    assert captured["timeout"] == 7
-    payload = captured["payload"]
-    assert isinstance(payload, dict)
-    assert payload["model"] == "Qwen/Test"
-    assert payload["max_tokens"] == 321
-    assert payload["temperature"] == 0.3
 
 
 def test_external_provider_fail_closed_without_credentials(monkeypatch) -> None:

@@ -15,7 +15,10 @@ from apps_rg.runtime.pre_dispatch_preflight import (
     run_pre_dispatch_preflight,
     targeting_override_allowed,
 )
-from apps_rg.runtime.section_cli_defaults import CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM
+from apps_rg.runtime.section_cli_defaults import (
+    CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
+    CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
+)
 from tests.unit.apps_rg.section_rigor.unify_ibm_lane_fixtures import unify_bullets_parsed_from_mock
 
 REPO = Path(__file__).resolve().parents[3]
@@ -53,32 +56,18 @@ def test_run_preflight_dispatch_false_when_jd_missing() -> None:
     assert "targeting" in result.decisive_reason.lower()
 
 
-def test_stub_skips_qwen_gate() -> None:
-    import os
-
-    prev = os.environ.get("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB")
-    os.environ["APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"] = "1"
-    try:
-        result = run_pre_dispatch_preflight(
-            section="headline",
-            jd=str(_FRESH_JD),
-            manual_brief="Lane briefing with non-default digest for pytest unit scope.",
-            lane_provider="qwen_vllm",
-            provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_QWEN_VLLM,
-        )
-        assert result.dispatch_started is True
-        from apps_rg.runtime.qwen_offline_contract_stub import offline_contract_stub_enabled
-
-        if offline_contract_stub_enabled():
-            assert result.qwen_health_status == "SKIPPED"
-            assert result.qwen_model_ready_status == "SKIPPED"
-        else:
-            assert result.qwen_health_status in ("PASS", "FAIL", "BLOCKED")
-    finally:
-        if prev is None:
-            os.environ.pop("APPS_RG_QWEN_OFFLINE_CONTRACT_STUB", None)
-        else:
-            os.environ["APPS_RG_QWEN_OFFLINE_CONTRACT_STUB"] = prev
+def test_provider_readiness_not_applicable_after_local_provider_removal() -> None:
+    """Local-provider readiness gate is retired; preflight reports NOT_APPLICABLE."""
+    result = run_pre_dispatch_preflight(
+        section="headline",
+        jd=str(_FRESH_JD),
+        manual_brief="Lane briefing with non-default digest for pytest unit scope.",
+        lane_provider="external_claude",
+        provider_resolution_source=CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
+    )
+    assert result.dispatch_started is True
+    assert result.qwen_health_status == "NOT_APPLICABLE"
+    assert result.qwen_model_ready_status == "NOT_APPLICABLE"
 
 
 def test_narrative_preflight_blocked_without_upstream_bullets(

@@ -56,9 +56,9 @@ from apps_rg.runtime.section_proof.section_input_usage_ledger import build_secti
 from apps_rg.runtime.sections.unify_bullets_pa import compile_unify_bullets_prompt
 from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3 as _aggregate_unify_bullets_x3
 from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges  # singleton fallback only
-from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     build_employment_targeting_context,
@@ -483,7 +483,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": UNIFY_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -667,7 +667,7 @@ def run_unify_bullets_execution(
         artifact_dir, section_id="unify_bullets", run_id=str(runtime_payload["run_id"])
     )
 
-    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+    from apps_rg.runtime.sections.section_generation import merge_transport_context
 
     merge_transport_context(
         artifact_dir=str(artifact_dir.resolve()),
@@ -742,7 +742,7 @@ def run_unify_bullets_execution(
         provider_lane=str(args.provider),
     )
 
-    provider_req, provider_payload = build_qwen_request(
+    provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
@@ -753,7 +753,7 @@ def run_unify_bullets_execution(
     provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
+    req_model = str(provider_payload.get("model", SECTION_MODEL_ID))
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
     result, raw_output, parsed_in, parse_error, gen_meta = generate_bullet_lane_with_sc_and_claude(
         section_lane=LANE_KEY,
@@ -764,7 +764,7 @@ def run_unify_bullets_execution(
         artifact_dir=artifact_dir,
         run_id=str(runtime_payload.get("run_id") or ""),
         temperature_bounds=UNIFY_TEMP_RANGE,
-        base_temperature=float(args.temperature) if args.provider == "qwen_vllm" else UNIFY_TEMP_DEFAULT,
+        base_temperature=float(args.temperature) if args.provider == "external_claude" else UNIFY_TEMP_DEFAULT,
         required_bullet_ids=UNIFY_BULLET_IDS,
         targeting_context=build_employment_targeting_context(runtime_payload, section_lane=LANE_KEY),
         judge_mode=judge_mode,
@@ -776,7 +776,7 @@ def run_unify_bullets_execution(
     write_json(artifact_dir / "provider_response.json", provider_result_data)
     parsed = parsed_in
     if (
-        str(args.provider) == "qwen_vllm"
+        str(args.provider) == "external_claude"
         and result
         and result.runtime_generation_status == "REAL_LLM"
         and parsed_in is None
@@ -849,7 +849,7 @@ def run_unify_bullets_execution(
         allowed_fact_ids=allowed_fact_ids,
     )
     model_name = resolve_provider_model_name(provider_request_data, provider_result_data)
-    temperature = float(args.temperature) if args.provider == "qwen_vllm" else UNIFY_TEMP_DEFAULT
+    temperature = float(args.temperature) if args.provider == "external_claude" else UNIFY_TEMP_DEFAULT
 
     l2_output = {
         "run_id": runtime_payload["run_id"],

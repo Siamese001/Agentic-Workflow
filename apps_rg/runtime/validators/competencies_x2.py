@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.validators.competencies_proof_markers import scan_mock_fixture_markers
 from apps_rg.runtime.validators.executive_summary_x2 import (
     EM_DASH,
@@ -135,7 +135,7 @@ def resolve_competencies_provider_transport_x2(
     rgs = str(runtime_generation_status).strip()
     if live_preflight_blocked:
         return False, cli, "blocked_http_models_preflight"
-    if cli == "qwen_vllm":
+    if cli == "external_claude":
         if rgs == "REAL_LLM":
             return True, cli, "qwen_vllm_http"
         if rgs == OFFLINE_CONTRACT_STUB_RUNTIME_STATUS:
@@ -1007,7 +1007,7 @@ def run_competencies_x2_gates(
         None if json_ok else json_reason,
     )
 
-    cli_effective = str(cli_provider or provider_requested or "qwen_vllm").strip().lower()
+    cli_effective = str(cli_provider or provider_requested or "external_claude").strip().lower()
     provider_ok, req_lbl, att_lbl = resolve_competencies_provider_transport_x2(
         cli_provider=cli_effective,
         runtime_generation_status=str(runtime_generation_status),
@@ -1022,7 +1022,7 @@ def run_competencies_x2_gates(
         if provider_ok
         else "Provider transport does not match CLI intent (substitution, blocked TCP preflight, or mock).",
     )
-    no_silent_mock = not (cli_effective == "qwen_vllm" and runtime_generation_status == "MOCKED")
+    no_silent_mock = not (cli_effective == "external_claude" and runtime_generation_status == "MOCKED")
     add(
         "x2_no_silent_mock_fallback",
         no_silent_mock,

@@ -58,8 +58,8 @@ from apps_rg.runtime.sections.unify_narrative_pa import compile_unify_narrative_
 from apps_rg.runtime.exit.unify_narrative_x3 import aggregate_x3 as _aggregate_unify_narrative_x3
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.judges.unify_narrative_x1d import run_unify_narrative_judges
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
@@ -460,7 +460,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -629,7 +629,7 @@ def run_unify_narrative_execution(
         run_id=str(runtime_payload["run_id"]),
     )
 
-    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+    from apps_rg.runtime.sections.section_generation import merge_transport_context
 
     merge_transport_context(
         artifact_dir=str(artifact_dir.resolve()),
@@ -713,7 +713,7 @@ def run_unify_narrative_execution(
         provider_lane=str(args.provider),
     )
 
-    provider_req, provider_payload = build_qwen_request(
+    provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
@@ -724,7 +724,7 @@ def run_unify_narrative_execution(
     provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_payload.get("model", DEFAULT_QWEN_MODEL))
+    req_model = str(provider_payload.get("model", SECTION_MODEL_ID))
 
     from apps_rg.runtime.validators.companion_bullet_finalization import (
         UPSTREAM_NOT_FINALIZED_RUNTIME_STATUS,
@@ -767,7 +767,7 @@ def run_unify_narrative_execution(
         write_json(artifact_dir / "provider_response.json", provider_result_data)
     if runtime_generation_status in ("REAL_LLM", "MOCKED"):
         parsed_in, parse_error = parse_model_json(raw_output)
-        if parsed_in is None and runtime_generation_status == "REAL_LLM" and str(args.provider) == "qwen_vllm":
+        if parsed_in is None and runtime_generation_status == "REAL_LLM" and str(args.provider) == "external_claude":
             raw_output, parsed_in, parse_error = retry_qwen_for_parse(
                 messages, provider_payload, raw_output, parse_error
             )
@@ -818,7 +818,7 @@ def run_unify_narrative_execution(
         allowed_fact_ids=allowed_fact_ids,
     )
     model_name = resolve_provider_model_name(provider_request_data, provider_result_data)
-    temperature = float(args.temperature) if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT
+    temperature = float(args.temperature) if args.provider == "external_claude" else NARRATIVE_TEMP_DEFAULT
 
     ja_raw = (parsed or {}).get("jd_alignment")
     if isinstance(ja_raw, dict):
@@ -1043,8 +1043,8 @@ def run_unify_narrative_execution(
         artifact_dir, "unify_narrative", runtime_payload, repo_root=REPO_ROOT
     )
 
-    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else NARRATIVE_TEMP_DEFAULT
-    l6_max = NARRATIVE_MAX_OUTPUT_TOKENS if args.provider == "qwen_vllm" else None
+    l6_temp = float(args.temperature) if args.provider == "external_claude" else NARRATIVE_TEMP_DEFAULT
+    l6_max = NARRATIVE_MAX_OUTPUT_TOKENS if args.provider == "external_claude" else None
     gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6 = build_l6_shadow_package(
         artifact_dir=artifact_dir,

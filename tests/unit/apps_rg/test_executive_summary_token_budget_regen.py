@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import pytest
 
-from apps_rg.runtime.providers import qwen_vllm_provider
+from apps_rg.runtime.providers import provider_contract as qwen_vllm_provider
 from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
     budgeted_qwen_regen_call,
     clear_regen_budget_ledger,
@@ -82,7 +82,7 @@ def test_budgeted_regen_requires_provider_response_for_accepted_parse(
         )
 
     monkeypatch.setattr(
-        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.call_qwen_vllm",
+        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.generate_section",
         _fake_call,
     )
     clear_regen_budget_ledger(tmp_path)
@@ -126,7 +126,7 @@ def test_budgeted_regen_timeout_never_accepted(monkeypatch, tmp_path: Path) -> N
         )
 
     monkeypatch.setattr(
-        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.call_qwen_vllm",
+        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.generate_section",
         _timeout_call,
     )
     clear_regen_budget_ledger(tmp_path)

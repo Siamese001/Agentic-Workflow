@@ -483,7 +483,7 @@ def test_retry_qwen_falls_back_when_core_runner_refuses(tmp_path: Path, monkeypa
         _refuse_core,
     )
     monkeypatch.setattr(
-        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.call_qwen_vllm",
+        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.generate_section",
         lambda *a, **k: _Result(),
     )
     monkeypatch.setattr(

@@ -50,9 +50,9 @@ from apps_rg.runtime.claim_ledger.headline_claim_ledger import (
 from apps_rg.runtime.sections.prompt_trace_reasoning import attach_reasoning_to_prompt_trace
 from apps_rg.runtime.exit.headline_x3 import aggregate_x3 as _aggregate_headline_x3
 from apps_rg.runtime.judges.headline_x1d import run_headline_judges
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
-from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
+from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.shadow.headline_l6 import (
     build_l6_shadow_package,
     emit_headline_l6_shadow_learning_outputs,
@@ -694,7 +694,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -729,7 +729,7 @@ def retry_headline_word_and_pipe(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, parsed, None
     new_raw = result.raw_model_output
@@ -843,7 +843,7 @@ def retry_headline_proof_shape(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, failed_snapshot, None
     new_raw = result.raw_model_output
@@ -1034,7 +1034,7 @@ def run_headline_execution(
     )
     (artifact_dir / "companion_generated_sections.txt").write_text(companion_context or "(none)\n", encoding="utf-8")
 
-    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+    from apps_rg.runtime.sections.section_generation import merge_transport_context
 
     merge_transport_context(
         artifact_dir=str(artifact_dir.resolve()),
@@ -1128,7 +1128,7 @@ def run_headline_execution(
         provider_lane=str(args.provider),
     )
 
-    provider_req, provider_payload = build_qwen_request(
+    provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
@@ -1137,7 +1137,7 @@ def run_headline_execution(
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
-    req_model = str(provider_request_data.get("model") or DEFAULT_QWEN_MODEL)
+    req_model = str(provider_request_data.get("model") or SECTION_MODEL_ID)
     tagged = tag_reasoning_lane(provider_payload, LANE_KEY)
     from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
 
@@ -1159,7 +1159,7 @@ def run_headline_execution(
     if result.runtime_generation_status in _HEADLINE_JSON_OUTPUT_STATUSES:
         raw_model_output_original = raw_output
         parsed, parse_error = parse_model_json(raw_model_output_original)
-        if parsed is None and str(args.provider) == "qwen_vllm":
+        if parsed is None and str(args.provider) == "external_claude":
             raw_model_output_original, parsed, parse_error = retry_qwen_for_parse(
                 messages, provider_payload, raw_model_output_original, parse_error
             )
@@ -1919,7 +1919,7 @@ def build_headline_lane_args(
     selected_role_fact_set: str = "",
 ) -> SimpleNamespace:
     return SimpleNamespace(
-        provider=str(provider).strip() or "qwen_vllm",
+        provider=str(provider).strip() or "external_claude",
         temperature=float(temperature),
         x1d_judges=str(x1d_judges),
         mock_judges=bool(mock_judges),

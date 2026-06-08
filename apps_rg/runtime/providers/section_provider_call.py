@@ -13,8 +13,7 @@ from typing import Any
 
 from apps_rg.runtime.providers.external_provider import ExternalProvider
 from apps_rg.runtime.providers.provider_gateway import ProviderGateway, ProviderProfile, normalize_provider_profile
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult, QwenVLLMProvider
-from apps_rg.runtime.providers import section_qwen_slice
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 
 
 @dataclass(frozen=True)
@@ -34,7 +33,6 @@ class _CompiledMessagesPrompt:
 def build_section_provider_gateway() -> ProviderGateway:
     return ProviderGateway(
         {
-            ProviderProfile.QWEN_VLLM: QwenVLLMProvider(),
             ProviderProfile.EXTERNAL_CLAUDE: ExternalProvider(
                 provider_profile=ProviderProfile.EXTERNAL_CLAUDE,
             ),
@@ -76,13 +74,6 @@ def call_section_model_provider(
     token_budget: int | None = None,
 ) -> ProviderResult:
     profile = normalize_provider_profile(provider_profile)
-    if profile == ProviderProfile.QWEN_VLLM:
-        return section_qwen_slice.call_qwen_vllm(
-            provider_payload,
-            artifact_dir=artifact_dir,
-            run_id=run_id,
-            temperature_override=temperature_override,
-        )
     compiled = _compiled_prompt_from_payload(provider_payload, run_id=run_id)
     budget = int(token_budget or provider_payload.get("max_tokens") or provider_payload.get("max_output_tokens") or 900)
     temperature = float(

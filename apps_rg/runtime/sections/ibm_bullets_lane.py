@@ -49,8 +49,8 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
 )
 from apps_rg.runtime.exit.ibm_bullets_x3 import aggregate_x3 as _aggregate_ibm_bullets_x3
 from apps_rg.runtime.judges.ibm_bullets_x1d import run_ibm_bullets_judges
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     build_employment_targeting_context,
@@ -331,7 +331,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": IBM_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if not generation_status_allows_qwen_json_parse(result.runtime_generation_status):
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -807,7 +807,7 @@ def run_ibm_bullets_execution(
     start_lane_repair_ledger(
         artifact_dir, section_id="ibm_bullets", run_id=str(runtime_payload["run_id"])
     )
-    from apps_rg.runtime.qwen_transport_diag import merge_transport_context
+    from apps_rg.runtime.sections.section_generation import merge_transport_context
 
     merge_transport_context(
         artifact_dir=str(artifact_dir.resolve()),
@@ -884,7 +884,7 @@ def run_ibm_bullets_execution(
         provider_lane=str(args.provider),
     )
 
-    provider_req, provider_payload = build_qwen_request(
+    provider_req, provider_payload = build_section_request(
         messages=messages,
         prompt_hash=prompt_hash,
         input_payload_hash=input_payload_hash,
@@ -895,7 +895,7 @@ def run_ibm_bullets_execution(
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)
     tagged = tag_reasoning_lane(provider_payload, LANE_KEY)
-    req_model = str(tagged.get("model", DEFAULT_QWEN_MODEL))
+    req_model = str(tagged.get("model", SECTION_MODEL_ID))
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
     result, raw_output, parsed, parse_error, gen_meta = generate_bullet_lane_with_sc_and_claude(
         section_lane=LANE_KEY,
@@ -906,7 +906,7 @@ def run_ibm_bullets_execution(
         artifact_dir=artifact_dir,
         run_id=str(runtime_payload.get("run_id") or ""),
         temperature_bounds=IBM_TEMP_RANGE,
-        base_temperature=float(args.temperature) if args.provider == "qwen_vllm" else IBM_TEMP_DEFAULT,
+        base_temperature=float(args.temperature) if args.provider == "external_claude" else IBM_TEMP_DEFAULT,
         required_bullet_ids=IBM_BULLET_IDS,
         targeting_context=build_employment_targeting_context(runtime_payload, section_lane=LANE_KEY),
         judge_mode=judge_mode,
@@ -916,7 +916,7 @@ def run_ibm_bullets_execution(
     provider_result_data = result.to_dict() if result else {}
     runtime_generation_status = result.runtime_generation_status if result else "BLOCKED"
     write_json(artifact_dir / "provider_response.json", provider_result_data)
-    if str(args.provider) == "qwen_vllm" and generation_status_allows_qwen_json_parse(runtime_generation_status):
+    if str(args.provider) == "external_claude" and generation_status_allows_qwen_json_parse(runtime_generation_status):
         if parsed is None:
             raw_output, parsed, parse_error = retry_qwen_for_parse(
                 messages, tagged, raw_output, parse_error
@@ -1094,7 +1094,7 @@ def run_ibm_bullets_execution(
         ]
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
 
-    temperature = float(args.temperature) if args.provider == "qwen_vllm" else IBM_TEMP_DEFAULT
+    temperature = float(args.temperature) if args.provider == "external_claude" else IBM_TEMP_DEFAULT
 
     write_json(
         artifact_dir / "prompt_selection_trace.json",
@@ -1264,8 +1264,8 @@ def run_ibm_bullets_execution(
     )
     write_json(artifact_dir / "l2_output.json", l2_output)
 
-    l6_temp = float(args.temperature) if args.provider == "qwen_vllm" else IBM_TEMP_DEFAULT
-    l6_max = IBM_MAX_OUTPUT_TOKENS if args.provider == "qwen_vllm" else None
+    l6_temp = float(args.temperature) if args.provider == "external_claude" else IBM_TEMP_DEFAULT
+    l6_max = IBM_MAX_OUTPUT_TOKENS if args.provider == "external_claude" else None
     gate_section_l6_shadow_after_exhaust(artifact_dir, runtime_payload)
     l6_base = build_l6_shadow_package(
         artifact_dir=artifact_dir,

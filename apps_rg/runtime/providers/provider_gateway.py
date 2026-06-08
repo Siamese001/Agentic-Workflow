@@ -12,7 +12,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Mapping, Protocol, runtime_checkable
 
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 
 ENV_APPS_RG_PROVIDER_PROFILE = "APPS_RG_PROVIDER_PROFILE"
 DEFAULT_PROVIDER_PROFILE = "external_claude"
@@ -28,12 +28,8 @@ class ProviderProfileNotRegisteredError(ProviderGatewayError):
 
 
 class ProviderProfile(str, Enum):
-    """Provider profile selection.
+    """Provider profile selection. External Claude is the apps_rg generation default."""
 
-    External Claude is the apps_rg E2E default; Qwen remains selectable.
-    """
-
-    QWEN_VLLM = "qwen_vllm"
     EXTERNAL_CLAUDE = "external_claude"
     EXTERNAL_OPENAI = "external_openai"
     EXTERNAL_DEFAULT = "external_default"
@@ -70,10 +66,6 @@ def normalize_provider_profile(value: str | ProviderProfile | None) -> ProviderP
     if not raw:
         return ProviderProfile.EXTERNAL_CLAUDE
     aliases = {
-        "local_qwen": ProviderProfile.QWEN_VLLM,
-        "local_qwen_generator": ProviderProfile.QWEN_VLLM,
-        "qwen": ProviderProfile.QWEN_VLLM,
-        "qwen_vllm": ProviderProfile.QWEN_VLLM,
         "claude": ProviderProfile.EXTERNAL_CLAUDE,
         "external_claude": ProviderProfile.EXTERNAL_CLAUDE,
         "openai": ProviderProfile.EXTERNAL_OPENAI,

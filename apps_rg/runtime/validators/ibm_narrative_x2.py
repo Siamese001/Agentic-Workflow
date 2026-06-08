@@ -20,7 +20,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     has_jd_phrase_copy,
     split_sentences,
 )
-from apps_rg.runtime.qwen_offline_contract_stub import offline_contract_stub_enabled
+from apps_rg.runtime.offline_contract_status import offline_contract_stub_enabled
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS, UNIFY_RUNTIME_TERM_PATTERNS
 from apps_rg.runtime.validators.narrative_identity_x2 import narrative_leaks_candidate_name_tokens
 from apps_rg.runtime.sections.section_product_shape_ssot import (
@@ -750,7 +750,7 @@ def run_ibm_narrative_x2_gates(
         "match",
         "Provider mismatch.",
     )
-    no_silent_mock = not (provider_requested == "qwen_vllm" and runtime_generation_status == "MOCKED")
+    no_silent_mock = not (provider_requested == "external_claude" and runtime_generation_status == "MOCKED")
     add(
         "x2_no_silent_mock_fallback",
         no_silent_mock,

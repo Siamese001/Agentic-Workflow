@@ -151,77 +151,16 @@ def resolve_context_window_provenance(*, model: str | None = None) -> ContextWin
     """Resolve context window with labeled provenance (W2.1). Auto-detect is opt-in only."""
     env_window = resolve_provider_context_window()
 
-    if not _truthy_env_flag(_ENV_VERIFY_CONTEXT_WINDOW):
-        return ContextWindowProvenance(
-            provider_context_window=env_window,
-            provider_context_window_source=_CONTEXT_SOURCE_ENV,
-            server_context_window_verified=False,
-            server_context_window_warning=(
-                "operator-declared VLLM_MAX_MODEL_LEN; not server-proven (verification disabled)"
-            ),
-            server_observed_context_window=None,
-        )
-
-    from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_BASE_URL, DEFAULT_QWEN_MODEL
-    from apps_rg.runtime.qwen_transport_diag import fetch_openai_compatible_model_ids
-
-    base_url = str(os.environ.get("VLLM_BASE_URL", DEFAULT_QWEN_BASE_URL))
-    model_id = str(model or os.environ.get("QWEN_VLLM_MODEL", DEFAULT_QWEN_MODEL))
-    timeout_s = float(os.environ.get("APPS_RG_QWEN_MODELS_PROBE_TIMEOUT_SECONDS", "5"))
-    http_status, _ids, transport_error = fetch_openai_compatible_model_ids(
-        base_url=base_url,
-        timeout_s=timeout_s,
-    )
-    if transport_error or http_status != 200:
-        return ContextWindowProvenance(
-            provider_context_window=env_window,
-            provider_context_window_source=_CONTEXT_SOURCE_UNKNOWN,
-            server_context_window_verified=False,
-            server_context_window_warning=(
-                f"server models probe failed; using env VLLM_MAX_MODEL_LEN={env_window} ({transport_error or http_status})"
-            ),
-            server_observed_context_window=None,
-        )
-
-    import urllib.error
-    import urllib.request
-
-    url = str(base_url).rstrip("/") + "/models"
-    try:
-        req = urllib.request.Request(url, method="GET")
-        with urllib.request.urlopen(req, timeout=timeout_s) as resp:
-            payload = json.loads(resp.read().decode("utf-8"))
-    except (OSError, urllib.error.URLError, TimeoutError, json.JSONDecodeError, ValueError):
-        return ContextWindowProvenance(
-            provider_context_window=env_window,
-            provider_context_window_source=_CONTEXT_SOURCE_UNKNOWN,
-            server_context_window_verified=False,
-            server_context_window_warning=(
-                "server models metadata unreadable; using operator-declared VLLM_MAX_MODEL_LEN"
-            ),
-            server_observed_context_window=None,
-        )
-
-    if not isinstance(payload, dict):
-        payload = {}
-    observed = _server_context_window_from_models_payload(payload, model_id=model_id)
-    if observed is None:
-        return ContextWindowProvenance(
-            provider_context_window=env_window,
-            provider_context_window_source=_CONTEXT_SOURCE_ENV,
-            server_context_window_verified=False,
-            server_context_window_warning=(
-                "server /v1/models reachable but no max_model_len metadata; using env VLLM_MAX_MODEL_LEN"
-            ),
-            server_observed_context_window=None,
-        )
-
+    # The Qwen/vLLM server ``/v1/models`` context-window probe was removed with the
+    # local-model provider; the context window is the operator-declared section budget.
     return ContextWindowProvenance(
-        provider_context_window=observed,
-        provider_context_window_source=_CONTEXT_SOURCE_SERVER,
-        server_context_window_verified=True,
-        server_context_window_warning=None,
-        server_observed_context_window=observed,
+        provider_context_window=env_window,
+        provider_context_window_source=_CONTEXT_SOURCE_ENV,
+        server_context_window_verified=False,
+        server_context_window_warning=(
+            "operator-declared section context window; not server-proven (local provider removed)"
+        ),
+        server_observed_context_window=None,
     )
 
 

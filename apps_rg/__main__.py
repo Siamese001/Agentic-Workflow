@@ -586,7 +586,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--provider",
         default=argparse.SUPPRESS,
-        choices=["qwen_vllm", "external_claude"],
+        choices=["external_claude"],
         help=(
             "Optional override for section-only lanes (qwen_vllm or external_claude); when omitted, uses "
             "APPS_RG_MODULAR_LANE_PROVIDER (see apps_rg.l2_recipe.r4_generation_mode). "
@@ -841,25 +841,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             print(f"pre_dispatch_preflight_receipt={receipt_path.as_posix()}", flush=True)
             return 2
 
-    # Optional local Qwen vLLM Docker restart (opt-in and qwen_vllm-only).
-    from apps_rg.runtime.qwen_vllm_docker_restart import maybe_restart_qwen_vllm_for_apps_rg_run
-
-    _qdr = maybe_restart_qwen_vllm_for_apps_rg_run(
-        running_section_lane=section_eff in section_lane_ids,
-        cli_provider=lane_provider_eff,
-    )
-    if _qdr.get("performed"):
-        print(
-            f"[apps_rg] qwen_vllm docker restart: container={_qdr.get('container')!r} "
-            f"ready={_qdr.get('ready')} probe={_qdr.get('probe_status')!r}",
-            flush=True,
-        )
-    from apps_rg.runtime.qwen_transport_diag import persist_docker_restart_readiness_artifact, set_docker_restart_audit
-
-    set_docker_restart_audit(dict(_qdr))
+    # Local Qwen vLLM Docker restart removed with the local-model provider; the external
+    # generation provider owns its own transport and needs no container preflight.
     _ad = str(getattr(args, "artifact_dir", "") or "").strip()
-    if _ad:
-        persist_docker_restart_readiness_artifact(_ad, dict(_qdr))
 
     if section_eff in section_lane_ids and lane_provider_eff is not None:
         from apps_rg.runtime.pre_dispatch_preflight import (

@@ -201,7 +201,7 @@ def resolve_cli_lane_provider_with_source(cli_value: str | None) -> tuple[str, s
                 "Invalid --provider 'mock': section lanes require qwen_vllm or external_claude. "
                 "Live qwen_vllm required; APPS_RG_QWEN_OFFLINE_CONTRACT_STUB is disabled on product paths."
             )
-        if v not in {"qwen_vllm", "external_claude"}:
+        if v not in {"external_claude"}:
             raise SectionCliConfigError(
                 f"Invalid --provider {cli_value!r} (expected qwen_vllm or external_claude)."
             )
@@ -235,7 +235,7 @@ def coalesce_lane_provider_resolution_source(
     raw_env = str(os.environ.get(ENV_APPS_RG_MODULAR_LANE_PROVIDER) or "").strip()
     if raw_env:
         return CLI_PROVIDER_RESOLUTION_ENV_APPS_RG_MODULAR_LANE_PROVIDER
-    if str(resolved_provider).strip().lower() == "qwen_vllm" and not raw_env:
+    if str(resolved_provider).strip().lower() == "external_claude" and not raw_env:
         return CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE
     return CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 

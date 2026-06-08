@@ -5,11 +5,11 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from apps_rg.l2_recipe.pa_to_core_cpa import adapt_apps_rg_cpa_for_l2_envelope
-from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MODEL_ID
+from apps_rg.runtime.section_model_limits import SECTION_MODEL_ID
 
 
 def test_adapt_maps_unspecified_model_to_ssot():
-    """Legacy PA manifests must not send ``unspecified`` to vLLM."""
+    """Legacy PA manifests must resolve ``unspecified`` to the section model SSOT."""
     local_cpa = SimpleNamespace(
         prompt_hash="sha256:abc",
         provider_render_manifest={"model": "unspecified", "max_tokens": 1024},
@@ -23,7 +23,7 @@ def test_adapt_maps_unspecified_model_to_ssot():
         local_cpa,
         {"request_id": "r1", "run_id": "run1", "trace_root": "tr1"},
     )
-    assert core.target_model == QWEN_LOCAL_MODEL_ID
+    assert core.target_model == SECTION_MODEL_ID
 
 
 def test_adapt_preserves_temperature_zero():

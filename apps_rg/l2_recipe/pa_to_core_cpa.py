@@ -15,7 +15,7 @@ from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact as CoreCompiledPromptArtifact,
     PromptBlock,
 )
-from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MODEL_ID
+from apps_rg.runtime.section_model_limits import SECTION_MODEL_ID
 
 
 def adapt_apps_rg_cpa_for_l2_envelope(
@@ -49,7 +49,7 @@ def adapt_apps_rg_cpa_for_l2_envelope(
     raw_model = str(prov.get("model") or "").strip()
     _missing = ("", "unspecified", "unknown", "none")
     if not raw_model or raw_model.lower() in _missing:
-        target_model = QWEN_LOCAL_MODEL_ID
+        target_model = SECTION_MODEL_ID
     else:
         target_model = raw_model
     max_tok = int(prov.get("max_tokens") or 4096)
