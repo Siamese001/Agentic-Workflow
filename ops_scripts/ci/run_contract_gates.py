@@ -402,6 +402,9 @@ def main():
         ("W4d 10C proof-ledger validation", "tools/requirements/validate_10c_proof_ledger.py"),
         ("W4d-3 10C cross-file consistency", "ops_scripts/ci/check_10c_cross_file_consistency.py"),
         ("W4d-4 10C pilot proof-evidence", "ops_scripts/ci/check_10c_pilot_proof_evidence.py"),
+        # PLAN-SUPERSEDE: plans declaring '## Supersedes' must have terminal
+        # predecessors. Advisory; fail-closed via PLAN_SUPERSESSION_GATE_FAIL_CLOSED=1.
+        ("PLAN-SUPERSEDE plan supersession consistency", "ops_scripts/ci/check_plan_supersession_consistency.py"),
         # Runtime-evidence stack (plan: runtime-evidence-foundation-54ad39).
         # All three close the static-only-proof gap that the OTEL emission RCA
         # surfaced. Pact-style contract verifier is the master gate; the orphan

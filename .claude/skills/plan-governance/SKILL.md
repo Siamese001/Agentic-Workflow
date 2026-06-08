@@ -134,12 +134,20 @@ Every Backlog Items row MUST have (a) `Plan` relation OR (b) non-empty `Plan Fil
 
 ---
 
+## 6. Supersession (auto-retire predecessors)
+
+When a plan replaces an earlier one, declare it in a `## Supersedes` table (and/or `supersedes:` frontmatter). Each named predecessor still in a non-terminal Notion status is auto-flipped to `Retired` — with a dated `Summary` note **and** a posted comment linking the successor — by the post-agent hook `post_agent_plan_supersession_retire.py`. CI sweep gate `check_plan_supersession_consistency.py` (PLAN-SUPERSEDE) backstops cross-session/cross-worktree/Notion-only misses. Net-new plans declare `_None — net-new plan._`. Engine SSOT: `.claude/governance/scripts/_plan_supersession.py`. Grammar + invariant: `notion-plans-taxonomy.md`.
+
+---
+
 ## Bypass Reference
 
 | Bypass | Effect |
 |--------|--------|
 | `PLAN_REGISTRATION_BYPASS=1` | Skip wave-start block |
 | `SCOPE_AUTHORIZATION_BYPASS=1` | Skip update auth checks |
+| `PLAN_SUPERSESSION_RETIRE_BYPASS=1` | Disable supersession auto-retire hook |
+| `PLAN_SUPERSESSION_GATE_BYPASS=1` | Skip PLAN-SUPERSEDE CI sweep |
 | `NOTION_WAVE_DEFERRAL_BYPASS=1` | Allow MCP mid-wave (reads only) |
 | `NOTION_PLAN_IDENTITY_BYPASS=1` | Skip ID verification (debug) |
 | `PLAN_WAVE_SUMMARY_TOP_BYPASS=1` | Skip PLAN-WAVE-TOP CI gate |
