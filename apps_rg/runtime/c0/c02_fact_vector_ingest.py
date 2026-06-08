@@ -19,6 +19,12 @@ from apps_rg.runtime.c0.constants import (
     TARGETING_ONLY,
 )
 from apps_rg.runtime.c0.c02_evidence_fetch import C02Atom
+from apps_rg.runtime.c0.fact_vector_write_back import (
+    STAGE_FOR_FACT_VECTORS,
+    STAGING_COLLECTION_NAME,
+    decide_write_back,
+    promote_staged_fact_vectors,
+)
 from apps_rg.tools.fact_vector_ingest import FactVectorChunk, FactVectorSchema
 
 _logger = logging.getLogger(__name__)
@@ -54,6 +60,10 @@ def chunk_to_chroma_document(chunk: FactVectorChunk, atom: C02Atom | None = None
         doc["metadata"]["confidence"] = str(atom.get("confidence") or "")
         doc["metadata"]["proof_status"] = str(atom.get("proof_status") or "")
         doc["metadata"]["source_span_ref"] = str(atom.get("source_span_ref") or "")[:500]
+        # Write-back discipline provenance — carried so the staging→live promotion gate can
+        # re-validate the row from its own metadata (hostile verifier; never trust prior validation).
+        doc["metadata"]["source_type"] = str(atom.get("source_type") or "")
+        doc["metadata"]["write_back_operation"] = str(atom.get("write_back_operation") or "")
     return doc
 
 
@@ -102,13 +112,24 @@ def atoms_to_fact_vector_chunks(
     chunk_atoms: list[C02Atom] = []
     skipped: list[dict[str, str]] = []
     for atom in atoms:
-        ok, reason = c02_atom_ingest_eligible(atom)
         fid = str(atom.get("fact_id") or "")
+        # Write-back discipline FIRST: only a transform (extract/fuse/enrich) of grounded content
+        # may be staged for fact_vectors. Generated/synthesized → semantic-cache domain; a claimed
+        # transform without source provenance → rejected (fail closed).
+        decision = decide_write_back(atom)
+        if decision.route != STAGE_FOR_FACT_VECTORS:
+            skipped.append(
+                {"fact_id": fid, "reason": f"route_{decision.route}:{decision.operation}:{decision.reason}"}
+            )
+            continue
+        ok, reason = c02_atom_ingest_eligible(atom)
         if not ok:
             skipped.append({"fact_id": fid, "reason": reason})
             continue
+        # Stamp the resolved operation so the promotion gate can re-validate from metadata.
+        atom_staged: C02Atom = {**atom, "write_back_operation": decision.operation}
         chunk = c02_atom_to_fact_vector_chunk(
-            atom,
+            atom_staged,
             section_id=section_id,
             ledger_version_hash=ledger_version_hash,
         )
@@ -117,7 +138,7 @@ def atoms_to_fact_vector_chunks(
             skipped.append({"fact_id": fid, "reason": ";".join(errs)})
             continue
         chunks.append(chunk)
-        chunk_atoms.append(atom)
+        chunk_atoms.append(atom_staged)
     return chunks, chunk_atoms, skipped
 
 
@@ -236,19 +257,51 @@ def maybe_upsert_c02_fact_vectors(
     )
     receipt["skipped"] = skipped[:50]
     receipt["skipped_count"] = len(skipped)
+    # Write-back discipline summary: operations of staged atoms + where the rest were routed.
+    operations: dict[str, int] = {}
+    for a in chunk_atoms:
+        op = str(a.get("write_back_operation") or "")
+        operations[op] = operations.get(op, 0) + 1
+    receipt["operations"] = operations
+    receipt["routed_to_semantic_cache"] = sum(
+        1 for s in skipped if str(s.get("reason", "")).startswith("route_semantic_cache")
+    )
+    receipt["rejected_ungrounded"] = sum(
+        1 for s in skipped if str(s.get("reason", "")).startswith("route_reject")
+    )
+    receipt["staged_count"] = 0
+    receipt["promotion"] = {}
     try:
-        count = upsert_fact_vector_chunks(
+        # Write-backs land in the STAGING collection (off the live fact store)...
+        staged = upsert_fact_vector_chunks(
             chunks,
             chroma_path=chroma_path,
+            collection_name=STAGING_COLLECTION_NAME,
             atoms=chunk_atoms,
         )
-        receipt["upserted_count"] = count
-        receipt["status"] = "PASS" if count else "EMPTY"
-        receipt["reason"] = "upsert_ok" if count else "no_eligible_atoms"
+        receipt["staged_count"] = staged
+        # ...then the deterministic validation gate promotes them to live fact_vectors (or holds
+        # for HITL when APPS_RG_FACT_VECTOR_PROMOTION_HITL=1). Live store stays populated for
+        # grounded transforms — non-breaking vs the prior direct-upsert path.
+        promotion = promote_staged_fact_vectors(chroma_path=chroma_path)
+        receipt["promotion"] = promotion
+        receipt["upserted_count"] = int(promotion.get("promoted_count", 0))
+        if promotion.get("status") == "HELD_FOR_HITL":
+            receipt["status"] = "STAGED_HELD"
+            receipt["reason"] = "staged_awaiting_hitl_promotion"
+        elif receipt["upserted_count"]:
+            receipt["status"] = "PASS"
+            receipt["reason"] = "staged_and_promoted"
+        elif staged:
+            receipt["status"] = "STAGED"
+            receipt["reason"] = "staged_none_promoted"
+        else:
+            receipt["status"] = "EMPTY"
+            receipt["reason"] = "no_eligible_atoms"
     except Exception as exc:  # guardian: allow-broad-exception -- P2 burndown: upsert failure recorded in receipt  # guardian: allow-log-and-swallow -- P2 burndown: upsert failure recorded in receipt
         receipt["status"] = "FAIL"
         receipt["reason"] = f"{type(exc).__name__}:{exc}"
-        _logger.warning("C0.2 fact_vectors upsert failed: %s", exc)
+        _logger.warning("C0.2 fact_vectors staged write-back failed: %s", exc)
     _write_receipt(artifact_dir, receipt)
     return receipt
 
