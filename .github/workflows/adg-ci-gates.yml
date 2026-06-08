@@ -57,6 +57,7 @@ jobs:
           --health-retries 5
 
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/common-setup
 
       - name: Install extra dependencies for ADG
