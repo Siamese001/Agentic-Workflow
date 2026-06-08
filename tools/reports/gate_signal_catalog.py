@@ -354,3 +354,49 @@ def format_gate_signal(gate: dict) -> str:
     gid = str(gate.get("gate_id", ""))
     cls = str(gate.get("gate_class") or "")
     return f"Counts: {what_counts(gid, cls)} Sub: {verdict_rule(gate)}"
+
+
+def recommended_next_step(gate: dict) -> str:
+    """Concrete, per-gate recommended action for the burndown 'Recommended Next Step' column.
+
+    Derived deterministically from the internal 7-way detail label (FAIL / REGR / SEED /
+    DEBT / OPEN / ADVIS / PASS), the severity band, and the baseline delta. The intent is
+    that an operator can act on each row without re-deriving the fix path.
+    """
+    detail = _verdict_detail(gate)
+    band = str(gate.get("band", "P?"))
+    n = int(gate.get("violation_count") or 0)
+    base = gate.get("baseline_count")
+
+    if detail == "PASS":
+        return "None — gate clean (zero findings)."
+    if detail == "FAIL":
+        if band == "P0":
+            return (
+                "BLOCKER (P0): clear the zero-tolerance condition before merge. "
+                "Do NOT re-baseline a P0 block."
+            )
+        return "Blocking: resolve the failing condition before the run can pass."
+    if detail == "REGR":
+        delta = f"+{n - int(base)}" if base is not None else "+N"
+        if band == "P0":
+            return (
+                f"Regression {delta} over baseline {base} (P0): investigate each NEW path; "
+                "fix the regression — re-baseline only with explicit sign-off."
+            )
+        return (
+            f"Regression {delta} over baseline {base}: fix the new findings, or "
+            "re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt."
+        )
+    if detail == "SEED":
+        return "First run / missing baseline: seed it via the gate's `--regenerate-baseline`."
+    if detail == "DEBT":
+        return (
+            "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. "
+            "No action needed to pass CI."
+        )
+    if detail == "OPEN":
+        return "Advisory inventory: monitor; reduce opportunistically. Does not block CI."
+    if detail == "ADVIS":
+        return "Advisory KPI: watch the trend; no action required to pass CI."
+    return "Review the gate handler for the appropriate remediation."

@@ -25,7 +25,7 @@ The report is intentionally one file with five fixed sections:
 
   1. Header — snapshot, timestamp, overall verdict
   2. Burndown by band — P0..P3 gross / net / diff / guardian
-  3. CI gates — all 48 gates: description, band, enforcement, verdict, findings
+  3. CI gates — all 48 gates: band, enforcement, verdict, findings, signal, recommended next step
   4. Aggregates — block_pass / block_fail / ratchet_pass / ratchet_regressed / warn
   5. Top blockers — gates currently failing, ordered by finding count
 
@@ -49,6 +49,7 @@ from tools.reports.gate_signal_catalog import (
     format_gate_signal,
     has_backlog_findings,
     needs_fix,
+    recommended_next_step,
     render_verdict_legend_markdown,
     verdict_sort_key,
 )
@@ -271,9 +272,10 @@ def render(
     a("- **Verdict** — **FIX** = address now · **TRACK** = backlog, CI OK · **CLEAR** = zero findings.")
     a("- **Sub** — detail (block / regr / floor / inventory / …); see glossary.")
     a("- **Signal** — what Findings count + short Sub note.")
+    a("- **Recommended Next Step** — concrete action for this gate (fix / re-baseline / defer / none).")
     a("")
-    a("| Gate ID | Band | Enf | Verdict | Sub | Findings | Signal |")
-    a("|---------|:----:|:---:|:-------:|:---:|---------:|--------|")
+    a("| Gate ID | Band | Enf | Verdict | Sub | Findings | Signal | Recommended Next Step |")
+    a("|---------|:----:|:---:|:-------:|:---:|---------:|--------|-----------------------|")
     band_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
     sorted_gates = sorted(
         gates,
@@ -291,7 +293,8 @@ def render(
             f"{_verdict_display(g)} | "
             f"{_verdict_sub_display(g)} | "
             f"{g.get('violation_count', 0)} | "
-            f"{_describe(g)} |"
+            f"{_describe(g)} | "
+            f"{recommended_next_step(g)} |"
         )
     fix_gates = [g for g in gates if needs_fix(g)]
     if fix_gates:
