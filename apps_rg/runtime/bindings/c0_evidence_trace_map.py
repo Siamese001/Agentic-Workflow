@@ -50,6 +50,14 @@ class SectionEvidenceTrace:
     retrieval_query: str = ""
     retrieval_score: float = 0.0
     slot: str = "c0_evidence_data_only"
+    # G8 (plan apps-rg-e2e-gap-remediation-7e2d9c): per-lane C0.2 retrieval observability.
+    # Additive, defaulted fields so older bindings/deserializers stay compatible.
+    raw_dense_hit_count: int = 0
+    post_filter_survivor_count: int = 0
+    applied_where_filter: str = ""
+    similarity_threshold: float = 0.0
+    embedding_model_id: str = ""
+    embedding_dimension: int = 0
 
 
 @dataclass

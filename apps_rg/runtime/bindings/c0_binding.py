@@ -201,8 +201,19 @@ def _build_section_evidence_trace(
     app_payload: dict[str, Any],
     *,
     timestamp_iso: str,
+    raw_dense_hit_count: int = 0,
+    post_filter_survivor_count: int | None = None,
+    applied_where_filter: str = "",
+    similarity_threshold: float = 0.0,
+    embedding_model_id: str = "",
+    embedding_dimension: int = 0,
 ) -> SectionEvidenceTrace:
-    """One ``SectionEvidenceTrace`` per profile section after dense+sparse merge."""
+    """One ``SectionEvidenceTrace`` per profile section after dense+sparse merge.
+
+    G8 observability fields (raw hit count / applied where / post-filter survivors / threshold /
+    embedding id+dim) are additive and default to neutral values when a caller does not supply
+    them — no behavior change to retrieval.
+    """
     del timestamp_iso  # reserved for future receipt alignment
     resume_text = str((app_payload.get("resume_payload") or {}).get("resume_text") or "")
     jd_text = str((app_payload.get("jd_payload") or {}).get("jd_text") or "")
@@ -243,6 +254,16 @@ def _build_section_evidence_trace(
         source_classes=classes,
         retrieval_query=query or "",
         retrieval_score=0.0,
+        raw_dense_hit_count=int(raw_dense_hit_count),
+        post_filter_survivor_count=(
+            len(section_dense_items)
+            if post_filter_survivor_count is None
+            else int(post_filter_survivor_count)
+        ),
+        applied_where_filter=applied_where_filter,
+        similarity_threshold=float(similarity_threshold),
+        embedding_model_id=embedding_model_id,
+        embedding_dimension=int(embedding_dimension),
     )
 
 
@@ -1260,6 +1281,8 @@ def _perform_bounded_section_retrieval(
     _sec_emb = resolve_apps_rg_embedding_settings(chroma_persist_dir=chromadb_path)
     assert_dense_retrieval_allowed(_sec_emb)
     model = _get_embedding_model()
+    # G8: embedding identity is a run-level constant; capture once for per-section traces.
+    _embedding_model_id = str(getattr(_sec_emb, "embedding_model_name", "") or "")
 
     sections = profile.get_sections()
     if section_id_filter:
@@ -1321,6 +1344,16 @@ def _perform_bounded_section_retrieval(
                 n_results=min(nk, 32),
                 where=where,
             )  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
+
+            # G8: raw dense hits (post-where, pre exact-match), applied filter, embedding dim.
+            _raw_hit_count = (
+                len(result["ids"][0]) if result and result.get("ids") and result["ids"] else 0
+            )
+            try:
+                _where_filter_str = json.dumps(where, sort_keys=True, default=str)
+            except (TypeError, ValueError):
+                _where_filter_str = str(where)
+            _embedding_dimension = len(qemb) if qemb is not None else 0
 
             section_dense_items: list[EvidenceItem] = []
             if result and result.get("ids"):
@@ -1453,6 +1486,15 @@ def _perform_bounded_section_retrieval(
                     section_dense_items,  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                     app_payload,
                     timestamp_iso=timestamp_iso,
+                    raw_dense_hit_count=_raw_hit_count,
+                    post_filter_survivor_count=len(section_dense_items),
+                    applied_where_filter=_where_filter_str,
+                    similarity_threshold=min(
+                        (float(getattr(it, "dense_score", 0.0)) for it in section_dense_items),
+                        default=0.0,
+                    ),
+                    embedding_model_id=_embedding_model_id,
+                    embedding_dimension=_embedding_dimension,
                 )
             )
             evidence_items.extend(section_dense_items)
