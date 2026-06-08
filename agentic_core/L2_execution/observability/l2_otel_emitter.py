@@ -99,6 +99,26 @@ def _resolve_tracer() -> Any:
         return _TRACER
 
 
+def reset_l2_tracer_cache() -> None:
+    """Invalidate the cached tracer handle so the next resolution re-binds.
+
+    Used by the generic provider bootstrap
+    (:func:`agentic_core.tracing.provider_bootstrap.ensure_tracer_provider_from_env`)
+    immediately after it installs a recording ``TracerProvider``. If this emitter
+    resolved its tracer *before* the provider was installed, the cache holds a
+    non-recording proxy tracer that would silently drop every span for the rest
+    of the process. Clearing it lets the next :func:`_resolve_tracer` call pick up
+    the now-recording provider.
+
+    Thread-safe. The lazy-resolve no-op fallback in :func:`_resolve_tracer`
+    (``None`` when OTel is unavailable) is unchanged — this only drops the cache.
+    """
+    global _TRACER, _OTEL_AVAILABLE  # noqa: PLW0603 — module-level cache by design
+    with _TRACER_LOCK:
+        _TRACER = None
+        _OTEL_AVAILABLE = None
+
+
 def _coerce_attr(value: Any) -> Any:
     """Coerce attribute value to an OTel-compatible primitive."""
     if isinstance(value, (str, int, float, bool)):

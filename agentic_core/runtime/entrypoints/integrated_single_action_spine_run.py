@@ -759,6 +759,14 @@ def run_integrated_single_action_spine(
         Immutable result containing run_id, x3_disposition, terminal_r5 flag,
         and artifact_dir.  Never raises — internal errors land in ``fault``.
     """
+    # Generic OTEL provider bootstrap — opt-in via env (default OFF). Installs a
+    # recording TracerProvider once per process BEFORE any L2/L3 emitter resolves
+    # its tracer, so spans actually export when OTEL_TRACES_EXPORTER is set. This
+    # is the single shared chokepoint every app crosses. Fail-soft: never raises.
+    from agentic_core.tracing.provider_bootstrap import ensure_tracer_provider_from_env
+
+    ensure_tracer_provider_from_env()
+
     eff_route_family = (route_family or ROUTE_FAMILY).strip() or ROUTE_FAMILY
     eff_chain_kind = (chain_kind or eff_route_family).strip() or CHAIN_KIND
 
