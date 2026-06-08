@@ -1,9 +1,12 @@
 """Isolated Phase-1 lane execution context (serial + parallel dispatcher)."""
 from __future__ import annotations
 
+import json
 import os
 import threading
+import traceback as _tb
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Callable
 
 from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
@@ -56,6 +59,43 @@ class LaneDispatchOutcome:
     error: str | None = None
 
 
+def _persist_exception_trace(
+    ctx: LaneExecutionContext, lane: str, exc: BaseException
+) -> dict[str, Any]:
+    """Capture a failed lane dispatch traceback and best-effort persist it.
+
+    Returns the structured trace fields (merged into the ``dispatch_result``) and writes
+    ``section_exception_trace.json`` into the lane artifact dir, so a failed integrated
+    run carries the exact module/line instead of only ``str(exc)``
+    (apps_rg AIG E2E remediation, Wave 0 -- truthful instrumentation for E2E-05/E2E-11).
+    """
+    tb_str = "".join(_tb.format_exception(type(exc), exc, exc.__traceback__))
+    frames = _tb.extract_tb(exc.__traceback__)
+    last = frames[-1] if frames else None
+    fields: dict[str, Any] = {
+        "error_type": type(exc).__name__,
+        "error_module": (last.filename if last else ""),
+        "error_lineno": (last.lineno if last else 0),
+        "traceback": tb_str,
+    }
+    payload = {
+        "schema_version": "section_exception_trace_v1",
+        "lane": lane,
+        "error": str(exc),
+        **fields,
+    }
+    try:
+        lane_dir = Path(ctx.sections_root) / lane
+        lane_dir.mkdir(parents=True, exist_ok=True)
+        (lane_dir / "section_exception_trace.json").write_text(
+            json.dumps(payload, indent=2), encoding="utf-8"
+        )
+    except OSError:
+        # Best-effort: trace persistence must never mask the original lane fault.
+        pass
+    return fields
+
+
 def run_lane_in_context(
     ctx: LaneExecutionContext,
     lane: str,
@@ -91,9 +131,10 @@ def run_lane_in_context(
             dr = dict(result) if isinstance(result, dict) else {}
             return LaneDispatchOutcome(lane=lane, dispatch_result=dr, exec_status="ok")
         except Exception as exc:  # guardian: allow-broad-exception -- phase1 fail-soft boundary
+            trace_fields = _persist_exception_trace(ctx, lane, exc)
             return LaneDispatchOutcome(
                 lane=lane,
-                dispatch_result={"fault": "exception", "error": str(exc)},
+                dispatch_result={"fault": "exception", "error": str(exc), **trace_fields},
                 exec_status=f"error:{exc!s}",
                 error=str(exc),
             )
