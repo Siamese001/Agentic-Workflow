@@ -205,7 +205,11 @@ def promote_staged_fact_vectors(
         return receipt
 
     try:
-        import chromadb
+        # Route through the sanctioned L4 chromadb adapter rather than importing
+        # the raw SDK directly in this runtime layer (infra-wiring gate).
+        from agentic_core.L4_state.utils.client.chroma_client import (
+            chromadb_module as chromadb,
+        )
 
         from apps_rg.runtime.chroma_precomputed_collection import (
             get_precomputed_embeddings_collection,
