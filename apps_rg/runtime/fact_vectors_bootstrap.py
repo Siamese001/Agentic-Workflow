@@ -94,6 +94,12 @@ def build_section_atoms(*, repo_root: Path | None = None) -> tuple[list[dict[str
     for row in facts:
         atom = _atom_from_ledger_row(row, section_id="competencies")
         atom["allowed_sections"] = assign_sections_for_fact(row)
+        # Dense-lane grounding requires BOTH candidate_profile AND project_evidence source classes
+        # (c0_binding fv_normative). Quantified-achievement facts (with metrics) are project_evidence;
+        # capability/profile facts are candidate_profile — so each section's dense atoms span both.
+        atom["source_class"] = (
+            "project_evidence" if (row.get("metric_values") or []) else "candidate_profile"
+        )
         ok, reason = c02_atom_ingest_eligible(atom)
         if not ok:
             skipped.append({"fact_id": atom["fact_id"], "reason": reason})

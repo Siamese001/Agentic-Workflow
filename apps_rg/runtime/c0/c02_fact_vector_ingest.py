@@ -75,7 +75,7 @@ def c02_atom_to_fact_vector_chunk(
         chunk_id=chunk_id,
         content=text,
         app="apps_rg",
-        source_class="candidate_profile",
+        source_class=str(atom.get("source_class") or "candidate_profile"),
         ingestion_timestamp=datetime.now(timezone.utc).isoformat(),
         source_document_id=fid,
         source_version_hash=ledger_version_hash or digest,
