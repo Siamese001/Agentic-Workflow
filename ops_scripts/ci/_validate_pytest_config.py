@@ -130,18 +130,21 @@ def validate_configs(pytest_ini: PytestConfig, pyproject: PytestConfig, strict: 
     errors = []
     warnings = []
 
-    # Critical: xdist parallel execution
-    if not pytest_ini.n_workers:
-        errors.append("CRITICAL: pytest.ini missing -n auto (parallel execution)")
-    elif pytest_ini.n_workers != pyproject.n_workers:
+    # Critical: xdist parallel execution + dist mode.
+    # xdist is INTENTIONALLY kept out of pytest.ini (it breaks IDE test
+    # explorers — see the pytest.ini header comment). pyproject.toml is the
+    # canonical CI source for parallelism, so validate it there. If pytest.ini
+    # *does* pin these, they must not conflict with pyproject.
+    if not pyproject.n_workers:
+        errors.append("CRITICAL: pyproject.toml missing -n <workers> (CI parallel execution)")
+    elif pytest_ini.n_workers and pytest_ini.n_workers != pyproject.n_workers:
         warnings.append(
             f"WORKERS MISMATCH: pytest.ini={pytest_ini.n_workers}, pyproject.toml={pyproject.n_workers}"
         )
 
-    # Critical: dist mode
-    if not pytest_ini.dist_mode:
-        errors.append("CRITICAL: pytest.ini missing --dist=loadfile (distribution mode)")
-    elif pytest_ini.dist_mode != pyproject.dist_mode:
+    if not pyproject.dist_mode:
+        errors.append("CRITICAL: pyproject.toml missing --dist=<mode> (distribution mode)")
+    elif pytest_ini.dist_mode and pytest_ini.dist_mode != pyproject.dist_mode:
         warnings.append(
             f"DIST MISMATCH: pytest.ini={pytest_ini.dist_mode}, pyproject.toml={pyproject.dist_mode}"
         )
@@ -232,15 +235,14 @@ def fix_configs(pytest_ini_path: Path, _pyproject_path: Path) -> bool:
         raise RuntimeError(f"could not read {pytest_ini_path}: {exc}") from exc
     changes_made = False
 
-    # Fix missing -n auto
-    if "-n auto" not in content and "-n " not in content:
-        content = re.sub(
-            r"(addopts\s*=\s*)",
-            r"\1-n auto --dist=loadfile --timeout=180 ",
-            content,
-        )
+    # NOTE: xdist (-n / --dist) is INTENTIONALLY not auto-added to pytest.ini —
+    # it breaks IDE test explorers (see pytest.ini header). The canonical CI
+    # parallelism lives in pyproject.toml; validate_configs checks it there. We
+    # still auto-add a missing --timeout and the serial marker.
+    if "--timeout" not in content:
+        content = re.sub(r"(addopts\s*=\s*)", r"\1--timeout=180 ", content)
         changes_made = True
-        print("🔧 AUTO-FIX: Added -n auto --dist=loadfile --timeout=180 to addopts")
+        print("🔧 AUTO-FIX: Added --timeout=180 to addopts")
 
     # Fix missing serial marker
     if "serial:" not in content:
