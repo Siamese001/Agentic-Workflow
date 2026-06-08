@@ -26,6 +26,8 @@ import os
 import time
 from typing import Callable, Dict, Optional
 
+from apps_rg.runtime.env_bootstrap import bootstrap_apps_rg_env
+
 _log = logging.getLogger(__name__)
 
 # Model IDs ΓÇö sourced from agentic_core/L0_routing/config/model_registry.py
@@ -61,6 +63,7 @@ def make_generator(
     This per-call override lets the ensemble runner sweep a temperature
     ladder across the 3 candidates without instantiating 3 generators.
     """
+    bootstrap_apps_rg_env()
     if os.getenv("ANTHROPIC_API_KEY"):
         return _make_anthropic_generator(timeout_s=timeout_s, temperature=temperature, max_tokens=max_tokens)
     if os.getenv("OPENAI_API_KEY"):
@@ -208,6 +211,7 @@ def call_judge(prompt: str, *, timeout_s: float = 30.0, max_tokens: int = 256) -
 
 
 def _judge_raw(prompt: str, *, timeout_s: float, max_tokens: int) -> str:
+    bootstrap_apps_rg_env()
     if os.getenv("ANTHROPIC_API_KEY"):
         return _judge_anthropic(prompt, timeout_s=timeout_s, max_tokens=max_tokens)
     if os.getenv("OPENAI_API_KEY"):

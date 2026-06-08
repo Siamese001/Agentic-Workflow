@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
+import apps_rg.runtime.providers.external_provider as external_provider_module
 from apps_rg.runtime.providers import (
     ExternalProvider,
     ProviderGateway,
@@ -115,11 +116,36 @@ def test_qwen_provider_wrapper_delegates_to_existing_transport(monkeypatch) -> N
 
 def test_external_provider_fail_closed_without_credentials(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    provider = ExternalProvider(provider_profile=ProviderProfile.EXTERNAL_OPENAI)
+    provider = ExternalProvider(provider_profile=ProviderProfile.EXTERNAL_OPENAI, environ={})
     result = provider.generate(_prompt(), token_budget=100)
     assert result.runtime_generation_status == "BLOCKED"
     assert result.provider_attempted is False
     assert "OPENAI_API_KEY" in str(result.exact_provider_error)
+
+
+def test_external_provider_bootstraps_process_env_before_credential_gate(monkeypatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    calls = {"count": 0}
+
+    def _bootstrap(environ) -> None:
+        calls["count"] += 1
+        monkeypatch.setenv("OPENAI_API_KEY", "dotenv-openai")
+
+    monkeypatch.setattr(
+        external_provider_module,
+        "bootstrap_process_env_if_needed",
+        _bootstrap,
+    )
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        transport=lambda _request: {"text": "bootstrapped output"},
+    )
+
+    result = provider.generate(_prompt(), token_budget=100)
+
+    assert calls["count"] == 1
+    assert result.runtime_generation_status == "REAL_LLM"
+    assert result.raw_model_output == "bootstrapped output"
 
 
 def test_external_provider_uses_injected_transport(monkeypatch) -> None:

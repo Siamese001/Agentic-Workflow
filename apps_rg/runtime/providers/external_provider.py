@@ -15,6 +15,7 @@ import urllib.request
 from collections.abc import Callable
 from typing import Any, Mapping
 
+from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
 from apps_rg.runtime.providers.provider_gateway import ProviderGatewayError, ProviderProfile
 from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
 
@@ -71,6 +72,7 @@ class ExternalProvider:
         self.base_url = base_url or ""
         self.transport = transport
         self.environ = os.environ if environ is None else environ
+        self._uses_process_environ = self.environ is os.environ
 
     def _default_transport(self, request: dict[str, Any]) -> dict[str, Any]:
         if self.provider_profile == ProviderProfile.EXTERNAL_CLAUDE:
@@ -163,6 +165,8 @@ class ExternalProvider:
             "temperature": float(temperature),
             "base_url": self.base_url,
         }
+        if self._uses_process_environ:
+            bootstrap_process_env_if_needed(self.environ)
         if not str(self.environ.get(self.api_key_env_var) or "").strip():
             return ProviderResult(
                 provider_requested=self.provider_profile.value,

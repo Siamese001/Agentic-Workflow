@@ -18,6 +18,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _resolve_anthropic_model,
     build_x1d_judge_system_prompt,
 )
+from apps_rg.runtime.env_bootstrap import bootstrap_apps_rg_env
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import SelfConsistencyPath
 from apps_rg.runtime.judges.employment_bullet_judge_rubric import pool_selector_scoring_instruction
 from apps_rg.runtime.reasoning.competencies_graph_pool import (
@@ -879,6 +880,7 @@ def run_claude_bullet_pool_selection(
         )
 
     meta = PROVIDERS.get("anthropic_claude") or {}
+    bootstrap_apps_rg_env()
     api_key = os.environ.get(str(meta.get("env", "ANTHROPIC_API_KEY")), "").strip()
     if not api_key:
         return _fallback_first_complete_path(

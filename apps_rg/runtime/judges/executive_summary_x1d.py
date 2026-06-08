@@ -22,6 +22,7 @@ from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
     dimension_verdicts_json_schema_fragment,
     ensure_dimension_verdicts,
 )
+from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
 
 
 JUDGE_RUBRIC_VERSION = "executive_summary_x1d_v1"
@@ -281,6 +282,7 @@ PROVIDERS = {
 
 def resolve_x1d_provider_credentials(provider_key: str, environ: Mapping[str, str]) -> tuple[str, list[str]]:
     """Return `(api_key, env_vars_consulted_in_order)` for preflight parity with lane judge execution."""
+    bootstrap_process_env_if_needed(environ)
     meta = PROVIDERS.get(provider_key)
     if not meta:
         return "", []

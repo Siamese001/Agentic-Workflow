@@ -713,19 +713,16 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
 
     section_lane_ids = GENERATED_CONTENT_LANES
     section_eff = str(getattr(args, "section", "") or "").strip().lower()
+    _repo_root = find_repo_root()
+    from apps_rg.runtime.env_bootstrap import bootstrap_apps_rg_env
+
+    bootstrap_apps_rg_env(repo_root=_repo_root)
 
     from apps_rg.runtime.qwen_live_only_guard import assert_production_runtime, is_test_harness
 
     if section_eff in section_lane_ids or not section_eff:
         if not is_test_harness():
             assert_production_runtime(context="python -m apps_rg", args=args)
-
-    from dotenv import load_dotenv
-
-    _repo_root = find_repo_root()
-    _env_path = _repo_root / ".env"
-    if _env_path.is_file():
-        load_dotenv(dotenv_path=_env_path, override=False)
 
     from apps_rg.runtime.embedding_settings import (
         apply_apps_rg_embedding_env_guards,
