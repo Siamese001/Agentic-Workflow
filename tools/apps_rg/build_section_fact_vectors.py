@@ -59,16 +59,34 @@ from apps_rg.runtime.c0.c02_fact_vector_ingest import (  # noqa: E402
     c02_atom_ingest_eligible,
     upsert_fact_vector_chunks,
 )
+from apps_rg.runtime.c0.constants import PROOF_ELIGIBLE, SOURCE_BASE_RESUME  # noqa: E402
+from apps_rg.runtime.resume_resolution import load_lane_base_resume_json  # noqa: E402
 
-# Seven C0-enabled resume sections (SSOT order in generated_lane_rollup).
+# C0-enabled resume sections (SSOT order in generated_lane_rollup). Includes the InsurTech/EY
+# employer lanes (unlocked in plan apps-rg-insurtech-ey-unlock-a4c0f0) so base-resume employment
+# bullets can seed their dense enrichment.
 ALL_SECTIONS: tuple[str, ...] = (
     "competencies",
     "unify_bullets",
     "ibm_bullets",
+    "insurtech_bullets",
+    "ey_bullets",
     "unify_narrative",
     "ibm_narrative",
+    "insurtech_narrative",
+    "ey_narrative",
     "executive_summary",
     "headline",
+)
+
+# Base-resume employment block (base['facts']['employment']) employer-label → its generated lanes.
+# Drives Phase 0 seeding of the employer-specific bullets so every employer section has dense
+# enrichment from a pure cold-start seed (not just accumulated runtime augmentation).
+_BASE_RESUME_EMPLOYER_LANES: tuple[tuple[tuple[str, ...], list[str]], ...] = (
+    (("ibm",), ["ibm_bullets", "ibm_narrative"]),
+    (("unify",), ["unify_bullets", "unify_narrative"]),
+    (("insurtech",), ["insurtech_bullets", "insurtech_narrative"]),
+    (("ernst", "young"), ["ey_bullets", "ey_narrative"]),
 )
 
 # Cross-section enrichment sections: any HIGH fact can support these.
@@ -148,6 +166,84 @@ def _reset_collection(chroma_path: str, collection_name: str = "fact_vectors") -
     return n
 
 
+def build_base_resume_employment_atoms(
+    *,
+    repo_root: Path | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Build one EXTRACT atom per base-resume employment bullet (InsurTech/EY/IBM/Unify).
+
+    The base resume (`base['facts']['employment']`) is the authoritative source document for
+    employment facts — the candidate **skills** ledger has none — so this seeds dense enrichment for
+    the employer sections, closing the FEC-WEAK cold-start gap for insurtech/ey. Each bullet becomes a
+    grounded EXTRACT atom (``source_type=base_resume``, proof-eligible, HIGH) tagged with its
+    employer's lanes + the cross-section enrichment targets.
+    """
+    root = repo_root or REPO_ROOT
+    atoms: list[dict[str, Any]] = []
+    section_counts: Counter[str] = Counter()
+    skipped: list[dict[str, str]] = []
+    try:
+        base, _bp, _bh = load_lane_base_resume_json(source_resume_ref=None, repo_root=root)
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        return atoms, {"base_resume_error": f"{type(exc).__name__}:{exc}", "base_resume_employment_atoms": 0}
+
+    employment = ((base.get("facts") or {}).get("employment")) or []
+    for block in employment:
+        if not isinstance(block, dict):
+            continue
+        label = str(block.get("employer") or block.get("company") or "").lower()
+        lanes: list[str] = []
+        for needles, sections in _BASE_RESUME_EMPLOYER_LANES:
+            if any(n in label for n in needles):
+                lanes = sections
+                break
+        if not lanes:
+            continue  # e.g. "Early Career Roles" — not a generated employer lane
+        targets = sorted((set(lanes) | set(CROSS_SECTION_TARGETS)) & set(ALL_SECTIONS))
+        for bullet in block.get("bullets") or []:
+            if not isinstance(bullet, dict):
+                continue
+            bid = str(bullet.get("bullet_id") or "").strip()
+            text = str(bullet.get("text") or bullet.get("bullet_text") or "").strip()
+            if not bid or not text:
+                continue
+            atom: dict[str, Any] = {
+                "fact_id": bid,
+                "text_to_embed": text[:2000],
+                "source_type": SOURCE_BASE_RESUME,
+                # Employment achievements are project_evidence (distinct from the skills ledger's
+                # candidate_profile) so the seed spans >=2 normative source classes — the FEC marks
+                # single-class dense support as WEAK.
+                "fact_vector_source_class": "project_evidence",
+                "source_ref": "apps_rg/resume/base",
+                "source_span_ref": f"base_resume:{bid}",
+                "confidence": "HIGH",
+                "domain_tags": [str(bullet.get("domain"))] if bullet.get("domain") else [],
+                "skill_tags": [str(t) for t in (bullet.get("technologies") or []) if str(t).strip()],
+                "metric_refs": [str(bullet.get("metric_raw"))] if bullet.get("metric_raw") else [],
+                "career_phase_refs": [],
+                "graph_node_refs": [],
+                "allowed_sections": targets,
+                "blocked_sections": [],
+                "proof_status": PROOF_ELIGIBLE,
+                "requires_trace_audit": False,
+                "retrieval_score": 1.0,
+                "rejected_reason": "",
+            }
+            ok, reason = c02_atom_ingest_eligible(atom)
+            if not ok:
+                skipped.append({"fact_id": bid, "reason": reason})
+                continue
+            atoms.append(atom)
+            for s in targets:
+                section_counts[s] += 1
+    return atoms, {
+        "base_resume_employment_atoms": len(atoms),
+        "base_resume_skipped": skipped[:50],
+        "base_resume_per_section_counts": dict(sorted(section_counts.items())),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Build per-section fact_vectors for C0 enrichment.")
     ap.add_argument("--execute", action="store_true", help="Embed + upsert (default: dry run).")
@@ -167,6 +263,12 @@ def main(argv: list[str] | None = None) -> int:
     chroma_path = os.environ.get("CHROMA_PERSIST_DIR", args.chroma_path)
 
     atoms, summary = build_section_atoms()
+    # Phase 0 also seeds base-resume employment bullets (InsurTech/EY/IBM/Unify) so every employer
+    # section has dense enrichment from a pure cold-start seed (plan apps-rg-fact-vector-writeback-
+    # discipline-67652c, base-resume coverage).
+    base_atoms, base_summary = build_base_resume_employment_atoms()
+    atoms = atoms + base_atoms
+    summary.update(base_summary)
     summary["chroma_path"] = chroma_path
     summary["execute"] = bool(args.execute)
 

@@ -81,11 +81,16 @@ def c02_atom_to_fact_vector_chunk(
     skills = [str(t) for t in (atom.get("skill_tags") or []) if str(t).strip()]
     chunk_id = f"{CHUNK_ID_PREFIX}{fid}"
     digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:32]
+    # Source class is atom-driven (schema allows candidate_profile + project_evidence). Employment
+    # achievements seed as project_evidence; skills-ledger facts as candidate_profile — the FEC needs
+    # >=2 normative source classes (single-class evidence is WEAK). Clamp to the allowed pair.
+    sc_hint = str(atom.get("fact_vector_source_class") or "").strip()
+    source_class = sc_hint if sc_hint in ("candidate_profile", "project_evidence") else "candidate_profile"
     return FactVectorChunk(
         chunk_id=chunk_id,
         content=text,
         app="apps_rg",
-        source_class="candidate_profile",
+        source_class=source_class,
         ingestion_timestamp=datetime.now(timezone.utc).isoformat(),
         source_document_id=fid,
         source_version_hash=ledger_version_hash or digest,

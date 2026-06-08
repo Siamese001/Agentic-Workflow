@@ -108,12 +108,21 @@ CHROMA_PERSIST_DIR=<store> python -m apps_rg --section <lane> ...               
 Seeding a fresh worktree store from the ledger (13 chunks) + building its sparse sidecar **cleared**
 the `Collection [fact_vectors] does not exist` and sparse-`UNAVAILABLE` errors.
 
-**Open finding (seed coverage):** a pure 13-fact seed yields `FEC support_status='WEAK'` for
-`insurtech_bullets` — the candidate skills ledger has no InsurTech/EY *employment* facts (those live in
-the base resume, surfaced authoritatively by the W3 base-resume role-episode planner; `fact_vectors` is
-non-authoritative dense *enrichment*). The richer main store passed. Closing this requires either
-extending the Phase 0 seed to also ingest base-resume employment bullets, or treating seed-coverage as
-an operational pre-req. Captured under `## Deferred Follow-ups`.
+**Seed coverage — RESOLVED (2026-06-08, user chose "extend seed with base-resume"):** the Phase 0 seed
+now ALSO ingests base-resume employment bullets (InsurTech/EY/IBM/Unify) as grounded EXTRACT atoms
+tagged `source_type=base_resume`, `source_class=project_evidence`. Two root causes were closed:
+1. **Coverage:** the candidate *skills* ledger has no InsurTech/EY *employment* facts → those sections
+   had no dense enrichment. Now seeded (3 InsurTech + 3 EY + 5 IBM + 6 Unify employment atoms).
+2. **Source-class diversity:** `_compute_support_status` marks single-class dense support **WEAK** (and
+   blocks). All chunks were hardcoded `candidate_profile` (1 class). Employment bullets now seed as
+   `project_evidence`, so a pure seed spans **2 normative classes** → FEC `PARTIAL` (passes).
+   `c02_atom_to_fact_vector_chunk` made `source_class` atom-driven (clamped to the schema's allowed
+   `{candidate_profile, project_evidence}`).
+
+**Cold-start proven end-to-end (no main-repo pointer):** seed (30 chunks: 13 candidate_profile + 17
+project_evidence) → sparse sidecar → `python -m apps_rg --section insurtech_bullets` AND `ey_bullets`
+product-strict → **REAL_LLM + X3_ALLOW + exit 0**, zero `REQUIRED_PROOF_ABSENT`/`WEAK`. 7 hermetic
+Phase-0 tests + no regression.
 
 ## Definition of Done
 
@@ -144,10 +153,6 @@ off-hot-path buffer; promotion is callable as a separate batch step.
   best-effort promotion becomes a hot-path cost.
 - Wiring promotion through the formal UWG commit path (spine law alignment) if `fact_vectors` is
   reclassified as UWG-governed durable state rather than a rebuildable C0 cache.
-- **Phase 0 seed coverage for InsurTech/EY:** `build_section_fact_vectors.py` seeds only the candidate
-  skills ledger, so a pure cold-start seed gives `FEC support_status='WEAK'` for `insurtech_bullets`/
-  `ey_bullets` (no employment facts in that ledger). Options: (a) extend the seed to also ingest the
-  base-resume employment bullets (`base['facts']['employment']`, reusing the W3 base-resume extraction)
-  as grounded EXTRACT chunks; (b) document seed-coverage as an operational pre-req and rely on
-  accumulated runtime augmentation; (c) relax the FEC mandatory-grounding threshold for sections whose
-  authoritative proof comes from the base-resume planner. Different blast radius — pending decision.
+- ~~Phase 0 seed coverage for InsurTech/EY~~ — **DONE** (option (a) chosen + implemented; see Phase 0
+  section). Seed now ingests base-resume employment bullets as `project_evidence`; cold-start
+  product-strict proven for insurtech/ey with no main-repo pointer.

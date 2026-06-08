@@ -41,6 +41,9 @@ SOURCE_PRIOR_VARIANT = "prior_resume_variant"
 SOURCE_SRFS = "selected_role_fact_set"
 SOURCE_LEDGER = "candidate_fact_ledger"
 SOURCE_PROOF_POOL = "proof_pool"
+# Canonical base resume employment bullets (the authoritative source document for InsurTech/EY/
+# IBM/Unify employment facts). Grounded — NOT in FORBIDDEN_PROOF_SOURCE_TYPES.
+SOURCE_BASE_RESUME = "base_resume"
 
 FORBIDDEN_PROOF_SOURCE_TYPES = frozenset(
     {
