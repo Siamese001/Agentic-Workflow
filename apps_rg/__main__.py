@@ -683,6 +683,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         from apps_rg.runtime.doctor import run_doctor_cli
 
         return run_doctor_cli(list(_tokens[1:]))
+    if _tokens and _tokens[0] == "bootstrap":
+        from apps_rg.runtime.fact_vectors_bootstrap import run_bootstrap_cli
+
+        return run_bootstrap_cli(list(_tokens[1:]))
     from apps_rg.runtime.windows_sac_delegate import (
         delegate_apps_rg_to_wsl,
         should_delegate_apps_rg_to_wsl,
