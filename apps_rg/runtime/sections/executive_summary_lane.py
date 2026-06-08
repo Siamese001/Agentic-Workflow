@@ -68,7 +68,7 @@ from apps_rg.runtime.judges.executive_summary_judge_packet import (
 )
 from apps_rg.runtime.judges.executive_summary_x1d import run_llm_judges
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3 as _aggregate_executive_summary_x3
-from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
 from apps_rg.runtime.section_cli_defaults import coalesce_lane_provider_resolution_source
 from apps_rg.runtime.section_proof.section_input_usage_ledger import build_section_input_usage_ledger_v1

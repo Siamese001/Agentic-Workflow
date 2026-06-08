@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
 from apps_rg.runtime.providers.section_qwen_slice import tag_reasoning_lane
 from apps_rg.runtime.reasoning.employment_bullet_pool import (

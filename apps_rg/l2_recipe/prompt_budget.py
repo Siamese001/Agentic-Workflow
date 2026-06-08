@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MAX_MODEL_LEN
+from apps_rg.runtime.section_model_limits import SECTION_MODEL_MAX_MODEL_LEN
 
 # Must match optimized_vllm_client._truncate_prompt_for_context (line ~51: max_chars = max_prompt_tokens * 2).
 # _CHARS_PER_TOKEN_EST = 2 is intentionally lower than the SSOT constant (CHARS_PER_TOKEN_ESTIMATE = 3
@@ -40,7 +40,7 @@ def completion_budget_for_truncation(requested_max_tokens: int) -> int:
 
 def prompt_char_limit_for_context(*, completion_budget: int) -> tuple[int, int]:
     """Return (max_prompt_chars, max_prompt_tokens) before client truncation."""
-    max_prompt_tokens = int(QWEN_LOCAL_MAX_MODEL_LEN) - int(completion_budget) - _TRUNC_RESERVE
+    max_prompt_tokens = int(SECTION_MODEL_MAX_MODEL_LEN) - int(completion_budget) - _TRUNC_RESERVE
     if max_prompt_tokens < _TRUNC_MIN_PROMPT_TOKENS:
         max_prompt_tokens = _TRUNC_MIN_PROMPT_TOKENS
     max_chars = max_prompt_tokens * _CHARS_PER_TOKEN_EST
@@ -51,7 +51,7 @@ def clamp_completion_tokens(*, prompt: str, requested_max_tokens: int) -> int:
     """Copy of ``optimized_vllm_client._clamp_completion_tokens`` (keep in sync)."""
     est_prompt_tokens = max(1, len(prompt) // _CHARS_PER_TOKEN_EST)
     reserve = 96
-    room = int(QWEN_LOCAL_MAX_MODEL_LEN) - est_prompt_tokens - reserve
+    room = int(SECTION_MODEL_MAX_MODEL_LEN) - est_prompt_tokens - reserve
     if room < 1:
         return 1
     return max(1, min(int(requested_max_tokens), int(room)))
@@ -138,7 +138,7 @@ def assert_completion_budget(
         raise PromptBudgetError(
             "E3_OUTPUT_BUDGET_TOO_SMALL",
             f"effective max_tokens after clamp={eff} < required {min_completion_tokens} "
-            f"(prompt_chars={len(packed_prompt)}, max_model_len={QWEN_LOCAL_MAX_MODEL_LEN})",
+            f"(prompt_chars={len(packed_prompt)}, max_model_len={SECTION_MODEL_MAX_MODEL_LEN})",
         )
     return eff, meta
 
@@ -157,7 +157,7 @@ def prepare_prompt_for_local_vllm(
         requested_max_tokens=requested_max_tokens,
     )
     merged = {
-        "max_model_len": int(QWEN_LOCAL_MAX_MODEL_LEN),
+        "max_model_len": int(SECTION_MODEL_MAX_MODEL_LEN),
         "completion_budget_for_truncation": cb,
         "max_prompt_tokens_estimate": lim_tok,
         "max_prompt_chars_budget": lim_chars,

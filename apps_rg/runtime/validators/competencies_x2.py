@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.validators.competencies_proof_markers import scan_mock_fixture_markers
 from apps_rg.runtime.validators.executive_summary_x2 import (
     EM_DASH,

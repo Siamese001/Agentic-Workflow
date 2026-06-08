@@ -17,7 +17,7 @@ from typing import Any, Mapping
 
 from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
 from apps_rg.runtime.providers.provider_gateway import ProviderGatewayError, ProviderProfile
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 
 ExternalTransport = Callable[[dict[str, Any]], dict[str, Any]]
 

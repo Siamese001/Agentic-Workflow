@@ -12,7 +12,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Mapping, Protocol, runtime_checkable
 
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+from apps_rg.runtime.providers.provider_contract import ProviderResult
 
 ENV_APPS_RG_PROVIDER_PROFILE = "APPS_RG_PROVIDER_PROFILE"
 DEFAULT_PROVIDER_PROFILE = "external_claude"

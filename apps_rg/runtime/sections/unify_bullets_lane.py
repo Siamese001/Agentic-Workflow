@@ -56,7 +56,7 @@ from apps_rg.runtime.section_proof.section_input_usage_ledger import build_secti
 from apps_rg.runtime.sections.unify_bullets_pa import compile_unify_bullets_prompt
 from apps_rg.runtime.exit.unify_bullets_x3 import aggregate_x3 as _aggregate_unify_bullets_x3
 from apps_rg.runtime.judges.unify_bullets_x1d import run_unify_bullets_judges  # singleton fallback only
-from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
 from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
 from apps_rg.runtime.reasoning.bullet_lane_generation import generate_bullet_lane_with_sc_and_claude

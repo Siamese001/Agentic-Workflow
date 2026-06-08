@@ -11,7 +11,7 @@ from typing import Any, Optional
 
 import yaml
 
-from apps_rg.runtime.qwen_vllm_health import QWEN_LOCAL_MODEL_ID
+from apps_rg.runtime.section_model_limits import SECTION_MODEL_ID
 
 from .contracts import (
     AUTHORITY_PRECEDENCE,
@@ -498,7 +498,7 @@ class PromptCompiler:
         # Build manifests
         pc = template_yaml.get("provider_control", {}) or {}
         provider_render_manifest = {
-            "model": QWEN_LOCAL_MODEL_ID,
+            "model": SECTION_MODEL_ID,
             "max_tokens": template_yaml.get("compilation_constraints", {}).get("max_response_tokens", 200),
             "temperature": float(pc.get("temperature", 0.1)),
             "top_p": float(pc.get("top_p", 0.8)),

@@ -13,7 +13,8 @@ from typing import Any
 
 from apps_rg.runtime.providers.external_provider import ExternalProvider
 from apps_rg.runtime.providers.provider_gateway import ProviderGateway, ProviderProfile, normalize_provider_profile
-from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult, QwenVLLMProvider
+from apps_rg.runtime.providers.provider_contract import ProviderResult
+from apps_rg.runtime.providers.qwen_vllm_provider import QwenVLLMProvider
 from apps_rg.runtime.providers import section_qwen_slice
 
 

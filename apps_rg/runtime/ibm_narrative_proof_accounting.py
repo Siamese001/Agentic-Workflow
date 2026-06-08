@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from apps_rg.runtime.qwen_offline_contract_stub import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
+from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 
 
 def classify_generation_class(
