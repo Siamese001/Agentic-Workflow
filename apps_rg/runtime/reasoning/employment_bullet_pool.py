@@ -285,6 +285,21 @@ def competencies_pool_x1d_judge_rows(
     categories_ok = bool(selections) and all(float(s.get("score") or 0.0) >= threshold for s in selections)
     passed = gate_ok and categories_ok and len(selections) >= n_final
 
+    # E2E-08 guard: distinguish an EMPTY selection input (selector returned no candidates,
+    # or bullet_pool_selection.json absent) from a genuine below-threshold model-quality
+    # failure. Without this, an empty merge silently emits a score=0.0 / pass=False row that
+    # reads downstream as a judge/content failure when the real condition is upstream "no
+    # candidates selected". Fail closed either way, but name the cause.
+    empty_selection = not selections
+    selection_file_present = sel_path.is_file()
+    diagnostic_reason = None
+    if empty_selection:
+        diagnostic_reason = (
+            "selector_returned_no_candidates"
+            if selection_file_present
+            else "no_selection_input_artifact"
+        )
+
     gemini_meta = PROVIDERS.get("gemini_pro") or {}
     row.setdefault("judge_id", f"x1d_gemini_pro_{lane}_pool")
     row.setdefault("provider_name", gemini_meta.get("provider_name", "Google Gemini"))
@@ -311,13 +326,30 @@ def competencies_pool_x1d_judge_rows(
         (gen_meta or {}).get("selection_mode") or "claude_competencies_top_8_pass"
     )
     row["final_category_count"] = n_final
-    row["findings"] = [
-        (
-            f"Competencies graph pool selector: {len(selections)} category selections, "
-            f"min_score={min_score:.2f}, threshold={threshold:.2f}, gate_ok={gate_ok}, "
-            f"target_emit={n_final}"
-        )
-    ]
+    if empty_selection:
+        # Truthful diagnostic: this is an upstream selector/data condition, not a model
+        # judge-quality failure. Stamp an explicit reason so it cannot be mistaken for one.
+        row["empty_selection"] = True
+        row["diagnostic_reason"] = diagnostic_reason
+        row["selection_file_present"] = selection_file_present
+        row["provider_status"] = "BLOCKED_NO_SELECTION"
+        row["findings"] = [
+            (
+                f"Competencies graph pool selector BLOCKED: {diagnostic_reason} "
+                f"(0 category selections, selection_file_present={selection_file_present}, "
+                f"gate_ok={gate_ok}, target_emit={n_final}). Upstream selector/data condition, "
+                f"not a model-quality judge failure."
+            )
+        ]
+    else:
+        row["empty_selection"] = False
+        row["findings"] = [
+            (
+                f"Competencies graph pool selector: {len(selections)} category selections, "
+                f"min_score={min_score:.2f}, threshold={threshold:.2f}, gate_ok={gate_ok}, "
+                f"target_emit={n_final}"
+            )
+        ]
     return [row]
 
 

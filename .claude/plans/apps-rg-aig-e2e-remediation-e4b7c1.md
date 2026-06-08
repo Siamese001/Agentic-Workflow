@@ -259,8 +259,30 @@ DoD:
 ## Wave 4 - Competencies Bundle/Term Data Gap
 
 WAVE_ID: W4
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE (deterministic parts) — term-floor/7-of-7 coverage validated live at W7
+WAVE_COMPLETE: YES
+
+> **2026-06-08 implementation (worktree `aig-e2e-continue`):**
+> - **E2E-07 orphan closed:** added `llmops_reliability` to `ccb_llmops_reliability`'s
+>   `target_taxonomy_category_ids` — the taxonomy category `llmops_reliability` was orphaned
+>   (in `executive_capability_taxonomy.yaml` but targeted by no bundle). All 8 taxonomy
+>   categories now covered. Verified by `test_competency_bundle_coverage.py`.
+> - **Coverage invariant:** `stamp_competency_bundle_bindings` now logs
+>   `COMPETENCY_BUNDLE_BINDING_MISSING` + stamps `competency_bundle_binding_missing=true`
+>   instead of silently skipping an orphaned category. New test asserts no orphan exists.
+> - **E2E-08:** `competencies_pool_x1d_judge_rows` now emits an explicit
+>   `provider_status=BLOCKED_NO_SELECTION` diagnostic row (`empty_selection`,
+>   `diagnostic_reason`) on empty/absent selection input instead of a silent score=0.0 row
+>   that read as a model-quality failure. 2 tests cover both empty cases.
+> - **Deferred to W7 (runtime-data-dependent, not blind-tuned):** raising the per-category
+>   term floor (`MIN_ITEMS_PER_CATEGORY=2`) to 3 and proving `x2_required_capability_families
+>   _covered` reaches 7/7 require a live external-Claude run; the Pass-0 family-coverage +
+>   per-category-floor machinery already exists and all 7 gate families map to bundles.
+> - **Discovered (pre-existing, NOT introduced here — see `## Deferred Follow-ups`):** 9
+>   competencies unit tests are red on clean `origin/main` (prompt↔judge `/8/` lockstep drift,
+>   rigor-gate fixtures, durable-bundle truth source). Out of W4's data-gap scope; flagged.
+
+Original scope (for provenance):
 
 Scope:
 - **E2E-07 (data):** add `llmops_reliability` to `target_taxonomy_category_ids` of the `ccb_llmops_reliability` bundle in `apps_rg/fact_inventory/competency_capability_bundles.json`.
@@ -350,3 +372,4 @@ Captured here, not implemented in this plan (surface via `spawn_task` if/when pr
 
 - **Bullet-pool selector content quality (the < 0.72 root question):** W5 contains the cascade but does not investigate *why* every self-consistency path scores below the 0.72 gate (prompt shape, threshold calibration, or candidate quality). This is a separate content-tuning effort with unbounded scope; do not fold into the bounded remediation.
 - **Generic L2 cache fail-open (`gptcache_client.py`):** if a fleet-wide "no default-EF fallback under product-strict" policy is ever desired, it belongs in a separate `agentic_core`-scoped plan with a migration receipt and a profile flag, not here.
+- **Pre-existing competencies test reds on `origin/main` (discovered during W4, NOT introduced by this plan):** 9 unit tests fail on clean `cb2235f915` independent of W4 changes — `test_section_prompt_judge_lockstep::...[competencies]` (prompt↔judge `/8/` category-count alias drift), `test_competencies_rigor_x2` (×2), `test_competencies_x2_proof_quality::...null_failure_reason_for_style_gates`, `test_executive_summary_prompt_ssot::test_competency_pa_slots_category_band_matches_x2`, `test_section_rigor_weak_gates::...min_items_per_category`, `test_r1b_derived_index_projection_w11::test_durable_bundle_is_truth_source`, `test_bullet_no_base_resume_hydration::TestIbmProofBundleNoProse` (×2). These are competencies prompt/judge/rigor SSOT-alignment failures (likely collateral from the qwen-removal section-lane rewiring), a separate test_strategy concern from W4's data-gap fix. W7 competencies will need these green; flag to whoever owns the competencies prompt/judge lockstep.

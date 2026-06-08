@@ -121,7 +121,7 @@
       "competency_bundle_id": "ccb_llmops_reliability",
       "capability_family": "llmops_reliability",
       "display_label_candidate": "LLMOps, Evaluation & Reliability",
-      "target_taxonomy_category_ids": ["governance_risk_compliance", "engineering_delivery_leadership"],
+      "target_taxonomy_category_ids": ["llmops_reliability", "governance_risk_compliance", "engineering_delivery_leadership"],
       "graph_skill_node_ids": [
         "skill_audit_grade_observability",
         "skill_completed_run_evaluation",

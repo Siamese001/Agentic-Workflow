@@ -6,11 +6,14 @@ archive material are calibration/provenance only — never prose hydration.
 """
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 from typing import Any
 
 from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+
+logger = logging.getLogger(__name__)
 from apps_rg.runtime.sections.competency_capability_registry import (
     REQUIRED_CAPABILITY_FAMILIES,
     get_bundles_for_section,
@@ -252,6 +255,18 @@ def stamp_competency_bundle_bindings(
         cid = str(cat.get("category_id") or "").strip()
         rec = by_category.get(cid)
         if not rec:
+            # Coverage violation: an emitted competency category whose taxonomy
+            # category_id is not a target of ANY competency bundle. Previously a silent
+            # skip — now surfaced so an orphaned taxonomy category (E2E-07) is observable
+            # instead of quietly dropping its graph lineage. Stamp the category too so the
+            # gap is visible in the artifact, not just the logs.
+            if cid:
+                logger.warning(
+                    "COMPETENCY_BUNDLE_BINDING_MISSING: category_id=%r has no competency "
+                    "bundle target (orphaned taxonomy category) — graph lineage not stamped",
+                    cid,
+                )
+                cat["competency_bundle_binding_missing"] = True
             continue
         cat["competency_bundle_id"] = rec["competency_bundle_id"]
         cat["capability_family"] = rec["capability_family"]
