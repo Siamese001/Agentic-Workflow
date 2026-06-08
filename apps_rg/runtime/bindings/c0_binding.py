@@ -207,6 +207,7 @@ def _build_section_evidence_trace(
     similarity_threshold: float = 0.0,
     embedding_model_id: str = "",
     embedding_dimension: int = 0,
+    filter_removed_all: bool = False,
 ) -> SectionEvidenceTrace:
     """One ``SectionEvidenceTrace`` per profile section after dense+sparse merge.
 
@@ -264,6 +265,7 @@ def _build_section_evidence_trace(
         similarity_threshold=float(similarity_threshold),
         embedding_model_id=embedding_model_id,
         embedding_dimension=int(embedding_dimension),
+        filter_removed_all=bool(filter_removed_all),
     )
 
 
@@ -1355,6 +1357,28 @@ def _perform_bounded_section_retrieval(
                 _where_filter_str = str(where)
             _embedding_dimension = len(qemb) if qemb is not None else 0
 
+            # G7: a section-scoped filter must not silently discard 100% of candidates. If the
+            # narrow filter matched nothing, re-query ONCE with the broad app+source_class clause;
+            # if THAT matches, the JD/section metadata filter removed all candidates — fall back to
+            # the broader group and name the reason rather than reporting a falsely empty section.
+            _filter_removed_all = False
+            _broad_where = {"$and": [{"app": "apps_rg"}, {"source_class": {"$in": allow}}]}
+            _narrow_empty = not (result and result.get("ids") and result["ids"][0])
+            if _narrow_empty and where != _broad_where:
+                broad_result = collection.query(
+                    query_embeddings=[qemb],
+                    n_results=min(nk, 32),
+                    where=_broad_where,
+                )
+                if broad_result and broad_result.get("ids") and broad_result["ids"][0]:
+                    _filter_removed_all = True
+                    result = broad_result
+                    _raw_hit_count = len(broad_result["ids"][0])
+                    _where_filter_str = (
+                        json.dumps(_broad_where, sort_keys=True, default=str)
+                        + " (G7_fallback_from_section_filter)"
+                    )
+
             section_dense_items: list[EvidenceItem] = []
             if result and result.get("ids"):
                 for i, doc_id in enumerate(result["ids"][0]):
@@ -1495,6 +1519,7 @@ def _perform_bounded_section_retrieval(
                     ),
                     embedding_model_id=_embedding_model_id,
                     embedding_dimension=_embedding_dimension,
+                    filter_removed_all=_filter_removed_all,
                 )
             )
             evidence_items.extend(section_dense_items)

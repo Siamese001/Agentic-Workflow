@@ -58,6 +58,9 @@ class SectionEvidenceTrace:
     similarity_threshold: float = 0.0
     embedding_model_id: str = ""
     embedding_dimension: int = 0
+    # G7: True when the narrow section filter matched nothing on a populated collection and the
+    # bounded broad (app+source_class) fallback was used — names the filter as the cause.
+    filter_removed_all: bool = False
 
 
 @dataclass
