@@ -1,9 +1,9 @@
 # apps_rg — Unlock InsurTech & EY into Generated Role-Episode Lanes
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W7
-LAST_COMPLETED_WAVE: W6 (W4/W5 covered by the generic role_episode_lane)
+PLAN_STATUS: PARTIAL — W1-W6 done + keyless W7 green; live AIG E2E BLOCKED on external-Claude key
+CURRENT_WAVE: W7 (live run pending key)
+LAST_COMPLETED_WAVE: W6
 LAST_UPDATED: 2026-06-08
 
 > **2026-06-08 scope correction:** the ~28-file estimate (from the exploratory map) was WRONG.
@@ -56,7 +56,7 @@ Parent: spun out of `apps-rg-aig-e2e-remediation-e4b7c1` W6 (user-authorized sco
 | W4 | P4 | **X2 Exit Gates** for both bullet lanes (+ narrative if separate) | ~45k | mirror `ibm_bullets_x2` with 3-bullet count | Not Started | X2 runs; bullet-count + metric-anchor + scope-isolation gates pass on valid output |
 | W5 | P5 | **Narrative lanes** — handled by the same generic role_episode_lane | ~50k | generic lane handles narratives | COVERED by generic lane | insurtech_narrative/ey_narrative resolve proof (3 facts each); live-validated at W7 |
 | W6 | P6 | **Unlock** reconciliation — verified, NO code change needed | ~20k | assembler already routes insurtech/ey as generated | DONE | No double-render: generated lanes own final resume; locked manifest keeps identity atoms + preserve gates; 4 tests |
-| W7 | P7 | **Tests** (unit + contract) mirroring IBM/Unify + **live AIG E2E** | ~45k | external Claude key available | Not Started | unit/contract green; live run emits all 4 lanes with X1D/X2/X3, no REQUIRED_PROOF_ABSENT |
+| W7 | P7 | **Tests + E2E** — keyless validation DONE; live run pending key | ~45k | external Claude key | PARTIAL | 26 unit tests green; both lanes dry-run EXIT 0 (preflight PASS, embedding fail-closed, Qwen N/A); proof resolves 3 grounded facts/lane. **Live generation+X1D/X2/X3 BLOCKED on ANTHROPIC_API_KEY (absent in env)** |
 
 ### Phase-Level Summary
 
