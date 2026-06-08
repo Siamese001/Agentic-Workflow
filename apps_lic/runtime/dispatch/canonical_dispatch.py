@@ -1,14 +1,16 @@
-"""Canonical apps_lic product spine: U0 → L1 → L0 → (R3R4 research) → C0 → PA → L3 → L2 → Exit.
+"""Canonical apps_lic product spine: U0 → L1 → L0 → C0 → PA → L3 → L2 → Exit.
 
-No integrated_r4_lic shortcut, no GovernedLicRun, no YAML L2 recipe resolver, no direct HOP
-bypass from CLI. R3R4 research uses ``ManagedWorkflowDispatcher`` before re-planning.
+No integrated_r4_lic shortcut, no GovernedLicRun, no YAML L2 recipe
+resolver, no direct HOP bypass from CLI, and no apps_research managed
+workflow support path. apps_research is deprecated for apps_lic; requests
+that would have selected the old R3R4 research-then-draft route fail closed
+instead of invoking any bridge, dispatcher, or support workflow.
 """
 
 from __future__ import annotations
 
 import dataclasses
 import json
-import os
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -25,7 +27,6 @@ from apps_lic.runtime.bindings.l2_binding import l2_execute_apps_lic
 from apps_lic.runtime.bindings.l3_binding import l3_orchestrate_apps_lic
 from apps_lic.runtime.bindings.pa_binding import pa_compose_apps_lic
 from apps_lic.runtime.bindings.c0_binding import c0_retrieve_apps_lic
-from agentic_core.runtime.contracts.route_contract import RouteContract
 from apps_lic.runtime.bindings.exit_binding import exit_finalize_apps_lic
 from apps_lic.runtime.u0.adapter import apps_lic_u0_adapt
 
@@ -37,11 +38,17 @@ from apps_lic.runtime.dispatch.runtime_proof_bundle import (
 )
 
 ROUTE_FAMILY_R4 = ROUTE_FAMILY_R4_MANAGED_DRAFT
-ROUTE_FAMILY_R3R4 = ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT
+ROUTE_FAMILY_R3R4 = ROUTE_FAMILY_R3R4_MANAGED_RESEARCH_THEN_DRAFT  # deprecated guard only
 ROUTE_FAMILY_R5 = ROUTE_FAMILY_R5_FALLBACK
 
 _EXECUTION_MANAGED = "managed_workflow"
 _EXECUTION_TERMINAL = "terminal_fallback"
+_APPS_RESEARCH_DEPRECATED_REASON = "APPS_RESEARCH_DEPRECATED"
+
+_DEFAULT_CAMPAIGN_OBJECTIVE = (
+    "Start a concise recruiting conversation around relevant AI / agentic AI "
+    "engineering leadership roles."
+)
 
 
 def _assert_runtime_proof_bundle_pass(artifact_dir: Path) -> None:
@@ -60,34 +67,53 @@ def build_cli_ingress_raw(
     run_id: str | None = None,
     request_id: str | None = None,
     trace_id: str | None = None,
+    recipient_class: str = "recruiter",
+    channel: str = "linkedin",
+    outreach_mode: str = "cold",
     manual_brief: str = "",
     allow_research: bool = False,
     lead_profile: Mapping[str, Any] | None = None,
-    campaign_objective: str = "Drive renewal conversation with enterprise prospect",
+    campaign_objective: str | None = None,
+    audience_segment: str = "recruiting",
 ) -> dict[str, Any]:
-    """Map CLI kwargs to AppsLicIngressContractV1-shaped raw JSON for U0."""
+    """Map CLI kwargs to AppsLicIngressContractV1-shaped raw JSON for U0.
+
+    ``allow_research`` is accepted only for backward CLI compatibility. It no
+    longer authorizes the deprecated apps_research managed workflow; the emitted
+    payload marks research disabled by policy so L0 cannot select R3R4 through
+    the normal profile interpreter.
+    """
     rid = run_id or f"run_lic_{uuid.uuid4().hex[:12]}"
     req_id = request_id or f"req_lic_{uuid.uuid4().hex[:12]}"
     tid = trace_id or f"trace_lic_{uuid.uuid4().hex[:12]}"
     now = datetime.now(timezone.utc).isoformat()
     has_brief = bool(manual_brief.strip())
+
+    normalized_channel = (channel or "linkedin").strip().lower() or "linkedin"
+    normalized_outreach_mode = (outreach_mode or "cold").strip().lower() or "cold"
+    normalized_recipient_class = (recipient_class or "recruiter").strip() or "recruiter"
+
     lead = dict(lead_profile) if lead_profile else {
-        "verified_name": "Jane Smith",
-        "title": "VP Technology",
-        "seniority_class": "VP",
-        "company_name": "Acme Corp",
-        "industry": "Technology",
+        "verified_name": "Recruiter",
+        "title": "Recruiter",
+        "seniority_class": normalized_recipient_class.upper(),
+        "company_name": "Unknown",
+        "industry": "Recruiting",
         "consent_attested": True,
     }
-    research_req: dict[str, Any] = {}
-    if allow_research and not has_brief:
-        research_req = {
-            "allow_research": True,
-            "required_evidence_types": ["company_brief", "lead_context"],
-        }
+
     personalization_inputs: dict[str, Any] = {}
     if has_brief:
         personalization_inputs["manual_brief"] = manual_brief.strip()
+
+    research_req: dict[str, Any] = {
+        "allow_research": False,
+        "research_disabled_by_policy": True,
+        "deprecation_reason": _APPS_RESEARCH_DEPRECATED_REASON,
+    }
+    if allow_research and not has_brief:
+        research_req["requested_but_disabled"] = True
+
     return {
         "apps_lic_contract_version": "v1",
         "transport": {
@@ -100,10 +126,12 @@ def build_cli_ingress_raw(
             "submitted_at": now,
         },
         "campaign": {
-            "request_type": "outreach_draft",
-            "campaign_objective": campaign_objective,
-            "channel": "email",
-            "audience_segment": "enterprise_renewal",
+            "request_type": "linkedin_recruiter_outreach_draft",
+            "campaign_objective": campaign_objective or _DEFAULT_CAMPAIGN_OBJECTIVE,
+            "channel": normalized_channel,
+            "audience_segment": audience_segment,
+            "recipient_class": normalized_recipient_class,
+            "outreach_mode": normalized_outreach_mode,
             "action_required": "draft_and_cert",
             "workflow_required": "managed_workflow_hop",
             "grounding_required": True,
@@ -126,7 +154,7 @@ def build_cli_ingress_raw(
             "sender_profile": {
                 "sender_id": "sender_cli",
                 "name": "Amit Ayer",
-                "title": "SVP AI Solutions",
+                "title": "Senior Agentic AI / AI Engineering Leader",
             },
             "sender_ref": None,
             "company_profile": None,
@@ -135,7 +163,11 @@ def build_cli_ingress_raw(
         "personalization": {"inputs": personalization_inputs},
         "generation_hints": {},
         "tone_constraints": {},
-        "output_format": {},
+        "output_format": {
+            "format": "linkedin_message_json",
+            "message_text_max_chars": 600,
+            "subject_required": False,
+        },
         "research_requirements": research_req,
         "routing_policy": {},
         "validation_policy": {},
@@ -166,16 +198,16 @@ def build_cli_ingress_raw(
     }
 
 
-def _write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
-
-
 def _inject_context_signals(
     validated_request: Any,
     raw_ingress: Mapping[str, Any],
 ) -> Any:
-    """Attach L0 routing context_signals to app_payload post-U0 (not ingress-schema fields)."""
+    """Attach L0 routing context_signals to app_payload post-U0.
+
+    Context is considered fresh only when the user supplied a manual/preloaded
+    briefing in the ingress payload. Deprecated apps_research output is not
+    produced or merged here.
+    """
     merged = dict(validated_request.app_payload)
     inputs = (raw_ingress.get("personalization") or {}).get("inputs") or {}
     entity = merged.get("entity_refs") or {}
@@ -189,170 +221,55 @@ def _inject_context_signals(
     return dataclasses.replace(validated_request, app_payload=merged)
 
 
-def _manifest_as_dict(manifest: Any) -> dict[str, Any]:
-    if isinstance(manifest, dict):
-        return manifest
-    if dataclasses.is_dataclass(manifest):
-        return dataclasses.asdict(manifest)
-    return {}
-
-
-def _merge_research_manifest(app_payload: dict[str, Any], manifest: Any) -> dict[str, Any]:
-    """Inject managed-workflow briefing into app_payload for re-planning."""
-    manifest_dict = _manifest_as_dict(manifest)
-    merged = dict(app_payload)
-    signals = dict(merged.get("context_signals") or {})
-    freshness = manifest_dict.get("freshness_status", "fresh")
-    signals["briefing_fresh"] = freshness == "fresh"
-    signals["context_grounded"] = freshness == "fresh"
-    signals.setdefault("lead_profile_valid", True)
-    merged["context_signals"] = signals
-    personalization = dict(merged.get("personalization") or {})
-    inputs = dict(personalization.get("inputs") or {})
-    company_brief = manifest_dict.get("company_brief") or manifest_dict.get("briefing_text")
-    if company_brief:
-        inputs["managed_briefing"] = company_brief
-    if manifest_dict.get("recipient_brief"):
-        inputs["recipient_brief"] = manifest_dict["recipient_brief"]
-    personalization["inputs"] = inputs
-    merged["personalization"] = personalization
-    return merged
-
-
-def _build_request_for_briefing(route: RouteContract, validated_request: Any) -> Any:
-    from apps_lic.integrations.managed_workflow_dispatcher import RequestForBriefing
-
-    payload = dict(validated_request.app_payload or {})
-    transport = payload.get("transport") or {}
-    campaign = payload.get("campaign") or {}
-    entity = payload.get("entity_refs") or {}
-    lead = entity.get("lead_profile") or {}
-    research_req = payload.get("research_requirements") or {}
-    return RequestForBriefing(
-        request_id=route.request_id,
-        run_id=route.run_id,
-        trace_id=route.trace_id,
-        recipient_class=str(lead.get("seniority_class") or "RECRUITER"),
-        recipient_name=str(lead.get("verified_name") or "Unknown"),
-        company_name=str(lead.get("company_name") or "Unknown"),
-        job_title=str(lead.get("title") or ""),
-        channel=str(campaign.get("channel") or "email"),
-        outreach_mode=str(campaign.get("outreach_mode") or "cold"),
-        relationship_distance=str(campaign.get("relationship_distance") or "cold"),
-        sender_resume_ref="sha256:cli_sender",
-        sender_policy_hash="sha256:cli_policy",
-        sender_blueprint_hash="sha256:cli_blueprint",
-        research_authorized=bool(research_req.get("allow_research", False)),
-        research_capability_ref="apps_research.v1",
-        audit_refs=tuple(validated_request.audit_refs or ()),
-    )
-
-
-def _research_bridge() -> Any:
-    if os.environ.get("APPS_LIC_MOCK_RESEARCH", "").strip() in ("1", "true", "yes"):
-        from apps_lic.integrations.apps_research_bridge import MockAppsResearchBridge
-
-        return MockAppsResearchBridge(confidence_score=0.85)
-    from apps_lic.integrations.apps_research_bridge import AppsResearchBridge
-
-    return AppsResearchBridge(capability_ref="apps_research.v1")
-
-
-def _write_mock_elimination_proof(artifact_dir: Path, bridge: Any) -> str:
-    """Record that live research path did not use mock bridge env or class."""
-    payload = {
-        "APPS_LIC_MOCK_RESEARCH": os.environ.get("APPS_LIC_MOCK_RESEARCH", ""),
-        "bridge_class": type(bridge).__name__,
-        "bridge_module": type(bridge).__module__,
-        "mock_env_active": os.environ.get("APPS_LIC_MOCK_RESEARCH", "").strip().lower()
-        in ("1", "true", "yes"),
-        "mock_bridge_class": "MockAppsResearchBridge",
-    }
-    path = artifact_dir / _sr.FILENAME_MOCK_ELIMINATION_PROOF
-    _sr.write_stage_receipt(path, payload)
-    return str(path)
-
-
-def _serialize_research_outcome(outcome: Any) -> dict[str, Any]:
-    from apps_lic.integrations.managed_workflow_dispatcher import (
-        BriefingReady,
-        DispatchFailurePacket,
-    )
-
-    if isinstance(outcome, BriefingReady):
-        return {
-            "outcome": "BriefingReady",
-            "research_run_id": outcome.research_run_id,
-            "research_evidence_count": outcome.research_evidence_count,
-            "confidence_score": outcome.confidence_score,
-            "manifest_freshness": getattr(outcome.manifest, "freshness_status", None),
-        }
-    if isinstance(outcome, DispatchFailurePacket):
-        return {
-            "outcome": "DispatchFailurePacket",
-            "r5_reason_code": outcome.r5_reason_code,
-            "detail": outcome.detail,
-        }
-    return {"outcome": type(outcome).__name__}
-
-
-def _run_r3r4_research(
+def _write_terminal_manifest(
     *,
-    route: RouteContract,
-    validated_request: Any,
-    artifact_dir: Path | None = None,
-) -> tuple[bool, str, Any | None]:
-    """Dispatch apps_research via ``dispatch_managed_briefing`` when R3R4 is selected."""
-    from apps_lic.integrations.managed_workflow_dispatcher import (
-        BriefingReady,
-        DispatchFailurePacket,
-        dispatch_managed_briefing,
+    artifact_dir: Path,
+    artifacts: list[str],
+    route_payload: Mapping[str, Any],
+    request_id: str,
+    run_id: str,
+    trace_id: str,
+    terminal_reason: str,
+    exit_stage_policy: str,
+    deprecated_route_family: str | None = None,
+) -> None:
+    stage_refs = _sr.standard_stage_receipt_refs(
+        terminal_r5=True,
+        c0_invoked=False,
+        pa_invoked=False,
+        l3_participated=False,
     )
-
-    req = _build_request_for_briefing(route, validated_request)
-    bridge = _research_bridge()
-
-    if artifact_dir is not None:
-        _write_mock_elimination_proof(artifact_dir, bridge)
-        pre_route = {
-            "route_id": route.route_id,
-            "route_family": route.route_family,
-            "execution_form": route.execution_form,
-            "l3_required": route.l3_required,
-        }
-        _sr.write_stage_receipt(
-            artifact_dir / _sr.FILENAME_ROUTE_PRE_RESEARCH,
-            pre_route,
-        )
-        _sr.write_stage_receipt(
-            artifact_dir / _sr.FILENAME_RESEARCH_BRIDGE_REQUEST,
-            dataclasses.asdict(req),
-        )
-
-    outcome = dispatch_managed_briefing(req, bridge=bridge)
-
-    if artifact_dir is not None:
-        response_payload: dict[str, Any] = {
-            "dispatch_outcome": _serialize_research_outcome(outcome),
-        }
-        if isinstance(outcome, BriefingReady):
-            response_payload["audit_refs"] = list(getattr(outcome, "audit_refs", ()) or ())
-            response_payload["research_run_id"] = outcome.research_run_id
-            response_payload["research_evidence_count"] = outcome.research_evidence_count
-            response_payload["confidence_score"] = outcome.confidence_score
-            response_payload["evidence_lineage"] = list(
-                getattr(outcome, "evidence_lineage", ()) or ()
-            )
-        _sr.write_stage_receipt(
-            artifact_dir / _sr.FILENAME_RESEARCH_BRIDGE_RESPONSE,
-            response_payload,
-        )
-
-    if isinstance(outcome, BriefingReady):
-        return True, "BriefingReady", outcome.manifest
-    if isinstance(outcome, DispatchFailurePacket):
-        return False, outcome.r5_reason_code, None
-    return False, "unknown_dispatch_outcome", None
+    manifest = {
+        **dict(route_payload),
+        "request_id": request_id,
+        "run_id": run_id,
+        "trace_id": trace_id,
+        "route_family": ROUTE_FAMILY_R5,
+        "execution_form": _EXECUTION_TERMINAL,
+        "l3_required": False,
+        "terminal_r5": True,
+        "terminal_r5_reason": terminal_reason,
+        "x3_disposition": "DENY",
+        "exit_status": "failure",
+        "outcome_authorized": False,
+        "exit_stage_policy": exit_stage_policy,
+        "producer_component": "apps_lic.runtime.dispatch.canonical_dispatch",
+        "apps_research_invoked": False,
+        "deprecated_route_family": deprecated_route_family or "",
+        "stage_receipt_refs": list(stage_refs),
+    }
+    manifest_path = _sr.write_stage_receipt(
+        artifact_dir / _sr.FILENAME_SPINE_MANIFEST,
+        manifest,
+    )
+    artifacts.append(manifest_path)
+    proof_path = write_runtime_proof_bundle(
+        artifact_dir,
+        manifest,
+        terminal_r5=True,
+    )
+    artifacts.append(proof_path)
+    _assert_runtime_proof_bundle_pass(artifact_dir)
 
 
 def run_canonical_apps_lic_spine(
@@ -361,7 +278,13 @@ def run_canonical_apps_lic_spine(
     artifact_root: Path | None = None,
     skip_r3r4_research: bool = False,
 ) -> SpineRunResult:
-    """Execute the canonical AG-8 spine for one apps_lic ingress payload."""
+    """Execute the canonical AG-8 spine for one apps_lic ingress payload.
+
+    ``skip_r3r4_research`` is retained for backward API compatibility only.
+    The old R3R4/apps_research path is removed and never invoked.
+    """
+    _ = skip_r3r4_research
+
     validated_request, reflection = apps_lic_u0_adapt(raw_ingress)
     validated_request = _inject_context_signals(validated_request, raw_ingress)
     l1 = l1_plan_apps_lic(validated_request)
@@ -399,81 +322,6 @@ def run_canonical_apps_lic_spine(
     )
     artifacts.append(u0_path)
 
-    research_note = ""
-    research_failed = False
-    if route.route_family == ROUTE_FAMILY_R3R4 and not skip_r3r4_research:
-        ok, research_note, manifest = _run_r3r4_research(
-            route=route,
-            validated_request=validated_request,
-            artifact_dir=artifact_dir,
-        )
-        if ok and manifest is not None:
-            merged_payload = _merge_research_manifest(
-                dict(validated_request.app_payload),
-                manifest,
-            )
-            validated_request = dataclasses.replace(
-                validated_request,
-                app_payload=merged_payload,
-            )
-            l1 = l1_plan_apps_lic(validated_request)
-            route = l0_route_apps_lic(l1)
-        else:
-            research_failed = True
-
-    if research_failed:
-        stage_refs = _sr.standard_stage_receipt_refs(
-            terminal_r5=True,
-            c0_invoked=False,
-            pa_invoked=False,
-            l3_participated=False,
-        )
-        terminal_reason = research_note or "APPS_RESEARCH_FAILED"
-        manifest = {
-            "route_id": route.route_id,
-            "route_family": ROUTE_FAMILY_R5,
-            "execution_form": _EXECUTION_TERMINAL,
-            "l3_required": False,
-            "reason_codes": list(route.reason_codes) + [terminal_reason],
-            "request_id": route.request_id,
-            "run_id": route.run_id,
-            "trace_id": route.trace_id,
-            "terminal_r5": True,
-            "terminal_r5_reason": terminal_reason,
-            "x3_disposition": "DENY",
-            "exit_status": "failure",
-            "outcome_authorized": False,
-            "exit_stage_policy": "r3r4_research_fail_closed_no_exit_receipt",
-            "producer_component": "apps_lic.runtime.dispatch.canonical_dispatch",
-            "research_note": terminal_reason,
-            "stage_receipt_refs": list(stage_refs),
-        }
-        manifest_path = _sr.write_stage_receipt(
-            artifact_dir / _sr.FILENAME_SPINE_MANIFEST,
-            manifest,
-        )
-        artifacts.append(manifest_path)
-        proof_path = write_runtime_proof_bundle(
-            artifact_dir,
-            manifest,
-            terminal_r5=True,
-        )
-        artifacts.append(proof_path)
-        _assert_runtime_proof_bundle_pass(artifact_dir)
-        return SpineRunResult(
-            run_id=run_id,
-            request_id=route.request_id,
-            trace_id=route.trace_id,
-            route_id=route.route_id,
-            route_family=ROUTE_FAMILY_R5,
-            execution_form=_EXECUTION_TERMINAL,
-            x3_disposition="DENY",
-            terminal_r5=True,
-            terminal_r5_reason=terminal_reason,
-            artifact_dir=artifact_dir,
-            artifacts=tuple(artifacts),
-        )
-
     l1_path = _sr.write_stage_receipt(
         artifact_dir / _sr.FILENAME_L1_PLAN,
         _sr.build_l1_receipt(l1),
@@ -486,6 +334,7 @@ def run_canonical_apps_lic_spine(
         "execution_form": route.execution_form,
         "l3_required": route.l3_required,
         "reason_codes": list(route.reason_codes),
+        "apps_research_invoked": False,
     }
     will_c0 = bool(l1.grounding_required)
     will_pa = bool(l1.model_generation_required and will_c0)
@@ -504,36 +353,44 @@ def run_canonical_apps_lic_spine(
     )
     artifacts.append(route_path)
 
+    if route.route_family == ROUTE_FAMILY_R3R4:
+        _write_terminal_manifest(
+            artifact_dir=artifact_dir,
+            artifacts=artifacts,
+            route_payload=route_payload,
+            request_id=route.request_id,
+            run_id=route.run_id,
+            trace_id=route.trace_id,
+            terminal_reason=_APPS_RESEARCH_DEPRECATED_REASON,
+            exit_stage_policy="deprecated_apps_research_route_fail_closed_no_exit_receipt",
+            deprecated_route_family=route.route_family,
+        )
+        return SpineRunResult(
+            run_id=run_id,
+            request_id=route.request_id,
+            trace_id=route.trace_id,
+            route_id=route.route_id,
+            route_family=ROUTE_FAMILY_R5,
+            execution_form=_EXECUTION_TERMINAL,
+            x3_disposition="DENY",
+            terminal_r5=True,
+            terminal_r5_reason=_APPS_RESEARCH_DEPRECATED_REASON,
+            artifact_dir=artifact_dir,
+            artifacts=tuple(artifacts),
+        )
+
     if route.execution_form == _EXECUTION_TERMINAL or route.route_family == ROUTE_FAMILY_R5:
-        stage_refs = _sr.standard_stage_receipt_refs(
-            terminal_r5=True,
-            c0_invoked=False,
-            pa_invoked=False,
-            l3_participated=False,
+        terminal_reason = "route_family=R5_FALLBACK"
+        _write_terminal_manifest(
+            artifact_dir=artifact_dir,
+            artifacts=artifacts,
+            route_payload=route_payload,
+            request_id=route.request_id,
+            run_id=route.run_id,
+            trace_id=route.trace_id,
+            terminal_reason=terminal_reason,
+            exit_stage_policy="terminal_r5_short_circuit_no_exit_receipt",
         )
-        manifest = {
-            **route_payload,
-            "request_id": route.request_id,
-            "run_id": route.run_id,
-            "trace_id": route.trace_id,
-            "terminal_r5": True,
-            "terminal_r5_reason": research_note or "route_family=R5_FALLBACK",
-            "x3_disposition": "DENY",
-            "exit_status": "failure",
-            "outcome_authorized": False,
-            "exit_stage_policy": "terminal_r5_short_circuit_no_exit_receipt",
-            "producer_component": "apps_lic.runtime.dispatch.canonical_dispatch",
-            "stage_receipt_refs": list(stage_refs),
-        }
-        manifest_path = _sr.write_stage_receipt(artifact_dir / _sr.FILENAME_SPINE_MANIFEST, manifest)
-        artifacts.append(manifest_path)
-        proof_path = write_runtime_proof_bundle(
-            artifact_dir,
-            manifest,
-            terminal_r5=True,
-        )
-        artifacts.append(proof_path)
-        _assert_runtime_proof_bundle_pass(artifact_dir)
         return SpineRunResult(
             run_id=run_id,
             request_id=route.request_id,
@@ -543,7 +400,7 @@ def run_canonical_apps_lic_spine(
             execution_form=route.execution_form,
             x3_disposition="DENY",
             terminal_r5=True,
-            terminal_r5_reason=research_note or "R5_TERMINAL_FALLBACK",
+            terminal_r5_reason="R5_TERMINAL_FALLBACK",
             artifact_dir=artifact_dir,
             artifacts=tuple(artifacts),
         )
@@ -585,6 +442,11 @@ def run_canonical_apps_lic_spine(
         raise ValueError(
             f"canonical_dispatch: non-terminal route must be managed_workflow; "
             f"got {route.execution_form!r}"
+        )
+    if fec is None:
+        raise ValueError(
+            "canonical_dispatch: managed apps_lic route requires C0 FinalEvidenceContract; "
+            "apps_research fallback is removed"
         )
 
     l3_receipt, step, _bus = l3_orchestrate_apps_lic(route, fec, prompt)
@@ -638,7 +500,7 @@ def run_canonical_apps_lic_spine(
         "l2_execution_status": l2_status,
         "l3_receipt_id": getattr(l3_receipt, "deterministic_digest", "")[:32],
         "producer_component": "apps_lic.runtime.dispatch.canonical_dispatch",
-        "research_note": research_note,
+        "apps_research_invoked": False,
         "stage_receipt_refs": list(stage_refs),
     }
     manifest_path = _sr.write_stage_receipt(artifact_dir / _sr.FILENAME_SPINE_MANIFEST, manifest)
