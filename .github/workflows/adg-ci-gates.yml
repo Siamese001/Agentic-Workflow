@@ -65,16 +65,10 @@ jobs:
           pip install redis
           pip install -e . --no-deps 2>/dev/null || pip install -r requirements.txt --quiet 2>/dev/null || true
 
-      - name: Ingest ADG into Redis
-        run: python tools/adg/adg_redis_ingest.py --force
-        env:
-          PYTHONPATH: .
-
-      - name: ADG Staleness Verify (blocking — confirms ingest against HEAD)
-        run: python tools/adg/adg_stale_guard.py
-        env:
-          PYTHONPATH: .
-
+      # NOTE: the Audit Pipeline (ADG generator) MUST run before the Redis
+      # ingest + staleness verify below. It is what produces artifacts/adg/,
+      # which is gitignored and therefore absent in a fresh CI checkout.
+      # Ingesting first failed with "ADG artifacts directory not found".
       - name: ADG Audit Pipeline (wrapper — Stage-1 generator + Stage-2 gap report)
         # Plan adg-audit-pipeline-integration-7f2c93: single SSOT entry for
         # the two-stage certification flow. Runs generate_full_adg.py with
@@ -85,6 +79,16 @@ jobs:
         # until OTel attestation is wired end-to-end (known limitation
         # #1 in docs/guides/ADG_Audit_Pipeline.md).
         run: python tools/adg/run_full_adg_audit.py --mode certification --format both
+        env:
+          PYTHONPATH: .
+
+      - name: Ingest ADG into Redis
+        run: python tools/adg/adg_redis_ingest.py --force
+        env:
+          PYTHONPATH: .
+
+      - name: ADG Staleness Verify (blocking — confirms ingest against HEAD)
+        run: python tools/adg/adg_stale_guard.py
         env:
           PYTHONPATH: .
 
