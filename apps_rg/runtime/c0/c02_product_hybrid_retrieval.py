@@ -18,6 +18,16 @@ from apps_rg.runtime.c0.c0_section_authority import AUTHORITY_CLASS_SPINE_ENRICH
 PRODUCT_HYBRID_REASON = "product_hybrid_bounded_section_retrieval"
 NOT_REQUIRED_REASON = "product_hybrid_not_required"
 
+# G5 (plan apps-rg-e2e-gap-remediation-7e2d9c): every C0.2 hard block must tell the
+# operator how to recover, not just that proof is absent. doctor diagnoses prerequisites;
+# bootstrap (W3) rebuilds the fact_vectors collection from tracked graph/proof-pool sources.
+_C0_REMEDIATION_HINT = (
+    "Remediation: run `python -m apps_rg doctor --strict` to diagnose prerequisites "
+    "(.env keys, fact_vectors presence, embedding model/dim), then "
+    "`python -m apps_rg bootstrap fact-vectors --strict` to (re)build the fact_vectors "
+    "collection. Plan: apps-rg-e2e-gap-remediation-7e2d9c (G5/G6/G7)."
+)
+
 
 def product_hybrid_retrieval_required(section_id: str) -> bool:
     """True when this section lane must run bounded hybrid read (fail-closed on product)."""
@@ -116,7 +126,10 @@ def _enforce_mandatory_lanes(
         return
     if lanes.get("dense") != "completed":
         raise C0EvidenceGapError(
-            f"C0.2 product hybrid dense lane required for {section_id!r} but did not complete"
+            f"C0.2 product hybrid dense lane required for {section_id!r} but did not complete "
+            f"(lane_status={lanes}). Likely cause: fact_vectors collection empty/under-populated "
+            f"for this section, the section metadata filter removed all candidates, or an "
+            f"embedding-function/dimension mismatch. " + _C0_REMEDIATION_HINT
         )
     sparse_cfg = profile.section_sparse_config(section_cfg)
     if sparse_cfg.get("sparse_enabled"):
@@ -127,7 +140,9 @@ def _enforce_mandatory_lanes(
             )
         if lanes.get("sparse") != "completed":
             raise C0EvidenceGapError(
-                f"C0.2 product hybrid sparse lane required for {section_id!r} but did not complete"
+                f"C0.2 product hybrid sparse lane required for {section_id!r} but did not complete "
+                f"(lane_status={lanes}). Likely cause: BM25/sparse index missing or empty for this "
+                f"section. " + _C0_REMEDIATION_HINT
             )
 
 
@@ -194,7 +209,8 @@ def perform_product_hybrid_retrieval(
     except Exception as exc:  # guardian: allow-broad-exception -- Chroma collection error taxonomy varies by version; classify as C0 evidence gap.
         raise C0EvidenceGapError(
             f"C0.2 product hybrid dense lane required for {section_id!r} but "
-            f"fact_vectors collection is unavailable at {chroma_path!r}: {exc}"
+            f"fact_vectors collection is unavailable at {chroma_path!r}: {exc}. "
+            + _C0_REMEDIATION_HINT
         ) from exc
 
     extra, _verdicts, status, sparse_refs, _scores, _traces = _perform_bounded_section_retrieval(

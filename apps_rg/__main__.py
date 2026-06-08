@@ -675,6 +675,14 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     Returns exit code (0 = success, 7 = cursor-prompts sentinel).
     """
     _argv = list(argv) if argv is not None else None
+    # Diagnostic subcommands intercept the flat run-parser: they own a minimal arg surface and
+    # must run on a clean checkout without the full generation schema (G1/G2-preflight,
+    # plan apps-rg-e2e-gap-remediation-7e2d9c).
+    _tokens = _argv if _argv is not None else sys.argv[1:]
+    if _tokens and _tokens[0] == "doctor":
+        from apps_rg.runtime.doctor import run_doctor_cli
+
+        return run_doctor_cli(list(_tokens[1:]))
     from apps_rg.runtime.windows_sac_delegate import (
         delegate_apps_rg_to_wsl,
         should_delegate_apps_rg_to_wsl,
@@ -1147,29 +1155,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 process_exit_code=rc,
             )
             return rc
-        if status != "success" or not authorized:
-            from apps_rg.runtime.cli_exit_codes import (
-                EXIT_GENERIC_FAILURE,
-                EXIT_JUDGE_REVIEW_REQUIRED,
-                EXIT_TOKEN_BUDGET_BLOCKED,
-            )
+        # Whole-run (no --section) exit code. A whole-run failure must never mask to 0
+        # via one section's locally-clean artifact (gap G4). exit_status=="success" AND
+        # outcome_authorized => 0; otherwise a specific non-zero code, never EXIT_SUCCESS.
+        from apps_rg.runtime.cli_exit_codes import exit_code_from_whole_run_result
 
-            if isinstance(result, dict):
-                ad = str(result.get("artifact_dir") or "").strip()
-                if ad and (Path(ad) / "lanes" / "executive_summary").is_dir():
-                    from apps_rg.runtime.cli_exit_codes import (
-                        exit_code_for_executive_summary_artifact,
-                    )
-
-                    es_ad = Path(ad) / "lanes" / "executive_summary"
-                    return exit_code_for_executive_summary_artifact(es_ad)
-                if str(result.get("token_budget_operator_message") or "").strip():
-                    return EXIT_TOKEN_BUDGET_BLOCKED
-                x3 = str(result.get("x3_disposition") or "")
-                if "JUDGE_SOFT_FAIL" in x3:
-                    return EXIT_JUDGE_REVIEW_REQUIRED
-            return EXIT_GENERIC_FAILURE
-        return 0
+        return exit_code_from_whole_run_result(result)
     except SectionCliConfigError as exc:
         print(f"ERROR: {exc}", file=sys.stderr, flush=True)
         return 2

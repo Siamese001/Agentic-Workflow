@@ -67,6 +67,45 @@ def exit_code_for_executive_summary_artifact(
     return EXIT_SUCCESS
 
 
+def exit_code_from_whole_run_result(result: Any) -> int:
+    """Derive the integrated *whole-run* process exit code (``python -m apps_rg`` with no --section).
+
+    Unlike a standalone lane, a whole-run failure MUST NEVER collapse to ``EXIT_SUCCESS``
+    just because one section's local artifact happens to lack a fault marker. The prior
+    inline path delegated the whole-run code to ``exit_code_for_executive_summary_artifact``,
+    which returns ``EXIT_SUCCESS`` for an ``X3_BLOCK`` exec-summary artifact that carries no
+    temperature fault / token-budget receipt / judge soft-fail — so an all-lanes-blocked run
+    masked to exit 0 (gap G4, plan apps-rg-e2e-gap-remediation-7e2d9c).
+
+    Contract: ``EXIT_SUCCESS`` requires the run to report ``exit_status == "success"`` AND
+    ``outcome_authorized``. Otherwise the code is non-zero, refined to a more specific reason
+    where one is observable (token budget, judge soft-fail), defaulting to
+    ``EXIT_GENERIC_FAILURE``.
+    """
+    if not isinstance(result, dict):
+        return EXIT_GENERIC_FAILURE
+    status = str(result.get("exit_status") or "unknown")
+    authorized = bool(result.get("outcome_authorized"))
+    if status == "success" and authorized:
+        return EXIT_SUCCESS
+    # Failure path: pick the most specific non-zero code; never downgrade to EXIT_SUCCESS.
+    if str(result.get("token_budget_operator_message") or "").strip():
+        return EXIT_TOKEN_BUDGET_BLOCKED
+    ad = str(result.get("artifact_dir") or "").strip()
+    if ad:
+        es_ad = Path(ad) / "lanes" / "executive_summary"
+        if es_ad.is_dir():
+            refined = exit_code_for_executive_summary_artifact(es_ad)
+            # Only adopt the refinement when it is itself a failure code. A whole-run
+            # failure must not be silenced by a section artifact that looks locally clean.
+            if refined != EXIT_SUCCESS:
+                return refined
+    x3 = str(result.get("x3_disposition") or "")
+    if "JUDGE_SOFT_FAIL" in x3:
+        return EXIT_JUDGE_REVIEW_REQUIRED
+    return EXIT_GENERIC_FAILURE
+
+
 def exit_code_from_lane_result(result: dict[str, Any], *, section_id: str) -> int:
     """Derive exit code from a section runner result dict."""
     if str(section_id or "").strip().lower() != "executive_summary":
@@ -104,4 +143,5 @@ __all__ = [
     "TOKEN_BUDGET_FAIL_REASONS",
     "exit_code_for_executive_summary_artifact",
     "exit_code_from_lane_result",
+    "exit_code_from_whole_run_result",
 ]

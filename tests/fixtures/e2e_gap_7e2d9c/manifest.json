@@ -1,0 +1,141 @@
+{
+  "schema_version": "apps_rg.e2e_gap_freeze.v1",
+  "plan": "apps-rg-e2e-gap-remediation-7e2d9c",
+  "wave": "W0",
+  "purpose": "Evidence freeze. Lock the AIG + Brown failing end-to-end signature BEFORE any behavior change so later waves (W1-W5) have a regression anchor. The original bundles live under artifacts/apps_rg/runtime_proofs/** which is gitignored and would vanish on a clean checkout; the decisive top-level evidence is copied here (tracked) and cross-checked by tests/unit/apps_rg/test_e2e_gap_7e2d9c_freeze.py.",
+  "frozen_on_utc": "2026-06-08",
+  "source_run_environment": {
+    "worktree": "apps_rg_e2e",
+    "provider_requested": "external_claude",
+    "model": "claude-sonnet-4-6",
+    "checkout_state": "fresh apps_rg_e2e worktree (live E2E)"
+  },
+  "expected_failure_signature": {
+    "description": "Both targets produced NO resume. All 11 lanes blocked upstream of company-specific generation; the external provider was never called; the integrated CLI masked the error with a top-level allow-style disposition and a zero exit code.",
+    "lane_count": 11,
+    "blocked_lane_count": 11,
+    "authorized_lane_count": 0,
+    "x3_block_lanes": [
+      "competencies",
+      "unify_bullets",
+      "ibm_bullets",
+      "insurtech_bullets",
+      "ey_bullets",
+      "executive_summary",
+      "headline"
+    ],
+    "pre_run_blocked_lanes": [
+      "unify_narrative",
+      "ibm_narrative",
+      "insurtech_narrative",
+      "ey_narrative"
+    ],
+    "x3_block_runtime_status": "REQUIRED_PROOF_ABSENT",
+    "pre_run_status": "PRE_RUN:upstream_not_finalized",
+    "root_cause_proof": "required upstream proof absent: C0.2 product hybrid dense lane required but did not complete (PHASE1_NO_RUN_DIR for all generated lanes)"
+  },
+  "proof_assertions": {
+    "provider_attempted_false": {
+      "gap": "upstream-of-generation",
+      "evidence_file": "competencies_provider_response.json",
+      "field": "provider_attempted",
+      "expected": false,
+      "note": "provider_available also false; exact_provider_error names the C0.2 dense-lane block (not a provider/key failure)."
+    },
+    "all_eleven_lanes_blocked": {
+      "gap": "G6/G7/G22 (C0.2 retrieval truth)",
+      "evidence_file": "full_run_section_status.json",
+      "expected_total_lanes": 11,
+      "expected_authorized_lanes": 0,
+      "cross_check_file": "integrated_lane_evidence_status.json",
+      "cross_check_fields": {
+        "executed_lane_count": 0,
+        "not_run_lane_count": 11,
+        "lanes_finalized": []
+      }
+    },
+    "exit_code_mismatch": {
+      "gap": "G4/G16 (exit-code masking + misleading aggregate disposition)",
+      "internal_status": "error",
+      "internal_evidence_file": "terminal_ret_packet.json",
+      "internal_evidence": "payload.l2_fault is non-empty (FAILED_MODULAR_R4 ...); E3 (Exec) and E5 (Seal) sub-stages FAIL",
+      "misleading_aggregate_disposition": "X3A",
+      "misleading_evidence_file": "x3_disposition_receipt.json",
+      "misleading_evidence_field": "payload.disposition",
+      "integrated_cli_exit_code_observed": 0,
+      "expected_after_remediation": "integrated CLI exits non-zero AND aggregate disposition is a block (W1=G4, W4=G16)"
+    }
+  },
+  "targets": {
+    "aig": {
+      "target_company": "AIG",
+      "target_role": "VP, Global Head of Agentic AI Solutions",
+      "target_level": "EXECUTIVE",
+      "manual_brief": "apps_rg/config/targeting/aig_vp_global_head_agentic_ai_briefing.md",
+      "source_bundle_dir": "artifacts/apps_rg/runtime_proofs/full_resume_016f007993d4",
+      "run_id": "42039a32-e0ec-4484-bdc2-084aeb245a70",
+      "request_id": "req-8bf3d44f272944129a9f987347973932",
+      "trace_root": "trace-1e63a99c3c2740ac92a5d013579ab5c4",
+      "emitted_at_utc": "2026-06-08T13:56:08Z",
+      "terminal_disposition": "X3A",
+      "internal_exit_status": "error",
+      "log": "artifacts/apps_rg/e2e_logs/aig_run2.log",
+      "frozen_files": [
+        "aig/ingress_raw.json",
+        "aig/terminal_ret_packet.json",
+        "aig/full_run_section_status.json",
+        "aig/integrated_lane_evidence_status.json",
+        "aig/x3_disposition_receipt.json",
+        "aig/competencies_provider_response.json",
+        "aig/competencies_integrated_lane_pre_run_failure.json"
+      ],
+      "frozen_file_sha256": {
+        "aig/ingress_raw.json": "3e8f32de4e1ac70595da4b0779c897c6207b3a3098f0ed2e217bd4a372aa53e4",
+        "aig/terminal_ret_packet.json": "785ba4930e15bb966af11bd7ce9ed60c45b45e3bde45dc1aeae2a15bb7782b1e",
+        "aig/full_run_section_status.json": "90c6ae6dd0ce823f1459a30d3660d136eb71dfae77697832e0ff6732c8ac3cd2",
+        "aig/integrated_lane_evidence_status.json": "4c69a1be90d9a6590cceb6cad926f006a34570a168b4b93bba49fd758768bf5b",
+        "aig/x3_disposition_receipt.json": "d497b8ef7d898f2e04010afc07b579c1a3092aba5a48bbf3c1548b5ab4d50bfb",
+        "aig/competencies_provider_response.json": "52519087d055ad4dee8283657e8ffa79be37205d12b5d875dbd4a8886f357fa2",
+        "aig/competencies_integrated_lane_pre_run_failure.json": "f3ab1edbe0b552837e4c2a2eda700227f096e3fbdd8136c147bec82b07a603a8"
+      }
+    },
+    "brown": {
+      "target_company": "Brown & Brown",
+      "target_role": "SVP IT Strategy & Innovation",
+      "target_level": "EXECUTIVE",
+      "manual_brief": "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md",
+      "source_bundle_dir": "artifacts/apps_rg/runtime_proofs/full_resume_da98b7f979f7",
+      "run_id": "2026aec8-1c16-4e6f-8543-1a45d7217360",
+      "request_id": "req-e81d28c05f0d4fc6a0beb43b04bb1267",
+      "trace_root": "trace-c6be5bc25ec641eea790c8318ff3d07f",
+      "emitted_at_utc": "2026-06-08T14:01:18Z",
+      "terminal_disposition": "X3A",
+      "internal_exit_status": "error",
+      "log": "artifacts/apps_rg/e2e_logs/brown_run.log",
+      "frozen_files": [
+        "brown/ingress_raw.json",
+        "brown/terminal_ret_packet.json",
+        "brown/full_run_section_status.json",
+        "brown/integrated_lane_evidence_status.json",
+        "brown/x3_disposition_receipt.json",
+        "brown/competencies_provider_response.json",
+        "brown/competencies_integrated_lane_pre_run_failure.json"
+      ],
+      "frozen_file_sha256": {
+        "brown/ingress_raw.json": "aa85053e00fb5a5e719e253b6e218da73c320d79242691ffdfc9e697c49372d9",
+        "brown/terminal_ret_packet.json": "d6a04099c84fe4a3a3c7f0c1c6677a1020a6c8ea699324705fadc2ebaa2d6d6c",
+        "brown/full_run_section_status.json": "1f44453d63bf401ad9d2b77c978d20d74a1382291ed37fdd3f40c7f458887309",
+        "brown/integrated_lane_evidence_status.json": "53206e90d35fa333c9f864b7a7f1b2c3d6ffeff2a265844da6c907d7c3b25aa9",
+        "brown/x3_disposition_receipt.json": "621cce0f4683c46584bae14344a950814c7ff348602fec340d98d37c426cd171",
+        "brown/competencies_provider_response.json": "52519087d055ad4dee8283657e8ffa79be37205d12b5d875dbd4a8886f357fa2",
+        "brown/competencies_integrated_lane_pre_run_failure.json": "cde74d764454ba93c195a69f4bad85f33d10d44973cc45750bc23db8eac59b8b"
+      }
+    }
+  },
+  "remediation_crosswalk": {
+    "W1": "G4 exit-code propagation must flip integrated_cli_exit_code_observed 0 -> non-zero for this signature",
+    "W2": "G6/G7/G22 must make C0.2 emit evidence or a named non-PASS instead of PHASE1_NO_RUN_DIR on a populated collection",
+    "W3": "G2/G3/G10 fact_vectors bootstrap must populate the dense lane so the generated lanes are not blocked upstream",
+    "W4": "G16 aggregate disposition must be a block (not X3A) when authorized_lane_count == 0"
+  }
+}

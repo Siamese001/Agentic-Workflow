@@ -1,0 +1,30 @@
+{
+  "schema_version": "integrated_lane_pre_run_failure_v1",
+  "generated_at_utc": "2026-06-08T13:56:08.867944+00:00",
+  "lane_id": "competencies",
+  "status": "PRE_RUN_BLOCKED",
+  "blocker": "EXECUTED_X3_BLOCK",
+  "lane_exec_status": "dispatch_error:lane_exit_error|missing_pointer:no resolvable run_dir pointer for lane 'competencies' under C:\\Git\\apps_rg_e2e\\artifacts\\apps_rg\\runtime_proofs\\full_resume_016f007993d4\\lanes",
+  "integrated_run_id": "full_resume_016f007993d4",
+  "sections_root_rel": "artifacts/apps_rg/runtime_proofs/full_resume_016f007993d4/lanes",
+  "dispatch_result": {
+    "exit_status": "error",
+    "execution_status": "failed",
+    "outcome_authorized": false,
+    "x3_disposition": "X3_BLOCK",
+    "fault": "",
+    "artifact_dir": "C:\\Git\\apps_rg_e2e\\artifacts\\apps_rg\\runtime_proofs\\full_resume_016f007993d4\\lanes\\competencies",
+    "run_id": "competencies_20260608_135600",
+    "request_id": "",
+    "l7_how_trace_emitted": false,
+    "terminal_r5": false,
+    "executive_summary_cli_output_text": "",
+    "headline_cli_output_text": "",
+    "unify_bullets_cli_output_text": "",
+    "unify_narrative_cli_output_text": "",
+    "ibm_bullets_cli_output_text": "",
+    "ibm_narrative_cli_output_text": "",
+    "competencies_cli_output_text": "competencies: REQUIRED_PROOF_ABSENT: required upstream proof absent for competencies: C0.2 product hybrid dense lane required for 'competencies' but did not complete"
+  },
+  "expected_run_dir_pattern": "artifacts/apps_rg/runtime_proofs/full_resume_016f007993d4/modular_r4/sections/competencies/real/<run_id>/"
+}

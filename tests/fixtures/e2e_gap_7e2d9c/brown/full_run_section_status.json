@@ -1,0 +1,139 @@
+{
+  "schema_version": "apps_rg.full_run_section_status.v1",
+  "run_root": ".",
+  "lanes": [
+    {
+      "lane": "competencies",
+      "executed": true,
+      "lane_dir": "lanes/competencies",
+      "display_txt_relpath": "lanes/competencies/command_output.txt",
+      "display_txt_path": "C:\\Git\\apps_rg_e2e\\artifacts\\apps_rg\\runtime_proofs\\full_resume_da98b7f979f7\\lanes\\competencies\\command_output.txt",
+      "x3_code": "X3_BLOCK",
+      "product_quality_status": "FAIL",
+      "x2_pass": "FAIL",
+      "x2_failed_gate_ids": "x2_competencies_required_proof_present",
+      "runtime_generation_status": "REQUIRED_PROOF_ABSENT"
+    },
+    {
+      "lane": "unify_bullets",
+      "executed": true,
+      "lane_dir": "lanes/unify_bullets",
+      "display_txt_relpath": "lanes/unify_bullets/command_output.txt",
+      "display_txt_path": "C:\\Git\\apps_rg_e2e\\artifacts\\apps_rg\\runtime_proofs\\full_resume_da98b7f979f7\\lanes\\unify_bullets\\command_output.txt",
+      "x3_code": "X3_BLOCK",
+      "product_quality_status": "FAIL",
+      "x2_pass": "FAIL",
+      "x2_failed_gate_ids": "x2_unify_bullets_required_proof_present",
+      "runtime_generation_status": "REQUIRED_PROOF_ABSENT"
+    },
+    {
+      "lane": "ibm_bullets",
+      "executed": true,
+      "lane_dir": "lanes/ibm_bullets",
+      "display_txt_relpath": "lanes/ibm_bullets/command_output.txt",
+      "display_txt_path": "C:\\Git\\apps_rg_e2e\\artifacts\\apps_rg\\runtime_proofs\\full_resume_da98b7f979f7\\lanes\\ibm_bullets\\command_output.txt",
+      "x3_code": "X3_BLOCK",
+      "product_quality_status": "FAIL",
+      "x2_pass": "FAIL",
+      "x2_failed_gate_ids": "x2_ibm_bullets_required_proof_present",
+      "runtime_generation_status": "REQUIRED_PROOF_ABSENT"
+    },
+    {
+      "lane": "insurtech_bullets",
+      "executed": true,
+      "lane_dir": "lanes/insurtech_bullets",
+      "display_txt_relpath": "lanes/insurtech_bullets/command_output.txt",
+      "display_txt_path": "C:\\Git\\apps_rg_e2e\\artifacts\\apps_rg\\runtime_proofs\\full_resume_da98b7f979f7\\lanes\\insurtech_bullets\\command_output.txt",
+      "x3_code": "X3_BLOCK",
+      "product_quality_status": "FAIL",
+      "x2_pass": "FAIL",
+      "x2_failed_gate_ids": "x2_insurtech_bullets_required_proof_present",
+      "runtime_generation_status": "REQUIRED_PROOF_ABSENT"
+    },
+    {
+      "lane": "ey_bullets",
+      "executed": true,
+      "lane_dir": "lanes/ey_bullets",
+      "display_txt_relpath": "lanes/ey_bullets/command_output.txt",
+      "display_txt_path": "C:\\Git\\apps_rg_e2e\\artifacts\\apps_rg\\runtime_proofs\\full_resume_da98b7f979f7\\lanes\\ey_bullets\\command_output.txt",
+      "x3_code": "X3_BLOCK",
+      "product_quality_status": "FAIL",
+      "x2_pass": "FAIL",
+      "x2_failed_gate_ids": "x2_ey_bullets_required_proof_present",
+      "runtime_generation_status": "REQUIRED_PROOF_ABSENT"
+    },
+    {
+      "lane": "unify_narrative",
+      "executed": true,
+      "lane_dir": "lanes/unify_narrative",
+      "display_txt_relpath": null,
+      "display_txt_path": null,
+      "x3_code": "PRE_RUN:upstream_not_finalized",
+      "product_quality_status": "UNKNOWN",
+      "x2_pass": "UNKNOWN",
+      "x2_failed_gate_ids": "",
+      "runtime_generation_status": "UNKNOWN"
+    },
+    {
+      "lane": "ibm_narrative",
+      "executed": true,
+      "lane_dir": "lanes/ibm_narrative",
+      "display_txt_relpath": null,
+      "display_txt_path": null,
+      "x3_code": "PRE_RUN:upstream_not_finalized",
+      "product_quality_status": "UNKNOWN",
+      "x2_pass": "UNKNOWN",
+      "x2_failed_gate_ids": "",
+      "runtime_generation_status": "UNKNOWN"
+    },
+    {
+      "lane": "insurtech_narrative",
+      "executed": true,
+      "lane_dir": "lanes/insurtech_narrative",
+      "display_txt_relpath": null,
+      "display_txt_path": null,
+      "x3_code": "PRE_RUN:upstream_not_finalized",
+      "product_quality_status": "UNKNOWN",
+      "x2_pass": "UNKNOWN",
+      "x2_failed_gate_ids": "",
+      "runtime_generation_status": "UNKNOWN"
+    },
+    {
+      "lane": "ey_narrative",
+      "executed": true,
+      "lane_dir": "lanes/ey_narrative",
+      "display_txt_relpath": null,
+      "display_txt_path": null,
+      "x3_code": "PRE_RUN:upstream_not_finalized",
+      "product_quality_status": "UNKNOWN",
+      "x2_pass": "UNKNOWN",
+      "x2_failed_gate_ids": "",
+      "runtime_generation_status": "UNKNOWN"
+    },
+    {
+      "lane": "executive_summary",
+      "executed": true,
+      "lane_dir": "lanes/executive_summary",
+      "display_txt_relpath": "lanes/executive_summary/command_output.txt",
+      "display_txt_path": "C:\\Git\\apps_rg_e2e\\artifacts\\apps_rg\\runtime_proofs\\full_resume_da98b7f979f7\\lanes\\executive_summary\\command_output.txt",
+      "x3_code": "X3_BLOCK",
+      "product_quality_status": "FAIL",
+      "x2_pass": "FAIL",
+      "x2_failed_gate_ids": "x2_executive_summary_required_proof_present",
+      "runtime_generation_status": "REQUIRED_PROOF_ABSENT"
+    },
+    {
+      "lane": "headline",
+      "executed": true,
+      "lane_dir": "lanes/headline",
+      "display_txt_relpath": "lanes/headline/command_output.txt",
+      "display_txt_path": "C:\\Git\\apps_rg_e2e\\artifacts\\apps_rg\\runtime_proofs\\full_resume_da98b7f979f7\\lanes\\headline\\command_output.txt",
+      "x3_code": "X3_BLOCK",
+      "product_quality_status": "FAIL",
+      "x2_pass": "FAIL",
+      "x2_failed_gate_ids": "x2_headline_required_proof_present",
+      "runtime_generation_status": "REQUIRED_PROOF_ABSENT"
+    }
+  ],
+  "markdown_relpath": "FULL_RUN_SECTION_STATUS.md"
+}
