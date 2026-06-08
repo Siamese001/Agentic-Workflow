@@ -15,7 +15,7 @@ _LANES = (
     "apps_rg/runtime/sections/unify_bullets_lane.py",
     "apps_rg/runtime/sections/unify_narrative_lane.py",
     "apps_rg/runtime/sections/ibm_bullets_lane.py",
-    "apps_rg/runtime/providers/section_qwen_slice.py",
+    "apps_rg/runtime/sections/section_generation.py",
 )
 
 

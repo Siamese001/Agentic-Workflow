@@ -9,8 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.providers import qwen_vllm_provider
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.providers import provider_contract
+from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.sections.executive_summary_context_limits import (
     resolve_regen_max_output_tokens,
     resolve_scratch_max_output_tokens,
@@ -126,7 +126,7 @@ def _compute_call_accepted(record: dict[str, Any]) -> bool:
     )
 
 
-def _transport_timeout(result: qwen_vllm_provider.ProviderResult) -> bool:
+def _transport_timeout(result: provider_contract.ProviderResult) -> bool:
     err = str(getattr(result, "exact_provider_error", None) or "").lower()
     if "timeout" in err:
         return True
@@ -142,7 +142,7 @@ def _transport_timeout(result: qwen_vllm_provider.ProviderResult) -> bool:
 class BudgetedQwenRegenOutcome:
     call_id: str
     call_record: dict[str, Any]
-    result: qwen_vllm_provider.ProviderResult | None
+    result: provider_contract.ProviderResult | None
     dispatch_allowed: bool
     block_reason: str | None
 
@@ -244,7 +244,7 @@ def budgeted_qwen_regen_call(
             },
         )
 
-    result = call_qwen_vllm(
+    result = generate_section(
         tag_reasoning_lane(payload, LANE_KEY),
         artifact_dir=artifact_dir,
         run_id=run_id,

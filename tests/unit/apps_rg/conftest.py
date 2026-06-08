@@ -56,10 +56,8 @@ def _w6_r1b_order_isolation(
         yield
         return
     from apps_rg.cache.r1b_bge_embedding import reset_bge_model_for_testing
-    from apps_rg.runtime import qwen_transport_diag as qtd
 
     reset_bge_model_for_testing()
-    qtd.reset_transport_context_for_tests()
     cache_root = tmp_path / "r1b_cache"
     chroma_dir = tmp_path / "chroma"
     monkeypatch.setenv("APPS_RG_R1B_CACHE_ROOT", str(cache_root))
@@ -68,4 +66,3 @@ def _w6_r1b_order_isolation(
     monkeypatch.delenv("APPS_RG_R1B_SKIP_UWG", raising=False)
     yield
     reset_bge_model_for_testing()
-    qtd.reset_transport_context_for_tests()

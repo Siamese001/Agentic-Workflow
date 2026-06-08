@@ -355,7 +355,7 @@ def generate_bullet_lane_with_sc_and_claude(
     targeting_context: dict[str, Any] | None = None,
     judge_mode: str = "blocked_if_unavailable",
     use_sc_path: bool | None = None,
-    provider_profile: str | None = "qwen_vllm",
+    provider_profile: str | None = "external_claude",
 ) -> tuple[ProviderResult | None, str, dict[str, Any] | None, str, dict[str, Any]]:
     """
     Returns (provider_result, raw_output, parsed, parse_error, generation_meta).
@@ -363,7 +363,7 @@ def generate_bullet_lane_with_sc_and_claude(
     When SC path is active: raw_output is JSON of merged selection; meta includes pool receipt.
     """
     from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
-    from apps_rg.runtime.providers.section_qwen_slice import tag_reasoning_lane
+    from apps_rg.runtime.sections.section_generation import tag_reasoning_lane
 
     sc_on = bullet_lane_sc_enabled(section_lane) if use_sc_path is None else bool(use_sc_path)
     lane = str(section_lane or "").strip().lower()

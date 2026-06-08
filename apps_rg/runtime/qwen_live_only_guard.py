@@ -1,11 +1,15 @@
-"""Fail-closed production runtime: live Qwen vLLM and live X1D judges on product CLI."""
+"""Production runtime guard for the apps_rg section CLI.
 
+Historically this enforced *live Qwen vLLM* (no offline stub) in addition to the live-judge
+policy. The Qwen/vLLM local provider was removed; the external generation provider owns its
+own transport, so the Qwen-readiness env checks are gone. The non-Qwen production policy
+remains: ``python -m apps_rg`` never accepts mock-judge CLI flags (X1D judges are always live;
+mock judges are test-harness env-only).
+"""
 from __future__ import annotations
 
 import os
 import sys
-
-from apps_rg.runtime.qwen_offline_contract_stub import ENV_APPS_RG_QWEN_OFFLINE_CONTRACT_STUB
 
 ENV_APPS_RG_TEST_HARNESS = "APPS_RG_TEST_HARNESS"
 ENV_APPS_RG_MOCK_JUDGES = "APPS_RG_MOCK_JUDGES"
@@ -17,45 +21,6 @@ _TRUE = frozenset({"1", "true", "yes", "on", "y"})
 
 def _env_on(name: str) -> bool:
     return os.environ.get(name, "").strip().lower() in _TRUE
-
-
-def _l2_stub_mode() -> bool:
-    raw = (os.environ.get("APPS_RG_L2_PROVIDER_MODE") or "").strip().lower()
-    return raw in ("stub_only", "stub", "off", "0", "false", "no")
-
-
-def live_qwen_mock_env_violations() -> list[str]:
-    """Human-readable reasons when mock/offline Qwen paths are requested."""
-    out: list[str] = []
-    if _env_on(ENV_APPS_RG_QWEN_OFFLINE_CONTRACT_STUB):
-        out.append(
-            f"{ENV_APPS_RG_QWEN_OFFLINE_CONTRACT_STUB}=1 is forbidden: "
-            "section lanes require live qwen_vllm HTTP (no offline contract stub)."
-        )
-    if _env_on("APPS_RG_SKIP_QWEN_VLLM_HEALTH"):
-        out.append(
-            "APPS_RG_SKIP_QWEN_VLLM_HEALTH=1 is forbidden: "
-            "vLLM /v1/models preflight must run before generation."
-        )
-    if _env_on("APPS_RG_L2_FORCE_STUB"):
-        out.append(
-            "APPS_RG_L2_FORCE_STUB=1 is forbidden for apps_rg runs that use qwen_vllm."
-        )
-    if _l2_stub_mode():
-        out.append(
-            "APPS_RG_L2_PROVIDER_MODE=stub_only (or stub) is forbidden for live qwen_vllm runs."
-        )
-    return out
-
-
-def assert_live_qwen_vllm_no_mocks(*, context: str = "apps_rg") -> None:
-    """Exit 2 when any env requests non-live Qwen for product/runtime execution."""
-    violations = live_qwen_mock_env_violations()
-    if not violations:
-        return
-    msg = f"{context}: live qwen_vllm required — " + " | ".join(violations)
-    print(f"ERROR: {msg}", file=sys.stderr, flush=True)
-    raise SystemExit(2)
 
 
 def is_test_harness() -> bool:
@@ -122,19 +87,16 @@ def assert_production_runtime(
     argv: list[str] | None = None,
     args: object | None = None,
 ) -> None:
-    """Live Qwen + no mock-judge CLI flags (product default)."""
+    """Product default: no mock-judge CLI flags (X1D judges are always live)."""
     assert_production_cli_no_mock_judge_flags(argv, args=args)
-    assert_live_qwen_vllm_no_mocks(context=context)
 
 
 __all__ = [
     "ENV_APPS_RG_MOCK_JUDGES",
     "ENV_APPS_RG_TEST_HARNESS",
-    "assert_live_qwen_vllm_no_mocks",
     "assert_production_cli_no_mock_judge_flags",
     "assert_production_runtime",
     "is_test_harness",
-    "live_qwen_mock_env_violations",
     "production_mock_judge_args_violations",
     "production_mock_judge_cli_violations",
     "resolve_cli_mock_judges",

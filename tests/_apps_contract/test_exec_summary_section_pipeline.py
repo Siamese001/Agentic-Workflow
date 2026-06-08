@@ -101,7 +101,7 @@ def _run_lane_in_process(
     runtime_generation_status: str = "REAL_LLM",
 ) -> dict[str, Any]:
     import apps_rg.runtime.sections.executive_summary_lane as lane
-    from apps_rg.runtime.providers.qwen_vllm_provider import ProviderResult
+    from apps_rg.runtime.providers.provider_contract import ProviderResult
 
     _apply_harness_env(monkeypatch)
     artifact_dir = _harness_artifact_dir(tmp_path)

@@ -254,10 +254,6 @@ def test_main_returns_2_when_proof_pool_law_violated(monkeypatch: pytest.MonkeyP
         _boom,
     )
     monkeypatch.setattr(
-        "apps_rg.runtime.qwen_vllm_docker_restart.maybe_restart_qwen_vllm_for_apps_rg_run",
-        lambda **_kw: {},
-    )
-    monkeypatch.setattr(
         "apps_rg.runtime.pre_dispatch_preflight.enforce_pre_dispatch_preflight",
         lambda **_kw: SimpleNamespace(
             dispatch_started=True,

@@ -9,6 +9,7 @@ import re
 from dataclasses import dataclass, asdict
 from typing import Any
 
+from apps_rg.runtime.section_model_limits import SECTION_MODEL_ID
 from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
 
 EXEC_SUMMARY_MIN_SENTENCES = 6
@@ -254,7 +255,7 @@ def check_qwen_transport_envelope_stub_false(
     provider_requested: str | None,
 ) -> tuple[bool, str | None]:
     """Reject synthetic harness responses that set stub:true on the vLLM JSON envelope."""
-    if str(provider_requested or "").strip().lower() != "qwen_vllm":
+    if str(provider_requested or "").strip().lower() != "external_claude":
         return True, None
     if artifacts_dir is None:
         return True, None
@@ -376,8 +377,8 @@ REQUIRED_ARTIFACTS = [
     "section_metric_receipt.json",
 ]
 
-# Allowed model names
-ALLOWED_MODELS = ["Qwen/Qwen2.5-32B-Instruct-AWQ"]
+# Allowed generation model names (apps_rg external Claude generation model SSOT).
+ALLOWED_MODELS = [SECTION_MODEL_ID]
 
 # Required X1D judge providers
 REQUIRED_JUDGE_PROVIDERS = ["gemini_pro", "openai_chatgpt", "anthropic_claude"]
@@ -2692,7 +2693,7 @@ def run_x2_gates(
 
     # Gate 13: x2_no_silent_mock_fallback
     no_mock_fallback_ok = not (
-        provider_requested == "qwen_vllm" and runtime_generation_status in ("MOCKED", "STUBBED")
+        provider_requested == "external_claude" and runtime_generation_status in ("MOCKED", "STUBBED")
     )
     add("x2_no_silent_mock_fallback", no_mock_fallback_ok, f"provider={provider_requested}, status={runtime_generation_status}", "no silent mock", "Silent mock or stub fallback detected.")
 
@@ -2706,7 +2707,7 @@ def run_x2_gates(
     )
 
     # Gate 14: x2_model_name_allowed — exercised only for qwen_vllm (REAL_LLM provider proof lane).
-    qwen_proof_lane = str(provider_requested or "").strip().lower() == "qwen_vllm"
+    qwen_proof_lane = str(provider_requested or "").strip().lower() == "external_claude"
     model_allowed_ok = (
         not qwen_proof_lane
         or (

@@ -82,8 +82,8 @@ from apps_rg.runtime.ibm_narrative_proof_accounting import (
 from apps_rg.runtime.judges.executive_summary_x1d import _make_blocked_output
 from apps_rg.runtime.judges.ibm_narrative_x1d import JUDGE_RUBRIC_VERSION, run_ibm_narrative_judges
 from apps_rg.runtime.providers.provider_contract import ProviderResult
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.offline_contract_status import OFFLINE_CONTRACT_STUB_RUNTIME_STATUS
 from apps_rg.runtime.shadow.ibm_narrative_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
@@ -405,7 +405,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
@@ -441,7 +441,7 @@ def retry_qwen_for_metric_budget(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": NARRATIVE_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(tag_reasoning_lane(repair_payload, LANE_KEY))
+    result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, parsed
     new_raw = result.raw_model_output

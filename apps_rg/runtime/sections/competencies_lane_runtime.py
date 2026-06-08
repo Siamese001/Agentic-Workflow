@@ -86,8 +86,8 @@ from apps_rg.runtime.providers.competencies_live_provider_gate import (
     competencies_vllm_preflight_timeout_s,
     live_provider_gate_audit_payload_failure,
 )
-from apps_rg.runtime.providers.qwen_vllm_provider import DEFAULT_QWEN_MODEL, build_qwen_request
-from apps_rg.runtime.providers.section_qwen_slice import call_qwen_vllm, tag_reasoning_lane
+from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_section_request
+from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.shadow.competencies_l6 import build_l6_shadow_package
 from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage
 from apps_rg.runtime.validators.competencies_x2 import (
@@ -1181,7 +1181,7 @@ def retry_qwen_for_parse(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(
+    result = generate_section(
         tag_reasoning_lane(repair_payload, LANE_KEY),
         artifact_dir=artifact_dir,
         run_id=run_id,
@@ -1370,7 +1370,7 @@ def retry_qwen_competency_restatement(
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_MAX_OUTPUT_TOKENS}
-    result = call_qwen_vllm(
+    result = generate_section(
         tag_reasoning_lane(repair_payload, LANE_KEY),
         artifact_dir=artifact_dir,
         run_id=run_id,
@@ -1413,7 +1413,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run apps_rg competencies runtime seam.")
     parser.add_argument(
         "--provider",
-        choices=["qwen_vllm"],
+        choices=["external_claude"],
         default="external_claude",
         help="Generation provider (qwen_vllm only). Live vLLM required; offline contract stub is disabled.",
     )

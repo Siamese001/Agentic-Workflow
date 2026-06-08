@@ -24,7 +24,7 @@ MODE_MODULAR_SECTION_LANES: Final[str] = "modular_section_lanes"
 RETIRED_MODE_LEGACY_FULL_RESUME: Final[str] = "legacy_full_resume"
 
 _MODULAR_LANE_PROVIDER_ALLOWED: Final[frozenset[str]] = frozenset(
-    {"qwen_vllm", "external_claude"}
+    {"external_claude"}
 )
 
 AppsRgR4GenerationMode = Literal["modular_section_lanes"]

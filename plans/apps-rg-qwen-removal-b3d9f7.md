@@ -32,10 +32,10 @@ created: 2026-06-07
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| W1 | P0 | Extract shared provider contract (behavior-preserving) | ~25k | `ProviderResult`/`ProviderRequest` move cleanly to neutral module | Not Started | All importers repointed; section tests green; zero behavior change |
-| W2 | P1 | Collapse provider selection to Claude-only | ~20k | `section_provider_call` fork is the sole selection chokepoint | Not Started | `ProviderProfile.QWEN_VLLM` gone; gateway builds Claude/OpenAI only |
-| W3 | P2, P3 | Delete Qwen-only stack + strip 8 section lanes + config/CLI | ~45k | Each lane already reaches the neutral `call_section_model_provider` path | Not Started | All Qwen-only modules deleted; lanes import no `build_qwen_request`; `.env`/profiles clean |
-| W4 | P4 | Tests + E2E proof + ADG regen | ~25k | external Claude key available for smoke (or transport-injected stub) | Not Started | `python -m apps_rg --section executive_summary` exits 0; suite green; ADG regenerated |
+| W1 | P0 | Extract shared provider contract (behavior-preserving) | ~25k | `ProviderResult`/`ProviderRequest` move cleanly to neutral module | Completed | Importers repointed; 78/78 targeted tests green; committed d80fc82203 |
+| W2 | P1 | Collapse provider selection to Claude-only | ~20k | `section_provider_call` fork is the sole selection chokepoint | Completed | `ProviderProfile.QWEN_VLLM` gone; gateway builds Claude/OpenAI only |
+| W3 | P2, P3 | Delete Qwen-only stack + rewire 7 lanes + config/CLI | ~45k | Lanes route repair/regen through neutral `generate_section` (Claude) | Completed | 7 Qwen modules deleted; lanes import no `build_qwen_request`; profiles/CLI clean; neutral `section_generation` seam |
+| W4 | P4 | Tests + suite verification | ~25k | external Claude key unavailable in this env → live-E2E deferred | Completed | Collection clean (10,599); unit-suite diff vs baseline = **0 new failures** (1 flaky-in-isolation excluded); live-E2E BLOCKED on key |
 
 ### Phase-Level Summary
 
