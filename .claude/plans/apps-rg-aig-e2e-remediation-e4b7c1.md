@@ -2,9 +2,9 @@
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W2
-LAST_COMPLETED_WAVE: W1
-LAST_UPDATED: 2026-06-07
+CURRENT_WAVE: W4
+LAST_COMPLETED_WAVE: W3
+LAST_UPDATED: 2026-06-08
 
 Plan ID: `apps-rg-aig-e2e-remediation-e4b7c1`
 Status: Not Started
@@ -14,15 +14,22 @@ Implementation branch: the active per-chat branch (branch-per-chat cuts a fresh 
 Scope boundary: **apps_rg only.** No `agentic_core` edits, no other `apps_*`. Any generic-core residue is captured under `## Out Of Scope` / `## Deferred Follow-ups`, never implemented here.
 Notion: https://app.notion.com/p/37827693f55c819d8ca1d5e8fee2941d
 
-> **Execution status (2026-06-08) — W2/W4/W5/W6 PAUSED.** W0, W1, W3 are implemented,
-> tested, and pushed to `main` (`c7b1cdacdb` / `b6682b5dec` / `c66fc476d7`). The remaining
-> waves are paused because a **concurrent apps_rg Qwen-removal refactor** (see
-> `plans/apps-rg-qwen-removal-b3d9f7.md`, new `apps_rg/runtime/providers/provider_contract.py`)
-> is actively modifying the provider / bullet-lane / role-episode files those waves target
-> (`qwen_vllm_provider.py`, `external_provider.py`, `bullet_lane_generation.py`,
-> `bullet_lane_self_consistency.py`, `role_episode_lane.py`). **W2 (E2E-02 Qwen leakage) is
-> likely superseded** by the qwen-removal — re-validate before resuming. Do not edit the
-> concurrently-modified files until that refactor lands.
+> **Execution status (2026-06-08) — UNPAUSED; Qwen-removal landed.** W0, W1, W3 are on
+> `main` (`c7b1cdacdb` / `b6682b5dec` / `c66fc476d7`). The concurrent **Qwen-removal refactor
+> merged** (PR #256: `ffc5391ee9` stage 1 + `15c8dcbd05` stage 2 → merge `cb2235f915`);
+> `apps_rg/runtime/providers/qwen_vllm_provider.py` is **deleted** and external Claude is the
+> sole generator (the seam is now `section_generation.py`).
+>
+> **W2 is reduced — E2E-02 (Qwen request-identity leakage) is RESOLVED BY DELETION** (no Qwen
+> provider exists to mislabel). W2 residuals only: **E2E-03** (7 section lanes still call bare
+> `load_dotenv()` rather than `bootstrap_apps_rg_env()` from `apps_rg/runtime/env_bootstrap.py`)
+> and **E2E-04** (embedding fail-closed guard already exists in
+> `apps_rg/runtime/chroma_precomputed_collection.py`; only a regression test is owed). These
+> residuals are folded into W7 verification.
+>
+> Continuation runs on isolated worktree `aig-e2e-continue` (branch off `origin/main`
+> `cb2235f915`) to avoid the multi-agent worktree collisions that paused this. Remaining order:
+> **W4 → W5 → W6 → W7.**
 
 ## Context
 
@@ -212,11 +219,18 @@ DoD:
 ## Wave 2 - Provider Fidelity & Env/Embedding Guards
 
 WAVE_ID: W2
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: REDUCED — E2E-02 RESOLVED BY DELETION (Qwen-removal PR #256); residuals folded into W7
+WAVE_COMPLETE: N/A
 
-Scope:
-- **E2E-02:** replace the unconditional `build_qwen_request()` identity (`qwen_vllm_provider.py:230-241`) with a provider-neutral request builder driven by the selected `ProviderProfile`; update the 7 lane call sites to stamp `provider_requested/provider_url/model` from the selection. Keep a thin qwen shim for the diagnostic slice. (Preflight already correct — do not touch.)
+> **2026-06-08 reconciliation:** the Qwen-removal refactor (PR #256) deleted
+> `qwen_vllm_provider.py` and `build_qwen_request()` entirely, so **E2E-02 (the unconditional
+> `qwen_vllm` request identity) can no longer occur** — there is no Qwen provider to mislabel.
+> External Claude is the sole generator. The original W2 scope below is retained for provenance;
+> only E2E-03 and E2E-04 residuals remain, verified in W7.
+
+Scope (original — E2E-02 portion now MOOT):
+- ~~**E2E-02:** replace the unconditional `build_qwen_request()` identity with a provider-neutral
+  request builder.~~ **MOOT — provider deleted in PR #256.**
 - Add a contract invariant: for every lane, `provider_request.json.provider_requested == provider_response.json.provider_requested` and no `localhost:8000` base URL in an external-Claude request. Extend `tests/_apps_contract/test_apps_rg_generation_model_env_boundary.py`.
 - **E2E-03 residual:** route the 7 lane modules' bare `load_dotenv()` through `bootstrap_apps_rg_env()`; emit the `AppsRgEnvBootstrapResult` into the preflight receipt so "did `.env` load?" is observable. (Core bootstrap already shipped — verify-only.)
 - **E2E-04 verify-only:** add an apps_rg regression guard asserting the embedding path stays fail-closed (no default EF; resolves local `BAAI/bge-m3`). No resolver change.
