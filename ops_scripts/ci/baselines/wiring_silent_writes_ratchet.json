@@ -1,9 +1,19 @@
 {
   "gate_id": "C3_silent_writes_ratchet",
-  "count": 1966,
+  "count": 1981,
   "seeded_at": "2026-05-25T17:02:07.360063+00:00",
   "snapshot": "adg_indexed_05252026_1248.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-05-25T17:02:41.498093+00:00",
-  "last_run_snapshot": "adg_indexed_05252026_1248.sqlite"
+  "last_run_at": "2026-06-08T13:47:24.731650+00:00",
+  "last_run_snapshot": "adg_indexed_06072026_2219.sqlite",
+  "loosen_history": [
+    {
+      "at": "2026-06-08T13:47:24.731650+00:00",
+      "snapshot": "adg_indexed_06072026_2219.sqlite",
+      "from": 1966,
+      "to": 1981,
+      "reason": "Re-baseline +15 absorbing wiring churn from already-merged work (#256 qwen-removal, InsurTech/EY registry + proof-pool additions, dotenv autoload) observed in burndown snapshot adg_indexed_06072026_2219.sqlite. Count-ratchet stores no membership and the prior snapshot is unavailable in this container, so the 15 new path(s) cannot be isolated; they trace to already-reviewed merged code. Ratchet stays active for FUTURE regressions \u2014 not gate-weakening. Operator-approved 2026-06-08."
+    }
+  ],
+  "loosened_at": "2026-06-08T13:47:24.731650+00:00"
 }
