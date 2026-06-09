@@ -38,6 +38,7 @@ def test_semantic_cache_manager_initializes_gptcache() -> None:
 
         # Verify GPTCacheClient was instantiated
         mock_gptcache.assert_called_once()
+        assert "cache_dir" not in mock_gptcache.call_args.kwargs
 
         # Verify gptcache_enabled is True
         assert cache.gptcache_enabled is True
@@ -174,6 +175,45 @@ def _make_real_cache(tmp_path: "Path") -> "NativePersistentCacheClient":
     if client._cache == "mock":
         pytest.skip("ChromaDB not available")
     return client
+
+
+def test_native_cache_initializes_layout_directories(monkeypatch, tmp_path: Path) -> None:
+    """W1: Native L2 cache creates canonical base/chroma dirs before Chroma startup."""
+    monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
+    from agentic_core.L4_state.cache.gptcache_client import NativePersistentCacheClient
+    from agentic_core.L4_state.contracts.vector_cache_layout import VectorCacheLayout
+
+    layout = VectorCacheLayout(base_dir=tmp_path / "l2")
+    with (
+        patch("agentic_core.L4_state.cache.gptcache_client.chromadb.PersistentClient") as persistent_client,
+        patch.object(NativePersistentCacheClient, "_get_or_create_bgem3_collection", return_value=MagicMock()),
+    ):
+        client = NativePersistentCacheClient(layout=layout)
+
+    assert layout.base_dir.is_dir()
+    assert layout.chroma_path.is_dir()
+    persistent_client.assert_called_once_with(path=str(layout.chroma_path))
+    client.close()
+
+
+def test_native_cache_honors_chroma_persist_dir_override(monkeypatch, tmp_path: Path) -> None:
+    """W1: CHROMA_PERSIST_DIR can isolate the Chroma path while SQLite stays in the layout."""
+    override = tmp_path / "override_chroma"
+    monkeypatch.setenv("CHROMA_PERSIST_DIR", str(override))
+    from agentic_core.L4_state.cache.gptcache_client import NativePersistentCacheClient
+    from agentic_core.L4_state.contracts.vector_cache_layout import VectorCacheLayout
+
+    layout = VectorCacheLayout(base_dir=tmp_path / "l2")
+    with (
+        patch("agentic_core.L4_state.cache.gptcache_client.chromadb.PersistentClient") as persistent_client,
+        patch.object(NativePersistentCacheClient, "_get_or_create_bgem3_collection", return_value=MagicMock()),
+    ):
+        client = NativePersistentCacheClient(layout=layout)
+
+    assert layout.sqlite_path.exists()
+    assert override.is_dir()
+    persistent_client.assert_called_once_with(path=str(override.resolve()))
+    client.close()
 
 
 def test_schema_migration_includes_new_columns(tmp_path: Path) -> None:
@@ -730,15 +770,21 @@ def test_try_semantic_match_raises_not_implemented() -> None:
 
 
 def test_d2_gate_passes_flow_class_explicitly() -> None:
-    """Phase D: static assertion that the D2 gate call site passes flow_class= and replay_mode= to recall()."""
+    """Phase D: D2 gate passes flow_class/replay_mode through the current route-gates split."""
     import inspect
 
     from agentic_core.L0_routing.reasoning.execution_orchestrator import ExecutionOrchestrator
+    from agentic_core.L0_routing.reasoning.route_gates import check_d2_semantic_cache
 
-    source = inspect.getsource(ExecutionOrchestrator.execute)
-    assert "flow_class" in source, "D2 gate must pass flow_class= to SemanticCacheManager.recall()"
-    assert "replay_mode" in source, "D2 gate must pass replay_mode= to SemanticCacheManager.recall()"
-    assert "SemanticCacheManager" in source, "D2 gate must call SemanticCacheManager.get_instance().recall()"
+    orchestrator_source = inspect.getsource(ExecutionOrchestrator.execute)
+    assert "check_route_gates" in orchestrator_source, "ExecutionOrchestrator must use the route-gates D1/D2 entrypoint"
+    assert "flow_class=_flow_class" in orchestrator_source, "ExecutionOrchestrator must pass flow_class to route gates"
+    assert "replay_mode=_replay_mode" in orchestrator_source, "ExecutionOrchestrator must pass replay_mode to route gates"
+
+    d2_source = inspect.getsource(check_d2_semantic_cache)
+    assert "SemanticCacheManager" in d2_source, "D2 gate must call SemanticCacheManager.get_instance().recall()"
+    assert "flow_class=flow_class" in d2_source, "D2 gate must pass flow_class= to SemanticCacheManager.recall()"
+    assert "replay_mode=replay_mode" in d2_source, "D2 gate must pass replay_mode= to SemanticCacheManager.recall()"
 
 
 # ---------------------------------------------------------------------------
@@ -918,7 +964,34 @@ def _make_migration_target():
         pytest.skip("ChromaDB not installed")
     inst = object.__new__(NativePersistentCacheClient)
     inst.embedding_model = "BAAI/bge-m3"
+    inst.similarity_threshold = 0.95
     return inst
+
+
+def test_bgem3_collection_created_with_contract_metadata() -> None:
+    """W2: collection creation must carry the BGE-M3 model, dimension, threshold, and EF."""
+    embedding_functions = pytest.importorskip("chromadb.utils.embedding_functions")
+    inst = _make_migration_target()
+    mock_client = MagicMock()
+    mock_client.get_collection.side_effect = Exception("collection not found")
+    inst._chroma_client = mock_client
+
+    with patch.object(embedding_functions, "SentenceTransformerEmbeddingFunction") as mock_ef:
+        ef = MagicMock()
+        mock_ef.return_value = ef
+
+        inst._get_or_create_bgem3_collection()
+
+    mock_ef.assert_called_once_with(model_name="BAAI/bge-m3")
+    kwargs = mock_client.get_or_create_collection.call_args.kwargs
+    assert kwargs["name"] == "l2_semantic_cache"
+    assert kwargs["embedding_function"] is ef
+    assert kwargs["metadata"] == {
+        "hnsw:space": "cosine",
+        "embedding_model": "BAAI/bge-m3",
+        "embedding_dimension": 1024,
+        "similarity_threshold": 0.95,
+    }
 
 
 def test_migration_guard_drops_incompatible_dim_collection() -> None:
@@ -932,6 +1005,22 @@ def test_migration_guard_drops_incompatible_dim_collection() -> None:
 
     inst._get_or_create_bgem3_collection()
 
+    mock_client.delete_collection.assert_called_once_with("l2_semantic_cache")
+    mock_client.get_or_create_collection.assert_called_once()
+
+
+def test_migration_guard_drops_incompatible_metadata_dim_collection() -> None:
+    """W2: metadata-declared dimensions must also guard empty incompatible collections."""
+    inst = _make_migration_target()
+    mock_client = MagicMock()
+    mock_existing = MagicMock()
+    mock_existing.metadata = {"embedding_dimension": "384"}
+    mock_client.get_collection.return_value = mock_existing
+    inst._chroma_client = mock_client
+
+    inst._get_or_create_bgem3_collection()
+
+    mock_existing.get.assert_not_called()
     mock_client.delete_collection.assert_called_once_with("l2_semantic_cache")
     mock_client.get_or_create_collection.assert_called_once()
 
@@ -964,6 +1053,24 @@ def test_migration_guard_skips_drop_on_empty_embeddings() -> None:
 
     mock_client.delete_collection.assert_not_called()
     mock_client.get_or_create_collection.assert_called_once()
+
+
+def test_clear_recreates_bgem3_collection_contract() -> None:
+    """W2: clear() must recreate the vector collection through the BGE-M3 contract path."""
+    sentinel_collection = object()
+    inst = _make_migration_target()
+    inst._cache = "real"
+    inst._chroma_client = MagicMock()
+    inst._sqlite_conn = MagicMock()
+
+    with patch.object(inst, "_get_or_create_bgem3_collection", return_value=sentinel_collection) as recreate:
+        inst.clear()
+
+    inst._chroma_client.delete_collection.assert_called_once_with("l2_semantic_cache")
+    recreate.assert_called_once_with()
+    assert inst._chroma_collection is sentinel_collection
+    inst._sqlite_conn.execute.assert_called_once_with("DELETE FROM l2_cache")
+    inst._sqlite_conn.commit.assert_called_once_with()
 
 
 def test_migration_guard_handles_missing_collection_silently() -> None:

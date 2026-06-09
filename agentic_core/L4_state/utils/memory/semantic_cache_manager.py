@@ -365,7 +365,7 @@ _REDIS_RECOVERABLE_EXCEPTIONS = (
     RuntimeError,
 )
 _REDIS_READ_EXCEPTIONS = _REDIS_RECOVERABLE_EXCEPTIONS + (json.JSONDecodeError,)
-_GPTCACHE_RECOVERABLE_EXCEPTIONS = (AttributeError, TypeError, ValueError, RuntimeError)
+_GPTCACHE_RECOVERABLE_EXCEPTIONS = (AttributeError, ImportError, TypeError, ValueError, RuntimeError)
 _GPTCACHE_READ_EXCEPTIONS = _GPTCACHE_RECOVERABLE_EXCEPTIONS + (json.JSONDecodeError,)
 _PROMOTION_EXCEPTIONS = _GPTCACHE_RECOVERABLE_EXCEPTIONS + _REDIS_RECOVERABLE_EXCEPTIONS + (KeyError,)
 
@@ -659,7 +659,7 @@ class SemanticCacheManager:
     def _warm_l1_from_l2(self, *, limit: int = 256) -> int:
         """Hydrate Redis L1 with the most recently accessed L2 rows.
 
-        Reads ``query`` + ``response`` pairs from ``artifacts/gptcache/l2_cache.db``,
+        Reads ``query`` + ``response`` pairs from the native L2 cache SQLite store,
         recomputes the L1 key (``memory:<ctx_hash>``) using the namespace stored in
         each row's response ``_metadata``, and writes the JSON payload at the L1
         TTL. Returns number of keys written.
@@ -720,7 +720,6 @@ class SemanticCacheManager:
             return ValueError("SEMANTIC_CACHE_D2_ENABLED not set — L2 cache intentionally disabled")
         try:
             self._gptcache = GPTCacheClient(
-                cache_dir="artifacts/gptcache",
                 similarity_threshold=self.similarity_threshold,
                 max_entries=10000,
                 embedding_provider="bge-m3",
@@ -733,7 +732,7 @@ class SemanticCacheManager:
                 )
                 return ValueError("Native L2 cache in mock mode")
             self.gptcache_enabled = True
-            Logger.info("[HiveMind] Native L2 cache initialized at artifacts/gptcache/")
+            Logger.info("[HiveMind] Native L2 cache initialized")
             return None
         except _GPTCACHE_RECOVERABLE_EXCEPTIONS as e:
             Logger.warning(f"[HiveMind] Native L2 cache initialization failed: {e}")

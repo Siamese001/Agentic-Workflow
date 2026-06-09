@@ -5,12 +5,10 @@ and canonical C0 integration contract.
 
 D1.1: Wired to canonical run_c0 from agentic_core.L0_routing.c0_retrieval.
 
-W1 (bge-m3-gap-closure-c8f3a2): Replaced stub fetcher with real BGE-M3
-retrieval from apps_qna_interview_cards index. The fetcher loads
-C:/AgenticEmbeddings/indexes/apps_qna_interview_cards/index.json, embeds
-the query text via tools.embedders.get_embedder(), computes cosine
-similarity, and returns top-k CandidateChunks. grounded=True when the
-index returns any candidates above the similarity floor.
+W2 (bge-review-apps-qna-c0-chroma-migration-f9a3b2): Prefer canonical
+Chroma retrieval from data/cache/chromadb, collection apps_qna_interview_cards.
+The previous flat index under C:/AgenticEmbeddings remains as a gated fallback
+for this rollout wave.
 
 The adapter MUST:
 - Shape an app-specific C0 request from interview parameters
@@ -44,19 +42,23 @@ _DEFAULT_INDEX_DIR = Path(
     )
 )
 _INDEX_FILE = _DEFAULT_INDEX_DIR / "index.json"
+_CHROMA_COLLECTION_NAME = "apps_qna_interview_cards"
+_FLAT_FALLBACK_ENV = "APPS_QNA_C0_ENABLE_FLAT_FALLBACK"
 
 # Retrieval config
 _DEFAULT_TOP_K = 5
 _SIMILARITY_FLOOR = 0.0  # accept all positives; caller can filter
 
-# Lazy-cached index data — reset by tests via _reset_index_cache()
+# Lazy-cached retrieval handles — reset by tests via _reset_index_cache()
 _INDEX_CACHE: dict[str, Any] | None = None
+_CHROMA_COLLECTION_CACHE: Any | None = None
 
 
 def _reset_index_cache() -> None:
-    """Clear the in-process index cache (for tests)."""
-    global _INDEX_CACHE
+    """Clear in-process retrieval caches (for tests)."""
+    global _INDEX_CACHE, _CHROMA_COLLECTION_CACHE
     _INDEX_CACHE = None
+    _CHROMA_COLLECTION_CACHE = None
 
 
 def _load_index() -> dict[str, Any] | None:
@@ -74,7 +76,7 @@ def _load_index() -> dict[str, Any] | None:
             "Loaded apps_qna index: %d vectors", len(_INDEX_CACHE.get("vectors", []))
         )
         return _INDEX_CACHE
-    except Exception as exc:  # noqa: BLE001
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
         _LOGGER.warning("Failed to load apps_qna index: %s", exc)
         return None
 
@@ -88,6 +90,159 @@ def _cosine_similarity(a: list[float], b: list[float]) -> float:
     if norm_a == 0.0 or norm_b == 0.0:
         return 0.0
     return float(np.dot(va, vb) / (norm_a * norm_b))
+
+
+def _flat_fallback_enabled() -> bool:
+    raw = os.environ.get(_FLAT_FALLBACK_ENV, "1").strip().lower()
+    return raw not in {"0", "false", "no", "off"}
+
+
+def _query_for_fetch(query_text: str, interview_slug: str) -> str:
+    return query_text.strip() or interview_slug.strip()
+
+
+def _embed_query(query: str) -> list[float] | None:
+    try:
+        from tools.embedders import get_embedder  # noqa: PLC0415
+
+        embedder = get_embedder()
+        if not embedder.is_available():
+            _LOGGER.debug("BGE-M3 embedder unavailable; C0 retrieval cannot run")
+            return None
+        query_vec = list(embedder.embed(query))
+        if len(query_vec) != 1024:
+            _LOGGER.warning("Query embedding has wrong dims=%d; expected 1024", len(query_vec))
+            return None
+        return query_vec
+    except (ImportError, AttributeError, RuntimeError, TypeError, ValueError, OSError) as exc:
+        _LOGGER.warning("Embedder error during C0 fetch: %s", exc)
+        return None
+
+
+def _is_expected_chroma_unavailable(exc: Exception) -> bool:
+    if isinstance(exc, (ImportError, AttributeError, RuntimeError, TypeError, ValueError, OSError, KeyError)):
+        return True
+    if type(exc).__name__ in {"ChromaError", "InvalidCollectionException", "NotFoundError"}:
+        return True
+    message = str(exc).lower()
+    return "does not exist" in message or "not found" in message
+
+
+def _metadata_dim_matches(metadata: dict[str, Any]) -> bool:
+    raw_dim = metadata.get("embedding_dim", metadata.get("embedding_dimension"))
+    if raw_dim is None:
+        return False
+    try:
+        return int(raw_dim) == 1024
+    except (TypeError, ValueError):
+        return False
+
+
+def _load_chroma_collection() -> Any | None:
+    """Load the canonical apps_qna Chroma collection, if available and compatible."""
+    global _CHROMA_COLLECTION_CACHE
+    if _CHROMA_COLLECTION_CACHE is not None:
+        return _CHROMA_COLLECTION_CACHE
+
+    try:
+        from agentic_core.L4_state.config.chroma_paths import canonical_persist_dir  # noqa: PLC0415
+        from agentic_core.L4_state.utils.client.chroma_client import (  # noqa: PLC0415
+            chromadb_module as chromadb,
+        )
+
+        persist_dir = canonical_persist_dir()
+        if not persist_dir.exists():
+            _LOGGER.debug("apps_qna Chroma persist dir not found: %s", persist_dir)
+            return None
+        client = chromadb.PersistentClient(path=str(persist_dir))
+        collection = client.get_collection(name=_CHROMA_COLLECTION_NAME)
+        metadata = getattr(collection, "metadata", None) or {}
+        if metadata.get("embedding_model") != "BAAI/bge-m3" or not _metadata_dim_matches(metadata):
+            _LOGGER.warning("apps_qna Chroma collection has incompatible metadata: %s", metadata)
+            return None
+        _CHROMA_COLLECTION_CACHE = collection
+        return collection
+    except Exception as exc:  # noqa: BLE001
+        if not _is_expected_chroma_unavailable(exc):
+            raise
+        _LOGGER.debug("apps_qna Chroma collection unavailable: %s", exc)
+        return None
+
+
+def _score_from_chroma_distance(distance: Any) -> float:
+    try:
+        score = 1.0 - float(distance)
+    except (TypeError, ValueError):
+        score = 0.0
+    return min(max(score, 0.0), 1.0)
+
+
+def _chroma_fetch(query_vec: list[float], top_k: int = _DEFAULT_TOP_K) -> list[dict[str, Any]]:
+    collection = _load_chroma_collection()
+    if collection is None:
+        return []
+    try:
+        results = collection.query(
+            query_embeddings=[query_vec],
+            n_results=top_k,
+            include=["metadatas", "distances", "documents"],
+        )
+    except Exception as exc:  # noqa: BLE001
+        if not _is_expected_chroma_unavailable(exc):
+            raise
+        _LOGGER.warning("apps_qna Chroma query failed; flat fallback may be used: %s", exc)
+        return []
+
+    ids = (results.get("ids") or [[]])[0] or []
+    distances = (results.get("distances") or [[]])[0] or []
+    metadatas = (results.get("metadatas") or [[]])[0] or []
+
+    hits: list[dict[str, Any]] = []
+    for rank, row_id in enumerate(ids):
+        score = _score_from_chroma_distance(distances[rank] if rank < len(distances) else None)
+        if score < _SIMILARITY_FLOOR:
+            continue
+        metadata = metadatas[rank] if rank < len(metadatas) and isinstance(metadatas[rank], dict) else {}
+        hits.append(
+            {
+                "id": str(row_id),
+                "score": score,
+                "metadata": metadata,
+            }
+        )
+    return hits
+
+
+def _flat_fetch(query_vec: list[float], top_k: int = _DEFAULT_TOP_K) -> list[dict[str, Any]]:
+    index = _load_index()
+    if not index:
+        return []
+
+    vectors = index.get("vectors", [])
+    if not vectors:
+        return []
+
+    scored: list[tuple[float, dict[str, Any]]] = []
+    for entry in vectors:
+        ev = entry.get("embedding")
+        if not ev or len(ev) != 1024:
+            continue
+        sim = _cosine_similarity(query_vec, ev)
+        if sim >= _SIMILARITY_FLOOR:
+            scored.append((sim, entry))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+
+    results = []
+    for sim, entry in scored[:top_k]:
+        results.append(
+            {
+                "id": entry.get("id", ""),
+                "score": sim,
+                "metadata": entry.get("metadata", {}),
+            }
+        )
+    return results
 
 
 class C0UnavailableError(Exception):
@@ -134,7 +289,7 @@ def _real_fetch(
     interview_slug: str,
     top_k: int = _DEFAULT_TOP_K,
 ) -> list[dict[str, Any]]:
-    """Query the apps_qna_interview_cards flat index.
+    """Query canonical Chroma first, then optionally fall back to the flat index.
 
     Returns a list of up to ``top_k`` result dicts ordered by cosine
     similarity descending.  Each dict has keys:
@@ -142,61 +297,26 @@ def _real_fetch(
         - ``score``      (float) cosine similarity 0..1
         - ``metadata``   (dict) card_id, base_card_type, archetype, expected_evidence
 
-    Falls back to empty list when:
-    - index.json not found on disk
+    Returns empty list when:
+    - canonical Chroma collection is unavailable and flat fallback is disabled
+    - both Chroma and flat fallback miss
     - embedder unavailable (no GPU / no sentence-transformers)
-    - any other failure (all errors are logged and swallowed — fail-soft
-      because a missing index is not a hard error; the caller degrades to
-      template_only gracefully)
+    - expected retrieval errors occur
     """
-    index = _load_index()
-    if not index:
-        return []
-
-    vectors = index.get("vectors", [])
-    if not vectors:
-        return []
-
-    query = query_text.strip() or interview_slug
+    query = _query_for_fetch(query_text, interview_slug)
     if not query:
         return []
 
-    try:
-        from tools.embedders import get_embedder  # noqa: PLC0415
-
-        embedder = get_embedder()
-        if not embedder.is_available():
-            _LOGGER.debug("BGE-M3 embedder unavailable; falling back to template_only")
-            return []
-        query_vec = embedder.embed(query)
-        if len(query_vec) != 1024:
-            _LOGGER.warning("Query embedding has wrong dims=%d; expected 1024", len(query_vec))
-            return []
-    except Exception as exc:  # noqa: BLE001
-        _LOGGER.warning("Embedder error during C0 fetch: %s", exc)
+    query_vec = _embed_query(query)
+    if query_vec is None:
         return []
 
-    scored: list[tuple[float, dict[str, Any]]] = []
-    for entry in vectors:
-        ev = entry.get("embedding")
-        if not ev or len(ev) != 1024:
-            continue
-        sim = _cosine_similarity(query_vec, ev)
-        if sim >= _SIMILARITY_FLOOR:
-            scored.append((sim, entry))
-
-    scored.sort(key=lambda x: x[0], reverse=True)
-
-    results = []
-    for sim, entry in scored[:top_k]:
-        results.append(
-            {
-                "id": entry.get("id", ""),
-                "score": sim,
-                "metadata": entry.get("metadata", {}),
-            }
-        )
-    return results
+    chroma_hits = _chroma_fetch(query_vec, top_k=top_k)
+    if chroma_hits:
+        return chroma_hits
+    if not _flat_fallback_enabled():
+        return []
+    return _flat_fetch(query_vec, top_k=top_k)
 
 
 def _call_canonical_c0(
@@ -207,8 +327,9 @@ def _call_canonical_c0(
 ) -> FinalEvidenceContract:
     """Call the canonical C0 retrieval endpoint via run_c0.
 
-    W1 (bge-m3-gap-closure-c8f3a2): Uses _real_fetch to query the
-    apps_qna_interview_cards index. When the index returns candidates the
+    W2 (bge-review-apps-qna-c0-chroma-migration-f9a3b2): Uses _real_fetch to
+    query canonical Chroma first, with the flat index as a gated rollout
+    fallback. When the retriever returns candidates the
     CandidateEvidencePool is populated and the canonical pipeline emits a
     GROUNDED contract. Falls back to template_only when the index is
     unavailable or the embedder cannot run.
@@ -344,6 +465,9 @@ __all__ = [
     "C0UnavailableError",
     "call_c0",
     "_real_fetch",
+    "_chroma_fetch",
+    "_flat_fetch",
     "_load_index",
+    "_load_chroma_collection",
     "_reset_index_cache",
 ]

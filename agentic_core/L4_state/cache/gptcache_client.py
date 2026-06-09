@@ -10,10 +10,15 @@ import datetime
 import hashlib
 import json as _json
 import logging
+import os
 import time
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L4_state.config.chroma_paths import (
+    ENV_OVERRIDE as CHROMA_PERSIST_ENV_OVERRIDE,
+    repo_root as chroma_repo_root,
+)
 from agentic_core.L4_state.contracts.vector_cache_layout import (
     VECTOR_CACHE_LAYOUT,
     VectorCacheLayout,
@@ -25,6 +30,11 @@ from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 Logger = logging.getLogger(__name__)
 
+DEFAULT_SIMILARITY_THRESHOLD = 0.95
+DEFAULT_EMBEDDING_MODEL = "BAAI/bge-m3"
+L2_SEMANTIC_CACHE_COLLECTION = "l2_semantic_cache"
+BGE_M3_EMBEDDING_DIM = 1024
+
 
 class NativePersistentCacheClient:
     """Native persistent semantic cache for L2 layer.
@@ -32,7 +42,7 @@ class NativePersistentCacheClient:
     Implements spec-compliant semantic caching with:
     - SQLite scalar store (query, response, metadata)
     - ChromaDB vector store (embeddings)
-    - Cosine similarity > 0.95 threshold
+    - Cosine similarity >= 0.95 threshold
     - LRU eviction (via last_access_at)
     - Zero-token return on cache hit
     """
@@ -40,10 +50,10 @@ class NativePersistentCacheClient:
     def __init__(
         self,
         cache_dir: str | None = None,
-        similarity_threshold: float = 0.95,
+        similarity_threshold: float = DEFAULT_SIMILARITY_THRESHOLD,
         max_entries: int = 10000,
         embedding_provider: str = "chromadb-default",
-        embedding_model: str = "BAAI/bge-m3",
+        embedding_model: str = DEFAULT_EMBEDDING_MODEL,
         layout: VectorCacheLayout | None = None,
     ):
         """Initialize native persistent cache client.
@@ -80,18 +90,60 @@ class NativePersistentCacheClient:
 
         self._init_cache()
 
+    def _resolve_chroma_path(self) -> Path:
+        """Resolve the ChromaDB persist path for the L2 cache."""
+        override = os.environ.get(CHROMA_PERSIST_ENV_OVERRIDE, "").strip()
+        if override:
+            override_path = Path(override)
+            if not override_path.is_absolute():
+                override_path = chroma_repo_root() / override_path
+            return override_path.resolve()
+        return self._layout.chroma_path
+
+    def _l2_collection_metadata(self) -> dict[str, Any]:
+        """Return the Chroma collection contract for the L2 semantic cache."""
+        return {
+            "hnsw:space": "cosine",
+            "embedding_model": self.embedding_model,
+            "embedding_dimension": BGE_M3_EMBEDDING_DIM,
+            "similarity_threshold": self.similarity_threshold,
+        }
+
+    def _l2_collection_kwargs(self, embedding_function: Any | None = None) -> dict[str, Any]:
+        """Build get_or_create_collection kwargs from the L2 collection contract."""
+        kwargs: dict[str, Any] = {
+            "name": L2_SEMANTIC_CACHE_COLLECTION,
+            "metadata": self._l2_collection_metadata(),
+        }
+        if embedding_function is not None:
+            kwargs["embedding_function"] = embedding_function
+        return kwargs
+
+    @staticmethod
+    def _metadata_embedding_dimension(metadata: Any) -> int | None:
+        if not isinstance(metadata, dict):
+            return None
+        value = metadata.get("embedding_dimension") or metadata.get("dimension")
+        if value is None:
+            return None
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
     def _init_cache(self) -> None:
         """Initialize SQLite scalar store and ChromaDB vector store with built-in embeddings."""
         try:
-            # Create cache directory
-            self.cache_dir.mkdir(parents=True, exist_ok=True)
+            # Create canonical cache directories before opening either backend.
+            self._layout.ensure_directories()
 
             # Initialize SQLite scalar store (Phase B: schema-complete via _init_sqlite)
-            sqlite_path = self.cache_dir / "l2_cache.db"
+            sqlite_path = self._layout.sqlite_path
             self._init_sqlite(sqlite_path)
 
             # Initialize ChromaDB vector store (persistent) with BGE-M3 embedding function
-            chroma_path = self.cache_dir / "chroma"
+            chroma_path = self._resolve_chroma_path()
+            chroma_path.mkdir(parents=True, exist_ok=True)
             self._chroma_client = chromadb.PersistentClient(path=str(chroma_path))
             self._chroma_collection = self._get_or_create_bgem3_collection()
 
@@ -109,8 +161,8 @@ class NativePersistentCacheClient:
 
     def _get_or_create_bgem3_collection(self) -> Any:
         """Get or create l2_semantic_cache with BGE-M3 EF; drops collection if dim-incompatible."""
-        col_name = "l2_semantic_cache"
-        _expected_dim = 1024
+        col_name = L2_SEMANTIC_CACHE_COLLECTION
+        _expected_dim = BGE_M3_EMBEDDING_DIM
 
         try:
             from chromadb.utils.embedding_functions import (
@@ -134,14 +186,21 @@ class NativePersistentCacheClient:
             _NotFoundError = RuntimeError
         try:
             existing = self._chroma_client.get_collection(col_name)
-            sample = existing.get(limit=1, include=["embeddings"])
-            _raw_emb = sample.get("embeddings")
-            embeddings = _raw_emb if _raw_emb is not None else []
-            if len(embeddings) > 0 and len(embeddings[0]) != _expected_dim:
+            stored_dim = self._metadata_embedding_dimension(getattr(existing, "metadata", None))
+            observed_dim: int | None = None
+            if stored_dim is None:
+                sample = existing.get(limit=1, include=["embeddings"])
+                _raw_emb = sample.get("embeddings")
+                embeddings = _raw_emb if _raw_emb is not None else []
+                if len(embeddings) > 0:
+                    observed_dim = len(embeddings[0])
+
+            incompatible_dim = stored_dim if stored_dim is not None else observed_dim
+            if incompatible_dim is not None and incompatible_dim != _expected_dim:
                 Logger.warning(
                     "L2_CACHE_MIGRATION: dropping 'l2_semantic_cache' — stored dim=%d incompatible "
                     "with BGE-M3 dim=%d; existing cache data is invalidated",
-                    len(embeddings[0]),
+                    incompatible_dim,
                     _expected_dim,
                 )
                 self._chroma_client.delete_collection(col_name)
@@ -156,11 +215,11 @@ class NativePersistentCacheClient:
             OSError,
         ):
             pass  # Migration probe failed — fall through to get_or_create below
+        except Exception as exc:  # guardian: allow-reraising-broad-exception -- Chroma versions disagree on missing-collection exception classes; only not-found probes are swallowed
+            if "not found" not in str(exc).lower():
+                raise
 
-        kwargs: dict[str, Any] = {"name": col_name, "metadata": {"hnsw:space": "cosine"}}
-        if _ef is not None:
-            kwargs["embedding_function"] = _ef
-        return self._chroma_client.get_or_create_collection(**kwargs)
+        return self._chroma_client.get_or_create_collection(**self._l2_collection_kwargs(_ef))
 
     def _init_sqlite(self, sqlite_path: Path) -> None:
         """Initialize SQLite schema (Phase B: schema-complete) and apply safe migrations."""
@@ -514,10 +573,8 @@ class NativePersistentCacheClient:
 
         try:
             # Clear ChromaDB collection
-            self._chroma_client.delete_collection("l2_semantic_cache")
-            self._chroma_collection = self._chroma_client.get_or_create_collection(
-                name="l2_semantic_cache",
-            )
+            self._chroma_client.delete_collection(L2_SEMANTIC_CACHE_COLLECTION)
+            self._chroma_collection = self._get_or_create_bgem3_collection()
 
             # Clear SQLite table
             self._sqlite_conn.execute("DELETE FROM l2_cache")

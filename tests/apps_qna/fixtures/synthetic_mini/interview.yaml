@@ -1,0 +1,155 @@
+slug: synthetic-mini
+company:
+  name: ExampleCo
+  division: AI Platform
+  practice: Applied AI
+  anchors:
+    - Governed agentic workflows for enterprise teams
+    - Retrieval quality and evaluation before automation
+  avoid_phrases:
+    - AI magic
+    - black box
+  overlay_facts:
+    - ExampleCo is piloting role-specific AI assistants for internal knowledge work.
+role:
+  title: Senior AI Platform Leader
+  level: senior
+  primary_mandate: Build reliable AI workflow platforms that connect retrieval, evaluation, human review, and measurable business outcomes.
+  success_criteria:
+    - Production workflows have clear evidence contracts.
+    - Evaluation and observability are part of every launch.
+    - Platform patterns are reusable across teams.
+interviewers:
+  - name: Jane Doe
+    title: VP Engineering
+    team: AI Platform
+    technical_depth: high
+    public_signals:
+      - Leads platform engineering for AI-enabled enterprise workflows.
+    hot_buttons:
+      - Practical governance
+      - Measurement discipline
+      - Reusable platform patterns
+    lens: Technical depth, executive translation, and operating-model clarity.
+jd:
+  sections:
+    - heading: Role Mandate
+      body: Lead a platform team building governed AI systems with retrieval, evaluation, telemetry, and human escalation.
+      extracted_keywords:
+        - agentic workflows
+        - retrieval systems
+        - AI evaluation
+        - observability
+experience:
+  points:
+    - title: Governed AI Platform
+      one_liner: Built agentic workflow foundations with retrieval contracts, policy gates, and replayable traces.
+      technical_depth_tags:
+        - GraphRAG
+        - evaluation
+        - orchestration
+  star_bank:
+    stories:
+      - name: Retrieval Quality Turnaround
+        situation: A retrieval assistant was producing plausible but weakly grounded answers.
+        task: Improve trust without slowing delivery.
+        action: Added evidence contracts, evaluator gates, and human escalation for uncertain outputs.
+        result: Teams could distinguish grounded answers from advisory drafts before launch.
+        lesson: Retrieval systems need explicit proof surfaces, not only better embeddings.
+        tags:
+          - governance
+          - retrieval
+  rca_bank:
+    - name: Cache Staleness
+      situation: A cache reused stale context after a policy change.
+      task: Prevent stale reuse.
+      root_cause: Cache keys lacked policy-version scope.
+      action: Added policy hashes and explicit invalidation triggers.
+      result: Future cache hits were scoped to the current policy contract.
+      operating_model_change: Cache changes now require policy and evidence-version review.
+research:
+  company_brief: ExampleCo values practical AI systems that are explainable, measurable, and safe to operate.
+  role_areas_of_focus:
+    - Production AI reliability
+    - Evidence-grounded retrieval
+  industry_trends:
+    - Enterprises are moving from prototypes to governed AI platforms.
+  interviewer_lenses:
+    Jane Doe: Focus on architecture, delivery discipline, and how governance remains ergonomic.
+  source_register:
+    - claim: ExampleCo is piloting AI workflow assistants.
+      claim_type: direct_evidence
+      source_id: synthetic_source
+      section_id: company
+  glossary_entries:
+    - term: Evidence Contract
+      definition: A structured record of what evidence supports a generated answer.
+      synonyms:
+        - grounding contract
+      usage_note: Use when discussing retrieval quality.
+  likely_questions:
+    - route_id: apps_qna.live_interview_runtime_pack_v1
+      questions:
+        - How would you make an AI workflow safe enough for production?
+build_metadata:
+  interview_slug: synthetic-mini
+  built_at: "2026-06-08T00:00:00Z"
+  builder_version: test
+  template_set_version: v2
+  output_dir: unused
+extra_context:
+  candidate_first_name: Amit
+  architecture_content_blocks:
+    - heading: Governed Workflow Spine
+      bullets:
+        - Evidence ingestion, retrieval, evaluator gates, and human escalation should be designed as one workflow.
+        - Cache reuse is advisory until evidence and policy scope are verified.
+  data_platform_anchors:
+    - Trusted source contracts
+  data_platform_talking_points:
+    - Start with data ownership and freshness before model choice.
+  measurement_anchors:
+    - Offline evals
+    - Human review
+  measurement_talking_points:
+    - Measure groundedness, usefulness, and escalation quality separately.
+  governance_control_surfaces:
+    - Policy gates
+    - Audit trails
+  governance_talking_points:
+    - Keep advisory outputs separate from state-changing actions.
+  semantic_grounding_talking_points:
+    - Retrieval needs citations, freshness checks, and contradiction handling.
+  mlops_lifecycle_anchors:
+    - Model registry
+    - Eval suite
+  ds_to_platform_talking_points:
+    - Convert notebooks into contracts, services, and monitoring.
+  global_engineering_anchors:
+    - Clear ownership
+  global_engineering_talking_points:
+    - Scale through reusable interfaces and explicit review paths.
+  productization_talking_points:
+    - Package repeatable workflows, not one-off prompts.
+  productization_kpi_anchors:
+    - Adoption
+    - Escalation precision
+  executive_fit_proof_points:
+    - Built systems that make uncertainty visible.
+  executive_fit_close_patterns:
+    - Tie architecture choices to business trust.
+  cross_exam_depth_anchors:
+    - topic: Failure modes
+      specifics: Name stale cache reuse, unsupported retrieval, and missing escalation as first-class risks.
+    - topic: Cost controls
+      specifics: Track retrieval volume, model calls, and evaluator pass rates before scaling usage.
+  questions_for_lead:
+    - Which workflow needs the strongest trust signal first?
+  questions_for_panel:
+    - Where do current AI pilots lose evidence or accountability?
+  plan_days_1_30:
+    - Map use cases, owners, and risk tiers.
+  plan_days_31_60:
+    - Ship one governed workflow with evaluator gates.
+  plan_days_61_90:
+    - Turn the workflow into a reusable platform pattern.
