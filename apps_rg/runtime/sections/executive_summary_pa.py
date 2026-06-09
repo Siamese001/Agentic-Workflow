@@ -242,9 +242,11 @@ def format_graph_proof_pool_appendix(runtime_payload: dict[str, Any]) -> str:
         "- MEDIUM, LOW, and NEEDS_VERIFICATION rows excluded from ALLOWED_SOURCE_FACT_IDS MUST NOT appear in "
         "source_fact_ids unless explicitly promoted after human confirmation.\n"
         "- Numeric evidence must still map to ledger metric-hash IDs when ALLOWED_SOURCE_FACT_IDS includes *_metric_* lines.\n"
-        "- **Credential facts (e.g. fact_certs_001) are optional supporting context, not mandatory paragraph filler.** "
-        "Prefer platform, governance, lifecycle, and commercial facts when the six-sentence / 140-word budget is tight. "
-        "Do **not** force every allowed fact_id into resume_display_text.\n"
+        "- **Credential facts (e.g. fact_certs_001) are optional supporting context, not mandatory paragraph filler** "
+        "(waived from utilization). Prefer platform, governance, lifecycle, and commercial facts when the "
+        "six-sentence / 140-word budget is tight. "
+        "Cite **every non-credential** allowed fact_id across the claim_ledger / resume_display_text -- "
+        "enforced by x2_exec_summary_allowed_fact_utilization (a ledger row may carry multiple source_fact_ids).\n"
         "- **Section ownership:** named certifications (AWS, Databricks, FSA, Basel, CCAR labels, "
         "Certified …, Lakehouse …) belong primarily in **Certifications/Credentials** and **Competencies** sections. "
         "Executive summary may imply quantitative or regulated depth without enumerating credential labels.\n"
@@ -327,7 +329,7 @@ def format_srfs_style_only_quality_oneshot_block() -> str:
         "- Product shape and X2 gate IDs: see appended PRODUCT_SHAPE (do not restate here).\n"
         "- Voice/density: use E0 many_shot_examples (judge-aligned SVP positives / negatives); do not copy exemplar metrics.\n"
         "- Arc, voice, and credential rules: I0 judge_alignment_contract (not restated here).\n"
-        "- Do not force every allowed fact_id into resume_display_text; document omissions in gap_notes/self_check.\n"
+        "- Cite every non-credential allowed fact_id (credential/cert facts are waived); document any credential omissions in gap_notes/self_check.\n"
         + format_srfs_forbidden_phrase_guardrails_block()
         + (
             "<srfs_governance_required_or_explain>\n"
