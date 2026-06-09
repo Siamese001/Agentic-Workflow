@@ -10,6 +10,7 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     build_canonical_claim_ledger_v2_payload,
 )
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run
+from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
 
 BLOCKED_STATUS = "REQUIRED_PROOF_ABSENT"
 
@@ -114,7 +115,15 @@ def write_required_proof_absent_artifacts(
         {"gates": x2, "x2_failed": 1, "x2_passed": 0, "failed_gates": [x2[0]["gate_id"]]},
     )
     _write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": []})
-    _write_json(artifact_dir / "x3_disposition.json", x3)
+    # Single-spine authority (E2E-14): route the x3 mirror through the spine finalize helper
+    # rather than writing x3_disposition.json raw. This is a pre-provider proof-absent block with
+    # no sealed L2, so exit receipts are skipped (default); the spine still owns the mirror.
+    finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id=sid,
+        runtime_payload=runtime_payload,
+        x3_result=x3,
+    )
     _write_json(
         artifact_dir / "l6_shadow_eval_package.json",
         {"section_id": sid, "status": "BLOCKED", "reason": reason},
