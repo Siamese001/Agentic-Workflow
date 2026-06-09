@@ -374,6 +374,7 @@ def normalize_unify_parsed_without_ledger_synthesis(
         runtime_payload,
         protected_bullet_id=protected_default,
     )
+    _bind_unify_role_episode_change_log(out)
     from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
         strip_employment_bullet_intensity_model,
     )
@@ -448,6 +449,61 @@ def _repair_protected_unify_bullet_metrics(
             }
         )
     _sync_unify_claim_ledger_to_bullets(out)
+
+
+def _bind_unify_role_episode_change_log(out: dict[str, Any]) -> None:
+    """Deterministically (re)bind each bullet's change_log row to its canonical role-episode bundle.
+
+    The role-episode X2 gates (``_collect_change_log_bindings``) read ``role_episode_bundle_id``,
+    ``graph_skill_node_ids`` and ``metric_outcome_ids`` from the per-bullet ``change_log``. The
+    generator places that lineage in ``selected_fact_plan`` instead, so we rebind it from the SSOT
+    bundle data via ``UNIFY_BULLET_SLOT_BUNDLE_MAP``. ``metric_outcome_ids`` are taken ONLY from the
+    matched bundle's ``linked_metric_outcome_ids`` (already on the approved list) and only for
+    ``has_metric`` bullets — never invented — so an unsupported/unapproved metric still fails the gate.
+    """
+    from apps_rg.runtime.sections.unify_role_episode_evidence import (
+        UNIFY_BULLET_SLOT_BUNDLE_MAP,
+        get_bundle_by_id,
+    )
+
+    bullets = [b for b in (out.get("bullets") or []) if isinstance(b, dict)]
+    if not bullets:
+        return
+    change_log = [e for e in (out.get("change_log") or []) if isinstance(e, dict)]
+    by_bid = {str(e.get("bullet_id") or ""): e for e in change_log if e.get("bullet_id")}
+    for bullet in bullets:
+        bid = str(bullet.get("bullet_id") or "").strip()
+        if not bid:
+            continue
+        bundle_id = UNIFY_BULLET_SLOT_BUNDLE_MAP.get(bid)
+        bundle = get_bundle_by_id(bundle_id) if bundle_id else None
+        if not bundle:
+            continue
+        skills = [str(x) for x in (bundle.get("graph_skill_node_ids") or [])]
+        srcs = [str(x) for x in (bullet.get("source_fact_ids") or [])] or [
+            str(x) for x in (bundle.get("linked_source_fact_ids") or [])
+        ]
+        row = by_bid.get(bid)
+        if row is None:
+            row = {"bullet_id": bid, "operation": "role_episode_bundle_binding"}
+            change_log.append(row)
+            by_bid[bid] = row
+        row["role_episode_bundle_id"] = bundle_id
+        row["graph_skill_node_ids"] = list(
+            dict.fromkeys([*(str(x) for x in (row.get("graph_skill_node_ids") or [])), *skills])
+        )
+        row["fact_ids_used"] = list(
+            dict.fromkeys([*(str(x) for x in (row.get("fact_ids_used") or [])), *srcs])
+        )
+        if bullet.get("has_metric"):
+            metric_ids = [str(x) for x in (bundle.get("linked_metric_outcome_ids") or [])]
+            if metric_ids:
+                row["metric_outcome_ids"] = list(
+                    dict.fromkeys(
+                        [*(str(x) for x in (row.get("metric_outcome_ids") or [])), *metric_ids]
+                    )
+                )
+    out["change_log"] = change_log
 
 
 def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
