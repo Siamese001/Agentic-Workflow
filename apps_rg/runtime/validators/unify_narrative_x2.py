@@ -26,6 +26,10 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 )
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.narrative_identity_x2 import narrative_leaks_candidate_name_tokens
+from apps_rg.runtime.sections.section_product_shape_ssot import (
+    NARRATIVE_MAX_CHARS,
+    NARRATIVE_MAX_WORDS,
+)
 
 
 # Exact display labels from finalized Unify bullets — never paste into narrative_sentence.
@@ -480,12 +484,12 @@ def run_unify_narrative_x2_gates(
 
     stripped_narrative = narrative_sentence.strip()
     wc = _narrative_word_count(stripped_narrative)
-    budget_ok = wc <= 58 and len(stripped_narrative) <= 360
+    budget_ok = wc <= NARRATIVE_MAX_WORDS and len(stripped_narrative) <= NARRATIVE_MAX_CHARS
     add(
         "x2_unify_narrative_word_budget",
         budget_ok,
         {"word_count": wc, "char_len": len(stripped_narrative)},
-        "<=58 words and <=360 chars",
+        f"<={NARRATIVE_MAX_WORDS} words and <={NARRATIVE_MAX_CHARS} chars",
         None if budget_ok else "Narrative exceeds word or character budget.",
     )
 
