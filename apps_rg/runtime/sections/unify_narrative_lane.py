@@ -965,6 +965,11 @@ def run_unify_narrative_execution(
             proof_pool_digest=str(pool.proof_pool_digest or ""),
         )
     ]
+    # X2 severity SSOT (plan x2-gate-slimdown-b4e8d2): demote adversarially-verified STYLE gates
+    # to WARN (record-don't-block) without touching detection. No-op for correctness gates.
+    from apps_rg.runtime.validators.x2_severity import soften_warn_only
+
+    x2 = soften_warn_only(x2)
     from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
         write_x2_source_fact_pool_receipt,
     )

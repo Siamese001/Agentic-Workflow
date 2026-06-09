@@ -1137,6 +1137,10 @@ def run_ibm_bullets_execution(
             runtime_payload=runtime_payload,
         )
     ]
+    # X2 severity SSOT (plan x2-gate-slimdown-b4e8d2): demote verified STYLE gates to WARN; no-op for correctness.
+    from apps_rg.runtime.validators.x2_severity import soften_warn_only
+
+    x2 = soften_warn_only(x2)
     from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
         write_x2_source_fact_pool_receipt,
     )
