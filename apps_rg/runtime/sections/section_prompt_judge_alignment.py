@@ -133,7 +133,7 @@ PRODUCT_SHAPE_ALIGNMENT_ALIASES: dict[str, tuple[str, ...]] = {
     ),
     "targeting_only": (r"targeting_only", r"targeting only", r"targeting-only", r"targeting only,"),
     "source_fact_ids": (r"source_fact_ids", r"source_fact_id", r"source fact"),
-    "pool_path_count": (r"pool_path", r"qwen_paths", r"self[- ]consistency"),
+    "pool_path_count": (r"pool_path", r"sc_paths", r"self[- ]consistency"),
     "bul_unify_": (r"bul_unify_", r"bul_unify"),
     "bul_ibm_": (r"bul_ibm_", r"bul_ibm"),
     "8": (r"\b8\b", r"six to eight", r"6-8", r"6 to 8"),

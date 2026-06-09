@@ -44,11 +44,11 @@ class TestStop5UnifyBulletPrompt:
         assert "BULLET_COUNT_INVALID" in content
     
     def test_pool_selection_contract_documented(self):
-        """Employment bullets use Qwen pool + Claude top-N selection (no intensity taxonomy)."""
+        """Employment bullets use SC pool + Claude top-N selection (no intensity taxonomy)."""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "unify_bullet_tailor_v1.yaml"
         content = template_path.read_text(encoding="utf-8")
         assert "pool_selection:" in content
-        assert "qwen_paths: 15" in content or "qwen_paths:15" in content
+        assert "sc_paths: 4" in content or "sc_paths:4" in content
         assert "final_bullet_count: 6" in content or "final_bullet_count:6" in content
         assert "rewrite_distribution" not in content
         assert "rewrite_intensity" not in content

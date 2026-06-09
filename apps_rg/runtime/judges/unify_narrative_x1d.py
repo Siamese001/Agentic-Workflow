@@ -7,11 +7,12 @@ from typing import Any
 
 from apps_rg.runtime.judges.executive_summary_x1d import JudgeOutput
 from apps_rg.runtime.judges.policy_backed_section_judges import run_policy_section_judges
+from apps_rg.runtime.sections.section_product_shape_ssot import NARRATIVE_MAX_CHARS, NARRATIVE_MAX_WORDS
 
 JUDGE_RUBRIC_VERSION = "unify_narrative_x1d_v3"
 JUDGE_RUBRIC_REF = "apps_rg/runtime/judges/unify_narrative_x1d.py#UNIFY_NARRATIVE_GRADE_ONLY_RUBRIC"
 
-NARRATIVE_RUBRIC = """
+NARRATIVE_RUBRIC = f"""
 You are evaluating one Unify Consulting role narrative sentence (complement to six bullets).
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 
@@ -32,7 +33,7 @@ Rubric dimensions (must score each):
 8. resume_voice: third person or implied subject; credible executive tone; no hype.
 9. role_fit_targeting: JD/briefing influence emphasis only — never proof of experience.
 10. why_role_mattered: narrative answers why the Unify role mattered (mandate, commercialization, IP) — companion bullets answer what was delivered.
-11. executive_brevity: exactly one sentence; product shape max 58 words and 360 characters; JD/briefing targeting only (never proof).
+11. executive_brevity: exactly one sentence; product shape max {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters; JD/briefing targeting only (never proof).
 
 Decisive failure triggers:
 - merely summarizes the six bullets or mirrors bullet labels/metrics as the thesis

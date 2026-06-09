@@ -73,6 +73,7 @@ from apps_rg.runtime.sections.unify_bullets_lane import _legacy_unify_to_ledger_
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
+from apps_rg.runtime.sections.section_product_shape_ssot import NARRATIVE_MAX_CHARS, NARRATIVE_MAX_WORDS
 from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
 
 UNIFY_NARRATIVE_BASE_FACT_ID = "unify_narrative_base_001"
@@ -455,7 +456,7 @@ def retry_qwen_for_parse(
                 "jd_used_as_proof:false, briefing_used_as_proof:false. "
                 "Every claim_ledger row MUST have non-empty claim_text and non-empty source_fact_ids from "
                 "ALLOWED_SOURCE_FACT_IDS in C0; rows with only IDs fail x2_claim_ledger_claim_text_non_empty. "
-                "narrative_sentence: third person, no em dash, no inline source tags, <=58 words, <=360 characters."
+                f"narrative_sentence: third person, no em dash, no inline source tags, <={NARRATIVE_MAX_WORDS} words, <={NARRATIVE_MAX_CHARS} characters."
             ),
         },
     ]
