@@ -158,6 +158,44 @@ def test_apply_materialization_syncs_runtime_payload() -> None:
         )
 
 
+def test_apply_materialization_filters_stray_evidence_items_to_fec() -> None:
+    """R1 (plan apps-rg-fec-grounding-blocker-d9a4b7): evidence_items whose source_fact_id was NOT
+    promoted into fec_allowed are dropped (alias-aware), so the FEC bridge prompt-surface stays a
+    strict subset of the FEC. Regression for fact_quant_hpc_002 leaking past the canonical narrowing
+    to _003 and tripping x2_prompt_c0_ids_subset_of_fec."""
+    from apps_rg.runtime.evidence.canonical_section_evidence_set import collect_prompt_c0_fact_ids
+
+    pool = _pool(
+        section="competencies",
+        ordered=["fact_a", "fact_b", "fact_stray"],
+        plan={"section_id": "competencies", "facts": [{"fact_id": "fact_a"}]},
+    )
+    bridge_doc = {
+        "allowed_fact_ids": ["fact_a", "fact_b", "fact_stray"],
+        "source_fact_ids": ["fact_a", "fact_b", "fact_stray"],
+        "evidence_items": [
+            {"evidence_id": "evidence:section:fact_a", "source_fact_id": "fact_a"},
+            {"evidence_id": "evidence:section:fact_stray", "source_fact_id": "fact_stray"},
+            {"evidence_id": "evidence:section:context", "source_fact_id": ""},  # context, kept
+        ],
+        "final_evidence_contract": {},
+    }
+    runtime_payload: dict = {"proof_pool_metadata": {}, "section_fec_bridge": bridge_doc}
+    bridge = SimpleNamespace(bridge_doc=bridge_doc)
+    apply_canonical_section_evidence_materialization(
+        pool=pool,  # type: ignore[arg-type]
+        runtime_payload=runtime_payload,
+        bridge=bridge,  # type: ignore[arg-type]
+        fec_allowed=["fact_a", "fact_b"],  # canonical narrowing drops fact_stray
+    )
+    kept = {it.get("source_fact_id") for it in bridge_doc["evidence_items"]}
+    assert "fact_stray" not in kept  # stray (non-FEC) evidence item dropped
+    assert "fact_a" in kept and "" in kept  # allowed fact + non-claim context retained
+    prompt_ids = collect_prompt_c0_fact_ids(runtime_payload)
+    assert "fact_stray" not in prompt_ids  # prompt surface no longer widens the FEC
+    assert prompt_ids <= {"fact_a", "fact_b"}
+
+
 @pytest.mark.parametrize(
     "section_id",
     (

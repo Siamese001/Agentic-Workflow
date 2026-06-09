@@ -192,6 +192,33 @@ def apply_canonical_section_evidence_materialization(
         doc["fec_allowed_fact_ids_digest"] = fec_digest
         doc["proof_pool_digest"] = canonical.pool_digest
         doc["id_alias_map"] = dict(canonical.alias_map)
+        # R1 (plan apps-rg-fec-grounding-blocker-d9a4b7): align evidence_items to the canonical FEC
+        # allow-set too. allowed_fact_ids/source_fact_ids are synced above, but a stray evidence item
+        # whose source_fact_id was NOT promoted into fec_allowed (a sibling the canonical narrowing
+        # dropped — e.g. fact_quant_hpc_002 vs the selected _003) still leaks into
+        # collect_prompt_c0_fact_ids and trips x2_prompt_c0_ids_subset_of_fec. Drop those items
+        # (alias-aware, mirroring validate_downstream_subset) so the bridge's prompt surface is a
+        # strict subset of the FEC. Items without a source_fact_id are non-claim context — kept.
+        _fec_set = set(fec_allowed)
+        _amap = dict(canonical.alias_map)
+
+        def _fec_admits(source_fact_id: Any) -> bool:
+            s = str(source_fact_id or "").strip()
+            if not s:
+                return True
+            base = s.split("_metric_", 1)[0]
+            if s in _fec_set or base in _fec_set:
+                return True
+            ledger = _amap.get(base) or _amap.get(s)
+            return bool(ledger and (ledger in _fec_set or ledger.split("_metric_", 1)[0] in _fec_set))
+
+        _items = doc.get("evidence_items")
+        if isinstance(_items, list):
+            doc["evidence_items"] = [
+                it
+                for it in _items
+                if not isinstance(it, dict) or _fec_admits(it.get("source_fact_id"))
+            ]
         if fec_materialization_receipt is not None:
             doc["fec_materialization_receipt"] = fec_materialization_receipt
         snap = doc.get("final_evidence_contract")
