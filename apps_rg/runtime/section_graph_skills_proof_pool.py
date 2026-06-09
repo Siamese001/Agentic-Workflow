@@ -1,6 +1,7 @@
 """Shared graph-skills fact allocation for apps_rg canonical sections (P2 all-section)."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -43,6 +44,13 @@ _SECTION_MIN_FACTS: dict[str, int] = {
     "insurtech_narrative": 3,
     "ey_bullets": 3,
     "ey_narrative": 3,
+}
+
+_ROLE_BUNDLE_FILE_BY_SECTION: dict[str, str] = {
+    "insurtech_bullets": "insurtech_role_episode_bundles.json",
+    "insurtech_narrative": "insurtech_role_episode_bundles.json",
+    "ey_bullets": "ey_role_episode_bundles.json",
+    "ey_narrative": "ey_role_episode_bundles.json",
 }
 
 
@@ -91,6 +99,61 @@ def _graph_substrate_company_hint_plan(
         "facts": facts,
         "required_fact_ids": [str(f["fact_id"]) for f in facts],
     }
+    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
+    return {k: v for k, v in plan.items() if not str(k).startswith("_")}, ordered, allowed
+
+
+def _role_episode_bundle_plan(
+    *,
+    section_id: str,
+    repo_root: Path,
+    limit: int,
+) -> tuple[dict[str, Any], list[str], set[str]] | None:
+    """Fallback role-lane proof facts from graph role-episode bundles when ledger slices are empty."""
+    bundle_file = _ROLE_BUNDLE_FILE_BY_SECTION.get(section_id)
+    if not bundle_file:
+        return None
+    path = repo_root / "apps_rg" / "fact_inventory" / bundle_file
+    if not path.is_file():
+        return None
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    facts: list[dict[str, Any]] = []
+    for bundle in doc.get("bundles") or []:
+        if not isinstance(bundle, dict):
+            continue
+        linked = [str(x).strip() for x in (bundle.get("linked_source_fact_ids") or []) if str(x).strip()]
+        fid = linked[0] if linked else ""
+        if not fid:
+            continue
+        signals = [str(x).strip() for x in (bundle.get("executive_scope_signals") or []) if str(x).strip()]
+        claim = signals[0] if signals else str(bundle.get("bullet_intent") or bundle.get("bundle_theme") or "").strip()
+        facts.append(
+            {
+                "fact_id": fid,
+                "candidate_fact_id": fid,
+                "claim_text": claim,
+                "role_episode_bundle_id": str(bundle.get("role_episode_bundle_id") or ""),
+                "graph_skill_node_ids": [str(x) for x in (bundle.get("graph_skill_node_ids") or [])],
+                "metric_outcome_ids": [str(x) for x in (bundle.get("linked_metric_outcome_ids") or [])],
+                "source_trace_archive_relpaths": [],
+            }
+        )
+        if len(facts) >= limit:
+            break
+    if not facts:
+        return None
+    plan = {
+        "section_id": section_id,
+        "selection_method": f"augmented_skills_graph_{section_id}_role_episode_bundle",
+        "facts": facts,
+        "required_fact_ids": [str(f["fact_id"]) for f in facts],
+        "role_episode_bundle_fallback": True,
+    }
+    from apps_rg.runtime.proof_pool_resolver import _stamp_unify_canonical_bullet_ids
+
     plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
     return {k: v for k, v in plan.items() if not str(k).startswith("_")}, ordered, allowed
 
@@ -505,6 +568,13 @@ def allocate_section_facts_from_graph_substrate(
         hinted = _hint_if_sufficient()
         if hinted is not None:
             return hinted
+        bundled = _role_episode_bundle_plan(
+            section_id=section_id,
+            repo_root=repo_root,
+            limit=min_required or 3,
+        )
+        if bundled is not None:
+            return bundled
         raise ValueError(f"graph-skills allocation produced empty slice for {section_id!r}")
 
     facts = [_slice_to_plan_fact(sl, section_id=section_id) for sl in slice_rows]
@@ -512,6 +582,13 @@ def allocate_section_facts_from_graph_substrate(
         hinted = _hint_if_sufficient()
         if hinted is not None:
             return hinted
+        bundled = _role_episode_bundle_plan(
+            section_id=section_id,
+            repo_root=repo_root,
+            limit=min_required or 3,
+        )
+        if bundled is not None:
+            return bundled
         raise ValueError(
             f"graph-skills allocation insufficient for {section_id!r}: {len(facts)} < {min_required}"
         )

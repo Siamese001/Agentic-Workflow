@@ -1,11 +1,12 @@
 """apps_rg-local X1D judge preflight and proof policy (no agentic_core imports).
 
-Aligns CI proof configuration with ``REQUIRED_JUDGE_PROVIDERS`` in lane X2 validators and with
+Aligns CI proof configuration with ``REQUIRED_JUDGE_PROVIDER_KEYS`` in section judge policy and with
 ``run_llm_judges`` credential checks in ``executive_summary_x1d`` (same primary ``*_API_KEY`` env
 names — no silent substitution of providers).
 
-Generation uses ``qwen_vllm``; X1D judges are separate external LLM providers (Gemini/OpenAI/Anthropic)
-and are not interchangeable with the generation provider unless explicitly added to policy (not default).
+Generation uses Claude-family providers; proof X1D judges are cross-provider external LLM providers
+(Gemini/OpenAI by default) and are not interchangeable with the generation provider unless explicitly
+added by override.
 """
 
 from __future__ import annotations
@@ -17,10 +18,10 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     PROVIDERS as X1D_RUN_LLM_PROVIDERS,
     resolve_x1d_provider_credentials,
 )
-from apps_rg.runtime.validators.executive_summary_x2 import REQUIRED_JUDGE_PROVIDERS
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
-# Explicit default for CI lane-dev boundary helpers — matches validators.
-APPS_RG_E2E_DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDERS)
+# Explicit default for CI lane-dev boundary helpers — matches section_judge_policy.
+APPS_RG_E2E_DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDER_KEYS)
 
 _PROVIDER_TYPES: dict[str, str] = {
     "gemini_pro": "external_cloud_llm_judge",
@@ -75,7 +76,7 @@ def preflight_x1d_judge_policy(
         raw = APPS_RG_E2E_DEFAULT_X1D_JUDGES
 
     configured = _split_judges(raw)
-    required = list(REQUIRED_JUDGE_PROVIDERS)
+    required = list(REQUIRED_JUDGE_PROVIDER_KEYS)
     valid_keys = set(X1D_RUN_LLM_PROVIDERS.keys())
 
     unknown = [p for p in configured if p not in valid_keys]

@@ -407,14 +407,19 @@ def audit_policy_sections_proof_judge_roster() -> list[TransportViolation]:
 
 
 def audit_providers_registry_complete() -> list[TransportViolation]:
-    """PROVIDERS registry must define exactly the proof panel keys."""
+    """PROVIDERS registry must define every required proof panel key.
+
+    Extra provider implementations may remain available for explicit overrides; the
+    proof roster is governed by ``PROOF_JUDGE_PROVIDER_KEYS``.
+    """
     reg = frozenset(PROVIDERS.keys())
     expected = frozenset(PROOF_JUDGE_PROVIDER_KEYS)
-    if reg != expected:
+    missing = expected - reg
+    if missing:
         return [
             TransportViolation(
                 code="providers_registry_mismatch",
-                detail=f"PROVIDERS keys {sorted(reg)} != {sorted(expected)}",
+                detail=f"PROVIDERS missing required proof keys {sorted(missing)} from {sorted(expected)}",
                 path="apps_rg/runtime/judges/executive_summary_x1d.py",
             )
         ]

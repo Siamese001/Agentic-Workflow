@@ -63,18 +63,16 @@ def _base_signals(**kwargs: object) -> dict[str, object]:
 
 def _policy_all_credentials() -> dict[str, object]:
     return {
-        "available_judges": ["gemini_pro", "openai_chatgpt", "anthropic_claude"],
+        "available_judges": ["gemini_pro", "openai_chatgpt"],
         "quorum_satisfied": True,
         "policy_valid": True,
         "per_provider": {
             "gemini_pro": {"credential_env_non_empty": True},
             "openai_chatgpt": {"credential_env_non_empty": True},
-            "anthropic_claude": {"credential_env_non_empty": True},
         },
         "provider_types": {
             "gemini_pro": "external_cloud_llm_judge",
             "openai_chatgpt": "external_cloud_llm_judge",
-            "anthropic_claude": "external_cloud_llm_judge",
         },
     }
 
@@ -128,18 +126,18 @@ class TestX1dJudgeExecutionQuality(unittest.TestCase):
                     "lane": "headline",
                     "x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL",
                     "gemini": "MODEL_BACKED_PASS",
-                    "openai": "MODEL_BACKED_PASS",
-                    "anthropic": "MODEL_BACKED_FAIL",
+                    "openai": "MODEL_BACKED_FAIL",
+                    "anthropic": "MODEL_BACKED_PASS",
                 }
             ],
         )
         fb = diag["failure_breakdown_for_exit"]
         self.assertTrue(fb["x1d_judge_model_backed_fail"])
         self.assertFalse(fb["x1d_judge_execution_mismatch"])
-        ac = next(
-            x for x in diag["lanes"]["headline"]["judge_results"] if x["provider_key"] == "anthropic_claude"
+        openai = next(
+            x for x in diag["lanes"]["headline"]["judge_results"] if x["provider_key"] == "openai_chatgpt"
         )
-        self.assertEqual(ac["mapped_judge_status_enum"], "MODEL_BACKED_FAIL")
+        self.assertEqual(openai["mapped_judge_status_enum"], "MODEL_BACKED_FAIL")
 
     def test_model_backed_quality_fail_keeps_whole_run_review(self) -> None:
         w = compute_whole_run_exit(
@@ -170,8 +168,8 @@ class TestX1dJudgeExecutionQuality(unittest.TestCase):
                     "lane": "single",
                     "x3_code": "X3_REVIEW",
                     "gemini": "MODEL_BACKED_PASS",
-                    "openai": "MODEL_BACKED_PASS",
-                    "anthropic": "MODEL_BACKED_FAIL",
+                    "openai": "MODEL_BACKED_FAIL",
+                    "anthropic": "MODEL_BACKED_PASS",
                 }
             ],
         )

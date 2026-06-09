@@ -154,6 +154,98 @@
       "x1d_soft_dimensions": ["precision", "redundancy", "readability"]
     },
     {
+      "section_id": "insurtech_bullets",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/sections/role_episode_lane.py",
+      "x2_run_function": "run_insurtech_bullets_x2_gates",
+      "x2_gates_sample": [
+        "x2_insurtech_bullets_bullet_count_3",
+        "x2_insurtech_bullets_source_fact_ids_supported",
+        "x2_claim_ledger_claim_text_non_empty",
+        "x2_no_first_person"
+      ],
+      "x2_deterministic_facts": [
+        "three-bullet shape",
+        "source_fact_ids supported by the allowed role proof pool",
+        "claim ledger",
+        "JD/briefing targeting only",
+        "role source namespace"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/role_episode_x1d.py",
+      "x1d_soft_dimensions": ["factual_support", "claim_ledger_grounding", "role_fit_targeting"]
+    },
+    {
+      "section_id": "ey_bullets",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/sections/role_episode_lane.py",
+      "x2_run_function": "run_ey_bullets_x2_gates",
+      "x2_gates_sample": [
+        "x2_ey_bullets_bullet_count_3",
+        "x2_ey_bullets_source_fact_ids_supported",
+        "x2_claim_ledger_claim_text_non_empty",
+        "x2_no_first_person"
+      ],
+      "x2_deterministic_facts": [
+        "three-bullet shape",
+        "source_fact_ids supported by the allowed role proof pool",
+        "claim ledger",
+        "JD/briefing targeting only",
+        "role source namespace"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/role_episode_x1d.py",
+      "x1d_soft_dimensions": ["factual_support", "claim_ledger_grounding", "role_fit_targeting"]
+    },
+    {
+      "section_id": "insurtech_narrative",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/sections/role_episode_lane.py",
+      "x2_run_function": "run_insurtech_narrative_x2_gates",
+      "x2_gates_sample": [
+        "x2_insurtech_narrative_exactly_one_sentence",
+        "x2_insurtech_narrative_word_budget",
+        "x2_insurtech_narrative_source_fact_ids_supported",
+        "x2_no_em_dash"
+      ],
+      "x2_deterministic_facts": [
+        "one-sentence shape",
+        "word and character budgets",
+        "source_fact_ids supported by the allowed role proof pool",
+        "JD/briefing targeting only",
+        "role source namespace"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/role_episode_x1d.py",
+      "x1d_soft_dimensions": ["factual_support", "claim_ledger_grounding", "role_fit_targeting"]
+    },
+    {
+      "section_id": "ey_narrative",
+      "llm_generation_allowed": true,
+      "claim_ledger_required": true,
+      "output_schema_ref": "apps_rg/rg_output_schema.json",
+      "x2_gate_profile_ref": "apps_rg/runtime/sections/role_episode_lane.py",
+      "x2_run_function": "run_ey_narrative_x2_gates",
+      "x2_gates_sample": [
+        "x2_ey_narrative_exactly_one_sentence",
+        "x2_ey_narrative_word_budget",
+        "x2_ey_narrative_source_fact_ids_supported",
+        "x2_no_em_dash"
+      ],
+      "x2_deterministic_facts": [
+        "one-sentence shape",
+        "word and character budgets",
+        "source_fact_ids supported by the allowed role proof pool",
+        "JD/briefing targeting only",
+        "role source namespace"
+      ],
+      "x1d_judge_profile_ref": "apps_rg/runtime/judges/role_episode_x1d.py",
+      "x1d_soft_dimensions": ["factual_support", "claim_ledger_grounding", "role_fit_targeting"]
+    },
+    {
       "section_id": "education",
       "llm_generation_allowed": false,
       "claim_ledger_required": true,

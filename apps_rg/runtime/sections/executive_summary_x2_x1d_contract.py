@@ -60,6 +60,10 @@ SYNTHESIS_CHECK_TO_X2_GATE: dict[str, str] = {
     "check_exec_summary_strategy_no_commercialization_thread": (
         "x2_exec_summary_strategy_no_commercialization_thread"
     ),
+    "check_exec_summary_s5_no_derivatives_inventory": (
+        "x2_exec_summary_s5_no_derivatives_inventory"
+    ),
+    "check_exec_summary_stock_bridge_count": "x2_exec_summary_stock_bridge_max_two",
 }
 
 SYNTHESIS_IMPLICIT_X2_GATES: frozenset[str] = frozenset(

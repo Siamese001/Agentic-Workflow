@@ -30,7 +30,7 @@ def proof_source_from_metadata(metadata: dict[str, Any] | None) -> str:
         if resolved:
             return resolved
     pt = str(meta.get("proof_pool_type") or "")
-    if pt in ("augmented_skills_graph", PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH):
+    if pt == PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH:
         return PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
     if pt == "selected_role_fact_set":
         return PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH

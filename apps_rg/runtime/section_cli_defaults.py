@@ -166,10 +166,9 @@ def resolve_cli_x1d_judges(
 ) -> str:
     """Honor ``APPS_RG_E2E_X1D_JUDGES`` when CLI omits ``--x1d-judges``.
 
-    Per-section composite-judge defaults (one judge, not the triple panel):
+    Per-section composite-judge defaults (one judge, not the full proof panel):
       * ``competencies``  -> single ``gemini_pro`` advisory judge.
-      * ``ibm_bullets``   -> single ``anthropic_claude`` composite bullet judge (matches the
-        unify_bullets Claude pool selector). The 3-provider panel is the optional adjudicator.
+      * bullets/narratives -> single ``gemini_pro`` cross-provider judge.
 
     An explicit ``--x1d-judges`` CSV or ``APPS_RG_E2E_X1D_JUDGES`` always wins (this is how the
     adjudicator panel is requested for borderline cases).

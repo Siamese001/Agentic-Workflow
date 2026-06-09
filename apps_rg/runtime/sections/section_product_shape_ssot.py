@@ -334,7 +334,7 @@ def _unify_bullets_shape() -> SectionProductShape:
         x2_module_ref="apps_rg/runtime/validators/unify_bullets_x2.py",
         display_field="bullets",
         shape_summary=(
-            f"6 bullets from {pool_n}-path Qwen pool; Claude pool selector picks top-6 passing score; "
+            f"6 bullets from {pool_n}-path self-consistency pool; Claude pool selector picks top-6 passing score; "
             "bul_unify_* fact ids only"
         ),
         bounds_gate_ids=(
@@ -375,7 +375,7 @@ def _unify_bullets_shape() -> SectionProductShape:
         ),
         jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
         compile_hints=(
-            f"qwen_pool_paths={pool_n}; claude_top_n=6; min_score gate",
+            f"sc_pool_paths={pool_n}; claude_top_n=6; min_score gate",
             "companion_context_allowed=false",
         ),
     )
@@ -430,7 +430,7 @@ def _ibm_bullets_shape() -> SectionProductShape:
         x2_module_ref="apps_rg/runtime/validators/ibm_bullets_x2.py",
         display_field="bullets",
         shape_summary=(
-            f"5 bullets from {pool_n}-path Qwen pool; Claude pool selector picks top-5 passing score; "
+            f"5 bullets from {pool_n}-path self-consistency pool; Claude pool selector picks top-5 passing score; "
             "bul_ibm_* only"
         ),
         bounds_gate_ids=(
@@ -465,7 +465,7 @@ def _ibm_bullets_shape() -> SectionProductShape:
         ),
         jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
         compile_hints=(
-            f"qwen_pool_paths={pool_n}; claude_top_n=5; min_score gate",
+            f"sc_pool_paths={pool_n}; claude_top_n=5; min_score gate",
             "IBM_BULLETS_FOUNDATION slice",
         ),
     )

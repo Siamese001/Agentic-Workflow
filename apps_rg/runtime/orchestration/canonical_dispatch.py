@@ -26,6 +26,7 @@ from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.resume_resolution import resolve_resume_for_lanes
 from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
 from apps_rg.runtime.runtime_proof_layout import find_repo_root, load_latest_pointer, proof_bucket_for_provider
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
 # V6 terminal codes short values (integrated R4); legacy strings retained.
 _SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
@@ -39,6 +40,7 @@ _UNIFY_NARRATIVE_SECTION_ID = "unify_narrative"
 _IBM_BULLETS_SECTION_ID = "ibm_bullets"
 _IBM_NARRATIVE_SECTION_ID = "ibm_narrative"
 _COMPETENCIES_SECTION_ID = "competencies"
+_DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDER_KEYS)
 # Single pool-selector judge (graph_8x8); not the executive-summary triple panel.
 COMPETENCIES_LANE_X1D_JUDGES_DEFAULT = "gemini_pro"
 
@@ -289,7 +291,7 @@ def run_canonical_full_resume_from_cli_primitives(
     section: str = "",
     lane_provider: str = "",
     lane_temperature: float = 0.45,
-    lane_x1d_judges: str = "gemini_pro,openai_chatgpt,anthropic_claude",
+    lane_x1d_judges: str = _DEFAULT_X1D_JUDGES,
     lane_mock_judges: bool = False,
     lane_allow_test_mock_judges: bool = False,
 ) -> dict[str, Any]:
@@ -420,7 +422,7 @@ def run_canonical_apps_rg_from_cli_primitives(
     lane_provider: str = "",
     lane_provider_resolution_source: str | None = None,
     lane_temperature: float = 0.45,
-    lane_x1d_judges: str = "gemini_pro,openai_chatgpt,anthropic_claude",
+    lane_x1d_judges: str = _DEFAULT_X1D_JUDGES,
     lane_mock_judges: bool = False,
     lane_allow_non_allow_exit_zero: bool = False,
     lane_allow_test_mock_judges: bool = False,
@@ -470,7 +472,7 @@ def execute_executive_summary_section_from_cli(
     lane_provider: str = "",
     lane_provider_resolution_source: str | None = None,
     lane_temperature: float = 0.45,
-    lane_x1d_judges: str = "gemini_pro,openai_chatgpt,anthropic_claude",
+    lane_x1d_judges: str = _DEFAULT_X1D_JUDGES,
     lane_mock_judges: bool = False,
     lane_allow_test_mock_judges: bool = False,
 ) -> dict[str, Any]:

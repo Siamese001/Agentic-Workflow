@@ -224,11 +224,10 @@ def test_run_llm_judges_passes_identical_user_prompt_to_each_provider(monkeypatc
         judge_packet=packet,
         section_id="executive_summary",
     )
-    assert len(outputs) == 3
+    assert len(outputs) == len(PROOF_JUDGE_PROVIDER_KEYS)
     assert set(captured.keys()) == set(PROOF_JUDGE_PROVIDER_KEYS)
-    assert captured["openai_chatgpt"] == expected_prompt
-    assert captured["anthropic_claude"] == expected_prompt
-    assert captured["gemini_pro"] == expected_prompt
+    for key in PROOF_JUDGE_PROVIDER_KEYS:
+        assert captured[key] == expected_prompt
 
 
 def test_run_llm_judges_same_input_hash_all_providers(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -371,7 +370,7 @@ def test_pass_math_matrix_parametrized(
 # --- Policy / registry consistency --------------------------------------------
 
 
-def test_proof_sections_share_three_judge_roster() -> None:
+def test_proof_sections_share_recalibrated_judge_roster() -> None:
     violations = audit_policy_sections_proof_judge_roster()
     assert violations == [], _codes(violations)
 
