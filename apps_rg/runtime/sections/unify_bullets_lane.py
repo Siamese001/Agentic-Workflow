@@ -87,7 +87,12 @@ from apps_rg.runtime.validators.unify_bullets_x2 import (
 PROMPT_ID = "unify_bullet_tailor_v1"
 UNIFY_TEMP_DEFAULT = 0.45
 UNIFY_TEMP_RANGE = (0.35, 0.55)
-UNIFY_MAX_OUTPUT_TOKENS = 2400
+# 6-bullet JSON emits bullets + a verbose echoed selected_fact_plan (skills_foregrounded +
+# targeting_emphasis per bullet) + claim_ledger + metadata ~= 14-16k chars. The prior 2400/4096 caps
+# truncated mid-document -> unterminated JSON -> every SC path parsed=None -> empty selector pool ->
+# fallback_empty -> X3_BLOCK. Raised to 8000 so the full document parses cleanly on every SC path,
+# giving the Claude per-slot selector a complete candidate pool. Fixes the bullet-pool fallback_empty.
+UNIFY_MAX_OUTPUT_TOKENS = 8000
 TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description

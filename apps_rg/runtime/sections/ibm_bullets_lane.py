@@ -112,7 +112,11 @@ BULLET_ID_ALIASES = {
     **{f"B{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
     **{f"b{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
 }
-IBM_MAX_OUTPUT_TOKENS = 2200
+# 5-bullet JSON (bullets + verbose echoed selected_fact_plan + claim_ledger + metadata) overruns the
+# prior 2200/4096 caps -> truncated/unterminated JSON -> every SC path parsed=None -> empty selector
+# pool -> fallback_empty -> X3_BLOCK. Raised to 8000 so the full document parses cleanly on every SC
+# path. See unify_bullets_lane for the matching fix.
+IBM_MAX_OUTPUT_TOKENS = 8000
 
 
 def _find_repo_root() -> Path:
