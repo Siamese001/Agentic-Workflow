@@ -93,8 +93,12 @@ def test_migration_scan_disabled_on_product_fail_closed(
 
 
 def test_phase1_dispatch_hard_failed_detects_fault() -> None:
+    # Only transport-level ``fault`` strings cascade-abort phase1. Per Author-Gate decision
+    # dec_19e6e344d5db19589 (E2E-05 lane isolation), an individual lane X3_BLOCK
+    # (``exit_status=='error'``) does NOT poison independent downstream lanes, so it must
+    # NOT report a hard phase1 failure.
     assert phase1_dispatch_hard_failed({"fault": "upstream_not_finalized"}) is True
-    assert phase1_dispatch_hard_failed({"exit_status": "error"}) is True
+    assert phase1_dispatch_hard_failed({"exit_status": "error"}) is False
     assert phase1_dispatch_hard_failed({"exit_status": "success"}) is False
 
 
@@ -122,8 +126,10 @@ def test_lane_run_dir_meets_product_bar_pass(
         json.dumps({"x3_code": "X3_ALLOW"}),
         encoding="utf-8",
     )
+    # external_claude is the sole accepted product provider after Qwen removal (PR #256);
+    # ACCEPTED_REAL_LLM_PROVIDER_PROFILES == {"external_claude"}.
     (run_dir / "provider_request.json").write_text(
-        json.dumps({"provider_requested": "qwen_vllm"}),
+        json.dumps({"provider_requested": "external_claude"}),
         encoding="utf-8",
     )
     ok, reason = lane_run_dir_meets_product_bar(run_dir)
