@@ -73,10 +73,21 @@ def main() -> int:
         path = row.get("path", "?")
         status = row.get("declared_status", "Not Started")
         captured = row.get("captured_at", "?")
-        print(
-            f"PLAN_REGISTRATION_PENDING: slug={slug} path={path} "
-            f"status={status} captured={captured}"
-        )
+        ai_summary = row.get("ai_summary") or ""
+        content_digest = row.get("content_digest") or ""
+        # W3: emit ai_summary + content_digest so Claude Code can create a complete
+        # Notion row (not a metadata stub) and detect later re-syncs.
+        parts = [
+            f"slug={slug}",
+            f"path={path}",
+            f"status={status}",
+            f"captured={captured}",
+        ]
+        if ai_summary:
+            parts.append(f'ai_summary="{ai_summary}"')
+        if content_digest:
+            parts.append(f"content_digest={content_digest}")
+        print("PLAN_REGISTRATION_PENDING: " + " ".join(parts))
 
     if len(pending) > MAX_LINES:
         print(

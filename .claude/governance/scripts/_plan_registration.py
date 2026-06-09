@@ -22,11 +22,13 @@ Row shape (queue)::
 
     {
       "slug": "my-plan-abc123",
-      "path": ".claude/plans/my-plan-abc123.md",
+      "path": "plans/my-plan-abc123.md",
       "declared_status": "Not Started",
       "captured_at": "2026-05-03T11:00:00Z",
       "registered": false,
-      "registered_at": null
+      "registered_at": null,
+      "content_digest": "sha256hex...",   # set by file-driven trigger (W2)
+      "ai_summary": "One-sentence summary."  # extracted from frontmatter (W2)
     }
 
 Cache shape::
@@ -49,6 +51,7 @@ Pure: no subprocess, no Notion API calls, no env reads. Specific
 exceptions only. Constitutional tie-in: §36 (new).
 """
 
+import hashlib
 import json
 import re
 import time
@@ -67,6 +70,18 @@ PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 NEW_PLANS_DIR = REPO_ROOT / "plans"
 PLAN_DIRS = [NEW_PLANS_DIR, PLANS_DIR]
 
+
+def canonical_plans_dir(project_dir: str | Path | None = None) -> Path:
+    """The canonical plans SSOT — the primary checkout's ``plans/`` folder.
+
+    Plans MUST always be written here (``C:\\Git\\Agentic-Workflow-FRESH\\plans``), never a per-chat
+    worktree copy (plan ``plan-ssot-notion-pipeline-d2f7a1`` W1). ``project_dir`` overrides the base —
+    callers may pass ``$CLAUDE_PROJECT_DIR`` to force the primary checkout even when invoked from a
+    worktree; defaults to this module's repo root (the primary checkout in the live-hook context).
+    Pure: no env reads here — the caller supplies ``project_dir`` to keep this module side-effect free.
+    """
+    return (Path(project_dir) / "plans") if project_dir else NEW_PLANS_DIR
+
 # Slug pattern: lowercase-slug-with-dashes-<6hex>
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*-[0-9a-f]{6}$")
 # Plan filename shape
@@ -74,6 +89,61 @@ PLAN_FILE_RE = re.compile(r"^(?P<slug>[a-z0-9][a-z0-9-]*-[0-9a-f]{6})\.md$")
 
 # Cache TTL (seconds). Cache considered fresh when fetched within this window.
 CACHE_TTL_SECONDS = 3600  # 1 hour
+
+
+# ---------------------------------------------------------------------------
+# Plan-file metadata helpers (W2 plan-ssot-notion-pipeline-d2f7a1)
+# ---------------------------------------------------------------------------
+
+
+def _extract_ai_summary(content: str) -> str | None:
+    """Extract ``ai_summary`` value from YAML frontmatter.  Returns None when absent."""
+    if not content.strip().startswith("---"):
+        return None
+    lines = content.splitlines()
+    end_fm = -1
+    for i, line in enumerate(lines[1:], start=1):
+        if line.strip() == "---":
+            end_fm = i
+            break
+    if end_fm < 0:
+        return None
+    _ai_re = re.compile(r"^ai_summary\s*:\s*(.*)")
+    for line in lines[1:end_fm]:
+        m = _ai_re.match(line)
+        if m:
+            val = m.group(1).strip()
+            if val.startswith('"') and val.endswith('"'):
+                val = val[1:-1]
+            elif val.startswith("'") and val.endswith("'"):
+                val = val[1:-1]
+            return val.strip() or None
+    return None
+
+
+def has_valid_frontmatter(content: str) -> bool:
+    """True when content has a properly closed YAML frontmatter block (``---``…``---``)."""
+    if not content.strip().startswith("---"):
+        return False
+    lines = content.splitlines()
+    for line in lines[1:]:
+        if line.strip() == "---":
+            return True
+    return False
+
+
+def extract_plan_metadata(content: str) -> dict[str, str | None]:
+    """Compute ``content_digest`` (sha256 hex) and extract ``ai_summary`` from frontmatter.
+
+    Used by the file-driven registration trigger (W2).  Never raises; fields are None
+    when not extractable.
+
+    Returns dict with keys: ``content_digest``, ``ai_summary``.
+    """
+    return {
+        "content_digest": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+        "ai_summary": _extract_ai_summary(content),
+    }
 
 
 @dataclass(frozen=True)
@@ -172,12 +242,23 @@ def _write_queue(rows: list[dict[str, Any]]) -> None:
     tmp.replace(QUEUE_PATH)
 
 
-def enqueue_plan(slug: str, path: str, declared_status: str = "Not Started") -> bool:
-    """
-    Idempotently enqueue a PLAN_CREATED capture.
+def enqueue_plan(
+    slug: str,
+    path: str,
+    declared_status: str = "Not Started",
+    *,
+    content_digest: str | None = None,
+    ai_summary: str | None = None,
+) -> bool:
+    """Idempotently enqueue a plan for Notion registration.
 
     Returns True if a new row was appended, False if the slug was already
     queued (regardless of its registered flag).
+
+    ``content_digest`` and ``ai_summary`` are populated by the file-driven trigger
+    (W2 plan-ssot-notion-pipeline-d2f7a1) so the Notion row is created complete.
+    Callers that supply no digest (e.g. legacy PLAN_CREATED: marker path) leave the
+    fields None; the row is created as before, with content sync deferred to W3.
     """
     if not slug or not SLUG_RE.match(slug):
         raise ValueError(f"invalid slug: {slug!r}")
@@ -191,6 +272,8 @@ def enqueue_plan(slug: str, path: str, declared_status: str = "Not Started") -> 
         "captured_at": _now_iso(),
         "registered": False,
         "registered_at": None,
+        "content_digest": content_digest,
+        "ai_summary": ai_summary,
     })
     _write_queue(rows)
     return True
@@ -208,6 +291,34 @@ def mark_registered(slug: str) -> bool:
     if changed:
         _write_queue(rows)
     return changed
+
+
+def update_plan_metadata(
+    slug: str,
+    *,
+    content_digest: str | None = None,
+    ai_summary: str | None = None,
+) -> bool:
+    """Update ``content_digest`` and/or ``ai_summary`` for an already-queued slug.
+
+    Used by the W3 re-sync trigger: when a plan file is edited after initial
+    enqueue (or registration), the new digest and ai_summary replace the stored
+    values so the drift gate can detect content-level drift.
+
+    Returns True if a row was updated, False if the slug is not in the queue.
+    """
+    rows = _read_queue()
+    updated = False
+    for r in rows:
+        if r.get("slug") == slug:
+            if content_digest is not None:
+                r["content_digest"] = content_digest
+            if ai_summary is not None:
+                r["ai_summary"] = ai_summary
+            updated = True
+    if updated:
+        _write_queue(rows)
+    return updated
 
 
 def pending_registrations() -> list[dict[str, Any]]:

@@ -1,5 +1,6 @@
 ---
 plan_id: <descriptive-name>-<6hex>
+plan_format: v2    # REQUIRED — opts into the enforced standard (Wave+Phase summary at top, canonical columns, ascending wave order). Do NOT remove; removing it downgrades the plan to legacy/advisory.
 plan_type: refactor    # refactor | governance | audit | doc | infra | tracker | platform_core_change
 touches_agentic_core: false   # true → plan_type MUST be platform_core_change + core_addition_author_gate_required=true
 touches_governance_ci: false   # true when modifying CI gates, schemas, or enforcement rules
@@ -44,8 +45,10 @@ LAST_UPDATED: 2026-01-01
 ## Status Tables
 
 > **Placement (required):** This section MUST appear near the top of the plan — after
-> Context (SCQA) and **before** the first `## Wave N` detail section. CI gate
-> PLAN-WAVE-TOP and `after_file_edit` enforce consolidated wave summary at top.
+> Context (SCQA) and **before** the first `## Wave N` detail section. It MUST contain BOTH a
+> `### Wave Progress` table (canonical columns) AND a `### Phase Progress` table. CI gate
+> PLAN-WAVE-TOP and `after_file_edit` enforce both-at-top + ascending wave order for
+> `plan_format: v2` plans (blocking); legacy plans without the marker stay advisory.
 > Canonical wave columns: Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 
 > These tables are auto-updated by `post_agent_wave_lifecycle_capture.py` when
@@ -56,13 +59,21 @@ LAST_UPDATED: 2026-01-01
 
 ### Wave Progress
 
-| Wave | Focus | Status | Tests Added | Files Changed |
-|------|-------|--------|-------------|---------------|
-| W1 | [Wave 1 scope] | 🔲 TODO | — | — |
-| W2 | [Wave 2 scope] | 🔲 TODO | — | — |
-| W3 | [Wave 3 scope] | 🔲 TODO | — | — |
+> **Execution order (required):** waves are listed in the order they will run (W1 → W2 → W3 …).
+> A wave may only depend on a **lower-numbered** wave — if B must run before A, B gets the lower
+> number. Do not write "W3 before W1". Enforced for `plan_format: v2` by gate PLAN-WAVE-TOP
+> (WS-ORDER-1/2/3). Canonical columns below are required (WS-TOP-7).
+
+| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
+|------|-----------|-------|-------------|-------------|--------|------------------|
+| W1 | W1.1, W1.2 | [Wave 1 scope] | ~[N]K | [assumptions] | 🔲 TODO | [done when …] |
+| W2 | W2.1, W2.2 | [Wave 2 scope] | ~[N]K | [assumptions] | 🔲 TODO | [done when …] |
+| W3 | W3.1, W3.2 | [Wave 3 scope] | ~[N]K | [assumptions] | 🔲 TODO | [done when …] |
 
 ### Phase Progress
+
+> Required at top (WS-PHASE-1/2/3): a phase summary table with at minimum Phase and Status columns,
+> before the first `## Wave N` detail section.
 
 | Phase | Title | Status |
 |-------|-------|--------|
