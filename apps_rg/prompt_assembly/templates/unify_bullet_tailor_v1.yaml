@@ -100,7 +100,7 @@ output_contract:
 
 rewrite_rules:
   pool_selection:
-    qwen_paths: 15
+    sc_paths: 4
     final_bullet_count: 6
     selector: "claude_pool_top_n_pass"
     min_selection_score: 0.72

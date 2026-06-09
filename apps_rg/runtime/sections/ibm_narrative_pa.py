@@ -15,6 +15,7 @@ import yaml
 from apps_rg.prompt_assembly.contracts import EvidenceSource, PromptAssemblyInput
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
 from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_section_compiled_with_proof_pool
+from apps_rg.runtime.sections.section_product_shape_ssot import NARRATIVE_MAX_WORDS
 from apps_rg.runtime.dispatch.unify_ibm_pa_common import (
     NARRATIVE_R0,
     jd_non_proof_block,
@@ -173,7 +174,7 @@ def _i0_from_spec(runtime_payload: dict[str, Any]) -> str:
         "- Required JSON keys: narrative_sentence, selected_fact_plan, claim_ledger, jd_alignment, "
         "gap_notes, change_log, self_check.\n"
         "- narrative_sentence: exactly one sentence; third person or implied subject; include the employer anchor "
-        "\"IBM\" once; no em dash; no inline source tags; preferred 34–48 words, hard max 58 words.\n"
+        f"\"IBM\" once; no em dash; no inline source tags; preferred 34–48 words, hard max {NARRATIVE_MAX_WORDS} words.\n"
         "- claim_ledger: rows {claim_text, source_fact_ids}; claim_text non-empty after trim; "
         "source_fact_ids non-empty, ALLOWED_SOURCE_FACT_IDS only; each material theme needs matching bul_ibm_* "
         "(see claim_ledger_coverage_contract in spec).\n"
@@ -203,7 +204,7 @@ def _i0_from_spec(runtime_payload: dict[str, Any]) -> str:
 def _u0(companion_nonempty: bool) -> str:
     closing = (
         "Write exactly one narrative_sentence: polished SVP-level executive prose, third person or implied subject, "
-        "IBM as employer anchor once, one period, preferred 34–48 words and hard max 58 words. "
+        f"IBM as employer anchor once, one period, preferred 34–48 words and hard max {NARRATIVE_MAX_WORDS} words. "
         "When ACCEPTED_IBM_BULLETS companion lines include the standard IBM KPI set ($15M, 99.9%, 30%, 25%, 50%), "
         "do not restate those digits or percentages in narrative_sentence — use conceptual language only."
     )

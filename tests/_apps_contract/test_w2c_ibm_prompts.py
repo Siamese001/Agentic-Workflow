@@ -59,11 +59,11 @@ class TestStop7IBMBulletPrompt:
         assert "BULLET_COUNT_INVALID" in content
     
     def test_pool_selection_contract_documented(self):
-        """IBM employment bullets use Qwen pool + Claude top-5 selection (no intensity taxonomy)."""
+        """IBM employment bullets use SC pool + Claude top-5 selection (no intensity taxonomy)."""
         template_path = APPS_RG_ROOT / "prompt_assembly" / "templates" / "ibm_bullet_tailor_v1.yaml"
         content = template_path.read_text(encoding="utf-8")
         assert "pool_selection:" in content
-        assert "qwen_paths: 12" in content or "qwen_paths:12" in content
+        assert "sc_paths: 4" in content or "sc_paths:4" in content
         assert "final_bullet_count: 5" in content or "final_bullet_count:5" in content
         assert "rewrite_distribution" not in content
         assert "rewrite_intensity" not in content

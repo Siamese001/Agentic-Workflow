@@ -64,6 +64,7 @@ from apps_rg.runtime.reasoning.employment_bullet_pool import (
     build_employment_targeting_context,
     employment_pool_x1d_judge_rows,
     is_employment_pool_generation,
+    sc_path_count_for_lane,
 )
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.runtime_proof_layout import finalize_runtime_proof_run, prepare_runtime_proof_run_dir
@@ -211,7 +212,7 @@ def build_runtime_payload(
         "writable_context_scope": "unify_bullets_only",
         "full_resume_writable": False,
         "protected_bullet_default": PROTECTED_BULLET_DEFAULT,
-        "pool_path_count": 15,
+        "pool_path_count": sc_path_count_for_lane("unify_bullets"),
         "selection_model": "qwen_pool_claude_top_n_pass",
     }
 

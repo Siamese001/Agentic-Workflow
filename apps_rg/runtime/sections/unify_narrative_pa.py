@@ -15,6 +15,7 @@ from apps_rg.prompt_assembly.e0_examples import resolve_e0_for_section
 from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPrompt, compile_section_prompt
 from apps_rg.runtime.dispatch.input_authority_prompt_block import finalize_section_compiled_with_proof_pool
 from apps_rg.runtime.sections.executive_summary_pa import format_selected_facts_for_c0
+from apps_rg.runtime.sections.section_product_shape_ssot import NARRATIVE_MAX_CHARS, NARRATIVE_MAX_WORDS
 from apps_rg.runtime.dispatch.unify_ibm_pa_common import (
     NARRATIVE_R0,
     jd_non_proof_block,
@@ -105,7 +106,7 @@ def _legacy_i0(runtime_payload: dict[str, Any]) -> str:
         "platform services\". Prefer capstone synonyms: industrialized / operating model / commercial engine / "
         "productized practice / regulated-enterprise adoption / IP-led services, with distinct word order.\n\n"
         "# Shape\n"
-        "One sentence; 34–48 words preferred; max 58 words / 360 chars; no bullets; third person; no em dash; no inline tags.\n"
+        f"One sentence; 34–48 words preferred; max {NARRATIVE_MAX_WORDS} words / {NARRATIVE_MAX_CHARS} chars; no bullets; third person; no em dash; no inline tags.\n"
         "Companion bullets: anti-repetition only, not proof. Default zero metrics; at most one cluster if C0-supported and non-redundant.\n"
         "Forbidden labels: Enterprise Agentic AI Platform Architecture; Dependency Graph Accelerator; Governed Runtime Reliability; "
         "Production Adoption; Distributed Ecosystem Engineering; Platform Commercialization and Engineering Leadership.\n"
@@ -132,7 +133,7 @@ def _u0(companion_nonempty: bool, dependency_status: str) -> str:
     closing = (
         "Write one narrative_sentence only: north-star role capstone for Unify Consulting (roadmap + architecture + "
         "commercialization + reusable IP + enterprise deployment), third person, one period, "
-        "preferred 34–48 words, hard max 58 words and 360 characters, no while also stack."
+        f"preferred 34–48 words, hard max {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters, no while also stack."
     )
     if dependency_status != "ACCEPTED_FINALIZED":
         return (

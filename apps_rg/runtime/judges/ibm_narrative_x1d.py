@@ -7,11 +7,12 @@ from typing import Any
 
 from apps_rg.runtime.judges.executive_summary_x1d import JudgeOutput
 from apps_rg.runtime.judges.policy_backed_section_judges import run_policy_section_judges
+from apps_rg.runtime.sections.section_product_shape_ssot import NARRATIVE_MAX_CHARS, NARRATIVE_MAX_WORDS
 
 JUDGE_RUBRIC_VERSION = "ibm_narrative_x1d_v3"
 JUDGE_RUBRIC_REF = "apps_rg/runtime/judges/ibm_narrative_x1d.py#IBM_NARRATIVE_GRADE_ONLY_RUBRIC"
 
-NARRATIVE_RUBRIC = """
+NARRATIVE_RUBRIC = f"""
 You are evaluating one IBM employment narrative sentence (complement to five IBM bullets).
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 
@@ -29,7 +30,7 @@ Rubric dimensions:
 8. role_fit_targeting: JD/briefing shape emphasis only — never proof.
 9. why_role_mattered: sentence explains IBM foundation mandate (cloud, data, lineage, observability, regulated context) — companion bullets carry KPI proof.
 10. no_meta_disclaimer: display text must not contain "without claiming/asserting" or similar editorial boundary language.
-11. executive_brevity: exactly one sentence; product shape max 58 words and 360 characters; JD/briefing targeting only (never proof).
+11. executive_brevity: exactly one sentence; product shape max {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters; JD/briefing targeting only (never proof).
 
 Decisive failure triggers:
 - first person or wrong-company proof framing
