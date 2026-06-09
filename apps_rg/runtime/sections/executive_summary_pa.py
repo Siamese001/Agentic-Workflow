@@ -529,8 +529,8 @@ def format_graph_only_quality_guardrails_block() -> str:
         "<graph_only_generation_quality>\n"
         "Graph path: metrics only from fact lines; no invented revenue/margin/%. "
         "No cross-fact causality unless one fact states it; graph edges are not proof. "
-        "Claim ledger must cover every material sentence (rows may support multiple sentences); "
-        "target 3-6 rows — do not default to one row per sentence; "
+        "Claim ledger: emit exactly one row per displayed sentence (one-to-one; 6 rows for the S1-S6 summary), "
+        "each tracing to an allowed fact -- enforced by x2_claim_ledger_row_count_matches_sentence_count; "
         "credentials woven or omitted (see I0 credential_policy_v1).\n"
         "</graph_only_generation_quality>"
     )

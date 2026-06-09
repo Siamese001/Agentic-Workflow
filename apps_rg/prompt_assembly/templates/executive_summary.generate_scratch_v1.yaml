@@ -104,7 +104,7 @@ slot_bodies:
     **Connectives:** At most **two** stock openers (`Building on` / `Through that` / `Complementing` / `With that governance` / `Against that` / `From that`) in S2-S5; vary the noun phrase after each bridge (avoid repeating "platform footprint" + "platform commercialization" in one sentence). On SVP strategy lanes with ≥3 brushstrokes, S4 MUST use a non-stock opener (e.g. `In parallel,` / `That operating foundation also,`) — S2 and S3 are expected to consume both available stock-bridge slots.
     **Meta-filler ban:** no "governance discipline", "active-voice delivery", "selected facts" scaffolding.
     **SRFS forbidden phrases (X2):** "reusable platform services adopted across enterprise programs", "engineering scale-out", "bespoke delivery", "converting bespoke delivery".
-    U0 `narrative_arc_weights` = thematic emphasis only (not one fact per sentence index). claim_ledger: 3-6 thesis-supporting rows when allowlist >=6 facts.
+    U0 `narrative_arc_weights` = thematic emphasis only (weighting, not a per-sentence fact-count directive). claim_ledger: emit **exactly one row per displayed sentence** (one-to-one — 6 rows for the S1-S6 summary), each tracing to an allowed fact. Enforced by `x2_claim_ledger_row_count_matches_sentence_count`.
     </judge_alignment_contract>
 
     <composition_heuristics>
