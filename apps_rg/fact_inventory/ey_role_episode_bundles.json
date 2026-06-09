@@ -1,0 +1,99 @@
+{
+  "schema": "ey_role_episode_bundles_v1",
+  "generated_at": "2026-06-09",
+  "generated_by": "g1_graph_source_ey_insurtech (plans apps-rg-e2e-readiness-e7c4f9 / graph-source-ey-insurtech-bullets-c5f2a9)",
+  "employer": "Ernst & Young",
+  "employer_node_id": "employment_exp_ey_001",
+  "time_window": "2009-10 to 2014-03",
+  "invariants": {
+    "archive_prose_excluded": true,
+    "base_resume_hydration_excluded": true,
+    "new_archive_metrics_not_introduced_without_reconciliation": true,
+    "internal_only_signals_not_external_claims": true,
+    "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+    "config_enablement_condition": "ey_bullets and ey_narrative",
+    "phase_ordinal": 2,
+    "epoch_node_id": "epoch_enterprise_risk_governance"
+  },
+  "approved_metric_outcome_ids": {
+    "metric_ey_15m_regulatory_program": "$15M regulatory analytics modernization program (canonical bullet-level value, linked to bul_ey_001; supersedes the $18M base role_narrative figure)",
+    "metric_ey_40pct_remediation_cost_reduction": "40% reduction in audit remediation costs (canonical, linked to bul_ey_002)",
+    "metric_ey_12pct_capital_reduction": "12% reduction in redundant capital holdings under Solvency II / AG43 (canonical, linked to bul_ey_003)"
+  },
+  "conditional_metric_outcome_ids": {},
+  "bundles": [
+    {
+      "role_episode_bundle_id": "reb_ey_regulatory_analytics_modernization",
+      "employer": "Ernst & Young",
+      "title": "Principal",
+      "time_window": "2009-10 to 2014-03",
+      "employer_node_id": "employment_exp_ey_001",
+      "bundle_theme": "Regulatory analytics modernization & risk lineage",
+      "executive_scope_signals": [
+        "Directed a $15M regulatory analytics modernization program across audit and regulatory reporting for global banks",
+        "Transformed cost-center audit functions into value-added predictive risk capabilities"
+      ],
+      "architecture_scope_signals": [
+        "Data lineage and controls modernization across regulatory reporting pipelines",
+        "Predictive risk modeling integrated into audit and compliance workflows"
+      ],
+      "graph_skill_node_ids": [
+        "skill_sr_basel_ccar_lineage_regulatory",
+        "skill_sr_enterprise_portfolio_data_governance",
+        "skill_sr_banking_ai_governance_controls"
+      ],
+      "linked_source_fact_ids": ["bul_ey_001"],
+      "linked_metric_outcome_ids": ["metric_ey_15m_regulatory_program"],
+      "operating_context": "Big-four advisory regulatory analytics modernization for global banks; Phase-2 Enterprise Risk & Governance.",
+      "bullet_intent": "Frame as regulatory analytics modernization leadership; assert $15M only via approved metric outcome id; lineage / controls / predictive-risk as graph-backed terms."
+    },
+    {
+      "role_episode_bundle_id": "reb_ey_predictive_risk_commercial_turnaround",
+      "employer": "Ernst & Young",
+      "title": "Principal",
+      "time_window": "2009-10 to 2014-03",
+      "employer_node_id": "employment_exp_ey_001",
+      "bundle_theme": "Predictive risk modeling & commercial turnaround",
+      "executive_scope_signals": [
+        "Achieved a 40% reduction in audit remediation costs via automated data lineage and predictive risk modeling",
+        "Turned regulatory analytics from a cost center into a measurable commercial outcome"
+      ],
+      "architecture_scope_signals": [
+        "Automated data lineage across regulatory analytics estates",
+        "Predictive risk modeling applied to remediation cost reduction"
+      ],
+      "graph_skill_node_ids": [
+        "skill_sr_banking_ai_governance_controls",
+        "skill_sr_enterprise_portfolio_data_governance"
+      ],
+      "linked_source_fact_ids": ["bul_ey_002"],
+      "linked_metric_outcome_ids": ["metric_ey_40pct_remediation_cost_reduction"],
+      "operating_context": "Regulatory analytics commercial turnaround for global banks; Phase-2 Enterprise Risk & Governance.",
+      "bullet_intent": "Frame as predictive-risk-driven commercial turnaround; assert 40% only via approved metric outcome id."
+    },
+    {
+      "role_episode_bundle_id": "reb_ey_capital_optimization_regulatory",
+      "employer": "Ernst & Young",
+      "title": "Principal",
+      "time_window": "2009-10 to 2014-03",
+      "employer_node_id": "employment_exp_ey_001",
+      "bundle_theme": "Regulatory capital optimization (Solvency II / AG43)",
+      "executive_scope_signals": [
+        "Optimized capital reserve requirements under Solvency II and AG43 for insurance clients",
+        "Reduced redundant capital holdings by 12% while strengthening regulatory controls"
+      ],
+      "architecture_scope_signals": [
+        "Capital reserve optimization modeling under Solvency II / AG43",
+        "Regulatory controls and lineage across capital reporting"
+      ],
+      "graph_skill_node_ids": [
+        "skill_sr_regulated_financial_institutions_fluency",
+        "skill_sr_basel_ccar_lineage_regulatory"
+      ],
+      "linked_source_fact_ids": ["bul_ey_003"],
+      "linked_metric_outcome_ids": ["metric_ey_12pct_capital_reduction"],
+      "operating_context": "Insurance capital optimization under Solvency II / AG43; Phase-2 Enterprise Risk & Governance.",
+      "bullet_intent": "Frame as regulatory capital optimization; assert 12% only via approved metric outcome id; Solvency II / AG43 as graph-backed regulatory terms."
+    }
+  ]
+}

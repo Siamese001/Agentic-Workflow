@@ -1,0 +1,99 @@
+{
+  "schema": "insurtech_role_episode_bundles_v1",
+  "generated_at": "2026-06-09",
+  "generated_by": "g1_graph_source_ey_insurtech (plans apps-rg-e2e-readiness-e7c4f9 / graph-source-ey-insurtech-bullets-c5f2a9)",
+  "employer": "InsurTech Cloud Solutions",
+  "employer_node_id": "employment_exp_insurtech_001",
+  "time_window": "2014-04 to 2017-03",
+  "invariants": {
+    "archive_prose_excluded": true,
+    "base_resume_hydration_excluded": true,
+    "new_archive_metrics_not_introduced_without_reconciliation": true,
+    "internal_only_signals_not_external_claims": true,
+    "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+    "config_enablement_condition": "insurtech_bullets and insurtech_narrative",
+    "phase_ordinal": 3,
+    "epoch_node_id": "epoch_cloud_data_platform_engineering"
+  },
+  "approved_metric_outcome_ids": {
+    "metric_insurtech_9999_uptime": "99.99% uptime for re-architected underwriting/operational systems (canonical, linked to bul_insurtech_003)"
+  },
+  "conditional_metric_outcome_ids": {
+    "metric_insurtech_tco_reduction": "Total-cost-of-ownership reduction on legacy-to-cloud modernization (bul_insurtech_001) — percentage not asserted until reconciled against source"
+  },
+  "bundles": [
+    {
+      "role_episode_bundle_id": "reb_insurtech_legacy_cloud_modernization",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "Legacy-to-cloud platform modernization",
+      "executive_scope_signals": [
+        "Led end-to-end modernization of monolithic policy administration systems into AWS-based architectures",
+        "Founded and led a cloud-native engineering firm modernizing middle-market insurer technology stacks"
+      ],
+      "architecture_scope_signals": [
+        "Monolith-to-AWS migration of policy administration systems",
+        "Cloud-native data platform and microservices integration"
+      ],
+      "graph_skill_node_ids": [
+        "skill_sr_insurtech_legacy_cloud_modernization",
+        "skill_sr_cloud_data_platform_engineering",
+        "skill_sr_microservices_integration_platform"
+      ],
+      "linked_source_fact_ids": ["bul_insurtech_001"],
+      "linked_metric_outcome_ids": [],
+      "operating_context": "Founder/CTO of a cloud-native engineering firm modernizing middle-market insurers; Phase-3 Cloud & Data Platform Engineering.",
+      "bullet_intent": "Frame as legacy-to-cloud platform modernization; do not assert a TCO percentage (conditional metric) until reconciled; cloud/microservices as graph-backed terms."
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_governance_security_controls",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "Cloud governance & security controls for regulated insurers",
+      "executive_scope_signals": [
+        "Designed SOC 2-aligned cloud control frameworks enabling regulated insurers to adopt modern analytics and ML",
+        "Established security and governance posture for regulated insurer cloud adoption"
+      ],
+      "architecture_scope_signals": [
+        "SOC 2-aligned cloud control framework design",
+        "Metadata, audit-trail, and access governance for regulated workloads"
+      ],
+      "graph_skill_node_ids": [
+        "skill_sr_insurtech_regulated_insurer_controls",
+        "skill_ibm_metadata_audit_rbac"
+      ],
+      "linked_source_fact_ids": ["bul_insurtech_002"],
+      "linked_metric_outcome_ids": [],
+      "operating_context": "Cloud governance/security enablement for regulated insurers; Phase-3 Cloud & Data Platform Engineering.",
+      "bullet_intent": "Frame as SOC 2-aligned cloud governance/security; controls/governance as graph-backed terms; no metric asserted."
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_operational_resilience",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "Operational resilience & high availability",
+      "executive_scope_signals": [
+        "Re-architected underwriting and operational systems for high availability, achieving 99.99% uptime",
+        "Enabled real-time ingestion supporting operational decisioning"
+      ],
+      "architecture_scope_signals": [
+        "High-availability re-architecture of underwriting/operational systems",
+        "Real-time ingestion and resilient data flow"
+      ],
+      "graph_skill_node_ids": [
+        "skill_sr_insurance_systems_resilience_internal",
+        "skill_sr_insurtech_cto_it_enablement"
+      ],
+      "linked_source_fact_ids": ["bul_insurtech_003"],
+      "linked_metric_outcome_ids": ["metric_insurtech_9999_uptime"],
+      "operating_context": "Operational resilience for middle-market insurer systems; Phase-3 Cloud & Data Platform Engineering.",
+      "bullet_intent": "Frame as operational resilience / high availability; assert 99.99% only via approved metric outcome id."
+    }
+  ]
+}

@@ -27,11 +27,20 @@ EMPLOYMENT_BULLET_LANES: Final[frozenset[str]] = frozenset(BULLET_LANES)
 EMPLOYMENT_BULLET_JUDGE_PROVIDERS: Final[tuple[str, ...]] = ("anthropic_claude",)
 
 # Variance-class alignment (2026-06): bullet lanes generate over a FIXED slot count
-# (unify=6, ibm=5). Generation variance is handled by the Claude pool selector +
-# min_selection_score floor + employment X2 metric/anchor gates, NOT by brute-force
-# sampling. SC lowered 15/12 -> 4 to match section_reasoning_intensity.py profile
-# (the prior variance-class redesign that had not reached the execution path).
-SC_PATH_COUNT_BY_LANE: Final[dict[str, int]] = {lane: DEFAULT_ACTIVE_SC_PATHS for lane in BULLET_LANES}
+# (unify=6, ibm=5, insurtech=3, ey=3). Generation variance is handled by the Claude pool
+# selector + min_selection_score floor + employment X2 metric/anchor gates, NOT by
+# brute-force sampling. SC count is per-lane by slot breadth: the 3-slot graph lanes
+# (insurtech/ey) run 2 SC paths (operator decision, plan apps-rg-e2e-readiness-e7c4f9 G1);
+# the wider 5-6-slot lanes (unify/ibm) keep 4 so the per-slot selector has enough candidate
+# diversity to cover every slot above the score floor. EY/InsurTech join the SC-pool path
+# here on equal footing with Unify/IBM (same engine + Claude per-slot selector judge).
+EMPLOYMENT_BULLET_SC_PATHS: Final[int] = 2
+SC_PATH_COUNT_BY_LANE: Final[dict[str, int]] = {
+    "unify_bullets": DEFAULT_ACTIVE_SC_PATHS,
+    "ibm_bullets": DEFAULT_ACTIVE_SC_PATHS,
+    "insurtech_bullets": EMPLOYMENT_BULLET_SC_PATHS,
+    "ey_bullets": EMPLOYMENT_BULLET_SC_PATHS,
+}
 
 REGEN_EXTRA_PATHS_BY_LANE: Final[dict[str, int]] = {
     lane: 3 for lane in BULLET_LANES
@@ -389,6 +398,7 @@ __all__ = [
     "DEFAULT_MIN_SELECTION_SCORE",
     "EMPLOYMENT_BULLET_JUDGE_PROVIDERS",
     "EMPLOYMENT_BULLET_LANES",
+    "EMPLOYMENT_BULLET_SC_PATHS",
     "EmploymentSelectionGate",
     "competencies_pool_x1d_judge_rows",
     "employment_pool_x1d_judge_rows",

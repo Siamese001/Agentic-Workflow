@@ -49,6 +49,16 @@ from apps_rg.runtime.spine.c0_fec_compose import (
 from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
     write_x2_source_fact_pool_receipt,
 )
+from apps_rg.runtime.reasoning.bullet_lane_generation import (
+    generate_bullet_lane_with_sc_and_claude,
+)
+from apps_rg.runtime.reasoning.employment_bullet_pool import (
+    REQUIRED_BULLET_IDS,
+    build_employment_targeting_context,
+    employment_pool_x1d_judge_rows,
+    is_employment_bullet_lane,
+    is_employment_pool_generation,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAX_OUTPUT_TOKENS = 900
@@ -286,6 +296,128 @@ def _parse_json_object(raw: str) -> tuple[dict[str, Any] | None, str]:
     return loaded, ""
 
 
+def _load_role_episode_bundles(cfg: RoleEpisodeLaneConfig) -> dict[str, Any]:
+    """Load the graph-anchored role-episode bundles for this lane's employer.
+
+    Mirrors the unify/ibm registry pattern: ``apps_rg/fact_inventory/<role_key>_role_episode_bundles.json``.
+    Fail-soft — bundle absence degrades to the base allowed-facts prompt, never raises.
+    """
+    path = REPO_ROOT / "apps_rg" / "fact_inventory" / f"{cfg.role_key}_role_episode_bundles.json"
+    if not path.is_file():
+        return {}
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    return loaded if isinstance(loaded, dict) else {}
+
+
+def _bundle_prompt_lines(runtime_payload: dict[str, Any]) -> list[str]:
+    """Graph-episode framing lines for the bullet prompt (targeting/framing, never proof).
+
+    Proof still comes only from the allowed source_fact_ids; these lines tell the generator
+    which graph role-episode to anchor each bullet to, mirroring unify/ibm's bundle-aware PA.
+    """
+    bundles = runtime_payload.get("role_episode_bundles") or []
+    if not bundles:
+        return []
+    approved = runtime_payload.get("approved_metric_outcome_ids") or {}
+    lines = [
+        "",
+        "Graph role-episode bundles — frame each bullet around ONE bundle below "
+        "(proof still comes ONLY from the allowed source_fact_ids above):",
+    ]
+    for bundle in bundles:
+        if not isinstance(bundle, dict):
+            continue
+        theme = str(bundle.get("bundle_theme") or "").strip()
+        intent = str(bundle.get("bullet_intent") or "").strip()
+        signals = [str(s).strip() for s in (bundle.get("executive_scope_signals") or []) if str(s).strip()]
+        skills = [str(s).strip() for s in (bundle.get("graph_skill_node_ids") or []) if str(s).strip()]
+        src = [str(s).strip() for s in (bundle.get("linked_source_fact_ids") or []) if str(s).strip()]
+        lines.append(
+            f"- {theme} [source_fact_ids: {', '.join(src) or 'none'}; "
+            f"graph_skills: {', '.join(skills) or 'none'}]"
+        )
+        if signals:
+            lines.append(f"    scope: {_compact_text(signals[0], max_chars=160)}")
+        if intent:
+            lines.append(f"    intent: {_compact_text(intent, max_chars=200)}")
+    if approved:
+        approved_compact = "; ".join(
+            f"{key}: {_compact_text(str(val), max_chars=90)}" for key, val in approved.items()
+        )
+        lines.append(f"Assert a metric ONLY via its approved outcome id — {approved_compact}")
+    return lines
+
+
+def _normalize_pool_parsed(
+    parsed: dict[str, Any] | None,
+    *,
+    cfg: RoleEpisodeLaneConfig,
+    allowed: list[str],
+) -> dict[str, Any]:
+    """Canonicalize a parsed SC-path / merged-selection payload for the pool selector + assembly."""
+    if not isinstance(parsed, dict):
+        return {}
+    out = dict(parsed)
+    bullets = _normalize_bullets(out, cfg=cfg, allowed=allowed)
+    out["bullets"] = bullets
+    out["claim_ledger"] = _claim_ledger_from_bullets(bullets)
+    out.setdefault("jd_alignment", {"targeting_only": True, "jd_used_as_proof": False})
+    return out
+
+
+def _generate_bullets_via_pool(
+    *,
+    sid: str,
+    cfg: RoleEpisodeLaneConfig,
+    args: Any,
+    runtime_payload: dict[str, Any],
+    prompt_text: str,
+    prompt_hash: str,
+    artifact_dir: Path,
+    run_id: str,
+    allowed_fact_ids: list[str],
+) -> tuple[ProviderResult | None, str, dict[str, Any] | None, str, dict[str, Any]]:
+    """Graph-anchored bullets via the shared SC-pool + Claude per-slot selector (Unify/IBM parity).
+
+    Returns the same tuple as ``generate_bullet_lane_with_sc_and_claude``:
+    (provider_result, raw_output, parsed, parse_error, generation_meta).
+    """
+    from apps_rg.runtime.sections.section_generation import build_section_request, tag_reasoning_lane
+
+    messages = [
+        {"role": "system", "content": "You are an apps_rg section generator. Emit compact JSON only."},
+        {"role": "user", "content": prompt_text},
+    ]
+    _req, provider_payload = build_section_request(
+        messages=messages,
+        prompt_hash=prompt_hash[:16],
+        input_payload_hash=_json_hash(runtime_payload),
+        temperature=float(args.temperature),
+        max_tokens=MAX_OUTPUT_TOKENS,
+        temperature_bounds=(0.0, 0.99),
+    )
+    provider_payload = tag_reasoning_lane(provider_payload, sid)
+    judge_mode = "mocked" if bool(getattr(args, "mock_judges", False)) else "blocked_if_unavailable"
+    return generate_bullet_lane_with_sc_and_claude(
+        section_lane=sid,
+        slot_kind="bullets",
+        provider_payload=provider_payload,
+        parse_model_json=_parse_json_object,
+        normalize_parsed=lambda p: _normalize_pool_parsed(p, cfg=cfg, allowed=allowed_fact_ids),
+        artifact_dir=artifact_dir,
+        run_id=run_id,
+        temperature_bounds=(0.0, 0.99),
+        base_temperature=float(args.temperature),
+        required_bullet_ids=REQUIRED_BULLET_IDS.get(sid),
+        targeting_context=build_employment_targeting_context(runtime_payload, section_lane=sid),
+        judge_mode=judge_mode,
+        provider_profile=str(args.provider),
+    )
+
+
 def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]) -> str:
     facts = _facts_from_plan(runtime_payload.get("selected_fact_plan") or {})
     fact_lines = [
@@ -300,11 +432,13 @@ def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]
         else "Return JSON with narrative_sentence, claim_ledger:[{claim_text, source_fact_ids}], "
         "jd_alignment:{targeting_only:true,jd_used_as_proof:false}. The narrative is exactly one sentence."
     )
+    bundle_lines = _bundle_prompt_lines(runtime_payload) if cfg.is_bullet_lane else []
     return "\n".join(
         [
             f"Section: {cfg.section_id}",
             "Use only source_fact_ids from the allowed facts below. Do not use JD or briefing as claim proof.",
             shape,
+            *bundle_lines,
             "Allowed facts:",
             *fact_lines,
         ]
@@ -375,6 +509,7 @@ def _x2_gates(
     l2: dict[str, Any],
     allowed: list[str],
     runtime_generation_status: str,
+    bundle_consumed: bool = False,
 ) -> list[dict[str, Any]]:
     claim_ledger = list(l2.get("claim_ledger") or [])
     cited: list[str] = []
@@ -422,6 +557,12 @@ def _x2_gates(
                     f"x2_{cfg.section_id}_bullet_no_embedded_newline",
                     all("\n" not in str(b.get("bullet_text") or "") for b in bullets if isinstance(b, dict)),
                     "bullet contains embedded newline",
+                ),
+                _x2_gate(
+                    f"x2_{cfg.section_id}_graph_role_episode_bundle_consumed",
+                    bool(bundle_consumed),
+                    "graph role-episode bundles not consumed (graph-sourcing required for this lane)",
+                    bool(bundle_consumed),
                 ),
             ]
         )
@@ -653,6 +794,21 @@ def run_role_episode_lane_execution(
             "proof_pool_metadata": dict(pool.proof_pool_metadata or {}),
         }
     )
+    if cfg.is_bullet_lane:
+        bundles_doc = _load_role_episode_bundles(cfg)
+        lane_bundles = bundles_doc.get("bundles") if isinstance(bundles_doc, dict) else None
+        if lane_bundles:
+            runtime_payload["role_episode_bundles"] = lane_bundles
+            runtime_payload["role_episode_bundle_ids"] = [
+                str(b.get("role_episode_bundle_id")) for b in lane_bundles if isinstance(b, dict)
+            ]
+            runtime_payload["approved_metric_outcome_ids"] = (
+                bundles_doc.get("approved_metric_outcome_ids") or {}
+            )
+            ppm = dict(runtime_payload.get("proof_pool_metadata") or {})
+            ppm["role_episode_bundle_consumption"] = True
+            ppm["role_episode_bundle_ids"] = runtime_payload["role_episode_bundle_ids"]
+            runtime_payload["proof_pool_metadata"] = ppm
     from apps_rg.runtime.sections.upstream_evidence_block import wire_spine_c0_fec_or_block
 
     blocked = wire_spine_c0_fec_or_block(
@@ -707,18 +863,44 @@ def run_role_episode_lane_execution(
         "mock_fallback_allowed": False,
     }
     write_json(artifact_dir / "provider_request.json", provider_request)
-    try:
-        provider_result = _provider_gateway().generate(
-            str(args.provider),
-            compiled_obj,
-            token_budget=MAX_OUTPUT_TOKENS,
-            temperature=float(args.temperature),
+    gen_meta: dict[str, Any] = {}
+    use_bullet_pool = (
+        cfg.is_bullet_lane
+        and is_employment_bullet_lane(sid)
+        and bool(REQUIRED_BULLET_IDS.get(sid))
+    )
+    if use_bullet_pool:
+        # Graph-anchored SC-pool + Claude per-slot selector (Unify/IBM parity; plan
+        # apps-rg-e2e-readiness-e7c4f9 G1). The Claude pool selector is the X1D judge.
+        provider_result, raw_output, parsed, parse_error, gen_meta = _generate_bullets_via_pool(
+            sid=sid,
+            cfg=cfg,
+            args=args,
+            runtime_payload=runtime_payload,
+            prompt_text=prompt_text,
+            prompt_hash=prompt_hash,
+            artifact_dir=artifact_dir,
+            run_id=run_id,
+            allowed_fact_ids=allowed_fact_ids,
         )
-    except ProviderGatewayError as exc:
-        provider_result = _blocked_provider_result(str(args.provider), str(exc))
+        if provider_result is None:
+            provider_result = _blocked_provider_result(
+                str(args.provider), "bullet pool generation returned no provider result"
+            )
+        write_json(artifact_dir / "bullet_lane_generation.json", gen_meta)
+    else:
+        try:
+            provider_result = _provider_gateway().generate(
+                str(args.provider),
+                compiled_obj,
+                token_budget=MAX_OUTPUT_TOKENS,
+                temperature=float(args.temperature),
+            )
+        except ProviderGatewayError as exc:
+            provider_result = _blocked_provider_result(str(args.provider), str(exc))
+        raw_output = provider_result.raw_model_output
+        parsed, parse_error = _parse_json_object(raw_output)
     write_json(artifact_dir / "provider_response.json", provider_result.to_dict())
-    raw_output = provider_result.raw_model_output
-    parsed, parse_error = _parse_json_object(raw_output)
 
     header = _role_header(base, cfg, args)
     if cfg.is_bullet_lane:
@@ -766,18 +948,27 @@ def run_role_episode_lane_execution(
         l2=l2,
         allowed=allowed_fact_ids,
         runtime_generation_status=provider_result.runtime_generation_status,
+        bundle_consumed=bool(runtime_payload.get("role_episode_bundles")),
     )
     product_quality_status = (
         "PASS" if provider_result.runtime_generation_status == "REAL_LLM" and all(g.get("pass") for g in x2) else "FAIL"
     )
     l2["product_quality_status"] = product_quality_status
     l2["product_quality_reason"] = "x2_pass" if product_quality_status == "PASS" else "x2_or_provider_blocked"
-    x1d = _judge_rows(
-        cfg=cfg,
-        provider_result=provider_result,
-        x2_gates=x2,
-        mock_judges=bool(getattr(args, "mock_judges", False)),
-    )
+    if cfg.is_bullet_lane and is_employment_pool_generation(gen_meta):
+        # Claude pool selector IS the X1D judge (Unify/IBM parity, operator decision).
+        x1d = employment_pool_x1d_judge_rows(
+            artifact_dir=artifact_dir,
+            section_id=sid,
+            gen_meta=gen_meta,
+        )
+    else:
+        x1d = _judge_rows(
+            cfg=cfg,
+            provider_result=provider_result,
+            x2_gates=x2,
+            mock_judges=bool(getattr(args, "mock_judges", False)),
+        )
     usage_doc = build_section_input_usage_ledger_v1(
         section_id=sid,
         run_id=run_id,
