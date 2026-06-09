@@ -42,7 +42,7 @@ supersedes: []
 ### Wave Progress
 | Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
 |---|---|---|---|---|---|
-| W0 | P0 | Fix the **live BLOCKS_GENERATION drifts** gating the AIG E2E now | ~120k | 🔄 In Progress | The 5 hard contradictions below resolved; lanes stop blocking on prompt↔gate disagreement |
+| W0 | P0 | Fix the **live BLOCKS_GENERATION drifts** gating the AIG E2E now | ~120k | ✅ Done | The 5 hard contradictions below resolved; lanes stop blocking on prompt↔gate disagreement. Commits: W0-A `04222155de`, W0-B `2c227fc44c`, W0-C `8b1f5cd733`, W0-D `1cf0ff1bf8`, W0-E `40385c5929`. Each stash-isolated → zero new test failures. |
 | W1 | P1 | **Numeric constraints SSOT** — one module owns every per-section count/budget/schema | ~90k | ⬜ Not Started | All numeric constraints have exactly one definition; X2 + SSOT import it |
 | W2 | P2 | **Collapse duplicated literals** — X2 validators + role_episode + ssot import the SSOT (no re-typed numbers) | ~70k | ⬜ Not Started | `grep` finds 0 re-typed constraint literals; the 6 NARRATIVE_MAX_WORDS copies → 1 |
 | W3 | P3 | **Generate prompt prose from SSOT** — `_legacy_i0`/templates interpolate constants, not hand-author | ~110k | ⬜ Not Started | Prompt constraint lines are rendered from the SSOT; no hand-typed counts in prompts |
