@@ -60,7 +60,8 @@ def _audit_plan_wave_summary_top(norm_path: str) -> int | None:
         sys.path.insert(0, str(REPO_ROOT))
     from ops_scripts.ci.plan_wave_summary_top import (
         WaveSummarySeverity,
-        validate_consolidated_wave_summary_at_top,
+        is_plan_format_v2,
+        validate_plan_format,
     )
 
     rel = norm_path.replace("\\", "/")
@@ -69,21 +70,23 @@ def _audit_plan_wave_summary_top(norm_path: str) -> int | None:
     except OSError:
         return None
 
+    v2 = is_plan_format_v2(content)
     fails = [
-        v
-        for v in validate_consolidated_wave_summary_at_top(content, rel)
-        if v.severity == WaveSummarySeverity.FAIL
+        v for v in validate_plan_format(content, rel) if v.severity == WaveSummarySeverity.FAIL
     ]
     if not fails:
         return None
 
     first = fails[0]
     reason = (
-        f"Plan missing consolidated wave summary at top ({first.rule_id}): {first.message} "
-        "Add `## Status Tables` → `### Wave Progress` with the canonical wave table "
-        "before the first `## Wave N` section. See plan-location.mdc."
+        f"Plan violates the v2 format standard ({first.rule_id}): {first.message} "
+        "Plans must carry Wave + Phase summary tables (canonical columns) under `## Status Tables` "
+        "before the first `## Wave N` section, with waves in ascending execution order. "
+        "See .claude/rules/plan-location.md."
     )
-    strict = os.environ.get("PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT", "").strip() in (
+    # v2 plans (created from the template) are enforced going forward → block. Legacy plans warn
+    # unless PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT=1 opts them into strict too.
+    strict = v2 or os.environ.get("PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT", "").strip() in (
         "1",
         "true",
         "yes",
