@@ -45,14 +45,17 @@ def main() -> int:
     if os.environ.get("POST_WRITE_PLAN_RECONCILE_BYPASS") == "1":
         return 0
 
-    # Read payload
+    # Read payload — handle Claude Code format (tool_input.file_path) and
+    # legacy Windsurf/Cursor format (tool_info.file_path).
     try:
-        payload = json.loads(sys.stdin.read() or "{}")
+        raw = json.loads(sys.stdin.read() or "{}")
     except (json.JSONDecodeError, ValueError):
         return 0
 
-    tool_info = payload.get("tool_info") or {}
-    file_path = str(tool_info.get("file_path") or "").replace("\\", "/")
+    ti = raw.get("tool_input") or raw.get("tool_info") or {}
+    file_path = str(
+        ti.get("file_path") or ti.get("filePath") or ti.get("path") or ""
+    ).replace("\\", "/")
 
     if not file_path:
         return 0
