@@ -193,6 +193,26 @@ def apply_canonical_section_evidence_materialization(
         doc["fec_allowed_fact_ids_digest"] = fec_digest
         doc["proof_pool_digest"] = canonical.pool_digest
         doc["id_alias_map"] = dict(canonical.alias_map)
+        _fec_set = set(fec_allowed)
+        _alias_map = dict(canonical.alias_map)
+
+        def _fec_admits(source_fact_id: Any) -> bool:
+            source = str(source_fact_id or "").strip()
+            if not source:
+                return True
+            base = source.split("_metric_", 1)[0]
+            if source in _fec_set or base in _fec_set:
+                return True
+            ledger = _alias_map.get(base) or _alias_map.get(source)
+            return bool(ledger and (ledger in _fec_set or ledger.split("_metric_", 1)[0] in _fec_set))
+
+        evidence_items = doc.get("evidence_items")
+        if isinstance(evidence_items, list):
+            doc["evidence_items"] = [
+                item
+                for item in evidence_items
+                if not isinstance(item, dict) or _fec_admits(item.get("source_fact_id"))
+            ]
         if fec_materialization_receipt is not None:
             doc["fec_materialization_receipt"] = fec_materialization_receipt
         snap = doc.get("final_evidence_contract")
