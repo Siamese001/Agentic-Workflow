@@ -522,11 +522,13 @@ def _role_bullets_shape(section_id: str, *, employer_label: str, bullet_prefix: 
             f"x2_{section_id}_bullet_count_3",
             f"x2_{section_id}_bullet_single_thought",
             f"x2_{section_id}_bullet_no_embedded_newline",
+            f"x2_{section_id}_graph_role_episode_bundle_consumed",
         ),
         proof_gate_ids=(
             f"x2_{section_id}_allowed_fact_ids_non_empty",
             f"x2_{section_id}_source_fact_ids_supported",
             "x2_claim_ledger_claim_text_non_empty",
+            f"x2_{section_id}_runtime_real_llm",
         ),
         style_gate_ids=("x2_no_first_person", "x2_no_em_dash"),
         required_any_text_patterns=(r"exactly\s+3", r"3\s+bullets"),
@@ -534,7 +536,7 @@ def _role_bullets_shape(section_id: str, *, employer_label: str, bullet_prefix: 
         forbidden_text_patterns=(r"JD_ONLY", r"BRIEFING_ONLY", r"TARGET_ONLY"),
         jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
         compile_hints=(
-            f"qwen_pool_paths={pool_n}; final_bullets=3",
+            f"sc_pool_paths={pool_n}; final_bullets=3",
             "upstream evidence required; retries cannot repair missing proof",
         ),
     )
@@ -559,6 +561,7 @@ def _role_narrative_shape(section_id: str, *, employer_label: str, bullet_prefix
             f"x2_{section_id}_allowed_fact_ids_non_empty",
             f"x2_{section_id}_source_fact_ids_supported",
             "x2_claim_ledger_claim_text_non_empty",
+            f"x2_{section_id}_runtime_real_llm",
         ),
         style_gate_ids=("x2_no_first_person", "x2_no_em_dash"),
         required_any_text_patterns=(r"Exactly\s+one\s+sentence", r"exactly one sentence"),
