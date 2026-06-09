@@ -293,6 +293,34 @@ def mark_registered(slug: str) -> bool:
     return changed
 
 
+def update_plan_metadata(
+    slug: str,
+    *,
+    content_digest: str | None = None,
+    ai_summary: str | None = None,
+) -> bool:
+    """Update ``content_digest`` and/or ``ai_summary`` for an already-queued slug.
+
+    Used by the W3 re-sync trigger: when a plan file is edited after initial
+    enqueue (or registration), the new digest and ai_summary replace the stored
+    values so the drift gate can detect content-level drift.
+
+    Returns True if a row was updated, False if the slug is not in the queue.
+    """
+    rows = _read_queue()
+    updated = False
+    for r in rows:
+        if r.get("slug") == slug:
+            if content_digest is not None:
+                r["content_digest"] = content_digest
+            if ai_summary is not None:
+                r["ai_summary"] = ai_summary
+            updated = True
+    if updated:
+        _write_queue(rows)
+    return updated
+
+
 def pending_registrations() -> list[dict[str, Any]]:
     """Return queue rows where registered=False."""
     return [r for r in _read_queue() if not r.get("registered")]

@@ -682,3 +682,257 @@ class TestExtractPlanMetadata:
         meta = pr.extract_plan_metadata(content)
         assert meta["ai_summary"] is None
         assert meta["content_digest"] is not None  # digest always populated
+
+
+# ---------------------------------------------------------------------------
+# W3 — update_plan_metadata
+# ---------------------------------------------------------------------------
+
+
+class TestUpdatePlanMetadata:
+    """update_plan_metadata patches digest/ai_summary in an existing queue row."""
+
+    def test_updates_content_digest(self, pr):
+        pr.enqueue_plan("plan-one-aaaaaa", "plans/plan-one-aaaaaa.md", content_digest="old", ai_summary="old summary")
+        updated = pr.update_plan_metadata("plan-one-aaaaaa", content_digest="newdigest")
+        assert updated is True
+        rows = pr._read_queue()
+        row = next(r for r in rows if r["slug"] == "plan-one-aaaaaa")
+        assert row["content_digest"] == "newdigest"
+        assert row["ai_summary"] == "old summary"  # untouched
+
+    def test_updates_ai_summary(self, pr):
+        pr.enqueue_plan("plan-two-bbbbbb", "plans/plan-two-bbbbbb.md", content_digest="d1", ai_summary="original")
+        updated = pr.update_plan_metadata("plan-two-bbbbbb", ai_summary="updated summary")
+        assert updated is True
+        rows = pr._read_queue()
+        row = next(r for r in rows if r["slug"] == "plan-two-bbbbbb")
+        assert row["ai_summary"] == "updated summary"
+        assert row["content_digest"] == "d1"  # untouched
+
+    def test_updates_both(self, pr):
+        pr.enqueue_plan("plan-thr-cccccc", "plans/plan-thr-cccccc.md")
+        updated = pr.update_plan_metadata("plan-thr-cccccc", content_digest="abc", ai_summary="new")
+        assert updated is True
+        rows = pr._read_queue()
+        row = next(r for r in rows if r["slug"] == "plan-thr-cccccc")
+        assert row["content_digest"] == "abc"
+        assert row["ai_summary"] == "new"
+
+    def test_returns_false_for_unknown_slug(self, pr):
+        result = pr.update_plan_metadata("not-there-ffffff", content_digest="x")
+        assert result is False
+
+    def test_only_updates_target_slug(self, pr):
+        pr.enqueue_plan("plan-aaa-aaaaaa", "plans/plan-aaa-aaaaaa.md", content_digest="aaa")
+        pr.enqueue_plan("plan-bbb-bbbbbb", "plans/plan-bbb-bbbbbb.md", content_digest="bbb")
+        pr.update_plan_metadata("plan-aaa-aaaaaa", content_digest="zzz")
+        rows = pr._read_queue()
+        aaa = next(r for r in rows if r["slug"] == "plan-aaa-aaaaaa")
+        bbb = next(r for r in rows if r["slug"] == "plan-bbb-bbbbbb")
+        assert aaa["content_digest"] == "zzz"
+        assert bbb["content_digest"] == "bbb"  # untouched
+
+
+# ---------------------------------------------------------------------------
+# W3 — surface hook emits ai_summary + content_digest
+# ---------------------------------------------------------------------------
+
+
+class TestSurfaceHookEmitsAiSummary:
+    """pre_user_prompt_plan_registration_surface.py emits W3 fields on PLAN_REGISTRATION_PENDING."""
+
+    def _load_surface(self, tmp_path, monkeypatch):
+        import importlib.util, sys
+        from pathlib import Path
+        path = (
+            Path(__file__).resolve().parents[3]
+            / ".claude" / "governance/scripts"
+            / "pre_user_prompt_plan_registration_surface.py"
+        )
+        spec = importlib.util.spec_from_file_location("_surface_w3_test", path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["_surface_w3_test"] = mod
+        spec.loader.exec_module(mod)
+        return mod
+
+    def _pr_with_queue(self, tmp_path, monkeypatch, rows):
+        """Return a _plan_registration module patched to a tmp state dir with given rows."""
+        import importlib.util, sys
+        from pathlib import Path
+        pr_path = (
+            Path(__file__).resolve().parents[3]
+            / ".claude" / "governance/scripts" / "_plan_registration.py"
+        )
+        spec = importlib.util.spec_from_file_location("_pr_surface_fixture", pr_path)
+        pr = importlib.util.module_from_spec(spec)
+        sys.modules["_pr_surface_fixture"] = pr
+        spec.loader.exec_module(pr)
+        state = tmp_path / "state"
+        state.mkdir(exist_ok=True)
+        monkeypatch.setattr(pr, "STATE_DIR", state)
+        monkeypatch.setattr(pr, "QUEUE_PATH", state / "plan_registration_queue.jsonl")
+        monkeypatch.setattr(pr, "CACHE_PATH", state / "plan_registration_cache.json")
+        # Write rows directly to queue
+        with (state / "plan_registration_queue.jsonl").open("w", encoding="utf-8") as fh:
+            import json
+            for r in rows:
+                fh.write(json.dumps(r) + "\n")
+        return pr
+
+    def test_emits_ai_summary_when_present(self, tmp_path, monkeypatch, capsys):
+        import sys
+        surface = self._load_surface(tmp_path, monkeypatch)
+        pr = self._pr_with_queue(tmp_path, monkeypatch, [
+            {
+                "slug": "plan-abc-123456",
+                "path": "plans/plan-abc-123456.md",
+                "declared_status": "Not Started",
+                "captured_at": "2026-01-01T00:00:00Z",
+                "registered": False,
+                "registered_at": None,
+                "content_digest": "abcdef01",
+                "ai_summary": "Fixes the plan pipeline.",
+            }
+        ])
+        # Monkey-patch _load_helper to return our fixture pr
+        monkeypatch.setattr(surface, "_load_helper", lambda: pr)
+        surface.main()
+        out = capsys.readouterr().out
+        assert "PLAN_REGISTRATION_PENDING:" in out
+        assert 'ai_summary="Fixes the plan pipeline."' in out
+
+    def test_emits_content_digest_when_present(self, tmp_path, monkeypatch, capsys):
+        surface = self._load_surface(tmp_path, monkeypatch)
+        pr = self._pr_with_queue(tmp_path, monkeypatch, [
+            {
+                "slug": "plan-xyz-abcdef",
+                "path": "plans/plan-xyz-abcdef.md",
+                "declared_status": "Not Started",
+                "captured_at": "2026-01-01T00:00:00Z",
+                "registered": False,
+                "registered_at": None,
+                "content_digest": "deadbeef01234567",
+                "ai_summary": None,
+            }
+        ])
+        monkeypatch.setattr(surface, "_load_helper", lambda: pr)
+        surface.main()
+        out = capsys.readouterr().out
+        assert "content_digest=deadbeef01234567" in out
+
+    def test_omits_ai_summary_when_blank(self, tmp_path, monkeypatch, capsys):
+        surface = self._load_surface(tmp_path, monkeypatch)
+        pr = self._pr_with_queue(tmp_path, monkeypatch, [
+            {
+                "slug": "plan-zzz-ffffff",
+                "path": "plans/plan-zzz-ffffff.md",
+                "declared_status": "Not Started",
+                "captured_at": "2026-01-01T00:00:00Z",
+                "registered": False,
+                "registered_at": None,
+                "content_digest": None,
+                "ai_summary": "",
+            }
+        ])
+        monkeypatch.setattr(surface, "_load_helper", lambda: pr)
+        surface.main()
+        out = capsys.readouterr().out
+        assert "PLAN_REGISTRATION_PENDING:" in out
+        assert "ai_summary=" not in out
+        assert "content_digest=" not in out
+
+
+# ---------------------------------------------------------------------------
+# W3 — patch_plan_notion_properties
+# ---------------------------------------------------------------------------
+
+
+class TestPatchPlanNotionProperties:
+    """patch_plan_notion_properties returns False on invalid args; PATCH on success."""
+
+    def _load_helper(self):
+        import importlib.util, sys
+        from pathlib import Path
+        path = (
+            Path(__file__).resolve().parents[3]
+            / "tools" / "notion" / "plan_creation_helper.py"
+        )
+        spec = importlib.util.spec_from_file_location("_pch_w3_test", path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["_pch_w3_test"] = mod
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_returns_false_when_both_none(self):
+        pch = self._load_helper()
+        result = pch.patch_plan_notion_properties("page-123", ai_summary=None, summary=None, token="tok")
+        assert result is False
+
+    def test_returns_false_when_no_token(self, monkeypatch):
+        import os
+        pch = self._load_helper()
+        monkeypatch.delenv("NOTION_TOKEN", raising=False)
+        monkeypatch.delenv("NOTION_API_KEY", raising=False)
+        # also patch _notion_token to return None
+        monkeypatch.setattr(pch, "_notion_token", lambda: None)
+        result = pch.patch_plan_notion_properties("page-123", ai_summary="hi", token=None)
+        assert result is False
+
+    def test_returns_false_when_no_page_id(self):
+        pch = self._load_helper()
+        result = pch.patch_plan_notion_properties("", ai_summary="hello", token="tok")
+        assert result is False
+
+    def test_makes_patch_request(self, monkeypatch):
+        """Happy-path: urllib.request.urlopen is patched to succeed; returns True."""
+        import json as _json
+        import urllib.request as _ureq
+        pch = self._load_helper()
+
+        captured_req = {}
+
+        class FakeResp:
+            def read(self):
+                return b"{}"
+            def __enter__(self):
+                return self
+            def __exit__(self, *a):
+                pass
+
+        def fake_urlopen(req, timeout=None):
+            captured_req["method"] = req.method
+            captured_req["url"] = req.full_url
+            captured_req["body"] = _json.loads(req.data.decode("utf-8"))
+            return FakeResp()
+
+        monkeypatch.setattr(_ureq, "urlopen", fake_urlopen)
+        result = pch.patch_plan_notion_properties("page-abc", ai_summary="Good plan.", token="tok-x")
+        assert result is True
+        assert captured_req["method"] == "PATCH"
+        assert "page-abc" in captured_req["url"]
+        props = captured_req["body"]["properties"]
+        assert "AI Summary " in props
+        assert props["AI Summary "]["rich_text"][0]["text"]["content"] == "Good plan."
+
+    def test_ai_summary_truncated_to_2000(self, monkeypatch):
+        """ai_summary longer than 2000 chars is truncated before sending."""
+        import urllib.request as _ureq, json as _json
+        pch = self._load_helper()
+        long_summary = "x" * 3000
+
+        captured_body = {}
+
+        class FakeResp:
+            def read(self): return b"{}"
+            def __enter__(self): return self
+            def __exit__(self, *a): pass
+
+        def fake_urlopen(req, timeout=None):
+            captured_body["body"] = _json.loads(req.data.decode("utf-8"))
+            return FakeResp()
+
+        monkeypatch.setattr(_ureq, "urlopen", fake_urlopen)
+        pch.patch_plan_notion_properties("page-trunc", ai_summary=long_summary, token="t")
+        content = captured_body["body"]["properties"]["AI Summary "]["rich_text"][0]["text"]["content"]
+        assert len(content) == 2000

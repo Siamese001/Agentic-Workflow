@@ -224,5 +224,105 @@ def _enqueue_plan_if_eligible(norm_path: str) -> None:
 
 _enqueue_plan_if_eligible(file_path.replace("\\", "/"))
 
+
+def _sync_plan_to_notion_if_registered(norm_path: str) -> None:
+    """W3 re-sync: when a registered plan is edited, patch Notion with updated ai_summary.
+
+    Re-derives content_digest from the current file and compares it to the stored digest
+    in the queue row.  If they differ (plan was edited), patches the Notion page's
+    ``AI Summary`` property and updates the queue row's stored digest.
+
+    Requires NOTION_TOKEN.  Fail-soft: any exception silently swallowed.
+    """
+    try:
+        _np = norm_path.replace("\\", "/")
+        from pathlib import Path as _Path
+        if _Path(_np).parent.name != "plans" or not _np.endswith(".md"):
+            return
+        if "/plans/_archive/" in _np:
+            return
+        _parts = {p.lower() for p in _Path(_np).parts}
+        if "docs" in _parts or "reports" in _parts:
+            return
+
+        plan_file = REPO_ROOT / norm_path.replace("/", os.sep)
+        if not plan_file.is_file():
+            return
+
+        import re as _re
+        _PFR = _re.compile(r"^(?P<slug>[a-z0-9][a-z0-9-]*-[0-9a-f]{6})\.md$")
+        _m = _PFR.match(plan_file.name)
+        if not _m:
+            return
+        slug = _m.group("slug")
+
+        # Load _plan_registration helper (already loaded in sys.modules under various names;
+        # just load fresh to avoid stale cache from the earlier enqueue call).
+        import importlib.util as _ilu3
+        _hp3 = REPO_ROOT / ".claude" / "governance/scripts" / "_plan_registration.py"
+        if not _hp3.exists():
+            return
+        _spec3 = _ilu3.spec_from_file_location("_plan_reg_sync", _hp3)
+        if _spec3 is None or _spec3.loader is None:
+            return
+        _helper3 = _ilu3.module_from_spec(_spec3)
+        try:
+            _spec3.loader.exec_module(_helper3)
+        except Exception:  # guardian: allow-broad-exception -- fail-soft hook contract
+            return
+
+        # Check if plan is registered and if digest has changed.
+        cache = _helper3.read_cache()
+        if not _helper3.cache_is_fresh(cache):
+            return
+        cache_plans = (cache or {}).get("plans", {})
+        entry = cache_plans.get(slug) if isinstance(cache_plans, dict) else None
+        if not entry or not isinstance(entry, dict):
+            return  # not registered yet — enqueue path handles initial registration
+        page_id = entry.get("page_id")
+        if not page_id:
+            return  # no page_id in cache — can't patch
+
+        # Compute current file digest and compare to queue row.
+        content = plan_file.read_text(encoding="utf-8")
+        meta = _helper3.extract_plan_metadata(content)
+        current_digest = meta.get("content_digest") or ""
+
+        rows = _helper3._read_queue()
+        queued = next((r for r in rows if r.get("slug") == slug), None)
+        stored_digest = (queued.get("content_digest") or "") if queued else ""
+
+        if current_digest == stored_digest and stored_digest:
+            return  # no change — skip patch
+
+        # Content changed — patch Notion and update queue metadata.
+        import os as _os
+        token = _os.environ.get("NOTION_TOKEN", "").strip()
+        if not token:
+            # No token — still update queue row so drift gate can detect the change.
+            _helper3.update_plan_metadata(slug, content_digest=current_digest, ai_summary=meta.get("ai_summary"))
+            return
+
+        if str(REPO_ROOT) not in sys.path:
+            sys.path.insert(0, str(REPO_ROOT))
+        try:
+            from tools.notion.plan_creation_helper import patch_plan_notion_properties as _patch
+            patched = _patch(page_id, ai_summary=meta.get("ai_summary"), token=token)
+        except Exception:  # guardian: allow-broad-exception -- fail-soft hook contract
+            patched = False
+
+        _helper3.update_plan_metadata(slug, content_digest=current_digest, ai_summary=meta.get("ai_summary"))
+        if patched:
+            print(
+                f"[after_file_edit] W3 re-sync: patched Notion page {page_id} for {slug} "
+                f"(digest {(stored_digest or '(none)')[:8]} → {current_digest[:8]})",
+                file=sys.stderr,
+            )
+    except Exception:  # guardian: allow-broad-exception -- fail-soft hook contract
+        pass
+
+
+_sync_plan_to_notion_if_registered(file_path.replace("\\", "/"))
+
 write_receipt("afterFileEdit", payload, "allow", "edit accepted")
 raise SystemExit(allow("edit accepted"))

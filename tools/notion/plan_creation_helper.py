@@ -36,7 +36,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none
 
@@ -302,6 +302,65 @@ def create_plan_in_notion(
             file=sys.stderr,
         )
         raise
+
+
+def patch_plan_notion_properties(
+    page_id: str,
+    *,
+    ai_summary: str | None = None,
+    summary: str | None = None,
+    token: str | None = None,
+) -> bool:
+    """Patch an existing Plans DB page's ``AI Summary`` and/or ``Summary`` properties.
+
+    Used for W3 body-sync: after initial registration and on subsequent plan-file edits
+    (detected via content_digest change) so the Notion row stays current.
+
+    Returns True if the patch succeeded, False otherwise (fail-soft; callers should not
+    raise on False).  Skips the API call when both ai_summary and summary are None.
+    """
+    if ai_summary is None and summary is None:
+        return False
+    resolved_token = token or _notion_token()
+    if not resolved_token:
+        return False
+    if not page_id:
+        return False
+
+    props: dict[str, Any] = {}
+    if ai_summary is not None:
+        props["AI Summary "] = {
+            "rich_text": [{"type": "text", "text": {"content": ai_summary[:2000]}}]
+        }
+    if summary is not None:
+        props["Summary"] = {
+            "rich_text": [{"type": "text", "text": {"content": summary[:2000]}}]
+        }
+
+    url = f"{_NOTION_BASE}/pages/{page_id}"
+    body = json.dumps({"properties": props}).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=body,
+        headers={
+            "Authorization": f"Bearer {resolved_token}",
+            "Content-Type": "application/json",
+            "Notion-Version": _NOTION_API_VERSION,
+        },
+        method="PATCH",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=_NOTION_TIMEOUT_S) as resp:
+            resp.read()
+        print(
+            f"[plan-creation-helper] BODY_SYNC page_id={page_id} "
+            f"ai_summary={'set' if ai_summary else 'skip'} "
+            f"summary={'set' if summary else 'skip'}",
+            file=sys.stderr,
+        )
+        return True
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError):
+        return False
 
 
 def main(argv: list[str] | None = None) -> int:
