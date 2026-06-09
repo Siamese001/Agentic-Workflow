@@ -16,12 +16,12 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     FIRST_PERSON_PATTERN,
     GENERIC_FILLER,
     INLINE_SOURCE_PATTERN,
-    REQUIRED_JUDGE_PROVIDERS,
     check_claim_ledger_claim_text_non_empty,
     check_json_parse_valid,
     check_judge_rows_present,
     check_judge_schema_valid,
     has_jd_phrase_copy,
+    required_judges_for_section,
     split_sentences,
 )
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
@@ -521,8 +521,9 @@ def run_unify_narrative_x2_gates(
     no_silent_mock = not (provider_requested == "external_claude" and runtime_generation_status == "MOCKED")
     add("x2_no_silent_mock_fallback", no_silent_mock, runtime_generation_status, "REAL_LLM", "Silent mock fallback.")
 
-    judges_ok, judges_reason = check_judge_rows_present(x1d_judges)
-    add("x2_x1d_required_judges_present", judges_ok, judges_reason, REQUIRED_JUDGE_PROVIDERS, judges_reason)
+    _required_judges = required_judges_for_section("unify_narrative")
+    judges_ok, judges_reason = check_judge_rows_present(x1d_judges, required_providers=_required_judges)
+    add("x2_x1d_required_judges_present", judges_ok, judges_reason, _required_judges, judges_reason)
 
     if x1d_judges:
         blocked_invalid = []

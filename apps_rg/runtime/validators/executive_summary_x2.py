@@ -1123,7 +1123,9 @@ def append_executive_summary_x1d_x2_gate_dicts(
             }
         )
 
-    judges_present_ok, judges_present_reason = check_judge_rows_present(x1d_judges)
+    judges_present_ok, judges_present_reason = check_judge_rows_present(
+        x1d_judges, required_providers=required_judges_for_section("executive_summary")
+    )
     _row(
         "x2_x1d_required_judges_present",
         judges_present_ok,
@@ -1200,6 +1202,21 @@ def check_judge_rows_present(
     if missing:
         return False, f"Missing required judge providers: {', '.join(missing)}"
     return True, None
+
+
+def required_judges_for_section(section_id: str) -> list[str]:
+    """Per-lane required judge providers, sourced from the recalibrated ``section_judge_policy`` SSOT.
+
+    W0-A (plan ``prompt-gate-ssot-consolidation-e7c9a2``): the Claude-base judge recalibration
+    (dual panel = gemini_pro+openai_chatgpt; single panel = gemini_pro; anthropic_claude self-judge
+    dropped) never propagated to the legacy module-level ``REQUIRED_JUDGE_PROVIDERS`` 3-list, so
+    ``x2_x1d_required_judges_present`` demanded an ``anthropic_claude`` row no recalibrated lane emits
+    and ``BLOCKS_GENERATION`` fired on a prompt<->gate disagreement. The required-judges gate must
+    require exactly what the policy declares for the lane -- nothing more, nothing less.
+    """
+    from apps_rg.runtime.section_judge_policy import get_section_judge_policy
+
+    return list(get_section_judge_policy(section_id).required_judge_providers)
 
 
 def check_judge_raw_responses_written(artifacts_dir: Path, x1d_judges: list[dict[str, Any]] | None) -> tuple[bool, str | None]:
