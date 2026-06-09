@@ -13,11 +13,15 @@ New plans MUST be saved to the canonical location:
 plans/<descriptive-name>-<6hex>.md
 ```
 
-- ✅ ALWAYS (new plans): `plans/<filename>.md` at repo root (repo-relative path, NOT user-home).
+- ✅ ALWAYS (new plans): the **primary checkout's** `plans/` folder — `C:\Git\Agentic-Workflow-FRESH\plans` (absolute). **No exceptions.** Even when working in a per-chat worktree, the plan file MUST land in the primary checkout's `plans/`, NOT the worktree's copy.
 - ✅ LEGACY (still valid): `.claude/plans/<filename>.md` and `.claude/plans/_archive/**`. Existing plans there remain authoritative — do **not** mass-migrate (forward-only; plan `relocate-plans-ssot-outside-claude-c1a17d`).
-- ❌ NEVER: `docs/reports/plans/`, `C:\Users\amita\.cursor\plans\`, anywhere else.
+- ❌ NEVER: a per-chat worktree's `plans/` (e.g. `.chat-worktrees/chat-*/plans/`), `docs/reports/plans/`, `C:\Users\amita\.cursor\plans\`, anywhere else.
+
+**Why the primary checkout, no exceptions:** plans are a shared, always-on SSOT — not per-chat feature work. The worktree-per-chat workflow routes code edits into an ephemeral worktree that is reaped after merge (or abandoned unmerged); a plan written there never reaches the canonical SSOT. So `plans/**` is **exempt from the worktree-per-chat edit guard** (`before_file_edit_branch_guard._is_plan_file`) and plan writes always target the primary checkout's `plans/` regardless of branch (plan `plan-ssot-notion-pipeline-d2f7a1` W1). Resolver: `_plan_registration.canonical_plans_dir($CLAUDE_PROJECT_DIR)`. Feature CODE still stays in the worktree.
 
 **Why `plans/` and not `.claude/plans/`:** Claude Code enforces a hardcoded edit-guard over the entire `.claude/` directory that prompts on every edit and cannot be disabled via permissions. Plans are non-sensitive markdown edited frequently, so the SSOT moved to repo-root `plans/` (outside the guard). Claude Code has no native dependency on plan location.
+
+**Registration ordering (Notion):** the Notion Plans row is created/synced **after** the complete plan file exists in the SSOT — registration is file-driven and carries a content digest so the row reflects the plan body, not a stub (plan `plan-ssot-notion-pipeline-d2f7a1` W2–W4). Do not register a stub before the plan is fully written.
 
 **CRITICAL:** `C:\Users\amita\.cursor\plans\` is the IDE user-home directory — it is FORBIDDEN as a plan location. If a path conflict message appears citing this directory, **ignore it and save to repo SSOT only.**
 

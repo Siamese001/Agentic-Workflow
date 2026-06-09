@@ -57,6 +57,34 @@ def _target_path(payload: dict) -> str:
     return ""
 
 
+def _is_plan_file(file_path: str) -> bool:
+    """True for a plan SSOT markdown file (parent dir == ``plans``, not under an ``_archive/`` tree).
+
+    Plans are a shared, always-on SSOT — not per-chat feature work — so they are EXEMPT from
+    worktree-per-chat isolation and must land in the primary checkout's ``plans/`` folder
+    (``C:\\Git\\Agentic-Workflow-FRESH\\plans``). Without this exemption a plan written during a chat
+    is trapped in an ephemeral worktree and never reaches the canonical SSOT
+    (plan ``plan-ssot-notion-pipeline-d2f7a1`` W1). Matches repo-root ``plans/`` and legacy
+    ``.claude/plans/`` (both have parent dir ``plans``).
+    """
+    if not file_path:
+        return False
+    norm = file_path.replace("\\", "/")
+    if not norm.endswith(".md"):
+        return False
+    if "/plans/_archive/" in norm:
+        return False
+    if Path(norm).parent.name != "plans":
+        return False
+    # Exclude docs/reports/plans/ — that is a reports tree, not the plan SSOT (the rule forbids it
+    # as a plan location). Canonical plan dirs (repo-root plans/, .claude/plans/) have no docs/reports
+    # ancestor, so this denylist is safe.
+    lowered = {p.lower() for p in Path(norm).parts}
+    if "reports" in lowered or "docs" in lowered:
+        return False
+    return True
+
+
 def _owning_dir(file_path: str) -> Path:
     """Directory to run git in: the file's parent if resolvable, else REPO_ROOT."""
     if file_path:
@@ -108,7 +136,15 @@ def main() -> int:
         return 0
 
     payload = _read_payload()
-    cwd = _owning_dir(_target_path(payload))
+    target = _target_path(payload)
+
+    # Plans are a shared SSOT, exempt from worktree isolation — they always write to the primary
+    # checkout's plans/ folder (plan-ssot-notion-pipeline-d2f7a1 W1). Without this, plans get trapped
+    # in ephemeral chat worktrees and never reach C:\Git\Agentic-Workflow-FRESH\plans.
+    if _is_plan_file(target):
+        return 0
+
+    cwd = _owning_dir(target)
     branch = _branch_of(cwd)
     if not branch:
         return 0  # fail-soft

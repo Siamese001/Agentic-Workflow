@@ -67,6 +67,18 @@ PLANS_DIR = REPO_ROOT / ".claude" / "plans"
 NEW_PLANS_DIR = REPO_ROOT / "plans"
 PLAN_DIRS = [NEW_PLANS_DIR, PLANS_DIR]
 
+
+def canonical_plans_dir(project_dir: str | Path | None = None) -> Path:
+    """The canonical plans SSOT — the primary checkout's ``plans/`` folder.
+
+    Plans MUST always be written here (``C:\\Git\\Agentic-Workflow-FRESH\\plans``), never a per-chat
+    worktree copy (plan ``plan-ssot-notion-pipeline-d2f7a1`` W1). ``project_dir`` overrides the base —
+    callers may pass ``$CLAUDE_PROJECT_DIR`` to force the primary checkout even when invoked from a
+    worktree; defaults to this module's repo root (the primary checkout in the live-hook context).
+    Pure: no env reads here — the caller supplies ``project_dir`` to keep this module side-effect free.
+    """
+    return (Path(project_dir) / "plans") if project_dir else NEW_PLANS_DIR
+
 # Slug pattern: lowercase-slug-with-dashes-<6hex>
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*-[0-9a-f]{6}$")
 # Plan filename shape
