@@ -11,17 +11,18 @@ rewrite_intent: "IBM_BULLET"
 pa_core_law_ref: apps_rg/prompt_assembly/pa_core_law_v1.yaml
 forbidden_slot_body_source: strategic_tailor_v1
 
-foundation_proof_model_id: "IBM_BULLETS_ORGANIC_GRAPH_BUNDLE_V1"
-treatment_profile: "ORGANIC_FROM_GRAPH_BUNDLE"
+mode: "REWRITE_FROM_FACT_POOL_CONSTRAINED"
+foundation_proof_model_id: "IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1"
+treatment_profile: "REWRITE_FROM_FACT_POOL_CONSTRAINED"
 
 purpose: |
   ORGANIC GENERATION from GRAPH_BULLET_EVIDENCE_PACK: compose IBM employment bullets from bound_skills +
-  proof_atoms (mechanism_vocab, locked_metrics, domain) only. Treatment profile ORGANIC_FROM_GRAPH_BUNDLE.
+  proof_atoms (mechanism_vocab, locked_metrics, domain) only. Treatment profile REWRITE_FROM_FACT_POOL_CONSTRAINED.
   Base resume claim_text is NOT in C0 — model must not copy, paraphrase, or lightly rewrite prior IBM bullet wording.
-  Model IBM_BULLETS_ORGANIC_GRAPH_BUNDLE_V1 must foreground enterprise AI/data platform architecture,
+  Model IBM_BULLETS_FOUNDATION_PROOF_MODEL_V1 must foreground enterprise AI/data platform architecture,
   cloud and data modernization, reusable platform/productization patterns, lineage + observability +
   regulatory response, and hyperscaler/commercial partnership leverage.
-  Each Qwen path outputs exactly 5 newly synthesized bullets; Claude pool selector picks the top 5 passing variants per bul_ibm_* slot.
+  Each SC path outputs exactly 5 newly synthesized bullets; Claude pool selector picks the top 5 passing variants per bul_ibm_* slot.
   No narrative paragraphs. No unsupported claims. No JD-as-proof copying. No ATS keyword stuffing.
   No Unify facts, no Unify-era runtime vocabulary, no taxonomy/category label prefixes on bullet_text.
 
