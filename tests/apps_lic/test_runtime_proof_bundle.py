@@ -17,6 +17,7 @@ from apps_lic.runtime.dispatch.runtime_proof_bundle import (
     PROOF_BUNDLE_SCHEMA_VERSION,
     build_runtime_proof_bundle,
 )
+from tests.apps_lic.canonical_readiness_fixtures import ready_governed_opportunity_facts
 
 
 def _load_proof_bundle(run_dir: Path) -> dict:
@@ -31,6 +32,7 @@ def test_r4_managed_workflow_writes_passing_proof_bundle(tmp_path: Path, monkeyp
         run_id="proof_r4_01",
         request_id="req_proof_r4_01",
         manual_brief="Proof bundle R4 managed workflow for Acme Corp renewal.",
+        governed_opportunity_facts=ready_governed_opportunity_facts(),
     )
     result = run_canonical_apps_lic_spine(raw, artifact_root=tmp_path / "r4")
     assert result.route_family == ROUTE_FAMILY_R4
@@ -69,14 +71,20 @@ def test_r5_terminal_reduced_receipt_policy(tmp_path: Path) -> None:
     assert bundle["status"] == "PASS"
     assert bundle["terminal_r5"] is True
     assert bundle["checks"]["r5_forbidden_absent"] == []
-    assert "terminal_r5_manifest_x3_deny_by_design" in bundle["checks"]["r5_terminal_exit_policy"]
+    assert bundle["checks"]["single_exit_x3"] == []
+    assert bundle["canonical_stage_order"] == ["INGRESS", "U0", "L1", "L0", "EXIT"]
+    assert "terminal_r5_exit_receipt_deny_by_design" in bundle["checks"]["r5_terminal_exit_policy"]
+    assert (result.artifact_dir / "exit_disposition_receipt.json").is_file()
 
     for forbidden in (
         "c0_final_evidence_contract.json",
+        "c03_sender_proof_packet.json",
         "pa_receipt.json",
         "l3_workflow_receipt.json",
         "l2_execution_receipt.json",
-        "exit_disposition_receipt.json",
+        "w4_candidate_batch.json",
+        "c03_postgen_claim_validation.json",
+        "w5_validation_exit.json",
     ):
         assert not (result.artifact_dir / forbidden).exists()
 

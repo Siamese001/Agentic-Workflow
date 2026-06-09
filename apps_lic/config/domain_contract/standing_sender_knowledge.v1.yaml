@@ -59,7 +59,7 @@ claim_permission_map:
 
 resume_project_facts:
   - fact_id: fact_agentic_platform
-    fact_text: Designed and operationalized a governed agentic AI platform for regulated enterprise workflows.
+    fact_text: Designed and operationalized a governed agentic AI platform for regulated enterprise workflows, combining multi-agent orchestration, GraphRAG retrieval, policy gating, validation controls, and replayable traces.
     source_ids:
       - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[0]
   - fact_id: fact_runtime_reliability
@@ -67,7 +67,7 @@ resume_project_facts:
     source_ids:
       - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[2]
   - fact_id: fact_platform_commercialization
-    fact_text: Productized agentic AI primitives into reusable platform services, generating IP-led revenue and expanding margins.
+    fact_text: Productized agentic AI primitives into reusable platform services, generating $22M in IP-led revenue and expanding gross margins by 20%.
     source_ids:
       - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[5]
   - fact_id: fact_cloud_ai_transformation
@@ -125,7 +125,7 @@ approved_sender_proof_points:
   - proof_id: sp_agentic_platform
     permission: allow
     claim_strength: strong
-    claim_text: Designed and operationalized a governed agentic AI platform for regulated enterprise workflows.
+    claim_text: Designed and operationalized a governed agentic AI platform for regulated enterprise workflows, combining multi-agent orchestration, GraphRAG retrieval, policy gating, validation controls, and replayable traces.
     allowed_message_types:
       - general_intro
       - role_specific
@@ -175,9 +175,10 @@ approved_sender_proof_points:
   - proof_id: sp_platform_commercialization
     permission: allow
     claim_strength: strong
-    claim_text: Productized agentic AI primitives into reusable platform services and scaled them into enterprise adoption.
+    claim_text: Productized agentic AI primitives into reusable platform services, generating $22M in IP-led revenue and expanding gross margins by 20%.
     allowed_message_types:
       - general_intro
+      - role_specific
       - trigger_based_insight
       - referral_ask
     allowed_recipient_classes:

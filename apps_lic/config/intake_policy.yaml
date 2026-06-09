@@ -31,7 +31,7 @@ exit_conditions:
       - "Required fields: recipient_id, channel, outreach_mode"
       - "channel must be in [email, linkedin, text]"
       - "outreach_mode must be in [cold, warm, referral, followup]"
-      - "recipient_class must be in [RECRUITER, SENIOR_TA, HIRING_MANAGER, EXECUTIVE, C_LEVEL, VP_ENG, CTO, REFERRAL_CONTACT]"
+      - "recipient_class must be in [RECRUITER, SENIOR_TA, HIRING_MANAGER, EXECUTIVE, C_LEVEL, CEO, VP_ENG, CTO, REFERRAL_CONTACT]"
       - "send_mode must NOT be in [send_now, auto_send, connector_send]"
 
   E2:

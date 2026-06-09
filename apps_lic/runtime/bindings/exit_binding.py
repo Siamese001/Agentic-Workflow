@@ -46,8 +46,10 @@ from agentic_core.L3_orchestration.exit_eval.v6.x1_checkout_adapter import (
 from agentic_core.L3_orchestration.exit_eval.v6.x1_gates import run_all_x1_gates
 from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import aggregate_decision
 from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import build_x3_packet
+from agentic_core.runtime.contracts.posture import POSTURE_READ_ONLY
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 from agentic_core.runtime.contracts.x3_disposition import X3Disposition
+from apps_lic.engines.validation_exit import EXIT_CLEAR_DRAFT, ExitProofBundle
 
 # W3: RuntimeCustomizationPackageSection import for Exit package consumption
 import json
@@ -59,6 +61,9 @@ from apps_lic.contracts.apps_lic_ingress_contract_v1 import (  # guardian: allow
 
 _CERT_REF = "exit-apps-lic-outreach-message-ag8-w7-f3c2e1"
 _APP_ID = "apps_lic"
+TERMINAL_R5_NO_SEND_RECEIPT = "pass:terminal_r5_no_send_no_model_or_connector"
+TERMINAL_R5_NO_L4_WRITE_RECEIPT = "pass:terminal_r5_no_l4_write"
+TERMINAL_R5_RUNTIME_EXHAUST_REF = "terminal_r5:no_c0_pa_l2_runtime_exhaust"
 
 # W3.5: Exit profile loaded from apps_lic config — NOT synthesised in agentic_core.
 # No hardcoded G-number set lives here. If the config is unavailable the
@@ -103,8 +108,9 @@ def _build_exit_review_packet(l2: SealedL2Artifact) -> ExitReviewPacket:
 
     Maps all available fields from the sealed artifact into the
     ExitReviewPacket slots that X1A-X1J gates read.  Fields not
-    populated by apps_lic W7 are left at safe/neutral defaults so that
-    each gate returns PASS or NOT_APPLICABLE rather than UNKNOWN.
+    populated by apps_lic W7 are left at fail-closed defaults. Canonical W5
+    callers pass ``validation_exit_proof`` to ``exit_finalize_apps_lic`` and
+    avoid this generic fallback.
 
     apps_lic terminal_class is "answer_only" because the outreach
     message pipeline does not propose a durable state diff — the
@@ -120,9 +126,9 @@ def _build_exit_review_packet(l2: SealedL2Artifact) -> ExitReviewPacket:
         "schema_valid": is_completed,
         "format_fit": is_completed,
         "completion_score": 1.0 if is_completed else 0.0,
-        "groundedness": 1.0,
-        "faithfulness": 1.0,
-        "citation_precision": 1.0,
+        "groundedness": 0.0,
+        "faithfulness": 0.0,
+        "citation_precision": 0.0,
         "bias_delta": 0.0,
         "bias_threshold": 0.2,
     }
@@ -166,7 +172,8 @@ def _build_exit_review_packet(l2: SealedL2Artifact) -> ExitReviewPacket:
     }
 
     final_evidence_contract: dict[str, Any] = {
-        "c0_status": "PASS",
+        "c0_status": "UNKNOWN",
+        "support_status": "UNKNOWN",
     }
 
     route_contract: dict[str, Any] = {
@@ -279,6 +286,155 @@ def _x3_packet_to_disposition(
         is_uwg_write_authority=False,
         is_future_run_only=False,
         l5_certification_ref=x3_pkt.l5_certification_ref,
+    )
+
+
+def _validation_exit_reason_codes(proof: ExitProofBundle) -> tuple[str, ...]:
+    reasons = (
+        *proof.x2_result.reason_codes,
+        *proof.x1d_result.reason_codes,
+        proof.exit_reason,
+    )
+    return tuple(dict.fromkeys(str(reason) for reason in reasons if str(reason)))
+
+
+def _validation_exit_proof_to_disposition(
+    proof: ExitProofBundle,
+    l2: SealedL2Artifact,
+    now_ts: str,
+) -> X3Disposition:
+    is_clear = (
+        proof.disposition == EXIT_CLEAR_DRAFT
+        and proof.x2_result.passed
+        and proof.x1d_result.passed
+    )
+    x2_passed = proof.x2_result.passed
+    reason_codes = _validation_exit_reason_codes(proof)
+
+    if is_clear:
+        x3_disposition = "X3D"
+        exit_status = "success"
+        outcome_authorized = True
+        hitl_required = False
+        rationale = ""
+    elif x2_passed:
+        x3_disposition = "X3B"
+        exit_status = "review_required"
+        outcome_authorized = False
+        hitl_required = True
+        rationale = "apps_lic_x1d_review_required"
+    else:
+        x3_disposition = "DENY"
+        exit_status = "blocked"
+        outcome_authorized = False
+        hitl_required = False
+        rationale = "apps_lic_x2_hard_gate_block"
+
+    final_output: dict[str, Any] = {
+        "disposition": x3_disposition,
+        "reason_codes": list(reason_codes),
+        "rationale": rationale,
+        "apps_lic_disposition": proof.disposition,
+        "apps_lic_status": proof.status,
+        "validation_exit_proof": proof.to_packet(),
+    }
+    if is_clear:
+        final_output["text"] = l2.generated_content or ""
+
+    gate_verdict_refs = (
+        f"apps_lic_x2:{proof.x2_result.status}",
+        f"apps_lic_x1d:{proof.x1d_result.status}",
+        f"apps_lic_exit:{proof.status}",
+    )
+
+    return X3Disposition(
+        request_id=l2.request_id,
+        run_id=l2.run_id,
+        app_id=_APP_ID,
+        trace_id=l2.trace_id,
+        exit_status=exit_status,
+        outcome_authorized=outcome_authorized,
+        final_output=final_output,
+        output_artifact_path=None,
+        eval_score=None,
+        eval_threshold_met=outcome_authorized,
+        hitl_required=hitl_required,
+        tenant_id=l2.tenant_id or "",
+        exit_timestamp=now_ts,
+        schema_version="W7.1+apps_lic_w5",
+        sealed_l2_digest=l2.compilation_hash or "",
+        otel_span_refs=l2.otel_span_refs,
+        audit_refs=tuple((*l2.audit_refs, *gate_verdict_refs)),
+        signature="",
+        posture=l2.posture,
+        gate_verdict_refs=gate_verdict_refs,
+        replay_key=l2.replay_key or "",
+        snapshot_refs=l2.snapshot_refs,
+        is_uwg_write_authority=False,
+        is_future_run_only=False,
+        l5_certification_ref=_CERT_REF,
+    )
+
+
+def terminal_r5_exit_disposition_apps_lic(
+    *,
+    request_id: str,
+    run_id: str,
+    trace_id: str,
+    terminal_reason: str,
+    route_family: str = "R5_FALLBACK",
+    deprecated_route_family: str = "",
+    exit_status: str = "blocked",
+) -> X3Disposition:
+    """Build the Exit-compatible terminal R5 denial disposition."""
+    reason = terminal_reason or "route_family=R5_FALLBACK"
+    now_ts = (
+        datetime.datetime.now(datetime.timezone.utc)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+    final_output: dict[str, Any] = {
+        "disposition": "DENY",
+        "reason_codes": [reason],
+        "rationale": reason,
+        "terminal_r5": True,
+        "route_family": route_family,
+        "deprecated_route_family": deprecated_route_family,
+        "no_send_receipt": TERMINAL_R5_NO_SEND_RECEIPT,
+        "no_l4_write_receipt": TERMINAL_R5_NO_L4_WRITE_RECEIPT,
+        "runtime_exhaust_ref": TERMINAL_R5_RUNTIME_EXHAUST_REF,
+    }
+    return X3Disposition(
+        request_id=request_id,
+        run_id=run_id,
+        app_id=_APP_ID,
+        trace_id=trace_id,
+        exit_status=exit_status,
+        outcome_authorized=False,
+        final_output=final_output,
+        output_artifact_path=None,
+        eval_score=None,
+        eval_threshold_met=False,
+        hitl_required=False,
+        tenant_id="",
+        exit_timestamp=now_ts,
+        schema_version="W7.1+apps_lic_r5",
+        sealed_l2_digest="",
+        otel_span_refs=(),
+        audit_refs=(),
+        signature="",
+        posture=POSTURE_READ_ONLY,
+        gate_verdict_refs=(
+            "terminal_r5:DENY",
+            f"terminal_reason:{reason}",
+            "no_send:pass",
+            "no_l4_write:pass",
+        ),
+        replay_key="",
+        snapshot_refs=(),
+        is_uwg_write_authority=False,
+        is_future_run_only=False,
+        l5_certification_ref=_CERT_REF,
     )
 
 
@@ -575,7 +731,11 @@ def _build_runtime_exhaust_bundle(
     return bundle
 
 
-def exit_finalize_apps_lic(l2: SealedL2Artifact) -> X3Disposition:
+def exit_finalize_apps_lic(
+    l2: SealedL2Artifact,
+    *,
+    validation_exit_proof: ExitProofBundle | None = None,
+) -> X3Disposition:
     """Wire the apps_lic Exit path.
 
     Consumes *l2* (SealedL2Artifact) only.  Produces exactly one
@@ -592,7 +752,14 @@ def exit_finalize_apps_lic(l2: SealedL2Artifact) -> X3Disposition:
     - NOT_APPLICABLE requires reason (X1Item enforces).
     - proposed_state_diff inert -> X1J NOT_APPLICABLE.
     """
-    now_ts = datetime.datetime.utcnow().isoformat() + "Z"
+    now_ts = (
+        datetime.datetime.now(datetime.timezone.utc)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+
+    if validation_exit_proof is not None:
+        return _validation_exit_proof_to_disposition(validation_exit_proof, l2, now_ts)
 
     packet = _build_exit_review_packet(l2)
 
@@ -623,6 +790,10 @@ def exit_finalize_apps_lic(l2: SealedL2Artifact) -> X3Disposition:
 
 __all__ = [
     "exit_finalize_apps_lic",
+    "terminal_r5_exit_disposition_apps_lic",
+    "TERMINAL_R5_NO_SEND_RECEIPT",
+    "TERMINAL_R5_NO_L4_WRITE_RECEIPT",
+    "TERMINAL_R5_RUNTIME_EXHAUST_REF",
     "_x3_packet_to_disposition",
     # W3.5: fail-closed error for missing/malformed exit profile
     "AppsLicExitProfileError",

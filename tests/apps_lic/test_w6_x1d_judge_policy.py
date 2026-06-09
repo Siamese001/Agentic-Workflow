@@ -29,6 +29,7 @@ from apps_lic.engines.validation_exit import (
     required_x1d_judge_ids_for_context,
     required_x1d_profiles,
     run_validation_exit,
+    x1d_judge_profile_policy,
 )
 from apps_lic.engines.whole_message_generation import (
     build_whole_message_generation_request_from_store,
@@ -145,13 +146,42 @@ def test_w6_config_declares_recipient_specific_judge_matrix() -> None:
     profiles = config["x1d"]["rubric_profiles"]
     assert "linkedin_tone_non_generic_x1d" in profiles
     assert profiles["linkedin_tone_non_generic_x1d"]["threshold"] == 0.84
+    assert profiles[JUDGE_CEO_ORIGINALITY]["rubric_id"] == "apps_lic.x1d.ceo_originality.v1"
+    assert profiles[JUDGE_CEO_ORIGINALITY]["threshold"] == 0.88
+    assert profiles[JUDGE_CEO_EVIDENCE_RISK]["rubric_id"] == "apps_lic.x1d.ceo_evidence_overclaim.v1"
+    assert profiles[JUDGE_CEO_EVIDENCE_RISK]["threshold"] == 0.86
     assert config["risk_matrix"]["hiring_manager_role_specific"]["required_judges"] == [
         JUDGE_EVIDENCE_SUPPORT,
         JUDGE_LINKEDIN_TONE_NON_GENERIC,
     ]
-    assert config["risk_matrix"]["executive_cto_vp_eng_trigger"]["conditional_judges"]["jd_or_technical_proof"] == [
+    assert config["risk_matrix"]["hiring_manager_strategic_trigger"]["required_judges"] == [
+        JUDGE_EVIDENCE_SUPPORT,
+        JUDGE_LINKEDIN_TONE_NON_GENERIC,
+    ]
+    assert config["risk_matrix"]["executive_vp_eng_trigger"]["required_judges"] == [
+        JUDGE_LINKEDIN_TONE,
         JUDGE_EVIDENCE_SUPPORT,
     ]
+    assert config["risk_matrix"]["ceo_cto_or_c_level"]["required_judges"] == [
+        JUDGE_CEO_ORIGINALITY,
+        JUDGE_CEO_EVIDENCE_RISK,
+    ]
+
+
+def test_w6_runtime_judge_profile_policy_matches_domain_contract() -> None:
+    with W7_CONFIG.open(encoding="utf-8") as handle:
+        config = yaml.safe_load(handle)
+
+    configured_profiles = config["x1d"]["rubric_profiles"]
+    loaded_profiles = x1d_judge_profile_policy()
+
+    assert set(configured_profiles) <= set(loaded_profiles)
+    for judge_id, configured in configured_profiles.items():
+        loaded = loaded_profiles[judge_id]
+        assert loaded.judge_id == judge_id
+        assert loaded.rubric_id == configured["rubric_id"]
+        assert loaded.role == configured["role"]
+        assert loaded.threshold == configured["threshold"]
 
 
 def test_w6_required_judge_mapping_by_recipient_class_and_message_type() -> None:
@@ -177,12 +207,17 @@ def test_w6_required_judge_mapping_by_recipient_class_and_message_type() -> None
         recipient_class="CTO",
         message_type="trigger_based_insight",
         proof_ids=("sp_agentic_platform",),
-    ) == (JUDGE_LINKEDIN_TONE, JUDGE_EVIDENCE_SUPPORT)
+    ) == (JUDGE_CEO_ORIGINALITY, JUDGE_CEO_EVIDENCE_RISK)
     assert required_x1d_judge_ids_for_context(
         recipient_class="EXECUTIVE",
         message_type="trigger_based_insight",
         proof_ids=("sp_platform_commercialization",),
-    ) == (JUDGE_LINKEDIN_TONE,)
+    ) == (JUDGE_LINKEDIN_TONE, JUDGE_EVIDENCE_SUPPORT)
+    assert required_x1d_judge_ids_for_context(
+        recipient_class="HIRING_MANAGER",
+        message_type="trigger_based_insight",
+        proof_ids=("sp_platform_commercialization",),
+    ) == (JUDGE_EVIDENCE_SUPPORT, JUDGE_LINKEDIN_TONE_NON_GENERIC)
     assert required_x1d_judge_ids_for_context(
         recipient_class="CEO",
         message_type="trigger_based_insight",

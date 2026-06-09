@@ -21,7 +21,11 @@ from apps_lic.engines.whole_message_generation import (
     INSTRUCTION_DATA_BOUNDARY_RECEIPT,
     NO_DURABLE_WRITE_RECEIPT,
     NO_SEND_RECEIPT,
+    REASON_CANDIDATE_MISSING_CTA,
+    REASON_CANDIDATE_MISSING_SIGNATURE,
+    REASON_CANDIDATE_MISSING_SUBJECT,
     REASON_CANDIDATE_NOT_WHOLE_MESSAGE,
+    REASON_CANDIDATE_SUBJECT_TOO_LONG,
     REASON_CANDIDATE_UNAPPROVED_CLAIM,
     REASON_MESSAGE_REQUIREMENTS_NOT_PASSED,
     REASON_SEND_MODE_FORBIDDEN,
@@ -38,6 +42,7 @@ from apps_lic.engines.whole_message_generation import (
     WholeMessageCandidate,
     build_whole_message_generation_request_from_store,
     generate_whole_message_candidates,
+    resolve_length_budget,
     resolve_reasoning_policy,
     validate_whole_message_candidate,
 )
@@ -99,6 +104,7 @@ def _w6_request(
     campaign_objective: str,
     desired_next_step: str = "a quick resume review",
     send_mode: str = "draft_only",
+    channel: str = "linkedin",
 ):
     derivation = derive_recipient_class_from_store(store)
     gate = evaluate_message_requirements_from_store(
@@ -120,6 +126,7 @@ def _w6_request(
         sender_proof_packet=proof_packet,
         request_id="req-w6",
         trace_root="trace-w6",
+        channel=channel,
         send_mode=send_mode,
         campaign_objective=campaign_objective,
         desired_next_step=desired_next_step,
@@ -137,6 +144,96 @@ def test_w6_config_freezes_whole_message_generation_contract() -> None:
     assert config["reasoning_policy"]["sc_levels"]["SC-2"]["candidate_count"] == 2
     assert config["reasoning_policy"]["sc_levels"]["SC-3"]["candidate_count"] == 3
     assert "body_fragment" in config["governance"]["forbidden_units"]
+    assert config["recipient_archetype_policy"]["class_to_archetype"]["CEO"] == "C_LEVEL"
+    assert config["length_control_policy"]["hard_controls"] == [
+        "max_sentences",
+        "hard_cap_chars",
+    ]
+    assert config["length_control_policy"]["advisory_controls"] == [
+        "min_words",
+        "max_words",
+    ]
+
+
+def test_ceo_length_budget_uses_c_level_archetype_and_advisory_words() -> None:
+    budget = resolve_length_budget(
+        recipient_class="CEO",
+        message_type="role_specific",
+        modifiers={},
+    )
+
+    assert budget.budget_key == "c_level_role_specific"
+    assert budget.max_sentences == 3
+    assert budget.hard_cap_chars == 550
+    assert budget.to_packet()["hard_controls"] == ["max_sentences", "hard_cap_chars"]
+    assert budget.to_packet()["advisory_controls"] == ["min_words", "max_words"]
+
+
+def test_inmail_length_budget_uses_sentence_and_character_hard_controls() -> None:
+    budget = resolve_length_budget(
+        recipient_class="CEO",
+        message_type="trigger_based_insight",
+        modifiers={},
+        channel="linkedin_inmail",
+    )
+
+    assert budget.budget_key == "c_level_trigger_inmail"
+    assert budget.max_sentences == 6
+    assert budget.hard_cap_chars == 1900
+    assert budget.channel == "linkedin_inmail"
+    assert budget.route_family == "INMAIL"
+    assert budget.subject_required is True
+    assert budget.signature_required is True
+    assert budget.to_packet()["hard_controls"] == ["max_sentences", "hard_cap_chars"]
+    assert budget.to_packet()["advisory_controls"] == ["min_words", "max_words"]
+    assert budget.to_packet()["subject_required"] is True
+
+
+def test_inmail_candidate_requires_subject_line() -> None:
+    store = _store_for(
+        title="Senior Technical Recruiter",
+        company={"company": "AIG", "context": "Regulated insurer expanding agentic AI governance."},
+        jd={
+            "title": "Director, AI Platforms",
+            "requisition_number": "JR-12345",
+            "company": "AIG",
+            "description": "Build production agentic AI platforms for regulated workflows.",
+        },
+    )
+    _derivation, _gate, _proof_packet, request = _w6_request(
+        store,
+        message_type_hint="role_specific",
+        campaign_objective="Ask for a quick resume review.",
+        channel="linkedin_inmail",
+    )
+    batch = generate_whole_message_candidates(request)
+    candidate = batch.candidates[0]
+
+    assert candidate.subject_line
+    assert validate_whole_message_candidate(candidate, request=request).status == STATUS_CANDIDATE_SHAPE_PASS
+
+    missing_subject = WholeMessageCandidate(
+        candidate_id=candidate.candidate_id,
+        draft_text=candidate.draft_text,
+        attempt_seed=candidate.attempt_seed,
+        model_id=candidate.model_id,
+        provider_id=candidate.provider_id,
+        temperature=candidate.temperature,
+        top_p=candidate.top_p,
+        word_count=candidate.word_count,
+        sentence_count=candidate.sentence_count,
+        char_count=candidate.char_count,
+        claims_used=candidate.claims_used,
+        is_whole_message=candidate.is_whole_message,
+        no_durable_write_receipt=candidate.no_durable_write_receipt,
+        generation_receipt=candidate.generation_receipt,
+        subject_line="",
+    )
+    validation = validate_whole_message_candidate(missing_subject, request=request)
+
+    assert validation.status == STATUS_CANDIDATE_SHAPE_BLOCKED
+    assert REASON_CANDIDATE_MISSING_SUBJECT in validation.issues
+    assert REASON_CANDIDATE_SUBJECT_TOO_LONG not in validation.issues
 
 
 def test_role_specific_recruiter_request_packs_w4_w5_jd_policy_and_no_send() -> None:
@@ -199,6 +296,7 @@ def test_role_specific_recruiter_generates_two_whole_message_candidates() -> Non
         assert "Director, AI Platforms" in candidate.draft_text
         assert "JR-12345" in candidate.draft_text
         assert "Subject:" not in candidate.draft_text
+        assert candidate.draft_text.endswith("\n\nAmit")
         assert candidate.claims_used
         validation = validate_whole_message_candidate(candidate, request=request)
         assert validation.status == STATUS_CANDIDATE_SHAPE_PASS
@@ -253,7 +351,8 @@ def test_long_trigger_based_insight_candidate_stays_within_exec_length_budget() 
 
     assert request.length_budget.budget_key == "executive_trigger"
     assert batch.candidates
-    assert batch.candidates[0].word_count <= request.length_budget.max_words
+    assert batch.candidates[0].word_count >= 1
+    assert batch.candidates[0].draft_text.endswith("\n\nAmit")
     assert batch.candidates[0].sentence_count <= request.length_budget.max_sentences
     assert batch.candidates[0].char_count <= request.length_budget.hard_cap_chars
 
@@ -345,6 +444,8 @@ def test_candidate_shape_validator_rejects_fragments_and_unapproved_claims() -> 
 
     assert validation.status == STATUS_CANDIDATE_SHAPE_BLOCKED
     assert REASON_CANDIDATE_NOT_WHOLE_MESSAGE in validation.issues
+    assert REASON_CANDIDATE_MISSING_CTA in validation.issues
+    assert REASON_CANDIDATE_MISSING_SIGNATURE in validation.issues
     assert REASON_CANDIDATE_UNAPPROVED_CLAIM in validation.issues
 
 

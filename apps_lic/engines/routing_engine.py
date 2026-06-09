@@ -49,12 +49,20 @@ class RoutingEngine:
             "target_audience", ""
         )
         register = persona.get("voice_register", "professional")
+        allowed_claim_ids = _allowed_claim_ids(
+            context.get("sender_proof_envelope")
+            or persona.get("sender_proof_envelope")
+            or {}
+        )
+        allowed_claim_text = ", ".join(allowed_claim_ids) if allowed_claim_ids else "(none)"
 
         prompt = (
             f"[template={template_id}] [register={register}] "
             f"[recipient_class={recipient_class}]\n"
             f"Audience: {audience}\n"
             f"Target contact: {target_name} | {target_title} | {target_company}\n"
+            f"Sender proof allowed claim IDs: {allowed_claim_text}\n"
+            "claims_used may contain only the sender proof allowed claim IDs above.\n"
             "Reasoning policy:\n"
             f"- sc_level: {reasoning_policy.get('sc_level', 'SC-1')}\n"
             f"- reasoning_intensity: {reasoning_policy.get('reasoning_intensity', 'R1_STANDARD')}\n"
@@ -76,6 +84,7 @@ class RoutingEngine:
                     dict(reasoning_policy) if isinstance(reasoning_policy, dict) else {}
                 ),
                 "evidence_support_status": evidence.get("support_status", ""),
+                "allowed_claim_ids": list(allowed_claim_ids),
             },
             "generation_prompt": prompt,
         }
@@ -89,3 +98,12 @@ class RoutingEngine:
         return "\n".join(
             f"- [{it.get('id', '?')}] {it.get('text', '')[:900]}" for it in top
         )
+
+
+def _allowed_claim_ids(envelope: Any) -> tuple[str, ...]:
+    if not isinstance(envelope, dict):
+        return ()
+    raw = envelope.get("allowed_claim_ids") or ()
+    if not isinstance(raw, (list, tuple)):
+        return ()
+    return tuple(dict.fromkeys(str(item).strip() for item in raw if str(item).strip()))

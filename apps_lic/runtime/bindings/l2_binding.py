@@ -40,7 +40,7 @@ import json
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any, Mapping, Optional
 
 from agentic_core.runtime.contracts.route_contract import RouteContract
 from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract
@@ -52,6 +52,14 @@ from agentic_core.L3_orchestration.doctrine.contracts_l3_7 import L3StepContract
 from apps_lic.policy.reasoning_intensity import (
     apply_evidence_support,
     policy_from_reason_codes,
+)
+from apps_lic.engines.recipient_classification import (
+    CLASS_UNKNOWN,
+    STATUS_DERIVED as RECIPIENT_CLASS_DERIVED,
+)
+from apps_lic.runtime.bindings.c0_binding import (
+    c0_recipient_class_status_from_fec,
+    c0_recipient_class_value_from_fec,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -179,6 +187,48 @@ def _target_contact_from_fec(fec: FinalEvidenceContract) -> dict[str, Any]:
     return {}
 
 
+def _c03_context_from_prompt(
+    prompt: Optional[CompiledPromptArtifact],
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    """Recover the app-owned C0.3 data envelope from the PA prompt artifact."""
+    if prompt is None:
+        return {}, {}, {}
+    for block in prompt.prompt_blocks:
+        content = str(getattr(block, "content", "") or "")
+        marker_index = content.find("C0.3 SENDER PROOF ENVELOPE")
+        if marker_index < 0:
+            continue
+        json_index = content.find("{", marker_index)
+        if json_index < 0:
+            continue
+        try:
+            parsed = json.loads(content[json_index:])
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(parsed, Mapping):
+            continue
+        envelope = parsed.get("sender_proof_envelope") or {}
+        length_budget = parsed.get("length_budget") or {}
+        jd_fields = parsed.get("jd_fields") or {}
+        return (
+            dict(envelope) if isinstance(envelope, Mapping) else {},
+            dict(length_budget) if isinstance(length_budget, Mapping) else {},
+            dict(jd_fields) if isinstance(jd_fields, Mapping) else {},
+        )
+    return {}, {}, {}
+
+
+def _recipient_class_from_fec(fec: FinalEvidenceContract) -> str:
+    status = c0_recipient_class_status_from_fec(fec)
+    recipient_class = c0_recipient_class_value_from_fec(fec).strip().upper()
+    if status != RECIPIENT_CLASS_DERIVED or recipient_class == CLASS_UNKNOWN:
+        raise ValueError(
+            "l2_execute_apps_lic: C0-derived recipient class is required before L2; "
+            f"status={status!r} value={recipient_class!r}"
+        )
+    return recipient_class
+
+
 def _normalize_generated_content(generated_content: Any) -> str:
     """Serialize HOP output into SealedL2Artifact.generated_content."""
     if isinstance(generated_content, str):
@@ -206,15 +256,19 @@ def _invoke_hop_pipeline(
     from apps_lic.config.hop_pipeline import REGISTRY
     from apps_shared.orchestration import HopPipelineExecutor
 
-    from apps_lic.engines.profile_analysis_engine import classify_recipient_profile
-
     target_contact = _target_contact_from_fec(fec)
-    recipient_class = classify_recipient_profile(target_contact)
+    recipient_class = _recipient_class_from_fec(fec)
     target_audience = recipient_class.lower()
     reasoning_policy = apply_evidence_support(
         policy_from_reason_codes(route.reason_codes),
         str(fec.support_status or ""),
     )
+    sender_proof_envelope, c03_length_budget, c03_jd_fields = _c03_context_from_prompt(prompt)
+    allowed_claim_ids = [
+        str(item)
+        for item in sender_proof_envelope.get("allowed_claim_ids", ())
+        if str(item)
+    ]
 
     # Build the initial context from FEC + prompt + route
     context: dict[str, Any] = {
@@ -232,6 +286,11 @@ def _invoke_hop_pipeline(
         "allowed_networks": list(route.allowed_networks),
         "allowed_file_roots": list(route.allowed_file_roots),
         "reasoning_policy": reasoning_policy,
+        "sender_proof_envelope": sender_proof_envelope,
+        "c03_length_budget": c03_length_budget,
+        "c03_jd_fields": c03_jd_fields,
+        "jd_fields": c03_jd_fields,
+        "c03_allowed_claim_ids": allowed_claim_ids,
         "c0_support_status": str(fec.support_status or ""),
         "c0_evidence_sufficiency_score": float(fec.evidence_sufficiency_score or 0.0),
         # C0 evidence as data only — no instruction authority
@@ -264,7 +323,19 @@ def _invoke_hop_pipeline(
             "config": {
                 "target_audience": target_audience,
                 "recipient_class": recipient_class,
+                "recipient_class_source": "C0_DERIVED",
+                "u0_recipient_class_hint": str(
+                    target_contact.get("seniority_class", "") or ""
+                ),
                 "target_contact": target_contact,
+                "sender_proof_envelope": sender_proof_envelope,
+                "c03_allowed_claim_ids": allowed_claim_ids,
+                "c03_proof_packet_id": str(
+                    sender_proof_envelope.get("proof_packet_id") or ""
+                ),
+                "c03_length_budget": c03_length_budget,
+                "c03_jd_fields": c03_jd_fields,
+                "jd_fields": c03_jd_fields,
                 "reasoning_policy": reasoning_policy,
                 "c0_support_status": str(fec.support_status or ""),
                 "compliance_level": "standard",
@@ -283,12 +354,13 @@ def _invoke_hop_pipeline(
         )
         return "stub_fallback", None, None
 
+    final_ctx = run_record.final_context or {}
+    generated_content = final_ctx.get("draft_message", "") or ""
     if run_record.success:
-        final_ctx = run_record.final_context or {}
-        generated_content = final_ctx.get("draft_message", "") or ""
         return "completed", run_record, generated_content
-    else:
-        return "stub_fallback", run_record, None
+    if generated_content:
+        return "completed_with_gate_halt", run_record, generated_content
+    return "stub_fallback", run_record, None
 
 
 def l2_execute_apps_lic(

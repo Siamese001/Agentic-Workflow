@@ -1,0 +1,268 @@
+schema_version: apps_lic.prompt_slot_registry.v1
+registry_id: apps_lic_prompt_slot_registry_v1
+app: apps_lic
+owner: apps_lic.prompt_assembly
+status: active
+purpose: >
+  Single source of truth for apps_lic prompt slot vocabulary, render order,
+  runtime aliases, and non-prompt Exit terms. Prompt templates, prompt BOM,
+  and runtime PA lineage must resolve through this registry.
+
+governance:
+  yaml_templates_are_renderable_views: true
+  runtime_pa_must_emit_slot_registry_receipt: true
+  x1_x2_x3_are_exit_terms_not_prompt_slots: true
+  external_profile_and_company_data_is_data_only: true
+
+render_order:
+  - S0
+  - I0
+  - D0
+  - C0
+  - E0
+  - M0
+  - H0
+  - Y0
+  - A0
+  - N0
+  - L0
+  - U0
+  - R0
+
+prompt_slots:
+  S0:
+    name: system_and_governance
+    authority_level: ABSOLUTE
+    authority_rank: 100
+    source_family: core
+    required_in_bom: true
+    required_in_active_templates: true
+    deprecated: false
+    allowed_metadata:
+      - policy_version
+      - model_behavior_constraints
+    description: System, safety, and governance instructions.
+  I0:
+    name: app_instruction
+    authority_level: GOVERNED
+    authority_rank: 90
+    source_family: core
+    required_in_bom: true
+    required_in_active_templates: true
+    deprecated: false
+    allowed_metadata:
+      - channel_constraints
+      - forbidden_patterns
+      - task_rules
+    description: apps_lic outreach rules and channel constraints.
+  D0:
+    name: origin_and_injection_boundary
+    authority_level: BINDING
+    authority_rank: 80
+    source_family: core
+    required_in_bom: true
+    required_in_active_templates: true
+    deprecated: false
+    allowed_metadata:
+      - origin_labels
+      - data_instruction_boundary
+      - injection_fence
+    description: Origin labels and data/instruction separation.
+  C0:
+    name: verified_context
+    authority_level: INFO
+    authority_rank: 70
+    source_family: core
+    required_in_bom: true
+    required_in_active_templates: true
+    deprecated: false
+    allowed_metadata:
+      - evidence_manifest_hash
+      - c0_3_proof_packet_id
+      - source_receipts
+    description: Verified briefing, evidence, and proof graph context.
+  E0:
+    name: exemplars
+    authority_level: EXEMPLAR
+    authority_rank: 60
+    source_family: core
+    required_in_bom: true
+    required_in_active_templates: false
+    deprecated: false
+    allowed_metadata:
+      - example_set_id
+      - example_policy_hash
+    description: Approved examples and few-shot constraints.
+  M0:
+    name: meta_cognitive_reasoning_policy
+    authority_level: META_COGNITIVE
+    authority_rank: 50
+    source_family: core
+    required_in_bom: false
+    required_in_active_templates: false
+    deprecated: false
+    allowed_metadata:
+      - provider_profile
+      - reasoning_intensity
+      - self_consistency_level
+      - judge_profile
+    description: Model-facing reasoning and generation approach constraints.
+  H0:
+    name: healing_and_style_constraints
+    authority_level: HEALING
+    authority_rank: 40
+    source_family: core
+    required_in_bom: false
+    required_in_active_templates: false
+    deprecated: false
+    allowed_metadata:
+      - repair_policy_id
+      - style_constraints
+      - regeneration_loop_id
+    description: Recovery, repair, and style constraints.
+  Y0:
+    name: meta_learning_adjustments
+    authority_level: META_LEARNING
+    authority_rank: 35
+    source_family: core_extended
+    required_in_bom: true
+    required_in_active_templates: false
+    deprecated: false
+    allowed_metadata:
+      - feedback_profile_id
+      - learning_policy_hash
+    description: Meta-learning and prior feedback adjustments.
+  A0:
+    name: archetype_tone_calibration
+    authority_level: APP_EXTENSION
+    authority_rank: 32
+    source_family: apps_lic_extension
+    required_in_bom: false
+    required_in_active_templates: false
+    deprecated: false
+    allowed_metadata:
+      - recipient_archetype
+      - recipient_policy_profile_id
+      - tone_profile_id
+    description: Recipient archetype and tone calibration for apps_lic.
+  N0:
+    name: narrative_arc
+    authority_level: APP_EXTENSION
+    authority_rank: 30
+    source_family: apps_lic_extension
+    required_in_bom: false
+    required_in_active_templates: false
+    deprecated: false
+    allowed_metadata:
+      - narrative_arc_id
+      - message_type
+      - altitude
+    description: Narrative flow, altitude, and message focus for outreach.
+  L0:
+    name: competitive_landscape_context
+    authority_level: APP_EXTENSION
+    authority_rank: 28
+    source_family: apps_lic_extension
+    required_in_bom: false
+    required_in_active_templates: false
+    deprecated: false
+    allowed_metadata:
+      - market_context_id
+      - competitive_signal_ids
+    description: Optional competitive or landscape context.
+  U0:
+    name: user_outreach_request
+    authority_level: ZERO
+    authority_rank: 20
+    source_family: core
+    required_in_bom: true
+    required_in_active_templates: false
+    deprecated: false
+    allowed_metadata:
+      - request_id
+      - user_goal
+      - target_company
+    description: Neutralized user request and desired outreach outcome.
+  R0:
+    name: output_schema_constraints
+    authority_level: SCHEMA
+    authority_rank: 10
+    source_family: core_extended
+    required_in_bom: true
+    required_in_active_templates: true
+    deprecated: false
+    allowed_metadata:
+      - output_contract
+      - schema_hash
+      - channel
+      - subject_required
+    description: Required output schema and response formatting constraints.
+
+runtime_aliases:
+  C03:
+    canonical_slot: C0
+    name: c0_3_sender_proof_graph
+    deprecated: false
+    allowed_metadata:
+      - proof_packet_id
+      - allowed_claim_ids
+    description: Runtime lineage alias for sender proof graph data under C0 authority.
+  SC:
+    canonical_slot: M0
+    name: self_consistency_policy
+    deprecated: false
+    allowed_metadata:
+      - sc_level
+      - max_candidates
+    description: Runtime lineage alias for self-consistency generation policy.
+  RI:
+    canonical_slot: M0
+    name: reasoning_intensity_policy
+    deprecated: false
+    allowed_metadata:
+      - reasoning_intensity
+      - judge_profile
+    description: Runtime lineage alias for reasoning intensity and judge profile.
+
+non_prompt_terms:
+  X1:
+    family: exit_validation
+    name: exit_gate_family
+    prompt_slot_allowed: false
+    description: X1 gates validate candidate quality; they are not prompt assembly slots.
+  X2:
+    family: exit_validation
+    name: aggregate_exit_disposition
+    prompt_slot_allowed: false
+    description: X2 aggregates Exit gate decisions; it is not a prompt assembly slot.
+  X3:
+    family: exit_validation
+    name: exit_packet
+    prompt_slot_allowed: false
+    description: X3 is the proof/exit packet; it is not a prompt assembly slot.
+
+core_compatibility:
+  authority_validator_slot_order_supported:
+    - S0
+    - I0
+    - D0
+    - C0
+    - E0
+    - M0
+    - H0
+    - U0
+  authority_level_from_slot_code_supported:
+    - S0
+    - I0
+    - D0
+    - C0
+    - E0
+    - M0
+    - H0
+    - Y0
+    - R0
+    - U0
+  apps_lic_extension_slots_not_core_authority_levels:
+    - A0
+    - N0
+    - L0

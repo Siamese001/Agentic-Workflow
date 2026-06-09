@@ -30,6 +30,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime, timezone
+from typing import Any, Iterable, Mapping
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.final_evidence_contract import (
@@ -39,13 +40,57 @@ from agentic_core.runtime.contracts.final_evidence_contract import (
     STATUS_NOT_APPLICABLE,
     STATUS_UNKNOWN,
     SUPPORT_STATUS_EMPTY,
+    SUPPORT_STATUS_BLOCKED,
+    SUPPORT_STATUS_CONFLICTED,
     SUPPORT_STATUS_PASS,
     SUPPORT_STATUS_WEAK,
 )
 from agentic_core.runtime.contracts.route_contract import RouteContract
+from apps_lic.engines.governed_opportunity_ingestion import (
+    C0_PROFILE_REQUIRED_VECTOR_COLLECTIONS,
+    InMemoryOpportunityFactStore,
+    OpportunityFactDocument,
+    OpportunityIngestionInput,
+    STATUS_BLOCKED as C0_EVIDENCE_BLOCKED,
+    STATUS_CONFLICTED as C0_EVIDENCE_CONFLICTED,
+    STATUS_MISSING as C0_OPPORTUNITY_INGESTION_REQUIRED,
+    STATUS_READY as C0_READY,
+    STATUS_STALE as C0_EVIDENCE_STALE,
+    build_opportunity_fact_documents,
+    check_opportunity_evidence_readiness,
+)
+from apps_lic.engines.recipient_classification import (
+    CLASS_UNKNOWN,
+    STATUS_CONFLICTED as RECIPIENT_CLASS_CONFLICTED,
+    STATUS_DERIVED as RECIPIENT_CLASS_DERIVED,
+    STATUS_LOW_CONFIDENCE as RECIPIENT_CLASS_LOW_CONFIDENCE,
+    STATUS_MISSING_EVIDENCE as RECIPIENT_CLASS_MISSING_EVIDENCE,
+    derive_recipient_class_from_store,
+)
 
 
 APPS_LIC_C0_CERT_REF: str = "c0-apps-lic-outreach-message-ag8-w5-f3c2e1"
+C0_READINESS_INPUT_KEY: str = "governed_opportunity_facts"
+C0_INGESTION_INPUT_KEY: str = "governed_opportunity_ingestion"
+C0_REQUIRED_NAMESPACES_KEY: str = "c0_required_namespaces"
+C0_READINESS_GATE_PREFIX: str = "c0_readiness:"
+C0_RECIPIENT_CLASS_GATE_PREFIX: str = "c0_recipient_class:"
+C0_RECIPIENT_CLASS_VALUE_PREFIX: str = "c0_recipient_class_value:"
+C0_RECIPIENT_CLASS_CONFIDENCE_PREFIX: str = "c0_recipient_class_confidence:"
+
+_READINESS_BLOCK_SUPPORT_STATUS: dict[str, str] = {
+    C0_OPPORTUNITY_INGESTION_REQUIRED: SUPPORT_STATUS_EMPTY,
+    C0_EVIDENCE_STALE: SUPPORT_STATUS_WEAK,
+    C0_EVIDENCE_CONFLICTED: SUPPORT_STATUS_CONFLICTED,
+    C0_EVIDENCE_BLOCKED: SUPPORT_STATUS_BLOCKED,
+}
+_RECIPIENT_CLASS_BLOCKING_STATUSES = frozenset(
+    {
+        RECIPIENT_CLASS_MISSING_EVIDENCE,
+        RECIPIENT_CLASS_LOW_CONFIDENCE,
+        RECIPIENT_CLASS_CONFLICTED,
+    }
+)
 
 # Explicit reason for all NOT_APPLICABLE dense/vector/sparse fields.
 # apps_lic does NOT generate embeddings; no ChromaDB collection exists at C0.
@@ -59,6 +104,225 @@ _NA_REASON = (
 
 def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _coerce_str_tuple(value: Any) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    if isinstance(value, str):
+        return (value,) if value else ()
+    if isinstance(value, Iterable):
+        return tuple(str(item) for item in value if str(item or "").strip())
+    return (str(value),)
+
+
+def _coerce_float(value: Any, default: float) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _metadata_from_packet(packet: Mapping[str, Any]) -> dict[str, Any]:
+    metadata = packet.get("metadata") or {}
+    return dict(metadata) if isinstance(metadata, Mapping) else {}
+
+
+def _fact_document_from_packet(
+    packet: Mapping[str, Any],
+    *,
+    index: int,
+) -> OpportunityFactDocument | None:
+    namespace = str(packet.get("namespace") or "").strip()
+    if not namespace:
+        return None
+    metadata = _metadata_from_packet(packet)
+    fact_text = str(
+        packet.get("fact_text")
+        or packet.get("text")
+        or packet.get("content")
+        or metadata.get("fact_text")
+        or ""
+    ).strip()
+    document_id = str(
+        packet.get("document_id")
+        or packet.get("id")
+        or f"{namespace}:{index}:{_sha256(f'{namespace}|{fact_text}|{index}')[:12]}"
+    )
+    return OpportunityFactDocument(
+        document_id=document_id,
+        namespace=namespace,
+        fact_family=str(packet.get("fact_family") or metadata.get("fact_family") or namespace),
+        fact_text=fact_text,
+        source_id=str(packet.get("source_id") or metadata.get("source_id") or document_id),
+        source_type=str(
+            packet.get("source_type")
+            or metadata.get("source_type")
+            or "governed_opportunity_fact"
+        ),
+        source_lineage=_coerce_str_tuple(
+            packet.get("source_lineage") or metadata.get("source_lineage")
+        ),
+        freshness_date=str(
+            packet.get("freshness_date")
+            or packet.get("collected_at")
+            or metadata.get("freshness_date")
+            or ""
+        ),
+        confidence=_coerce_float(packet.get("confidence"), 0.80),
+        metadata=metadata,
+    )
+
+
+def _documents_from_governed_inputs(
+    *,
+    personalization_inputs: Mapping[str, Any],
+    route: RouteContract,
+) -> tuple[OpportunityFactDocument, ...]:
+    documents: list[OpportunityFactDocument] = []
+    raw_docs = personalization_inputs.get(C0_READINESS_INPUT_KEY) or ()
+    if isinstance(raw_docs, Mapping):
+        raw_docs = raw_docs.get("documents") or ()
+    if isinstance(raw_docs, Iterable) and not isinstance(raw_docs, (str, bytes)):
+        for index, raw_doc in enumerate(raw_docs):
+            if not isinstance(raw_doc, Mapping):
+                continue
+            document = _fact_document_from_packet(raw_doc, index=index)
+            if document is not None:
+                documents.append(document)
+
+    ingestion_raw = personalization_inputs.get(C0_INGESTION_INPUT_KEY)
+    if isinstance(ingestion_raw, Mapping):
+        ingestion_input = OpportunityIngestionInput(
+            request_id=route.request_id,
+            trace_root=route.trace_id,
+            idempotency_key=str(
+                ingestion_raw.get("idempotency_key")
+                or f"c0-readiness:{route.run_id}"
+            ),
+            profile_id=str(ingestion_raw.get("profile_id") or ""),
+            expected_opportunity_scope=str(
+                ingestion_raw.get("expected_opportunity_scope") or ""
+            ),
+            contact=ingestion_raw.get("contact")
+            if isinstance(ingestion_raw.get("contact"), Mapping)
+            else None,
+            company=ingestion_raw.get("company")
+            if isinstance(ingestion_raw.get("company"), Mapping)
+            else None,
+            jd=ingestion_raw.get("jd"),
+            company_trigger=ingestion_raw.get("company_trigger")
+            if isinstance(ingestion_raw.get("company_trigger"), Mapping)
+            else None,
+            role_ownership=ingestion_raw.get("role_ownership")
+            if isinstance(ingestion_raw.get("role_ownership"), Mapping)
+            else None,
+            relationship=ingestion_raw.get("relationship")
+            if isinstance(ingestion_raw.get("relationship"), Mapping)
+            else None,
+            referral=ingestion_raw.get("referral")
+            if isinstance(ingestion_raw.get("referral"), Mapping)
+            else None,
+            prior_thread=ingestion_raw.get("prior_thread")
+            if isinstance(ingestion_raw.get("prior_thread"), Mapping)
+            else None,
+            collected_at=str(ingestion_raw.get("collected_at") or ""),
+        )
+        documents.extend(build_opportunity_fact_documents(ingestion_input))
+    return tuple(documents)
+
+
+def _required_namespaces(
+    personalization_inputs: Mapping[str, Any],
+) -> tuple[str, ...]:
+    raw = personalization_inputs.get(C0_REQUIRED_NAMESPACES_KEY)
+    namespaces = _coerce_str_tuple(raw)
+    return namespaces or tuple(C0_PROFILE_REQUIRED_VECTOR_COLLECTIONS)
+
+
+def _readiness_store_from_inputs(
+    *,
+    personalization_inputs: Mapping[str, Any],
+    route: RouteContract,
+) -> tuple[InMemoryOpportunityFactStore, tuple[OpportunityFactDocument, ...]]:
+    store = InMemoryOpportunityFactStore()
+    documents = _documents_from_governed_inputs(
+        personalization_inputs=personalization_inputs,
+        route=route,
+    )
+    store.upsert_documents(documents)
+    return store, documents
+
+
+def c0_readiness_store_from_validated_request(
+    *,
+    route: RouteContract,
+    validated_request: ValidatedRequest,
+) -> tuple[InMemoryOpportunityFactStore, tuple[OpportunityFactDocument, ...]]:
+    app_payload = validated_request.app_payload or {}
+    personalization_inputs = (
+        (app_payload.get("personalization") or {}).get("inputs") or {}
+    )
+    if not isinstance(personalization_inputs, Mapping):
+        personalization_inputs = {}
+    return _readiness_store_from_inputs(
+        personalization_inputs=personalization_inputs,
+        route=route,
+    )
+
+
+def c0_readiness_status_from_fec(fec: FinalEvidenceContract) -> str:
+    for ref in fec.gate_verdict_refs:
+        text = str(ref)
+        if text.startswith(C0_READINESS_GATE_PREFIX):
+            return text.removeprefix(C0_READINESS_GATE_PREFIX)
+    return C0_OPPORTUNITY_INGESTION_REQUIRED
+
+
+def c0_recipient_class_status_from_fec(fec: FinalEvidenceContract) -> str:
+    for ref in fec.gate_verdict_refs:
+        text = str(ref)
+        if text.startswith(C0_RECIPIENT_CLASS_GATE_PREFIX):
+            return text.removeprefix(C0_RECIPIENT_CLASS_GATE_PREFIX)
+    return RECIPIENT_CLASS_MISSING_EVIDENCE
+
+
+def c0_recipient_class_value_from_fec(fec: FinalEvidenceContract) -> str:
+    for ref in fec.gate_verdict_refs:
+        text = str(ref)
+        if text.startswith(C0_RECIPIENT_CLASS_VALUE_PREFIX):
+            return text.removeprefix(C0_RECIPIENT_CLASS_VALUE_PREFIX)
+    return CLASS_UNKNOWN
+
+
+def c0_recipient_class_confidence_from_fec(fec: FinalEvidenceContract) -> float:
+    for ref in fec.gate_verdict_refs:
+        text = str(ref)
+        if text.startswith(C0_RECIPIENT_CLASS_CONFIDENCE_PREFIX):
+            return _coerce_float(
+                text.removeprefix(C0_RECIPIENT_CLASS_CONFIDENCE_PREFIX),
+                0.0,
+            )
+    return 0.0
+
+
+def c0_blocking_status_from_fec(fec: FinalEvidenceContract) -> str:
+    readiness_status = c0_readiness_status_from_fec(fec)
+    if readiness_status != C0_READY:
+        return readiness_status
+    recipient_status = c0_recipient_class_status_from_fec(fec)
+    recipient_class = c0_recipient_class_value_from_fec(fec)
+    if (
+        recipient_status in _RECIPIENT_CLASS_BLOCKING_STATUSES
+        or recipient_status != RECIPIENT_CLASS_DERIVED
+        or recipient_class == CLASS_UNKNOWN
+    ):
+        return recipient_status or RECIPIENT_CLASS_MISSING_EVIDENCE
+    return C0_READY
+
+
+def c0_ready_for_pa(fec: FinalEvidenceContract) -> bool:
+    return c0_blocking_status_from_fec(fec) == C0_READY
 
 
 def _build_lead_evidence(
@@ -337,6 +601,19 @@ def c0_retrieve_apps_lic(
 
     lead_profile = entity_refs.get("lead_profile") or {}
     sender_profile = entity_refs.get("sender_profile") or {}
+    readiness_store, readiness_documents = _readiness_store_from_inputs(
+        personalization_inputs=personalization_inputs,
+        route=route,
+    )
+    required_namespaces = _required_namespaces(personalization_inputs)
+    c0_readiness = check_opportunity_evidence_readiness(
+        store=readiness_store,
+        required_namespaces=required_namespaces,
+    )
+    recipient_derivation = derive_recipient_class_from_store(
+        readiness_store,
+        u0_recipient_class_hint=str(lead_profile.get("seniority_class") or ""),
+    )
 
     timestamp_iso = datetime.now(timezone.utc).isoformat()
     run_id = route.run_id
@@ -388,7 +665,12 @@ def c0_retrieve_apps_lic(
     # All USER_INTENT IDs
     user_intent_ids = tuple(it.evidence_id for it in items if it.stratum == "USER_INTENT")
 
-    target_met = has_lead and has_campaign
+    recipient_class_ready = (
+        recipient_derivation.status == RECIPIENT_CLASS_DERIVED
+        and recipient_derivation.derived_recipient_class != CLASS_UNKNOWN
+    )
+    governed_ready = c0_readiness.ready and recipient_class_ready
+    target_met = has_lead and has_campaign and governed_ready
     target_partial = has_lead or has_campaign
     score = 0.0
     if has_lead:
@@ -398,6 +680,10 @@ def c0_retrieve_apps_lic(
     if has_sender:
         score += 0.15
     if has_personalization:
+        score += 0.10
+    if c0_readiness.ready:
+        score += 0.10
+    if recipient_class_ready:
         score += 0.10
 
     # ── Compilation hash (binds evidence bundle for PA reference) ────────────
@@ -432,9 +718,32 @@ def c0_retrieve_apps_lic(
         evidence_strata += (("USER_INTENT", user_intent_ids),)
 
     # ── Support status ───────────────────────────────────────────────────────
+    readiness_reason = c0_readiness.ingestion_required_reason
+    if (
+        c0_readiness.status == C0_READY
+        and recipient_derivation.status != RECIPIENT_CLASS_DERIVED
+    ):
+        readiness_reason = (
+            f"{recipient_derivation.status}: "
+            + ",".join(recipient_derivation.class_reason_codes)
+        ).strip(": ")
+
     if target_met:
         support_status_v = SUPPORT_STATUS_PASS
         unknown_reason = ""
+    elif c0_readiness.status != C0_READY:
+        support_status_v = _READINESS_BLOCK_SUPPORT_STATUS.get(
+            c0_readiness.status,
+            SUPPORT_STATUS_WEAK,
+        )
+        unknown_reason = readiness_reason or c0_readiness.status
+    elif not recipient_class_ready:
+        support_status_v = (
+            SUPPORT_STATUS_CONFLICTED
+            if recipient_derivation.status == RECIPIENT_CLASS_CONFLICTED
+            else SUPPORT_STATUS_WEAK
+        )
+        unknown_reason = readiness_reason or recipient_derivation.status
     elif target_partial:
         support_status_v = SUPPORT_STATUS_WEAK
         unknown_reason = "Lead profile or campaign context is missing — partial evidence only"
@@ -448,13 +757,24 @@ def c0_retrieve_apps_lic(
         # Preserve the WEAK/EMPTY label — do NOT silently upgrade to PASS.
         pass
 
-    # contradiction_report: apps_lic inline evidence cannot contradict itself
-    # at C0 (single-source, no cross-source comparison at this stage).
-    contradiction_report = (
-        STATUS_NOT_APPLICABLE
-        + ": apps_lic C0 collects inline app_payload evidence only; "
-        + "no multi-source contradiction surface applies at W5."
-    )
+    if c0_readiness.status == C0_EVIDENCE_CONFLICTED:
+        contradiction_report = (
+            f"{C0_EVIDENCE_CONFLICTED}: "
+            + ",".join(c0_readiness.conflicted_namespaces)
+        )
+    elif recipient_derivation.status == RECIPIENT_CLASS_CONFLICTED:
+        contradiction_report = (
+            f"{RECIPIENT_CLASS_CONFLICTED}: "
+            + ",".join(recipient_derivation.class_reason_codes)
+        )
+    else:
+        # apps_lic inline evidence cannot contradict itself at C0; governed
+        # fact-store readiness above is the cross-source contradiction surface.
+        contradiction_report = (
+            STATUS_NOT_APPLICABLE
+            + ": apps_lic inline app_payload evidence is user assertion only; "
+            + "governed opportunity fact readiness controls public evidence."
+        )
 
     # ── Final evidence digest ─────────────────────────────────────────────────
     final_evidence_digest = _sha256(
@@ -467,6 +787,74 @@ def c0_retrieve_apps_lic(
         ("campaign_present", 1.0 if has_campaign else 0.0),
         ("sender_present", 1.0 if has_sender else 0.0),
         ("personalization_present", 1.0 if has_personalization else 0.0),
+        ("governed_c0_ready", 1.0 if c0_readiness.ready else 0.0),
+        ("governed_c0_source_count", float(c0_readiness.source_count)),
+        (
+            "recipient_class_ready",
+            1.0 if recipient_class_ready else 0.0,
+        ),
+        (
+            "recipient_class_confidence",
+            float(recipient_derivation.recipient_class_confidence),
+        ),
+    )
+    gate_verdict_refs = (
+        f"{C0_READINESS_GATE_PREFIX}{c0_readiness.status}",
+        f"{C0_RECIPIENT_CLASS_GATE_PREFIX}{recipient_derivation.status}",
+        (
+            f"{C0_RECIPIENT_CLASS_VALUE_PREFIX}"
+            f"{recipient_derivation.derived_recipient_class}"
+        ),
+        (
+            f"{C0_RECIPIENT_CLASS_CONFIDENCE_PREFIX}"
+            f"{recipient_derivation.recipient_class_confidence:.3f}"
+        ),
+    )
+    readiness_packet_ref = "c0_readiness_packet:sha256:" + _sha256(
+        json.dumps(c0_readiness.to_packet(), sort_keys=True)
+    )
+    recipient_packet_ref = (
+        "c0_recipient_class_packet:"
+        + recipient_derivation.evidence_packet_id
+    )
+    u0_recipient_class_hint = str(lead_profile.get("seniority_class") or "").strip()
+    audit_refs = (
+        readiness_packet_ref,
+        recipient_packet_ref,
+        "c0_recipient_class_reason_codes:"
+        + ",".join(recipient_derivation.class_reason_codes),
+        "c0_recipient_class_contradiction_status:"
+        + recipient_derivation.contradiction_status,
+        "c0_recipient_class_hitl_required:"
+        + str(bool(recipient_derivation.hitl_required)).lower(),
+        "c0_u0_recipient_class_hint:" + u0_recipient_class_hint,
+        "c0_u0_recipient_class_hint_authority:false",
+    )
+    freshness_receipts = (
+        f"c0_readiness_status:{c0_readiness.status}",
+        "c0_required_namespaces:" + ",".join(required_namespaces),
+        "c0_source_count:" + str(c0_readiness.source_count),
+    )
+    blocked_source_refs = tuple(
+        dict.fromkeys(
+            (
+                *c0_readiness.blocked_namespaces,
+                *c0_readiness.conflicted_namespaces,
+                *c0_readiness.stale_namespaces,
+            )
+        )
+    )
+    weak_support_refinement_attempts = (
+        (readiness_reason or f"{c0_readiness.status}:{recipient_derivation.status}"),
+    ) if support_status_v != SUPPORT_STATUS_PASS else ()
+    snapshot_refs = tuple(
+        dict.fromkeys(
+            (
+                *c0_readiness.source_snapshot_ids,
+                *recipient_derivation.source_snapshot_ids,
+                *(doc.source_snapshot_id for doc in readiness_documents),
+            )
+        )
     )
 
     return FinalEvidenceContract(
@@ -478,11 +866,14 @@ def c0_retrieve_apps_lic(
         evidence_items=tuple(items),
         retrieval_sources=tuple(sources),
         support_target_met=target_met,
-        support_target_partial=target_partial,
-        evidence_sufficiency_score=round(score, 3),
+        support_target_partial=target_partial and not target_met,
+        evidence_sufficiency_score=round(score if target_met else min(score, 0.59), 3),
         evidence_collection_timestamp=timestamp_iso,
-        schema_version="AG-8.W5.f3c2e1",
+        schema_version="AG-8.W5.f3c2e1.W1_C0_READINESS",
         compilation_hash=compilation_hash,
+        gate_verdict_refs=gate_verdict_refs,
+        snapshot_refs=snapshot_refs,
+        audit_refs=audit_refs,
         l5_certification_ref=APPS_LIC_C0_CERT_REF,
         # Lineage
         route_contract_ref=getattr(route, "compilation_hash", ""),
@@ -500,7 +891,7 @@ def c0_retrieve_apps_lic(
         source_version_map=source_version_map,
         # ACL/freshness — N/A for inline path
         acl_verification_receipts=(),
-        freshness_receipts=(),
+        freshness_receipts=freshness_receipts,
         # Contradiction — N/A at W5 (single-source inline)
         contradiction_report=contradiction_report,
         # Support aggregate
@@ -508,8 +899,8 @@ def c0_retrieve_apps_lic(
         support_score_profile=support_score_profile,
         # Exclusions
         excluded_evidence_refs=(),
-        blocked_source_refs=(),
-        weak_support_refinement_attempts=(),
+        blocked_source_refs=blocked_source_refs,
+        weak_support_refinement_attempts=weak_support_refinement_attempts,
         # Digest
         final_evidence_digest=final_evidence_digest,
         unknown_reason=unknown_reason,
@@ -521,5 +912,18 @@ def c0_retrieve_apps_lic(
 
 __all__ = [
     "APPS_LIC_C0_CERT_REF",
+    "C0_EVIDENCE_BLOCKED",
+    "C0_EVIDENCE_CONFLICTED",
+    "C0_EVIDENCE_STALE",
+    "C0_OPPORTUNITY_INGESTION_REQUIRED",
+    "C0_READY",
+    "C0_READINESS_INPUT_KEY",
+    "c0_blocking_status_from_fec",
+    "c0_readiness_status_from_fec",
+    "c0_ready_for_pa",
+    "c0_recipient_class_confidence_from_fec",
+    "c0_recipient_class_status_from_fec",
+    "c0_recipient_class_value_from_fec",
+    "c0_readiness_store_from_validated_request",
     "c0_retrieve_apps_lic",
 ]

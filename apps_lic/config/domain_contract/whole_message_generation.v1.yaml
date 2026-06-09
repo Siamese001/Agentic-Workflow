@@ -35,6 +35,23 @@ provider_backed_generation:
     provider_mode_must_emit_call_receipt: true
     provider_mode_must_preserve_allowed_claim_ids: true
 
+recipient_archetype_policy:
+  canonical_archetypes:
+    - RECRUITER
+    - SENIOR_TA
+    - EXECUTIVE
+    - C_LEVEL
+  class_to_archetype:
+    RECRUITER: RECRUITER
+    REFERRAL_CONTACT: RECRUITER
+    SENIOR_TA: SENIOR_TA
+    HIRING_MANAGER: EXECUTIVE
+    EXECUTIVE: EXECUTIVE
+    VP_ENG: EXECUTIVE
+    C_LEVEL: C_LEVEL
+    CEO: C_LEVEL
+    CTO: C_LEVEL
+
 required_inputs:
   - recipient_class_derivation
   - message_requirement_gate_result
@@ -76,6 +93,23 @@ reasoning_policy:
     - application_status
     - company_trigger
 
+length_control_policy:
+  hard_controls:
+    - max_sentences
+    - hard_cap_chars
+  advisory_controls:
+    - min_words
+    - max_words
+  rationale: >
+    Tokenizers split text into character sequences that may be shorter or longer
+    than human-visible words. Sentence count and character caps are the stable
+    controls for LinkedIn-length drafts; word ranges remain useful guidance and
+    reporting metadata.
+  enforcement:
+    w4_selection: enforce hard_controls only
+    validation_exit: enforce hard_controls only
+    prompt_assembly: instruct hard_controls and label words advisory
+
 length_budgets:
   recruiter_general_intro:
     words: [40, 60]
@@ -89,10 +123,30 @@ length_budgets:
     words: [50, 75]
     sentences: [3, 4]
     hard_cap_chars: 700
+  senior_ta_general_intro:
+    words: [35, 60]
+    sentences: [2, 3]
+    hard_cap_chars: 500
   hiring_manager_role_specific:
     words: [55, 75]
     sentences: [3, 4]
     hard_cap_chars: 750
+  executive_role_specific:
+    words: [45, 70]
+    sentences: [3, 4]
+    hard_cap_chars: 700
+  executive_general_intro:
+    words: [35, 55]
+    sentences: [2, 3]
+    hard_cap_chars: 500
+  c_level_role_specific:
+    words: [35, 60]
+    sentences: [2, 3]
+    hard_cap_chars: 550
+  c_level_general_intro:
+    words: [30, 55]
+    sentences: [2, 3]
+    hard_cap_chars: 500
   executive_trigger:
     words: [35, 60]
     sentences: [2, 3]

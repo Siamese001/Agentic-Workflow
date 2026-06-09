@@ -106,9 +106,9 @@ slot_bodies:
 
     Examples are style references only.
   M0: |
-    Model/provider contract:
-    - provider_profile: qwen_vllm
-    - model: Qwen/Qwen2.5-32B-Instruct-AWQ
+    Generation contract:
+    - Provider and model are selected by runtime routing configuration.
+    - Do not include runtime provider or model identifiers in the output.
     - Return JSON only.
   H0: |
     Approved writing preferences:
@@ -116,7 +116,8 @@ slot_bodies:
     - Avoid AI-sounding phrasing.
     - No em dashes.
     - Links must be plain text.
-    - Signature is optional and must be short.
+    - Signature is required for linkedin_inmail and optional for linkedin_chat.
+    - Signature must be short.
   N0: |
     Narrative Arc guidance (P2 optional):
     {{narrative_arc_context}}
@@ -143,38 +144,48 @@ slot_bodies:
 
     If no competitive context, proceed without this guidance.
   R0: |
-    Output exactly one JSON object with:
-    - message_text
+    Output exactly one OutreachDraftCandidate JSON object with:
+    - subject
+    - message_body
     - channel
     - recipient_class
+    - relationship_posture
     - intended_next_step
     - claims_used
     - unsupported_claims
     - omitted_claims
-    - qa_notes
-    - provider_profile
-    - model
+    - personalization_confidence
+    - tone_risk_flags
+    - hitl_questions
+    - signature_block
+    - metadata
+    - send_mode
 
     Required values:
-    - channel: linkedin
+    - channel: copy the input channel exactly.
     - recipient_class: recruiter
-    - provider_profile: qwen_vllm
-    - model: Qwen/Qwen2.5-32B-Instruct-AWQ
+    - send_mode: one of draft_only, review_required, send_ready_candidate.
 
-    message_text rules:
-    - 600 characters or fewer
-    - Max 2 short paragraphs
+    Channel-specific rules:
+    - If channel is linkedin_inmail, subject must be non-empty, message_body must fit the provided channel_ceiling, and signature_block is required.
+    - If channel is linkedin_chat, subject must be empty, message_body must be under 300 characters, and signature_block is optional.
+    - Do not infer channel from length. Use the explicit channel input.
+
+    message_body rules:
+    - Fit the provided channel_ceiling.
+    - Max 2 short paragraphs for recruiter compact drafts.
     - Low-friction ask for a chat, call, or resume review
-    - No subject line
-    - No send mode
 output_contract:
-  type: LinkedInRecruiterOutreachDraft
+  type: OutreachDraftCandidate
   format: json
 validation_rules:
-  - all_claims_in_message_text_must_appear_in_claims_used
+  - all_claims_in_message_body_must_appear_in_claims_used
   - claims_used_must_have_source_refs
-  - omitted_claims_must_not_appear_in_message_text
-  - unsupported_claims_must_not_appear_in_message_text
+  - omitted_claims_must_not_appear_in_message_body
+  - unsupported_claims_must_not_appear_in_message_body
+  - send_mode_must_be_allowed
+  - linkedin_inmail_requires_subject_and_signature
+  - linkedin_chat_requires_empty_subject_and_300_char_body
   - no_em_dash
   - no_markdown_links
   - within_channel_ceiling

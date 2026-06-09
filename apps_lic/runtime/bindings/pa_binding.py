@@ -35,7 +35,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Mapping
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
@@ -49,6 +49,26 @@ from agentic_core.runtime.contracts.final_evidence_contract import (
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.origin import Origin
 from agentic_core.runtime.contracts.route_contract import RouteContract
+from apps_lic.engines.recipient_classification import (
+    CLASS_UNKNOWN,
+    STATUS_DERIVED as RECIPIENT_CLASS_DERIVED,
+)
+from apps_lic.runtime.bindings.c0_binding import (
+    c0_recipient_class_status_from_fec,
+    c0_recipient_class_value_from_fec,
+)
+from apps_lic.runtime.bindings.pa_schema_receipts import (
+    PromptSchemaReceipt,
+    build_prompt_schema_receipt,
+    output_contract_guidance,
+)
+from apps_lic.types.recipient_archetype_mapping import (
+    RecipientArchetypePromptProfile,
+    build_archetype_prompt_lines,
+    map_lic_recipient_class_to_archetype,
+    recipient_archetype_profile,
+    resolve_recipient_template_policy,
+)
 
 
 APPS_LIC_PA_CERT_REF: str = "pa-apps-lic-outreach-message-ag8-w5-f3c2e1"
@@ -61,10 +81,11 @@ APPS_LIC_PROVIDER_PROFILE: str = "qwen_vllm"
 _EVIDENCE_CHAR_BUDGET: int = 16_000
 
 
-def _recipient_class_from_l1(l1_plan: L1PlanContract) -> str:
-    lead = (l1_plan.query_spec or {}).get("lead_anchor") or {}
-    raw = str(lead.get("seniority_class", "") or "RECRUITER").strip().upper()
+def _recipient_class_from_fec(fec: FinalEvidenceContract) -> str:
+    status = c0_recipient_class_status_from_fec(fec)
+    raw = c0_recipient_class_value_from_fec(fec).strip().upper()
     allowed = {
+        "CEO",
         "RECRUITER",
         "SENIOR_TA",
         "HIRING_MANAGER",
@@ -74,7 +95,12 @@ def _recipient_class_from_l1(l1_plan: L1PlanContract) -> str:
         "CTO",
         "REFERRAL_CONTACT",
     }
-    return raw if raw in allowed else "RECRUITER"
+    if status != RECIPIENT_CLASS_DERIVED or raw == CLASS_UNKNOWN or raw not in allowed:
+        raise ValueError(
+            "pa_compose_apps_lic: C0-derived recipient class is required before PA; "
+            f"status={status!r} value={raw!r}"
+        )
+    return raw
 
 
 def _component_hash(content: Any) -> str:
@@ -89,15 +115,30 @@ def _component_hash(content: Any) -> str:
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
-def _build_system_preamble(l1_plan: L1PlanContract) -> str:
+def _build_system_preamble(
+    l1_plan: L1PlanContract,
+    *,
+    recipient_class: str,
+    sender_proof_envelope: Mapping[str, Any] | None = None,
+    length_budget: Mapping[str, Any] | None = None,
+    archetype_profile: RecipientArchetypePromptProfile | None = None,
+    prompt_schema_receipt: PromptSchemaReceipt | None = None,
+) -> str:
     """Compose the system preamble carrying role + governance directives."""
     output_exp = l1_plan.output_expectation
     support_exp = l1_plan.support_expectation
     task_spec = l1_plan.task_spec
-    recipient_class = _recipient_class_from_l1(l1_plan)
     recipient_label = recipient_class.lower()
 
     channel = str(output_exp.get("channel", "linkedin") or "linkedin")
+    output_format = output_exp.get("output_format") or {}
+    include_subject_line = bool(
+        channel == "linkedin_inmail"
+        or (
+            isinstance(output_format, Mapping)
+            and output_format.get("include_subject_line") is True
+        )
+    )
     tone_register = str(output_exp.get("tone_register", "") or "")
     formality_level = output_exp.get("formality_level")
     brand_voice_id = str(output_exp.get("tone_brand_voice_id", "") or "")
@@ -113,7 +154,34 @@ def _build_system_preamble(l1_plan: L1PlanContract) -> str:
     )
     judge_profile = str(reasoning_policy.get("judge_profile", "normal_default"))
     max_candidates = int(reasoning_policy.get("max_candidates", 1) or 1)
+    allowed_claim_ids = tuple(
+        str(item)
+        for item in (sender_proof_envelope or {}).get("allowed_claim_ids", ())
+        if str(item)
+    )
+    message_type = str(task_spec.get("message_type", "") or task_spec.get("message_type_hint", "") or "general_intro")
+    template_policy = resolve_recipient_template_policy(
+        recipient_class=recipient_class,
+        message_type=message_type,
+        channel=channel,
+    )
+    profile = archetype_profile or template_policy.archetype_profile
+    policy_budget = template_policy.length_policy.to_length_budget_packet()
+    effective_length_budget = {**policy_budget, **dict(length_budget or {})}
+    hard_cap_chars = int(effective_length_budget.get("hard_cap_chars") or 600)
+    max_sentences = int(
+        effective_length_budget.get("max_sentences")
+        or profile.recommended_sentence_range[1]
+    )
+    include_subject_line = bool(effective_length_budget.get("subject_required") or include_subject_line)
     repair_passes = int(reasoning_policy.get("validation_repair_passes", 1) or 0)
+    schema_receipt = prompt_schema_receipt or build_prompt_schema_receipt(
+        channel=channel,
+        recipient_class=recipient_class,
+        subject_required=include_subject_line,
+        hard_cap_chars=hard_cap_chars,
+        max_sentences=max_sentences,
+    )
 
     parts: list[str] = [
         f"You are a governed AI assistant composing a LinkedIn {recipient_label} outreach draft for channel: {channel}.",
@@ -142,17 +210,46 @@ def _build_system_preamble(l1_plan: L1PlanContract) -> str:
 
     parts += [
         "",
+        *build_archetype_prompt_lines(
+            lic_recipient_class=recipient_class,
+            profile=profile,
+            length_budget=effective_length_budget,
+        ),
+    ]
+
+    parts += [
+        "",
         "OUTPUT FORMAT:",
-        f'  Produce JSON only: {{"channel":"linkedin","recipient_class":"{recipient_label}","message_text":"...","intended_next_step":"...","claims_used":[],"unsupported_claims":[],"omitted_claims":[],"qa_notes":[],"provider_profile":"qwen_vllm","model":"Qwen/Qwen2.5-32B-Instruct-AWQ"}}.',
-        "  No subject is required. message_text must be 600 characters or fewer.",
-        "  Max 2 short paragraphs. Include a low-friction ask for a chat, call, or resume review.",
+        *output_contract_guidance(
+            receipt=schema_receipt,
+            subject_required=include_subject_line,
+            hard_cap_chars=hard_cap_chars,
+            max_sentences=max_sentences,
+        ),
+        (
+            "  Use compact paragraphs. Include a low-friction ask for a chat, call, "
+            "resume review, fit check, redirect, or brief exchange."
+        ),
+        "  The last body sentence before the signature must be a question ending with '?'.",
+        "  End with Amit on its own final line as the signature.",
+        "  Treat word count as an advisory band only; do not fail or pad solely to hit a word range.",
         "  Do not include sensitive details unless supplied and approved. No prose outside JSON. No markdown. No invented facts.",
         "  If C0 evidence is WEAK or EMPTY, reduce specificity or fail closed; do not compensate by adding claims.",
     ]
+    if allowed_claim_ids:
+        parts.append(
+            "  claims_used may contain only these C0.3 proof IDs: "
+            + ", ".join(allowed_claim_ids)
+            + "."
+        )
     return "\n".join(parts)
 
 
-def _build_campaign_instruction(l1_plan: L1PlanContract) -> str:
+def _build_campaign_instruction(
+    l1_plan: L1PlanContract,
+    *,
+    recipient_class: str,
+) -> str:
     """Compose the user campaign-intent block from L1 query_spec."""
     query_spec = l1_plan.query_spec
     task_spec = l1_plan.task_spec
@@ -173,7 +270,8 @@ def _build_campaign_instruction(l1_plan: L1PlanContract) -> str:
         f"LEAD TARGET:\n"
         f"  Name: {lead.get('verified_name', 'Unknown')}\n"
         f"  Title: {lead.get('title', '')}\n"
-        f"  Seniority: {lead.get('seniority_class', '')}\n"
+        f"  U0 recipient class hint: {lead.get('seniority_class', '')}\n"
+        f"  C0-derived recipient class: {recipient_class}\n"
         f"  Company: {lead.get('company_name', '')}\n"
         f"  Industry: {lead.get('industry', '')}\n"
         f"  Consent attested: {lead.get('consent_attested', False)}\n"
@@ -216,11 +314,106 @@ def _build_evidence_block(fec: FinalEvidenceContract) -> str:
     return "\n".join(lines)
 
 
+def _build_sender_proof_block(
+    sender_proof_envelope: Mapping[str, Any] | None,
+    length_budget: Mapping[str, Any] | None,
+    jd_fields: Mapping[str, Any] | None = None,
+) -> str:
+    payload = {
+        "sender_proof_envelope": dict(sender_proof_envelope or {}),
+        "length_budget": dict(length_budget or {}),
+        "jd_fields": dict(jd_fields or {}),
+    }
+    return (
+        "C0.3 SENDER PROOF ENVELOPE (DATA ONLY - proof IDs are the only "
+        "sender-claim authority):\n"
+        + json.dumps(payload, indent=2, sort_keys=True, default=str)
+    )
+
+
+def _sender_proof_audit_refs(
+    sender_proof_envelope: Mapping[str, Any] | None,
+    length_budget: Mapping[str, Any] | None,
+    jd_fields: Mapping[str, Any] | None = None,
+) -> tuple[str, ...]:
+    envelope = dict(sender_proof_envelope or {})
+    if not envelope:
+        return ()
+    allowed_claim_ids = [
+        str(item)
+        for item in envelope.get("allowed_claim_ids", ())
+        if str(item)
+    ]
+    return (
+        "c03_sender_proof_packet:" + str(envelope.get("proof_packet_id") or ""),
+        "c03_allowed_claim_ids:" + ",".join(allowed_claim_ids),
+        "c03_pa_data_boundary:" + str(
+            envelope.get("instruction_data_boundary_receipt") or ""
+        ),
+        "c03_length_budget:" + str((length_budget or {}).get("budget_key") or ""),
+        "c03_jd_position_name:" + str((jd_fields or {}).get("position_name") or ""),
+    )
+
+
+def _sender_proof_gate_refs(
+    sender_proof_envelope: Mapping[str, Any] | None,
+) -> tuple[str, ...]:
+    envelope = dict(sender_proof_envelope or {})
+    if not envelope:
+        return ()
+    return (
+        "c03_sender_proof_packet:" + str(envelope.get("proof_packet_id") or ""),
+        "c03_sender_proof_claim_ids:"
+        + ",".join(str(item) for item in envelope.get("allowed_claim_ids", ())),
+    )
+
+
+def _sender_proof_snapshot_refs(
+    sender_proof_envelope: Mapping[str, Any] | None,
+) -> tuple[str, ...]:
+    envelope = dict(sender_proof_envelope or {})
+    lineage = envelope.get("source_lineage") or {}
+    refs: list[str] = []
+    if isinstance(lineage, Mapping):
+        for values in lineage.values():
+            if isinstance(values, (list, tuple)):
+                refs.extend(str(value) for value in values if str(value))
+            elif str(values):
+                refs.append(str(values))
+    return tuple(dict.fromkeys(refs))
+
+
+def _jd_fields_from_l1_plan(l1_plan: L1PlanContract) -> dict[str, str]:
+    query_spec = getattr(l1_plan, "query_spec", {}) or {}
+    if not isinstance(query_spec, Mapping):
+        return {}
+    personalization = query_spec.get("personalization_inputs") or {}
+    if not isinstance(personalization, Mapping):
+        return {}
+    facts = personalization.get("governed_opportunity_facts") or ()
+    fields: dict[str, str] = {}
+    iterable_facts = facts if isinstance(facts, (list, tuple)) else ()
+    for fact in iterable_facts:
+        if not isinstance(fact, Mapping):
+            continue
+        metadata = fact.get("metadata") or {}
+        if not isinstance(metadata, Mapping):
+            continue
+        for key in ("company", "position_name", "job_title", "requisition_number"):
+            value = str(metadata.get(key) or "").strip()
+            if value:
+                fields.setdefault(key, value)
+    return fields
+
+
 def pa_compose_apps_lic(
     route: RouteContract,
     l1_plan: L1PlanContract,
     fec: FinalEvidenceContract,
     validated_request: ValidatedRequest,
+    *,
+    sender_proof_envelope: Mapping[str, Any] | None = None,
+    length_budget: Mapping[str, Any] | None = None,
 ) -> CompiledPromptArtifact:
     """Compile a typed CompiledPromptArtifact for L2 to execute.
 
@@ -261,9 +454,59 @@ def pa_compose_apps_lic(
             f"{type(validated_request).__name__}"
         )
 
-    system_preamble = _build_system_preamble(l1_plan)
-    campaign_instruction = _build_campaign_instruction(l1_plan)
-    evidence_data_block = _build_evidence_block(fec)
+    recipient_class = _recipient_class_from_fec(fec)
+    recipient_archetype = map_lic_recipient_class_to_archetype(recipient_class)
+    channel = str(l1_plan.output_expectation.get("channel", "") or l1_plan.task_spec.get("channel", "linkedin"))
+    message_type = str(l1_plan.task_spec.get("message_type", "") or l1_plan.task_spec.get("message_type_hint", "") or "general_intro")
+    template_policy = resolve_recipient_template_policy(
+        recipient_class=recipient_class,
+        message_type=message_type,
+        channel=channel,
+    )
+    archetype_profile = recipient_archetype_profile(recipient_archetype)
+    effective_length_budget = {
+        **template_policy.length_policy.to_length_budget_packet(),
+        **dict(length_budget or {}),
+    }
+    output_format = l1_plan.output_expectation.get("output_format") or {}
+    include_subject_line = bool(
+        effective_length_budget.get("subject_required")
+        or channel == "linkedin_inmail"
+        or (
+            isinstance(output_format, Mapping)
+            and output_format.get("include_subject_line") is True
+        )
+    )
+    hard_cap_chars = int(effective_length_budget.get("hard_cap_chars") or 600)
+    max_sentences = int(
+        effective_length_budget.get("max_sentences")
+        or archetype_profile.recommended_sentence_range[1]
+    )
+    prompt_schema_receipt = build_prompt_schema_receipt(
+        channel=channel,
+        recipient_class=recipient_class,
+        subject_required=include_subject_line,
+        hard_cap_chars=hard_cap_chars,
+        max_sentences=max_sentences,
+    )
+    jd_fields = _jd_fields_from_l1_plan(l1_plan)
+    system_preamble = _build_system_preamble(
+        l1_plan,
+        recipient_class=recipient_class,
+        sender_proof_envelope=sender_proof_envelope,
+        length_budget=effective_length_budget,
+        archetype_profile=archetype_profile,
+        prompt_schema_receipt=prompt_schema_receipt,
+    )
+    campaign_instruction = _build_campaign_instruction(
+        l1_plan,
+        recipient_class=recipient_class,
+    )
+    evidence_data_block = (
+        _build_evidence_block(fec)
+        + "\n\n"
+        + _build_sender_proof_block(sender_proof_envelope, effective_length_budget, jd_fields)
+    )
 
     blocks: tuple[PromptBlock, ...] = (
         # Block 0 — SYSTEM_INTERNAL: governance + output format directives
@@ -298,7 +541,6 @@ def pa_compose_apps_lic(
             )
 
     # ── slot_lineage_map ─────────────────────────────────────────────────────
-    recipient_class = _recipient_class_from_l1(l1_plan)
     reasoning_policy = l1_plan.task_spec.get("reasoning_policy") or {}
     slot_lineage_map: dict[str, str] = {
         "S0": "PA-authored:system_governance",
@@ -306,6 +548,10 @@ def pa_compose_apps_lic(
         "I0": f"USER_INTENT:query_spec+task_plan:l1_plan={l1_plan.schema_version}",
         "E0": "PA-authored:approved_examples_empty",
         "C0": f"C0_EVIDENCE_DATA_ONLY:fec={fec.compilation_hash[:16]}:items={len(fec.evidence_items)}",
+        "C03": (
+            "C0_3_PROOF_GRAPH:"
+            + str((sender_proof_envelope or {}).get("proof_packet_id") or "")
+        ),
         "M0": f"provider_profile={APPS_LIC_PROVIDER_PROFILE}:model={APPS_LIC_TARGET_MODEL}",
         "SC": (
             f"sc_level={reasoning_policy.get('sc_level', 'SC-1')}:"
@@ -317,13 +563,41 @@ def pa_compose_apps_lic(
             f"judge_profile={reasoning_policy.get('judge_profile', 'normal_default')}"
         ),
         "U0": f"validated_request:{validated_request.request_id}",
-        "H0": f"PA-authored:linkedin_{recipient_class.lower()}_style_constraints",
-        "R0": f"PA-authored:linkedin_{recipient_class.lower()}_json_output_contract",
+        "A0": (
+            "PA-authored:recipient_archetype="
+            f"{recipient_archetype}:template={archetype_profile.template_id}"
+        ),
+        "H0": f"PA-authored:linkedin_{recipient_archetype.lower()}_style_constraints",
+        "R0": (
+            "PA-authored:output_contract="
+            f"{prompt_schema_receipt.output_contract_name}"
+            f":output_schema_hash={prompt_schema_receipt.output_schema_hash[:16]}"
+            f":mapped_archetype={recipient_archetype}"
+        ),
+        "slot_registry": (
+            f"slot_registry_ref={prompt_schema_receipt.slot_registry_ref}:"
+            f"slot_registry_hash={prompt_schema_receipt.slot_registry_hash[:16]}"
+        ),
+        "template_policy": (
+            f"recipient_policy_profile_id={archetype_profile.template_id}:"
+            f"template_policy_hash={_component_hash(template_policy.to_hash_payload())[:16]}"
+        ),
+        "output_schema": (
+            f"output_contract={prompt_schema_receipt.output_contract_name}:"
+            f"output_schema_hash={prompt_schema_receipt.output_schema_hash[:16]}"
+        ),
         "user_block_2": (
             f"C0_EVIDENCE_DATA_ONLY:fec={fec.compilation_hash[:16]}"
             f":items={len(fec.evidence_items)}"
         ),
         "evidence": f"C0:fec.compilation_hash={fec.compilation_hash[:16]}",
+        "sender_proof": (
+            "C0_3_PROOF_GRAPH:allowed_claim_ids="
+            + ",".join(
+                str(item)
+                for item in (sender_proof_envelope or {}).get("allowed_claim_ids", ())
+            )
+        ),
     }
 
     # ── component_hash_map ───────────────────────────────────────────────────
@@ -353,6 +627,21 @@ def pa_compose_apps_lic(
             "target_model": APPS_LIC_TARGET_MODEL,
         }),
         "reasoning_policy": _component_hash(reasoning_policy),
+        "c03_sender_proof_envelope": _component_hash(dict(sender_proof_envelope or {})),
+        "c03_length_budget": _component_hash(dict(effective_length_budget)),
+        "recipient_archetype": _component_hash({
+            "lic_recipient_class": recipient_class,
+            "mapped_archetype": recipient_archetype,
+            "profile": archetype_profile.to_hash_payload(),
+            "template_policy": template_policy.to_hash_payload(),
+        }),
+        "recipient_policy_profile": _component_hash(archetype_profile.to_hash_payload()),
+        "template_policy": _component_hash(template_policy.to_hash_payload()),
+        "slot_registry_hash": prompt_schema_receipt.slot_registry_hash,
+        "prompt_registry_hash": prompt_schema_receipt.prompt_registry_hash,
+        "prompt_bom_hash": prompt_schema_receipt.prompt_bom_hash,
+        "output_schema_hash": prompt_schema_receipt.output_schema_hash,
+        "prompt_schema_receipt": _component_hash(prompt_schema_receipt.to_hash_payload()),
     }
 
     # ── compilation_hash (== prompt_hash) ────────────────────────────────────
@@ -363,6 +652,7 @@ def pa_compose_apps_lic(
             "provider": APPS_LIC_TARGET_PROVIDER,
             "provider_profile": APPS_LIC_PROVIDER_PROFILE,
             "reasoning_policy": reasoning_policy,
+            "prompt_schema_receipt": prompt_schema_receipt.to_hash_payload(),
         }]
         + [{"slot_lineage_map": slot_lineage_map, "component_hash_map": component_hash_map}],
         sort_keys=True,
@@ -403,6 +693,9 @@ def pa_compose_apps_lic(
         max_tokens=4096,
         temperature=0.82,
         replay_key=validated_request.replay_key,
+        audit_refs=_sender_proof_audit_refs(sender_proof_envelope, effective_length_budget, jd_fields),
+        gate_verdict_refs=_sender_proof_gate_refs(sender_proof_envelope),
+        snapshot_refs=_sender_proof_snapshot_refs(sender_proof_envelope),
         l5_certification_ref=APPS_LIC_PA_CERT_REF,
     )
 

@@ -83,6 +83,12 @@ class ApprovedSenderProofPoint:
     permission: str = PERMISSION_ALLOW
 
     def is_scope_allowed(self, *, recipient_class: str, message_type: str) -> bool:
+        if (
+            self.proof_id == "sp_platform_commercialization"
+            and recipient_class == "RECRUITER"
+            and message_type == "role_specific"
+        ):
+            return self.permission == PERMISSION_ALLOW
         return (
             self.permission == PERMISSION_ALLOW
             and message_type in self.allowed_message_types

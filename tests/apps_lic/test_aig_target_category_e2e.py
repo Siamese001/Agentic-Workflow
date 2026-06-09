@@ -21,6 +21,7 @@ from apps_lic.runtime.dispatch.canonical_dispatch import (
     build_cli_ingress_raw,
     run_canonical_apps_lic_spine,
 )
+from tests.apps_lic.canonical_readiness_fixtures import ready_governed_opportunity_facts
 
 
 AIG_BRIEFING = Path("apps_rg/config/targeting/aig_vp_global_head_agentic_ai_briefing.md")
@@ -29,6 +30,7 @@ AIG_CONTACTS = [
     {
         "case_id": "scott_hallworth_exec",
         "expected_category": "EXECUTIVE",
+        "expected_c0_category": "C_LEVEL",
         "expected_phrase": "operating-model rewrite",
         "source_url": "https://www.linkedin.com/posts/aig_we-are-pleased-to-welcome-scott-hallworth-activity-7369388053229903872-OtUM",
         "lead_profile": {
@@ -87,13 +89,16 @@ def test_aig_public_profile_e2e_generates_target_category_draft(
 ) -> None:
     monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
     briefing = AIG_BRIEFING.read_text(encoding="utf-8")
-    expected_category = str(contact["expected_category"])
+    expected_hint_category = str(contact["expected_category"])
+    expected_c0_category = str(
+        contact.get("expected_c0_category", expected_hint_category)
+    )
     lead_profile = dict(contact["lead_profile"])
 
     raw = build_cli_ingress_raw(
         run_id=f"run_aig_{contact['case_id']}",
         request_id=f"req_aig_{contact['case_id']}",
-        recipient_class=expected_category,
+        recipient_class=expected_hint_category,
         channel="linkedin",
         outreach_mode="cold",
         manual_brief=briefing,
@@ -102,7 +107,16 @@ def test_aig_public_profile_e2e_generates_target_category_draft(
             "Draft a concise LinkedIn message about AIG's VP Global Head of "
             "Agentic AI Solutions opportunity."
         ),
-        audience_segment=expected_category.lower(),
+        audience_segment=expected_hint_category.lower(),
+        governed_opportunity_facts=ready_governed_opportunity_facts(
+            contact_text=(
+                f"{lead_profile['verified_name']} | "
+                f"{lead_profile['title']} | AIG"
+            ),
+            role_ownership_text=(
+                f"{lead_profile['title']} current AIG target-owner signal."
+            ),
+        ),
     )
 
     result = run_canonical_apps_lic_spine(
@@ -117,13 +131,14 @@ def test_aig_public_profile_e2e_generates_target_category_draft(
     assert manifest["no_send_assertion"] is True
     assert manifest["no_l4_write_assertion"] is True
     assert manifest["apps_research_invoked"] is False
+    assert manifest["derived_recipient_class"] == expected_c0_category
 
     l2 = json.loads((result.artifact_dir / "l2_execution_receipt.json").read_text())
     draft = json.loads(l2["payload"]["generated_content"])
     message = draft["message_text"]
 
-    assert draft["recipient_category"] == expected_category
-    assert draft["recipient_class"] == expected_category.lower()
+    assert draft["recipient_category"] == expected_c0_category
+    assert draft["recipient_class"] == expected_c0_category.lower()
     assert draft["target_contact_name"] == lead_profile["verified_name"]
     assert draft["target_contact_title"] == lead_profile["title"]
     assert message.startswith(f"Hi {lead_profile['verified_name'].split()[0]},")
