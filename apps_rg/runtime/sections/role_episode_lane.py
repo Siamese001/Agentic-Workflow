@@ -65,6 +65,7 @@ from apps_rg.runtime.reasoning.employment_bullet_pool import (
 from apps_rg.runtime.sections.section_product_shape_ssot import (
     NARRATIVE_MAX_CHARS,
     NARRATIVE_MAX_WORDS,
+    product_shape_gate_ids_for_lane,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -123,6 +124,18 @@ _ROLE_LANES: dict[str, RoleEpisodeLaneConfig] = {
         output_filename="ey_narrative_output.txt",
         output_kind="narrative",
     ),
+}
+
+_X1D_WIRING_GATE_IDS: frozenset[str] = frozenset(
+    {"x2_x1d_required_judges_present", "x2_x1d_schema_valid"}
+)
+
+ROLE_EPISODE_X2_RUN_FUNCTION_BY_SECTION: dict[str, str] = {
+    lane: f"run_{lane}_x2_gates" for lane in _ROLE_LANES
+}
+ROLE_EPISODE_X2_GATE_IDS_BY_RUN_FUNCTION: dict[str, frozenset[str]] = {
+    fn_name: frozenset(product_shape_gate_ids_for_lane(lane) | _X1D_WIRING_GATE_IDS)
+    for lane, fn_name in ROLE_EPISODE_X2_RUN_FUNCTION_BY_SECTION.items()
 }
 
 
@@ -508,6 +521,20 @@ def _x2_gate(gate_id: str, ok: bool, reason: str = "", observed: Any = None) -> 
     }
 
 
+def _display_text_for_x2(l2: dict[str, Any], cfg: RoleEpisodeLaneConfig) -> str:
+    if cfg.is_bullet_lane:
+        return "\n".join(
+            str(b.get("bullet_text") or "")
+            for b in (l2.get("bullets") or [])
+            if isinstance(b, dict)
+        )
+    return str(l2.get("narrative_sentence") or "")
+
+
+def _has_first_person(text: str) -> bool:
+    return bool(re.search(r"\b(I|me|my|mine|we|us|our|ours)\b", str(text or ""), flags=re.IGNORECASE))
+
+
 def _x2_gates(
     *,
     cfg: RoleEpisodeLaneConfig,
@@ -522,6 +549,7 @@ def _x2_gates(
         if isinstance(row, dict):
             cited.extend(str(x) for x in row.get("source_fact_ids") or [])
     bad = sorted({x for x in cited if x not in set(allowed)})
+    display_text = _display_text_for_x2(l2, cfg)
     gates = [
         _x2_gate(
             f"x2_{cfg.section_id}_allowed_fact_ids_non_empty",
@@ -547,6 +575,16 @@ def _x2_gates(
             f"runtime_generation_status={runtime_generation_status}",
             runtime_generation_status,
         ),
+        _x2_gate(
+            "x2_no_first_person",
+            not _has_first_person(display_text),
+            "first-person language detected",
+        ),
+        _x2_gate(
+            "x2_no_em_dash",
+            "—" not in display_text,
+            "em dash detected",
+        ),
     ]
     if cfg.is_bullet_lane:
         bullets = list(l2.get("bullets") or [])
@@ -557,6 +595,18 @@ def _x2_gates(
                     len(bullets) == 3,
                     "expected exactly 3 bullets",
                     len(bullets),
+                ),
+                _x2_gate(
+                    f"x2_{cfg.section_id}_bullet_single_thought",
+                    all(
+                        str(b.get("bullet_text") or "").count(".")
+                        + str(b.get("bullet_text") or "").count("!")
+                        + str(b.get("bullet_text") or "").count("?")
+                        <= 1
+                        for b in bullets
+                        if isinstance(b, dict)
+                    ),
+                    "bullet contains multiple sentence-like thoughts",
                 ),
                 _x2_gate(
                     f"x2_{cfg.section_id}_bullet_no_embedded_newline",
@@ -596,6 +646,40 @@ def _x2_gates(
             ]
         )
     return gates
+
+
+def run_role_episode_x2_gates(
+    *,
+    section_id: str,
+    l2: dict[str, Any],
+    allowed: list[str],
+    runtime_generation_status: str,
+    bundle_consumed: bool = False,
+) -> list[dict[str, Any]]:
+    cfg = _ROLE_LANES[str(section_id or "").strip().lower()]
+    return _x2_gates(
+        cfg=cfg,
+        l2=l2,
+        allowed=allowed,
+        runtime_generation_status=runtime_generation_status,
+        bundle_consumed=bundle_consumed,
+    )
+
+
+def run_insurtech_bullets_x2_gates(**kwargs: Any) -> list[dict[str, Any]]:
+    return run_role_episode_x2_gates(section_id="insurtech_bullets", **kwargs)
+
+
+def run_insurtech_narrative_x2_gates(**kwargs: Any) -> list[dict[str, Any]]:
+    return run_role_episode_x2_gates(section_id="insurtech_narrative", **kwargs)
+
+
+def run_ey_bullets_x2_gates(**kwargs: Any) -> list[dict[str, Any]]:
+    return run_role_episode_x2_gates(section_id="ey_bullets", **kwargs)
+
+
+def run_ey_narrative_x2_gates(**kwargs: Any) -> list[dict[str, Any]]:
+    return run_role_episode_x2_gates(section_id="ey_narrative", **kwargs)
 
 
 def _judge_rows(
@@ -841,7 +925,7 @@ def run_role_episode_lane_execution(
         merge_compiled_prompt_artifact_fec_fields(
             {
                 "section_id": sid,
-                "apps_rg_prompt_template_ref": f"apps_rg/prompt_assembly/templates/{sid}_v1.yaml",
+                "apps_rg_prompt_template_ref": f"apps_rg/prompt_assembly/templates/{sid}{'_tailor_v1' if '_bullets' in sid else '_v1'}.yaml",
                 "compiler_template_id": f"{sid}_role_episode_v1",
                 "pa_prompt_hash": prompt_hash[:16],
                 "provider_prompt_hash": prompt_hash[:16],
@@ -948,8 +1032,8 @@ def run_role_episode_lane_execution(
             "prompt_hash": prompt_hash[:16],
         }
 
-    x2 = _x2_gates(
-        cfg=cfg,
+    x2 = run_role_episode_x2_gates(
+        section_id=sid,
         l2=l2,
         allowed=allowed_fact_ids,
         runtime_generation_status=provider_result.runtime_generation_status,
@@ -1085,4 +1169,14 @@ def run_role_episode_lane_execution(
     }
 
 
-__all__ = ["build_role_episode_lane_args", "run_role_episode_lane_execution"]
+__all__ = [
+    "ROLE_EPISODE_X2_GATE_IDS_BY_RUN_FUNCTION",
+    "ROLE_EPISODE_X2_RUN_FUNCTION_BY_SECTION",
+    "build_role_episode_lane_args",
+    "run_ey_bullets_x2_gates",
+    "run_ey_narrative_x2_gates",
+    "run_insurtech_bullets_x2_gates",
+    "run_insurtech_narrative_x2_gates",
+    "run_role_episode_lane_execution",
+    "run_role_episode_x2_gates",
+]
