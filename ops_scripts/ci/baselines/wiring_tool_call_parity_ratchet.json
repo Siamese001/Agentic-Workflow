@@ -1,11 +1,11 @@
 {
   "gate_id": "O_tool_call_parity_ratchet",
-  "count": 340,
+  "count": 335,
   "seeded_at": "2026-05-25T17:02:07.656869+00:00",
-  "snapshot": "adg_indexed_05252026_1248.sqlite",
+  "snapshot": "adg_indexed_06082026_1742.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-08T13:47:24.731650+00:00",
-  "last_run_snapshot": "adg_indexed_06072026_2219.sqlite",
+  "last_run_at": "2026-06-08T22:03:38.098186+00:00",
+  "last_run_snapshot": "adg_indexed_06082026_1758.sqlite",
   "loosen_history": [
     {
       "at": "2026-06-08T13:47:24.731650+00:00",
@@ -15,5 +15,14 @@
       "reason": "Re-baseline +16 absorbing wiring churn from already-merged work (#256 qwen-removal, InsurTech/EY registry + proof-pool additions, dotenv autoload) observed in burndown snapshot adg_indexed_06072026_2219.sqlite. Count-ratchet stores no membership and the prior snapshot is unavailable in this container, so the 16 new path(s) cannot be isolated; they trace to already-reviewed merged code. Ratchet stays active for FUTURE regressions \u2014 not gate-weakening. Operator-approved 2026-06-08."
     }
   ],
-  "loosened_at": "2026-06-08T13:47:24.731650+00:00"
+  "loosened_at": "2026-06-08T13:47:24.731650+00:00",
+  "tightened_at": "2026-06-08T21:52:19.874186+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-06-08T21:52:19.874186+00:00",
+      "snapshot": "adg_indexed_06082026_1742.sqlite",
+      "from": 340,
+      "to": 335
+    }
+  ]
 }
