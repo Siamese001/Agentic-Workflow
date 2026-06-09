@@ -131,6 +131,20 @@ def _build_cli_ingress_envelope(
     request_id = f"req-{uuid.uuid4().hex}"
     run_id = str(uuid.uuid4())
     trace_id = str(uuid.uuid4())
+    # G23 (plan apps-rg-e2e-gap-remediation-7e2d9c): the CLI ``--jd`` value arrives as ``jd`` but was
+    # never written into app_payload, so U0 fell back to DEFAULT_SSOT generic targeting and the resume
+    # ignored the job description. Map it into the canonical fields when an explicit ref/text was not
+    # supplied: an existing path becomes job_description_ref; inline text becomes job_description_text.
+    jd_cli = str(jd or "").strip()
+    if jd_cli and not str(job_description_ref or "").strip() and not str(job_description_text or "").strip():
+        try:
+            _jd_is_path = Path(jd_cli).expanduser().exists()
+        except OSError:
+            _jd_is_path = False
+        if _jd_is_path:
+            job_description_ref = jd_cli
+        else:
+            job_description_text = jd_cli
     app_payload: dict[str, Any] = {
         "target_company": target_company,
         "target_role": target_role,
