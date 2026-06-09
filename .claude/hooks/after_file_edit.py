@@ -108,5 +108,121 @@ _wave_top_exit = _audit_plan_wave_summary_top(file_path.replace("\\", "/"))
 if _wave_top_exit is not None:
     raise SystemExit(_wave_top_exit)
 
+
+def _enqueue_plan_if_eligible(norm_path: str) -> None:
+    """File-driven plan registration trigger (W2 plan-ssot-notion-pipeline-d2f7a1).
+
+    After a plan write passes all format checks, enqueue the plan for Notion registration
+    ONLY when the file is a valid SSOT plan path AND passes completeness:
+      - v2 plans: ``validate_plan_format`` returns 0 FAIL violations.
+      - legacy plans: has valid frontmatter (``---`` … ``---``).
+
+    Carries ``content_digest`` (sha256) + ``ai_summary`` (from frontmatter) in the queue
+    row so the Notion row is created complete, not as a metadata-only stub.
+
+    Fail-soft: any exception is silently swallowed — never blocks the edit.  The legacy
+    PLAN_CREATED: marker capture path remains as an advisory fallback.
+    """
+    try:
+        _np = norm_path.replace("\\", "/")
+        from pathlib import Path as _Path
+        _parent = _Path(_np).parent.name
+        if _parent != "plans":
+            return
+        if not _np.endswith(".md"):
+            return
+        if "/plans/_archive/" in _np:
+            return
+        _parts = {p.lower() for p in _Path(_np).parts}
+        if "docs" in _parts or "reports" in _parts:
+            return
+
+        plan_file = REPO_ROOT / norm_path.replace("/", os.sep)
+        if not plan_file.is_file():
+            return
+
+        # Extract slug from filename
+        import re as _re
+        _PLAN_FILE_RE = _re.compile(r"^(?P<slug>[a-z0-9][a-z0-9-]*-[0-9a-f]{6})\.md$")
+        _m = _PLAN_FILE_RE.match(plan_file.name)
+        if not _m:
+            return
+        slug = _m.group("slug")
+
+        content = plan_file.read_text(encoding="utf-8")
+
+        if str(REPO_ROOT) not in sys.path:
+            sys.path.insert(0, str(REPO_ROOT))
+
+        from ops_scripts.ci.plan_wave_summary_top import (
+            WaveSummarySeverity,
+            is_plan_format_v2,
+            validate_plan_format,
+        )
+
+        v2 = is_plan_format_v2(content)
+        rel = norm_path.replace("\\", "/")
+
+        if v2:
+            # v2 plans must pass the format gate before we register them — no stubs.
+            fails = [
+                v for v in validate_plan_format(content, rel)
+                if v.severity == WaveSummarySeverity.FAIL
+            ]
+            if fails:
+                return  # incomplete / malformed — don't register; user will fix and re-write
+        else:
+            # Legacy: at minimum needs a closed frontmatter block.
+            import importlib.util as _ilu
+            _helper_path = REPO_ROOT / ".claude" / "governance/scripts" / "_plan_registration.py"
+            if not _helper_path.exists():
+                return
+            _spec = _ilu.spec_from_file_location("_plan_reg_fde_legacy", _helper_path)
+            if _spec is None or _spec.loader is None:
+                return
+            _helper_legacy = _ilu.module_from_spec(_spec)
+            try:
+                _spec.loader.exec_module(_helper_legacy)
+            except Exception:  # guardian: allow-broad-exception -- fail-soft hook contract
+                return
+            if not _helper_legacy.has_valid_frontmatter(content):
+                return
+
+        # Load helper for enqueue + metadata extraction.
+        import importlib.util as _ilu2
+        _helper_path2 = REPO_ROOT / ".claude" / "governance/scripts" / "_plan_registration.py"
+        if not _helper_path2.exists():
+            return
+        _spec2 = _ilu2.spec_from_file_location("_plan_reg_fde", _helper_path2)
+        if _spec2 is None or _spec2.loader is None:
+            return
+        _helper = _ilu2.module_from_spec(_spec2)
+        try:
+            _spec2.loader.exec_module(_helper)
+        except Exception:  # guardian: allow-broad-exception -- fail-soft hook contract
+            return
+
+        meta = _helper.extract_plan_metadata(content)
+        path_str = f"plans/{slug}.md"
+        enqueued = _helper.enqueue_plan(
+            slug,
+            path_str,
+            "Not Started",
+            content_digest=meta.get("content_digest"),
+            ai_summary=meta.get("ai_summary"),
+        )
+        if enqueued:
+            digest_short = (meta.get("content_digest") or "")[:8]
+            print(
+                f"[after_file_edit] file-driven plan registration: queued {slug} "
+                f"(digest={digest_short}..., ai_summary={str(meta.get('ai_summary'))[:40]!r})",
+                file=sys.stderr,
+            )
+    except Exception:  # guardian: allow-broad-exception -- fail-soft hook contract
+        pass
+
+
+_enqueue_plan_if_eligible(file_path.replace("\\", "/"))
+
 write_receipt("afterFileEdit", payload, "allow", "edit accepted")
 raise SystemExit(allow("edit accepted"))

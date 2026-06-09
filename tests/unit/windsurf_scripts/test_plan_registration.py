@@ -558,3 +558,127 @@ def test_drift_report_lower_priority_counted_as_active(pr):
     report = pr.drift_report()
     # slug-lp-aaaaaa is in Notion as active but not on disk
     assert "slug-lp-aaaaaa" in report["notion_active_not_on_disk"]
+
+
+# ---------------------------------------------------------------------------
+# W2: content_digest + ai_summary in queue rows (plan-ssot-notion-pipeline-d2f7a1)
+# ---------------------------------------------------------------------------
+
+
+class TestEnqueuePlanW2:
+    """enqueue_plan now stores content_digest and ai_summary (W2.2)."""
+
+    def test_enqueue_carries_digest_and_summary(self, pr):
+        """Queue row must store content_digest and ai_summary when provided."""
+        enqueued = pr.enqueue_plan(
+            "my-plan-aaaaaa",
+            "plans/my-plan-aaaaaa.md",
+            content_digest="abc123" * 8 + "00",
+            ai_summary="Fixes the pipeline; syncs Notion rows after write.",
+        )
+        assert enqueued
+        rows = pr.pending_registrations()
+        assert len(rows) == 1
+        row = rows[0]
+        assert row["content_digest"] == "abc123" * 8 + "00"
+        assert row["ai_summary"] == "Fixes the pipeline; syncs Notion rows after write."
+
+    def test_enqueue_backward_compat_no_digest(self, pr):
+        """Calling without digest/summary still works; fields are None in row."""
+        pr.enqueue_plan("my-plan-bbbbbb", "plans/my-plan-bbbbbb.md")
+        rows = pr.pending_registrations()
+        row = rows[0]
+        assert row["content_digest"] is None
+        assert row["ai_summary"] is None
+
+    def test_enqueue_digest_none_when_omitted(self, pr):
+        """Keyword-only args default to None, not absent from row."""
+        pr.enqueue_plan("my-plan-cccccc", "plans/my-plan-cccccc.md", "Not Started")
+        rows = pr.pending_registrations()
+        row = rows[0]
+        # Fields must be present (even as None) so callers can detect absence.
+        assert "content_digest" in row
+        assert "ai_summary" in row
+
+
+class TestExtractAiSummary:
+    """_extract_ai_summary and has_valid_frontmatter helpers."""
+
+    def _load_pr(self):
+        import importlib.util, sys
+        from pathlib import Path
+        path = Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts" / "_plan_registration.py"
+        spec = importlib.util.spec_from_file_location("_pr_ai_test", path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["_pr_ai_test"] = mod
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_extracts_double_quoted_value(self):
+        pr = self._load_pr()
+        content = '---\nplan_id: foo-aaaaaa\nai_summary: "Fixes the pipeline quickly."\n---\n# Body'
+        assert pr._extract_ai_summary(content) == "Fixes the pipeline quickly."
+
+    def test_extracts_unquoted_value(self):
+        pr = self._load_pr()
+        content = "---\nplan_id: foo-aaaaaa\nai_summary: Fixes things fast.\n---\n# Body"
+        assert pr._extract_ai_summary(content) == "Fixes things fast."
+
+    def test_returns_none_when_absent(self):
+        pr = self._load_pr()
+        content = "---\nplan_id: foo-aaaaaa\nstatus: Not Started\n---\n# Body"
+        assert pr._extract_ai_summary(content) is None
+
+    def test_returns_none_without_frontmatter(self):
+        pr = self._load_pr()
+        content = "# No frontmatter here\nsome content"
+        assert pr._extract_ai_summary(content) is None
+
+    def test_has_valid_frontmatter_closed(self):
+        pr = self._load_pr()
+        content = "---\nplan_id: foo\n---\n# body"
+        assert pr.has_valid_frontmatter(content)
+
+    def test_has_valid_frontmatter_unclosed_returns_false(self):
+        pr = self._load_pr()
+        content = "---\nplan_id: foo\n# no closing ---"
+        assert not pr.has_valid_frontmatter(content)
+
+    def test_has_valid_frontmatter_no_marker_returns_false(self):
+        pr = self._load_pr()
+        content = "# Regular markdown\nno frontmatter"
+        assert not pr.has_valid_frontmatter(content)
+
+
+class TestExtractPlanMetadata:
+    """extract_plan_metadata returns content_digest + ai_summary."""
+
+    def _load_pr(self):
+        import importlib.util, sys, hashlib
+        from pathlib import Path
+        path = Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts" / "_plan_registration.py"
+        spec = importlib.util.spec_from_file_location("_pr_meta_test", path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["_pr_meta_test"] = mod
+        spec.loader.exec_module(mod)
+        return mod, hashlib
+
+    def test_digest_is_sha256(self):
+        pr, hashlib = self._load_pr()
+        content = "---\nai_summary: Hello.\n---\n# body"
+        meta = pr.extract_plan_metadata(content)
+        expected = hashlib.sha256(content.encode("utf-8")).hexdigest()
+        assert meta["content_digest"] == expected
+
+    def test_ai_summary_extracted(self):
+        pr, _ = self._load_pr()
+        content = '---\nai_summary: "One-line summary."\n---\n# body'
+        meta = pr.extract_plan_metadata(content)
+        assert meta["ai_summary"] == "One-line summary."
+
+    def test_missing_ai_summary_is_none(self):
+        pr, _ = self._load_pr()
+        content = "---\nplan_id: foo\n---\n# body"
+        meta = pr.extract_plan_metadata(content)
+        assert meta["ai_summary"] is None
+        assert meta["content_digest"] is not None  # digest always populated
