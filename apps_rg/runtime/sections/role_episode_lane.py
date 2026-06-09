@@ -60,10 +60,15 @@ from apps_rg.runtime.reasoning.employment_bullet_pool import (
     is_employment_pool_generation,
 )
 
+# W2 (plan prompt-gate-ssot-consolidation-e7c9a2): narrative budgets come from the numeric SSOT,
+# not a re-declared local copy. section_product_shape_ssot is the canonical owner.
+from apps_rg.runtime.sections.section_product_shape_ssot import (
+    NARRATIVE_MAX_CHARS,
+    NARRATIVE_MAX_WORDS,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAX_OUTPUT_TOKENS = 900
-NARRATIVE_MAX_WORDS = 58
-NARRATIVE_MAX_CHARS = 360
 
 
 @dataclass(frozen=True)

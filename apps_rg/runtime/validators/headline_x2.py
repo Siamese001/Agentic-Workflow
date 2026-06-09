@@ -18,6 +18,10 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     has_jd_phrase_copy,
     required_judges_for_section,
 )
+from apps_rg.runtime.sections.section_product_shape_ssot import (
+    HEADLINE_WORD_MAX,
+    HEADLINE_WORD_MIN,
+)
 
 # Metrics and numeric proof patterns (headline must avoid all).
 _METRIC_RE = re.compile(
@@ -578,7 +582,7 @@ def headline_runtime_self_check_truth(
         "word_count": wc,
         "segment_count": segment_count,
         "separator_count": sep_count,
-        "word_count_in_range": 10 <= wc <= 13,
+        "word_count_in_range": HEADLINE_WORD_MIN <= wc <= HEADLINE_WORD_MAX,
         "fixed_prefix": fixed_prefix,
         "no_metrics": _METRIC_RE.search(h) is None,
         "no_employer_names": not emp_hit,
@@ -752,7 +756,7 @@ def run_headline_x2_gates(
     )
 
     wc = headline_word_count(h) if h else 0
-    wc_ok = 10 <= wc <= 13
+    wc_ok = HEADLINE_WORD_MIN <= wc <= HEADLINE_WORD_MAX
     add(
         "x2_headline_word_count_10_to_13",
         wc_ok,
