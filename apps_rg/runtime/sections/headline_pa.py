@@ -127,6 +127,27 @@ def load_headline_template_slots() -> dict[str, str]:
     return {str(k): str(v) for k, v in bodies.items() if isinstance(v, str)}
 
 
+def format_narrowing_it_labels_blocklist_block() -> str:
+    """Render the narrowing/demoting-label blocklist FROM the X2 SSOT constant.
+
+    W0-E (plan prompt-gate-ssot-consolidation-e7c9a2): ``x2_headline_no_narrowing_it_labels``
+    HARD-fails any headline containing a NARROWING_IT_LABELS phrase, but the prompt never
+    enumerated them -- the generator could not avoid what it was never shown. Source the block
+    directly from ``headline_quality_x2.NARROWING_IT_LABELS`` so prompt and gate cannot drift:
+    one constant, rendered into the prompt at compile time.
+    """
+    from apps_rg.runtime.validators.headline_quality_x2 import NARROWING_IT_LABELS
+
+    labels = ", ".join(f'"{label}"' for label in sorted(NARROWING_IT_LABELS))
+    return (
+        "\n<narrowing_label_blocklist>\n"
+        "FORBIDDEN narrowing/demoting label phrases — the narrowing-label gate HARD-fails any "
+        "headline_line that contains one (case-insensitive substring match). They juniorize the SVP "
+        "positioning; never use any as (part of) a segment: " + labels + ".\n"
+        "</narrowing_label_blocklist>"
+    )
+
+
 def build_headline_assembly_input(
     runtime_payload: dict[str, Any],
     fact_lines: str,
@@ -225,7 +246,7 @@ def build_headline_assembly_input(
         trace_root=trace_root,
         s0_system_preamble=slots.get("S0", ""),
         d0_fences=slots.get("D0"),
-        i0_instructions=slots.get("I0", ""),
+        i0_instructions=slots.get("I0", "") + format_narrowing_it_labels_blocklist_block(),
         e0_examples=slots.get("E0"),
         y0_style_preferences=slots.get("Y0"),
         c0_candidate_facts=EvidenceSource(
