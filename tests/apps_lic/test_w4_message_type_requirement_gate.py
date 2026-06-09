@@ -35,6 +35,7 @@ from apps_lic.engines.message_type_requirement_gate import (
 )
 from apps_lic.engines.recipient_classification import (
     CLASS_HIRING_MANAGER,
+    CLASS_EXECUTIVE,
     CLASS_RECRUITER,
     CLASS_SENIOR_TA,
     CLASS_UNKNOWN,
@@ -245,6 +246,36 @@ def test_role_specific_hiring_manager_requires_jd_and_position_not_req() -> None
     assert missing.missing_fields == (MISSING_JD_FACTS,)
     assert passing.status == STATUS_REQUIREMENTS_PASS
     assert passing.recipient_class == CLASS_HIRING_MANAGER
+
+
+def test_live_public_title_patterns_derive_recipient_class_without_u0_hint() -> None:
+    cases = (
+        ("Talent Acquisition Strategist", CLASS_RECRUITER, "recruiter_ta_strategist_signal"),
+        ("AI Systems Builder", CLASS_HIRING_MANAGER, "hiring_manager_ai_builder_signal"),
+        (
+            "Head of Technology and Business Enablement",
+            CLASS_EXECUTIVE,
+            "executive_technology_business_enablement_signal",
+        ),
+        (
+            "Neo4j Product / Hiring Amplifier",
+            CLASS_HIRING_MANAGER,
+            "hiring_manager_product_hiring_signal",
+        ),
+        (
+            "AI and Data Platform Product/Architecture Leader",
+            CLASS_HIRING_MANAGER,
+            "hiring_manager_product_architecture_leader_signal",
+        ),
+    )
+
+    for title, expected_class, expected_reason in cases:
+        derivation = derive_recipient_class_from_store(_store_for(title=title))
+
+        assert derivation.status == STATUS_DERIVED
+        assert derivation.derived_recipient_class == expected_class
+        assert expected_reason in derivation.class_reason_codes
+        assert derivation.u0_hint_used_as_authority is False
 
 
 def test_follow_up_blocks_without_prior_thread() -> None:

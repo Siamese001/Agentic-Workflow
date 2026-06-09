@@ -1,14 +1,13 @@
 """
-SOVEREIGN KNOWLEDGE BASE (FROZEN v1.0) - LinkedIn Outreach Campaign
--------------------------------------------------------------------
-Auto-generated for LinkedIn Campaign Optimizer system.
-This module serves as the immutable 'brain' of the outreach system.
+Compatibility-fenced legacy prompt snapshot for LinkedIn outreach.
 
-VIOLATION: NO MAGIC STRINGS. ALL PROMPTS/CONFIGS MUST BE ACCESSED VIA THIS REGISTRY.
+This module preserves historical imports and read-only characterization data.
+It is not a runtime prompt authority. Runtime prompt assembly must use:
 
-Slot Taxonomy Integration:
-- Unified 10-slot taxonomy: S0,D0,M0,I0,E0,C0,Y0,U0,H0,R0
-- See agentic_core.prompt_governance.contracts.slot_contracts for definitions
+- apps_lic/config/prompt_registry.yaml
+- apps_lic/prompt_assembly/prompt_bom.yaml
+- apps_lic/config/domain_contract/prompt_slot_registry.v1.yaml
+- apps_lic/config/domain_contract/output_schema.yaml
 """
 
 from __future__ import annotations
@@ -24,6 +23,29 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "lic_PromptTemplate", "p0_governance")
 _emit_reads_policy_state("p0", "lic_PromptTemplate", "policy_binding")
 _emit_snapshots_state("p0", "lic_PromptTemplate", "state_snapshot")
+
+LEGACY_PROMPT_TEMPLATE_STATUS = "compatibility_fenced"
+LEGACY_PROMPT_TEMPLATE_RUNTIME_AUTHORITY = False
+LEGACY_PROMPT_TEMPLATE_AUTHORITY = "historical_read_only_snapshot"
+CANONICAL_PROMPT_REGISTRY_REF = "apps_lic/config/prompt_registry.yaml"
+CANONICAL_PROMPT_BOM_REF = "apps_lic/prompt_assembly/prompt_bom.yaml"
+CANONICAL_PROMPT_SLOT_REGISTRY_REF = (
+    "apps_lic/config/domain_contract/prompt_slot_registry.v1.yaml"
+)
+CANONICAL_OUTPUT_SCHEMA_REF = "apps_lic/config/domain_contract/output_schema.yaml"
+
+
+def legacy_prompt_template_fence_receipt() -> dict[str, object]:
+    """Return the compatibility-fence receipt for legacy prompt imports."""
+    return {
+        "status": LEGACY_PROMPT_TEMPLATE_STATUS,
+        "runtime_authority": LEGACY_PROMPT_TEMPLATE_RUNTIME_AUTHORITY,
+        "authority": LEGACY_PROMPT_TEMPLATE_AUTHORITY,
+        "canonical_prompt_registry_ref": CANONICAL_PROMPT_REGISTRY_REF,
+        "canonical_prompt_bom_ref": CANONICAL_PROMPT_BOM_REF,
+        "canonical_prompt_slot_registry_ref": CANONICAL_PROMPT_SLOT_REGISTRY_REF,
+        "canonical_output_schema_ref": CANONICAL_OUTPUT_SCHEMA_REF,
+    }
 
 
 # -----------------------------------------------------------------------------
@@ -364,11 +386,19 @@ def list_all_nodes() -> list[str]:
 # -----------------------------------------------------------------------------
 
 __all__ = [
+    "LEGACY_PROMPT_TEMPLATE_STATUS",
+    "LEGACY_PROMPT_TEMPLATE_RUNTIME_AUTHORITY",
+    "LEGACY_PROMPT_TEMPLATE_AUTHORITY",
+    "CANONICAL_PROMPT_REGISTRY_REF",
+    "CANONICAL_PROMPT_BOM_REF",
+    "CANONICAL_PROMPT_SLOT_REGISTRY_REF",
+    "CANONICAL_OUTPUT_SCHEMA_REF",
     "FROZEN_SNAPSHOT",
     "LicPromptEntry",
     "LicNodeEntry",
     "LicGlobalRule",
     "LicSovereignKnowledge",
+    "legacy_prompt_template_fence_receipt",
     "get_prompt",
     "get_system_prompt",
     "get_prompt_entry",

@@ -3,7 +3,13 @@
   "app_id": "apps_lic",
   "task_class": "outreach_message",
   "version": "v1",
-  "required_exit_gates": [
+  "status": "compatibility_fenced",
+  "canonical_exit_profile_ref": "apps_lic/config/domain_contract/validation_exit.v1.yaml",
+  "authority": "legacy_gate_label_mapping_only",
+  "runtime_authority": false,
+  "fail_closed_on_unmapped_legacy_gate": true,
+  "fail_closed_on_unmapped_legacy_disposition": true,
+  "legacy_required_exit_gates": [
     "G21",
     "G22",
     "G23",
@@ -11,22 +17,136 @@
     "G26",
     "G28"
   ],
-  "conditional_exit_gates": [
+  "legacy_conditional_exit_gates": [
     "G25",
     "G27"
   ],
-  "fail_closed_on_exit_failure": true,
-  "allowed_exit_dispositions": [
-    "APPROVED",
-    "APPROVED_WITH_NOTES",
-    "REJECTED",
-    "HITL_REQUIRED",
-    "ABSTAIN"
+  "canonical_exit_terms": {
+    "x1": "Exit gate family. X1 gate labels validate candidate/output/security/replay/write/audit conditions.",
+    "x2": "Aggregate Exit disposition over deterministic gates and required X1D judge receipts.",
+    "x3": "Final proof/exit packet emitted after X2 aggregation. Prompt Assembly cannot emit X3."
+  },
+  "legacy_gate_map": {
+    "G21": {
+      "legacy_name": "output_contract_shape",
+      "canonical_family": "X1",
+      "canonical_x2_gates": [
+        "schema_gate",
+        "whole_message_shape_gate"
+      ],
+      "required": true
+    },
+    "G22": {
+      "legacy_name": "output_quality_and_channel_fit",
+      "canonical_family": "X1",
+      "canonical_x2_gates": [
+        "message_type_recipient_length_gate",
+        "unsupported_claim_gate"
+      ],
+      "required": true
+    },
+    "G23": {
+      "legacy_name": "security_and_prompt_injection",
+      "canonical_family": "X1",
+      "canonical_x2_gates": [
+        "prompt_injection_neutralization_gate",
+        "no_send_gate"
+      ],
+      "required": true
+    },
+    "G24": {
+      "legacy_name": "replay_and_proof_readiness",
+      "canonical_family": "X1",
+      "canonical_x2_gates": [
+        "schema_gate"
+      ],
+      "proof_bundle_fields": [
+        "proof_packet_id",
+        "prompt_contract_id"
+      ],
+      "required": true
+    },
+    "G25": {
+      "legacy_name": "runtime_anomaly",
+      "canonical_family": "X1",
+      "canonical_x2_gates": [],
+      "conditional": true,
+      "status": "runtime_gate_outside_apps_lic_validation_exit"
+    },
+    "G26": {
+      "legacy_name": "exit_eligibility",
+      "canonical_family": "X1",
+      "canonical_x2_gates": [
+        "recipient_class_present_and_derived_gate",
+        "candidate_selection_gate"
+      ],
+      "required": true
+    },
+    "G27": {
+      "legacy_name": "durable_write_sovereignty",
+      "canonical_family": "X1",
+      "canonical_x2_gates": [
+        "no_send_gate"
+      ],
+      "conditional": true,
+      "status": "not_applicable_for_read_only_draft_return"
+    },
+    "G28": {
+      "legacy_name": "audit_and_learning_receipts",
+      "canonical_family": "X1",
+      "canonical_x2_gates": [
+        "schema_gate"
+      ],
+      "proof_bundle_fields": [
+        "x2_gates",
+        "x1d_judges",
+        "no_send_receipt",
+        "proof_packet_id",
+        "prompt_contract_id"
+      ],
+      "required": true
+    }
+  },
+  "legacy_disposition_map": {
+    "APPROVED": "clear_draft",
+    "APPROVED_WITH_NOTES": "review_required",
+    "REJECTED": "blocked",
+    "HITL_REQUIRED": "review_required",
+    "ABSTAIN": "abstain"
+  },
+  "canonical_allowed_exit_dispositions": [
+    "clear_draft",
+    "review_required",
+    "blocked",
+    "abstain"
   ],
-  "default_disposition": "REJECTED",
+  "canonical_default_disposition": "blocked",
+  "forbidden_as_exit_dispositions": [
+    "S0",
+    "I0",
+    "D0",
+    "C0",
+    "E0",
+    "M0",
+    "H0",
+    "Y0",
+    "A0",
+    "N0",
+    "L0",
+    "U0",
+    "R0",
+    "C03",
+    "SC",
+    "RI",
+    "X1",
+    "X2",
+    "X3"
+  ],
   "metadata": {
-    "description": "Exit gate policy for apps_lic outreach_message",
+    "description": "Compatibility-fenced legacy Exit gate policy for apps_lic outreach_message. Runtime authority lives in validation_exit.v1.yaml.",
     "author": "agentic_core",
-    "created_at": "2026-05-11"
+    "created_at": "2026-05-11",
+    "compatibility_fenced_at": "2026-06-09",
+    "w4_closeout": "apps_lic prompt-slot/X1-X3 SSOT drift plan W4"
   }
 }

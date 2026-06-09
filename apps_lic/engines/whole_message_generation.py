@@ -56,6 +56,10 @@ from apps_lic.engines.sender_proof_graph import (
     SenderProofGraphPacket,
     validate_l2_sender_claims_against_packet,
 )
+from apps_lic.types.recipient_archetype_mapping import (
+    resolve_recipient_template_policy,
+)
+from apps_lic.types.linkedin_route_envelope import CHANNEL_LINKEDIN_INMAIL
 
 
 STATUS_GENERATION_REQUEST_READY = "WHOLE_MESSAGE_GENERATION_REQUEST_READY"
@@ -89,6 +93,10 @@ REASON_SEND_MODE_FORBIDDEN = "send_mode_forbidden"
 REASON_CANDIDATE_NOT_WHOLE_MESSAGE = "candidate_not_whole_message"
 REASON_CANDIDATE_OVER_LENGTH = "candidate_over_length_budget"
 REASON_CANDIDATE_UNAPPROVED_CLAIM = "candidate_uses_claim_not_in_proof_packet"
+REASON_CANDIDATE_MISSING_CTA = "candidate_missing_low_friction_cta"
+REASON_CANDIDATE_MISSING_SIGNATURE = "candidate_missing_amit_signature"
+REASON_CANDIDATE_MISSING_SUBJECT = "candidate_missing_inmail_subject_line"
+REASON_CANDIDATE_SUBJECT_TOO_LONG = "candidate_inmail_subject_line_too_long"
 
 _ALLOWED_SEND_MODES = {"draft_only", "review_required"}
 _FORBIDDEN_FRAGMENT_MARKERS = (
@@ -99,6 +107,15 @@ _FORBIDDEN_FRAGMENT_MARKERS = (
     "opening:",
     "cta:",
     "section:",
+)
+_SIGNATURE_PATTERN = re.compile(
+    r"(?:\r?\n|\A)\s*(?:best|thanks|regards|warmly|cheers)?[,]?\s*Amit(?: Ayer)?\.?\s*\Z",
+    flags=re.IGNORECASE,
+)
+_CTA_PATTERN = re.compile(
+    r"\b(would|could|can|open to|worth|reasonable|useful|available)\b"
+    r"[^?!.]{0,120}\b(chat|call|screen|review|fit|compare notes|connect|exchange|redirect|conversation)\b",
+    flags=re.IGNORECASE,
 )
 
 _SC_SETTINGS: dict[str, tuple[str, int, int, float, float]] = {
@@ -117,6 +134,11 @@ class LengthBudget:
     min_sentences: int
     max_sentences: int
     hard_cap_chars: int
+    channel: str = "linkedin"
+    route_family: str = "LINKEDIN_DRAFT"
+    subject_required: bool = False
+    signature_required: bool = True
+    cta_style: str = ""
 
     def to_packet(self) -> dict[str, Any]:
         return {
@@ -126,6 +148,13 @@ class LengthBudget:
             "min_sentences": self.min_sentences,
             "max_sentences": self.max_sentences,
             "hard_cap_chars": self.hard_cap_chars,
+            "hard_controls": ["max_sentences", "hard_cap_chars"],
+            "advisory_controls": ["min_words", "max_words"],
+            "channel": self.channel,
+            "route_family": self.route_family,
+            "subject_required": self.subject_required,
+            "signature_required": self.signature_required,
+            "cta_style": self.cta_style,
         }
 
 
@@ -229,11 +258,13 @@ class WholeMessageCandidate:
     is_whole_message: bool
     no_durable_write_receipt: str
     generation_receipt: str
+    subject_line: str = ""
 
     def to_packet(self) -> dict[str, Any]:
         return {
             "schema_version": "apps_lic.whole_message_candidate.v1",
             "candidate_id": self.candidate_id,
+            "subject_line": self.subject_line,
             "draft_text": self.draft_text,
             "attempt_seed": self.attempt_seed,
             "model_id": self.model_id,
@@ -299,6 +330,18 @@ def _clean(value: Any) -> str:
     return re.sub(r"\s+", " ", str(value or "")).strip()
 
 
+def _has_terminal_signature(text: str) -> bool:
+    return _SIGNATURE_PATTERN.search(str(text or "")) is not None
+
+
+def _has_low_friction_cta(text: str) -> bool:
+    return "?" in str(text or "") or _CTA_PATTERN.search(str(text or "")) is not None
+
+
+def _with_signature(text: str) -> str:
+    return f"{_clean(text)}\n\nAmit"
+
+
 def _short_trigger_signal(value: str, *, max_words: int = 10) -> str:
     first_clause = re.split(r"[.;]", _clean(value), maxsplit=1)[0].strip()
     words = re.findall(r"\b[\w'-]+\b", first_clause)
@@ -317,6 +360,7 @@ def _word_count(text: str) -> int:
 
 
 def _sentence_count(text: str) -> int:
+    text = _SIGNATURE_PATTERN.sub("", str(text or "")).strip()
     return len([part for part in re.split(r"[.!?]+", text) if part.strip()])
 
 
@@ -416,27 +460,34 @@ def resolve_length_budget(
     recipient_class: str,
     message_type: str,
     modifiers: Mapping[str, bool],
+    channel: str = "linkedin",
 ) -> LengthBudget:
-    """Resolve LinkedIn/InMail length budget by message type and class."""
-    if message_type == MESSAGE_ROLE_SPECIFIC:
-        if recipient_class == CLASS_RECRUITER:
-            return LengthBudget("recruiter_role_specific", 55, 80, 3, 4, 750)
-        if recipient_class == CLASS_SENIOR_TA:
-            return LengthBudget("senior_ta_role_specific", 50, 75, 3, 4, 700)
-        if recipient_class == CLASS_HIRING_MANAGER:
-            return LengthBudget("hiring_manager_role_specific", 55, 75, 3, 4, 750)
-        return LengthBudget("executive_role_specific", 45, 70, 3, 4, 700)
-    if message_type == MESSAGE_TRIGGER_BASED_INSIGHT:
-        return LengthBudget("executive_trigger", 35, 60, 2, 3, 550)
-    if message_type == MESSAGE_REFERRAL_ASK:
-        return LengthBudget("referral_ask", 50, 75, 3, 4, 700)
-    if message_type == MESSAGE_FOLLOW_UP:
-        if modifiers.get(MODIFIER_USES_JD) or modifiers.get(MODIFIER_APPLICATION_STATUS_CLAIMED):
-            return LengthBudget("follow_up_role_or_status", 35, 60, 2, 3, 600)
-        return LengthBudget("follow_up_short", 25, 45, 1, 2, 400)
-    if _is_exec_class(recipient_class):
-        return LengthBudget("executive_general_intro", 35, 55, 2, 3, 500)
-    return LengthBudget("recruiter_general_intro", 40, 60, 2, 3, 500)
+    """Resolve LinkedIn/InMail length budget from the shared recipient template policy.
+
+    Word bands are retained for reporting and prompt guidance only. Hard runtime
+    controls are sentence count and character cap because tokenizer splits make
+    word counts a weak proxy for model output length.
+    """
+    policy = resolve_recipient_template_policy(
+        recipient_class=recipient_class,
+        message_type=message_type,
+        channel=channel,
+        modifiers=modifiers,
+    )
+    packet = policy.length_policy.to_length_budget_packet()
+    return LengthBudget(
+        budget_key=str(packet["budget_key"]),
+        min_words=int(packet["min_words"]),
+        max_words=int(packet["max_words"]),
+        min_sentences=int(packet["min_sentences"]),
+        max_sentences=int(packet["max_sentences"]),
+        hard_cap_chars=int(packet["hard_cap_chars"]),
+        channel=str(packet["channel"]),
+        route_family=str(packet["route_family"]),
+        subject_required=bool(packet["subject_required"]),
+        signature_required=bool(packet["signature_required"]),
+        cta_style=str(packet["cta_style"]),
+    )
 
 
 def _docs_from_store(store: OpportunityFactStore) -> tuple[OpportunityFactDocument, ...]:
@@ -523,6 +574,7 @@ def build_whole_message_generation_request(
         recipient_class=message_gate_result.recipient_class,
         message_type=message_gate_result.message_type,
         modifiers=modifiers,
+        channel=channel,
     )
     reasoning_policy = resolve_reasoning_policy(
         recipient_class=message_gate_result.recipient_class,
@@ -666,46 +718,58 @@ def _render_candidate_text(
         role_ref = position or "the open role"
         req_ref = f" ({req})" if req else ""
         return (
-            f"Hi {first}, I noticed {company}'s {role_ref} role{req_ref}. "
-            f"{proof_fragment}, which maps to the platform and governance work behind this kind of mandate. "
-            f"{ask}",
+            _with_signature(
+                f"Hi {first}, I noticed {company}'s {role_ref} role{req_ref}. "
+                f"{proof_fragment}, which maps to the platform and governance work behind this kind of mandate. "
+                f"{ask}"
+            ),
             claims_used,
         )
     if request.message_type == MESSAGE_TRIGGER_BASED_INSIGHT:
         trigger_ref = _short_trigger_signal(trigger or f"{company}'s AI platform work").rstrip(".!?")
         return (
-            f"Hi {first}, I noticed {trigger_ref}. "
-            f"{proof_fragment}; the edge is making governance accelerate adoption. "
-            f"{ask}",
+            _with_signature(
+                f"Hi {first}, I noticed {trigger_ref}. "
+                f"{proof_fragment}; the edge is making governance accelerate adoption. "
+                f"{ask}"
+            ),
             claims_used,
         )
     if request.message_type == MESSAGE_REFERRAL_ASK:
         bridge = f"{referrer} suggested I reach out" if referrer else "A warm intro brought you to mind"
         return (
-            f"Hi {first}, {bridge}. "
-            f"{proof_fragment}. "
-            f"{ask}",
+            _with_signature(
+                f"Hi {first}, {bridge}. "
+                f"{proof_fragment}. "
+                f"{ask}"
+            ),
             claims_used,
         )
     if request.message_type == MESSAGE_FOLLOW_UP:
         thread_ref = prior_thread or "our earlier exchange"
         return (
-            f"Hi {first}, following up on {thread_ref}. "
-            f"{proof_fragment}. "
-            f"{ask}",
+            _with_signature(
+                f"Hi {first}, following up on {thread_ref}. "
+                f"{proof_fragment}. "
+                f"{ask}"
+            ),
             claims_used,
         )
     if objective:
         return (
-            f"Hi {first}, I saw your work at {company} and wanted to connect around {objective}. "
-            f"{proof_fragment}. "
-            f"{ask}",
+            _with_signature(
+                f"Hi {first}, I saw your work at {company} and wanted to connect around {objective}. "
+                f"{proof_fragment}. "
+                f"{ask}"
+            ),
             claims_used,
         )
     return (
-        f"Hi {first}, I saw your work at {company} and wanted to connect. "
-        f"{proof_fragment}. "
-        f"{ask}",
+        _with_signature(
+            f"Hi {first}, I saw your work at {company} and wanted to connect. "
+            f"{proof_fragment}. "
+            f"{ask}"
+        ),
         claims_used,
     )
 
@@ -718,6 +782,20 @@ def _candidate_id(request: WholeMessageGenerationRequest, index: int, draft_text
             "draft_text": draft_text,
         }
     )
+
+
+def _subject_for_request(request: WholeMessageGenerationRequest) -> str:
+    if str(request.channel or "").strip().lower() != CHANNEL_LINKEDIN_INMAIL:
+        return ""
+    company = _clean(request.target_context.get("company")) or "AI platform work"
+    position = _clean(
+        request.jd_fields.get("position_name") or request.jd_fields.get("job_title")
+    )
+    if position:
+        return _clean(f"{position} fit at {company}")[:200]
+    if request.message_type == MESSAGE_TRIGGER_BASED_INSIGHT:
+        return _clean(f"{company} AI execution note")[:200]
+    return _clean(f"{company} AI leadership fit")[:200]
 
 
 def generate_whole_message_candidates(
@@ -736,10 +814,12 @@ def generate_whole_message_candidates(
     candidates: list[WholeMessageCandidate] = []
     for index in range(request.reasoning_policy.candidate_count):
         draft_text, claims_used = _render_candidate_text(request, variant_index=index)
+        subject_line = _subject_for_request(request)
         candidate_id = _candidate_id(request, index, draft_text)
         candidates.append(
             WholeMessageCandidate(
                 candidate_id=candidate_id,
+                subject_line=subject_line,
                 draft_text=draft_text,
                 attempt_seed=_sha256_canonical(
                     {
@@ -779,8 +859,18 @@ def validate_whole_message_candidate(
     lowered = candidate.draft_text.lower()
     if not candidate.is_whole_message or any(marker in lowered for marker in _FORBIDDEN_FRAGMENT_MARKERS):
         issues.append(REASON_CANDIDATE_NOT_WHOLE_MESSAGE)
+    if str(request.channel or "").strip().lower() == CHANNEL_LINKEDIN_INMAIL:
+        subject = _clean(candidate.subject_line)
+        if not subject:
+            issues.append(REASON_CANDIDATE_MISSING_SUBJECT)
+        elif len(subject) > 200:
+            issues.append(REASON_CANDIDATE_SUBJECT_TOO_LONG)
     if candidate.char_count > request.length_budget.hard_cap_chars:
         issues.append(REASON_CANDIDATE_OVER_LENGTH)
+    if not _has_low_friction_cta(candidate.draft_text):
+        issues.append(REASON_CANDIDATE_MISSING_CTA)
+    if not _has_terminal_signature(candidate.draft_text):
+        issues.append(REASON_CANDIDATE_MISSING_SIGNATURE)
     claim_validation = validate_l2_sender_claims_against_packet(
         candidate.claims_used,
         packet=request.proof_packet,
@@ -808,7 +898,11 @@ __all__ = [
     "R2_DELIBERATE",
     "R3_STRICT",
     "REASON_CANDIDATE_NOT_WHOLE_MESSAGE",
+    "REASON_CANDIDATE_MISSING_CTA",
+    "REASON_CANDIDATE_MISSING_SIGNATURE",
+    "REASON_CANDIDATE_MISSING_SUBJECT",
     "REASON_CANDIDATE_OVER_LENGTH",
+    "REASON_CANDIDATE_SUBJECT_TOO_LONG",
     "REASON_CANDIDATE_UNAPPROVED_CLAIM",
     "REASON_MESSAGE_REQUIREMENTS_NOT_PASSED",
     "REASON_RECIPIENT_CLASS_NOT_DERIVED",

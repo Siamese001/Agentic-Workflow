@@ -1,0 +1,41 @@
+{
+  "schema_version": "apps_lic.validation_profiles.v1",
+  "default_profile_id": "generic_company",
+  "profiles": {
+    "generic_company": {
+      "profile_id": "generic_company",
+      "companies": [],
+      "requires_operating_insight": false,
+      "operating_terms": [],
+      "minimum_operating_terms": 0,
+      "forbidden_terms_without_evidence": [
+        "underwriting",
+        "claims",
+        "aig assist"
+      ]
+    },
+    "aig_operating_insight": {
+      "profile_id": "aig_operating_insight",
+      "companies": [
+        "aig",
+        "american international group"
+      ],
+      "requires_operating_insight": true,
+      "operating_terms": [
+        "underwriting",
+        "claims",
+        "genai",
+        "agentic",
+        "governance",
+        "workflow",
+        "operating-model",
+        "operating model",
+        "telemetry",
+        "evals",
+        "aig assist"
+      ],
+      "minimum_operating_terms": 2,
+      "forbidden_terms_without_evidence": []
+    }
+  }
+}

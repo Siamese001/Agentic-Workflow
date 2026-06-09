@@ -53,6 +53,26 @@ from apps_lic.engines.whole_message_generation import (
     WholeMessageGenerationRequest,
     validate_whole_message_candidate,
 )
+from apps_lic.engines.x1d_judge_policy import (
+    ANTHROPIC_MESSAGES_API,
+    DEFAULT_X1D_JUDGE_MODEL,
+    DEFAULT_X1D_JUDGE_PROVIDER,
+    INDEPENDENT_JUDGE,
+    JUDGE_AVAILABLE,
+    JUDGE_CEO_EVIDENCE_RISK,
+    JUDGE_CEO_ORIGINALITY,
+    JUDGE_EVIDENCE_SUPPORT,
+    JUDGE_LINKEDIN_TONE,
+    JUDGE_LINKEDIN_TONE_NON_GENERIC,
+    JUDGE_UNAVAILABLE,
+    LIVE_CLAUDE_API_CALL,
+    MODIFIER_PROVIDER_BACKED_GENERATION,
+    MODIFIER_SIMILARITY_GATE_FLAGGED,
+    NON_INDEPENDENT_JUDGE,
+    X1DJudgeProfilePolicy,
+    required_x1d_judge_ids_for_context,
+    x1d_judge_profile_policy,
+)
 
 
 STATUS_X2_PASS = "X2_VALIDATION_PASS"
@@ -82,6 +102,7 @@ GATE_NO_SEND = "no_send_gate"
 GATE_RECIPIENT_CLASS = "recipient_class_present_and_derived_gate"
 GATE_PROMPT_INJECTION = "prompt_injection_neutralization_gate"
 GATE_WHOLE_MESSAGE_SHAPE = "whole_message_shape_gate"
+GATE_INMAIL_SUBJECT = "inmail_subject_line_gate"
 GATE_CHANNEL_LENGTH = "message_type_recipient_length_gate"
 GATE_UNSUPPORTED_CLAIM = "unsupported_claim_gate"
 GATE_CANDIDATE_SELECTION = "candidate_selection_gate"
@@ -99,38 +120,13 @@ X1D_DEPTH_NONE = "none"
 X1D_DEPTH_ONE = "one"
 X1D_DEPTH_TWO = "two"
 
-DEFAULT_X1D_JUDGE_MODEL = "Claude Sonnet 4.6"
-DEFAULT_X1D_JUDGE_PROVIDER = "claude"
-JUDGE_AVAILABLE = "available"
-JUDGE_UNAVAILABLE = "unavailable"
-INDEPENDENT_JUDGE = "independent_judge"
-NON_INDEPENDENT_JUDGE = "non_independent_judge"
-LIVE_CLAUDE_API_CALL = "live_claude_api_call"
-ANTHROPIC_MESSAGES_API = "anthropic_messages_api"
-
-JUDGE_LINKEDIN_TONE = "linkedin_tone_channel_quality_x1d"
-JUDGE_LINKEDIN_TONE_NON_GENERIC = "linkedin_tone_non_generic_x1d"
-JUDGE_EVIDENCE_SUPPORT = "evidence_claim_support_x1d"
-JUDGE_CEO_ORIGINALITY = "ceo_attention_originality_x1d"
-JUDGE_CEO_EVIDENCE_RISK = "ceo_evidence_overclaim_risk_x1d"
-
-MODIFIER_PROVIDER_BACKED_GENERATION = "provider_backed_generation"
-MODIFIER_SIMILARITY_GATE_FLAGGED = "similarity_gate_flagged"
-
-TECHNICAL_PROOF_IDS = frozenset(
-    {
-        "sp_agentic_platform",
-        "sp_runtime_reliability",
-        "sp_cloud_ai_transformation",
-    }
-)
-
 _X2_UNIVERSAL_GATES = (
     GATE_SCHEMA,
     GATE_NO_SEND,
     GATE_RECIPIENT_CLASS,
     GATE_PROMPT_INJECTION,
     GATE_WHOLE_MESSAGE_SHAPE,
+    GATE_INMAIL_SUBJECT,
     GATE_CHANNEL_LENGTH,
     GATE_UNSUPPORTED_CLAIM,
 )
@@ -156,8 +152,6 @@ _NON_US_OWNERSHIP_HINTS = (
     "japan",
     "tokyo",
 )
-
-
 @dataclass(frozen=True)
 class X2GateResult:
     gate_id: str
@@ -450,13 +444,30 @@ def _length_gate_passes(
     budget = request.length_budget
     if candidate.char_count > budget.hard_cap_chars:
         return False, "candidate_exceeds_hard_char_cap"
-    if candidate.word_count > budget.max_words:
-        return False, "candidate_exceeds_message_type_word_budget"
     if candidate.sentence_count > budget.max_sentences:
         return False, "candidate_exceeds_message_type_sentence_budget"
     if candidate.word_count < budget.min_words or candidate.sentence_count < budget.min_sentences:
         return True, "candidate_below_recommended_minimum_but_within_hard_bounds"
+    if candidate.word_count > budget.max_words:
+        return True, "candidate_above_recommended_word_band_but_within_hard_bounds"
     return True, "candidate_within_message_type_recipient_length_budget"
+
+
+def _inmail_subject_gate_passes(
+    candidate: WholeMessageCandidate | None,
+    request: WholeMessageGenerationRequest,
+) -> tuple[bool, str, bool]:
+    applicable = str(request.channel or "").strip().lower() == "linkedin_inmail"
+    if not applicable:
+        return True, "subject_line_not_required_for_route", False
+    if candidate is None:
+        return False, "selected_candidate_missing", True
+    subject = _clean(getattr(candidate, "subject_line", ""))
+    if not subject:
+        return False, "inmail_subject_line_missing", True
+    if len(subject) > 200:
+        return False, "inmail_subject_line_over_200_chars", True
+    return True, "inmail_subject_line_present", True
 
 
 def _schema_gate_passes(
@@ -587,6 +598,19 @@ def run_x2_validation(
             shape_ok,
             shape_reason,
             evidence_refs=(selected_id,),
+        )
+    )
+    subject_ok, subject_reason, subject_applicable = _inmail_subject_gate_passes(
+        selected_candidate,
+        request,
+    )
+    gate_results.append(
+        _gate(
+            GATE_INMAIL_SUBJECT,
+            subject_ok,
+            subject_reason,
+            evidence_refs=(selected_id, getattr(selected_candidate, "subject_line", "") if selected_candidate else ""),
+            applicable=subject_applicable,
         )
     )
     gate_results.append(
@@ -733,101 +757,17 @@ def run_x2_validation(
     )
 
 
-def _uses_technical_proof(proof_ids: Iterable[str]) -> bool:
-    return bool({item for item in proof_ids if _clean(item)} & TECHNICAL_PROOF_IDS)
-
-
-def required_x1d_judge_ids_for_context(
-    *,
-    recipient_class: str,
-    message_type: str,
-    modifiers: Mapping[str, bool] | None = None,
-    proof_ids: Iterable[str] = (),
-) -> tuple[str, ...]:
-    """Resolve the W6 recipient/message-specific X1D judge policy."""
-    modifier_map = dict(modifiers or {})
-    recipient = _clean(recipient_class)
-    message = _clean(message_type)
-    proof_id_tuple = tuple(dict.fromkeys(_clean(item) for item in proof_ids if _clean(item)))
-    uses_jd = message == MESSAGE_ROLE_SPECIFIC or bool(modifier_map.get(MODIFIER_USES_JD))
-    uses_technical_proof = _uses_technical_proof(proof_id_tuple)
-    provider_backed = bool(modifier_map.get(MODIFIER_PROVIDER_BACKED_GENERATION))
-    similarity_risk = bool(modifier_map.get(MODIFIER_SIMILARITY_GATE_FLAGGED))
-
-    if recipient in {CLASS_CEO, CLASS_C_LEVEL}:
-        return (JUDGE_CEO_ORIGINALITY, JUDGE_CEO_EVIDENCE_RISK)
-
-    judge_ids: list[str] = []
-    if recipient in {CLASS_RECRUITER, CLASS_SENIOR_TA} and message == MESSAGE_ROLE_SPECIFIC:
-        judge_ids.append(JUDGE_EVIDENCE_SUPPORT)
-        if provider_backed or similarity_risk:
-            judge_ids.append(JUDGE_LINKEDIN_TONE_NON_GENERIC)
-        return tuple(dict.fromkeys(judge_ids))
-
-    if recipient == CLASS_HIRING_MANAGER and message == MESSAGE_ROLE_SPECIFIC:
-        return (JUDGE_EVIDENCE_SUPPORT, JUDGE_LINKEDIN_TONE_NON_GENERIC)
-
-    if recipient in {CLASS_EXECUTIVE, CLASS_CTO, CLASS_VP_ENG}:
-        judge_ids.append(JUDGE_LINKEDIN_TONE)
-        if uses_jd or uses_technical_proof:
-            judge_ids.append(JUDGE_EVIDENCE_SUPPORT)
-        return tuple(dict.fromkeys(judge_ids))
-
-    if message == MESSAGE_REFERRAL_ASK or modifier_map.get(MODIFIER_APPLICATION_STATUS_CLAIMED):
-        return (JUDGE_EVIDENCE_SUPPORT,)
-    if max(0, int(modifier_map.get("x1d_llm_judge_depth") or 0)) > 0:
-        return (JUDGE_LINKEDIN_TONE,)
-    return ()
-
-
 def _judge_profile_for_id(judge_id: str, *, required_for_depth: str) -> X1DJudgeProfile:
-    if judge_id == JUDGE_CEO_ORIGINALITY:
-        return X1DJudgeProfile(
-            judge_id=JUDGE_CEO_ORIGINALITY,
-            rubric_id="apps_lic.x1d.ceo_originality.v1",
-            model=DEFAULT_X1D_JUDGE_MODEL,
-            provider=DEFAULT_X1D_JUDGE_PROVIDER,
-            threshold=0.88,
-            role="CEO/C-level attention value, originality, and strategic sharpness.",
-            required_for_depth=required_for_depth,
-        )
-    if judge_id == JUDGE_CEO_EVIDENCE_RISK:
-        return X1DJudgeProfile(
-            judge_id=JUDGE_CEO_EVIDENCE_RISK,
-            rubric_id="apps_lic.x1d.ceo_evidence_overclaim.v1",
-            model=DEFAULT_X1D_JUDGE_MODEL,
-            provider=DEFAULT_X1D_JUDGE_PROVIDER,
-            threshold=0.90,
-            role="CEO/C-level evidence support, overclaim risk, and no-fabrication review.",
-            required_for_depth=required_for_depth,
-        )
-    if judge_id == JUDGE_EVIDENCE_SUPPORT:
-        return X1DJudgeProfile(
-            judge_id=JUDGE_EVIDENCE_SUPPORT,
-            rubric_id="apps_lic.x1d.evidence_claim_support.v1",
-            model=DEFAULT_X1D_JUDGE_MODEL,
-            provider=DEFAULT_X1D_JUDGE_PROVIDER,
-            threshold=0.86,
-            role="Evidence support, claim grounding, and specificity discipline.",
-            required_for_depth=required_for_depth,
-        )
-    if judge_id == JUDGE_LINKEDIN_TONE_NON_GENERIC:
-        return X1DJudgeProfile(
-            judge_id=JUDGE_LINKEDIN_TONE_NON_GENERIC,
-            rubric_id="apps_lic.x1d.linkedin_tone_non_generic.v1",
-            model=DEFAULT_X1D_JUDGE_MODEL,
-            provider=DEFAULT_X1D_JUDGE_PROVIDER,
-            threshold=0.84,
-            role="Lightweight LinkedIn tone, non-generic wording, and recruiter-channel fit.",
-            required_for_depth=required_for_depth,
-        )
+    policy = x1d_judge_profile_policy().get(judge_id)
+    if policy is None:
+        raise ValueError(f"Unsupported X1D judge profile id: {judge_id!r}")
     return X1DJudgeProfile(
-        judge_id=JUDGE_LINKEDIN_TONE,
-        rubric_id="apps_lic.x1d.linkedin_tone_channel_quality.v1",
+        judge_id=policy.judge_id,
+        rubric_id=policy.rubric_id,
         model=DEFAULT_X1D_JUDGE_MODEL,
         provider=DEFAULT_X1D_JUDGE_PROVIDER,
-        threshold=0.82,
-        role="LinkedIn tone, channel fit, readability, and non-generic phrasing.",
+        threshold=policy.threshold,
+        role=policy.role,
         required_for_depth=required_for_depth,
     )
 
@@ -1122,6 +1062,7 @@ __all__ = [
     "X1D_DEPTH_NONE",
     "X1D_DEPTH_ONE",
     "X1D_DEPTH_TWO",
+    "X1DJudgeProfilePolicy",
     "X1DJudgeProfile",
     "X1DJudgeResult",
     "X1DValidationResult",
@@ -1134,4 +1075,5 @@ __all__ = [
     "required_x1d_profiles",
     "run_validation_exit",
     "run_x2_validation",
+    "x1d_judge_profile_policy",
 ]

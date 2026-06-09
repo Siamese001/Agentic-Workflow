@@ -110,6 +110,24 @@ def _coerce_str(v: object) -> str:
     return str(v) if v is not None else ""
 
 
+def _effective_channel(
+    *,
+    campaign: Mapping[str, Any],
+    personalization: Mapping[str, Any],
+) -> str:
+    inputs = personalization.get("inputs") if isinstance(personalization, Mapping) else {}
+    envelope = (
+        inputs.get("linkedin_route_envelope")
+        if isinstance(inputs, Mapping)
+        else None
+    )
+    if isinstance(envelope, Mapping):
+        route_channel = _coerce_str(envelope.get("channel", "")).strip()
+        if route_channel:
+            return route_channel
+    return _coerce_str(campaign.get("channel", "email"))
+
+
 def _build_app_payload_projections(
     app_payload: Mapping[str, Any],
 ) -> tuple[
@@ -167,6 +185,10 @@ def _build_app_payload_projections(
         _coerce_str(campaign.get("workflow_required", "")) == "managed_workflow_hop"
     )
     action_required_str: str = _coerce_str(campaign.get("action_required", "draft_and_cert"))
+    effective_channel = _effective_channel(
+        campaign=campaign,
+        personalization=personalization,
+    )
 
     # model_generation_required: always True for outreach_message (LLM draft)
     model_generation_required: bool = True
@@ -200,7 +222,7 @@ def _build_app_payload_projections(
     task_spec: dict[str, Any] = {
         "task_class": _coerce_str(transport.get("task_class", "outreach_message")),
         "request_type": _coerce_str(campaign.get("request_type", "outreach_draft")),
-        "channel": _coerce_str(campaign.get("channel", "email")),
+        "channel": effective_channel,
         "action_required": action_required_str,
         "workflow_required": workflow_required,
         "grounding_required": grounding_required,
@@ -268,7 +290,7 @@ def _build_app_payload_projections(
 
     # ── 4. output_expectation ─────────────────────────────────────────────────
     output_expectation: dict[str, Any] = {
-        "channel": _coerce_str(campaign.get("channel", "email")),
+        "channel": effective_channel,
         "tone_brand_voice_id": tone.get("brand_voice_id", ""),
         "tone_register": _coerce_str(tone.get("tone_register", "")),
         "formality_level": tone.get("formality_level"),
@@ -302,7 +324,7 @@ def _build_app_payload_projections(
     # ── advisory route_hints (L0 DOES NOT bind to these for deterministic routing)
     route_hints: dict[str, Any] = {
         "audience_segment": campaign.get("audience_segment", ""),
-        "channel": _coerce_str(campaign.get("channel", "email")),
+        "channel": effective_channel,
         "request_type": _coerce_str(campaign.get("request_type", "outreach_draft")),
         "ab_test_profile": app_payload.get("ab_test", {}).get("ab_test_profile"),
         "reasoning_policy": reasoning_policy,

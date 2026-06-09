@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from apps_lic.engines.governed_opportunity_ingestion import NAMESPACE_CONTACT
+from apps_lic.engines.message_type_requirement_gate import MESSAGE_GENERAL_INTRO
 from apps_lic.engines.qa_report_engine import QaReportEngine
 from apps_lic.engines.validation_engine import ValidationEngine
 from apps_lic.policy.reasoning_intensity import (
@@ -27,6 +29,10 @@ from apps_lic.runtime.dispatch.canonical_dispatch import (
 )
 from apps_lic.runtime.u0.adapter import apps_lic_u0_adapt
 from apps_lic.runtime.bindings.l1_binding import l1_plan_apps_lic
+from tests.apps_lic.canonical_readiness_fixtures import (
+    minimal_recruiter_readiness_facts,
+    ready_governed_opportunity_facts,
+)
 
 
 def test_default_policy_is_sc1_r1_with_x2_gates_and_x1d_judge() -> None:
@@ -98,6 +104,13 @@ def test_executive_or_high_stakes_policy_escalates_to_sc3() -> None:
             "industry": "Insurance",
             "consent_attested": True,
         },
+        governed_opportunity_facts=ready_governed_opportunity_facts(
+            contact_text=(
+                "Scott Hallworth | Executive Vice President and Chief Digital "
+                "Officer | AIG"
+            ),
+            role_ownership_text="Executive sponsor for digital and AI transformation.",
+        ),
     )
 
     policy = select_reasoning_policy(raw)
@@ -310,7 +323,10 @@ def test_default_reasoning_policy_e2e_manifest(tmp_path: Path, monkeypatch) -> N
     monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
     monkeypatch.setenv("APPS_LIC_TEST_X1D_JUDGE_STUB", "1")
     raw = build_cli_ingress_raw(
-        manual_brief="Context for a concise LinkedIn introduction."
+        manual_brief="Context for a concise LinkedIn note.",
+        message_type_hint=MESSAGE_GENERAL_INTRO,
+        governed_opportunity_facts=minimal_recruiter_readiness_facts(),
+        c0_required_namespaces=(NAMESPACE_CONTACT,),
     )
 
     result = run_canonical_apps_lic_spine(raw, artifact_root=tmp_path / "default_r1")
@@ -352,6 +368,13 @@ def test_strict_reasoning_policy_e2e_manifest_for_executive(
             "industry": "Insurance",
             "consent_attested": True,
         },
+        governed_opportunity_facts=ready_governed_opportunity_facts(
+            contact_text=(
+                "Scott Hallworth | Executive Vice President and Chief Digital "
+                "Officer | AIG"
+            ),
+            role_ownership_text="Executive sponsor for digital and AI transformation.",
+        ),
     )
 
     result = run_canonical_apps_lic_spine(raw, artifact_root=tmp_path / "strict_r3")

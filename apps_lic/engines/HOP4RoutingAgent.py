@@ -8,13 +8,30 @@ Implements Gate 5 (Route Selection) and Gate 6 (Premium Mismatch).
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Mapping
 
 from apps_lic.utils.lic_agent_base_util import LICAgentBase
 from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
 from apps_lic.types.TraceRegistry import TraceRegistry
+from apps_lic.types.linkedin_route_envelope import (
+    ROUTE_LINKEDIN_DIRECT,
+    LinkedInRouteEnvelope,
+    resolve_linkedin_route_envelope,
+)
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+
+
+def resolve_hop4_linkedin_route(mission_input: Mapping[str, Any]) -> tuple[str, LinkedInRouteEnvelope]:
+    """Resolve legacy HOP4 route through the canonical LinkedIn route envelope."""
+    envelope = resolve_linkedin_route_envelope(
+        channel=str(mission_input.get("channel") or "linkedin"),
+        connection_status=str(mission_input.get("connection_status") or "NOT_CONNECTED"),
+        premium_available=bool(mission_input.get("premium_available", False)),
+        route_override=str(mission_input.get("route_override") or ""),
+    )
+    legacy_route = "FOLLOW_UP" if envelope.route == ROUTE_LINKEDIN_DIRECT else envelope.route
+    return legacy_route, envelope
 
 
 @dataclass
@@ -55,31 +72,14 @@ class HOP4RoutingAgent(LICAgentBase, SubatomicTestingMixin):
             raise RuntimeError("HOP-4 missing critical mission input")
 
         hop1 = buffer.read("hop1_analysis")
-        premium_available = mission_input.get("premium_available", False)
-        route_override = mission_input.get("route_override")
-        connection_status = mission_input.get("connection_status", "NOT_CONNECTED")
-
         registry.add_trace("PHASE_STEP", {"action": "executing_gate_5_selection"})
 
-        # 2. Gate 5: Route Selection Logic
-        # Prioritize Override -> Connection Status -> Premium Availability
-        selected_route = "CONNECTION_REQ"
-
-        if route_override:
-            selected_route = route_override
+        # 2/3. Gate 5 route selection + Gate 6 premium policy are delegated to
+        # the canonical LinkedIn route envelope. Explicit INMAIL override is a
+        # documented override path, even when premium_available is false.
+        selected_route, route_envelope = resolve_hop4_linkedin_route(mission_input)
+        if mission_input.get("route_override"):
             registry.add_trace("ROUTE_OVERRIDE_APPLIED", {"route": selected_route})
-            # Skepticism: Ensure overrides still respect Gate 6 safety
-        elif connection_status == "CONNECTED":
-            selected_route = "FOLLOW_UP"
-        elif premium_available:
-            selected_route = "INMAIL"
-
-        # 3. Gate 6: Premium Routing Mismatch Detection (CRITICAL)
-        if selected_route == "INMAIL" and not premium_available:
-            registry.add_trace("GATE_6_FAILED", {"reason": "premium_unavailable_for_inmail"})
-            raise ValueError(
-                "GATE_6_BLOCKED: INMAIL route selected but Premium InMail not available"
-            )
 
         # 4. Fetch Route Constraints from Specs
         config = self.config.routing_agent
@@ -109,7 +109,11 @@ class HOP4RoutingAgent(LICAgentBase, SubatomicTestingMixin):
         output_data = {
             "route": selected_route,
             "constraints": constraints,
-            "metadata": {"premium_validated": True, "archetype_aligned": archetype},
+            "metadata": {
+                "premium_validated": True,
+                "archetype_aligned": archetype,
+                "linkedin_route_envelope": route_envelope.to_packet(),
+            },
         }
 
         buffer.write_once("hop4_routing", output_data)

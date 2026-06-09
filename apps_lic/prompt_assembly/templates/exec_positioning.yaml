@@ -156,7 +156,7 @@ slot_bodies:
     
     If no competitive context or insufficient confidence, omit.
   R0: |
-    Output exactly one OutreachDraft JSON object with:
+    Output exactly one OutreachDraftCandidate JSON object with:
     - subject
     - message_body
     - channel
@@ -183,11 +183,16 @@ slot_bodies:
     - auto_send
     - connector_send
 
+    Channel-specific rules:
+    - If channel is linkedin_inmail, subject must be non-empty, message_body must fit the provided channel_ceiling, and signature_block is required.
+    - If channel is linkedin_chat, subject must be empty, message_body must be under 300 characters, and signature_block is optional.
+    - Do not infer channel from length. Use the explicit channel input.
+
     Executive-specific checks:
     - If arc_coherence_score < 0.6, force review_required
     - If competitive claims lack source_refs, force review_required
 output_contract:
-  type: OutreachDraft
+  type: OutreachDraftCandidate
   format: json
 validation_rules:
   - all_claims_in_message_body_must_appear_in_claims_used
@@ -195,6 +200,8 @@ validation_rules:
   - omitted_claims_must_not_appear_in_message_body
   - unsupported_claims_must_not_appear_in_message_body
   - send_mode_must_be_allowed
+  - linkedin_inmail_requires_subject_and_signature
+  - linkedin_chat_requires_empty_subject_and_300_char_body
   - no_em_dash
   - no_markdown_links
   - within_channel_ceiling

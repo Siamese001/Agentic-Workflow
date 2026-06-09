@@ -11,6 +11,7 @@ from apps_lic.runtime.dispatch.canonical_dispatch import (
     build_cli_ingress_raw,
     run_canonical_apps_lic_spine,
 )
+from tests.apps_lic.canonical_readiness_fixtures import ready_governed_opportunity_facts
 
 
 def test_build_cli_ingress_r4_fresh_context() -> None:
@@ -25,6 +26,7 @@ def test_canonical_spine_r4_managed_workflow(tmp_path: Path, monkeypatch) -> Non
         run_id="phase0_canonical_lic_01",
         request_id="req_phase0_canonical_lic_01",
         manual_brief="Enterprise renewal outreach for VP Technology at Acme Corp.",
+        governed_opportunity_facts=ready_governed_opportunity_facts(),
     )
     result = run_canonical_apps_lic_spine(raw, artifact_root=tmp_path / "run")
     assert result.route_family == ROUTE_FAMILY_R4
@@ -53,3 +55,6 @@ def test_canonical_spine_r5_without_context_or_research(tmp_path: Path) -> None:
     )
     assert result.terminal_r5 is True
     assert result.execution_form == "terminal_fallback"
+    assert result.exit_status == "blocked"
+    assert result.outcome_authorized is False
+    assert (result.artifact_dir / "exit_disposition_receipt.json").is_file()

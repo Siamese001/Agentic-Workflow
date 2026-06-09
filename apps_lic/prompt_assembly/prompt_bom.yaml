@@ -1,11 +1,12 @@
-schema_version: "1.0"
+schema_version: "1.1"
 app: apps_lic
 bom_id: apps_lic_prompt_bom_v1
 owner: apps_lic.prompt_assembly
+slot_registry_ref: apps_lic_prompt_slot_registry_v1
 purpose: >
   Defines canonical Prompt Assembly slots for governed professional outreach drafts,
   briefing-to-manifest conversion, unsupported claim omission, anti-pattern repair,
-  and channel-length repair.
+  channel-length repair, and apps_lic archetype-specific drafting views.
 required_slots:
   - S0
   - I0
@@ -15,6 +16,12 @@ required_slots:
   - E0
   - Y0
   - R0
+optional_slots:
+  - M0
+  - H0
+  - A0
+  - N0
+  - L0
 slot_definitions:
   S0:
     name: system_and_governance
@@ -56,14 +63,44 @@ slot_definitions:
     authority: schema_contract
     required: true
     description: OutreachDraft schema and send mode restrictions.
+  M0:
+    name: meta_cognitive_reasoning_policy
+    authority: model_reasoning_policy
+    required: false
+    description: Runtime-selected reasoning, self-consistency, and provider routing metadata; provider/model identities are not prompt output fields.
+  H0:
+    name: healing_and_style_constraints
+    authority: repair_and_style_policy
+    required: false
+    description: Style, repair, and regeneration constraints.
+  A0:
+    name: archetype_tone_calibration
+    authority: apps_lic_recipient_policy
+    required: false
+    description: Recipient archetype tone calibration.
+  N0:
+    name: narrative_arc
+    authority: apps_lic_message_policy
+    required: false
+    description: Narrative flow, altitude, and message focus.
+  L0:
+    name: competitive_landscape_context
+    authority: optional_data_only_context
+    required: false
+    description: Optional competitive or market context, only when source-backed.
 hash_fields:
   - schema_version
   - bom_id
+  - slot_registry_ref
   - required_slots
+  - optional_slots
   - slot_definitions
   - template_registry_refs
 template_registry_refs:
   - outreach_draft_v1
+  - outreach_draft_v2
+  - compact_recruiter_arc
+  - exec_positioning
   - briefing_to_manifest_v1
   - unsupported_claim_omission_v1
   - repair_antipattern_v1

@@ -71,6 +71,9 @@ from apps_lic.runtime.bindings.pa_binding import (
     APPS_LIC_TARGET_MODEL,
     pa_compose_apps_lic,
 )
+from apps_lic.runtime.bindings.l2_binding import _c03_context_from_prompt
+from apps_lic.runtime.dispatch.canonical_dispatch import build_cli_ingress_raw
+from tests.apps_lic.canonical_readiness_fixtures import ready_governed_opportunity_facts
 
 
 # ---------------------------------------------------------------------------
@@ -112,8 +115,8 @@ _VALID_RAW: dict[str, Any] = {
     "entity_refs": {
         "lead_profile": {
             "verified_name": "Jane Smith",
-            "title": "VP Technology",
-            "seniority_class": "VP",
+            "title": "Senior Technical Recruiter",
+            "seniority_class": "RECRUITER",
             "company_name": "Acme Corp",
             "industry": "Technology",
             "consent_attested": True,
@@ -129,7 +132,13 @@ _VALID_RAW: dict[str, Any] = {
         "company_ref": None,
     },
     "personalization": {
-        "inputs": {"recent_win_reference": "Acme closed $2M deal in Q1"},
+        "inputs": {
+            "recent_win_reference": "Acme closed $2M deal in Q1",
+            "governed_opportunity_facts": ready_governed_opportunity_facts(
+                contact_text="Jane Smith | Senior Technical Recruiter | Acme Corp",
+                role_ownership_text="Owns recruiting for AI platform leadership roles.",
+            ),
+        },
     },
     "generation_hints": {},
     "tone_constraints": {},
@@ -189,6 +198,33 @@ def _make_fec(route: RouteContract, vr: ValidatedRequest) -> FinalEvidenceContra
 
 def _canonical_pipeline() -> tuple[ValidatedRequest, L1PlanContract, RouteContract, FinalEvidenceContract]:
     vr = _make_validated_request()
+    l1 = _make_l1(vr)
+    route = _make_route(l1)
+    fec = _make_fec(route, vr)
+    return vr, l1, route, fec
+
+
+def _ceo_pipeline() -> tuple[ValidatedRequest, L1PlanContract, RouteContract, FinalEvidenceContract]:
+    raw = build_cli_ingress_raw(
+        request_id="req_lic_w5_ceo",
+        run_id="run_lic_w5_ceo",
+        trace_id="trace_lic_w5_ceo",
+        manual_brief="Draft a concise executive LinkedIn note.",
+        campaign_objective="Draft a concise executive LinkedIn note.",
+        lead_profile={
+            "verified_name": "Casey CEO",
+            "title": "Technical Recruiter",
+            "seniority_class": "RECRUITER",
+            "company_name": "AIG",
+            "industry": "Insurance",
+            "consent_attested": True,
+        },
+        governed_opportunity_facts=ready_governed_opportunity_facts(
+            contact_text="Casey CEO | Chief Executive Officer | AIG",
+            role_ownership_text="Current CEO and accountable executive for AI strategy.",
+        ),
+    )
+    vr = _make_validated_request(raw)
     l1 = _make_l1(vr)
     route = _make_route(l1)
     fec = _make_fec(route, vr)
@@ -601,6 +637,15 @@ class TestTPA01_PAEmitsCPA:
         cpa = pa_compose_apps_lic(route, l1, fec, vr)
         assert len(cpa.prompt_blocks) == 3
 
+    def test_c03_data_block_carries_jd_fields_for_l2_generation(self):
+        vr, l1, route, fec = _canonical_pipeline()
+        cpa = pa_compose_apps_lic(route, l1, fec, vr)
+
+        _sender_proof, _length_budget, jd_fields = _c03_context_from_prompt(cpa)
+
+        assert jd_fields["position_name"] == "VP, Global Head of Agentic AI Solutions"
+        assert jd_fields["requisition_number"] == "JR2601998"
+
     def test_target_model_set(self):
         vr, l1, route, fec = _canonical_pipeline()
         cpa = pa_compose_apps_lic(route, l1, fec, vr)
@@ -615,6 +660,44 @@ class TestTPA01_PAEmitsCPA:
         vr, l1, route, fec = _canonical_pipeline()
         cpa = pa_compose_apps_lic(route, l1, fec, vr)
         assert cpa.evidence_digest == fec.compilation_hash
+
+    def test_ceo_maps_to_c_level_archetype_template(self):
+        vr, l1, route, fec = _ceo_pipeline()
+        cpa = pa_compose_apps_lic(
+            route,
+            l1,
+            fec,
+            vr,
+            length_budget={
+                "budget_key": "c_level_general_intro",
+                "min_words": 30,
+                "max_words": 55,
+                "min_sentences": 2,
+                "max_sentences": 3,
+                "hard_cap_chars": 500,
+            },
+        )
+
+        system_text = cpa.prompt_blocks[0].content
+        assert "LIC recipient class: CEO." in system_text
+        assert "Mapped archetype: C_LEVEL." in system_text
+        assert "apps_lic.recipient_archetype.c_level.v1" in system_text
+        assert "max 3 sentences and max 500 characters" in system_text
+        assert "word band is advisory only" in system_text
+        assert cpa.slot_lineage_map["A0"].startswith(
+            "PA-authored:recipient_archetype=C_LEVEL"
+        )
+        assert cpa.slot_lineage_map["H0"] == "PA-authored:linkedin_c_level_style_constraints"
+        assert "recipient_archetype" in cpa.component_hash_map
+
+    def test_pa_component_hash_includes_shared_template_policy(self):
+        vr, l1, route, fec = _ceo_pipeline()
+        cpa = pa_compose_apps_lic(route, l1, fec, vr)
+
+        system_text = cpa.prompt_blocks[0].content
+        assert "RECIPIENT ARCHETYPE TEMPLATE:" in system_text
+        assert "CTA: Ask for a brief executive exchange or the right owner to speak with." in system_text
+        assert "recipient_archetype" in cpa.component_hash_map
 
 
 # ---------------------------------------------------------------------------

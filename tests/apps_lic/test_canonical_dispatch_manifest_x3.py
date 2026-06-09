@@ -17,6 +17,7 @@ from apps_lic.runtime.dispatch.spine_run_result import (
     SpineRunResult,
     x3_manifest_fields,
 )
+from tests.apps_lic.canonical_readiness_fixtures import ready_governed_opportunity_facts
 
 _R4_MANAGED_STAGE_FILES = (
     sr.FILENAME_INGRESS_RAW,
@@ -25,9 +26,13 @@ _R4_MANAGED_STAGE_FILES = (
     sr.FILENAME_ROUTE_CONTRACT,
     sr.FILENAME_C0_FEC,
     sr.FILENAME_FEC_SUMMARY,
+    sr.FILENAME_C03_SENDER_PROOF,
     sr.FILENAME_PA_RECEIPT,
     sr.FILENAME_L3_WORKFLOW,
     sr.FILENAME_L2_EXECUTION,
+    sr.FILENAME_W4_CANDIDATE_BATCH,
+    sr.FILENAME_C03_POSTGEN_VALIDATION,
+    sr.FILENAME_W5_VALIDATION_EXIT,
     sr.FILENAME_EXIT_DISPOSITION,
     sr.FILENAME_SPINE_MANIFEST,
 )
@@ -121,6 +126,7 @@ class TestCanonicalSpineManifestX3Integration:
             run_id="pytest_manifest_x3_01",
             request_id="req_pytest_manifest_x3_01",
             manual_brief="Enterprise renewal outreach for VP Technology at Acme Corp.",
+            governed_opportunity_facts=ready_governed_opportunity_facts(),
         )
         result = run_canonical_apps_lic_spine(raw, artifact_root=tmp_path / "run")
         assert result.terminal_r5 is False
@@ -142,6 +148,7 @@ class TestCanonicalSpineManifestX3Integration:
             run_id="pytest_stage_receipts_01",
             request_id="req_pytest_stage_receipts_01",
             manual_brief="Enterprise renewal outreach for VP Technology at Acme Corp.",
+            governed_opportunity_facts=ready_governed_opportunity_facts(),
         )
         result = run_canonical_apps_lic_spine(raw, artifact_root=tmp_path / "run")
         assert result.route_family == "R4_MANAGED_DRAFT"
@@ -159,9 +166,25 @@ class TestCanonicalSpineManifestX3Integration:
         l1 = json.loads((result.artifact_dir / sr.FILENAME_L1_PLAN).read_text(encoding="utf-8"))
         route = json.loads((result.artifact_dir / sr.FILENAME_ROUTE_CONTRACT).read_text(encoding="utf-8"))
         c0 = json.loads((result.artifact_dir / sr.FILENAME_C0_FEC).read_text(encoding="utf-8"))
+        c03 = json.loads((result.artifact_dir / sr.FILENAME_C03_SENDER_PROOF).read_text(encoding="utf-8"))
         pa = json.loads((result.artifact_dir / sr.FILENAME_PA_RECEIPT).read_text(encoding="utf-8"))
         l3 = json.loads((result.artifact_dir / sr.FILENAME_L3_WORKFLOW).read_text(encoding="utf-8"))
         l2 = json.loads((result.artifact_dir / sr.FILENAME_L2_EXECUTION).read_text(encoding="utf-8"))
+        w4 = json.loads(
+            (result.artifact_dir / sr.FILENAME_W4_CANDIDATE_BATCH).read_text(
+                encoding="utf-8"
+            )
+        )
+        postgen = json.loads(
+            (result.artifact_dir / sr.FILENAME_C03_POSTGEN_VALIDATION).read_text(
+                encoding="utf-8"
+            )
+        )
+        w5 = json.loads(
+            (result.artifact_dir / sr.FILENAME_W5_VALIDATION_EXIT).read_text(
+                encoding="utf-8"
+            )
+        )
         exit_rcpt = json.loads(
             (result.artifact_dir / sr.FILENAME_EXIT_DISPOSITION).read_text(encoding="utf-8")
         )
@@ -170,18 +193,28 @@ class TestCanonicalSpineManifestX3Integration:
         _assert_stage_receipt(l1, stage="L1")
         _assert_stage_receipt(route, stage="L0")
         _assert_stage_receipt(c0, stage="C0")
+        _assert_stage_receipt(c03, stage="C0.3")
         _assert_stage_receipt(pa, stage="PA")
         _assert_stage_receipt(l3, stage="L3")
         _assert_stage_receipt(l2, stage="L2")
+        _assert_stage_receipt(w4, stage="W4.CANDIDATES")
+        _assert_stage_receipt(postgen, stage="C0.3.POSTGEN")
+        _assert_stage_receipt(w5, stage="W5.VALIDATION_EXIT")
         _assert_stage_receipt(exit_rcpt, stage="EXIT")
 
         assert sr.FILENAME_U0_RECEIPT in l1["upstream_receipt_refs"]
         assert sr.FILENAME_L1_PLAN in route["upstream_receipt_refs"]
         assert sr.FILENAME_ROUTE_CONTRACT in c0["upstream_receipt_refs"]
-        assert sr.FILENAME_C0_FEC in pa["upstream_receipt_refs"]
+        assert sr.FILENAME_C0_FEC in c03["upstream_receipt_refs"]
+        assert sr.FILENAME_C03_SENDER_PROOF in pa["upstream_receipt_refs"]
         assert sr.FILENAME_PA_RECEIPT in l3["upstream_receipt_refs"]
         assert sr.FILENAME_L3_WORKFLOW in l2["upstream_receipt_refs"]
-        assert sr.FILENAME_L2_EXECUTION in exit_rcpt["upstream_receipt_refs"]
+        assert sr.FILENAME_L2_EXECUTION in w4["upstream_receipt_refs"]
+        assert sr.FILENAME_W4_CANDIDATE_BATCH in postgen["upstream_receipt_refs"]
+        assert sr.FILENAME_C03_POSTGEN_VALIDATION in w5["upstream_receipt_refs"]
+        assert sr.FILENAME_W5_VALIDATION_EXIT in exit_rcpt["upstream_receipt_refs"]
+        assert w4["payload"]["status"] == "W4_CANDIDATE_BATCH_READY"
+        assert w5["payload"]["x2_status"] == "X2_VALIDATION_PASS"
         assert exit_rcpt["payload"]["x3_disposition"] == "X3D"
         assert exit_rcpt["payload"]["exit_status"] == "success"
         assert exit_rcpt["payload"]["outcome_authorized"] is True

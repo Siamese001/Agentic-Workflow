@@ -16,6 +16,7 @@ from apps_lic.runtime.dispatch.canonical_dispatch import (
     run_canonical_apps_lic_spine,
 )
 from apps_lic.runtime.u0.adapter import apps_lic_u0_adapt
+from tests.apps_lic.canonical_readiness_fixtures import ready_governed_opportunity_facts
 
 
 def test_cli_ingress_defaults_to_linkedin_recruiter_and_disables_research() -> None:
@@ -25,7 +26,9 @@ def test_cli_ingress_defaults_to_linkedin_recruiter_and_disables_research() -> N
     assert raw["campaign"]["channel"] == "linkedin"
     assert raw["entity_refs"]["lead_profile"]["verified_name"] == "Recruiter"
     assert raw["entity_refs"]["sender_profile"]["name"] == "Amit Ayer"
-    assert raw["output_format"]["include_subject_line"] is False
+    assert raw["output_format"]["include_subject_line"] is True
+    assert raw["personalization"]["inputs"]["linkedin_route_envelope"]["route"] == "INMAIL"
+    assert raw["personalization"]["inputs"]["linkedin_route_envelope"]["channel"] == "linkedin_inmail"
 
     research = raw["research_requirements"]
     assert research["allow_research"] is False
@@ -57,11 +60,14 @@ def test_deprecated_research_spine_short_circuits_without_execution(tmp_path: Pa
     assert result.pa_invoked is False
     assert result.l3_participated is False
     assert result.l2_executed is False
+    assert result.exit_status == "blocked"
 
     manifest = json.loads((result.artifact_dir / "spine_run_manifest.json").read_text())
     assert manifest["apps_research_invoked"] is False
     assert manifest["r3r4_research_invoked"] is False
     assert manifest["no_send_assertion"] is True
+    assert manifest["exit_disposition_receipt_ref"] == "exit_disposition_receipt.json"
+    assert (result.artifact_dir / "exit_disposition_receipt.json").is_file()
     assert not (result.artifact_dir / "c0_final_evidence_contract.json").exists()
     assert not (result.artifact_dir / "l2_execution_receipt.json").exists()
 
@@ -69,7 +75,8 @@ def test_deprecated_research_spine_short_circuits_without_execution(tmp_path: Pa
 def test_manual_brief_r4_uses_qwen_stub_and_l2_hop(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("APPS_LIC_TEST_PROVIDER_STUB", "1")
     raw = build_cli_ingress_raw(
-        manual_brief="Recruiter brief for AI engineering leadership roles."
+        manual_brief="Recruiter brief for AI engineering leadership roles.",
+        governed_opportunity_facts=ready_governed_opportunity_facts(),
     )
     result = run_canonical_apps_lic_spine(raw, artifact_root=tmp_path / "r4")
 
@@ -79,7 +86,7 @@ def test_manual_brief_r4_uses_qwen_stub_and_l2_hop(tmp_path: Path, monkeypatch) 
     assert result.c0_invoked is True
     assert result.pa_invoked is True
     assert result.l2_executed is True
-    assert result.l2_execution_status == "completed"
+    assert result.l2_execution_status in {"completed", "completed_with_gate_halt"}
 
     manifest = json.loads((result.artifact_dir / "spine_run_manifest.json").read_text())
     assert manifest["apps_research_invoked"] is False
@@ -88,11 +95,12 @@ def test_manual_brief_r4_uses_qwen_stub_and_l2_hop(tmp_path: Path, monkeypatch) 
 
     l2 = json.loads((result.artifact_dir / "l2_execution_receipt.json").read_text())
     draft = json.loads(l2["payload"]["generated_content"])
-    assert draft["channel"] == "linkedin"
+    assert draft["channel"] == "linkedin_inmail"
+    assert draft["subject_line"]
     assert draft["recipient_class"] == "recruiter"
     assert draft["provider_profile"] == "qwen_vllm"
     assert draft["model"] == "Qwen/Qwen2.5-32B-Instruct-AWQ"
-    assert len(draft["message_text"]) <= 600
+    assert len(draft["message_text"]) <= 1900
     assert "—" not in draft["message_text"]
 
 

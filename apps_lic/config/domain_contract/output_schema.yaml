@@ -4,6 +4,38 @@ task_class: outreach_message
 version: "1.0.0"
 status: active
 output_type: structured_record
+generation_contract:
+  name: OutreachDraftCandidate
+  legacy_post_validation_artifact: OutreachDraft
+  format: json
+  required_fields:
+    - subject
+    - message_body
+    - channel
+    - recipient_class
+    - relationship_posture
+    - intended_next_step
+    - claims_used
+    - unsupported_claims
+    - omitted_claims
+    - personalization_confidence
+    - tone_risk_flags
+    - hitl_questions
+    - signature_block
+    - metadata
+    - send_mode
+  forbidden_fields:
+    - provider_profile
+    - model
+  channel_rules:
+    linkedin_inmail:
+      subject_required: true
+      signature_required: true
+      body_hard_cap_chars: 1900
+    linkedin_chat:
+      subject_required: false
+      signature_required: false
+      body_hard_cap_chars: 300
 required_sections:
   - subject_line                  # required for email and linkedin_inmail
   - opening

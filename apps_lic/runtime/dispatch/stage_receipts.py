@@ -17,15 +17,24 @@ FILENAME_L1_PLAN = "l1_plan_contract.json"
 FILENAME_ROUTE_CONTRACT = "route_contract.json"
 FILENAME_C0_FEC = "c0_final_evidence_contract.json"
 FILENAME_FEC_SUMMARY = "fec_summary.json"
+FILENAME_C03_SENDER_PROOF = "c03_sender_proof_packet.json"
 FILENAME_PA_RECEIPT = "pa_receipt.json"
 FILENAME_L3_WORKFLOW = "l3_workflow_receipt.json"
 FILENAME_L2_EXECUTION = "l2_execution_receipt.json"
+FILENAME_W4_CANDIDATE_BATCH = "w4_candidate_batch.json"
+FILENAME_C03_POSTGEN_VALIDATION = "c03_postgen_claim_validation.json"
+FILENAME_W5_VALIDATION_EXIT = "w5_validation_exit.json"
 FILENAME_EXIT_DISPOSITION = "exit_disposition_receipt.json"
 FILENAME_SPINE_MANIFEST = "spine_run_manifest.json"
 FILENAME_ROUTE_PRE_RESEARCH = "route_contract_pre_research.json"
 FILENAME_RESEARCH_BRIDGE_REQUEST = "research_bridge_request.json"
 FILENAME_RESEARCH_BRIDGE_RESPONSE = "research_bridge_response.json"
 FILENAME_MOCK_ELIMINATION_PROOF = "mock_elimination_proof.json"
+
+_C0_READINESS_GATE_PREFIX = "c0_readiness:"
+_C0_RECIPIENT_CLASS_GATE_PREFIX = "c0_recipient_class:"
+_C0_RECIPIENT_CLASS_VALUE_PREFIX = "c0_recipient_class_value:"
+_C0_RECIPIENT_CLASS_CONFIDENCE_PREFIX = "c0_recipient_class_confidence:"
 
 
 def _canonical_json(payload: Any) -> str:
@@ -189,11 +198,62 @@ def build_c0_receipt(
 
 
 def build_c0_summary(fec: Any) -> dict[str, Any]:
+    gate_refs = tuple(str(ref) for ref in getattr(fec, "gate_verdict_refs", ()))
+    audit_refs = tuple(str(ref) for ref in getattr(fec, "audit_refs", ()))
+
+    def _gate_value(prefix: str, default: str = "") -> str:
+        for ref in gate_refs:
+            if ref.startswith(prefix):
+                return ref.removeprefix(prefix)
+        return default
+
+    def _audit_value(prefix: str, default: str = "") -> str:
+        for ref in audit_refs:
+            if ref.startswith(prefix):
+                return ref.removeprefix(prefix)
+        return default
+
     return {
         "compilation_hash": fec.compilation_hash,
         "item_count": len(fec.evidence_items),
         "support_status": fec.support_status,
         "evidence_sufficiency_score": fec.evidence_sufficiency_score,
+        "readiness_status": _gate_value(
+            _C0_READINESS_GATE_PREFIX,
+            "C0_OPPORTUNITY_INGESTION_REQUIRED",
+        ),
+        "recipient_class_status": _gate_value(
+            _C0_RECIPIENT_CLASS_GATE_PREFIX,
+            "C0_OPPORTUNITY_INGESTION_REQUIRED",
+        ),
+        "derived_recipient_class": _gate_value(
+            _C0_RECIPIENT_CLASS_VALUE_PREFIX,
+            "UNKNOWN",
+        ),
+        "recipient_class_confidence": _gate_value(
+            _C0_RECIPIENT_CLASS_CONFIDENCE_PREFIX,
+            "0.000",
+        ),
+        "recipient_class_reason_codes": [
+            code
+            for code in _audit_value("c0_recipient_class_reason_codes:").split(",")
+            if code
+        ],
+        "recipient_class_contradiction_status": _audit_value(
+            "c0_recipient_class_contradiction_status:",
+        ),
+        "recipient_class_hitl_required": (
+            _audit_value("c0_recipient_class_hitl_required:", "true") == "true"
+        ),
+        "u0_recipient_class_hint": _audit_value("c0_u0_recipient_class_hint:"),
+        "u0_recipient_class_hint_authority": _audit_value(
+            "c0_u0_recipient_class_hint_authority:",
+            "false",
+        ),
+        "source_snapshot_ids": list(getattr(fec, "snapshot_refs", ()) or ()),
+        "freshness_receipts": list(getattr(fec, "freshness_receipts", ()) or ()),
+        "gate_verdict_refs": list(gate_refs),
+        "audit_refs": list(audit_refs),
         "request_id": fec.request_id,
         "run_id": fec.run_id,
         "trace_id": fec.trace_id,
@@ -201,10 +261,35 @@ def build_c0_summary(fec: Any) -> dict[str, Any]:
     }
 
 
+def build_c03_receipt(
+    c03: Any,
+    *,
+    upstream_receipt_refs: tuple[str, ...] = (FILENAME_C0_FEC, FILENAME_FEC_SUMMARY),
+    downstream_receipt_refs: tuple[str, ...] = (FILENAME_PA_RECEIPT,),
+) -> dict[str, Any]:
+    payload = c03.to_receipt_payload()
+    digest = payload.get("proof_packet_id") or _sha256_digest(payload)
+    return stage_receipt_envelope(
+        stage="C0.3",
+        request_id=c03.request_id,
+        run_id=c03.run_id,
+        trace_id=c03.trace_id,
+        digest=str(digest),
+        artifact_ref=FILENAME_C03_SENDER_PROOF,
+        payload=payload,
+        upstream_receipt_refs=upstream_receipt_refs,
+        downstream_receipt_refs=downstream_receipt_refs,
+    )
+
+
 def build_pa_receipt(
     prompt: Any,
     *,
-    upstream_receipt_refs: tuple[str, ...] = (FILENAME_C0_FEC, FILENAME_L1_PLAN),
+    upstream_receipt_refs: tuple[str, ...] = (
+        FILENAME_C03_SENDER_PROOF,
+        FILENAME_C0_FEC,
+        FILENAME_L1_PLAN,
+    ),
     downstream_receipt_refs: tuple[str, ...] = (FILENAME_L3_WORKFLOW,),
 ) -> dict[str, Any]:
     payload = _serialize_value(prompt)
@@ -251,7 +336,7 @@ def build_l2_receipt(
     l2: Any,
     *,
     upstream_receipt_refs: tuple[str, ...] = (FILENAME_L3_WORKFLOW,),
-    downstream_receipt_refs: tuple[str, ...] = (FILENAME_EXIT_DISPOSITION,),
+    downstream_receipt_refs: tuple[str, ...] = (FILENAME_W4_CANDIDATE_BATCH,),
 ) -> dict[str, Any]:
     payload = _serialize_value(l2)
     digest = _digest_for(l2, fallback_payload=payload)
@@ -262,6 +347,69 @@ def build_l2_receipt(
         trace_id=l2.trace_id,
         digest=digest,
         artifact_ref=FILENAME_L2_EXECUTION,
+        payload=payload,
+        upstream_receipt_refs=upstream_receipt_refs,
+        downstream_receipt_refs=downstream_receipt_refs,
+    )
+
+
+def build_w4_candidate_batch_receipt(
+    result: Any,
+    *,
+    upstream_receipt_refs: tuple[str, ...] = (FILENAME_L2_EXECUTION,),
+    downstream_receipt_refs: tuple[str, ...] = (FILENAME_C03_POSTGEN_VALIDATION,),
+) -> dict[str, Any]:
+    payload = result.to_receipt_payload()
+    digest = payload.get("l2_generated_content_digest") or _sha256_digest(payload)
+    return stage_receipt_envelope(
+        stage="W4.CANDIDATES",
+        request_id=result.request_id,
+        run_id=result.run_id,
+        trace_id=result.trace_id,
+        digest=str(digest),
+        artifact_ref=FILENAME_W4_CANDIDATE_BATCH,
+        payload=payload,
+        upstream_receipt_refs=upstream_receipt_refs,
+        downstream_receipt_refs=downstream_receipt_refs,
+    )
+
+
+def build_c03_postgen_receipt(
+    result: Any,
+    *,
+    upstream_receipt_refs: tuple[str, ...] = (FILENAME_W4_CANDIDATE_BATCH,),
+    downstream_receipt_refs: tuple[str, ...] = (FILENAME_W5_VALIDATION_EXIT,),
+) -> dict[str, Any]:
+    payload = result.to_receipt_payload()
+    digest = payload.get("l2_generated_content_digest") or _sha256_digest(payload)
+    return stage_receipt_envelope(
+        stage="C0.3.POSTGEN",
+        request_id=result.request_id,
+        run_id=result.run_id,
+        trace_id=result.trace_id,
+        digest=str(digest),
+        artifact_ref=FILENAME_C03_POSTGEN_VALIDATION,
+        payload=payload,
+        upstream_receipt_refs=upstream_receipt_refs,
+        downstream_receipt_refs=downstream_receipt_refs,
+    )
+
+
+def build_w5_validation_exit_receipt(
+    result: Any,
+    *,
+    upstream_receipt_refs: tuple[str, ...] = (FILENAME_C03_POSTGEN_VALIDATION,),
+    downstream_receipt_refs: tuple[str, ...] = (FILENAME_EXIT_DISPOSITION,),
+) -> dict[str, Any]:
+    payload = result.to_receipt_payload()
+    digest = payload.get("proof_packet_id") or _sha256_digest(payload)
+    return stage_receipt_envelope(
+        stage="W5.VALIDATION_EXIT",
+        request_id=result.request_id,
+        run_id=result.run_id,
+        trace_id=result.trace_id,
+        digest=str(digest),
+        artifact_ref=FILENAME_W5_VALIDATION_EXIT,
         payload=payload,
         upstream_receipt_refs=upstream_receipt_refs,
         downstream_receipt_refs=downstream_receipt_refs,
@@ -301,13 +449,30 @@ def build_exit_receipt(
     )
 
 
-def managed_workflow_downstream_refs(*, c0_invoked: bool, pa_invoked: bool) -> tuple[str, ...]:
+def managed_workflow_downstream_refs(
+    *,
+    c0_invoked: bool,
+    c03_invoked: bool = False,
+    pa_invoked: bool,
+    w4_candidate_invoked: bool = False,
+    c03_postgen_invoked: bool = False,
+    w5_validation_exit_invoked: bool = False,
+) -> tuple[str, ...]:
     refs: list[str] = []
     if c0_invoked:
         refs.append(FILENAME_C0_FEC)
+    if c03_invoked:
+        refs.append(FILENAME_C03_SENDER_PROOF)
     if pa_invoked:
         refs.append(FILENAME_PA_RECEIPT)
-    refs.extend((FILENAME_L3_WORKFLOW, FILENAME_L2_EXECUTION, FILENAME_EXIT_DISPOSITION))
+    refs.extend((FILENAME_L3_WORKFLOW, FILENAME_L2_EXECUTION))
+    if w4_candidate_invoked:
+        refs.append(FILENAME_W4_CANDIDATE_BATCH)
+    if c03_postgen_invoked:
+        refs.append(FILENAME_C03_POSTGEN_VALIDATION)
+    if w5_validation_exit_invoked:
+        refs.append(FILENAME_W5_VALIDATION_EXIT)
+    refs.append(FILENAME_EXIT_DISPOSITION)
     return tuple(refs)
 
 
@@ -315,7 +480,11 @@ def standard_stage_receipt_refs(
     *,
     terminal_r5: bool,
     c0_invoked: bool,
+    c03_invoked: bool = False,
     pa_invoked: bool,
+    w4_candidate_invoked: bool = False,
+    c03_postgen_invoked: bool = False,
+    w5_validation_exit_invoked: bool = False,
     l3_participated: bool,
 ) -> tuple[str, ...]:
     refs = [
@@ -325,20 +494,109 @@ def standard_stage_receipt_refs(
         FILENAME_ROUTE_CONTRACT,
     ]
     if terminal_r5:
+        refs.append(FILENAME_EXIT_DISPOSITION)
         refs.append(FILENAME_SPINE_MANIFEST)
         return tuple(refs)
     if c0_invoked:
         refs.append(FILENAME_C0_FEC)
         refs.append(FILENAME_FEC_SUMMARY)
+    if c03_invoked:
+        refs.append(FILENAME_C03_SENDER_PROOF)
     if pa_invoked:
         refs.append(FILENAME_PA_RECEIPT)
     if l3_participated:
         refs.append(FILENAME_L3_WORKFLOW)
+        refs.append(FILENAME_L2_EXECUTION)
+        if w4_candidate_invoked:
+            refs.append(FILENAME_W4_CANDIDATE_BATCH)
+        if c03_postgen_invoked:
+            refs.append(FILENAME_C03_POSTGEN_VALIDATION)
+        if w5_validation_exit_invoked:
+            refs.append(FILENAME_W5_VALIDATION_EXIT)
     refs.extend(
         (
-            FILENAME_L2_EXECUTION,
             FILENAME_EXIT_DISPOSITION,
             FILENAME_SPINE_MANIFEST,
         )
     )
     return tuple(refs)
+
+
+def c0_block_stage_receipt_refs() -> tuple[str, ...]:
+    return (
+        FILENAME_INGRESS_RAW,
+        FILENAME_U0_RECEIPT,
+        FILENAME_L1_PLAN,
+        FILENAME_ROUTE_CONTRACT,
+        FILENAME_C0_FEC,
+        FILENAME_FEC_SUMMARY,
+        FILENAME_SPINE_MANIFEST,
+    )
+
+
+def c03_block_stage_receipt_refs() -> tuple[str, ...]:
+    return (
+        FILENAME_INGRESS_RAW,
+        FILENAME_U0_RECEIPT,
+        FILENAME_L1_PLAN,
+        FILENAME_ROUTE_CONTRACT,
+        FILENAME_C0_FEC,
+        FILENAME_FEC_SUMMARY,
+        FILENAME_C03_SENDER_PROOF,
+        FILENAME_SPINE_MANIFEST,
+    )
+
+
+def c03_postgen_block_stage_receipt_refs() -> tuple[str, ...]:
+    return (
+        FILENAME_INGRESS_RAW,
+        FILENAME_U0_RECEIPT,
+        FILENAME_L1_PLAN,
+        FILENAME_ROUTE_CONTRACT,
+        FILENAME_C0_FEC,
+        FILENAME_FEC_SUMMARY,
+        FILENAME_C03_SENDER_PROOF,
+        FILENAME_PA_RECEIPT,
+        FILENAME_L3_WORKFLOW,
+        FILENAME_L2_EXECUTION,
+        FILENAME_W4_CANDIDATE_BATCH,
+        FILENAME_C03_POSTGEN_VALIDATION,
+        FILENAME_SPINE_MANIFEST,
+    )
+
+
+def w5_validation_exit_block_stage_receipt_refs() -> tuple[str, ...]:
+    return (
+        FILENAME_INGRESS_RAW,
+        FILENAME_U0_RECEIPT,
+        FILENAME_L1_PLAN,
+        FILENAME_ROUTE_CONTRACT,
+        FILENAME_C0_FEC,
+        FILENAME_FEC_SUMMARY,
+        FILENAME_C03_SENDER_PROOF,
+        FILENAME_PA_RECEIPT,
+        FILENAME_L3_WORKFLOW,
+        FILENAME_L2_EXECUTION,
+        FILENAME_W4_CANDIDATE_BATCH,
+        FILENAME_C03_POSTGEN_VALIDATION,
+        FILENAME_W5_VALIDATION_EXIT,
+        FILENAME_EXIT_DISPOSITION,
+        FILENAME_SPINE_MANIFEST,
+    )
+
+
+def w4_candidate_block_stage_receipt_refs() -> tuple[str, ...]:
+    return (
+        FILENAME_INGRESS_RAW,
+        FILENAME_U0_RECEIPT,
+        FILENAME_L1_PLAN,
+        FILENAME_ROUTE_CONTRACT,
+        FILENAME_C0_FEC,
+        FILENAME_FEC_SUMMARY,
+        FILENAME_C03_SENDER_PROOF,
+        FILENAME_PA_RECEIPT,
+        FILENAME_L3_WORKFLOW,
+        FILENAME_L2_EXECUTION,
+        FILENAME_W4_CANDIDATE_BATCH,
+        FILENAME_SPINE_MANIFEST,
+    )

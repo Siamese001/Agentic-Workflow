@@ -16,6 +16,7 @@ from typing import Any
 
 
 _CANONICAL_RECIPIENT_CLASSES = {
+    "CEO",
     "RECRUITER",
     "SENIOR_TA",
     "HIRING_MANAGER",
@@ -129,16 +130,24 @@ class ProfileAnalysisEngine:
         target_audience = _extract(config, "target_audience", "")
         compliance_level = _extract(config, "compliance_level", "standard")
         campaign_name = _extract(config, "name", "")
-        recipient_class = classify_recipient_profile(
-            target_profile,
-            fallback=target_audience or "RECRUITER",
-        )
+        c0_recipient_class = _canonical_recipient_class(_extract(config, "recipient_class", ""))
+        recipient_class_source = str(
+            _extract(config, "recipient_class_source", "")
+            or ""
+        ).upper()
+        if recipient_class_source == "C0_DERIVED" and c0_recipient_class:
+            recipient_class = c0_recipient_class
+        else:
+            recipient_class = classify_recipient_profile(
+                target_profile,
+                fallback=target_audience or "RECRUITER",
+            )
 
         # Low-cost archetype hint — keyword match on audience + name.
         corpus = f"{recipient_class} {target_audience} {campaign_name}".lower()
         if recipient_class in {"RECRUITER", "SENIOR_TA"}:
             archetype_hint = "RECRUITER"
-        elif recipient_class in {"EXECUTIVE", "C_LEVEL", "CTO"}:
+        elif recipient_class in {"CEO", "EXECUTIVE", "C_LEVEL", "CTO"}:
             archetype_hint = "EXECUTIVE"
         elif recipient_class in {"HIRING_MANAGER", "VP_ENG"}:
             archetype_hint = "HIRING_MANAGER"

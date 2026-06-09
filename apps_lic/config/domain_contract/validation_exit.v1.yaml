@@ -92,20 +92,25 @@ x1d:
       - raw_response_digest
   rubric_profiles:
     linkedin_tone_channel_quality_x1d:
+      rubric_id: apps_lic.x1d.linkedin_tone_channel_quality.v1
       role: LinkedIn tone, channel fit, readability, and non-generic phrasing.
       threshold: 0.82
     linkedin_tone_non_generic_x1d:
+      rubric_id: apps_lic.x1d.linkedin_tone_non_generic.v1
       role: Lightweight LinkedIn tone, non-generic wording, and recruiter-channel fit.
       threshold: 0.84
     evidence_claim_support_x1d:
+      rubric_id: apps_lic.x1d.evidence_claim_support.v1
       role: Evidence support, claim grounding, and specificity discipline.
       threshold: 0.86
     ceo_attention_originality_x1d:
+      rubric_id: apps_lic.x1d.ceo_originality.v1
       role: CEO/C-level attention value, originality, and strategic sharpness.
       threshold: 0.88
     ceo_evidence_overclaim_risk_x1d:
+      rubric_id: apps_lic.x1d.ceo_evidence_overclaim.v1
       role: CEO/C-level evidence support, overclaim risk, and no-fabrication review.
-      threshold: 0.90
+      threshold: 0.86
 
 risk_matrix:
   recruiter_general_intro:
@@ -137,29 +142,36 @@ risk_matrix:
       - evidence_claim_support_x1d
       - linkedin_tone_non_generic_x1d
     clearance: Requires evidence support plus role-specific tone/non-generic judge passes.
-  executive_cto_vp_eng_trigger:
+  hiring_manager_strategic_trigger:
+    sc_level: SC-2
+    llm_judge_depth: two
+    required_judges:
+      - evidence_claim_support_x1d
+      - linkedin_tone_non_generic_x1d
+    clearance: Hiring-manager rows mapped to executive prompt archetype require evidence and non-generic tone judges for trigger-based or technical-proof outreach.
+  executive_vp_eng_trigger:
     sc_level: SC-2_or_SC-3
-    llm_judge_depth: one_or_two
+    llm_judge_depth: two
     required_judges:
       - linkedin_tone_channel_quality_x1d
-    conditional_judges:
-      jd_or_technical_proof:
-        - evidence_claim_support_x1d
-    clearance: Requires tone/channel judge; adds evidence support when JD or technical proof is used.
-  executive_or_c_level:
+      - evidence_claim_support_x1d
+    clearance: Executive/VP_ENG trigger-based or technical-proof outreach requires tone/channel and evidence support judges.
+  ceo_cto_or_c_level:
     sc_level: SC-3
     llm_judge_depth: two
     required_judges:
       - ceo_attention_originality_x1d
       - ceo_evidence_overclaim_risk_x1d
-    clearance: CEO/C_LEVEL requires two independent LLM judge passes for clear_draft.
+    clearance: CEO/CTO/C_LEVEL requires two independent executive LLM judge passes for clear_draft.
 
 acceptance:
   - Recruiter general_intro can clear with X2-only if low risk.
   - CEO/C-level requires two LLM judge passes for clear_draft.
   - Hiring-manager role-specific messages require evidence and tone/non-generic X1D.
+  - Hiring-manager trigger-based or technical-proof messages require evidence and tone/non-generic X1D.
   - Recruiter and Senior TA role-specific messages require evidence X1D by default and add tone/non-generic X1D for provider-backed or similarity-risk paths.
-  - Executive/CTO/VP_ENG messages require tone/channel X1D and add evidence X1D when JD or technical proof is used.
+  - Executive/VP_ENG trigger-based or technical-proof messages require tone/channel and evidence X1D.
+  - CTO messages follow the C-level two-judge policy.
   - Required X1D judges must come from a live Anthropic Claude transport receipt; fake/mock/manual artifacts block.
   - X1D cannot run if X2 failed.
   - X1D cannot override C0 evidence, X2 hard gates, no-send, or Exit.

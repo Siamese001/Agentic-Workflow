@@ -32,7 +32,7 @@ from apps_lic.engines.whole_message_generation import (
 
 
 DEFAULT_CLAUDE_TRANSPORT_MODEL_ID = "claude-sonnet-4-6"
-DEFAULT_CLAUDE_MAX_TOKENS = 700
+DEFAULT_CLAUDE_MAX_TOKENS = 1200
 
 
 class ClaudeX1DTransport(Protocol):
@@ -85,7 +85,11 @@ def build_claude_x1d_judge_request(
 ) -> X1DClaudeJudgeRequest:
     """Build one Claude X1D judge request from W6/W7 artifacts."""
     system_prompt = (
-        "You are an independent LinkedIn outreach judge. Return only valid JSON. "
+        "You are an independent LinkedIn outreach judge. Return only one valid JSON "
+        "object with keys score, passed, issues, and required_repairs. Do not return "
+        "markdown, prose, code fences, or explanations outside the JSON object. "
+        "issues and required_repairs must be arrays of at most three short strings, "
+        "not objects. Use compact snake_case reason strings. "
         "You cannot override deterministic X2 gates, C0 evidence, no-send policy, "
         "or Exit clearance."
     )
@@ -105,7 +109,9 @@ def build_claude_x1d_judge_request(
             "instructions": (
                 "Score only the judge rubric. Penalize generic phrasing, unsupported "
                 "claims, over-specificity without evidence, and weak LinkedIn fit. "
-                "Respond as JSON with score, passed, issues, and required_repairs."
+                "Respond only as JSON with numeric score, boolean passed, issues, "
+                "and required_repairs. Keep issues and required_repairs as short "
+                "string arrays, for example [\"generic_phrasing\"]."
             ),
         },
         sort_keys=True,
@@ -317,6 +323,20 @@ class AnthropicClaudeX1DTransport:
             if value:
                 text += value
         parsed = _extract_json_mapping(text)
+        if not parsed:
+            return {
+                "score": 0.0,
+                "passed": False,
+                "availability_status": JUDGE_UNAVAILABLE,
+                "issues": ["judge_response_not_parseable"],
+                "required_repairs": ["return_valid_json_with_score_passed_issues_required_repairs"],
+                "raw_response_digest": raw_response_digest(text),
+                "transport_provenance": LIVE_CLAUDE_API_CALL,
+                "transport_provider": ANTHROPIC_MESSAGES_API,
+                "transport_call_id": str(getattr(response, "id", "") or "anthropic_messages_api_response"),
+                "model": DEFAULT_X1D_JUDGE_MODEL,
+                "provider": DEFAULT_X1D_JUDGE_PROVIDER,
+            }
         parsed["transport_provenance"] = LIVE_CLAUDE_API_CALL
         parsed["transport_provider"] = ANTHROPIC_MESSAGES_API
         parsed["transport_call_id"] = str(getattr(response, "id", "") or "anthropic_messages_api_response")
