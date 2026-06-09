@@ -610,7 +610,7 @@ def deterministic_headline_word_count_expand(headline_line: str) -> str:
             trial_parts[seg_idx] = f"{trial_parts[seg_idx]} {token}".strip()
             trial = " | ".join(trial_parts)
             trial_wc = headline_word_count(trial)
-            if 10 <= trial_wc <= 13:
+            if HEADLINE_WORD_MIN <= trial_wc <= HEADLINE_WORD_MAX:
                 return trial
     return hl
 
