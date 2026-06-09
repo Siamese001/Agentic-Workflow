@@ -65,8 +65,8 @@ COMPETENCIES_OUTPUT_SCHEMA: dict[str, Any] = {
         "properties": {
             "categories": {
                 "type": "array",
-                "minItems": 6,
-                "maxItems": 6,
+                "minItems": 8,
+                "maxItems": 8,
                 "description": (
                     "Executive capability categories: category_id, category_label, "
                     "terms[{text, source_fact_id, source_fact_ids, optional source_skill_ids, support_class}]"
