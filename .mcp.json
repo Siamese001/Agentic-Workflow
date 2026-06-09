@@ -5,10 +5,12 @@
       "args": ["mcp", "--host=cursor", "--source=gitlens", "--scheme=cursor"]
     },
     "adg_sqlite": {
-      "command": "cmd",
-      "args": ["/c", "tools\\adg\\mcp\\run_server.bat"],
+      "command": "python",
+      "args": ["-u", "-m", "tools.adg.mcp.server"],
       "env": {
-        "ADG_REDIS_URL": "${ADG_REDIS_URL}"
+        "ADG_REDIS_URL": "${ADG_REDIS_URL}",
+        "ADG_REPO_ROOT": "${AGENTIC_REPO_ROOT}",
+        "PYTHONPATH": "${AGENTIC_REPO_ROOT}"
       }
     },
     "deepwiki": {

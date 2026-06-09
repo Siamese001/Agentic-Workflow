@@ -26,6 +26,7 @@ def _force_guard_kill_path(monkeypatch: pytest.MonkeyPatch):
 class _FakeProc:
     def __init__(self, pid: int, cmdline: list[str], name: str = "python.exe") -> None:
         self.info = {"pid": pid, "name": name, "cmdline": cmdline}
+        self.pid = pid
         self.terminated = False
         self.killed = False
 
@@ -39,9 +40,11 @@ class _FakeProc:
         return None
 
 
-def _install_fake_psutil(monkeypatch: pytest.MonkeyPatch, procs: list[_FakeProc]) -> None:
+def _install_fake_psutil(monkeypatch: pytest.MonkeyPatch, procs: list[_FakeProc]):
     fake = mock.MagicMock()
     fake.process_iter = mock.MagicMock(return_value=procs)
+    fake.Process = mock.MagicMock()
+    fake.Process.return_value.parents.return_value = []
 
     class _Exc(Exception):
         pass
@@ -51,6 +54,7 @@ def _install_fake_psutil(monkeypatch: pytest.MonkeyPatch, procs: list[_FakeProc]
     fake.ZombieProcess = _Exc
     fake.TimeoutExpired = _Exc
     monkeypatch.setitem(__import__("sys").modules, "psutil", fake)
+    return fake
 
 
 # ---- single-marker backward compatibility --------------------------------
@@ -116,6 +120,28 @@ def test_marker_inside_parent_shell_text_is_not_killed(
     )
     sibling = _FakeProc(42, ["python.exe", "-u", "-m", "tools.adg.mcp.server"])
     _install_fake_psutil(monkeypatch, [parent, sibling])
+    monkeypatch.setattr(os, "getpid", lambda: 1)
+    mod.guard_single_instance(
+        ("tools.adg.mcp.server", "tools/adg/mcp/server"),
+    )
+    assert not parent.terminated
+    assert sibling.terminated
+
+
+def test_marker_inside_python_ancestor_text_is_not_killed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    parent = _FakeProc(
+        41,
+        [
+            "python.exe",
+            "-c",
+            "subprocess.run([sys.executable, '-m', 'tools.adg.mcp.server'])",
+        ],
+    )
+    sibling = _FakeProc(42, ["python.exe", "-u", "-m", "tools.adg.mcp.server"])
+    fake_psutil = _install_fake_psutil(monkeypatch, [parent, sibling])
+    fake_psutil.Process.return_value.parents.return_value = [parent]
     monkeypatch.setattr(os, "getpid", lambda: 1)
     mod.guard_single_instance(
         ("tools.adg.mcp.server", "tools/adg/mcp/server"),

@@ -237,6 +237,17 @@ def guard_single_instance(
     killed: list[int] = []
     deferred: list[int] = []
     logger = logging.getLogger("mcp_bootstrap")
+    ancestor_pids: set[int] = set()
+    try:
+        current = psutil.Process(my_pid)
+        for ancestor in current.parents():
+            ancestor_pid = getattr(ancestor, "pid", None)
+            if ancestor_pid is None:
+                ancestor_pid = getattr(ancestor, "info", {}).get("pid")
+            if ancestor_pid is not None:
+                ancestor_pids.add(int(ancestor_pid))
+    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess, AttributeError, TypeError):
+        ancestor_pids = set()
 
     def _looks_like_python_mcp_process(proc_name: str, cmdline: list[Any]) -> bool:
         """Return True only for plausible Python MCP server processes.
@@ -274,6 +285,15 @@ def guard_single_instance(
     for proc in psutil.process_iter(attrs=("pid", "name", "cmdline")):
         try:
             if proc.info["pid"] == my_pid:
+                continue
+            if proc.info["pid"] in ancestor_pids:
+                logger.warning(
+                    "GUARD_SKIP_ANCESTOR: pid=%d cmdline=%s "
+                    "(marker=%s)",
+                    proc.info["pid"],
+                    " ".join(str(c) for c in (proc.info.get("cmdline") or []))[:200],
+                    marker_display,
+                )
                 continue
             cmdline = proc.info.get("cmdline") or []
             matched_marker: str | None = None
