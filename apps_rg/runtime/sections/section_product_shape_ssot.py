@@ -24,7 +24,11 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     EXEC_SUMMARY_MIN_SENTENCES,
     EXPECTED_PROMPT_ID as EXEC_SUMMARY_PROMPT_ID,
 )
-from apps_rg.runtime.reasoning.employment_bullet_pool import SC_PATH_COUNT_BY_LANE
+from apps_rg.runtime.reasoning.employment_bullet_pool import (
+    FINAL_BULLET_COUNT,
+    SC_PATH_COUNT_BY_LANE,
+)
+from apps_rg.runtime.validators.competencies_quality_x2 import GENERIC_CATEGORY_MIN_GRAPH_TERMS
 
 # Headline (aligned with headline_x2 headline_runtime_self_check_truth)
 HEADLINE_WORD_MIN = 10
@@ -46,6 +50,78 @@ JD_ALIGNMENT_PROOF_FIELDS: tuple[str, ...] = (
     "companion_context_used_as_proof",
     "companion_used_as_proof",
 )
+
+# ---------------------------------------------------------------------------
+# SECTION_CONSTRAINTS — the per-lane numeric SSOT (W1, plan
+# prompt-gate-ssot-consolidation-e7c9a2). Every value below REFERENCES a
+# canonical constant imported above — NO re-typed magic numbers:
+#   executive_summary -> executive_summary_x2 (EXEC_SUMMARY_*)
+#   headline / narrative -> declared in this module (HEADLINE_* / NARRATIVE_*)
+#   competencies -> competencies_rigor (category/items) + competencies_quality_x2 (generic terms)
+#   *_bullets -> employment_bullet_pool (FINAL_BULLET_COUNT / SC_PATH_COUNT_BY_LANE)
+# This is the single structure the prompt generator (W3) and the numeric-equality
+# drift gate (W4) iterate; `test_section_constraints_ssot` asserts each value still
+# equals its owner constant and that every GENERATED_LANE is covered.
+# ---------------------------------------------------------------------------
+_BULLET_LANES: tuple[str, ...] = ("unify_bullets", "ibm_bullets", "insurtech_bullets", "ey_bullets")
+_NARRATIVE_LANES: tuple[str, ...] = (
+    "unify_narrative",
+    "ibm_narrative",
+    "insurtech_narrative",
+    "ey_narrative",
+)
+
+SECTION_CONSTRAINTS: dict[str, dict[str, int]] = {
+    "executive_summary": {
+        "min_sentences": EXEC_SUMMARY_MIN_SENTENCES,
+        "max_sentences": EXEC_SUMMARY_MAX_SENTENCES,
+        "max_words": EXEC_SUMMARY_MAX_WORDS,
+        "max_words_per_sentence": EXEC_SUMMARY_MAX_WORDS_PER_SENTENCE,
+        # W0-C invariant: x2_claim_ledger_row_count_matches_sentence_count -> one row per sentence.
+        "claim_ledger_rows": EXEC_SUMMARY_MAX_SENTENCES,
+    },
+    "headline": {
+        "word_min": HEADLINE_WORD_MIN,
+        "word_max": HEADLINE_WORD_MAX,
+        "max_chars": HEADLINE_MAX_CHARS,
+        "segment_count": HEADLINE_SEGMENT_COUNT,
+        "pipe_separators": HEADLINE_PIPE_SEPARATORS,
+    },
+    "competencies": {
+        "category_min": MIN_CATEGORY_COUNT,
+        "category_max": MAX_CATEGORY_COUNT,
+        "candidate_category_count": CANDIDATE_CATEGORY_COUNT,
+        "items_min": MIN_ITEMS_PER_CATEGORY,
+        "items_max": MAX_ITEMS_PER_CATEGORY,
+        "generic_min_graph_terms": GENERIC_CATEGORY_MIN_GRAPH_TERMS,
+    },
+    **{
+        lane: {
+            "final_count": FINAL_BULLET_COUNT.get(lane, 0),
+            "sc_pool_paths": SC_PATH_COUNT_BY_LANE.get(lane, 0),
+        }
+        for lane in _BULLET_LANES
+    },
+    **{
+        lane: {
+            "max_words": NARRATIVE_MAX_WORDS,
+            "max_chars": NARRATIVE_MAX_CHARS,
+            "preferred_word_min": NARRATIVE_PREFERRED_WORD_MIN,
+            "preferred_word_max": NARRATIVE_PREFERRED_WORD_MAX,
+        }
+        for lane in _NARRATIVE_LANES
+    },
+}
+
+
+def section_numeric_constraints(section_id: str) -> dict[str, int]:
+    """Per-lane numeric constraints from the SSOT map (W1).
+
+    The single programmatic entry point for the prompt generator (W3) and the
+    numeric-equality drift gate (W4). Returns a copy so callers cannot mutate the
+    SSOT. Locked-deterministic / unknown sections return an empty dict.
+    """
+    return dict(SECTION_CONSTRAINTS.get(str(section_id or "").strip(), {}))
 
 # Shared template drift guards (forbidden in PA YAML — not model output)
 FORBIDDEN_LEGACY_EXEC_SUMMARY: tuple[str, ...] = (
