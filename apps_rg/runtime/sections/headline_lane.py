@@ -71,6 +71,10 @@ from apps_rg.runtime.runtime_proof_layout import (
     prepare_runtime_proof_run_dir,
     proof_bucket_for_provider,
 )
+from apps_rg.runtime.sections.section_product_shape_ssot import (
+    HEADLINE_WORD_MAX,
+    HEADLINE_WORD_MIN,
+)
 from apps_rg.runtime.validators.headline_x2 import (
     headline_runtime_self_check_truth,
     headline_word_count,
@@ -592,7 +596,7 @@ def deterministic_headline_word_count_expand(headline_line: str) -> str:
     """Add one fact-safe token to segments 2–4 when the model under-shoots the 10-word floor."""
     hl = str(headline_line or "").strip()
     wc = headline_word_count(hl)
-    if 10 <= wc <= 13:
+    if HEADLINE_WORD_MIN <= wc <= HEADLINE_WORD_MAX:
         return hl
     if wc >= 10 or not hl.startswith("SVP Engineering | ") or hl.count(" | ") != 3:
         return hl
@@ -1236,7 +1240,7 @@ def run_headline_execution(
                 raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
             hl = str(parsed.get("headline_line", "")).strip()
             wc = headline_word_count(hl)
-            if hl.count(" | ") != 3 or not hl.startswith("SVP Engineering | ") or not (10 <= wc <= 13):
+            if hl.count(" | ") != 3 or not hl.startswith("SVP Engineering | ") or not (HEADLINE_WORD_MIN <= wc <= HEADLINE_WORD_MAX):
                 raw_output, parsed, rsnap = retry_headline_word_and_pipe(
                     messages,
                     provider_payload,
