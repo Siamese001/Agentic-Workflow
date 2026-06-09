@@ -70,6 +70,16 @@ def test_ibm_pool_shape_ssot() -> None:
     assert "HEAVY" not in shape.shape_summary
 
 
+@pytest.mark.parametrize("lane", ["unify_bullets", "ibm_bullets"])
+def test_pool_compile_hints_use_self_consistency_label(lane: str) -> None:
+    shape = section_product_shape(lane)
+    combined = " ".join((shape.shape_summary, *shape.compile_hints))
+    assert "self-consistency pool" in combined
+    assert "sc_pool_paths=" in combined
+    assert "Qwen pool" not in combined
+    assert "qwen_pool_paths=" not in combined
+
+
 def test_headline_word_band_ssot() -> None:
     shape = section_product_shape("headline")
     assert f"{HEADLINE_WORD_MIN}-{HEADLINE_WORD_MAX}" in shape.shape_summary

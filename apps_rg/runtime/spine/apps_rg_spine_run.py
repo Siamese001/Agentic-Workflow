@@ -21,6 +21,9 @@ from apps_rg.runtime.spine.section_cli_runners import (
     run_section_unify_bullets_spine,
     run_section_unify_narrative_spine,
 )
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
+
+_DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDER_KEYS)
 
 _SECTION_RUNNERS: dict[str, Any] = {
     "headline": run_section_headline_spine,
@@ -55,7 +58,7 @@ def run_apps_rg_spine(
     lane_provider: str = "",
     lane_provider_resolution_source: str | None = None,
     lane_temperature: float = 0.45,
-    lane_x1d_judges: str = "gemini_pro,openai_chatgpt,anthropic_claude",
+    lane_x1d_judges: str = _DEFAULT_X1D_JUDGES,
     lane_mock_judges: bool = False,
     lane_allow_non_allow_exit_zero: bool = False,
     lane_allow_test_mock_judges: bool = False,

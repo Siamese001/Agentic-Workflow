@@ -28,7 +28,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 _ALIGNMENT_MATRIX = _REPO_ROOT / "artifacts" / "apps_rg" / "prompt_authority" / "x2_x1d_alignment_matrix.json"
 
 # Lane Python modules that invoke run_*_x2_gates in the product path.
-_LANE_MODULE_IMPORT: dict[str, str] = {
+_STATIC_LANE_MODULE_IMPORT: dict[str, str] = {
     "headline": "apps_rg.runtime.sections.headline_lane",
     "executive_summary": "apps_rg.runtime.sections.executive_summary_lane",
     "competencies": "apps_rg.runtime.sections.competencies_lane_execution",
@@ -37,6 +37,22 @@ _LANE_MODULE_IMPORT: dict[str, str] = {
     "ibm_bullets": "apps_rg.runtime.sections.ibm_bullets_lane",
     "ibm_narrative": "apps_rg.runtime.sections.ibm_narrative_lane_execution",
 }
+_ROLE_EPISODE_MODULE_IMPORT = "apps_rg.runtime.sections.role_episode_lane"
+
+
+def _lane_module_imports() -> dict[str, str]:
+    out = dict(_STATIC_LANE_MODULE_IMPORT)
+    for lane in GENERATED_LANES:
+        shape = section_product_shape(lane)
+        if shape.x2_module_ref.endswith("/role_episode_lane.py"):
+            out[lane] = _ROLE_EPISODE_MODULE_IMPORT
+    missing = sorted(set(GENERATED_LANES) - set(out))
+    if missing:
+        raise RuntimeError(f"_LANE_MODULE_IMPORT missing GENERATED_LANES coverage: {missing}")
+    return {lane: out[lane] for lane in GENERATED_LANES}
+
+
+_LANE_MODULE_IMPORT: dict[str, str] = _lane_module_imports()
 
 _X1D_WIRING_GATES: frozenset[str] = frozenset(
     {"x2_x1d_required_judges_present", "x2_x1d_schema_valid"}
@@ -105,11 +121,16 @@ def lane_x2_x1d_spec(section_id: str) -> LaneX2X1dSpec:
     x1d_ref = str(row.get("x1d_judge_profile_ref") or "").strip()
     if not x1d_ref:
         raise KeyError(f"alignment matrix missing x1d_judge_profile_ref for {section_id}")
+    x2_run_function = str(row.get("x2_run_function") or "").strip()
+    if not x2_run_function:
+        x2_run_function = _discover_x2_run_function(x2_module)
+    if not callable(getattr(x2_module, x2_run_function, None)):
+        raise KeyError(f"{shape.x2_module_ref} missing x2_run_function {x2_run_function!r} for {section_id}")
     samples = tuple(str(g).strip() for g in (row.get("x2_gates_sample") or ()) if str(g).strip())
     return LaneX2X1dSpec(
         section_id=section_id,
         x2_module_ref=shape.x2_module_ref,
-        x2_run_function=_discover_x2_run_function(x2_module),
+        x2_run_function=x2_run_function,
         lane_module_import=_LANE_MODULE_IMPORT[section_id],
         x1d_judge_module_ref=x1d_ref,
         x2_gates_sample=samples,
@@ -190,6 +211,10 @@ def extract_runtime_x2_gate_ids(
     """AST-extract gate_id literals from a lane's ``run_*_x2_gates`` add(...) calls."""
     mod = x2_module if x2_module is not None else _module_from_repo_ref(str(x2_module_ref))
     run_fn = x2_run_function or _discover_x2_run_function(mod)
+    if getattr(mod, "__name__", "") == "apps_rg.runtime.sections.role_episode_lane":
+        role_gate_map = getattr(mod, "ROLE_EPISODE_X2_GATE_IDS_BY_RUN_FUNCTION", {})
+        if run_fn in role_gate_map:
+            return frozenset(role_gate_map[run_fn])
     src = Path(mod.__file__).read_text(encoding="utf-8")
     tree = ast.parse(src)
     consts = _module_gate_id_constants(tree)
@@ -323,12 +348,13 @@ def _audit_lane_execution_wiring(spec: LaneX2X1dSpec) -> list[X2X1dDriftViolatio
     lane_mod = importlib.import_module(spec.lane_module_import)
     lane_src = Path(lane_mod.__file__).read_text(encoding="utf-8")
     x2_call = f"for g in {spec.x2_run_function}("
-    if x2_call not in lane_src:
+    role_shared_call = "run_role_episode_x2_gates(" if spec.lane_module_import == _ROLE_EPISODE_MODULE_IMPORT else ""
+    if x2_call not in lane_src and (not role_shared_call or role_shared_call not in lane_src):
         out.append(
             X2X1dDriftViolation(
                 spec.section_id,
                 "lane_missing_x2_invocation",
-                f"lane must call {x2_call}",
+                f"lane must call {x2_call}" if not role_shared_call else f"lane must call {role_shared_call}",
                 spec.lane_module_import.replace(".", "/") + ".py",
             )
         )

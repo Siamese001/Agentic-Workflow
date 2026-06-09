@@ -133,6 +133,64 @@ def test_ibm_bullet_stamp_maps_ledger_to_bul_ibm() -> None:
     assert ok, fail
 
 
+@pytest.mark.parametrize(
+    ("section_id", "prefix"),
+    (
+        ("insurtech_bullets", "bul_insurtech_"),
+        ("insurtech_narrative", "bul_insurtech_"),
+        ("ey_bullets", "bul_ey_"),
+        ("ey_narrative", "bul_ey_"),
+    ),
+)
+def test_role_lane_stamp_maps_ledger_to_canonical_role_bullet_ids(section_id: str, prefix: str) -> None:
+    plan = {
+        "section_id": section_id,
+        "facts": [
+            {"fact_id": f"fact_{section_id}_001", "claim_text": "a"},
+            {"fact_id": f"fact_{section_id}_002", "claim_text": "b"},
+            {"fact_id": f"fact_{section_id}_003", "claim_text": "c"},
+        ],
+    }
+    stamped, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
+    assert ordered == [f"{prefix}001", f"{prefix}002", f"{prefix}003"]
+    assert allowed == set(ordered)
+    assert stamped["facts"][0]["fact_id"] == f"{prefix}001"
+    assert stamped["facts"][0]["ledger_candidate_fact_id"] == f"fact_{section_id}_001"
+
+    ok, receipt, fail = evaluate_proof_pool_source_fact_gate(
+        section_id=section_id,
+        collected_ids=[f"fact_{section_id}_001", f"{prefix}002"],
+        allowed_fact_ids=allowed,
+        proof_pool_metadata={
+            "proof_pool_type": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
+            "id_alias_map": {
+                f"{prefix}001": f"fact_{section_id}_001",
+                f"{prefix}002": f"fact_{section_id}_002",
+            },
+        },
+    )
+    assert ok, fail
+    assert receipt["id_alias_map"][f"{prefix}001"] == f"fact_{section_id}_001"
+
+
+def test_role_lane_namespace_split_uses_alias_map() -> None:
+    split, ids = detect_id_namespace_split_without_alias(
+        pool_ids={"bul_insurtech_001"},
+        fec_ids={"fact_insurtech_001"},
+        alias_map={},
+    )
+    assert split is True
+    assert ids
+
+    split, ids = detect_id_namespace_split_without_alias(
+        pool_ids={"bul_insurtech_001"},
+        fec_ids={"fact_insurtech_001"},
+        alias_map={"bul_insurtech_001": "fact_insurtech_001"},
+    )
+    assert split is False
+    assert ids == []
+
+
 def test_incomplete_lane_proof_classification(tmp_path: Path) -> None:
     run_dir = tmp_path / "lane_run"
     run_dir.mkdir()
@@ -194,6 +252,34 @@ def test_apply_materialization_filters_stray_evidence_items_to_fec() -> None:
     prompt_ids = collect_prompt_c0_fact_ids(runtime_payload)
     assert "fact_stray" not in prompt_ids  # prompt surface no longer widens the FEC
     assert prompt_ids <= {"fact_a", "fact_b"}
+
+
+def test_materialization_carries_role_lane_alias_map_into_metadata() -> None:
+    pool = _pool(
+        section="ey_bullets",
+        ordered=["bul_ey_001", "bul_ey_002", "bul_ey_003"],
+        plan={
+            "section_id": "ey_bullets",
+            "facts": [
+                {"fact_id": "bul_ey_001", "ledger_candidate_fact_id": "fact_ey_001"},
+                {"fact_id": "bul_ey_002", "ledger_candidate_fact_id": "fact_ey_002"},
+                {"fact_id": "bul_ey_003", "ledger_candidate_fact_id": "fact_ey_003"},
+            ],
+        },
+    )
+    runtime_payload: dict = {"proof_pool_metadata": {}}
+    apply_canonical_section_evidence_materialization(
+        pool=pool,  # type: ignore[arg-type]
+        runtime_payload=runtime_payload,
+        bridge=None,
+    )
+    meta = runtime_payload["proof_pool_metadata"]
+    assert meta["id_alias_map"] == {
+        "bul_ey_001": "fact_ey_001",
+        "bul_ey_002": "fact_ey_002",
+        "bul_ey_003": "fact_ey_003",
+    }
+    assert meta["canonical_section_evidence_set"]["id_alias_map"] == meta["id_alias_map"]
 
 
 @pytest.mark.parametrize(

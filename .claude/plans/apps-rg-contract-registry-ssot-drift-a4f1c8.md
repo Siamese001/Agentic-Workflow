@@ -1,7 +1,7 @@
 ---
 plan_type: apps_rg_contract_refactor
 slug: apps-rg-contract-registry-ssot-drift-a4f1c8
-status: Not Started
+status: Complete
 ai_summary: "Kill apps_rg registry drift: derive lane/judge/gate/proof-source registries from one SSOT + coverage gate."
 dod_exempt: false
 supersedes: []
@@ -48,20 +48,20 @@ the registry-derivation + coverage layer and only references them.
 ### Wave Progress
 | Wave | Phase IDs | Focus | Est. Tokens | Status | Success Criteria |
 |---|---|---|---|---|---|
-| W0 | P0 | **Lane taxonomy (D1)** — the live `KeyError`/test blocker | ~110k | ⬜ Not Started | `_LANE_MODULE_IMPORT`, alignment-matrix JSON, `LANE_RUBRIC_MODULES` all cover the 4 role lanes (derived from `GENERATED_LANES`); `lane_x2_x1d_spec`/lockstep/adversarial tests green for insurtech/ey |
-| W1 | P1 | **Judge roster (D2)** — finish the recalibration propagation | ~70k | ⬜ Not Started | No judge constant contains `anthropic_claude`; harness default + transport proof-keys + diagnostics derive from the recalibrated panels |
-| W2 | P2 | **Proof-source + namespace (D5)** | ~90k | ⬜ Not Started | `PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH` imported everywhere (0 re-typed); insurtech/ey bullet-ID stamping exists; alias map computed once |
-| W3 | P3 | **Gate-ID parity (D3)** — role-lane lies + advertise-subset contract | ~70k | ⬜ Not Started | Role lanes emit (or stop advertising) the style/discipline gates; unify/ibm "lies" verified (helper-registered vs real) |
-| W4 | P4 | **Registry-coverage gate (D6)** — the durable fix | ~80k | ⬜ Not Started | New CI gate fails on any registry ≠ SSOT; wired into the 3 existing audits + CI |
+| W0 | P0 | **Lane taxonomy (D1)** — the live `KeyError`/test blocker | ~110k | ✅ Complete | `_LANE_MODULE_IMPORT`, alignment-matrix JSON, `LANE_RUBRIC_MODULES` all cover the 4 role lanes (derived from `GENERATED_LANES`); `lane_x2_x1d_spec`/lockstep/adversarial tests green for insurtech/ey |
+| W1 | P1 | **Judge roster (D2)** — finish the recalibration propagation | ~70k | ✅ Complete | No judge constant contains `anthropic_claude`; harness default + transport proof-keys + diagnostics derive from the recalibrated panels |
+| W2 | P2 | **Proof-source + namespace (D5)** | ~90k | ✅ Complete | `PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH` imported everywhere (0 re-typed); insurtech/ey bullet-ID stamping exists; alias map computed once |
+| W3 | P3 | **Gate-ID parity (D3)** — role-lane lies + advertise-subset contract | ~70k | ✅ Complete | Role lanes emit (or stop advertising) the style/discipline gates; unify/ibm "lies" verified (helper-registered vs real) |
+| W4 | P4 | **Registry-coverage gate (D6)** — the durable fix | ~80k | ✅ Complete | New CI gate fails on any registry ≠ SSOT; wired into the 3 existing audits + CI |
 
 ### Phase-Level Summary
 | Phase ID | Title | Scope (files) | Pain Points | Est. Tokens | Status |
 |---|---|---|---|---|---|
-| P0 | Lane taxonomy derivation | `section_x2_x1d_contract.py`, `x2_x1d_alignment_matrix.json`, `graph_skills_x1d_rubric_contract.py`, (+ role-lane x1d rubric/judge) | role lanes half-wired; new judge modules may be needed | ~110k | ⬜ |
-| P1 | Judge roster propagation | `section_judge_policy.py`, `executive_summary_x2.py`, `x1d_judge_policy.py`, `x1d_lane_judge_diagnostics.py`, `x1d_judge_transport_contract.py` | two parallel stale 3-lists + 3 consumers | ~70k | ⬜ |
-| P2 | Proof-source + namespace | `proof_pool_resolver.py`, `proof_pool_source_fact_validation.py`, `competencies_graph_skills_proof_pool.py`, `product_evidence_authority.py`, `canonical_section_evidence_set.py` | 6+ re-typed literals; missing role-lane stamping | ~90k | ⬜ |
-| P3 | Gate-ID parity | `section_product_shape_ssot.py`, `role_episode_lane.py`, `section_x2_x1d_contract.py` | advertise-subset semantics; helper-registration false positives | ~70k | ⬜ |
-| P4 | Coverage gate | `ops_scripts/ci/check_apps_rg_registry_coverage.py` (new), the 3 existing audits | must not flag intentional advertise-subset | ~80k | ⬜ |
+| P0 | Lane taxonomy derivation | `section_x2_x1d_contract.py`, `x2_x1d_alignment_matrix.json`, `graph_skills_x1d_rubric_contract.py`, (+ role-lane x1d rubric/judge) | role lanes half-wired; new judge modules may be needed | ~110k | ✅ |
+| P1 | Judge roster propagation | `section_judge_policy.py`, `executive_summary_x2.py`, `x1d_judge_policy.py`, `x1d_lane_judge_diagnostics.py`, `x1d_judge_transport_contract.py` | two parallel stale 3-lists + 3 consumers | ~70k | ✅ |
+| P2 | Proof-source + namespace | `proof_pool_resolver.py`, `proof_pool_source_fact_validation.py`, `competencies_graph_skills_proof_pool.py`, `product_evidence_authority.py`, `canonical_section_evidence_set.py` | 6+ re-typed literals; missing role-lane stamping | ~90k | ✅ |
+| P3 | Gate-ID parity | `section_product_shape_ssot.py`, `role_episode_lane.py`, `section_x2_x1d_contract.py` | advertise-subset semantics; helper-registration false positives | ~70k | ✅ |
+| P4 | Coverage gate | `ops_scripts/ci/check_apps_rg_registry_coverage.py` (new), the 3 existing audits | must not flag intentional advertise-subset | ~80k | ✅ |
 
 ## The Drift Inventory (ADG-grounded evidence)
 

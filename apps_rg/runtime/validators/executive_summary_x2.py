@@ -9,6 +9,7 @@ import re
 from dataclasses import dataclass, asdict
 from typing import Any
 
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.section_model_limits import SECTION_MODEL_ID
 from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
 
@@ -381,7 +382,7 @@ REQUIRED_ARTIFACTS = [
 ALLOWED_MODELS = [SECTION_MODEL_ID]
 
 # Required X1D judge providers
-REQUIRED_JUDGE_PROVIDERS = ["gemini_pro", "openai_chatgpt", "anthropic_claude"]
+REQUIRED_JUDGE_PROVIDERS = list(REQUIRED_JUDGE_PROVIDER_KEYS)
 
 
 @dataclass

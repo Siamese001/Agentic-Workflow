@@ -177,17 +177,48 @@ def _stamp_ibm_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, Any
     """Map ledger ``fact_*`` rows to canonical ``bul_ibm_*`` ids for IBM bullet X2 gates."""
     from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
 
-    facts = list(plan.get("facts") or [])
-    if not facts or str(facts[0].get("fact_id") or "").startswith("bul_ibm_"):
+    return _stamp_canonical_surface_ids(plan, canonical_ids=IBM_BULLET_IDS, prefix="bul_ibm_")
+
+
+def _stamp_role_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, Any], list[str], set[str]]:
+    """Map role-lane ledger rows to canonical ``bul_insurtech_*`` / ``bul_ey_*`` ids."""
+    section_id = str(plan.get("section_id") or "")
+    prefix_by_section = {
+        "insurtech_bullets": "bul_insurtech_",
+        "insurtech_narrative": "bul_insurtech_",
+        "ey_bullets": "bul_ey_",
+        "ey_narrative": "bul_ey_",
+    }
+    prefix = prefix_by_section.get(section_id)
+    if not prefix:
+        facts = list(plan.get("facts") or [])
         ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
         return plan, ordered, allowed
-    for idx, fact in enumerate(facts[: len(IBM_BULLET_IDS)]):
-        if idx >= len(IBM_BULLET_IDS):
+    return _stamp_canonical_surface_ids(
+        plan,
+        canonical_ids=tuple(f"{prefix}{idx:03d}" for idx in range(1, 4)),
+        prefix=prefix,
+    )
+
+
+def _stamp_canonical_surface_ids(
+    plan: dict[str, Any],
+    *,
+    canonical_ids: tuple[str, ...],
+    prefix: str,
+) -> tuple[dict[str, Any], list[str], set[str]]:
+    """Map ledger ``fact_*`` rows to canonical surface ids while retaining ledger aliases."""
+    facts = list(plan.get("facts") or [])
+    if not facts or str(facts[0].get("fact_id") or "").startswith(prefix):
+        ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+        return plan, ordered, allowed
+    for idx, fact in enumerate(facts[: len(canonical_ids)]):
+        if idx >= len(canonical_ids):
             break
         ledger_id = str(fact.get("fact_id") or fact.get("candidate_fact_id") or "").strip()
         if ledger_id:
             fact["ledger_candidate_fact_id"] = ledger_id
-        fact["fact_id"] = IBM_BULLET_IDS[idx]
+        fact["fact_id"] = canonical_ids[idx]
     ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
     stamped = {
         **plan,
@@ -204,6 +235,8 @@ def _stamp_unify_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, A
     section_id = str(plan.get("section_id") or "")
     if section_id == "ibm_bullets":
         return _stamp_ibm_canonical_bullet_ids(plan)
+    if section_id in ("insurtech_bullets", "insurtech_narrative", "ey_bullets", "ey_narrative"):
+        return _stamp_role_canonical_bullet_ids(plan)
     if section_id not in ("unify_bullets", "unify_narrative"):
         facts = list(plan.get("facts") or [])
         ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
@@ -226,6 +259,26 @@ def _stamp_unify_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, A
         "required_fact_ids": [str(f["fact_id"]) for f in facts],
     }
     return stamped, ordered, allowed
+
+
+def _id_alias_map_from_plan(plan: dict[str, Any]) -> dict[str, str]:
+    """Surface proof id -> ledger fact id aliases stamped by this resolver."""
+    out: dict[str, str] = {}
+    for row in plan.get("facts") or []:
+        if not isinstance(row, dict):
+            continue
+        surface = str(row.get("fact_id") or "").strip()
+        ledger = str(row.get("ledger_candidate_fact_id") or row.get("candidate_fact_id") or "").strip()
+        if surface and ledger and surface != ledger:
+            out[surface] = ledger
+    return out
+
+
+def _attach_id_alias_map(meta: dict[str, Any], plan: dict[str, Any]) -> dict[str, Any]:
+    alias_map = _id_alias_map_from_plan(plan)
+    if alias_map:
+        return {**meta, "id_alias_map": alias_map}
+    return meta
 
 
 def _resolve_executive_summary_graph_only_proof_pool(
@@ -439,6 +492,7 @@ def _resolve_executive_summary_graph_only_proof_pool(
             substrate_ref=ledger_ref_str,
         ),
     )
+    meta = _attach_id_alias_map(meta, plan)
     digest = _sha256_hex(json.dumps(plan, sort_keys=True, ensure_ascii=False))
     receipt = meta.get("exec_summary_allowlist_receipt")
     if isinstance(receipt, dict):
@@ -602,6 +656,7 @@ def _resolve_generic_section_graph_skills_proof_pool(
             substrate_ref=ledger_ref_str,
         ),
     )
+    meta = _attach_id_alias_map(meta, plan)
     ledger_digest = _sha256_hex(
         json.dumps(ledger, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
     )
@@ -720,6 +775,7 @@ def _resolve_competencies_graph_skills_proof_pool(
             substrate_ref=ledger_ref_str,
         ),
     )
+    meta = _attach_id_alias_map(meta, plan)
     from apps_rg.runtime.sections.competency_capability_evidence import (
         attach_competency_bundles_to_proof_pool_metadata,
     )

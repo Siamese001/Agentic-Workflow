@@ -23,13 +23,6 @@ class FallbackPolicy(str, Enum):
     FAIL_CLOSED = "FAIL_CLOSED"
 
 
-REQUIRED_JUDGE_PROVIDER_KEYS: tuple[str, ...] = (
-    "gemini_pro",
-    "openai_chatgpt",
-    "anthropic_claude",
-)
-
-
 @dataclass(frozen=True)
 class SectionJudgePolicy:
     section_name: str
@@ -56,6 +49,10 @@ class SectionJudgePolicy:
 # was Qwen-era insurance against a weak local generator. See .claude/rules/judge-calibration-cadence.md.
 _DUAL_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro", "openai_chatgpt")
 _SINGLE_JUDGE_PANEL: tuple[str, ...] = ("gemini_pro",)
+
+# Legacy proof-harness alias: the global proof provider set is the union of recalibrated
+# policy panels, not a separately maintained roster.
+REQUIRED_JUDGE_PROVIDER_KEYS: tuple[str, ...] = _DUAL_JUDGE_PANEL
 
 
 def _enhanced_providers() -> tuple[str, ...]:

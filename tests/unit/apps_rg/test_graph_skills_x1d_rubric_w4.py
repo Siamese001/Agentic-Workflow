@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.judges.graph_skills_x1d_rubric_contract import (
     MIN_PASS_THRESHOLD,
     NON_CLAIM_NO_MASKING,
@@ -15,7 +16,7 @@ REPO = Path(__file__).resolve().parents[3]
 
 def test_all_lane_rubrics_meet_w4_markers() -> None:
     snaps = collect_current_rubric_snapshots()
-    assert len(snaps) == 7
+    assert {snap.lane_id for snap in snaps} == set(GENERATED_LANES)
     for snap in snaps:
         assert snap.default_threshold >= MIN_PASS_THRESHOLD, snap.lane_id
         assert not snap.missing_markers, f"{snap.lane_id} missing {snap.missing_markers}"

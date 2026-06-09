@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+
 PLAN_ID = "graph-skills-quality-enhancement-c4e8a1"
 MIN_PASS_THRESHOLD = 0.80
 NON_CLAIM_NO_MASKING = (
@@ -61,6 +63,14 @@ FAMILY_MARKER_GROUPS: dict[str, tuple[tuple[str, ...], ...]] = {
         ("decisive_failure",),
         ("source_fact", "source_fact", "bul_"),
     ),
+    "role_episode": (
+        ("factual_support",),
+        ("claim_ledger", "claim ledger"),
+        ("jd-as-proof", "jd-as-proof", "jd as proof"),
+        ("briefing",),
+        ("decisive_failure",),
+        ("source_fact", "source_fact", "source fact", "bul_"),
+    ),
 }
 
 FORBIDDEN_RELAXATION_MARKERS: tuple[str, ...] = (
@@ -88,7 +98,7 @@ class LaneRubricSource:
     forbidden_markers_found: tuple[str, ...]
 
 
-LANE_RUBRIC_MODULES: tuple[tuple[str, str, str], ...] = (
+_STATIC_LANE_RUBRIC_MODULES: tuple[tuple[str, str, str], ...] = (
     ("executive_summary", "executive_summary", "apps_rg.runtime.judges.executive_summary_x1d"),
     ("headline", "headline", "apps_rg.runtime.judges.headline_x1d"),
     ("narrative", "unify_narrative", "apps_rg.runtime.judges.unify_narrative_x1d"),
@@ -98,6 +108,20 @@ LANE_RUBRIC_MODULES: tuple[tuple[str, str, str], ...] = (
     ("competencies", "competencies", "apps_rg.runtime.judges.competencies_x1d"),
 )
 
+
+def _lane_rubric_modules() -> tuple[tuple[str, str, str], ...]:
+    by_lane = {lane: (family, lane, mod) for family, lane, mod in _STATIC_LANE_RUBRIC_MODULES}
+    for lane in GENERATED_LANES:
+        if lane not in by_lane:
+            by_lane[lane] = ("role_episode", lane, "apps_rg.runtime.judges.role_episode_x1d")
+    missing = sorted(set(GENERATED_LANES) - set(by_lane))
+    if missing:
+        raise RuntimeError(f"LANE_RUBRIC_MODULES missing GENERATED_LANES coverage: {missing}")
+    return tuple(by_lane[lane] for lane in GENERATED_LANES)
+
+
+LANE_RUBRIC_MODULES: tuple[tuple[str, str, str], ...] = _lane_rubric_modules()
+
 RUBRIC_TEXT_ATTR: dict[str, str] = {
     "apps_rg.runtime.judges.executive_summary_x1d": "RUBRIC",
     "apps_rg.runtime.judges.headline_x1d": "HEADLINE_RUBRIC",
@@ -106,6 +130,7 @@ RUBRIC_TEXT_ATTR: dict[str, str] = {
     "apps_rg.runtime.judges.unify_bullets_x1d": "UNIFY_RUBRIC",
     "apps_rg.runtime.judges.ibm_bullets_x1d": "IBM_RUBRIC",
     "apps_rg.runtime.judges.competencies_x1d": "COMPETENCIES_RUBRIC",
+    "apps_rg.runtime.judges.role_episode_x1d": "ROLE_EPISODE_RUBRIC",
 }
 
 

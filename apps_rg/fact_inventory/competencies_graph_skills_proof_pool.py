@@ -28,6 +28,7 @@ from apps_rg.fact_inventory.track_weighted_graph_expansion import (
     build_track_weighted_expansion,
     infer_projection_role_family_key,
 )
+from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
 
 P1_W4_CLOSEOUT_RECEIPT_REF = "docs/reports/apps_rg/career_track_p1_w4_closeout_receipt.json"
 P1_W5_RECEIPT_REF = "docs/reports/apps_rg/career_track_p1_w5_track_balanced_sections_receipt.json"
@@ -175,11 +176,11 @@ def build_competencies_graph_skills_proof_payload(
         "plan_id": "graph-skills-hardening-f3a8c1",
         "wave": "P2-W1A",
         "section_id": "competencies",
-        "proof_pool_type": "augmented_skills_graph",
-        "proof_source": "augmented_skills_graph",
+        "proof_pool_type": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
+        "proof_source": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
         "graph_source": graph_ref,
-        "default_proof_pool_type": "augmented_skills_graph",
-        "competencies_product_authority": "augmented_skills_graph",
+        "default_proof_pool_type": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
+        "competencies_product_authority": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
         "selection_method": "augmented_skills_graph_track_weighted_competencies",
         "source_authority": SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
         "broad_skills_ledger_used_as_authority": False,
@@ -226,7 +227,7 @@ def build_competencies_graph_skills_proof_payload(
 
 def validate_competencies_graph_skills_proof_payload(payload: dict[str, Any]) -> None:
     errors: list[str] = []
-    if str(payload.get("proof_pool_type") or "") != "augmented_skills_graph":
+    if str(payload.get("proof_pool_type") or "") != PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH:
         errors.append(f"proof_pool_type must be augmented_skills_graph; got {payload.get('proof_pool_type')!r}")
     if str(payload.get("section_id") or "") != "competencies":
         errors.append("section_id must be competencies")
@@ -289,9 +290,9 @@ def validate_p2_w1a_default_graph_authority_receipt(receipt: dict[str, Any]) -> 
     for key in required:
         if key not in receipt:
             errors.append(f"missing {key}")
-    if str(receipt.get("default_proof_pool_type") or "") != "augmented_skills_graph":
+    if str(receipt.get("default_proof_pool_type") or "") != PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH:
         errors.append("default_proof_pool_type must be augmented_skills_graph")
-    if str(receipt.get("competencies_product_authority") or "") != "augmented_skills_graph":
+    if str(receipt.get("competencies_product_authority") or "") != PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH:
         errors.append("competencies_product_authority must be augmented_skills_graph")
     for flag in (
         "broad_skills_ledger_default",
@@ -326,8 +327,8 @@ def write_p2_w1_competencies_graph_proof_pool_receipt(
         "proof_pool_type": payload["proof_pool_type"],
         "section_id": payload["section_id"],
         "graph_source": payload["graph_source"],
-        "default_proof_pool_type": "augmented_skills_graph",
-        "competencies_product_authority": "augmented_skills_graph",
+        "default_proof_pool_type": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
+        "competencies_product_authority": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
         "selected_tracks": payload["selected_tracks"],
         "selected_skill_count_by_track": payload["selected_skill_count_by_track"],
         "selected_fact_count_by_track": payload["selected_fact_count_by_track"],
@@ -392,8 +393,8 @@ def write_p2_w1a_default_graph_authority_receipt(
         "generated_at": ts,
         "plan_id": "graph-skills-hardening-f3a8c1",
         "wave": "P2-W1A",
-        "default_proof_pool_type": "augmented_skills_graph",
-        "competencies_product_authority": "augmented_skills_graph",
+        "default_proof_pool_type": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
+        "competencies_product_authority": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
         "broad_skills_ledger_default": False,
         "broad_skills_ledger_fallback": False,
         "broad_skills_ledger_compatibility_authority": False,

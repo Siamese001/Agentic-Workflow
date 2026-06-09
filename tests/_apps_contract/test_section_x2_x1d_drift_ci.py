@@ -46,6 +46,71 @@ def test_runtime_emits_ssot_product_shape_gates(lane: str) -> None:
     assert not missing, f"{lane}: SSOT gates missing from {spec.x2_run_function}: {missing}"
 
 
+@pytest.mark.parametrize(
+    "lane",
+    ["insurtech_bullets", "insurtech_narrative", "ey_bullets", "ey_narrative"],
+)
+def test_role_lane_product_shape_gates_are_advertised_subset_of_runtime(lane: str) -> None:
+    spec = lane_x2_x1d_spec(lane)
+    runtime = extract_runtime_x2_gate_ids(
+        x2_module_ref=spec.x2_module_ref,
+        x2_run_function=spec.x2_run_function,
+    )
+    advertised = set(section_product_shape(lane).required_gate_ids)
+    assert advertised <= set(runtime)
+
+
+@pytest.mark.parametrize(
+    "lane, helper_gates",
+    [
+        (
+            "unify_bullets",
+            {
+                "x2_unify_bullet_no_embedded_newline",
+                "x2_unify_bullet_single_thought",
+                "x2_unify_bullet_no_paragraph_block",
+            },
+        ),
+        (
+            "ibm_bullets",
+            {
+                "x2_ibm_bullet_no_embedded_newline",
+                "x2_ibm_bullet_single_thought",
+                "x2_ibm_bullet_no_paragraph_block",
+                "x2_ibm_narrative_slot_reservation",
+            },
+        ),
+        (
+            "unify_narrative",
+            {
+                "x2_unify_narrative_exactly_one_sentence_mechanical",
+                "x2_unify_narrative_forbidden_opener",
+                "x2_unify_narrative_metric_cap",
+                "x2_unify_narrative_bullet_overlap_threshold",
+            },
+        ),
+        (
+            "ibm_narrative",
+            {
+                "x2_ibm_narrative_exactly_one_sentence_mechanical",
+                "x2_ibm_narrative_forbidden_opener",
+                "x2_ibm_narrative_metric_cap",
+                "x2_ibm_narrative_bullet_overlap_threshold",
+            },
+        ),
+    ],
+)
+def test_unify_ibm_helper_registered_gates_count_as_runtime_emission(
+    lane: str, helper_gates: set[str]
+) -> None:
+    spec = lane_x2_x1d_spec(lane)
+    runtime = extract_runtime_x2_gate_ids(
+        x2_module_ref=spec.x2_module_ref,
+        x2_run_function=spec.x2_run_function,
+    )
+    assert helper_gates <= set(runtime)
+
+
 @pytest.mark.parametrize("lane", list(GENERATED_LANES))
 def test_lane_audit_returns_no_violations(lane: str) -> None:
     assert audit_lane_x2_x1d_drift(lane) == []

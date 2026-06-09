@@ -954,6 +954,13 @@ def main():
             "SECTION-X2-X1D generated-lane X2/X1D contract drift (fail-closed)",
             "ops_scripts/ci/check_section_x2_x1d_drift.py",
         ),
+        # APPS-RG-REGISTRY-COVERAGE — non-numeric registry SSOT drift gate.
+        # Fail-closed by default; advisory APPS_RG_REGISTRY_COVERAGE_ADVISORY=1;
+        # bypass APPS_RG_REGISTRY_COVERAGE_BYPASS=1.
+        (
+            "APPS-RG-REGISTRY-COVERAGE apps_rg registry SSOT coverage (fail-closed)",
+            "ops_scripts/ci/check_apps_rg_registry_coverage.py",
+        ),
         (
             "EXEC-SUMMARY-L2-X1D-MANIFEST executive_summary L2/X1D input parity manifest",
             "ops_scripts/ci/check_exec_summary_l2_x1d_manifest_drift.py",

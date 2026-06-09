@@ -24,7 +24,7 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
 JUDGE_RUBRIC_VERSION = "competencies_x1d_v2"
 
 COMPETENCIES_RUBRIC = """
-You are evaluating exactly six executive resume competency categories (short labels plus compact capability phrases).
+You are evaluating exactly 8 executive resume competency categories (short labels plus compact capability phrases).
 This is OPTIONAL ADVISORY taxonomy grading — deterministic X2 gates are authoritative for proof eligibility.
 Return JSON only with: score_scale, score, threshold, pass, decisive_failure, findings, cited_sentence_indexes, remediation_suggestions.
 
@@ -41,6 +41,7 @@ Rubric dimensions:
 7. category_clarity: labels are crisp; terms are compact keyword phrases (not sentence-style competency claims).
 
 Advisory notes:
+- The deterministic product shape expects exactly 8 categories; flag missing, extra, or duplicate category groups as quality_flags.
 - Sentence-style competency claims are out of scope for this section format; flag them as quality_flags only.
 - Judge pass/fail does not gate product proof eligibility for competencies.
 - companion_context_used_as_proof must remain false; JD/briefing/targeting_only — never proof (aligns with PA contract).

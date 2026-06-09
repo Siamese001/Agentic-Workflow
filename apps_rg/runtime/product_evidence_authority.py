@@ -15,14 +15,15 @@ from dataclasses import replace
 from typing import TYPE_CHECKING, Any, Mapping
 
 from apps_rg.runtime.legacy_proof_sources import FORBIDDEN_PROOF_POOL_TYPE_LABELS
+from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
 from apps_rg.runtime.section_cli_defaults import SectionCliConfigError
 
 if TYPE_CHECKING:
     from apps_rg.runtime.proof_pool_resolver import SectionProofPool
 
-_PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH = "augmented_skills_graph"
+_PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH = PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
 
-EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH = "augmented_skills_graph"
+EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH = PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
 
 FORBIDDEN_EVIDENCE_AUTHORITIES: frozenset[str] = frozenset(
     {
@@ -437,7 +438,7 @@ def product_authority_reporting_fields(
     ea = pp.get("evidence_authority") if isinstance(pp.get("evidence_authority"), dict) else {}
     ss = pp.get("selection_scope") if isinstance(pp.get("selection_scope"), dict) else {}
     return {
-        "proof_pool_type": "augmented_skills_graph",
+        "proof_pool_type": PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH,
         "proof_pool_type_role": pp.get("proof_pool_type_role") or "receipt_label_not_authority_switch",
         "evidence_authority": dict(ea),
         "selection_scope": dict(ss),

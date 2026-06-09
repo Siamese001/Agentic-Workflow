@@ -67,6 +67,36 @@ def test_default_resolves_augmented_skills_graph(section_id: str) -> None:
     assert pool.targeting_inputs_used.get("briefing") is True
 
 
+@pytest.mark.parametrize(
+    ("section_id", "prefix"),
+    (
+        ("insurtech_bullets", "bul_insurtech_"),
+        ("insurtech_narrative", "bul_insurtech_"),
+        ("ey_bullets", "bul_ey_"),
+        ("ey_narrative", "bul_ey_"),
+    ),
+)
+def test_role_lanes_resolve_canonical_bullet_namespace(section_id: str, prefix: str) -> None:
+    if not LEDGER_PATH.is_file():
+        pytest.skip(f"ledger missing: {LEDGER_PATH}")
+    pool = resolve_section_proof_pool(
+        section=section_id,
+        repo_root=REPO,
+        target_company="Synthetic Role Lane Target",
+        target_title="SVP Engineering",
+        jd_text="Role-lane namespace proof.",
+        briefing_text="",
+        product_visible=False,
+    )
+    assert pool.proof_source == PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
+    assert pool.allowed_fact_ids_ordered
+    assert all(fid.startswith(prefix) for fid in pool.allowed_fact_ids_ordered)
+    assert all(
+        str(f.get("fact_id") or "").startswith(prefix)
+        for f in (pool.selected_fact_plan.get("facts") or [])
+    )
+
+
 def test_headline_fail_closed_when_graph_blocked(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         "apps_rg.runtime.proof_pool_resolver.resolve_augmented_skills_graph_authority",

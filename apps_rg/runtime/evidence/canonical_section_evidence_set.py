@@ -14,7 +14,7 @@ from apps_rg.runtime.spine.c0_fec_compose import SectionFecBridge
 PROOF_CLASS_INCOMPLETE = "INCOMPLETE_PROOF"
 X2_BLOCK_ID_NAMESPACE_SPLIT = "X2_BLOCK_ID_NAMESPACE_SPLIT"
 
-_BULLET_SURFACE_PREFIXES = ("bul_unify_", "bul_ibm_")
+_BULLET_SURFACE_PREFIXES = ("bul_unify_", "bul_ibm_", "bul_insurtech_", "bul_ey_")
 _LEDGER_PREFIX = "fact_"
 
 
@@ -69,8 +69,7 @@ def detect_id_namespace_split_without_alias(
         for b in fec_bul:
             if b in pool_ids:
                 continue
-            rev = {v: k for k, v in amap.items()}
-            if rev.get(b) in pool_ids:
+            if amap.get(b) in pool_ids:
                 continue
             if not amap:
                 return True, sorted(fec_bul | pool_fact)
@@ -178,6 +177,8 @@ def apply_canonical_section_evidence_materialization(
     meta["canonical_evidence_set_digest"] = canonical.pool_digest
     meta["fec_allowed_fact_ids_digest"] = fec_digest
     meta["proof_pool_digest"] = canonical.pool_digest
+    meta["id_alias_map"] = dict(canonical.alias_map)
+    meta["canonical_section_evidence_set"] = canonical.as_dict()
     runtime_payload["proof_pool_metadata"] = meta
 
     plan = dict(pool.selected_fact_plan or {})

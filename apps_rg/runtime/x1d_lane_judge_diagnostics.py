@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-from apps_rg.runtime.validators.executive_summary_x2 import REQUIRED_JUDGE_PROVIDERS
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
 # Rollup column -> provider_key (matches generated_lane_rollup judge_rows)
 _COL_TO_PROVIDER: dict[str, str] = {
@@ -18,6 +18,7 @@ _COL_TO_PROVIDER: dict[str, str] = {
     "openai": "openai_chatgpt",
     "anthropic": "anthropic_claude",
 }
+_PROVIDER_TO_COL: dict[str, str] = {provider: col for col, provider in _COL_TO_PROVIDER.items()}
 
 
 def _status_upper(raw: Any) -> str:
@@ -248,7 +249,7 @@ def build_x1d_lane_judge_diagnostics(
     When ``lane_x1d_judge_blobs`` maps lane -> judges list (from ``x1d_llm_judge_outputs.json``),
     per-judge artifact fields enrich ``judge_results`` (error tails, attempted flags, etc.).
     """
-    required = list(REQUIRED_JUDGE_PROVIDERS)
+    required = list(REQUIRED_JUDGE_PROVIDER_KEYS)
     blobs_in = lane_x1d_judge_blobs if lane_x1d_judge_blobs is not None else {}
     pp = dict(judge_policy.get("per_provider") or {})
     avail_set = set(judge_policy.get("available_judges") or [])
@@ -286,7 +287,8 @@ def build_x1d_lane_judge_diagnostics(
 
         judge_results: list[dict[str, Any]] = []
 
-        for col, pkey in _COL_TO_PROVIDER.items():
+        for pkey in required:
+            col = _PROVIDER_TO_COL.get(pkey, pkey)
             raw_row = row.get(col)
             pre_ok = pkey in avail_set or bool((pp.get(pkey) or {}).get("credential_env_non_empty"))
             info = classify_judge_status(raw_row, preflight_credential_available=pre_ok)
