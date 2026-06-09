@@ -46,7 +46,13 @@ def test_exec_summary_x1d_rubric_lists_all_ssot_dimensions() -> None:
 
 
 def test_exec_summary_pa_claim_ledger_guidance_consistent() -> None:
-    """u0 and graph-only guard must not contradict on one-row-per-sentence vs 3-6 rows."""
+    """u0 and graph-only guard must AGREE with the row==sentence gate (W0-C reconciliation).
+
+    x2_claim_ledger_row_count_matches_sentence_count + reconcile_claim_ledger_to_sentence_count
+    require exactly one claim_ledger row per displayed sentence, so the prompt guard and u0 must
+    NOT revive the legacy "3-6 rows / do not default to one row per sentence" contradiction (which
+    fought both the gate and the runtime reconciler).
+    """
     from apps_rg.runtime.sections.executive_summary_pa import build_executive_summary_assembly_input
 
     stub_payload = {
@@ -70,10 +76,13 @@ def test_exec_summary_pa_claim_ledger_guidance_consistent() -> None:
     graph_guard = format_graph_only_quality_guardrails_block()
     guard_lower = graph_guard.lower()
     u0_lower = u0.lower()
-    assert "do not default to one row per sentence" in guard_lower
-    assert "3-6" in graph_guard or "3–6" in graph_guard
-    assert "one claim_ledger row per sentence" not in guard_lower
-    assert "one claim_ledger row per sentence" not in u0_lower
+    # Reconciled contract (W0-C): the guard affirmatively states one row per displayed sentence.
+    assert "one row per displayed sentence" in guard_lower
+    # The legacy "3-6 rows / do not default to one row per sentence" contradiction must not return.
+    assert "do not default to one row per sentence" not in guard_lower
+    assert "3-6" not in graph_guard and "3–6" not in graph_guard
+    assert "3-6" not in u0 and "3–6" not in u0
+    # u0 still teaches facts != sentences (no one-sentence-per-brushstroke) — consistent with one-per-sentence.
     assert "not one sentence per brushstroke" in u0_lower
 
 
