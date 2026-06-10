@@ -884,6 +884,103 @@ def _unify_bullets_weak_mechanism_stack():
     )
 
 
+def _role_bullet_l2(*, prefix: str, bullets: list[dict]) -> dict:
+    return {
+        "bullets": bullets,
+        "claim_ledger": [
+            {"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]}
+            for b in bullets
+        ],
+    }
+
+
+def _insurtech_bullets_weak_count():
+    from apps_rg.runtime.sections.role_episode_lane import run_insurtech_bullets_x2_gates
+
+    bullets = [
+        {
+            "bullet_id": "bul_insurtech_001",
+            "bullet_text": "First regulated outcome.",
+            "source_fact_ids": ["bul_insurtech_001"],
+        },
+        {
+            "bullet_id": "bul_insurtech_002",
+            "bullet_text": "Second regulated outcome.",
+            "source_fact_ids": ["bul_insurtech_002"],
+        },
+    ]
+    return run_insurtech_bullets_x2_gates(
+        l2=_role_bullet_l2(prefix="bul_insurtech", bullets=bullets),
+        allowed=["bul_insurtech_001", "bul_insurtech_002", "bul_insurtech_003"],
+        runtime_generation_status="REAL_LLM",
+        bundle_consumed=True,
+    )
+
+
+def _insurtech_bullets_weak_bundle_not_consumed():
+    from apps_rg.runtime.sections.role_episode_lane import run_insurtech_bullets_x2_gates
+
+    bullets = [
+        {
+            "bullet_id": f"bul_insurtech_{i:03d}",
+            "bullet_text": f"Outcome {i}.",
+            "source_fact_ids": [f"bul_insurtech_{i:03d}"],
+        }
+        for i in range(1, 4)
+    ]
+    return run_insurtech_bullets_x2_gates(
+        l2=_role_bullet_l2(prefix="bul_insurtech", bullets=bullets),
+        allowed=[b["bullet_id"] for b in bullets],
+        runtime_generation_status="REAL_LLM",
+        bundle_consumed=False,
+    )
+
+
+def _insurtech_narrative_weak_empty_sentence():
+    from apps_rg.runtime.sections.role_episode_lane import run_insurtech_narrative_x2_gates
+
+    return run_insurtech_narrative_x2_gates(
+        l2={"narrative_sentence": "", "claim_ledger": []},
+        allowed=["bul_insurtech_001"],
+        runtime_generation_status="REAL_LLM",
+    )
+
+
+def _ey_bullets_weak_unsupported_source_fact():
+    from apps_rg.runtime.sections.role_episode_lane import run_ey_bullets_x2_gates
+
+    bullets = [
+        {
+            "bullet_id": f"bul_ey_{i:03d}",
+            "bullet_text": f"Audit outcome {i}.",
+            "source_fact_ids": [f"bul_ey_{i:03d}"],
+        }
+        for i in range(1, 4)
+    ]
+    bullets[0]["source_fact_ids"] = ["bul_insurtech_001"]
+    ledger = [
+        {"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]} for b in bullets
+    ]
+    return run_ey_bullets_x2_gates(
+        l2={"bullets": bullets, "claim_ledger": ledger},
+        allowed=[f"bul_ey_{i:03d}" for i in range(1, 4)],
+        runtime_generation_status="REAL_LLM",
+        bundle_consumed=True,
+    )
+
+
+def _ey_narrative_weak_word_budget():
+    from apps_rg.runtime.sections.role_episode_lane import run_ey_narrative_x2_gates
+
+    narrative = " ".join(["enterprise"] * 60) + "."
+    ledger = [{"claim_text": narrative, "source_fact_ids": ["bul_ey_001"]}]
+    return run_ey_narrative_x2_gates(
+        l2={"narrative_sentence": narrative, "claim_ledger": ledger},
+        allowed=["bul_ey_001"],
+        runtime_generation_status="REAL_LLM",
+    )
+
+
 def all_weak_fail_cases() -> tuple[WeakFailCase, ...]:
     return (
         WeakFailCase(
@@ -1024,6 +1121,31 @@ def all_weak_fail_cases() -> tuple[WeakFailCase, ...]:
             "ibm_narrative",
             "x2_ibm_narrative_requires_finalized_bullets",
             _ibm_narrative_weak_requires_finalized,
+        ),
+        WeakFailCase(
+            "insurtech_bullets",
+            "x2_insurtech_bullets_bullet_count_3",
+            _insurtech_bullets_weak_count,
+        ),
+        WeakFailCase(
+            "insurtech_bullets",
+            "x2_insurtech_bullets_graph_role_episode_bundle_consumed",
+            _insurtech_bullets_weak_bundle_not_consumed,
+        ),
+        WeakFailCase(
+            "insurtech_narrative",
+            "x2_insurtech_narrative_exactly_one_sentence",
+            _insurtech_narrative_weak_empty_sentence,
+        ),
+        WeakFailCase(
+            "ey_bullets",
+            "x2_ey_bullets_source_fact_ids_supported",
+            _ey_bullets_weak_unsupported_source_fact,
+        ),
+        WeakFailCase(
+            "ey_narrative",
+            "x2_ey_narrative_word_budget",
+            _ey_narrative_weak_word_budget,
         ),
     )
 
