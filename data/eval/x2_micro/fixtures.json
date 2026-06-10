@@ -1,0 +1,79 @@
+{
+  "fixtures": [
+    {
+      "fixture_id": "x2-numeric-precision-decimal-hardline",
+      "family": "numeric_precision",
+      "description": "Decimal or percentage precision drift must hard-fail instead of being rounded away.",
+      "expected_disposition": "BLOCK",
+      "required_gate_ids": ["x2_numeric_precision_exact"],
+      "gate_observations": [
+        {
+          "gate_id": "x2_numeric_precision_exact",
+          "pass": false,
+          "severity": "hard",
+          "detail": "99.99 became 100"
+        }
+      ]
+    },
+    {
+      "fixture_id": "x2-sentence-boundary-merged-bullets",
+      "family": "sentence_boundaries",
+      "description": "Merged bullets or embedded paragraph blocks must hard-fail line discipline.",
+      "expected_disposition": "BLOCK",
+      "required_gate_ids": ["x2_sentence_boundary_single_thought"],
+      "gate_observations": [
+        {
+          "gate_id": "x2_sentence_boundary_single_thought",
+          "pass": false,
+          "severity": "hard",
+          "detail": "two bullet thoughts merged into one line"
+        }
+      ]
+    },
+    {
+      "fixture_id": "x2-leakage-self-check-separation",
+      "family": "leakage_self_check_separation",
+      "description": "Self-check or reasoning text must not leak into display output.",
+      "expected_disposition": "BLOCK",
+      "required_gate_ids": ["x2_no_reasoning_or_self_check_leakage"],
+      "gate_observations": [
+        {
+          "gate_id": "x2_no_reasoning_or_self_check_leakage",
+          "pass": false,
+          "severity": "hard",
+          "detail": "display text included self_check rationale"
+        }
+      ]
+    },
+    {
+      "fixture_id": "x2-unknown-hard-line",
+      "family": "unknown_hard_lines",
+      "description": "Unknown proof status on a required hard-line must block instead of passing as advisory.",
+      "expected_disposition": "BLOCK",
+      "required_gate_ids": ["x2_required_proof_known"],
+      "gate_observations": [
+        {
+          "gate_id": "x2_required_proof_known",
+          "pass": false,
+          "severity": "hard",
+          "detail": "required proof status was unknown"
+        }
+      ]
+    },
+    {
+      "fixture_id": "x2-mock-provider-not-allowed",
+      "family": "mock_not_allowed",
+      "description": "Silent mock fallback must block provider-required X2 paths.",
+      "expected_disposition": "BLOCK",
+      "required_gate_ids": ["x2_no_silent_mock_fallback"],
+      "gate_observations": [
+        {
+          "gate_id": "x2_no_silent_mock_fallback",
+          "pass": false,
+          "severity": "hard",
+          "detail": "provider_requested=true provider_attempted=false"
+        }
+      ]
+    }
+  ]
+}

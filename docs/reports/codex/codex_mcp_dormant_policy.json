@@ -1,0 +1,141 @@
+{
+  "generated": "2026-06-10",
+  "plan_id": "codex-mcp-transport-parity-4b9c7e",
+  "wave": "W3",
+  "scope": "dormant/re-add MCP server parity for Codex",
+  "sources": {
+    "live_mcp_ssot": ".mcp.json",
+    "dormant_readd_ssot": ".claude/mcp-notes.md",
+    "procedural_ssot": ".claude/skills/mcp-integration/sections/*.md",
+    "local_env_file": "C:/Users/amita/env/.env"
+  },
+  "policy": {
+    "dormant_servers_are_not_live": true,
+    "substitutes_must_be_labeled": true,
+    "readd_requires_exact_mcp_notes_block": true,
+    "redis_sqlite_canonical": true
+  },
+  "evidence": {
+    "redis_cli": {
+      "path": "C:/Program Files/Redis/redis-cli.EXE",
+      "ping": "PONG"
+    },
+    "adg_redis_url_env": "set",
+    "adg_redis_ingest": {
+      "script": "tools/adg/adg_redis_ingest.py",
+      "compile": "pass",
+      "has_check": true,
+      "has_dry_run": true,
+      "eval_worktree_check": {
+        "returncode": 1,
+        "reason": "C:/Git/eval-harness/artifacts/adg is absent"
+      },
+      "primary_artifacts_dir_exists": true
+    },
+    "tavily_api_key": {
+      "current_environment": "set",
+      "env_file": "C:/Users/amita/env/.env",
+      "env_file_line": 79,
+      "length": 41
+    },
+    "pytest_version": "pytest 9.0.2",
+    "script_compile": {
+      "tools/mcp/pytest_server.py": "pass",
+      "tools/mcp/redis_mcp_server.py": "pass",
+      "tools/otel/otel_mcp_server.py": "pass",
+      "tools/adg/adg_redis_ingest.py": "pass"
+    },
+    "current_env_gaps": {
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "unset",
+      "OTEL_MCP_RUNTIME_ADG_DIR": "unset"
+    }
+  },
+  "servers": [
+    {
+      "server_id": "redis",
+      "claude_status": "dormant_readd",
+      "mcp_json_status": "absent",
+      "readd_ssot": ".claude/mcp-notes.md redis block",
+      "current_storage": [
+        "ADG_REDIS_URL environment variable for ADG/memory",
+        "REDIS_HOST/REDIS_PORT/REDIS_DB in dormant re-add block",
+        "Redis data as hot projection/cache only"
+      ],
+      "current_substitute": [
+        "redis-cli for standalone cache inspection",
+        "adg_sqlite MCP for ADG graph access",
+        "tools/adg/adg_redis_ingest.py for cache warm/mutation"
+      ],
+      "readd_prerequisites": [
+        "local Redis service on localhost:6379",
+        "tools/mcp/redis_mcp_server.py",
+        "PYTHONPATH=${AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED=1"
+      ],
+      "mutation_policy": "SQLite is canonical; Redis projection mutation must be mediated by tools/adg/adg_redis_ingest.py.",
+      "codex_policy": "Do not treat standalone redis as live unless explicitly re-added."
+    },
+    {
+      "server_id": "tavily",
+      "claude_status": "dormant_readd",
+      "mcp_json_status": "absent",
+      "readd_ssot": ".claude/mcp-notes.md tavily block",
+      "current_storage": [
+        "TAVILY_API_KEY in Windows/local env",
+        "TAVILY_API_KEY in C:/Users/amita/env/.env"
+      ],
+      "current_substitute": [
+        "Claude native WebSearch/WebFetch",
+        "Codex Tavily plugin tools when exposed",
+        "Codex web tooling with degraded note when plugin unavailable"
+      ],
+      "readd_prerequisites": [
+        "TAVILY_API_KEY",
+        "npx -y tavily-mcp"
+      ],
+      "mutation_policy": "Read/search/extract only.",
+      "codex_policy": "Do not claim raw tavily MCP availability unless re-added from .claude/mcp-notes.md."
+    },
+    {
+      "server_id": "pytest_mcp",
+      "claude_status": "dormant_readd",
+      "mcp_json_status": "absent",
+      "readd_ssot": ".claude/mcp-notes.md pytest_mcp block",
+      "current_storage": [
+        "tools/mcp/pytest_server.py",
+        "repo pytest policy"
+      ],
+      "current_substitute": [
+        "python -m pytest"
+      ],
+      "readd_prerequisites": [
+        "tools/mcp/pytest_server.py",
+        "PYTHONPATH=${AGENTIC_REPO_ROOT}",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 for direct test runs"
+      ],
+      "mutation_policy": "No weakened assertions or unstrict skips.",
+      "codex_policy": "Keep dormant; use direct pytest with repo policy."
+    },
+    {
+      "server_id": "otel_mcp",
+      "claude_status": "dormant_on_demand",
+      "mcp_json_status": "absent",
+      "readd_ssot": ".claude/mcp-notes.md otel_mcp block",
+      "current_storage": [
+        "tools/otel/otel_mcp_server.py",
+        "OTEL_MCP_RUNTIME_ADG_DIR re-add env"
+      ],
+      "current_substitute": [
+        "adg_sqlite for static dependency and blast-radius work"
+      ],
+      "readd_prerequisites": [
+        "collector/runtime trace source running",
+        "OTEL_MCP_RUNTIME_ADG_DIR=${AGENTIC_REPO_ROOT}/agentic_core/L4_state/memory/runtime_adg",
+        "tools/otel/otel_mcp_server.py"
+      ],
+      "health_probe": "otel_server_info after re-add",
+      "mutation_policy": "Runtime trace/anomaly/healing only; not static dependency analysis.",
+      "codex_policy": "Keep dormant/on-demand until explicitly re-added and collector prerequisites are satisfied."
+    }
+  ]
+}

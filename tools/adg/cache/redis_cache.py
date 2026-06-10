@@ -3,13 +3,13 @@
 import hashlib
 import json
 import logging
-import os
 import time
 from typing import Any
 
 import redis
 
 from tools.adg.core.models import ADGEdge, ADGNode
+from tools.adg.shared_modules.config import resolve_adg_redis_url
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,7 @@ _RECONNECT_BACKOFF_S: float = 30.0
 # Mark Redis unavailable after this many consecutive query failures
 _MAX_CONSECUTIVE_ERRORS: int = 5
 _EMPTY_SET_SENTINEL = "__empty__"
+_HASH_JSON_PREFIX = "__json__:"
 
 
 class RedisCache:
@@ -36,7 +37,7 @@ class RedisCache:
         ADG_REDIS_URL environment variable.
         """
         # SSOT: ADG_REDIS_URL from env var or explicit parameter; no default
-        resolved_url = redis_url or os.getenv("ADG_REDIS_URL")
+        resolved_url = resolve_adg_redis_url(redis_url)
         if not resolved_url:
             raise RuntimeError(
                 "RedisCache requires redis_url parameter or ADG_REDIS_URL env var. "
@@ -93,6 +94,8 @@ class RedisCache:
         After _MAX_CONSECUTIVE_ERRORS failures, marks Redis unavailable so
         subsequent reads skip the 75ms timeout until _maybe_reconnect() fires.
         """
+        if not hasattr(self, "_consecutive_errors"):
+            self._consecutive_errors = 0
         self._consecutive_errors += 1
         if self._consecutive_errors >= _MAX_CONSECUTIVE_ERRORS:
             logger.warning(
@@ -104,6 +107,8 @@ class RedisCache:
 
     def _record_success(self) -> None:
         """Reset consecutive error budget after a successful Redis operation."""
+        if not hasattr(self, "_consecutive_errors"):
+            self._consecutive_errors = 0
         if self._consecutive_errors:
             self._consecutive_errors = 0
 
@@ -111,6 +116,26 @@ class RedisCache:
     def _strip_empty_sentinel(values: set[str]) -> set[str]:
         """Remove the empty-set sentinel from a Redis set payload."""
         return {value for value in values if value != _EMPTY_SET_SENTINEL}
+
+    @staticmethod
+    def _hset_mapping(target: Any, key: str, mapping: dict[str, Any]) -> None:
+        """Write a hash mapping using Redis-3-compatible single-field HSETs."""
+        for field, value in mapping.items():
+            target.hset(key, field, f"{_HASH_JSON_PREFIX}{json.dumps(value)}")
+
+    @staticmethod
+    def _decode_hash_mapping(raw: dict[str, Any]) -> dict[str, Any]:
+        """Decode JSON hash values while tolerating legacy plain-string cache entries."""
+        decoded: dict[str, Any] = {}
+        for field, value in raw.items():
+            if isinstance(value, str) and value.startswith(_HASH_JSON_PREFIX):
+                try:
+                    decoded[field] = json.loads(value[len(_HASH_JSON_PREFIX) :])
+                    continue
+                except ValueError:
+                    pass
+            decoded[field] = value
+        return decoded
 
     def health(self) -> tuple[str, dict[str, Any]]:
         """Return Redis health status."""
@@ -149,7 +174,7 @@ class RedisCache:
             data = self._client.hgetall(key)
             self._record_success()
             if data:
-                return ADGNode(**data)
+                return ADGNode(**self._decode_hash_mapping(data))
         except (
             OSError,
             ValueError,
@@ -170,8 +195,8 @@ class RedisCache:
 
         try:
             key = self._key(f"node:{node.id}", adg_snapshot_id)
-            mapping = {k: str(v) for k, v in node.model_dump().items() if v is not None}
-            self._client.hset(key, mapping=mapping)
+            mapping = node.model_dump()
+            self._hset_mapping(self._client, key, mapping)
             self._record_success()
         except (
             OSError,
@@ -206,7 +231,7 @@ class RedisCache:
                 detail_key = self._key(f"edge_detail:{eid}", adg_snapshot_id)
                 detail = self._client.hgetall(detail_key)
                 if detail:
-                    edges.append(ADGEdge(**detail))
+                    edges.append(ADGEdge(**self._decode_hash_mapping(detail)))
             if len(edges) != len(edge_ids):
                 return None  # partial: some edge_detail hashes missing — force SQLite fallback
             return edges
@@ -238,8 +263,8 @@ class RedisCache:
                     pipe.sadd(key, _EMPTY_SET_SENTINEL)
                 for edge in edges:
                     detail_key = self._key(f"edge_detail:{edge.id}", adg_snapshot_id)
-                    mapping = {k: str(v) for k, v in edge.model_dump().items() if v is not None}
-                    pipe.hset(detail_key, mapping=mapping)
+                    mapping = edge.model_dump()
+                    self._hset_mapping(pipe, detail_key, mapping)
                     pipe.sadd(key, edge.id)
                 pipe.execute()
             self._record_success()
@@ -277,7 +302,7 @@ class RedisCache:
                 detail_key = self._key(f"edge_detail:{eid}", adg_snapshot_id)
                 detail = self._client.hgetall(detail_key)
                 if detail:
-                    edges.append(ADGEdge(**detail))
+                    edges.append(ADGEdge(**self._decode_hash_mapping(detail)))
             if len(edges) != len(edge_ids):
                 return None  # partial: some edge_detail hashes missing — force SQLite fallback
             return edges
@@ -309,8 +334,8 @@ class RedisCache:
                     pipe.sadd(key, _EMPTY_SET_SENTINEL)
                 for edge in edges:
                     detail_key = self._key(f"edge_detail:{edge.id}", adg_snapshot_id)
-                    mapping = {k: str(v) for k, v in edge.model_dump().items() if v is not None}
-                    pipe.hset(detail_key, mapping=mapping)
+                    mapping = edge.model_dump()
+                    self._hset_mapping(pipe, detail_key, mapping)
                     pipe.sadd(key, edge.id)
                 pipe.execute()
             self._record_success()

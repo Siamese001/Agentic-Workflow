@@ -1,9 +1,273 @@
 {
-  "fetched_at": "2026-05-28T10:30:30Z",
-  "fetched_at_epoch": 1779964230.476806,
+  "fetched_at": "2026-06-10T13:18:36Z",
+  "fetched_at_epoch": 1781097516.018155,
   "plans": {
-    "exec-summary-judge-display-override-parity-7c3e8a": {
+    "codex-mcp-transport-parity-4b9c7e": {
       "status": "Not Started",
+      "page_id": "37b27693-f55c-8195-864a-f01d07b7181a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "eval-harness-spine-adg-closeout-6f2a9c": {
+      "status": "Not Started",
+      "page_id": "37b27693-f55c-812e-935d-c382192e8f86",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-aig-remaining-lanes-closeout-d4e1f7": {
+      "status": "Not Started",
+      "page_id": "37a27693-f55c-81d2-8e6c-f8d82dc39780",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-c02-bootstrap-gate-correctness-c02f1a": {
+      "status": "Completed",
+      "page_id": "37a27693-f55c-81b6-ac2d-d2e90fffe74d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-x1d-repair-loop-hardening-490f55": {
+      "status": "In Progress",
+      "page_id": "37a27693-f55c-81f0-a9b5-f5b7d09a89a5",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-rg-contract-registry-ssot-drift-a4f1c8": {
+      "status": "Completed",
+      "page_id": "37a27693-f55c-814f-8376-cd75d360eb66",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "prompt-gate-ssot-consolidation-e7c9a2": {
+      "status": "Completed",
+      "page_id": "37a27693-f55c-81fc-90f4-e4901729b21c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-prompt-slot-x1x3-ssot-drift-4a9f2c": {
+      "status": "Completed",
+      "page_id": "37a27693-f55c-813c-b5f0-f94bb056076f",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-lic-end-to-end-quality-governance-72d4b8": {
+      "status": "Retired",
+      "page_id": "37a27693-f55c-8172-82e3-db57881d2cfc",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "retire-legacy-windsurf-mirrors-a9d3f7": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-819e-b4ae-fadefa94827a",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "plan-ssot-hook-path-recognition-a4f2c1": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-81d3-81e2-c16573fa944d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "plan-notion-disk-tandem-enforcement-b8e3f1": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-81e0-8507-c6bd2df45f69",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-e2e-gap-remediation-7e2d9c": {
+      "status": "Not Started",
+      "page_id": "37927693-f55c-8174-afb8-c6682d3feac7",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "otel-provider-bootstrap-9082d0": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-812e-b2f8-c41226215ea9",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "bge-review-apps-qna-c0-chroma-migration-f9a3b2": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-8160-8e47-f527350a59fe",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "bge-review-apps-qna-cache-init-9a4c2e": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-81c5-a735-e36189849fa2",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-lic-canonical-hardening-wireup-4c9d2a": {
+      "status": "Retired",
+      "page_id": "37927693-f55c-81cb-b238-f5856a4f88aa",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-burndown-remaining-e7b3a1": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-814a-a3da-d106d786c174",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-fact-vector-writeback-discipline-67652c": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-8179-b5b6-f9c9a2abce6f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "notion-supersession-auto-retire-b4e7a1": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-8168-af7a-c7b70b263907",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-30-profile-gap-remediation-a9f3c2": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-8176-8f00-dc12c1b5f802",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "ci-rightsize-github-checks": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-816a-b72f-fa49dbdef13a",
+      "exists_on_disk": false,
+      "has_ai_summary": false
+    },
+    "apps-rg-qwen-removal-b3d9f7": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-8135-a47b-feec395725cd",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-lic-redesign-refactor-plan-v2-consolidated": {
+      "status": "Retired",
+      "page_id": "37927693-f55c-8125-bd57-cdf3fc395b13",
+      "exists_on_disk": false,
+      "has_ai_summary": false
+    },
+    "apps-lic-c0-c03-redesign-refactor-plan": {
+      "status": "Retired",
+      "page_id": "37927693-f55c-8198-8438-dbc89e0e289d",
+      "exists_on_disk": false,
+      "has_ai_summary": false
+    },
+    "apps-lic-reasoning-intensity-policy-7d4e9a": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-8144-afbb-eff37f6df40b",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-lic-message-quality-revalidation-6b8e2f": {
+      "status": "Completed",
+      "page_id": "37927693-f55c-81a9-ac5f-fb4dd34bef42",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-lic-linkedin-qwen-refactor-a9c4e2": {
+      "status": "Retired",
+      "page_id": "37927693-f55c-817b-8bb3-ef4b6bf98735",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "ci-adg-precommit-overlap-6f3a2b": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-8107-bfd5-e5a7c6551700",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-rg-aig-e2e-remediation-e4b7c1": {
+      "status": "Retired",
+      "page_id": "37827693-f55c-819d-8ca1-d5e8fee2941d",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "adg-redis-hotcache-enforcement-b9f4c2": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-81e7-927f-d824de779e2d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "legacy-windsurf-tree-decommission-9f2c47": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-819f-8a18-c1d9b7d2131c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "governance-rule-residue-cleanup-7e3a91": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-81d1-9b99-d74f24c802af",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "cursor-naming-rename-w5-b4f1a9": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-814f-b827-c8a0b2c4b661",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-provider-neutral-token-budgets-6d7a2b": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-814a-aaaa-e493a39e6477",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "relocate-plans-ssot-outside-claude-c1a17d": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-81bc-b409-de73c16466bf",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "cursor-windsurf-codeium-decommission-dec0de": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-8167-8e3a-dd8b650a1773",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "cursor-decommission-a1f7c3": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-814e-a466-f38e383eeed1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-mv-materialization-perf-b3d9f1": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-815d-a27e-cf329a1d9aa0",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-gate-pipeline-efficiency-e4b1c7": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-81ce-ba74-d129d90f1f92",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l7-section-shim-legacy-removal-followup-a9c4e2": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-81e8-b391-f7ac1d198f75",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "l7-auditability-overlap-cleanup-4f8c2d": {
+      "status": "Completed",
+      "page_id": "37827693-f55c-810b-887a-e554c05fec4c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps_rg_lean_core_binding_a1b2c3": {
+      "status": "Retired",
+      "page_id": "37827693-f55c-812d-b7f2-f52ccf32f2cf",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "c03-graph-skills-mvp-b4f9a2": {
+      "status": "Completed",
+      "page_id": "36e27693-f55c-8100-9793-c3ee4cc71144",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "exec-summary-judge-display-override-parity-7c3e8a": {
+      "status": "Completed",
       "page_id": "36e27693-f55c-81b6-8d34-c75db2072709",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -15,13 +279,13 @@
       "has_ai_summary": false
     },
     "exec-summary-rc-narrative-quality-c4e9a1": {
-      "status": "Not Started",
+      "status": "Completed",
       "page_id": "36d27693-f55c-81cb-b868-f2f3ddc3a5aa",
       "exists_on_disk": true,
       "has_ai_summary": false
     },
     "exec-summary-rc-composition-hardcode-b3d7e1": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "36d27693-f55c-8177-acd3-eb29f6fd1a91",
       "exists_on_disk": true,
       "has_ai_summary": false
@@ -39,7 +303,7 @@
       "has_ai_summary": true
     },
     "exec-summary-rc-structural-repair-f4a8c2": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "36d27693-f55c-8131-b67c-fc0aa960d9dc",
       "exists_on_disk": true,
       "has_ai_summary": false
@@ -51,31 +315,31 @@
       "has_ai_summary": true
     },
     "brown-svp-full-resume-rca-remediation-20260527": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "36d27693-f55c-8196-95af-f7013858a502",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "skills-graph-hardening-gap-closure-53576c": {
-      "status": "Not Started",
+      "status": "Completed",
       "page_id": "36d27693-f55c-8105-bb47-d93ad7200465",
       "exists_on_disk": true,
       "has_ai_summary": false
     },
     "graph-skills-three-phase-jd-b3e5f2": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "36d27693-f55c-81a7-968f-d1e6e36510e2",
       "exists_on_disk": true,
       "has_ai_summary": false
     },
     "qwen-prompt-regen-reduction-7481e3": {
-      "status": "Not Started",
+      "status": "Completed",
       "page_id": "36d27693-f55c-8134-95c8-c38d17b7bcd2",
       "exists_on_disk": true,
       "has_ai_summary": false
     },
     "exec-summary-s5-bridge-hardening-acc0f0": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "36d27693-f55c-819b-aee7-fcd7798ad9b1",
       "exists_on_disk": true,
       "has_ai_summary": false
@@ -147,7 +411,7 @@
       "has_ai_summary": true
     },
     "qwen3-32b-vllm-upgrade-d7a3f1": {
-      "status": "Lower Priority",
+      "status": "Retired",
       "page_id": "36c27693-f55c-8121-8712-c2bc55a50d72",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -171,7 +435,7 @@
       "has_ai_summary": true
     },
     "exec-summary-failed-run-persistence-notion-e7c4b2": {
-      "status": "Not Started",
+      "status": "Retired",
       "page_id": "36c27693-f55c-81d8-8cba-d0181e262ba2",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -189,7 +453,7 @@
       "has_ai_summary": true
     },
     "graph-skills-deferred-followup-d7f2a8": {
-      "status": "In Progress",
+      "status": "Retired",
       "page_id": "36c27693-f55c-8131-a2c2-f2ad66da13b4",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -207,13 +471,13 @@
       "has_ai_summary": true
     },
     "agent-capability-spine-harvest-e8f4a2": {
-      "status": "Lower Priority",
+      "status": "Retired",
       "page_id": "36b27693-f55c-8175-b7ee-c1042f686bdf",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "agent-inventory-deferred-followup-c2a8f1": {
-      "status": "Lower Priority",
+      "status": "Retired",
       "page_id": "36b27693-f55c-81b7-869e-f5c752742ff9",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -255,7 +519,7 @@
       "has_ai_summary": true
     },
     "windsurf-tree-deletion-ci-parity-b8e4f1": {
-      "status": "Lower Priority",
+      "status": "Completed",
       "page_id": "36b27693-f55c-81e7-beca-d0c788365473",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1623,7 +1887,7 @@
       "has_ai_summary": true
     },
     "apps-test-surface-deferred-f3c8b2": {
-      "status": "Waiting",
+      "status": "Retired",
       "page_id": "35c27693-f55c-818f-855b-eeadfa81fc03",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -1773,7 +2037,7 @@
       "has_ai_summary": true
     },
     "l6-alignment-deferred-scope-c5e8a7": {
-      "status": "Lower Priority",
+      "status": "Retired",
       "page_id": "35b27693-f55c-8189-8827-c3dec80f05fa",
       "exists_on_disk": true,
       "has_ai_summary": true

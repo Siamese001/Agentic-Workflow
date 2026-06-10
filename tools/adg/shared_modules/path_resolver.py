@@ -34,19 +34,94 @@ def connect_adg_snapshot_readonly(snapshot: Path, *, timeout: float = 5.0) -> sq
 def get_repo_root() -> Path:
     """Return repository root directory.
 
-    Uses ADG_REPO_ROOT env var if set, otherwise derives from this file's location.
+    Uses ADG_REPO_ROOT env var if set and resolved, otherwise derives from this
+    file's location. Unexpanded MCP placeholders such as "${AGENTIC_REPO_ROOT}"
+    are ignored so a bad launcher environment does not poison ADG resolution.
     """
     if env_root := os.environ.get("ADG_REPO_ROOT"):
-        return Path(env_root).resolve()
+        if "$" not in env_root:
+            resolved = Path(env_root).resolve()
+            if resolved.exists():
+                return resolved
     # This file is at: tools/adg/shared_modules/path_resolver.py
     # Repo root is 4 levels up
     return Path(__file__).resolve().parents[3]
 
 
+def _worktree_primary_root(repo_root: Path) -> Path | None:
+    """Return the primary checkout root for a linked git worktree, if known.
+
+    Codex often operates in a sibling worktree that intentionally does not
+    carry heavy, gitignored ADG artifacts. The canonical snapshots remain in
+    the primary checkout. Git records that relationship in the worktree's
+    `.git` file:
+
+        gitdir: C:/Git/Agentic-Workflow-FRESH/.git/worktrees/eval-harness
+
+    Prefer the `commondir` file when present because it is Git's canonical
+    pointer; fall back to the common `.git` parent for older layouts.
+    """
+    git_marker = repo_root / ".git"
+    if not git_marker.is_file():
+        return None
+    try:
+        raw = git_marker.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    prefix = "gitdir:"
+    if not raw.lower().startswith(prefix):
+        return None
+    gitdir = Path(raw[len(prefix) :].strip())
+    if not gitdir.is_absolute():
+        gitdir = (repo_root / gitdir).resolve()
+    else:
+        gitdir = gitdir.resolve()
+
+    commondir_file = gitdir / "commondir"
+    if commondir_file.exists():
+        try:
+            common_raw = commondir_file.read_text(encoding="utf-8").strip()
+        except OSError:
+            common_raw = ""
+        if common_raw:
+            common_dir = Path(common_raw)
+            if not common_dir.is_absolute():
+                common_dir = (gitdir / common_dir).resolve()
+            else:
+                common_dir = common_dir.resolve()
+            if common_dir.name == ".git":
+                return common_dir.parent
+
+    # Common linked-worktree layout: <primary>/.git/worktrees/<name>
+    try:
+        if gitdir.parent.name == "worktrees" and gitdir.parent.parent.name == ".git":
+            return gitdir.parent.parent.parent
+    except IndexError:
+        return None
+    return None
+
+
+def _adg_dir_has_snapshot(adg_dir: Path) -> bool:
+    """Return True when `adg_dir` has at least one timestamp-valid ADG snapshot."""
+    if not adg_dir.exists():
+        return False
+    for path in adg_dir.glob("adg_indexed_*.sqlite"):
+        snapshot_id = path.stem.replace("adg_indexed_", "")
+        try:
+            datetime.strptime(snapshot_id, "%m%d%Y_%H%M")
+            return True
+        except ValueError:
+            continue
+    return False
+
+
 def get_adg_dir() -> Path:
     """Return ADG artifacts directory (artifacts/adg).
 
-    Uses ADG_DIR env var if set, otherwise derives from repo root.
+    Uses ADG_DIR env var if set, otherwise derives from repo root. In linked
+    worktrees, falls back to the primary checkout's `artifacts/adg` when the
+    worktree has no snapshots. This keeps ADG MCP queryable from Codex worktrees
+    without copying large gitignored SQLite artifacts into every worktree.
     """
     repo_root = get_repo_root()
     if env_dir := os.environ.get("ADG_DIR"):
@@ -58,7 +133,17 @@ def get_adg_dir() -> Path:
             return resolved
         except ValueError:
             return repo_root / "artifacts" / "adg"
-    return repo_root / "artifacts" / "adg"
+    local_adg_dir = repo_root / "artifacts" / "adg"
+    if _adg_dir_has_snapshot(local_adg_dir):
+        return local_adg_dir
+
+    primary_root = _worktree_primary_root(repo_root)
+    if primary_root is not None and primary_root != repo_root:
+        primary_adg_dir = primary_root / "artifacts" / "adg"
+        if _adg_dir_has_snapshot(primary_adg_dir):
+            return primary_adg_dir
+
+    return local_adg_dir
 
 
 def _has_nodes_table(path: Path) -> bool:
@@ -69,14 +154,18 @@ def _has_nodes_table(path: Path) -> bool:
     table. Picking such a stub by mtime would crash consumers with
     `sqlite3.OperationalError: no such table: nodes`.
     """
+    conn: sqlite3.Connection | None = None
     try:
-        with connect_adg_snapshot_readonly(path) as conn:
-            row = conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
-            ).fetchone()
-            return row is not None
+        conn = connect_adg_snapshot_readonly(path)
+        row = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
+        ).fetchone()
+        return row is not None
     except Exception:  # noqa: BLE001
         return False
+    finally:
+        if conn is not None:
+            conn.close()
 
 
 def latest_sqlite(require_nodes_table: bool = False) -> Path | None:

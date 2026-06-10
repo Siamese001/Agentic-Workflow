@@ -1,0 +1,41 @@
+{
+  "schema_version": "l6_known_failure_seeds.v1",
+  "seeds": [
+    {
+      "finding_id": "known-token-truncation",
+      "failure_family": "token_truncation",
+      "scenario_seed": {
+        "scenario_id": "l6-token-truncation-preserves-tail-schema",
+        "expected_failure": "prompt truncation removed required tail schema or R0 evidence",
+        "source_refs": [
+          "apps_rg/l2_recipe/prompt_budget.py",
+          "apps_rg/runtime/judges/executive_summary_x1d.py"
+        ]
+      }
+    },
+    {
+      "finding_id": "known-zero-judge-rows",
+      "failure_family": "zero_judge_rows",
+      "scenario_seed": {
+        "scenario_id": "l6-zero-judge-rows-blocks-x1d-trust",
+        "expected_failure": "X1D-required lane emitted zero judge rows",
+        "source_refs": [
+          "apps_rg/runtime/exit/executive_summary_x3.py",
+          "docs/apps_rg/executive_summary_operator_guide.md"
+        ]
+      }
+    },
+    {
+      "finding_id": "known-decimal-false-positive",
+      "failure_family": "decimal_false_positive",
+      "scenario_seed": {
+        "scenario_id": "l6-decimal-99-99-not-two-sentences",
+        "expected_failure": "decimal 99.99 split or rounded incorrectly",
+        "source_refs": [
+          "apps_rg/runtime/validators/executive_summary_sentence_utils.py",
+          "apps_rg/runtime/sections/role_episode_lane.py"
+        ]
+      }
+    }
+  ]
+}
