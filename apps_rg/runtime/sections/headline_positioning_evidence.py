@@ -179,6 +179,9 @@ def format_headline_positioning_evidence_pack(
         *_AUTHORITY_HEADER_LINES,
         f"- seniority_floor: {packet['seniority_floor']} (segment 0 must be exactly this).",
         f"- technical_specificity_floor: >= {packet['technical_specificity_floor']} positioning families across X/Y/Z.",
+        "- governance_floor: at least one of X/Y/Z MUST carry a governance or regulated-AI signal "
+        "(vocabulary: governance, governed, runtime, gates, policy, deterministic, regulated, "
+        "regulatory, compliance) drawn from a bundle with governance_signal: true.",
         "- Each positioning theme MUST bind to a headline_positioning_bundle_id with graph_skill_node_ids.",
         "- skill_id alone is not proof; linked_source_fact_ids or graph_lineage_refs bind positioning.",
     ]

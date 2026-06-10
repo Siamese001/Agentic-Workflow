@@ -163,11 +163,17 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
     # - graph_only_generation_quality_repair: augmented_skills_graph product path
     # - finalize_competencies_v3_output: capability projection on competencies lane (always runs)
     # - repair_protected_unify_bullet_metrics: canonical metric restoration on unify_bullets lane
+    # - bullet_judge_feedback_reselection (W4.1/G14): judge-feedback pool reselection on the
+    #   employment bullet lanes. Honest because the swap (a) re-runs the FULL X2 gate set on
+    #   the swapped doc and fully reverts on any regression, (b) re-judges the new content
+    #   exactly once at the SAME rubric/threshold (revert-on-worse on the soft-fail arm), and
+    #   (c) always writes reselection_receipt.json naming trigger, slots, and outcome.
     _AUTHORIZED_DET_OPS: frozenset[str] = frozenset(
         {
             "graph_only_generation_quality_repair",
             "finalize_competencies_v3_output",
             "repair_protected_unify_bullet_metrics",
+            "bullet_judge_feedback_reselection",
         }
     )
     det_ops = [

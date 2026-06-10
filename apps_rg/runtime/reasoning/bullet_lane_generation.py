@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 import json
+import os
 from pathlib import Path
 from typing import Any, Callable
 
@@ -107,6 +108,114 @@ def summarize_selector_emptiness(*, pool: PoolSelectionResult, gate: Any) -> dic
     if empty:
         out["selector_block_reason"] = SELECTOR_EMPTY_BLOCK_REASON
     return out
+
+
+EMPTY_SELECTION_SHORT_CIRCUIT_BYPASS_ENV = "APPS_RG_EMPTY_SELECTION_SHORT_CIRCUIT_BYPASS"
+EMPTY_SELECTION_MIN_BULLETS_ENV = "APPS_RG_EMPTY_SELECTION_MIN_BULLETS"
+EMPTY_SELECTION_REASON_PREFIX = "EMPTY_SELECTION_PRE_X2"
+
+
+def empty_selection_min_bullets() -> int:
+    """Short-circuit floor: merged-bullet count below this fires SEAM B (default 1 = empty
+    only; raiseable toward FINAL_BULLET_COUNT via env)."""
+    raw = os.environ.get(EMPTY_SELECTION_MIN_BULLETS_ENV, "1").strip()
+    try:
+        return max(0, int(raw))
+    except ValueError:
+        return 1
+
+
+def _count_validity_rejections(artifact_dir: Path | None) -> int:
+    """source_fact_id_not_allowed rejections from bullet_pool_candidate_validity.json (fail-soft)."""
+    if artifact_dir is None:
+        return 0
+    path = artifact_dir / "bullet_pool_candidate_validity.json"
+    if not path.is_file():
+        return 0
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return 0
+    count = 0
+    for path_row in doc.get("paths") or [] if isinstance(doc, dict) else []:
+        if not isinstance(path_row, dict):
+            continue
+        for rej in path_row.get("rejections") or []:
+            if isinstance(rej, dict) and str(rej.get("reason") or "") == "source_fact_id_not_allowed":
+                count += 1
+    return count
+
+
+def _count_entailment_exclusions(artifact_dir: Path | None) -> int:
+    """numeric_token_not_entailed exclusions across all rounds of the SEAM A receipt (fail-soft)."""
+    if artifact_dir is None:
+        return 0
+    from apps_rg.runtime.reasoning.bullet_fact_entailment import ENTAILMENT_RECEIPT_FILENAME
+
+    path = artifact_dir / ENTAILMENT_RECEIPT_FILENAME
+    if not path.is_file():
+        return 0
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return 0
+    total = 0
+    for round_doc in doc.get("rounds") or [] if isinstance(doc, dict) else []:
+        if isinstance(round_doc, dict):
+            try:
+                total += int(round_doc.get("excluded_total") or 0)
+            except (TypeError, ValueError):
+                continue
+    return total
+
+
+def should_short_circuit_empty_selection(
+    gen_meta: dict[str, Any] | None,
+    bullets: list[Any] | None,
+    runtime_generation_status: str,
+    *,
+    artifact_dir: Path | None = None,
+) -> tuple[bool, str]:
+    """W4.4 (G16): pre-X2 empty-selection short-circuit predicate + single true-reason string.
+
+    Fires ONLY when ALL hold: the provider genuinely produced output
+    (``runtime_generation_status == "REAL_LLM"`` — provider-BLOCKED runs keep today's
+    path), the run is employment-pool generation, the merged bullet count is below
+    ``APPS_RG_EMPTY_SELECTION_MIN_BULLETS`` (default 1 = empty only), and the
+    ``APPS_RG_EMPTY_SELECTION_SHORT_CIRCUIT_BYPASS`` kill-switch is off. The reason names
+    the true causes (pool/selection counts + per-filter exclusion counts + missing slots)
+    so one honest blocking row replaces the ~15-gate X2 cascade. Pure aside from the
+    fail-soft optional receipt reads under ``artifact_dir``.
+    """
+    from apps_rg.runtime.reasoning.employment_bullet_pool import is_employment_pool_generation
+
+    if os.environ.get(EMPTY_SELECTION_SHORT_CIRCUIT_BYPASS_ENV, "").strip() == "1":
+        return False, ""
+    if str(runtime_generation_status or "").upper() != "REAL_LLM":
+        return False, ""
+    if not is_employment_pool_generation(gen_meta):
+        return False, ""
+    merged_count = len(bullets or [])
+    if merged_count >= empty_selection_min_bullets():
+        return False, ""
+
+    meta = gen_meta or {}
+    gate = dict(meta.get("selection_gate") or {})
+    min_score = float(meta.get("min_selection_score") or 0.0)
+    scores = [s for s in (meta.get("selector_subthreshold_scores") or []) if isinstance(s, (int, float))]
+    below_min_score = sum(1 for s in scores if float(s) < min_score)
+    slots_missing = [str(x) for x in (gate.get("slots_missing") or [])]
+    reason = (
+        f"{EMPTY_SELECTION_REASON_PREFIX}: "
+        f"paths={int(meta.get('total_paths_executed') or 0)} "
+        f"selections={int(meta.get('claude_selection_count') or 0)} "
+        f"merged={merged_count}; "
+        f"excluded_by=[source_fact_id_not_allowed:{_count_validity_rejections(artifact_dir)}, "
+        f"numeric_token_not_entailed:{_count_entailment_exclusions(artifact_dir)}, "
+        f"below_min_score:{below_min_score}]; "
+        f"slots_missing=[{', '.join(slots_missing)}]"
+    )
+    return True, reason
 
 
 def _write_employment_regen_artifact(artifact_dir: Path, doc: dict[str, Any]) -> None:
@@ -534,4 +643,11 @@ def generate_bullet_lane_with_sc_and_claude(
     return last_result, raw, merged, "", meta
 
 
-__all__ = ["generate_bullet_lane_with_sc_and_claude"]
+__all__ = [
+    "EMPTY_SELECTION_MIN_BULLETS_ENV",
+    "EMPTY_SELECTION_REASON_PREFIX",
+    "EMPTY_SELECTION_SHORT_CIRCUIT_BYPASS_ENV",
+    "empty_selection_min_bullets",
+    "generate_bullet_lane_with_sc_and_claude",
+    "should_short_circuit_empty_selection",
+]

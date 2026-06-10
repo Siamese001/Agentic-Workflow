@@ -165,6 +165,159 @@ def write_required_proof_absent_artifacts(
     }
 
 
+def write_empty_selection_short_circuit_artifacts(
+    *,
+    repo_root: Path,
+    artifact_dir: Path,
+    section_id: str,
+    provider: str,
+    runtime_payload: dict[str, Any],
+    reason: str,
+    gen_meta: dict[str, Any] | None = None,
+    bullets_in_merged: int = 0,
+    output_filename: str = "",
+) -> dict[str, Any]:
+    """W4.4 (G16): one honest blocking bundle when a REAL_LLM employment-pool run merged
+    fewer bullets than the short-circuit floor — instead of the ~15-gate X2 cascade.
+
+    Sibling of ``write_required_proof_absent_artifacts`` differing honestly: the provider
+    DID run (``runtime_generation_status`` stays ``REAL_LLM``, ``provider_attempted=True``).
+
+    Artifacts already written truthfully at the lane insertion point are NOT overwritten:
+    raw_model_output.txt, parsed_output.json, canonical_claim_ledger_v2.json,
+    provider_request.json, provider_response.json, bullet_pool_selection.json,
+    bullet_lane_generation.json (and runtime_payload.json).
+
+    Written here: l2_output.json (REAL_LLM, bullets=[]), the per-lane output txt,
+    x2_gate_outputs.json with exactly ONE failing row
+    (``x2_<sid>_nonempty_selection_pre_x2`` — the X2 wall is never dispatched),
+    x1d_llm_judge_outputs.json {"judges": []} (nothing to judge), the X3 mirror via
+    ``finalize_section_lane_x3`` (X3_BLOCK, decisive_reason = the true-reason string),
+    command_output.txt, section_metric_receipt.json, empty_selection_pre_x2_receipt.json.
+    No existing gate is weakened, removed, or threshold-lowered.
+    """
+    sid = str(section_id)
+    provider_name = str(provider or "")
+    run_id = str(runtime_payload.get("run_id") or "")
+    meta = gen_meta or {}
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    runtime_payload["empty_selection_pre_x2"] = True
+    runtime_payload["empty_selection_pre_x2_reason"] = reason
+
+    gate_id = f"x2_{sid}_nonempty_selection_pre_x2"
+    x2_row = {
+        "gate_id": gate_id,
+        "pass": False,
+        "severity": "block",
+        "reason": reason,
+    }
+    x3 = {
+        "x3_code": "X3_BLOCK",
+        "pass": False,
+        "pass_": False,
+        "runtime_generation_status": "REAL_LLM",
+        "product_quality_status": "FAIL",
+        "decisive_reason": reason,
+        "required_remediation": [reason],
+    }
+    l2 = {
+        "run_id": run_id,
+        "section_id": sid,
+        "runtime_generation_status": "REAL_LLM",
+        "product_quality_status": "FAIL",
+        "product_quality_reason": reason,
+        "bullets": [],
+        "claim_ledger": [],
+        "selected_fact_plan": runtime_payload.get("selected_fact_plan") or {},
+        "jd_alignment": {"targeting_only": True, "jd_used_as_proof": False},
+        "self_check": {"blocked_reason": reason},
+    }
+    output_text = f"{sid}: X3_BLOCK: {reason}"
+
+    _write_json(artifact_dir / "l2_output.json", l2)
+    _write_json(
+        artifact_dir / "x2_gate_outputs.json",
+        {
+            "gates": [x2_row],
+            "failed_gates": [gate_id],
+            "x2_passed": 0,
+            "x2_failed": 1,
+            "total_x2_gates": 1,
+        },
+    )
+    _write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": []})
+    finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id=sid,
+        runtime_payload=runtime_payload,
+        x3_result=x3,
+    )
+    _write_json(
+        artifact_dir / "section_metric_receipt.json",
+        {
+            "lane_id": sid,
+            "run_id": run_id,
+            "runtime_generation_status": "REAL_LLM",
+            "product_quality_status": "FAIL",
+            "x3_code": "X3_BLOCK",
+            "x2_failed_gates": [gate_id],
+            "empty_selection_pre_x2": True,
+        },
+    )
+    entailment_exclusions = 0
+    entailment_path = artifact_dir / "bullet_pool_fact_entailment.json"
+    if entailment_path.is_file():
+        try:
+            entailment_doc = json.loads(entailment_path.read_text(encoding="utf-8"))
+            for round_doc in entailment_doc.get("rounds") or []:
+                if isinstance(round_doc, dict):
+                    entailment_exclusions += int(round_doc.get("excluded_total") or 0)
+        except (json.JSONDecodeError, OSError, TypeError, ValueError):
+            entailment_exclusions = 0
+    _write_json(
+        artifact_dir / "empty_selection_pre_x2_receipt.json",
+        {
+            "schema_version": "empty_selection_pre_x2_v1",
+            "section_id": sid,
+            "run_id": run_id,
+            "reason": reason,
+            "runtime_generation_status": "REAL_LLM",
+            "provider_attempted": True,
+            "bullets_in_merged": int(bullets_in_merged),
+            "pool_stats": {
+                "total_paths_executed": int(meta.get("total_paths_executed") or 0),
+                "claude_selection_count": int(meta.get("claude_selection_count") or 0),
+                "selection_gate": dict(meta.get("selection_gate") or {}),
+            },
+            "regen_rounds_executed": int(meta.get("regen_rounds_executed") or 0),
+            "selection_mode": str(meta.get("selection_mode") or ""),
+            "entailment_exclusion_count": entailment_exclusions,
+            "fired_by": "should_short_circuit_empty_selection",
+        },
+    )
+    if output_filename:
+        (artifact_dir / output_filename).write_text("", encoding="utf-8")
+    (artifact_dir / "command_output.txt").write_text(output_text + "\n", encoding="utf-8")
+
+    finalize_runtime_proof_run(
+        repo_root,
+        sid,
+        provider_name,
+        artifact_dir,
+        run_id=run_id,
+        section_id=sid,
+        runtime_generation_status="REAL_LLM",
+        provider_requested=provider_name,
+        provider_attempted=True,
+    )
+    return {
+        "artifact_dir": str(artifact_dir),
+        "runtime_payload": runtime_payload,
+        "x3": x3,
+        "output_text": output_text,
+    }
+
+
 def wire_spine_c0_fec_or_block(
     *,
     repo_root: Path,
@@ -207,5 +360,6 @@ def wire_spine_c0_fec_or_block(
 __all__ = [
     "BLOCKED_STATUS",
     "wire_spine_c0_fec_or_block",
+    "write_empty_selection_short_circuit_artifacts",
     "write_required_proof_absent_artifacts",
 ]

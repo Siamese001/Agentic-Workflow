@@ -61,6 +61,7 @@ from apps_rg.runtime.sections.section_generation import SECTION_MODEL_ID, build_
 from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
 from apps_rg.runtime.reasoning.bullet_lane_generation import (
     generate_bullet_lane_with_sc_and_claude,
+    should_short_circuit_empty_selection,
     truthful_block_reason,
 )
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
@@ -850,6 +851,29 @@ def run_unify_bullets_execution(
     )
     write_json(artifact_dir / "canonical_claim_ledger_v2.json", canon_doc)
 
+    # W4.4 (G16): a REAL_LLM employment-pool run that merged 0 bullets fails ONCE with the
+    # true reason instead of cascading through X1D + the ~15-gate X2 wall. Provider-BLOCKED
+    # runs keep today's path. Raw/parsed/provider/pool artifacts above stay as written.
+    sc_fire, sc_reason = should_short_circuit_empty_selection(
+        gen_meta, bullets, runtime_generation_status, artifact_dir=artifact_dir
+    )
+    if sc_fire:
+        from apps_rg.runtime.sections.upstream_evidence_block import (
+            write_empty_selection_short_circuit_artifacts,
+        )
+
+        return write_empty_selection_short_circuit_artifacts(
+            repo_root=REPO_ROOT,
+            artifact_dir=artifact_dir,
+            section_id="unify_bullets",
+            provider=str(args.provider),
+            runtime_payload=runtime_payload,
+            reason=sc_reason,
+            gen_meta=gen_meta,
+            bullets_in_merged=len(bullets),
+            output_filename="unify_bullets_output.txt",
+        )
+
     display_for_coverage = bullets_display_text(bullets)
     coverage = build_unify_bullets_text_claim_coverage(bullets, claim_ledger, allowed_fact_ids)
     parsed_for_x2 = enrich_unify_parsed_for_x2(
@@ -1022,6 +1046,187 @@ def run_unify_bullets_execution(
             "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]],
         },
     )
+
+    # W4.1 (G14): bullet judge-feedback reselection — symmetric to ibm_bullets_lane. Mostly
+    # inert on the pool path today (single synthetic selector row, never a trigger); live on
+    # the non-pool path (policy panel row, gemini_pro after the policy filter) and for future
+    # panel parity. Bounded exactly-once via reselection_receipt.json.
+    from apps_rg.runtime.reasoning.bullet_fact_entailment import build_slot_entailment_corpus
+    from apps_rg.runtime.reasoning.bullet_pool_reselection import (
+        LaneRebuildState,
+        run_bullet_judge_reselection,
+    )
+
+    def _resel_post_chain(doc: dict[str, Any]) -> dict[str, Any]:
+        return normalize_unify_parsed_without_ledger_synthesis(doc, runtime_payload) or doc
+
+    def _resel_rebuild_state(new_parsed: dict[str, Any]) -> LaneRebuildState:
+        new_bullets = list(new_parsed.get("bullets") or [])
+        new_ledger = list(new_parsed.get("claim_ledger") or [])
+        new_parse_status, new_invalid = classify_ledger_parse_state(
+            new_parsed,
+            parse_error=parse_error,
+            raw_output=raw_output,
+            lane_profile="unify_bullets",
+        )
+        new_norm = normalize_exec_summary_claim_ledger(new_ledger) if new_parse_status == "OK" else []
+        new_canon = build_canonical_claim_ledger_v2_payload(
+            new_norm,
+            parse_status=new_parse_status,
+            invalid_reason=new_invalid if new_parse_status != "OK" else None,
+            claim_id_prefix="unify_bullets_claim",
+        )
+        new_coverage = build_unify_bullets_text_claim_coverage(new_bullets, new_ledger, allowed_fact_ids)
+        new_parsed_for_x2 = enrich_unify_parsed_for_x2(
+            new_parsed,
+            coverage=new_coverage,
+            input_payload_hash=input_payload_hash,
+            allowed_fact_ids=allowed_fact_ids,
+        )
+        new_usage = build_section_input_usage_ledger_v1(
+            section_id="unify_bullets",
+            run_id=str(runtime_payload["run_id"]),
+            request_id=req_id,
+            trace_root=trace_rr,
+            repo_root=REPO_ROOT,
+            artifact_dir=artifact_dir,
+            runtime_payload=runtime_payload,
+            selected_fact_plan=new_parsed.get("selected_fact_plan") or l2_output["selected_fact_plan"],
+            claim_ledger=new_ledger,
+            allowed_fact_ids=allowed_fact_ids,
+            jd_text=str(runtime_payload.get("jd_text") or ""),
+            target_title=str(runtime_payload.get("target_title") or ""),
+            target_company=str(runtime_payload.get("target_company") or ""),
+            briefing_text=str(runtime_payload.get("briefing") or ""),
+            jd_alignment=l2_output.get("jd_alignment"),
+        )
+        return LaneRebuildState(
+            parsed=new_parsed,
+            bullets=new_bullets,
+            claim_ledger=new_ledger,
+            coverage=new_coverage,
+            parsed_for_x2=new_parsed_for_x2,
+            canon_doc=new_canon,
+            usage_doc=new_usage,
+            display_text=bullets_display_text(new_bullets),
+            parse_status=new_parse_status,
+        )
+
+    def _resel_run_x2(
+        state: LaneRebuildState, x1d_rows: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        return [
+            g.to_dict()
+            for g in run_unify_bullets_x2_gates(
+                bullets=state.bullets,
+                parsed_output=state.parsed_for_x2,
+                claim_ledger=state.claim_ledger,
+                allowed_fact_ids=allowed_fact_ids,
+                jd_text=runtime_payload["jd_text"],
+                runtime_generation_status=runtime_generation_status,
+                artifacts_dir=artifact_dir,
+                provider_requested=args.provider,
+                provider_attempted=args.provider,
+                model_name=model_name,
+                raw_output=raw_output,
+                x1d_judges=x1d_rows,
+                srfs_source_fact_slice_gate_active=srfs_slice_x2_active,
+                proof_pool_metadata=pp_x2,
+                proof_pool_ref=str(pool.proof_pool_ref or ""),
+                proof_pool_digest=str(pool.proof_pool_digest or ""),
+                base_resume=base,
+                runtime_payload=runtime_payload,
+            )
+        ]
+
+    def _resel_run_judges(state: LaneRebuildState, keys: list[str]) -> list[dict[str, Any]]:
+        return [
+            j.to_dict()
+            for j in run_unify_bullets_judges(
+                bullets=state.bullets,
+                claim_ledger=state.claim_ledger,
+                judge_keys=list(keys),
+                mode=judge_mode,
+                artifact_base=artifact_dir,
+            )
+        ]
+
+    def _resel_write_usage(state: LaneRebuildState) -> None:
+        write_json(
+            artifact_dir / "section_input_usage_ledger.json",
+            apply_proof_pool_to_usage_ledger(state.usage_doc, pool),
+        )
+
+    def _resel_write_artifacts(state: LaneRebuildState, x2_rows: list[dict[str, Any]]) -> None:
+        write_json(
+            artifact_dir / "parsed_output.json",
+            {"parsed": state.parsed, "parse_error": parse_error, "parse_status": state.parse_status},
+        )
+        (artifact_dir / "unify_bullets_output.txt").write_text(
+            state.display_text + "\n", encoding="utf-8"
+        )
+        write_json(artifact_dir / "claim_ledger.json", state.claim_ledger)
+        write_json(artifact_dir / "text_claim_coverage.json", state.coverage)
+        write_json(artifact_dir / "canonical_claim_ledger_v2.json", state.canon_doc)
+        _resel_write_usage(state)
+        write_x2_gate_outputs(
+            artifact_dir / "x2_gate_outputs.json", x2_rows, section_id="unify_bullets"
+        )
+        write_json(
+            artifact_dir / "fact_check_result.json",
+            {
+                "passed": not [g for g in x2_rows if not g["pass"]],
+                "failed_gates": [g["gate_id"] for g in x2_rows if not g["pass"]],
+            },
+        )
+        l2_output["bullets"] = state.bullets
+        l2_output["claim_ledger"] = state.claim_ledger
+        l2_output["selected_fact_plan"] = (
+            state.parsed.get("selected_fact_plan") or l2_output["selected_fact_plan"]
+        )
+        l2_output["gap_notes"] = state.parsed.get("gap_notes") or []
+        l2_output["change_log"] = state.parsed.get("change_log") or []
+        l2_output["self_check"] = state.parsed.get("self_check") or l2_output["self_check"]
+        l2_output["text_claim_coverage"] = state.coverage
+        l2_output["output_payload_hash"] = (state.parsed_for_x2 or {}).get("output_payload_hash")
+        l2_output["claim_ledger_hash"] = (state.parsed_for_x2 or {}).get("claim_ledger_hash")
+        l2_output["allowed_fact_ids_hash"] = (state.parsed_for_x2 or {}).get("allowed_fact_ids_hash")
+
+    _resel = run_bullet_judge_reselection(
+        artifact_dir=artifact_dir,
+        section_id="unify_bullets",
+        run_id=str(runtime_payload["run_id"]),
+        required_bullet_ids=UNIFY_BULLET_IDS,
+        parsed=parsed,
+        bullets=bullets,
+        claim_ledger=claim_ledger,
+        parsed_for_x2=parsed_for_x2,
+        x1d=x1d,
+        x2=x2,
+        usage_doc=usage_doc,
+        canon_doc=canon_doc,
+        allowed_fact_ids=allowed_fact_ids,
+        judge_mode=judge_mode,
+        entailment_corpus=build_slot_entailment_corpus(
+            "unify_bullets", runtime_payload.get("selected_fact_plan") or {}
+        ),
+        post_chain=_resel_post_chain,
+        rebuild_state=_resel_rebuild_state,
+        run_x2=_resel_run_x2,
+        run_judges=_resel_run_judges,
+        write_usage_ledger=_resel_write_usage,
+        write_lane_artifacts=_resel_write_artifacts,
+    )
+    parsed = _resel.parsed
+    bullets = _resel.bullets
+    claim_ledger = _resel.claim_ledger
+    parsed_for_x2 = _resel.parsed_for_x2
+    x2 = _resel.x2
+    x1d = _resel.x1d
+    usage_doc = _resel.usage_doc
+    canon_doc = _resel.canon_doc
+    if _resel.display_text is not None:
+        display_for_coverage = _resel.display_text
 
     from apps_rg.runtime.section_repair_lane_integration import finalize_lane_product_quality
 
