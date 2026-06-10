@@ -2,17 +2,18 @@
 
 import json
 import logging
-import os
 from typing import Any, Dict, List, Optional, Tuple
 
 import redis
 
 from tools.adg.core.models import ADGEdge, ADGNode
+from tools.adg.shared_modules.config import resolve_adg_redis_url
 
 logger = logging.getLogger(__name__)
 
 # Strict timeout budget for Redis (ms)
 REDIS_TIMEOUT_MS = 75
+_HASH_JSON_PREFIX = "__json__:"
 
 
 class RedisCache:
@@ -28,7 +29,7 @@ class RedisCache:
         SSOT: No localhost default per S-03. Must provide redis_url or set
         ADG_REDIS_URL environment variable.
         """
-        resolved_url = redis_url or os.getenv("ADG_REDIS_URL")
+        resolved_url = resolve_adg_redis_url(redis_url)
         if not resolved_url:
             raise RuntimeError(
                 "RedisCache requires redis_url parameter or ADG_REDIS_URL env var. "
@@ -72,6 +73,26 @@ class RedisCache:
         """Generate versioned cache key."""
         return f"adg:{self._cache_version}:{adg_snapshot_id}:{base}"
 
+    @staticmethod
+    def _hset_mapping(target: Any, key: str, mapping: dict[str, Any]) -> None:
+        """Write a hash mapping using Redis-3-compatible single-field HSETs."""
+        for field, value in mapping.items():
+            target.hset(key, field, f"{_HASH_JSON_PREFIX}{json.dumps(value)}")
+
+    @staticmethod
+    def _decode_hash_mapping(raw: dict[str, Any]) -> dict[str, Any]:
+        """Decode JSON hash values while tolerating legacy plain-string cache entries."""
+        decoded: dict[str, Any] = {}
+        for field, value in raw.items():
+            if isinstance(value, str) and value.startswith(_HASH_JSON_PREFIX):
+                try:
+                    decoded[field] = json.loads(value[len(_HASH_JSON_PREFIX) :])
+                    continue
+                except ValueError:
+                    pass
+            decoded[field] = value
+        return decoded
+
     def get_node(self, node_id: str, adg_snapshot_id: str) -> ADGNode | None:
         """Try Redis first, return None on miss or timeout."""
         if not self._available:
@@ -81,7 +102,7 @@ class RedisCache:
             key = self._key(f"node:{node_id}", adg_snapshot_id)
             data = self._client.hgetall(key)
             if data:
-                return ADGNode(**data)
+                return ADGNode(**self._decode_hash_mapping(data))
         except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.debug(f"Redis get_node miss: {e}")
 
@@ -94,7 +115,7 @@ class RedisCache:
 
         try:
             key = self._key(f"node:{node.id}", adg_snapshot_id)
-            self._client.hset(key, mapping=node.model_dump())
+            self._hset_mapping(self._client, key, node.model_dump())
         except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.debug(f"Redis set_node failed: {e}")
 
@@ -114,7 +135,7 @@ class RedisCache:
                 detail_key = self._key(f"edge_detail:{eid}", adg_snapshot_id)
                 detail = self._client.hgetall(detail_key)
                 if detail:
-                    edges.append(ADGEdge(**detail))
+                    edges.append(ADGEdge(**self._decode_hash_mapping(detail)))
             return edges
         except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.debug(f"Redis get_edge_fanout miss: {e}")
@@ -132,7 +153,7 @@ class RedisCache:
             key = self._key(f"edge:{src_id}:{relation_type}", adg_snapshot_id)
             for edge in edges:
                 detail_key = self._key(f"edge_detail:{edge.id}", adg_snapshot_id)
-                self._client.hset(detail_key, mapping=edge.model_dump())
+                self._hset_mapping(self._client, detail_key, edge.model_dump())
                 self._client.sadd(key, edge.id)
         except (OSError, ValueError, TypeError, KeyError, AttributeError, RuntimeError) as e:
             logger.debug(f"Redis set_edge_fanout failed: {e}")

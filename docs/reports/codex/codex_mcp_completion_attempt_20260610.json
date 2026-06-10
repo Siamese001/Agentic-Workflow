@@ -1,0 +1,61 @@
+{
+  "generated": "2026-06-10",
+  "plan_id": "codex-mcp-transport-parity-4b9c7e",
+  "requested_action": "mark plan completed and perform testing",
+  "completion_marked": false,
+  "result": "blocked",
+  "blocking_evidence": [
+    {
+      "gate": "mcp__adg_sqlite__adg_health",
+      "status": "fail",
+      "evidence": "Transport closed"
+    },
+    {
+      "gate": "audit_codex_mcp_transports",
+      "status": "fail_for_completion",
+      "duplicates": {
+        "adg_sqlite": {
+          "classification": "duplicate",
+          "root_launcher_count": 2
+        },
+        "memory": {
+          "classification": "duplicate",
+          "root_launcher_count": 3
+        },
+        "vector_db": {
+          "classification": "duplicate",
+          "root_launcher_count": 3
+        },
+        "notion": {
+          "classification": "duplicate_launch_tree",
+          "root_launcher_count": 3
+        },
+        "context7": {
+          "classification": "duplicate_launch_tree",
+          "root_launcher_count": 3
+        },
+        "playwright": {
+          "classification": "duplicate_launch_tree",
+          "root_launcher_count": 3
+        }
+      }
+    }
+  ],
+  "passing_gates": {
+    "verify_codex_backup": "pass",
+    "plan_format_compliance": "pass",
+    "focused_pytest": {
+      "status": "pass",
+      "tests": 14,
+      "warnings": 5
+    },
+    "audit_helper_execution": "pass"
+  },
+  "required_before_completion": [
+    "Restart or clean up owning MCP host so there is one launch tree per live MCP server.",
+    "Reopen adg_sqlite transport in Codex.",
+    "Re-run adg_health and adg_runtime_info.",
+    "Re-run closeout gates.",
+    "Mark plan Completed only after live MCP closeout gates pass."
+  ]
+}

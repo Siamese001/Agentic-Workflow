@@ -1,0 +1,62 @@
+{
+  "generated": "2026-06-10",
+  "plan_id": "codex-mcp-transport-parity-4b9c7e",
+  "wave": "W5",
+  "scope": "Codex adapter documentation, Notion registration sync, and verification gates",
+  "wave_status": "complete_out_of_order",
+  "plan_status": "in_progress",
+  "blocked_wave": "W2.3",
+  "blocker": "ADG-LIVE-CODE-MISMATCH",
+  "adapter_updates": [
+    {
+      "path": "docs/codex-backup-adapter.md",
+      "summary": "Added dormant MCP SSOT, evidence snapshot pointers, and read-only transport audit helper."
+    },
+    {
+      "path": "C:/Users/amita/.codex/skills/agentic-workflow-governance/SKILL.md",
+      "summary": "Added .claude/mcp-notes.md as a canonical source and named audit_codex_mcp_transports.py."
+    },
+    {
+      "path": "C:/Users/amita/.codex/skills/agentic-workflow-verification/SKILL.md",
+      "summary": "Added read-only MCP transport audit helper and evidence snapshot policy."
+    }
+  ],
+  "ssot_policy": {
+    "live_mcp": ".mcp.json",
+    "dormant_readd_mcp": ".claude/mcp-notes.md",
+    "procedure": ".claude/skills/mcp-integration/SKILL.md",
+    "reports_are_evidence_snapshots": true,
+    "codex_specific_mcp_registry_created": false
+  },
+  "notion": {
+    "url": "https://app.notion.com/p/37b27693f55c8195864af01d07b7181a",
+    "slug": "codex-mcp-transport-parity-4b9c7e",
+    "status": "In Progress",
+    "exists_on_disk": "__YES__",
+    "plan_file_path": "plans/codex-mcp-transport-parity-4b9c7e.md",
+    "status_note": "Original creation acceptance named Not Started; current In Progress is correct because waves have executed and W2.3 remains blocked."
+  },
+  "verification": {
+    "verify_codex_backup": "pass",
+    "audit_codex_mcp_transports": "pass",
+    "py_compile_audit_and_verifier": "pass",
+    "focused_pytest": {
+      "status": "pass",
+      "tests": 14,
+      "warnings": 5
+    }
+  },
+  "residual_risks": [
+    "W2.3 remains blocked by ADG-LIVE-CODE-MISMATCH.",
+    "W4-ADG-DUPLICATE-PROCESS remains open: adg_sqlite PIDs 11052 and 12236 are both present, with 12236 reported live by adg_runtime_info.",
+    "C:/Git/eval-harness lacks artifacts/adg while live ADG MCP serves C:/Git/Agentic-Workflow-FRESH artifacts/adg."
+  ],
+  "closeout_state": {
+    "W1": "done",
+    "W2": "blocked_partial",
+    "W3": "done_out_of_order",
+    "W4": "done_out_of_order",
+    "W5": "done_out_of_order",
+    "main_wave_cursor": "W2"
+  }
+}

@@ -10,8 +10,9 @@ SSOT: SQLite. Redis is optional acceleration.
 from __future__ import annotations
 
 import logging
-import os
 from typing import Any
+
+from tools.adg.shared_modules.config import resolve_adg_redis_url
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ REDIS_TIMEOUT_MS = 75
 # SSOT: ADG_REDIS_URL must be set externally; no localhost default per S-03
 # NOTE: validation is deferred to MVRedisReader.__init__ so importing this module
 # during pytest collection does not raise RuntimeError and crash the collector.
-_REDIS_URL: str | None = os.getenv("ADG_REDIS_URL")
+_REDIS_URL: str | None = resolve_adg_redis_url()
 
 
 def _redis_key(snapshot_id: str, base: str) -> str:
@@ -37,7 +38,7 @@ class MVRedisReader:
 
     def __init__(self, redis_url: str | None = None, client: Any | None = None):
         # Use provided URL, env var, or module-level default (already validated)
-        self._redis_url = redis_url or _REDIS_URL
+        self._redis_url = resolve_adg_redis_url(redis_url) or _REDIS_URL
         self._client: Any | None = client
         self._available = client is not None
         if client is None:
@@ -54,6 +55,10 @@ class MVRedisReader:
             return
 
         redis_exc = getattr(redis, "RedisError", ConnectionError)
+        if not self._redis_url:
+            self._available = False
+            self._client = None
+            return
         try:
             self._client = redis.from_url(
                 self._redis_url,

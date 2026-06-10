@@ -1,13 +1,13 @@
 """ADG Service — Query orchestration with mandatory SQLite + optional Redis."""
 
 import logging
-import os
 from typing import Any, Callable
 
 from tools.adg.cache.redis_cache import RedisCache
 from tools.adg.core.models import ADGResponse, HealthStatus
 from tools.adg.core.sqlite_backend import SQLiteBackend
 from tools.adg.mv_reader import MVRedisReader
+from tools.adg.shared_modules.config import resolve_adg_redis_url
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class ADGService:
 
     _sqlite: SQLiteBackend
     _redis: RedisCache | None
-    _redis_url: str
+    _redis_url: str | None
     _adg_snapshot_id: str
     _mv_reader: MVRedisReader
 
@@ -41,21 +41,20 @@ class ADGService:
         status = self._sqlite.get_status()
         self._adg_snapshot_id = status["timestamp"]
 
-        # SSOT: Redis URL resolution - env var (ADG_REDIS_URL) → explicit arg
-        # No localhost default per S-03; caller must provide or env must be set.
-        resolved_url = redis_url or os.getenv("ADG_REDIS_URL")
-        if not resolved_url:
-            raise RuntimeError(
-                "ADGService requires redis_url parameter or ADG_REDIS_URL env var. "
-                "No localhost default per ADG config SSOT (S-03)."
-            )
-        self._redis_url = resolved_url
+        # SSOT: Redis URL resolution - env var (ADG_REDIS_URL) -> explicit arg.
+        # Redis is an optional accelerator; absence must leave ADG in
+        # sqlite_only mode instead of collapsing the MCP transport.
+        self._redis_url = resolve_adg_redis_url(redis_url)
         self._redis = None
         self._connect_redis()
         self._mv_reader = MVRedisReader(redis_url=self._redis_url)
 
     def _connect_redis(self) -> None:
         """Best-effort Redis initialization that never blocks SQLite-only mode."""
+        if not self._redis_url:
+            logger.info("ADG_REDIS_URL unset; continuing in sqlite-only mode")
+            self._redis = None
+            return
         try:
             self._redis = RedisCache(self._redis_url)
         except Exception as exc:  # guardian: allow-broad-exception -- Redis init can fail for heterogeneous transport/auth/env reasons and must degrade to sqlite-only mode

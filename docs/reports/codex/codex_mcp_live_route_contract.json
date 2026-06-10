@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-06-10",
+  "plan_id": "codex-mcp-transport-parity-4b9c7e",
+  "wave": "W2",
+  "status": "blocked",
+  "blocked_phase": "W2.3",
+  "blocker": {
+    "id": "ADG-LIVE-CODE-MISMATCH",
+    "summary": "Live Codex ADG MCP serves primary checkout code, while the Redis decode/write compatibility fix exists in the eval-harness worktree.",
+    "evidence": {
+      "runtime_sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06082026_1212.sqlite",
+      "adg_node_backend_used": "redis",
+      "adg_node_bad_field_example": "id=__json__:\"1\"",
+      "worktree_has_decode_patch": true,
+      "primary_has_decode_patch": false
+    },
+    "valid_unblock_paths": [
+      "Merge or apply the ADG Redis fixes from eval-harness into C:\\Git\\Agentic-Workflow-FRESH, then restart Codex MCP.",
+      "Relaunch Codex with AGENTIC_REPO_ROOT=C:\\Git\\eval-harness, then restart Codex MCP.",
+      "After live code parity is restored, delete and re-warm affected Redis keys."
+    ]
+  },
+  "routes": [
+    {
+      "server_id": "adg_sqlite",
+      "codex_route": "raw_mcp",
+      "status": "transport_green_payload_blocked",
+      "contract": "Use adg_health first; Redis payloads are valid only after live MCP decode parity is restored."
+    },
+    {
+      "server_id": "memory",
+      "codex_route": "none",
+      "status": "blocked",
+      "contract": "Do not claim mem_recall_session_start compliance; local fallback must be marked DEGRADED_FALLBACK."
+    },
+    {
+      "server_id": "vector_db",
+      "codex_route": "none",
+      "status": "blocked_degraded",
+      "contract": "Do not treat rg lexical search as semantic Vector DB search."
+    },
+    {
+      "server_id": "GitKraken",
+      "codex_route": "none",
+      "status": "blocked_degraded",
+      "contract": "Use native git/GitHub plugin only with explicit delta from GitKraken MCP."
+    },
+    {
+      "server_id": "deepwiki",
+      "codex_route": "none",
+      "status": "blocked",
+      "contract": "Use GitHub plugin or Tavily/web only as a named substitute."
+    },
+    {
+      "server_id": "notion",
+      "codex_route": "plugin_substitute",
+      "status": "callable",
+      "contract": "Fetch data source schema before writing; preserve property names exactly; defer Notion MCP writes during active waves."
+    },
+    {
+      "server_id": "context7",
+      "codex_route": "not_raw_exposed",
+      "status": "blocked_degraded",
+      "contract": "Use equivalent plugin/docs only when exact library/version coverage is available."
+    },
+    {
+      "server_id": "playwright",
+      "codex_route": "node_repl_or_browser_plugin",
+      "status": "callable_substitute",
+      "contract": "Use node_repl/Browser plugin; do not claim raw browser_* MCP parity."
+    }
+  ],
+  "local_prerequisites": {
+    "gk_mcp_help": "ok",
+    "memory_py_compile": "ok",
+    "vector_py_compile": "ok",
+    "context7_help": "ok",
+    "playwright_help": "ok"
+  }
+}
