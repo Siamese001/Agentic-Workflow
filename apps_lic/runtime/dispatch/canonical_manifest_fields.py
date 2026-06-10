@@ -58,8 +58,13 @@ def w5_manifest_fields(w5: Any | None) -> dict[str, Any]:
             "w5_x1d_regeneration_attempted": False,
             "w5_x1d_regeneration_iteration_count": 0,
             "w5_x1d_regeneration_stop_reason": "",
+            "w5_x1d_repair_effective": False,
+            "w5_x1d_repair_resolved_issue_ids": [],
+            "w5_x1d_repair_unresolved_issue_ids": [],
+            "w5_repair_candidate_sanitization_passed": False,
         }
     proof = w5.exit_proof_bundle
+    regeneration_packet = w5.x1d_regeneration.to_packet() if w5.x1d_regeneration else {}
     return {
         "w5_validation_exit_invoked": True,
         "w5_validation_exit_status": proof.status,
@@ -90,5 +95,17 @@ def w5_manifest_fields(w5: Any | None) -> dict[str, Any]:
         ),
         "w5_x1d_regeneration_stop_reason": (
             w5.x1d_regeneration.stop_reason if w5.x1d_regeneration else ""
+        ),
+        "w5_x1d_repair_effective": bool(
+            regeneration_packet.get("x1d_repair_effective", False)
+        ),
+        "w5_x1d_repair_resolved_issue_ids": list(
+            regeneration_packet.get("x1d_repair_resolved_issue_ids", [])
+        ),
+        "w5_x1d_repair_unresolved_issue_ids": list(
+            regeneration_packet.get("x1d_repair_unresolved_issue_ids", [])
+        ),
+        "w5_repair_candidate_sanitization_passed": bool(
+            regeneration_packet.get("repair_candidate_sanitization_passed", False)
         ),
     }

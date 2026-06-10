@@ -1,4 +1,4 @@
-"""Post-W7 live-sourced 15-contact canonical canary."""
+"""Post-W7 secondary live-sourced 15-contact company soak."""
 
 from __future__ import annotations
 
@@ -11,6 +11,8 @@ from urllib.parse import urlparse
 from scripts.apps_lic.run_post_w7_live_15_contact_company_validation import (
     COMPANIES,
     LIVE_CONTACTS,
+    SECONDARY_E2E_GATE_ROLE,
+    SECONDARY_E2E_GATE_SHAPE,
     run_post_w7_live_15_contact_company_validation,
 )
 
@@ -29,6 +31,8 @@ def _is_public_linkedin_url(url: str) -> bool:
 
 
 def test_post_w7_live_sources_are_5_per_company_and_targeting_files_exist() -> None:
+    assert SECONDARY_E2E_GATE_ROLE == "secondary_live_company_soak"
+    assert SECONDARY_E2E_GATE_SHAPE == "5_per_company_15_company_validation"
     assert len(LIVE_CONTACTS) == 15
     counts = {company: 0 for company in COMPANIES}
     for contact in LIVE_CONTACTS:

@@ -119,6 +119,7 @@ def test_executive_or_high_stakes_policy_escalates_to_sc3() -> None:
     assert policy["reasoning_intensity"] == R3_STRICT
     assert policy["judge_profile"] == "high_risk_strict"
     assert policy["max_candidates"] == 3
+    assert policy["validation_repair_passes"] == 2
     assert policy["judges"] == [
         JUDGE_EVIDENCE_SUPPORT,
         JUDGE_LINKEDIN_TONE,
