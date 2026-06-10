@@ -73,6 +73,7 @@ class CreationResult:
     status: str
     error: str | None = None
     correction_applied: bool = False
+    body_blocks_appended: int = 0
 
 
 def _notion_token() -> str | None:
@@ -209,12 +210,13 @@ def create_plan_in_notion(
     plan_file_path: str | None = None,
     force_status: Literal["Not Started", "Completed"] | None = None,
     plan_content: str | None = None,
+    include_body: bool = False,
 ) -> CreationResult:
     """
     Canonical plan creation in Notion Plans DB.
-    
+
     **ENFORCES:** Status MUST be "Not Started" at creation time.
-    
+
     Args:
         slug: Plan slug (kebab-case-6hex, e.g., 'my-plan-abc123')
         summary: Human-readable summary (prose)
@@ -223,10 +225,16 @@ def create_plan_in_notion(
         force_status: "Completed" for retrospective plans only. Default "Not Started".
         plan_content: Optional disk SSOT markdown. When provided, Summary and
             AI Summary are derived from wave/phase state and closeout notes.
-    
+        include_body: When True (and plan_content provided), ALSO upload the plan
+            markdown as page body blocks after creation (tools.notion.plan_body_sync).
+            Default False — per memory-notion-writeback.md the row should LINK to the
+            disk SSOT, not repeat it; opt in when operators want the full plan readable
+            in Notion. Body upload is fail-soft: a body-sync failure never fails the
+            registration (check CreationResult.body_blocks_appended).
+
     Returns:
-        CreationResult with ok, page_id, status, error details
-    
+        CreationResult with ok, page_id, status, body_blocks_appended, error details
+
     Raises:
         PlanCreationError: On validation or API error (fail-closed)
     
@@ -295,20 +303,36 @@ def create_plan_in_notion(
     try:
         response = _call_notion_api(payload)
         page_id = response.get("id")
-        
+
         print(
             f"[plan-creation-helper] CREATED slug={slug} "
             f"status={validated_status} page_id={page_id}",
             file=sys.stderr,
         )
-        
+
+        # Phase 1.5: Optional page-body upload (opt-in; fail-soft — registration
+        # already succeeded, so a body-sync failure must not fail the call).
+        body_blocks = 0
+        if include_body and plan_content and page_id:
+            try:
+                from tools.notion.plan_body_sync import sync_plan_body
+
+                body_blocks = sync_plan_body(page_id, plan_content, mode="replace")
+            except Exception as exc:  # guardian: allow-broad-exception -- body upload is best-effort post-registration
+                print(
+                    f"[plan-creation-helper] BODY_SYNC_FAILED slug={slug} "
+                    f"page_id={page_id}: {type(exc).__name__}:{exc}",
+                    file=sys.stderr,
+                )
+
         return CreationResult(
             ok=True,
             page_id=page_id,
             slug=slug,
             status=validated_status,
+            body_blocks_appended=body_blocks,
         )
-        
+
     except PlanCreationError:
         print(
             f"[plan-creation-helper] API_FAILED slug={slug}",
@@ -390,10 +414,23 @@ def main(argv: list[str] | None = None) -> int:
         choices=["Not Started", "Completed"],
         help="Force status (default: Not Started; use Completed for retrospective)"
     )
+    parser.add_argument(
+        "--plan-content-file",
+        help="Path to the plan markdown on disk; enables wave-aware Summary/AI Summary derivation",
+    )
+    parser.add_argument(
+        "--include-body",
+        action="store_true",
+        help="Also upload the plan markdown as Notion page body blocks (requires --plan-content-file)",
+    )
     parser.add_argument("--json", action="store_true", help="Output JSON result")
-    
+
     args = parser.parse_args(argv)
-    
+
+    plan_content = None
+    if args.plan_content_file:
+        plan_content = Path(args.plan_content_file).read_text(encoding="utf-8")
+
     try:
         result = create_plan_in_notion(
             slug=args.slug,
@@ -401,6 +438,8 @@ def main(argv: list[str] | None = None) -> int:
             ai_summary=args.ai_summary,
             plan_file_path=args.plan_file_path,
             force_status=args.force_status,  # type: ignore
+            plan_content=plan_content,
+            include_body=args.include_body,
         )
         
         if args.json:
@@ -410,6 +449,7 @@ def main(argv: list[str] | None = None) -> int:
                 "slug": result.slug,
                 "status": result.status,
                 "error": result.error,
+                "body_blocks_appended": result.body_blocks_appended,
             }, indent=2))
         else:
             if result.ok:

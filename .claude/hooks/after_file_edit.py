@@ -334,6 +334,21 @@ def _sync_plan_to_notion_if_registered(norm_path: str) -> None:
                 f"(digest {(stored_digest or '(none)')[:8]} → {current_digest[:8]})",
                 file=sys.stderr,
             )
+
+        # Opt-in page-BODY sync (NOTION_PLAN_BODY_SYNC=1): mirror the full plan
+        # markdown into the Notion page body so the page is readable, not just the
+        # row. Default off — memory-notion-writeback.md: row links, does not repeat.
+        try:
+            if _os.environ.get("NOTION_PLAN_BODY_SYNC", "").strip().lower() in ("1", "true", "yes", "on"):
+                from tools.notion.plan_body_sync import sync_plan_body as _body_sync
+
+                _appended = _body_sync(page_id, content, token=token, mode="replace")
+                print(
+                    f"[after_file_edit] W3 body-sync: {_appended} blocks → page {page_id} for {slug}",
+                    file=sys.stderr,
+                )
+        except Exception:  # guardian: allow-broad-exception -- fail-soft hook contract
+            pass
     except Exception:  # guardian: allow-broad-exception -- fail-soft hook contract
         pass
 
