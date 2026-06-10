@@ -61,6 +61,9 @@ class W5ValidationExitResult:
 
     def to_receipt_payload(self) -> dict[str, Any]:
         proof = self.exit_proof_bundle
+        regeneration_packet = (
+            self.x1d_regeneration.to_packet() if self.x1d_regeneration else {}
+        )
         return {
             "schema_version": "apps_lic.w5_validation_exit_result.v1",
             "status": self.status,
@@ -98,9 +101,19 @@ class W5ValidationExitResult:
             "x1d_regeneration_stop_reason": (
                 self.x1d_regeneration.stop_reason if self.x1d_regeneration else ""
             ),
-            "x1d_regeneration": (
-                self.x1d_regeneration.to_packet() if self.x1d_regeneration else {}
+            "x1d_repair_effective": bool(
+                regeneration_packet.get("x1d_repair_effective", False)
             ),
+            "x1d_repair_resolved_issue_ids": list(
+                regeneration_packet.get("x1d_repair_resolved_issue_ids", [])
+            ),
+            "x1d_repair_unresolved_issue_ids": list(
+                regeneration_packet.get("x1d_repair_unresolved_issue_ids", [])
+            ),
+            "repair_candidate_sanitization_passed": bool(
+                regeneration_packet.get("repair_candidate_sanitization_passed", False)
+            ),
+            "x1d_regeneration": regeneration_packet,
             "l5_certification_ref": self.l5_certification_ref,
         }
 

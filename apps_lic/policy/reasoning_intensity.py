@@ -194,6 +194,7 @@ def select_reasoning_policy(app_payload: Mapping[str, Any]) -> dict[str, Any]:
                 "x2_deterministic_gates": list(STRICT_X2_GATES),
                 "x1d_llm_judges": list(DEFAULT_X1D_LLM_JUDGES),
                 "max_candidates": 3,
+                "validation_repair_passes": 2,
             }
         )
     elif deliberate:

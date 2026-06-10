@@ -258,11 +258,31 @@ def test_w5_live_x1d_review_failure_runs_bounded_qwen_feedback_repair(
     assert w5["payload"]["x1d_regeneration_attempted"] is True
     assert w5["payload"]["x1d_regeneration_iteration_count"] == 1
     assert w5["payload"]["x1d_regeneration_stop_reason"] == STOP_REPAIR_CANDIDATE_CLEAR
+    assert w5["payload"]["x1d_repair_effective"] is True
+    assert w5["payload"]["x1d_repair_resolved_issue_ids"] == ["generic_role_fit"]
+    assert w5["payload"]["x1d_repair_unresolved_issue_ids"] == []
+    assert w5["payload"]["repair_candidate_sanitization_passed"] is True
+    assert w5["payload"]["x1d_regeneration"]["x1d_repair_effective"] is True
+    assert w5["payload"]["x1d_regeneration"]["repair_candidate_sanitization_passed"] is True
     assert w5["payload"]["x1d_regeneration"]["attempts"][0]["failed_judge_ids"] == [
         "evidence_claim_support_x1d"
     ]
+    assert w5["payload"]["x1d_regeneration"]["attempts"][0]["x1d_repair_effective"] is True
+    assert w5["payload"]["x1d_regeneration"]["attempts"][0][
+        "x1d_repair_resolved_issue_ids"
+    ] == ["generic_role_fit"]
+    assert w5["payload"]["x1d_regeneration"]["attempts"][0][
+        "x1d_repair_unresolved_issue_ids"
+    ] == []
+    assert w5["payload"]["x1d_regeneration"]["attempts"][0][
+        "repair_candidate_sanitization_passed"
+    ] is True
     assert manifest["w5_x1d_regeneration_attempted"] is True
     assert manifest["w5_x1d_regeneration_stop_reason"] == STOP_REPAIR_CANDIDATE_CLEAR
+    assert manifest["w5_x1d_repair_effective"] is True
+    assert manifest["w5_x1d_repair_resolved_issue_ids"] == ["generic_role_fit"]
+    assert manifest["w5_x1d_repair_unresolved_issue_ids"] == []
+    assert manifest["w5_repair_candidate_sanitization_passed"] is True
     assert manifest["w5_x1d_status"] == "X1D_VALIDATION_PASS"
 
 

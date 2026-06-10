@@ -122,7 +122,7 @@ _SC_SETTINGS: dict[str, tuple[str, int, int, float, float]] = {
     SC_0: (R0_MINIMAL, 1, 0, 0.80, 0.90),
     SC_1: (R1_STANDARD, 1, 1, 0.86, 0.94),
     SC_2: (R2_DELIBERATE, 2, 1, 0.92, 0.94),
-    SC_3: (R3_STRICT, 3, 1, 0.94, 0.95),
+    SC_3: (R3_STRICT, 3, 2, 0.94, 0.95),
 }
 
 

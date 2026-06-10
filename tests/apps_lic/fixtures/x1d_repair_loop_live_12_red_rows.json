@@ -1,0 +1,455 @@
+{
+  "schema_version": "apps_lic.x1d_repair_loop_live_12_red_rows_fixture.v1",
+  "source_run": "artifacts/apps_lic/live_e2e_codex_20260609/main_full_e2e_12_archetype_matrix",
+  "captured_at": "2026-06-09",
+  "gate_role": "main_full_e2e_gate",
+  "gate_shape": "4_per_company_12_archetype_matrix",
+  "rca_scope": "live_w5_x1d_judge_feedback_repair_loop_only",
+  "secondary_soak": {
+    "source_run": "artifacts/apps_lic/live_e2e_codex_20260609/post_w7_live_15_contact_company_validation",
+    "gate_role": "secondary_live_company_soak",
+    "gate_shape": "5_per_company_15_company_validation",
+    "is_primary_gate": false,
+    "acceptance_passed": true,
+    "canonical_runtime_rows": 15,
+    "quality_violation_count": 0
+  },
+  "red_rows": [
+    {
+      "row_id": "aig_regina_gilligan",
+      "run_artifact": "runs/aig/02_aig_regina_gilligan",
+      "company_key": "aig",
+      "company": "AIG",
+      "contact_name": "Regina Gilligan",
+      "contact_title": "Talent Acquisition Manager",
+      "message_type": "role_specific",
+      "sc_level": "SC-2",
+      "repair_budget": 1,
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "x1d_missing_judge_ids": [],
+      "x1d_required_judge_ids": ["evidence_claim_support_x1d"],
+      "repair_attempted": true,
+      "repair_iteration_count": 1,
+      "repair_stop_reason": "repair_same_as_parent",
+      "parent_candidate": {
+        "source_artifact": "w4_candidate_batch.json",
+        "candidate_id": "1",
+        "digest": "sha256:91f778f3ef5d705dec7ab612fbe02160f4d6e862df3617ba394b2b3b13d0eadf",
+        "claims_used": ["sp_agentic_platform", "sp_runtime_reliability", "sp_platform_commercialization"]
+      },
+      "repair_candidate": {
+        "source_artifact": "w5_validation_exit.json",
+        "candidate_id": "x1d_repair_1_repair_candidate_1",
+        "digest": "sha256:91f778f3ef5d705dec7ab612fbe02160f4d6e862df3617ba394b2b3b13d0eadf",
+        "claims_used": ["sp_agentic_platform", "sp_runtime_reliability", "sp_platform_commercialization"]
+      },
+      "failed_judges": [
+        {
+          "judge_id": "evidence_claim_support_x1d",
+          "score": 0.81,
+          "threshold": 0.86,
+          "issues": [
+            "sp_runtime_reliability_claim_not_surfaced_in_draft",
+            "repetitive_phrasing_replayable_traces_validation_controls_appears_twice",
+            "weak_insurance_domain_bridge_no_claims_underwriting_specificity"
+          ],
+          "required_repairs": [
+            "surface_runtime_reliability_evidence_or_replace_with_stronger_mapped_claim",
+            "remove_duplicate_policy_gated_retrieval_validation_controls_replayable_traces_phrase",
+            "add_one_concrete_insurance_workflow_anchor_claims_or_underwriting_to_strengthen_domain_fit"
+          ]
+        }
+      ]
+    },
+    {
+      "row_id": "aig_jim_young",
+      "run_artifact": "runs/aig/03_aig_jim_young",
+      "company_key": "aig",
+      "company": "AIG",
+      "contact_name": "Jim Young",
+      "contact_title": "Global Chief Data Officer",
+      "message_type": "trigger_based_insight",
+      "sc_level": "SC-3",
+      "repair_budget": 1,
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "x1d_missing_judge_ids": [],
+      "x1d_required_judge_ids": ["ceo_attention_originality_x1d", "ceo_evidence_overclaim_risk_x1d"],
+      "repair_attempted": true,
+      "repair_iteration_count": 1,
+      "repair_stop_reason": "repair_budget_exhausted",
+      "parent_candidate": {
+        "source_artifact": "w4_candidate_batch.json",
+        "candidate_id": "1",
+        "digest": "sha256:a48ff94837e509e5c053cad3a61b22dd804bee3dcb582b48b850b764e3adc5a1",
+        "claims_used": ["sp_agentic_platform", "sp_runtime_reliability", "sp_platform_commercialization"]
+      },
+      "repair_candidate": {
+        "source_artifact": "w5_validation_exit.json",
+        "candidate_id": "x1d_repair_1_repair_candidate_1",
+        "digest": "sha256:66f6c06fcf05e1663474b751710f16e40ae7794087649274505370f61379d8a7",
+        "claims_used": ["sp_agentic_platform", "sp_runtime_reliability"]
+      },
+      "failed_judges": [
+        {
+          "judge_id": "ceo_attention_originality_x1d",
+          "score": 0.61,
+          "threshold": 0.88,
+          "issues": [
+            "duplicate_closing_signature_and_fragmented_structure",
+            "sp_platform_commercialization_claim_omitted_from_draft_despite_approval",
+            "generic_phrasing_without_specific_aig_trigger_hook"
+          ],
+          "required_repairs": [
+            "remove_duplicate_amit_signature_and_restructure_as_single_coherent_message",
+            "incorporate_22m_revenue_or_margin_outcome_from_sp_platform_commercialization_to_anchor_executive_value",
+            "replace_generic_could_we_discuss_cta_with_specific_ask_referencing_aig_agentic_ai_role_or_right_owner"
+          ]
+        },
+        {
+          "judge_id": "ceo_evidence_overclaim_risk_x1d",
+          "score": 0.71,
+          "threshold": 0.86,
+          "issues": [
+            "sp_platform_commercialization_claim_omitted_but_strongest_metric_absent_from_draft",
+            "duplicate_sign_off_amit_appears_twice_structural_error",
+            "second_paragraph_reads_as_unedited_model_reasoning_not_polished_outreach"
+          ],
+          "required_repairs": [
+            "remove_duplicate_amit_signature_and_merge_fragmented_second_paragraph_into_single_coherent_sentence",
+            "surface_commercial_outcome_metric_from_sp_platform_commercialization_to_substantiate_value_claim",
+            "tighten_cta_to_explicit_ask_per_length_budget_cta_style_guidance"
+          ]
+        }
+      ]
+    },
+    {
+      "row_id": "citi_dee_morgan",
+      "run_artifact": "runs/citi/05_citi_dee_morgan",
+      "company_key": "citi",
+      "company": "Citi",
+      "contact_name": "Dee Morgan",
+      "contact_title": "Talent Acquisition Strategist",
+      "message_type": "role_specific",
+      "sc_level": "SC-2",
+      "repair_budget": 1,
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "x1d_missing_judge_ids": [],
+      "x1d_required_judge_ids": ["evidence_claim_support_x1d"],
+      "repair_attempted": true,
+      "repair_iteration_count": 1,
+      "repair_stop_reason": "repair_budget_exhausted",
+      "parent_candidate": {
+        "source_artifact": "w4_candidate_batch.json",
+        "candidate_id": "1",
+        "digest": "sha256:385dbad7068d9294bc4f11137676ded1732776bef91995f0009b14e17b5e364f",
+        "claims_used": ["sp_agentic_platform", "sp_platform_commercialization"]
+      },
+      "repair_candidate": {
+        "source_artifact": "w5_validation_exit.json",
+        "candidate_id": "x1d_repair_1_repair_candidate_1",
+        "digest": "sha256:b358ceb17b27efd2ef0ea3fa1d6afd4740b391bd0c257cda117605d6ca643403",
+        "claims_used": ["sp_agentic_platform", "sp_platform_commercialization"]
+      },
+      "failed_judges": [
+        {
+          "judge_id": "evidence_claim_support_x1d",
+          "score": 0.81,
+          "threshold": 0.86,
+          "issues": [
+            "role_name_repetition_reduces_naturalness",
+            "min_sentence_count_not_met_four_sentences_vs_five_required",
+            "opening_sentence_awkward_grammar_weakens_first_impression"
+          ],
+          "required_repairs": [
+            "expand_to_minimum_five_sentences_per_length_budget",
+            "rewrite_opening_sentence_for_natural_flow",
+            "reduce_role_name_repetition_to_at_most_one_inline_reference"
+          ]
+        }
+      ]
+    },
+    {
+      "row_id": "citi_brian_saluzzo",
+      "run_artifact": "runs/citi/07_citi_brian_saluzzo",
+      "company_key": "citi",
+      "company": "Citi",
+      "contact_name": "Brian Saluzzo",
+      "contact_title": "Chief Information Officer",
+      "message_type": "trigger_based_insight",
+      "sc_level": "SC-3",
+      "repair_budget": 1,
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "x1d_missing_judge_ids": [],
+      "x1d_required_judge_ids": ["ceo_attention_originality_x1d", "ceo_evidence_overclaim_risk_x1d"],
+      "repair_attempted": true,
+      "repair_iteration_count": 1,
+      "repair_stop_reason": "repair_budget_exhausted",
+      "parent_candidate": {
+        "source_artifact": "w4_candidate_batch.json",
+        "candidate_id": "2",
+        "digest": "sha256:e11a6140508236e37e2d116d78ebb5ed12eb2ca01a34d7295783deb5ff13467a",
+        "claims_used": ["sp_agentic_platform", "sp_platform_commercialization"]
+      },
+      "repair_candidate": {
+        "source_artifact": "w5_validation_exit.json",
+        "candidate_id": "x1d_repair_1_repair_candidate_1",
+        "digest": "sha256:677fad57ef4251f2a62b25602d9854238be11afa7259d0eb65e0c508631624a9",
+        "claims_used": ["sp_agentic_platform", "sp_platform_commercialization"]
+      },
+      "failed_judges": [
+        {
+          "judge_id": "ceo_attention_originality_x1d",
+          "score": 0.61,
+          "threshold": 0.88,
+          "issues": [
+            "verbatim_credential_block_repeated_twice_reducing_originality",
+            "trigger_insight_thin_no_citi_specific_strategic_tension_developed",
+            "word_count_158_exceeds_120_word_advisory_budget"
+          ],
+          "required_repairs": [
+            "remove_duplicate_credential_block_keep_one_concise_proof_statement",
+            "deepen_citi_sky_trigger_into_a_specific_strategic_tension_or_risk_the_cio_faces",
+            "trim_to_under_120_words_while_preserving_both_approved_claims"
+          ]
+        },
+        {
+          "judge_id": "ceo_evidence_overclaim_risk_x1d",
+          "score": 0.71,
+          "threshold": 0.86,
+          "issues": [
+            "verbatim_claim_repetition_degrades_quality",
+            "word_count_exceeds_advisory_max_120",
+            "weak_trigger_to_insight_bridge"
+          ],
+          "required_repairs": [
+            "remove_duplicate_platform_and_revenue_sentences_to_meet_120_word_advisory",
+            "sharpen_citi_sky_trigger_into_a_single_specific_insight_not_a_generic_framing",
+            "consolidate_to_max_6_sentences_with_one_unified_evidence_statement"
+          ]
+        }
+      ]
+    },
+    {
+      "row_id": "neo4j_clint_obrien",
+      "run_artifact": "runs/neo4j/09_neo4j_clint_obrien",
+      "company_key": "neo4j",
+      "company": "Neo4j",
+      "contact_name": "Clint O'Brien",
+      "contact_title": "Senior Recruiter",
+      "message_type": "role_specific",
+      "sc_level": "SC-2",
+      "repair_budget": 1,
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "x1d_missing_judge_ids": [],
+      "x1d_required_judge_ids": ["evidence_claim_support_x1d"],
+      "repair_attempted": true,
+      "repair_iteration_count": 1,
+      "repair_stop_reason": "repair_budget_exhausted",
+      "parent_candidate": {
+        "source_artifact": "w4_candidate_batch.json",
+        "candidate_id": "2",
+        "digest": "sha256:1270a8a4109fec75926670491ea522a95154e1b19bcb30b04ec0fd266075038e",
+        "claims_used": ["sp_agentic_platform", "sp_platform_commercialization"]
+      },
+      "repair_candidate": {
+        "source_artifact": "w5_validation_exit.json",
+        "candidate_id": "x1d_repair_1_repair_candidate_1",
+        "digest": "sha256:fa03648d217526c03fd6de84f53aaa630c38134549ecf5d925cc3cd7df9ac963",
+        "claims_used": ["sp_agentic_platform", "sp_platform_commercialization"]
+      },
+      "failed_judges": [
+        {
+          "judge_id": "evidence_claim_support_x1d",
+          "score": 0.74,
+          "threshold": 0.86,
+          "issues": [
+            "repetitive_role_title_overuse_dilutes_signal",
+            "opening_sentence_fragment_weakens_clarity",
+            "no_neo4j_graph_specific_hook_connecting_candidate_to_company_context"
+          ],
+          "required_repairs": [
+            "remove_redundant_vp_role_title_repetitions_keep_one_reference",
+            "fix_opening_sentence_to_complete_grammatical_structure",
+            "add_one_neo4j_graph_intelligence_specific_bridge_line_to_anchor_company_fit"
+          ]
+        }
+      ]
+    },
+    {
+      "row_id": "neo4j_penny_stevenson",
+      "run_artifact": "runs/neo4j/10_neo4j_penny_stevenson",
+      "company_key": "neo4j",
+      "company": "Neo4j",
+      "contact_name": "Penny Stevenson",
+      "contact_title": "Talent Acquisition Manager",
+      "message_type": "role_specific",
+      "sc_level": "SC-2",
+      "repair_budget": 1,
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "x1d_missing_judge_ids": [],
+      "x1d_required_judge_ids": ["evidence_claim_support_x1d"],
+      "repair_attempted": true,
+      "repair_iteration_count": 1,
+      "repair_stop_reason": "repair_budget_exhausted",
+      "parent_candidate": {
+        "source_artifact": "w4_candidate_batch.json",
+        "candidate_id": "1",
+        "digest": "sha256:d1091ef966dc2cb9a886893d4efe592753eb7686fe8ace21bae33b5d10e645fc",
+        "claims_used": ["sp_agentic_platform", "sp_runtime_reliability", "sp_platform_commercialization"]
+      },
+      "repair_candidate": {
+        "source_artifact": "w5_validation_exit.json",
+        "candidate_id": "x1d_repair_1_repair_candidate_1",
+        "digest": "sha256:2085739bcf58fc382b7f50d5c315188b75e3b3f4ea279d99d9f5f0d60f0e9106",
+        "claims_used": ["sp_agentic_platform", "sp_runtime_reliability"]
+      },
+      "failed_judges": [
+        {
+          "judge_id": "evidence_claim_support_x1d",
+          "score": 0.78,
+          "threshold": 0.86,
+          "issues": [
+            "omits_approved_commercialization_claim_sp_platform_commercialization",
+            "scale_signal_vague_no_quantified_outcome",
+            "subject_line_generic_not_role_specific"
+          ],
+          "required_repairs": [
+            "add_22m_revenue_or_margin_metric_from_sp_platform_commercialization_to_ground_scale_signal",
+            "replace_subject_line_with_role_anchored_hook_referencing_agentic_ai_or_neo4j_mandate",
+            "tighten_scale_signal_sentence_to_cite_specific_regulated_workflow_outcome"
+          ]
+        }
+      ]
+    },
+    {
+      "row_id": "neo4j_sudhir_hasbe",
+      "run_artifact": "runs/neo4j/11_neo4j_sudhir_hasbe",
+      "company_key": "neo4j",
+      "company": "Neo4j",
+      "contact_name": "Sudhir Hasbe",
+      "contact_title": "President and Chief Product Officer",
+      "message_type": "trigger_based_insight",
+      "sc_level": "SC-3",
+      "repair_budget": 1,
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "x1d_missing_judge_ids": [],
+      "x1d_required_judge_ids": ["ceo_attention_originality_x1d", "ceo_evidence_overclaim_risk_x1d"],
+      "repair_attempted": true,
+      "repair_iteration_count": 1,
+      "repair_stop_reason": "repair_budget_exhausted",
+      "parent_candidate": {
+        "source_artifact": "w4_candidate_batch.json",
+        "candidate_id": "2",
+        "digest": "sha256:d43f551ed53aeda95676de0ddb3ee1365e3840f781d38ba285c83e467409716e",
+        "claims_used": ["sp_agentic_platform", "sp_runtime_reliability", "sp_platform_commercialization"]
+      },
+      "repair_candidate": {
+        "source_artifact": "w5_validation_exit.json",
+        "candidate_id": "x1d_repair_1_repair_candidate_1",
+        "digest": "sha256:8765367dff979126a01f70591c3fb206ba1f3f0d7a859dc9a74ac67f20fe489c",
+        "claims_used": ["sp_agentic_platform", "sp_runtime_reliability"]
+      },
+      "failed_judges": [
+        {
+          "judge_id": "ceo_attention_originality_x1d",
+          "score": 0.81,
+          "threshold": 0.88,
+          "issues": [
+            "omits_strongest_quantified_claim_sp_platform_commercialization",
+            "runtime_reliability_claim_underdeveloped_no_specifics",
+            "opening_framing_generic_graph_intelligence_challenge"
+          ],
+          "required_repairs": [
+            "inject_sp_platform_commercialization_metric_22m_revenue_or_margin_expansion_into_body",
+            "sharpen_runtime_reliability_sentence_with_at_least_one_concrete_mechanism_eg_evaluation_gates_or_rollback",
+            "replace_generic_opening_challenge_framing_with_neo4j_specific_trigger_signal_agentic_hiring_or_graph_as_context_infra"
+          ]
+        },
+        {
+          "judge_id": "ceo_evidence_overclaim_risk_x1d",
+          "score": 0.81,
+          "threshold": 0.86,
+          "issues": [
+            "commercial_outcome_claim_omitted_from_draft_despite_being_strongest_proof",
+            "runtime_reliability_claim_vague_without_specifics_like_evaluation_gates_or_telemetry",
+            "graph_intelligence_connection_to_neo4j_context_asserted_but_not_grounded_in_sender_evidence"
+          ],
+          "required_repairs": [
+            "add_measurable_commercial_outcome_from_sp_platform_commercialization_eg_ip_led_revenue_or_margin_expansion",
+            "sharpen_runtime_reliability_sentence_with_at_least_one_concrete_mechanism_eg_evaluation_gates_or_replayable_traces",
+            "tie_graph_context_explicitly_to_senders_graphrag_or_graph_retrieval_work_to_avoid_unsupported_neo4j_fit_assertion"
+          ]
+        }
+      ]
+    },
+    {
+      "row_id": "neo4j_firat_tekiner",
+      "run_artifact": "runs/neo4j/12_neo4j_firat_tekiner",
+      "company_key": "neo4j",
+      "company": "Neo4j",
+      "contact_name": "Firat Tekiner",
+      "contact_title": "Director of Product Management",
+      "message_type": "trigger_based_insight",
+      "sc_level": "SC-2",
+      "repair_budget": 1,
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "x1d_missing_judge_ids": [],
+      "x1d_required_judge_ids": ["evidence_claim_support_x1d", "linkedin_tone_non_generic_x1d"],
+      "repair_attempted": true,
+      "repair_iteration_count": 1,
+      "repair_stop_reason": "repair_budget_exhausted",
+      "parent_candidate": {
+        "source_artifact": "w4_candidate_batch.json",
+        "candidate_id": "1",
+        "digest": "sha256:3c939961392f64cf43710b42fd47ac89d15f2c1beffc20c0267416a6a72736cf",
+        "claims_used": ["sp_agentic_platform", "sp_runtime_reliability"]
+      },
+      "repair_candidate": {
+        "source_artifact": "w5_validation_exit.json",
+        "candidate_id": "x1d_repair_1_repair_candidate_1",
+        "digest": "sha256:2504d34cceb2e5b0d5bd40096984eec7ebb9cbf4b7e98fd23a2b7eb24afe70bb",
+        "claims_used": ["sp_runtime_reliability", "sp_agentic_platform"]
+      },
+      "failed_judges": [
+        {
+          "judge_id": "evidence_claim_support_x1d",
+          "score": 0.82,
+          "threshold": 0.86,
+          "issues": [
+            "repetitive_sentence_structure_reduces_linkedin_fit",
+            "sp_cloud_ai_transformation_allowed_but_unused_leaving_scale_signal_thin",
+            "cta_phrasing_generic_redirect_weakens_closing"
+          ],
+          "required_repairs": [
+            "reduce_repetition_of_vp_role_title_across_sentences_3_and_4",
+            "add_one_concrete_scale_or_outcome_signal_anchored_to_sp_cloud_ai_transformation",
+            "sharpen_cta_to_reference_specific_neo4j_agentic_context_rather_than_generic_fit_exchange"
+          ]
+        },
+        {
+          "judge_id": "linkedin_tone_non_generic_x1d",
+          "score": 0.81,
+          "threshold": 0.84,
+          "issues": [
+            "repetitive_role_title_overuse",
+            "opening_lacks_trigger_hook",
+            "closing_cta_is_weak_redirect"
+          ],
+          "required_repairs": [
+            "remove_repeated_vp_role_title_mentions_keep_one",
+            "add_specific_neo4j_trigger_signal_in_opening_sentence",
+            "sharpen_cta_to_single_direct_ask_without_redirect_hedge"
+          ]
+        }
+      ]
+    }
+  ]
+}

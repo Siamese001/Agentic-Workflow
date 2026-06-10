@@ -321,6 +321,7 @@ def test_ceo_trigger_gets_sc3_three_candidates_and_two_judge_depth_marker() -> N
 
     assert request.reasoning_policy.sc_level == SC_3
     assert request.reasoning_policy.candidate_count == 3
+    assert request.reasoning_policy.repair_budget == 2
     assert request.reasoning_policy.x1d_llm_judge_depth == 2
     assert len(batch.candidates) == 3
     assert all("governance" in candidate.draft_text.lower() for candidate in batch.candidates)

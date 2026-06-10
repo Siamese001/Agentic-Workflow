@@ -79,7 +79,7 @@ reasoning_policy:
       top_p: 0.94
     SC-3:
       candidate_count: 3
-      repair_budget: 1
+      repair_budget: 2
       generator_temperature: 0.94
       top_p: 0.95
   repair_temperature: 0.30

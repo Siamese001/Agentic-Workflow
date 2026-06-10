@@ -1,6 +1,6 @@
-"""Post-W7 live-sourced 15-contact canonical apps_lic run.
+"""Secondary live company-soak validation for apps_lic.
 
-This canary uses public LinkedIn-indexed/current web search pulls collected on
+This runner uses public LinkedIn-indexed/current web search pulls collected on
 2026-06-08: 5 contacts each for AIG, Citi, and Neo4j. It does not scrape behind
 login, send messages, or call LinkedIn APIs. When ANTHROPIC_API_KEY is loaded
 from .env, required X1D judges run through live Claude.
@@ -49,6 +49,8 @@ FIXED_FRESHNESS_DATE = "2026-06-08T00:00:00+00:00"
 DEFAULT_OUTPUT_DIR = (
     REPO_ROOT / "artifacts" / "apps_lic" / "post_w7_live_15_contact_company_validation"
 )
+SECONDARY_E2E_GATE_ROLE = "secondary_live_company_soak"
+SECONDARY_E2E_GATE_SHAPE = "5_per_company_15_company_validation"
 DEFAULT_ENV_FILE_CANDIDATES = (
     REPO_ROOT / ".env",
     REPO_ROOT.parent / "Agentic-Workflow-FRESH" / ".env",
@@ -672,6 +674,9 @@ def _build_summary(rows: tuple[dict[str, Any], ...], *, generated_at: str) -> di
     return {
         "schema_version": "apps_lic.post_w7_live_15_contact_company_validation.v1",
         "run_id": RUN_ID,
+        "gate_role": SECONDARY_E2E_GATE_ROLE,
+        "gate_shape": SECONDARY_E2E_GATE_SHAPE,
+        "acceptance_contract": "company_soak_allows_review_required_when_quality_violations_are_zero",
         "generated_at_utc": generated_at,
         "profile_count": len(rows),
         "company_counts": company_counts,
@@ -709,9 +714,11 @@ def _build_summary(rows: tuple[dict[str, Any], ...], *, generated_at: str) -> di
 
 def _write_report(output_dir: Path, summary: Mapping[str, Any], rows: tuple[dict[str, Any], ...]) -> None:
     lines = [
-        "# Post-W7 Live 15-Contact Canonical Validation",
+        "# apps_lic Secondary Live Company Soak",
         "",
         f"Run ID: `{summary['run_id']}`",
+        f"Gate role: `{summary['gate_role']}`",
+        f"Gate shape: `{summary['gate_shape']}`",
         f"Acceptance passed: `{summary['acceptance_passed']}`",
         f"Rows: `{summary['profile_count']}`",
         f"Parseable proof bundles: `{summary['parseable_proof_bundle_count']}`",

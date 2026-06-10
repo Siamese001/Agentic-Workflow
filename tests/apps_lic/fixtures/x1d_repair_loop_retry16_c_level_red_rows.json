@@ -1,0 +1,120 @@
+{
+  "schema_version": "apps_lic.x1d_repair_loop_retry16_c_level_red_rows_fixture.v1",
+  "source_run": "artifacts/apps_lic/live_e2e_codex_20260610/w5_main_full_e2e_12_archetype_matrix_retry16",
+  "captured_at": "2026-06-10",
+  "gate_role": "main_full_e2e_gate",
+  "gate_shape": "4_per_company_12_archetype_matrix",
+  "acceptance_passed": false,
+  "canonical_runtime_rows": 12,
+  "quality_violation_count": 2,
+  "rca_scope": "c_level_live_x1d_editorial_repair_loop_convergence",
+  "red_rows": [
+    {
+      "row_id": "aig_jim_young",
+      "run_artifact": "runs/aig/03_aig_jim_young/w5_validation_exit.json",
+      "company": "AIG",
+      "contact_name": "Jim Young",
+      "contact_title": "Global Chief Data Officer",
+      "recipient_class": "C_LEVEL",
+      "message_type": "trigger_based_insight",
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "repair_stop_reason": "repair_budget_exhausted",
+      "repair_iteration_count": 2,
+      "final_subject_line": "AIG GCDO agent governance",
+      "final_draft_text": "Hi Jim, your GCDO remit makes AIG's agentic AI trigger specific: claims and underwriting agents need auditable evidence before release. I've built governed agentic platforms with policy gates, evaluation traces, and rollback paths. For AIG, the value bridge is reusable insurance workflow controls; my proof is productizing agentic AI services tied to $22M revenue and 20% margin expansion. Would a brief executive exchange on which AIG workflow should pilot agent governance first be useful?\n\nAmit",
+      "unresolved_issue_ids": [
+        "cta_asks_recipient_to_identify_pilot_workflow_which_presumes_insider_knowledge",
+        "value_bridge_sentence_is_dense_and_reads_as_generic_platform_pitch",
+        "subject_line_lacks_specificity_to_trigger_or_recipient_role"
+      ],
+      "required_repairs": [
+        "reframe_cta_to_ask_for_brief_exchange_on_aig_agentic_governance_priorities_not_workflow_selection",
+        "tighten_value_bridge_to_one_crisp_insurance_specific_outcome_sentence",
+        "sharpen_subject_line_to_reference_aig_agentic_operating_model_or_gcdo_trigger"
+      ],
+      "attempt_receipts": [
+        {
+          "iteration": 1,
+          "x1d_repair_effective": true,
+          "x1d_repair_resolved_issue_ids": [
+            "sp_runtime_reliability_claim_not_surfaced_in_body",
+            "cta_phrasing_slightly_generic_release_gate_framing",
+            "sentence_two_semicolon_list_reads_as_resume_dump"
+          ],
+          "x1d_repair_unresolved_issue_ids": [
+            "weak_trigger_specificity_no_aig_context_detail",
+            "cta_framing_generic_compare_not_sharp",
+            "subject_line_too_generic"
+          ]
+        },
+        {
+          "iteration": 2,
+          "x1d_repair_effective": true,
+          "x1d_repair_resolved_issue_ids": [
+            "weak_trigger_specificity_no_aig_context_detail",
+            "cta_framing_generic_compare_not_sharp",
+            "subject_line_too_generic"
+          ],
+          "x1d_repair_unresolved_issue_ids": [
+            "cta_asks_recipient_to_identify_pilot_workflow_which_presumes_insider_knowledge",
+            "value_bridge_sentence_is_dense_and_reads_as_generic_platform_pitch",
+            "subject_line_lacks_specificity_to_trigger_or_recipient_role"
+          ]
+        }
+      ]
+    },
+    {
+      "row_id": "citi_brian_saluzzo",
+      "run_artifact": "runs/citi/07_citi_brian_saluzzo/w5_validation_exit.json",
+      "company": "Citi",
+      "contact_name": "Brian Saluzzo",
+      "contact_title": "Chief Information Officer",
+      "recipient_class": "C_LEVEL",
+      "message_type": "trigger_based_insight",
+      "x2_status": "X2_VALIDATION_PASS",
+      "x1d_status": "X1D_REVIEW_REQUIRED",
+      "repair_stop_reason": "repair_same_as_parent",
+      "repair_iteration_count": 2,
+      "final_subject_line": "Citi Sky production AI controls",
+      "final_draft_text": "Hi Brian, Citi Sky raises a CIO-level operating question: how do banker-facing AI workflows carry model controls, data lineage, and support ownership in the same loop? My fit is building governed agentic platforms where policy gates and evaluation evidence turn AI usage into auditable operations. The governance foundation is risk-aware platform design: actuarial and statistical discipline applied to AI controls, not a standalone credential. The commercialization proof is productized agentic AI services tied to $22M revenue and 20% margin expansion. Would 15 minutes to pressure-test the operating model behind Citi Sky be useful?\n\nAmit",
+      "unresolved_issue_ids": [
+        "opening_question_slightly_generic_for_cio_not_ceo_level_sharpness",
+        "governance_foundation_sentence_reads_as_defensive_credential_framing",
+        "cta_pressure_test_phrasing_is_overused_in_cold_outreach"
+      ],
+      "required_repairs": [
+        "reframe_opening_question_with_citi_sky_specific_operational_tension_unique_to_cio_context",
+        "replace_defensive_actuarial_credential_sentence_with_forward_risk_outcome_claim",
+        "replace_pressure_test_cta_with_sharper_executive_exchange_ask"
+      ],
+      "attempt_receipts": [
+        {
+          "iteration": 1,
+          "x1d_repair_effective": true,
+          "x1d_repair_resolved_issue_ids": [
+            "opening_trigger_link_is_surface_level_not_insight",
+            "cta_question_is_generic_control_plane_framing",
+            "sentence_two_is_a_credential_list_not_a_strategic_provocation"
+          ],
+          "x1d_repair_unresolved_issue_ids": [
+            "opening_question_slightly_generic_for_cio_not_ceo_level_sharpness",
+            "governance_foundation_sentence_reads_as_defensive_credential_framing",
+            "cta_pressure_test_phrasing_is_overused_in_cold_outreach"
+          ]
+        },
+        {
+          "iteration": 2,
+          "x1d_repair_effective": false,
+          "stop_reason": "repair_same_as_parent",
+          "x1d_repair_resolved_issue_ids": [],
+          "x1d_repair_unresolved_issue_ids": [
+            "opening_question_slightly_generic_for_cio_not_ceo_level_sharpness",
+            "governance_foundation_sentence_reads_as_defensive_credential_framing",
+            "cta_pressure_test_phrasing_is_overused_in_cold_outreach"
+          ]
+        }
+      ]
+    }
+  ]
+}
