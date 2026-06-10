@@ -417,6 +417,7 @@ def _x2_gates(
     l2: dict[str, Any],
     allowed: list[str],
     runtime_generation_status: str,
+    bundle_consumed: bool = False,
 ) -> list[dict[str, Any]]:
     claim_ledger = list(l2.get("claim_ledger") or [])
     cited: list[str] = []
@@ -465,6 +466,12 @@ def _x2_gates(
         bullets = list(l2.get("bullets") or [])
         gates.extend(
             [
+                _x2_gate(
+                    f"x2_{cfg.section_id}_graph_role_episode_bundle_consumed",
+                    bundle_consumed,
+                    "role episode bundles not consumed from proof pool metadata",
+                    bundle_consumed,
+                ),
                 _x2_gate(
                     f"x2_{cfg.section_id}_bullet_count_3",
                     len(bullets) == 3,
@@ -860,11 +867,14 @@ def run_role_episode_lane_execution(
             "prompt_hash": prompt_hash[:16],
         }
 
+    proof_meta = dict(pool.proof_pool_metadata or {})
+    bundle_consumed = bool(proof_meta.get("role_episode_bundle_consumption"))
     x2 = run_role_episode_x2_gates(
         section_id=sid,
         l2=l2,
         allowed=allowed_fact_ids,
         runtime_generation_status=provider_result.runtime_generation_status,
+        bundle_consumed=bundle_consumed,
     )
     product_quality_status = (
         "PASS" if provider_result.runtime_generation_status == "REAL_LLM" and all(g.get("pass") for g in x2) else "FAIL"
