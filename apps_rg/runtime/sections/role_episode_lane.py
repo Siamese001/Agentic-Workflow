@@ -183,14 +183,22 @@ def _compact_text(text: str, *, max_chars: int = 240) -> str:
 
 
 def _sentence(text: str) -> str:
-    cleaned = _compact_text(text, max_chars=NARRATIVE_MAX_CHARS)
+    # Em dashes are banned by x2_no_em_dash — normalize to a comma clause before budgeting.
+    normalized = str(text or "").replace("—", ", ").replace(" ,", ",")
+    cleaned = _compact_text(normalized, max_chars=NARRATIVE_MAX_CHARS)
     if not cleaned:
         return ""
     cleaned = cleaned.replace("\n", " ").strip()
     words = cleaned.split()
     if len(words) > NARRATIVE_MAX_WORDS:
         cleaned = " ".join(words[:NARRATIVE_MAX_WORDS])
-    return cleaned if cleaned.endswith((".", "!", "?")) else f"{cleaned}."
+    if cleaned.endswith((".", "!", "?")):
+        return cleaned
+    # Reserve room for the appended terminator — truncating to exactly NARRATIVE_MAX_CHARS and
+    # then adding "." produced a 361-char narrative vs the 360 budget (off-by-one X2 fail).
+    if len(cleaned) >= NARRATIVE_MAX_CHARS:
+        cleaned = cleaned[: NARRATIVE_MAX_CHARS - 1].rstrip().rstrip(",;")
+    return f"{cleaned}."
 
 
 def _role_header(base: dict[str, Any], cfg: RoleEpisodeLaneConfig, args: Any) -> dict[str, Any]:

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from agentic_core.L2_execution.regen.delta_shape_guard import estimate_token_count
 from agentic_core.L2_execution.regen.prompt_lock import DEFAULT_MAX_DELTA_TOKENS
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
@@ -14,7 +16,7 @@ from apps_rg.runtime.sections.executive_summary_judge_remediation import (
     collect_judge_remediation_delta_lines,
     evaluate_g3_trigger_judge_monotonicity,
     evaluate_judge_remediation_trigger,
-    retry_qwen_for_judge_remediation,
+    retry_provider_for_judge_remediation,
     rerun_soft_failed_judges,
     snapshot_model_backed_judge_scores,
 )
@@ -437,7 +439,7 @@ def test_all_soft_failed_judges_emit_untruncated_feedback() -> None:
     assert "openai_chatgpt remediation:" in joined
 
 
-def test_retry_qwen_falls_back_when_core_runner_refuses(tmp_path: Path, monkeypatch) -> None:
+def test_retry_provider_falls_back_when_core_runner_refuses(tmp_path: Path, monkeypatch) -> None:
     import json
 
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN", "1")
@@ -483,7 +485,7 @@ def test_retry_qwen_falls_back_when_core_runner_refuses(tmp_path: Path, monkeypa
         _refuse_core,
     )
     monkeypatch.setattr(
-        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.generate_section",
+        "apps_rg.runtime.sections.executive_summary_regen_dispatch.generate_section",
         lambda *a, **k: _Result(),
     )
     monkeypatch.setattr(
@@ -495,7 +497,7 @@ def test_retry_qwen_falls_back_when_core_runner_refuses(tmp_path: Path, monkeypa
         lambda parsed, _allowed: None,
     )
 
-    new_raw, new_parsed, receipt = retry_qwen_for_judge_remediation(
+    new_raw, new_parsed, receipt = retry_provider_for_judge_remediation(
         [{"role": "system", "content": "SYS"}, {"role": "user", "content": "USER"}],
         {"model": "qwen-test"},
         raw,

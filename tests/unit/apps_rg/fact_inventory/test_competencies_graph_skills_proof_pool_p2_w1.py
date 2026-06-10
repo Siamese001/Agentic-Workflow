@@ -9,7 +9,6 @@ import pytest
 
 from apps_rg.fact_inventory.competencies_graph_skills_proof_pool import (
     C03_STATUS_COMPETENCIES_GRAPH_PROOF,
-    P2_W1_RECEIPT_JSON,
     build_competencies_graph_skills_proof_payload,
     validate_competencies_graph_skills_proof_payload,
     write_p2_w1_competencies_graph_proof_pool_receipt,
@@ -76,10 +75,13 @@ def test_every_skill_has_fact_links_and_graph_support() -> None:
         assert sk.get("graph_hop_path") or sk.get("graph_support_ref")
 
 
-def test_p2_w1_receipt_written_and_validates() -> None:
-    out = write_p2_w1_competencies_graph_proof_pool_receipt(repo_root=REPO)
-    assert P2_W1_RECEIPT_JSON.is_file()
-    receipt = json.loads(P2_W1_RECEIPT_JSON.read_text(encoding="utf-8"))
+def test_p2_w1_receipt_written_and_validates(tmp_path) -> None:
+    # out_dir=tmp_path (RCA 2026-06-10): tests must never regenerate the tracked
+    # docs/reports receipts — that side effect kept the tree dirty and broke a stash pop.
+    out = write_p2_w1_competencies_graph_proof_pool_receipt(repo_root=REPO, out_dir=tmp_path)
+    receipt_json = Path(out["receipt_json"])
+    assert receipt_json.is_file() and receipt_json.parent == tmp_path
+    receipt = json.loads(receipt_json.read_text(encoding="utf-8"))
     assert receipt["proof_pool_type"] == "augmented_skills_graph"
     assert receipt["section_id"] == "competencies"
     assert receipt["every_skill_has_fact_id_links"] is True

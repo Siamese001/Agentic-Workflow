@@ -1261,7 +1261,7 @@ def _build_synthesis_repair_user(
     )
 
 
-def retry_qwen_for_synthesis(
+def retry_provider_for_synthesis(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,
@@ -1343,16 +1343,16 @@ def retry_qwen_for_synthesis(
             {"role": "assistant", "content": current_raw},
             {"role": "user", "content": repair_user},
         ]
-        from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
-            budgeted_qwen_regen_call,
+        from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
+            budgeted_regen_call,
             mark_regen_call_parse,
         )
 
-        regen_outcome = budgeted_qwen_regen_call(
+        regen_outcome = budgeted_regen_call(
             provider_payload,
             messages=repair_messages,
             phase="synthesis_regen",
-            call_site="retry_qwen_for_synthesis",
+            call_site="retry_provider_for_synthesis",
             cycle_index=0,
             attempt_index=attempt + 1,
             artifact_dir=artifact_dir,
@@ -1688,7 +1688,7 @@ def run_executive_summary_execution(
     else:
         artifact_dir = prepare_runtime_proof_run_dir(REPO_ROOT, LANE_KEY, args.provider, runtime_payload["run_id"])
     from apps_rg.runtime.section_repair_ledger import init_ledger
-    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+    from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
         clear_regen_budget_ledger,
     )
 
@@ -2127,7 +2127,7 @@ def run_executive_summary_execution(
                 or runtime_payload.get("target_title")
                 or ""
             ).strip()
-            raw_output, parsed, parse_error = retry_qwen_for_synthesis(
+            raw_output, parsed, parse_error = retry_provider_for_synthesis(
                 messages,
                 provider_payload,
                 raw_output,
@@ -2669,7 +2669,7 @@ def run_executive_summary_execution(
             repair_judge_regen_after_x2_fail,
             rerun_soft_failed_judges,
             rerun_x2_after_judge_remediation,
-            retry_qwen_for_judge_remediation,
+            retry_provider_for_judge_remediation,
         )
         from apps_rg.runtime.sections.executive_summary_repair_policy import judge_regen_max_attempts
         from apps_rg.runtime.validators.executive_summary_x2 import collect_unused_allowed_fact_ids
@@ -2827,7 +2827,7 @@ def run_executive_summary_execution(
                         or ""
                     ).strip()
                 )
-                raw_output, parsed_regen, _j_receipt = retry_qwen_for_judge_remediation(
+                raw_output, parsed_regen, _j_receipt = retry_provider_for_judge_remediation(
                     _regen_messages,
                     provider_payload,
                     raw_output,
@@ -3657,7 +3657,7 @@ def run_executive_summary_execution(
         ),
     )
 
-    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+    from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
         regen_budget_ledger,
     )
 
@@ -4012,7 +4012,7 @@ __all__ = [
     "load_base_resume",
     "parse_model_json",
     "resolve_provider_model_name",
-    "retry_qwen_for_synthesis",
+    "retry_provider_for_synthesis",
     "run_executive_summary_execution",
     "sha16",
     "write_json",

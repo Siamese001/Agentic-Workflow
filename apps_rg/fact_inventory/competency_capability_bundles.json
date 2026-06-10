@@ -1,314 +1,449 @@
 {
-  "schema": "competency_capability_bundles_v1",
-  "generated_at": "2026-05-28T14:30:00Z",
-  "generated_by": "competencies_graph_skill_rigor_wiring",
-  "section": "competencies",
-  "purpose": "Graph-backed competency capability bundles are the content/proof authority for the competencies section. Base resume competencies are a rigor/seniority/technical-density/coverage calibration baseline only. Archive resumes are candidate signal/provenance only. JD/briefing are targeting only. E0 examples are style only.",
-  "invariants": {
-    "archive_prose_excluded": true,
-    "base_resume_prose_hydration_excluded": true,
-    "base_resume_used_as_calibration_only": true,
-    "jd_used_as_targeting_only": true,
-    "generic_taxonomy_label_is_display_wrapper_not_proof": true,
-    "default_fid_only_support_forbidden": true,
-    "config_gate": "ENABLED_WITH_COMPETENCY_BUNDLE_GUARDS",
-    "config_enablement_condition": "competencies graph_expansion_allowed may be enabled only when section generation consumes competency_bundle_id (graph_expansion_mode=competency_bundle_only), not flat taxonomy labels or flat skill lists."
+ "schema": "competency_capability_bundles_v1",
+ "generated_at": "2026-05-28T14:30:00Z",
+ "generated_by": "competencies_graph_skill_rigor_wiring",
+ "section": "competencies",
+ "purpose": "Graph-backed competency capability bundles are the content/proof authority for the competencies section. Base resume competencies are a rigor/seniority/technical-density/coverage calibration baseline only. Archive resumes are candidate signal/provenance only. JD/briefing are targeting only. E0 examples are style only.",
+ "invariants": {
+  "archive_prose_excluded": true,
+  "base_resume_prose_hydration_excluded": true,
+  "base_resume_used_as_calibration_only": true,
+  "jd_used_as_targeting_only": true,
+  "generic_taxonomy_label_is_display_wrapper_not_proof": true,
+  "default_fid_only_support_forbidden": true,
+  "config_gate": "ENABLED_WITH_COMPETENCY_BUNDLE_GUARDS",
+  "config_enablement_condition": "competencies graph_expansion_allowed may be enabled only when section generation consumes competency_bundle_id (graph_expansion_mode=competency_bundle_only), not flat taxonomy labels or flat skill lists."
+ },
+ "required_capability_families": [
+  "agentic_platforms",
+  "runtime_governance",
+  "retrieval_context_engineering",
+  "llmops_reliability",
+  "distributed_systems_engineering",
+  "platform_productization",
+  "partnerships_ecosystem_execution",
+  "engineering_leadership"
+ ],
+ "optional_supporting_families": [
+  "insurance_domain_modernization",
+  "data_governance_security",
+  "cloud_hpc_modernization",
+  "devsecops_delivery_governance"
+ ],
+ "bundles": [
+  {
+   "competency_bundle_id": "ccb_agentic_platforms",
+   "capability_family": "agentic_platforms",
+   "display_label_candidate": "Governed Agentic AI Platform Architecture",
+   "target_taxonomy_category_ids": [
+    "ai_platform_leadership",
+    "tech_strategy_innovation"
+   ],
+   "graph_skill_node_ids": [
+    "skill_governed_agentic_systems_architecture",
+    "skill_reusable_agentic_platform_architecture",
+    "skill_agentic_control_plane_design"
+   ],
+   "linked_source_fact_ids": [
+    "fact_engineering_platform_001"
+   ],
+   "employer_bindings": [],
+   "role_episode_bindings": [],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "Agentic AI Platforms",
+   "seniority_signal": "executive_platform_architecture",
+   "technical_density_signal": "high",
+   "commercial_or_operating_scope_signal": "platform_operating_model",
+   "target_relevance_rationale": "SVP Engineering agentic AI posture requires governed multi-agent platform architecture as the lead capability family.",
+   "vocabulary_anchors": [
+    "governed agentic systems architecture",
+    "multi-agent orchestration fabric",
+    "agentic control plane"
+   ]
   },
-  "required_capability_families": [
-    "agentic_platforms",
-    "runtime_governance",
-    "retrieval_context_engineering",
+  {
+   "competency_bundle_id": "ccb_runtime_governance",
+   "capability_family": "runtime_governance",
+   "display_label_candidate": "AI Runtime Governance & Control Gates",
+   "target_taxonomy_category_ids": [
+    "governance_risk_compliance"
+   ],
+   "graph_skill_node_ids": [
+    "skill_runtime_gate_mesh_design",
+    "skill_fail_closed_gate_semantics",
+    "skill_x1_x2_x3_exit_control",
+    "skill_policy_bound_runtime_design"
+   ],
+   "linked_source_fact_ids": [
+    "fact_engineering_platform_001"
+   ],
+   "employer_bindings": [],
+   "role_episode_bindings": [],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "AI Runtime Governance",
+   "seniority_signal": "runtime_control_governance",
+   "technical_density_signal": "high",
+   "commercial_or_operating_scope_signal": "policy_gated_operating_controls",
+   "target_relevance_rationale": "Runtime governance, deterministic gate meshes, and fail-closed exit control differentiate engineering leadership for regulated agentic AI.",
+   "vocabulary_anchors": [
+    "runtime gate mesh design",
+    "fail-closed gate semantics",
+    "policy-bound runtime controls"
+   ]
+  },
+  {
+   "competency_bundle_id": "ccb_retrieval_context_engineering",
+   "capability_family": "retrieval_context_engineering",
+   "display_label_candidate": "Retrieval & Context Engineering",
+   "target_taxonomy_category_ids": [
+    "ai_platform_leadership",
+    "tech_strategy_innovation"
+   ],
+   "graph_skill_node_ids": [
+    "skill_context_engineering",
+    "skill_dense_sparse_exact_retrieval_design",
+    "skill_graph_aware_relationship_grounding",
+    "skill_prompt_assembly_architecture"
+   ],
+   "linked_source_fact_ids": [
+    "fact_engineering_platform_003"
+   ],
+   "employer_bindings": [],
+   "role_episode_bindings": [],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "Retrieval & Context Engineering",
+   "seniority_signal": "retrieval_platform_architecture",
+   "technical_density_signal": "high",
+   "commercial_or_operating_scope_signal": "grounded_generation_quality",
+   "target_relevance_rationale": "Dense/sparse/exact retrieval design and graph-aware grounding are core to context engineering for agentic platforms.",
+   "vocabulary_anchors": [
+    "dense-sparse-exact retrieval design",
+    "graph-aware relationship grounding",
+    "authority-ordered prompt assembly"
+   ]
+  },
+  {
+   "competency_bundle_id": "ccb_llmops_reliability",
+   "capability_family": "llmops_reliability",
+   "display_label_candidate": "LLMOps, Evaluation & Reliability",
+   "target_taxonomy_category_ids": [
     "llmops_reliability",
-    "distributed_systems_engineering",
-    "platform_productization",
-    "partnerships_ecosystem_execution",
-    "engineering_leadership"
-  ],
-  "optional_supporting_families": [
-    "insurance_domain_modernization",
-    "data_governance_security",
-    "cloud_hpc_modernization",
-    "devsecops_delivery_governance"
-  ],
-  "bundles": [
-    {
-      "competency_bundle_id": "ccb_agentic_platforms",
-      "capability_family": "agentic_platforms",
-      "display_label_candidate": "Governed Agentic AI Platform Architecture",
-      "target_taxonomy_category_ids": ["ai_platform_leadership", "tech_strategy_innovation"],
-      "graph_skill_node_ids": [
-        "skill_governed_agentic_systems_architecture",
-        "skill_reusable_agentic_platform_architecture",
-        "skill_agentic_control_plane_design"
-      ],
-      "linked_source_fact_ids": ["fact_engineering_platform_001"],
-      "employer_bindings": [],
-      "role_episode_bindings": [],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "STRONG",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "Agentic AI Platforms",
-      "seniority_signal": "executive_platform_architecture",
-      "technical_density_signal": "high",
-      "commercial_or_operating_scope_signal": "platform_operating_model",
-      "target_relevance_rationale": "SVP Engineering agentic AI posture requires governed multi-agent platform architecture as the lead capability family.",
-      "vocabulary_anchors": [
-        "governed agentic systems architecture",
-        "multi-agent orchestration fabric",
-        "agentic control plane"
-      ]
-    },
-    {
-      "competency_bundle_id": "ccb_runtime_governance",
-      "capability_family": "runtime_governance",
-      "display_label_candidate": "AI Runtime Governance & Control Gates",
-      "target_taxonomy_category_ids": ["governance_risk_compliance"],
-      "graph_skill_node_ids": [
-        "skill_runtime_gate_mesh_design",
-        "skill_fail_closed_gate_semantics",
-        "skill_x1_x2_x3_exit_control",
-        "skill_policy_bound_runtime_design"
-      ],
-      "linked_source_fact_ids": ["fact_engineering_platform_001"],
-      "employer_bindings": [],
-      "role_episode_bindings": [],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "STRONG",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "AI Runtime Governance",
-      "seniority_signal": "runtime_control_governance",
-      "technical_density_signal": "high",
-      "commercial_or_operating_scope_signal": "policy_gated_operating_controls",
-      "target_relevance_rationale": "Runtime governance, deterministic gate meshes, and fail-closed exit control differentiate engineering leadership for regulated agentic AI.",
-      "vocabulary_anchors": [
-        "runtime gate mesh design",
-        "fail-closed gate semantics",
-        "policy-bound runtime controls"
-      ]
-    },
-    {
-      "competency_bundle_id": "ccb_retrieval_context_engineering",
-      "capability_family": "retrieval_context_engineering",
-      "display_label_candidate": "Retrieval & Context Engineering",
-      "target_taxonomy_category_ids": ["ai_platform_leadership", "tech_strategy_innovation"],
-      "graph_skill_node_ids": [
-        "skill_context_engineering",
-        "skill_dense_sparse_exact_retrieval_design",
-        "skill_graph_aware_relationship_grounding",
-        "skill_prompt_assembly_architecture"
-      ],
-      "linked_source_fact_ids": ["fact_engineering_platform_003"],
-      "employer_bindings": [],
-      "role_episode_bindings": [],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "STRONG",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "Retrieval & Context Engineering",
-      "seniority_signal": "retrieval_platform_architecture",
-      "technical_density_signal": "high",
-      "commercial_or_operating_scope_signal": "grounded_generation_quality",
-      "target_relevance_rationale": "Dense/sparse/exact retrieval design and graph-aware grounding are core to context engineering for agentic platforms.",
-      "vocabulary_anchors": [
-        "dense-sparse-exact retrieval design",
-        "graph-aware relationship grounding",
-        "authority-ordered prompt assembly"
-      ]
-    },
-    {
-      "competency_bundle_id": "ccb_llmops_reliability",
-      "capability_family": "llmops_reliability",
-      "display_label_candidate": "LLMOps, Evaluation & Reliability",
-      "target_taxonomy_category_ids": ["llmops_reliability", "governance_risk_compliance", "engineering_delivery_leadership"],
-      "graph_skill_node_ids": [
-        "skill_audit_grade_observability",
-        "skill_completed_run_evaluation",
-        "skill_eval_regression_and_gauntlet_design",
-        "skill_multi_judge_calibration"
-      ],
-      "linked_source_fact_ids": ["fact_engineering_platform_003", "fact_engineering_platform_004"],
-      "employer_bindings": [],
-      "role_episode_bindings": [],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "STRONG",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "LLMOps & Reliability",
-      "seniority_signal": "reliability_evaluation_leadership",
-      "technical_density_signal": "high",
-      "commercial_or_operating_scope_signal": "production_reliability_operating_model",
-      "target_relevance_rationale": "Evaluation gauntlets, judge calibration, and audit-grade observability anchor LLMOps reliability for runtime agentic systems.",
-      "vocabulary_anchors": [
-        "audit-grade observability",
-        "evaluation gauntlet design",
-        "multi-judge calibration"
-      ]
-    },
-    {
-      "competency_bundle_id": "ccb_distributed_systems_engineering",
-      "capability_family": "distributed_systems_engineering",
-      "display_label_candidate": "Distributed Systems & Cloud Data Engineering",
-      "target_taxonomy_category_ids": ["engineering_delivery_leadership", "data_analytics_modernization"],
-      "graph_skill_node_ids": [
-        "skill_sr_cloud_data_platform_engineering",
-        "skill_sr_microservices_integration_platform",
-        "skill_confluent_streaming_platforms"
-      ],
-      "linked_source_fact_ids": ["fact_engineering_platform_002"],
-      "employer_bindings": ["employment_exp_ibm_001"],
-      "role_episode_bindings": ["reb_ibm_cloud_modernization", "reb_ibm_streaming_realtime_analytics"],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "STRONG",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "Distributed Systems Engineering",
-      "seniority_signal": "distributed_platform_architecture",
-      "technical_density_signal": "high",
-      "commercial_or_operating_scope_signal": "cloud_native_platform_scale",
-      "target_relevance_rationale": "Cloud-native microservices, streaming pipelines, and data platform engineering underpin distributed systems leadership.",
-      "vocabulary_anchors": [
-        "cloud-native data platform engineering",
-        "containerized microservices integration",
-        "streaming analytics pipelines"
-      ]
-    },
-    {
-      "competency_bundle_id": "ccb_platform_productization",
-      "capability_family": "platform_productization",
-      "display_label_candidate": "Platform Productization & Commercialization",
-      "target_taxonomy_category_ids": ["commercial_operating_impact", "tech_strategy_innovation"],
-      "graph_skill_node_ids": [
-        "skill_agentic_platform_productization",
-        "skill_reusable_agentic_platform_architecture",
-        "skill_p2_tech_demoable_accelerator"
-      ],
-      "linked_source_fact_ids": ["fact_engineering_platform_006"],
-      "employer_bindings": [],
-      "role_episode_bindings": [],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "STRONG",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "Platform Productization",
-      "seniority_signal": "platform_product_commercialization",
-      "technical_density_signal": "medium_high",
-      "commercial_or_operating_scope_signal": "ip_led_platform_commercialization",
-      "target_relevance_rationale": "Reusable platform IP and demoable accelerators convert engineering capability into commercialized platform products.",
-      "vocabulary_anchors": [
-        "IP-led platform commercialization",
-        "reusable agentic platform architecture",
-        "demoable solution accelerators"
-      ]
-    },
-    {
-      "competency_bundle_id": "ccb_partnerships_ecosystem_execution",
-      "capability_family": "partnerships_ecosystem_execution",
-      "display_label_candidate": "Strategic Partnerships & Ecosystem Execution",
-      "target_taxonomy_category_ids": ["cloud_partner_ecosystems"],
-      "graph_skill_node_ids": [
-        "skill_partner_ibm_aws_alliance_joint_revenue",
-        "skill_sr_w12_hyperscaler_alliance_co_sell",
-        "skill_partner_co_selling",
-        "skill_partner_cloud_partner_ecosystem"
-      ],
-      "linked_source_fact_ids": ["fact_partnerships_gtm_002"],
-      "employer_bindings": ["employment_exp_ibm_001"],
-      "role_episode_bindings": ["reb_ibm_hyperscaler_alliance_partner"],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "STRONG",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "Strategic Partnerships & Ecosystem Execution",
-      "seniority_signal": "alliance_pnl_execution",
-      "technical_density_signal": "medium",
-      "commercial_or_operating_scope_signal": "hyperscaler_alliance_co_sell",
-      "target_relevance_rationale": "Hyperscaler co-sell alliances and ecosystem GTM execution are differentiating when target relevance supports partnerships posture.",
-      "vocabulary_anchors": [
-        "hyperscaler alliance co-sell",
-        "cloud partner ecosystem GTM",
-        "joint revenue execution"
-      ]
-    },
-    {
-      "competency_bundle_id": "ccb_engineering_leadership",
-      "capability_family": "engineering_leadership",
-      "display_label_candidate": "Engineering Leadership & Operating Model",
-      "target_taxonomy_category_ids": ["engineering_delivery_leadership"],
-      "graph_skill_node_ids": [
-        "skill_svp_it_strategy_innovation",
-        "skill_commercial_board_level_stakeholder_alignment"
-      ],
-      "linked_source_fact_ids": ["fact_exec_001"],
-      "employer_bindings": [],
-      "role_episode_bindings": [],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "STRONG",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "Engineering Leadership",
-      "seniority_signal": "svp_engineering_operating_model",
-      "technical_density_signal": "medium",
-      "commercial_or_operating_scope_signal": "board_level_operating_model",
-      "target_relevance_rationale": "Engineering organization scale-out and board-level operating alignment establish the senior engineering leadership posture.",
-      "vocabulary_anchors": [
-        "engineering organization scale-out",
-        "platform operating model design",
-        "board-level stakeholder alignment"
-      ]
-    },
-    {
-      "competency_bundle_id": "ccb_data_governance_security",
-      "capability_family": "data_governance_security",
-      "display_label_candidate": "Regulated Data Governance & Lineage Controls",
-      "target_taxonomy_category_ids": ["data_analytics_modernization", "governance_risk_compliance"],
-      "graph_skill_node_ids": [
-        "skill_sr_basel_ccar_lineage_regulatory",
-        "skill_ibm_metadata_audit_rbac"
-      ],
-      "linked_source_fact_ids": ["fact_solutions_002"],
-      "employer_bindings": ["employment_exp_ibm_001"],
-      "role_episode_bindings": ["reb_ibm_metadata_audit_governance"],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "MODERATE",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "Data Governance & Security",
-      "seniority_signal": "regulated_data_governance",
-      "technical_density_signal": "medium_high",
-      "commercial_or_operating_scope_signal": "regulatory_lineage_controls",
-      "target_relevance_rationale": "Optional supporting family: regulated lineage and RBAC governance when financial-services data governance relevance is present.",
-      "vocabulary_anchors": [
-        "regulatory data lineage controls",
-        "metadata audit and RBAC governance"
-      ]
-    },
-    {
-      "competency_bundle_id": "ccb_devsecops_delivery_governance",
-      "capability_family": "devsecops_delivery_governance",
-      "display_label_candidate": "DevSecOps Delivery Governance",
-      "target_taxonomy_category_ids": ["engineering_delivery_leadership", "governance_risk_compliance"],
-      "graph_skill_node_ids": [
-        "skill_ibm_devsecops_pipeline_security",
-        "skill_ibm_automated_release_pipelines"
-      ],
-      "linked_source_fact_ids": ["fact_engineering_platform_002"],
-      "employer_bindings": ["employment_exp_ibm_001"],
-      "role_episode_bindings": ["reb_ibm_devsecops_reliability"],
-      "allowed_sections": ["competencies"],
-      "evidence_strength": "MODERATE",
-      "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE",
-      "base_rigor_family_match": "DevSecOps Delivery Governance",
-      "seniority_signal": "release_governance_leadership",
-      "technical_density_signal": "medium_high",
-      "commercial_or_operating_scope_signal": "secure_release_operating_model",
-      "target_relevance_rationale": "Optional supporting family: CI/CD security and automated release governance when delivery-governance relevance is present.",
-      "vocabulary_anchors": [
-        "DevSecOps pipeline security",
-        "automated release pipelines"
-      ]
-    }
-  ]
+    "governance_risk_compliance",
+    "engineering_delivery_leadership"
+   ],
+   "graph_skill_node_ids": [
+    "skill_audit_grade_observability",
+    "skill_completed_run_evaluation",
+    "skill_eval_regression_and_gauntlet_design",
+    "skill_multi_judge_calibration"
+   ],
+   "linked_source_fact_ids": [
+    "fact_engineering_platform_003",
+    "fact_engineering_platform_004"
+   ],
+   "employer_bindings": [],
+   "role_episode_bindings": [],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "LLMOps & Reliability",
+   "seniority_signal": "reliability_evaluation_leadership",
+   "technical_density_signal": "high",
+   "commercial_or_operating_scope_signal": "production_reliability_operating_model",
+   "target_relevance_rationale": "Evaluation gauntlets, judge calibration, and audit-grade observability anchor LLMOps reliability for runtime agentic systems.",
+   "vocabulary_anchors": [
+    "audit-grade observability",
+    "evaluation gauntlet design",
+    "multi-judge calibration"
+   ]
+  },
+  {
+   "competency_bundle_id": "ccb_distributed_systems_engineering",
+   "capability_family": "distributed_systems_engineering",
+   "display_label_candidate": "Distributed Systems & Cloud Data Engineering",
+   "target_taxonomy_category_ids": [
+    "engineering_delivery_leadership",
+    "data_analytics_modernization"
+   ],
+   "graph_skill_node_ids": [
+    "skill_sr_cloud_data_platform_engineering",
+    "skill_sr_microservices_integration_platform",
+    "skill_confluent_streaming_platforms"
+   ],
+   "linked_source_fact_ids": [
+    "fact_engineering_platform_002"
+   ],
+   "employer_bindings": [
+    "employment_exp_ibm_001"
+   ],
+   "role_episode_bindings": [
+    "reb_ibm_cloud_modernization",
+    "reb_ibm_streaming_realtime_analytics"
+   ],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "Distributed Systems Engineering",
+   "seniority_signal": "distributed_platform_architecture",
+   "technical_density_signal": "high",
+   "commercial_or_operating_scope_signal": "cloud_native_platform_scale",
+   "target_relevance_rationale": "Cloud-native microservices, streaming pipelines, and data platform engineering underpin distributed systems leadership.",
+   "vocabulary_anchors": [
+    "cloud-native data platform engineering",
+    "containerized microservices integration",
+    "streaming analytics pipelines"
+   ]
+  },
+  {
+   "competency_bundle_id": "ccb_platform_productization",
+   "capability_family": "platform_productization",
+   "display_label_candidate": "Platform Productization & Commercialization",
+   "target_taxonomy_category_ids": [
+    "commercial_operating_impact",
+    "tech_strategy_innovation"
+   ],
+   "graph_skill_node_ids": [
+    "skill_agentic_platform_productization",
+    "skill_reusable_agentic_platform_architecture",
+    "skill_p2_tech_demoable_accelerator"
+   ],
+   "linked_source_fact_ids": [
+    "fact_engineering_platform_006"
+   ],
+   "employer_bindings": [],
+   "role_episode_bindings": [],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "Platform Productization",
+   "seniority_signal": "platform_product_commercialization",
+   "technical_density_signal": "medium_high",
+   "commercial_or_operating_scope_signal": "ip_led_platform_commercialization",
+   "target_relevance_rationale": "Reusable platform IP and demoable accelerators convert engineering capability into commercialized platform products.",
+   "vocabulary_anchors": [
+    "IP-led platform commercialization",
+    "reusable agentic platform architecture",
+    "demoable solution accelerators"
+   ]
+  },
+  {
+   "competency_bundle_id": "ccb_partnerships_ecosystem_execution",
+   "capability_family": "partnerships_ecosystem_execution",
+   "display_label_candidate": "Strategic Partnerships & Ecosystem Execution",
+   "target_taxonomy_category_ids": [
+    "cloud_partner_ecosystems"
+   ],
+   "graph_skill_node_ids": [
+    "skill_partner_ibm_aws_alliance_joint_revenue",
+    "skill_sr_w12_hyperscaler_alliance_co_sell",
+    "skill_partner_co_selling",
+    "skill_partner_cloud_partner_ecosystem"
+   ],
+   "linked_source_fact_ids": [
+    "fact_partnerships_gtm_002"
+   ],
+   "employer_bindings": [
+    "employment_exp_ibm_001"
+   ],
+   "role_episode_bindings": [
+    "reb_ibm_hyperscaler_alliance_partner"
+   ],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "Strategic Partnerships & Ecosystem Execution",
+   "seniority_signal": "alliance_pnl_execution",
+   "technical_density_signal": "medium",
+   "commercial_or_operating_scope_signal": "hyperscaler_alliance_co_sell",
+   "target_relevance_rationale": "Hyperscaler co-sell alliances and ecosystem GTM execution are differentiating when target relevance supports partnerships posture.",
+   "vocabulary_anchors": [
+    "hyperscaler alliance co-sell",
+    "cloud partner ecosystem GTM",
+    "joint revenue execution"
+   ]
+  },
+  {
+   "competency_bundle_id": "ccb_engineering_leadership",
+   "capability_family": "engineering_leadership",
+   "display_label_candidate": "Engineering Leadership & Operating Model",
+   "target_taxonomy_category_ids": [
+    "engineering_delivery_leadership"
+   ],
+   "graph_skill_node_ids": [
+    "skill_svp_it_strategy_innovation",
+    "skill_commercial_board_level_stakeholder_alignment"
+   ],
+   "linked_source_fact_ids": [
+    "fact_exec_001"
+   ],
+   "employer_bindings": [],
+   "role_episode_bindings": [],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "Engineering Leadership",
+   "seniority_signal": "svp_engineering_operating_model",
+   "technical_density_signal": "medium",
+   "commercial_or_operating_scope_signal": "board_level_operating_model",
+   "target_relevance_rationale": "Engineering organization scale-out and board-level operating alignment establish the senior engineering leadership posture.",
+   "vocabulary_anchors": [
+    "engineering organization scale-out",
+    "platform operating model design",
+    "board-level stakeholder alignment"
+   ]
+  },
+  {
+   "competency_bundle_id": "ccb_data_governance_security",
+   "capability_family": "data_governance_security",
+   "display_label_candidate": "Regulated Data Governance & Lineage Controls",
+   "target_taxonomy_category_ids": [
+    "data_analytics_modernization",
+    "governance_risk_compliance"
+   ],
+   "graph_skill_node_ids": [
+    "skill_sr_basel_ccar_lineage_regulatory",
+    "skill_ibm_metadata_audit_rbac"
+   ],
+   "linked_source_fact_ids": [
+    "fact_solutions_002"
+   ],
+   "employer_bindings": [
+    "employment_exp_ibm_001"
+   ],
+   "role_episode_bindings": [
+    "reb_ibm_metadata_audit_governance"
+   ],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "MODERATE",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "Data Governance & Security",
+   "seniority_signal": "regulated_data_governance",
+   "technical_density_signal": "medium_high",
+   "commercial_or_operating_scope_signal": "regulatory_lineage_controls",
+   "target_relevance_rationale": "Optional supporting family: regulated lineage and RBAC governance when financial-services data governance relevance is present.",
+   "vocabulary_anchors": [
+    "regulatory data lineage controls",
+    "metadata audit and RBAC governance"
+   ]
+  },
+  {
+   "competency_bundle_id": "ccb_devsecops_delivery_governance",
+   "capability_family": "devsecops_delivery_governance",
+   "display_label_candidate": "DevSecOps Delivery Governance",
+   "target_taxonomy_category_ids": [
+    "engineering_delivery_leadership",
+    "governance_risk_compliance"
+   ],
+   "graph_skill_node_ids": [
+    "skill_ibm_devsecops_pipeline_security",
+    "skill_ibm_automated_release_pipelines"
+   ],
+   "linked_source_fact_ids": [
+    "fact_engineering_platform_002"
+   ],
+   "employer_bindings": [
+    "employment_exp_ibm_001"
+   ],
+   "role_episode_bindings": [
+    "reb_ibm_devsecops_reliability"
+   ],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "MODERATE",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "ACTIVE",
+   "base_rigor_family_match": "DevSecOps Delivery Governance",
+   "seniority_signal": "release_governance_leadership",
+   "technical_density_signal": "medium_high",
+   "commercial_or_operating_scope_signal": "secure_release_operating_model",
+   "target_relevance_rationale": "Optional supporting family: CI/CD security and automated release governance when delivery-governance relevance is present.",
+   "vocabulary_anchors": [
+    "DevSecOps pipeline security",
+    "automated release pipelines"
+   ]
+  },
+  {
+   "competency_bundle_id": "ccb_insurance_domain_erm",
+   "capability_family": "insurance_domain_modernization",
+   "display_label_candidate": "Insurance Domain & Enterprise Risk Management",
+   "target_taxonomy_category_ids": [
+    "governance_risk_compliance",
+    "commercial_operating_impact"
+   ],
+   "graph_skill_node_ids": [
+    "skill_risk_enterprise_risk_controls",
+    "skill_capital_regulatory_capital",
+    "skill_capital_capital_modeling",
+    "skill_capital_pricing_actuarial",
+    "skill_actuarial_fsa_fellowship",
+    "skill_sr_insurtech_regulated_insurer_controls",
+    "skill_sr_insurance_systems_resilience_internal"
+   ],
+   "linked_source_fact_ids": [
+    "fact_quant_hpc_003"
+   ],
+   "employer_bindings": [
+    "employment_exp_ey_001",
+    "employment_exp_insurtech_001"
+   ],
+   "role_episode_bindings": [
+    "reb_ey_capital_optimization_solvency",
+    "reb_insurtech_cloud_governance_security"
+   ],
+   "allowed_sections": [
+    "competencies"
+   ],
+   "evidence_strength": "STRONG",
+   "external_claim_policy": "skill_projection_not_proof",
+   "activation_status": "active",
+   "base_rigor_family_match": "governance_risk_compliance",
+   "seniority_signal": "FSA-chartered actuarial foundation; enterprise risk and regulatory capital leadership across insurer engagements",
+   "technical_density_signal": "capital modeling, Solvency II/AG43 reserving, derivatives pricing, regulated-insurer platform controls",
+   "commercial_or_operating_scope_signal": "insurance carrier modernization and ERM advisory across EY and InsurTech CTO tenure",
+   "target_relevance_rationale": "Insurance-domain + ERM expertise (actuarial career through EY, InsurTech CTO) is a first-class differentiator for insurer targets (e.g. AIG); fills the sanctioned-but-unused insurance_domain_modernization family.",
+   "vocabulary_anchors": [
+    "enterprise risk management",
+    "regulatory capital",
+    "Solvency II",
+    "capital modeling",
+    "FSA",
+    "regulated insurers",
+    "insurance platform modernization"
+   ]
+  }
+ ]
 }

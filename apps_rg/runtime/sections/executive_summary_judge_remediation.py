@@ -965,7 +965,7 @@ def try_judge_safe_prefilter(
     return parsed, None
 
 
-def retry_qwen_for_judge_remediation(
+def retry_provider_for_judge_remediation(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,
@@ -1158,8 +1158,8 @@ def retry_qwen_for_judge_remediation(
         from apps_rg.runtime.sections.executive_summary_judge_regen_thread import (
             compact_judge_regen_messages,
         )
-        from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
-            budgeted_qwen_regen_call,
+        from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
+            budgeted_regen_call,
             mark_regen_call_parse,
         )
 
@@ -1171,11 +1171,11 @@ def retry_qwen_for_judge_remediation(
         thread_messages, compact_receipt = compact_judge_regen_messages(thread_messages)
         if compact_receipt.get("compacted"):
             receipt.setdefault("thread_compaction", []).append(compact_receipt)
-        regen_outcome = budgeted_qwen_regen_call(
+        regen_outcome = budgeted_regen_call(
             provider_payload,
             messages=thread_messages,
             phase="judge_regen",
-            call_site="retry_qwen_for_judge_remediation",
+            call_site="retry_provider_for_judge_remediation",
             cycle_index=int(cycle_index),
             attempt_index=attempt + 1,
             artifact_dir=artifact_dir,
@@ -1353,12 +1353,12 @@ def repair_judge_regen_after_x2_fail(
         {"role": "assistant", "content": regen_raw or json.dumps(regen_parsed, ensure_ascii=False)},
         {"role": "user", "content": repair_user},
     ]
-    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
-        budgeted_qwen_regen_call,
+    from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
+        budgeted_regen_call,
         mark_regen_call_parse,
     )
 
-    regen_outcome = budgeted_qwen_regen_call(
+    regen_outcome = budgeted_regen_call(
         provider_payload,
         messages=repair_messages,
         phase="judge_x2_repair",

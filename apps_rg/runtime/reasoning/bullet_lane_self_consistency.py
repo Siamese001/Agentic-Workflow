@@ -74,7 +74,7 @@ class SelfConsistencyPath:
     provider_result: ProviderResult | None
 
 
-def run_qwen_self_consistency_paths(
+def run_provider_self_consistency_paths(
     *,
     section_lane: str,
     provider_payload: dict[str, Any],
@@ -261,7 +261,7 @@ __all__ = [
     "SelfConsistencyPath",
     "bullet_lane_sc_enabled",
     "patch_receipt_samples_executed",
-    "run_qwen_self_consistency_paths",
+    "run_provider_self_consistency_paths",
     "self_consistency_path_count",
     "temperature_ladder",
 ]

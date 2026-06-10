@@ -699,6 +699,38 @@ def _selection_passes(row: dict[str, Any]) -> bool:
     return str(val).strip().lower() in ("true", "1", "yes")
 
 
+def _bullet_passes_line_discipline(bullet: dict[str, Any] | None) -> bool:
+    """Deterministic per-bullet compliance pre-check mirroring the X2 line-discipline gates.
+
+    W5 (plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): with N self-consistency paths the
+    pool usually contains a compliant candidate per slot — prefer it over a max-score candidate
+    that would deterministically fail X2 (e.g. 325-char paragraph block vs the 320 cap).
+    """
+    if not isinstance(bullet, dict):
+        return False
+    from apps_rg.runtime.validators.bullet_line_discipline_x2 import (
+        check_bullet_no_embedded_newline,
+        check_bullet_no_paragraph_block,
+        check_bullet_single_thought,
+    )
+    from apps_rg.runtime.validators.bullet_quality_floor_x2 import (
+        check_bullet_seniority_floor,
+        check_bullet_technical_specificity_floor,
+    )
+
+    text = str(bullet.get("bullet_text") or "")
+    bid = str(bullet.get("bullet_id") or "")
+    return (
+        check_bullet_no_paragraph_block(text)[0]
+        and check_bullet_single_thought(text)[0]
+        and check_bullet_no_embedded_newline(text)[0]
+        # Quality floors are deterministic X2 gates too (W4-residual): prefer candidates that
+        # already carry a strong executive verb/scale signal and a named mechanism.
+        and check_bullet_seniority_floor(bid, text).passed
+        and check_bullet_technical_specificity_floor(bid, text).passed
+    )
+
+
 def merge_bullet_selections(
     paths: list[SelfConsistencyPath],
     selections: list[dict[str, Any]],
@@ -712,6 +744,12 @@ def merge_bullet_selections(
     bullets_out: list[dict[str, Any]] = []
     source_map: dict[str, int] = {}
 
+    def _bullet_for_selection(sel: dict[str, Any] | None, bid: str) -> dict[str, Any] | None:
+        if not isinstance(sel, dict):
+            return None
+        path = path_by_index.get(int(sel.get("path_index", 0)))
+        return _bullet_by_id(path.parsed or {}, bid) if path and path.parsed else None
+
     for bid in required_bullet_ids:
         slot_selections = [
             s
@@ -722,7 +760,13 @@ def merge_bullet_selections(
             slot_selections = [
                 s for s in slot_selections if float(s.get("score") or 0.0) >= min_score_threshold
             ]
-        sel = max(slot_selections, key=lambda s: float(s.get("score") or 0.0), default=None)
+        # Gate-aware preference (W5): among score-passing candidates, pick the highest-scored one
+        # whose bullet also passes the deterministic line-discipline checks; fall back to the raw
+        # max-score candidate when none are compliant (the lane then fails X2 honestly).
+        ranked = sorted(slot_selections, key=lambda s: float(s.get("score") or 0.0), reverse=True)
+        sel = next((s for s in ranked if _bullet_passes_line_discipline(_bullet_for_selection(s, bid))), None)
+        if sel is None:
+            sel = ranked[0] if ranked else None
         if sel is None:
             sel = next((s for s in selections if str(s.get("bullet_id") or "").strip() == bid), None)
         path_idx = int(sel.get("path_index", 0)) if isinstance(sel, dict) else 0
@@ -732,6 +776,20 @@ def merge_bullet_selections(
             for p in paths:
                 if p.parsed and _bullet_by_id(p.parsed, bid):
                     bullet = _bullet_by_id(p.parsed, bid)
+                    path_idx = p.path_index
+                    break
+        # W5 all-paths compliance scan: the Claude selector returns ONE winner per slot, so the
+        # ranked pre-filter above usually has a single candidate. When the winner's bullet fails
+        # the deterministic line-discipline gates, scan every path for the same slot and take a
+        # compliant alternative — the slot would otherwise deterministically fail X2 (e.g. a
+        # 325-char paragraph block vs the 320 cap). Keep the winner when no path is compliant.
+        if bullet is not None and not _bullet_passes_line_discipline(bullet):
+            for p in paths:
+                if not p.parsed:
+                    continue
+                alt = _bullet_by_id(p.parsed, bid)
+                if alt is not None and _bullet_passes_line_discipline(alt):
+                    bullet = alt
                     path_idx = p.path_index
                     break
         if bullet is not None:
@@ -755,6 +813,27 @@ def merge_bullet_selections(
         merged["claim_ledger"] = ledger_rows
     elif anchor.get("claim_ledger"):
         merged["claim_ledger"] = list(anchor.get("claim_ledger") or [])
+    # W5 (apps-rg-aig-remaining-lanes-closeout-d4e1f7): merge per-bullet ``change_log`` rows from
+    # each selected bullet's SOURCE path, mirroring the claim_ledger merge above. Keeping only
+    # the anchor path's change_log paired bullets from path N with bindings from path 0, so
+    # metric_outcome_ids / role_episode_bundle_id bindings went missing for selected bullets
+    # (x2_*_metric_outcome_id_required_when_has_metric failed on a structurally mismatched doc).
+    change_rows: list[dict[str, Any]] = []
+    for bid, pidx in source_map.items():
+        src_path = path_by_index.get(pidx)
+        if not src_path or not src_path.parsed:
+            continue
+        for row in src_path.parsed.get("change_log") or []:
+            if not isinstance(row, dict):
+                continue
+            row_bid = str(row.get("bullet_id") or "")
+            row_sids = [str(x) for x in (row.get("source_fact_ids") or [])]
+            if bid == row_bid or bid in row_sids:
+                change_rows.append(dict(row))
+    if change_rows:
+        merged["change_log"] = change_rows
+    elif anchor.get("change_log"):
+        merged["change_log"] = list(anchor.get("change_log") or [])
     return merged, source_map
 
 

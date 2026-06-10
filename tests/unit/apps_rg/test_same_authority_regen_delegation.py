@@ -12,7 +12,7 @@ from agentic_core.L2_execution.regen.prompt_lock import PROMPT_LOCK_GENERIC
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
     build_judge_remediation_prescriptive_delta_message,
     collect_judge_remediation_delta_lines,
-    retry_qwen_for_judge_remediation,
+    retry_provider_for_judge_remediation,
 )
 from apps_rg.runtime.sections.executive_summary_same_authority_regen_bridge import (
     build_incremental_repair_contract,
@@ -74,7 +74,7 @@ def test_messages_to_prompt_messages_extracts_system_and_user() -> None:
     assert pm.user_text() == "USER"
 
 
-def test_retry_qwen_delegates_to_core_runner(tmp_path: Path, monkeypatch) -> None:
+def test_retry_provider_delegates_to_core_runner(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN", "1")
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_PRESCRIPTIVE_DELTA", "1")
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_CORE_SAME_AUTHORITY_REGEN", "1")
@@ -137,7 +137,7 @@ def test_retry_qwen_delegates_to_core_runner(tmp_path: Path, monkeypatch) -> Non
         _fake_run,
     )
 
-    new_raw, new_parsed, receipt = retry_qwen_for_judge_remediation(
+    new_raw, new_parsed, receipt = retry_provider_for_judge_remediation(
         [{"role": "system", "content": "SYS"}, {"role": "user", "content": "USER"}],
         {"model": "qwen-test", "temperature": 0.1, "max_tokens": 1024},
         raw,
