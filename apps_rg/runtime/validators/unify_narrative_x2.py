@@ -298,7 +298,13 @@ def run_unify_narrative_x2_gates(
         scope_ids_membership_only,
     )
 
-    serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
+    # Leakage scan excludes the model's free-form ``self_check`` attestation (W5,
+    # apps-rg-aig-remaining-lanes-closeout-d4e1f7): an attestation key naming the forbidden
+    # marker (e.g. "no_bul_ibm_references") false-trips the substring scan.
+    serialized = json.dumps(
+        {k: v for k, v in (parsed_output or {}).items() if k != "self_check"},
+        sort_keys=True,
+    ).lower()
     proof_source = proof_source_from_metadata(proof_pool_metadata)
     if proof_source in ("srfs", "broad_skills_ledger"):
         scope_ids = _ledger_fact_ids(claim_ledger)
@@ -525,8 +531,14 @@ def run_unify_narrative_x2_gates(
     no_silent_mock = not (provider_requested == "external_claude" and runtime_generation_status == "MOCKED")
     add("x2_no_silent_mock_fallback", no_silent_mock, runtime_generation_status, "REAL_LLM", "Silent mock fallback.")
 
-    judges_ok, judges_reason = check_judge_rows_present(x1d_judges)
-    add("x2_x1d_required_judges_present", judges_ok, judges_reason, REQUIRED_JUDGE_PROVIDERS, judges_reason)
+    # Per-lane roster from section_judge_policy (W4, apps-rg-aig-remaining-lanes-closeout-d4e1f7):
+    # the recalibrated narrative panel is single-judge (gemini_pro); falling back to the global
+    # exec-summary roster demanded openai_chatgpt the lane policy never runs (W0-A class drift).
+    from apps_rg.runtime.section_judge_policy import get_section_judge_policy
+
+    _required = list(get_section_judge_policy("unify_narrative").required_judge_providers)
+    judges_ok, judges_reason = check_judge_rows_present(x1d_judges, required_providers=_required)
+    add("x2_x1d_required_judges_present", judges_ok, judges_reason, _required, judges_reason)
 
     if x1d_judges:
         blocked_invalid = []

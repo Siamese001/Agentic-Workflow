@@ -165,15 +165,36 @@ def _collect_change_log_bindings(
                         fact_or_lineage.append(fid)
 
     if bundles:
+        # W5 (apps-rg-aig-remaining-lanes-closeout-d4e1f7): also derive via the canonical
+        # slot->bundle map. Bullets cite their own slot ids / per-slot metric atoms
+        # (``bul_unify_004``, ``bul_unify_004_metric_*``) rather than the bundle's
+        # ``fact_engineering_platform_*`` linked facts, so the cited∩linked intersection alone
+        # left metric_outcome_ids unbound for metric-protected slots. The narrative path already
+        # resolves through this map; the per-bullet path now does too.
+        from apps_rg.runtime.sections.unify_role_episode_evidence import (
+            UNIFY_BULLET_SLOT_BUNDLE_MAP,
+        )
+
+        bundle_by_id = {str(r.get("role_episode_bundle_id")): r for r in bundles}
         for bid, slot in per_bullet.items():
             cited = {f for f in slot.get("source_fact_ids") or [] if f}
-            if not cited:
-                continue
+            slot_recs: list[dict[str, Any]] = []
+            # Map-bind ONLY when the bullet actually cites its own slot's proof-pool atoms
+            # (``bul_unify_004`` / ``bul_unify_004_metric_*``); a bullet citing no slot atom
+            # derives nothing here, so adversarial unbound-metric packets still fail the gate.
+            cites_own_slot = any(c == bid or c.startswith(f"{bid}_") for c in cited)
+            mapped_rid = UNIFY_BULLET_SLOT_BUNDLE_MAP.get(bid) if cites_own_slot else None
+            if mapped_rid and mapped_rid in bundle_by_id:
+                slot_recs.append(bundle_by_id[mapped_rid])
             for rec in bundles:
                 linked = {str(f).strip() for f in (rec.get("linked_source_fact_ids") or []) if str(f).strip()}
                 matched = cited & linked
-                if not matched:
+                if not matched and rec not in slot_recs:
                     continue
+                if rec not in slot_recs:
+                    slot_recs.append(rec)
+                fact_or_lineage.extend(sorted(matched))
+            for rec in slot_recs:
                 rid = str(rec.get("role_episode_bundle_id"))
                 if not slot.get("role_episode_bundle_id"):
                     slot["role_episode_bundle_id"] = rid
@@ -181,7 +202,6 @@ def _collect_change_log_bindings(
                 rsk = [str(x) for x in (rec.get("graph_skill_node_ids") or [])]
                 slot["graph_skill_node_ids"].extend(rsk)
                 skill_ids.extend(rsk)
-                fact_or_lineage.extend(sorted(matched))
                 rmids = [str(x) for x in (rec.get("linked_metric_outcome_ids") or [])]
                 slot["metric_outcome_ids"].extend(rmids)
                 metric_ids.extend(rmids)

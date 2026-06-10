@@ -36,11 +36,20 @@ IBM_BULLET_SLOT_IDS: tuple[str, ...] = (
 )
 
 # One primary role episode bundle per bullet slot (employer-bound themes).
+# Slot -> bundle coherence (user directive, plan apps-rg-aig-remaining-lanes-closeout-d4e1f7):
+# the IBM career phase blends platform delivery with Technical Pre-Sales / GTM. The graph-selected
+# slot facts are: 001 Salesforce pipeline analytics ($10M ARR), 002 budget/cost-optimization
+# dashboards, 003 M&A diligence/estimation, 004 regulatory IT/legacy modernization, 005 alliance
+# revenue. Slots 001-003 previously bound platform bundles (cloud_modernization/devsecops) whose
+# themes contradicted their GTM facts — the X1D judge decisive-failed the mismatch. They now bind
+# the dedicated reb_ibm_technical_presales_gtm episode; 004 moves to cloud_modernization
+# (its fact IS legacy modernization; metadata_audit_governance carries Basel/CCAR, an EY-phase
+# theme per the career-phase mapping).
 IBM_BULLET_SLOT_BUNDLE_MAP: dict[str, str] = {
-    "bul_ibm_001": "reb_ibm_cloud_modernization",
-    "bul_ibm_002": "reb_ibm_cloud_modernization",
-    "bul_ibm_003": "reb_ibm_devsecops_reliability",
-    "bul_ibm_004": "reb_ibm_metadata_audit_governance",
+    "bul_ibm_001": "reb_ibm_technical_presales_gtm",
+    "bul_ibm_002": "reb_ibm_technical_presales_gtm",
+    "bul_ibm_003": "reb_ibm_technical_presales_gtm",
+    "bul_ibm_004": "reb_ibm_cloud_modernization",
     "bul_ibm_005": "reb_ibm_hyperscaler_alliance_partner",
 }
 
@@ -335,6 +344,15 @@ def format_ibm_role_episode_evidence_pack(
 
     # ibm_bullets: one block per bul_ibm_* slot bound to primary bundle.
     skill_index = _skill_rows_by_id()
+    # Per-slot PLAN FACT stories (W4-residual, plan apps-rg-aig-remaining-lanes-closeout-d4e1f7):
+    # the X1D judge grades each bullet against its selected_fact_plan fact's claim_text, but the
+    # pack only carried bundle intent + skills vocabulary — the generator literally never saw the
+    # story it was graded on (gemini decisive-failed "bullet describes X; source fact says Y" on
+    # every run). Surface each slot's plan fact so composition can restate its activity.
+    _plan_fact_by_slot: dict[str, dict[str, Any]] = {}
+    for _pf in (plan.get("facts") or []):
+        if isinstance(_pf, dict):
+            _plan_fact_by_slot[str(_pf.get("fact_id") or "").strip()] = _pf
     slot_blocks: list[str] = []
     for slot_id in IBM_BULLET_SLOT_IDS:
         bundle_id = IBM_BULLET_SLOT_BUNDLE_MAP.get(slot_id, "")
@@ -363,6 +381,22 @@ def format_ibm_role_episode_evidence_pack(
             lines.append(f"    - {sig}")
         lines.append(f"  operating_context: {bundle.get('operating_context')}")
         lines.append(f"  bullet_intent: {bundle.get('bullet_intent')}")
+        _slot_fact = _plan_fact_by_slot.get(slot_id) or {}
+        _story = str(_slot_fact.get("claim_text") or "").strip()
+        if _story:
+            lines.append(
+                "  slot_fact_story (X1D GRADING ANCHOR — this bullet MUST restate THIS activity; "
+                "do not substitute the bundle theme for it. EVERY bullet must ALSO satisfy ALL of: "
+                "(1) open with a STRONG executive verb (Led/Directed/Drove/Owned/Architected — never "
+                "the ledger's weak verb like 'Conducted'); (2) carry an organizational scale signal "
+                "(enterprise/portfolio/cross-functional); (3) name >=1 concrete technology or "
+                "mechanism token IN the sentence (e.g. platform, architecture, AWS, Salesforce, "
+                "microservices, pipeline, infrastructure) — a bullet with zero named tech fails "
+                "the deterministic specificity gate even when the story is faithful):"
+            )
+            lines.append(f"    activity: {_story[:400]}")
+            _mr = str(_slot_fact.get("metric_raw") or "").strip()
+            lines.append(f"    approved_metric: {_mr or '(none — qualitative bullet)'}")
 
         skill_ids = list(bundle.get("graph_skill_node_ids") or [])
         if skill_ids:

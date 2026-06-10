@@ -1,321 +1,368 @@
 {
-  "schema": "ibm_role_episode_bundles_v1",
-  "generated_at": "2026-05-28T13:00:00Z",
-  "generated_by": "apply_ibm_graph_promotion_wave.py",
-  "employer": "IBM",
-  "employer_node_id": "employment_exp_ibm_001",
-  "time_window": "2017-04 to 2022-10",
-  "invariants": {
-    "archive_prose_excluded": true,
-    "base_resume_hydration_excluded": true,
-    "hold_metrics_not_promoted": true,
-    "do_not_promote_metrics_excluded": true,
-    "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-    "config_enablement_condition": "ibm_bullets and ibm_narrative graph_expansion_allowed may be enabled only when section generation consumes role_episode_bundle_id, not flat skill lists."
+ "schema": "ibm_role_episode_bundles_v1",
+ "generated_at": "2026-05-28T13:00:00Z",
+ "generated_by": "apply_ibm_graph_promotion_wave.py",
+ "employer": "IBM",
+ "employer_node_id": "employment_exp_ibm_001",
+ "time_window": "2017-04 to 2022-10",
+ "invariants": {
+  "archive_prose_excluded": true,
+  "base_resume_hydration_excluded": true,
+  "hold_metrics_not_promoted": true,
+  "do_not_promote_metrics_excluded": true,
+  "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+  "config_enablement_condition": "ibm_bullets and ibm_narrative graph_expansion_allowed may be enabled only when section generation consumes role_episode_bundle_id, not flat skill lists."
+ },
+ "excluded_metrics_by_policy": [
+  {
+   "metric": "25%",
+   "reason": "DO NOT PROMOTE - overloaded across 6+ contexts"
   },
-  "excluded_metrics_by_policy": [
-    {
-      "metric": "25%",
-      "reason": "DO NOT PROMOTE - overloaded across 6+ contexts"
-    },
-    {
-      "metric": "30%",
-      "reason": "DO NOT PROMOTE - overloaded across 8+ contexts"
-    },
-    {
-      "metric": "35%",
-      "reason": "DO NOT PROMOTE - overloaded across 6+ contexts"
-    },
-    {
-      "metric": "40%",
-      "reason": "DO NOT PROMOTE - most overloaded metric in archive"
-    },
-    {
-      "metric": "$15M modernization deals",
-      "reason": "HOLD - single source (SAE only)"
-    },
-    {
-      "metric": "$30M Cloud Pak partner revenue",
-      "reason": "HOLD - single source (CTO Resume only)"
-    }
-  ],
-  "promotable_metrics": [
-    {
-      "metric": "20% joint revenue growth",
-      "employer": "IBM",
-      "context": "IBM-AWS alliance",
-      "archive_signal_ids": [
-        "sig_ibm_009"
-      ]
-    },
-    {
-      "metric": "$10M IBM ARR",
-      "employer": "IBM",
-      "context": "IBM Salesforce pipeline expansion",
-      "archive_signal_ids": []
-    },
-    {
-      "metric": "10% FinOps savings",
-      "employer": "IBM",
-      "context": "CI/CD DevSecOps practices",
-      "archive_signal_ids": [
-        "sig_comp_002"
-      ],
-      "caveat": "Unique metric - verify with base resume"
-    }
-  ],
-  "bundles": [
-    {
-      "role_episode_bundle_id": "reb_ibm_cloud_modernization",
-      "employer": "IBM",
-      "title": "Lead Client Partner",
-      "time_window": "2017-04 to 2022-10",
-      "employer_node_id": "employment_exp_ibm_001",
-      "bundle_theme": "Cloud Modernization / Containerized Microservices",
-      "executive_scope_signals": [
-        "Fortune 500 financial services clients migrating to distributed cloud-native platforms",
-        "Architecture and commercial ownership of cloud and AI transformation portfolio"
-      ],
-      "architecture_scope_signals": [
-        "Containerized microservices replacing monolithic risk calculation engines",
-        "Cloud-native data platforms enabling governed analytics",
-        "Kubernetes, AWS, distributed deployment"
-      ],
-      "graph_skill_node_ids": [
-        "skill_sr_microservices_integration_platform",
-        "skill_sr_cloud_data_platform_engineering",
-        "skill_ibm_automated_release_pipelines"
-      ],
-      "linked_source_fact_ids": [
-        "fact_engineering_platform_002"
-      ],
-      "linked_archive_signal_ids": [
-        "sig_ibm_001",
-        "sig_ibm_003"
-      ],
-      "promotable_metrics": [],
-      "held_metrics": [
-        "$15M modernization deals (HOLD - single source)"
-      ],
-      "excluded_metrics": [
-        "40% calculation latency (DO NOT PROMOTE - overloaded)"
-      ],
-      "operating_context": "IBM Financial Services modernization engagements; migration from monolithic risk systems to cloud-native microservices.",
-      "bullet_intent": "Frame as architecture leadership driving modernization outcomes at scale; no metric without fact_id anchor.",
-      "section_eligibility": [
-        "ibm_bullets",
-        "ibm_narrative"
-      ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "skill_sr_microservices_integration_platform allowed_sections does not currently include ibm_bullets — add ibm_bullets/ibm_narrative when graph expansion authorized."
-    },
-    {
-      "role_episode_bundle_id": "reb_ibm_devsecops_reliability",
-      "employer": "IBM",
-      "title": "Lead Client Partner",
-      "time_window": "2017-04 to 2022-10",
-      "employer_node_id": "employment_exp_ibm_001",
-      "bundle_theme": "DevSecOps / Release Reliability",
-      "executive_scope_signals": [
-        "Enterprise-grade release governance for financial services clients",
-        "Security embedded into development pipelines from code to production"
-      ],
-      "architecture_scope_signals": [
-        "Automated CI/CD pipelines with integrated code scanning",
-        "DevSecOps scanning on containerized workloads",
-        "Role-based data access controls in pipeline gates"
-      ],
-      "graph_skill_node_ids": [
-        "skill_ibm_devsecops_pipeline_security",
-        "skill_ibm_automated_release_pipelines",
-        "skill_ibm_metadata_audit_rbac"
-      ],
-      "linked_source_fact_ids": [],
-      "linked_archive_signal_ids": [
-        "sig_ibm_003",
-        "sig_ibm_004",
-        "sig_comp_002"
-      ],
-      "promotable_metrics": [
-        "10% FinOps savings via CI/CD best practices (unique metric from Chief AI Officer resume)"
-      ],
-      "held_metrics": [],
-      "excluded_metrics": [
-        "35% production incident reduction (DO NOT PROMOTE - overloaded across 5+ contexts)",
-        "40% DevSecOps overhead reduction (DO NOT PROMOTE - overloaded)"
-      ],
-      "operating_context": "IBM financial services delivery governance; DevSecOps embedded into regulated cloud workloads.",
-      "bullet_intent": "Frame as engineering governance leadership: security + release velocity + RBAC; 10% FinOps savings is uniquely promotable if base resume second-source confirms.",
-      "section_eligibility": [
-        "ibm_bullets",
-        "ibm_narrative"
-      ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "10% FinOps savings metric is unique (Chief AI Officer resume only) — confirm against base resume before activating."
-    },
-    {
-      "role_episode_bundle_id": "reb_ibm_streaming_realtime_analytics",
-      "employer": "IBM",
-      "title": "Lead Client Partner",
-      "time_window": "2017-04 to 2022-10",
-      "employer_node_id": "employment_exp_ibm_001",
-      "bundle_theme": "Streaming / Near-Real-Time Analytics",
-      "executive_scope_signals": [
-        "Transition from batch-only to streaming ecosystems for financial risk decisions",
-        "Confluent-based pipeline deployments for real-time risk scoring"
-      ],
-      "architecture_scope_signals": [
-        "Streaming analytics ecosystems replacing batch-only data processing",
-        "Confluent event-driven pipelines for market data validation",
-        "Near-real-time risk monitoring for trading and compliance"
-      ],
-      "graph_skill_node_ids": [
-        "skill_confluent_streaming_platforms",
-        "skill_sr_cloud_data_platform_engineering"
-      ],
-      "linked_source_fact_ids": [],
-      "linked_archive_signal_ids": [
-        "sig_ibm_006",
-        "sig_ibm_007"
-      ],
-      "promotable_metrics": [],
-      "held_metrics": [],
-      "excluded_metrics": [
-        "25% system downtime reduction (DO NOT PROMOTE - overloaded)",
-        "25% capacity increase (DO NOT PROMOTE - overloaded)"
-      ],
-      "operating_context": "IBM financial services data modernization; batch-to-streaming migration for risk and market analytics.",
-      "bullet_intent": "Frame as data architecture modernization: real-time risk monitoring, Confluent pipelines, streaming analytics; avoid 25% metric unanchored.",
-      "section_eligibility": [
-        "ibm_bullets",
-        "ibm_narrative"
-      ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "skill_confluent_streaming_platforms promoted DRAFT→ACTIVE_CONFIRMED in this wave."
-    },
-    {
-      "role_episode_bundle_id": "reb_ibm_metadata_audit_governance",
-      "employer": "IBM",
-      "title": "Lead Client Partner",
-      "time_window": "2017-04 to 2022-10",
-      "employer_node_id": "employment_exp_ibm_001",
-      "bundle_theme": "Metadata / Audit Trail / RBAC Governance",
-      "executive_scope_signals": [
-        "Standardized audit trails and metadata tagging for client compliance obligations",
-        "Role-based access controls governing data governance protocols"
-      ],
-      "architecture_scope_signals": [
-        "Metadata tagging on shared data assets",
-        "Audit trails for alliance partner data sharing",
-        "Role-based data access controls in governance pipelines"
-      ],
-      "graph_skill_node_ids": [
-        "skill_ibm_metadata_audit_rbac",
-        "skill_sr_basel_ccar_lineage_regulatory"
-      ],
-      "linked_source_fact_ids": [],
-      "linked_archive_signal_ids": [
-        "sig_ibm_008"
-      ],
-      "promotable_metrics": [],
-      "held_metrics": [],
-      "excluded_metrics": [
-        "30% compliance gap reduction (DO NOT PROMOTE - overloaded across 6+ contexts)"
-      ],
-      "operating_context": "IBM financial services compliance governance; partner data sharing protocols and RBAC for regulated environments.",
-      "bullet_intent": "Frame as governance architecture: metadata lineage, audit-ready controls, RBAC; qualitative framing — no 30% metric unanchored.",
-      "section_eligibility": [
-        "ibm_bullets",
-        "ibm_narrative"
-      ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "skill_ibm_metadata_audit_rbac is a new node added in this wave."
-    },
-    {
-      "role_episode_bundle_id": "reb_ibm_hpc_risk_analytics",
-      "employer": "IBM",
-      "title": "Lead Client Partner",
-      "time_window": "2017-04 to 2022-10",
-      "employer_node_id": "employment_exp_ibm_001",
-      "bundle_theme": "Risk Analytics / HPC Stress Testing",
-      "executive_scope_signals": [
-        "HPC-based stress test acceleration for capital adequacy decisions",
-        "Real-time risk analytics for Fortune 500 financial portfolios"
-      ],
-      "architecture_scope_signals": [
-        "HPC simulations for stress testing — weeks to hours compression",
-        "Containerized HPC clusters for near-real-time risk analytics",
-        "GPU-powered parallel computation for scenario analysis"
-      ],
-      "graph_skill_node_ids": [
-        "skill_risk_greek_stress_testing",
-        "skill_sr_cloud_data_platform_engineering",
-        "skill_confluent_streaming_platforms"
-      ],
-      "linked_source_fact_ids": [],
-      "linked_archive_signal_ids": [
-        "sig_ibm_002",
-        "sig_ibm_006"
-      ],
-      "promotable_metrics": [],
-      "held_metrics": [
-        "$15M modernization deals (HOLD - single source, SAE only)"
-      ],
-      "excluded_metrics": [
-        "40% scenario runtime reduction (DO NOT PROMOTE - overloaded)"
-      ],
-      "operating_context": "IBM financial services HPC risk analytics; stress testing modernization from weekly batch to real-time.",
-      "bullet_intent": "Frame as HPC architecture leadership: weeks-to-hours compression, real-time risk; no 40% or $15M metric without anchor.",
-      "section_eligibility": [
-        "ibm_bullets",
-        "ibm_narrative"
-      ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "skill_risk_greek_stress_testing promoted DRAFT→ACTIVE_CONFIRMED in this wave."
-    },
-    {
-      "role_episode_bundle_id": "reb_ibm_hyperscaler_alliance_partner",
-      "employer": "IBM",
-      "title": "Lead Client Partner",
-      "time_window": "2017-04 to 2022-10",
-      "employer_node_id": "employment_exp_ibm_001",
-      "bundle_theme": "IBM-AWS Hyperscaler Alliance / Partner Execution",
-      "executive_scope_signals": [
-        "P&L accountability within IBM-AWS financial services alliance",
-        "Joint revenue growth through AI-driven sales frameworks"
-      ],
-      "architecture_scope_signals": [
-        "IBM-AWS alliance co-sell framework for financial services",
-        "AI-driven sales motions for cloud transformation deals"
-      ],
-      "graph_skill_node_ids": [
-        "skill_partner_ibm_aws_alliance_joint_revenue",
-        "skill_sr_w12_hyperscaler_alliance_co_sell",
-        "skill_partner_co_selling"
-      ],
-      "linked_source_fact_ids": [
-        "fact_partnerships_gtm_002"
-      ],
-      "linked_archive_signal_ids": [
-        "sig_ibm_009",
-        "sig_comp_001"
-      ],
-      "promotable_metrics": [
-        "20% joint revenue growth (PROMOTABLE - consistent across 2 resumes, IBM-AWS alliance context)",
-        "$10M IBM ARR (PROMOTABLE - consistent across 2 resumes, IBM Salesforce pipeline context)"
-      ],
-      "held_metrics": [
-        "$30M Cloud Pak partner revenue (HOLD - single source, CTO Resume only)"
-      ],
-      "excluded_metrics": [],
-      "operating_context": "IBM-AWS financial services alliance P&L; co-sell revenue growth through AI solutions.",
-      "bullet_intent": "Frame as alliance leadership: IBM-AWS P&L, 20% joint revenue, co-sell motions; 20% and $10M IBM ARR are promotable with fact_id anchor.",
-      "section_eligibility": [
-        "ibm_bullets",
-        "ibm_narrative"
-      ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "20% joint revenue is the primary promotable IBM metric in this bundle."
-    }
-  ]
+  {
+   "metric": "30%",
+   "reason": "DO NOT PROMOTE - overloaded across 8+ contexts"
+  },
+  {
+   "metric": "35%",
+   "reason": "DO NOT PROMOTE - overloaded across 6+ contexts"
+  },
+  {
+   "metric": "40%",
+   "reason": "DO NOT PROMOTE - most overloaded metric in archive"
+  },
+  {
+   "metric": "$15M modernization deals",
+   "reason": "HOLD - single source (SAE only)"
+  },
+  {
+   "metric": "$30M Cloud Pak partner revenue",
+   "reason": "HOLD - single source (CTO Resume only)"
+  }
+ ],
+ "promotable_metrics": [
+  {
+   "metric": "20% joint revenue growth",
+   "employer": "IBM",
+   "context": "IBM-AWS alliance",
+   "archive_signal_ids": [
+    "sig_ibm_009"
+   ]
+  },
+  {
+   "metric": "$10M IBM ARR",
+   "employer": "IBM",
+   "context": "IBM Salesforce pipeline expansion",
+   "archive_signal_ids": []
+  },
+  {
+   "metric": "10% FinOps savings",
+   "employer": "IBM",
+   "context": "CI/CD DevSecOps practices",
+   "archive_signal_ids": [
+    "sig_comp_002"
+   ],
+   "caveat": "Unique metric - verify with base resume"
+  }
+ ],
+ "bundles": [
+  {
+   "role_episode_bundle_id": "reb_ibm_cloud_modernization",
+   "employer": "IBM",
+   "title": "Lead Client Partner",
+   "time_window": "2017-04 to 2022-10",
+   "employer_node_id": "employment_exp_ibm_001",
+   "bundle_theme": "Cloud Modernization / Containerized Microservices",
+   "executive_scope_signals": [
+    "Fortune 500 financial services clients migrating to distributed cloud-native platforms",
+    "Architecture and commercial ownership of cloud and AI transformation portfolio"
+   ],
+   "architecture_scope_signals": [
+    "Containerized microservices replacing monolithic risk calculation engines",
+    "Cloud-native data platforms enabling governed analytics",
+    "Kubernetes, AWS, distributed deployment"
+   ],
+   "graph_skill_node_ids": [
+    "skill_sr_microservices_integration_platform",
+    "skill_sr_cloud_data_platform_engineering",
+    "skill_ibm_automated_release_pipelines"
+   ],
+   "linked_source_fact_ids": [
+    "fact_engineering_platform_002"
+   ],
+   "linked_archive_signal_ids": [
+    "sig_ibm_001",
+    "sig_ibm_003"
+   ],
+   "promotable_metrics": [],
+   "held_metrics": [
+    "$15M modernization deals (HOLD - single source)"
+   ],
+   "excluded_metrics": [
+    "40% calculation latency (DO NOT PROMOTE - overloaded)"
+   ],
+   "operating_context": "IBM Financial Services modernization engagements; migration from monolithic risk systems to cloud-native microservices.",
+   "bullet_intent": "Frame as architecture leadership driving modernization outcomes at scale; no metric without fact_id anchor.",
+   "section_eligibility": [
+    "ibm_bullets",
+    "ibm_narrative"
+   ],
+   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+   "notes": "skill_sr_microservices_integration_platform allowed_sections does not currently include ibm_bullets — add ibm_bullets/ibm_narrative when graph expansion authorized."
+  },
+  {
+   "role_episode_bundle_id": "reb_ibm_devsecops_reliability",
+   "employer": "IBM",
+   "title": "Lead Client Partner",
+   "time_window": "2017-04 to 2022-10",
+   "employer_node_id": "employment_exp_ibm_001",
+   "bundle_theme": "DevSecOps / Release Reliability",
+   "executive_scope_signals": [
+    "Enterprise-grade release governance for financial services clients",
+    "Security embedded into development pipelines from code to production"
+   ],
+   "architecture_scope_signals": [
+    "Automated CI/CD pipelines with integrated code scanning",
+    "DevSecOps scanning on containerized workloads",
+    "Role-based data access controls in pipeline gates"
+   ],
+   "graph_skill_node_ids": [
+    "skill_ibm_devsecops_pipeline_security",
+    "skill_ibm_automated_release_pipelines",
+    "skill_ibm_metadata_audit_rbac"
+   ],
+   "linked_source_fact_ids": [],
+   "linked_archive_signal_ids": [
+    "sig_ibm_003",
+    "sig_ibm_004",
+    "sig_comp_002"
+   ],
+   "promotable_metrics": [
+    "10% FinOps savings via CI/CD best practices (unique metric from Chief AI Officer resume)"
+   ],
+   "held_metrics": [],
+   "excluded_metrics": [
+    "35% production incident reduction (DO NOT PROMOTE - overloaded across 5+ contexts)",
+    "40% DevSecOps overhead reduction (DO NOT PROMOTE - overloaded)"
+   ],
+   "operating_context": "IBM financial services delivery governance; DevSecOps embedded into regulated cloud workloads.",
+   "bullet_intent": "Frame as engineering governance leadership: security + release velocity + RBAC; 10% FinOps savings is uniquely promotable if base resume second-source confirms.",
+   "section_eligibility": [
+    "ibm_bullets",
+    "ibm_narrative"
+   ],
+   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+   "notes": "10% FinOps savings metric is unique (Chief AI Officer resume only) — confirm against base resume before activating."
+  },
+  {
+   "role_episode_bundle_id": "reb_ibm_streaming_realtime_analytics",
+   "employer": "IBM",
+   "title": "Lead Client Partner",
+   "time_window": "2017-04 to 2022-10",
+   "employer_node_id": "employment_exp_ibm_001",
+   "bundle_theme": "Streaming / Near-Real-Time Analytics",
+   "executive_scope_signals": [
+    "Transition from batch-only to streaming ecosystems for financial risk decisions",
+    "Confluent-based pipeline deployments for real-time risk scoring"
+   ],
+   "architecture_scope_signals": [
+    "Streaming analytics ecosystems replacing batch-only data processing",
+    "Confluent event-driven pipelines for market data validation",
+    "Near-real-time risk monitoring for trading and compliance"
+   ],
+   "graph_skill_node_ids": [
+    "skill_confluent_streaming_platforms",
+    "skill_sr_cloud_data_platform_engineering"
+   ],
+   "linked_source_fact_ids": [],
+   "linked_archive_signal_ids": [
+    "sig_ibm_006",
+    "sig_ibm_007"
+   ],
+   "promotable_metrics": [],
+   "held_metrics": [],
+   "excluded_metrics": [
+    "25% system downtime reduction (DO NOT PROMOTE - overloaded)",
+    "25% capacity increase (DO NOT PROMOTE - overloaded)"
+   ],
+   "operating_context": "IBM financial services data modernization; batch-to-streaming migration for risk and market analytics.",
+   "bullet_intent": "Frame as data architecture modernization: real-time risk monitoring, Confluent pipelines, streaming analytics; avoid 25% metric unanchored.",
+   "section_eligibility": [
+    "ibm_bullets",
+    "ibm_narrative"
+   ],
+   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+   "notes": "skill_confluent_streaming_platforms promoted DRAFT→ACTIVE_CONFIRMED in this wave."
+  },
+  {
+   "role_episode_bundle_id": "reb_ibm_metadata_audit_governance",
+   "employer": "IBM",
+   "title": "Lead Client Partner",
+   "time_window": "2017-04 to 2022-10",
+   "employer_node_id": "employment_exp_ibm_001",
+   "bundle_theme": "Metadata / Audit Trail / RBAC Governance",
+   "executive_scope_signals": [
+    "Standardized audit trails and metadata tagging for client compliance obligations",
+    "Role-based access controls governing data governance protocols"
+   ],
+   "architecture_scope_signals": [
+    "Metadata tagging on shared data assets",
+    "Audit trails for alliance partner data sharing",
+    "Role-based data access controls in governance pipelines"
+   ],
+   "graph_skill_node_ids": [
+    "skill_ibm_metadata_audit_rbac",
+    "skill_sr_basel_ccar_lineage_regulatory"
+   ],
+   "linked_source_fact_ids": [],
+   "linked_archive_signal_ids": [
+    "sig_ibm_008"
+   ],
+   "promotable_metrics": [],
+   "held_metrics": [],
+   "excluded_metrics": [
+    "30% compliance gap reduction (DO NOT PROMOTE - overloaded across 6+ contexts)"
+   ],
+   "operating_context": "IBM financial services compliance governance; partner data sharing protocols and RBAC for regulated environments.",
+   "bullet_intent": "Frame as governance architecture: metadata lineage, audit-ready controls, RBAC; qualitative framing — no 30% metric unanchored.",
+   "section_eligibility": [
+    "ibm_bullets",
+    "ibm_narrative"
+   ],
+   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+   "notes": "skill_ibm_metadata_audit_rbac is a new node added in this wave."
+  },
+  {
+   "role_episode_bundle_id": "reb_ibm_hpc_risk_analytics",
+   "employer": "IBM",
+   "title": "Lead Client Partner",
+   "time_window": "2017-04 to 2022-10",
+   "employer_node_id": "employment_exp_ibm_001",
+   "bundle_theme": "Risk Analytics / HPC Stress Testing",
+   "executive_scope_signals": [
+    "HPC-based stress test acceleration for capital adequacy decisions",
+    "Real-time risk analytics for Fortune 500 financial portfolios"
+   ],
+   "architecture_scope_signals": [
+    "HPC simulations for stress testing — weeks to hours compression",
+    "Containerized HPC clusters for near-real-time risk analytics",
+    "GPU-powered parallel computation for scenario analysis"
+   ],
+   "graph_skill_node_ids": [
+    "skill_risk_greek_stress_testing",
+    "skill_sr_cloud_data_platform_engineering",
+    "skill_confluent_streaming_platforms"
+   ],
+   "linked_source_fact_ids": [],
+   "linked_archive_signal_ids": [
+    "sig_ibm_002",
+    "sig_ibm_006"
+   ],
+   "promotable_metrics": [],
+   "held_metrics": [
+    "$15M modernization deals (HOLD - single source, SAE only)"
+   ],
+   "excluded_metrics": [
+    "40% scenario runtime reduction (DO NOT PROMOTE - overloaded)"
+   ],
+   "operating_context": "IBM financial services HPC risk analytics; stress testing modernization from weekly batch to real-time.",
+   "bullet_intent": "Frame as HPC architecture leadership: weeks-to-hours compression, real-time risk; no 40% or $15M metric without anchor.",
+   "section_eligibility": [
+    "ibm_bullets",
+    "ibm_narrative"
+   ],
+   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+   "notes": "skill_risk_greek_stress_testing promoted DRAFT→ACTIVE_CONFIRMED in this wave."
+  },
+  {
+   "role_episode_bundle_id": "reb_ibm_hyperscaler_alliance_partner",
+   "employer": "IBM",
+   "title": "Lead Client Partner",
+   "time_window": "2017-04 to 2022-10",
+   "employer_node_id": "employment_exp_ibm_001",
+   "bundle_theme": "IBM-AWS Hyperscaler Alliance / Partner Execution",
+   "executive_scope_signals": [
+    "P&L accountability within IBM-AWS financial services alliance",
+    "Joint revenue growth through AI-driven sales frameworks"
+   ],
+   "architecture_scope_signals": [
+    "IBM-AWS alliance co-sell framework for financial services",
+    "AI-driven sales motions for cloud transformation deals"
+   ],
+   "graph_skill_node_ids": [
+    "skill_partner_ibm_aws_alliance_joint_revenue",
+    "skill_sr_w12_hyperscaler_alliance_co_sell",
+    "skill_partner_co_selling"
+   ],
+   "linked_source_fact_ids": [
+    "fact_partnerships_gtm_002"
+   ],
+   "linked_archive_signal_ids": [
+    "sig_ibm_009",
+    "sig_comp_001"
+   ],
+   "promotable_metrics": [
+    "20% joint revenue growth (PROMOTABLE - consistent across 2 resumes, IBM-AWS alliance context)",
+    "$10M IBM ARR (PROMOTABLE - consistent across 2 resumes, IBM Salesforce pipeline context)"
+   ],
+   "held_metrics": [
+    "$30M Cloud Pak partner revenue (HOLD - single source, CTO Resume only)"
+   ],
+   "excluded_metrics": [],
+   "operating_context": "IBM-AWS financial services alliance P&L; co-sell revenue growth through AI solutions.",
+   "bullet_intent": "Frame as alliance leadership: IBM-AWS P&L, 20% joint revenue, co-sell motions; 20% and $10M IBM ARR are promotable with fact_id anchor.",
+   "section_eligibility": [
+    "ibm_bullets",
+    "ibm_narrative"
+   ],
+   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+   "notes": "20% joint revenue is the primary promotable IBM metric in this bundle."
+  },
+  {
+   "role_episode_bundle_id": "reb_ibm_technical_presales_gtm",
+   "employer": "IBM",
+   "title": "Lead Client Partner",
+   "time_window": "2017-04 to 2022-10",
+   "employer_node_id": "employment_exp_ibm_001",
+   "bundle_theme": "Technical Pre-Sales / GTM Solution Leadership",
+   "executive_scope_signals": [
+    "Pipeline analytics and discovery-to-qualification motion driving enterprise deal flow",
+    "Executive/CFO buyer alignment on data-centric solution value and ROI",
+    "Estimation, sizing, and technology due-diligence for enterprise pursuits"
+   ],
+   "architecture_scope_signals": [
+    "Demoable solution accelerators and reusable implementation IP for pursuit engineering",
+    "Salesforce-driven pipeline analytics and deal prioritization tooling",
+    "Transparent budget/cost-optimization dashboards backing commercial proposals"
+   ],
+   "graph_skill_node_ids": [
+    "skill_p2_gtm_discovery_qualification",
+    "skill_p2_gtm_solution_mapping",
+    "skill_p2_gtm_executive_buyer_alignment",
+    "skill_p2_gtm_enterprise_deal_support",
+    "skill_p2_tech_demoable_accelerator",
+    "skill_p2_tech_estimation_sizing_directional",
+    "skill_p2_tech_ibm_cloud_portfolio_anchor",
+    "skill_partner_pre_sales"
+   ],
+   "linked_source_fact_ids": [
+    "fact_revenue_ops_001",
+    "fact_revenue_ops_004",
+    "fact_revenue_ops_005"
+   ],
+   "linked_archive_signal_ids": [],
+   "linked_metric_outcome_ids": [
+    "metric_ibm_10m_arr"
+   ],
+   "promotable_metrics": [
+    "$10M IBM ARR (PROMOTABLE - consistent across 2 resumes, IBM Salesforce pipeline context)"
+   ],
+   "operating_context": "IBM financial-services technical pre-sales and GTM solution leadership (career-phase: pre-sales/GTM blended with platform delivery)",
+   "bullet_intent": "Commercial-engineering bullets: pipeline analytics, buyer alignment, estimation/diligence — grounded in the slot fact's GTM activity",
+   "held_metrics": [],
+   "excluded_metrics": [],
+   "section_eligibility": [],
+   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+   "notes": "20% joint revenue is the primary promotable IBM metric in this bundle."
+  }
+ ]
 }
