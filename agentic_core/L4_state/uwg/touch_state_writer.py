@@ -173,10 +173,10 @@ class TouchStateUWGAdapter:
     
     Example
     -------
-    >>> from agentic_core.L4_state.uwg.durable_write_gateway import get_gateway
+    >>> from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
     >>> from agentic_core.L4_state.uwg.touch_state_writer import TouchStateUWGAdapter, TouchStateWriteRequest
     >>> 
-    >>> gateway = get_gateway()
+    >>> gateway = get_default_gateway()
     >>> adapter = TouchStateUWGAdapter(gateway)
     >>> 
     >>> request = TouchStateWriteRequest(
@@ -290,9 +290,9 @@ def schedule_touch(
     This is a fire-and-forget helper for the common case of scheduling
     a touch. For more control, use TouchStateUWGAdapter directly.
     """
-    from agentic_core.L4_state.uwg.durable_write_gateway import get_gateway
+    from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
     
-    gateway = get_gateway()
+    gateway = get_default_gateway()
     adapter = TouchStateUWGAdapter(gateway)
     
     request = TouchStateWriteRequest(

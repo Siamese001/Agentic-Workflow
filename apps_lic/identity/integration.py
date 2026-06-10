@@ -383,14 +383,14 @@ class IdentitySpineIntegration:
         try:
             from apps_lic.identity.propagation import get_identity_propagation_service
             from apps_lic.identity.carry_forward import ContextCarryForwardBridge
-            from agentic_core.L4_state.uwg.durable_write_gateway import get_gateway
+            from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
             from agentic_core.L4_state.uwg.touch_state_writer import TouchStateUWGAdapter
             
             cfg = config or IdentityIntegrationConfig()
             
             # Create services
             identity_service = get_identity_propagation_service()
-            gateway = get_gateway()
+            gateway = get_default_gateway()
             state_adapter = TouchStateUWGAdapter(gateway)
             bridge = ContextCarryForwardBridge(
                 identity_service=identity_service,

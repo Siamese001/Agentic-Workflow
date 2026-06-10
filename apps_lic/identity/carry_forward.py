@@ -418,11 +418,11 @@ def carry_context_forward(
         Result of operation
     """
     from apps_lic.identity.propagation import get_identity_propagation_service
-    from agentic_core.L4_state.uwg.durable_write_gateway import get_gateway
+    from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
     from agentic_core.L4_state.uwg.touch_state_writer import TouchStateUWGAdapter
     
     identity_service = get_identity_propagation_service()
-    gateway = get_gateway()
+    gateway = get_default_gateway()
     state_adapter = TouchStateUWGAdapter(gateway)
     
     bridge = ContextCarryForwardBridge(

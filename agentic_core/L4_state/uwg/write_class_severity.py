@@ -41,6 +41,19 @@ class WriteClass(Enum):
     """Promotion of a policy snapshot. Irreversible at the snapshot layer."""
 
 
+class WriteClassSeverity(Enum):
+    """Legacy durability label for app-domain write-class registration.
+
+    New UWG routing code uses :class:`WriteClass` for reversibility policy.
+    Some app-domain registration surfaces still publish durability labels and
+    consume ``.value`` directly, so keep this narrow compatibility surface.
+    """
+
+    EPHEMERAL = "ephemeral"
+    DURABLE = "durable"
+    CRITICAL = "critical"
+
+
 _HEAVY_CLASSES: frozenset[WriteClass] = frozenset(
     {WriteClass.SCHEMA_CHANGE, WriteClass.IRREVERSIBLE, WriteClass.POLICY_UPDATE},
 )
@@ -163,6 +176,7 @@ __all__ = [
     "InvalidationCoverageGate",
     "InvalidationProposal",
     "WriteClass",
+    "WriteClassSeverity",
     "alias_swap_atomicity_proof",
     "classify_write",
     "requires_second_judge",
