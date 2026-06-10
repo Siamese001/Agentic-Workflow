@@ -104,6 +104,19 @@ migration receipt. Detail: `.claude/rules/agentic-core-static.md`, `.claude/rule
 - Memory: first tool call each session is `mem_recall_session_start`. Detail
   `.claude/rules/memory-management.md`, skill [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md).
 
+## apps_rg Operating Model — Standing Orders (2026-06-10)
+
+> Adopted after the 145-plans/0-shipped review. Full rule: [`apps-rg-execution-bias`](.claude/rules/apps-rg-execution-bias.md).
+
+- **North star (only success metric):** AIG resume, 11/11 lanes X3_ALLOW, assembled DOCX in hand.
+- **Execute, don't plan** — NEW plan files are blocked by `pre_write_plan_mint_gate.py`; explicit
+  user authorization in-turn (`PLAN_MINT_OK=1`) is the only mint path.
+- **Findings → rows** in the single backlog (`plans/apps-rg-lane-aggregation-gap-closure-b8c3d1.md`
+  Master Gap Inventory), never new plan documents.
+- **WIP = 1 active plan, one owner session** — check Notion `In Progress` before apps_rg write-work.
+- Discovery ≤20%, post-increment; subtraction before addition; weekly heartbeat E2E matrix is the
+  only status artifact.
+
 ---
 
 ## Specialized rules — load when relevant
