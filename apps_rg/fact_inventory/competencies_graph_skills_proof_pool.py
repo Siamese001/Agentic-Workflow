@@ -316,8 +316,19 @@ def validate_p2_w1a_default_graph_authority_receipt(receipt: dict[str, Any]) -> 
 def write_p2_w1_competencies_graph_proof_pool_receipt(
     *,
     repo_root: Path | None = None,
+    out_dir: Path | None = None,
 ) -> dict[str, Any]:
+    """Emit the P2-W1 receipts.
+
+    ``out_dir`` (RCA 2026-06-10, plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): operator/CLI
+    emission defaults to the tracked ``docs/reports/apps_rg`` SSOT, but TEST runs must pass an
+    untracked dir (pytest ``tmp_path``) — receipt regeneration as a pytest side effect kept the
+    tree chronically dirty and broke a mid-session ``git stash pop``.
+    """
     root = repo_root or ROOT
+    out_base = Path(out_dir) if out_dir is not None else REPORTS_DIR
+    receipt_json_path = out_base / P2_W1_RECEIPT_JSON.name
+    receipt_md_path = out_base / P2_W1_RECEIPT_MD.name
     payload = build_competencies_graph_skills_proof_payload(repo_root=root)
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -349,8 +360,8 @@ def write_p2_w1_competencies_graph_proof_pool_receipt(
     }
     validate_competencies_graph_skills_proof_payload({**payload, **receipt})
 
-    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    P2_W1_RECEIPT_JSON.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    out_base.mkdir(parents=True, exist_ok=True)
+    receipt_json_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
 
     md = [
         "# P2-W1 — Competencies graph-skills proof pool",
@@ -375,16 +386,20 @@ def write_p2_w1_competencies_graph_proof_pool_receipt(
     ]
     for track, n in (receipt.get("selected_skill_count_by_track") or {}).items():
         md.append(f"- skills `{track}`: {n}")
-    P2_W1_RECEIPT_MD.write_text("\n".join(md), encoding="utf-8")
-    return {"receipt_json": str(P2_W1_RECEIPT_JSON), "receipt_md": str(P2_W1_RECEIPT_MD), "payload": payload, "receipt": receipt}
+    receipt_md_path.write_text("\n".join(md), encoding="utf-8")
+    return {"receipt_json": str(receipt_json_path), "receipt_md": str(receipt_md_path), "payload": payload, "receipt": receipt}
 
 
 def write_p2_w1a_default_graph_authority_receipt(
     *,
     repo_root: Path | None = None,
+    out_dir: Path | None = None,
 ) -> dict[str, Any]:
     root = repo_root or ROOT
-    w1 = write_p2_w1_competencies_graph_proof_pool_receipt(repo_root=root)
+    out_base = Path(out_dir) if out_dir is not None else REPORTS_DIR
+    receipt_json_path = out_base / P2_W1A_RECEIPT_JSON.name
+    receipt_md_path = out_base / P2_W1A_RECEIPT_MD.name
+    w1 = write_p2_w1_competencies_graph_proof_pool_receipt(repo_root=root, out_dir=out_dir)
     payload = w1["payload"]
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -420,7 +435,8 @@ def write_p2_w1a_default_graph_authority_receipt(
     validate_p2_w1a_default_graph_authority_receipt(receipt)
     validate_competencies_graph_skills_proof_payload(payload)
 
-    P2_W1A_RECEIPT_JSON.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    out_base.mkdir(parents=True, exist_ok=True)
+    receipt_json_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
     md = [
         "# P2-W1A — Competencies default graph authority (ledger removed)",
         "",
@@ -435,10 +451,10 @@ def write_p2_w1a_default_graph_authority_receipt(
         f"- deprecated_ledger_code_reachable_from_product_path: **{receipt['deprecated_ledger_code_reachable_from_product_path']}**",
         "",
     ]
-    P2_W1A_RECEIPT_MD.write_text("\n".join(md), encoding="utf-8")
+    receipt_md_path.write_text("\n".join(md), encoding="utf-8")
     return {
-        "receipt_json": str(P2_W1A_RECEIPT_JSON),
-        "receipt_md": str(P2_W1A_RECEIPT_MD),
+        "receipt_json": str(receipt_json_path),
+        "receipt_md": str(receipt_md_path),
         "receipt": receipt,
         "payload": payload,
     }

@@ -34,7 +34,7 @@ def resolve_lane_placement_bucket(
     return "real"
 
 
-def generation_status_allows_qwen_json_parse(status: str) -> bool:
+def generation_status_allows_json_parse(status: str) -> bool:
     """Whether provider JSON parsing/normalization should run like REAL_LLM paths."""
     s = str(status or "").strip()
     return s in ("REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS)
@@ -43,6 +43,6 @@ def generation_status_allows_qwen_json_parse(status: str) -> bool:
 __all__ = [
     "LanePlacementBucket",
     "OFFLINE_CONTRACT_STUB_RUNTIME_STATUS",
-    "generation_status_allows_qwen_json_parse",
+    "generation_status_allows_json_parse",
     "resolve_lane_placement_bucket",
 ]

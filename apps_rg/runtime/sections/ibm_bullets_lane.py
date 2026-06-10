@@ -61,7 +61,7 @@ from apps_rg.runtime.reasoning.employment_bullet_pool import (
     is_employment_pool_generation,
 )
 from apps_rg.runtime.section_proof.lane_proof_accounting import (
-    generation_status_allows_qwen_json_parse,
+    generation_status_allows_json_parse,
     resolve_lane_placement_bucket,
 )
 from apps_rg.runtime.section_proof.mock_runtime_proof_policy import (
@@ -115,7 +115,11 @@ BULLET_ID_ALIASES = {
     **{f"B{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
     **{f"b{i}": f"bul_ibm_{i:03d}" for i in range(1, 6)},
 }
-IBM_MAX_OUTPUT_TOKENS = 2200
+# 2200 -> 8000 (W5, plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): same truncation defect
+# as unify_bullets — bullets + claim ledger JSON exceeds the cap, every SC path parses to
+# nothing, selector merges 0 bullets. 8000 was validated in the prior apps_rg_e2e session
+# (that worktree was removed before its fix merged).
+IBM_MAX_OUTPUT_TOKENS = 8000
 
 
 def _find_repo_root() -> Path:
@@ -244,13 +248,36 @@ def _normalize_fact_id_list(ids: Any) -> list[str]:
     return [_canonicalize_bul_ibm_source_fact_id(str(x)) for x in ids]
 
 
-def _normalize_ibm_claim_ledger(parsed: dict[str, Any]) -> None:
+def _clamp_to_ibm_fact_scope(ids: list[str], allowed: set[str]) -> list[str]:
+    """Drop citations outside the IBM allowed pool (W5, apps-rg-aig-remaining-lanes-closeout-d4e1f7).
+
+    Mirrors the ``x2_ibm_only_fact_scope`` membership rule (bul_ibm_* root in the allowed pool).
+    With W1 dense enrichment live, the model sometimes echoes surfaced ledger atoms (e.g.
+    ``fact_solutions_002``) alongside its valid IBM citations; the enrichment is recall-only and
+    never proof, so foreign ids are clamped out — same pattern as role_episode
+    ``_normalize_source_ids``. When nothing valid remains the row keeps its original ids and the
+    scope gate fails honestly.
+    """
+    if not allowed:
+        return ids
+
+    def _ok(sid: str) -> bool:
+        return sid.startswith("bul_ibm_") and (
+            sid in allowed or sid.split("_metric_")[0] in allowed
+        )
+
+    kept = [sid for sid in ids if _ok(sid)]
+    return kept or ids
+
+
+def _normalize_ibm_claim_ledger(parsed: dict[str, Any], allowed: set[str] | None = None) -> None:
     led = parsed.get("claim_ledger")
     if not isinstance(led, list):
         return
     for entry in led:
         if isinstance(entry, dict):
-            entry["source_fact_ids"] = _normalize_fact_id_list(entry.get("source_fact_ids"))
+            ids = _normalize_fact_id_list(entry.get("source_fact_ids"))
+            entry["source_fact_ids"] = _clamp_to_ibm_fact_scope(ids, allowed or set())
 
 
 def _count_intensities(bullets: list[dict[str, Any]]) -> dict[str, int]:
@@ -283,7 +310,10 @@ def normalize_parsed_output(
         ).upper()
         if not row.get("source_fact_ids"):
             row["source_fact_ids"] = [row["bullet_id"]]
-        row["source_fact_ids"] = _normalize_fact_id_list(row.get("source_fact_ids"))
+        _allowed_scope = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
+        row["source_fact_ids"] = _clamp_to_ibm_fact_scope(
+            _normalize_fact_id_list(row.get("source_fact_ids")), _allowed_scope
+        )
         normalized_bullets.append(row)
 
     parsed = dict(parsed)
@@ -298,7 +328,9 @@ def normalize_parsed_output(
             }
             for bullet in normalized_bullets
         ]
-    _normalize_ibm_claim_ledger(parsed)
+    _normalize_ibm_claim_ledger(
+        parsed, {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
+    )
     dist = parsed.get("rewrite_distribution") or {}
     if not dist.get("total"):
         counts = _count_intensities(normalized_bullets)
@@ -315,7 +347,7 @@ def normalize_parsed_output(
     return strip_employment_bullet_intensity_model(parsed)
 
 
-def retry_qwen_for_parse(
+def retry_provider_for_parse(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,
@@ -335,7 +367,7 @@ def retry_qwen_for_parse(
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": IBM_MAX_OUTPUT_TOKENS}
     result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
-    if not generation_status_allows_qwen_json_parse(result.runtime_generation_status):
+    if not generation_status_allows_json_parse(result.runtime_generation_status):
         return raw_output, None, parse_error
     new_raw = result.raw_model_output
     new_parsed, new_err = parse_model_json(new_raw)
@@ -479,6 +511,23 @@ def inject_ibm_locked_metric_anchors(
       (b) the plan_fact's metric_raw aligns with the canonical (already-correct case).
     """
     from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_METRIC_ANCHOR_RULES
+    from apps_rg.runtime.validators.bullet_line_discipline_x2 import DEFAULT_BULLET_MAX_CHARS
+
+    def _append_metric_clause(base_text: str, clause_core: str) -> str:
+        """Inject the metric as an IN-SENTENCE clause (W5, apps-rg-aig-remaining-lanes-closeout-d4e1f7).
+
+        The previous ``"{base}. Delivered {token} at enterprise scale."`` style appended a SECOND
+        sentence, deterministically failing ``x2_ibm_bullet_single_thought`` (and often the
+        320-char paragraph cap) on every injected bullet. Convert the trailing terminator to a
+        comma clause instead, with a shorter fallback when the long clause would break the cap.
+        """
+        base = (base_text or "").rstrip().rstrip(".!?").rstrip()
+        if not base:
+            return f"Delivered {clause_core} at enterprise scale."
+        long_form = f"{base}, delivering {clause_core} at enterprise scale."
+        if len(long_form) <= DEFAULT_BULLET_MAX_CHARS:
+            return long_form
+        return f"{base}, delivering {clause_core}."
 
     bullets = list(parsed.get("bullets") or [])
     if not bullets:
@@ -528,13 +577,7 @@ def inject_ibm_locked_metric_anchors(
             if plan_has_metric and plan_token and not already_has_plan_metric:
                 cleaned = _scrub_foreign_ibm_metric_tokens(text, root)
                 base_text = cleaned or text
-                if base_text and not base_text.rstrip().endswith((".", "!", "?")):
-                    base_text = base_text.rstrip() + "."
-                bullet["bullet_text"] = (
-                    f"{base_text} Delivered {plan_token} at enterprise scale."
-                    if base_text
-                    else f"Delivered {plan_token} at enterprise scale."
-                )
+                bullet["bullet_text"] = _append_metric_clause(base_text, plan_token)
                 bullet["has_metric"] = True
                 bullet["metric_raw"] = plan_metric
                 src = list(bullet.get("source_fact_ids") or [])
@@ -565,11 +608,7 @@ def inject_ibm_locked_metric_anchors(
             continue
 
         cleaned = _scrub_foreign_ibm_metric_tokens(text, root)
-        bullet["bullet_text"] = (
-            f"{cleaned} Delivered {token} outcomes at enterprise scale."
-            if cleaned
-            else f"Delivered {token} outcomes at enterprise scale."
-        )
+        bullet["bullet_text"] = _append_metric_clause(cleaned, f"{token} outcomes")
         bullet["has_metric"] = True
         bullet["metric_raw"] = token
         src = list(bullet.get("source_fact_ids") or [])
@@ -650,6 +689,105 @@ def demote_gated_ibm_metrics(parsed: dict[str, Any]) -> None:
             if str(bullet.get("metric_raw") or "").strip().startswith("10"):
                 bullet["metric_raw"] = ""
                 bullet["has_metric"] = bool(re.search(r"[\$\d]", new_text))
+
+
+# HOLD/DO_NOT_PROMOTE figures (x2_ibm_hold_metric_forbidden_in_output) — never promotable.
+_HOLD_METRIC_TEXT_RE = re.compile(
+    r"(?:\b(?:by|of|to|at|up to|achieving|delivering|driving|with)\s+)?"
+    r"(?:\$\s*(?:15|30)\s*M\b|\b(?:25|30|35|40)\s*%)",
+    re.IGNORECASE,
+)
+
+
+def demote_hold_metrics(parsed: dict[str, Any]) -> None:
+    """Strip HOLD/DO_NOT_PROMOTE figures (25/30/35/40%, $15M, $30M) to qualitative prose.
+
+    W5 (plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): sibling of
+    ``demote_gated_ibm_metrics`` — the PA forbids these figures, but when a generation path
+    still surfaces one, this deterministic backstop removes the unpromotable figure so the
+    bullet reads qualitatively. Promotable metrics ($10M ARR, 20% joint revenue growth) are
+    never touched.
+    """
+    if not isinstance(parsed, dict):
+        return
+    from apps_rg.runtime.validators.executive_summary_sentence_utils import split_sentences
+
+    for bullet in parsed.get("bullets") or []:
+        if not isinstance(bullet, dict):
+            continue
+        text = str(bullet.get("bullet_text") or "")
+        if not _HOLD_METRIC_TEXT_RE.search(text):
+            continue
+        # Sentence-aware demotion: when the bullet has multiple sentences, DROP the sentence
+        # carrying the HOLD figure (also restores single-thought shape); when it is the only
+        # sentence, strip just the figure in place.
+        sentences = split_sentences(text)
+        if len(sentences) > 1:
+            kept = [s for s in sentences if not _HOLD_METRIC_TEXT_RE.search(s)]
+            new_text = " ".join(kept).strip() if kept else _HOLD_METRIC_TEXT_RE.sub("", text)
+        else:
+            new_text = _HOLD_METRIC_TEXT_RE.sub("", text)
+        new_text = re.sub(r"\s{2,}", " ", new_text).replace(" ,", ",").replace(" .", ".").strip()
+        if new_text and not new_text.rstrip().endswith((".", "!", "?")):
+            new_text = new_text.rstrip() + "."
+        bullet["bullet_text"] = new_text
+        mr = str(bullet.get("metric_raw") or "")
+        if _HOLD_METRIC_TEXT_RE.search(mr):
+            bullet["metric_raw"] = ""
+            bullet["has_metric"] = bool(re.search(r"[\$\d]", new_text))
+
+
+def scrub_cross_slot_plan_metrics(parsed: dict[str, Any], plan_facts: list[dict[str, Any]]) -> None:
+    """Remove a slot's plan-fact metric token from every OTHER slot's bullet text.
+
+    W4-residual (plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): the gemini X1D judge
+    decisive-failed ibm_bullets because a bullet carried ANOTHER slot's metric (e.g. bullet 5
+    claiming the "$10M new ARR" that belongs to bul_ibm_001's fact). The canonical-anchor scrub
+    only covers IBM_METRIC_ANCHOR_RULES tokens; plan-fact metrics (graph-selected) were not
+    scrubbed cross-slot. A metric claim not supported by the slot's own source fact is
+    unsupported by construction — remove it deterministically.
+    """
+    if not isinstance(parsed, dict):
+        return
+    tokens_by_root: dict[str, str] = {}
+    for f in plan_facts or []:
+        if not isinstance(f, dict):
+            continue
+        tok = _plan_metric_display_token(str(f.get("metric_raw") or ""))
+        if tok:
+            tokens_by_root[str(f.get("fact_id") or "").strip()] = tok
+    if not tokens_by_root:
+        return
+    for bullet in parsed.get("bullets") or []:
+        if not isinstance(bullet, dict):
+            continue
+        own = str(bullet.get("bullet_id") or "").strip()
+        text = str(bullet.get("bullet_text") or "")
+        changed = False
+        for root, tok in tokens_by_root.items():
+            if root == own or not tok or tok.lower() not in text.lower():
+                continue
+            # Clause-aware removal: strip the token PLUS its dangling verb/prepositional shell
+            # ("generating $10M in new ARR" -> remove the whole clause, not just "$10M", which
+            # left fragments like "generating in new ARR" that the X1D judge flagged).
+            clause = re.compile(
+                r"(?:,?\s*(?:and\s+)?(?:generating|delivering|driving|producing|securing|adding)\s+)?"
+                + re.escape(tok)
+                + r"(?:\s+(?:in|of)\s+[A-Za-z -]{0,40}?)?(?=$|[,.;)])",
+                re.IGNORECASE,
+            )
+            new = clause.sub("", text)
+            text = new if new != text else re.sub(re.escape(tok), "", text, flags=re.IGNORECASE)
+            changed = True
+            if str(bullet.get("metric_raw") or "").strip().lower().startswith(tok.lower()):
+                bullet["metric_raw"] = ""
+                bullet["has_metric"] = False
+        if changed:
+            text = re.sub(r"\s{2,}", " ", text)
+            text = re.sub(r"\s+([,.])", r"\1", text).strip().strip(",")
+            if text and not text.rstrip().endswith((".", "!", "?")):
+                text = text.rstrip() + "."
+            bullet["bullet_text"] = text
 
 
 def _plan_metric_display_token(plan_metric: str) -> str:
@@ -770,6 +908,17 @@ def run_ibm_bullets_execution(
     ibm_facts.sort(
         key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
     )
+    # Plan-level HOLD demotion (W5, apps-rg-aig-remaining-lanes-closeout-d4e1f7): the ledger can
+    # assign a slot a HOLD/DO_NOT_PROMOTE figure as its plan metric (e.g. bul_ibm_002 ->
+    # "30% cost optimization"), which made the prompt's METRIC SURFACING and the anchor gate
+    # demand the very token x2_ibm_hold_metric_forbidden_in_output bans — unsatisfiable by
+    # construction. Demote the fact to qualitative at the plan seam so prompt, anchor gate, and
+    # HOLD gate agree; the fact's qualitative claim_text is unchanged.
+    for _f in ibm_facts:
+        if isinstance(_f, dict) and _HOLD_METRIC_TEXT_RE.search(str(_f.get("metric_raw") or "")):
+            _f["metric_raw"] = ""
+            _f["has_metric"] = False
+            _f["metric_demoted_hold"] = True
     selected_fact_plan = {**pool.selected_fact_plan, "facts": ibm_facts}
     allowed_fact_ids = pool.allowed_fact_ids
     proof_pool_metadata = pool.proof_pool_metadata
@@ -919,9 +1068,9 @@ def run_ibm_bullets_execution(
     provider_result_data = result.to_dict() if result else {}
     runtime_generation_status = result.runtime_generation_status if result else "BLOCKED"
     write_json(artifact_dir / "provider_response.json", provider_result_data)
-    if str(args.provider) == "external_claude" and generation_status_allows_qwen_json_parse(runtime_generation_status):
+    if str(args.provider) == "external_claude" and generation_status_allows_json_parse(runtime_generation_status):
         if parsed is None:
-            raw_output, parsed, parse_error = retry_qwen_for_parse(
+            raw_output, parsed, parse_error = retry_provider_for_parse(
                 messages, tagged, raw_output, parse_error
             )
             if parsed is not None:
@@ -951,6 +1100,12 @@ def run_ibm_bullets_execution(
             # x2_ibm_metric_outcome_id_required_when_has_metric does not block on an
             # unpromotable figure.
             demote_gated_ibm_metrics(parsed)
+            # W5 backstop: strip HOLD/DO_NOT_PROMOTE figures (25/30/35/40%, $15M, $30M)
+            # any path still surfaced despite the PA ban.
+            demote_hold_metrics(parsed)
+            # W4-residual: a bullet must not claim ANOTHER slot's plan metric (judge
+            # decisive-failed on cross-slot "$10M new ARR"); scrub deterministically.
+            scrub_cross_slot_plan_metrics(parsed, ibm_facts)
             align_ibm_claim_ledger_from_canonical_facts(
                 parsed,
                 plan_facts=ibm_facts,
@@ -1445,7 +1600,7 @@ __all__ = [
     "load_base_resume",
     "normalize_parsed_output",
     "parse_model_json",
-    "retry_qwen_for_parse",
+    "retry_provider_for_parse",
     "run_ibm_bullets_execution",
     "sha16",
     "write_json",

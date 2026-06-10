@@ -268,7 +268,7 @@ def run_ibm_narrative_lane_execution(
         if _generation_status_allows_structure_parse(result.runtime_generation_status):
             parsed, parse_error = parse_model_json(raw_output)
             if parsed is None and str(args.provider) == "external_claude":
-                raw_output, parsed, parse_error = retry_qwen_for_parse(
+                raw_output, parsed, parse_error = retry_provider_for_parse(
                     messages, provider_payload, raw_output, parse_error
                 )
                 if parsed is not None:
@@ -284,7 +284,7 @@ def run_ibm_narrative_lane_execution(
             if parsed is not None:
                 parsed = normalize_parsed_output(parsed, runtime_payload)
                 _pre_metric_raw = raw_output
-                raw_output, parsed = retry_qwen_for_metric_budget(
+                raw_output, parsed = retry_provider_for_metric_budget(
                     messages,
                     provider_payload,
                     raw_output,

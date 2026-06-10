@@ -204,7 +204,7 @@ def run_competencies_lane_execution(
     base_url = str(provider_request_data.get("provider_url") or "")
     pre_timeout = competencies_vllm_preflight_timeout_s()
     print(
-        f"[competencies] live qwen_vllm: shared HTTP /v1/models preflight base_url={base_url!r} "
+        f"[competencies] provider preflight: shared HTTP /v1/models probe base_url={base_url!r} "
         f"model={req_model!r} timeout_s={pre_timeout}",
         file=sys.stderr,
         flush=True,
@@ -282,7 +282,7 @@ def run_competencies_lane_execution(
     runtime_generation_status = result.runtime_generation_status if result else "BLOCKED"
     if runtime_generation_status in ("REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS):
         if parsed is None:
-            raw_model_output_original, parsed, parse_error = retry_qwen_for_parse(
+            raw_model_output_original, parsed, parse_error = retry_provider_for_parse(
                 messages,
                 provider_payload,
                 raw_model_output_original,
@@ -308,7 +308,7 @@ def run_competencies_lane_execution(
             raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
             bad_term = find_bullet_restatement_term(parsed.get("competencies") or [], bullet_lowers)
             if bad_term:
-                raw_output, parsed = retry_qwen_competency_restatement(
+                raw_output, parsed = retry_provider_competency_restatement(
                     messages,
                     provider_payload,
                     raw_output,

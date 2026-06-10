@@ -436,7 +436,7 @@ def normalize_unify_narrative_parsed(
     return out
 
 
-def retry_qwen_for_parse(
+def retry_provider_for_parse(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,
@@ -769,7 +769,7 @@ def run_unify_narrative_execution(
     if runtime_generation_status in ("REAL_LLM", "MOCKED"):
         parsed_in, parse_error = parse_model_json(raw_output)
         if parsed_in is None and runtime_generation_status == "REAL_LLM" and str(args.provider) == "external_claude":
-            raw_output, parsed_in, parse_error = retry_qwen_for_parse(
+            raw_output, parsed_in, parse_error = retry_provider_for_parse(
                 messages, provider_payload, raw_output, parse_error
             )
             if parsed_in is not None:

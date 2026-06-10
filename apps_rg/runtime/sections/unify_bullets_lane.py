@@ -91,7 +91,11 @@ from apps_rg.runtime.validators.unify_bullets_x2 import (
 PROMPT_ID = "unify_bullet_tailor_v1"
 UNIFY_TEMP_DEFAULT = 0.45
 UNIFY_TEMP_RANGE = (0.35, 0.55)
-UNIFY_MAX_OUTPUT_TOKENS = 2400
+# 2400 -> 8000 (W5, plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): the 6-bullet +
+# claim-ledger + coverage JSON exceeds ~2400 tokens, so every SC path's output was cut
+# mid-string (full6: raw ends at `"claim_text": "Converted bespoke...`), parsed to nothing,
+# and the selector merged 0 bullets -> 15-gate X2 cascade.
+UNIFY_MAX_OUTPUT_TOKENS = 8000
 TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
@@ -466,7 +470,7 @@ def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:
     return None, "Model output was not a JSON object."
 
 
-def retry_qwen_for_parse(
+def retry_provider_for_parse(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,
@@ -785,7 +789,7 @@ def run_unify_bullets_execution(
         and result.runtime_generation_status == "REAL_LLM"
         and parsed_in is None
     ):
-        raw_output, parsed_in, parse_error = retry_qwen_for_parse(
+        raw_output, parsed_in, parse_error = retry_provider_for_parse(
             messages, provider_payload, raw_output, parse_error
         )
         if parsed_in is not None:
@@ -1272,7 +1276,7 @@ __all__ = [
     "load_base_resume",
     "normalize_unify_parsed_without_ledger_synthesis",
     "parse_model_json",
-    "retry_qwen_for_parse",
+    "retry_provider_for_parse",
     "run_unify_bullets_execution",
     "sha16",
     "write_json",

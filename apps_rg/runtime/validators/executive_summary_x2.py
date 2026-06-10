@@ -251,7 +251,7 @@ def check_resume_display_colon_space_discipline(resume_display_text: str) -> tup
     return True, None
 
 
-def check_qwen_transport_envelope_stub_false(
+def check_transport_envelope_stub_false(
     artifacts_dir: Path | None,
     provider_requested: str | None,
 ) -> tuple[bool, str | None]:
@@ -2698,7 +2698,7 @@ def run_x2_gates(
     )
     add("x2_no_silent_mock_fallback", no_mock_fallback_ok, f"provider={provider_requested}, status={runtime_generation_status}", "no silent mock", "Silent mock or stub fallback detected.")
 
-    stub_env_ok, stub_env_reason = check_qwen_transport_envelope_stub_false(artifacts_dir, provider_requested)
+    stub_env_ok, stub_env_reason = check_transport_envelope_stub_false(artifacts_dir, provider_requested)
     add(
         "x2_qwen_provider_stub_transport_zero",
         stub_env_ok,

@@ -28,6 +28,7 @@ from apps_rg.runtime.reasoning.employment_bullet_pool import (
     FINAL_BULLET_COUNT,
     SC_PATH_COUNT_BY_LANE,
 )
+from apps_rg.runtime.validators.bullet_line_discipline_x2 import DEFAULT_BULLET_MAX_CHARS
 from apps_rg.runtime.validators.competencies_quality_x2 import GENERIC_CATEGORY_MIN_GRAPH_TERMS
 
 # Headline (aligned with headline_x2 headline_runtime_self_check_truth)
@@ -304,7 +305,11 @@ def _headline_shape() -> SectionProductShape:
         shape_summary=(
             f"{HEADLINE_SEGMENT_COUNT} segments; prefix {HEADLINE_SEGMENT_PREFIX!r}; "
             f"{HEADLINE_PIPE_SEPARATORS} pipe separators; "
-            f"{HEADLINE_WORD_MIN}-{HEADLINE_WORD_MAX} words total; one line only"
+            f"{HEADLINE_WORD_MIN}-{HEADLINE_WORD_MAX} words total; one line only; "
+            ">=1 segment MUST carry a governance/regulated-AI signal (e.g. 'Governed', "
+            "'AI Governance', 'Regulated AI') AND >=1 a platform/runtime signal "
+            "(x2_headline_governance_or_regulated_ai_signal_required + "
+            "x2_headline_platform_or_runtime_signal_required are HARD gates)"
         ),
         bounds_gate_ids=(
             "x2_headline_exactly_one_line",
@@ -411,7 +416,8 @@ def _unify_bullets_shape() -> SectionProductShape:
         display_field="bullets",
         shape_summary=(
             f"6 bullets from {pool_n}-path self-consistency pool; Claude pool selector picks top-6 passing score; "
-            "bul_unify_* fact ids only"
+            "bul_unify_* fact ids only; "
+            f"each bullet_text exactly 1 sentence, single line, <= {DEFAULT_BULLET_MAX_CHARS} chars"
         ),
         bounds_gate_ids=(
             "x2_unify_bullet_count_6",
@@ -507,7 +513,8 @@ def _ibm_bullets_shape() -> SectionProductShape:
         display_field="bullets",
         shape_summary=(
             f"5 bullets from {pool_n}-path self-consistency pool; Claude pool selector picks top-5 passing score; "
-            "bul_ibm_* only"
+            "bul_ibm_* only; "
+            f"each bullet_text exactly 1 sentence, single line, <= {DEFAULT_BULLET_MAX_CHARS} chars"
         ),
         bounds_gate_ids=(
             "x2_ibm_bullet_count_5",

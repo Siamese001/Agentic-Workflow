@@ -453,7 +453,13 @@ def run_ibm_narrative_x2_gates(
         ledger_text_reason,
     )
 
-    serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
+    # Leakage scan excludes the model's free-form ``self_check`` attestation (W5,
+    # apps-rg-aig-remaining-lanes-closeout-d4e1f7): an attestation key naming the forbidden
+    # marker false-trips the substring scan.
+    serialized = json.dumps(
+        {k: v for k, v in (parsed_output or {}).items() if k != "self_check"},
+        sort_keys=True,
+    ).lower()
     if proof_source in ("srfs", "broad_skills_ledger"):
         scope_ids = _ledger_fact_ids(claim_ledger)
     else:
@@ -759,8 +765,14 @@ def run_ibm_narrative_x2_gates(
         "Silent mock fallback detected.",
     )
 
-    judges_ok, judges_reason = check_judge_rows_present(x1d_judges)
-    add("x2_x1d_required_judges_present", judges_ok, judges_reason, REQUIRED_JUDGE_PROVIDERS, judges_reason)
+    # Per-lane roster from section_judge_policy (W4, apps-rg-aig-remaining-lanes-closeout-d4e1f7):
+    # narratives run the recalibrated single-judge panel (gemini_pro); the global exec-summary
+    # roster fallback demanded openai_chatgpt the lane policy never runs (W0-A class drift).
+    from apps_rg.runtime.section_judge_policy import get_section_judge_policy
+
+    _required = list(get_section_judge_policy("ibm_narrative").required_judge_providers)
+    judges_ok, judges_reason = check_judge_rows_present(x1d_judges, required_providers=_required)
+    add("x2_x1d_required_judges_present", judges_ok, judges_reason, _required, judges_reason)
 
     if x1d_judges:
         blocked_invalid = []

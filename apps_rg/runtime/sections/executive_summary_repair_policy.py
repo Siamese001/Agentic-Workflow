@@ -10,7 +10,7 @@ RELEASE_SRFS_EMERGENCY_FINALIZER_ENABLED = False
 RELEASE_SRFS_JUDGE_SAFE_REPAIR_ENABLED = False
 RELEASE_SRFS_DENSITY_MICRO_EXPANSION_ENABLED = False
 
-# Bounded same-authority synthesis regen (retry_qwen_for_synthesis).
+# Bounded same-authority synthesis regen (retry_provider_for_synthesis).
 RELEASE_SYNTHESIS_REGENERATION_ENABLED = True
 SYNTHESIS_REGEN_MAX_ATTEMPTS = 2
 SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
@@ -102,7 +102,7 @@ def judge_pass_floor_0_to_5() -> float | None:
 
 
 def judge_regen_max_attempts() -> int:
-    """Judge-regen cycles per run (one Qwen rewrite + re-judge soft fails each)."""
+    """Judge-regen cycles per run (one provider rewrite + re-judge soft fails each)."""
     raw = os.environ.get(
         "APPS_RG_EXEC_SUMMARY_JUDGE_REGEN_MAX_ATTEMPTS",
         str(JUDGE_REGEN_MAX_ATTEMPTS),
@@ -174,8 +174,14 @@ def exploratory_full_paragraph_regen_enabled() -> bool:
     return _truthy_env(raw)
 
 
-# Re-run X1D after full X2 with authoritative gate snapshot (default off — variance-class trim).
-RELEASE_POST_X2_JUDGE_REFRESH_ENABLED = False
+# Re-run X1D after full X2 with authoritative gate snapshot.
+# Re-enabled (plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): the variance-class trim that
+# hardcoded this False made x2_x1d_required_judges_present STRUCTURALLY unsatisfiable — on the
+# initial lane path the X1D panel runs ONLY via refresh_x1d_judges_after_full_x2(prior_judges=[]),
+# so disabling the refresh emitted zero judge rows while the gate still required
+# gemini_pro+openai_chatgpt (full6: NO_JUDGE_ROWS_EMITTED, X3_BLOCK on judge-wiring gates alone
+# with x2_passed=true). Opt out per-run via APPS_RG_EXEC_SUMMARY_X1D_POST_X2_REFRESH=0.
+RELEASE_POST_X2_JUDGE_REFRESH_ENABLED = True
 
 
 def post_x2_judge_refresh_enabled() -> bool:
