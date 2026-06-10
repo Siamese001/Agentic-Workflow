@@ -12,8 +12,9 @@ worktree, ``.env`` is resolved in this order (first existing file wins):
 
 1. ``$APPS_RG_DOTENV`` — explicit operator override (a single absolute path).
 2. ``<repo_root>/.env`` — back-compat / intentional per-worktree override.
-3. ``~/.apps_rg/.env`` — canonical relocated SSOT outside any repo (survives
-   worktree reaps, re-clones, and the primary checkout moving).
+3. ``~/env/.env`` — canonical relocated SSOT outside any repo (survives
+   worktree reaps, re-clones, and the primary checkout moving). Deliberately
+   app-neutral: one credentials file serves every worktree and branch.
 
 ``override=False`` preserves already-exported shell credentials in all cases.
 """
@@ -31,8 +32,8 @@ APPS_RG_DOTENV_ENV_VAR = "APPS_RG_DOTENV"
 
 
 def canonical_home_dotenv() -> Path:
-    """Repo-independent SSOT default: ``~/.apps_rg/.env`` (final fallback)."""
-    return Path.home() / ".apps_rg" / ".env"
+    """Repo-independent SSOT default: ``~/env/.env`` (final fallback)."""
+    return Path.home() / "env" / ".env"
 
 
 @dataclass(frozen=True)
@@ -62,7 +63,7 @@ def bootstrap_apps_rg_env(
 ) -> AppsRgEnvBootstrapResult:
     """Load the ``.env`` SSOT for process-env provider checks.
 
-    Resolution order: ``$APPS_RG_DOTENV`` → ``<repo_root>/.env`` → ``~/.apps_rg/.env``.
+    Resolution order: ``$APPS_RG_DOTENV`` → ``<repo_root>/.env`` → ``~/env/.env``.
     ``override=False`` preserves already-exported shell credentials, matching the
     historical CLI behavior while making that behavior available outside
     ``python -m apps_rg``.

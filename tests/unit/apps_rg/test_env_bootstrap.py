@@ -65,7 +65,7 @@ def test_bootstrap_falls_back_to_home_ssot_when_worktree_blank(tmp_path: Path, m
     """A fresh worktree with no .env and no override still resolves the canonical home SSOT."""
     repo = tmp_path / "blank_worktree"
     repo.mkdir()  # no .env materialized (mirrors `git worktree add`)
-    home_ssot = tmp_path / "home" / ".apps_rg" / ".env"
+    home_ssot = tmp_path / "home" / "env" / ".env"
     home_ssot.parent.mkdir(parents=True)
     home_ssot.write_text("ANTHROPIC_API_KEY=home-ssot\n", encoding="utf-8")
     monkeypatch.delenv(APPS_RG_DOTENV_ENV_VAR, raising=False)
