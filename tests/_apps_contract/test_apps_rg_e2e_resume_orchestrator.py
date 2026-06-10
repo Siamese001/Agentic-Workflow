@@ -46,6 +46,9 @@ def _stub_canonical_base_resume(repo: Path, *, text: str) -> Path:
 
 def test_lane_modules_canonical_sequence() -> None:
     tails = [_lane_tail(m) for m in lb.LANE_MODULES]
+    # role_episode_lane (InsurTech/EY role-episode dispatch) is canonical since
+    # e8011623f9 "close e2e lane proof blockers"; it dispatches before competencies
+    # so all employment bullets/narratives precede competencies synthesis.
     assert tails == [
         "headline",
         "executive_summary",
@@ -53,6 +56,7 @@ def test_lane_modules_canonical_sequence() -> None:
         "unify_narrative",
         "ibm_bullets",
         "ibm_narrative",
+        "role_episode",
         "competencies",
     ]
 

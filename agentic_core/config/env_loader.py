@@ -6,6 +6,24 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+def _home_ssot_dotenv() -> Path:
+    """App-neutral machine-wide ``.env`` SSOT: ``~/env/.env``.
+
+    ``git worktree add`` materializes only tracked files and ``.env`` is gitignored,
+    so fresh worktrees (and checkouts whose root ``.env`` was retired) resolve the
+    home SSOT instead. Generic across all apps_* — no app-specific paths or vars.
+    """
+    return Path.home() / "env" / ".env"
+
+
+def _resolve_dotenv_path(project_root: Path) -> Path | None:
+    """First existing of ``<project_root>/.env`` then ``~/env/.env``; None if neither."""
+    for candidate in (project_root / ".env", _home_ssot_dotenv()):
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 class SovereignEnv:
     """Sovereign .env loader - fail-fast, type-safe, zero-drift."""
 
@@ -52,10 +70,13 @@ class SovereignEnv:
         return value
 
     def _load(self, project_root: Path):
-        """Load and validate all environment configuration from root .env."""
-        env_path = project_root / ".env"
-        if not env_path.is_file():
-            raise FileNotFoundError(f"[L6 CRITICAL] .env missing at {env_path} - Neural Link broken")
+        """Load and validate environment configuration from root .env or the home SSOT."""
+        env_path = _resolve_dotenv_path(project_root)
+        if env_path is None:
+            raise FileNotFoundError(
+                f"[L6 CRITICAL] .env missing at {project_root / '.env'} "
+                f"and {_home_ssot_dotenv()} - Neural Link broken"
+            )
 
         load_dotenv(dotenv_path=env_path, override=False)
 

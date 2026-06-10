@@ -1,11 +1,12 @@
-"""CHECK-RG-FACT-VECTORS — apps_rg fact_vectors Chroma gate (sibling to CHECK-RG-CHROMA).
+"""CHECK-RG-FACT-VECTORS — apps_rg fact_vectors dense+sparse gate.
 
 Verifies the C0 dense lane collection ``fact_vectors`` exists at the canonical persist
-path, uses BGE-M3-sized embeddings (1024), and carries required metadata keys on a sample.
+path, uses BGE-M3-sized embeddings (1024), carries required metadata keys on a sample,
+and has the sparse FTS5 sidecar required by the C0.2 hybrid lane.
 
 ``run_contract_gates`` runs ``ops_scripts/ci/seed_apps_rg_fact_vectors_chroma.py`` immediately
-before this gate so fresh CI checkouts can satisfy RG-FV-1 when chromadb + sentence-transformers
-are available. Bypass seed: ``APPS_RG_SEED_FACT_VECTORS_BYPASS=1``.
+before this gate so fresh CI checkouts can satisfy RG-FV-1/RG-FV-5 when chromadb +
+sentence-transformers are available. Bypass seed: ``APPS_RG_SEED_FACT_VECTORS_BYPASS=1``.
 
 Advisory by default; fail-closed via APPS_RG_FACT_VECTORS_FAIL_CLOSED=1.
 Bypass: APPS_RG_FACT_VECTORS_BYPASS=1.
@@ -14,6 +15,7 @@ from __future__ import annotations
 
 import json
 import os
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -24,6 +26,7 @@ BYPASS = os.environ.get("APPS_RG_FACT_VECTORS_BYPASS", "").lower() in ("1", "tru
 FAIL_CLOSED = os.environ.get("APPS_RG_FACT_VECTORS_FAIL_CLOSED", "").lower() in ("1", "true")
 
 CHROMA_PATH = os.environ.get("CHROMA_PERSIST_DIR", str(REPO_ROOT / "data/cache/chromadb"))
+SPARSE_PATH = REPO_ROOT / "data" / "cache" / "sparse" / "fact_vectors.db"
 
 REQUIRED_METADATA_KEYS = (
     "app",
@@ -42,6 +45,18 @@ def _check(checks: list[dict], check_id: str, ok: bool, detail: str) -> None:
     level = "OK" if ok else "ERROR"
     checks.append({"check": check_id, "level": level, "detail": detail})
     print(f"  {'✅' if ok else '❌'} {check_id}: {detail}")
+
+
+def _sparse_doc_count(path: Path | None = None) -> int:
+    target = path or SPARSE_PATH
+    if not target.is_file():
+        return 0
+    try:
+        with sqlite3.connect(str(target)) as conn:
+            row = conn.execute("SELECT COUNT(*) FROM docs").fetchone()
+    except sqlite3.Error:
+        return 0
+    return int(row[0] or 0) if row else 0
 
 
 def main() -> int:
@@ -106,6 +121,14 @@ def main() -> int:
     except Exception as exc:
         _check(checks, "RG-FV-3", False, f"metadata sample error: {exc}")
 
+    sparse_docs = _sparse_doc_count()
+    _check(
+        checks,
+        "RG-FV-5",
+        sparse_docs > 0,
+        f"sparse sidecar docs={sparse_docs} path={SPARSE_PATH}",
+    )
+
     try:
         from agentic_core.runtime.contracts.final_evidence_contract import (
             SUPPORT_STATUS_PASSING_VALUES as FEC_PASS,
@@ -137,6 +160,7 @@ def _write_report(checks: list[dict], error_count: int) -> None:
     report = {
         "gate": "CHECK-RG-FACT-VECTORS",
         "chroma_path": CHROMA_PATH,
+        "sparse_path": str(SPARSE_PATH),
         "checks": checks,
         "error_count": error_count,
         "advisory": not FAIL_CLOSED,

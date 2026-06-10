@@ -16,7 +16,12 @@ MAX_CATEGORY_COUNT = 8
 # category set. Selection rigor (min_score 0.72 + per-category graph_skill_node_ids
 # X2 gate) is unchanged.
 CANDIDATE_CATEGORY_COUNT = 8
-MIN_ITEMS_PER_CATEGORY = 2
+# Floor raised 2->3 (plan apps-rg-aig-remaining-lanes-closeout-d4e1f7 W2): the generic-category
+# graph-terms gate (GENERIC_CATEGORY_MIN_GRAPH_TERMS=3) requires >=3 graph-backed terms per generic
+# category, but a floor of 2 let the prompt request "2-6 terms", so the model emitted exactly 2
+# (both graph-backed) and failed x2_competencies_generic_category_blocked_without_graph. Aligning the
+# floor to 3 makes the prompt request 3-6 terms; this TIGHTENS the gate, never weakens it.
+MIN_ITEMS_PER_CATEGORY = 3
 MAX_ITEMS_PER_CATEGORY = 6
 
 # Executive / platform narrative alignment (targeting coherence — not JD-as-proof).
