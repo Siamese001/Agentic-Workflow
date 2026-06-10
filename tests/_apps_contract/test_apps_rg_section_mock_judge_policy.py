@@ -1,4 +1,9 @@
-"""Contract tests: mock judges policy and offline Qwen stub on ``python -m apps_rg``."""
+"""Contract tests: live-judges-only policy on the product CLI (``python -m apps_rg``).
+
+The product entry never accepts ``--mock-judges`` (X1D judges are always model-backed); mock
+judges are test-harness env-only. external_claude is the sole accepted generation provider
+after Qwen removal (PR #256). Guard SSOT: ``apps_rg.runtime.live_judge_only_guard``.
+"""
 
 from __future__ import annotations
 
@@ -62,7 +67,7 @@ def test_mock_judges_cli_flag_rejected_on_product_entry(lane: str) -> None:
             "--section",
             lane,
             "--provider",
-            "qwen_vllm",
+            "external_claude",
             "--mock-judges",
         ],
         cwd=REPO_ROOT,
@@ -87,7 +92,7 @@ def test_allow_non_allow_exit_zero_does_not_bypass_mock_judge_cli_block(lane: st
             "--section",
             lane,
             "--provider",
-            "qwen_vllm",
+            "external_claude",
             "--mock-judges",
             "--allow-non-allow-exit-zero",
         ],
@@ -100,19 +105,3 @@ def test_allow_non_allow_exit_zero_does_not_bypass_mock_judge_cli_block(lane: st
     assert r.returncode == 2, (r.stdout, r.stderr)
     combined = ((r.stderr or "") + (r.stdout or "")).lower()
     assert "mock-judges" in combined
-
-
-def test_lane_dispatch_build_parser_default_provider_is_qwen_vllm() -> None:
-    """Legacy dispatch argparse defaults use qwen_vllm (mock provider removed)."""
-    import importlib
-
-    from apps_rg.l2_recipe.modular_resume_generation import LANE_DISPATCH_MODULES
-
-    for mod in LANE_DISPATCH_MODULES:
-        m = importlib.import_module(mod)
-        bp_factory = m.__dict__.get("build_parser")
-        if bp_factory is None:
-            continue
-        bp = bp_factory()
-        ns = bp.parse_args([])
-        assert ns.provider == "qwen_vllm", mod

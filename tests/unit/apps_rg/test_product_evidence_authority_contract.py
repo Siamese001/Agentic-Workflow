@@ -242,7 +242,7 @@ def test_blocked_graph_raises_product_error(monkeypatch: pytest.MonkeyPatch) -> 
 def test_main_returns_2_when_proof_pool_law_violated(monkeypatch: pytest.MonkeyPatch) -> None:
     """Canonical CLI path maps ProductEvidenceAuthorityError to exit 2."""
     monkeypatch.setattr(
-        "apps_rg.runtime.qwen_live_only_guard.assert_production_runtime",
+        "apps_rg.runtime.live_judge_only_guard.assert_production_runtime",
         lambda **_kw: None,
     )
 

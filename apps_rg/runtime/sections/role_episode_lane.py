@@ -24,6 +24,9 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
     normalize_exec_summary_claim_ledger,
 )
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
+from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
+from apps_rg.runtime.validators.bullet_line_discipline_x2 import check_bullet_single_thought
+from apps_rg.runtime.validators.narrative_mechanical_x2 import check_narrative_exactly_one_sentence
 from apps_rg.runtime.providers import (
     ExternalProvider,
     ProviderGateway,
@@ -250,7 +253,12 @@ def _normalize_bullets(parsed: dict[str, Any], *, cfg: RoleEpisodeLaneConfig, al
                 continue
             out.append(
                 {
-                    "bullet_id": str(row.get("bullet_id") or f"{cfg.bullet_prefix}_{idx + 1:03d}"),
+                    # Canonical slot id ALWAYS (W3, plan apps-rg-aig-remaining-lanes-closeout-d4e1f7):
+                    # the companion-finalization gate keys on bul_<employer>_NNN; trusting a
+                    # model-emitted id (e.g. "ins_b1") made narrative upstream acceptance
+                    # non-deterministic — InsurTech failed bullet_ids_mismatch while EY passed
+                    # only because its model happened to echo the canonical ids.
+                    "bullet_id": f"{cfg.bullet_prefix}_{idx + 1:03d}",
                     "bullet_text": text,
                     "source_fact_ids": _normalize_source_ids(row.get("source_fact_ids"), allowed, idx),
                 }
@@ -474,13 +482,12 @@ def _x2_gates(
                 _x2_gate(
                     f"x2_{cfg.section_id}_bullet_single_thought",
                     all(
-                        str(b.get("bullet_text") or "").count(".")
-                        + str(b.get("bullet_text") or "").count("!")
-                        + str(b.get("bullet_text") or "").count("?")
-                        <= 1
+                        check_bullet_single_thought(str(b.get("bullet_text") or ""))[0]
                         for b in bullets
                         if isinstance(b, dict)
                     ),
+                    # Sentence-aware (shared validator): a decimal like "99.99%" is one thought,
+                    # not two sentences — the prior raw '.'-count false-failed legitimate metrics.
                     "bullet contains multiple sentence-like thoughts",
                 ),
                 _x2_gate(
@@ -492,13 +499,14 @@ def _x2_gates(
         )
     else:
         sent = str(l2.get("narrative_sentence") or "").strip()
+        sent_ok, sent_count, _sent_reason = check_narrative_exactly_one_sentence(sent)
         gates.extend(
             [
                 _x2_gate(
                     f"x2_{cfg.section_id}_exactly_one_sentence",
-                    bool(sent) and sent.count(".") + sent.count("!") + sent.count("?") == 1,
+                    sent_ok,
                     "expected exactly one sentence",
-                    sent,
+                    {"sentence_count": sent_count, "text": sent},
                 ),
                 _x2_gate(
                     f"x2_{cfg.section_id}_word_budget",
@@ -523,7 +531,6 @@ def run_role_episode_x2_gates(
     l2: dict[str, Any],
     allowed: list[str],
     runtime_generation_status: str,
-    bundle_consumed: bool = False,
 ) -> list[dict[str, Any]]:
     cfg = _ROLE_LANES[str(section_id or "").strip().lower()]
     return _x2_gates(
@@ -531,7 +538,6 @@ def run_role_episode_x2_gates(
         l2=l2,
         allowed=allowed,
         runtime_generation_status=runtime_generation_status,
-        bundle_consumed=bundle_consumed,
     )
 
 
@@ -658,7 +664,15 @@ def _write_blocked_artifacts(
     write_json(artifact_dir / "text_claim_coverage.json", {"status": "BLOCKED", "reason": reason})
     write_json(artifact_dir / "x2_gate_outputs.json", {"gates": x2, "x2_failed": 1, "x2_passed": 0, "failed_gates": [x2[0]["gate_id"]]})
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": []})
-    write_json(artifact_dir / "x3_disposition.json", x3)
+    # Single-spine authority (E2E-14): route the x3 mirror through the spine finalize helper
+    # rather than writing x3_disposition.json raw. No sealed L2 exists on this pre-provider block
+    # path, so exit receipts are skipped (default); the spine still owns the mirror.
+    finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id=cfg.section_id,
+        runtime_payload=runtime_payload,
+        x3_result=x3,
+    )
     write_json(artifact_dir / "l6_shadow_eval_package.json", {"section_id": cfg.section_id, "status": "BLOCKED", "reason": reason})
     write_json(artifact_dir / "real_l2_generation_result.json", provider_resp)
     write_json(artifact_dir / "section_metric_receipt.json", {"lane_id": cfg.section_id, "runtime_generation_status": status, "x3_code": "X3_BLOCK"})
@@ -924,7 +938,15 @@ def run_role_episode_lane_execution(
     write_json(artifact_dir / "parsed_output.json", {"parsed": parsed, "parse_error": parse_error})
     write_json(artifact_dir / "x2_gate_outputs.json", {"gates": x2, "x2_failed": len(failed), "x2_passed": len(x2) - len(failed), "failed_gates": failed})
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
-    write_json(artifact_dir / "x3_disposition.json", x3.to_dict())
+    # Single-spine authority (E2E-14): aggregate_x3 above is judge math only; the spine finalize
+    # helper owns the x3_disposition.json mirror. The real ExitEvalPipeline runs after sealed L2
+    # via finalize_section_l2_after_output (called below).
+    x3 = finalize_section_lane_x3(
+        artifact_dir=artifact_dir,
+        section_id=sid,
+        runtime_payload=runtime_payload,
+        x3_result=x3,
+    )
     write_json(artifact_dir / "section_input_usage_ledger.json", usage_doc)
     write_json(artifact_dir / "real_l2_generation_result.json", {**provider_result.to_dict(), "product_quality_status": product_quality_status})
     write_json(

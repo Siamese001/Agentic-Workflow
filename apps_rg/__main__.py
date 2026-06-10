@@ -23,8 +23,8 @@ Résumé body generation is **modular section lanes only** (``APPS_RG_R4_GENERAT
 Offline batch orchestration is library-only under ``tests.helpers.offline_lane_orchestration`` (not product proof);
 there is no separate offline orchestrate module CLI.
 
-**L2 model execution (résumé body):** section lanes default to ``external_claude`` through
-``ProviderGateway`` and keep ``qwen_vllm`` explicitly selectable for local comparison.
+**L2 model execution (résumé body):** section lanes run on ``external_claude`` through
+``ProviderGateway`` (the sole accepted provider after Qwen removal, PR #256).
 Section lanes and integrated runs require a **live** provider bundle (no offline contract stub)
 and **live X1D judges** (no ``--mock-judges`` on this CLI; pytest uses
 ``APPS_RG_TEST_HARNESS=1`` + ``APPS_RG_MOCK_JUDGES=1`` only).
@@ -588,7 +588,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=argparse.SUPPRESS,
         choices=["external_claude"],
         help=(
-            "Optional override for section-only lanes (qwen_vllm or external_claude); when omitted, uses "
+            "Optional override for section-only lanes (external_claude); when omitted, uses "
             "APPS_RG_MODULAR_LANE_PROVIDER (see apps_rg.l2_recipe.r4_generation_mode). "
             "Ignored for full R4 runs."
         ),
@@ -718,7 +718,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
 
     bootstrap_apps_rg_env(repo_root=_repo_root)
 
-    from apps_rg.runtime.qwen_live_only_guard import assert_production_runtime, is_test_harness
+    from apps_rg.runtime.live_judge_only_guard import assert_production_runtime, is_test_harness
 
     if section_eff in section_lane_ids or not section_eff:
         if not is_test_harness():
@@ -907,7 +907,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             from apps_rg.runtime.orchestration.canonical_dispatch import (
                 run_canonical_apps_rg_from_cli_primitives,
             )
-            from apps_rg.runtime.qwen_live_only_guard import resolve_cli_mock_judges
+            from apps_rg.runtime.live_judge_only_guard import resolve_cli_mock_judges
             from apps_rg.runtime.section_cli_defaults import (
                 resolve_allow_non_allow_exit_zero,
                 resolve_cli_lane_provider_with_source,
