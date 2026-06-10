@@ -41,9 +41,9 @@ def touch_scheduler():
 @pytest.fixture
 def state_adapter():
     """Provide UWG state adapter."""
-    from agentic_core.L4_state.uwg.durable_write_gateway import get_gateway
+    from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
     from agentic_core.L4_state.uwg.touch_state_writer import TouchStateUWGAdapter
-    gateway = get_gateway()
+    gateway = get_default_gateway()
     return TouchStateUWGAdapter(gateway)
 
 
@@ -292,18 +292,16 @@ class TestFECProducer:
         from apps_lic.cert.fec_producer import produce_fec
         
         run_context = {
-            "research_snippets": [
-                {"source": "linkedin", "content": "Test content", "confidence": 0.8},
-            ],
-            "company_brief": {"stage": "Series A"},
-            "competitive_signals": [{"type": "hiring", "confidence": 0.75}],
+            "profile_data_sources": ["linkedin:profile:123"],
+            "template_ids": ["linkedin_inmail.v1"],
+            "route_id": "linkedin_inmail",
+            "compliance_check_status": "passed",
         }
         
         fec = produce_fec(run_context)
         
-        assert fec["producer"] == "apps_lic.research_bridge"
-        assert "_schema_version" in fec
-        assert fec["_schema_version"] == "1.0.0"
+        assert fec["producer"] == "apps_lic.cert.fec_producer"
+        assert fec["schema_version"] == "1.1"
         assert "retrieval_sources" in fec
         assert "template_ids" in fec
         assert "route_id" in fec
@@ -314,14 +312,15 @@ class TestFECProducer:
         from apps_lic.cert.fec_producer import produce_fec
         
         run_context = {
-            "research_snippets": [{"source": "test", "content": "content"}],
+            "template_ids": ["linkedin_inmail.v1"],
+            "route_id": "linkedin_inmail",
         }
         
         fec = produce_fec(run_context)
         
-        assert fec["grounded"] is True  # Has snippets
-        assert fec["evidence_sufficiency"] == "template_with_signals"
-        assert len(fec["retrieval_sources"]) > 0
+        assert fec["grounded"] is False
+        assert fec["evidence_sufficiency"] == "template_only"
+        assert fec["retrieval_sources"] == []
     
     def test_fec_forward_compat_c0(self):
         """Test FEC producer forward-compatible with C0."""
@@ -329,11 +328,14 @@ class TestFECProducer:
         
         # Simulate C0 retrieval wired in
         run_context = {
-            "c0_retrieval_sources": {
-                "retrieval_id": "ret-123",
-                "query": "company hiring",
-                "results": [{"doc_id": "doc1"}],
-                "confidence": 0.85,
+            "profile_data_sources": ["c0_retrieval:ret-123"],
+            "c0_bundle": {
+                "claim_evidence_map": {
+                    "unsupported_claim_count": 0,
+                    "jd_unsupported_claim_count": 0,
+                    "jd_to_company_evidence_map_present": True,
+                },
+                "freshness_report": {"violation_count": 0},
             },
         }
         
@@ -341,10 +343,9 @@ class TestFECProducer:
         
         assert fec["grounded"] is True
         assert fec["evidence_sufficiency"] == "grounded"
-        assert any(
-            s["source_type"] == "c0_retrieval"
-            for s in fec["retrieval_sources"]
-        )
+        assert "c0_retrieval:ret-123" in fec["retrieval_sources"]
+        assert fec["unsupported_claim_count"] == 0
+        assert fec["jd_to_company_evidence_map_present"] is True
 
 
 # -----------------------------------------------------------------------------

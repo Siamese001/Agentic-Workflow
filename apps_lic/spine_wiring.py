@@ -193,8 +193,8 @@ class SpineWiringVerifier:
     def _verify_coordination_fabric(self) -> WiringStatus:
         """Verify coordination fabric."""
         try:
-            from agentic_core.cache.core.redis_coordination_fabric import get_fabric
-            fabric = get_fabric()
+            from agentic_core.cache.core.redis_coordination_fabric import get_coordination_fabric
+            fabric = get_coordination_fabric()
             
             return WiringStatus(
                 component="coordination_fabric",
@@ -331,11 +331,11 @@ class SpineWiringVerifier:
         try:
             from apps_lic.identity.carry_forward import ContextCarryForwardBridge
             from apps_lic.identity.propagation import get_identity_propagation_service
-            from agentic_core.L4_state.uwg.durable_write_gateway import get_gateway
+            from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
             from agentic_core.L4_state.uwg.touch_state_writer import TouchStateUWGAdapter
             
             identity_service = get_identity_propagation_service()
-            gateway = get_gateway()
+            gateway = get_default_gateway()
             state_adapter = TouchStateUWGAdapter(gateway)
             
             bridge = ContextCarryForwardBridge(

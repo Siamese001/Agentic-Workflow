@@ -533,8 +533,8 @@ def get_touch_scheduler(
         Configured scheduler instance
     """
     if fabric is None:
-        from agentic_core.cache.core.redis_coordination_fabric import get_fabric
-        fabric = get_fabric()
+        from agentic_core.cache.core.redis_coordination_fabric import get_coordination_fabric
+        fabric = get_coordination_fabric()
     
     return TouchScheduler(fabric=fabric)
 

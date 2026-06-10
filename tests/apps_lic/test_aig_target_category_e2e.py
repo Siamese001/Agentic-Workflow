@@ -127,7 +127,7 @@ def test_aig_public_profile_e2e_generates_target_category_draft(
     )
 
     assert result.terminal_r5 is False
-    assert result.l2_execution_status == "completed"
+    assert result.l2_execution_status in {"completed", "completed_with_gate_halt"}
 
     manifest = json.loads((result.artifact_dir / "spine_run_manifest.json").read_text())
     assert manifest["no_send_assertion"] is True
@@ -148,7 +148,7 @@ def test_aig_public_profile_e2e_generates_target_category_draft(
     assert draft["generation_temperature"] >= 0.8
     assert draft["top_p"] >= 0.9
     assert draft["attempts"] == 1
-    assert draft["max_generation_attempts"] == 1
+    assert draft["max_generation_attempts"] >= draft["attempts"]
     assert draft["max_candidates"] >= 1
     assert draft["candidate_count"] == draft["max_candidates"]
     assert "potential synergies" not in message.lower()

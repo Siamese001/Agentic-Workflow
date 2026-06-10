@@ -504,10 +504,10 @@ def get_identity_propagation_service(
         Configured service
     """
     if state_adapter is None:
-        from agentic_core.L4_state.uwg.durable_write_gateway import get_gateway
+        from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
         from agentic_core.L4_state.uwg.touch_state_writer import TouchStateUWGAdapter
         
-        gateway = get_gateway()
+        gateway = get_default_gateway()
         state_adapter = TouchStateUWGAdapter(gateway)
     
     return IdentityPropagationService(state_adapter)
