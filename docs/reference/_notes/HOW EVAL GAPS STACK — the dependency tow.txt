@@ -1,0 +1,81 @@
+        HOW EVAL GAPS STACK — the dependency tower (general model)
+ ═══════════════════════════════════════════════════════════════════════════
+
+   Read bottom-up: each layer is IMPOSSIBLE until the one below it exists.
+   "Eval gaps" are just missing layers in this tower.
+
+                                                            what you can
+                                                            finally DO
+ ┌─────────────────────────────────────────────────────┐
+ │  5. CHANGE CONTROL                                  │   "this prompt
+ │     no change ships without a green suite run;      │    change is safe
+ │     promotions must cite the receipt                │    to ship"
+ └──────────────────────────▲──────────────────────────┘
+                            │ needs a suite that actually runs
+ ┌──────────────────────────┴──────────────────────────┐
+ │  4. SUITE  (many scenarios × whole pipeline)        │   "we pass 49/50
+ │     pass-RATE, compared against a BASELINE          │    orders, and
+ │     (no baseline = a slide from 99%→96% is          │    that's 2 fewer
+ │      invisible while still above the bar)           │    than last week"
+ └──────────────────────────▲──────────────────────────┘
+                            │ needs ONE scenario to be re-runnable
+ ┌──────────────────────────┴──────────────────────────┐
+ │  3. SINGLE-SCENARIO REPLAY  ◀━━ DETERMINISTIC       │   "run it again,
+ │     pinned inputs → controlled run → compare        │    same result —
+ │     RECEIPTS with the previous run                  │    or receipts show
+ │                                                     │    exactly what
+ │     deterministic stages: must match EXACTLY        │    changed"
+ │     model stages: replay RECORDED responses, or     │
+ │     run live + compare at receipt level             │
+ └──────────────────────────▲──────────────────────────┘
+                            │ needs the world to hold still
+ ┌──────────────────────────┴──────────────────────────┐
+ │  2. CONTROLLED STATE  (the sticky-note problem)     │   "run 2 happens
+ │     every side effect a run reads/writes is         │    in the same
+ │     ISOLATED (own sandbox) + MANIFESTED (logged)    │    office as run 1,
+ │     — pointers, caches, env vars, files             │    provably"
+ └──────────────────────────▲──────────────────────────┘
+                            │ needs inputs that can't drift
+ ┌──────────────────────────┴──────────────────────────┐
+ │  1. PINNED FIXTURES                                 │   "the test order
+ │     frozen inputs (hash-locked), frozen config/     │    is the SAME
+ │     prompt/rubric versions                          │    order, forever"
+ └─────────────────────────────────────────────────────┘
+
+ ── TWO SIDE TOWERS (independent of the stack, feed INTO it) ──────────────
+
+ ┌─────────────────────────────┐      ┌─────────────────────────────────┐
+ │  MICRO-EVALS                │      │  GRADER TRUST (meta-eval)       │
+ │  frozen specimen → checker  │      │  graders scored vs HUMAN        │
+ │  → exact T/F                │      │  answer key, on a cadence       │
+ │                             │      │                                 │
+ │  no dependencies — can      │      │  no dependencies — but EVERY    │
+ │  build TODAY, runs free     │      │  layer above 3 that uses a      │
+ │  on every commit            │      │  grader's score INHERITS        │
+ │                             │      │  whatever trust it has          │
+ └──────────────┬──────────────┘      └────────────────┬────────────────┘
+                │ keeps the CHECKERS honest            │ keeps the SCORES honest
+                ▼                                      ▼
+        (feeds layers 3–5: replay/suite verdicts use these checkers
+         and these scores — rot here silently corrupts everything above)
+
+ ── WHERE "DETERMINISTIC REPLAY" SITS ─────────────────────────────────────
+
+   It is layer 3 — the MIDDLE of the tower. The two classic confusions:
+
+   ✗ "replay is the foundation"  — no: it CANNOT EXIST until fixtures
+                                    are pinned (1) and state is controlled (2)
+   ✗ "replay is the goal"        — no: it's scaffolding FOR the suite (4)
+                                    and change-control (5) above it
+
+ ── FAILURE PROPAGATION (why order matters) ───────────────────────────────
+
+   hole in 1 (drifting fixture)    → every layer above compares apples
+                                     to oranges
+   hole in 2 (one stray sticky     → "same input, different result" with
+    note)                            no way to tell WHY → replay verdicts
+                                     meaningless
+   hole in 3 (no replay)           → suite must use live one-offs:
+                                     slow, costly, noisy
+   hole in 4 (no baseline)         → slow rot ships invisibly
+   hole in side towers             → green results you cannot trust
