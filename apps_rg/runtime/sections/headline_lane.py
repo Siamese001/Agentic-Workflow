@@ -71,9 +71,19 @@ from apps_rg.runtime.runtime_proof_layout import (
     prepare_runtime_proof_run_dir,
     proof_bucket_for_provider,
 )
+from apps_rg.runtime.sections.headline_repair_policy import (
+    CONTENT_SIGNAL_REPAIR_MAX_ATTEMPTS,
+    content_signal_repair_enabled,
+    content_signal_repair_env_state,
+)
 from apps_rg.runtime.sections.section_product_shape_ssot import (
     HEADLINE_WORD_MAX,
     HEADLINE_WORD_MIN,
+)
+from apps_rg.runtime.validators.headline_positioning_x2 import (
+    GOVERNANCE_SIGNAL_FAMILIES,
+    governance_signal_families_matched,
+    headline_positioning_consumption_active,
 )
 from apps_rg.runtime.validators.headline_x2 import (
     headline_runtime_self_check_truth,
@@ -761,6 +771,166 @@ def retry_headline_word_and_pipe(
     return json.dumps(new_parsed, sort_keys=True, separators=(",", ":")), new_parsed, raw_gate_snap
 
 
+def retry_headline_content_signal(
+    messages: list[dict[str, str]],
+    provider_payload: dict[str, Any],
+    raw_output: str,
+    parsed: dict[str, Any],
+    runtime_payload: dict[str, Any],
+    allowed_fact_ids: set[str],
+    *,
+    companion_nonempty: bool,
+    employer_names_lower: list[str],
+) -> tuple[str, dict[str, Any], dict[str, Any] | None, str | None]:
+    """Bounded same-authority regen when the headline misses the governance/regulated-AI signal."""
+    repair_messages = [
+        *messages,
+        {"role": "assistant", "content": raw_output},
+        {
+            "role": "user",
+            "content": (
+                "CONTENT_SIGNAL_REVISION (x2_headline_governance_or_regulated_ai_signal_required): "
+                "your headline carries no governance/regulated-AI signal. At least one of X/Y/Z MUST "
+                "express a governance or regulated-AI positioning family using vocabulary such as: "
+                "governance, governed, runtime, gates, policy, deterministic, regulated, regulatory, "
+                "compliance — drawn from a positioning bundle with governance_signal: true. "
+                "Keep every other constraint (exact prefix 'SVP Engineering | ', exactly three ' | ' "
+                "separators, 10 to 13 total words, no metrics, no employer or target company names, "
+                "no first person), rebind claim_ledger rows per segment, recompute self_check, "
+                "and return one compact JSON object only."
+            ),
+        },
+    ]
+    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
+    result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
+    if result.runtime_generation_status != "REAL_LLM":
+        return raw_output, parsed, None, "provider_not_real"
+    new_raw = result.raw_model_output
+    new_parsed, _e = parse_model_json(new_raw)
+    if new_parsed is None:
+        return raw_output, parsed, None, "parse_failed"
+    raw_gate_snap = json.loads(json.dumps(new_parsed))
+    hl = str(new_parsed.get("headline_line", "")).strip()
+    snapshot_raw_jd_alignment(new_parsed)
+    new_parsed = (
+        normalize_parsed_output(
+            new_parsed,
+            runtime_payload,
+            allowed_fact_ids,
+            hl,
+            companion_nonempty=companion_nonempty,
+            employer_names_lower=employer_names_lower,
+        )
+        or parsed
+    )
+    final_hl = str(new_parsed.get("headline_line") or "").strip()
+    if not governance_signal_families_matched(final_hl):
+        return raw_output, parsed, None, "signal_still_missing"
+    final_wc = headline_word_count(final_hl)
+    if _headline_positioning_segments(final_hl) is None or not (HEADLINE_WORD_MIN <= final_wc <= HEADLINE_WORD_MAX):
+        return raw_output, parsed, None, "shape_invalid"
+    if not isinstance(new_parsed.get("change_log"), list):
+        new_parsed["change_log"] = []
+    new_parsed["change_log"] = list(parsed.get("change_log") or []) + list(new_parsed.get("change_log") or [])
+    new_parsed["change_log"].append(
+        {
+            "operation": "headline_content_signal_repair",
+            "reason": "x2_headline_governance_or_regulated_ai_signal_required:none",
+        }
+    )
+    return json.dumps(new_parsed, sort_keys=True, separators=(",", ":")), new_parsed, raw_gate_snap, None
+
+
+def apply_headline_content_signal_repair(
+    *,
+    messages: list[dict[str, str]],
+    provider_payload: dict[str, Any],
+    raw_output: str,
+    parsed: dict[str, Any] | None,
+    runtime_payload: dict[str, Any],
+    allowed_fact_ids: set[str],
+    artifact_dir: Path,
+    runtime_generation_status: str,
+    prior_repair_provider_call_made: bool,
+    companion_nonempty: bool,
+    employer_names_lower: list[str],
+) -> tuple[str, dict[str, Any] | None, dict[str, Any] | None, bool]:
+    """G13 rung: one bounded content-signal regen before X1D/X2 (bundle mode + REAL_LLM only)."""
+    if not isinstance(parsed, dict):
+        return raw_output, parsed, None, False
+    hl_pre = str(parsed.get("headline_line", "")).strip()
+    pp_meta = runtime_payload.get("proof_pool_metadata")
+    if (
+        runtime_generation_status != "REAL_LLM"
+        or not headline_positioning_consumption_active(pp_meta if isinstance(pp_meta, dict) else None)
+        or _headline_positioning_segments(hl_pre) is None
+        or governance_signal_families_matched(hl_pre)
+    ):
+        return raw_output, parsed, None, False
+    from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, load_ledger, record_repair
+
+    ledger = load_ledger(artifact_dir) or {}
+    budget_consumed = prior_repair_provider_call_made or any(
+        r.get("kind") == KIND_REGEN_LLM and r.get("replaced_l2")
+        for r in (ledger.get("repairs") or [])
+    )
+    receipt: dict[str, Any] = {
+        "section_id": "headline",
+        "run_id": str(runtime_payload.get("run_id") or ""),
+        "gate_id": "x2_headline_governance_or_regulated_ai_signal_required",
+        "trigger": {
+            "required_families": list(GOVERNANCE_SIGNAL_FAMILIES),
+            "families_matched_pre": [],
+            "headline_pre": hl_pre,
+        },
+        "attempted": False,
+        "regen_call_made": False,
+        "accepted": False,
+        "headline_post": hl_pre,
+        "families_matched_post": [],
+        "rejected_reason": None,
+        "bounded": {"max_attempts": CONTENT_SIGNAL_REPAIR_MAX_ATTEMPTS, "attempts_used": 0},
+        "env_kill_switch_state": content_signal_repair_env_state(),
+    }
+    accepted = False
+    snap: dict[str, Any] | None = None
+    if not content_signal_repair_enabled():
+        receipt["rejected_reason"] = "kill_switch_off"
+    elif budget_consumed:
+        receipt["rejected_reason"] = "regen_budget_consumed"
+    else:
+        receipt["attempted"] = True
+        receipt["regen_call_made"] = True
+        receipt["bounded"]["attempts_used"] = 1
+        new_raw, new_parsed, new_snap, rejected_reason = retry_headline_content_signal(
+            messages,
+            provider_payload,
+            raw_output,
+            parsed,
+            runtime_payload,
+            allowed_fact_ids,
+            companion_nonempty=companion_nonempty,
+            employer_names_lower=employer_names_lower,
+        )
+        if rejected_reason is None and new_snap is not None:
+            record_repair(
+                artifact_dir,
+                kind=KIND_REGEN_LLM,
+                operation="headline_content_signal_repair",
+                reason="x2_headline_governance_or_regulated_ai_signal_required:none",
+                replaced_l2=True,
+            )
+            raw_output, parsed, snap, accepted = new_raw, new_parsed, new_snap, True
+            hl_post = str(parsed.get("headline_line", "")).strip()
+            receipt["accepted"] = True
+            receipt["headline_post"] = hl_post
+            receipt["families_matched_post"] = governance_signal_families_matched(hl_post)
+        else:
+            receipt["rejected_reason"] = rejected_reason or "parse_failed"
+    write_json(artifact_dir / "headline_content_signal_repair_receipt.json", receipt)
+    return raw_output, parsed, snap, accepted
+
+
 def snapshot_needs_headline_proof_retry(
     snapshot_pre: dict[str, Any],
     *,
@@ -1114,6 +1284,8 @@ def run_headline_execution(
     headline_proof_retry_attempted = False
     headline_proof_shape_retry_reason = ""
     headline_repair_receipt: dict[str, Any] | None = None
+    headline_repair_provider_call_made = False
+    headline_content_signal_repair_accepted = False
 
     from apps_rg.runtime.spine.exit_lane_hooks import finalize_section_exit_after_l2
     from apps_rg.runtime.section_l2_lane_integration import (
@@ -1164,6 +1336,7 @@ def run_headline_execution(
         raw_model_output_original = raw_output
         parsed, parse_error = parse_model_json(raw_model_output_original)
         if parsed is None and str(args.provider) == "external_claude":
+            headline_repair_provider_call_made = True
             raw_model_output_original, parsed, parse_error = retry_provider_for_parse(
                 messages, provider_payload, raw_model_output_original, parse_error
             )
@@ -1187,6 +1360,7 @@ def run_headline_execution(
             )
             if needs_proof_retry:
                 headline_proof_shape_retry_reason = proof_retry_reason
+                headline_repair_provider_call_made = True
                 raw_output_retry, parsed_retry, snap_retry = retry_headline_proof_shape(
                     messages,
                     provider_payload,
@@ -1241,6 +1415,7 @@ def run_headline_execution(
             hl = str(parsed.get("headline_line", "")).strip()
             wc = headline_word_count(hl)
             if hl.count(" | ") != 3 or not hl.startswith("SVP Engineering | ") or not (HEADLINE_WORD_MIN <= wc <= HEADLINE_WORD_MAX):
+                headline_repair_provider_call_made = True
                 raw_output, parsed, rsnap = retry_headline_word_and_pipe(
                     messages,
                     provider_payload,
@@ -1264,6 +1439,23 @@ def run_headline_execution(
                     parsed_raw_pre_normalize = rsnap
                 if parsed is not None:
                     raw_output = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+            raw_output, parsed, _cs_snap, headline_content_signal_repair_accepted = (
+                apply_headline_content_signal_repair(
+                    messages=messages,
+                    provider_payload=provider_payload,
+                    raw_output=raw_output,
+                    parsed=parsed,
+                    runtime_payload=runtime_payload,
+                    allowed_fact_ids=allowed_fact_ids,
+                    artifact_dir=artifact_dir,
+                    runtime_generation_status=runtime_generation_status,
+                    prior_repair_provider_call_made=headline_repair_provider_call_made,
+                    companion_nonempty=companion_nonempty,
+                    employer_names_lower=employer_names,
+                )
+            )
+            if _cs_snap is not None:
+                parsed_raw_pre_normalize = _cs_snap
         else:
             raw_output = raw_model_output_original
     else:
@@ -1623,8 +1815,16 @@ def run_headline_execution(
         after_l2_source=str(_hl_ledger.get("authoritative_l2_source") or "initial_llm"),
         x2_gates=x2,
     )
-    if headline_proof_retry_attempted and not [g for g in x2 if not g.get("pass")]:
-        set_authoritative_attempt(artifact_dir, 2, reason="headline_proof_shape_retry_x2_pass")
+    if (headline_proof_retry_attempted or headline_content_signal_repair_accepted) and not [g for g in x2 if not g.get("pass")]:
+        set_authoritative_attempt(
+            artifact_dir,
+            2,
+            reason=(
+                "headline_proof_shape_retry_x2_pass"
+                if headline_proof_retry_attempted
+                else "headline_content_signal_repair_x2_pass"
+            ),
+        )
     write_json(
         artifact_dir / "fact_check_result.json",
         {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},

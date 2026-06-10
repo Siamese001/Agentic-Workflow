@@ -3,16 +3,22 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 
 import pytest
 
 from apps_rg.runtime.claim_ledger.headline_claim_ledger import build_headline_text_claim_coverage
+from apps_rg.runtime.sections import headline_lane
 from apps_rg.runtime.sections.headline_lane import (
     W3_EXECUTION_PATH_BUCKET,
     build_headline_allowed_fact_packet,
     ensure_claim_ledger,
     normalize_parsed_output,
     sync_selected_fact_plan_required_ids,
+)
+from apps_rg.runtime.validators.headline_positioning_x2 import (
+    governance_signal_families_matched,
+    run_headline_positioning_x2_gates,
 )
 from apps_rg.runtime.validators.headline_x2 import run_headline_x2_gates
 from apps_rg.runtime.w3_execution_path_labels import BUCKET_GOVERNED_PA_L2_EXIT
@@ -225,3 +231,303 @@ def test_weak_payload_silent_row_drop_fails() -> None:
     )
 
     assert not _gate_pass(_headline_weak_silent_row_drop(), "x2_headline_claim_ledger_no_silent_row_drop")
+
+
+# ---------------------------------------------------------------------------
+# W4.2 — headline content-signal repair rung (gap G13)
+# ---------------------------------------------------------------------------
+
+_CS_RECEIPT = "headline_content_signal_repair_receipt.json"
+_CS_GATE_ID = "x2_headline_governance_or_regulated_ai_signal_required"
+PRE_HL_NO_GOV = "SVP Engineering | Distributed AI Infrastructure | Retrieval Context Engineering | Platform Productization"
+GOV_HL = "SVP Engineering | Governed Agentic AI Platforms | Runtime Governance Gates | Regulated Enterprise Delivery"
+NO_GOV_REGEN_HL = "SVP Engineering | Distributed AI Platforms | Retrieval Context Systems | Platform Productization Scale"
+SHORT_GOV_HL = "SVP Engineering | Governed Platforms | Runtime Gates | Regulated Delivery"
+
+
+class _RecordingProvider:
+    def __init__(self, status: str, raw: str) -> None:
+        self.status = status
+        self.raw = raw
+        self.calls = 0
+
+    def __call__(self, payload: dict) -> SimpleNamespace:
+        self.calls += 1
+        return SimpleNamespace(runtime_generation_status=self.status, raw_model_output=self.raw)
+
+
+def _bundle_runtime_payload() -> dict:
+    return {
+        "run_id": "csr-test",
+        "target_company": "",
+        "selected_fact_plan": {"section_id": "headline", "facts": [], "required_fact_ids": []},
+        "proof_pool_metadata": {"headline_positioning_bundle_consumption": True},
+    }
+
+
+def _attempt1_parsed(hl: str = PRE_HL_NO_GOV) -> dict:
+    return {
+        "headline_line": hl,
+        "claim_ledger": [],
+        "selected_fact_plan": {"required_fact_ids": []},
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+        },
+        "gap_notes": [],
+        "change_log": [],
+        "self_check": {},
+    }
+
+
+def _regen_json(hl: str) -> str:
+    return json.dumps(
+        {
+            "headline_line": hl,
+            "claim_ledger": [],
+            "jd_alignment": {"targeting_only": True},
+            "gap_notes": [],
+            "change_log": [],
+            "self_check": {},
+        }
+    )
+
+
+def _run_content_signal_rung(
+    tmp_path,
+    monkeypatch,
+    *,
+    provider,
+    parsed,
+    runtime_payload=None,
+    runtime_generation_status="REAL_LLM",
+    prior_repair_provider_call_made=False,
+):
+    monkeypatch.setattr(headline_lane, "generate_section", provider)
+    payload = runtime_payload if runtime_payload is not None else _bundle_runtime_payload()
+    raw = json.dumps(parsed, sort_keys=True) if isinstance(parsed, dict) else ""
+    return headline_lane.apply_headline_content_signal_repair(
+        messages=[{"role": "system", "content": "s"}, {"role": "user", "content": "u"}],
+        provider_payload={"messages": [], "temperature": 0.55},
+        raw_output=raw,
+        parsed=parsed,
+        runtime_payload=payload,
+        allowed_fact_ids=set(),
+        artifact_dir=tmp_path,
+        runtime_generation_status=runtime_generation_status,
+        prior_repair_provider_call_made=prior_repair_provider_call_made,
+        companion_nonempty=False,
+        employer_names_lower=[],
+    )
+
+
+def _read_receipt(tmp_path) -> dict:
+    return json.loads((tmp_path / _CS_RECEIPT).read_text(encoding="utf-8"))
+
+
+class TestHeadlineContentSignalRepairRung:
+    @pytest.fixture(autouse=True)
+    def _default_kill_switch_on(self, monkeypatch):
+        monkeypatch.delenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", raising=False)
+
+    def test_trigger_skips_non_bundle_mode(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        parsed = _attempt1_parsed()
+        payload = _bundle_runtime_payload()
+        payload["proof_pool_metadata"] = {}
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed, runtime_payload=payload
+        )
+        assert provider.calls == 0
+        assert not accepted and snap is None
+        assert out is parsed
+        assert not (tmp_path / _CS_RECEIPT).exists()
+
+    def test_trigger_skips_non_real_llm(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path,
+            monkeypatch,
+            provider=provider,
+            parsed=_attempt1_parsed(),
+            runtime_generation_status="OFFLINE_CONTRACT_STUB",
+        )
+        assert provider.calls == 0
+        assert not accepted and snap is None
+        assert not (tmp_path / _CS_RECEIPT).exists()
+
+    def test_trigger_skips_shape_invalid_pre(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed("broken headline no pipes")
+        )
+        assert provider.calls == 0
+        assert not accepted
+        assert not (tmp_path / _CS_RECEIPT).exists()
+
+    def test_trigger_skips_when_signal_present(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(GOV_HL)
+        )
+        assert provider.calls == 0
+        assert not accepted
+        assert not (tmp_path / _CS_RECEIPT).exists()
+
+    def test_kill_switch_off_makes_zero_calls_with_receipt(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", "0")
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        parsed = _attempt1_parsed()
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 0
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "kill_switch_off"
+        assert receipt["attempted"] is False
+        assert receipt["regen_call_made"] is False
+        assert receipt["bounded"] == {"max_attempts": 1, "attempts_used": 0}
+        assert receipt["env_kill_switch_state"] == "0"
+        assert receipt["gate_id"] == _CS_GATE_ID
+
+    def test_budget_consumed_by_prior_provider_call(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        parsed = _attempt1_parsed()
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path,
+            monkeypatch,
+            provider=provider,
+            parsed=parsed,
+            prior_repair_provider_call_made=True,
+        )
+        assert provider.calls == 0
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "regen_budget_consumed"
+        assert receipt["regen_call_made"] is False
+
+    def test_budget_consumed_by_prior_ledger_regen(self, tmp_path, monkeypatch):
+        from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, init_ledger, record_repair
+
+        init_ledger(tmp_path, section_id="headline", run_id="csr-test")
+        record_repair(
+            tmp_path, kind=KIND_REGEN_LLM, operation="headline_format_repair", replaced_l2=True
+        )
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed()
+        )
+        assert provider.calls == 0
+        assert not accepted
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "regen_budget_consumed"
+
+    def test_accept_path_swaps_output_and_records_regen(self, tmp_path, monkeypatch):
+        from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, init_ledger, load_ledger
+
+        init_ledger(tmp_path, section_id="headline", run_id="csr-test")
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed()
+        )
+        assert provider.calls == 1
+        assert accepted is True
+        assert out["headline_line"] == GOV_HL
+        assert snap is not None and snap["headline_line"] == GOV_HL
+        assert GOV_HL in raw
+        ledger = load_ledger(tmp_path) or {}
+        regen_rows = [
+            r
+            for r in (ledger.get("repairs") or [])
+            if r.get("kind") == KIND_REGEN_LLM and r.get("replaced_l2")
+        ]
+        assert len(regen_rows) == 1
+        assert regen_rows[0]["operation"] == "headline_content_signal_repair"
+        receipt = _read_receipt(tmp_path)
+        assert receipt["accepted"] is True
+        assert receipt["rejected_reason"] is None
+        assert receipt["headline_post"] == GOV_HL
+        assert receipt["families_matched_post"]
+        assert receipt["trigger"]["headline_pre"] == PRE_HL_NO_GOV
+        assert receipt["trigger"]["required_families"] == ["runtime_governance", "regulated_ai_systems"]
+        assert receipt["bounded"] == {"max_attempts": 1, "attempts_used": 1}
+        assert any(
+            e.get("operation") == "headline_content_signal_repair"
+            for e in (out.get("change_log") or [])
+        )
+
+    def test_reject_signal_still_missing_keeps_attempt1_and_gate_still_fails(self, tmp_path, monkeypatch):
+        from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, init_ledger, load_ledger
+
+        init_ledger(tmp_path, section_id="headline", run_id="csr-test")
+        provider = _RecordingProvider("REAL_LLM", _regen_json(NO_GOV_REGEN_HL))
+        parsed = _attempt1_parsed()
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 1
+        assert not accepted and snap is None
+        assert out is parsed
+        assert out["headline_line"] == PRE_HL_NO_GOV
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "signal_still_missing"
+        assert receipt["regen_call_made"] is True
+        ledger = load_ledger(tmp_path) or {}
+        assert not [r for r in (ledger.get("repairs") or []) if r.get("kind") == KIND_REGEN_LLM]
+        gates = run_headline_positioning_x2_gates(
+            headline_line=out["headline_line"],
+            parsed_output=out,
+            proof_pool_metadata={"headline_positioning_bundle_consumption": True},
+        )
+        gate = next(g for g in gates if g.gate_id == _CS_GATE_ID)
+        assert not gate.passed
+        assert governance_signal_families_matched(out["headline_line"]) == []
+
+    def test_reject_parse_failed_keeps_attempt1(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", "not-json {{{")
+        parsed = _attempt1_parsed()
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 1
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "parse_failed"
+
+    def test_reject_provider_not_real(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("BLOCKED", "")
+        parsed = _attempt1_parsed()
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 1
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "provider_not_real"
+        assert receipt["regen_call_made"] is True
+
+    def test_reject_shape_invalid_keeps_attempt1(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(SHORT_GOV_HL))
+        parsed = _attempt1_parsed()
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 1
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "shape_invalid"
+
+    def test_kill_switch_default_on_and_hard_cap(self, monkeypatch):
+        from apps_rg.runtime.sections.headline_repair_policy import (
+            CONTENT_SIGNAL_REPAIR_MAX_ATTEMPTS,
+            content_signal_repair_enabled,
+        )
+
+        monkeypatch.delenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", raising=False)
+        assert content_signal_repair_enabled() is True
+        assert CONTENT_SIGNAL_REPAIR_MAX_ATTEMPTS == 1
+        for off in ("0", "false", "no", "off"):
+            monkeypatch.setenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", off)
+            assert content_signal_repair_enabled() is False

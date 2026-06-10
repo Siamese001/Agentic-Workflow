@@ -287,6 +287,252 @@ def test_selector_filters_candidates_outside_allowed_fact_set(tmp_path) -> None:
     assert any(r["reason"] == "source_fact_id_not_allowed" for r in receipt["paths"][0]["rejections"])
 
 
+def _entailment_path(idx: int, temperature: float, bullets: list[dict]) -> SelfConsistencyPath:
+    return SelfConsistencyPath(
+        idx,
+        temperature,
+        "REAL_LLM",
+        "",
+        {"bullets": bullets, "claim_ledger": []},
+        "",
+        None,
+    )
+
+
+_ENTAILMENT_CTX = {
+    "allowed_fact_ids": ["bul_unify_001"],
+    "selector_requires_valid_candidates": True,
+    "slot_entailment_corpus": {
+        "bul_unify_001": "Cut bespoke delivery from six months to three weeks via platform reuse."
+    },
+}
+
+
+def test_selector_excludes_non_entailed_candidate_and_entailed_alternate_wins(tmp_path) -> None:
+    """W4.3: a candidate citing the right fact_id but claiming a magnitude absent from the
+    slot corpus is excluded BEFORE pool formatting; the entailed alternate wins the slot."""
+    paths = [
+        _entailment_path(
+            0,
+            0.38,
+            [
+                {
+                    "bullet_id": "bul_unify_001",
+                    "bullet_text": "Drove $25M platform revenue.",
+                    "source_fact_ids": ["bul_unify_001"],
+                }
+            ],
+        ),
+        _entailment_path(
+            1,
+            0.42,
+            [
+                {
+                    "bullet_id": "bul_unify_001",
+                    "bullet_text": "Cut delivery time from six months to three weeks.",
+                    "source_fact_ids": ["bul_unify_001"],
+                }
+            ],
+        ),
+    ]
+    pool = run_claude_bullet_pool_selection(
+        section_id="unify_bullets",
+        slot_kind="bullets",
+        paths=paths,
+        required_bullet_ids=("bul_unify_001",),
+        targeting_context=dict(_ENTAILMENT_CTX),
+        artifact_dir=tmp_path,
+        mode="mocked",
+    )
+    bullets = pool.merged_parsed.get("bullets") or []
+    assert [b["bullet_text"] for b in bullets] == ["Cut delivery time from six months to three weeks."]
+    assert pool.source_path_by_slot == {"bul_unify_001": 1}
+
+    receipt = json.loads((tmp_path / "bullet_pool_fact_entailment.json").read_text(encoding="utf-8"))
+    rounds = receipt["rounds"]
+    assert len(rounds) == 1
+    assert rounds[0]["operation"] == "selector_fact_entailment_exclusion"
+    assert rounds[0]["bypass"] is False
+    assert rounds[0]["corpus_present"] is True
+    assert rounds[0]["excluded_total"] == 1
+    rejection = rounds[0]["paths"][0]["rejections"][0]
+    assert rejection["bullet_id"] == "bul_unify_001"
+    assert rejection["reason"] == "numeric_token_not_entailed"
+    assert rejection["missing_tokens"] == ["$25M"]
+    assert rejection["bullet_sha16"]
+
+
+def test_selector_entailment_emptied_pool_hits_strict_emptiness_return(tmp_path) -> None:
+    """W4.3 required change: when exclusion empties every path's bullets, parsed=None makes
+    the existing strict-emptiness return fire — no Claude call against a zero-candidate pool."""
+    paths = [
+        _entailment_path(
+            0,
+            0.38,
+            [
+                {
+                    "bullet_id": "bul_unify_001",
+                    "bullet_text": "Drove $25M platform revenue.",
+                    "source_fact_ids": ["bul_unify_001"],
+                }
+            ],
+        ),
+    ]
+    pool = run_claude_bullet_pool_selection(
+        section_id="unify_bullets",
+        slot_kind="bullets",
+        paths=paths,
+        required_bullet_ids=("bul_unify_001",),
+        targeting_context=dict(_ENTAILMENT_CTX),
+        artifact_dir=tmp_path,
+        mode="mocked",
+    )
+    assert pool.selection_mode == "blocked_no_selector_eligible_candidates"
+    assert pool.merged_parsed == {}
+    assert pool.selections == []
+
+
+def test_selector_entailment_emptied_slot_lands_in_selection_gate_slots_missing(tmp_path) -> None:
+    ctx = {
+        "allowed_fact_ids": ["bul_unify_001", "bul_unify_002"],
+        "selector_requires_valid_candidates": True,
+        "slot_entailment_corpus": {
+            "bul_unify_001": "Platform spine delivery across enterprise programs.",
+            "bul_unify_002": "Dependency graph accelerator adoption.",
+        },
+    }
+    paths = [
+        _entailment_path(
+            0,
+            0.38,
+            [
+                {
+                    "bullet_id": "bul_unify_001",
+                    "bullet_text": "Delivered the platform spine.",
+                    "source_fact_ids": ["bul_unify_001"],
+                },
+                {
+                    "bullet_id": "bul_unify_002",
+                    "bullet_text": "Drove $99M accelerator revenue.",
+                    "source_fact_ids": ["bul_unify_002"],
+                },
+            ],
+        ),
+    ]
+    pool = run_claude_bullet_pool_selection(
+        section_id="unify_bullets",
+        slot_kind="bullets",
+        paths=paths,
+        required_bullet_ids=("bul_unify_001", "bul_unify_002"),
+        targeting_context=ctx,
+        artifact_dir=tmp_path,
+        mode="mocked",
+    )
+    merged_ids = [b["bullet_id"] for b in (pool.merged_parsed.get("bullets") or [])]
+    assert merged_ids == ["bul_unify_001"]
+    gate = evaluate_employment_selection_quality(
+        section_lane="unify_bullets",
+        required_bullet_ids=("bul_unify_001", "bul_unify_002"),
+        selections=[
+            {"bullet_id": "bul_unify_001", "path_index": 0, "score": 0.9, "passes": True},
+            {"bullet_id": "bul_unify_002", "path_index": 0, "score": 0.9, "passes": True},
+        ],
+        merged_parsed=pool.merged_parsed,
+        min_score=0.72,
+    )
+    assert "bul_unify_002" in gate.slots_missing
+
+
+def test_selector_entailment_bypass_env_restores_pass_through(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("APPS_RG_SELECTOR_FACT_ENTAILMENT_BYPASS", "1")
+    paths = [
+        _entailment_path(
+            0,
+            0.38,
+            [
+                {
+                    "bullet_id": "bul_unify_001",
+                    "bullet_text": "Drove $25M platform revenue.",
+                    "source_fact_ids": ["bul_unify_001"],
+                }
+            ],
+        ),
+    ]
+    pool = run_claude_bullet_pool_selection(
+        section_id="unify_bullets",
+        slot_kind="bullets",
+        paths=paths,
+        required_bullet_ids=("bul_unify_001",),
+        targeting_context=dict(_ENTAILMENT_CTX),
+        artifact_dir=tmp_path,
+        mode="mocked",
+    )
+    bullets = pool.merged_parsed.get("bullets") or []
+    assert [b["bullet_text"] for b in bullets] == ["Drove $25M platform revenue."]
+    receipt = json.loads((tmp_path / "bullet_pool_fact_entailment.json").read_text(encoding="utf-8"))
+    assert receipt["rounds"][0]["bypass"] is True
+    assert receipt["rounds"][0]["excluded_total"] == 0
+
+
+def test_selector_entailment_fail_open_when_corpus_missing(tmp_path) -> None:
+    paths = [
+        _entailment_path(
+            0,
+            0.38,
+            [
+                {
+                    "bullet_id": "bul_unify_001",
+                    "bullet_text": "Drove $25M platform revenue.",
+                    "source_fact_ids": ["bul_unify_001"],
+                }
+            ],
+        ),
+    ]
+    pool = run_claude_bullet_pool_selection(
+        section_id="unify_bullets",
+        slot_kind="bullets",
+        paths=paths,
+        required_bullet_ids=("bul_unify_001",),
+        targeting_context={
+            "allowed_fact_ids": ["bul_unify_001"],
+            "selector_requires_valid_candidates": True,
+        },
+        artifact_dir=tmp_path,
+        mode="mocked",
+    )
+    bullets = pool.merged_parsed.get("bullets") or []
+    assert [b["bullet_text"] for b in bullets] == ["Drove $25M platform revenue."]
+    receipt = json.loads((tmp_path / "bullet_pool_fact_entailment.json").read_text(encoding="utf-8"))
+    assert receipt["rounds"][0]["corpus_present"] is False
+    assert receipt["rounds"][0]["excluded_total"] == 0
+
+
+def test_targeting_context_carries_slot_entailment_corpus() -> None:
+    ctx = build_employment_targeting_context(
+        {
+            "jd_text": "SVP agentic role",
+            "briefing": "emphasize platform",
+            "allowed_fact_ids": ["bul_unify_001"],
+            "selected_fact_plan": {
+                "selection_method": "augmented_skills_graph",
+                "facts": [
+                    {
+                        "fact_id": "bul_unify_001",
+                        "claim_text": "Cut bespoke delivery from six months to three weeks.",
+                        "metric_raw": "",
+                    }
+                ],
+            },
+        },
+        section_lane="unify_bullets",
+    )
+    corpus = ctx["slot_entailment_corpus"]
+    assert "bul_unify_001" in corpus
+    assert "Cut bespoke delivery from six months to three weeks." in corpus["bul_unify_001"]
+
+
 def test_section_profiles_unify_15_ibm_12() -> None:
     # Variance-class alignment (2026-06): profile SC for bullet lanes is 4.0 (was 15/12);
     # generation variance is handled by the Claude pool selector + X2 gates, not sampling.

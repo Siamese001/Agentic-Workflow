@@ -255,6 +255,129 @@ def _selector_valid_bullet_paths(
     return filtered_paths, receipt
 
 
+def _selector_numeric_entailed_paths(
+    paths: list[SelfConsistencyPath],
+    *,
+    required_bullet_ids: tuple[str, ...],
+    targeting_context: dict[str, Any] | None,
+) -> tuple[list[SelfConsistencyPath], dict[str, Any]]:
+    """W4.3 (G15/G17): drop bullet rows whose numeric tokens are not entailed by the slot's
+    fact corpus (``slot_entailment_corpus`` built upstream from selected_fact_plan C0-pool
+    facts + bundle non-metric text). Exclusion only — bullet text is never rewritten.
+
+    Fail-open: bypass env, missing/empty corpus, or a slot without corpus text leaves the
+    candidate untouched (recorded in the receipt). A path whose bullets are all excluded
+    gets ``parsed=None`` — mirroring ``_selector_valid_bullet_paths`` semantics — so the
+    existing strict-emptiness return fires instead of dispatching a Claude selector call
+    against a zero-candidate pool.
+    """
+    from apps_rg.runtime.reasoning.bullet_fact_entailment import (
+        CORPUS_SOURCE_LABEL,
+        ENTAILMENT_BYPASS_ENV,
+        ENTAILMENT_REJECTION_REASON,
+        numeric_entailment_check,
+    )
+
+    bypass = os.environ.get(ENTAILMENT_BYPASS_ENV, "").strip() == "1"
+    corpus = (targeting_context or {}).get("slot_entailment_corpus")
+    corpus = corpus if isinstance(corpus, dict) else {}
+    receipt: dict[str, Any] = {
+        "operation": "selector_fact_entailment_exclusion",
+        "bypass": bypass,
+        "corpus_source": CORPUS_SOURCE_LABEL,
+        "corpus_present": bool(corpus),
+        "slot_ids_with_corpus": sorted(str(k) for k in corpus),
+        "required_bullet_ids": list(required_bullet_ids),
+        "excluded_total": 0,
+        "paths": [],
+    }
+    if bypass or not corpus:
+        return paths, receipt
+
+    excluded_total = 0
+    filtered_paths: list[SelfConsistencyPath] = []
+    for path in paths:
+        parsed = path.parsed
+        path_row: dict[str, Any] = {
+            "path_index": path.path_index,
+            "input_bullet_count": 0,
+            "entailed_bullet_count": 0,
+            "corpus_missing_slots": [],
+            "rejections": [],
+        }
+        if not isinstance(parsed, dict):
+            filtered_paths.append(path)
+            receipt["paths"].append(path_row)
+            continue
+
+        bullets = parsed.get("bullets") if isinstance(parsed.get("bullets"), list) else []
+        path_row["input_bullet_count"] = len(bullets)
+        entailed_bullets: list[Any] = []
+        for bullet in bullets:
+            if not isinstance(bullet, dict):
+                entailed_bullets.append(bullet)
+                continue
+            bid = str(bullet.get("bullet_id") or "").strip()
+            corpus_text = str(corpus.get(bid) or "")
+            if not corpus_text:
+                # Fail-open per slot: no evidence corpus means no exclusion authority.
+                if bid and bid not in path_row["corpus_missing_slots"]:
+                    path_row["corpus_missing_slots"].append(bid)
+                entailed_bullets.append(bullet)
+                continue
+            bullet_text = str(bullet.get("bullet_text") or "")
+            entailed, missing_tokens = numeric_entailment_check(bullet_text, corpus_text)
+            if entailed:
+                entailed_bullets.append(bullet)
+                continue
+            excluded_total += 1
+            path_row["rejections"].append(
+                {
+                    "bullet_id": bid,
+                    "path_index": path.path_index,
+                    "reason": ENTAILMENT_REJECTION_REASON,
+                    "missing_tokens": missing_tokens,
+                    "bullet_sha16": _sha16(bullet_text),
+                }
+            )
+
+        path_row["entailed_bullet_count"] = sum(
+            1 for b in entailed_bullets if isinstance(b, dict)
+        )
+        if entailed_bullets == bullets:
+            filtered_paths.append(path)
+        else:
+            next_parsed: dict[str, Any] | None = None
+            if any(isinstance(b, dict) for b in entailed_bullets):
+                next_parsed = dict(parsed)
+                next_parsed["bullets"] = entailed_bullets
+            filtered_paths.append(replace(path, parsed=next_parsed))
+        receipt["paths"].append(path_row)
+
+    receipt["excluded_total"] = excluded_total
+    return filtered_paths, receipt
+
+
+def _append_entailment_receipt_round(artifact_dir: Path, doc: dict[str, Any]) -> None:
+    """Rounds-append pattern (mirrors ``_write_employment_regen_artifact``) so the regen
+    loop's per-invocation receipts all survive — last-write-wins would lose round 0."""
+    from apps_rg.runtime.reasoning.bullet_fact_entailment import ENTAILMENT_RECEIPT_FILENAME
+
+    path = artifact_dir / ENTAILMENT_RECEIPT_FILENAME
+    prior: list[dict[str, Any]] = []
+    if path.is_file():
+        try:
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict) and isinstance(loaded.get("rounds"), list):
+                prior = loaded["rounds"]
+        except (json.JSONDecodeError, OSError):
+            prior = []
+    path.write_text(
+        json.dumps({"rounds": prior + [doc]}, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
 def _category_by_label(parsed: dict[str, Any], label: str) -> dict[str, Any] | None:
     norm = label.strip().lower()
     for key in ("competencies", "categories"):
@@ -924,6 +1047,17 @@ def run_claude_bullet_pool_selection(
                 json.dumps(validity_receipt, indent=2, ensure_ascii=False) + "\n",
                 encoding="utf-8",
             )
+        # W4.3 (G15/G17): deterministic numeric fact-entailment exclusion — non-entailed
+        # candidates never reach the Claude prompt, the merge, or the all-paths compliance
+        # scan. Runs after the id-level validity filter, before the strict-emptiness check.
+        valid_paths, entailment_receipt = _selector_numeric_entailed_paths(
+            valid_paths,
+            required_bullet_ids=required_bullet_ids or (),
+            targeting_context=targeting_context,
+        )
+        valid_paths = [p for p in valid_paths if p.parsed is not None]
+        if artifact_dir is not None:
+            _append_entailment_receipt_round(artifact_dir, entailment_receipt)
         if not valid_paths and _selector_requires_valid_candidates(
             slot_kind=slot_kind,
             targeting_context=targeting_context,

@@ -23,6 +23,9 @@ from apps_rg.runtime.validators.headline_quality_x2 import (
 )
 
 
+GOVERNANCE_SIGNAL_FAMILIES: tuple[str, ...] = ("runtime_governance", "regulated_ai_systems")
+
+
 @dataclass
 class HeadlinePositioningResult:
     gate_id: str
@@ -30,6 +33,13 @@ class HeadlinePositioningResult:
     observed_value: Any
     threshold: Any
     failure_reason: str | None
+
+
+def governance_signal_families_matched(headline_line: str) -> list[str]:
+    """Governance/regulated-AI families matched by the gate's exact blob/token predicate."""
+    blob = " ".join(headline_line.split(" | ")[1:]).lower() if " | " in headline_line else headline_line.lower()
+    tokens = set(blob.replace("|", " ").split())
+    return _families_matched(blob, tokens, GOVERNANCE_SIGNAL_FAMILIES)
 
 
 def headline_positioning_consumption_active(meta: dict[str, Any] | None) -> bool:
@@ -209,8 +219,7 @@ def run_headline_positioning_x2_gates(
         None if pr_hit else "Headline missing platform/runtime positioning signal.",
     )
 
-    gov_families = ("runtime_governance", "regulated_ai_systems")
-    gov_hit = _families_matched(blob, tokens, gov_families)
+    gov_hit = governance_signal_families_matched(headline_line)
     add(
         "x2_headline_governance_or_regulated_ai_signal_required",
         bool(gov_hit),
@@ -288,7 +297,9 @@ def _families_matched(blob: str, tokens: set[str], families: tuple[str, ...]) ->
 
 
 __all__ = [
+    "GOVERNANCE_SIGNAL_FAMILIES",
     "HeadlinePositioningResult",
+    "governance_signal_families_matched",
     "headline_positioning_consumption_active",
     "run_headline_positioning_x2_gates",
 ]

@@ -142,6 +142,8 @@ def build_employment_targeting_context(
     section_lane: str,
 ) -> dict[str, Any]:
     """JD + briefing + skills proof metadata for Claude selection (targeting only, not proof)."""
+    from apps_rg.runtime.reasoning.bullet_fact_entailment import build_slot_entailment_corpus
+
     pp = runtime_payload.get("proof_pool_metadata") or {}
     lane = str(section_lane or "").strip().lower()
     allowed_fact_ids = [str(x) for x in (runtime_payload.get("allowed_fact_ids") or []) if str(x).strip()]
@@ -161,6 +163,12 @@ def build_employment_targeting_context(
         "allowed_fact_ids": allowed_fact_ids,
         "selector_requires_valid_candidates": bool(allowed_fact_ids),
     }
+    # W4.3 (G15/G17): per-slot numeric-entailment corpus from the C0-pool selected_fact_plan
+    # (NOT base-resume extract_*_employment rows) + slot bundle non-metric text.
+    ctx["slot_entailment_corpus"] = build_slot_entailment_corpus(
+        lane,
+        runtime_payload.get("selected_fact_plan") or {},
+    )
     return ctx
 
 

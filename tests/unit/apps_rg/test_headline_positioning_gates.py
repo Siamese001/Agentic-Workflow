@@ -16,6 +16,11 @@ from __future__ import annotations
 
 import pytest
 
+from apps_rg.runtime.validators.headline_positioning_x2 import (
+    GOVERNANCE_SIGNAL_FAMILIES,
+    governance_signal_families_matched,
+    run_headline_positioning_x2_gates,
+)
 from apps_rg.runtime.validators.headline_quality_x2 import (
     HEADLINE_E0_REFERENCE_TEXTS,
     NARROWING_IT_LABELS,
@@ -211,3 +216,46 @@ class TestPositioningFamilyMultipleRequired:
         hl = "SVP Engineering | Agentic AI Platform Engineering | Runtime Governance Controls | Regulated Enterprise AI"
         result = check_headline_positioning_families(hl, min_families=2)
         assert result.passed
+
+
+# ---------------------------------------------------------------------------
+# 8. governance_signal_families_matched <=> gate equivalence (shared predicate)
+# ---------------------------------------------------------------------------
+
+_GOVERNANCE_GATE_ID = "x2_headline_governance_or_regulated_ai_signal_required"
+
+_GOVERNANCE_EQUIVALENCE_HEADLINES = [
+    "SVP Engineering | Agentic AI Platform Engineering | Runtime Governance Controls | Regulated Enterprise AI",
+    "SVP Engineering | Governed Agentic Platforms | Runtime Infrastructure | Regulated Delivery",
+    "SVP Engineering | Distributed AI Infrastructure | Retrieval Context Engineering | Platform Productization",
+    "SVP Engineering | Annual Contract Value | Cloud Vendors | Cost Reduction",
+    "SVP Engineering | Compliance Platforms | Policy Gates | Deterministic Delivery",
+    "Governance | Sales Leadership | Marketing Programs | Finance Operations",
+    "SVP Engineering | X | Y | Z",
+    "",
+    "no signal here at all",
+    "governance without pipes",
+    "a|governance",
+]
+
+
+class TestGovernanceSignalHelperGateEquivalence:
+    """helper empty <=> gate fails — trigger==gate by construction (shared predicate)."""
+
+    @pytest.mark.parametrize("hl", _GOVERNANCE_EQUIVALENCE_HEADLINES)
+    def test_helper_empty_iff_gate_fails(self, hl):
+        gates = run_headline_positioning_x2_gates(
+            headline_line=hl,
+            parsed_output={},
+            proof_pool_metadata={},
+        )
+        gate = next(g for g in gates if g.gate_id == _GOVERNANCE_GATE_ID)
+        matched = governance_signal_families_matched(hl)
+        assert bool(matched) == gate.passed, (
+            f"helper/gate divergence for {hl!r}: matched={matched} gate.passed={gate.passed}"
+        )
+        if gate.passed:
+            assert gate.observed_value == matched
+        else:
+            assert gate.observed_value == "none"
+        assert all(f in GOVERNANCE_SIGNAL_FAMILIES for f in matched)
