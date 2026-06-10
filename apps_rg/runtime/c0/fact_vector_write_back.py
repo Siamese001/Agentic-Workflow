@@ -448,14 +448,12 @@ class _ChromaFactWritebackStore:
 
 
 def _open_collection(*, chroma_path: str, collection_name: str, collection_role: str) -> Any:
-    from agentic_core.L4_state.utils.client.chroma_client import (
-        chromadb_module as chromadb,
-    )
+    from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
     from apps_rg.runtime.chroma_precomputed_collection import (
         get_precomputed_embeddings_collection,
     )
 
-    client = chromadb.PersistentClient(path=chroma_path)
+    client = ensure_apps_rg_chroma_client(chroma_path)
     return get_precomputed_embeddings_collection(
         client,
         collection_name,
