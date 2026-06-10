@@ -676,7 +676,7 @@ def normalize_parsed_output(
     return out
 
 
-def retry_qwen_for_parse(
+def retry_provider_for_parse(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,
@@ -1164,7 +1164,7 @@ def run_headline_execution(
         raw_model_output_original = raw_output
         parsed, parse_error = parse_model_json(raw_model_output_original)
         if parsed is None and str(args.provider) == "external_claude":
-            raw_model_output_original, parsed, parse_error = retry_qwen_for_parse(
+            raw_model_output_original, parsed, parse_error = retry_provider_for_parse(
                 messages, provider_payload, raw_model_output_original, parse_error
             )
             if parsed is not None:

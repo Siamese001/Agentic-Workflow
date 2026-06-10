@@ -147,7 +147,7 @@ def test_generate_competencies_graph_pool_lane_mocked(monkeypatch: pytest.Monkey
         )
 
     monkeypatch.setattr(
-        "apps_rg.runtime.reasoning.bullet_lane_generation.run_qwen_self_consistency_paths",
+        "apps_rg.runtime.reasoning.bullet_lane_generation.run_provider_self_consistency_paths",
         _fake_paths,
     )
 

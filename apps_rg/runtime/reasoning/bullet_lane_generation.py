@@ -16,7 +16,7 @@ from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
     SelfConsistencyPath,
     bullet_lane_sc_enabled,
     patch_receipt_samples_executed,
-    run_qwen_self_consistency_paths,
+    run_provider_self_consistency_paths,
     self_consistency_path_count,
 )
 from apps_rg.runtime.reasoning.competencies_graph_pool import (
@@ -160,7 +160,7 @@ def _generate_employment_bullet_lane(
             if regen_round == 0
             else regen_extra_path_count_for_lane(section_lane)
         )
-        new_paths, last_result = run_qwen_self_consistency_paths(
+        new_paths, last_result = run_provider_self_consistency_paths(
             section_lane=section_lane,
             provider_payload=provider_payload,
             parse_model_json=parse_model_json,
@@ -294,7 +294,7 @@ def _generate_competencies_graph_pool_lane(
             if regen_round == 0
             else regen_extra_path_count_for_lane(section_lane)
         )
-        new_paths, last_result = run_qwen_self_consistency_paths(
+        new_paths, last_result = run_provider_self_consistency_paths(
             section_lane=section_lane,
             provider_payload=provider_payload,
             parse_model_json=parse_model_json,
@@ -478,7 +478,7 @@ def generate_bullet_lane_with_sc_and_claude(
         "generation_mode": "qwen_sc_claude_pool",
         "section_lane": section_lane,
     }
-    paths, last_result = run_qwen_self_consistency_paths(
+    paths, last_result = run_provider_self_consistency_paths(
         section_lane=section_lane,
         provider_payload=provider_payload,
         parse_model_json=parse_model_json,

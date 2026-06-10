@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from apps_rg.runtime.sections.executive_summary_judge_remediation import (
-    retry_qwen_for_judge_remediation,
+    retry_provider_for_judge_remediation,
 )
 
 
@@ -50,7 +50,7 @@ def _regen_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     return tmp_path
 
 
-def test_retry_qwen_cycle2_uses_incremental_anchor_parsed(
+def test_retry_provider_cycle2_uses_incremental_anchor_parsed(
     _regen_env: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -94,7 +94,7 @@ def test_retry_qwen_cycle2_uses_incremental_anchor_parsed(
         _fake_run,
     )
 
-    _new_raw, _new_parsed, receipt = retry_qwen_for_judge_remediation(
+    _new_raw, _new_parsed, receipt = retry_provider_for_judge_remediation(
         [{"role": "system", "content": "SYS"}, {"role": "user", "content": "USER"}],
         {"model": "qwen-test", "temperature": 0.1, "max_tokens": 1024},
         json.dumps(scratch),

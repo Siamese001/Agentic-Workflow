@@ -1,4 +1,4 @@
-"""W1 unit tests: regen token budget gate + budgeted_qwen_regen_call."""
+"""W1 unit tests: regen token budget gate + budgeted_regen_call."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 
 from apps_rg.runtime.providers import provider_contract as qwen_vllm_provider
-from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
-    budgeted_qwen_regen_call,
+from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
+    budgeted_regen_call,
     clear_regen_budget_ledger,
     regen_budget_ledger,
     resolve_regen_max_output_tokens,
@@ -48,7 +48,7 @@ def test_budgeted_regen_fail_closed_before_transport(monkeypatch, tmp_path: Path
     monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "4096")
     clear_regen_budget_ledger(tmp_path)
     messages = [{"role": "user", "content": "x " * 50000}]
-    outcome = budgeted_qwen_regen_call(
+    outcome = budgeted_regen_call(
         {"model": "test-model"},
         messages=messages,
         phase="judge_regen",
@@ -82,12 +82,12 @@ def test_budgeted_regen_requires_provider_response_for_accepted_parse(
         )
 
     monkeypatch.setattr(
-        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.generate_section",
+        "apps_rg.runtime.sections.executive_summary_regen_dispatch.generate_section",
         _fake_call,
     )
     clear_regen_budget_ledger(tmp_path)
     messages = [{"role": "user", "content": "short prompt"}]
-    outcome = budgeted_qwen_regen_call(
+    outcome = budgeted_regen_call(
         {"model": "test-model"},
         messages=messages,
         phase="synthesis_regen",
@@ -99,7 +99,7 @@ def test_budgeted_regen_requires_provider_response_for_accepted_parse(
     assert outcome.result.runtime_generation_status == "REAL_LLM"
     resp_files = list(tmp_path.glob("provider_response_synthesis_regen_*.json"))
     assert resp_files
-    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+    from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
         mark_regen_call_parse,
     )
 
@@ -126,18 +126,18 @@ def test_budgeted_regen_timeout_never_accepted(monkeypatch, tmp_path: Path) -> N
         )
 
     monkeypatch.setattr(
-        "apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch.generate_section",
+        "apps_rg.runtime.sections.executive_summary_regen_dispatch.generate_section",
         _timeout_call,
     )
     clear_regen_budget_ledger(tmp_path)
-    outcome = budgeted_qwen_regen_call(
+    outcome = budgeted_regen_call(
         {"model": "test"},
         messages=[{"role": "user", "content": "hi"}],
         phase="judge_regen",
         call_site="test_timeout",
         artifact_dir=tmp_path,
     )
-    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
+    from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
         mark_regen_call_parse,
     )
 

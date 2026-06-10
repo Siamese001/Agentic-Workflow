@@ -1159,7 +1159,7 @@ def normalize_parsed_output(parsed: dict[str, Any] | None, runtime_payload: dict
     return out
 
 
-def retry_qwen_for_parse(
+def retry_provider_for_parse(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,
@@ -1342,7 +1342,7 @@ def write_x2_gate_outputs(
     )
 
 
-def retry_qwen_competency_restatement(
+def retry_provider_competency_restatement(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,

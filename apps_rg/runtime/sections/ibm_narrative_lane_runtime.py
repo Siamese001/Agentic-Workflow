@@ -385,7 +385,7 @@ def apply_companion_metric_budget_trim(
     parsed["claim_ledger"] = reconcile_narrative_claim_ledger(collapsed, led, allowed_fact_ids=allowed)
 
 
-def retry_qwen_for_parse(
+def retry_provider_for_parse(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,
@@ -413,7 +413,7 @@ def retry_qwen_for_parse(
     return new_raw, new_parsed, new_err
 
 
-def retry_qwen_for_metric_budget(
+def retry_provider_for_metric_budget(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
     raw_output: str,
