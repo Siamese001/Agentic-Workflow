@@ -1,7 +1,7 @@
 # SSOT: fact_vectors collection (apps_rg C0 dense lane)
 # Embeddings MUST match tools.ingestion.chroma_ingest_pipeline (BGE-M3, 1024).
 
-schema_version: "2.0"
+schema_version: "2.1"
 collection_name: fact_vectors
 description: Candidate-owned fact embeddings for apps_rg resume_generation (separate from process_docs)
 
@@ -92,6 +92,75 @@ metadata_schema:
     type: string
     required: false
     allowed_values: [PRIMARY, SUPPORTING, REFERENCE, UNKNOWN]
+
+  tier:
+    type: string
+    required: true
+    allowed_values: [seed, learned]
+    notes: Seed rows come from bootstrap/canonical candidate facts; learned rows are promoted from staging.
+
+  candidate_fact_id:
+    type: string
+    required: false
+    notes: Runtime C0.2 atom identifier stamped on write-back candidates.
+
+  confidence:
+    type: string
+    required: false
+    notes: Candidate-fact confidence copied from the source atom.
+
+  proof_status:
+    type: string
+    required: false
+    notes: Proof eligibility copied from the source atom.
+
+  source_span_ref:
+    type: string
+    required: false
+    notes: Pointer to the source span used to ground the atom.
+
+  source_type:
+    type: string
+    required: false
+    notes: Source taxonomy used by the staging-to-live promotion verifier.
+
+  write_back_operation:
+    type: string
+    required: false
+    allowed_values: [extract, fuse, enrich]
+    notes: Grounded transform operation allowed into fact_vectors.
+
+  promoted_at_utc:
+    type: string
+    format: iso8601
+    required: false
+    notes: UTC timestamp set when a staged learned row is promoted to live fact_vectors.
+
+  promotion_run_id:
+    type: string
+    required: false
+    notes: Promotion batch identifier stamped with promoted learned rows.
+
+  run_id:
+    type: string
+    required: false
+    notes: Runtime run identifier stamped on staged learned rows before X3-gated promotion.
+
+  staged_at_utc:
+    type: string
+    format: iso8601
+    required: false
+    notes: UTC timestamp set when a candidate row lands in fact_vectors_staging.
+
+  promotion_hold_reason:
+    type: string
+    required: false
+    notes: Operator-visible reason a staged row remained held instead of promoted.
+
+  x3_code:
+    type: string
+    required: false
+    notes: X3 disposition code consulted by deferred promotion.
 
   embedding_model_id:
     type: string

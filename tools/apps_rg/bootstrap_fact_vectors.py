@@ -84,9 +84,12 @@ def _run_sparse_build(chroma_path: Path) -> dict[str, int]:
     os.environ["CHROMA_PERSIST_DIR"] = str(chroma_path)
     from tools.generate.ingestion import build_sparse_index
 
-    build_sparse_index.CHROMA_PATH = chroma_path
-    build_sparse_index.SPARSE_PATH = SPARSE_PATH.parent
-    return build_sparse_index.build_for_collection(COLLECTION, dry_run=False)
+    return build_sparse_index.build_for_collection(
+        COLLECTION,
+        dry_run=False,
+        chroma_path=chroma_path,
+        sparse_dir=SPARSE_PATH.parent,
+    )
 
 
 def bootstrap(

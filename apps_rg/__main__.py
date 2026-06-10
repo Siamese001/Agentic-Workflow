@@ -61,12 +61,10 @@ from pathlib import Path
 from typing import Any, Callable
 
 from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
-from apps_rg.runtime.resume_resolution import DEFAULT_RESUME_SSOT_PATH
 from apps_rg.runtime.cli_section_execution_report import (
     emit_cli_section_execution_summary,
-    section_lane_process_exit_code,
 )
-from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
+from apps_rg.runtime.resume_resolution import DEFAULT_RESUME_SSOT_PATH
 from apps_rg.runtime.runtime_proof_layout import find_repo_root
 from apps_rg.runtime.section_cli_defaults import SectionCliConfigError
 from apps_rg.runtime.section_execution_plan import (
@@ -344,7 +342,7 @@ def _gather_interactive_fields(args: argparse.Namespace) -> None:
         nonlocal session
         if session is None:
             session = _new_interactive_inputs_session_dir()
-            setattr(args, "_interactive_cli_inputs_dir", str(session))
+            args._interactive_cli_inputs_dir = str(session)
             print(f"\nInteractive inputs directory:\n  {session}\n", flush=True)
         return session
 
@@ -904,10 +902,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     # Dispatch to the runtime pipeline
     try:
         if section_eff in section_lane_ids:
+            from apps_rg.runtime.live_judge_only_guard import resolve_cli_mock_judges
             from apps_rg.runtime.orchestration.canonical_dispatch import (
                 run_canonical_apps_rg_from_cli_primitives,
             )
-            from apps_rg.runtime.live_judge_only_guard import resolve_cli_mock_judges
             from apps_rg.runtime.section_cli_defaults import (
                 resolve_allow_non_allow_exit_zero,
                 resolve_cli_lane_provider_with_source,
@@ -1103,6 +1101,14 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                     emit_full_run_section_status(ad, print_stdout=True)
         if section_eff in section_lane_ids:
             res_dict = result if isinstance(result, dict) else {}
+            from apps_rg.runtime.c0.c02_fact_vector_ingest import (
+                promote_deferred_c02_fact_vectors_after_x3,
+            )
+
+            res_dict["fact_vector_deferred_promotion"] = promote_deferred_c02_fact_vectors_after_x3(
+                res_dict,
+                section_id=section_eff,
+            )
             allow_exit_flag = bool(getattr(args, "allow_non_allow_exit_zero", False))
             if res_dict.get("fault") == "temperature_range":
                 err = str(res_dict.get("error") or "temperature out of range")

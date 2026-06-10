@@ -5,12 +5,9 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-import pytest
-
 from tools.generate.infra_wiring_views import (
     _APPROVED_ADAPTER_PATHS,
     _PROCESS_BOUNDARY_ADAPTERS,
-    _RAW_INFRA_PACKAGES,
     materialize_infra_views,
 )
 
@@ -130,6 +127,64 @@ class TestMaterializeInfraViews:
 
         counts = materialize_infra_views(db_path)
         assert counts["v_p0_apps_direct_infra"] == 1
+
+    def test_detects_apps_rg_fact_ingest_raw_chromadb_import(self, tmp_path: Path) -> None:
+        """Regression: c02_fact_vector_ingest is no longer grandfathered for raw Chroma imports."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::apps_rg/runtime/c0/c02_fact_vector_ingest.py",
+            "module",
+            "L_APP",
+            "repo_module",
+            "apps_rg/runtime/c0/c02_fact_vector_ingest.py",
+        )
+        _insert_node(conn, 2, "ADG::Symbol::chromadb", "external", "external", "external_module", "chromadb")
+        _insert_edge(conn, 1, 2, "imports", "apps_rg/runtime/c0/c02_fact_vector_ingest.py", 183, "chromadb")
+        conn.commit()
+        conn.close()
+
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p0_apps_direct_infra"] == 1
+
+    def test_apps_rg_fact_ingest_adapter_import_clears_raw_chromadb_view(self, tmp_path: Path) -> None:
+        """Fixed code imports the sanctioned L4 adapter module, so no raw-SDK P0 row appears."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::apps_rg/runtime/c0/c02_fact_vector_ingest.py",
+            "module",
+            "L_APP",
+            "repo_module",
+            "apps_rg/runtime/c0/c02_fact_vector_ingest.py",
+        )
+        _insert_node(
+            conn,
+            2,
+            "ADG::Module::agentic_core/L4_state/utils/client/chroma_client.py",
+            "module",
+            "L4",
+            "repo_module",
+            "agentic_core/L4_state/utils/client/chroma_client.py",
+        )
+        _insert_edge(
+            conn,
+            1,
+            2,
+            "imports",
+            "apps_rg/runtime/c0/c02_fact_vector_ingest.py",
+            183,
+            "chromadb_module",
+        )
+        conn.commit()
+        conn.close()
+
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p0_apps_direct_infra"] == 0
 
     def test_apps_shared_not_flagged_as_p0(self, tmp_path: Path) -> None:
         """Edge case: apps_shared imports are NOT P0 violations."""
@@ -314,6 +369,59 @@ class TestP0WriteBypassUWG:
         conn.close()
         counts = materialize_infra_views(db_path)
         assert counts["v_p0_write_bypass_uwg"] == 1
+
+    def test_chromadb_upsert_outside_l4_adapter_flagged(self, tmp_path: Path) -> None:
+        """Regression: raw Chroma import plus collection.upsert is a UWG bypass."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::apps_rg/runtime/c0/raw_fact_vector_writer.py",
+            "module",
+            "L_APP",
+            "repo_module",
+            "apps_rg/runtime/c0/raw_fact_vector_writer.py",
+        )
+        _insert_node(conn, 2, "ADG::Symbol::chromadb", "external", "external", "external_module", "chromadb")
+        _insert_edge(conn, 1, 2, "imports", "apps_rg/runtime/c0/raw_fact_vector_writer.py", 10, "chromadb")
+        _insert_edge(
+            conn,
+            1,
+            1,
+            "writes_through",
+            "apps_rg/runtime/c0/raw_fact_vector_writer.py",
+            42,
+            "collection.upsert",
+        )
+        conn.commit()
+        conn.close()
+
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p0_write_bypass_uwg"] == 1
+
+    def test_chromadb_upsert_inside_l4_adapter_not_write_bypass(self, tmp_path: Path) -> None:
+        """The sanctioned L4 Chroma adapter may import and write through Chroma."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        adapter_path = "agentic_core/L4_state/utils/client/chroma_client.py"
+        _insert_node(
+            conn,
+            1,
+            f"ADG::Module::{adapter_path}",
+            "module",
+            "L4",
+            "repo_module",
+            adapter_path,
+        )
+        _insert_node(conn, 2, "ADG::Symbol::chromadb", "external", "external", "external_module", "chromadb")
+        _insert_edge(conn, 1, 2, "imports", adapter_path, 10, "chromadb")
+        _insert_edge(conn, 1, 1, "writes_through", adapter_path, 42, "collection.upsert")
+        conn.commit()
+        conn.close()
+
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p0_write_bypass_uwg"] == 0
 
 
 class TestP0L1DirectInfra:

@@ -156,7 +156,6 @@ SANCTIONED_ADAPTER_FILES = {
     "rationale_quality_judge.py",  # apps_underwriting_ai judge adapter — anthropic lazy-imported in _get_client(); LLM-as-judge boundary; peer of frontier_rationale_judge.py
     "c0_binding.py",  # apps_rg C0 retrieval binding — chromadb import for ChromaResearchStore wiring; W4 receipted in artifacts/apps_rg/retrieval/ingestion_receipts/w4_c0_binding_receipt.json; peer of chroma_research_store.py
     "chroma_precomputed_collection.py",  # apps_rg Chroma collection boundary — precomputed BGE vectors only; blocks DefaultEmbeddingFunction
-    "c02_fact_vector_ingest.py",  # apps_rg C0.2 fact-vector upsert — chromadb at sanctioned ingest seam
     "c02_product_hybrid_retrieval.py",  # apps_rg C0.2 product hybrid retrieval — chromadb query seam
     "augmented_skills_graph_sqlite.py",  # apps_rg fact_inventory — canonical C0.3 graph materialization adapter (sqlite3)
     # 2026-06-07 — apps_01 bank-grade-servicing L4 store (self-contained app, 0 agentic_core deps)
@@ -189,7 +188,7 @@ def scan_file(file_path: Path) -> list[tuple[int, str]] | None:
     try:
         with open(file_path, encoding="utf-8") as f:
             lines = f.readlines()
-    except (OSError, IOError, UnicodeDecodeError) as exc:
+    except (OSError, UnicodeDecodeError) as exc:
         _log.warning("Could not read %s: %s", file_path, exc)
         return None
 

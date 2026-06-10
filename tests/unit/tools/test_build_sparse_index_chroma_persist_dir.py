@@ -10,7 +10,9 @@ agentic_core.L4_state.config.chroma_paths), so the sidecar can be built against 
 from __future__ import annotations
 
 import importlib
+import json
 import os
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -58,3 +60,80 @@ def test_sparse_output_stays_repo_local_regardless_of_override(_clean_env, tmp_p
     os.environ["CHROMA_PERSIST_DIR"] = str(tmp_path)
     mod = importlib.import_module(MOD)
     assert mod.SPARSE_PATH == (mod.REPO_ROOT / "data" / "cache" / "sparse")
+
+
+def test_upsert_documents_incrementally_replaces_sparse_rows(tmp_path: Path) -> None:
+    mod = importlib.import_module(MOD)
+
+    first = mod.upsert_documents(
+        "fact_vectors",
+        [
+            {
+                "id": "apps_rg:fv:f1",
+                "document": "alpha grounded claim",
+                "metadata": {"tier": "learned"},
+            }
+        ],
+        sparse_dir=tmp_path,
+    )
+    assert first["upserted_count"] == 1
+    assert first["doc_count"] == 1
+
+    db_path = tmp_path / "fact_vectors.db"
+    with sqlite3.connect(str(db_path)) as conn:
+        assert conn.execute("SELECT id FROM docs_fts WHERE docs_fts MATCH 'alpha'").fetchone()[0] == "apps_rg:fv:f1"
+        metadata = conn.execute("SELECT metadata FROM docs WHERE id = ?", ("apps_rg:fv:f1",)).fetchone()[0]
+        assert json.loads(metadata)["tier"] == "learned"
+
+    second = mod.upsert_documents(
+        "fact_vectors",
+        [
+            {
+                "id": "apps_rg:fv:f1",
+                "document": "omega revised claim",
+                "metadata": {"tier": "learned", "revision": "2"},
+            }
+        ],
+        sparse_dir=tmp_path,
+    )
+    assert second["doc_count"] == 1
+
+    with sqlite3.connect(str(db_path)) as conn:
+        assert conn.execute("SELECT id FROM docs_fts WHERE docs_fts MATCH 'alpha'").fetchone() is None
+        assert conn.execute("SELECT id FROM docs_fts WHERE docs_fts MATCH 'omega'").fetchone()[0] == "apps_rg:fv:f1"
+        metadata = conn.execute("SELECT metadata FROM docs WHERE id = ?", ("apps_rg:fv:f1",)).fetchone()[0]
+        assert json.loads(metadata)["revision"] == "2"
+
+
+def test_build_for_collection_clears_sparse_rows_missing_from_chroma(tmp_path: Path) -> None:
+    import chromadb
+
+    mod = importlib.import_module(MOD)
+    sparse_dir = tmp_path / "sparse"
+    mod.upsert_documents(
+        "fact_vectors",
+        [
+            {"id": "stale", "document": "stale content", "metadata": {}},
+        ],
+        sparse_dir=sparse_dir,
+    )
+
+    chroma_path = tmp_path / "chroma"
+    client = chromadb.PersistentClient(path=str(chroma_path))
+    col = client.get_or_create_collection(name="fact_vectors")
+    col.upsert(
+        ids=["fresh"],
+        embeddings=[[0.1, 0.2, 0.3, 0.4]],
+        documents=["fresh content"],
+        metadatas=[{"tier": "learned"}],
+    )
+
+    stats = mod.build_for_collection(
+        "fact_vectors",
+        chroma_path=chroma_path,
+        sparse_dir=sparse_dir,
+    )
+    assert stats["doc_count"] == 1
+
+    with sqlite3.connect(str(sparse_dir / "fact_vectors.db")) as conn:
+        assert conn.execute("SELECT id FROM docs ORDER BY id").fetchall() == [("fresh",)]

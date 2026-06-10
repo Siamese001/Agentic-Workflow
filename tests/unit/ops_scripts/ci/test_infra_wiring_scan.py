@@ -15,7 +15,6 @@ from ops_scripts.ci.infra_wiring_scan import (
     scan_file,
 )
 
-
 # ---------------------------------------------------------------------------
 # scan_file — happy path, failure path, edge case
 # ---------------------------------------------------------------------------
@@ -250,3 +249,8 @@ class TestRemediation927628SanctionedEntries:
         """Negative control: a nearby non-adapter file with a forbidden import is NOT allowed."""
         p = Path("C:/Git/Agentic-Workflow-FRESH/apps_qna/engines/dispatch/some_business_logic.py")
         assert is_allowed_path(p) is False, "Non-adapter file must remain blocked"
+
+    def test_c02_fact_vector_ingest_no_longer_sanctioned(self) -> None:
+        """W5 routes the ingest seam through chroma_client; raw Chroma relapse must be caught."""
+        p = Path("C:/Git/Agentic-Workflow-FRESH/apps_rg/runtime/c0/c02_fact_vector_ingest.py")
+        assert is_allowed_path(p) is False

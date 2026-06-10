@@ -26,6 +26,7 @@ import sys
 import time
 from collections import Counter
 from pathlib import Path
+
 from tqdm import tqdm
 
 
@@ -233,12 +234,83 @@ def _upsert_term_batch(
     conn.commit()
 
 
+def _delete_docs_batch(conn: sqlite3.Connection, doc_ids: list[str]) -> None:
+    """Delete stale sparse rows for document ids before incremental replacement."""
+    conn.executemany("DELETE FROM term_freq WHERE doc_id = ?", [(doc_id,) for doc_id in doc_ids])
+    conn.executemany("DELETE FROM docs WHERE id = ?", [(doc_id,) for doc_id in doc_ids])
+    conn.commit()
+
+
+def _refresh_meta(conn: sqlite3.Connection, collection_name: str) -> dict[str, int]:
+    doc_count = int(conn.execute("SELECT COUNT(*) FROM docs").fetchone()[0] or 0)
+    term_count = int(conn.execute("SELECT COUNT(*) FROM term_freq").fetchone()[0] or 0)
+    conn.executemany(
+        "INSERT OR REPLACE INTO meta(key, value) VALUES(?, ?)",
+        [
+            ("collection", collection_name),
+            ("doc_count", str(doc_count)),
+            ("term_count", str(term_count)),
+            ("built_at", str(time.time())),
+        ],
+    )
+    conn.commit()
+    return {"doc_count": doc_count, "term_count": term_count}
+
+
+def upsert_documents(
+    collection_name: str,
+    rows: list[dict[str, object]],
+    *,
+    sparse_dir: str | Path | None = None,
+) -> dict[str, int]:
+    """Incrementally upsert documents into one SQLite FTS5 sparse sidecar.
+
+    W2 promotion uses this after dense Chroma upsert so learned facts become visible to
+    both dense and sparse lanes without requiring a full sidecar rebuild.
+    """
+    target_dir = Path(sparse_dir) if sparse_dir is not None else SPARSE_PATH
+    target_dir.mkdir(parents=True, exist_ok=True)
+    db_path = target_dir / f"{collection_name}.db"
+    conn = sqlite3.connect(str(db_path))
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA synchronous=NORMAL")
+    _create_schema(conn)
+
+    doc_rows: list[tuple[str, str, str]] = []
+    term_rows: list[tuple[str, str, int]] = []
+    for row in rows:
+        doc_id = str(row.get("id") or "").strip()
+        if not doc_id:
+            continue
+        document = str(row.get("document") or "")
+        metadata = row.get("metadata")
+        metadata_json = json.dumps(metadata if isinstance(metadata, dict) else {})
+        doc_rows.append((doc_id, document, metadata_json))
+        for term, freq in Counter(tokenize(document)).items():
+            term_rows.append((term, doc_id, freq))
+
+    if doc_rows:
+        _delete_docs_batch(conn, [row[0] for row in doc_rows])
+        _upsert_docs_batch(conn, doc_rows)
+        _upsert_term_batch(conn, term_rows)
+        _rebuild_fts(conn)
+    stats = _refresh_meta(conn, collection_name)
+    conn.close()
+    return {"upserted_count": len(doc_rows), **stats}
+
+
 # ---------------------------------------------------------------------------
 # Main builder
 # ---------------------------------------------------------------------------
 
 
-def build_for_collection(collection_name: str, dry_run: bool = False) -> dict[str, int]:
+def build_for_collection(
+    collection_name: str,
+    dry_run: bool = False,
+    *,
+    chroma_path: str | Path | None = None,
+    sparse_dir: str | Path | None = None,
+) -> dict[str, int]:
     """Fetch all docs from Chroma collection and write sparse sidecar DB.
 
     Returns stats dict with doc_count, term_count.
@@ -249,7 +321,8 @@ def build_for_collection(collection_name: str, dry_run: bool = False) -> dict[st
         print("ERROR: chromadb not installed.")
         sys.exit(1)
 
-    chroma = chromadb.PersistentClient(path=str(CHROMA_PATH))
+    source_chroma_path = Path(chroma_path) if chroma_path is not None else CHROMA_PATH
+    chroma = chromadb.PersistentClient(path=str(source_chroma_path))
 
     try:
         col = chroma.get_collection(collection_name)
@@ -266,13 +339,17 @@ def build_for_collection(collection_name: str, dry_run: bool = False) -> dict[st
         print(f"  DRY RUN: '{collection_name}' has {total} docs — would write sparse index.")
         return {"doc_count": total, "term_count": 0}
 
-    db_path = SPARSE_PATH / f"{collection_name}.db"
-    SPARSE_PATH.mkdir(parents=True, exist_ok=True)
+    target_dir = Path(sparse_dir) if sparse_dir is not None else SPARSE_PATH
+    db_path = target_dir / f"{collection_name}.db"
+    target_dir.mkdir(parents=True, exist_ok=True)
 
     conn = sqlite3.connect(str(db_path))
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
     _create_schema(conn)
+    conn.execute("DELETE FROM term_freq")
+    conn.execute("DELETE FROM docs")
+    conn.commit()
 
     offset = 0
     doc_count = 0

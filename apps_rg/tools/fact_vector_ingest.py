@@ -37,6 +37,7 @@ class FactVectorChunk:
     citation_anchor: str = ""
     chunk_digest: str = ""
     authority_class: str = "PRIMARY"
+    tier: str = "seed"
     embedding_model_id: str = BGE_M3_MODEL_ID
     embedding_dim: int = BGE_M3_DIM
     freshness_status: str = "FRESH"
@@ -77,6 +78,7 @@ class FactVectorChunk:
                 "citation_anchor": self.citation_anchor or "",
                 "chunk_digest": self.chunk_digest or "",
                 "authority_class": self.authority_class or "PRIMARY",
+                "tier": self.tier or "seed",
                 "embedding_model_id": self.embedding_model_id,
                 "embedding_dim": int(self.embedding_dim),
                 "freshness_status": self.freshness_status,
@@ -87,13 +89,13 @@ class FactVectorChunk:
 
 class FactVectorSchema:
     """Schema validator for fact_vectors collection."""
-    
+
     SCHEMA_PATH = Path("apps_rg/config/domain_contract/fact_vectors_schema.yaml")
-    
+
     def __init__(self):
         self._schema: dict[str, Any] = {}
         self._load_schema()
-    
+
     def _load_schema(self) -> None:
         """Load schema from YAML file."""
         if self.SCHEMA_PATH.exists():
@@ -105,33 +107,33 @@ class FactVectorSchema:
                 "collection_name": "fact_vectors",
                 "allowed_source_classes": ["candidate_profile", "project_evidence"],
                 "rejected_source_classes": [
-                    "rubrics", "governance_docs", "approved_examples", 
+                    "rubrics", "governance_docs", "approved_examples",
                     "receipts", "company_research", "process_docs"
                 ],
             }
-    
+
     @property
     def collection_name(self) -> str:
         return self._schema.get("collection_name", "fact_vectors")
-    
+
     @property
     def allowed_source_classes(self) -> list[str]:
         return self._schema.get("allowed_source_classes", ["candidate_profile", "project_evidence"])
-    
+
     @property
     def rejected_source_classes(self) -> list[str]:
         return self._schema.get("rejected_source_classes", [])
-    
+
     def validate_chunk(self, chunk: FactVectorChunk) -> tuple[bool, list[str]]:
         """Validate a chunk against the schema."""
         errors: list[str] = []
-        
+
         # Check app
         if not chunk.app:
             errors.append("Missing app metadata")
         elif chunk.app != "apps_rg":
             errors.append(f"Invalid app value: {chunk.app}, expected apps_rg")
-        
+
         # Check source_class
         if chunk.source_class in self.rejected_source_classes:
             errors.append(
@@ -139,7 +141,15 @@ class FactVectorSchema:
             )
         elif chunk.source_class not in self.allowed_source_classes:
             errors.append(f"Source class {chunk.source_class} not in allowed list")
-        
+
+        tier_schema = (self._schema.get("metadata_schema") or {}).get("tier") or {}
+        tier = str(chunk.tier or "").strip()
+        if tier_schema.get("required", False) and not tier:
+            errors.append("Missing tier metadata")
+        allowed_tiers = tier_schema.get("allowed_values") or ["seed", "learned"]
+        if tier and tier not in allowed_tiers:
+            errors.append(f"Invalid tier value: {tier}, expected one of {allowed_tiers}")
+
         return len(errors) == 0, errors
 
 
@@ -153,19 +163,19 @@ def _extract_skills(content: str) -> list[str]:
         r"\b(TensorFlow|PyTorch|scikit-learn|Pandas|NumPy|Apache Spark)\b",
         r"\b(Machine Learning|AI|Deep Learning|NLP|Computer Vision)\b",
     ]
-    
+
     skills = set()
     for pattern in skill_patterns:
         matches = re.findall(pattern, content, re.IGNORECASE)
         skills.update(matches)
-    
+
     return sorted(skills)
 
 
 def _detect_section_type(content: str) -> str:
     """Detect the section type of content."""
     content_lower = content.lower()
-    
+
     section_patterns = {
         "experience": ["experience", "work history", "employment", "career"],
         "skills": ["skills", "technologies", "tech stack", "proficiencies"],
@@ -174,11 +184,11 @@ def _detect_section_type(content: str) -> str:
         "projects": ["projects", "open source", "github"],
         "certifications": ["certifications", "certified", "aws certified"],
     }
-    
+
     for section_type, keywords in section_patterns.items():
         if any(kw in content_lower for kw in keywords):
             return section_type
-    
+
     return "general"
 
 
@@ -196,30 +206,30 @@ def ingest_candidate_profile(
     role: str = "",
 ) -> list[FactVectorChunk]:
     """Ingest candidate profile (resume) into chunks.
-    
+
     Args:
         content: Raw resume text
         candidate_name: Name of candidate
         source_document_id: Document ID for this resume
-        
+
     Returns:
         List of FactVectorChunk objects
     """
     chunks: list[FactVectorChunk] = []
     content_hash = _compute_hash(content)
     timestamp = datetime.now(timezone.utc).isoformat()
-    
+
     # Split content into sections
     sections = re.split(r"\n\n+", content)
-    
+
     for i, section in enumerate(sections):
         if len(section.strip()) < 50:  # Skip very short sections
             continue
-            
+
         chunk_id = f"{source_document_id}_section_{i:03d}_{content_hash[:8]}"
         skills = _extract_skills(section)
         section_type = _detect_section_type(section)
-        
+
         starget = section_type if section_type == "general" else f"{section_type},general"
         chunk = FactVectorChunk(
             chunk_id=chunk_id,
@@ -236,7 +246,7 @@ def ingest_candidate_profile(
             section_targets=starget,
         )
         chunks.append(chunk)
-    
+
     return chunks
 
 
@@ -249,7 +259,7 @@ def ingest_project_evidence(
     role_or_title: str = "",
 ) -> list[FactVectorChunk]:
     """Ingest project evidence into chunks.
-    
+
     Args:
         content: Raw project description text
         project_name: Name of the project
@@ -257,24 +267,24 @@ def ingest_project_evidence(
         source_document_id: Document ID for this project
         employer_or_client: Optional employer/client name
         role_or_title: Optional role/title
-        
+
     Returns:
         List of FactVectorChunk objects
     """
     chunks: list[FactVectorChunk] = []
     content_hash = _compute_hash(content)
     timestamp = datetime.now(timezone.utc).isoformat()
-    
+
     # Split content into paragraphs
     paragraphs = re.split(r"\n\n+", content)
-    
+
     for i, para in enumerate(paragraphs):
         if len(para.strip()) < 30:  # Skip very short paragraphs
             continue
-            
+
         chunk_id = f"{source_document_id}_para_{i:03d}_{content_hash[:8]}"
         skills = _extract_skills(para)
-        
+
         # Build content with metadata
         enriched_content = f"""Project: {project_name}
 Candidate: {candidate_name}
@@ -282,7 +292,7 @@ Employer/Client: {employer_or_client}
 Role: {role_or_title}
 
 {para.strip()}"""
-        
+
         chunk = FactVectorChunk(
             chunk_id=chunk_id,
             content=enriched_content,
@@ -298,7 +308,7 @@ Role: {role_or_title}
             section_targets="outcomes_lane,professional_experience,project",
         )
         chunks.append(chunk)
-    
+
     return chunks
 
 
