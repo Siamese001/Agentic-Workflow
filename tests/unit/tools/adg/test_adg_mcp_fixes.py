@@ -78,8 +78,8 @@ class TestRedisUrlEnvOverride:
 
         mock_redis_cls.assert_called_once_with("redis://explicit:1234/0")
 
-    def test_localhost_default_when_nothing_set(self, monkeypatch):
-        """Fallback to redis://localhost:6379/0 when neither env nor arg provided."""
+    def test_sqlite_only_mode_when_nothing_set(self, monkeypatch):
+        """When neither env nor arg is provided, Redis is skipped instead of defaulting localhost."""
         monkeypatch.delenv("ADG_REDIS_URL", raising=False)
 
         mock_sqlite = MagicMock()
@@ -91,25 +91,57 @@ class TestRedisUrlEnvOverride:
                 mock_redis_cls.return_value._available = False
                 from tools.adg.core.service import ADGService
 
-                ADGService()
+                service = ADGService()
 
-        mock_redis_cls.assert_called_once_with("redis://localhost:6379/0")
+        mock_redis_cls.assert_not_called()
+        assert service.health().mode == "sqlite_only"
 
-    def test_empty_env_var_falls_through_to_localhost_default(self, monkeypatch):
-        """ADG_REDIS_URL='' must fall through to localhost default, not pass '' to RedisCache."""
+    def test_empty_env_var_uses_sqlite_only_mode(self, monkeypatch):
+        """ADG_REDIS_URL='' must not pass '' to RedisCache or collapse service startup."""
         monkeypatch.setenv("ADG_REDIS_URL", "")
 
         mock_sqlite = MagicMock()
         mock_sqlite.get_status.return_value = {"timestamp": "ts_004"}
+        mock_sqlite.health.return_value = ("healthy", {})
 
         with patch("tools.adg.core.service.SQLiteBackend", return_value=mock_sqlite):
             with patch("tools.adg.core.service.RedisCache") as mock_redis_cls:
                 mock_redis_cls.return_value._available = False
                 from tools.adg.core.service import ADGService
 
-                ADGService()
+                service = ADGService()
 
-        mock_redis_cls.assert_called_once_with("redis://localhost:6379/0")
+        mock_redis_cls.assert_not_called()
+        assert service.health().redis == "unavailable"
+
+    def test_unexpanded_env_placeholder_uses_sqlite_only_mode(self, monkeypatch):
+        """Literal MCP placeholders must not be treated as Redis URLs."""
+        monkeypatch.setenv("ADG_REDIS_URL", "${ADG_REDIS_URL}")
+
+        mock_sqlite = MagicMock()
+        mock_sqlite.get_status.return_value = {"timestamp": "ts_005"}
+        mock_sqlite.health.return_value = ("healthy", {})
+
+        with patch("tools.adg.core.service.SQLiteBackend", return_value=mock_sqlite):
+            with patch("tools.adg.core.service.RedisCache") as mock_redis_cls:
+                from tools.adg.core.service import ADGService
+
+                service = ADGService()
+
+        mock_redis_cls.assert_not_called()
+        assert service.health().mode == "sqlite_only"
+
+    def test_redis_cache_rejects_unexpanded_placeholder_before_client_connect(self, monkeypatch):
+        """RedisCache must not pass literal MCP placeholders to redis.from_url."""
+        monkeypatch.setenv("ADG_REDIS_URL", "${ADG_REDIS_URL}")
+
+        with patch("tools.adg.cache.redis_cache.redis.from_url") as mock_from_url:
+            from tools.adg.cache.redis_cache import RedisCache
+
+            with pytest.raises(RuntimeError):
+                RedisCache()
+
+        mock_from_url.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
@@ -271,6 +303,19 @@ class TestAdgReloadHygiene:
 
 
 class TestRedisAvailabilityRefresh:
+    def test_hset_mapping_uses_single_field_hset_calls(self):
+        """Redis 3 rejects multi-field HSET; cache writes must stay compatible."""
+        from tools.adg.cache.redis_cache import RedisCache
+
+        target = MagicMock()
+
+        RedisCache._hset_mapping(target, "hash-key", {"a": 1, "b": 2})
+
+        assert target.hset.call_args_list == [
+            call("hash-key", "a", "__json__:1"),
+            call("hash-key", "b", "__json__:2"),
+        ]
+
     def test_maybe_reconnect_fires_after_backoff_window(self):
         """_maybe_reconnect() must re-probe Redis once the 30s backoff elapses
         and reset consecutive_errors to 0 on successful reconnect."""

@@ -1,0 +1,157 @@
+{
+  "generated": "2026-06-10",
+  "plan_id": "codex-mcp-transport-parity-4b9c7e",
+  "wave": "W4",
+  "scope": "transport health probes, duplicate-process hygiene, and env placeholder preflight",
+  "helper": "scripts/governance/audit_codex_mcp_transports.py",
+  "read_only": true,
+  "adg": {
+    "health": {
+      "mode": "full",
+      "sqlite": "healthy",
+      "redis": "healthy",
+      "cache_hit_capable": true,
+      "snapshot_id": "06082026_1212",
+      "sqlite_path": "C:/Git/Agentic-Workflow-FRESH/artifacts/adg/adg_indexed_06082026_1212.sqlite"
+    },
+    "runtime_info": {
+      "pid": 12236,
+      "startup_time": "2026-06-10T09:16:54.190413",
+      "startup_nonce": "17aa233dcc0d",
+      "combined_fingerprint": "29b299ba80",
+      "redis_enabled": true
+    },
+    "restart_proof_status": "baseline_captured_pid_or_nonce_must_change_after_intentional_restart"
+  },
+  "local_probes": {
+    "commands_found": ["python", "cmd", "npx", "node", "git", "redis-cli"],
+    "tcp": {
+      "localhost:6379": "open"
+    },
+    "script_compile": {
+      "tools/adg/adg_redis_ingest.py": "pass",
+      "tools/adg/mcp/server.py": "pass",
+      "tools/mcp/pytest_server.py": "pass",
+      "tools/mcp/redis_mcp_server.py": "pass",
+      "tools/mcp/vector_db_server.py": "pass",
+      "tools/memory/adg_memory_server.py": "pass",
+      "tools/otel/otel_mcp_server.py": "pass"
+    }
+  },
+  "env": {
+    "set": ["ADG_REDIS_URL", "AGENTIC_REPO_ROOT", "GITKRAKEN_GK_PATH", "MEMORY_DB", "NOTION_TOKEN", "TAVILY_API_KEY"],
+    "unset": ["CONTEXT7_API_KEY", "OTEL_MCP_RUNTIME_ADG_DIR", "PYTEST_DISABLE_PLUGIN_AUTOLOAD", "VECTOR_DB_CHROMA_PATH"],
+    "runtime_unresolved_placeholders": false,
+    "env_file_tavily_api_key": {
+      "path": "C:/Users/amita/env/.env",
+      "line": 79,
+      "present": true,
+      "length": 41
+    }
+  },
+  "registry": {
+    "path": "C:/Git/eval-harness/.mcp.json",
+    "source_placeholders_present": true,
+    "source_placeholders_are_expected": true,
+    "critical_placeholders": [
+      "GitKraken.command=${GITKRAKEN_GK_PATH}",
+      "adg_sqlite.env.ADG_REDIS_URL=${ADG_REDIS_URL}",
+      "adg_sqlite.env.ADG_REPO_ROOT=${AGENTIC_REPO_ROOT}",
+      "memory.args.1=${AGENTIC_REPO_ROOT}/tools/memory/adg_memory_server.py",
+      "memory.env.MEMORY_DB=${AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite",
+      "vector_db.args.1=${AGENTIC_REPO_ROOT}/tools/mcp/vector_db_server.py",
+      "notion.env.NOTION_TOKEN=${NOTION_TOKEN}"
+    ]
+  },
+  "process_classification": {
+    "adg_sqlite": {
+      "expected": "single-python-stdio-server",
+      "process_count": 2,
+      "root_launcher_count": 2,
+      "classification": "duplicate",
+      "pids": [11052, 12236],
+      "live_runtime_pid": 12236
+    },
+    "memory": {
+      "expected": "single-python-stdio-server",
+      "process_count": 1,
+      "root_launcher_count": 1,
+      "classification": "single",
+      "pids": [38996]
+    },
+    "vector_db": {
+      "expected": "single-python-stdio-server",
+      "process_count": 1,
+      "root_launcher_count": 1,
+      "classification": "single",
+      "pids": [38544]
+    },
+    "notion": {
+      "expected": "single-npx-launch-tree",
+      "process_count": 3,
+      "root_launcher_count": 1,
+      "classification": "single_launch_tree"
+    },
+    "context7": {
+      "expected": "single-npx-launch-tree",
+      "process_count": 4,
+      "root_launcher_count": 1,
+      "classification": "single_launch_tree"
+    },
+    "playwright": {
+      "expected": "single-npx-launch-tree",
+      "process_count": 3,
+      "root_launcher_count": 1,
+      "classification": "single_launch_tree"
+    },
+    "redis": {
+      "expected": "dormant",
+      "process_count": 0,
+      "classification": "none"
+    },
+    "pytest_mcp": {
+      "expected": "dormant",
+      "process_count": 0,
+      "classification": "none"
+    },
+    "otel_mcp": {
+      "expected": "dormant-on-demand",
+      "process_count": 0,
+      "classification": "none"
+    },
+    "tavily": {
+      "expected": "dormant",
+      "process_count": 0,
+      "classification": "none"
+    }
+  },
+  "findings": [
+    {
+      "id": "W4-ADG-DUPLICATE-PROCESS",
+      "severity": "medium",
+      "status": "open",
+      "summary": "Two adg_sqlite Python stdio server processes are present; adg_runtime_info reports PID 12236 as the live serving process."
+    },
+    {
+      "id": "W4-PLACEHOLDER-RUNTIME-OK",
+      "severity": "info",
+      "status": "closed",
+      "summary": "Current runtime env values have no literal ${...} placeholder leakage."
+    },
+    {
+      "id": "W4-DORMANT-PROCESS-POLICY-OK",
+      "severity": "info",
+      "status": "closed",
+      "summary": "Dormant Redis, pytest_mcp, otel_mcp, and Tavily have no standalone MCP processes."
+    }
+  ],
+  "verification": {
+    "audit_script_compile": "pass",
+    "audit_script_run": "pass",
+    "focused_pytest": {
+      "status": "pass",
+      "tests": 14,
+      "warnings": 5
+    }
+  }
+}

@@ -96,8 +96,8 @@ class MigrationSteps:
     def check_coordination_fabric() -> tuple[bool, str]:
         """Check if coordination fabric is configured."""
         try:
-            from agentic_core.cache.core.redis_coordination_fabric import get_fabric
-            fabric = get_fabric()
+            from agentic_core.cache.core.redis_coordination_fabric import get_coordination_fabric
+            fabric = get_coordination_fabric()
             return True, "Coordination fabric available"
         except Exception as e:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             return False, f"Coordination fabric unavailable: {e}"
@@ -117,8 +117,8 @@ class MigrationSteps:
         
         try:
             # Ensure wake queue exists in Redis
-            from agentic_core.cache.core.redis_coordination_fabric import get_fabric
-            fabric = get_fabric()
+            from agentic_core.cache.core.redis_coordination_fabric import get_coordination_fabric
+            fabric = get_coordination_fabric()
             
             return MigrationResult(
                 step_id=step_id,

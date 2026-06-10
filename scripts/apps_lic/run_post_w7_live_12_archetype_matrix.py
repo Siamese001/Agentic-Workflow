@@ -1,4 +1,4 @@
-"""Post-W7 live LinkedIn archetype matrix for apps_lic.
+"""Main full live E2E gate for apps_lic.
 
 Runs one recruiter, one senior TA, one C-level, and one executive-archetype
 contact for each of AIG, Citi, and Neo4j. Sources are public LinkedIn-indexed
@@ -68,6 +68,8 @@ from scripts.apps_lic.run_post_w7_live_15_contact_company_validation import (  #
 RUN_ID = "post_w7_live_12_archetype_matrix_20260609"
 FRESHNESS_DATE = "2026-06-09T00:00:00+00:00"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "artifacts" / "apps_lic" / "post_w7_live_12_archetype_matrix"
+FULL_E2E_GATE_ROLE = "main_full_e2e_gate"
+FULL_E2E_GATE_SHAPE = "4_per_company_12_archetype_matrix"
 THRESHOLD_PROFILE_ID = "atp::apps_lic::outreach_message::v1"
 SCORE_TYPE_LIVE_X1D_MIN = "Live X1D min score"
 SCORE_TYPE_X2_PASS_RATIO = "X2 pass ratio"
@@ -545,6 +547,9 @@ def _build_summary(rows: tuple[dict[str, Any], ...], *, generated_at: str) -> di
     return {
         "schema_version": "apps_lic.post_w7_live_12_archetype_matrix.v1",
         "run_id": RUN_ID,
+        "gate_role": FULL_E2E_GATE_ROLE,
+        "gate_shape": FULL_E2E_GATE_SHAPE,
+        "acceptance_contract": "all_12_company_archetype_rows_clear_with_zero_quality_violations",
         "generated_at_utc": generated_at,
         "profile_count": len(rows),
         "company_counts": company_counts,
@@ -597,9 +602,11 @@ def _escape_table(value: Any) -> str:
 
 def _write_report(output_dir: Path, summary: Mapping[str, Any], rows: tuple[dict[str, Any], ...]) -> None:
     lines = [
-        "# Post-W7 Live 12-Contact Archetype Matrix",
+        "# apps_lic Main Full Live E2E Gate",
         "",
         f"Run ID: `{summary['run_id']}`",
+        f"Gate role: `{summary.get('gate_role', FULL_E2E_GATE_ROLE)}`",
+        f"Gate shape: `{summary.get('gate_shape', FULL_E2E_GATE_SHAPE)}`",
         f"Acceptance passed: `{summary['acceptance_passed']}`",
         f"Rows: `{summary['profile_count']}`",
         f"Quality violations: `{summary['quality_violation_count']}`",

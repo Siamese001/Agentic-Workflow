@@ -212,8 +212,8 @@ def run_core_same_authority_regen(
 ) -> tuple[str, dict[str, Any], dict[str, Any], tuple[dict[str, str], ...]]:
     """Invoke core runner; persist receipt + provider_request proof artifacts."""
     from apps_rg.runtime.sections.executive_summary_lane import write_json
-    from apps_rg.runtime.sections.executive_summary_qwen_regen_dispatch import (
-        budgeted_qwen_regen_call,
+    from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
+        budgeted_regen_call,
         mark_regen_call_parse,
     )
 
@@ -221,7 +221,7 @@ def run_core_same_authority_regen(
     _semantic_index = int(contract.semantic_regen_attempt_index or 1)
 
     def _provider_generate(chat_messages: list[dict[str, str]]) -> dict[str, Any]:
-        regen_outcome = budgeted_qwen_regen_call(
+        regen_outcome = budgeted_regen_call(
             provider_payload,
             messages=list(chat_messages),
             phase="judge_regen",

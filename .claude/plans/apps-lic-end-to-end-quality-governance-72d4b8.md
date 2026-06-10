@@ -11,7 +11,8 @@ Review apps_lic end to end as an agentic engineer and close the policy, duplicat
 ## Evidence Snapshot
 
 - ADG health: SQLite SSOT healthy, Redis cache healthy, cache-hit capable, snapshot `06082026_1758`.
-- Latest live harness: 12/12 clear, all `INMAIL` / `linkedin_inmail`, live Qwen/vLLM required, live Claude X1D enabled.
+- Main full live E2E gate: 4 contacts per company across 3 companies = 12 rows. Each company must cover Recruiter, Senior TA, Executive, and C-level. All rows use canonical dispatch, live Qwen/vLLM is required, and live Claude X1D is required when policy says so.
+- Secondary live soak: 5 contacts per company across 3 companies = 15 rows. This is broader company-contact validation, not the primary acceptance gate.
 - Structural hotspots:
   - `apps_lic/engines/validation_exit.py`: ADG apps_lic risk hotspot #1; 25 debt findings; fan-out 42.
   - `apps_lic/runtime/dispatch/canonical_dispatch.py`: ADG apps_lic chokepoint #1; fan-in 43, fan-out 45; `run_canonical_apps_lic_spine` is 587 lines.
@@ -486,8 +487,8 @@ Run in this order:
 
 1. Focused unit tests for policy profile, route envelope, length budget, X1D profile loader.
 2. Existing apps_lic targeted regression suite.
-3. Live 12-row harness.
-4. Live 15-row or 30-row contact harness with all companies and all archetypes.
+3. Main full E2E gate: live 12-row 4-per-company archetype matrix.
+4. Secondary soak only: live 15-row company-contact validation, if extra runtime breadth is needed.
 5. ADG SQLite direct health and Redis cache health.
 
 Acceptance:

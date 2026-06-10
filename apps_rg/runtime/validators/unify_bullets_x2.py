@@ -606,7 +606,13 @@ def run_unify_bullets_x2_gates(
         None if scope_ok else scope_failure,
     )
 
-    serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
+    # Leakage scan covers PROOF-CARRYING fields only (W5, plan
+    # apps-rg-aig-remaining-lanes-closeout-d4e1f7): ``self_check`` is the model's free-form
+    # compliance attestation — a key literally named "no_bul_ibm_references": true tripped the
+    # naive whole-doc substring scan (false positive). Bullets/claim_ledger/change_log/
+    # selected_fact_plan/gap_notes all remain scanned at full strength.
+    _scan_doc = {k: v for k, v in (parsed_output or {}).items() if k != "self_check"}
+    serialized = json.dumps(_scan_doc, sort_keys=True).lower()
     add("x2_no_ibm_fact_leakage", "bul_ibm_" not in serialized, "bul_ibm_", "absent", "IBM fact leakage detected.")
     add(
         "x2_no_insurtech_fact_leakage",

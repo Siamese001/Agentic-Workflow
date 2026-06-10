@@ -1,4 +1,6 @@
+import json
 from dataclasses import replace
+from pathlib import Path
 
 from apps_lic.engines.message_type_requirement_gate import MESSAGE_ROLE_SPECIFIC
 from apps_lic.engines.validation_exit import (
@@ -24,6 +26,7 @@ from apps_lic.engines.whole_message_generation import (
 )
 import apps_lic.engines.x1d_judge_feedback_regeneration as x1d_regen
 from apps_lic.engines.x1d_judge_feedback_regeneration import (
+    STOP_REPAIR_BUDGET_EXHAUSTED,
     STOP_REPAIR_CANDIDATE_CLEAR,
     STOP_REPAIR_CANDIDATE_X2_FAILED,
     STOP_REPAIR_SAME_AS_PARENT,
@@ -146,6 +149,13 @@ def test_x1d_feedback_repair_can_clear_after_live_judge_review_failure() -> None
     assert judge_calls == ["repair_candidate_1"]
     assert result.attempts[0].failed_judge_ids == (JUDGE_EVIDENCE_SUPPORT,)
     assert result.attempts[0].post_repair_scores[0]["passed"] is True
+    assert result.attempts[0].x1d_repair_effective is True
+    assert result.attempts[0].x1d_repair_resolved_issue_ids == ("generic_draft",)
+    assert result.attempts[0].x1d_repair_unresolved_issue_ids == ()
+    assert result.attempts[0].repair_candidate_sanitization_passed is True
+    assert result.to_packet()["x1d_repair_effective"] is True
+    assert result.to_packet()["x1d_repair_resolved_issue_ids"] == ["generic_draft"]
+    assert result.to_packet()["repair_candidate_sanitization_passed"] is True
 
 
 def test_x1d_blocked_result_does_not_trigger_regeneration() -> None:
@@ -211,6 +221,8 @@ def test_x1d_feedback_same_text_repair_stops_without_second_judge() -> None:
     assert result.stop_reason == STOP_REPAIR_SAME_AS_PARENT
     assert result.iteration_count == 1
     assert result.final_proof is initial
+    assert result.attempts[0].x1d_repair_effective is False
+    assert result.attempts[0].x1d_repair_unresolved_issue_ids == ("generic_draft",)
 
 
 def test_x1d_feedback_repair_reruns_x2_before_second_judge() -> None:
@@ -244,6 +256,216 @@ def test_x1d_feedback_repair_reruns_x2_before_second_judge() -> None:
     assert result.stop_reason == STOP_REPAIR_CANDIDATE_X2_FAILED
     assert result.final_proof.x2_result.status == STATUS_X2_BLOCKED
     assert result.final_proof.x1d_result.status == STATUS_X1D_BLOCKED
+    assert result.attempts[0].repair_candidate_sanitization_passed is False
+
+
+def test_w3_sc3_repair_loop_can_use_second_iteration() -> None:
+    request, batch, selected = _request_and_selected()
+    request = replace(
+        request,
+        reasoning_policy=replace(
+            request.reasoning_policy,
+            sc_level="SC-3",
+            repair_budget=2,
+        ),
+    )
+    initial = run_validation_exit(
+        request,
+        batch,
+        selected_candidate_id=selected.candidate_id,
+        judge_results=(_live_judge(score=0.40, passed=False),),
+    )
+    repaired_texts = {
+        1: (
+            "Hi Jane, AIG's Director, AI Platforms role needs governed agentic AI "
+            "delivery. I designed and operationalized a governed agentic AI platform "
+            "for regulated enterprise workflows. Would a quick resume review for "
+            "JR-12345 be useful?\n\nAmit"
+        ),
+        2: (
+            "Hi Jane, AIG's Director, AI Platforms role needs governed agentic AI "
+            "delivery with validation controls and replayable traces. I designed "
+            "and operationalized a governed agentic AI platform for regulated "
+            "enterprise workflows. Would a quick resume review for JR-12345 be useful?\n\nAmit"
+        ),
+    }
+    repair_iterations: list[int] = []
+    judge_calls = 0
+
+    def repair_runner(_req, parent, _failed, iteration):
+        repair_iterations.append(iteration)
+        return _repair_candidate(
+            parent,
+            text=repaired_texts[iteration],
+            candidate_id=f"repair_candidate_{iteration}",
+        )
+
+    def judge_runner(_req, _candidate):
+        nonlocal judge_calls
+        judge_calls += 1
+        if judge_calls == 1:
+            return (_live_judge(score=0.50, passed=False),)
+        return (_live_judge(score=0.96, passed=True, issue="", repair=""),)
+
+    result = run_x1d_judge_feedback_regeneration(
+        request=request,
+        batch=batch,
+        selected_candidate_id=selected.candidate_id,
+        initial_proof=initial,
+        x1d_judge_runner=judge_runner,
+        repair_runner=repair_runner,
+    )
+
+    assert repair_iterations == [1, 2]
+    assert result.iteration_count == 2
+    assert result.stop_reason == STOP_REPAIR_CANDIDATE_CLEAR
+    assert result.final_selected_candidate_id == "repair_candidate_2"
+
+
+def test_w3_sc2_single_judge_repair_stays_one_iteration() -> None:
+    request, batch, selected = _request_and_selected()
+    assert request.reasoning_policy.sc_level == "SC-2"
+    assert request.reasoning_policy.repair_budget == 1
+    initial = run_validation_exit(
+        request,
+        batch,
+        selected_candidate_id=selected.candidate_id,
+        judge_results=(_live_judge(score=0.40, passed=False),),
+    )
+    repair_iterations: list[int] = []
+
+    def repair_runner(_req, parent, _failed, iteration):
+        repair_iterations.append(iteration)
+        return _repair_candidate(
+            parent,
+            text=(
+                "Hi Jane, AIG's Director, AI Platforms role needs governed agentic AI "
+                "delivery. I designed and operationalized a governed agentic AI platform "
+                "for regulated enterprise workflows. Would a quick resume review for "
+                "JR-12345 be useful?\n\nAmit"
+            ),
+        )
+
+    def judge_runner(_req, _candidate):
+        return (_live_judge(score=0.50, passed=False),)
+
+    result = run_x1d_judge_feedback_regeneration(
+        request=request,
+        batch=batch,
+        selected_candidate_id=selected.candidate_id,
+        initial_proof=initial,
+        x1d_judge_runner=judge_runner,
+        repair_runner=repair_runner,
+    )
+
+    assert repair_iterations == [1]
+    assert result.iteration_count == 1
+    assert result.stop_reason == STOP_REPAIR_BUDGET_EXHAUSTED
+
+
+def test_w5_sc2_effective_sanitized_repair_gets_one_followup_attempt() -> None:
+    request, batch, selected = _request_and_selected()
+    assert request.reasoning_policy.sc_level == "SC-2"
+    assert request.reasoning_policy.repair_budget == 1
+    initial = run_validation_exit(
+        request,
+        batch,
+        selected_candidate_id=selected.candidate_id,
+        judge_results=(
+            _live_judge(
+                score=0.40,
+                passed=False,
+                issue="old_issue",
+                repair="fix_old_issue",
+            ),
+        ),
+    )
+    repaired_texts = {
+        1: (
+            "Hi Jane, AIG's Director, AI Platforms role needs governed agentic AI "
+            "delivery with validation controls. I designed and operationalized a "
+            "governed agentic AI platform for regulated enterprise workflows. Would "
+            "a quick resume review for JR-12345 be useful?\n\nAmit"
+        ),
+        2: (
+            "Hi Jane, AIG's Director, AI Platforms role needs governed agentic AI "
+            "delivery with validation controls and replayable traces. I designed "
+            "and operationalized a governed agentic AI platform for regulated "
+            "enterprise workflows. Would a quick resume review for JR-12345 be useful?\n\nAmit"
+        ),
+    }
+    repair_iterations: list[int] = []
+    judge_calls = 0
+
+    def repair_runner(_req, parent, _failed, iteration):
+        repair_iterations.append(iteration)
+        return _repair_candidate(
+            parent,
+            text=repaired_texts[iteration],
+            candidate_id=f"repair_candidate_{iteration}",
+        )
+
+    def judge_runner(_req, _candidate):
+        nonlocal judge_calls
+        judge_calls += 1
+        if judge_calls == 1:
+            return (
+                _live_judge(
+                    score=0.50,
+                    passed=False,
+                    issue="new_issue",
+                    repair="fix_new_issue",
+                ),
+            )
+        return (_live_judge(score=0.96, passed=True, issue="", repair=""),)
+
+    result = run_x1d_judge_feedback_regeneration(
+        request=request,
+        batch=batch,
+        selected_candidate_id=selected.candidate_id,
+        initial_proof=initial,
+        x1d_judge_runner=judge_runner,
+        repair_runner=repair_runner,
+    )
+
+    assert repair_iterations == [1, 2]
+    assert result.iteration_count == 2
+    assert result.stop_reason == STOP_REPAIR_CANDIDATE_CLEAR
+    assert result.final_selected_candidate_id == "repair_candidate_2"
+    assert result.attempts[0].x1d_repair_effective is True
+    assert result.attempts[0].repair_candidate_sanitization_passed is True
+    assert result.attempts[0].x1d_repair_resolved_issue_ids == ("old_issue",)
+    assert result.attempts[0].x1d_repair_unresolved_issue_ids == ("new_issue",)
+
+
+def test_w3_multi_judge_failure_can_use_two_iteration_window() -> None:
+    request, batch, selected = _request_and_selected()
+    initial = run_validation_exit(
+        request,
+        batch,
+        selected_candidate_id=selected.candidate_id,
+        judge_results=(_live_judge(score=0.40, passed=False),),
+    )
+    multi_judge_proof = replace(
+        initial,
+        x1d_result=replace(
+            initial.x1d_result,
+            judge_results=(
+                _live_judge(score=0.40, passed=False),
+                _live_judge(
+                    judge_id="linkedin_tone_non_generic_x1d",
+                    score=0.40,
+                    passed=False,
+                ),
+            ),
+        ),
+    )
+
+    assert x1d_regen._max_repair_iterations(
+        request,
+        explicit=None,
+        initial_proof=multi_judge_proof,
+    ) == 2
 
 
 def test_qwen_repair_candidate_forces_terminal_amit_signature(monkeypatch) -> None:
@@ -408,7 +630,7 @@ def test_qwen_repair_applies_generic_neo4j_recruiter_feedback_plan(monkeypatch) 
     assert "The bridge is implementation detail" not in repaired.draft_text
     assert "graph-context reliability" not in repaired.draft_text
     assert "Neo4j's VP of Product Management, Agentic AI search" in repaired.draft_text
-    assert "quick recruiter screen on the VP of Product Management, Agentic AI fit" in repaired.draft_text
+    assert "quick recruiter screen on the role fit" in repaired.draft_text
     assert "sp_platform_commercialization" in repaired.claims_used
 
 
@@ -468,8 +690,604 @@ def test_w6_unseen_company_repair_uses_generic_evidence_plan(monkeypatch) -> Non
     assert "Waystar's Director, Agentic Automation search" in repaired.draft_text
     assert "multi-agent orchestration" in repaired.draft_text
     assert "policy gating" in repaired.draft_text
-    assert "quick recruiter screen on the Director, Agentic Automation fit" in repaired.draft_text
+    assert "quick recruiter screen on the role fit" in repaired.draft_text
     for borrowed in ("AIG Assist", "claims", "underwriting", "insurance", "graph-context reliability"):
         assert borrowed.lower() not in repaired.draft_text.lower()
     assert "sp_agentic_platform" in repaired.claims_used
     assert "sp_platform_commercialization" in repaired.claims_used
+
+
+def test_w2_clean_rebuild_replaces_patchy_duplicate_signature_repair(monkeypatch) -> None:
+    request, _batch, selected = _request_and_selected()
+    request = replace(
+        request,
+        target_context={"name": "Jim Young", "title": "Global Chief Data Officer", "company": "AIG"},
+        jd_fields={
+            "position_name": "VP, Global Head of Agentic AI Solutions",
+            "job_title": "VP, Global Head of Agentic AI Solutions",
+            "company": "AIG",
+        },
+        recipient_class="C_LEVEL",
+    )
+    patchy_repair = (
+        "Hi Jim, Given your mandate as the Global Chief Data Officer, ensuring reliable "
+        "and auditable AI systems is critical. I've designed and operationalized a "
+        "governed agentic AI platform for regulated workflows. Could we discuss how "
+        "these insights could enhance AIG's claims and underwriting processes? Amit "
+        "That maps to the mandate, where the operating question is how to make "
+        "agentic decisions auditable across regulated insurance workflows.\n\nAmit"
+    )
+
+    def _fake_repair(**kwargs):
+        _ = kwargs
+        return {
+            "selected_candidate_id": "repair_candidate_1",
+            "candidates": [
+                {
+                    "candidate_id": "repair_candidate_1",
+                    "draft_text": patchy_repair,
+                    "claims_used": ["sp_agentic_platform", "sp_runtime_reliability"],
+                    "model_call_ref": "mref:test",
+                    "provider_receipt": "prov:test",
+                }
+            ],
+            "model": GENERATOR_MODEL_ID,
+            "target_provider": GENERATOR_PROVIDER_ID,
+        }
+
+    monkeypatch.setattr(x1d_regen, "generate_judge_feedback_repair_draft", _fake_repair)
+    monkeypatch.setattr(
+        x1d_regen,
+        "_allowed_claim_ids",
+        lambda _request: {
+            "sp_agentic_platform",
+            "sp_runtime_reliability",
+            "sp_platform_commercialization",
+        },
+    )
+
+    repaired = x1d_regen.qwen_judge_feedback_repair_candidate(
+        request,
+        selected,
+        (
+            _live_judge(
+                judge_id="ceo_attention_originality_x1d",
+                score=0.61,
+                passed=False,
+                issue="duplicate_closing_signature_and_fragmented_structure; sp_platform_commercialization_claim_omitted_from_draft_despite_approval; generic_phrasing_without_specific_aig_trigger_hook",
+                repair="remove_duplicate_amit_signature_and_restructure_as_single_coherent_message; incorporate_22m_revenue_or_margin_outcome_from_sp_platform_commercialization_to_anchor_executive_value",
+            ),
+            _live_judge(
+                judge_id="ceo_evidence_overclaim_risk_x1d",
+                score=0.71,
+                passed=False,
+                issue="duplicate_sign_off_amit_appears_twice_structural_error; second_paragraph_reads_as_unedited_model_reasoning_not_polished_outreach",
+                repair="surface_commercial_outcome_metric_from_sp_platform_commercialization_to_substantiate_value_claim",
+            ),
+        ),
+        1,
+    )
+
+    assert repaired is not None
+    assert repaired.draft_text.count("Amit") == 1
+    assert repaired.draft_text.endswith("\n\nAmit")
+    assert "That maps to the mandate" not in repaired.draft_text
+    assert "$22M" in repaired.draft_text
+    assert "sp_platform_commercialization" in repaired.claims_used
+    assert repaired.word_count <= request.length_budget.max_words
+    assert repaired.char_count <= request.length_budget.hard_cap_chars
+
+
+def test_w2_clean_rebuild_prevents_same_as_parent_repair(monkeypatch) -> None:
+    request, _batch, selected = _request_and_selected()
+    request = replace(
+        request,
+        target_context={"name": "Regina Gilligan", "title": "Talent Acquisition Manager", "company": "AIG"},
+        jd_fields={
+            "position_name": "VP, Global Head of Agentic AI Solutions",
+            "job_title": "VP, Global Head of Agentic AI Solutions",
+            "company": "AIG",
+        },
+        recipient_class="SENIOR_TA",
+    )
+
+    def _fake_repair(**kwargs):
+        _ = kwargs
+        return {
+            "selected_candidate_id": "repair_candidate_1",
+            "candidates": [
+                {
+                    "candidate_id": "repair_candidate_1",
+                    "draft_text": selected.draft_text,
+                    "claims_used": list(selected.claims_used),
+                    "model_call_ref": "mref:test",
+                    "provider_receipt": "prov:test",
+                }
+            ],
+            "model": GENERATOR_MODEL_ID,
+            "target_provider": GENERATOR_PROVIDER_ID,
+        }
+
+    monkeypatch.setattr(x1d_regen, "generate_judge_feedback_repair_draft", _fake_repair)
+
+    repaired = x1d_regen.qwen_judge_feedback_repair_candidate(
+        request,
+        selected,
+        (
+            _live_judge(
+                score=0.81,
+                passed=False,
+                issue="sp_runtime_reliability_claim_not_surfaced_in_draft; repetitive_phrasing_replayable_traces_validation_controls_appears_twice",
+                repair="surface_runtime_reliability_evidence_or_replace_with_stronger_mapped_claim; remove_duplicate_policy_gated_retrieval_validation_controls_replayable_traces_phrase",
+            ),
+        ),
+        1,
+    )
+
+    assert repaired is not None
+    assert x1d_regen._message_fingerprint(repaired.draft_text) != x1d_regen._message_fingerprint(selected.draft_text)
+    assert "validation controls" in repaired.draft_text
+    assert "replayable traces" in repaired.draft_text
+    assert repaired.draft_text.count("Amit") == 1
+
+
+def test_w5_clean_rebuild_varies_for_new_citi_trigger_and_cta_feedback() -> None:
+    request, _batch, _selected = _request_and_selected()
+    request = replace(
+        request,
+        target_context={
+            "name": "Brian Saluzzo",
+            "title": "Chief Information Officer",
+            "company": "Citi",
+            "company_trigger": (
+                "Citi is expanding firmwide AI strategy under senior AI leadership, "
+                "with responsible AI, Citi Sky, and global AI adoption signals."
+            ),
+        },
+        jd_fields={
+            "position_name": "Head of AI Strategy - Firmwide AI",
+            "job_title": "Head of AI Strategy - Firmwide AI",
+            "company": "Citi",
+        },
+        recipient_class="C_LEVEL",
+        message_type="trigger_based_insight",
+    )
+    intents = (
+        x1d_regen.X1DNormalizedRepairIntent(
+            judge_id="ceo_attention_originality_x1d",
+            issue_id="opening_sentence_too_dense_and_generic",
+            required_repair="make_opening_trigger_specific",
+            intent="opening_rewrite",
+            required_claim_ids=(),
+        ),
+        x1d_regen.X1DNormalizedRepairIntent(
+            judge_id="ceo_attention_originality_x1d",
+            issue_id="missing_citi_specific_trigger_hook",
+            required_repair="add_citi_specific_trigger_hook",
+            intent="trigger_hook",
+            required_claim_ids=(),
+        ),
+        x1d_regen.X1DNormalizedRepairIntent(
+            judge_id="ceo_attention_originality_x1d",
+            issue_id="cta_weak_role_fit_framing",
+            required_repair="make_cta_more_executive_specific",
+            intent="cta",
+            required_claim_ids=(),
+        ),
+    )
+
+    rebuilt = x1d_regen._clean_rebuild_repair_text(
+        request=request,
+        normalized_intents=intents,
+    )
+
+    assert "Citi Sky creates a CIO-specific operating tension" in rebuilt
+    assert "model controls, data lineage, and support ownership" in rebuilt
+    assert "Citi Sky governance loop" in rebuilt
+
+
+def test_w5_clean_rebuild_surfaces_allowed_cloud_ai_metric_claim(monkeypatch) -> None:
+    request, _batch, _selected = _request_and_selected()
+    request = replace(
+        request,
+        target_context={
+            "name": "Firat Tekiner",
+            "title": "Director of Product Management",
+            "company": "Neo4j",
+            "company_trigger": (
+                "Neo4j is hiring for Agentic AI product leadership and positioning graph "
+                "intelligence as context infrastructure for enterprise agents."
+            ),
+        },
+        jd_fields={
+            "position_name": "VP of Product Management, Agentic AI",
+            "job_title": "VP of Product Management, Agentic AI",
+            "company": "Neo4j",
+        },
+        recipient_class="HIRING_MANAGER",
+        message_type="trigger_based_insight",
+    )
+    allowed_claim_ids = {
+        "sp_agentic_platform",
+        "sp_runtime_reliability",
+        "sp_cloud_ai_transformation",
+    }
+    monkeypatch.setattr(
+        x1d_regen,
+        "_allowed_claim_ids",
+        lambda _request: allowed_claim_ids,
+    )
+    intents = (
+        x1d_regen.X1DNormalizedRepairIntent(
+            judge_id="linkedin_tone_non_generic_x1d",
+            issue_id="no_quantified_outcomes_or_metrics_to_anchor_claims",
+            required_repair="add_one_concrete_outcome_metric",
+            intent="claim_surface",
+            required_claim_ids=("sp_cloud_ai_transformation",),
+        ),
+        x1d_regen.X1DNormalizedRepairIntent(
+            judge_id="linkedin_tone_non_generic_x1d",
+            issue_id="trigger_insight_is_generic_graph_reliability_not_recipient_specific",
+            required_repair="make_trigger_recipient_specific",
+            intent="trigger_hook",
+            required_claim_ids=(),
+        ),
+        x1d_regen.X1DNormalizedRepairIntent(
+            judge_id="linkedin_tone_non_generic_x1d",
+            issue_id="cta_repeats_role_title_verbatim_twice",
+            required_repair="remove_repeated_role_title_from_cta",
+            intent="cta",
+            required_claim_ids=(),
+        ),
+    )
+
+    rebuilt = x1d_regen._clean_rebuild_repair_text(
+        request=request,
+        normalized_intents=intents,
+    )
+    claims = x1d_regen._claims_from_repaired_text(
+        rebuilt,
+        existing=(),
+        allowed_claim_ids=allowed_claim_ids,
+    )
+
+    assert "$30M cloud and AI transformation portfolio" in rebuilt
+    assert "sp_cloud_ai_transformation" in claims
+    assert "not another retrieval feature" in rebuilt
+    assert "VP Product, Agentic AI search be useful" not in rebuilt
+
+
+def _retry16_c_level_fixture() -> dict:
+    fixture_path = (
+        Path(__file__).parent
+        / "fixtures"
+        / "x1d_repair_loop_retry16_c_level_red_rows.json"
+    )
+    return json.loads(fixture_path.read_text(encoding="utf-8"))
+
+
+def _retry16_intents(row: dict) -> tuple[x1d_regen.X1DNormalizedRepairIntent, ...]:
+    return tuple(
+        x1d_regen.X1DNormalizedRepairIntent(
+            judge_id="ceo_attention_originality_x1d",
+            issue_id=str(issue),
+            required_repair=str(repair),
+            intent=x1d_regen._repair_intent_for_feedback(f"{issue} {repair}".lower()),
+            required_claim_ids=x1d_regen._required_claim_ids_for_feedback(
+                f"{issue} {repair}".lower()
+            ),
+        )
+        for issue, repair in zip(row["unresolved_issue_ids"], row["required_repairs"])
+    )
+
+
+def _c_level_request(*, company: str, name: str, title: str) -> object:
+    request, _batch, _selected = _request_and_selected()
+    if company == "AIG":
+        return replace(
+            request,
+            target_context={
+                "name": name,
+                "title": title,
+                "company": "AIG",
+                "company_context": (
+                    "AIG enterprise AI operating context for regulated insurance, claims, "
+                    "underwriting, governance, and GenAI standards."
+                ),
+                "company_trigger": (
+                    "AIG's VP Global Head of Agentic AI Solutions role reports into the "
+                    "Global Chief Data Officer and spans agentic AI operating-model work."
+                ),
+                "role_ownership_signal": (
+                    "Global Chief Data Officer tied to AIG data, AI, and agentic AI platform context."
+                ),
+            },
+            jd_fields={
+                "position_name": "VP, Global Head of Agentic AI Solutions",
+                "company": "AIG",
+            },
+            recipient_class="C_LEVEL",
+            message_type="trigger_based_insight",
+        )
+    return replace(
+        request,
+        target_context={
+            "name": name,
+            "title": title,
+            "company": "Citi",
+            "company_context": (
+                "Citi firmwide AI strategy context across regulated finance, risk controls, "
+                "responsible AI, data governance, and platform execution."
+            ),
+            "company_trigger": (
+                "Citi is expanding firmwide AI strategy under senior AI leadership, with "
+                "responsible AI, Citi Sky, and global AI adoption signals."
+            ),
+            "role_ownership_signal": (
+                "Chief Information Officer at Citi shaping global technology services and "
+                "AI-enabled firmwide technology work."
+            ),
+        },
+        jd_fields={
+            "position_name": "Head of AI Strategy - Firmwide AI",
+            "company": "Citi",
+        },
+        recipient_class="C_LEVEL",
+        message_type="trigger_based_insight",
+    )
+
+
+def test_w5_retry16_c_level_issue_families_are_classified() -> None:
+    rows = {row["row_id"]: row for row in _retry16_c_level_fixture()["red_rows"]}
+
+    aig_families = x1d_regen._c_level_editorial_issue_families(
+        " ".join(rows["aig_jim_young"]["unresolved_issue_ids"])
+    )
+    assert {"subject_specificity", "proof_bridge", "cta_executive_sharpness"} <= aig_families
+
+    citi_families = x1d_regen._c_level_editorial_issue_families(
+        " ".join(rows["citi_brian_saluzzo"]["unresolved_issue_ids"])
+    )
+    assert {"trigger_insight", "credential_dump", "cta_executive_sharpness"} <= citi_families
+    assert rows["citi_brian_saluzzo"]["repair_stop_reason"] == "repair_same_as_parent"
+
+
+def test_w5_retry16_c_level_composer_replaces_bad_aig_copy(monkeypatch) -> None:
+    row = {
+        item["row_id"]: item for item in _retry16_c_level_fixture()["red_rows"]
+    }["aig_jim_young"]
+    request = _c_level_request(
+        company="AIG",
+        name="Jim Young",
+        title="Global Chief Data Officer",
+    )
+    allowed_claim_ids = {
+        "sp_agentic_platform",
+        "sp_platform_commercialization",
+        "sp_runtime_reliability",
+    }
+    monkeypatch.setattr(x1d_regen, "_allowed_claim_ids", lambda _request: allowed_claim_ids)
+    intents = _retry16_intents(row)
+
+    old_lint = x1d_regen._c_level_editorial_copy_lint_issues(
+        text=row["final_draft_text"],
+        subject_line=row["final_subject_line"],
+        request=request,
+    )
+    rebuilt = x1d_regen._clean_rebuild_repair_text(
+        request=request,
+        normalized_intents=intents,
+    )
+    subject = x1d_regen._clean_rebuild_subject_line(
+        existing=row["final_subject_line"],
+        request=request,
+        normalized_intents=intents,
+    )
+    claims = x1d_regen._claims_from_repaired_text(
+        rebuilt,
+        existing=(),
+        allowed_claim_ids=allowed_claim_ids,
+    )
+    new_lint = x1d_regen._c_level_editorial_copy_lint_issues(
+        text=rebuilt,
+        subject_line=subject,
+        request=request,
+    )
+
+    assert "c_level_copy_lint:subject_specificity" in old_lint
+    assert "c_level_copy_lint:cta_presumes_workflow_selection" in old_lint
+    assert new_lint == ()
+    assert subject == "AIG GCDO agentic operating proof"
+    assert "insurance workflow reuse" in rebuilt
+    assert "which AIG workflow" not in rebuilt
+    assert "brief executive exchange" not in rebuilt
+    assert {"sp_agentic_platform", "sp_platform_commercialization", "sp_runtime_reliability"} <= set(claims)
+
+
+def test_w5_retry16_c_level_composer_replaces_same_parent_citi_copy(monkeypatch) -> None:
+    row = {
+        item["row_id"]: item for item in _retry16_c_level_fixture()["red_rows"]
+    }["citi_brian_saluzzo"]
+    request = _c_level_request(
+        company="Citi",
+        name="Brian Saluzzo",
+        title="Chief Information Officer",
+    )
+    allowed_claim_ids = {
+        "sp_agentic_platform",
+        "sp_platform_commercialization",
+        "sp_quant_governance_foundation",
+    }
+    monkeypatch.setattr(x1d_regen, "_allowed_claim_ids", lambda _request: allowed_claim_ids)
+    intents = _retry16_intents(row)
+
+    old_lint = x1d_regen._c_level_editorial_copy_lint_issues(
+        text=row["final_draft_text"],
+        subject_line=row["final_subject_line"],
+        request=request,
+    )
+    rebuilt = x1d_regen._clean_rebuild_repair_text(
+        request=request,
+        normalized_intents=intents,
+    )
+    subject = x1d_regen._clean_rebuild_subject_line(
+        existing=row["final_subject_line"],
+        request=request,
+        normalized_intents=intents,
+    )
+    claims = x1d_regen._claims_from_repaired_text(
+        rebuilt,
+        existing=(),
+        allowed_claim_ids=allowed_claim_ids,
+    )
+    new_lint = x1d_regen._c_level_editorial_copy_lint_issues(
+        text=rebuilt,
+        subject_line=subject,
+        request=request,
+    )
+
+    assert any("pressure-test" in issue for issue in old_lint)
+    assert new_lint == ()
+    assert subject == "Citi Sky CIO governance loop"
+    assert "Citi Sky creates a CIO-specific operating tension" in rebuilt
+    assert "quant-governance proof is forward risk control" in rebuilt
+    assert "pressure-test" not in rebuilt
+    assert "The governance foundation is" not in rebuilt
+    assert "My fit is" not in rebuilt
+    assert {
+        "sp_agentic_platform",
+        "sp_platform_commercialization",
+        "sp_quant_governance_foundation",
+    } <= set(claims)
+
+
+def test_w5_retry17_aig_second_stage_variant_changes_same_parent(monkeypatch) -> None:
+    request = _c_level_request(
+        company="AIG",
+        name="Jim Young",
+        title="Global Chief Data Officer",
+    )
+    allowed_claim_ids = {
+        "sp_agentic_platform",
+        "sp_platform_commercialization",
+        "sp_runtime_reliability",
+    }
+    monkeypatch.setattr(x1d_regen, "_allowed_claim_ids", lambda _request: allowed_claim_ids)
+    parent_text = (
+        "Hi Jim, AIG's GCDO trigger is concrete: agentic AI for claims and underwriting "
+        "needs release evidence before regulated decisions. The value bridge is insurance "
+        "workflow reuse, backed by productized agentic AI services tied to $22M revenue "
+        "and 20% margin expansion. My relevant work adds governed agentic AI platforms "
+        "with policy gates, evaluation traces, rollback paths, and reusable service patterns. "
+        "Would 15 minutes on evidence-backed release controls for AIG's agentic AI operating "
+        "model be useful?\n\nAmit"
+    )
+    row = {
+        "unresolved_issue_ids": [
+            "value_bridge_lacks_insurance_specificity",
+            "cta_too_generic_for_c_level",
+            "trigger_framing_restates_jd_not_novel_insight",
+        ],
+        "required_repairs": [
+            "add_insurance_workflow_specificity_to_value_bridge",
+            "sharpen_cta_to_name_concrete_decision_or_tradeoff_for_gcdo",
+            "reframe_trigger_as_external_signal_not_jd_restatement",
+        ],
+    }
+    intents = _retry16_intents(row)
+
+    rebuilt = x1d_regen._clean_rebuild_repair_text(
+        request=request,
+        normalized_intents=intents,
+    )
+    subject = x1d_regen._clean_rebuild_subject_line(
+        existing="AIG GCDO agentic operating proof",
+        request=request,
+        normalized_intents=intents,
+    )
+    lint = x1d_regen._c_level_editorial_copy_lint_issues(
+        text=rebuilt,
+        subject_line=subject,
+        request=request,
+    )
+
+    assert x1d_regen._message_fingerprint(rebuilt) != x1d_regen._message_fingerprint(parent_text)
+    assert subject == "AIG GCDO release-evidence tradeoff"
+    assert "release-gate problem" in rebuilt
+    assert "claims triage and underwriting agents" in rebuilt
+    assert "reusable controls turning agentic AI services into scaled offerings" in rebuilt
+    assert "release-gate design for AIG's agentic AI operating model" in rebuilt
+    assert lint == ()
+
+
+def test_w5_retry17_citi_second_stage_variant_drops_medium_quant_claim(monkeypatch) -> None:
+    request = _c_level_request(
+        company="Citi",
+        name="Brian Saluzzo",
+        title="Chief Information Officer",
+    )
+    allowed_claim_ids = {
+        "sp_agentic_platform",
+        "sp_platform_commercialization",
+        "sp_quant_governance_foundation",
+    }
+    monkeypatch.setattr(x1d_regen, "_allowed_claim_ids", lambda _request: allowed_claim_ids)
+    parent_text = (
+        "Hi Brian, Citi Sky creates a CIO-specific operating tension: banker-facing AI can scale "
+        "only if model controls, data lineage, and support ownership travel with each workflow. "
+        "My relevant work is governed agentic AI platform delivery where policy gates and "
+        "evaluation evidence made AI usage auditable in production. The quant-governance proof "
+        "is forward risk control: decision workflows that expose ownership and audit evidence "
+        "before scale. Commercially, the same platform discipline supported productized agentic "
+        "AI services tied to $22M revenue and 20% margin expansion. Would 15 minutes on the "
+        "Citi Sky governance loop be useful?\n\nAmit"
+    )
+    row = {
+        "unresolved_issue_ids": [
+            "quant_governance_claim_is_medium_strength_but_framed_as_forward_risk_proof_without_direct_evidence",
+            "opening_tension_framing_is_competent_but_not_sufficiently_differentiated_for_cio_at_global_bank",
+            "cta_is_generic_15_minute_ask_without_specific_hook_tied_to_citi_sky_trigger",
+            "quant_governance_claim_is_medium_strength_but_presented_as_forward_risk_proof_without_hedging",
+            "citi_sky_trigger_referenced_but_no_specific_citi_sky_detail_anchors_the_insight",
+        ],
+        "required_repairs": [
+            "sharpen_cta_to_reference_specific_citi_sky_governance_gap_or_observable_signal_rather_than_generic_15_min_ask",
+            "replace_quant_governance_sentence_with_concrete_audit_evidence_example_or_drop_to_avoid_medium_claim_overreach",
+            "differentiate_opening_tension_with_citi_specific_detail_such_as_regulated_workflow_scale_or_responsible_ai_mandate",
+            "hedge_or_remove_forward_risk_control_framing_for_sp_quant_governance_foundation_given_medium_claim_strength",
+            "add_one_specific_citi_sky_or_firmwide_ai_detail_to_differentiate_trigger_from_generic_ai_governance_pitch",
+        ],
+    }
+    intents = _retry16_intents(row)
+
+    rebuilt = x1d_regen._clean_rebuild_repair_text(
+        request=request,
+        normalized_intents=intents,
+    )
+    subject = x1d_regen._clean_rebuild_subject_line(
+        existing="Citi Sky CIO governance loop",
+        request=request,
+        normalized_intents=intents,
+    )
+    claims = x1d_regen._claims_from_repaired_text(
+        rebuilt,
+        existing=(),
+        allowed_claim_ids=allowed_claim_ids,
+    )
+    lint = x1d_regen._c_level_editorial_copy_lint_issues(
+        text=rebuilt,
+        subject_line=subject,
+        request=request,
+    )
+
+    assert x1d_regen._message_fingerprint(rebuilt) != x1d_regen._message_fingerprint(parent_text)
+    assert subject == "Citi Sky CIO governance handoff"
+    assert "AI controls, data lineage, risk review" in rebuilt
+    assert "audit-to-support loop" in rebuilt
+    assert "quant-governance" not in rebuilt
+    assert "forward risk control" not in rebuilt
+    assert "sp_quant_governance_foundation" not in {
+        claim_id for intent in intents for claim_id in intent.required_claim_ids
+    }
+    assert "sp_quant_governance_foundation" not in claims
+    assert lint == ()

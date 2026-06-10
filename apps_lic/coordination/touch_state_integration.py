@@ -334,7 +334,7 @@ class CoordinationTouchSpineIntegration:
         try:
             from apps_lic.coordination.touch_scheduler import get_touch_scheduler
             from agentic_core.L4_state.uwg.touch_state_writer import TouchStateUWGAdapter
-            from agentic_core.L4_state.uwg.durable_write_gateway import get_gateway
+            from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
             
             cfg = config or CoordinationTouchIntegrationConfig()
             
@@ -342,7 +342,7 @@ class CoordinationTouchSpineIntegration:
             scheduler = get_touch_scheduler()
             
             # Get state adapter
-            gateway = get_gateway()
+            gateway = get_default_gateway()
             state_adapter = TouchStateUWGAdapter(gateway)
             
             # Create integration

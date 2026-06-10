@@ -1,16 +1,22 @@
-"""Post-W7 live-sourced 15-contact canonical canary."""
+"""Post-W7 secondary live-sourced 15-contact company soak."""
 
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
+import pytest
+
 from scripts.apps_lic.run_post_w7_live_15_contact_company_validation import (
     COMPANIES,
     LIVE_CONTACTS,
+    SECONDARY_E2E_GATE_ROLE,
+    SECONDARY_E2E_GATE_SHAPE,
+    _build_summary,
     run_post_w7_live_15_contact_company_validation,
 )
 
@@ -28,7 +34,14 @@ def _is_public_linkedin_url(url: str) -> bool:
     return parsed.scheme == "https" and parsed.netloc.endswith("linkedin.com")
 
 
+def _require_live_15_soak() -> None:
+    if os.environ.get("APPS_LIC_RUN_LIVE_15_SOAK") != "1":
+        pytest.skip("set APPS_LIC_RUN_LIVE_15_SOAK=1 to run the live 15-contact provider soak")
+
+
 def test_post_w7_live_sources_are_5_per_company_and_targeting_files_exist() -> None:
+    assert SECONDARY_E2E_GATE_ROLE == "secondary_live_company_soak"
+    assert SECONDARY_E2E_GATE_SHAPE == "5_per_company_15_company_validation"
     assert len(LIVE_CONTACTS) == 15
     counts = {company: 0 for company in COMPANIES}
     for contact in LIVE_CONTACTS:
@@ -40,7 +53,46 @@ def test_post_w7_live_sources_are_5_per_company_and_targeting_files_exist() -> N
         assert company.briefing_path.is_file(), company.briefing_path
 
 
+def test_post_w7_live_summary_contract_names_secondary_gate() -> None:
+    rows = tuple(
+        {
+            "company": company,
+            "profile_id": f"{company.lower()}_{index}",
+            "draft_text": "Hi there, concise draft.",
+            "proof_bundle_status": "PASS",
+            "canonical_producer": "apps_lic.runtime.dispatch.canonical_dispatch",
+            "no_send_assertion": True,
+            "no_l4_write_assertion": True,
+            "no_connector_post_assertion": True,
+            "c0_recipient_class_status": "RECIPIENT_CLASS_DERIVED",
+            "generation_generator": "qwen_vllm",
+            "generation_qa_notes": [],
+            "outcome_authorized": True,
+            "proof_packet_id": f"proof_{company}_{index}",
+            "selected_candidate_id": f"candidate_{company}_{index}",
+            "x2_result": "X2_VALIDATION_PASS",
+            "x1d_result": "X1D_VALIDATION_PASS",
+            "apps_lic_disposition": "clear_draft",
+            "shared_x3_disposition": "CLEAR",
+            "derived_recipient_class": "RECRUITER",
+            "message_type": "role_specific",
+            "proof_mode": "X1D_VALIDATED",
+        }
+        for company in ("AIG", "Citi", "Neo4j")
+        for index in range(5)
+    )
+    summary = _build_summary(rows, generated_at="2026-06-10T00:00:00+00:00")
+
+    assert summary["gate_role"] == SECONDARY_E2E_GATE_ROLE
+    assert summary["gate_shape"] == SECONDARY_E2E_GATE_SHAPE
+    assert summary["profile_count"] == 15
+    assert summary["company_counts"] == {"AIG": 5, "Citi": 5, "Neo4j": 5}
+    assert summary["quality_violation_count"] == 0
+    assert summary["acceptance_passed"] is True
+
+
 def test_post_w7_live_runner_produces_15_canonical_rows(tmp_path: Path) -> None:
+    _require_live_15_soak()
     result = run_post_w7_live_15_contact_company_validation(output_dir=tmp_path)
     summary = result["summary"]
     rows = _load_json(tmp_path / "rows.json")["rows"]
@@ -74,6 +126,9 @@ def test_post_w7_live_runner_produces_15_canonical_rows(tmp_path: Path) -> None:
 
 
 def test_post_w7_live_runner_cli_writes_expected_artifacts(tmp_path: Path) -> None:
+    _require_live_15_soak()
+    env = os.environ.copy()
+    env.setdefault("APPS_LIC_QWEN_TIMEOUT_SECONDS", "20")
     completed = subprocess.run(
         [
             sys.executable,
@@ -85,6 +140,8 @@ def test_post_w7_live_runner_cli_writes_expected_artifacts(tmp_path: Path) -> No
         check=True,
         text=True,
         capture_output=True,
+        env=env,
+        timeout=600,
     )
     payload = json.loads(completed.stdout)
 

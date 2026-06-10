@@ -8,7 +8,6 @@ import pytest
 
 from apps_rg.fact_inventory.competencies_graph_skills_proof_pool import (
     DEPRECATED_LEDGER_CODE_PATHS,
-    P2_W1A_RECEIPT_JSON,
     build_competencies_graph_skills_proof_payload,
     validate_p2_w1a_default_graph_authority_receipt,
     write_p2_w1a_default_graph_authority_receipt,
@@ -110,10 +109,13 @@ def test_graph_unavailable_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None
         resolve_section_proof_pool(section="competencies", repo_root=REPO, jd_text=HYBRID_JD)
 
 
-def test_p2_w1a_receipt() -> None:
-    out = write_p2_w1a_default_graph_authority_receipt(repo_root=REPO)
-    assert P2_W1A_RECEIPT_JSON.is_file()
-    receipt = json.loads(P2_W1A_RECEIPT_JSON.read_text(encoding="utf-8"))
+def test_p2_w1a_receipt(tmp_path) -> None:
+    # out_dir=tmp_path (RCA 2026-06-10): tests must never regenerate the tracked
+    # docs/reports receipts — that side effect kept the tree dirty and broke a stash pop.
+    out = write_p2_w1a_default_graph_authority_receipt(repo_root=REPO, out_dir=tmp_path)
+    receipt_json = Path(out["receipt_json"])
+    assert receipt_json.is_file() and receipt_json.parent == tmp_path
+    receipt = json.loads(receipt_json.read_text(encoding="utf-8"))
     validate_p2_w1a_default_graph_authority_receipt(receipt)
     assert receipt["deprecated_ledger_code_reachable_from_product_path"] is False
     assert receipt["silent_fallback_possible"] is False

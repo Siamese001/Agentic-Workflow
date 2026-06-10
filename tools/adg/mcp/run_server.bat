@@ -9,14 +9,14 @@ pushd "%REPO_ROOT%" >nul 2>&1 || (
     exit /b 1
 )
 
-if not exist "tools\adg\mcp\server.py" (
-    echo Could not find tools\adg\mcp\server.py under "%CD%"
+if not exist "tools\mcp\launch_adg_sqlite_mcp.py" (
+    echo Could not find tools\mcp\launch_adg_sqlite_mcp.py under "%CD%"
     popd >nul
     exit /b 1
 )
 
 set "PYTHONPATH=%CD%;%PYTHONPATH%"
-python -m tools.adg.mcp.server
+python -m tools.mcp.launch_adg_sqlite_mcp
 set "EXIT_CODE=%ERRORLEVEL%"
 
 popd >nul

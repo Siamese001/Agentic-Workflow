@@ -453,7 +453,13 @@ def run_ibm_narrative_x2_gates(
         ledger_text_reason,
     )
 
-    serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
+    # Leakage scan excludes the model's free-form ``self_check`` attestation (W5,
+    # apps-rg-aig-remaining-lanes-closeout-d4e1f7): an attestation key naming the forbidden
+    # marker false-trips the substring scan.
+    serialized = json.dumps(
+        {k: v for k, v in (parsed_output or {}).items() if k != "self_check"},
+        sort_keys=True,
+    ).lower()
     if proof_source in ("srfs", "broad_skills_ledger"):
         scope_ids = _ledger_fact_ids(claim_ledger)
     else:
@@ -499,6 +505,24 @@ def run_ibm_narrative_x2_gates(
         if isinstance(e, dict) and e.get("role_episode_bundle_id")
     ]
     pool_bundle_ids = list(pp_meta.get("role_episode_bundle_ids") or [])
+    # derive_from_cited_facts (dec_19e9c91073ae4b5ab; first-run wiring fix, plan
+    # apps-rg-aig-remaining-lanes-closeout-d4e1f7 W4): a bundle is bound when the narrative's
+    # claim_ledger cites that slot's bul_ibm_* id — the model rarely echoes bundle ids in
+    # change_log, but the citations are the binding. Guarded by citations: a packet citing no
+    # slot ids derives nothing and still fails.
+    if not narrative_bundle_ids and ledger_ids:
+        from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+            IBM_BULLET_SLOT_BUNDLE_MAP,
+        )
+
+        narrative_bundle_ids = sorted(
+            {
+                IBM_BULLET_SLOT_BUNDLE_MAP[sid]
+                for sid in ledger_ids
+                if sid in IBM_BULLET_SLOT_BUNDLE_MAP
+                and (not pool_bundle_ids or IBM_BULLET_SLOT_BUNDLE_MAP[sid] in pool_bundle_ids)
+            }
+        )
     narrative_has_bundles = bool(narrative_bundle_ids) or bool(
         (parsed_output or {}).get("role_episode_bundle_ids")
     )
@@ -759,8 +783,14 @@ def run_ibm_narrative_x2_gates(
         "Silent mock fallback detected.",
     )
 
-    judges_ok, judges_reason = check_judge_rows_present(x1d_judges)
-    add("x2_x1d_required_judges_present", judges_ok, judges_reason, REQUIRED_JUDGE_PROVIDERS, judges_reason)
+    # Per-lane roster from section_judge_policy (W4, apps-rg-aig-remaining-lanes-closeout-d4e1f7):
+    # narratives run the recalibrated single-judge panel (gemini_pro); the global exec-summary
+    # roster fallback demanded openai_chatgpt the lane policy never runs (W0-A class drift).
+    from apps_rg.runtime.section_judge_policy import get_section_judge_policy
+
+    _required = list(get_section_judge_policy("ibm_narrative").required_judge_providers)
+    judges_ok, judges_reason = check_judge_rows_present(x1d_judges, required_providers=_required)
+    add("x2_x1d_required_judges_present", judges_ok, judges_reason, _required, judges_reason)
 
     if x1d_judges:
         blocked_invalid = []

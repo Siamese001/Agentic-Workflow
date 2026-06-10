@@ -1,0 +1,147 @@
+{
+  "generated_at": "2026-06-10",
+  "plan_id": "codex-mcp-transport-parity-4b9c7e",
+  "wave": "W1",
+  "sources": [
+    ".mcp.json",
+    "CLAUDE.md",
+    ".claude/mcp-notes.md",
+    ".claude/skills/mcp-integration/SKILL.md",
+    ".claude/skills/mcp-integration/sections/*.md",
+    "Codex tool_search results"
+  ],
+  "servers": [
+    {
+      "server_id": "adg_sqlite",
+      "claude_status": "live_in_mcp_json",
+      "codex_surface": "raw_mcp",
+      "codex_tools": ["adg_health", "adg_runtime_info", "adg_node", "adg_nodes_by_layer", "adg_nodes_by_file", "adg_edge_fanout", "adg_edge_fanin"],
+      "fallback": "Direct SQLite only with DEGRADED_FALLBACK or named CI parity script.",
+      "env": ["ADG_REPO_ROOT", "ADG_REDIS_URL", "PYTHONPATH"],
+      "health_probe": "adg_health mode=full sqlite=healthy redis=healthy",
+      "mutation_policy": "Read-only MCP; Redis mutation through ADG scripts.",
+      "gap_status": "green"
+    },
+    {
+      "server_id": "GitKraken",
+      "claude_status": "live_in_mcp_json",
+      "codex_surface": "not_exposed",
+      "codex_tools": [],
+      "fallback": "Native git plus GitHub plugin, with semantic delta noted.",
+      "env": ["GITKRAKEN_GK_PATH"],
+      "health_probe": "gk.exe mcp --help exits 0 locally",
+      "mutation_policy": "Prefer GitKraken for git/PR operations when exposed.",
+      "gap_status": "red"
+    },
+    {
+      "server_id": "deepwiki",
+      "claude_status": "live_in_mcp_json",
+      "codex_surface": "not_exposed",
+      "codex_tools": [],
+      "fallback": "GitHub plugin or Tavily/web with explicit substitute note.",
+      "env": [],
+      "health_probe": "No Codex tool found.",
+      "mutation_policy": "Read-only.",
+      "gap_status": "red"
+    },
+    {
+      "server_id": "memory",
+      "claude_status": "live_in_mcp_json",
+      "codex_surface": "not_exposed",
+      "codex_tools": [],
+      "fallback": "No honest substitute for mem_recall_session_start; mark blocked/degraded.",
+      "env": ["ADG_REDIS_URL", "MEMORY_DB", "PYTHONPATH"],
+      "health_probe": "Local server script exists and starts; no Codex MCP tool.",
+      "mutation_policy": "Decision writeback via Memory MCP when exposed.",
+      "gap_status": "red"
+    },
+    {
+      "server_id": "vector_db",
+      "claude_status": "live_in_mcp_json",
+      "codex_surface": "not_exposed",
+      "codex_tools": [],
+      "fallback": "rg lexical fallback only; mark degraded for semantic search.",
+      "env": ["VECTOR_DB_CHROMA_PATH", "VECTOR_DB_EMBEDDING_MODEL", "VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "HF_HUB_OFFLINE"],
+      "health_probe": "Local script compiles/starts; duplicate-process guard observed.",
+      "mutation_policy": "Read/search only.",
+      "gap_status": "red"
+    },
+    {
+      "server_id": "notion",
+      "claude_status": "live_in_mcp_json",
+      "codex_surface": "plugin_substitute",
+      "codex_tools": ["_fetch", "_notion_create_pages", "_search", "_notion_get_users", "_notion_get_comments"],
+      "fallback": "Use fetched data-source schema; map Codex plugin properties to Claude Plans DB access.",
+      "env": ["NOTION_TOKEN"],
+      "health_probe": "_notion_get_users(self) succeeded; Plans row creation succeeded.",
+      "mutation_policy": "Plans and Backlog only; archived DBs are filesystem SSOT.",
+      "gap_status": "yellow"
+    },
+    {
+      "server_id": "context7",
+      "claude_status": "live_in_mcp_json",
+      "codex_surface": "not_raw_exposed",
+      "codex_tools": [],
+      "fallback": "Use equivalent Codex/plugin docs only when library coverage matches; otherwise mark unavailable.",
+      "env": ["CONTEXT7_API_KEY optional"],
+      "health_probe": "npx @upstash/context7-mcp --help exits 0 locally.",
+      "mutation_policy": "Read-only.",
+      "gap_status": "yellow_red"
+    },
+    {
+      "server_id": "playwright",
+      "claude_status": "live_in_mcp_json",
+      "codex_surface": "plugin_substitute",
+      "codex_tools": ["node_repl.js", "Browser plugin"],
+      "fallback": "Use node_repl/Browser plugin with explicit delta from Claude browser_* tool names.",
+      "env": [],
+      "health_probe": "npx @playwright/mcp --help exits 0 locally.",
+      "mutation_policy": "Browser automation only; outputs under .playwright-mcp when raw MCP is used.",
+      "gap_status": "yellow"
+    },
+    {
+      "server_id": "pytest_mcp",
+      "claude_status": "dormant_readd_block",
+      "codex_surface": "not_expected",
+      "codex_tools": [],
+      "fallback": "python -m pytest with repo pytest policy.",
+      "env": ["PYTEST_DISABLE_PLUGIN_AUTOLOAD", "PYTHONPATH"],
+      "health_probe": "Use pytest CLI.",
+      "mutation_policy": "Test execution only.",
+      "gap_status": "green"
+    },
+    {
+      "server_id": "redis",
+      "claude_status": "dormant_readd_block",
+      "codex_surface": "adg_indirect_and_local_cli",
+      "codex_tools": ["adg_health", "adg_node backend_used=redis"],
+      "fallback": "redis-cli for standalone inspection; ADG through adg_sqlite first.",
+      "env": ["ADG_REDIS_URL", "REDIS_HOST", "REDIS_PORT", "REDIS_DB"],
+      "health_probe": "Redis TCP open; ADG health reports Redis healthy.",
+      "mutation_policy": "Hot projection only; mutation via tools/adg/adg_redis_ingest.py.",
+      "gap_status": "green_yellow"
+    },
+    {
+      "server_id": "otel_mcp",
+      "claude_status": "dormant_readd_block",
+      "codex_surface": "not_expected",
+      "codex_tools": [],
+      "fallback": "Manual/local collector diagnostics with degraded note.",
+      "env": ["OTEL_MCP_RUNTIME_ADG_DIR"],
+      "health_probe": "Not probed in W1.",
+      "mutation_policy": "Runtime diagnostics and ingest when collector is up.",
+      "gap_status": "green"
+    },
+    {
+      "server_id": "tavily",
+      "claude_status": "dormant_readd_block",
+      "codex_surface": "plugin_substitute",
+      "codex_tools": ["_tavily_search", "_tavily_extract", "_tavily_crawl", "_tavily_map", "_tavily_research"],
+      "fallback": "Claude native WebSearch/WebFetch; Codex Tavily plugin or web fallback when plugin absent.",
+      "env": ["TAVILY_API_KEY"],
+      "health_probe": "Tool discovery exposes Codex Tavily plugin tools; .env contains non-empty key.",
+      "mutation_policy": "Read/search/extract/crawl only.",
+      "gap_status": "green_yellow"
+    }
+  ]
+}

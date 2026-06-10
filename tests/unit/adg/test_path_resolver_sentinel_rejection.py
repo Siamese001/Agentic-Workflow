@@ -247,3 +247,38 @@ def test_external_adg_dir_escape_hatch(
     monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
 
     assert get_adg_dir() == external.resolve()
+
+
+def test_linked_worktree_falls_back_to_primary_checkout_adg_dir(
+    temp_adg_dir: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A linked worktree with no local snapshots uses the primary checkout ADG dir."""
+    import sqlite3
+
+    from tools.adg.shared_modules.path_resolver import get_adg_dir, latest_sqlite
+
+    primary = temp_adg_dir / "primary"
+    worktree = temp_adg_dir / "worktree"
+    primary_git = primary / ".git"
+    worktree_gitdir = primary_git / "worktrees" / "worktree"
+    primary_adg = primary / "artifacts" / "adg"
+
+    worktree.mkdir()
+    worktree_gitdir.mkdir(parents=True)
+    primary_adg.mkdir(parents=True)
+    (worktree / ".git").write_text(f"gitdir: {worktree_gitdir.as_posix()}\n", encoding="utf-8")
+    (worktree_gitdir / "commondir").write_text("../..\n", encoding="utf-8")
+
+    sqlite_path = primary_adg / "adg_indexed_06082026_1212.sqlite"
+    conn = sqlite3.connect(str(sqlite_path))
+    conn.execute("CREATE TABLE nodes (id INTEGER)")
+    conn.commit()
+    conn.close()
+
+    monkeypatch.setenv("ADG_REPO_ROOT", str(worktree))
+    monkeypatch.delenv("ADG_DIR", raising=False)
+    monkeypatch.delenv("ADG_ALLOW_EXTERNAL_DIR", raising=False)
+
+    assert get_adg_dir() == primary_adg
+    assert latest_sqlite(require_nodes_table=True) == sqlite_path

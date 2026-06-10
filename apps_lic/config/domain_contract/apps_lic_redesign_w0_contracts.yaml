@@ -462,7 +462,7 @@ reasoning_policy:
       use_when: named_recruiter_company_or_role_specific
     SC-3:
       candidates: 3
-      validation_repair_passes: 1
+      validation_repair_passes: 2
       use_when: sensitive_claim_heavy_executive_or_high_stakes
   reasoning_levels:
     R0_MINIMAL: deterministic_generic_low_risk_one_shot

@@ -3,19 +3,27 @@
 ## Canonical launch path
 
 ```
-python -m tools.adg.mcp.server
+python -m tools.mcp.launch_adg_sqlite_mcp
 ```
 
-This is the only supported launch path — configured in `.cursor/mcp.json` as:
+This supervised launcher is the only supported launch path. It runs preflight
+checks, normalizes ADG environment variables, writes transport state under
+`artifacts/mcp_heartbeat/`, and then starts the stdio MCP server.
+
+It is configured in root `.mcp.json` as:
 ```json
-"command": "cmd", "args": ["/c", "tools\\adg\\mcp\\run_server.bat"]
+"command": "python", "args": ["-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"]
 ```
 
-The project launcher resolves the repository root from its own path and sets
+For manual Windows launches, `tools\\adg\\mcp\\run_server.bat` delegates to the
+same supervised launcher after resolving the repository root and setting
 `PYTHONPATH` from that root. Do not pass `ADG_DIR` from a global
 `AGENTIC_REPO_ROOT`; stale values can point the MCP at another checkout.
 
-`tools/adg/mcp/server_launcher.py` and `tools/adg/adg_mcp_entry.py` are **deprecated** legacy wrappers retained for emergency use only. Do not add them to `mcp_config.json`.
+`tools/adg/mcp/server.py` remains the internal FastMCP server implementation.
+Do not point MCP config at it directly. `tools/adg/mcp/server_launcher.py` and
+`tools/adg/adg_mcp_entry.py` are **deprecated** legacy wrappers retained for
+emergency use only. Do not add them to `.mcp.json`.
 
 ## Restart decision table
 
@@ -24,10 +32,16 @@ Two distinct restart types exist. Choosing the wrong one wastes time.
 | Change made | Action required | Why |
 |---|---|---|
 | Edited `server.py`, `service.py`, `sqlite_backend.py`, or `models.py` | **Toggle adg_sqlite OFF then ON** in Windsurf MCP Settings | Windsurf kills and respawns the subprocess, loading fresh `.py` files |
-| Edited `.cursor/mcp.json` (command, args, **env**, cwd) | **Fully restart Windsurf IDE** | Windsurf reads global MCP config only at IDE startup; per-server toggle reuses the stale command. This includes `ADG_DIR` and `ADG_REDIS_URL` changes. |
+| Edited `.mcp.json` (command, args, **env**) | **Restart the MCP client session** | MCP clients read subprocess config at startup; per-server toggles can reuse a stale command. This includes `ADG_REDIS_URL` changes. |
 | New SQLite snapshot available (`adg_indexed_*.sqlite`) | Call **`adg_reload`** MCP tool | Data-only reload; does not restart the process or reload code |
 
 ## Verifying a restart took effect
+
+Out-of-band transport check:
+
+```
+python tools/mcp/check_adg_sqlite_transport.py --json
+```
 
 Call `adg_runtime_info` before and after. A genuine process restart shows:
 
@@ -81,10 +95,11 @@ Use this sequence when the ADG needs full regeneration while Windsurf is running
 
 ## Config sync
 
-`post_write_code` hook auto-syncs `.cursor/mcp.json` → `~/.codeium/windsurf/mcp_config.json` whenever the repo file is written (detected via mtime within 10 s). Manual fallback:
+Root `.mcp.json` is the project MCP SSOT. After editing it, validate and sync
+generated references:
 
 ```
 python .claude/governance/scripts/sync_mcp_config.py
 ```
 
-The hook output confirms sync: `[mcp_sync] Synced N servers to global config.`
+Then restart the MCP client session so it reads the new command.

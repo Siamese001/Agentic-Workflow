@@ -249,6 +249,17 @@ def _ibm_metric_anchors_on_assigned_bullets(
         for f in plan_facts or []
         if isinstance(f, dict)
     }
+    # W5 (apps-rg-aig-remaining-lanes-closeout-d4e1f7): the live selected_fact_plan is
+    # slot-keyed ({"bul_ibm_001": {...}}), not a {"facts": [...]} list, so plan_by_bid came up
+    # empty and the no-metric escape below never fired — anchors then fell back to the canonical
+    # tokens, three of which (30%, 25%, $15M) are HOLD-forbidden figures the hold-metric gate
+    # blocks. Accept slot-keyed dict rows here so a slot whose plan fact carries no metric is
+    # legitimately metric-free instead of being forced into the contradiction.
+    for f in plan_facts or []:
+        if isinstance(f, dict) and not f.get("fact_id"):
+            for k, v in f.items():
+                if isinstance(v, dict) and str(k).startswith("bul_ibm_") and k not in plan_by_bid:
+                    plan_by_bid[str(k)] = v
     failures: list[str] = []
     for needles, root in IBM_METRIC_ANCHOR_RULES:
         bullet = by_id.get(root)
@@ -596,6 +607,14 @@ def run_ibm_bullets_x2_gates(
     )
 
     plan_facts_for_anchors = list((selected_plan or {}).get("facts") or [])
+    if not plan_facts_for_anchors and isinstance(selected_plan, dict):
+        # Slot-keyed plan shape ({"bul_ibm_001": {...}}) — adapt to fact rows so the anchor
+        # check sees each slot's real metric state (see _ibm_metric_anchors_on_assigned_bullets).
+        plan_facts_for_anchors = [
+            {"fact_id": k, **v}
+            for k, v in selected_plan.items()
+            if isinstance(v, dict) and str(k).startswith("bul_ibm_")
+        ]
     anchor_ok, anchor_fail = _ibm_metric_anchors_on_assigned_bullets(
         bullets, plan_facts=plan_facts_for_anchors
     )
@@ -869,7 +888,13 @@ def run_ibm_bullets_x2_gates(
         scope_fail = "Fact scope must be IBM bullets only."
     add("x2_ibm_only_fact_scope", scope_ok, sorted(source_ids), scope_threshold, None if scope_ok else scope_fail)
 
-    serialized = json.dumps(parsed_output or {}, sort_keys=True).lower()
+    # Leakage scan excludes the model's free-form ``self_check`` attestation (W5,
+    # apps-rg-aig-remaining-lanes-closeout-d4e1f7): an attestation key naming the forbidden
+    # marker (e.g. "no_bul_unify_references") false-trips the substring scan.
+    serialized = json.dumps(
+        {k: v for k, v in (parsed_output or {}).items() if k != "self_check"},
+        sort_keys=True,
+    ).lower()
     add(
         "x2_no_unify_fact_leakage",
         "bul_unify_" not in serialized,

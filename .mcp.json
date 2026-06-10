@@ -6,7 +6,7 @@
     },
     "adg_sqlite": {
       "command": "python",
-      "args": ["-u", "-m", "tools.adg.mcp.server"],
+      "args": ["-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"],
       "env": {
         "ADG_REDIS_URL": "${ADG_REDIS_URL}",
         "ADG_REPO_ROOT": "${AGENTIC_REPO_ROOT}",
