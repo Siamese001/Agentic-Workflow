@@ -1162,6 +1162,22 @@ def main():
             "ops_scripts/ci/check_apps_rg_fact_vectors_readiness.py",
             "CHECK-RG-FACT-VECTORS",
         ),
+        # CHECK-RG-FV-PARITY / SCHEMA — governance visibility gates for the
+        # c0-grounded-fact-writeback-spine W5 closeout. Parity checks the live
+        # dense Chroma lane against data/cache/sparse/fact_vectors.db; schema
+        # checks sampled metadata against apps_rg fact_vectors_schema.yaml.
+        # Advisory by default; fail-closed via APPS_RG_FACT_VECTORS_PARITY_FAIL_CLOSED=1
+        # and APPS_RG_FACT_VECTORS_SCHEMA_FAIL_CLOSED=1.
+        (
+            "CHECK-RG-FV-PARITY apps_rg fact_vectors dense/sparse parity (advisory)",
+            "ops_scripts/ci/check_fact_vectors_lane_parity.py",
+            "CHECK-RG-FV-PARITY",
+        ),
+        (
+            "CHECK-RG-FV-SCHEMA apps_rg fact_vectors schema conformance (advisory)",
+            "ops_scripts/ci/check_fact_vectors_schema_conformance.py",
+            "CHECK-RG-FV-SCHEMA",
+        ),
         # L4-FS-WRITE — apps_rg direct filesystem durable write gate.
         # Scans runtime/cache/providers for forbidden write_text/write_bytes/json.dump/open-w calls.
         # Advisory by default; fail-closed via APPS_RG_FS_WRITE_GATE_FAIL_CLOSED=1.
@@ -1211,13 +1227,24 @@ def main():
         ),
     ]
 
-    # Isolated ``--gate`` filter matching CHECK-RG-FACT-VECTORS must still run SEED-RG-FV first,
-    # otherwise RG-FV-1/RG-FV-5 fail on an empty canonical Chroma/sparse path.
+    # Isolated ``--gate`` filters matching fact_vectors checks must still run SEED-RG-FV first,
+    # otherwise fresh checkouts have no canonical Chroma/sparse lane to inspect.
     _g = getattr(args, "gate", None)
-    if _g and "CHECK-RG-FACT-VECTORS" in str(_g) and "SEED-RG-FV" not in str(_g):
+    if (
+        _g
+        and any(
+            gate_id in str(_g)
+            for gate_id in (
+                "CHECK-RG-FACT-VECTORS",
+                "CHECK-RG-FV-PARITY",
+                "CHECK-RG-FV-SCHEMA",
+            )
+        )
+        and "SEED-RG-FV" not in str(_g)
+    ):
         print(
             "🔍 Running: SEED-RG-FV apps_rg fact_vectors dense+sparse bootstrap (if missing) "
-            "[prerequisite for filtered CHECK-RG-FACT-VECTORS] ...",
+            "[prerequisite for filtered fact_vectors gate] ...",
             flush=True,
         )
         _seed_cmd = [

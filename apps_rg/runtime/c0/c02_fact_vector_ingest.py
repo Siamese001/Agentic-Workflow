@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.c0.c02_evidence_fetch import C02Atom
 from apps_rg.runtime.c0.constants import (
     CONFIDENCE_PENDING,
     NOT_PROOF,
@@ -18,12 +19,16 @@ from apps_rg.runtime.c0.constants import (
     SOURCE_PRIOR_VARIANT,
     TARGETING_ONLY,
 )
-from apps_rg.runtime.c0.c02_evidence_fetch import C02Atom
 from apps_rg.runtime.c0.fact_vector_write_back import (
+    ENRICH,
+    FUSE,
+    GENERATED,
+    PROMOTION_MODE_DEFERRED,
     STAGE_FOR_FACT_VECTORS,
     STAGING_COLLECTION_NAME,
     decide_write_back,
     promote_staged_fact_vectors,
+    promotion_mode,
 )
 from apps_rg.tools.fact_vector_ingest import FactVectorChunk, FactVectorSchema
 
@@ -64,6 +69,8 @@ def chunk_to_chroma_document(chunk: FactVectorChunk, atom: C02Atom | None = None
         # re-validate the row from its own metadata (hostile verifier; never trust prior validation).
         doc["metadata"]["source_type"] = str(atom.get("source_type") or "")
         doc["metadata"]["write_back_operation"] = str(atom.get("write_back_operation") or "")
+        doc["metadata"]["run_id"] = str(atom.get("run_id") or "")
+        doc["metadata"]["staged_at_utc"] = str(atom.get("staged_at_utc") or "")
     return doc
 
 
@@ -110,6 +117,8 @@ def atoms_to_fact_vector_chunks(
     *,
     section_id: str,
     ledger_version_hash: str = "",
+    run_id: str = "",
+    staged_at_utc: str = "",
 ) -> tuple[list[FactVectorChunk], list[C02Atom], list[dict[str, str]]]:
     """Filter eligible atoms and build chunks (parallel atom list for metadata)."""
     schema = FactVectorSchema()
@@ -132,7 +141,12 @@ def atoms_to_fact_vector_chunks(
             skipped.append({"fact_id": fid, "reason": reason})
             continue
         # Stamp the resolved operation so the promotion gate can re-validate from metadata.
-        atom_staged: C02Atom = {**atom, "write_back_operation": decision.operation}
+        atom_staged: C02Atom = {
+            **atom,
+            "write_back_operation": decision.operation,
+            "run_id": run_id,
+            "staged_at_utc": staged_at_utc,
+        }
         chunk = c02_atom_to_fact_vector_chunk(
             atom_staged,
             section_id=section_id,
@@ -166,8 +180,9 @@ def upsert_fact_vector_chunks(
     """Upsert chunks into Chroma (stable ids — safe to re-run per section)."""
     if not chunks:
         return 0
-    import chromadb
-
+    from agentic_core.L4_state.utils.client.chroma_client import (
+        chromadb_module as chromadb,
+    )
     from apps_rg.runtime.chroma_precomputed_collection import (
         get_precomputed_embeddings_collection,
     )
@@ -219,14 +234,22 @@ def maybe_upsert_c02_fact_vectors(
     section_id: str,
     artifact_dir: Path | None = None,
     repo_root: Path | None = None,
+    run_id: str | None = None,
+    promotion_mode_override: str | None = None,
 ) -> dict[str, Any]:
     """Best-effort C0.2 → fact_vectors upsert; never blocks evidence room on failure."""
     root = repo_root or REPO_ROOT
     chroma_path = os.environ.get("CHROMA_PERSIST_DIR", "").strip()
+    resolved_run_id = str(run_id or (artifact_dir.name if artifact_dir is not None else "")).strip()
+    resolved_promotion_mode = promotion_mode(promotion_mode_override)
+    staged_at_utc = datetime.now(timezone.utc).isoformat()
     receipt: dict[str, Any] = {
         "schema_version": "c02_fact_vectors_ingest_v1",
         "section_id": section_id,
         "chroma_path": chroma_path or None,
+        "run_id": resolved_run_id,
+        "promotion_mode": resolved_promotion_mode,
+        "staged_at_utc": staged_at_utc,
         "attempted": False,
         "upserted_count": 0,
         "skipped_count": 0,
@@ -259,6 +282,8 @@ def maybe_upsert_c02_fact_vectors(
         atoms,
         section_id=section_id,
         ledger_version_hash=ledger_hash,
+        run_id=resolved_run_id,
+        staged_at_utc=staged_at_utc,
     )
     receipt["skipped"] = skipped[:50]
     receipt["skipped_count"] = len(skipped)
@@ -285,10 +310,24 @@ def maybe_upsert_c02_fact_vectors(
             atoms=chunk_atoms,
         )
         receipt["staged_count"] = staged
+        if not staged:
+            receipt["status"] = "EMPTY"
+            receipt["reason"] = "no_eligible_atoms"
+            _write_receipt(artifact_dir, receipt)
+            return receipt
+        if resolved_promotion_mode == PROMOTION_MODE_DEFERRED:
+            receipt["status"] = "STAGED_DEFERRED"
+            receipt["reason"] = "staged_awaiting_post_x3_promotion"
+            _write_receipt(artifact_dir, receipt)
+            return receipt
         # ...then the deterministic validation gate promotes them to live fact_vectors (or holds
         # for HITL when APPS_RG_FACT_VECTOR_PROMOTION_HITL=1). Live store stays populated for
         # grounded transforms — non-breaking vs the prior direct-upsert path.
-        promotion = promote_staged_fact_vectors(chroma_path=chroma_path)
+        promotion = promote_staged_fact_vectors(
+            chroma_path=chroma_path,
+            artifact_dir=artifact_dir,
+            run_id=resolved_run_id,
+        )
         receipt["promotion"] = promotion
         receipt["upserted_count"] = int(promotion.get("promoted_count", 0))
         if promotion.get("status") == "HELD_FOR_HITL":
@@ -311,6 +350,121 @@ def maybe_upsert_c02_fact_vectors(
     return receipt
 
 
+def _read_x3_for_artifact_dir(artifact_dir: Path | None) -> dict[str, Any]:
+    if artifact_dir is None:
+        return {}
+    path = artifact_dir / "x3_disposition.json"
+    if not path.is_file():
+        return {}
+    try:
+        blob = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    return blob if isinstance(blob, dict) else {}
+
+
+def promote_deferred_c02_fact_vectors_after_x3(
+    result: dict[str, Any],
+    *,
+    section_id: str = "",
+) -> dict[str, Any]:
+    """Post-X3 seam: in deferred mode, promote only rows for a run that reached X3_ALLOW."""
+    resolved_mode = promotion_mode()
+    receipt: dict[str, Any] = {
+        "schema_version": "c02_fact_vectors_deferred_promotion_v1",
+        "section_id": section_id,
+        "promotion_mode": resolved_mode,
+        "attempted": False,
+        "status": "SKIPPED",
+        "reason": "",
+        "promotion": {},
+    }
+    if resolved_mode != PROMOTION_MODE_DEFERRED:
+        receipt["reason"] = "promotion_mode_inline"
+        return receipt
+    chroma_path = os.environ.get("CHROMA_PERSIST_DIR", "").strip()
+    receipt["chroma_path"] = chroma_path or None
+    if not chroma_path:
+        receipt["reason"] = "CHROMA_PERSIST_DIR unset"
+        return receipt
+    artifact_dir_raw = str(result.get("artifact_dir") or "").strip()
+    artifact_dir = Path(artifact_dir_raw) if artifact_dir_raw else None
+    x3_doc = _read_x3_for_artifact_dir(artifact_dir)
+    resolved_run_id = str(
+        result.get("run_id")
+        or x3_doc.get("run_id")
+        or (artifact_dir.name if artifact_dir is not None else "")
+    ).strip()
+    resolved_x3_code = str(x3_doc.get("x3_code") or result.get("x3_disposition") or "").strip()
+    receipt["run_id"] = resolved_run_id
+    receipt["x3_code"] = resolved_x3_code
+    receipt["artifact_dir"] = str(artifact_dir) if artifact_dir is not None else ""
+    receipt["attempted"] = True
+    promotion = promote_staged_fact_vectors(
+        chroma_path=chroma_path,
+        artifact_dir=artifact_dir,
+        run_id=resolved_run_id,
+        x3_code=resolved_x3_code,
+        require_x3_allow=True,
+    )
+    receipt["promotion"] = promotion
+    receipt["status"] = str(promotion.get("status") or "UNKNOWN")
+    receipt["reason"] = str(promotion.get("reason") or "")
+    return receipt
+
+
+def c05_fact_vector_write_back_atoms(c05: dict[str, Any]) -> list[C02Atom]:
+    """Extract explicit C0.5 FUSE/ENRICH write-back atoms from the evidence-contract receipt."""
+    raw_atoms = list(c05.get("fact_vector_write_back_atoms") or c05.get("write_back_atoms") or [])
+    atoms: list[C02Atom] = []
+    for raw in raw_atoms:
+        if not isinstance(raw, dict):
+            continue
+        atom = dict(raw)
+        operation = str(atom.get("write_back_operation") or atom.get("operation") or ENRICH).lower()
+        if operation not in (FUSE, ENRICH, GENERATED):
+            operation = ENRICH
+        atom["write_back_operation"] = operation
+        atoms.append(atom)
+    return atoms
+
+
+def maybe_upsert_c05_fact_vector_write_back_atoms(
+    c05: dict[str, Any],
+    *,
+    section_id: str,
+    artifact_dir: Path | None = None,
+    repo_root: Path | None = None,
+    run_id: str | None = None,
+) -> dict[str, Any]:
+    """Stage explicit FUSE/ENRICH atoms produced by the C0.5 evidence-contract path."""
+    atoms = c05_fact_vector_write_back_atoms(c05)
+    receipt: dict[str, Any] = {
+        "schema_version": "c05_fact_vector_write_back_v1",
+        "section_id": section_id,
+        "run_id": str(run_id or (artifact_dir.name if artifact_dir is not None else "")).strip(),
+        "attempted": False,
+        "atom_count": len(atoms),
+        "status": "EMPTY",
+        "reason": "no_c05_write_back_atoms",
+        "ingest": {},
+    }
+    if not atoms:
+        return receipt
+    ingest = maybe_upsert_c02_fact_vectors(
+        atoms,
+        section_id=section_id,
+        artifact_dir=None,
+        repo_root=repo_root,
+        run_id=receipt["run_id"],
+    )
+    receipt["attempted"] = True
+    receipt["ingest"] = ingest
+    receipt["status"] = str(ingest.get("status") or "UNKNOWN")
+    receipt["reason"] = str(ingest.get("reason") or "")
+    return receipt
+
+
 def _write_receipt(artifact_dir: Path | None, receipt: dict[str, Any]) -> None:
     if artifact_dir is None:
         return
@@ -329,6 +483,9 @@ __all__ = [
     "atoms_to_fact_vector_chunks",
     "c02_atom_ingest_eligible",
     "c02_atom_to_fact_vector_chunk",
+    "c05_fact_vector_write_back_atoms",
     "maybe_upsert_c02_fact_vectors",
+    "maybe_upsert_c05_fact_vector_write_back_atoms",
+    "promote_deferred_c02_fact_vectors_after_x3",
     "upsert_fact_vector_chunks",
 ]

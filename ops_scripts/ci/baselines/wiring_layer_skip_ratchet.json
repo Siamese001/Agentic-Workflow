@@ -4,8 +4,8 @@
   "seeded_at": "2026-05-25T17:01:54.822193+00:00",
   "snapshot": "adg_indexed_05252026_1248.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-08T22:03:27.599686+00:00",
-  "last_run_snapshot": "adg_indexed_06082026_1758.sqlite",
+  "last_run_at": "2026-06-10T18:23:31.631909+00:00",
+  "last_run_snapshot": "adg_indexed_06102026_1413.sqlite",
   "loosen_history": [
     {
       "at": "2026-06-08T13:47:24.731650+00:00",

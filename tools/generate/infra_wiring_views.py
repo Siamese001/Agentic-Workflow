@@ -91,7 +91,6 @@ _APPROVED_ADAPTER_PATHS = (
     "agentic_core/L4_state/cache/gptcache_client.py",
     # apps_rg Chroma seams (mirror _SANCTIONED_APP_DIRECT_INFRA — exclude from t_infra_importers)
     "apps_rg/runtime/chroma_precomputed_collection.py",
-    "apps_rg/runtime/c0/c02_fact_vector_ingest.py",
     "apps_rg/runtime/c0/c02_product_hybrid_retrieval.py",
 )
 
@@ -150,7 +149,6 @@ _SANCTIONED_APP_DIRECT_INFRA = (
     # 2026-05-12 adg-snapshot-regen-check-rg-chroma-e2f8b1 — C0 binding already in file-scan allowlist
     "apps_rg/runtime/bindings/c0_binding.py",  # C0 ChromaDB binding — receipted in W4 of apps-rg-chroma-ingestion-wiring-c7f2d9; peer of chroma_research_store.py
     "apps_rg/runtime/chroma_precomputed_collection.py",  # apps_rg Chroma collection boundary — precomputed BGE only
-    "apps_rg/runtime/c0/c02_fact_vector_ingest.py",  # C0.2 fact-vector upsert seam
     "apps_rg/runtime/c0/c02_product_hybrid_retrieval.py",  # C0.2 product hybrid retrieval seam
     "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py",  # C0.3 skills graph materialization — sqlite3 adapter for augmented_skills_graph ledger
 )
@@ -663,12 +661,12 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
             rows = cursor.fetchall()
             for (name,) in rows:
                 infra_adg_names.append(name)
-            
+
         # HTTP-specific subset for v_p1_raw_http_outside_seam
         _http_pkg_set = {"aiohttp", "httpx", "requests"}
         http_adg_names = [n for n in infra_adg_names if any(n == f"ADG::Symbol::{p}" for p in _http_pkg_set)]
         http_in = ", ".join(f"'{n}'" for n in http_adg_names) if http_adg_names else "'__none__'"
-            
+
         # Find ADG node names for provider SDKs
         provider_adg_names = []
         for pkg in _PROVIDER_SDKS:
@@ -679,7 +677,7 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
             rows = cursor.fetchall()
             for (name,) in rows:
                 provider_adg_names.append(name)
-            
+
         # Drop existing views (idempotent recreation) — order matters for dependencies
         for vname in (  # tqdm: small fixed tuple of view names, no bar needed
             "v_infra_violations_summary",  # depends on P0 views, drop first
@@ -700,34 +698,34 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
             "v_p3_isolated_experimental",
         ):
             cursor.execute(f"DROP VIEW IF EXISTS {vname}")
-            
+
         # Build parameterized SQL for IN clauses
         infra_in = ", ".join(f"'{n}'" for n in infra_adg_names) if infra_adg_names else "'__none__'"
         provider_in = ", ".join(f"'{n}'" for n in provider_adg_names) if provider_adg_names else "'__none__'"
         adapter_paths_clause = _build_adapter_path_clause()
         process_boundary_clause = _build_process_boundary_clause()
-            
+
         # Materialize t_infra_importers: the set of resolved_path values that import raw infra.
         # This is used by P0-3 (write bypass) and P0-5 (L6 mutation) to scope those views to
         # files that actually touch raw infra packages, excluding plain filesystem I/O.
         # Using a real table (not a VIEW) so it can be JOINed efficiently without correlated subqueries.
         cursor.execute("DROP TABLE IF EXISTS t_infra_importers")
         cursor.execute(
-            """
+            f"""
             CREATE TABLE t_infra_importers AS
             SELECT DISTINCT n_src.resolved_path
             FROM edges e
             JOIN nodes n_src ON e.src_id = n_src.id
             JOIN nodes n_dst ON e.dst_id = n_dst.id
             WHERE e.relation_type = 'imports'
-              AND n_dst.adg_name IN ({infra_adg_names})
-              AND n_src.resolved_path NOT IN {adapter_paths}
-        """.format(infra_adg_names=infra_in, adapter_paths=adapter_paths_clause)
+              AND n_dst.adg_name IN ({infra_in})
+              AND n_src.resolved_path NOT IN {adapter_paths_clause}
+        """
         )
         cursor.execute(
             "CREATE INDEX IF NOT EXISTS idx_t_infra_importers_path ON t_infra_importers(resolved_path)"
         )
-            
+
         # Create all views with actual node names
         # P0 views
         sanctioned_app_clause = _build_sanctioned_app_clause()
@@ -769,9 +767,9 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
         cursor.execute(_VIEW_P3_ISOLATED_EXPERIMENTAL)
         # Summary view (must be last — depends on P0 views)
         cursor.execute(_VIEW_INFRA_VIOLATIONS_SUMMARY)
-            
+
         conn.commit()
-            
+
         # Query row counts for all views
         _ALL_VIEW_NAMES = (
             "v_p0_apps_direct_infra",

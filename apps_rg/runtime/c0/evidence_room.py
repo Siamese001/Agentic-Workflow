@@ -7,15 +7,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.c0.c01_retrieval_plan import build_c01_retrieval_plan
-from apps_rg.runtime.c0.c02_evidence_fetch import fetch_c02_evidence_atoms
-from apps_rg.runtime.c0.c02_fact_vector_ingest import maybe_upsert_c02_fact_vectors
-from apps_rg.runtime.c0.c03_graph_expansion import expand_c03_graph_bindings
-from apps_rg.runtime.c0.c03_role_family import resolve_c0_role_family_key
-from apps_rg.runtime.c0.c04_stratify import stratify_c04_evidence
-from apps_rg.runtime.c0.c05_fec_packet import build_c05_final_evidence_contract
-from apps_rg.runtime.c0.c07_handoff_audit import audit_c07_handoff
-from apps_rg.runtime.c0.c02_hybrid_receipt_truth import normalize_c02_vector_query_receipt
 from apps_rg.runtime.c0.c0_section_authority import (
     C01_ARTIFACT,
     C02_ATOMS_ARTIFACT,
@@ -23,8 +14,20 @@ from apps_rg.runtime.c0.c0_section_authority import (
     bridge_authority_fields,
     section_chroma_write_in_c02,
 )
-from apps_rg.runtime.c0.product_runtime_guards import ENV_APPS_RG_C0_EVIDENCE_ROOM
+from apps_rg.runtime.c0.c01_retrieval_plan import build_c01_retrieval_plan
+from apps_rg.runtime.c0.c02_evidence_fetch import fetch_c02_evidence_atoms
+from apps_rg.runtime.c0.c02_fact_vector_ingest import (
+    maybe_upsert_c02_fact_vectors,
+    maybe_upsert_c05_fact_vector_write_back_atoms,
+)
+from apps_rg.runtime.c0.c02_hybrid_receipt_truth import normalize_c02_vector_query_receipt
+from apps_rg.runtime.c0.c03_graph_expansion import expand_c03_graph_bindings
+from apps_rg.runtime.c0.c03_role_family import resolve_c0_role_family_key
+from apps_rg.runtime.c0.c04_stratify import stratify_c04_evidence
+from apps_rg.runtime.c0.c05_fec_packet import build_c05_final_evidence_contract
+from apps_rg.runtime.c0.c07_handoff_audit import audit_c07_handoff
 from apps_rg.runtime.c0.constants import C0_SECTIONS_ENABLED, REPO_ROOT
+from apps_rg.runtime.c0.product_runtime_guards import ENV_APPS_RG_C0_EVIDENCE_ROOM
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
 from apps_rg.runtime.spine.c0_fec_compose import (
     FEC_BRIDGE_ARTIFACT,
@@ -83,6 +86,7 @@ def run_section_c0_evidence_room(
 
     apply_apps_rg_embedding_env_guards()
     ts = _utc_now()
+    run_id = str(runtime_payload.get("run_id") or artifact_dir.name)
     rf_key = role_family_key or resolve_c0_role_family_key(
         front_spine=front_spine,
         pool=pool,
@@ -115,7 +119,6 @@ def run_section_c0_evidence_room(
 
     from apps_rg.runtime.c02_chroma_lifecycle import (
         build_c02_chroma_write_receipt,
-        product_section_skip_lane_upsert,
     )
 
     if not section_chroma_write_in_c02():
@@ -134,6 +137,7 @@ def run_section_c0_evidence_room(
             section_id=section_id,
             artifact_dir=artifact_dir,
             repo_root=REPO_ROOT,
+            run_id=run_id,
         )
     c02["c02_chroma_write"] = build_c02_chroma_write_receipt(fv_ingest)
     c02["fact_vectors_ingest"] = {
@@ -199,7 +203,7 @@ def run_section_c0_evidence_room(
         metrics_path = artifact_dir / "c0_metrics.json"
         metrics_doc = {
             "schema_version": "c0_metrics.v1",
-            "run_id": str(runtime_payload.get("run_id") or artifact_dir.name),
+            "run_id": run_id,
             "section_id": section_id,
             **metrics_patch,
         }
@@ -216,6 +220,15 @@ def run_section_c0_evidence_room(
         retrieval_plan=plan,
         product_hybrid=product_hybrid,
     )
+    c05_fact_vectors = maybe_upsert_c05_fact_vector_write_back_atoms(
+        c05,
+        section_id=section_id,
+        artifact_dir=artifact_dir,
+        repo_root=REPO_ROOT,
+        run_id=run_id,
+    )
+    if c05_fact_vectors.get("attempted") or c05_fact_vectors.get("atom_count"):
+        c05["fact_vectors_write_back"] = c05_fact_vectors
     vector_query = normalize_c02_vector_query_receipt(
         dict(c05.get("c02_vector_query") or {}),
         section_id=section_id,
@@ -242,7 +255,7 @@ def run_section_c0_evidence_room(
         target_company=_sc_company,
         target_role=target_role,
         jd_digest=_sc_jd_digest,
-        run_id=str(runtime_payload.get("run_id") or artifact_dir.name),
+        run_id=run_id,
     )
     write_c02_semantic_cache_payload(artifact_dir, _sc_payload)
     c02["c02_semantic_cache_payload_present"] = True
