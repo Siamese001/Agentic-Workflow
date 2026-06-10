@@ -176,6 +176,13 @@ def _lane_record_full(sections_root: Path, lane: str) -> Dict[str, Any]:
         cand = Path(dispatch_result["artifact_dir"])
         run_dir = cand if cand.is_dir() else None
     rec.update(lane_metrics_from_run_dir(run_dir) if run_dir else lane_metrics_from_run_dir(lane_dir))
+    # W3 (plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): a lane that SUCCEEDED writes no
+    # integrated_lane_pre_run_failure.json, so dispatch_result is empty and classify_lane_state
+    # fell through to MISSING_NOT_ATTEMPTED — mislabeling X3_ALLOW/authorized lanes. When no
+    # pre-run failure exists, derive the state from the executed run dir's actual X3 evidence.
+    if not pre and rec.get("x3") not in (None, "", _DASH):
+        rec["state"] = f"EXECUTED_{rec['x3']}"
+        rec["blocker"] = _DASH
     return rec
 
 

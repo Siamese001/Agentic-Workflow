@@ -26,6 +26,7 @@ from apps_rg.runtime.claim_ledger.canonical_exec_summary_v2 import (
 from apps_rg.runtime.exit.executive_summary_x3 import aggregate_x3
 from apps_rg.runtime.spine.section_x3_finalize import finalize_section_lane_x3
 from apps_rg.runtime.validators.bullet_line_discipline_x2 import check_bullet_single_thought
+from apps_rg.runtime.validators.narrative_mechanical_x2 import check_narrative_exactly_one_sentence
 from apps_rg.runtime.providers import (
     ExternalProvider,
     ProviderGateway,
@@ -252,7 +253,12 @@ def _normalize_bullets(parsed: dict[str, Any], *, cfg: RoleEpisodeLaneConfig, al
                 continue
             out.append(
                 {
-                    "bullet_id": str(row.get("bullet_id") or f"{cfg.bullet_prefix}_{idx + 1:03d}"),
+                    # Canonical slot id ALWAYS (W3, plan apps-rg-aig-remaining-lanes-closeout-d4e1f7):
+                    # the companion-finalization gate keys on bul_<employer>_NNN; trusting a
+                    # model-emitted id (e.g. "ins_b1") made narrative upstream acceptance
+                    # non-deterministic — InsurTech failed bullet_ids_mismatch while EY passed
+                    # only because its model happened to echo the canonical ids.
+                    "bullet_id": f"{cfg.bullet_prefix}_{idx + 1:03d}",
                     "bullet_text": text,
                     "source_fact_ids": _normalize_source_ids(row.get("source_fact_ids"), allowed, idx),
                 }
@@ -493,13 +499,14 @@ def _x2_gates(
         )
     else:
         sent = str(l2.get("narrative_sentence") or "").strip()
+        sent_ok, sent_count, _sent_reason = check_narrative_exactly_one_sentence(sent)
         gates.extend(
             [
                 _x2_gate(
                     f"x2_{cfg.section_id}_exactly_one_sentence",
-                    bool(sent) and sent.count(".") + sent.count("!") + sent.count("?") == 1,
+                    sent_ok,
                     "expected exactly one sentence",
-                    sent,
+                    {"sentence_count": sent_count, "text": sent},
                 ),
                 _x2_gate(
                     f"x2_{cfg.section_id}_word_budget",

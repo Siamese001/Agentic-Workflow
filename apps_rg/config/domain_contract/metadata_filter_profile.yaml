@@ -5,21 +5,16 @@ enabled: true
 
 collection: fact_vectors
 
+# NOTE (apps-rg-aig-remaining-lanes-closeout-d4e1f7 W1): `company` and `role` were removed as
+# HARD Chroma `where` filters. fact_vectors holds the CANDIDATE's facts (tagged with the
+# candidate's own employers/titles), while the query sources here are the TARGET job's
+# company/role (jd_payload.target_company/target_role). A candidate fact from "Unify" can never
+# `$eq` the target "AIG", so the hard filter matched zero chunks and zeroed the dense lane
+# (REQUIRED_PROOF_ABSENT) for every profile-driven section. Per this file's own `score_separation`
+# contract, JD↔candidate overlap is a SOFT `metadata_score` (see `_metadata_match_for_chunk`,
+# observability-only), never a gate. Certification/year remain: they fire only when the JD
+# supplies the value and match a candidate attribute to a JD requirement (meaningful, conditional).
 filterable_fields:
-  - field_name: company
-    chroma_metadata_key: company
-    display_name: Company / employer
-    query_sources:
-      - jd_payload.target_company
-    match_type: exact_case_insensitive
-
-  - field_name: role
-    chroma_metadata_key: role
-    display_name: Role / title
-    query_sources:
-      - jd_payload.target_role
-    match_type: exact_case_insensitive
-
   - field_name: certification
     chroma_metadata_key: certification
     display_name: Certification

@@ -1145,13 +1145,15 @@ def main():
             "CHECK-RG-CHROMA apps_rg ChromaDB readiness (advisory)",
             "ops_scripts/ci/check_apps_rg_chroma_readiness.py",
         ),
-        # CHECK-RG-FACT-VECTORS — apps_rg C0 dense lane (fact_vectors, BGE-M3 / 1024).
-        # Preceded by SEED-RG-FV so contract_gates succeeds on fresh clones when chromadb
-        # + sentence-transformers are installed. Bypass seed: APPS_RG_SEED_FACT_VECTORS_BYPASS=1.
+        # CHECK-RG-FACT-VECTORS — apps_rg C0.2 dense+sparse lane
+        # (fact_vectors, BGE-M3 / 1024 + data/cache/sparse/fact_vectors.db).
+        # Preceded by SEED-RG-FV so contract_gates succeeds on fresh clones when
+        # chromadb + sentence-transformers are installed. Bypass seed:
+        # APPS_RG_SEED_FACT_VECTORS_BYPASS=1.
         # Advisory by default; fail-closed via APPS_RG_FACT_VECTORS_FAIL_CLOSED=1.
         # Bypass: APPS_RG_FACT_VECTORS_BYPASS=1.
         (
-            "SEED-RG-FV apps_rg fact_vectors Chroma seed (if missing)",
+            "SEED-RG-FV apps_rg fact_vectors dense+sparse bootstrap (if missing)",
             "ops_scripts/ci/seed_apps_rg_fact_vectors_chroma.py",
             "SEED-RG-FV",
         ),
@@ -1210,11 +1212,11 @@ def main():
     ]
 
     # Isolated ``--gate`` filter matching CHECK-RG-FACT-VECTORS must still run SEED-RG-FV first,
-    # otherwise RG-FV-1 fails on an empty canonical Chroma path.
+    # otherwise RG-FV-1/RG-FV-5 fail on an empty canonical Chroma/sparse path.
     _g = getattr(args, "gate", None)
     if _g and "CHECK-RG-FACT-VECTORS" in str(_g) and "SEED-RG-FV" not in str(_g):
         print(
-            "🔍 Running: SEED-RG-FV apps_rg fact_vectors Chroma seed (if missing) "
+            "🔍 Running: SEED-RG-FV apps_rg fact_vectors dense+sparse bootstrap (if missing) "
             "[prerequisite for filtered CHECK-RG-FACT-VECTORS] ...",
             flush=True,
         )
