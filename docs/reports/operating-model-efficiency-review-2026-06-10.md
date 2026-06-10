@@ -8,6 +8,23 @@
 
 ---
 
+<!-- ============================================================
+     PICKUP NOTE FOR A NEW (Notion-enabled) SESSION
+     The on-disk reconstruction below is the verified interim answer.
+     To replace the DERIVED monthly attribution in §1b with authoritative
+     Notion data, run this in a session where Notion is reachable
+     (MCP connector enabled, OR api.notion.com allowlisted + NOTION_TOKEN set):
+
+       1. Query Plans DB data source: ac53d31b-3068-4039-9ebe-856c12caab32
+       2. Paginate all rows; for each pull: created_time, Status, Slug, Exists On Disk
+       3. Bucket by created_time month (2026-03..2026-06) and by Status
+       4. Replace the §1b "Monthly distribution" + completion figures with the
+          Notion numbers; keep the on-disk figures as a labeled cross-check column
+       5. Expected: Notion total < 1,197 on-disk (pre-registration + pre-2026-05-15
+          sweep plans were never registered / are Retired|Archived). Not a discrepancy.
+       6. Commit + push.
+     ============================================================ -->
+
 ## 1. The headline finding
 
 In the ~3 weeks preceding 2026-06-10, the operating model produced:
