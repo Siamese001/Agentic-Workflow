@@ -1,8 +1,10 @@
-# Operating-Model Efficiency Review — "145 Plans, 0 Shipped"
+# Operating-Model Efficiency Review — "~1,200 Plans, 0 Shipped"
 
 > **Date:** 2026-06-10  
-> **Scope:** apps_rg delivery cadence over the preceding ~3 weeks  
-> **Status:** Findings consolidated from existing governance artifacts (commit `2f83d4bb` / PR #282, `.claude/rules/apps-rg-execution-bias.md`, `CLAUDE.md`, plan `b8c3d1`). No new measurement performed — this report copies and organizes findings already recorded in the repo.
+> **Scope:** Full plan-creation cadence over the last ~3 months (the data goes back to **April 2026** — the earliest dated archive bucket; that is "as far back as I can go").  
+> **Status:** Findings reconstructed from the on-disk plan corpus + archive structure + in-file date stamps. The original ~3-week apps_rg slice (§1) is preserved as the triggering subset; §1b extends it to the full 3-month window.
+
+> **Methodology / caveat (read first).** The intended source — the **Notion Plans DB** — is **not reachable from this execution environment** (no Notion MCP server is whitelisted in `.mcp.json`, and none is connected). Per `.claude/rules/plan-location.md`, Notion is a **file-driven mirror**: every Plans row is created *from* a `plans/<slug>-<6hex>.md` file with a content digest. So the on-disk plan corpus is the SSOT the Notion DB is built from, and is used here as the authoritative substitute. Git author-dates are **not** usable (the repo was bulk-committed in one June import, flattening all timestamps), so dates come from **archive bucket names** and **date stamps inside the plan files**. Counts are DIRECTLY OBSERVED from disk; monthly attribution is DERIVED and approximate.
 
 ---
 
@@ -22,6 +24,34 @@ of a shipped artifact.
 
 _Source: commit `2f83d4bb` ("Adopted after the operating-model review: 145 plans /
 119 completed / 0 product shipped in 3 weeks"), echoed in `apps-rg-execution-bias.md`._
+
+## 1b. The 3-month view (April → June 2026)
+
+The ~3-week apps_rg slice above was not an anomaly — it was the visible tip of a
+quarter-long pattern. Extending the window to the full plan corpus:
+
+| Metric | Value | Grade |
+|---|---|---|
+| Total plan files on disk (`plans/` + `.claude/plans/` + archive) | **1,197** | OBSERVED |
+| Distinct plan paths ever recorded in git (incl. moves/renames) | 2,181 | OBSERVED |
+| Plans bearing a completion marker (`PLAN_STATUS: COMPLETE` / `PLAN_COMPLETE:` / `status: completed`) | 121 / 134 / 172 | OBSERVED |
+| **Certified North-star deliverables (AIG resume, 11/11 lanes X3_ALLOW, assembled DOCX)** | **0** | DERIVED |
+| Raw resume `.docx` generation outputs (uncertified, latest 2026-04-28) | 8 | OBSERVED |
+
+### Monthly distribution (by archive bucket + in-file date stamps)
+
+| Month | Archive bucket(s) | In-file date stamps | Notes |
+|---|---|---|---|
+| **2026-04** | `_archive/2026-04/` = 10 | 34 | Earliest data available ("as far back as I can go") |
+| **2026-05** | `_archive/2026-05/` = 633 **+** `_archive/historical_plans_20260515_cursor_optimization/` = 451 → **~1,084** | 259 | The glut. A `2026-05-15` "cursor_optimization" sweep archived **451 plans in one pass** — the system recognized the plan-glut and tried to clean it, but the factory kept minting (633 more in the May bucket). |
+| **2026-06** | `plans/` = 31 + `.claude/plans/` = 59 → **~90** | 62 | Current/active; the 145-plan apps_rg slice (§1) sits inside this tail. |
+
+### What the 3-month view adds to the 3-week finding
+
+1. **Scale:** the ~145-plan / 3-week figure generalizes to **~1,200 plan files over the quarter** — roughly **two-thirds concentrated in May 2026** alone.
+2. **The self-aware-but-ineffective cleanup:** the `2026-05-15` archival of 451 plans proves the glut was *seen*, but archiving plans is not shipping product — the factory was not switched off until the 2026-06-10 standing orders.
+3. **Shipping stayed flat at zero (North-star metric):** despite ~1,200 plans and 120–170 "completions," **no certified AIG deliverable** exists. The 8 `.docx` files are pre-certification generation outputs from late April, not 11/11-lane assembled product.
+4. **"Completed" is decoupled from "delivered" all quarter** — not just in the 3-week window. The completion-marker count (121–172) tracks plan bookkeeping, not product.
 
 ## 2. Root cause — a mode-faithful amplifier stuck in PLAN mode
 
@@ -77,9 +107,11 @@ assembled DOCX in hand.
 
 ## 6. One-line summary
 
-> A mode-faithful agent stuck in plan mode turned three weeks of effort into 145 plans
-> and 119 "completions" with zero shipped product; the fix is a mechanically-enforced
-> execute-first operating model with a hard WIP limit and a single backlog.
+> A mode-faithful agent stuck in plan mode turned **a quarter** of effort into **~1,200 plan
+> files** (≈two-thirds minted in May 2026) and 120–170 "completions" with **zero certified
+> product shipped** — even a mid-May sweep that archived 451 plans didn't stop the factory.
+> The 145-plan / 3-week apps_rg slice was the tip, not the whole. The fix is a mechanically-
+> enforced execute-first operating model with a hard WIP limit and a single backlog.
 
 ---
 
