@@ -505,6 +505,24 @@ def run_ibm_narrative_x2_gates(
         if isinstance(e, dict) and e.get("role_episode_bundle_id")
     ]
     pool_bundle_ids = list(pp_meta.get("role_episode_bundle_ids") or [])
+    # derive_from_cited_facts (dec_19e9c91073ae4b5ab; first-run wiring fix, plan
+    # apps-rg-aig-remaining-lanes-closeout-d4e1f7 W4): a bundle is bound when the narrative's
+    # claim_ledger cites that slot's bul_ibm_* id — the model rarely echoes bundle ids in
+    # change_log, but the citations are the binding. Guarded by citations: a packet citing no
+    # slot ids derives nothing and still fails.
+    if not narrative_bundle_ids and ledger_ids:
+        from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+            IBM_BULLET_SLOT_BUNDLE_MAP,
+        )
+
+        narrative_bundle_ids = sorted(
+            {
+                IBM_BULLET_SLOT_BUNDLE_MAP[sid]
+                for sid in ledger_ids
+                if sid in IBM_BULLET_SLOT_BUNDLE_MAP
+                and (not pool_bundle_ids or IBM_BULLET_SLOT_BUNDLE_MAP[sid] in pool_bundle_ids)
+            }
+        )
     narrative_has_bundles = bool(narrative_bundle_ids) or bool(
         (parsed_output or {}).get("role_episode_bundle_ids")
     )
