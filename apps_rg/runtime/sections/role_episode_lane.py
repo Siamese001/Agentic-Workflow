@@ -652,6 +652,7 @@ def run_role_episode_x2_gates(
     l2: dict[str, Any],
     allowed: list[str],
     runtime_generation_status: str,
+    bundle_consumed: bool = False,
 ) -> list[dict[str, Any]]:
     cfg = _ROLE_LANES[str(section_id or "").strip().lower()]
     return _x2_gates(
@@ -659,6 +660,7 @@ def run_role_episode_x2_gates(
         l2=l2,
         allowed=allowed,
         runtime_generation_status=runtime_generation_status,
+        bundle_consumed=bundle_consumed,
     )
 
 

@@ -216,6 +216,52 @@ def test_apply_materialization_syncs_runtime_payload() -> None:
         )
 
 
+def test_apply_materialization_filters_evidence_via_metric_suffix_and_alias() -> None:
+    """Metric-suffixed source_fact_id and bul->ledger alias both admit retained FEC evidence."""
+    from apps_rg.runtime.evidence.canonical_section_evidence_set import collect_prompt_c0_fact_ids
+
+    pool = _pool(
+        section="ey_bullets",
+        ordered=["bul_ey_001", "bul_ey_002"],
+        plan={
+            "section_id": "ey_bullets",
+            "facts": [
+                {"fact_id": "bul_ey_001", "ledger_candidate_fact_id": "fact_ey_001"},
+                {"fact_id": "bul_ey_002", "ledger_candidate_fact_id": "fact_ey_002"},
+            ],
+        },
+    )
+    bridge_doc = {
+        "allowed_fact_ids": ["bul_ey_001", "bul_ey_002", "bul_ey_003"],
+        "source_fact_ids": ["bul_ey_001", "bul_ey_002", "bul_ey_003"],
+        "evidence_items": [
+            {"evidence_id": "evidence:section:bul_ey_001", "source_fact_id": "bul_ey_001"},
+            {
+                "evidence_id": "evidence:section:bul_ey_002_metric",
+                "source_fact_id": "bul_ey_002_metric_revenue",
+            },
+            {"evidence_id": "evidence:section:stray", "source_fact_id": "bul_ey_003"},
+            {"evidence_id": "evidence:section:context", "source_fact_id": ""},
+        ],
+        "final_evidence_contract": {},
+    }
+    runtime_payload: dict = {"proof_pool_metadata": {}, "section_fec_bridge": bridge_doc}
+    bridge = SimpleNamespace(bridge_doc=bridge_doc)
+    apply_canonical_section_evidence_materialization(
+        pool=pool,  # type: ignore[arg-type]
+        runtime_payload=runtime_payload,
+        bridge=bridge,  # type: ignore[arg-type]
+        fec_allowed=["bul_ey_001", "bul_ey_002"],
+    )
+    kept = {it.get("source_fact_id") for it in bridge_doc["evidence_items"]}
+    assert "bul_ey_003" not in kept
+    assert "bul_ey_001" in kept
+    assert "bul_ey_002_metric_revenue" in kept
+    assert "" in kept
+    prompt_ids = collect_prompt_c0_fact_ids(runtime_payload)
+    assert "bul_ey_003" not in prompt_ids
+
+
 def test_apply_materialization_filters_stray_evidence_items_to_fec() -> None:
     """R1 (plan apps-rg-fec-grounding-blocker-d9a4b7): evidence_items whose source_fact_id was NOT
     promoted into fec_allowed are dropped (alias-aware), so the FEC bridge prompt-surface stays a
