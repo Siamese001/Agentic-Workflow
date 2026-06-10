@@ -226,11 +226,12 @@ _enqueue_plan_if_eligible(file_path.replace("\\", "/"))
 
 
 def _sync_plan_to_notion_if_registered(norm_path: str) -> None:
-    """W3 re-sync: when a registered plan is edited, patch Notion with updated ai_summary.
+    """W3 re-sync: when a registered plan is edited, patch Notion plan properties.
 
     Re-derives content_digest from the current file and compares it to the stored digest
     in the queue row.  If they differ (plan was edited), patches the Notion page's
-    ``AI Summary`` property and updates the queue row's stored digest.
+    ``AI Summary`` and wave-aware ``Summary`` properties, then updates the queue
+    row's stored digest.
 
     Requires NOTION_TOKEN.  Fail-soft: any exception silently swallowed.
     """
@@ -297,7 +298,10 @@ def _sync_plan_to_notion_if_registered(norm_path: str) -> None:
 
         # Content changed — patch Notion and update queue metadata.
         import os as _os
-        token = _os.environ.get("NOTION_TOKEN", "").strip()
+        token = (
+            _os.environ.get("NOTION_TOKEN", "").strip()
+            or _os.environ.get("NOTION_API_KEY", "").strip()
+        )
         if not token:
             # No token — still update queue row so drift gate can detect the change.
             _helper3.update_plan_metadata(slug, content_digest=current_digest, ai_summary=meta.get("ai_summary"))
@@ -307,11 +311,23 @@ def _sync_plan_to_notion_if_registered(norm_path: str) -> None:
             sys.path.insert(0, str(REPO_ROOT))
         try:
             from tools.notion.plan_creation_helper import patch_plan_notion_properties as _patch
-            patched = _patch(page_id, ai_summary=meta.get("ai_summary"), token=token)
+            from tools.notion.plan_wave_summary import (
+                build_plan_notion_ai_summary as _ai_summary,
+                build_plan_notion_summary as _summary,
+            )
+
+            computed_ai_summary = _ai_summary(content)
+            patched = _patch(
+                page_id,
+                ai_summary=computed_ai_summary,
+                summary=_summary(content),
+                token=token,
+            )
         except Exception:  # guardian: allow-broad-exception -- fail-soft hook contract
+            computed_ai_summary = meta.get("ai_summary")
             patched = False
 
-        _helper3.update_plan_metadata(slug, content_digest=current_digest, ai_summary=meta.get("ai_summary"))
+        _helper3.update_plan_metadata(slug, content_digest=current_digest, ai_summary=computed_ai_summary)
         if patched:
             print(
                 f"[after_file_edit] W3 re-sync: patched Notion page {page_id} for {slug} "

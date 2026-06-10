@@ -39,6 +39,10 @@ from pathlib import Path
 from typing import Any, Literal
 
 from tools.notion.notion_bearer_token import get_notion_bearer_token_or_none
+from tools.notion.plan_wave_summary import (
+    build_plan_notion_ai_summary,
+    build_plan_notion_summary,
+)
 
 # Notion API constants
 _NOTION_BASE = "https://api.notion.com/v1"
@@ -204,6 +208,7 @@ def create_plan_in_notion(
     ai_summary: str,
     plan_file_path: str | None = None,
     force_status: Literal["Not Started", "Completed"] | None = None,
+    plan_content: str | None = None,
 ) -> CreationResult:
     """
     Canonical plan creation in Notion Plans DB.
@@ -216,6 +221,8 @@ def create_plan_in_notion(
         ai_summary: Bullet-style AI summary (high-signal format)
         plan_file_path: Optional override. Default: plans/{slug}.md
         force_status: "Completed" for retrospective plans only. Default "Not Started".
+        plan_content: Optional disk SSOT markdown. When provided, Summary and
+            AI Summary are derived from wave/phase state and closeout notes.
     
     Returns:
         CreationResult with ok, page_id, status, error details
@@ -269,11 +276,17 @@ def create_plan_in_notion(
     # Claude Code .claude/ edit-guard); plan relocate-plans-ssot-outside-claude-c1a17d.
     effective_path = plan_file_path or f"plans/{slug}.md"
     
+    effective_summary = summary
+    effective_ai_summary = ai_summary
+    if plan_content:
+        effective_summary = build_plan_notion_summary(plan_content)
+        effective_ai_summary = build_plan_notion_ai_summary(plan_content)
+
     # Phase 1.3: Build payload
     payload = _build_payload(
         slug=slug,
-        summary=summary,
-        ai_summary=ai_summary,
+        summary=effective_summary,
+        ai_summary=effective_ai_summary,
         status=validated_status,
         plan_file_path=effective_path,
     )
@@ -353,7 +366,7 @@ def patch_plan_notion_properties(
         with urllib.request.urlopen(req, timeout=_NOTION_TIMEOUT_S) as resp:
             resp.read()
         print(
-            f"[plan-creation-helper] BODY_SYNC page_id={page_id} "
+            f"[plan-creation-helper] PROPERTY_SYNC page_id={page_id} "
             f"ai_summary={'set' if ai_summary else 'skip'} "
             f"summary={'set' if summary else 'skip'}",
             file=sys.stderr,
