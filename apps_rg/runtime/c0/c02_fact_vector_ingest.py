@@ -183,7 +183,9 @@ def upsert_fact_vector_chunks(
     settings = resolve_apps_rg_embedding_settings(chroma_persist_dir=chroma_path)
     assert_dense_retrieval_allowed(settings)
     model = load_bge_sentence_transformer(settings)
-    client = chromadb.PersistentClient(path=chroma_path)
+    from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
+
+    client = ensure_apps_rg_chroma_client(chroma_path)
     collection = get_precomputed_embeddings_collection(
         client,
         collection_name,

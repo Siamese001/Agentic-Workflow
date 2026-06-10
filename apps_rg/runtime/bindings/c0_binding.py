@@ -441,9 +441,9 @@ def c0_retrieve_apps_rg(
 
     if effective_chroma:
         try:
-            import chromadb
+            from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
 
-            client = chromadb.PersistentClient(path=effective_chroma)
+            client = ensure_apps_rg_chroma_client(effective_chroma)
             from apps_rg.runtime.chroma_precomputed_collection import (
                 get_precomputed_embeddings_collection_for_query,
             )
@@ -1232,9 +1232,9 @@ def _perform_bounded_section_retrieval(
     # not EMPTY (bounded-section contract tests + operator clarity).
     if chroma_collection is None and chromadb_path:
         try:
-            import chromadb
+            from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
 
-            _probe_client = chromadb.PersistentClient(path=chromadb_path)
+            _probe_client = ensure_apps_rg_chroma_client(chromadb_path)
             _probe_client.get_collection(profile.collection_name)
         except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             verdict = GateVerdict(
@@ -1293,9 +1293,9 @@ def _perform_bounded_section_retrieval(
             if chroma_collection is not None:
                 collection = chroma_collection
             else:
-                import chromadb
+                from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
 
-                client = chromadb.PersistentClient(path=chromadb_path or "")
+                client = ensure_apps_rg_chroma_client(chromadb_path or "")
                 collection = client.get_collection(profile.collection_name)
 
             allow = section.get("source_class_allowlist") or [
