@@ -104,7 +104,10 @@ TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description
 BRIEFING_DEFAULT = resolve_briefing_for_lanes(briefing_artifact_ref=None).text
-HEADLINE_MAX_OUTPUT_TOKENS = 900
+# 900 truncated live responses mid-JSON (postW4_20260610_1716: cut at char 3373 == the cap,
+# parse_status=TRUNCATED_JSON -> 25-gate cascade). Same defect class as the bullets 2200-cap
+# incident; headline JSON (line + ledger + change_log + self_check) needs headroom, not 900.
+HEADLINE_MAX_OUTPUT_TOKENS = 4000
 
 # Parse/normalize model JSON for live Qwen and for offline contract stub (same payload shape).
 _HEADLINE_JSON_OUTPUT_STATUSES: frozenset[str] = frozenset({"REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS})

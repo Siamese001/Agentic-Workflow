@@ -119,21 +119,43 @@ def decompose_ibm_narrative_claim_ledger_by_clause(
     parts = re.split(r",\s+(?=establishing\b)", narrative, maxsplit=1, flags=re.I)
     new_led: list[dict[str, Any]] = []
     if len(parts) >= 2:
-        for part in parts:
-            clause = part.strip().rstrip(".")
-            if not clause:
-                continue
-            themes = sorted(
+        clauses = [p.strip().rstrip(".") for p in parts if p.strip()]
+        clause_themes: list[list[str]] = [
+            sorted(
                 t
                 for t in ibm_narrative_material_fact_ids_for_sentence(clause)
                 if t in allowed_bul
             )
-            if not themes:
-                themes = allowed_bul[:2]
+            for clause in clauses
+        ]
+        # Coverage-aware root assignment (postW4 live fail, run postW4_20260610_1716:
+        # naive per-clause `themes[:2]` dropped a grounded theme — bul_ibm_004 on a
+        # 3-theme clause — which the downstream theme-coverage binder then re-appended
+        # onto row 0, recreating the 3-root row the clause-decomposition gate rejects).
+        # Assign each detected theme to a clause whose own text expresses it
+        # (theme-grounded; never fabricated), max 2 bul_ibm_* roots per row, so the
+        # row union honestly covers every theme a 2-per-row assignment can carry.
+        # Deterministic: sorted theme order; uniquely-grounded themes claim their
+        # only host clause first, shared themes fill remaining capacity in order.
+        assigned: list[list[str]] = [[] for _ in clauses]
+        pool = sorted({t for themes in clause_themes for t in themes})
+        for theme in pool:
+            hosts = [i for i, themes in enumerate(clause_themes) if theme in themes]
+            if len(hosts) == 1 and len(assigned[hosts[0]]) < 2:
+                assigned[hosts[0]].append(theme)
+        for theme in pool:
+            if any(theme in row_roots for row_roots in assigned):
+                continue
+            for i in (i for i, themes in enumerate(clause_themes) if theme in themes):
+                if len(assigned[i]) < 2:
+                    assigned[i].append(theme)
+                    break
+        for i, clause in enumerate(clauses):
+            roots = sorted(assigned[i]) or clause_themes[i][:2] or allowed_bul[:2]
             new_led.append(
                 {
                     "claim_text": clause,
-                    "source_fact_ids": themes[:2],
+                    "source_fact_ids": roots,
                 }
             )
     else:
@@ -174,6 +196,71 @@ def decompose_ibm_narrative_claim_ledger_by_clause(
         }
     )
     parsed["change_log"] = clog
+
+
+def bind_missing_ibm_narrative_theme_citations(
+    parsed: dict[str, Any],
+    *,
+    allowed_fact_ids: set[str] | frozenset[str],
+) -> list[str]:
+    """Cite detected-but-uncited sentence themes on a grounded ledger row with root capacity.
+
+    Replaces the blind append-to-row-0 binding (W4 first-run wiring,
+    apps-rg-aig-remaining-lanes-closeout-d4e1f7) that recreated 3-root rows the
+    ``x2_ibm_narrative_claim_ledger_clause_decomposition`` gate rejects (live fail
+    postW4_20260610_1716: row 0 union [bul_ibm_001, bul_ibm_002, bul_ibm_004]).
+
+    A missing theme is bound only when BOTH hold for a row: the row's own
+    ``claim_text`` expresses the theme (``IBM_NARRATIVE_THEME_TRIGGERS`` — never
+    fabricated attribution) AND the row still carries fewer than 2 bul_ibm_* roots.
+    Themes with no grounded row with capacity stay uncited (fail-open: the
+    theme-coverage gate verdict stands honestly). Returns the bound theme ids and
+    records them in ``change_log``.
+    """
+    from apps_rg.runtime.validators.ibm_narrative_x2 import (
+        _ledger_row_bul_ibm_roots,
+        ibm_narrative_material_fact_ids_for_sentence,
+    )
+
+    narrative = str(parsed.get("narrative_sentence") or "").strip()
+    ledger = [r for r in (parsed.get("claim_ledger") or []) if isinstance(r, dict)]
+    if not narrative or not ledger:
+        return []
+    allowed = {str(x) for x in allowed_fact_ids}
+    cited = {
+        str(s).split("_metric_")[0]
+        for row in ledger
+        for s in (row.get("source_fact_ids") or [])
+    }
+    themes = ibm_narrative_material_fact_ids_for_sentence(narrative)
+    bound: list[str] = []
+    for theme in sorted(t for t in themes if t in allowed and t not in cited):
+        for row in ledger:
+            roots = _ledger_row_bul_ibm_roots(row)
+            if theme in roots or len(roots) >= 2:
+                continue
+            if theme not in ibm_narrative_material_fact_ids_for_sentence(
+                str(row.get("claim_text") or "")
+            ):
+                continue
+            row["source_fact_ids"] = list(row.get("source_fact_ids") or []) + [theme]
+            bound.append(theme)
+            break
+    if bound:
+        clog = (
+            list(parsed.get("change_log") or [])
+            if isinstance(parsed.get("change_log"), list)
+            else []
+        )
+        clog.append(
+            {
+                "operation": "bind_detected_theme_citations",
+                "reason": "x2_ibm_narrative_claim_theme_coverage",
+                "bound_fact_ids": list(bound),
+            }
+        )
+        parsed["change_log"] = clog
+    return bound
 
 
 def align_ibm_narrative_claim_ledger_to_bul_ibm(
