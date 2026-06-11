@@ -172,6 +172,14 @@ def _args_target_title(args: argparse.Namespace) -> str:
     )
 
 
+def _strip_targeting_cap_notice(text: str) -> str:
+    """Remove the exec-only _CAP_NOTICE sentinel so cross-lane input digests compare the
+    same canonical text (aggregation preflight x2_preflight_*_digest_coherence)."""
+    from apps_rg.runtime.sections.executive_summary_targeting_cap import _CAP_NOTICE
+
+    return str(text or "").replace(_CAP_NOTICE, "\n").replace(_CAP_NOTICE.strip(), "")
+
+
 def _args_jd_text(args: argparse.Namespace) -> str:
     return (
         str(getattr(args, "jd_text", None) or getattr(args, "jd", None) or JD_TEXT_DEFAULT).strip()
@@ -2737,10 +2745,22 @@ def run_executive_summary_execution(
         selected_fact_plan=sfp_for_usage if isinstance(sfp_for_usage, dict) else {"facts": []},
         claim_ledger=claim_ledger,
         allowed_fact_ids=allowed_fact_ids,
-        jd_text=_generation_material.jd_text_material,
+        # Canonical inputs for the cross-lane digest: the aggregation preflight compares
+        # jd_text_hash/briefing_hash ACROSS lanes (x2_preflight_*_digest_coherence), and
+        # exec was the lone mismatch on every integrated run (live: attempt4 f7cc... vs
+        # all other lanes e6a2...) because (a) the materialized slice was stamped and
+        # (b) exec's runtime_payload carries the exec-only _CAP_NOTICE sentinel appended
+        # by the targeting cap. Strip the sentinel so the hash is over the same canonical
+        # text every other lane stamps; the slice digests stay receipted by the
+        # targeting-parity machinery.
+        jd_text=_strip_targeting_cap_notice(
+            str(runtime_payload.get("jd_text") or "") or _generation_material.jd_text_material
+        ),
         target_title=_args_target_title(args),
         target_company=str(args.target_company),
-        briefing_text=_generation_material.briefing_text_material,
+        briefing_text=_strip_targeting_cap_notice(
+            str(runtime_payload.get("briefing") or "") or _generation_material.briefing_text_material
+        ),
         jd_alignment=l2_output.get("jd_alignment"),
     )
     usage_doc = apply_proof_pool_to_usage_ledger(usage_doc, pool)
