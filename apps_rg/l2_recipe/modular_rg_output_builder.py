@@ -56,7 +56,12 @@ def _facts(base: dict[str, Any]) -> dict[str, Any]:
 
 
 def _word_count(text: str) -> int:
-    return len(re.findall(r"\b\w+\b", text.strip()))
+    # Whitespace tokens — the SAME counter the lane word-budget rung and X2 caps
+    # use (len(text.split())). The previous \b\w+\b regex counted hyphenated/
+    # slashed compounds as multiple words, so a lane-certified 140-word exec
+    # summary re-counted as 144 here and export rejected the certified product
+    # (patch_run_22, 2026-06-11). One tokenizer, one authority.
+    return len(text.split())
 
 
 def _parse_year_month(raw: str) -> tuple[int, int] | None:
