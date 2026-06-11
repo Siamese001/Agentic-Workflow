@@ -25,6 +25,38 @@ def test_forbidden_opener_led() -> None:
     assert hit == "led"
 
 
+def test_forbidden_opener_company_prefix_leadin() -> None:
+    # Regression (2026-06-11): "At IBM, led ..." shipped because the opener gate
+    # only checked mechanical verb openers, not scene-setting prepositions.
+    ok, hit, reason = check_narrative_forbidden_opener(
+        "At IBM, led enterprise-scale cloud modernization and data governance."
+    )
+    assert not ok
+    assert hit == "at"
+    assert "scene-setting lead-in" in (reason or "")
+
+
+def test_forbidden_opener_temporal_and_role_leadins_blocked() -> None:
+    for narrative in (
+        "While at IBM, led the modernization program.",
+        "During my tenure, scaled the engineering organization.",
+        "As VP of Engineering, drove platform delivery.",
+        "Throughout the engagement, governed regulatory lineage.",
+    ):
+        ok, _, _ = check_narrative_forbidden_opener(narrative)
+        assert not ok, f"expected scene-setting lead-in to fail: {narrative!r}"
+
+
+def test_action_verb_leadins_still_pass() -> None:
+    for narrative in (
+        "Stewarded Unify Consulting's end-to-end mandate to industrialize agentic AI.",
+        "Modernized legacy policy administration platforms into AWS-based services.",
+        "Directed a $15M regulatory analytics modernization program.",
+    ):
+        ok, hit, _ = check_narrative_forbidden_opener(narrative)
+        assert ok, f"expected action-verb opener to pass: {narrative!r} (hit={hit!r})"
+
+
 def test_metric_cap_exceeded() -> None:
     from apps_rg.runtime.validators.narrative_mechanical_x2 import UNIFY_NARRATIVE_METRIC_PATTERNS
 
