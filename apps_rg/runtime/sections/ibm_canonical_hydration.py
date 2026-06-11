@@ -150,6 +150,22 @@ def decompose_ibm_narrative_claim_ledger_by_clause(
                 if len(assigned[i]) < 2:
                     assigned[i].append(theme)
                     break
+        # Overflow rows (live flap 4x, postRungs/attempt4 2026-06-11: a clause grounding
+        # 3 themes is structurally uncoverable with ONE row per clause, because each theme
+        # may only be cited by a row whose own clause text expresses it and rows cap at
+        # 2 bul_ibm_* roots). The clause-decomposition gate caps roots PER ROW, not rows
+        # per clause - so leftover grounded themes get additional rows for their host
+        # clause (same clause text, <=2 roots each). Every root stays grounded in the
+        # text it is attributed to; nothing is fabricated and no per-row cap is loosened.
+        overflow: list[list[str]] = [[] for _ in clauses]
+        for theme in pool:
+            if any(theme in row_roots for row_roots in assigned) or any(
+                theme in extra for extra in overflow
+            ):
+                continue
+            hosts = [i for i, themes in enumerate(clause_themes) if theme in themes]
+            if hosts:
+                overflow[hosts[0]].append(theme)
         for i, clause in enumerate(clauses):
             roots = sorted(assigned[i]) or clause_themes[i][:2] or allowed_bul[:2]
             new_led.append(
@@ -158,6 +174,14 @@ def decompose_ibm_narrative_claim_ledger_by_clause(
                     "source_fact_ids": roots,
                 }
             )
+            extras = sorted(overflow[i])
+            for j in range(0, len(extras), 2):
+                new_led.append(
+                    {
+                        "claim_text": clause,
+                        "source_fact_ids": extras[j : j + 2],
+                    }
+                )
     else:
         themes = sorted(
             t for t in ibm_narrative_material_fact_ids_for_sentence(narrative) if t in allowed_bul

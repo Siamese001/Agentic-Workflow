@@ -93,10 +93,16 @@ def _theme_budget_block() -> str:
         "pass both theme-coverage and clause-decomposition gates.",
         "- Choose the STRONGEST 4 families for the target role; leave at least one family "
         "unexpressed (do not even allude to its trigger vocabulary).",
-        "- PER-CLAUSE LIMIT IS THE HARD PART (live failure 2x): packing a third family's "
+        "- PER-CLAUSE LIMIT IS THE HARD PART (live failure 4x): packing a third family's "
         "vocabulary into the opening clause makes that family impossible to ledger-cover. "
         "Each clause names AT MOST TWO families - move the third family's vocabulary into "
         "the ', establishing' clause or drop it entirely.",
+        "- SENTENCE SKELETON (follow this shape EXACTLY - two families per clause, no "
+        "third): 'At IBM, led <family-A> and <family-B> programs for enterprise clients, "
+        "establishing <family-C> and <family-D> discipline that <plain outcome with no "
+        "additional family vocabulary>.' Choose A-D from four DIFFERENT families; before "
+        "returning, count the families each clause expresses and remove vocabulary until "
+        "each clause has at most two.",
         "Theme families (trigger vocabulary classes):",
     ]
     for fid, phrases in IBM_NARRATIVE_THEME_TRIGGERS:

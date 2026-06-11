@@ -223,3 +223,34 @@ def test_align_narrative_ledger_replaces_fact_ids_with_bul_ibm() -> None:
     src = parsed["claim_ledger"][0]["source_fact_ids"]
     assert all(str(s).startswith("bul_ibm_") for s in src)
     assert themes.issubset(set(src)) or src
+
+
+def test_decompose_overflow_row_covers_third_theme_in_one_clause() -> None:
+    """Live flap 4x (attempt4/postRungs 2026-06-11): a clause grounding 3 themes was
+    structurally uncoverable with one row per clause (max 2 bul_ibm roots per row, theme
+    citable only by a row whose own clause expresses it). The decomposer now emits an
+    overflow row (same clause text, <=2 roots) so the union covers every grounded theme;
+    the clause-decomposition gate (roots-per-row cap) and theme-coverage gate both pass.
+    """
+    from apps_rg.runtime.validators.ibm_narrative_x2 import (
+        check_ibm_narrative_claim_ledger_clause_decomposition,
+    )
+
+    sentence = (
+        "At IBM, led enterprise-scale cloud modernization, data lineage and observability "
+        "programs for regulated financial services institutions, establishing governed "
+        "delivery discipline and hyperscaler alliance execution that expanded platform "
+        "reach across complex enterprise portfolios."
+    )
+    allowed = {f"bul_ibm_00{i}" for i in range(1, 6)}
+    parsed = {"narrative_sentence": sentence, "claim_ledger": [], "change_log": []}
+    decompose_ibm_narrative_claim_ledger_by_clause(
+        parsed, narrative_sentence=sentence, allowed_fact_ids=allowed
+    )
+    rows = parsed["claim_ledger"]
+    themes = ibm_narrative_material_fact_ids_for_sentence(sentence)
+    union = {fid for r in rows for fid in r.get("source_fact_ids", [])}
+    assert themes <= union, f"uncovered: {sorted(themes - union)}"
+    assert all(len(r.get("source_fact_ids", [])) <= 2 for r in rows)
+    ok, detail = check_ibm_narrative_claim_ledger_clause_decomposition(sentence, rows)
+    assert ok, detail
