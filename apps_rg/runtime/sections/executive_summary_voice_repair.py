@@ -1069,6 +1069,39 @@ def _upgrade_thin_s6(
     return out
 
 
+def _scrub_unsupported_industry_claims(
+    sentences: list[str],
+    *,
+    selected_facts: list[dict[str, Any]] | None,
+) -> list[str]:
+    """Replace industry phrases the selected facts do not support with the weaker,
+    always-true "regulated enterprises".
+
+    Live flap 2x (attempt4 + patch_run_8, x2_unsupported_industry_claim_zero
+    "financial services"): the model naturally targets AIG with financial-services
+    vocabulary the SELECTED facts phrase differently. Delegates to the gate's own
+    predicate (same supported-set computation) so scrub == gate by construction; the
+    replacement claims strictly LESS than the original — the metric-echo-sanitizer
+    pattern applied to industry phrases. Gate untouched.
+    """
+    from apps_rg.runtime.validators.executive_summary_x2 import (
+        check_unsupported_industry_claims,
+    )
+
+    text = " ".join(sentences)
+    ok, reason = check_unsupported_industry_claims(text, selected_facts)
+    if ok:
+        return sentences
+    phrases = [p.strip() for p in str(reason or "").split(":", 1)[-1].split(",") if p.strip()]
+    out = list(sentences)
+    for phrase in phrases:
+        pat = re.compile(rf"(?:regulated\s+)?{re.escape(phrase)}", re.IGNORECASE)
+        out = [pat.sub("regulated enterprises", s) for s in out]
+        out = [s.replace("regulated regulated", "regulated") for s in out]
+        out = [re.sub(r"regulated enterprises(\s+(?:institutions|industries|sectors|firms))", "regulated enterprises", s) for s in out]
+    return out
+
+
 def _trim_paragraph_word_budget(
     sentences: list[str],
     *,
@@ -1262,6 +1295,10 @@ def polish_executive_summary_judge_alignment(
         (
             "upgrade_thin_s6",
             lambda s: _upgrade_thin_s6(s, selected_facts=selected_facts),
+        ),
+        (
+            "scrub_unsupported_industry_claims",
+            lambda s: _scrub_unsupported_industry_claims(s, selected_facts=selected_facts),
         ),
         ("trim_paragraph_word_budget", _trim_paragraph_word_budget),
     ):
