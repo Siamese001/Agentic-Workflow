@@ -40,6 +40,7 @@ class HealthDiagnostics:
             "cache_hit_capable": health.cache_hit_capable,
             "schema_version": health.schema_version,
             "adg_snapshot_id": health.adg_snapshot_id,
+            "views_materialized_at": health.views_materialized_at,
             "adg": status.data if status.status == "ok" else None,
             "graph_projection": self._safe_projection_status(),
         }
