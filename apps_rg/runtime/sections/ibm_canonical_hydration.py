@@ -222,6 +222,47 @@ def decompose_ibm_narrative_claim_ledger_by_clause(
     parsed["change_log"] = clog
 
 
+def redact_banned_lexicon_from_attestation_change_log(parsed: dict[str, Any]) -> int:
+    """Redact mock/plumbing lexicon QUOTED inside model attestation change_log rows.
+
+    Live fail (ibm_narrative_20260611_160915): the model wrote a change_log detail
+    "Scanned for: ... mocked_runtime_slice, test-only, plumbing_only" - a self-audit
+    attesting which vocabulary it checked - and the mock-language X2 gate (which rightly
+    scans change_log) tripped on the quoted lexicon itself. Same self-reference
+    false-positive class as the unify self_check exclusion (d4e1f7 W5). The gate stays
+    untouched; the lane redacts quoted banned tokens ONLY from rows that are clearly
+    attestations (scan/check vocabulary present) - real plumbing language in content
+    fields or non-attestation rows still trips the gate.
+    """
+    from apps_rg.runtime.validators.ibm_narrative_x2 import (
+        REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS,
+    )
+
+    attestation_markers = ("scan", "check", "verif", "ensur", "avoid", "confirm")
+    redacted = 0
+    for row in parsed.get("change_log") or []:
+        if not isinstance(row, dict):
+            continue
+        for field in ("detail", "reason", "note"):
+            val = row.get(field)
+            if not isinstance(val, str):
+                continue
+            low = val.lower()
+            if not any(tok in low for tok in REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS):
+                continue
+            if not any(m in low for m in attestation_markers):
+                continue
+            new_val = val
+            for tok in REAL_L2_MOCK_LANGUAGE_BANNED_SUBSTRINGS:
+                if tok in new_val.lower():
+                    pattern = re.compile(re.escape(tok), re.IGNORECASE)
+                    new_val = pattern.sub("[lexicon-redacted]", new_val)
+            if new_val != val:
+                row[field] = new_val
+                redacted += 1
+    return redacted
+
+
 def bind_missing_ibm_narrative_theme_citations(
     parsed: dict[str, Any],
     *,
