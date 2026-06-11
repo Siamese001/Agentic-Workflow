@@ -1236,22 +1236,21 @@ def _trim_paragraph_word_budget(
     # mass), removing them reverses the chain's own additions - the underlying claims
     # stand alone grammatically and no factual content is touched.
     if _wc(out) > max_words:
-        bridge_openers = (
-            "Against that delivery foundation, ",
-            "Building on that platform foundation, ",
-            "Building on that foundation, ",
-            "Through that delivery system, ",
-            "Complementing that, ",
-            "In parallel, ",
+        # Comma-terminated connective prefixes are pure discourse glue - the claim after
+        # the comma stands alone grammatically. Live rolls vary the noun freely ("that
+        # delivery system/base/foundation", "that lineage backdrop"), so match the shape,
+        # not a fixed list.
+        bridge_opener_re = re.compile(
+            r"^(?:(?:Against|Building on|Through|Complementing|Anchored (?:by|in)|"
+            r"Leveraging|Extending) that [^,]{0,40}, |In parallel, )"
         )
         for idx, sent in enumerate(out):
             if _wc(out) <= max_words:
                 break
-            for opener in bridge_openers:
-                if sent.startswith(opener):
-                    rest = sent[len(opener) :]
-                    out[idx] = (rest[:1].upper() + rest[1:]) if rest else sent
-                    break
+            m = bridge_opener_re.match(sent)
+            if m:
+                rest = sent[m.end() :]
+                out[idx] = (rest[:1].upper() + rest[1:]) if rest else sent
 
     return out
 
