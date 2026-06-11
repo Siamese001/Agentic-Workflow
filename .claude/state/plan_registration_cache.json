@@ -1,9 +1,45 @@
 {
-  "fetched_at": "2026-06-10T13:18:36Z",
-  "fetched_at_epoch": 1781097516.018155,
+  "fetched_at": "2026-06-10T16:20:43Z",
+  "fetched_at_epoch": 1781108443.4661472,
   "plans": {
-    "codex-mcp-transport-parity-4b9c7e": {
+    "apps-rg-skills-bindability-closure-a7e2f9": {
       "status": "Not Started",
+      "page_id": "37b27693-f55c-81bb-9587-ff4d809bb23d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "c0-grounded-fact-writeback-spine-4f8e2a": {
+      "status": "Not Started",
+      "page_id": "37b27693-f55c-818a-88aa-fefd4cb49856",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-lane-aggregation-gap-closure-b8c3d1": {
+      "status": "Not Started",
+      "page_id": "37b27693-f55c-8138-b2c1-dae00bd6b2f8",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-rg-lane-reasoning-optimization-7c4e9b": {
+      "status": "Retired",
+      "page_id": "37b27693-f55c-818d-9d6f-eef32e0a9478",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "eval-harness-adg-mcp-open-replan-9c1f2a": {
+      "status": "Completed",
+      "page_id": "37b27693-f55c-813b-93a5-f0e1d3ef310f",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "eval-harness-adg-mcp-replan-a71c9e": {
+      "status": "Not Started",
+      "page_id": "37b27693-f55c-81ae-ae61-ceafec76009c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "codex-mcp-transport-parity-4b9c7e": {
+      "status": "In Progress",
       "page_id": "37b27693-f55c-8195-864a-f01d07b7181a",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -27,7 +63,7 @@
       "has_ai_summary": true
     },
     "apps-lic-x1d-repair-loop-hardening-490f55": {
-      "status": "In Progress",
+      "status": "Completed",
       "page_id": "37a27693-f55c-81f0-a9b5-f5b7d09a89a5",
       "exists_on_disk": true,
       "has_ai_summary": false

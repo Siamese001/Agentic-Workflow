@@ -12,6 +12,14 @@ dod_exempt: false
 supersedes: []
 ---
 
+# ⛔ SUPERSEDED (2026-06-10) — remaining scope absorbed by [apps-rg-lane-aggregation-gap-closure-b8c3d1](apps-rg-lane-aggregation-gap-closure-b8c3d1.md)
+
+> Code-review-verified at supersession: all deterministic waves landed AND committed (merge
+> `655fc41284` / PR #280) — W1 dense-filter, W2 floor=3, W3 canonical ids + summarizer truth,
+> W5 caps=8000, W6 judge refresh, narrative fixes. Open remainder (W4 all-11 proof; residuals:
+> ibm fact↔content quality, headline signal flap, ibm_narrative cascade) = successor's
+> G13/G14/G15 (W4) + W9 proof. Do not execute from this file. Notion row: Retired.
+
 # apps_rg AIG E2E — Close the Remaining Lanes to X3_ALLOW
 
 Drive the AIG VP "Global Head of Agentic AI" run from 3/11 lanes authorized to **all 11 at `X3_ALLOW`** by fixing three independent residual blockers: C0.2 dense "PASS-but-empty" for the bespoke lanes, the competencies graph-term content gate, and the lane-status packaging mislabel that cascade-blocks narratives.
