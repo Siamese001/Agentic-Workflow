@@ -643,16 +643,37 @@ def run_cross_section_x2_gates(
         ),
     )
 
-    # Repeated metrics across sections
-    metric_hits: dict[str, list[str]] = {}
+    # Repeated metrics across sections — keyed by (metric, source fact), not bare
+    # string. Distinct canonical facts may legitimately share a value: "40%" is
+    # simultaneously InsurTech TCO reduction (bul_insurtech_001), EY audit
+    # remediation, and the exec error-reduction claim, so literal counting made
+    # the locked fact base unshippable (first full aggregation, 2026-06-11).
+    # Recycling the SAME fact's metric into >=3 sections still fails, and metric
+    # text not attributable to any claim row stays keyed as unattributed —
+    # unattributed repetition across >=3 sections fails closed.
+    metric_hits: dict[tuple[str, str], set[str]] = {}
     for sec in sections:
         if sec.get("section_kind") != "generated_lane":
             continue
         sid = str(sec.get("section_id"))
+        snap = sec.get("l2_output_snapshot") if isinstance(sec.get("l2_output_snapshot"), dict) else {}
+        claim_metric_facts: dict[str, set[str]] = {}
+        for row in snap.get("claim_ledger") or []:
+            if not isinstance(row, dict):
+                continue
+            fact_ids = {str(x) for x in (row.get("source_fact_ids") or []) if str(x).strip()}
+            for m in METRIC_PATTERN.findall(str(row.get("claim_text") or "")):
+                claim_metric_facts.setdefault(m.lower(), set()).update(fact_ids or {"unattributed"})
         text = _section_plaintext(sec)
         for m in METRIC_PATTERN.findall(text):
-            metric_hits.setdefault(m.lower(), []).append(sid)
-    repeated = {m: sids for m, sids in metric_hits.items() if len(set(sids)) >= 3}
+            ml = m.lower()
+            for fid in sorted(claim_metric_facts.get(ml) or {"unattributed"}):
+                metric_hits.setdefault((ml, fid), set()).add(sid)
+    repeated = {
+        f"{metric}[{fid}]": sorted(sids)
+        for (metric, fid), sids in metric_hits.items()
+        if len(sids) >= 3
+    }
     gates.append(
         CrossSectionGateResult(
             gate_id="x2_cross_section_repeated_metric",
