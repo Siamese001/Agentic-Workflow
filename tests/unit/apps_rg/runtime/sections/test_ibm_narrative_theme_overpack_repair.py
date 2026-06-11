@@ -14,6 +14,7 @@ from types import SimpleNamespace
 import pytest
 
 from apps_rg.runtime.sections import ibm_narrative_lane_runtime as lane_runtime
+from apps_rg.runtime.sections.ibm_narrative_lane_defaults import NARRATIVE_MAX_OUTPUT_TOKENS
 from apps_rg.runtime.validators.ibm_narrative_x2 import (
     check_ibm_narrative_claim_ledger_clause_decomposition,
     ibm_narrative_material_fact_ids_for_sentence,
@@ -21,6 +22,11 @@ from apps_rg.runtime.validators.ibm_narrative_x2 import (
 
 _RECEIPT = lane_runtime.THEME_REPAIR_RECEIPT_FILENAME
 ALL_IBM_POOL = ["bul_ibm_001", "bul_ibm_002", "bul_ibm_003", "bul_ibm_004", "bul_ibm_005"]
+
+
+def test_attempt1_lane_cap_has_headroom_beyond_live_truncation() -> None:
+    """Live postRungs_20260610_2246 hit max_tokens at the old 1200 cap on attempt 1."""
+    assert NARRATIVE_MAX_OUTPUT_TOKENS >= 4000
 
 # 5-theme overpack (today's flap shape): clause 1 trips 001/002/004, clause 2 trips 003/005.
 OVERPACK_CLAUSE_1 = (
@@ -382,9 +388,8 @@ class TestThemeOverpackRepairRung:
         regen cap must scale from attempt 1's observed length with margin."""
         provider = _RecordingProvider("REAL_LLM", _regen_json(GOOD_REGEN_NARRATIVE))
         parsed = _attempt1_parsed()
-        long_raw = json.dumps(parsed, sort_keys=True) + (
-            "x" * (lane_runtime.NARRATIVE_MAX_OUTPUT_TOKENS * 4)
-        )
+        # Padding must exceed the 4000-token floor so margin scaling is observable.
+        long_raw = json.dumps(parsed, sort_keys=True) + ("x" * 20000)
         _raw, _out, _accepted = _run_rung(
             tmp_path, monkeypatch, provider=provider, parsed=parsed, raw_output=long_raw
         )
