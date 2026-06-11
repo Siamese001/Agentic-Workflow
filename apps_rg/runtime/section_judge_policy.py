@@ -226,6 +226,11 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
 
 _SECTION_ALIASES: dict[str, str] = {
     "professional_competencies": "competencies",
+    # The assembly-time full-resume coherence judge is the final-aggregate judging
+    # surface under its runner's section id (run_full_resume_coherence_judges resolves
+    # gemini via this policy). Latent KeyError fired the FIRST time any integrated run
+    # survived aggregation preflight (patch_run_14, 2026-06-11).
+    "full_resume_coherence": "final_aggregate_resume",
 }
 
 
