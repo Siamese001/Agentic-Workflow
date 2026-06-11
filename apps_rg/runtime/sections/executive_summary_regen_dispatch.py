@@ -29,7 +29,7 @@ def _write_json(path: Path, data: Any) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 _REGEN_PHASES = frozenset(
-    {"synthesis_regen", "judge_regen", "judge_x2_repair"},
+    {"synthesis_regen", "judge_regen", "judge_x2_repair", "word_budget_repair"},
 )
 
 def allocate_call_id(

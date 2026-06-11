@@ -18,6 +18,23 @@ SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP = 3
 # Graph-only path may deterministically reformat from allowed facts (not template finalizer).
 RELEASE_GRAPH_ONLY_DETERMINISTIC_REFORMAT_ENABLED = True
 
+# Bounded same-authority word-budget regen (apply_exec_summary_word_budget_repair).
+# Fires when the FINAL post-polish display text exceeds the X2 paragraph word ceiling
+# (x2_exec_summary_paragraph_max_words) — the last seam before 11/11. Hard cap 1 attempt;
+# absolute ceiling, not operator-raisable (no env knob exists for attempts).
+RELEASE_WORD_BUDGET_REPAIR_ENABLED = True
+WORD_BUDGET_REPAIR_MAX_ATTEMPTS = 1
+
+
+def word_budget_repair_enabled() -> bool:
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_WORD_BUDGET_REPAIR", "1").strip().lower()
+    return RELEASE_WORD_BUDGET_REPAIR_ENABLED and raw not in ("0", "false", "no", "off")
+
+
+def word_budget_repair_env_state() -> str:
+    raw = os.environ.get("APPS_RG_EXEC_SUMMARY_WORD_BUDGET_REPAIR")
+    return raw.strip() if isinstance(raw, str) and raw.strip() else "unset"
+
 
 def synthesis_regeneration_enabled() -> bool:
     raw = os.environ.get("APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN", "1").strip().lower()
@@ -202,8 +219,10 @@ __all__ = [
     "RELEASE_SRFS_JUDGE_SAFE_REPAIR_ENABLED",
     "RELEASE_SRFS_LLM_REPAIR_ENABLED",
     "RELEASE_SYNTHESIS_REGENERATION_ENABLED",
+    "RELEASE_WORD_BUDGET_REPAIR_ENABLED",
     "SYNTHESIS_REGEN_MAX_ATTEMPTS",
     "SYNTHESIS_REGEN_MAX_ATTEMPTS_HARD_CAP",
+    "WORD_BUDGET_REPAIR_MAX_ATTEMPTS",
     "exploratory_full_paragraph_regen_enabled",
     "judge_regen_core_runner_enabled",
     "judge_pass_floor_0_to_5",
@@ -220,4 +239,6 @@ __all__ = [
     "post_x2_judge_refresh_enabled",
     "synthesis_regen_max_attempts",
     "synthesis_regeneration_enabled",
+    "word_budget_repair_enabled",
+    "word_budget_repair_env_state",
 ]
