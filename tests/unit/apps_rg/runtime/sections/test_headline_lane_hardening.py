@@ -19,6 +19,7 @@ from apps_rg.runtime.sections.headline_lane import (
 from apps_rg.runtime.validators.headline_positioning_x2 import (
     POSITIONING_FAMILY_FLOOR,
     governance_signal_families_matched,
+    narrowing_labels_found,
     positioning_families_matched,
     run_headline_positioning_x2_gates,
 )
@@ -564,7 +565,7 @@ class TestHeadlineContentSignalSpecificityArm:
             (GOV_HL, None),
             (PRE_HL_NO_GOV, "governance_signal"),
             (SPEC_FLOOR_HL, "specificity_floor"),
-            (BOTH_ARMS_HL, "both"),
+            (BOTH_ARMS_HL, "governance_signal+specificity_floor"),
         ],
     )
     def test_trigger_arm_truth_table(self, tmp_path, monkeypatch, hl, expected_arm):
@@ -612,7 +613,7 @@ class TestHeadlineContentSignalSpecificityArm:
         assert _CS_GATE_ID in emphasis
         assert _SPEC_GATE_ID in emphasis
         receipt = _read_receipt(tmp_path)
-        assert receipt["trigger_arm"] == "both"
+        assert receipt["trigger_arm"] == "governance_signal+specificity_floor"
         assert receipt["gate_id"] == f"{_CS_GATE_ID}+{_SPEC_GATE_ID}"
 
     def test_specificity_arm_accept_path(self, tmp_path, monkeypatch):
@@ -720,3 +721,226 @@ class TestHeadlineContentSignalSpecificityArm:
         assert out["headline_line"] == GOV_HL
         receipt = _read_receipt(tmp_path)
         assert receipt["bounded"] == {"max_attempts": 1, "attempts_used": 1}
+
+
+# ---------------------------------------------------------------------------
+# Narrowing-labels arm of the content-signal rung (live failure
+# postRungs_20260610_2246: x2_headline_no_narrowing_it_labels AND
+# x2_headline_generic_it_strategy_demote_forbidden flagged
+# 'ai lifecycle standardization'; governance + specificity arms were clean,
+# so the two-arm rung correctly stayed idle).
+# ---------------------------------------------------------------------------
+
+_NARROW_GATE_ID = "x2_headline_no_narrowing_it_labels"
+_DEMOTE_GATE_ID = "x2_headline_generic_it_strategy_demote_forbidden"
+# Verbatim live failure shape: governance ok, 2 families, one narrowing label.
+LIVE_NARROWING_HL = "SVP Engineering | Retrieval Telemetry Governance | AI Lifecycle Standardization | HPC Microservices Architecture"
+# No governance signal + 2 families + narrowing label -> governance+narrowing combo.
+GOV_PLUS_NARROWING_HL = "SVP Engineering | Distributed AI Infrastructure | Digital Transformation Programs | Platform Productization"
+# All three arms fire.
+TRIPLE_ARM_HL = "SVP Engineering | Digital Transformation Leadership | Enterprise Delivery Programs | Innovation Leadership Excellence"
+# Regen with governance + 2 families but STILL carrying a narrowing label -> rejected.
+NARROWING_REGEN_STILL_DIRTY_HL = "SVP Engineering | Runtime Governance Gates | Agentic AI Platforms | Digital Transformation Leadership"
+
+
+class TestHeadlineContentSignalNarrowingArm:
+    @pytest.fixture(autouse=True)
+    def _default_kill_switch_on(self, monkeypatch):
+        monkeypatch.delenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", raising=False)
+
+    @pytest.mark.parametrize(
+        ("hl", "expected_arm"),
+        [
+            (GOV_HL, None),
+            (LIVE_NARROWING_HL, "narrowing_labels"),
+            (GOV_PLUS_NARROWING_HL, "governance_signal+narrowing_labels"),
+            (TRIPLE_ARM_HL, "governance_signal+specificity_floor+narrowing_labels"),
+        ],
+    )
+    def test_narrowing_trigger_arm_truth_table(self, tmp_path, monkeypatch, hl, expected_arm):
+        # Kill switch OFF isolates trigger classification: receipt is written, zero calls.
+        monkeypatch.setenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", "0")
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, _out, _snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(hl)
+        )
+        assert provider.calls == 0
+        assert not accepted
+        if expected_arm is None:
+            assert not (tmp_path / _CS_RECEIPT).exists()
+            return
+        receipt = _read_receipt(tmp_path)
+        assert receipt["trigger_arm"] == expected_arm
+        pre = receipt["trigger"]["families_matched_pre"]
+        assert pre["narrowing_labels"] == narrowing_labels_found(hl)
+        if "narrowing_labels" in expected_arm:
+            assert pre["narrowing_labels"]
+            assert _NARROW_GATE_ID in receipt["gate_id"]
+            assert _DEMOTE_GATE_ID in receipt["gate_id"]
+
+    def test_live_shape_trigger_records_label_verbatim(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", "0")
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(LIVE_NARROWING_HL)
+        )
+        receipt = _read_receipt(tmp_path)
+        assert receipt["trigger_arm"] == "narrowing_labels"
+        assert receipt["trigger"]["families_matched_pre"]["narrowing_labels"] == [
+            "ai lifecycle standardization"
+        ]
+        assert receipt["gate_id"] == f"{_NARROW_GATE_ID}+{_DEMOTE_GATE_ID}"
+
+    def test_narrowing_emphasis_names_label_verbatim(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(LIVE_NARROWING_HL)
+        )
+        assert provider.calls == 1
+        emphasis = provider.payloads[0]["messages"][-1]["content"]
+        assert "ai lifecycle standardization" in emphasis  # detected label named verbatim
+        assert _NARROW_GATE_ID in emphasis
+        assert _DEMOTE_GATE_ID in emphasis
+        # replacement steering: senior platform/engineering positioning vocabulary
+        assert "platform" in emphasis.lower()
+        # other arm headers absent (they did not fire)
+        assert _CS_GATE_ID not in emphasis
+        assert _SPEC_GATE_ID not in emphasis
+        # constraint reminder preserved (prefix, pipes, word count, no metrics/employers)
+        assert "SVP Engineering | " in emphasis
+        assert "three ' | ' " in emphasis or "three ' | '" in emphasis
+        assert "10 to 13 total words" in emphasis
+        assert "no metrics" in emphasis
+        assert "no employer" in emphasis
+
+    def test_narrowing_arm_accept_path(self, tmp_path, monkeypatch):
+        from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, init_ledger, load_ledger
+
+        init_ledger(tmp_path, section_id="headline", run_id="csr-test")
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(LIVE_NARROWING_HL)
+        )
+        assert provider.calls == 1
+        assert accepted is True
+        assert out["headline_line"] == GOV_HL
+        assert snap is not None
+        receipt = _read_receipt(tmp_path)
+        assert receipt["trigger_arm"] == "narrowing_labels"
+        assert receipt["accepted"] is True
+        assert receipt["families_matched_post"]["narrowing_labels"] == []
+        assert receipt["families_matched_post"]["governance_signal"]
+        assert len(receipt["families_matched_post"]["specificity_floor"]) >= POSITIONING_FAMILY_FLOOR
+        ledger = load_ledger(tmp_path) or {}
+        regen_rows = [
+            r
+            for r in (ledger.get("repairs") or [])
+            if r.get("kind") == KIND_REGEN_LLM and r.get("replaced_l2")
+        ]
+        assert len(regen_rows) == 1
+        assert _NARROW_GATE_ID in str(regen_rows[0].get("reason"))
+        gates = run_headline_positioning_x2_gates(
+            headline_line=out["headline_line"],
+            parsed_output=out,
+            proof_pool_metadata={"headline_positioning_bundle_consumption": True},
+        )
+        assert next(g for g in gates if g.gate_id == _DEMOTE_GATE_ID).passed
+
+    def test_acceptance_rejects_regen_still_containing_label(self, tmp_path, monkeypatch):
+        from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, init_ledger, load_ledger
+
+        init_ledger(tmp_path, section_id="headline", run_id="csr-test")
+        # Regen satisfies governance + specificity but STILL carries 'digital transformation'.
+        provider = _RecordingProvider("REAL_LLM", _regen_json(NARROWING_REGEN_STILL_DIRTY_HL))
+        parsed = _attempt1_parsed(LIVE_NARROWING_HL)
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 1
+        assert not accepted and snap is None
+        assert out is parsed
+        assert out["headline_line"] == LIVE_NARROWING_HL
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "signal_still_missing"
+        ledger = load_ledger(tmp_path) or {}
+        assert not [r for r in (ledger.get("repairs") or []) if r.get("kind") == KIND_REGEN_LLM]
+        gates = run_headline_positioning_x2_gates(
+            headline_line=NARROWING_REGEN_STILL_DIRTY_HL,
+            parsed_output={},
+            proof_pool_metadata={"headline_positioning_bundle_consumption": True},
+        )
+        assert not next(g for g in gates if g.gate_id == _DEMOTE_GATE_ID).passed
+
+    def test_acceptance_requires_zero_labels_when_other_arm_triggered(self, tmp_path, monkeypatch):
+        # Governance-arm trigger; regen fixes governance + specificity but adds a narrowing label.
+        provider = _RecordingProvider("REAL_LLM", _regen_json(NARROWING_REGEN_STILL_DIRTY_HL))
+        parsed = _attempt1_parsed(PRE_HL_NO_GOV)
+        _raw, out, _snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 1
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["trigger_arm"] == "governance_signal"
+        assert receipt["rejected_reason"] == "signal_still_missing"
+
+    def test_narrowing_arm_respects_one_call_budget(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        parsed = _attempt1_parsed(LIVE_NARROWING_HL)
+        _raw, out, _snap, accepted = _run_content_signal_rung(
+            tmp_path,
+            monkeypatch,
+            provider=provider,
+            parsed=parsed,
+            prior_repair_provider_call_made=True,
+        )
+        assert provider.calls == 0
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "regen_budget_consumed"
+        assert receipt["trigger_arm"] == "narrowing_labels"
+        assert receipt["regen_call_made"] is False
+
+    def test_triple_arm_single_regen_call_and_emphasis(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, out, _snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(TRIPLE_ARM_HL)
+        )
+        assert provider.calls == 1  # one bounded regen covers all three arms
+        assert accepted is True
+        assert out["headline_line"] == GOV_HL
+        emphasis = provider.payloads[0]["messages"][-1]["content"]
+        assert _CS_GATE_ID in emphasis
+        assert _SPEC_GATE_ID in emphasis
+        assert _NARROW_GATE_ID in emphasis
+        receipt = _read_receipt(tmp_path)
+        assert receipt["trigger_arm"] == "governance_signal+specificity_floor+narrowing_labels"
+        assert receipt["bounded"] == {"max_attempts": 1, "attempts_used": 1}
+
+
+# ---------------------------------------------------------------------------
+# Prompt-side narrowing steering: the headline evidence pack carries a
+# PARAPHRASED narrowing guard (never the verbatim forbidden C0 phrases —
+# assert_headline_positioning_evidence_pack_has_no_forbidden_leaks).
+# ---------------------------------------------------------------------------
+
+
+def test_evidence_pack_narrowing_guard_paraphrased_and_leak_free():
+    from apps_rg.runtime.sections.headline_positioning_evidence import (
+        _FORBIDDEN_C0_SUBSTRINGS,
+        assert_headline_positioning_evidence_pack_has_no_forbidden_leaks,
+        format_headline_positioning_evidence_pack,
+    )
+    from apps_rg.runtime.validators.headline_quality_x2 import NARROWING_IT_LABELS
+
+    pack = format_headline_positioning_evidence_pack({"jd_text": "enterprise AI platform"})
+    # steering line present
+    assert "narrowing_guard:" in pack
+    guard_line = next(ln for ln in pack.splitlines() if "narrowing_guard:" in ln)
+    assert "platform" in guard_line.lower()  # senior platform/engineering positioning steer
+    # paraphrased: the guard line never echoes a verbatim blocklist phrase
+    assert not [lbl for lbl in NARROWING_IT_LABELS if lbl in guard_line.lower()]
+    # the leak asserter passes on the full pack (it also runs inside format itself)
+    assert_headline_positioning_evidence_pack_has_no_forbidden_leaks(pack)
+    for forbidden in _FORBIDDEN_C0_SUBSTRINGS:
+        assert forbidden not in pack

@@ -20,6 +20,7 @@ from apps_rg.runtime.validators.headline_positioning_x2 import (
     GOVERNANCE_SIGNAL_FAMILIES,
     POSITIONING_FAMILY_FLOOR,
     governance_signal_families_matched,
+    narrowing_labels_found,
     positioning_families_matched,
     run_headline_positioning_x2_gates,
 )
@@ -305,3 +306,50 @@ class TestPositioningFamiliesHelperGateEquivalence:
         direct = check_headline_positioning_families(hl, min_families=POSITIONING_FAMILY_FLOOR)
         assert positioning_families_matched(hl) == list(direct.observed_value or [])
         assert (len(positioning_families_matched(hl)) < POSITIONING_FAMILY_FLOOR) == (not direct.passed)
+
+
+# ---------------------------------------------------------------------------
+# 10. narrowing_labels_found <=> narrowing/demote gate equivalence
+# ---------------------------------------------------------------------------
+
+_DEMOTE_GATE_ID = "x2_headline_generic_it_strategy_demote_forbidden"
+
+_NARROWING_EQUIVALENCE_HEADLINES = _GOVERNANCE_EQUIVALENCE_HEADLINES + [
+    # live failure shape (postRungs_20260610_2246): 'ai lifecycle standardization' echoed from C0
+    "SVP Engineering | Retrieval Telemetry Governance | AI Lifecycle Standardization | HPC Microservices Architecture",
+    "SVP Engineering | IT Strategy | Data Modernization | AI Governance",
+    "SVP Engineering | Digital Transformation Leadership | Enterprise Delivery Programs | Innovation Leadership Excellence",
+    "SVP Engineering | Distributed AI Infrastructure | Digital Transformation Programs | Platform Productization",
+    "SVP Engineering | Agentic AI Platforms | Regulated Enterprise AI | Runtime Governance",
+]
+
+
+class TestNarrowingLabelsHelperGateEquivalence:
+    """helper non-empty <=> demote gate fails — trigger==gate by construction (shared predicate)."""
+
+    @pytest.mark.parametrize("hl", _NARROWING_EQUIVALENCE_HEADLINES)
+    def test_helper_nonempty_iff_gate_fails(self, hl):
+        gates = run_headline_positioning_x2_gates(
+            headline_line=hl,
+            parsed_output={},
+            proof_pool_metadata={},
+        )
+        gate = next(g for g in gates if g.gate_id == _DEMOTE_GATE_ID)
+        found = narrowing_labels_found(hl)
+        assert bool(found) == (not gate.passed), (
+            f"helper/gate divergence for {hl!r}: found={found} gate.passed={gate.passed}"
+        )
+        if gate.passed:
+            assert gate.observed_value == "none"
+            assert found == []
+        else:
+            assert sorted(gate.observed_value) == sorted(found)
+        assert all(lbl in NARROWING_IT_LABELS for lbl in found)
+
+    @pytest.mark.parametrize("hl", _NARROWING_EQUIVALENCE_HEADLINES)
+    def test_helper_matches_gate_predicate_function(self, hl):
+        """The helper delegates to check_headline_no_narrowing_it_labels — identical label set."""
+        direct = check_headline_no_narrowing_it_labels(hl)
+        direct_labels = direct.observed_value if isinstance(direct.observed_value, list) else []
+        assert sorted(narrowing_labels_found(hl)) == sorted(direct_labels)
+        assert bool(narrowing_labels_found(hl)) == (not direct.passed)

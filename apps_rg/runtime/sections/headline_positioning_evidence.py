@@ -182,6 +182,11 @@ def format_headline_positioning_evidence_pack(
         "- governance_floor: at least one of X/Y/Z MUST carry a governance or regulated-AI signal "
         "(vocabulary: governance, governed, runtime, gates, policy, deterministic, regulated, "
         "regulatory, compliance) drawn from a bundle with governance_signal: true.",
+        "- narrowing_guard: avoid generic IT-strategy, modernization, transformation, "
+        "innovation-leadership, lifecycle-standardization, vendor/partner-ecosystem, and "
+        "contract-value style program labels in X/Y/Z — even when such phrases appear in the "
+        "evidence, they demote the posture. Position every segment as senior platform/engineering "
+        "leadership using the positioning-family vocabulary above.",
         "- Each positioning theme MUST bind to a headline_positioning_bundle_id with graph_skill_node_ids.",
         "- skill_id alone is not proof; linked_source_fact_ids or graph_lineage_refs bind positioning.",
     ]

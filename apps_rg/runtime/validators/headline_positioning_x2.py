@@ -58,6 +58,22 @@ def positioning_families_matched(headline_line: str) -> list[str]:
     return list(fam.observed_value or [])
 
 
+def narrowing_labels_found(headline_line: str) -> list[str]:
+    """Narrowing/demoting IT labels found by the gates' exact blocklist predicate.
+
+    Shared by BOTH narrowing gates (x2_headline_no_narrowing_it_labels in the quality run
+    and x2_headline_generic_it_strategy_demote_forbidden in this positioning run) and the
+    headline content-signal repair trigger (headline_lane.apply_headline_content_signal_repair)
+    — trigger == gate by construction. Delegates to check_headline_no_narrowing_it_labels
+    (the single NARROWING_IT_LABELS blocklist SSOT in headline_quality_x2) rather than
+    copying the label list, so the repair trigger can never drift from the gate predicate.
+    Returns the verbatim labels detected ([] when clean).
+    """
+    res = check_headline_no_narrowing_it_labels(headline_line)
+    observed = res.observed_value
+    return list(observed) if isinstance(observed, list) else []
+
+
 def headline_positioning_consumption_active(meta: dict[str, Any] | None) -> bool:
     return bool(isinstance(meta, dict) and meta.get("headline_positioning_bundle_consumption"))
 
@@ -319,6 +335,7 @@ __all__ = [
     "HeadlinePositioningResult",
     "governance_signal_families_matched",
     "headline_positioning_consumption_active",
+    "narrowing_labels_found",
     "positioning_families_matched",
     "run_headline_positioning_x2_gates",
 ]
