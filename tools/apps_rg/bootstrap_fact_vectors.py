@@ -48,9 +48,14 @@ def dense_count(chroma_path: Path, collection: str = COLLECTION) -> int:
         return 0
 
     try:
+        from chromadb.errors import NotFoundError  # type: ignore[import-not-found]
+    except ImportError:
+        NotFoundError = KeyError  # older chromadb raised KeyError/ValueError for missing collections
+
+    try:
         client = chromadb.PersistentClient(path=str(chroma_path))
         return int(client.get_collection(collection).count())
-    except (KeyError, RuntimeError, ValueError, OSError):
+    except (KeyError, RuntimeError, ValueError, OSError, NotFoundError):
         return 0
 
 
