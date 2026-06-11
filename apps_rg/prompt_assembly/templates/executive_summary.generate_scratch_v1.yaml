@@ -108,7 +108,7 @@ slot_bodies:
     </judge_alignment_contract>
 
     <composition_heuristics>
-    One paragraph; max **140** words (X2). Third person; no U+2014 em dash. Voice examples: E0 at execute time.
+    One paragraph; write **110-125 words** - deterministic post-processing may inject a required bridge sentence and the X2 hard ceiling is **140** words AFTER those additions (live fails at 153/163 when drafts target the ceiling). Third person; no U+2014 em dash. Voice examples: E0 at execute time.
     </composition_heuristics>
 
     <internal_deliberation_controls>
