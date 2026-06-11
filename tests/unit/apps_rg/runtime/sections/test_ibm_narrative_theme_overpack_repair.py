@@ -382,7 +382,9 @@ class TestThemeOverpackRepairRung:
         regen cap must scale from attempt 1's observed length with margin."""
         provider = _RecordingProvider("REAL_LLM", _regen_json(GOOD_REGEN_NARRATIVE))
         parsed = _attempt1_parsed()
-        long_raw = json.dumps(parsed, sort_keys=True) + ("x" * 8000)
+        long_raw = json.dumps(parsed, sort_keys=True) + (
+            "x" * (lane_runtime.NARRATIVE_MAX_OUTPUT_TOKENS * 4)
+        )
         _raw, _out, _accepted = _run_rung(
             tmp_path, monkeypatch, provider=provider, parsed=parsed, raw_output=long_raw
         )
