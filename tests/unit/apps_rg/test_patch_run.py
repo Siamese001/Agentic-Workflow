@@ -383,6 +383,7 @@ def test_execute_patch_run_dispatch_order_receipt_and_exit_zero(
         "companion_accepted_in_modular_sections_root",
         lambda *a, **k: True,
     )
+    _patch_embedding_preflight(monkeypatch, [])
 
     calls: list[str] = []
     plan = build_patch_plan(run_dir)
@@ -449,6 +450,7 @@ def test_execute_patch_run_upstream_still_blocked_narrative_skipped(
         "companion_accepted_in_modular_sections_root",
         lambda *a, **k: False,
     )
+    _patch_embedding_preflight(monkeypatch, [])
 
     calls: list[str] = []
     plan = build_patch_plan(run_dir)
@@ -476,6 +478,184 @@ def test_execute_patch_run_upstream_still_blocked_narrative_skipped(
         ).read_text(encoding="utf-8")
     )
     assert pre["blocker"] == "UPSTREAM_BULLETS_NOT_FINALIZED"
+
+
+# --------------------------------------------------------------- targeting threading (live defect 2026-06-11)
+
+
+def _patch_embedding_preflight(
+    monkeypatch: pytest.MonkeyPatch, preflight_calls: list[tuple[str, Any]]
+) -> None:
+    """Capture the whole-run embedding env preflight instead of mutating process env."""
+    import apps_rg.runtime.embedding_settings as emb
+
+    monkeypatch.setattr(
+        emb,
+        "bootstrap_apps_rg_embedding_env",
+        lambda repo_root=None: preflight_calls.append(("bootstrap", repo_root)) or {},
+    )
+    monkeypatch.setattr(
+        emb,
+        "apply_apps_rg_embedding_env_guards",
+        lambda *a, **k: preflight_calls.append(("guards", k.get("chroma_persist_dir")))
+        or object(),
+    )
+    monkeypatch.setattr(
+        emb,
+        "write_embedding_settings_receipt",
+        lambda artifact_dir, settings: preflight_calls.append(("receipt", artifact_dir))
+        or None,
+    )
+
+
+def test_default_dispatch_threads_derived_jd_brief_into_canonical_primitives(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Live defect (attempt4 patch_run_1.log): plan derivation printed correct AIG
+    targeting but the per-lane dispatch fell to DEFAULT_SSOT / REQUIRED_PROOF_ABSENT.
+    The DEFAULT dispatch path (no dispatch_fn) MUST pass the derived JD ref / brief /
+    level / mode into run_canonical_apps_rg_from_cli_primitives for every lane."""
+    repo, run_dir = _seed_integrated_run(tmp_path)
+    real_find_repo_root = pr.find_repo_root
+    monkeypatch.setattr(
+        pr,
+        "find_repo_root",
+        lambda start=None: repo if start is None else real_find_repo_root(start),
+    )
+    import apps_rg.runtime.validators.companion_bullet_finalization as cbf
+
+    monkeypatch.setattr(
+        cbf, "companion_accepted_in_modular_sections_root", lambda *a, **k: True
+    )
+    preflight_calls: list[tuple[str, Any]] = []
+    _patch_embedding_preflight(monkeypatch, preflight_calls)
+
+    captured: dict[str, dict[str, Any]] = {}
+
+    def _capture_primitives(**kwargs: Any) -> dict[str, Any]:
+        lane = str(kwargs.get("section") or "")
+        captured[lane] = dict(kwargs)
+        rd = _seed_lane_run(repo, run_dir, lane, f"{lane}_20260611_090000")
+        return {
+            "exit_status": "success",
+            "x3_disposition": "X3_ALLOW",
+            "artifact_dir": str(rd),
+        }
+
+    import apps_rg.runtime.orchestration.canonical_dispatch as cd
+
+    monkeypatch.setattr(
+        cd, "run_canonical_apps_rg_from_cli_primitives", _capture_primitives
+    )
+
+    plan = build_patch_plan(run_dir)
+    result = execute_patch_run(
+        plan,
+        aggregate_fn=lambda plan_arg, **kw: {
+            "decisive_status": "PASS",
+            "failure_reason": "",
+            "full_success_eligibility": {"eligible": True, "reasons": []},
+        },
+    )
+    assert result["exit_code"] == 0
+    assert set(captured) == {"ibm_bullets", "ibm_narrative", "executive_summary", "headline"}
+
+    jd_abs = str((repo / "apps_rg" / "config" / "targeting" / "aig_jd.txt").resolve())
+    brief_abs = str((repo / "apps_rg" / "config" / "targeting" / "aig_brief.md").resolve())
+    for lane, kwargs in captured.items():
+        # Derived targeting — identical to the full-run CLI invocation primitives.
+        assert kwargs["target_company"] == "AIG", lane
+        assert kwargs["target_role"] == "VP Global Head of Agentic AI Solutions", lane
+        assert kwargs["target_level"] == "VP", lane
+        assert kwargs["generation_mode"] == "strategic_tailor", lane
+        # --jd file path → job_description_ref primitive (jd legacy slot stays empty).
+        assert kwargs["jd"] == "", lane
+        assert kwargs["job_description_ref"] == jd_abs, lane
+        assert kwargs["job_description_text"] == "", lane
+        # --manual-brief path → briefing primitive.
+        assert kwargs["manual_brief"] == brief_abs, lane
+        # Full-run phase1 parity: section + provider + no per-lane artifact_dir override.
+        assert kwargs["section"] == lane
+        assert kwargs["artifact_dir"] == ""
+        assert kwargs["resume_path"] == ""
+        assert str(kwargs["lane_provider"]).strip() != ""
+        assert kwargs["lane_mock_judges"] is False
+        assert kwargs["lane_allow_non_allow_exit_zero"] is False
+
+    # Whole-run embedding env preflight (C0 evidence-room composition prerequisite)
+    # MUST run in the patch context before any lane dispatch.
+    kinds = [k for k, _ in preflight_calls]
+    assert kinds == ["bootstrap", "guards", "receipt"]
+    assert preflight_calls[0][1] == plan.repo
+    assert preflight_calls[2][1] == plan.run_dir
+
+
+def test_default_dispatch_threads_inline_jd_text_fallback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """When the persisted --jd file is gone, the inline job_description_text fallback
+    derived from validated_request.app_payload must reach the dispatch primitives."""
+    repo, run_dir = _seed_integrated_run(tmp_path)
+    (repo / "apps_rg" / "config" / "targeting" / "aig_jd.txt").unlink()
+    lane_rd = latest_lane_run_dir_any(run_dir / "modular_r4" / "sections", "competencies")
+    assert lane_rd is not None
+    _write_json(
+        lane_rd / "validated_request.json",
+        {
+            "payload": {
+                "app_payload": {
+                    "target_company": "AIG",
+                    "target_role": "VP Global Head of Agentic AI Solutions",
+                    "job_description_text": "Inline JD body from validated_request",
+                    "user_constraints": {"briefing_text": "inline brief"},
+                }
+            }
+        },
+    )
+    real_find_repo_root = pr.find_repo_root
+    monkeypatch.setattr(
+        pr,
+        "find_repo_root",
+        lambda start=None: repo if start is None else real_find_repo_root(start),
+    )
+    import apps_rg.runtime.validators.companion_bullet_finalization as cbf
+
+    monkeypatch.setattr(
+        cbf, "companion_accepted_in_modular_sections_root", lambda *a, **k: True
+    )
+    _patch_embedding_preflight(monkeypatch, [])
+
+    captured: dict[str, dict[str, Any]] = {}
+
+    def _capture_primitives(**kwargs: Any) -> dict[str, Any]:
+        lane = str(kwargs.get("section") or "")
+        captured[lane] = dict(kwargs)
+        rd = _seed_lane_run(repo, run_dir, lane, f"{lane}_20260611_090000")
+        return {
+            "exit_status": "success",
+            "x3_disposition": "X3_ALLOW",
+            "artifact_dir": str(rd),
+        }
+
+    import apps_rg.runtime.orchestration.canonical_dispatch as cd
+
+    monkeypatch.setattr(
+        cd, "run_canonical_apps_rg_from_cli_primitives", _capture_primitives
+    )
+
+    plan = build_patch_plan(run_dir)
+    execute_patch_run(
+        plan,
+        aggregate_fn=lambda plan_arg, **kw: {
+            "decisive_status": "PASS",
+            "failure_reason": "",
+            "full_success_eligibility": {"eligible": True, "reasons": []},
+        },
+    )
+    assert captured, "no lanes dispatched"
+    for lane, kwargs in captured.items():
+        assert kwargs["job_description_ref"] == "", lane
+        assert kwargs["job_description_text"] == "Inline JD body from validated_request", lane
 
 
 # --------------------------------------------------------------- aggregation (partial)
