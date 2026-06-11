@@ -593,6 +593,16 @@ def apply_ibm_narrative_theme_overpack_repair(
         receipt["fired"] = True
         receipt["bounded"]["attempts_used"] = 1
         theme_ids = ", ".join(sorted(themes_pre))
+        # Per-clause breakdown: the live 2x failure mode is 3 families packed into clause 1
+        # (structurally unplaceable: each theme must land on a row whose own clause text
+        # expresses it, 2 roots per row) - generic budget restatement did not steer it.
+        clause_parts = re.split(r",\s+(?=establishing\b)", narrative_pre, maxsplit=1, flags=re.I)
+        clause_lines = []
+        for idx, part in enumerate(clause_parts, start=1):
+            part_themes = sorted(ibm_narrative_material_fact_ids_for_sentence(part))
+            flag = " - OVER LIMIT, max 2" if len(part_themes) > 2 else ""
+            clause_lines.append(f"clause {idx} expresses [{', '.join(part_themes)}]{flag}")
+        per_clause = "; ".join(clause_lines)
         repair_messages = [
             *messages,
             {"role": "assistant", "content": raw_output},
@@ -601,16 +611,20 @@ def apply_ibm_narrative_theme_overpack_repair(
                 "content": (
                     "THEME_BUDGET_REVISION (x2_ibm_narrative_claim_theme_coverage): your "
                     f"narrative_sentence materially expresses {len(themes_pre)} theme families "
-                    f"[{theme_ids}]; the deterministic ledger math (', establishing' split = max 2 "
-                    "claim_ledger rows, max 2 bul_ibm_* roots per row) cannot cover more than 4 themes "
-                    f"total and 2 per clause (currently uncovered: [{', '.join(missing_pre)}]). "
-                    "Rewrite narrative_sentence expressing AT MOST 4 theme families — at most 2 per "
-                    "clause — preserving the clause structure ', establishing'. Keep every other "
-                    "constraint (exactly one sentence, IBM anchor once, no metric replay, no em dash, "
-                    "no candidate name, claim_ledger rows with at most 2 bul_ibm_* roots each from "
-                    "ALLOWED_SOURCE_FACT_IDS). Return one NEW compact JSON object only. "
-                    "Keys: narrative_sentence (one sentence), selected_fact_plan, claim_ledger, "
-                    "jd_alignment, gap_notes, change_log, self_check."
+                    f"[{theme_ids}]; per-clause analysis: {per_clause}. The deterministic ledger "
+                    "math (', establishing' split = max 2 claim_ledger rows, max 2 bul_ibm_* roots "
+                    "per row, each theme covered only by a row whose own clause expresses it) "
+                    f"leaves uncovered: [{', '.join(missing_pre)}]. Rewrite narrative_sentence "
+                    "expressing AT MOST 4 theme families, at most 2 per clause - EACH clause "
+                    "expresses AT MOST 2 theme families (move one family's vocabulary "
+                    "into the other clause or drop that family entirely - do not allude to a "
+                    "dropped family's trigger words), preserving the clause structure "
+                    "', establishing'. Keep every other constraint (exactly one sentence, IBM "
+                    "anchor once, no metric replay, no em dash, no candidate name, claim_ledger "
+                    "rows with at most 2 bul_ibm_* roots each from ALLOWED_SOURCE_FACT_IDS). "
+                    "Return one NEW compact JSON object only. Keys: narrative_sentence (one "
+                    "sentence), selected_fact_plan, claim_ledger, jd_alignment, gap_notes, "
+                    "change_log, self_check."
                 ),
             },
         ]
