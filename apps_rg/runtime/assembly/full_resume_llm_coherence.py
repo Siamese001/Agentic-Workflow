@@ -379,7 +379,11 @@ def emit_full_resume_llm_coherence_review(
         jd_context=jd_context,
         judge_roster=judge_roster,
         mode=mode,
-        artifact_base=output_dir,
+        # Raw provider request/response artifacts go in a subdir: the structural
+        # assembly X2 scan (final_resume_x2) iterates only top-level files of the
+        # assembly dir, whose allowed set is the declared assembly artifacts plus
+        # the two aggregate-judge summaries written below — not per-provider raws.
+        artifact_base=output_dir / "coherence_judge_providers",
     )
     det_blockers = _deterministic_preflight_blockers(final_resume)
     agg = aggregate_full_resume_coherence(judges, deterministic_blockers=det_blockers)

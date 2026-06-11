@@ -202,18 +202,26 @@ def _sentence(text: str) -> str:
 
 
 def _role_header(base: dict[str, Any], cfg: RoleEpisodeLaneConfig, args: Any) -> dict[str, Any]:
-    target_title = str(getattr(args, "target_title", "") or getattr(args, "target_role", "") or "").strip()
+    # Locked-identity law: employer/title/location/dates come verbatim from the base
+    # resume employment block — NEVER from targeting. The canonical base resume keeps
+    # employment rows under facts.employment keyed by fact_id (exp_<role>_001); the
+    # legacy experience-list shapes are kept for fixture compatibility. The old
+    # target_title fallback stamped the TARGET role onto InsurTech/EY headers (all 3
+    # full-resume coherence judges blocked assembly on the duplicate titles, 2026-06-11).
     fallback = {
         "employer": cfg.employer_label,
-        "title": target_title,
+        "title": "",
         "location": "",
         "start_date": "",
         "end_date": "",
         "is_current": False,
     }
     experiences = base.get("experience") or base.get("professional_experience") or []
-    if not isinstance(experiences, list):
-        return fallback
+    if not isinstance(experiences, list) or not experiences:
+        facts = base.get("facts")
+        emp_rows = facts.get("employment") if isinstance(facts, dict) else None
+        experiences = emp_rows if isinstance(emp_rows, list) else []
+    expected_fact_id = f"exp_{cfg.role_key}_001"
     label_l = cfg.employer_label.lower()
     for row in experiences:
         if not isinstance(row, dict):
@@ -221,16 +229,18 @@ def _role_header(base: dict[str, Any], cfg: RoleEpisodeLaneConfig, args: Any) ->
         employer = str(row.get("employer") or row.get("company") or "").strip()
         if not employer:
             continue
+        fact_id = str(row.get("fact_id") or "").strip()
         emp_l = employer.lower()
-        if label_l not in emp_l and cfg.role_key not in emp_l:
+        if fact_id != expected_fact_id and label_l not in emp_l and cfg.role_key not in emp_l:
             continue
         return {
             "employer": employer,
-            "title": str(row.get("title") or target_title),
+            "title": str(row.get("title") or ""),
             "location": str(row.get("location") or ""),
             "start_date": str(row.get("start_date") or ""),
             "end_date": str(row.get("end_date") or ""),
             "is_current": bool(row.get("is_current")),
+            "fact_id": fact_id or expected_fact_id,
         }
     return fallback
 
@@ -342,7 +352,9 @@ def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]
         "jd_alignment:{targeting_only:true,jd_used_as_proof:false}}"
         if cfg.is_bullet_lane
         else "Return JSON with narrative_sentence, claim_ledger:[{claim_text, source_fact_ids}], "
-        "jd_alignment:{targeting_only:true,jd_used_as_proof:false}. The narrative is exactly one sentence."
+        "jd_alignment:{targeting_only:true,jd_used_as_proof:false}. The narrative is exactly one sentence "
+        "in first-person-implied resume voice: start with a past-tense action verb and never use a "
+        "third-person subject such as 'the candidate' or the candidate's name."
     )
     return "\n".join(
         [

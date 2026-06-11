@@ -442,8 +442,15 @@ def run_final_resume_x2_gates(
             if not f.is_file():
                 continue
             name = f.name.lower()
-            if name not in allowed_artifact_files:
-                pass
+            # The allowlist IS the filter: declared assembly artifacts (including the
+            # two aggregate-judge summaries this gate family itself requires via
+            # x2_final_resume_aggregate_judge_artifact_present) are exempt from the
+            # provider/judge scans below. It was authored as `pass` (dead no-op),
+            # making the judge-artifact-present and no-inline-judges gates impossible
+            # to satisfy together — first exposed when aggregation first reached the
+            # coherence judges (patch_run_15, 2026-06-11).
+            if name in allowed_artifact_files:
+                continue
             if "provider_" in name and name.endswith(".json"):
                 prov_hits.append(f.name)
             if "qwen" in name or name == "real_l2_generation_result.json":
