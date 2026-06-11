@@ -40,6 +40,22 @@ from apps_rg.runtime.assembly.full_resume_text import (  # noqa: E402
 ACCENT = RGBColor(0x1F, 0x3A, 0x5F)
 
 
+def _is_spine_shaped(path: Path) -> bool:
+    """True when the JSON is the spine-aggregation product this builder renders.
+
+    The spine ``final_resume.json`` (under ``final_resume_assembly/``) carries
+    ``candidate_identity`` + a *list* of ``sections`` with ``l2_output_snapshot``.
+    The flat ``outputs/final_resume.json`` export sibling has a different schema
+    (top-level ``candidate_name``, ``sections`` as a *dict*) that this builder
+    cannot render — picking it silently yields a hollow DOCX.
+    """
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return isinstance(d.get("candidate_identity"), dict) and isinstance(d.get("sections"), list)
+
+
 def _resolve_final_resume(arg: str) -> Path:
     p = Path(arg)
     if p.is_file():
@@ -47,7 +63,21 @@ def _resolve_final_resume(arg: str) -> Path:
     candidates = sorted(p.rglob("final_resume.json"))
     if not candidates:
         raise FileNotFoundError(f"No final_resume.json under {p}")
-    return candidates[-1]
+    # Prefer the spine-aggregation product over the flat ``outputs/`` export
+    # sibling (which sorts last alphabetically and would otherwise win via
+    # ``[-1]``, then render empty). Among spine-shaped files prefer the one
+    # under ``final_resume_assembly/``.
+    spine = [c for c in candidates if _is_spine_shaped(c)]
+    if spine:
+        for c in spine:
+            if c.parent.name == "final_resume_assembly":
+                return c
+        return spine[0]
+    raise ValueError(
+        "No spine-shaped final_resume.json (candidate_identity + list sections) "
+        f"under {p}; found {[str(c) for c in candidates]}. "
+        "Point at final_resume_assembly/final_resume.json."
+    )
 
 
 def _heading(doc: Document, text: str) -> None:
@@ -98,6 +128,19 @@ def export(final_resume_path: Path, out_path: Path | None = None) -> Path:
     identity = blob.get("candidate_identity") or {}
     sections = [s for s in (blob.get("sections") or []) if isinstance(s, dict)]
     by_id = {s.get("section_id"): s for s in sections}
+
+    # Refuse to emit a hollow DOCX: the spine schema must carry a candidate name
+    # and at least one dict section. A flat ``outputs/`` export (candidate_name
+    # top-level, ``sections`` as a dict) lands here with empty ``sections`` and
+    # would otherwise render only the "Candidate" + "Professional Experience"
+    # placeholders. Fail loudly instead.
+    if not str(identity.get("candidate_name") or "").strip() or not sections:
+        raise ValueError(
+            f"final_resume.json at {final_resume_path} is not spine-shaped "
+            "(missing candidate_identity.candidate_name or a list of sections) — "
+            "refusing to emit a hollow DOCX. Point at "
+            "final_resume_assembly/final_resume.json."
+        )
 
     def snap(sid: str) -> dict[str, Any]:
         sec = by_id.get(sid) or {}
