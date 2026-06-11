@@ -1011,6 +1011,41 @@ def _rebind_source_fact_ids_from_prior_rows(
     return carried
 
 
+def _rebind_from_canonical_display_sentences(sentence: str) -> list[str]:
+    """Attribute a display sentence to the fact whose CANONICAL injected sentence it is a
+    trimmed/bridge-stripped variant of.
+
+    ``_enforce_required_fact_slots`` injects ``_CANONICAL_DISPLAY_SENTENCES[fid]`` verbatim,
+    then later trim strategies strip openers/adjectives — breaking both the anchor
+    heuristics and prior-row rebind (the model never wrote a row for the injected content).
+    The injector knows the fact identity by construction, so a high-coverage token match
+    against the canon SSOT binds [fid]; anything below the floor stays orphaned (fail-open).
+    """
+    from apps_rg.runtime.validators.executive_summary_x2 import _ledger_claim_tokens
+
+    sent_low = str(sentence or "").lower()
+    if not sent_low:
+        return []
+    best_fid = ""
+    best_coverage = 0.0
+    second_coverage = 0.0
+    for fid, canon in _CANONICAL_DISPLAY_SENTENCES.items():
+        tokens = _ledger_claim_tokens(str(canon or ""))
+        if not tokens:
+            continue
+        coverage = sum(1 for t in tokens if t in sent_low) / len(tokens)
+        if coverage > best_coverage:
+            second_coverage = best_coverage
+            best_coverage = coverage
+            best_fid = fid
+        elif coverage > second_coverage:
+            second_coverage = coverage
+    # Trimmed canon variants retain the bulk of the canon's tokens; require a clear margin.
+    if best_fid and best_coverage >= 0.55 and best_coverage > second_coverage:
+        return [best_fid]
+    return []
+
+
 def _rebuild_claim_ledger_from_display(parsed: dict[str, Any]) -> dict[str, Any]:
     from apps_rg.runtime.validators.executive_summary_x2 import split_sentences
 
@@ -1027,6 +1062,13 @@ def _rebuild_claim_ledger_from_display(parsed: dict[str, Any]) -> dict[str, Any]
             # Anchor heuristics missed (rewritten/bridged sentence) — re-bind the ids from
             # the prior ledger row this sentence derives from instead of dropping them.
             fids = _rebind_source_fact_ids_from_prior_rows(s, prior_rows)
+        if not fids:
+            # The chain's OWN injected canonical sentence has no prior model row to bind to
+            # (live: exec_summary_20260611_162322 row 1 — the required-fact-slot bridge,
+            # bridge-stripped by the word trim so the anchor missed). The injector's SSOT
+            # knows the fact identity by construction: a trimmed variant still shares the
+            # bulk of its canon's tokens.
+            fids = _rebind_from_canonical_display_sentences(s)
         ledger.append(
             {
                 "claim": s[:80],
