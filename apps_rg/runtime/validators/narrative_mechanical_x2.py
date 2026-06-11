@@ -11,6 +11,29 @@ from apps_rg.runtime.validators.executive_summary_x2 import EXEC_SUMMARY_MECHANI
 DEFAULT_NARRATIVE_METRIC_CAP = 2
 DEFAULT_BULLET_OVERLAP_MIN_WORDS = 5
 
+# Experience narratives must LEAD with a past-tense action verb, never a
+# scene-setting prepositional / temporal clause (e.g. "At IBM, led ...",
+# "While at IBM, ...", "During my tenure, ...", "As VP, ..."). Such openers
+# bury the accomplishment behind the employer / time context and read weakly at
+# the executive level. The first word being one of these prepositions is the
+# deterministic signal — none of them is ever a valid action-verb opener.
+NARRATIVE_FORBIDDEN_LEADIN_PREPOSITIONS = frozenset(
+    {
+        "at",
+        "in",
+        "as",
+        "with",
+        "during",
+        "while",
+        "throughout",
+        "across",
+        "within",
+        "from",
+        "upon",
+        "amid",
+    }
+)
+
 
 def check_narrative_exactly_one_sentence(narrative: str) -> tuple[bool, int, str | None]:
     text = str(narrative or "").strip()
@@ -28,6 +51,13 @@ def check_narrative_forbidden_opener(narrative: str) -> tuple[bool, str | None, 
     first = re.sub(r"^[^A-Za-z0-9]+", "", text).split(None, 1)[0].lower().rstrip(".,;:")
     if first in EXEC_SUMMARY_MECHANICAL_OPENERS:
         return False, first, f"forbidden mechanical opener: {first}"
+    if first in NARRATIVE_FORBIDDEN_LEADIN_PREPOSITIONS:
+        return (
+            False,
+            first,
+            f"forbidden scene-setting lead-in: {first!r} — open with an action verb, "
+            "not an employer/time prepositional clause (e.g. 'At IBM, led ...')",
+        )
     return True, None, None
 
 
@@ -149,6 +179,7 @@ def register_narrative_mechanical_x2_gates(
 __all__ = [
     "DEFAULT_BULLET_OVERLAP_MIN_WORDS",
     "DEFAULT_NARRATIVE_METRIC_CAP",
+    "NARRATIVE_FORBIDDEN_LEADIN_PREPOSITIONS",
     "IBM_NARRATIVE_METRIC_PATTERNS",
     "UNIFY_NARRATIVE_METRIC_PATTERNS",
     "check_narrative_bullet_overlap_threshold",
