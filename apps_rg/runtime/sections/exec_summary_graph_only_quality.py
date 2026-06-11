@@ -231,6 +231,39 @@ def _metric_ids_for_base(base_id: str, row: dict[str, Any], allowed_fact_ids: se
     return ids
 
 
+def _unsupported_margin_phrase_hit(resume: str, facts: list[dict[str, Any]]) -> bool:
+    """True only when a margin / revenue-growth echo appears in the display text WITHOUT
+    support in the allowed fact pool.
+
+    Root-cause fix (attempt4 + patch-run-2 exec_summary X3_BLOCK, 2026-06-11): the flag was
+    previously unconditional — any "gross margins" phrase tripped it even when the selected
+    fact itself says "expanding gross margins by 20%" (fact_engineering_platform_006
+    metric_raw "20% gross margin expansion"). The sanitizer then deleted the supported
+    "$22M … gross margins by 20% … 8 to 28" clause from S3, the post-chain ledger rebuild
+    could no longer bind the gutted sentence, and 11 derived X2 gates failed deterministically.
+    Unsupported margin echoes still trip the flag — nothing is weakened.
+    """
+    matches = {m.group(0).lower() for m in _UNSUPPORTED_MARGIN_RE.finditer(str(resume or ""))}
+    if not matches:
+        return False
+    from apps_rg.runtime.validators.executive_summary_x2 import _selected_facts_support_blob
+
+    blob = _selected_facts_support_blob(facts)
+
+    def _supported(phrase: str) -> bool:
+        norm = re.sub(r"\s+", " ", phrase).strip().lower()
+        if "margin" in norm:
+            return bool(
+                re.search(
+                    r"(?:gross\s+)?margins?\s+expansion|expand\w*\s+(?:gross\s+)?margins?|gross\s+margins?",
+                    blob,
+                )
+            )
+        return norm in blob
+
+    return any(not _supported(p) for p in matches)
+
+
 def detect_graph_only_synthesis_violations(
     parsed: dict[str, Any],
     *,
@@ -268,7 +301,7 @@ def detect_graph_only_synthesis_violations(
 
     flags = {
         "unsupported_percent_tokens": unsupported_pcts,
-        "had_unsupported_gross_margin": bool(_UNSUPPORTED_MARGIN_RE.search(resume)),
+        "had_unsupported_gross_margin": _unsupported_margin_phrase_hit(resume, facts),
         "had_bare_credential_inventory": bool(_CREDENTIAL_INVENTORY_RE.search(resume)) or not cred_ok,
         "had_causal_claim_merge_in_ledger": had_causal_merge,
         "mechanical_opener_stack": not mech_ok,
@@ -450,9 +483,15 @@ def _sanitize_display_metric_echoes(
     *,
     unsupported_pcts: list[str],
     plan_facts: list[dict[str, Any]],
+    gross_margin_unsupported: bool = True,
 ) -> str:
     cleaned = _sanitize_unsupported_percent_tokens(resume, unsupported_pcts)
-    cleaned = _sanitize_unsupported_gross_margin_phrases(cleaned)
+    # Only strip margin phrasing when the detector proved it unsupported by the allowed
+    # fact pool — fact-supported "expanded gross margins by 20%" must survive (the margin
+    # sanitizer also deletes the whole trailing "$22M …" clause, which is destructive when
+    # the metrics ARE supported).
+    if gross_margin_unsupported:
+        cleaned = _sanitize_unsupported_gross_margin_phrases(cleaned)
     cleaned = _sanitize_unsupported_style_metric_echoes(cleaned, plan_facts=plan_facts)
     return _sanitize_deprecated_commercialization_thread(cleaned)
 
@@ -728,6 +767,7 @@ def apply_graph_only_generation_quality_repair(
             before_resume,
             unsupported_pcts=list(flags.get("unsupported_percent_tokens") or []),
             plan_facts=plan_facts,
+            gross_margin_unsupported=bool(flags.get("had_unsupported_gross_margin")),
         )
         percent_candidate = copy.deepcopy(out)
         percent_candidate["resume_display_text"] = sanitized

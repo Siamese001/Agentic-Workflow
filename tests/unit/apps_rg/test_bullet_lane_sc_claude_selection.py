@@ -8,7 +8,10 @@ from unittest.mock import patch
 import pytest
 
 from apps_rg.runtime.judges.bullet_pool_claude_selector import (
+    POOL_SELECTOR_SYSTEM_PROMPT,
     PoolSelectionResult,
+    _call_anthropic_pool_selector,
+    _parse_selections,
     merge_bullet_selections,
     run_claude_bullet_pool_selection,
 )
@@ -595,3 +598,100 @@ def test_employment_pool_x1d_is_single_claude_judge(tmp_path) -> None:
     assert rows[0]["pass"] is True
     assert rows[0]["judge_role"] == "employment_bullet_pool_selector"
     assert list(EMPLOYMENT_BULLET_JUDGE_PROVIDERS) == ["anthropic_claude"]
+
+
+# ---------------------------------------------------------------------------
+# Bug:BulletPoolSelectorDualJsonObjects — regression coverage (2026-06-11)
+#
+# Live failure (reproduced twice: AIG full-run attempt4 + patch-run 2, ibm_bullets):
+# claude-sonnet-4-6 obeyed the old X1D rubric system prompt IN ADDITION to the pool-selection
+# user prompt and returned TWO top-level JSON objects (rubric verdict, blank line, selections).
+# _extract_json_from_text raised "Extra data" on every strategy -> _parse_selections returned
+# None -> BLOCKED_RESPONSE_PARSE_ERROR "Pool selector JSON missing selections array" ->
+# selection_mode=fallback_first_complete_path -> selections=0 -> selection gate
+# all-slots-missing -> synthetic decisive judge fail -> X3_BLOCK.
+# ---------------------------------------------------------------------------
+
+# EXACT live assistant text from
+# artifacts/apps_rg/e2e_aig_verify/attempt4_20260610_2329/modular_r4/sections/ibm_bullets/real/
+#   ibm_bullets_20260611_125552/x1d_anthropic_claude_provider_response_raw_20260611_130358_394.json
+# (content[0].text verbatim; stop_reason=end_turn, output_tokens=1360 — NOT truncation).
+_LIVE_DUAL_OBJECT_SELECTOR_RESPONSE = """{"score_scale":"0_to_5","score":0.0,"threshold":4.0,"pass":true,"decisive_failure":false,"findings":["bul_ibm_001 best variant is PATH 2/4/5 (Salesforce pipeline analytics, $10M ARR, no unify/runtime vocab, clean outcome)","bul_ibm_002 best variant is PATH 4 (budget dashboards, microservices, cost optimization, no stuffing, clean discipline)","bul_ibm_003 best variant is PATH 4/5 (M&A due diligence, synergy models, CFO-level, integration costs/revenue, grounded)","bul_ibm_004 best variant is PATH 4 (Fortune 500, monolithic to containerized microservices, AWS/Kubernetes, risk/compliance/data, cloud-native governed analytics)","bul_ibm_005 best variant is PATH 4 (IBM-AWS alliance P&L, AI co-sell frameworks, 20% joint revenue, concise, no stuffing)"],"cited_sentence_indexes":[],"remediation_suggestions":[],"dimension_verdicts":{"claim_ledger_grounding":{"pass":true,"severity":"none","codes":["all five bullets grounded in skills-graph facts: Salesforce GTM, budget dashboards, M&A due diligence, legacy modernization, IBM-AWS alliance"]},"bullet_line_discipline":{"pass":true,"severity":"none","codes":["all selected variants are single-line, action-verb-led, outcome-terminated, no run-on constructions"]},"jd_briefing_targeting_discipline":{"pass":true,"severity":"none","codes":["JD phrases not copied verbatim; bullets emphasize financial-services transformation, cloud-native, AI co-sell, M&A — aligned to AIG targeting"]},"keyword_discipline_without_stuffing":{"pass":true,"severity":"none","codes":["Salesforce, microservices, Kubernetes, AWS, containerized, ARR, P&L — relevant and not over-stacked"]},"cross_bullet_outcome_diversity":{"pass":true,"severity":"none","codes":["GTM revenue, cost optimization, M&A investment thesis, cloud modernization, alliance P&L — five distinct outcome types"]},"foundation_enterprise_credibility":{"pass":true,"severity":"none","codes":["Fortune 500 financial institutions, CFO-level buyers, IBM-AWS alliance, enterprise-scope M&A — credible enterprise signals"]},"no_unify_runtime_vocabulary":{"pass":true,"severity":"none","codes":["no unify, runtime, agentic, or disallowed vocabulary present in any selected variant"]}}}
+
+{"selections":[{"bullet_id":"bul_ibm_001","path_index":4,"score":0.84,"passes":true,"rationale":"PATH 4 is clean and concise: 'Architected Salesforce-driven pipeline analytics to systematically prioritize high-potential enterprise deals, refining GTM strategies across the financial-services portfolio and generating $10M in new annual recurring revenue.' Strong claim_ledger_grounding ($10M ARR, Salesforce), no stuffing, no unify/runtime vocab, single tight line, outcome-terminated. Scores PATH 2 and 5 equally but PATH 4 hyphenates financial-services consistently and avoids the slightly weaker 'refining GTM strategies' placement of PATH 5."},{"bullet_id":"bul_ibm_002","path_index":4,"score":0.83,"passes":true,"rationale":"PATH 4: 'Deployed transparent budget dashboards and microservices architecture for senior finance teams to surface underused resource pools, enabling data-driven reallocation decisions and measurable cost optimization across enterprise cloud investments.' Best balance of claim grounding (dashboards, microservices, cost optimization), no keyword stuffing, clean line discipline, CFO/finance stakeholder credibility, and no disallowed vocabulary."},{"bullet_id":"bul_ibm_003","path_index":4,"score":0.85,"passes":true,"rationale":"PATH 4: 'Led enterprise-scope M&A technology due diligence and built synergy models quantifying integration costs and revenue opportunities, equipping CFO-level buyers with executive value propositions to support go-to-market investment decisions.' Tightest construction across paths — dual outcomes (costs + revenue), CFO-level credibility, no JD phrase copying, no stuffing, grounded in skills-graph M&A due diligence fact."},{"bullet_id":"bul_ibm_004","path_index":4,"score":0.86,"passes":true,"rationale":"PATH 4: 'Directed large-scale legacy modernization programs for Fortune 500 financial institutions, replacing monolithic risk calculation engines with containerized microservices on AWS and Kubernetes to enable cloud-native governed analytics across risk, compliance, and data domains.' Strongest variant — Fortune 500 credibility, specific technical transformation (monolithic→containerized), named platforms (AWS, Kubernetes), governed analytics outcome, no unify/runtime vocab, no stuffing."},{"bullet_id":"bul_ibm_005","path_index":4,"score":0.84,"passes":true,"rationale":"PATH 4: 'Owned P&L accountability for the IBM-AWS financial services alliance and designed AI-driven co-sell frameworks that expanded joint revenue by 20% across cloud transformation pursuits.' Most concise variant — P&L accountability, named alliance (IBM-AWS), quantified outcome (20%), AI co-sell grounded in skills graph, no disallowed vocabulary, no stuffing, clean line discipline."}],"pool_summary":{"paths_scored":7,"final_bullet_count":5,"min_score_threshold":0.72,"selector":"anthropic_claude"}}"""
+
+
+def test_parse_selections_recovers_selections_from_live_dual_object_response() -> None:
+    """The exact live raw response (rubric object + selections object) must parse."""
+    doc = _parse_selections(_LIVE_DUAL_OBJECT_SELECTOR_RESPONSE)
+    assert isinstance(doc, dict)
+    selections = doc.get("selections")
+    assert isinstance(selections, list) and len(selections) == 5
+    assert [s["bullet_id"] for s in selections] == [
+        "bul_ibm_001",
+        "bul_ibm_002",
+        "bul_ibm_003",
+        "bul_ibm_004",
+        "bul_ibm_005",
+    ]
+    # Every live selection met the 0.72 floor — the block was purely a parse failure.
+    assert all(float(s["score"]) >= 0.72 and s["passes"] is True for s in selections)
+    assert doc["pool_summary"]["selector"] == "anthropic_claude"
+    assert doc["pool_summary"]["min_score_threshold"] == pytest.approx(0.72)
+    # The rubric verdict object must NOT be the doc the selector consumes.
+    assert "dimension_verdicts" not in doc
+
+
+def test_parse_selections_single_object_and_brace_bearing_rationales_still_parse() -> None:
+    single = (
+        '{"selections":[{"bullet_id":"bul_ibm_001","path_index":1,"score":0.8,"passes":true,'
+        '"rationale":"keeps {braces} and \\"quotes\\" inside strings"}],'
+        '"pool_summary":{"selector":"anthropic_claude"}}'
+    )
+    doc = _parse_selections(single)
+    assert isinstance(doc, dict)
+    assert doc["selections"][0]["bullet_id"] == "bul_ibm_001"
+    # Dual-object variant with braces/escapes inside string values exercises the
+    # balanced-span scanner directly (direct json.loads fails with Extra data).
+    dual = '{"score_scale":"0_to_5","pass":true}\n\n' + single
+    doc2 = _parse_selections(dual)
+    assert isinstance(doc2, dict)
+    assert doc2["selections"][0]["rationale"] == 'keeps {braces} and "quotes" inside strings'
+
+
+def test_parse_selections_recovers_from_fenced_dual_objects() -> None:
+    fenced = "```json\n" + _LIVE_DUAL_OBJECT_SELECTOR_RESPONSE + "\n```"
+    doc = _parse_selections(fenced)
+    assert isinstance(doc, dict)
+    assert isinstance(doc.get("selections"), list) and len(doc["selections"]) == 5
+
+
+def test_parse_selections_rubric_only_object_keeps_legacy_dict_result() -> None:
+    """Shape A (rubric-only, zero selections — 034411 both rounds): legacy behavior is to
+    return the parsed dict; upstream then sees selections=[] and the selection gate stays
+    the honest arbiter. This test pins that we did not silently change Shape A semantics."""
+    rubric_only = _LIVE_DUAL_OBJECT_SELECTOR_RESPONSE.split("\n\n", 1)[0]
+    doc = _parse_selections(rubric_only)
+    assert isinstance(doc, dict)
+    assert "selections" not in doc
+    assert doc["score_scale"] == "0_to_5"
+
+
+def test_parse_selections_fails_closed_on_unusable_text() -> None:
+    assert _parse_selections("") is None
+    assert _parse_selections("I cannot evaluate this pool.") is None
+    assert _parse_selections("{not json at all") is None
+
+
+def test_pool_selector_system_prompt_is_selection_schema_not_rubric() -> None:
+    """Root-cause guard: the selector call must never re-anchor on the X1D rubric schema."""
+    import inspect
+
+    assert '"selections"' in POOL_SELECTOR_SYSTEM_PROMPT
+    assert '"pool_summary"' in POOL_SELECTOR_SYSTEM_PROMPT
+    for rubric_token in ("score_scale", "dimension_verdicts"):
+        # Named only as forbidden output, never as the mandated shape.
+        assert f"no {rubric_token}" in POOL_SELECTOR_SYSTEM_PROMPT
+    src = inspect.getsource(_call_anthropic_pool_selector)
+    assert "POOL_SELECTOR_SYSTEM_PROMPT" in src
+    assert "build_x1d_judge_system_prompt" not in src

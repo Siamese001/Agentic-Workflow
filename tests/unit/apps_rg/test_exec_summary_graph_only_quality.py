@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
+    _unsupported_margin_phrase_hit,
     apply_graph_only_generation_quality_repair,
     build_graph_only_executive_summary_from_facts,
+    detect_graph_only_synthesis_violations,
 )
 from apps_rg.runtime.sections.executive_summary_composition import is_mechanism_inventory_sentence
 from apps_rg.runtime.validators.executive_summary_x2 import (
@@ -198,3 +200,100 @@ def test_apply_repair_strips_hallucinated_margin() -> None:
     assert meta["had_unsupported_gross_margin"] is True
     assert "gross margin" not in str(repaired.get("resume_display_text") or "").lower()
     assert "20%" not in str(repaired.get("resume_display_text") or "")
+
+
+# --- Support-aware had_unsupported_gross_margin regression pins -------------------------
+# Live incident (attempt4_20260610_2329 + patch-run-2, identical claim_ledger row-2 orphan):
+# the flag was unconditional, so a fact-SUPPORTED "expanding gross margins by 20%" clause in
+# S3 was deleted by the margin sanitizer, gutting the sentence; the post-chain ledger rebuild
+# orphaned claim_ledger[2] and 11 derived X2 gates failed. The fix makes the flag support-aware
+# (margin echo trips only when the allowed fact pool lacks margin support). Unsupported margin
+# echoes MUST still trip — gate correctness preserved, nothing weakened.
+
+_MARGIN_DISPLAY = (
+    "Building on that platform foundation, platform revenue outcomes generated $22M in "
+    "IP-led revenue and expanded gross margins by 20% while scaling the ML engineering "
+    "organization from 8 to 28 specialists."
+)
+
+_MARGIN_SUPPORTED_FACT = {
+    "fact_id": "fact_engineering_platform_006",
+    "claim_text": (
+        "Productized agentic AI primitives, generating $22M in IP-led revenue "
+        "and expanding gross margins by 20%."
+    ),
+    "metric_raw": "$22M IP-led revenue|20% gross margin expansion",
+}
+
+
+def test_margin_flag_false_when_fact_pool_supports_margin() -> None:
+    """(a) Supported case: margin echo backed by the allowed fact pool must NOT trip the flag."""
+    facts = [_MARGIN_SUPPORTED_FACT, *_sample_facts()]
+    allowed = {str(f["fact_id"]) for f in facts}
+    parsed = {
+        "resume_display_text": _MARGIN_DISPLAY,
+        "claim_ledger": [
+            {
+                "claim_text": _MARGIN_DISPLAY,
+                "source_fact_ids": ["fact_engineering_platform_006"],
+            }
+        ],
+    }
+    _needs, flags = detect_graph_only_synthesis_violations(
+        parsed, allowed_fact_ids=allowed, plan_facts=facts
+    )
+    assert flags["had_unsupported_gross_margin"] is False
+    # 20% is fact-backed via metric_raw -> not an unsupported percent token either.
+    assert "20%" not in (flags.get("unsupported_percent_tokens") or [])
+
+
+def test_margin_flag_true_when_fact_pool_lacks_margin_support() -> None:
+    """(b) Unsupported case: same display text, no margin support in pool -> flag still trips."""
+    facts = _sample_facts()  # no margin text in any claim_text/metric_raw
+    allowed = {str(f["fact_id"]) for f in facts}
+    parsed = {
+        "resume_display_text": _MARGIN_DISPLAY,
+        "claim_ledger": [
+            {
+                "claim_text": _MARGIN_DISPLAY,
+                "source_fact_ids": ["fact_engineering_platform_001"],
+            }
+        ],
+    }
+    _needs, flags = detect_graph_only_synthesis_violations(
+        parsed, allowed_fact_ids=allowed, plan_facts=facts
+    )
+    assert flags["had_unsupported_gross_margin"] is True
+    # Repair must still remove the unsupported margin echo from the display text.
+    out, meta = apply_graph_only_generation_quality_repair(
+        parsed, allowed_fact_ids=allowed, plan_facts=facts
+    )
+    assert meta["had_unsupported_gross_margin"] is True
+    assert "gross margin" not in str(out.get("resume_display_text") or "").lower()
+
+
+def test_margin_flag_fail_closed_on_empty_fact_pool() -> None:
+    """(c) Empty facts -> no support blob -> unsupported -> flag trips (fail-closed)."""
+    assert _unsupported_margin_phrase_hit(_MARGIN_DISPLAY, []) is True
+    # Helper-level supported/unsupported A-B on identical text.
+    assert _unsupported_margin_phrase_hit(_MARGIN_DISPLAY, [_MARGIN_SUPPORTED_FACT]) is False
+    assert _unsupported_margin_phrase_hit(_MARGIN_DISPLAY, _sample_facts()) is True
+
+
+def test_supported_margin_clause_survives_repair_seam() -> None:
+    """End-to-end incident pin: builder emits the supported margin clause; the repair seam
+    (commercialization-thread sanitize + re-detect) must NOT delete it, so the claim ledger
+    keeps binding (attempt4 row-2 orphan -> 11-gate echo)."""
+    facts = _seven_fact_pool()
+    allowed = {str(row["fact_id"]) for row in facts}
+    resume, ledger = build_graph_only_executive_summary_from_facts(facts, allowed)
+    assert "gross margins by 20%" in resume  # precondition: supported clause present in S-band
+    parsed = {"resume_display_text": resume, "claim_ledger": ledger}
+    out, meta = apply_graph_only_generation_quality_repair(
+        parsed, allowed_fact_ids=allowed, plan_facts=facts
+    )
+    assert meta["had_unsupported_gross_margin"] is False
+    after = str(out.get("resume_display_text") or "")
+    assert "gross margins by 20%" in after
+    assert "$22M" in after
+    assert len(out.get("claim_ledger") or []) >= 1

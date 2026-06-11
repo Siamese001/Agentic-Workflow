@@ -16,7 +16,6 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _extract_anthropic_message_text,
     _extract_json_from_text,
     _resolve_anthropic_model,
-    build_x1d_judge_system_prompt,
 )
 from apps_rg.runtime.env_bootstrap import bootstrap_apps_rg_env
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import SelfConsistencyPath
@@ -40,6 +39,23 @@ from apps_rg.runtime.sections.executive_summary_context_limits import (
 )
 
 SlotKind = Literal["bullets", "competencies"]
+
+# Bug:BulletPoolSelectorRubricSchemaDrift (AIG attempt4 + patch-run 2, 2026-06-11): the selector
+# previously sent build_x1d_judge_system_prompt(compact=True) as its system prompt. That prompt's
+# JUDGE_COMPACT_OUTPUT block hard-mandates "Return ONLY one compact JSON object" in the GRADE_ONLY
+# rubric shape ({"score_scale", ..., "dimension_verdicts"}), contradicting the user prompt's
+# {"selections": [...]} schema. claude-sonnet-4-6 stochastically resolved the conflict by emitting
+# the rubric object — alone (zero selections, silent MODEL_BACKED degradation) or followed by the
+# selections object as a SECOND top-level JSON object (unparseable by _extract_json_from_text →
+# BLOCKED_RESPONSE_PARSE_ERROR → fallback_first_complete_path → X3_BLOCK). The selector is NOT a
+# rubric judge (see _call_anthropic_pool_selector docstring) — anchor its own output schema.
+POOL_SELECTOR_SYSTEM_PROMPT = (
+    "You are a strict pool SELECTOR for resume bullet/competency candidates - not a grading "
+    'judge. Return ONLY one compact JSON object whose top-level keys are exactly "selections" '
+    'and "pool_summary", following the schema in the user message. Do NOT return rubric or '
+    "verdict JSON: no score_scale, no threshold, no dimension_verdicts, no findings. "
+    "No markdown fences, no prose before or after the JSON object."
+)
 
 
 @dataclass(frozen=True)
@@ -582,8 +598,67 @@ def _selection_prompt(
     )
 
 
+def _iter_top_level_json_object_spans(text: str) -> list[str]:
+    """Return every balanced top-level ``{...}`` span in ``text`` (string/escape aware).
+
+    Braces inside JSON string values are ignored; nested objects stay inside their
+    enclosing top-level span. Unterminated objects yield nothing.
+    """
+    spans: list[str] = []
+    depth = 0
+    start = -1
+    in_str = False
+    esc = False
+    for i, ch in enumerate(text):
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch == "{":
+            if depth == 0:
+                start = i
+            depth += 1
+        elif ch == "}" and depth > 0:
+            depth -= 1
+            if depth == 0 and start != -1:
+                spans.append(text[start : i + 1])
+                start = -1
+    return spans
+
+
 def _parse_selections(text: str) -> dict[str, Any] | None:
-    return _extract_json_from_text(text)
+    """Extract the pool-selection doc — the JSON object carrying a ``selections`` list.
+
+    Bug:BulletPoolSelectorDualJsonObjects (AIG attempt4 + patch-run 2, 2026-06-11):
+    claude-sonnet-4-6 stochastically obeyed the old rubric system prompt IN ADDITION to the
+    pool-selection user prompt and returned TWO top-level JSON objects — the rubric verdict
+    first, then ``{"selections": [...]}`` — separated by a blank line (stop_reason=end_turn;
+    not truncation). ``_extract_json_from_text`` cannot parse multi-object text: the direct
+    ``json.loads`` and the first-``{``-to-last-``}`` span both raise "Extra data", and there
+    are no markdown fences to strip — so a fully valid selections doc was discarded and the
+    call blocked with "Pool selector JSON missing selections array". Scan balanced top-level
+    objects and prefer the one that actually carries a ``selections`` list; otherwise keep
+    the legacy single-object result (rubric-only responses keep their prior behavior).
+    Genuinely unusable responses (no JSON, refusal prose) still return ``None`` and fail
+    closed upstream — the synthetic decisive judge row remains the honest outcome.
+    """
+    doc = _extract_json_from_text(text)
+    if isinstance(doc, dict) and isinstance(doc.get("selections"), list):
+        return doc
+    for span in _iter_top_level_json_object_spans(str(text or "")):
+        try:
+            candidate = json.loads(span)
+        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- scan continues to next balanced span
+            continue
+        if isinstance(candidate, dict) and isinstance(candidate.get("selections"), list):
+            return candidate
+    return doc
 
 
 def _load_selection_doc_from_judge_artifacts(
@@ -647,7 +722,7 @@ def _call_anthropic_pool_selector(
     payload = {
         "model": model,
         "max_tokens": max_tokens,
-        "system": build_x1d_judge_system_prompt(compact=True),
+        "system": POOL_SELECTOR_SYSTEM_PROMPT,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
