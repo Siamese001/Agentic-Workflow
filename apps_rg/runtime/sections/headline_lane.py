@@ -82,9 +82,12 @@ from apps_rg.runtime.sections.section_product_shape_ssot import (
 )
 from apps_rg.runtime.validators.headline_positioning_x2 import (
     GOVERNANCE_SIGNAL_FAMILIES,
+    POSITIONING_FAMILY_FLOOR,
     governance_signal_families_matched,
     headline_positioning_consumption_active,
+    positioning_families_matched,
 )
+from apps_rg.runtime.validators.headline_quality_x2 import POSITIONING_FAMILIES
 from apps_rg.runtime.validators.headline_x2 import (
     headline_runtime_self_check_truth,
     headline_word_count,
@@ -774,6 +777,53 @@ def retry_headline_word_and_pipe(
     return json.dumps(new_parsed, sort_keys=True, separators=(",", ":")), new_parsed, raw_gate_snap
 
 
+# Allowed-family vocabularies surfaced in the specificity-floor emphasis. Phrase lists are
+# pulled from POSITIONING_FAMILIES (headline_quality_x2) — never hardcoded duplicates.
+_SPECIFICITY_EMPHASIS_FAMILY_IDS: tuple[str, ...] = (
+    "agentic_ai_platforms",
+    "distributed_ai_infrastructure",
+    "runtime_governance",
+)
+
+
+def _specificity_floor_vocab_emphasis() -> str:
+    """Render the allowed positioning-family vocabularies from POSITIONING_FAMILIES."""
+    parts: list[str] = []
+    for fam in _SPECIFICITY_EMPHASIS_FAMILY_IDS:
+        phrases = ", ".join(sorted(POSITIONING_FAMILIES.get(fam, frozenset())))
+        parts.append(f"{fam} ({phrases})")
+    return "; ".join(parts)
+
+
+def _content_signal_emphasis(trigger_arm: str, families_matched_pre: list[str]) -> str:
+    """Per-arm CONTENT_SIGNAL_REVISION emphasis naming exactly what is missing."""
+    emphasis_parts: list[str] = []
+    if trigger_arm in ("governance_signal", "both"):
+        emphasis_parts.append(
+            "CONTENT_SIGNAL_REVISION (x2_headline_governance_or_regulated_ai_signal_required): "
+            "your headline carries no governance/regulated-AI signal. At least one of X/Y/Z MUST "
+            "express a governance or regulated-AI positioning family using vocabulary such as: "
+            "governance, governed, runtime, gates, policy, deterministic, regulated, regulatory, "
+            "compliance — drawn from a positioning bundle with governance_signal: true."
+        )
+    if trigger_arm in ("specificity_floor", "both"):
+        emphasis_parts.append(
+            "CONTENT_SIGNAL_REVISION (x2_headline_technical_specificity_floor_met): "
+            f"your headline matches only {len(families_matched_pre)} positioning families "
+            f"(need {POSITIONING_FAMILY_FLOOR}): {families_matched_pre}. X/Y/Z MUST express at least "
+            f"{POSITIONING_FAMILY_FLOOR} DISTINCT positioning families. Keep the matched signal and "
+            "add a second distinct family from the allowed set using vocabulary such as: "
+            f"{_specificity_floor_vocab_emphasis()}."
+        )
+    emphasis_parts.append(
+        "Keep every other constraint (exact prefix 'SVP Engineering | ', exactly three ' | ' "
+        "separators, 10 to 13 total words, no metrics, no employer or target company names, "
+        "no first person), rebind claim_ledger rows per segment, recompute self_check, "
+        "and return one compact JSON object only."
+    )
+    return " ".join(emphasis_parts)
+
+
 def retry_headline_content_signal(
     messages: list[dict[str, str]],
     provider_payload: dict[str, Any],
@@ -784,24 +834,22 @@ def retry_headline_content_signal(
     *,
     companion_nonempty: bool,
     employer_names_lower: list[str],
+    trigger_arm: str = "governance_signal",
+    families_matched_pre: list[str] | None = None,
+    trigger_reason: str = "x2_headline_governance_or_regulated_ai_signal_required:none",
 ) -> tuple[str, dict[str, Any], dict[str, Any] | None, str | None]:
-    """Bounded same-authority regen when the headline misses the governance/regulated-AI signal."""
+    """Bounded same-authority regen when the headline misses a positioning content signal.
+
+    Arms: governance_signal (governance/regulated-AI families empty), specificity_floor
+    (< POSITIONING_FAMILY_FLOOR positioning families), or both. Acceptance is fail-closed:
+    the regen is adopted only when BOTH arms are satisfied post-normalize.
+    """
     repair_messages = [
         *messages,
         {"role": "assistant", "content": raw_output},
         {
             "role": "user",
-            "content": (
-                "CONTENT_SIGNAL_REVISION (x2_headline_governance_or_regulated_ai_signal_required): "
-                "your headline carries no governance/regulated-AI signal. At least one of X/Y/Z MUST "
-                "express a governance or regulated-AI positioning family using vocabulary such as: "
-                "governance, governed, runtime, gates, policy, deterministic, regulated, regulatory, "
-                "compliance — drawn from a positioning bundle with governance_signal: true. "
-                "Keep every other constraint (exact prefix 'SVP Engineering | ', exactly three ' | ' "
-                "separators, 10 to 13 total words, no metrics, no employer or target company names, "
-                "no first person), rebind claim_ledger rows per segment, recompute self_check, "
-                "and return one compact JSON object only."
-            ),
+            "content": _content_signal_emphasis(trigger_arm, list(families_matched_pre or [])),
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
@@ -827,7 +875,11 @@ def retry_headline_content_signal(
         or parsed
     )
     final_hl = str(new_parsed.get("headline_line") or "").strip()
-    if not governance_signal_families_matched(final_hl):
+    # Fail-closed acceptance: BOTH arms must hold post-normalize regardless of trigger arm.
+    if (
+        not governance_signal_families_matched(final_hl)
+        or len(positioning_families_matched(final_hl)) < POSITIONING_FAMILY_FLOOR
+    ):
         return raw_output, parsed, None, "signal_still_missing"
     final_wc = headline_word_count(final_hl)
     if _headline_positioning_segments(final_hl) is None or not (HEADLINE_WORD_MIN <= final_wc <= HEADLINE_WORD_MAX):
@@ -838,7 +890,7 @@ def retry_headline_content_signal(
     new_parsed["change_log"].append(
         {
             "operation": "headline_content_signal_repair",
-            "reason": "x2_headline_governance_or_regulated_ai_signal_required:none",
+            "reason": trigger_reason,
         }
     )
     return json.dumps(new_parsed, sort_keys=True, separators=(",", ":")), new_parsed, raw_gate_snap, None
@@ -858,7 +910,13 @@ def apply_headline_content_signal_repair(
     companion_nonempty: bool,
     employer_names_lower: list[str],
 ) -> tuple[str, dict[str, Any] | None, dict[str, Any] | None, bool]:
-    """G13 rung: one bounded content-signal regen before X1D/X2 (bundle mode + REAL_LLM only)."""
+    """G13 rung: one bounded content-signal regen before X1D/X2 (bundle mode + REAL_LLM only).
+
+    Fires when EITHER positioning gate would fail (single shared budget — ONE regen per run):
+    governance arm (governance/regulated-AI families empty) and/or specificity arm
+    (< POSITIONING_FAMILY_FLOOR positioning families, the exact
+    x2_headline_technical_specificity_floor_met predicate via positioning_families_matched).
+    """
     if not isinstance(parsed, dict):
         return raw_output, parsed, None, False
     hl_pre = str(parsed.get("headline_line", "")).strip()
@@ -867,9 +925,31 @@ def apply_headline_content_signal_repair(
         runtime_generation_status != "REAL_LLM"
         or not headline_positioning_consumption_active(pp_meta if isinstance(pp_meta, dict) else None)
         or _headline_positioning_segments(hl_pre) is None
-        or governance_signal_families_matched(hl_pre)
     ):
         return raw_output, parsed, None, False
+    gov_pre = governance_signal_families_matched(hl_pre)
+    spec_pre = positioning_families_matched(hl_pre)
+    governance_arm = not gov_pre
+    specificity_arm = len(spec_pre) < POSITIONING_FAMILY_FLOOR
+    if not governance_arm and not specificity_arm:
+        return raw_output, parsed, None, False
+    if governance_arm and specificity_arm:
+        trigger_arm = "both"
+    elif governance_arm:
+        trigger_arm = "governance_signal"
+    else:
+        trigger_arm = "specificity_floor"
+    gate_ids: list[str] = []
+    reason_parts: list[str] = []
+    if governance_arm:
+        gate_ids.append("x2_headline_governance_or_regulated_ai_signal_required")
+        reason_parts.append("x2_headline_governance_or_regulated_ai_signal_required:none")
+    if specificity_arm:
+        gate_ids.append("x2_headline_technical_specificity_floor_met")
+        reason_parts.append(
+            f"x2_headline_technical_specificity_floor_met:{len(spec_pre)}_of_{POSITIONING_FAMILY_FLOOR}"
+        )
+    trigger_reason = "+".join(reason_parts)
     from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, load_ledger, record_repair
 
     ledger = load_ledger(artifact_dir) or {}
@@ -880,17 +960,22 @@ def apply_headline_content_signal_repair(
     receipt: dict[str, Any] = {
         "section_id": "headline",
         "run_id": str(runtime_payload.get("run_id") or ""),
-        "gate_id": "x2_headline_governance_or_regulated_ai_signal_required",
+        "gate_id": "+".join(gate_ids),
+        "trigger_arm": trigger_arm,
         "trigger": {
             "required_families": list(GOVERNANCE_SIGNAL_FAMILIES),
-            "families_matched_pre": [],
+            "specificity_floor": POSITIONING_FAMILY_FLOOR,
+            "families_matched_pre": {
+                "governance_signal": gov_pre,
+                "specificity_floor": spec_pre,
+            },
             "headline_pre": hl_pre,
         },
         "attempted": False,
         "regen_call_made": False,
         "accepted": False,
         "headline_post": hl_pre,
-        "families_matched_post": [],
+        "families_matched_post": {"governance_signal": [], "specificity_floor": []},
         "rejected_reason": None,
         "bounded": {"max_attempts": CONTENT_SIGNAL_REPAIR_MAX_ATTEMPTS, "attempts_used": 0},
         "env_kill_switch_state": content_signal_repair_env_state(),
@@ -914,20 +999,26 @@ def apply_headline_content_signal_repair(
             allowed_fact_ids,
             companion_nonempty=companion_nonempty,
             employer_names_lower=employer_names_lower,
+            trigger_arm=trigger_arm,
+            families_matched_pre=spec_pre,
+            trigger_reason=trigger_reason,
         )
         if rejected_reason is None and new_snap is not None:
             record_repair(
                 artifact_dir,
                 kind=KIND_REGEN_LLM,
                 operation="headline_content_signal_repair",
-                reason="x2_headline_governance_or_regulated_ai_signal_required:none",
+                reason=trigger_reason,
                 replaced_l2=True,
             )
             raw_output, parsed, snap, accepted = new_raw, new_parsed, new_snap, True
             hl_post = str(parsed.get("headline_line", "")).strip()
             receipt["accepted"] = True
             receipt["headline_post"] = hl_post
-            receipt["families_matched_post"] = governance_signal_families_matched(hl_post)
+            receipt["families_matched_post"] = {
+                "governance_signal": governance_signal_families_matched(hl_post),
+                "specificity_floor": positioning_families_matched(hl_post),
+            }
         else:
             receipt["rejected_reason"] = rejected_reason or "parse_failed"
     write_json(artifact_dir / "headline_content_signal_repair_receipt.json", receipt)

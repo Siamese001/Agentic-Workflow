@@ -17,9 +17,12 @@ from apps_rg.runtime.sections.headline_lane import (
     sync_selected_fact_plan_required_ids,
 )
 from apps_rg.runtime.validators.headline_positioning_x2 import (
+    POSITIONING_FAMILY_FLOOR,
     governance_signal_families_matched,
+    positioning_families_matched,
     run_headline_positioning_x2_gates,
 )
+from apps_rg.runtime.validators.headline_quality_x2 import POSITIONING_FAMILIES
 from apps_rg.runtime.validators.headline_x2 import run_headline_x2_gates
 from apps_rg.runtime.w3_execution_path_labels import BUCKET_GOVERNED_PA_L2_EXIT
 
@@ -250,9 +253,11 @@ class _RecordingProvider:
         self.status = status
         self.raw = raw
         self.calls = 0
+        self.payloads: list[dict] = []
 
     def __call__(self, payload: dict) -> SimpleNamespace:
         self.calls += 1
+        self.payloads.append(payload)
         return SimpleNamespace(runtime_generation_status=self.status, raw_model_output=self.raw)
 
 
@@ -531,3 +536,187 @@ class TestHeadlineContentSignalRepairRung:
         for off in ("0", "false", "no", "off"):
             monkeypatch.setenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", off)
             assert content_signal_repair_enabled() is False
+
+
+# ---------------------------------------------------------------------------
+# Specificity-floor arm of the content-signal rung (live failure
+# postW4fix_20260610_2200: x2_headline_technical_specificity_floor_met,
+# only ['runtime_governance'] matched).
+# ---------------------------------------------------------------------------
+
+_SPEC_GATE_ID = "x2_headline_technical_specificity_floor_met"
+# governance present, only ONE positioning family (runtime_governance) -> specificity arm.
+SPEC_FLOOR_HL = "SVP Engineering | Runtime Governance Gates | Deterministic Policy Controls | Resilient Delivery Programs"
+# no governance signal AND only one positioning family (platform_productization) -> both arms.
+BOTH_ARMS_HL = "SVP Engineering | Retrieval Context Programs | Platform Productization Roadmaps | Resilient Delivery Leadership"
+# regen result that still matches only one family (governance present) -> rejected.
+SPEC_STILL_ONE_HL = "SVP Engineering | Runtime Governance Gates | Deterministic Policy Controls | Resilient Program Delivery Leadership"
+
+
+class TestHeadlineContentSignalSpecificityArm:
+    @pytest.fixture(autouse=True)
+    def _default_kill_switch_on(self, monkeypatch):
+        monkeypatch.delenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", raising=False)
+
+    @pytest.mark.parametrize(
+        ("hl", "expected_arm"),
+        [
+            (GOV_HL, None),
+            (PRE_HL_NO_GOV, "governance_signal"),
+            (SPEC_FLOOR_HL, "specificity_floor"),
+            (BOTH_ARMS_HL, "both"),
+        ],
+    )
+    def test_trigger_arm_truth_table(self, tmp_path, monkeypatch, hl, expected_arm):
+        # Kill switch OFF isolates trigger classification: receipt is written, zero calls.
+        monkeypatch.setenv("APPS_RG_HEADLINE_CONTENT_SIGNAL_REPAIR", "0")
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, _out, _snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(hl)
+        )
+        assert provider.calls == 0
+        assert not accepted
+        if expected_arm is None:
+            assert not (tmp_path / _CS_RECEIPT).exists()
+            return
+        receipt = _read_receipt(tmp_path)
+        assert receipt["trigger_arm"] == expected_arm
+        assert receipt["trigger"]["specificity_floor"] == POSITIONING_FAMILY_FLOOR
+        pre = receipt["trigger"]["families_matched_pre"]
+        assert pre["governance_signal"] == governance_signal_families_matched(hl)
+        assert pre["specificity_floor"] == positioning_families_matched(hl)
+
+    def test_specificity_emphasis_names_missing_family_class(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(SPEC_FLOOR_HL)
+        )
+        assert provider.calls == 1
+        emphasis = provider.payloads[0]["messages"][-1]["content"]
+        assert _SPEC_GATE_ID in emphasis
+        assert "['runtime_governance']" in emphasis  # lists the families actually matched
+        # governance arm did not fire -> its emphasis header is absent
+        assert _CS_GATE_ID not in emphasis
+        # allowed-set vocabularies pulled from POSITIONING_FAMILIES, not hardcoded duplicates
+        for fam in ("agentic_ai_platforms", "distributed_ai_infrastructure", "runtime_governance"):
+            assert fam in emphasis
+            assert any(phrase in emphasis for phrase in POSITIONING_FAMILIES[fam])
+
+    def test_both_arms_emphasis_names_both_gates(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(BOTH_ARMS_HL)
+        )
+        assert provider.calls == 1
+        emphasis = provider.payloads[0]["messages"][-1]["content"]
+        assert _CS_GATE_ID in emphasis
+        assert _SPEC_GATE_ID in emphasis
+        receipt = _read_receipt(tmp_path)
+        assert receipt["trigger_arm"] == "both"
+        assert receipt["gate_id"] == f"{_CS_GATE_ID}+{_SPEC_GATE_ID}"
+
+    def test_specificity_arm_accept_path(self, tmp_path, monkeypatch):
+        from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, init_ledger, load_ledger
+
+        init_ledger(tmp_path, section_id="headline", run_id="csr-test")
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(SPEC_FLOOR_HL)
+        )
+        assert provider.calls == 1
+        assert accepted is True
+        assert out["headline_line"] == GOV_HL
+        assert snap is not None
+        receipt = _read_receipt(tmp_path)
+        assert receipt["trigger_arm"] == "specificity_floor"
+        assert receipt["gate_id"] == _SPEC_GATE_ID
+        assert receipt["trigger"]["families_matched_pre"]["specificity_floor"] == ["runtime_governance"]
+        assert len(receipt["families_matched_post"]["specificity_floor"]) >= POSITIONING_FAMILY_FLOOR
+        assert receipt["families_matched_post"]["governance_signal"]
+        ledger = load_ledger(tmp_path) or {}
+        regen_rows = [
+            r
+            for r in (ledger.get("repairs") or [])
+            if r.get("kind") == KIND_REGEN_LLM and r.get("replaced_l2")
+        ]
+        assert len(regen_rows) == 1
+        assert _SPEC_GATE_ID in str(regen_rows[0].get("reason"))
+        gates = run_headline_positioning_x2_gates(
+            headline_line=out["headline_line"],
+            parsed_output=out,
+            proof_pool_metadata={"headline_positioning_bundle_consumption": True},
+        )
+        assert next(g for g in gates if g.gate_id == _SPEC_GATE_ID).passed
+
+    def test_specificity_arm_reject_when_still_below_floor(self, tmp_path, monkeypatch):
+        from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, init_ledger, load_ledger
+
+        init_ledger(tmp_path, section_id="headline", run_id="csr-test")
+        provider = _RecordingProvider("REAL_LLM", _regen_json(SPEC_STILL_ONE_HL))
+        parsed = _attempt1_parsed(SPEC_FLOOR_HL)
+        _raw, out, snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 1
+        assert not accepted and snap is None
+        assert out is parsed
+        assert out["headline_line"] == SPEC_FLOOR_HL
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "signal_still_missing"
+        ledger = load_ledger(tmp_path) or {}
+        assert not [r for r in (ledger.get("repairs") or []) if r.get("kind") == KIND_REGEN_LLM]
+        gates = run_headline_positioning_x2_gates(
+            headline_line=out["headline_line"],
+            parsed_output=out,
+            proof_pool_metadata={"headline_positioning_bundle_consumption": True},
+        )
+        assert not next(g for g in gates if g.gate_id == _SPEC_GATE_ID).passed
+
+    def test_acceptance_requires_both_arms_gov_trigger(self, tmp_path, monkeypatch):
+        # Governance-arm trigger; regen fixes governance but lands below the specificity floor.
+        provider = _RecordingProvider("REAL_LLM", _regen_json(SPEC_FLOOR_HL))
+        parsed = _attempt1_parsed(PRE_HL_NO_GOV)
+        _raw, out, _snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 1
+        assert not accepted and out is parsed
+        assert _read_receipt(tmp_path)["rejected_reason"] == "signal_still_missing"
+
+    def test_acceptance_requires_both_arms_spec_trigger(self, tmp_path, monkeypatch):
+        # Specificity-arm trigger; regen reaches >=2 families but loses the governance signal.
+        provider = _RecordingProvider("REAL_LLM", _regen_json(PRE_HL_NO_GOV))
+        parsed = _attempt1_parsed(SPEC_FLOOR_HL)
+        _raw, out, _snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed
+        )
+        assert provider.calls == 1
+        assert not accepted and out is parsed
+        assert _read_receipt(tmp_path)["rejected_reason"] == "signal_still_missing"
+
+    def test_specificity_arm_respects_one_call_budget(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        parsed = _attempt1_parsed(SPEC_FLOOR_HL)
+        _raw, out, _snap, accepted = _run_content_signal_rung(
+            tmp_path,
+            monkeypatch,
+            provider=provider,
+            parsed=parsed,
+            prior_repair_provider_call_made=True,
+        )
+        assert provider.calls == 0
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "regen_budget_consumed"
+        assert receipt["trigger_arm"] == "specificity_floor"
+
+    def test_both_arms_single_regen_call(self, tmp_path, monkeypatch):
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOV_HL))
+        _raw, out, _snap, accepted = _run_content_signal_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=_attempt1_parsed(BOTH_ARMS_HL)
+        )
+        assert provider.calls == 1  # one bounded regen covers both arms
+        assert accepted is True
+        assert out["headline_line"] == GOV_HL
+        receipt = _read_receipt(tmp_path)
+        assert receipt["bounded"] == {"max_attempts": 1, "attempts_used": 1}

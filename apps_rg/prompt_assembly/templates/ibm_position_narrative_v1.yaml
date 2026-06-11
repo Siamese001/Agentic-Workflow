@@ -74,6 +74,10 @@ claim_ledger_coverage_contract: |
   Prefer MULTIPLE concise claim_ledger rows (one per material clause) over one row that cannot justify the full sentence.
   Each claim_ledger row MUST cite at most two bul_ibm_* roots aligned to that clause's theme.
   Do NOT cite three or more bul_ibm_* ids on a single row.
+  STRUCTURAL THEME BUDGET: narrative_sentence may materially express AT MOST 4 of the 5 theme families above —
+  at most 2 per clause. The ', establishing' clause split yields at most 2 ledger rows and each row may cite at most
+  2 bul_ibm_* roots, so a sentence tripping all 5 theme families can NEVER pass both theme-coverage and
+  clause-decomposition gates. Choose the strongest 4 families; leave at least one unexpressed.
   Do NOT use career-bridge phrasing ("supported later", "subsequent roles", "later production AI platform leadership")
   unless an explicit career-bridge fact id exists in ALLOWED_SOURCE_FACT_IDS (default: omit such framing).
 

@@ -361,6 +361,27 @@ def run_ibm_narrative_lane_execution(
                         reason="x2_ibm_narrative_claim_theme_coverage",
                         replaced_l2=False,
                     )
+                # Theme-overpack rung (b8c3d1; live flap postW4fix_20260610_2200): the
+                # ', establishing' decomposer (max 2 rows) + max 2 bul_ibm_* roots per row
+                # cap the ledger union at 4 roots, so a sentence tripping 5 theme triggers
+                # can never pass theme-coverage AND clause-decomposition together. ONE
+                # bounded same-authority regen (headline content-signal idiom, PR #284):
+                # fail-closed acceptance — regen adopted only when parse ok, ≤4 themes,
+                # and the full deterministic chain passes both predicates; else attempt 1
+                # stands and X2 fails honestly. Receipt:
+                # ibm_narrative_theme_repair_receipt.json; kill-switch
+                # APPS_RG_IBM_NARRATIVE_THEME_REPAIR (default on).
+                raw_output, parsed, _theme_repair_accepted = (
+                    apply_ibm_narrative_theme_overpack_repair(
+                        messages=messages,
+                        provider_payload=provider_payload,
+                        raw_output=raw_output,
+                        parsed=parsed,
+                        runtime_payload=runtime_payload,
+                        artifact_dir=artifact_dir,
+                        runtime_generation_status=runtime_generation_status,
+                    )
+                )
         else:
             parsed = None
             parse_error = result.exact_provider_error or "provider blocked"
