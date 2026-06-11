@@ -201,6 +201,13 @@
             "has_metric": false,
             "technologies": ["Guidewire", "ClaimCenter", "PolicyCenter", "claims automation", "policy administration"],
             "domain": "insurance core platform"
+          },
+          {
+            "bullet_id": "bul_ey_005",
+            "text": "Enterprise Risk Management Transformation: Architected three-lines-of-defense risk-governance operating models and BCBS 239-aligned risk-data aggregation programs for global financial institutions, centralizing data lineage and metadata standards to deliver consistent, auditable risk metrics.",
+            "has_metric": false,
+            "technologies": ["three lines of defense", "BCBS 239", "risk data aggregation", "data lineage", "risk governance"],
+            "domain": "enterprise risk management"
           }
         ]
       },

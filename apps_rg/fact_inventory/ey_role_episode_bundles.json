@@ -37,7 +37,8 @@
       "graph_skill_node_ids": [
         "skill_sr_basel_ccar_lineage_regulatory",
         "skill_audit_grade_observability",
-        "skill_risk_model_risk"
+        "skill_risk_model_risk",
+        "skill_finra_sec_regulatory_compliance"
       ],
       "linked_source_fact_ids": ["exp_ey_001"],
       "linked_archive_signal_ids": [],
@@ -103,7 +104,8 @@
         "Regulatory-capital compliance for insurance clients"
       ],
       "graph_skill_node_ids": [
-        "skill_capital_regulatory_capital"
+        "skill_capital_regulatory_capital",
+        "skill_insurance_solvency_regimes"
       ],
       "linked_source_fact_ids": ["exp_ey_001"],
       "linked_archive_signal_ids": [],
@@ -154,6 +156,43 @@
       ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
       "notes": "Anchors base-resume bullet bul_ey_004 (Insurance Core Modernization / Guidewire). Insurance-domain depth for AIG targeting; graph skills grounded in the 2009-2014 EY Principal window."
+    },
+    {
+      "role_episode_bundle_id": "reb_ey_erm_risk_governance",
+      "employer": "Ernst & Young",
+      "title": "Principal",
+      "time_window": "2009-10 to 2014-03",
+      "employer_node_id": "employment_exp_ey_001",
+      "bundle_theme": "Enterprise Risk Management Operating Model & Risk-Data Aggregation",
+      "executive_scope_signals": [
+        "Architected three-lines-of-defense risk-governance operating models for global financial institutions",
+        "Implemented BCBS 239-aligned risk-data aggregation with centralized lineage and metadata standards"
+      ],
+      "architecture_scope_signals": [
+        "Three-lines-of-defense operating model design (first-line operations, second-line risk/compliance, third-line audit)",
+        "BCBS 239 risk-data aggregation: centralized lineage, cataloging, metadata standards",
+        "Consistent, auditable risk metrics across business units"
+      ],
+      "graph_skill_node_ids": [
+        "skill_risk_three_lines_of_defense",
+        "skill_risk_data_aggregation_bcbs239",
+        "skill_risk_enterprise_risk_controls"
+      ],
+      "linked_source_fact_ids": [
+        "exp_ey_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "Enterprise risk management transformation: three-lines-of-defense risk-governance operating models and BCBS 239-aligned risk-data aggregation programs for global financial institutions.",
+      "bullet_intent": "Frame as ERM operating-model architecture leadership (three lines of defense + BCBS 239 risk-data aggregation); metrics only from base-resume anchored fact_id (bul_ey_005).",
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Anchors base-resume bullet bul_ey_005 (Enterprise Risk Management Transformation). ERM depth (user-confirmed 2026-06-11) for senior banking/insurance agentic targeting; graph skills grounded in the 2009-2014 EY Principal window."
     }
   ]
 }

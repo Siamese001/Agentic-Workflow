@@ -35221,7 +35221,9 @@
       "forbidden_phrases": [],
       "allowed_sections": [
         "competencies",
-        "executive_summary"
+        "executive_summary",
+        "ey_bullets",
+        "ey_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
