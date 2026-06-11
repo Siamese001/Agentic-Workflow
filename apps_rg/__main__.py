@@ -664,6 +664,34 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Stitch artifacts/apps_rg/_pinned/<section>/ outputs into a single resume markdown and exit.",
     )
+    # W7.1 patch-run mode: re-dispatch ONLY failed lanes of an existing integrated run
+    # dir, then re-run the same aggregation/evidence chain. Inputs are re-derived from
+    # the run dir's persisted artifacts (never interactive).
+    p.add_argument(
+        "--patch-run",
+        default="",
+        help=(
+            "Path to an existing integrated run dir: re-dispatch only non-authorized lanes "
+            "into the SAME run dir, then re-aggregate. Combine with --sections/--force-lanes/"
+            "--dry-run."
+        ),
+    )
+    p.add_argument(
+        "--sections",
+        default="",
+        help=(
+            "Patch-run only: comma-separated lane ids to re-dispatch "
+            "(default: auto = all non-authorized lanes)."
+        ),
+    )
+    p.add_argument(
+        "--force-lanes",
+        default="",
+        help=(
+            "Patch-run only: comma-separated lane ids that MAY be re-dispatched even though "
+            "they are currently authorized (without this, green lanes are refused)."
+        ),
+    )
     return p
 
 
@@ -721,6 +749,14 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     if section_eff in section_lane_ids or not section_eff:
         if not is_test_harness():
             assert_production_runtime(context="python -m apps_rg", args=args)
+
+    # W7.1 patch-run mode — re-dispatch only failed lanes of an existing integrated run,
+    # re-derive targeting inputs from the run dir's persisted artifacts, re-aggregate.
+    # Handles --dry-run itself; never prompts interactively.
+    if str(getattr(args, "patch_run", "") or "").strip():
+        from apps_rg.runtime.orchestration.patch_run import run_patch_from_cli
+
+        return run_patch_from_cli(args)
 
     from apps_rg.runtime.embedding_settings import (
         apply_apps_rg_embedding_env_guards,
