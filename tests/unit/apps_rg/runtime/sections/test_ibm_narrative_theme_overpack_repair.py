@@ -109,14 +109,16 @@ def _run_rung(
     parsed,
     runtime_payload=None,
     runtime_generation_status="REAL_LLM",
+    raw_output=None,
 ):
     monkeypatch.setattr(lane_runtime, "generate_section", provider)
     payload = runtime_payload if runtime_payload is not None else _runtime_payload()
-    raw = json.dumps(parsed, sort_keys=True) if isinstance(parsed, dict) else ""
+    if raw_output is None:
+        raw_output = json.dumps(parsed, sort_keys=True) if isinstance(parsed, dict) else ""
     return lane_runtime.apply_ibm_narrative_theme_overpack_repair(
         messages=[{"role": "system", "content": "s"}, {"role": "user", "content": "u"}],
         provider_payload={"messages": [], "temperature": 0.35},
-        raw_output=raw,
+        raw_output=raw_output,
         parsed=parsed,
         runtime_payload=payload,
         artifact_dir=tmp_path,
@@ -283,6 +285,20 @@ class TestThemeOverpackRepairRung:
         assert "5 theme families" in regen_user_msg
         assert "at most 2 per" in regen_user_msg.lower()
         assert "', establishing'" in regen_user_msg
+        # postRungs_20260610_2246 fix: regen mirrors attempt 1's proven parse-retry output
+        # contract (compact JSON, same key list) instead of "one full JSON object".
+        assert "compact JSON object" in regen_user_msg
+        assert "narrative_sentence (one sentence), selected_fact_plan" in regen_user_msg
+        # Regen cap is floored at the lane default and recorded in the receipt.
+        assert provider.last_payload["max_tokens"] >= lane_runtime.NARRATIVE_MAX_OUTPUT_TOKENS
+        assert receipt["regen_max_tokens"] == provider.last_payload["max_tokens"]
+        # Regen raw response is persisted and referenced even on accept.
+        ref = receipt["regen_raw_response_ref"]
+        assert ref == lane_runtime.THEME_REPAIR_REGEN_RAW_FILENAME
+        assert (tmp_path / ref).read_text(encoding="utf-8") == _regen_json(
+            GOOD_REGEN_NARRATIVE
+        )
+        assert receipt["regen_parse_error"] is None
 
     def test_reject_themes_still_overpacked_keeps_attempt1(self, tmp_path, monkeypatch):
         from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, init_ledger, load_ledger
@@ -321,6 +337,66 @@ class TestThemeOverpackRepairRung:
         assert not accepted and out is parsed
         receipt = _read_receipt(tmp_path)
         assert receipt["rejected_reason"] == "parse_failed"
+
+    def test_reject_bare_sentence_regen_persists_raw_and_parse_error(
+        self, tmp_path, monkeypatch
+    ):
+        """Regen replying with just a rewritten sentence (no JSON doc) is rejected fail-open,
+        and the receipt now carries the raw-response ref + parse_error detail for RCA."""
+        bare = (
+            "At IBM led cloud modernization and data lineage programs, "
+            "establishing platform discipline for governed delivery."
+        )
+        provider = _RecordingProvider("REAL_LLM", bare)
+        parsed = _attempt1_parsed()
+        _raw, out, accepted = _run_rung(tmp_path, monkeypatch, provider=provider, parsed=parsed)
+        assert provider.calls == 1
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "parse_failed"
+        assert receipt["regen_parse_error"]
+        ref = receipt["regen_raw_response_ref"]
+        assert ref == lane_runtime.THEME_REPAIR_REGEN_RAW_FILENAME
+        assert (tmp_path / ref).read_text(encoding="utf-8") == bare
+
+    def test_reject_truncated_json_live_shape_persists_raw_and_parse_error(
+        self, tmp_path, monkeypatch
+    ):
+        """Proven live failure shape (postRungs_20260610_2246): full JSON doc cut at the
+        token cap mid-string (provider stop_reason=max_tokens) → unterminated JSON."""
+        truncated = _regen_json(GOOD_REGEN_NARRATIVE)[:-40]
+        provider = _RecordingProvider("REAL_LLM", truncated)
+        parsed = _attempt1_parsed()
+        _raw, out, accepted = _run_rung(tmp_path, monkeypatch, provider=provider, parsed=parsed)
+        assert provider.calls == 1
+        assert not accepted and out is parsed
+        receipt = _read_receipt(tmp_path)
+        assert receipt["rejected_reason"] == "parse_failed"
+        assert "JSON parse failed" in receipt["regen_parse_error"]
+        ref = receipt["regen_raw_response_ref"]
+        assert (tmp_path / ref).read_text(encoding="utf-8") == truncated
+
+    def test_regen_max_tokens_sized_from_attempt1_with_margin(self, tmp_path, monkeypatch):
+        """Live root cause: attempt 1 needed ~1,130 of the 1,200-token lane cap (attempt 1's own
+        provider call stopped at max_tokens), so a regen reusing the flat cap truncates. The
+        regen cap must scale from attempt 1's observed length with margin."""
+        provider = _RecordingProvider("REAL_LLM", _regen_json(GOOD_REGEN_NARRATIVE))
+        parsed = _attempt1_parsed()
+        long_raw = json.dumps(parsed, sort_keys=True) + ("x" * 8000)
+        _raw, _out, _accepted = _run_rung(
+            tmp_path, monkeypatch, provider=provider, parsed=parsed, raw_output=long_raw
+        )
+        assert provider.calls == 1
+        expected = lane_runtime._theme_repair_regen_max_tokens(long_raw)
+        assert provider.last_payload["max_tokens"] == expected
+        assert expected > lane_runtime.NARRATIVE_MAX_OUTPUT_TOKENS
+        receipt = _read_receipt(tmp_path)
+        assert receipt["regen_max_tokens"] == expected
+        # Floor: a short attempt-1 raw never drops the cap below the lane default.
+        assert (
+            lane_runtime._theme_repair_regen_max_tokens("{}")
+            == lane_runtime.NARRATIVE_MAX_OUTPUT_TOKENS
+        )
 
     def test_reject_provider_not_real_keeps_attempt1(self, tmp_path, monkeypatch):
         provider = _RecordingProvider("BLOCKED", "")

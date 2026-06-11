@@ -458,7 +458,21 @@ def retry_provider_for_metric_budget(
 
 
 THEME_REPAIR_RECEIPT_FILENAME = "ibm_narrative_theme_repair_receipt.json"
+THEME_REPAIR_REGEN_RAW_FILENAME = "ibm_narrative_theme_repair_regen_raw.txt"
 _THEME_BUDGET_MAX_FAMILIES = 4
+
+
+def _theme_repair_regen_max_tokens(attempt1_raw: str) -> int:
+    """Size the regen output cap from attempt 1's observed response length plus margin.
+
+    Live fail (postRungs_20260610_2246): attempt 1 itself stopped at the 1200-token lane cap
+    (provider_response.json: stop_reason=max_tokens, output_tokens=1200) and the kept compact
+    parse-retry doc (~4.5KB ≈ ~1,130 tokens) left <6% headroom. The rung's regen reused the
+    same 1200 cap and truncated again → unterminated JSON → parse_failed. chars/4 token
+    estimate × 1.5 margin, floored at the lane default.
+    """
+    estimated_tokens = (len(attempt1_raw) // 4) + 1
+    return max(NARRATIVE_MAX_OUTPUT_TOKENS, (estimated_tokens * 3) // 2)
 
 
 def _run_ibm_narrative_deterministic_ledger_chain(
@@ -566,6 +580,9 @@ def apply_ibm_narrative_theme_overpack_repair(
         "rejected_reason": None,
         "bounded": {"max_attempts": THEME_REPAIR_MAX_ATTEMPTS, "attempts_used": 0},
         "kill_switch": theme_repair_env_state(),
+        "regen_max_tokens": None,
+        "regen_raw_response_ref": None,
+        "regen_parse_error": None,
     }
     accepted = False
     if not theme_repair_enabled():
@@ -591,29 +608,42 @@ def apply_ibm_narrative_theme_overpack_repair(
                     "clause — preserving the clause structure ', establishing'. Keep every other "
                     "constraint (exactly one sentence, IBM anchor once, no metric replay, no em dash, "
                     "no candidate name, claim_ledger rows with at most 2 bul_ibm_* roots each from "
-                    "ALLOWED_SOURCE_FACT_IDS) and return one full JSON object with the same keys."
+                    "ALLOWED_SOURCE_FACT_IDS). Return one NEW compact JSON object only. "
+                    "Keys: narrative_sentence (one sentence), selected_fact_plan, claim_ledger, "
+                    "jd_alignment, gap_notes, change_log, self_check."
                 ),
             },
         ]
+        regen_max_tokens = _theme_repair_regen_max_tokens(raw_output)
+        receipt["regen_max_tokens"] = regen_max_tokens
         repair_payload = {
             **provider_payload,
             "messages": repair_messages,
-            "max_tokens": NARRATIVE_MAX_OUTPUT_TOKENS,
+            "max_tokens": regen_max_tokens,
         }
         result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
+        regen_raw = str(result.raw_model_output or "")
+        (artifact_dir / THEME_REPAIR_REGEN_RAW_FILENAME).write_text(
+            regen_raw, encoding="utf-8"
+        )
+        receipt["regen_raw_response_ref"] = THEME_REPAIR_REGEN_RAW_FILENAME
         if result.runtime_generation_status != "REAL_LLM":
             receipt["rejected_reason"] = "provider_not_real"
         else:
-            new_raw = result.raw_model_output
+            new_raw = regen_raw
             new_parsed, _err = parse_model_json(new_raw)
             if new_parsed is None:
                 receipt["rejected_reason"] = "parse_failed"
+                receipt["regen_parse_error"] = _err
             else:
                 new_parsed = _run_ibm_narrative_deterministic_ledger_chain(
                     new_parsed, runtime_payload
                 )
                 if new_parsed is None:
                     receipt["rejected_reason"] = "parse_failed"
+                    receipt["regen_parse_error"] = (
+                        "deterministic ledger chain returned None (normalize_parsed_output)"
+                    )
                 else:
                     narrative_post = str(new_parsed.get("narrative_sentence") or "").strip()
                     themes_post = ibm_narrative_material_fact_ids_for_sentence(narrative_post)

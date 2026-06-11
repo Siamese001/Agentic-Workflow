@@ -85,6 +85,7 @@ from apps_rg.runtime.validators.headline_positioning_x2 import (
     POSITIONING_FAMILY_FLOOR,
     governance_signal_families_matched,
     headline_positioning_consumption_active,
+    narrowing_labels_found,
     positioning_families_matched,
 )
 from apps_rg.runtime.validators.headline_quality_x2 import POSITIONING_FAMILIES
@@ -795,10 +796,22 @@ def _specificity_floor_vocab_emphasis() -> str:
     return "; ".join(parts)
 
 
-def _content_signal_emphasis(trigger_arm: str, families_matched_pre: list[str]) -> str:
+def _content_signal_arms(trigger_arm: str) -> set[str]:
+    """Decompose a trigger_arm value into its fired arm names ('both' = legacy alias)."""
+    if trigger_arm == "both":
+        return {"governance_signal", "specificity_floor"}
+    return {a for a in trigger_arm.split("+") if a}
+
+
+def _content_signal_emphasis(
+    trigger_arm: str,
+    families_matched_pre: list[str],
+    narrowing_labels_pre: list[str] | None = None,
+) -> str:
     """Per-arm CONTENT_SIGNAL_REVISION emphasis naming exactly what is missing."""
+    arms = _content_signal_arms(trigger_arm)
     emphasis_parts: list[str] = []
-    if trigger_arm in ("governance_signal", "both"):
+    if "governance_signal" in arms:
         emphasis_parts.append(
             "CONTENT_SIGNAL_REVISION (x2_headline_governance_or_regulated_ai_signal_required): "
             "your headline carries no governance/regulated-AI signal. At least one of X/Y/Z MUST "
@@ -806,7 +819,7 @@ def _content_signal_emphasis(trigger_arm: str, families_matched_pre: list[str]) 
             "governance, governed, runtime, gates, policy, deterministic, regulated, regulatory, "
             "compliance — drawn from a positioning bundle with governance_signal: true."
         )
-    if trigger_arm in ("specificity_floor", "both"):
+    if "specificity_floor" in arms:
         emphasis_parts.append(
             "CONTENT_SIGNAL_REVISION (x2_headline_technical_specificity_floor_met): "
             f"your headline matches only {len(families_matched_pre)} positioning families "
@@ -814,6 +827,17 @@ def _content_signal_emphasis(trigger_arm: str, families_matched_pre: list[str]) 
             f"{POSITIONING_FAMILY_FLOOR} DISTINCT positioning families. Keep the matched signal and "
             "add a second distinct family from the allowed set using vocabulary such as: "
             f"{_specificity_floor_vocab_emphasis()}."
+        )
+    if "narrowing_labels" in arms:
+        labels = list(narrowing_labels_pre or [])
+        emphasis_parts.append(
+            "CONTENT_SIGNAL_REVISION (x2_headline_no_narrowing_it_labels / "
+            "x2_headline_generic_it_strategy_demote_forbidden): your headline contains forbidden "
+            f"narrowing/demoting label(s): {labels}. These phrases demote the SVP Engineering "
+            "posture into generic IT-program language. Remove every one of them and replace each "
+            "with senior platform/engineering positioning vocabulary (e.g. agentic AI platforms, "
+            "distributed AI infrastructure, runtime governance, platform engineering) drawn from "
+            "the positioning bundles."
         )
     emphasis_parts.append(
         "Keep every other constraint (exact prefix 'SVP Engineering | ', exactly three ' | ' "
@@ -836,20 +860,28 @@ def retry_headline_content_signal(
     employer_names_lower: list[str],
     trigger_arm: str = "governance_signal",
     families_matched_pre: list[str] | None = None,
+    narrowing_labels_pre: list[str] | None = None,
     trigger_reason: str = "x2_headline_governance_or_regulated_ai_signal_required:none",
 ) -> tuple[str, dict[str, Any], dict[str, Any] | None, str | None]:
     """Bounded same-authority regen when the headline misses a positioning content signal.
 
     Arms: governance_signal (governance/regulated-AI families empty), specificity_floor
-    (< POSITIONING_FAMILY_FLOOR positioning families), or both. Acceptance is fail-closed:
-    the regen is adopted only when BOTH arms are satisfied post-normalize.
+    (< POSITIONING_FAMILY_FLOOR positioning families), narrowing_labels (forbidden
+    narrowing/demoting IT label present), or any '+'-joined combination. Acceptance is
+    fail-closed: the regen is adopted only when ALL THREE arms are satisfied post-normalize
+    (governance families non-empty AND >= floor positioning families AND zero narrowing
+    labels), regardless of which arm(s) triggered.
     """
     repair_messages = [
         *messages,
         {"role": "assistant", "content": raw_output},
         {
             "role": "user",
-            "content": _content_signal_emphasis(trigger_arm, list(families_matched_pre or [])),
+            "content": _content_signal_emphasis(
+                trigger_arm,
+                list(families_matched_pre or []),
+                list(narrowing_labels_pre or []),
+            ),
         },
     ]
     repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
@@ -875,10 +907,11 @@ def retry_headline_content_signal(
         or parsed
     )
     final_hl = str(new_parsed.get("headline_line") or "").strip()
-    # Fail-closed acceptance: BOTH arms must hold post-normalize regardless of trigger arm.
+    # Fail-closed acceptance: ALL THREE arms must hold post-normalize regardless of trigger arm.
     if (
         not governance_signal_families_matched(final_hl)
         or len(positioning_families_matched(final_hl)) < POSITIONING_FAMILY_FLOOR
+        or narrowing_labels_found(final_hl)
     ):
         return raw_output, parsed, None, "signal_still_missing"
     final_wc = headline_word_count(final_hl)
@@ -912,10 +945,13 @@ def apply_headline_content_signal_repair(
 ) -> tuple[str, dict[str, Any] | None, dict[str, Any] | None, bool]:
     """G13 rung: one bounded content-signal regen before X1D/X2 (bundle mode + REAL_LLM only).
 
-    Fires when EITHER positioning gate would fail (single shared budget — ONE regen per run):
-    governance arm (governance/regulated-AI families empty) and/or specificity arm
-    (< POSITIONING_FAMILY_FLOOR positioning families, the exact
-    x2_headline_technical_specificity_floor_met predicate via positioning_families_matched).
+    Fires when ANY stochastic-content positioning gate would fail (single shared budget —
+    ONE regen per run): governance arm (governance/regulated-AI families empty), specificity
+    arm (< POSITIONING_FAMILY_FLOOR positioning families, the exact
+    x2_headline_technical_specificity_floor_met predicate via positioning_families_matched),
+    and/or narrowing-labels arm (forbidden narrowing/demoting IT label detected — the exact
+    x2_headline_no_narrowing_it_labels / x2_headline_generic_it_strategy_demote_forbidden
+    predicate via narrowing_labels_found). trigger_arm is the '+'-joined list of fired arms.
     """
     if not isinstance(parsed, dict):
         return raw_output, parsed, None, False
@@ -929,26 +965,33 @@ def apply_headline_content_signal_repair(
         return raw_output, parsed, None, False
     gov_pre = governance_signal_families_matched(hl_pre)
     spec_pre = positioning_families_matched(hl_pre)
+    narrow_pre = narrowing_labels_found(hl_pre)
     governance_arm = not gov_pre
     specificity_arm = len(spec_pre) < POSITIONING_FAMILY_FLOOR
-    if not governance_arm and not specificity_arm:
+    narrowing_arm = bool(narrow_pre)
+    if not governance_arm and not specificity_arm and not narrowing_arm:
         return raw_output, parsed, None, False
-    if governance_arm and specificity_arm:
-        trigger_arm = "both"
-    elif governance_arm:
-        trigger_arm = "governance_signal"
-    else:
-        trigger_arm = "specificity_floor"
+    arm_names: list[str] = []
     gate_ids: list[str] = []
     reason_parts: list[str] = []
     if governance_arm:
+        arm_names.append("governance_signal")
         gate_ids.append("x2_headline_governance_or_regulated_ai_signal_required")
         reason_parts.append("x2_headline_governance_or_regulated_ai_signal_required:none")
     if specificity_arm:
+        arm_names.append("specificity_floor")
         gate_ids.append("x2_headline_technical_specificity_floor_met")
         reason_parts.append(
             f"x2_headline_technical_specificity_floor_met:{len(spec_pre)}_of_{POSITIONING_FAMILY_FLOOR}"
         )
+    if narrowing_arm:
+        arm_names.append("narrowing_labels")
+        gate_ids.append("x2_headline_no_narrowing_it_labels")
+        gate_ids.append("x2_headline_generic_it_strategy_demote_forbidden")
+        reason_parts.append(
+            "x2_headline_no_narrowing_it_labels:" + "|".join(narrow_pre)
+        )
+    trigger_arm = "+".join(arm_names)
     trigger_reason = "+".join(reason_parts)
     from apps_rg.runtime.section_repair_ledger import KIND_REGEN_LLM, load_ledger, record_repair
 
@@ -968,6 +1011,7 @@ def apply_headline_content_signal_repair(
             "families_matched_pre": {
                 "governance_signal": gov_pre,
                 "specificity_floor": spec_pre,
+                "narrowing_labels": narrow_pre,
             },
             "headline_pre": hl_pre,
         },
@@ -975,7 +1019,11 @@ def apply_headline_content_signal_repair(
         "regen_call_made": False,
         "accepted": False,
         "headline_post": hl_pre,
-        "families_matched_post": {"governance_signal": [], "specificity_floor": []},
+        "families_matched_post": {
+            "governance_signal": [],
+            "specificity_floor": [],
+            "narrowing_labels": [],
+        },
         "rejected_reason": None,
         "bounded": {"max_attempts": CONTENT_SIGNAL_REPAIR_MAX_ATTEMPTS, "attempts_used": 0},
         "env_kill_switch_state": content_signal_repair_env_state(),
@@ -1001,6 +1049,7 @@ def apply_headline_content_signal_repair(
             employer_names_lower=employer_names_lower,
             trigger_arm=trigger_arm,
             families_matched_pre=spec_pre,
+            narrowing_labels_pre=narrow_pre,
             trigger_reason=trigger_reason,
         )
         if rejected_reason is None and new_snap is not None:
@@ -1018,6 +1067,7 @@ def apply_headline_content_signal_repair(
             receipt["families_matched_post"] = {
                 "governance_signal": governance_signal_families_matched(hl_post),
                 "specificity_floor": positioning_families_matched(hl_post),
+                "narrowing_labels": narrowing_labels_found(hl_post),
             }
         else:
             receipt["rejected_reason"] = rejected_reason or "parse_failed"
