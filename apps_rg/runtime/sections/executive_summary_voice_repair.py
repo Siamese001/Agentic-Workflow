@@ -1252,6 +1252,28 @@ def _trim_paragraph_word_budget(
                 rest = sent[m.end() :]
                 out[idx] = (rest[:1].upper() + rest[1:]) if rest else sent
 
+    # Strategy 8 (guaranteed closer): drop trailing comma-delimited segments from
+    # DIGIT-FREE sentences (facts/metrics protected), last sentence first - the capstone
+    # S6 list tail (", investment rigor, and measurable productivity outcomes") is
+    # aspirational positioning, not evidence. Live: rung regens land 143-145 with no
+    # strippable connectives; each dropped segment recovers 3-6 words.
+    if _wc(out) > max_words:
+        for idx in range(len(out) - 1, -1, -1):
+            while _wc(out) > max_words:
+                sent = out[idx]
+                if re.search(r"[\d$%]", sent):
+                    break
+                body = sent.rstrip(".").rstrip()
+                parts = body.split(", ")
+                # Keep >=3 segments so the trimmed sentence retains enough tokens for
+                # the ledger rebind (orphan-zero) to attribute it to its prior row.
+                if len(parts) < 4:
+                    break
+                parts.pop()
+                out[idx] = ", ".join(parts).rstrip(",").rstrip() + "."
+            if _wc(out) <= max_words:
+                break
+
     return out
 
 

@@ -258,7 +258,10 @@ def merge_targeting_parity_into_usage_ledger(
     refs["targeting_bundle_digest"] = bundle_d
     refs["generation_material_digest"] = gen_d
     refs["judge_material_digest"] = judge_d
-    refs["briefing_hash"] = gen_d
+    # Do NOT clobber input_refs.briefing_hash with gen_d: that digest already lives one
+    # line up under its own name, while briefing_hash is the CROSS-LANE canonical input
+    # digest the aggregation preflight compares (x2_preflight_briefing_digest_coherence)
+    # - the clobber made exec_summary the lone mismatch on every integrated run.
     refs["briefing_material_authority"] = "compiled_prompt_jd_requirements"
     refs["parity_match"] = match
     out["input_refs"] = refs
