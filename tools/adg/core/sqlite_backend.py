@@ -328,6 +328,20 @@ class SQLiteBackend:
             "sqlite_path": str(self._sqlite_path),
         }
 
+    def get_views_materialized_at(self) -> str | None:
+        """Return snapshot timestamp if infra P-views are present, else None."""
+        try:
+            conn = self._require_conn()
+            row = conn.execute(
+                "SELECT COUNT(*) FROM sqlite_master"
+                " WHERE type='view' AND (name LIKE 'mv_%' OR name LIKE 'v_p%')"
+            ).fetchone()
+            if row and row[0] > 0 and self._sqlite_path is not None:
+                return self._sqlite_path.stem.replace("adg_indexed_", "")
+            return None
+        except Exception:  # guardian: allow-broad-exception -- views may not exist on fresh or partial snapshots; health report must not fail closed
+            return None
+
     # -----------------------------------------------------------------
     # W3 P3.3 — graph-layer primitives (mv_*, P-views) for §22 consumers
     # -----------------------------------------------------------------

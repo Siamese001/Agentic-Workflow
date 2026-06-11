@@ -92,6 +92,8 @@ _APPROVED_ADAPTER_PATHS = (
     # apps_rg Chroma seams (mirror _SANCTIONED_APP_DIRECT_INFRA — exclude from t_infra_importers)
     "apps_rg/runtime/chroma_precomputed_collection.py",
     "apps_rg/runtime/c0/c02_product_hybrid_retrieval.py",
+    # apps_lic W7 Claude X1D judge adapter — sanctioned anthropic SDK caller for Exit-layer judging
+    "apps_lic/engines/x1d_claude_judge_adapter.py",
 )
 
 # Process-boundary adapters: invoked at process level (MCP server launch, filesystem access)
@@ -655,7 +657,7 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
         infra_adg_names = []
         for pkg in _RAW_INFRA_PACKAGES:
             cursor.execute(
-                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
+                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind IN ('external_module', 'external_provider')",
                 (f"ADG::Symbol::{pkg}",),
             )
             rows = cursor.fetchall()
@@ -671,7 +673,7 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
         provider_adg_names = []
         for pkg in _PROVIDER_SDKS:
             cursor.execute(
-                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
+                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind IN ('external_module', 'external_provider')",
                 (f"ADG::Symbol::{pkg}",),
             )
             rows = cursor.fetchall()

@@ -80,6 +80,8 @@ class ADGService:
 
         mode = "full" if redis_status == "healthy" else "sqlite_only"
         cache_hit_capable = redis_status == "healthy"
+        _vma = self._sqlite.get_views_materialized_at()
+        views_materialized_at: str | None = _vma if isinstance(_vma, str) else None
 
         return HealthStatus(
             mode=mode,
@@ -88,6 +90,7 @@ class ADGService:
             cache_hit_capable=cache_hit_capable,
             schema_version="1.0",
             adg_snapshot_id=self._adg_snapshot_id,
+            views_materialized_at=views_materialized_at,
         )
 
     def _query_with_fallback(
