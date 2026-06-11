@@ -402,6 +402,7 @@ def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]
         if cfg.is_bullet_lane
         else "Return JSON with narrative_sentence, claim_ledger:[{claim_text, source_fact_ids}], "
         "jd_alignment:{targeting_only:true,jd_used_as_proof:false}. The narrative is exactly one sentence "
+        f"of at most {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters, "
         "in first-person-implied resume voice: start with a past-tense action verb and never use a "
         "third-person subject such as 'the candidate' or the candidate's name."
     )
