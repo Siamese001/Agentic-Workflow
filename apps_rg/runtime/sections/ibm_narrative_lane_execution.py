@@ -166,6 +166,7 @@ def run_ibm_narrative_lane_execution(
     parsed: dict[str, Any] | None = None
     parse_error = ""
     runtime_generation_status = "BLOCKED"
+    _theme_repair_accepted = False
 
     judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
     judge_allowed_mock = bool(args.mock_judges and getattr(args, "allow_test_mock_judges", False))
@@ -583,7 +584,11 @@ def run_ibm_narrative_lane_execution(
     )
 
     write_x2_gate_outputs(artifact_dir / "x2_gate_outputs.json", x2, section_id="ibm_narrative")
-    from apps_rg.runtime.section_repair_ledger import load_ledger, record_x2_run
+    from apps_rg.runtime.section_repair_ledger import (
+        load_ledger,
+        record_x2_run,
+        set_authoritative_attempt,
+    )
 
     _ibm_ledger = load_ledger(artifact_dir) or {}
     record_x2_run(
@@ -592,6 +597,17 @@ def run_ibm_narrative_lane_execution(
         after_l2_source=str(_ibm_ledger.get("authoritative_l2_source") or "initial_llm"),
         x2_gates=x2,
     )
+    # An ACCEPTED theme-overpack regen (replaced_l2=True) that then passes the full X2
+    # suite is the authoritative attempt - without this, ledger_blocks_product_pass flips
+    # product to FAIL on every accepted repair (live: 20260611_152450, 0 X2 fails,
+    # judge pass, X3_BLOCK "Product quality is FAIL"). Headline precedent: headline_lane
+    # set_authoritative_attempt after its content-signal repair.
+    if _theme_repair_accepted and not [g for g in x2 if not g.get("pass")]:
+        set_authoritative_attempt(
+            artifact_dir,
+            2,
+            reason="ibm_narrative_theme_overpack_repair_x2_pass",
+        )
     write_json(
         artifact_dir / "fact_check_result.json",
         {"passed": not [g for g in x2 if not g["pass"]], "failed_gates": [g["gate_id"] for g in x2 if not g["pass"]]},
