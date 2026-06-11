@@ -1155,6 +1155,29 @@ def _trim_paragraph_word_budget(
                 break
             out = [s.replace(bad, good) for s in out]
 
+    # Strategy 7: strip the polish chain's OWN injected bridge openers. The chain adds
+    # 3-5-word connectives for flow; when they push the paragraph past the X2 ceiling
+    # (live: 153/163/158-word fails, attempt4 2026-06-11, all over by exactly the bridge
+    # mass), removing them reverses the chain's own additions - the underlying claims
+    # stand alone grammatically and no factual content is touched.
+    if _wc(out) > max_words:
+        bridge_openers = (
+            "Against that delivery foundation, ",
+            "Building on that platform foundation, ",
+            "Building on that foundation, ",
+            "Through that delivery system, ",
+            "Complementing that, ",
+            "In parallel, ",
+        )
+        for idx, sent in enumerate(out):
+            if _wc(out) <= max_words:
+                break
+            for opener in bridge_openers:
+                if sent.startswith(opener):
+                    rest = sent[len(opener) :]
+                    out[idx] = (rest[:1].upper() + rest[1:]) if rest else sent
+                    break
+
     return out
 
 

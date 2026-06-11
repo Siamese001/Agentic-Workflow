@@ -341,6 +341,7 @@ def run_ibm_narrative_lane_execution(
                 # stay uncited and fail their gates honestly.
                 from apps_rg.runtime.sections.ibm_canonical_hydration import (
                     bind_missing_ibm_narrative_theme_citations,
+                    redact_banned_lexicon_from_attestation_change_log,
                 )
 
                 _bound_theme_ids = bind_missing_ibm_narrative_theme_citations(
@@ -349,6 +350,7 @@ def run_ibm_narrative_lane_execution(
                         str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])
                     },
                 )
+                redact_banned_lexicon_from_attestation_change_log(parsed)
                 if _bound_theme_ids:
                     from apps_rg.runtime.section_repair_ledger import (
                         KIND_MECHANICAL as _KIND_MECH,
