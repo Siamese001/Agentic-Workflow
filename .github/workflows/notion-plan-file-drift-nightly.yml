@@ -9,7 +9,7 @@
 # Scope: runs ops_scripts/ci/check_notion_plan_file_drift.py against the
 # Wave/Phase Convergence DB (`aa8d2507-101e-4384-81d9-60ea3fe33876`).
 # Open rows whose Plan File property does not resolve to a file under
-# .cursor/plans/ produce a per-row report and fail the job.
+# plans/ produce a per-row report and fail the job.
 #
 # Policy: STRICT_DRIFT=1 is set so a missing NOTION_TOKEN (misconfig) also
 # fails the run — nightly is meant to be authoritative.

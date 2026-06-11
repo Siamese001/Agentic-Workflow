@@ -39,9 +39,11 @@ from __future__ import annotations
 __adg_consumer_mode__ = "inventory"
 
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Final
 
@@ -96,28 +98,48 @@ def _scan_files(root: Path, pattern: str, exts: tuple[str, ...] = (".py",)) -> d
     """Return {rel_path: [line_no, ...]} for every file under root that
     matches `pattern` (regex). Skips test / archive / venv directories.
     """
-    skip_parts = {"tests", "archives", "_archived", "venv", ".venv", "site-packages"}
+    skip_parts = {
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv",
+        "__pycache__",
+        "_archived",
+        "archives",
+        "lib",
+        "lib64",
+        "node_modules",
+        "site-packages",
+        "tests",
+        "venv",
+        "worktrees",
+    }
     rx = re.compile(pattern)
     results: dict[str, list[int]] = {}
-    for p in root.rglob("*"):
-        if not p.is_file() or p.suffix not in exts:
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in skip_parts]
+        current = Path(dirpath)
+        if any(part in skip_parts for part in current.parts):
             continue
-        if any(part in skip_parts for part in p.parts):
-            continue
-        try:
-            text = p.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-        hits: list[int] = []
-        for line_no, line in enumerate(text.splitlines(), start=1):
-            if rx.search(line):
-                hits.append(line_no)
-        if hits:
+        for filename in filenames:
+            p = current / filename
+            if p.suffix not in exts:
+                continue
             try:
-                rel = str(p.relative_to(REPO_ROOT)).replace("\\", "/")
-            except ValueError:
-                rel = p.name
-            results[rel] = hits
+                text = p.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            hits: list[int] = []
+            for line_no, line in enumerate(text.splitlines(), start=1):
+                if rx.search(line):
+                    hits.append(line_no)
+            if hits:
+                try:
+                    rel = str(p.relative_to(REPO_ROOT)).replace("\\", "/")
+                except ValueError:
+                    rel = p.name
+                results[rel] = hits
     return results
 
 
@@ -126,6 +148,7 @@ def _scan_files(root: Path, pattern: str, exts: tuple[str, ...] = (".py",)) -> d
 # ---------------------------------------------------------------------------
 
 
+@lru_cache(maxsize=1)
 def resolve_mcp_consumer_edges() -> list[ConsumerEdge]:
     """Mine code that references MCP server names declared in mcp_config.json.
 
@@ -140,7 +163,7 @@ def resolve_mcp_consumer_edges() -> list[ConsumerEdge]:
     server (the consumer doesn't statically pin a single server name, but
     it has read access to the entire registry).
     """
-    config_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
+    config_path = REPO_ROOT / ".mcp.json"
     if not config_path.exists():
         return []
     try:
@@ -167,7 +190,7 @@ def resolve_mcp_consumer_edges() -> list[ConsumerEdge]:
         hits = _scan_files(REPO_ROOT, pattern)
         anchor = f"Registry::MCP::{name}"
         for rel_path, line_nos in hits.items():
-            if rel_path == ".cursor/mcp.json":
+            if rel_path == ".mcp.json":
                 continue  # the registry source itself is not a consumer
             consumer_module = _module_adg_name(rel_path)
             key = (consumer_module, anchor)
@@ -197,6 +220,7 @@ def resolve_mcp_consumer_edges() -> list[ConsumerEdge]:
 # ---------------------------------------------------------------------------
 
 
+@lru_cache(maxsize=1)
 def resolve_agent_spec_consumer_edges() -> list[ConsumerEdge]:
     """Mine code that loads or references agent_specs.json keys.
 
@@ -287,6 +311,7 @@ def resolve_agent_spec_consumer_edges() -> list[ConsumerEdge]:
     return edges
 
 
+@lru_cache(maxsize=1)
 def resolve_route_contract_consumer_edges() -> list[ConsumerEdge]:
     """Mine code that references route-contract identifiers declared in
     ``agentic_core/L0_routing/config/v15_policy_pack.json`` (or successors).

@@ -1,0 +1,94 @@
+{
+  "generated_at": "2026-06-11",
+  "plan_id": "codex-claude-mcp-access-parity-c6d4e2",
+  "result": "fixed",
+  "cause": "Two Claude agent parent processes each owned a full MCP launch tree.",
+  "runtime_cleanup": {
+    "older_claude_parent_pid": 31676,
+    "preserved_claude_parent_pid": 13272,
+    "terminated_duplicate_child_count": 16,
+    "terminated_groups": {
+      "GitKraken": 1,
+      "adg_sqlite": 1,
+      "memory": 1,
+      "vector_db": 1,
+      "notion_launch_tree": 3,
+      "context7_launch_tree": 4,
+      "playwright_launch_tree": 5
+    }
+  },
+  "code_changes": [
+    {
+      "path": "scripts/governance/audit_codex_mcp_transports.py",
+      "change": "Added tools.mcp.launch_adg_sqlite_mcp as an adg_sqlite process marker."
+    },
+    {
+      "path": "scripts/governance/cleanup_duplicate_mcp_cohorts.py",
+      "change": "Added dry-run-first helper that removes duplicate Claude-owned MCP child cohorts without terminating Claude parents or crossing nested Claude parent boundaries."
+    },
+    {
+      "path": "tests/unit/scripts/governance/test_audit_codex_mcp_transports.py",
+      "change": "Added regression tests for the ADG launcher marker and cleanup selection safety."
+    }
+  ],
+  "final_audit": {
+    "adg_sqlite": {
+      "classification": "single",
+      "process_count": 1,
+      "root_launcher_count": 1
+    },
+    "memory": {
+      "classification": "single",
+      "process_count": 1,
+      "root_launcher_count": 1
+    },
+    "vector_db": {
+      "classification": "single",
+      "process_count": 1,
+      "root_launcher_count": 1
+    },
+    "notion": {
+      "classification": "single_launch_tree",
+      "process_count": 3,
+      "root_launcher_count": 1
+    },
+    "context7": {
+      "classification": "single_launch_tree",
+      "process_count": 4,
+      "root_launcher_count": 1
+    },
+    "playwright": {
+      "classification": "single_launch_tree",
+      "process_count": 3,
+      "root_launcher_count": 1
+    }
+  },
+  "cleanup_dry_run_after_fix": {
+    "mode": "dry-run",
+    "selection": {
+      "keep_parent_pid": 13272,
+      "duplicate_parent_pids": [],
+      "target_pids": [],
+      "targets": []
+    }
+  },
+  "verification": [
+    {
+      "command": "python -m py_compile scripts/governance/audit_codex_mcp_transports.py scripts/governance/cleanup_duplicate_mcp_cohorts.py",
+      "result": "pass"
+    },
+    {
+      "command": "python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py -q",
+      "result": "pass: 10 passed, 3 warnings"
+    },
+    {
+      "command": "python scripts/governance/verify_codex_backup.py",
+      "result": "pass"
+    },
+    {
+      "command": "python tools/analysis/check_plan_format_forward.py plans/codex-claude-mcp-access-parity-c6d4e2.md",
+      "result": "pass"
+    }
+  ],
+  "remaining_limit": "The Codex adg_sqlite tool transport still reports Transport closed; this cleanup fixed duplicate process cohorts, not the separate Codex tool attachment issue."
+}

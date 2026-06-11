@@ -1,0 +1,983 @@
+---
+status: Archived
+do_not_execute: true
+memorialized: true
+source_surface: recovered_docs_reports_plans
+source_key: windsurf-docs
+original_path: 'C:\\Git\\windsurf-plans-recovered\\docs_reports_plans\\hostile_audit_execute_ssot_entrypoint_heal.md'
+original_relative_path: 'hostile_audit_execute_ssot_entrypoint_heal.md'
+source_sha256: 21c55eb8791712213d606a2346300cf5bff681082b140bd8803f37d6eb68875f
+recovered_status: LOST_RECOVERED
+last_commit: '8730830964b'
+last_commit_date: '2026-04-05 17:47:48 -0400'
+created_date: '2026-03-09'
+archived_reason: historical consolidation for review, lessons learned, and anti-pattern analysis
+---
+
+> ARCHIVED MEMORIAL RECORD: This file is preserved for review and lessons learned. Do not execute it as an active plan.
+
+---
+# HOSTILE MASTER AUDITOR REPORT
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
+## Target: `python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --heal`
+## Date: 2026-03-09 | Auditor position: zero-trust, forensic-grade standard
+
+---
+
+## EXECUTIVE VERDICT
+
+**NO. `execute_ssot_entrypoint --heal` cannot currently be trusted.**
+
+This is not a marginal trust gap. It is a structural absence of forensic evidence. The system can and does claim success under all of the following conditions without producing verifiable proof:
+
+- No mutations occurred
+- Mutations occurred outside the write gateway
+- Policy used is stale or hardcoded
+- Post-heal validation was skipped
+- An agent threw an exception that was swallowed
+- Replay/scan mode was misidentified as commit mode in the summary
+
+Every claim in the current output traces back to self-reported `fix_summary` strings and aggregated in-memory counters — none of which are independently verifiable from the artifact files alone.
+
+---
+
+# SECTION A — CURRENT TRUST FAILURES
+
+## A1. HARDCODED POLICY HASH (CRITICAL)
+
+**Location:** `execute_ssot.py:7466`
+```python
+_policy_hash = _h.sha256(b"sovereign-policy-v1.0").hexdigest()
+```
+**Verdict:** Every run on every machine at every point in time produces the exact same `policy_hash`. This is not a policy hash. It is a constant disguised as an audit signal. A run using a totally different policy config will show the identical hash. **This is a guaranteed false positive on every run.**
+
+---
+
+## A2. NO MUTATION LEDGER — ZERO PER-WRITE FORENSIC PROOF
+
+**Location:** `agentic_core/L2_execution/tools/write_gateway.py:232`
+```python
+Logger.debug(f"[WriteGateway] write_text: {p}")
+```
+The gateway records nothing beyond a DEBUG log line. There is no:
+- Per-write `before_hash`
+- Per-write `after_hash`
+- Per-write `trace_id` binding
+- Per-write `replay_mode` flag
+- Per-write `permitted` or `gateway_approval` result
+- Append to any ledger file
+
+**A human reading `heal_run_complete.json` cannot determine what was written, to which paths, in which sequence, or whether the gateway approved each write.** The only "proof" is an agent-supplied `fix_summary` string.
+
+---
+
+## A3. BYPASS PATHS AROUND THE WRITE GATEWAY
+
+**Location:** Throughout agent code — many agents predate the gateway and use:
+```python
+path.write_text(...)       # direct Python
+open(path, 'w').write(...) # direct Python
+```
+`_deny_writes_into_source_roots` is the only guard against these — and it is completely bypassed when `AGENTIC_ALLOW_MUTATION_FOR_TESTS == "1"` (set automatically when `--allow-protected-root-mutation` is passed). **There is no mechanism to detect, count, or report mutations that bypass `write_gateway.py`.**
+
+---
+
+## A4. NO PRE-VALIDATION PROOF ARTIFACT
+
+**Location:** `execute_ssot.py:8053-8057`
+```python
+phase3_result = execute_phase3_validation(agents, territory, _phase1_violations, False)
+```
+`_phase1_violations` is computed during Phase 1 scan. The violations are:
+- Used inline during heal
+- **Never written to a structured `pre_validation.json` artifact**
+- Not hash-stamped
+- Not tied to the run's trace_id
+
+The pre-heal violation state exists only in memory. If the run crashes or produces a partial output, the pre-heal state is unrecoverable.
+
+---
+
+## A5. NO POST-VALIDATION PROOF ARTIFACT
+
+**Location:** `execute_ssot.py:8060-8064`
+```python
+if phase3_result["status"] == "clean":
+    logger.info("✅ Phase 3: All files pass validation")
+else:
+    remaining_count = len(phase3_result.get("remaining_violations", []))
+    logger.warning(f"⚠️ Phase 3: {remaining_count} issues detected")
+```
+`phase3_result` is computed but:
+- **Never stored in `state_mgr`**
+- **Never written to any output JSON**
+- **Only emitted as a logger call**
+
+The stdout transcript is not a proof artifact. A single `logger.info("✅ Phase 3: All files pass validation")` is trivially confused with a real pass. **Post-heal revalidation currently leaves zero durable evidence.**
+
+---
+
+## A6. TRACE_ID IS NOT THREADED THROUGH THE HEALING PIPELINE
+
+**Location:** `execute_ssot.py:879-904` (manifest building) vs `_record_healing_action` (line 1335)
+```python
+# _record_healing_action schema:
+action = {
+    "agent": agent,
+    "territory": territory,
+    "fix_summary": fix_summary,   # self-reported
+    "outcome": outcome,
+    ...
+    # NO trace_id field
+    # NO plan_hash field
+    # NO execution_mode field
+}
+```
+The `trace_id` generated by `_v15_build_ssot_manifest()` is used only for the gateway audit log. It is not:
+- Passed into any healing action record
+- Stored in `heal_run_output.json` or `heal_run_complete.json`
+- Used to cross-reference any artifact
+
+**Two different runs' artifacts are indistinguishable by trace_id because no artifact contains it.**
+
+---
+
+## A7. SELF-REPORTED SUCCESS — NO INDEPENDENT VERIFICATION
+
+**Location:** `execute_ssot.py:8112-8127`
+```python
+_record_healing_action(
+    state_mgr,
+    agent="FileClassificationHealerAgent",
+    fix_summary=f"Fixed {healed} file classification violation(s) in {territory}",
+    outcome="SUCCESS" if healed > 0 else "PARTIAL",
+)
+```
+The agent determines its own `outcome`. There is no external verifier that:
+- Reads the actual filesystem after the write
+- Computes a post-write hash and compares to the claimed fix
+- Validates that `healed` matches any filesystem diff
+
+`healed = heal_result.get("violations_fixed", 0) if isinstance(heal_result, dict) else 0` — if `heal_result` returns `{}` (which it does on agent import failure, line 8104-8105), `healed = 0` and outcome = `"PARTIAL"`. This silently masks total agent failure as a partial success.
+
+---
+
+## A8. EXCEPTION SWALLOWING MASKS AGENT FAILURE IN SUCCESS SUMMARIES
+
+**Location:** Throughout — example at `execute_ssot.py:8217`
+```python
+except Exception as e:
+    logger.error(f"ObservabilityProbeExecutorAgent FAILED: {e}")
+    state_mgr.complete_agent("ObservabilityProbeExecutorAgent", False, str(e))
+    _record_healing_action(..., outcome="FAILED")
+```
+This specific case records `outcome="FAILED"` — but the Gate 1 (Agent Coverage) check uses `state_mgr.complete_agent(success=True/False)` which affects coverage ratio. An agent that throws is marked failed in coverage but its healing action outcome is `"FAILED"`, which is **not excluded from the success rate denominator** (only PARTIAL and SKIPPED are excluded). A run where every agent throws will show `success_rate = 0.0` — but the outer `overall_status` may still show `PASS` if no gate explicitly FAILs on this.
+
+More critically: many call sites use `# guardian: allow-silent-swallower` and do NOT record a FAILED outcome — the exception is consumed with no trace in `healing_actions`.
+
+---
+
+## A9. NO EXECUTION MODE MARKER IN OUTPUT ARTIFACTS
+
+The `HealContext.heal: bool` flag controls whether mutations are applied, but:
+- It is **not written to any output JSON artifact**
+- A scan-only run (`--validate`, no `--heal`) and a commit run (`--heal`) produce artifacts with identical schema
+- The only distinction is a lower `violations_fixed` count — which is also `0` on a legitimate no-op commit run
+
+A human reading `heal_run_complete.json` from a scan-only run cannot distinguish it from a commit run that healed nothing.
+
+---
+
+## A10. OBSERVABILITY PROBE RECORDS "SUCCESS" WITH ZERO MUTATIONS
+
+**Location:** `execute_ssot.py:8187-8196`
+```python
+_record_healing_action(
+    state_mgr,
+    agent="ObservabilityProbeExecutorAgent",
+    fix_summary=f"Observability probe scan: {len(conv_violations)} violation(s) in {territory}",
+    outcome="SUCCESS",
+)
+```
+This agent performs a **scan**, not a heal. It records `outcome="SUCCESS"` regardless of how many violations it finds. This entry flows into:
+- Gate 1 (Agent Coverage) → counted as a covered agent
+- Success rate denominator → counted as a SUCCESS
+
+A scan that reports `N violations found` is semantically identical in the ledger to a healer that fixed `N violations`. Both show `outcome="SUCCESS"`.
+
+---
+
+## A11. STALE SNAPSHOT USE — NO CONFIG FRESHNESS PROOF
+
+**Location:** `execute_ssot.py:7476`
+```python
+_config_hash = _hcs(_gcs())
+```
+`_gcs()` is `get_config_surface()` from `negative_control_harness`. This hash is computed but:
+- Not stored in any artifact with a timestamp
+- Not cross-referenced against a known-good baseline
+- Silently falls back to a stable hash if import fails (line 7462-7464)
+
+There is no mechanism to detect or reject a stale policy configuration loaded from a prior state.
+
+---
+
+## A12. NO RUN START/END TIMESTAMPS IN ARTIFACTS
+
+`run_ts = datetime.datetime.now().isoformat()` is computed but `run_ts` and a corresponding `end_ts` are not written to any output artifact. Audit artifacts cannot be placed in chronological sequence relative to other system events.
+
+---
+
+## A13. `plan_hash` IS ABSENT — NO SURGICAL PLAN PROOF
+
+The `SurgicalManifest` contains a `manifest_hash` computed as `sha256(ast_snippet.encode())` where `ast_snippet = "execute_ssot._legacy_main()"` — a hardcoded string. This is not a plan hash. No actual healing plan (territory set, agent set, violation set, operation set) is hashed and recorded.
+
+---
+
+## A14. `phase3_result` RE-USES `_phase1_violations` AS REFERENCE — CIRCULAR PROOF
+
+**Location:** `execute_ssot.py:8053`
+```python
+phase3_result = execute_phase3_validation(agents, territory, _phase1_violations, False)
+```
+The post-heal validator runs against the same `_phase1_violations` list that was used to plan the heal. It does not independently re-scan the filesystem. If a healer claimed to fix violations by modifying `_phase1_violations` in memory, the post-heal check would show "clean" even if the filesystem was unchanged.
+
+---
+
+## A15. AGGREGATE SUCCESS MASKS PARTIAL FAILURE — "47 FIXES APPLIED" PATTERN
+
+**Location:** `_write_heal_run_complete` — Gate 11 (Healing Effectiveness Rate)
+`_total_fixed / _total_found` is an aggregate ratio. A run that healed 47 of 50 violations but left 3 unresolved in a critical path will show `93.4% effectiveness` — above the 50% threshold — despite 3 unresolved critical violations. There is no per-violation resolved/residual breakdown in any artifact.
+
+---
+
+# SECTION B — HARD FAIL GATE CRITERIA
+
+## B1. Run Identity (MANDATORY — ALL MUST BE PRESENT)
+
+| Field | Requirement | Current State | Verdict |
+|-------|-------------|---------------|---------|
+| `trace_id` | UUID-v4 or 64-hex, unique per run | Computed but not in artifacts | **ABSENT** |
+| `policy_hash` | SHA256 of actual loaded policy JSON | Hardcoded constant | **FALSE POSITIVE** |
+| `plan_hash` | SHA256 of (territory_set ‖ agent_set ‖ violation_ids) | Not computed | **ABSENT** |
+| `config_snapshot_hash` | SHA256 of actual config surface | Computed, not in artifacts | **ABSENT** |
+| `execution_mode` | `"COMMIT"` or `"SCAN_ONLY"` | Not in any artifact | **ABSENT** |
+| `run_start_utc` | ISO-8601 timestamp | Not in artifacts | **ABSENT** |
+| `run_end_utc` | ISO-8601 timestamp | Not in artifacts | **ABSENT** |
+
+**HARD FAIL if any B1 field is missing, malformed, or is a static/hardcoded value.**
+
+## B2. Input Snapshot Proof (MANDATORY)
+
+| Proof | Requirement | Current State |
+|-------|-------------|---------------|
+| Config snapshot hash | Matches `get_config_surface()` at run start, stored in artifact | Not in artifact |
+| Registry digest | SHA256 of `registry_digest()` JSON, stored in artifact | Computed, not in artifact |
+| Structure blueprint hash | SHA256 of active structure blueprint | Not computed |
+| Active territory set | Explicit list of territories processed | In stdout only |
+| Policy threshold bundle hash | SHA256 of loaded thresholds | Not computed |
+| Execution authorization token | Proof that `--heal` flag was set in the run that produced these artifacts | Not in artifacts |
+
+**HARD FAIL if config_snapshot_hash in artifact does not match hash recomputed from filesystem at validation time. HARD FAIL if any snapshot field is absent.**
+
+## B3. Pre-Heal Validation Proof (MANDATORY)
+
+| Proof | Requirement | Current State |
+|-------|-------------|---------------|
+| `pre_validation.json` | Structured artifact with findings list | Does not exist |
+| Finding IDs | Normalized, deterministic ID per finding | Not assigned |
+| Finding provenance | Validator class + method that emitted finding | Not captured |
+| Severity distribution | Count by severity tier | Not in artifact |
+| Targeted paths | List of files/paths scanned | Not structured |
+| Pre-heal timestamp | ISO-8601 timestamp of when scan completed | Not captured |
+
+**HARD FAIL if `pre_validation.json` is absent. HARD FAIL if findings have no normalized IDs. HARD FAIL if validator class provenance is missing.**
+
+## B4. Mutation Proof (MANDATORY PER WRITE)
+
+| Proof | Requirement | Current State |
+|-------|-------------|---------------|
+| `mutation_ledger.jsonl` | One entry per attempted write | Does not exist |
+| `path` | Normalized absolute path | Not captured |
+| `operation` | `write_text`/`write_bytes`/`remove_file`/etc. | Not captured |
+| `before_hash` | SHA256 of file content before write | Not captured |
+| `after_hash` | SHA256 of file content after write | Not captured |
+| `gateway_approved` | Boolean from `enforce_protected_root` | Not captured |
+| `replay_mode` | Whether this write was simulated | Not captured |
+| `sequence_number` | Monotonically increasing per-run | Not captured |
+| `trace_id` | Same trace_id as run_manifest | Not captured |
+
+**HARD FAIL if any write occurred during commit mode without a ledger entry. HARD FAIL if `before_hash == after_hash` for any entry claiming `outcome=SUCCESS`. HARD FAIL if `gateway_approved=False` for any completed write. HARD FAIL if any write bypassed the gateway (detected by comparing ledger entry count to filesystem diff).**
+
+## B5. Post-Heal Revalidation Proof (MANDATORY)
+
+| Proof | Requirement | Current State |
+|-------|-------------|---------------|
+| `post_validation.json` | Structured artifact | Does not exist |
+| Resolved findings | Finding IDs from pre_validation no longer present | Not computed |
+| Residual findings | Finding IDs still present after heal | Not computed |
+| Regressions | Finding IDs present in post but not pre | Not computed |
+| Post-heal timestamp | ISO-8601 | Not captured |
+| Validator version | Which version of each validator was used | Not captured |
+
+**HARD FAIL if `post_validation.json` is absent. HARD FAIL if post-validation ran against in-memory state instead of filesystem. HARD FAIL if `resolved + residual != pre_finding_count`. HARD FAIL if regressions > 0 with success claim.**
+
+## B6. Determinism / Replay Proof
+
+**HARD FAIL if** `plan_hash` differs between two runs on the same commit with the same violation set, without explicit justification stored in the artifact.
+
+**HARD FAIL if** `replay_mode=True` but `mutation_ledger.jsonl` contains any entry with `gateway_approved=True` and `before_hash != after_hash`.
+
+## B7. False Positive Guard (MANDATORY CIRCUIT BREAKERS)
+
+| Condition | Required Behavior |
+|-----------|-------------------|
+| Commit mode, zero writes, success claimed | HARD FAIL |
+| Scan mode, repair language in summary | HARD FAIL |
+| Post-heal validation absent | HARD FAIL |
+| Any proof artifact missing | HARD FAIL |
+| Any artifact hash mismatch vs `artifact_integrity.json` | HARD FAIL |
+| `policy_hash` equals `sha256("sovereign-policy-v1.0")` | HARD FAIL — static constant detected |
+| `trace_id` absent from any artifact | HARD FAIL |
+| `before_hash == after_hash` on SUCCESS ledger entry | HARD FAIL |
+
+---
+
+# SECTION C — EVIDENCE CONTRACT UPGRADE
+
+## Required Artifact Set (all bound by trace_id)
+
+### C1. `run_manifest.json`
+```json
+{
+  "schema_version": "2.0.0",
+  "trace_id": "<uuid4>",
+  "plan_hash": "<sha256 of territory_set|agent_set|pre_finding_ids>",
+  "policy_hash": "<sha256 of actual loaded policy JSON — NOT a hardcoded string>",
+  "registry_digest": "<sha256 of registry_digest() JSON>",
+  "structure_blueprint_hash": "<sha256 of structure blueprint file>",
+  "config_snapshot_hash": "<sha256 of get_config_surface()>",
+  "execution_mode": "COMMIT",
+  "run_start_utc": "2026-03-09T04:53:00.000Z",
+  "run_end_utc": "2026-03-09T04:58:22.113Z",
+  "territories_processed": ["L5_safety", "L0_routing"],
+  "agents_invoked": ["FileClassificationHealerAgent", "HierarchyHealerAgent"],
+  "overall_result": "<derived from sub-artifact pass/fail — no human-written string>",
+  "fail_reasons": []
+}
+```
+**Derivation rule:** `overall_result` must be computed solely from `pre_validation.json`, `mutation_ledger.jsonl`, `post_validation.json`, and `decision_summary.json`. Any discrepancy between `overall_result` and the stdout transcript is a FAIL.
+
+### C2. `pre_validation.json`
+```json
+{
+  "trace_id": "<must match run_manifest>",
+  "timestamp_utc": "...",
+  "snapshot_hash": "<config_snapshot_hash from run_manifest>",
+  "validators": ["LocationValidatorAgent", "FileClassificationAgent"],
+  "findings": [
+    {
+      "id": "FND-0001",
+      "validator": "LocationValidatorAgent",
+      "path": "agentic_core/L0_routing/scripts/foo.py",
+      "severity": "high",
+      "rule": "LOCATION_VIOLATION",
+      "description": "..."
+    }
+  ],
+  "counts": {"total": 14, "high": 8, "medium": 4, "low": 2},
+  "targeted_paths": [...]
+}
+```
+
+### C3. `mutation_ledger.jsonl` (one JSON object per line)
+```jsonl
+{"seq": 1, "trace_id": "...", "timestamp_utc": "...", "agent": "FileClassificationHealerAgent", "operation": "write_text", "path": "docs/evidence/foo.md", "before_hash": "abc123...", "after_hash": "def456...", "bytes_written": 1024, "gateway": "L2.WriteGateway", "gateway_approved": true, "replay_mode": false, "result": "SUCCESS", "error": null, "finding_ids_addressed": ["FND-0001", "FND-0002"]}
+```
+**Every write_gateway call must append one line. Missing line = missing proof = HARD FAIL.**
+
+### C4. `post_validation.json`
+```json
+{
+  "trace_id": "...",
+  "timestamp_utc": "...",
+  "pre_finding_count": 14,
+  "resolved_findings": ["FND-0001", "FND-0002"],
+  "residual_findings": ["FND-0003"],
+  "regressions": [],
+  "post_finding_count": 1,
+  "resolution_rate": 0.9285,
+  "validators_rerun": ["LocationValidatorAgent", "FileClassificationAgent"]
+}
+```
+
+### C5. `decision_summary.json`
+```json
+{
+  "trace_id": "...",
+  "overall_result": "PASS",
+  "gates_evaluated": 12,
+  "gates_passed": 11,
+  "gates_failed": 0,
+  "gates_na": 1,
+  "fail_reasons": [],
+  "false_positive_guards_triggered": [],
+  "machine_derived": true
+}
+```
+**No human-written narrative. All fields derived from other artifacts.**
+
+### C6. `stdout_transcript.txt`
+Raw stdout captured at runtime. Informational only. Cannot override JSON artifacts.
+
+### C7. `artifact_integrity.json`
+```json
+{
+  "trace_id": "...",
+  "artifacts": {
+    "run_manifest.json": {"sha256": "...", "size_bytes": 1204, "present": true},
+    "pre_validation.json": {"sha256": "...", "size_bytes": 8402, "present": true},
+    "mutation_ledger.jsonl": {"sha256": "...", "size_bytes": 34021, "present": true},
+    "post_validation.json": {"sha256": "...", "size_bytes": 2104, "present": true},
+    "decision_summary.json": {"sha256": "...", "size_bytes": 512, "present": true},
+    "stdout_transcript.txt": {"sha256": "...", "size_bytes": 45600, "present": true}
+  },
+  "missing_artifacts": [],
+  "integrity_verified": true
+}
+```
+**Written last. Any `present: false` is a HARD FAIL. This file must itself be hashed and its hash printed to stdout.**
+
+---
+
+# SECTION D — FALSE POSITIVE TEST MATRIX
+
+## D1. Healer claims success, no writes occurred
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Agent `heal_repository()` returns `{"violations_fixed": 5}` but calls `path.write_text()` directly, bypassing write_gateway |
+| **Trigger** | Run in commit mode; agent self-reports SUCCESS |
+| **Expected FAIL condition** | `mutation_ledger.jsonl` has 0 entries; `before_hash == after_hash` for all paths; gate B7 fires |
+| **Proof artifact** | `mutation_ledger.jsonl` empty + filesystem diff shows no changes |
+| **Why it fools humans** | stdout shows "Fixed 5 classification violations" with green checkmark; no artifact contradicts it |
+
+## D2. Writes occurred, post-validation skipped
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | `execute_phase3_validation` throws `ImportError`; exception is swallowed |
+| **Trigger** | `phase3_result` is `None`; code path falls through to success summary |
+| **Expected FAIL condition** | `post_validation.json` is absent; gate B5 fires |
+| **Proof artifact** | Missing `post_validation.json` + `artifact_integrity.json` shows `present: false` |
+| **Why it fools humans** | Healing actions show SUCCESS; no explicit error in stdout; green overall status |
+
+## D3. Scan-mode run reported as committed repair
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Run without `--heal`; `HealContext.heal=False` |
+| **Trigger** | `fix_summary` from a scan agent contains "Fixed N violations" language |
+| **Expected FAIL condition** | `run_manifest.json` `execution_mode=SCAN_ONLY`; gate B7 fires if repair language present without `mutation_ledger.jsonl` entries |
+| **Proof artifact** | `mutation_ledger.jsonl` empty + `execution_mode=SCAN_ONLY` in run_manifest |
+| **Why it fools humans** | `ObservabilityProbeExecutorAgent` records `outcome=SUCCESS` in scan mode; success rate gate shows PASS |
+
+## D4. Partial repair, final status says success
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | 50 findings pre-heal; 47 fixed; 3 residual in a critical `L5_safety` territory |
+| **Trigger** | Healing effectiveness gate: 47/50 = 94% ≥ 50% → PASS |
+| **Expected FAIL condition** | Gate must evaluate residual findings by severity; any residual `severity=critical` findings = FAIL regardless of aggregate rate |
+| **Proof artifact** | `post_validation.json` residual_findings list with severities |
+| **Why it fools humans** | Aggregate 94% rate looks healthy; critical residuals buried in details |
+
+## D5. Wrong snapshot loaded — findings disappear
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | `get_config_surface()` import fails; falls back to `sha256("determinism-digest:import-failed")` |
+| **Trigger** | Pre-validation runs with fallback config; zero findings returned (different rules) |
+| **Expected FAIL condition** | Gate B2: config_snapshot_hash matches fallback sentinel → HARD FAIL |
+| **Proof artifact** | `run_manifest.json` config_snapshot_hash equals `sha256("determinism-digest:import-failed")` sentinel |
+| **Why it fools humans** | Zero violations means all gates show N/A or PASS; summary appears clean |
+
+## D6. Static `policy_hash` constant used (current production behavior)
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Current production code: `_policy_hash = sha256("sovereign-policy-v1.0")` |
+| **Trigger** | Every run |
+| **Expected FAIL condition** | Gate B7: policy_hash equals known static sentinel `9ab9b026...` → HARD FAIL |
+| **Proof artifact** | `run_manifest.json` policy_hash checked against known-constant sentinel |
+| **Why it fools humans** | policy_hash looks like a real SHA256; nothing in the output identifies it as a constant |
+
+## D7. Mutation ledger missing one of several writes
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Agent calls `write_gateway.write_text()` for 5 files; ledger append fails on file 3 due to I/O error; exception is swallowed |
+| **Trigger** | Ledger has 4 entries; artifact integrity hash covers 4 entries |
+| **Expected FAIL condition** | Cross-reference ledger entry count vs filesystem diff count; mismatch = HARD FAIL |
+| **Proof artifact** | `git diff --name-only` count vs `mutation_ledger.jsonl` line count |
+| **Why it fools humans** | healing_effectiveness shows 4/5 fixed; no indicator that one write is untracked |
+
+## D8. Filesystem changed outside gateway
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Agent uses `open(path, 'w')` directly; write succeeds; gateway never called |
+| **Trigger** | `mutation_ledger.jsonl` has 0 entries for that path |
+| **Expected FAIL condition** | Post-run filesystem diff includes paths not in mutation_ledger → HARD FAIL |
+| **Proof artifact** | `git diff --name-only` output cross-referenced with ledger paths |
+| **Why it fools humans** | Fix summary says "Fixed 1 violation"; it was real; but it was unauthorized |
+
+## D9. stdout claims resolved, post_validation still has findings
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Phase 3 revalidator runs against in-memory violation list that healer modified directly |
+| **Trigger** | Filesystem still contains violations; in-memory list shows clean |
+| **Expected FAIL condition** | post_validation.json re-run must use fresh filesystem scan, not in-memory reference |
+| **Proof artifact** | `post_validation.json` timestamp must be after last ledger entry timestamp |
+| **Why it fools humans** | logger.info("✅ Phase 3: All files pass validation") emitted from in-memory result |
+
+## D10. Zero findings pre-heal, healer still reports healed
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Pre-validation finds 0 violations; healer still executes |
+| **Trigger** | Agent returns `{"violations_fixed": 0}`; records `outcome=PARTIAL` |
+| **Expected FAIL condition** | Gate B7: commit mode + 0 pre-findings + 0 ledger entries + success claimed = HARD FAIL (silent no-op) |
+| **Proof artifact** | `pre_validation.json` count=0 + `mutation_ledger.jsonl` count=0 + `execution_mode=COMMIT` |
+| **Why it fools humans** | PARTIAL outcome is excluded from success rate denominator; effectively invisible |
+
+## D11. Exception swallowed, final summary still green
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Critical healer throws; `# guardian: allow-silent-swallower` catches it |
+| **Trigger** | No `_record_healing_action` call with `outcome=FAILED` at some call sites |
+| **Expected FAIL condition** | Any `guardian: allow-silent-swallower` in a healing code path that does NOT record FAILED outcome must force FAIL |
+| **Proof artifact** | Exception audit: every swallowed exception must appear in a `exceptions_swallowed` field in `run_manifest.json` |
+| **Why it fools humans** | Agent simply absent from healing_actions list; coverage gate may or may not catch it |
+
+## D12. Corrupted artifact hash but decision_summary still PASS
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | `post_validation.json` written with truncated content; file present |
+| **Trigger** | `artifact_integrity.json` hash of post_validation.json does not match recomputed hash |
+| **Expected FAIL condition** | Integrity verification gate fires; overall_result forced to FAIL |
+| **Proof artifact** | `artifact_integrity.json` with `integrity_verified: false` |
+| **Why it fools humans** | File exists and is parseable; summary shows success; hash mismatch not visually obvious |
+
+## D13. trace_id mismatch across artifacts
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | `run_manifest.json` written at run start with trace_id A; later artifacts written with trace_id B from a different run context |
+| **Trigger** | trace_id correlation check fails |
+| **Expected FAIL condition** | Any artifact with trace_id ≠ run_manifest.trace_id = HARD FAIL |
+| **Proof artifact** | `artifact_integrity.json` includes trace_id consistency check |
+| **Why it fools humans** | No current field in any artifact encodes trace_id; no check exists |
+
+## D14. No-op patch with success wording
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Healer writes file with identical content (`before_hash == after_hash`) |
+| **Trigger** | write_gateway does not check for content equality before write |
+| **Expected FAIL condition** | Ledger entry where `before_hash == after_hash` and `result=SUCCESS` → HARD FAIL on that entry |
+| **Proof artifact** | `mutation_ledger.jsonl` entry with matching hashes flagged `no_op: true` |
+| **Why it fools humans** | File modification timestamp updates; write appears real; content unchanged |
+
+## D15. Same run produces inconsistent counts across artifacts
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | stdout says "47 fixes applied"; `mutation_ledger.jsonl` has 43 entries; `post_validation.json` shows 44 resolved |
+| **Trigger** | Count cross-reference in `decision_summary.json` |
+| **Expected FAIL condition** | Any count mismatch across stdout, ledger, and post_validation = HARD FAIL |
+| **Proof artifact** | `decision_summary.json` includes cross-reference counts and fail_reasons list |
+| **Why it fools humans** | Humans trust the largest or most visible number; discrepancy only visible on detailed comparison |
+
+## D16. Duplicate findings collapsed incorrectly
+
+| Element | Detail |
+|---------|--------|
+| **Setup** | Pre-validation emits 10 findings for the same file from two different validators |
+| **Trigger** | Dedup logic collapses to 5 unique findings; healer addresses 5; post-validation shows 5 of 10 original violations resolved |
+| **Expected FAIL condition** | Finding IDs must be validator-scoped: `{validator}:{path}:{rule}` to prevent cross-validator dedup |
+| **Proof artifact** | `pre_validation.json` findings with composite IDs |
+| **Why it fools humans** | Dedup appears to reduce noise; actually hides 5 unresolved violations |
+
+---
+
+# SECTION E — IMPLEMENTATION PLAN
+
+## E1. Inject `trace_id` into run_manifest and all artifacts (Observability layer)
+
+| | |
+|-|-|
+| **File** | `agentic_core/L0_routing/scripts/execute_ssot.py` — `_legacy_main` entry |
+| **Responsibility** | Generate trace_id at function entry (before any agent runs); pass to all phase functions and the write_gateway context |
+| **Why** | No artifact can be correlated without a shared trace_id; currently absent from all artifacts |
+| **Layer** | Observability / artifact layer |
+| **Change size** | ~50 lines: generate UUID, thread through `HealContext`, write to run_manifest at start |
+
+## E2. Replace hardcoded `policy_hash` constant (L0 routing layer)
+
+| | |
+|-|-|
+| **File** | `execute_ssot.py:7466` |
+| **Responsibility** | Hash the actual loaded policy JSON dict instead of the literal string `"sovereign-policy-v1.0"` |
+| **Why** | Every run currently shows identical policy_hash regardless of actual policy |
+| **Layer** | Runtime |
+| **Change size** | 3 lines — load policy via existing API, serialize, hash |
+
+## E3. Add mutation ledger to write_gateway (Gateway layer)
+
+| | |
+|-|-|
+| **File** | `agentic_core/L2_execution/tools/write_gateway.py` |
+| **Responsibility** | Before and after each write: capture `before_hash`, compute `after_hash`, append JSONL entry to ledger file; accept `trace_id` as optional kwarg threaded in from caller |
+| **Why** | Currently zero per-write forensic evidence |
+| **Layer** | Gateway / mutation proof |
+| **Change size** | ~80 lines: `_append_ledger_entry()` helper; inject into `write_text`, `write_bytes`, `write_json`, `write_json_atomic`, `remove_file` |
+
+## E4. Write `pre_validation.json` before any heal runs (Validator layer)
+
+| | |
+|-|-|
+| **File** | `execute_ssot.py` — between Phase 1 scan and Phase 2 healing |
+| **Responsibility** | Serialize `_phase1_violations` to `pre_validation.json` with trace_id, timestamp, validator provenance, normalized finding IDs |
+| **Why** | Pre-heal state currently exists only in memory; unrecoverable on crash or partial run |
+| **Layer** | Validator artifact |
+| **Change size** | ~40 lines: `_write_pre_validation_artifact(violations, trace_id, validators_used)` |
+
+## E5. Write `post_validation.json` after Phase 3 revalidation (Validator layer)
+
+| | |
+|-|-|
+| **File** | `execute_ssot.py:8060-8064` — after `execute_phase3_validation` |
+| **Responsibility** | Store `phase3_result` in structured JSON; compute resolved/residual/regression sets by cross-referencing `pre_validation.json` finding IDs |
+| **Why** | Phase 3 results currently go only to logger; zero durable post-heal proof |
+| **Layer** | Validator artifact |
+| **Change size** | ~60 lines: `_write_post_validation_artifact(phase3_result, pre_validation_ids, trace_id)` |
+
+## E6. Write `run_manifest.json` at run start and `decision_summary.json` at end (Artifact layer)
+
+| | |
+|-|-|
+| **File** | `execute_ssot.py` — `_legacy_main` entry and exit |
+| **Responsibility** | Write run_manifest at entry with all snapshot hashes; write decision_summary at exit derived from sub-artifacts only |
+| **Why** | No run identity artifact exists; overall_result is currently computed from in-memory counters, not from artifacts |
+| **Layer** | Observability / artifact |
+| **Change size** | ~70 lines |
+
+## E7. Write `artifact_integrity.json` as final step, print its hash to stdout (Artifact layer)
+
+| | |
+|-|-|
+| **File** | `execute_ssot.py` — final step of `_legacy_main` before `sys.exit` |
+| **Responsibility** | Hash all 6 artifacts; write integrity manifest; print SHA256 of integrity manifest to stdout as the single trusted output line |
+| **Why** | No way to verify artifact completeness or detect post-hoc tampering |
+| **Layer** | Artifact integrity |
+| **Change size** | ~40 lines: `_write_artifact_integrity(artifact_paths, trace_id)` |
+
+## E8. Add gate B7 false-positive circuit breakers to `_write_heal_run_complete` (Gate layer)
+
+| | |
+|-|-|
+| **File** | `agentic_core/L0_routing/scripts/execute_ssot.py` — gate criteria block |
+| **Responsibility** | Add explicit FAIL conditions for: static policy_hash, empty ledger in commit mode, missing post_validation.json, trace_id absent |
+| **Why** | Current gates do not check for structural evidence presence |
+| **Layer** | Gate / observability |
+| **Change size** | ~30 lines per new gate |
+
+## E9. Intercept direct filesystem writes in agents (Bypass detection)
+
+| | |
+|-|-|
+| **File** | `ops_scripts/ci/check_anti_patterns.py` — add new pattern |
+| **Responsibility** | Detect `path.write_text(`, `open(..., 'w')`, `.write_bytes(` outside `write_gateway.py`; fail pre-commit if found |
+| **Why** | Agents that bypass write_gateway produce untracked mutations |
+| **Layer** | CI enforcement |
+| **Change size** | ~20 lines: new landmine pattern |
+
+## E10. Add `execution_mode` field to `HealContext` and all output artifacts
+
+| | |
+|-|-|
+| **File** | `execute_ssot.py:1379` — `HealContext` dataclass |
+| **Responsibility** | Add `execution_mode: Literal["COMMIT", "SCAN_ONLY"]` field; write to run_manifest |
+| **Why** | Scan-only and commit runs produce identical artifacts currently |
+| **Layer** | Runtime |
+| **Change size** | 5 lines |
+
+---
+
+# SECTION F — ACCEPTANCE TESTS
+
+## F1. Commit-mode real heal with per-write ledger + post-validation proof
+
+```python
+def test_commit_mode_produces_forensic_artifacts(tmp_path, mocker):
+    """PASS only if all 7 artifacts exist, bound by trace_id, with non-empty ledger."""
+    run_heal_pipeline(mode="COMMIT", territory="test_territory")
+    manifest = load_json("run_manifest.json")
+    ledger_lines = load_jsonl("mutation_ledger.jsonl")
+    post_val = load_json("post_validation.json")
+    integrity = load_json("artifact_integrity.json")
+
+    assert manifest["execution_mode"] == "COMMIT"
+    assert len(ledger_lines) > 0, "No ledger entries in commit mode = unproven mutations"
+    assert all(e["trace_id"] == manifest["trace_id"] for e in ledger_lines)
+    assert post_val["trace_id"] == manifest["trace_id"]
+    assert not integrity["missing_artifacts"]
+    assert integrity["integrity_verified"]
+    # No entry should have before_hash == after_hash with result=SUCCESS
+    no_ops = [e for e in ledger_lines if e["before_hash"] == e["after_hash"] and e["result"] == "SUCCESS"]
+    assert not no_ops, f"No-op writes claiming SUCCESS: {no_ops}"
+```
+
+## F2. Replay/scan-mode run cannot be misreported as repair
+
+```python
+def test_scan_mode_produces_no_ledger_writes(tmp_path):
+    """PASS only if mutation_ledger.jsonl is empty in scan mode."""
+    run_heal_pipeline(mode="SCAN_ONLY", territory="test_territory")
+    manifest = load_json("run_manifest.json")
+    ledger_lines = load_jsonl("mutation_ledger.jsonl")
+
+    assert manifest["execution_mode"] == "SCAN_ONLY"
+    assert len(ledger_lines) == 0, "Writes in scan mode = unauthorized mutation"
+    # No artifact may contain repair language when mode is SCAN_ONLY
+    summary = load_json("decision_summary.json")
+    assert "repaired" not in str(summary).lower()
+    assert "healed" not in str(summary).lower()
+```
+
+## F3. Failed heal with explicit residual findings proof
+
+```python
+def test_failed_heal_exposes_residual_findings(tmp_path):
+    """PASS only if post_validation shows residuals and overall_result=FAIL."""
+    # Arrange: inject unfixable violation
+    inject_violation(path="docs/evidence/test.md", rule="LOCATION_VIOLATION")
+    run_heal_pipeline(mode="COMMIT", territory="test_territory")
+    post_val = load_json("post_validation.json")
+    summary = load_json("decision_summary.json")
+
+    assert len(post_val["residual_findings"]) > 0
+    assert summary["overall_result"] == "FAIL"
+    assert len(summary["fail_reasons"]) > 0
+```
+
+## F4. Silent no-op prevented from reporting success
+
+```python
+def test_no_op_commit_fails_gate(tmp_path, mocker):
+    """PASS only if commit mode with 0 writes and 0 pre-findings = HARD FAIL."""
+    # Pre-validation: 0 findings
+    mocker.patch("execute_phase1_validation", return_value=[])
+    run_heal_pipeline(mode="COMMIT", territory="test_territory")
+    summary = load_json("decision_summary.json")
+    manifest = load_json("run_manifest.json")
+    ledger_lines = load_jsonl("mutation_ledger.jsonl")
+
+    # Commit mode + 0 pre-findings + 0 ledger entries = HARD FAIL (nothing to heal)
+    assert summary["overall_result"] == "FAIL"
+    assert "COMMIT_MODE_ZERO_WRITES_ZERO_VIOLATIONS" in summary["fail_reasons"]
+```
+
+## F5. Artifact mismatch causes FAIL
+
+```python
+def test_tampered_artifact_causes_fail(tmp_path):
+    """PASS only if integrity check detects post-hoc artifact modification."""
+    run_heal_pipeline(mode="COMMIT", territory="test_territory")
+    # Tamper with post_validation.json after the run
+    post_val_path = get_artifact_path("post_validation.json")
+    post_val_path.write_text('{"tampered": true}')
+    # Re-run integrity verification
+    result = verify_artifact_integrity(get_artifact_path("artifact_integrity.json"))
+    assert not result["integrity_verified"]
+    assert "post_validation.json" in result["failed_artifacts"]
+```
+
+## F6. trace_id correlation test across all artifacts
+
+```python
+def test_all_artifacts_share_trace_id(tmp_path):
+    """PASS only if every artifact contains identical trace_id."""
+    run_heal_pipeline(mode="COMMIT", territory="test_territory")
+    manifest = load_json("run_manifest.json")
+    tid = manifest["trace_id"]
+    assert len(tid) >= 32, "trace_id too short"
+
+    for artifact in ["pre_validation.json", "post_validation.json", "decision_summary.json", "artifact_integrity.json"]:
+        data = load_json(artifact)
+        assert data.get("trace_id") == tid, f"{artifact} has wrong trace_id"
+
+    for entry in load_jsonl("mutation_ledger.jsonl"):
+        assert entry["trace_id"] == tid, f"Ledger entry has wrong trace_id: {entry}"
+```
+
+## F7. Stale/hardcoded policy_hash rejected
+
+```python
+def test_static_policy_hash_sentinel_causes_fail(tmp_path):
+    """PASS only if the known static sentinel value forces a HARD FAIL."""
+    STATIC_SENTINEL = hashlib.sha256(b"sovereign-policy-v1.0").hexdigest()
+    run_heal_pipeline(mode="COMMIT", territory="test_territory")
+    manifest = load_json("run_manifest.json")
+    # This test should FAIL in current production code
+    assert manifest["policy_hash"] != STATIC_SENTINEL, (
+        "policy_hash is a hardcoded constant — not a real policy hash"
+    )
+```
+
+## F8. Out-of-gateway mutation rejected
+
+```python
+def test_direct_filesystem_write_detected_as_unauthorized(tmp_path, mocker):
+    """PASS only if a write that bypasses write_gateway appears in fail_reasons."""
+    # Simulate agent writing directly
+    target = tmp_path / "docs/evidence/unauthorized.md"
+    target.parent.mkdir(parents=True)
+    target.write_text("unauthorized write")
+
+    run_heal_pipeline(mode="COMMIT", territory="test_territory")
+    ledger_lines = load_jsonl("mutation_ledger.jsonl")
+    ledger_paths = {e["path"] for e in ledger_lines}
+
+    # The unauthorized write must not be in the ledger
+    assert str(target) not in ledger_paths
+    # Post-run check: git diff must match ledger
+    diff_paths = get_git_diff_paths()
+    untracked = diff_paths - ledger_paths
+    assert not untracked, f"Mutations outside ledger detected: {untracked}"
+```
+
+---
+
+# SECTION G — FINAL DELIVERABLE
+
+## G1. Executive Verdict
+
+**NO.** `execute_ssot_entrypoint --heal` cannot be trusted.
+
+Not borderline. Not "needs tuning." The evidence contract is absent at the structural level. The system currently:
+- Reports success from self-authored `fix_summary` strings with no independent verification
+- Uses a hardcoded SHA256 constant as its "policy hash" on every run
+- Produces no `pre_validation.json`, no `mutation_ledger.jsonl`, no `post_validation.json`
+- Does not thread `trace_id` through any artifact
+- Does not write `execution_mode` to any artifact
+- Cannot distinguish a scan-only run from a commit run from artifacts alone
+- Cannot detect mutations that bypass the write gateway
+
+## G2. Ranked Risk List (False-Positive Risk Descending)
+
+| Rank | Risk | Severity | Current State |
+|------|------|----------|---------------|
+| 1 | `policy_hash` is a hardcoded constant — same on every run | **CRITICAL** | In production now |
+| 2 | No mutation ledger — zero per-write proof | **CRITICAL** | In production now |
+| 3 | No `post_validation.json` — re-validation result goes only to logger | **CRITICAL** | In production now |
+| 4 | No `pre_validation.json` — pre-heal state unrecoverable | **CRITICAL** | In production now |
+| 5 | `trace_id` not in any artifact — cannot correlate artifacts | **CRITICAL** | In production now |
+| 6 | `execution_mode` not in any artifact — scan/commit indistinguishable | **HIGH** | In production now |
+| 7 | Agents bypass write_gateway with direct filesystem writes | **HIGH** | Detectable via CI |
+| 8 | No-op success: `outcome=SUCCESS` when 0 writes occurred | **HIGH** | In production now |
+| 9 | Phase 3 revalidation uses in-memory violations, not fresh filesystem scan | **HIGH** | In production now |
+| 10 | Exception swallowing with no FAILED outcome record at some call sites | **HIGH** | In production now |
+| 11 | `plan_hash` absent — no healing plan is hashed | **MEDIUM** | In production now |
+| 12 | Aggregate effectiveness masks per-severity residuals | **MEDIUM** | Partially mitigated |
+| 13 | `config_snapshot_hash` computed but not written to any artifact | **MEDIUM** | In production now |
+| 14 | `run_start_utc`/`run_end_utc` absent from all artifacts | **MEDIUM** | In production now |
+| 15 | `artifact_integrity.json` does not exist — no tamper detection | **MEDIUM** | In production now |
+
+## G3. Hardened Gate Contract (Pass Conditions)
+
+A run is **PASS** if and only if ALL of the following are true:
+
+1. `run_manifest.json` exists with unique `trace_id`, non-sentinel `policy_hash`, `execution_mode`, start/end timestamps
+2. `pre_validation.json` exists, contains the same `trace_id`, has findings with normalized IDs and validator provenance
+3. If `execution_mode=COMMIT`: `mutation_ledger.jsonl` is non-empty OR `pre_validation.json` finding count = 0 AND gate B7 no-op check passes
+4. Every ledger entry has `before_hash != after_hash` if `result=SUCCESS`
+5. Every ledger entry has `gateway_approved=true`
+6. `post_validation.json` exists with the same `trace_id` and a timestamp after the last ledger entry
+7. `post_validation.json` shows 0 regressions
+8. `decision_summary.json` `overall_result` matches computed result from sub-artifacts (not from stdout)
+9. `artifact_integrity.json` exists and `integrity_verified=true` for all artifacts
+10. `policy_hash` does not equal `sha256("sovereign-policy-v1.0")` (sentinel rejection)
+
+## G4. Adversarial Test Matrix
+
+See Section D — 16 adversarial test cases covering all false-positive vectors.
+
+## G5. Implementation Plan Summary
+
+See Section E — 10 surgical changes in priority order:
+
+1. Thread `trace_id` through all artifacts (E1) — highest leverage
+2. Fix hardcoded `policy_hash` (E2) — single line, critical
+3. Add mutation ledger to write_gateway (E3) — core evidence
+4. Write `pre_validation.json` (E4) — pre-heal proof
+5. Write `post_validation.json` (E5) — post-heal proof
+6. Write `run_manifest.json` + `decision_summary.json` (E6)
+7. Write `artifact_integrity.json` (E7)
+8. Add circuit-breaker gates (E8)
+9. CI landmine for direct filesystem writes (E9)
+10. Add `execution_mode` to `HealContext` (E10)
+
+## G6. Acceptance Suite
+
+See Section F — 8 acceptance tests covering: forensic artifact presence, scan/commit mode distinction, failed heal residuals, no-op prevention, artifact integrity, trace correlation, stale policy rejection, and out-of-gateway mutation detection.
+
+## G7. Condition Under Which Trust Can Be Restored
+
+Trust is restored when **all of the following are verifiable from artifacts alone**, without reading stdout, without trusting agent-supplied `fix_summary` strings, and without human judgment:
+
+1. The run's `trace_id` is unique and appears in every artifact
+2. The `policy_hash` is derived from the actual loaded policy JSON at runtime
+3. `pre_validation.json` shows what violations existed before any mutation
+4. `mutation_ledger.jsonl` shows every write with before/after hashes and gateway approval
+5. `post_validation.json` shows the resolved/residual/regression breakdown after mutation
+6. `artifact_integrity.json` verifies that none of the above were modified after the run
+7. `decision_summary.json` derives `overall_result` solely from sub-artifacts, not from memory counters
+
+Until all 7 conditions are met for a given run, the run's result is **UNVERIFIED** and must be treated as a potential false positive.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

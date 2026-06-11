@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-06-11",
+  "plan_id": "codex-claude-mcp-access-parity-c6d4e2",
+  "wave": "W3",
+  "implementation": {
+    "script": "scripts/governance/audit_codex_mcp_transports.py",
+    "test_file": "tests/unit/scripts/governance/test_audit_codex_mcp_transports.py",
+    "changes": [
+      "Added route contract discovery from docs/reports/codex/codex_claude_mcp_access_contract_*.json or CODEX_MCP_ROUTE_CONTRACT.",
+      "Added route_evidence output that separates configured, process-visible, and callable route states.",
+      "Added classify_route and build_route_evidence pure functions for fixture-backed testing.",
+      "Added optional CODEX_MCP_CALLABLE_<SERVER_ID> evidence override for callable proof states such as healthy and closed_transport."
+    ]
+  },
+  "classifications_supported": [
+    "CALLABLE",
+    "EXPOSED_BLOCKED",
+    "PLUGIN_SUBSTITUTE",
+    "SUBSTITUTE_CALLABLE",
+    "PROCESS_ONLY",
+    "HOST_MCP_REQUIRED",
+    "DEGRADED_FALLBACK",
+    "NOT_EXPOSED"
+  ],
+  "live_audit_route_evidence": {
+    "contract_plan_id": "codex-claude-mcp-access-parity-c6d4e2",
+    "contract_wave": "W2",
+    "counts": {
+      "DEGRADED_FALLBACK": 2,
+      "EXPOSED_BLOCKED": 1,
+      "PLUGIN_SUBSTITUTE": 1,
+      "PROCESS_ONLY": 3,
+      "SUBSTITUTE_CALLABLE": 1
+    },
+    "servers": {
+      "GitKraken": "DEGRADED_FALLBACK",
+      "adg_sqlite": "EXPOSED_BLOCKED",
+      "context7": "PROCESS_ONLY",
+      "deepwiki": "DEGRADED_FALLBACK",
+      "memory": "PROCESS_ONLY",
+      "notion": "PLUGIN_SUBSTITUTE",
+      "playwright": "SUBSTITUTE_CALLABLE",
+      "vector_db": "PROCESS_ONLY"
+    }
+  },
+  "verification": [
+    {
+      "command": "python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py -q",
+      "result": "7 passed, 3 warnings"
+    },
+    {
+      "command": "python scripts/governance/audit_codex_mcp_transports.py --json",
+      "result": "exit 0; emitted route_evidence with W2 contract classifications"
+    }
+  ],
+  "w3_result": {
+    "W3.1": "DONE",
+    "W3.2": "DONE",
+    "next_wave": "W4",
+    "open_items_for_w4": [
+      "Run callable proof calls where Codex tools are exposed.",
+      "Record blocked/degraded proof rows where tools remain absent or transport-closed.",
+      "Update Codex backup adapter documentation with the final access procedure."
+    ]
+  }
+}

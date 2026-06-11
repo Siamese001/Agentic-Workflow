@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Anti-regression gate (cursor-decommission W7): keep `.cursor/` decommissioned.
+"""Anti-regression gate: keep the repo-local `.cursor/` tree decommissioned.
 
 Two checks:
   1. DIRECTORY: no tracked files may live under `.cursor/`. The legacy Cursor tree
      was relocated to `.claude/` (engine -> .claude/governance/scripts, plans ->
      .claude/plans, state/schemas/templates -> .claude/, rules/skills/commands/agents
      are the .claude SSOT). Historical copies live read-only under docs/archive/cursor/.
-  2. ACTIVE PATH USE: no live code may CONSTRUCT a `.cursor/` filesystem path
-     (Path(".cursor/..."), open(".cursor/..."), `/ ".cursor"`, endswith(".cursor...")).
+  2. ACTIVE PATH USE: no live code/config may CONSTRUCT a repo-local `.cursor/`
+     filesystem path (Path(".cursor/..."), open(".cursor/..."), `/ ".cursor"`,
+     Join-Path ... ".cursor", YAML workflow paths, etc.).
      Cosmetic mentions in comments/docstrings/markdown/SQL-comments are allowed
      (they reference history; rewriting archived prose adds churn without value).
 
@@ -24,11 +25,18 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# Active code roots scanned for path-construction. Excludes archives, legacy
-# mirrors, plans (historical), and the migration tooling itself.
-ACTIVE_GLOBS = ("ops_scripts", "tools", "agentic_core", ".claude/governance",
-                ".claude/hooks")
+# Active code/config roots scanned for path-construction. Excludes archives,
+# legacy mirrors, plans (historical), and migration tooling itself.
+ACTIVE_GLOBS = (
+    ".github",
+    "ops_scripts",
+    "tools",
+    "agentic_core",
+    ".claude/governance",
+    ".claude/hooks",
+)
 ACTIVE_APP_GLOB = "apps_*"
+ACTIVE_EXTS = {".py", ".ps1", ".yml", ".yaml"}
 EXCLUDE_SUBSTR = ("/_legacy_", "/_archive/", "/__pycache__/", "/docs/archive/",
                   "tools/migration/", "tools/cursor/")
 # Legacy/self/historical-purpose files that intentionally retain .cursor references
@@ -37,18 +45,25 @@ DENYLIST_FILES = {
     "ops_scripts/ci/check_no_cursor_refs.py",
     "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py",
     "ops_scripts/maintenance/rewrite_cascade_to_cursor.py",
+    "ops_scripts/ci/governance_w2_dedupe_report.py",  # historical cursor-era report emitter
     ".claude/governance/scripts/generate_rules_index.py",
     ".claude/governance/scripts/sync_mcp_config.py",  # obsolete MCP-mirror sync (mirror retired)
     "tools/cursor/verify_cursor_author_gate_wiring.py",
 }
 
-# A real .cursor/ filesystem path construction (not a comment/docstring mention).
+# A real repo-local .cursor filesystem path construction (not a
+# comment/docstring mention). Intentionally does not match Path.home() /
+# ".cursor" user-profile paths; this gate protects the project tree.
 PATH_USE_RE = re.compile(
-    r"""(Path\(\s*['"]\.cursor/|"""           # Path(".cursor/...
-    r"""open\(\s*['"]\.cursor/|"""             # open(".cursor/...
-    r"""/\s*['"]\.cursor['"]|"""               # / ".cursor"
-    r"""endswith\(\s*['"]\.cursor/|"""         # endswith(".cursor/...
-    r"""\.glob\(\s*['"][^'"]*\.cursor/)"""     # glob("...cursor/...
+    r"""(Path\(\s*['"]\.cursor(?:[/\\]|['"])|"""  # Path(".cursor/...") / Path(".cursor")
+    r"""open\(\s*['"]\.cursor(?:[/\\]|['"])|"""   # open(".cursor/...")
+    r"""(?<!home\(\)\s)/\s*['"]\.cursor['"]|"""   # repo_root / ".cursor" (not Path.home())
+    r"""endswith\(\s*['"]\.cursor(?:[/\\]|['"])|"""  # endswith(".cursor/...")
+    r"""\.glob\(\s*['"][^'"]*\.cursor(?:[/\\])|"""  # glob("...cursor/...")
+    r"""Join-Path\b[^\n]*['"]\.cursor(?:[/\\]|['"])|"""  # Join-Path ... ".cursor\..."
+    r"""(?<![\w.])['"]\.cursor[/\\][^'"]*['"]|"""  # YAML/list literal ".cursor/..."
+    r"""(?<![\w.])['"]\.cursor['"]\s*[:\]}),]"""   # YAML/list literal ".cursor"
+    r""")"""
 )
 COMMENT_RE = re.compile(r"^\s*(#|--|//|\*)")
 
@@ -63,15 +78,17 @@ def _tracked_cursor_files() -> list[str]:
     return [ln for ln in out.stdout.splitlines() if ln.strip()]
 
 
-def _active_path_uses() -> list[str]:
+def _active_path_uses(root: Path = REPO_ROOT) -> list[str]:
     hits: list[str] = []
-    roots = [REPO_ROOT / g for g in ACTIVE_GLOBS]
-    roots.extend(sorted(REPO_ROOT.glob(ACTIVE_APP_GLOB)))
+    roots = [root / g for g in ACTIVE_GLOBS]
+    roots.extend(sorted(root.glob(ACTIVE_APP_GLOB)))
     for root in roots:
         if not root.is_dir():
             continue
-        for p in root.rglob("*.py"):
-            rel = str(p.relative_to(REPO_ROOT)).replace("\\", "/")
+        for p in root.rglob("*"):
+            if not p.is_file() or p.suffix not in ACTIVE_EXTS:
+                continue
+            rel = str(p.relative_to(REPO_ROOT if root.is_relative_to(REPO_ROOT) else root.parent)).replace("\\", "/")
             if rel in DENYLIST_FILES:
                 continue
             if any(s.strip("/") in f"/{rel}/" or rel.startswith(s.lstrip("/")) for s in EXCLUDE_SUBSTR):
@@ -80,7 +97,7 @@ def _active_path_uses() -> list[str]:
                 text = p.read_text(encoding="utf-8")
             except (UnicodeDecodeError, OSError):
                 continue
-            if ".cursor/" not in text:
+            if ".cursor" not in text:
                 continue
             for n, line in enumerate(text.splitlines(), 1):
                 if COMMENT_RE.match(line):

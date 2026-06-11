@@ -102,7 +102,7 @@ def temp_ledger(tmp_path, monkeypatch):
     base_sql = (repo_root / ".claude" / "schemas" / "ledger_base.schema.sql").read_text()
     per_sql = (
         repo_root
-        / ".cursor"
+        / ".claude"
         / "schemas"
         / "router_l2_cascade_ledger.schema.sql"
     ).read_text()

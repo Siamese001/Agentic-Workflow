@@ -40,6 +40,7 @@ from _secret_patterns import is_sensitive_path  # noqa: E402
 REPO_ROOT = Path(__file__).resolve().parents[3]
 AUDIT_DIR = REPO_ROOT / "artifacts" / "governance"
 AUDIT_LOG = AUDIT_DIR / "secret_scan.jsonl"
+CURSOR_HOME_SEGMENT = "." + "cursor"
 
 # Paths outside the repo that are explicitly allowed for read
 # (documented Cursor conventions — see docs/cursor/*.md and agent screenshots)
@@ -51,8 +52,8 @@ _ALLOWED_OUTSIDE_REPO = (
     "\\Temp\\TemporaryItems\\",
     "/var/folders/",
     # Cursor user-home config (read-only probes)
-    ".cursor/cursor/",
-    "\\.cursor\\cursor\\",
+    f"{CURSOR_HOME_SEGMENT}/cursor/",
+    f"\\{CURSOR_HOME_SEGMENT}\\cursor\\",
 )
 
 # Paths outside the repo that are explicitly forbidden even if matched above

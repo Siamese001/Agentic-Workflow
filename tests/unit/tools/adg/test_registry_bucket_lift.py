@@ -94,12 +94,12 @@ def two_edges() -> list[RegistryEdge]:
             dst_name="Registry::MCP::adg_sqlite",
             relation_type="MCP_SERVER_DECLARED",
             edge_kind="REGISTRY_DECLARATION",
-            source_file=".cursor/mcp.json",
+            source_file=".mcp.json",
             symbol="adg_sqlite",
             resolution_status=RESOLUTION_STABLE,
             authority_status=AUTHORITY_AUTHORITATIVE_REGISTRY,
             evidence_refs={
-                "registry_path": ".cursor/mcp.json",
+                "registry_path": ".mcp.json",
                 "registry_digest": "abc123",
                 "declaration_key": "mcpServers.adg_sqlite",
             },
@@ -109,12 +109,12 @@ def two_edges() -> list[RegistryEdge]:
             dst_name="Registry::MCP::disabled_server",
             relation_type="MCP_SERVER_DECLARED",
             edge_kind="REGISTRY_DECLARATION",
-            source_file=".cursor/mcp.json",
+            source_file=".mcp.json",
             symbol="disabled_server",
             resolution_status=RESOLUTION_DISABLED,
             authority_status=AUTHORITY_RISK_SIGNAL_ONLY,
             evidence_refs={
-                "registry_path": ".cursor/mcp.json",
+                "registry_path": ".mcp.json",
                 "registry_digest": "def456",
                 "declaration_key": "mcpServers.disabled_server",
             },
@@ -129,7 +129,7 @@ def two_edges() -> list[RegistryEdge]:
 
 class TestLiftBasicPersistence:
     def test_inserts_one_row_per_edge(self, synthetic_snapshot, two_edges):
-        stats = lift(static_snapshot=synthetic_snapshot, edges=two_edges)
+        stats = lift(static_snapshot=synthetic_snapshot, edges=two_edges, include_consumer_edges=False)
 
         assert stats.edges_resolved == 2
         assert stats.edges_inserted == 2
@@ -141,7 +141,7 @@ class TestLiftBasicPersistence:
         assert n == 2
 
     def test_writes_constitutional_triplet(self, synthetic_snapshot, two_edges):
-        lift(static_snapshot=synthetic_snapshot, edges=two_edges)
+        lift(static_snapshot=synthetic_snapshot, edges=two_edges, include_consumer_edges=False)
 
         con = sqlite3.connect(synthetic_snapshot)
         rows = con.execute(
@@ -166,7 +166,7 @@ class TestLiftBasicPersistence:
     def test_disabled_server_carries_risk_signal_authority(
         self, synthetic_snapshot, two_edges
     ):
-        lift(static_snapshot=synthetic_snapshot, edges=two_edges)
+        lift(static_snapshot=synthetic_snapshot, edges=two_edges, include_consumer_edges=False)
 
         con = sqlite3.connect(synthetic_snapshot)
         row = con.execute(
@@ -180,8 +180,8 @@ class TestLiftBasicPersistence:
 
 class TestLiftIdempotency:
     def test_repeated_calls_do_not_duplicate(self, synthetic_snapshot, two_edges):
-        first = lift(static_snapshot=synthetic_snapshot, edges=two_edges)
-        second = lift(static_snapshot=synthetic_snapshot, edges=two_edges)
+        first = lift(static_snapshot=synthetic_snapshot, edges=two_edges, include_consumer_edges=False)
+        second = lift(static_snapshot=synthetic_snapshot, edges=two_edges, include_consumer_edges=False)
 
         assert first.edges_inserted == 2
         assert second.edges_inserted == 0
@@ -211,7 +211,7 @@ class TestLiftIdempotency:
             # Different evidence — but dedup ignores it.
             evidence_refs={"registry_digest": "2"},
         )
-        stats = lift(static_snapshot=synthetic_snapshot, edges=[edge_a, edge_b])
+        stats = lift(static_snapshot=synthetic_snapshot, edges=[edge_a, edge_b], include_consumer_edges=False)
 
         assert stats.edges_inserted == 1
         assert stats.edges_skipped_duplicate == 1
@@ -219,7 +219,12 @@ class TestLiftIdempotency:
 
 class TestLiftDryRun:
     def test_dry_run_rolls_back(self, synthetic_snapshot, two_edges):
-        stats = lift(static_snapshot=synthetic_snapshot, edges=two_edges, dry_run=True)
+        stats = lift(
+            static_snapshot=synthetic_snapshot,
+            edges=two_edges,
+            dry_run=True,
+            include_consumer_edges=False,
+        )
 
         # Stats reflect what WOULD have been inserted.
         assert stats.edges_inserted == 2
@@ -239,7 +244,7 @@ class TestLiftNodeStubbing:
         con.close()
         assert n_nodes_before == 0
 
-        stats = lift(static_snapshot=synthetic_snapshot, edges=two_edges)
+        stats = lift(static_snapshot=synthetic_snapshot, edges=two_edges, include_consumer_edges=False)
 
         # 1 unique src + 2 unique dsts = 3 stubbed nodes.
         assert stats.nodes_stubbed == 3
@@ -263,7 +268,7 @@ class TestLiftNodeStubbing:
         con.commit()
         con.close()
 
-        stats = lift(static_snapshot=synthetic_snapshot, edges=two_edges)
+        stats = lift(static_snapshot=synthetic_snapshot, edges=two_edges, include_consumer_edges=False)
 
         # Only 2 dst nodes need stubbing; the src already existed.
         assert stats.nodes_stubbed == 2
@@ -292,7 +297,7 @@ class TestLiftMissingSnapshot:
 
 class TestLiftStatsByResolutionStatus:
     def test_groups_by_resolution_status(self, synthetic_snapshot, two_edges):
-        stats = lift(static_snapshot=synthetic_snapshot, edges=two_edges)
+        stats = lift(static_snapshot=synthetic_snapshot, edges=two_edges, include_consumer_edges=False)
 
         assert stats.by_resolution_status[RESOLUTION_STABLE] == 1
         assert stats.by_resolution_status[RESOLUTION_DISABLED] == 1
@@ -300,7 +305,7 @@ class TestLiftStatsByResolutionStatus:
 
 class TestLiftEmptyEdges:
     def test_no_edges_no_writes(self, synthetic_snapshot):
-        stats = lift(static_snapshot=synthetic_snapshot, edges=[])
+        stats = lift(static_snapshot=synthetic_snapshot, edges=[], include_consumer_edges=False)
 
         assert stats.edges_resolved == 0
         assert stats.edges_inserted == 0

@@ -376,7 +376,7 @@ CORE_TABLE_DESCRIPTIONS: dict[str, str] = {
     "edges": "Canonical edge table (imports / calls / writes / flows_to / etc.).",
     "external_calls": "External (provider/SDK/HTTP) call sites (input for capability_egress checks).",
     "gate_self_consistency": "Per-gate self-consistency probe rows (gate-of-gates).",
-    "mcp_config_servers": ".cursor/mcp.json declared servers.",
+    "mcp_config_servers": "Root .mcp.json declared servers.",
     "mcp_tool_declarations": "All @mcp.tool decorated functions ingested per MCP server.",
     "meta": "Snapshot meta (commit_sha, timestamp, generator version).",
     "module_entrypoints": "Every module-level entrypoint with classification (test / cli / api / service).",

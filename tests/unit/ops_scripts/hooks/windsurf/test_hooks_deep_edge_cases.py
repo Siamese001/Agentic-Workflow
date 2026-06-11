@@ -420,7 +420,7 @@ class TestPreWriteGateArgvFastPath:
 
     def test_argv_mcp_json_proceeds_to_gate(self):
         # No edits → mcp.json deletion block
-        payload = {"tool_info": {"file_path": ".cursor/mcp.json", "edits": []}}
+        payload = {"tool_info": {"file_path": ".mcp.json", "edits": []}}
         assert self._run_with_argv("mcp.json", payload) == 2
 
 
@@ -990,8 +990,8 @@ class TestPostWriteAuditEnvVarFormats:
 # ============================================================================
 
 
-class TestPostCascadeCleanupRotationLimits:
-    """Each log has its own rotation limit — test all three."""
+class ArchivedPostCascadeCleanupRotationLimits:
+    """Archived with retired post_agent_cleanup.py hook; not collected."""
 
     def _make_log(self, path: Path, n_lines: int):
         path.parent.mkdir(parents=True, exist_ok=True)

@@ -1,6 +1,6 @@
 """mcp_schema_cost.py - one-shot audit of MCP server schema bytes.
 
-Spawns each enabled stdio MCP server from `.cursor/mcp.json`, sends
+Spawns each enabled stdio MCP server from root `.mcp.json`, sends
 JSON-RPC `initialize` + `tools/list`, captures the response, measures the
 serialized-bytes cost of the tool schemas, and writes a ranked report to:
 
@@ -36,7 +36,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MCP_CONFIG = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
+MCP_CONFIG = REPO_ROOT / ".mcp.json"
 OUT_JSON = REPO_ROOT / "artifacts" / "governance" / "mcp_schema_cost.json"
 OUT_MD = REPO_ROOT / "docs" / "reports" / "token-burn" / "mcp_schema_cost.md"
 

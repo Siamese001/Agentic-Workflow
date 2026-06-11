@@ -30,11 +30,11 @@ ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 def _check_mcp_config_drift() -> None:
     """Check for MCP config drift between repo SSOT and global Windsurf config.
 
-    SSOT: .cursor/mcp.json (mcpServers format)
+    SSOT: root .mcp.json (mcpServers format)
     Global: ~/.codeium/windsurf/mcp_config.json (Windsurf reads this at startup)
     """
     print("[ADG] Checking MCP config drift...")
-    repo_ssot = ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
+    repo_ssot = ROOT / ".mcp.json"
     global_config_path = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
 
     if not repo_ssot.exists():
@@ -57,7 +57,7 @@ def _check_mcp_config_drift() -> None:
                 print(f"[WARNING]   In repo SSOT but not global: {sorted(added)}")
             if removed:
                 print(f"[WARNING]   In global but not repo SSOT: {sorted(removed)}")
-            print("[WARNING]   Edit .cursor/mcp.json and copy to global config.")
+            print("[WARNING]   Edit root .mcp.json and copy to global config.")
             print("[WARNING]   Proceeding with ADG generation...")
         else:
             print(f"[ADG] MCP config in sync ({len(repo_servers)} servers)")

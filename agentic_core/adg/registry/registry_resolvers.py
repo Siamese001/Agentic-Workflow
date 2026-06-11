@@ -122,7 +122,7 @@ def _rel_path(path: Path) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Resolver: MCP server registry  (.cursor/mcp.json)
+# Resolver: MCP server registry  (.mcp.json)
 # ---------------------------------------------------------------------------
 
 
@@ -131,7 +131,7 @@ MCP_REGISTRY_ROOT: Final[str] = "Registry::MCP::root"
 
 
 def resolve_mcp_config(config_path: Path | None = None) -> list[RegistryEdge]:
-    """Resolve `.cursor/mcp.json` into registry-bucket edges.
+    """Resolve root `.mcp.json` into registry-bucket edges.
 
     Each `mcpServers` entry becomes one edge:
 
@@ -147,7 +147,7 @@ def resolve_mcp_config(config_path: Path | None = None) -> list[RegistryEdge]:
     'one unresolved entry'.
     """
     if config_path is None:
-        config_path = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
+        config_path = REPO_ROOT / ".mcp.json"
 
     if not config_path.exists():
         return []

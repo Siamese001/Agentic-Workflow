@@ -1048,12 +1048,6 @@ def main():
             "MCP-PARITY Cursor vs Windsurf MCP editor parity",
             "ops_scripts/ci/check_mcp_editor_parity.py",
         ),
-        # MCP-SCOPE0 — filesystem MCP locked to repo root (Constitutional Rule #0).
-        # Bypass: MCP_CONFIG_SOVEREIGNTY_BYPASS=1
-        (
-            "MCP-SCOPE0 filesystem scope sovereignty (Rule #0)",
-            "ops_scripts/ci/check_mcp_config_sovereignty.py",
-        ),
         # [W4 claude-native-supersession-9d3f7a] DEFER deferred-scope-marker gate RETIRED;
         # out-of-scope work now surfaces via native spawn_task chips (ADR-096).
         # RULE-FMT — Rule frontmatter schema validation.

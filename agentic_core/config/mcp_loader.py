@@ -7,11 +7,11 @@ from pathlib import Path
 from typing import Any
 
 
-DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[2] / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
+DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[2] / ".mcp.json"
 
 
 class MCPServerEntry:
-    """A single mcpServers entry from .cursor/mcp.json."""
+    """A single mcpServers entry from root .mcp.json."""
 
     def __init__(self, name: str, data: dict[str, Any]) -> None:
         self.name = name
@@ -32,7 +32,7 @@ class MCPServerEntry:
 
 
 class MCPLoader:
-    """Loader for MCP configuration from .cursor/mcp.json."""
+    """Loader for MCP configuration from root .mcp.json."""
 
     def __init__(
         self,

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# setup_symlinks.sh — POSIX contributor symlink setup for Windsurf config SSOT.
+# setup_symlinks.sh — POSIX contributor symlink setup for MCP config mirrors.
 #
-# Creates symlinks so the repo-local files ARE the files Windsurf reads:
-#   ~/.codeium/windsurf/mcp_config.json  ->  <repo>/.windsurf/mcp_config.json
-#   <repo>/AGENTS.md                     ->  <repo>/.windsurf/AGENTS.md   (with --include-agents-md)
+# Creates symlinks so deprecated global editor mirrors read the repo SSOT:
+#   ~/.codeium/windsurf/mcp_config.json  ->  <repo>/.mcp.json
 #
 # Idempotent; safe to re-run. Backs up any pre-existing regular file before
-# replacing it with a symlink.
+# replacing it with a symlink. The --include-agents-md flag is retained for
+# compatibility, but root AGENTS.md is already the SSOT and is not replaced.
 #
 # Usage:
 #   bash tools/setup/setup_symlinks.sh
@@ -93,10 +93,8 @@ new_file_symlink() {
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/../.." && pwd)"
 
-repo_mcp="$repo_root/.windsurf/mcp_config.json"
+repo_mcp="$repo_root/.mcp.json"
 global_mcp="$HOME/.codeium/windsurf/mcp_config.json"
-repo_agents="$repo_root/AGENTS.md"
-ws_agents_md="$repo_root/.windsurf/AGENTS.md"
 
 log "Repo root: $repo_root"
 log "Mode: $([[ $DRY_RUN -eq 1 ]] && echo DRY-RUN || echo APPLY)"
@@ -106,11 +104,7 @@ new_file_symlink "$global_mcp" "$repo_mcp"
 
 if [[ $INCLUDE_AGENTS_MD -eq 1 ]]; then
     log "--- AGENTS.md ---"
-    if [[ ! -e "$ws_agents_md" ]]; then
-        log "SKIP: $ws_agents_md does not yet exist — run W2 of the plan first"
-    else
-        new_file_symlink "$repo_agents" "$ws_agents_md"
-    fi
+    log "SKIP: root AGENTS.md is already the SSOT; no legacy symlink is created"
 fi
 
 log "Done."

@@ -37,7 +37,7 @@ _PATH_KEYS: tuple[str, ...] = ("file_path", "path", "uri", "target_path")
 LEGACY_EXECUTION_TOKENS: tuple[str, ...] = (
     ".windsurf",
     "docs/archive/windsurf/legacy-tree",
-    ".cursor/scripts/_legacy_windsurf",
+    ".claude/governance/scripts/_legacy_windsurf",
 )
 
 
@@ -183,17 +183,16 @@ def parse_mcp_tool_input(payload: dict[str, Any]) -> dict[str, Any] | None:
 
 @lru_cache(maxsize=1)
 def mcp_config_server_keys() -> frozenset[str]:
-    for rel in (".mcp.json", ".cursor/mcp.json"):
-        path = _REPO_ROOT_FOR_MCP / rel
-        if not path.is_file():
-            continue
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            continue
-        servers = data.get("mcpServers")
-        if isinstance(servers, dict):
-            return frozenset(str(key) for key in servers)
+    path = _REPO_ROOT_FOR_MCP / ".mcp.json"
+    if not path.is_file():
+        return frozenset()
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return frozenset()
+    servers = data.get("mcpServers")
+    if isinstance(servers, dict):
+        return frozenset(str(key) for key in servers)
     return frozenset()
 
 

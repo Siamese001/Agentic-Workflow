@@ -1,0 +1,119 @@
+{
+  "generated_at": "2026-06-11",
+  "plan_id": "codex-claude-mcp-access-parity-c6d4e2",
+  "wave": "W4",
+  "proof_summary": {
+    "CALLABLE": [],
+    "PLUGIN_SUBSTITUTE": [
+      "notion"
+    ],
+    "SUBSTITUTE_CALLABLE": [
+      "playwright"
+    ],
+    "EXPOSED_BLOCKED": [
+      "adg_sqlite"
+    ],
+    "PROCESS_ONLY": [
+      "memory",
+      "vector_db",
+      "context7"
+    ],
+    "DEGRADED_FALLBACK": [
+      "GitKraken",
+      "deepwiki"
+    ]
+  },
+  "proofs": [
+    {
+      "server_id": "GitKraken",
+      "target_proof": "git_status or equivalent GitKraken MCP call",
+      "result": "DEGRADED_FALLBACK",
+      "evidence": "No Codex GitKraken MCP tool surface discovered in W1. Native git fallback proof `git rev-parse --show-toplevel` returned C:/Git/Agentic-Workflow-FRESH.",
+      "next_step_for_parity": "Expose GitKraken MCP tools through the Codex host; native git remains fallback only."
+    },
+    {
+      "server_id": "adg_sqlite",
+      "target_proof": "adg_health succeeds from Codex",
+      "result": "EXPOSED_BLOCKED",
+      "evidence": "Direct `mcp__adg_sqlite.adg_health` call returned Transport closed. W4 audit run used CODEX_MCP_CALLABLE_ADG_SQLITE=closed_transport and classified the route as EXPOSED_BLOCKED.",
+      "next_step_for_parity": "Restart or reattach adg_sqlite through the MCP host and verify `adg_health` succeeds."
+    },
+    {
+      "server_id": "deepwiki",
+      "target_proof": "read_wiki_structure/read_wiki_contents/ask_question succeeds",
+      "result": "DEGRADED_FALLBACK",
+      "evidence": "No Codex DeepWiki tool surface discovered in W1. No honest DeepWiki-backed proof exists in this Codex session.",
+      "next_step_for_parity": "Expose the remote DeepWiki MCP through the Codex host; web/GitHub/Tavily substitutes must be labeled degraded."
+    },
+    {
+      "server_id": "memory",
+      "target_proof": "mem_recall_session_start succeeds",
+      "result": "PROCESS_ONLY",
+      "evidence": "Transport audit sees a single memory process, but no Codex Memory MCP tool surface was discovered. Process presence is not callable parity.",
+      "next_step_for_parity": "Expose Memory MCP through the Codex host; do not claim persistent recall/writeback until callable."
+    },
+    {
+      "server_id": "vector_db",
+      "target_proof": "semantic_search/vector_stats/list_collections succeeds",
+      "result": "PROCESS_ONLY",
+      "evidence": "Transport audit sees a single vector_db process, but no Codex Vector DB tool surface was discovered. `rg --version` fallback returned ripgrep 15.1.0.",
+      "next_step_for_parity": "Expose Vector DB MCP through the Codex host; lexical `rg` remains degraded fallback only."
+    },
+    {
+      "server_id": "notion",
+      "target_proof": "Plans data source/page fetch succeeds",
+      "result": "PLUGIN_SUBSTITUTE",
+      "evidence": "Codex Notion plugin `_fetch` successfully fetched the plan page `37c27693-f55c-8109-8837-f3169f38fff7`. W4 audit run used CODEX_MCP_CALLABLE_NOTION=plugin_callable.",
+      "next_step_for_parity": "Continue plugin route with schema-fetch discipline, or expose raw Claude Notion MCP if identical tool names are required."
+    },
+    {
+      "server_id": "context7",
+      "target_proof": "resolve-library-id/get-library-docs succeeds",
+      "result": "PROCESS_ONLY",
+      "evidence": "Transport audit sees a single context7 launch tree, but raw Context7 tools are not callable in Codex. Use official docs or plugin docs as degraded substitutes.",
+      "next_step_for_parity": "Expose Context7 MCP through the Codex host."
+    },
+    {
+      "server_id": "playwright",
+      "target_proof": "browser/session call succeeds",
+      "result": "SUBSTITUTE_CALLABLE",
+      "evidence": "Codex `mcp__node_repl.js` returned ok=true with cwd C:\\\\Git\\\\Agentic-Workflow-FRESH. W4 audit run used CODEX_MCP_CALLABLE_PLAYWRIGHT=substitute_callable.",
+      "next_step_for_parity": "Use node_repl/Browser substitute for Codex UI verification, or expose raw Playwright MCP if Claude `browser_*` parity is required."
+    }
+  ],
+  "commands": [
+    {
+      "command": "mcp__adg_sqlite.adg_health",
+      "result": "Transport closed"
+    },
+    {
+      "command": "mcp__codex_apps__notion._fetch page 37c27693-f55c-8109-8837-f3169f38fff7",
+      "result": "success"
+    },
+    {
+      "command": "mcp__node_repl.js",
+      "result": "{\"ok\":true,\"cwd\":\"C:\\\\Git\\\\Agentic-Workflow-FRESH\",\"hasRequestMeta\":true}"
+    },
+    {
+      "command": "python scripts/governance/audit_codex_mcp_transports.py --json with callable evidence env overrides",
+      "result": "exit 0; route_evidence classified notion as PLUGIN_SUBSTITUTE, playwright as SUBSTITUTE_CALLABLE, adg_sqlite as EXPOSED_BLOCKED"
+    },
+    {
+      "command": "git rev-parse --show-toplevel",
+      "result": "C:/Git/Agentic-Workflow-FRESH"
+    },
+    {
+      "command": "rg --version",
+      "result": "ripgrep 15.1.0"
+    }
+  ],
+  "w4_result": {
+    "W4.1": "DONE",
+    "W4.2": "DONE",
+    "plan_status": "Completed",
+    "remaining_risks": [
+      "Raw MCP parity is still blocked for GitKraken, adg_sqlite, deepwiki, memory, vector_db, and context7 until the Codex host exposes healthy callable tools.",
+      "Notion and Playwright routes are accepted substitutes, not identical Claude raw MCP surfaces."
+    ]
+  }
+}

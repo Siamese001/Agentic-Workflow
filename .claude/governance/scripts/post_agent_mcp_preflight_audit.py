@@ -35,7 +35,7 @@ from typing import Any
 repo_root = Path(__file__).resolve().parents[3]
 heartbeat_path = repo_root / "artifacts" / "governance" / "mcp_health_heartbeat.json"
 violations_log = repo_root / "artifacts" / "governance" / "mcp_preflight_violations.jsonl"
-ttl_config = repo_root / ".cursor" / "config" / "mcp_preflight_ttl.json"
+ttl_config = repo_root / "config" / "mcp_preflight_ttl.json"
 
 # ---------------------------------------------------------------------------
 # Tool classification (shared contract with pre_mcp_gate.py)

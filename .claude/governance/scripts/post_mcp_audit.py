@@ -31,7 +31,7 @@ gitkraken_write_audit_log = repo_root / "artifacts" / "governance" / "gitkraken_
 # Supply-chain drift detection for MCP servers (W2 hardening).
 # Tracks SHA256 of mcpServers block + per-server (command, args, env keys)
 # between sessions. Writes a drift record whenever the fingerprint changes.
-mcp_config_path = repo_root / ".cursor" / "mcp.json"
+mcp_config_path = repo_root / ".mcp.json"
 mcp_fingerprint_path = repo_root / "artifacts" / "governance" / "mcp_config_fingerprint.json"
 mcp_drift_log = repo_root / "artifacts" / "governance" / "mcp_drift.jsonl"
 # Namespaced per logical session — matches pre_mcp_gate.py and pre_prompt_classifier.py.

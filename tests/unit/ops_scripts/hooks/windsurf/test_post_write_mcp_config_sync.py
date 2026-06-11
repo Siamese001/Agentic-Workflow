@@ -136,8 +136,8 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
         mock_ssot.exists.assert_not_called()
 
     def test_main_argv_mcp_config_path_proceeds(self):
-        """Filter: .cursor/mcp.json in argv proceeds to sync (SSOT checked)."""
-        with patch("sys.argv", ["post_write_mcp_config_sync.py", "/repo/.cursor/mcp.json"]):
+        """Filter: root .mcp.json in argv proceeds to sync (SSOT checked)."""
+        with patch("sys.argv", ["post_write_mcp_config_sync.py", "/repo/.mcp.json"]):
             with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:
                 mock_ssot.exists.return_value = False
                 result = main()
@@ -146,7 +146,7 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
 
     def test_main_argv_windows_backslash_path_proceeds(self):
         """Filter: Windows backslash path ending in mcp.json is accepted."""
-        with patch("sys.argv", ["post_write_mcp_config_sync.py", r"C:\repo\.cursor\mcp.json"]):
+        with patch("sys.argv", ["post_write_mcp_config_sync.py", r"C:\repo\.mcp.json"]):
             with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:
                 mock_ssot.exists.return_value = False
                 result = main()
@@ -166,7 +166,7 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
 
     def test_main_stdin_mcp_config_payload_proceeds(self):
         """Filter: stdin JSON with mcp.json file_path proceeds to sync."""
-        payload = json.dumps({"file_path": "/repo/.cursor/mcp.json"})
+        payload = json.dumps({"file_path": "/repo/.mcp.json"})
         with patch("sys.argv", ["post_write_mcp_config_sync.py"]):
             with patch("sys.stdin", io.StringIO(payload)):
                 with patch("post_write_mcp_config_sync.SSOT") as mock_ssot:

@@ -1,7 +1,7 @@
 name: apps-e2e-harness-nightly
 # Nightly apps_* end-to-end auditability harness.
 #
-# Plan: .cursor/plans/_archive/2026-05/apps-e2e-auditability-harness-7c2a91.md
+# Historical plan: .claude/plans/_archive/2026-05/apps-e2e-auditability-harness-7c2a91.md
 #
 # Two jobs:
 #   1. harness-verifier (every PR + push)
@@ -28,7 +28,7 @@ on:
       - "tests/runtime/test_apps_e2e_*.py"
       - "tests/runtime/test_agentic_core_spine_proof.py"
       - "tests/unit/apps_e2e/**"
-      - ".cursor/schemas/apps_e2e_*.schema.json"
+      - ".claude/schemas/apps_e2e_*.schema.json"
       - ".windsurf/schemas/apps_e2e_*.schema.json"
       - "ops_scripts/ci/check_apps_e2e_harness.py"
   pull_request:
@@ -38,7 +38,7 @@ on:
       - "tests/runtime/test_apps_e2e_*.py"
       - "tests/runtime/test_agentic_core_spine_proof.py"
       - "tests/unit/apps_e2e/**"
-      - ".cursor/schemas/apps_e2e_*.schema.json"
+      - ".claude/schemas/apps_e2e_*.schema.json"
       - ".windsurf/schemas/apps_e2e_*.schema.json"
   schedule:
     # 03:42 UTC nightly — offset from fortknox-nightly (02:17) to spread runner load.

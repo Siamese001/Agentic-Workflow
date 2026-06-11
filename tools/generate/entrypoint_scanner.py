@@ -4,8 +4,8 @@ Scans configuration files for Python entrypoint references and emits
 entrypoint_kind edges into the ADG edge list.
 
 Sources:
-  - .cursor/hooks.json → entrypoint_kind=hook
-  - .cursor/mcp.json → entrypoint_kind=mcp
+  - .claude/settings.json → entrypoint_kind=hook
+  - .mcp.json → entrypoint_kind=mcp
   - .pre-commit-config.yaml → entrypoint_kind=hook
   - .github/workflows/*.yml → entrypoint_kind=ci
   - pyproject.toml [project.scripts] → entrypoint_kind=cli
@@ -69,40 +69,46 @@ def _extract_py_files_from_command(command: str) -> list[str]:
 
 
 def _scan_hooks_json() -> list[tuple[str, str]]:
-    """Scan .cursor/hooks.json for hook entrypoints.
+    """Scan .claude/settings.json for hook entrypoints.
 
     Returns list of (repo_relative_path, entrypoint_kind).
     """
-    hooks_path = REPO / "docs/archive/windsurf/legacy-tree" / "hooks.json"
-    if not hooks_path.is_file():
+    settings_path = REPO / ".claude" / "settings.json"
+    if not settings_path.is_file():
         return []
 
     results: list[tuple[str, str]] = []
     try:
-        data = json.loads(hooks_path.read_text(encoding="utf-8"))
+        data = json.loads(settings_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, UnicodeDecodeError):
         return []
 
-    hooks = data.get("hooks", {})
-    for _hook_type, entries in hooks.items():
-        if not isinstance(entries, list):
-            continue
-        for entry in entries:
-            if not isinstance(entry, dict):
-                continue
-            command = entry.get("command", "")
-            for py_file in _extract_py_files_from_command(command):
-                results.append((py_file, "hook"))
+    def iter_commands(value: object) -> list[str]:
+        commands: list[str] = []
+        if isinstance(value, dict):
+            command = value.get("command")
+            if isinstance(command, str):
+                commands.append(command)
+            for nested in value.values():
+                commands.extend(iter_commands(nested))
+        elif isinstance(value, list):
+            for item in value:
+                commands.extend(iter_commands(item))
+        return commands
+
+    for command in iter_commands(data.get("hooks", {})):
+        for py_file in _extract_py_files_from_command(command):
+            results.append((py_file, "hook"))
 
     return results
 
 
 def _scan_mcp_config() -> list[tuple[str, str]]:
-    """Scan .cursor/mcp.json for MCP entrypoints.
+    """Scan root .mcp.json for MCP entrypoints.
 
     Returns list of (repo_relative_path, entrypoint_kind).
     """
-    mcp_path = REPO / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
+    mcp_path = REPO / ".mcp.json"
     if not mcp_path.is_file():
         return []
 

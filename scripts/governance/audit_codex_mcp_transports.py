@@ -38,7 +38,11 @@ SCRIPT_PATHS = [
 
 PROCESS_MARKERS = {
     "adg_sqlite": {
-        "markers": ["tools.adg.mcp.server", "tools/adg/mcp/server.py"],
+        "markers": [
+            "tools.adg.mcp.server",
+            "tools/adg/mcp/server.py",
+            "tools.mcp.launch_adg_sqlite_mcp",
+        ],
         "expected": "single-python-stdio-server",
     },
     "memory": {
@@ -78,6 +82,9 @@ PROCESS_MARKERS = {
         "expected": "dormant",
     },
 }
+
+CALLABLE_STATUS_ENV_PREFIX = "CODEX_MCP_CALLABLE_"
+ROUTE_CONTRACT_GLOB = "codex_claude_mcp_access_contract_*.json"
 
 
 def _safe_cmdline(cmdline: list[str]) -> list[str]:
@@ -199,7 +206,90 @@ def _is_root_launcher(server_id: str, cmdline: list[str]) -> bool:
     return True
 
 
-def build_report() -> dict[str, Any]:
+def _latest_route_contract_path() -> Path | None:
+    reports_dir = ROOT / "docs" / "reports" / "codex"
+    if not reports_dir.exists():
+        return None
+    candidates = sorted(
+        reports_dir.glob(ROUTE_CONTRACT_GLOB),
+        key=lambda p: (p.stat().st_mtime, p.name),
+        reverse=True,
+    )
+    return candidates[0] if candidates else None
+
+
+def _load_route_contract(path: Path | None) -> dict[str, Any] | None:
+    if path is None or not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _callable_status(server_id: str) -> str:
+    value = os.environ.get(f"{CALLABLE_STATUS_ENV_PREFIX}{server_id.upper()}", "").strip().lower()
+    if value in {"healthy", "closed_transport", "plugin_callable", "substitute_callable", "absent"}:
+        return value
+    return "absent"
+
+
+def classify_route(route: dict[str, Any], process_state: dict[str, Any], callable_status: str = "absent") -> str:
+    """Classify a Codex MCP route without treating process presence as parity."""
+    selected = str(route.get("selected_codex_route", ""))
+    fallback_key = str(route.get("fallback_message_key", ""))
+    process_count = int(process_state.get("process_count") or 0)
+
+    if callable_status == "healthy":
+        return "CALLABLE"
+    if callable_status == "closed_transport" or fallback_key == "closed_transport":
+        return "EXPOSED_BLOCKED"
+    if callable_status == "plugin_callable" or selected == "plugin_substitute":
+        return "PLUGIN_SUBSTITUTE"
+    if callable_status == "substitute_callable" or selected == "substitute_callable":
+        return "SUBSTITUTE_CALLABLE"
+    if process_count > 0:
+        return "PROCESS_ONLY"
+    if selected == "host_mcp_required":
+        return "HOST_MCP_REQUIRED"
+    if selected == "degraded_fallback":
+        return "DEGRADED_FALLBACK"
+    return "NOT_EXPOSED"
+
+
+def build_route_evidence(
+    contract: dict[str, Any] | None,
+    process_servers: dict[str, Any],
+) -> dict[str, Any]:
+    if not contract:
+        return {"available": False, "reason": "no route contract found", "servers": {}}
+
+    classified: dict[str, Any] = {}
+    counts: dict[str, int] = {}
+    for route in contract.get("routes", []):
+        server_id = str(route.get("server_id", ""))
+        process_state = process_servers.get(server_id, {})
+        callable_status = _callable_status(server_id)
+        classification = classify_route(route, process_state, callable_status)
+        counts[classification] = counts.get(classification, 0) + 1
+        classified[server_id] = {
+            "classification": classification,
+            "callable_status": callable_status,
+            "selected_codex_route": route.get("selected_codex_route"),
+            "fallback_message_key": route.get("fallback_message_key"),
+            "process_classification": process_state.get("classification", "none"),
+            "process_count": process_state.get("process_count", 0),
+            "route_owner": route.get("route_owner"),
+            "w2_decision": route.get("w2_decision"),
+        }
+
+    return {
+        "available": True,
+        "contract_plan_id": contract.get("plan_id"),
+        "contract_wave": contract.get("wave"),
+        "counts": dict(sorted(counts.items())),
+        "servers": classified,
+    }
+
+
+def build_report(route_contract_path: Path | None = None) -> dict[str, Any]:
     registry_path = ROOT / ".mcp.json"
     registry = json.loads(registry_path.read_text(encoding="utf-8"))
     servers = registry.get("mcpServers", {})
@@ -242,10 +332,16 @@ def build_report() -> dict[str, Any]:
                     "length": len(value),
                 }
 
+    processes = _processes()
+    env_contract = os.environ.get("CODEX_MCP_ROUTE_CONTRACT")
+    contract_path = route_contract_path or (Path(env_contract) if env_contract else None) or _latest_route_contract_path()
+    route_contract = _load_route_contract(contract_path)
+
     return {
         "repo_root": str(ROOT),
         "primary_root": str(PRIMARY_ROOT),
         "registry_path": str(registry_path),
+        "route_contract_path": str(contract_path) if contract_path else None,
         "command_paths": {name: shutil.which(name) for name in ["python", "cmd", "npx", "node", "git", "redis-cli"]},
         "script_compile": {rel: _compile_script(ROOT / rel) for rel in sorted(set(SCRIPT_PATHS))},
         "tcp": {"localhost:6379": _tcp_probe("localhost", 6379)},
@@ -256,15 +352,21 @@ def build_report() -> dict[str, Any]:
             "eval_artifacts_adg_exists": (ROOT / "artifacts" / "adg").exists(),
             "primary_artifacts_adg_exists": (PRIMARY_ROOT / "artifacts" / "adg").exists(),
         },
-        "processes": _processes(),
+        "processes": processes,
+        "route_evidence": build_route_evidence(route_contract, processes.get("servers", {})),
     }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", help="Emit JSON report")
+    parser.add_argument(
+        "--route-contract",
+        type=Path,
+        help="Optional Codex route contract JSON; defaults to latest codex_claude_mcp_access_contract_*.json",
+    )
     args = parser.parse_args()
-    report = build_report()
+    report = build_report(args.route_contract)
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))
     else:

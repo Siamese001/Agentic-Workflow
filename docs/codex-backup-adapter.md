@@ -37,6 +37,9 @@ Codex MCP parity evidence belongs in reports, not in a second registry. Use:
 | `docs/reports/codex/codex_mcp_live_route_contract.md` | Live `.mcp.json` route contracts, substitutes, and blocked routes. |
 | `docs/reports/codex/codex_mcp_dormant_policy.md` | Dormant Redis/Tavily/pytest/OTel substitute and re-add policy. |
 | `docs/reports/codex/codex_mcp_transport_lifecycle_audit.md` | Transport health, duplicate-process, and placeholder preflight evidence. |
+| `docs/reports/codex/codex_claude_mcp_access_inventory_c6d4e2.md` | Current Codex-vs-Claude configured/process/callable inventory for plan `codex-claude-mcp-access-parity-c6d4e2`. |
+| `docs/reports/codex/codex_claude_mcp_access_contract_c6d4e2.md` | Route contract, no-parallel-registry invariants, and fallback wording for Codex MCP access. |
+| `docs/reports/codex/codex_claude_mcp_access_w4_proof_c6d4e2.md` | Final callable proof matrix and operating procedure for the Codex MCP access plan. |
 
 These files are evidence snapshots. For live routing decisions, read `.mcp.json`,
 `.claude/mcp-notes.md`, and `.claude/skills/mcp-integration/SKILL.md` first.
@@ -67,3 +70,20 @@ python scripts/governance/audit_codex_mcp_transports.py --json
 ```
 
 This audit is read-only and should not be used as a launcher or cleanup tool.
+
+For Codex/Claude MCP access parity work, interpret the audit's `route_evidence`
+section instead of process presence alone. A visible MCP process is not a
+callable Codex tool. When a proof call has been run in the current Codex
+session, pass that evidence to the audit using environment variables such as:
+
+```text
+CODEX_MCP_CALLABLE_ADG_SQLITE=closed_transport
+CODEX_MCP_CALLABLE_NOTION=plugin_callable
+CODEX_MCP_CALLABLE_PLAYWRIGHT=substitute_callable
+```
+
+Accepted values are `healthy`, `closed_transport`, `plugin_callable`,
+`substitute_callable`, and `absent`. Treat `PLUGIN_SUBSTITUTE` and
+`SUBSTITUTE_CALLABLE` as useful Codex routes, not raw Claude MCP parity.
+Treat `PROCESS_ONLY` as blocked for MCP calls even when the local OS process is
+healthy.

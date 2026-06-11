@@ -1,0 +1,180 @@
+{
+  "generated_at": "2026-06-11",
+  "plan_id": "codex-claude-mcp-access-parity-c6d4e2",
+  "proof_type": "post_completion_e2e_live",
+  "result": "complete_live_tested",
+  "classification_summary": {
+    "CALLABLE": [
+      "adg_sqlite"
+    ],
+    "PLUGIN_SUBSTITUTE": [
+      "notion"
+    ],
+    "SUBSTITUTE_CALLABLE": [
+      "playwright"
+    ],
+    "PROCESS_ONLY": [
+      "memory",
+      "vector_db",
+      "context7"
+    ],
+    "DEGRADED_FALLBACK": [
+      "GitKraken",
+      "deepwiki"
+    ]
+  },
+  "live_proofs": [
+    {
+      "surface": "adg_sqlite",
+      "test": "mcp__adg_sqlite.adg_health",
+      "result": "success",
+      "details": {
+        "status": "ok",
+        "mode": "full",
+        "sqlite": "healthy",
+        "redis": "healthy",
+        "schema_version": "1.0",
+        "adg_snapshot_id": "06102026_1438",
+        "node_count": 185328,
+        "edge_count": 1097680,
+        "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06102026_1438.sqlite",
+        "graph_projection_available": true,
+        "graph_projection_stale": false
+      }
+    },
+    {
+      "surface": "notion",
+      "test": "mcp__codex_apps__notion._fetch",
+      "result": "success",
+      "details": {
+        "page_id": "37c27693-f55c-8109-8837-f3169f38fff7",
+        "url": "https://app.notion.com/p/37c27693f55c81098837f3169f38fff7",
+        "status": "Completed",
+        "exists_on_disk": "__YES__",
+        "data_source": "collection://ac53d31b-3068-4039-9ebe-856c12caab32"
+      }
+    },
+    {
+      "surface": "playwright_substitute",
+      "test": "mcp__node_repl.js",
+      "result": "success",
+      "details": {
+        "ok": true,
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "requestMeta": true,
+        "tmpDir": "C:\\Users\\amita\\AppData\\Local\\Temp"
+      }
+    }
+  ],
+  "audit": {
+    "command": "python scripts/governance/audit_codex_mcp_transports.py --json",
+    "env_overrides": {
+      "CODEX_MCP_CALLABLE_ADG_SQLITE": "healthy",
+      "CODEX_MCP_CALLABLE_NOTION": "plugin_callable",
+      "CODEX_MCP_CALLABLE_PLAYWRIGHT": "substitute_callable"
+    },
+    "returncode": 0,
+    "counts": {
+      "CALLABLE": 1,
+      "DEGRADED_FALLBACK": 2,
+      "PLUGIN_SUBSTITUTE": 1,
+      "PROCESS_ONLY": 3,
+      "SUBSTITUTE_CALLABLE": 1
+    },
+    "servers": {
+      "GitKraken": {
+        "classification": "DEGRADED_FALLBACK",
+        "callable_status": "absent",
+        "process_classification": "none",
+        "process_count": 0,
+        "selected_codex_route": "degraded_fallback"
+      },
+      "adg_sqlite": {
+        "classification": "CALLABLE",
+        "callable_status": "healthy",
+        "process_classification": "duplicate",
+        "process_count": 2,
+        "selected_codex_route": "host_mcp_required"
+      },
+      "deepwiki": {
+        "classification": "DEGRADED_FALLBACK",
+        "callable_status": "absent",
+        "process_classification": "none",
+        "process_count": 0,
+        "selected_codex_route": "degraded_fallback"
+      },
+      "memory": {
+        "classification": "PROCESS_ONLY",
+        "callable_status": "absent",
+        "process_classification": "duplicate",
+        "process_count": 2,
+        "selected_codex_route": "host_mcp_required"
+      },
+      "vector_db": {
+        "classification": "PROCESS_ONLY",
+        "callable_status": "absent",
+        "process_classification": "duplicate",
+        "process_count": 2,
+        "selected_codex_route": "degraded_fallback"
+      },
+      "notion": {
+        "classification": "PLUGIN_SUBSTITUTE",
+        "callable_status": "plugin_callable",
+        "process_classification": "duplicate_launch_tree",
+        "process_count": 6,
+        "selected_codex_route": "plugin_substitute"
+      },
+      "context7": {
+        "classification": "PROCESS_ONLY",
+        "callable_status": "absent",
+        "process_classification": "duplicate_launch_tree",
+        "process_count": 8,
+        "selected_codex_route": "degraded_fallback"
+      },
+      "playwright": {
+        "classification": "SUBSTITUTE_CALLABLE",
+        "callable_status": "substitute_callable",
+        "process_classification": "duplicate_launch_tree",
+        "process_count": 6,
+        "selected_codex_route": "substitute_callable"
+      }
+    }
+  },
+  "verification_commands": [
+    {
+      "command": "git rev-parse --show-toplevel",
+      "returncode": 0,
+      "stdout": "C:/Git/Agentic-Workflow-FRESH"
+    },
+    {
+      "command": "rg --version",
+      "returncode": 0,
+      "stdout": "ripgrep 15.1.0 (rev af60c2de9d)"
+    },
+    {
+      "command": "python -m py_compile scripts/governance/audit_codex_mcp_transports.py",
+      "returncode": 0
+    },
+    {
+      "command": "python tools/analysis/check_plan_format_forward.py plans/codex-claude-mcp-access-parity-c6d4e2.md",
+      "returncode": 0,
+      "stdout": "[PASS] codex-claude-mcp-access-parity-c6d4e2.md: 0 FAIL, 0 ERROR, 0 WARN, 0 INFO"
+    },
+    {
+      "command": "python scripts/governance/verify_codex_backup.py",
+      "returncode": 0,
+      "stdout": "Codex backup adapter verification passed"
+    },
+    {
+      "command": "python -m pytest tests/unit/scripts/governance/test_audit_codex_mcp_transports.py -q",
+      "returncode": 0,
+      "stdout": "7 passed, 3 warnings"
+    }
+  ],
+  "residual_notes": [
+    "Duplicate process cohorts remain visible for adg_sqlite, memory, vector_db, notion, context7, and playwright; this is process hygiene debt, not callable proof.",
+    "memory, vector_db, and context7 remain process-only until the Codex host exposes callable tools.",
+    "GitKraken and deepwiki remain explicit degraded fallback routes.",
+    "notion and playwright are accepted Codex routes for this plan, but they are not identical raw Claude MCP tool surfaces."
+  ]
+}

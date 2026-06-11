@@ -5,27 +5,27 @@ name: Author-Gate Harness HITL
 #   - Decision ledger schema matches canonical DDL (no drift)
 #   - Surfaced decisions older than 24h have outcome rows bound (learning loop intact)
 #
-# SSOT: .cursor/schemas, .cursor/scripts, .claude/state/refactor_decisions/
+# SSOT: .claude/schemas, .claude/governance/scripts, .claude/state/refactor_decisions/
 # ADR-023 (distinct from runtime HITL — do not conflate)
 
 on:
   pull_request:
     paths:
-      - '.cursor/schemas/decision_ledger.schema.sql'
-      - '.cursor/schemas/decision_record.schema.json'
-      - '.cursor/scripts/apply_ledger_schema.py'
-      - '.cursor/scripts/post_agent_author_gate_capture.py'
-      - '.cursor/scripts/post_commit_outcome_binder.py'
+      - '.claude/schemas/decision_ledger.schema.sql'
+      - '.claude/schemas/decision_record.schema.json'
+      - '.claude/governance/scripts/apply_ledger_schema.py'
+      - '.claude/governance/scripts/post_agent_author_gate_capture.py'
+      - '.claude/governance/scripts/post_commit_outcome_binder.py'
       - 'ops_scripts/ci/author_gate/**'
       - '.claude/state/refactor_decisions/**'
   push:
     branches: [main]
     paths:
-      - '.cursor/schemas/decision_ledger.schema.sql'
-      - '.cursor/schemas/decision_record.schema.json'
-      - '.cursor/scripts/apply_ledger_schema.py'
-      - '.cursor/scripts/post_agent_author_gate_capture.py'
-      - '.cursor/scripts/post_commit_outcome_binder.py'
+      - '.claude/schemas/decision_ledger.schema.sql'
+      - '.claude/schemas/decision_record.schema.json'
+      - '.claude/governance/scripts/apply_ledger_schema.py'
+      - '.claude/governance/scripts/post_agent_author_gate_capture.py'
+      - '.claude/governance/scripts/post_commit_outcome_binder.py'
       - 'ops_scripts/ci/author_gate/**'
       - '.claude/state/refactor_decisions/**'
   workflow_dispatch: {}
@@ -66,7 +66,7 @@ jobs:
 
       - name: Binder dry-run (diagnostic only, non-blocking)
         continue-on-error: true
-        run: python .cursor/scripts/post_commit_outcome_binder.py --dry-run --lookback 20 --verbose
+        run: python .claude/governance/scripts/post_commit_outcome_binder.py --dry-run --lookback 20 --verbose
 
       - name: Upload ledger artifact on failure
         if: failure()

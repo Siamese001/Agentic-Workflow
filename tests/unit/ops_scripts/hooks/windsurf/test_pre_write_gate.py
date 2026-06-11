@@ -282,12 +282,12 @@ class TestCheckPythonSyntax:
 
 class TestCheckMcpConfig:
     def test_deletion_blocked(self):
-        block, msgs = check_mcp_config("path/to/.cursor/mcp.json", [])
+        block, msgs = check_mcp_config("path/to/.mcp.json", [])
         assert block is True
         assert any("deletion" in m.lower() for m in msgs)
 
     def test_deletion_detection_by_suffix(self):
-        block, _ = check_mcp_config("/home/user/.cursor/mcp.json", [])
+        block, _ = check_mcp_config("/home/user/project/.mcp.json", [])
         assert block is True
 
     def test_risky_edit_mcp_servers_warns(self):
@@ -432,15 +432,15 @@ class TestMain:
         }
         assert self._run(payload) == 0
 
-    # --- .cursor/mcp.json ---
+    # --- root .mcp.json ---
     def test_mcp_deletion_blocked(self):
-        payload = {"tool_info": {"file_path": ".cursor/mcp.json", "edits": []}}
+        payload = {"tool_info": {"file_path": ".mcp.json", "edits": []}}
         assert self._run(payload) == 2
 
     def test_mcp_risky_edit_warns_allows(self):
         payload = {
             "tool_info": {
-                "file_path": ".cursor/mcp.json",
+                "file_path": ".mcp.json",
                 "edits": [{"old_string": "v1", "new_string": '"env": {"KEY": "val"}'}],
             },
         }

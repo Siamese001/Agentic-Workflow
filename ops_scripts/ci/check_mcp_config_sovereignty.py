@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """MCP Config Sovereignty gate — Constitutional Rule #0 (filesystem scope).
 
-Validates that the Cursor MCP config keeps the filesystem server scoped to the
+Validates that the root MCP config keeps the filesystem server scoped to the
 repo root only:
 
 - ``filesystem`` entry present in ``mcpServers``
@@ -41,12 +41,12 @@ FORBIDDEN_PATH_FRAGMENTS: tuple[str, ...] = (
     r"c:\users",
     r"c:/users",
     "/users/",
-    ".cursor/plans",
-    ".cursor\\plans",
+    ".claude/plans",
+    ".claude\\plans",
 )
 
 PROFILE_LAUNCHERS: dict[str, tuple[Path, str]] = {
-    "cursor": (CURSOR_MCP_PATH, ".cursor/scripts/filesystem_mcp_launcher.js"),
+    "cursor": (CURSOR_MCP_PATH, ".claude/governance/scripts/filesystem_mcp_launcher.js"),
 }
 
 
@@ -271,7 +271,7 @@ def main() -> int:
     if report["valid"]:
         print(
             "[check_mcp_config_sovereignty] OK: Rule #0 filesystem scope valid for "
-            "Cursor MCP config"
+            "root MCP config"
         )
         return 0
 
@@ -287,7 +287,7 @@ def main() -> int:
     print(
         "[check_mcp_config_sovereignty] Fix: lock filesystem.args to "
         f"[<editor-launcher>, '{ALLOWED_ROOT_ARG}'] only. "
-        "Never add C:\\Users\\... or editor plan paths.",
+        "Never add C:\\Users\\... or non-SSOT plan paths.",
         file=sys.stderr,
     )
     return 1

@@ -9,8 +9,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO / ".claude" / "governance/scripts"
-HOOKS_JSON = REPO / ".cursor" / "hooks.json"
-GOVERNANCE_DISPATCH = REPO / ".cursor" / "hooks" / "after_agent_governance_dispatch.py"
+HOOKS_JSON = REPO / ".claude" / "settings.json"
+GOVERNANCE_DISPATCH = REPO / ".claude" / "hooks" / "after_agent_governance_dispatch.py"
 DISPATCH_LEGACY = REPO / ".claude" / "governance/scripts" / "post_agent_dispatch.py"
 OUT_JSON = REPO / "docs/reports/cursor/governance_w3_hook_audit_matrix.json"
 OUT_MD = REPO / "docs/reports/cursor/governance_w3_hook_audit_matrix.md"

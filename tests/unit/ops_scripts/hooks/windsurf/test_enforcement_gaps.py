@@ -411,57 +411,54 @@ class TestGap3RedisHealthCheck:
 
 
 # ---------------------------------------------------------------------------
-# Gap 4: show_output: false made classifier output invisible to Cursor Agent
+# Gap 4: prompt-submit hook output visibility in Claude settings
 # ---------------------------------------------------------------------------
 
 
-class TestGap4ShowOutputInHooksJson:
+class TestGap4PromptSubmitHookInClaudeSettings:
     """
-    Gap: hooks.json had show_output: false for pre_user_prompt, meaning
-    Cursor Agent never saw the SR mandate or tier tag emitted to stderr.
-    Fix: show_output must be true so Cursor Agent receives the classifier output.
+    Gap: retired hooks.json used show_output: false for pre_user_prompt.
+    Current Claude settings wire UserPromptSubmit through before_submit_prompt.py;
+    Claude hook command output is surfaced by the runtime, so no retired
+    show_output flag is required.
     """
 
     def setup_method(self):
-        self.hooks_path = Path(__file__).resolve().parents[5] / "docs/archive/windsurf/legacy-tree" / "hooks.json"
+        self.settings_path = Path(__file__).resolve().parents[5] / ".claude" / "settings.json"
 
-    def test_hooks_json_exists(self):
-        assert self.hooks_path.exists(), "hooks.json must exist at .cursor/hooks.json"
+    def test_claude_settings_exists(self):
+        assert self.settings_path.exists(), ".claude/settings.json must exist"
 
-    def test_pre_user_prompt_hook_configured(self):
-        data = json.loads(self.hooks_path.read_text(encoding="utf-8"))
-        hooks = data.get("hooks", data)
-        assert "pre_user_prompt" in hooks, "hooks.json must contain pre_user_prompt hook configuration"
+    def test_user_prompt_submit_hook_configured(self):
+        data = json.loads(self.settings_path.read_text(encoding="utf-8"))
+        hooks = data.get("hooks", {})
+        assert "UserPromptSubmit" in hooks, "settings.json must contain UserPromptSubmit hook configuration"
 
-    def test_pre_user_prompt_show_output_is_true(self):
-        data = json.loads(self.hooks_path.read_text(encoding="utf-8"))
-        hooks = data.get("hooks", data)
-        pre_user_prompt = hooks["pre_user_prompt"]
-        entries = pre_user_prompt if isinstance(pre_user_prompt, list) else [pre_user_prompt]
-        classifier_entries = [e for e in entries if "pre_prompt_classifier" in e.get("command", "")]
-        assert classifier_entries, "No pre_user_prompt hook entry references pre_prompt_classifier"
-        for entry in classifier_entries:
-            assert entry.get("show_output") is True, (
-                f"pre_user_prompt hook for pre_prompt_classifier must have "
-                f"show_output: true (found: {entry.get('show_output')!r}). "
-                "Without this, Cursor Agent cannot see the SR mandate or tier tag."
-            )
-
-    def test_pre_user_prompt_command_is_pre_prompt_classifier(self):
-        data = json.loads(self.hooks_path.read_text(encoding="utf-8"))
-        hooks = data.get("hooks", data)
-        entries = hooks.get("pre_user_prompt", [])
-        if not isinstance(entries, list):
-            entries = [entries]
-        commands = [e.get("command", "") for e in entries]
-        assert any("pre_prompt_classifier" in c for c in commands), (
-            "pre_user_prompt hook must invoke pre_prompt_classifier.py"
+    def test_user_prompt_submit_has_no_retired_show_output_false(self):
+        data = json.loads(self.settings_path.read_text(encoding="utf-8"))
+        entries = data.get("hooks", {}).get("UserPromptSubmit", [])
+        assert entries, "UserPromptSubmit hook must be configured"
+        assert "show_output" not in json.dumps(entries), (
+            "Claude settings should not carry retired Cursor show_output flags"
         )
 
-    def test_hooks_json_is_valid_json(self):
-        text = self.hooks_path.read_text(encoding="utf-8")
+    def test_user_prompt_submit_command_is_before_submit_prompt(self):
+        data = json.loads(self.settings_path.read_text(encoding="utf-8"))
+        entries = data.get("hooks", {}).get("UserPromptSubmit", [])
+        commands = [
+            hook.get("command", "")
+            for entry in entries
+            for hook in entry.get("hooks", [])
+            if isinstance(hook, dict)
+        ]
+        assert any("before_submit_prompt.py" in c for c in commands), (
+            "UserPromptSubmit hook must invoke before_submit_prompt.py"
+        )
+
+    def test_claude_settings_is_valid_json(self):
+        text = self.settings_path.read_text(encoding="utf-8")
         data = json.loads(text)  # raises if invalid
-        assert isinstance(data, dict), "hooks.json must be a JSON object"
+        assert isinstance(data, dict), ".claude/settings.json must be a JSON object"
 
 
 # ---------------------------------------------------------------------------
@@ -477,17 +474,8 @@ class TestGap5AdgHealthFunctionRename:
     """
 
     def _run_health_check(self, servers_response: list) -> bool:
-        """Helper: run check_adg_health_red with a mocked probe that returns servers_response."""
-        from pre_prompt_classifier import check_adg_health_red
-
-        mock_result = _make_probe_result(servers_response)
-        with patch(
-            "pre_prompt_classifier.subprocess.run",
-            return_value=mock_result,
-        ):
-            # Also mock probe_script.exists() to return True so the function doesn't bail early
-            with patch("pathlib.Path.exists", return_value=True):
-                return check_adg_health_red(Path("."))
+        """Historical helper retained for old probe tests; current check is SQLite based."""
+        raise AssertionError("check_adg_health_red no longer uses MCP subprocess probe output")
 
     def test_check_adg_health_red_importable(self):
         from pre_prompt_classifier import check_adg_health_red
@@ -501,64 +489,33 @@ class TestGap5AdgHealthFunctionRename:
             "check_adg_health_stale must not exist — it was the old broken name. Use check_adg_health_red."
         )
 
-    def test_check_adg_health_red_returns_true_when_probe_reports_non_ok(self):
-        result = self._run_health_check([{"name": "adg_sqlite", "status": "error"}])
-        assert result is True, "check_adg_health_red must return True when probe reports status != 'ok'"
-
-    def test_check_adg_health_red_returns_false_when_probe_reports_ok(self):
-        result = self._run_health_check([{"name": "adg_sqlite", "status": "ok"}])
-        assert result is False, "check_adg_health_red must return False when probe reports status == 'ok'"
-
-    def test_check_adg_health_red_fails_open_when_probe_errors(self):
+    def test_check_adg_health_red_returns_true_when_adg_dir_exists_but_empty(self, tmp_path):
         from pre_prompt_classifier import check_adg_health_red
 
-        with patch(
-            "pre_prompt_classifier.subprocess.run",
-            side_effect=FileNotFoundError("probe not found"),
-        ):
-            with patch("pathlib.Path.exists", return_value=True):
-                result = check_adg_health_red(Path("."))
-        assert result is False, "check_adg_health_red must fail-open (return False) when probe script errors"
+        (tmp_path / "artifacts" / "adg").mkdir(parents=True)
+        assert check_adg_health_red(tmp_path) is True
 
-    def test_check_adg_health_red_fails_open_on_malformed_json(self):
+    def test_check_adg_health_red_returns_false_when_sqlite_snapshot_readable(self, tmp_path):
+        from pre_prompt_classifier import check_adg_health_red
+        import sqlite3
+
+        adg_dir = tmp_path / "artifacts" / "adg"
+        adg_dir.mkdir(parents=True)
+        db = adg_dir / "adg_indexed_20990101_0000.sqlite"
+        con = sqlite3.connect(db)
+        con.execute("CREATE TABLE smoke (id INTEGER)")
+        con.close()
+        assert check_adg_health_red(tmp_path) is False
+
+    def test_check_adg_health_red_returns_true_when_latest_snapshot_corrupt(self, tmp_path):
         from pre_prompt_classifier import check_adg_health_red
 
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = "{not valid json}"
-        with patch(
-            "pre_prompt_classifier.subprocess.run",
-            return_value=mock_result,
-        ):
-            with patch("pathlib.Path.exists", return_value=True):
-                result = check_adg_health_red(Path("."))
-        assert result is False, "check_adg_health_red must fail-open when probe returns malformed JSON"
+        adg_dir = tmp_path / "artifacts" / "adg"
+        adg_dir.mkdir(parents=True)
+        (adg_dir / "adg_indexed_20990101_0000.sqlite").write_text("not sqlite", encoding="utf-8")
+        assert check_adg_health_red(tmp_path) is True
 
-    def test_check_adg_health_red_fails_open_on_nonzero_exit(self):
+    def test_check_adg_health_red_fails_open_when_adg_dir_missing(self, tmp_path):
         from pre_prompt_classifier import check_adg_health_red
 
-        mock_result = MagicMock()
-        mock_result.returncode = 1
-        mock_result.stdout = ""
-        with patch(
-            "pre_prompt_classifier.subprocess.run",
-            return_value=mock_result,
-        ):
-            with patch("pathlib.Path.exists", return_value=True):
-                result = check_adg_health_red(Path("."))
-        assert result is False, "check_adg_health_red must fail-open when probe exits with non-zero code"
-
-    def test_check_adg_health_red_fails_open_when_probe_script_missing(self):
-        from pre_prompt_classifier import check_adg_health_red
-
-        # probe_script.exists() returns False → should bail out and return False
-        with patch("pathlib.Path.exists", return_value=False):
-            result = check_adg_health_red(Path("/nonexistent"))
-        assert result is False, "check_adg_health_red must fail-open when probe script file does not exist"
-
-    def test_check_adg_health_red_returns_true_when_adg_sqlite_absent_from_results(self):
-        # Probe returned results but adg_sqlite not among them → red (absent = unhealthy)
-        result = self._run_health_check([{"name": "other_server", "status": "ok"}])
-        assert result is True, (
-            "check_adg_health_red must return True (red) when adg_sqlite not in probe results"
-        )
+        assert check_adg_health_red(tmp_path) is False

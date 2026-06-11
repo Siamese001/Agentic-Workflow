@@ -54,7 +54,7 @@ class TestRealSnapshotSmoke:
         edges = resolve_mcp_consumer_edges()
         # The registry source file itself must NOT be reported as a consumer.
         assert all(
-            e.consumer_file != ".cursor/mcp.json" for e in edges
+            e.consumer_file != ".mcp.json" for e in edges
         )
 
     def test_mcp_resolver_skips_test_dirs(self):

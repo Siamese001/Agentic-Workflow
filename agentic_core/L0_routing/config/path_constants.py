@@ -105,7 +105,8 @@ APPS_PACKAGES: Final[list[str]] = [
 PROJECT_ROOT_MARKERS: Final[tuple[str, ...]] = (
     ".git",
     "pyproject.toml",
-    ".cursor/rules",
+    ".mcp.json",
+    ".claude/rules",
 )
 
 
@@ -157,7 +158,8 @@ ARCHIVES_DIR: Final[str] = "archives"
 ARTIFACTS_DIR: Final[str] = "artifacts"
 ADG_ARTIFACTS_DIR: Final[str] = "artifacts/adg"
 WINDSURF_ARTIFACTS_DIR: Final[str] = "artifacts/governance"
-WINDSURF_PLANS_DIR: Final[str] = "docs/archive/windsurf/legacy-tree/plans"
+PLANS_DIR: Final[str] = "plans"
+WINDSURF_PLANS_DIR: Final[str] = PLANS_DIR
 DOCS_DIR: Final[str] = "docs"
 DOCS_REPORTS_DIR: Final[str] = "docs/reports"
 ADR_DIR: Final[str] = "docs/architecture/adr"
@@ -177,19 +179,14 @@ TOOLS_DIR: Final[str] = "tools"
 DASHBOARD_DIR: Final[str] = "agentic_core/L6_observability/dashboards"
 REPORTS_DIR: Final[str] = "reports"
 
-# W0 cursor-decommission (2026-06-07) — successor SSOT targets for the
-# .cursor -> .claude migration (plan .claude/plans/cursor-decommission-a1f7c3.md).
-# CURSOR_* = current canonical location (pre-move); CLAUDE_* = post-move target.
-# Per-surface waves rewrite hardcoded ".cursor/<x>" literals to the CURSOR_*
-# symbol (via tools/migration/ssot_path_literal_migrator.py), then git-mv the
-# data and flip the consumer to the CLAUDE_* symbol. Both endpoints are exported
-# so migration tooling can reference either side explicitly.
-CURSOR_PLANS_DIR: Final[str] = ".cursor/plans"
+# Cursor-decommission compatibility aliases. The names remain for older imports,
+# but values point at the current SSOT locations.
+CURSOR_PLANS_DIR: Final[str] = PLANS_DIR
 CURSOR_STATE_DIR: Final[str] = ".claude/state"
-CURSOR_SCHEMAS_DIR: Final[str] = ".cursor/schemas"
-CURSOR_TEMPLATES_DIR: Final[str] = ".cursor/templates"
-CURSOR_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".cursor/scripts"
-CLAUDE_PLANS_DIR: Final[str] = ".claude/plans"
+CURSOR_SCHEMAS_DIR: Final[str] = ".claude/schemas"
+CURSOR_TEMPLATES_DIR: Final[str] = ".claude/templates"
+CURSOR_GOVERNANCE_SCRIPTS_DIR: Final[str] = ".claude/governance/scripts"
+CLAUDE_PLANS_DIR: Final[str] = PLANS_DIR
 CLAUDE_STATE_DIR: Final[str] = ".claude/state"
 CLAUDE_SCHEMAS_DIR: Final[str] = ".claude/schemas"
 CLAUDE_TEMPLATES_DIR: Final[str] = ".claude/templates"
@@ -329,7 +326,8 @@ ROOT_PROTECTED_FILES: Final[frozenset[str]] = frozenset(
         ".gitignore",
         ".gitattributes",
         ".pre-commit-config.yaml",
-        ".cursor/rules",
+        ".mcp.json",
+        ".claude/rules",
         "pyproject.toml",
         "requirements.txt",
         "setup.py",

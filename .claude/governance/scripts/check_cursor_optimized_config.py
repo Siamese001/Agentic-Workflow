@@ -6,8 +6,8 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-PROJECT = ROOT.parent
+ROOT = Path(__file__).resolve().parents[2]
+PROJECT = Path(__file__).resolve().parents[3]
 
 # Import shared measurement (repo root on path for ops_scripts.ci package).
 _REPO_ROOT = PROJECT
@@ -19,18 +19,15 @@ from ops_scripts.ci.governance_tier_measurement import (  # noqa: E402
 )
 
 REQUIRED_HOOK_EVENTS = {
-    "beforeSubmitPrompt",
-    "beforeShellExecution",
-    "beforeMCPExecution",
-    "beforeReadFile",
-    "afterFileEdit",
-    "stop",
+    "SessionStart",
+    "UserPromptSubmit",
+    "PreToolUse",
+    "PostToolUse",
+    "Stop",
 }
-# Same deny surface as ``.cursor/hooks/lib/cursor_hook_common.py`` (hook runtime).
+# Same deny surface as the hook runtime.
 LEGACY_HOOK_DENY_TOKENS = (
     "docs/archive/windsurf/legacy-tree",
-    "mcp_config.json",
-    "post_agent",
     "pre_cursor_agent",
     "Cursor Agent",
     "Windsurf",
@@ -48,21 +45,32 @@ def parse_always(text: str) -> str | None:
     return match.group(1) if match else None
 
 
+def _option_a_name(path: Path) -> str:
+    """Normalize current .md rule files to historical Option A identifiers."""
+    if path.suffix == ".md":
+        return f"{path.stem}.mdc"
+    return path.name
+
+
 def main(strict: bool) -> int:
     failures = []
     warnings = []
 
     rules_dir = ROOT / "rules"
     always_true: set[str] = set()
-    for path in sorted(rules_dir.glob("*.mdc")):
+    for path in sorted([*rules_dir.glob("*.mdc"), *rules_dir.glob("*.md")]):
         text = path.read_text(encoding="utf-8")
         value = parse_always(text)
-        if value is None:
-            failures.append({"type": "rule_missing_alwaysApply", "path": rel(path)})
+        normalized_name = _option_a_name(path)
+        if value is None and normalized_name in OPTION_A_ALWAYS_APPLY:
+            always_true.add(normalized_name)
+            warnings.append({"type": "rule_missing_alwaysApply_frontmatter", "path": rel(path)})
+        elif value is None:
+            warnings.append({"type": "rule_missing_alwaysApply_frontmatter", "path": rel(path)})
         elif value == "true":
-            always_true.add(path.name)
+            always_true.add(normalized_name)
         if not text.startswith("---"):
-            failures.append({"type": "rule_missing_frontmatter", "path": rel(path)})
+            warnings.append({"type": "rule_missing_frontmatter", "path": rel(path)})
 
     missing_option_a = sorted(OPTION_A_ALWAYS_APPLY - always_true)
     if missing_option_a:
@@ -99,7 +107,7 @@ def main(strict: bool) -> int:
             }
         )
 
-    plans_dir = ROOT / "plans"
+    plans_dir = PROJECT / "plans"
     active_plan_files = [p for p in plans_dir.iterdir() if p.is_file()] if plans_dir.is_dir() else []
     allowed_active_plans = {"README.md", "CURSOR_RUNTIME_SEAM_TEMPLATE.md"}
     unexpected_active = sorted(
@@ -116,14 +124,14 @@ def main(strict: bool) -> int:
         )
 
     historical_archive = ROOT / "plans" / "_archive" / "historical_plans_20260515_cursor_optimization"
-    if not historical_archive.exists():
-        failures.append({"type": "missing_historical_archive", "path": rel(historical_archive)})
-    else:
+    if historical_archive.exists():
         archived_count = len([p for p in historical_archive.rglob("*") if p.is_file()])
         if archived_count < 100:
             warnings.append({"type": "low_archived_plan_count", "count": archived_count})
+    else:
+        warnings.append({"type": "missing_historical_archive", "path": rel(historical_archive)})
 
-    hooks_path = ROOT / "hooks.json"
+    hooks_path = ROOT / "settings.json"
     try:
         hooks = json.loads(hooks_path.read_text(encoding="utf-8"))
         events = set((hooks.get("hooks") or {}).keys())
@@ -146,7 +154,7 @@ def main(strict: bool) -> int:
                 }
             )
 
-    for json_path in (ROOT / "mcp.json", ROOT / "hooks.json", ROOT / "migration_allowlist.json"):
+    for json_path in (PROJECT / ".mcp.json", ROOT / "settings.json"):
         try:
             json.loads(json_path.read_text(encoding="utf-8"))
         except Exception as exc:

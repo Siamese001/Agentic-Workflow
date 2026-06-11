@@ -113,20 +113,19 @@ def load_tool_registry_from_mcp_config(
 ) -> list[ToolDefinition]:
     """Load tool definitions from the MCP config file.
 
-    Parses ``mcp_config.json`` to extract server IDs.  Tool names and
+    Parses root ``.mcp.json`` to extract server IDs.  Tool names and
     descriptions are populated from the AGENTS.md Quick Reference table
     when available; otherwise a minimal stub is created from the server ID.
 
     Args:
-        config_path: Path to ``mcp_config.json``.  Defaults to the
-            repo-local ``.cursor/mcp.json``.
+        config_path: Path to root ``.mcp.json``.
 
     Returns:
         List of ``ToolDefinition`` objects, one per server (coarse-grained
         until per-tool metadata is available in the config).
     """
     if config_path is None:
-        config_path = Path(__file__).resolve().parents[4] / "docs/archive/windsurf/legacy-tree" / "mcp_config.json"
+        config_path = Path(__file__).resolve().parents[4] / ".mcp.json"
     config_path = Path(config_path)
 
     tools: list[ToolDefinition] = []

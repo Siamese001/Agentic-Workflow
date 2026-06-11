@@ -1,0 +1,160 @@
+{
+  "generated_at": "2026-06-11",
+  "plan_id": "codex-claude-mcp-access-parity-c6d4e2",
+  "wave": "W1",
+  "sources": [
+    ".mcp.json",
+    ".claude/mcp-notes.md",
+    "scripts/governance/audit_codex_mcp_transports.py --json",
+    "tool_search discovery results",
+    "direct Codex tool-call evidence from this session"
+  ],
+  "summary": {
+    "configured_live_mcp_count": 8,
+    "configured_live_mcps": [
+      "GitKraken",
+      "adg_sqlite",
+      "deepwiki",
+      "memory",
+      "vector_db",
+      "notion",
+      "context7",
+      "playwright"
+    ],
+    "codex_raw_mcp_callable_green": [],
+    "codex_raw_mcp_exposed_but_blocked": [
+      "adg_sqlite"
+    ],
+    "codex_plugin_or_substitute_callable": [
+      "notion",
+      "playwright"
+    ],
+    "process_visible_but_not_callable": [
+      "memory",
+      "vector_db",
+      "context7"
+    ],
+    "not_exposed_or_not_process_visible": [
+      "GitKraken",
+      "deepwiki"
+    ]
+  },
+  "servers": [
+    {
+      "server_id": "GitKraken",
+      "configured_in_mcp_json": true,
+      "configured_command_or_url": "${GITKRAKEN_GK_PATH} mcp --host=cursor --source=gitlens --scheme=cursor",
+      "process_visible": false,
+      "process_classification": "none",
+      "codex_callable_surface": "none_found",
+      "codex_callable_tools": [],
+      "evidence": "tool_search for GitKraken git_status/git_add_or_commit/pull_request_create returned zero tools.",
+      "current_gap": "Claude live MCP is configured, but Codex has no GitKraken MCP tool surface.",
+      "fallback": "Use native git or GitHub plugin with explicit GitKraken-unavailable note."
+    },
+    {
+      "server_id": "adg_sqlite",
+      "configured_in_mcp_json": true,
+      "configured_command_or_url": "python -u -m tools.mcp.launch_adg_sqlite_mcp",
+      "process_visible": false,
+      "process_classification": "none",
+      "codex_callable_surface": "raw_mcp_namespace_present",
+      "codex_callable_tools": [
+        "adg_health",
+        "adg_reopen_connections",
+        "adg_status",
+        "adg_violations",
+        "adg_p0_wave_plan"
+      ],
+      "evidence": "Codex exposes mcp__adg_sqlite tools, but adg_health returned Transport closed during W1.",
+      "current_gap": "Raw tool namespace exists but transport is closed and no backing process is visible.",
+      "fallback": "Use read-only SQLite/repo scripts only with degraded ADG MCP note."
+    },
+    {
+      "server_id": "deepwiki",
+      "configured_in_mcp_json": true,
+      "configured_command_or_url": "https://mcp.deepwiki.com/mcp",
+      "process_visible": false,
+      "process_classification": "remote_url_not_process_visible",
+      "codex_callable_surface": "none_found",
+      "codex_callable_tools": [],
+      "evidence": "tool_search for read_wiki_structure/read_wiki_contents/ask_question returned zero tools.",
+      "current_gap": "Claude remote MCP is configured, but Codex has no DeepWiki tool surface.",
+      "fallback": "Use GitHub plugin or web/Tavily only as a named substitute."
+    },
+    {
+      "server_id": "memory",
+      "configured_in_mcp_json": true,
+      "configured_command_or_url": "python -u ${AGENTIC_REPO_ROOT}/tools/memory/adg_memory_server.py",
+      "process_visible": true,
+      "process_classification": "single",
+      "codex_callable_surface": "none_found",
+      "codex_callable_tools": [],
+      "evidence": "Transport audit found one memory process; tool_search for mem_recall_session_start/create_entities/add_observations returned zero tools.",
+      "current_gap": "Process is visible, but Codex cannot call Memory MCP.",
+      "fallback": "No honest persistent-memory substitute; report writeback/recall as blocked."
+    },
+    {
+      "server_id": "vector_db",
+      "configured_in_mcp_json": true,
+      "configured_command_or_url": "python -u ${AGENTIC_REPO_ROOT}/tools/mcp/vector_db_server.py",
+      "process_visible": true,
+      "process_classification": "single",
+      "codex_callable_surface": "none_found",
+      "codex_callable_tools": [],
+      "evidence": "Transport audit found one vector_db process; tool_search for semantic_search/query_collection/vector_stats/list_collections returned zero tools.",
+      "current_gap": "Process is visible, but Codex cannot call Vector DB MCP.",
+      "fallback": "Use rg or direct Chroma inspection only as degraded fallback."
+    },
+    {
+      "server_id": "notion",
+      "configured_in_mcp_json": true,
+      "configured_command_or_url": "cmd /c npx -y @notionhq/notion-mcp-server",
+      "process_visible": true,
+      "process_classification": "single_launch_tree",
+      "codex_callable_surface": "codex_notion_plugin",
+      "codex_callable_tools": [
+        "_fetch",
+        "_notion_create_pages",
+        "_search",
+        "_notion_get_users"
+      ],
+      "evidence": "Codex Notion plugin fetched the Plans data source and created the plan registration page.",
+      "current_gap": "Callable, but API shape differs from Claude's raw Notion MCP names.",
+      "fallback": "Use fetched schema and document property mapping; do not assume Claude API names."
+    },
+    {
+      "server_id": "context7",
+      "configured_in_mcp_json": true,
+      "configured_command_or_url": "cmd /c npx -y @upstash/context7-mcp",
+      "process_visible": true,
+      "process_classification": "single_launch_tree",
+      "codex_callable_surface": "none_found",
+      "codex_callable_tools": [],
+      "evidence": "Transport audit found one context7 launch tree; tool_search did not expose resolve-library-id/get-library-docs.",
+      "current_gap": "Process is visible, but raw Context7 tools are not callable from Codex.",
+      "fallback": "Use official docs or relevant plugin docs with explicit Context7-unavailable note."
+    },
+    {
+      "server_id": "playwright",
+      "configured_in_mcp_json": true,
+      "configured_command_or_url": "cmd /c npx -y @playwright/mcp",
+      "process_visible": true,
+      "process_classification": "single_launch_tree",
+      "codex_callable_surface": "node_repl_browser_substitute",
+      "codex_callable_tools": [
+        "mcp__node_repl.js",
+        "Browser plugin via skill/tool discovery"
+      ],
+      "evidence": "tool_search exposed node_repl browser-control capability, not Claude raw browser_navigate/browser_snapshot tools.",
+      "current_gap": "Callable substitute exists; raw Playwright MCP tool names are not exposed.",
+      "fallback": "Use node_repl/Browser plugin and label it as substitute, not raw Playwright parity."
+    }
+  ],
+  "w1_result": {
+    "W1.1": "DONE",
+    "W1.2": "DONE",
+    "next_wave": "W2",
+    "open_decision": "Choose which gaps require host-level MCP exposure versus accepted plugin/fallback routes."
+  }
+}

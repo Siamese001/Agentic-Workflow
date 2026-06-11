@@ -35,8 +35,8 @@ REQUIRED_PATHS = [
     "docs/reports/cursor/governance_dedup_w4_receipt.json",
     "docs/reports/cursor/plan_sprawl_inventory_20260526.csv",
     "docs/reports/cursor/windsurf_always_on_demotion_map_20260526.md",
-    ".cursor/hooks/after_agent_governance_dispatch.py",
-    ".claude/plans/_archive/2026-05",
+    ".claude/hooks/after_agent_governance_dispatch.py",
+    "plans",
     "docs/reports/decommission/legacy_tree_classification_9f2c47.json",
 ]
 
@@ -92,20 +92,20 @@ def _structural_checks() -> list[str]:
     for rel in REQUIRED_PATHS:
         if not (REPO / rel).exists():
             errors.append(f"missing path: {rel}")
-    hooks_json = REPO / ".cursor/hooks.json"
-    if hooks_json.is_file():
-        text = hooks_json.read_text(encoding="utf-8")
+    settings_json = REPO / ".claude/settings.json"
+    if settings_json.is_file():
+        text = settings_json.read_text(encoding="utf-8")
         if "after_agent_governance_dispatch.py" not in text:
-            errors.append("hooks.json missing after_agent_governance_dispatch.py")
+            errors.append("settings.json missing after_agent_governance_dispatch.py")
         if "after_agent_author_gate_audits.py" in text:
-            errors.append("hooks.json still wires legacy after_agent_author_gate_audits.py")
+            errors.append("settings.json still wires legacy after_agent_author_gate_audits.py")
     sys.path.insert(0, str(REPO / "ops_scripts" / "ci"))
     from governance_tier_measurement import scan_windsurf_always_on_md  # noqa: E402
 
     if scan_windsurf_always_on_md():
         errors.append("windsurf still has trigger: always_on files")
     plan_count = sum(
-        1 for p in (REPO / ".claude/plans").iterdir() if p.is_file() and p.suffix == ".md"
+        1 for p in (REPO / "plans").iterdir() if p.is_file() and p.suffix == ".md"
     )
     if plan_count > 20:
         errors.append(f"top-level plan count {plan_count} > 20")

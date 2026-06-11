@@ -34,7 +34,6 @@ EXCLUDE_IMPORTER_PREFIXES = (
     "tests/",
     "tools/debug/",
     "archives/",
-    ".cursor/",
     "docs/",
 )
 

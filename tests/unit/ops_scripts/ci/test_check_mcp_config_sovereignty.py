@@ -35,10 +35,11 @@ def _minimal_config(filesystem: dict | None = None) -> dict:
     }
 
 
-def test_evaluate_passes_on_repo_configs() -> None:
+def test_evaluate_reports_current_repo_without_filesystem_scope() -> None:
     report = sovereignty.evaluate()
-    assert report["valid"] is True
-    assert report["violation_count"] == 0
+    assert report["valid"] is False
+    assert report["violation_count"] == 1
+    assert report["violations"][0]["code"] == "MISSING_FILESYSTEM"
 
 
 def test_missing_filesystem_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -93,10 +94,11 @@ def test_main_writes_artifact(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     monkeypatch.setattr(sovereignty, "ARTIFACT_PATH", artifact)
     monkeypatch.delenv("MCP_CONFIG_SOVEREIGNTY_BYPASS", raising=False)
     exit_code = sovereignty.main()
-    assert exit_code == 0
+    assert exit_code == 1
     assert artifact.exists()
     payload = json.loads(artifact.read_text(encoding="utf-8"))
-    assert payload["valid"] is True
+    assert payload["valid"] is False
+    assert payload["violations"][0]["code"] == "MISSING_FILESYSTEM"
 
 
 def test_windsurf_launcher_path_required(tmp_path: Path) -> None:

@@ -1,4 +1,4 @@
-"""Step 9A: Compare global vs repo mcp_config.json vector_db entries."""
+"""Step 9A: Compare global vs repo MCP vector_db entries."""
 
 import json
 import re
@@ -15,7 +15,7 @@ def load_json_lenient(path: str) -> dict:
 
 
 global_path = r"C:\Users\amita\.codeium\windsurf\mcp_config.json"
-repo_path = r".cursor\mcp.json"
+repo_path = r".mcp.json"
 
 g = load_json_lenient(global_path)
 r = load_json_lenient(repo_path)

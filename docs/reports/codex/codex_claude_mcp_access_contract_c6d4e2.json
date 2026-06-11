@@ -1,0 +1,146 @@
+{
+  "generated_at": "2026-06-11",
+  "plan_id": "codex-claude-mcp-access-parity-c6d4e2",
+  "wave": "W2",
+  "sources": [
+    ".mcp.json",
+    ".claude/mcp-notes.md",
+    "docs/reports/codex/codex_claude_mcp_access_inventory_c6d4e2.json",
+    "scripts/governance/audit_codex_mcp_transports.py --json",
+    "direct Codex tool-call evidence from W2"
+  ],
+  "invariants": [
+    {
+      "id": "NO_PARALLEL_REGISTRY",
+      "rule": "Codex must not maintain a second MCP server registry for this repository.",
+      "enforcement": "All configured-server truth comes from root .mcp.json; Codex reports may contain evidence snapshots only."
+    },
+    {
+      "id": "PROCESS_IS_NOT_CALLABLE",
+      "rule": "A live MCP OS process is not proof that Codex can call the MCP.",
+      "enforcement": "Reports must separate configured, process-visible, and callable states."
+    },
+    {
+      "id": "FALLBACK_IS_NOT_PARITY",
+      "rule": "CLI, plugin, web, or direct-DB fallbacks are degraded routes unless they expose the same MCP contract.",
+      "enforcement": "Fallback messages must include the unavailable MCP and the substitute being used."
+    },
+    {
+      "id": "HOST_OWNS_STDIO",
+      "rule": "Detached manual stdio MCP launches are not equivalent to host-attached MCP access.",
+      "enforcement": "Codex may audit process health, but parity requires the Codex host to expose callable tools."
+    },
+    {
+      "id": "NO_SECRET_CHURN",
+      "rule": "This plan does not change credentials or environment variable values.",
+      "enforcement": "W2 only records required env state and route decisions."
+    }
+  ],
+  "standard_failure_messages": {
+    "raw_mcp_unavailable": "DEGRADED_FALLBACK: <server_id> is configured in .mcp.json for Claude, but Codex has no callable MCP tool surface in this session; using <substitute> instead.",
+    "process_only": "BLOCKED: <server_id> has a visible MCP process, but Codex cannot call its tools; process presence is not MCP parity.",
+    "closed_transport": "BLOCKED: <server_id> tool namespace is exposed, but the transport is closed; restart or reattach through the MCP host before claiming parity.",
+    "plugin_substitute": "SUBSTITUTE_ROUTE: <server_id> is available through a Codex plugin or adjacent tool with different API shape; verify schema/tool-name differences before mutation.",
+    "no_substitute": "BLOCKED: <server_id> is unavailable in Codex and has no honest substitute for this operation."
+  },
+  "routes": [
+    {
+      "server_id": "GitKraken",
+      "desired_claude_contract": "Git/PR authority via git_status, git_add_or_commit, git_log_or_diff, pull_request_create.",
+      "selected_codex_route": "degraded_fallback",
+      "route_owner": "Codex host for parity exposure; Codex agent for fallback disclosure.",
+      "codex_route": "native git CLI and GitHub plugin only when task scope permits.",
+      "fallback_message_key": "raw_mcp_unavailable",
+      "mutation_allowed": true,
+      "mutation_constraints": "Follow Codex git safety rules; do not claim GitKraken authority.",
+      "w2_decision": "Require host-level GitKraken MCP exposure for parity. Native git is acceptable only as an explicit degraded fallback."
+    },
+    {
+      "server_id": "adg_sqlite",
+      "desired_claude_contract": "ADG structural authority via adg_health first, SQLite canonical, Redis optional cache.",
+      "selected_codex_route": "host_mcp_required",
+      "route_owner": "Codex host must expose and keep stdio transport attached.",
+      "codex_route": "mcp__adg_sqlite namespace when transport is open.",
+      "fallback_message_key": "closed_transport",
+      "mutation_allowed": false,
+      "mutation_constraints": "Read-only structural queries; direct SQLite fallback must be labeled degraded.",
+      "w2_decision": "Treat current route as blocked until adg_health succeeds from Codex. Do not replace with detached manual launch."
+    },
+    {
+      "server_id": "deepwiki",
+      "desired_claude_contract": "External GitHub repository wiki/Q&A via read_wiki_structure, read_wiki_contents, ask_question.",
+      "selected_codex_route": "degraded_fallback",
+      "route_owner": "Codex host for parity exposure; Codex agent for fallback disclosure.",
+      "codex_route": "GitHub plugin, Tavily/web, or official docs only as named substitutes.",
+      "fallback_message_key": "raw_mcp_unavailable",
+      "mutation_allowed": false,
+      "mutation_constraints": "Read-only research substitute; cite actual sources used.",
+      "w2_decision": "Require host-level DeepWiki exposure for parity. Web/GitHub substitutes are not DeepWiki-backed."
+    },
+    {
+      "server_id": "memory",
+      "desired_claude_contract": "Session recall and durable decision writeback via mem_recall_session_start, create_entities, add_observations, search_nodes.",
+      "selected_codex_route": "host_mcp_required",
+      "route_owner": "Codex host must expose callable Memory MCP tools.",
+      "codex_route": "No accepted substitute for persistent memory compliance.",
+      "fallback_message_key": "no_substitute",
+      "mutation_allowed": false,
+      "mutation_constraints": "Do not claim memory writeback or first-call compliance unless the Memory MCP is callable.",
+      "w2_decision": "Memory is parity-critical. Process-only visibility remains blocked."
+    },
+    {
+      "server_id": "vector_db",
+      "desired_claude_contract": "Semantic search and vector stats via semantic_search, query_collection, vector_stats, list_collections.",
+      "selected_codex_route": "degraded_fallback",
+      "route_owner": "Codex host for parity exposure; Codex agent for fallback disclosure.",
+      "codex_route": "rg lexical search, ADG structural search, or direct Chroma inspection only when fit for purpose.",
+      "fallback_message_key": "process_only",
+      "mutation_allowed": false,
+      "mutation_constraints": "Do not represent lexical search as semantic search.",
+      "w2_decision": "Require host-level Vector DB exposure for semantic parity; otherwise use explicitly degraded substitutes."
+    },
+    {
+      "server_id": "notion",
+      "desired_claude_contract": "Plans/Backlog access via Claude Notion MCP API-query-data-source, API-post-page, API-patch-page.",
+      "selected_codex_route": "plugin_substitute",
+      "route_owner": "Codex Notion plugin for current route; Codex host for raw MCP parity if required later.",
+      "codex_route": "mcp__codex_apps__notion tools: _fetch, _notion_create_pages, _notion_update_page, _search, _notion_get_users.",
+      "fallback_message_key": "plugin_substitute",
+      "mutation_allowed": true,
+      "mutation_constraints": "Fetch schema before writes; use exact property names; Plans/Backlog only; do not write archived DBs.",
+      "w2_decision": "Accept plugin substitute for this plan because W1/W2 Notion registration and update succeeded. Record API-shape delta."
+    },
+    {
+      "server_id": "context7",
+      "desired_claude_contract": "Versioned official library docs via resolve-library-id and get-library-docs.",
+      "selected_codex_route": "degraded_fallback",
+      "route_owner": "Codex host for parity exposure; Codex agent for source disclosure.",
+      "codex_route": "Official docs/web search or domain-specific plugin docs; use only when source freshness/authority requirements are met.",
+      "fallback_message_key": "process_only",
+      "mutation_allowed": false,
+      "mutation_constraints": "For technical answers, rely on primary official docs and cite source; do not claim Context7 use.",
+      "w2_decision": "Require host-level Context7 exposure for raw parity. Process-only context7 is not callable."
+    },
+    {
+      "server_id": "playwright",
+      "desired_claude_contract": "Browser automation via browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_take_screenshot.",
+      "selected_codex_route": "substitute_callable",
+      "route_owner": "Codex node_repl/Browser plugin for substitute; Codex host for raw Playwright MCP parity.",
+      "codex_route": "node_repl browser automation and Browser plugin skills.",
+      "fallback_message_key": "plugin_substitute",
+      "mutation_allowed": true,
+      "mutation_constraints": "Label as substitute when raw browser_* MCP tools are absent; verify screenshots/interactions when frontend work requires it.",
+      "w2_decision": "Accept substitute route for Codex browser verification unless raw Claude Playwright MCP parity is explicitly required."
+    }
+  ],
+  "w2_result": {
+    "W2.1": "DONE",
+    "W2.2": "DONE",
+    "next_wave": "W3",
+    "open_items_for_w3": [
+      "Teach audit helper to emit configured/process/callable classifications from this contract.",
+      "Add fixture-backed tests for blocked transport, process-only, plugin-substitute, and degraded-fallback states.",
+      "Optionally add a callable evidence adapter when Codex exposes more MCP tools."
+    ]
+  }
+}

@@ -73,7 +73,6 @@ root_file_patterns:
   - "*.lock"        # uv.lock, poetry.lock, package-lock.json equivalents
   - "CODEOWNERS"    # GitHub governance file (no extension by convention)
   - "CACHEDIR.TAG"  # pip/pytest cache tag marker (no extension; pre-existing artifact)
-  - "cursorignore"  # Cursor ignore file (no leading dot; repo-local convention)
   - ".*"            # dotfiles (.gitignore, .env, etc.)
 
 # --- Layer structure ---

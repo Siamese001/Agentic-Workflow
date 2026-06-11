@@ -153,7 +153,7 @@ repos:
 
       # -- T6a REMOVED (windsurf/codeium-decommission W3, 2026-06-07) -----------------
       # `no-active-windsurf-authoring` only matched nonexistent paths
-      # (docs/archive/windsurf/legacy-tree/, .cursor/windsurf_compat/, docs/archive/windsurf/)
+      # (docs/archive/windsurf/legacy-tree/, docs/archive/windsurf/)
       # so the hook was permanently dormant. Removed during the windsurf/codeium brand
       # decommission (plan cursor-windsurf-codeium-decommission-dec0de). Orphaned script
       # ops_scripts/ci/check_no_active_windsurf_changes.py left for W6 sweep.
@@ -299,7 +299,7 @@ repos:
 
       # -- T6e2b REMOVED (cursor-decommission W7) --------------------------------------
       # cursor-config-schema validated deleted Cursor-era hooks/MCP structure,
-      # both deleted in the .cursor->.claude migration (Claude Code uses .claude/settings.json
+      # both deleted in the Cursor-to-Claude migration (Claude Code uses .claude/settings.json
       # + root .mcp.json). Validator script removed; hook retired.
 
       # -- T6e2c / T11 REMOVED (cursor-decommission W7) --------------------------------
@@ -397,8 +397,8 @@ repos:
       # never-functional gate: its `files:` glob matched `.claude/rules/*.md` but only
       # `.mdc` ever existed there, so it never fired; and it asserts §HITL-9/§HITL-10 +
       # "Surface 1–N options" / "LOW_CONFIDENCE_AMBIGUITY" markers that are absent from BOTH
-      # the legacy `.cursor/*.mdc` AND the `.claude/*.md` SSOT. Removed during the
-      # .cursor→.claude rules migration rather than wired to fail against the SSOT. The
+      # the legacy Cursor rules AND the `.claude/*.md` SSOT. Removed during the
+      # Cursor-to-Claude rules migration rather than wired to fail against the SSOT. The
       # validator script + tests/governance/test_hitl_validators.py remain on disk pending a
       # separate retire-or-rewrite decision.
 
