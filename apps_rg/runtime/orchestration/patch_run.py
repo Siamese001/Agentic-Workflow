@@ -487,6 +487,7 @@ def _default_dispatch_lane(
     from apps_rg.runtime.section_cli_defaults import (
         CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
         resolve_cli_x1d_judges,
+        resolve_phase1_lane_allow_non_allow_exit_zero,
     )
     from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 
@@ -494,19 +495,22 @@ def _default_dispatch_lane(
     result = run_canonical_apps_rg_from_cli_primitives(
         target_company=t.target_company,
         target_role=t.target_role,
+        target_level=t.target_level,
         jd="",
         job_description_ref=t.job_description_ref,
         job_description_text=t.job_description_text,
         manual_brief=t.manual_brief,
         resume_path="",
         source_resume_text="",
-        generation_mode="strategic_tailor",
+        generation_mode=t.generation_mode or "strategic_tailor",
         artifact_dir="",
         section=lane,
         lane_provider=lane_provider,
         lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
         lane_temperature=default_temperature_for_section(lane),
         lane_x1d_judges=resolve_cli_x1d_judges(None, section_id=lane),
+        lane_mock_judges=False,
+        lane_allow_non_allow_exit_zero=resolve_phase1_lane_allow_non_allow_exit_zero(False),
     )
     return dict(result) if isinstance(result, dict) else {}
 
@@ -919,6 +923,26 @@ def execute_patch_run(
             f"active checkout ({repo_here}); run patch-run from that checkout "
             "(dry-run works from anywhere)."
         )
+
+    # Whole-run env preflight parity (live defect 2026-06-11, patch_run_1.log):
+    # the --patch-run CLI branch returns from main() BEFORE the embedding bootstrap
+    # block every full run executes (apps_rg/__main__.py + r3r4_whole_run_orchestration),
+    # so CHROMA_PERSIST_DIR / EMBEDDING_ENABLED / APPS_RG_C0_DENSE_SPARSE_MANDATORY were
+    # never set and every dispatched lane failed C0.2 product hybrid composition
+    # PRE-provider with REQUIRED_PROOF_ABSENT ("CHROMA_PERSIST_DIR required").
+    # Mirror run_whole_run_with_route_governance exactly: bootstrap + env guards +
+    # embedding settings receipt into the run dir.
+    from apps_rg.runtime.embedding_settings import (
+        apply_apps_rg_embedding_env_guards,
+        bootstrap_apps_rg_embedding_env,
+        write_embedding_settings_receipt,
+    )
+
+    bootstrap_apps_rg_embedding_env(repo_root=plan.repo)
+    emb = apply_apps_rg_embedding_env_guards(
+        chroma_persist_dir=os.environ.get("CHROMA_PERSIST_DIR")
+    )
+    write_embedding_settings_receipt(plan.run_dir, emb)
 
     lane_provider = resolve_apps_rg_modular_lane_provider()
     sections_root = plan.run_dir / "modular_r4" / "sections"
