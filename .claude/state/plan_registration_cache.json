@@ -1,15 +1,15 @@
 {
-  "fetched_at": "2026-06-10T16:20:43Z",
-  "fetched_at_epoch": 1781108443.4661472,
+  "fetched_at": "2026-06-11T12:35:04Z",
+  "fetched_at_epoch": 1781181304.858239,
   "plans": {
     "apps-rg-skills-bindability-closure-a7e2f9": {
-      "status": "Not Started",
+      "status": "Lower Priority",
       "page_id": "37b27693-f55c-81bb-9587-ff4d809bb23d",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "c0-grounded-fact-writeback-spine-4f8e2a": {
-      "status": "Not Started",
+      "status": "Completed",
       "page_id": "37b27693-f55c-818a-88aa-fefd4cb49856",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -33,7 +33,7 @@
       "has_ai_summary": true
     },
     "eval-harness-adg-mcp-replan-a71c9e": {
-      "status": "Not Started",
+      "status": "Lower Priority",
       "page_id": "37b27693-f55c-81ae-ae61-ceafec76009c",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -45,13 +45,13 @@
       "has_ai_summary": true
     },
     "eval-harness-spine-adg-closeout-6f2a9c": {
-      "status": "Not Started",
+      "status": "Lower Priority",
       "page_id": "37b27693-f55c-812e-935d-c382192e8f86",
       "exists_on_disk": true,
       "has_ai_summary": true
     },
     "apps-rg-aig-remaining-lanes-closeout-d4e1f7": {
-      "status": "Not Started",
+      "status": "Retired",
       "page_id": "37a27693-f55c-81d2-8e6c-f8d82dc39780",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -111,7 +111,7 @@
       "has_ai_summary": true
     },
     "apps-rg-e2e-gap-remediation-7e2d9c": {
-      "status": "Not Started",
+      "status": "Lower Priority",
       "page_id": "37927693-f55c-8174-afb8-c6682d3feac7",
       "exists_on_disk": true,
       "has_ai_summary": true
