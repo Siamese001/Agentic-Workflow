@@ -954,10 +954,68 @@ def _source_fact_ids_for_display_sentence(sentence: str) -> list[str]:
     return []
 
 
+def _rebind_source_fact_ids_from_prior_rows(
+    sentence: str,
+    prior_rows: list[dict[str, Any]],
+) -> list[str]:
+    """Carry over source_fact_ids from the prior ledger row a rewritten sentence derives from.
+
+    Deterministic rewriters (canonical fact-slot injection, bridge connectives, word-budget
+    trims) re-phrase a sentence so the anchor heuristics in
+    ``_source_fact_ids_for_display_sentence`` no longer match — historically that DROPPED the
+    model's source_fact_ids and tripped x2_claim_ledger_orphan_zero. Attribution here is
+    token-overlap against the prior rows' claim_text (same tokenizer the materialization gate
+    uses). Only a unique, high-confidence best match binds; ids are copied verbatim from that
+    prior row (deduped, order preserved) — never fabricated. Ambiguous or weak attribution
+    returns [] (fail-open: the row stays orphaned and the gate verdict stands).
+    """
+    from apps_rg.runtime.validators.executive_summary_x2 import _ledger_claim_tokens
+
+    sent_low = str(sentence or "").lower()
+    if not sent_low:
+        return []
+    best_idx = -1
+    best_hits = 0
+    best_coverage = 0.0
+    second_hits = 0
+    for idx, row in enumerate(prior_rows):
+        if not isinstance(row, dict):
+            continue
+        sids = [str(s).strip() for s in (row.get("source_fact_ids") or []) if str(s).strip()]
+        if not sids:
+            continue
+        tokens = _ledger_claim_tokens(str(row.get("claim_text") or ""))
+        if not tokens:
+            continue
+        hits = sum(1 for t in tokens if t in sent_low)
+        if hits > best_hits:
+            second_hits = best_hits
+            best_hits = hits
+            best_idx = idx
+            best_coverage = hits / len(tokens)
+        elif hits > second_hits:
+            second_hits = hits
+    if best_idx < 0:
+        return []
+    # Confidence floor: enough absolute overlap, substantial coverage of the prior claim,
+    # and a strictly unique best row. Anything weaker is genuinely ambiguous -> no bind.
+    if best_hits < 4 or best_coverage < 0.35 or best_hits == second_hits:
+        return []
+    carried: list[str] = []
+    seen: set[str] = set()
+    for sid in prior_rows[best_idx].get("source_fact_ids") or []:
+        s = str(sid).strip()
+        if s and s not in seen:
+            seen.add(s)
+            carried.append(s)
+    return carried
+
+
 def _rebuild_claim_ledger_from_display(parsed: dict[str, Any]) -> dict[str, Any]:
     from apps_rg.runtime.validators.executive_summary_x2 import split_sentences
 
     out = dict(parsed)
+    prior_rows = [r for r in (out.get("claim_ledger") or []) if isinstance(r, dict)]
     sentences = split_sentences(str(out.get("resume_display_text") or ""))
     ledger: list[dict[str, Any]] = []
     for sent in sentences:
@@ -965,6 +1023,10 @@ def _rebuild_claim_ledger_from_display(parsed: dict[str, Any]) -> dict[str, Any]
         if not s:
             continue
         fids = _source_fact_ids_for_display_sentence(s)
+        if not fids:
+            # Anchor heuristics missed (rewritten/bridged sentence) — re-bind the ids from
+            # the prior ledger row this sentence derives from instead of dropping them.
+            fids = _rebind_source_fact_ids_from_prior_rows(s, prior_rows)
         ledger.append(
             {
                 "claim": s[:80],

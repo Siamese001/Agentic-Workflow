@@ -91,7 +91,9 @@ UNIFY_NARRATIVE_C0_BULLET_PRIORITY: tuple[str, ...] = (
 PROMPT_ID = "unify_position_narrative_v1"
 NARRATIVE_TEMP_DEFAULT = 0.45
 NARRATIVE_TEMP_RANGE = (0.35, 0.55)
-NARRATIVE_MAX_OUTPUT_TOKENS = 1200
+# Same 1200-cap truncation class proven on ibm_narrative (postRungs_20260610_2246:
+# stop_reason=max_tokens at 1200) - raised preemptively; one verbose roll away.
+NARRATIVE_MAX_OUTPUT_TOKENS = 4000
 TARGET_TITLE_DEFAULT = "SVP Engineering, Agentic AI Platforms"
 TARGET_COMPANY_DEFAULT = "Synthetic Enterprise Corp."
 JD_TEXT_DEFAULT = resolve_jd_for_lanes().description

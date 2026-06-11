@@ -70,3 +70,176 @@ def test_strip_unsupported_audit_ready_when_facts_lack_audit() -> None:
     assert receipt.get("repaired") is True
     assert "audit" not in text
     assert "lineage-ready" in text
+
+
+# --- Ledger fact-loss regression (live shape exec_summary_20260611_145208) ---------------
+# Model emitted 6 fully sourced claim_ledger rows. The deterministic judge polish
+# (enforce_required_fact_slots + trim_paragraph_word_budget) rewrote S2 with the
+# "Against that delivery foundation," canonical bridge and stripped " large-scale ",
+# then _rebuild_claim_ledger_from_display's anchor heuristics missed the rewritten
+# S2/S6 sentences and emitted rows WITHOUT source_fact_ids -> x2_claim_ledger_orphan_zero.
+# The rebuild must re-bind each rewritten row's ids from the prior row it derives from.
+
+_LIVE_MODEL_DISPLAY = (
+    "Enterprise technology executive who aligns governed agentic AI platform delivery, "
+    "regulatory lineage discipline, and quantitative rigor into one coherent AI strategy "
+    "for regulated financial and insurance enterprises. "
+    "Through that platform foundation, large-scale regulatory IT transformations and "
+    "legacy-modernization programs across risk, compliance, data, and cloud domains "
+    "established the operating model depth this role demands. "
+    "Building on that foundation, productizing agentic AI primitives into governed platform "
+    "services generated $22M in IP-led revenue and expanded gross margins by 20% while "
+    "scaling the ML engineering organization from 8 to 28 specialists. "
+    "In parallel, implementing Basel III and CCAR data lineage and automated validation "
+    "frameworks reduced regulatory reporting errors by 40%, embedding audit-ready evidence "
+    "discipline into the platform delivery model. "
+    "That regulatory foundation is grounded in quantitative rigor established through "
+    "FSA-chartered actuarial work in capital modeling and portfolio stress analytics, "
+    "informing data governance and AI strategy at scale. "
+    "That convergence of platform monetization, governance depth, and actuarial rigor "
+    "positions this leader to scale enterprise agentic AI across underwriting, claims, "
+    "and operations with measurable accuracy and productivity outcomes."
+)
+
+_LIVE_MODEL_LEDGER = [
+    {
+        "claim_text": (
+            "Aligns governed agentic AI platform delivery, regulatory lineage discipline, and "
+            "FSA-chartered quantitative rigor into one enterprise AI strategy for regulated "
+            "financial and insurance enterprises."
+        ),
+        "source_fact_ids": ["fact_engineering_platform_001", "fact_quant_hpc_003"],
+    },
+    {
+        "claim_text": (
+            "Directed large-scale regulatory IT transformations and legacy-modernization "
+            "programs for major financial institutions across risk, compliance, data, cloud, "
+            "and architecture domains, establishing the operating model depth required for "
+            "enterprise-wide agentic AI transformation."
+        ),
+        "source_fact_ids": ["fact_consulting_001"],
+    },
+    {
+        "claim_text": (
+            "Productized agentic AI primitives into governed platform services, generating "
+            "$22M in IP-led revenue, expanding gross margins by 20%, and scaling the ML "
+            "engineering organization from 8 to 28 specialists."
+        ),
+        "source_fact_ids": ["fact_engineering_platform_006", "fact_exec_002"],
+    },
+    {
+        "claim_text": (
+            "Implemented Basel III and CCAR data lineage, cataloging, and automated validation "
+            "frameworks that cut regulatory reporting errors by 40%, embedding audit-ready "
+            "evidence discipline into the platform delivery model."
+        ),
+        "source_fact_ids": ["fact_governance_003"],
+    },
+    {
+        "claim_text": (
+            "FSA-chartered actuarial work in capital modeling and portfolio stress analytics "
+            "grounds the regulatory and governance foundation, informing data governance and "
+            "AI strategy decisions at enterprise scale."
+        ),
+        "source_fact_ids": ["fact_quant_hpc_003", "fact_certs_001"],
+    },
+    {
+        "claim_text": (
+            "The convergence of platform IP monetization, regulatory data lineage discipline, "
+            "and FSA-chartered quantitative rigor positions this leader to scale enterprise "
+            "agentic AI across underwriting, claims, and operations with measurable accuracy "
+            "and productivity outcomes."
+        ),
+        "source_fact_ids": [
+            "fact_engineering_platform_006",
+            "fact_governance_003",
+            "fact_quant_hpc_003",
+        ],
+    },
+]
+
+_LIVE_POOL_FACTS = [
+    {"fact_id": "fact_engineering_platform_001", "claim_text": "Governed agentic AI platform"},
+    {"fact_id": "fact_consulting_001", "claim_text": "Directed regulatory IT transformations"},
+    {"fact_id": "fact_engineering_platform_006", "claim_text": "$22M IP-led revenue, 20% margin"},
+    {"fact_id": "fact_exec_002", "claim_text": "Scaled team 8 to 28"},
+    {"fact_id": "fact_governance_003", "claim_text": "Basel III lineage cut errors 40%"},
+    {"fact_id": "fact_quant_hpc_003", "claim_text": "FSA actuarial capital modeling"},
+    {"fact_id": "fact_certs_001", "claim_text": "Certifications"},
+]
+
+
+def test_polish_rebuild_carries_source_fact_ids_for_rewritten_rows(monkeypatch) -> None:
+    """6 sourced model rows -> bridge rewriter -> every final row still sourced."""
+    monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_UTILIZATION_WAIVE_FACT_IDS", raising=False)
+    from apps_rg.runtime.sections.executive_summary_voice_repair import (
+        polish_executive_summary_judge_alignment,
+    )
+
+    parsed = {
+        "resume_display_text": _LIVE_MODEL_DISPLAY,
+        "claim_ledger": [dict(r) for r in _LIVE_MODEL_LEDGER],
+    }
+    model_union = {sid for row in _LIVE_MODEL_LEDGER for sid in row["source_fact_ids"]}
+
+    polished, receipt = polish_executive_summary_judge_alignment(
+        parsed, selected_facts=_LIVE_POOL_FACTS
+    )
+    assert receipt.get("applied") is True
+    ledger = list(polished.get("claim_ledger") or [])
+    assert len(ledger) == 6
+
+    for i, row in enumerate(ledger):
+        ids = list(row.get("source_fact_ids") or [])
+        assert ids, f"claim_ledger[{i}] lost its source_fact_ids: {row.get('claim_text')!r}"
+        # Never fabricate: every carried id must come from the model-emitted rows.
+        assert set(ids) <= model_union, f"claim_ledger[{i}] fabricated ids: {ids}"
+
+    text = str(polished.get("resume_display_text") or "")
+    # Rewritten bridge text is preserved (the fix re-binds ids; it must not undo the rewrite).
+    joined = " ".join(str(r.get("claim_text") or "") for r in ledger).lower()
+    if "against that delivery foundation" in text.lower():
+        bridge_row = next(
+            r for r in ledger
+            if str(r.get("claim_text") or "").lower().startswith("against that delivery foundation")
+        )
+        assert bridge_row["source_fact_ids"] == ["fact_consulting_001"]
+    assert "that convergence of" in joined
+    convergence_row = next(
+        r for r in ledger if "convergence" in str(r.get("claim_text") or "").lower()
+    )
+    assert convergence_row["source_fact_ids"] == [
+        "fact_engineering_platform_006",
+        "fact_governance_003",
+        "fact_quant_hpc_003",
+    ]
+
+
+def test_rebind_source_fact_ids_fail_open_on_ambiguity() -> None:
+    """Ambiguous or weak attribution must NOT bind ids (no guessing, gate verdict stands)."""
+    from apps_rg.runtime.sections.executive_summary_voice_repair import (
+        _rebind_source_fact_ids_from_prior_rows,
+    )
+
+    # Two prior rows with identical claim text -> tie -> ambiguous -> [].
+    rows = [
+        {"claim_text": "Directed regulatory transformations across risk and data domains", "source_fact_ids": ["fact_a"]},
+        {"claim_text": "Directed regulatory transformations across risk and data domains", "source_fact_ids": ["fact_b"]},
+    ]
+    out = _rebind_source_fact_ids_from_prior_rows(
+        "Against that foundation, directed regulatory transformations across risk and data domains.",
+        rows,
+    )
+    assert out == []
+
+    # Weak overlap -> [].
+    assert (
+        _rebind_source_fact_ids_from_prior_rows(
+            "Innovation programs federate governed platform capabilities.",
+            [{"claim_text": "Basel III lineage cut reporting errors by 40%", "source_fact_ids": ["fact_governance_003"]}],
+        )
+        == []
+    )
+
+    # No prior rows -> [].
+    assert _rebind_source_fact_ids_from_prior_rows("Any sentence at all here.", []) == []
