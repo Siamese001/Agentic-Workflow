@@ -101,8 +101,6 @@
       "graph_skill_node_ids": [
         "skill_audit_grade_observability",
         "skill_runtime_resilience_controls",
-        "skill_same_authority_runtime_repair",
-        "skill_completed_run_evaluation",
         "skill_context_engineering"
       ],
       "linked_source_fact_ids": ["fact_engineering_platform_003"],

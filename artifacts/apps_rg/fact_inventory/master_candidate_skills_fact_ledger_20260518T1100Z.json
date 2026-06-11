@@ -1297,6 +1297,176 @@
       ],
       "proof_text": "Unify (current): governed agentic AI + GraphRAG retrieval engineering applied to insurance underwriting, claims, and policy use cases.",
       "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_credit_001",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "credit_risk",
+        "default_prediction",
+        "credit_adjudication",
+        "underwriting"
+      ],
+      "claim_text": "Guided an AI-driven credit-adjudication program that reduced default exposure by 15% through dynamic risk profiling and improved underwriting accuracy.",
+      "metric_values": [
+        "15% default exposure reduction"
+      ],
+      "company": "IBM",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Quantitative Research & Trading - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Banking/insurance/ERM domain fact; user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "AI_SOLUTIONS_ARCHITECTURE"
+      ],
+      "proof_text": "IBM Lead Client Partner: AI-driven credit adjudication; dynamic risk profiling cut default exposure 15%.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_insurance_software_001",
+      "domain_family": "AI_SOLUTIONS_ARCHITECTURE",
+      "capability_tags": [
+        "actuarial_software",
+        "insurance_platforms",
+        "risk_solutions"
+      ],
+      "claim_text": "Contributed to the sale and rollout of specialized actuarial/insurance software, expanding adoption of advanced risk solutions for leading insurers.",
+      "metric_values": [],
+      "company": "Ernst & Young",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Quantitative Research & Trading - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Banking/insurance/ERM domain fact; user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "STRATEGIC_FINANCE"
+      ],
+      "proof_text": "Specialized actuarial/insurance software sale and rollout, expanding adoption of advanced risk solutions for leading insurers.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_solvency_001",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "solvency_ii",
+        "ag43",
+        "pc_insurance",
+        "life_insurance",
+        "insurance_regulation"
+      ],
+      "claim_text": "Led insurance regulatory IT modernization aligned to Solvency II capital-adequacy and AG43 actuarial-reporting requirements across property & casualty and life insurers.",
+      "metric_values": [],
+      "company": "Ernst & Young",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Quantitative Research & Trading - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Banking/insurance/ERM domain fact; user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "STRATEGIC_FINANCE"
+      ],
+      "proof_text": "EY Principal: insurance regulatory IT modernization for Solvency II / AG43 across P&C and life insurers (user-confirmed).",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_insurance_liabilities_001",
+      "domain_family": "STRATEGIC_FINANCE",
+      "capability_tags": [
+        "insurance_liabilities",
+        "embedded_options",
+        "policy_reserves",
+        "actuarial_modeling"
+      ],
+      "claim_text": "Applied actuarial and derivative-pricing methods to insurance liability modeling and embedded-option valuation at major insurers.",
+      "metric_values": [],
+      "company": "Early Career - Actuarial",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Quantitative Research & Trading - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Banking/insurance/ERM domain fact; user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "STRATEGIC_FINANCE",
+        "QUANT_TRADING_HPC",
+        "AI_GOVERNANCE_RISK"
+      ],
+      "proof_text": "Actuarial and derivative-pricing methods applied to insurance liability modeling and embedded-option valuation (user-confirmed).",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_three_lines_001",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "three_lines_of_defense",
+        "risk_governance",
+        "internal_audit",
+        "operating_model"
+      ],
+      "claim_text": "Architected three-lines-of-defense risk-governance operating models aligning first-line operations, second-line risk and compliance, and third-line audit across global financial institutions.",
+      "metric_values": [],
+      "company": "Ernst & Young",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Quantitative Research & Trading - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Banking/insurance/ERM domain fact; user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "EXECUTIVE_LEADERSHIP"
+      ],
+      "proof_text": "EY: three-lines-of-defense risk-governance operating models across global financial institutions (user-confirmed).",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_bcbs239_001",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "bcbs239",
+        "risk_data_aggregation",
+        "data_lineage",
+        "risk_reporting"
+      ],
+      "claim_text": "Implemented BCBS 239-aligned risk-data aggregation with centralized lineage, cataloging, and metadata standards enabling consistent, auditable risk metrics across business units.",
+      "metric_values": [],
+      "company": "Ernst & Young",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Strategic Finance - Amit Ayer.txt",
+        "Quantitative Research & Trading - Amit Ayer.txt"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Banking/insurance/ERM domain fact; user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "proof_text": "BCBS 239-aligned risk-data aggregation: centralized lineage, cataloging, and metadata for consistent, auditable risk metrics (user-confirmed).",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
     }
   ],
   "capabilities": [

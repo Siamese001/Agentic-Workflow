@@ -2,14 +2,14 @@
 
 - **STATUS**: PASS
 - **PLAN_ID**: graph-skills-sqlite-c03-w1
-- **SQLITE_DB_PATH**: [augmented_skills_graph.sqlite](C:/Git/Agentic-Workflow-FRESH/artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite)
+- **SQLITE_DB_PATH**: [augmented_skills_graph.sqlite](C:/Git/.chat-worktrees/chat-20260611-212244-8f3dc8f0/artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite)
 - **GRAPH_VERSION**: master_skills_arsenal_graph_v1
-- **GRAPH_HASH**: `b8f63a4ce7f3b96f…`
-- **NODE_COUNT**: 501 | **EDGE_COUNT**: 1421
+- **GRAPH_HASH**: `99bb5fc5bcb19d24…`
+- **NODE_COUNT**: 481 | **EDGE_COUNT**: 1291
 - **C0.3 integration**: SQLITE_CONTEXT_AVAILABLE
-- **C0.3 receipt**: [c03_graph_sqlite_context_20260527_123008.json](artifacts/apps_rg/runtime_proofs/c03_graph_sqlite_context/c03_graph_sqlite_context_20260527_123008.json)
-- **Section projection parity**: PASS
-- **W14b traversal parity**: PASS
+- **C0.3 receipt**: [c03_graph_sqlite_context_20260611_224818.json](artifacts/apps_rg/runtime_proofs/c03_graph_sqlite_context/c03_graph_sqlite_context_20260611_224818.json)
+- **Section projection parity**: SKIPPED
+- **W14b traversal parity**: SKIPPED
 - **broad_skills_ledger**: non_authority
 
 ## Proof classification

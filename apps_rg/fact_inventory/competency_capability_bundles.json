@@ -147,10 +147,7 @@
     "engineering_delivery_leadership"
    ],
    "graph_skill_node_ids": [
-    "skill_audit_grade_observability",
-    "skill_completed_run_evaluation",
-    "skill_eval_regression_and_gauntlet_design",
-    "skill_multi_judge_calibration"
+    "skill_audit_grade_observability"
    ],
    "linked_source_fact_ids": [
     "fact_engineering_platform_003",
