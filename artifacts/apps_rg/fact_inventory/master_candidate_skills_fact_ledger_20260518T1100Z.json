@@ -1213,6 +1213,90 @@
       ],
       "proof_text": "Pioneered the integration of actuarial thought processes with evolving analytics platforms, creating a foundation for enterprise-scale governance.",
       "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_ey_guidewire_001",
+      "domain_family": "AI_GOVERNANCE_RISK",
+      "capability_tags": [
+        "guidewire",
+        "claims_automation",
+        "policy_administration",
+        "insurance_core_platform"
+      ],
+      "claim_text": "Delivered Guidewire core-system implementations for insurance carriers, automating claims processing and modernizing policy administration to retire legacy platforms and accelerate product delivery.",
+      "metric_values": [],
+      "company": "Ernst & Young",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Insurance-domain fact; user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM"
+      ],
+      "proof_text": "EY Principal (2009-2014): Guidewire ClaimCenter/PolicyCenter implementations for insurance carriers; claims automation and policy administration modernization.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_insurtech_aws_001",
+      "domain_family": "ENGINEERING_PLATFORM",
+      "capability_tags": [
+        "aws_rehosting",
+        "relational_database_migration",
+        "cloud_modernization",
+        "lift_and_shift"
+      ],
+      "claim_text": "Drove early-stage AWS cloud modernization, re-hosting legacy relational database systems to AWS - establishing the cloud-migration foundation for insurance-technology platforms.",
+      "metric_values": [],
+      "company": "InsurTech Cloud Solutions",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Insurance-domain fact; user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "ENGINEERING_PLATFORM",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "CONSULTING_DELIVERY_LEADERSHIP"
+      ],
+      "proof_text": "InsurTech CTO (2014-2017): first-wave AWS adoption; re-hosted legacy relational databases to AWS for insurance technology platforms.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_rag_insurance_001",
+      "domain_family": "AI_SOLUTIONS_ARCHITECTURE",
+      "capability_tags": [
+        "rag",
+        "graphrag",
+        "retrieval_augmented_generation",
+        "underwriting_copilot",
+        "claims_triage"
+      ],
+      "claim_text": "Architected GraphRAG / retrieval-augmented agentic systems and applies them to insurance use cases - underwriting copilots, claims triage, and policy/coverage Q&A - grounding LLM outputs in governed, auditable enterprise knowledge.",
+      "metric_values": [],
+      "company": "Unify Consulting",
+      "source_resume_variants": [
+        "Industry Solutions - Amit Ayer.txt",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Insurance-domain fact; user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "AI_GOVERNANCE_RISK",
+        "ENGINEERING_PLATFORM",
+        "DATA_ANALYTICS_LEADERSHIP"
+      ],
+      "proof_text": "Unify (current): governed agentic AI + GraphRAG retrieval engineering applied to insurance underwriting, claims, and policy use cases.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
     }
   ],
   "capabilities": [

@@ -194,6 +194,13 @@
             "metric_raw": "12% capital reduction",
             "technologies": ["Solvency II", "AG43", "actuarial modeling"],
             "domain": "actuarial"
+          },
+          {
+            "bullet_id": "bul_ey_004",
+            "text": "Insurance Core Modernization: Delivered Guidewire core-system implementations for insurance carriers, automating claims processing and modernizing policy administration to retire legacy platforms and accelerate product delivery.",
+            "has_metric": false,
+            "technologies": ["Guidewire", "ClaimCenter", "PolicyCenter", "claims automation", "policy administration"],
+            "domain": "insurance core platform"
           }
         ]
       },

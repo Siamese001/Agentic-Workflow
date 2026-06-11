@@ -117,6 +117,43 @@
       "section_eligibility": ["ey_bullets", "ey_narrative"],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
       "notes": "Anchors base-resume bullet bul_ey_003 (Capital Optimization). Graph skills grounded in the 2009-2014 EY Principal window."
+    },
+    {
+      "role_episode_bundle_id": "reb_ey_guidewire_insurance_platform",
+      "employer": "Ernst & Young",
+      "title": "Principal",
+      "time_window": "2009-10 to 2014-03",
+      "employer_node_id": "employment_exp_ey_001",
+      "bundle_theme": "Guidewire Insurance Core-System Implementation",
+      "executive_scope_signals": [
+        "Delivered Guidewire core-system implementations for insurance carriers",
+        "Automated claims processing and modernized policy administration to retire legacy core systems"
+      ],
+      "architecture_scope_signals": [
+        "Guidewire ClaimCenter / PolicyCenter implementation",
+        "Claims automation and straight-through processing",
+        "Policy administration modernization replacing legacy platforms"
+      ],
+      "graph_skill_node_ids": [
+        "skill_insurance_guidewire",
+        "skill_insurance_claims_automation",
+        "skill_insurance_policy_administration"
+      ],
+      "linked_source_fact_ids": [
+        "exp_ey_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "Guidewire core-system (ClaimCenter/PolicyCenter) implementations for insurance carriers; claims automation and policy administration modernization to retire legacy platforms.",
+      "bullet_intent": "Frame as Guidewire insurance-platform implementation leadership (claims automation + policy administration); metrics only from base-resume anchored fact_id (bul_ey_004).",
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Anchors base-resume bullet bul_ey_004 (Insurance Core Modernization / Guidewire). Insurance-domain depth for AIG targeting; graph skills grounded in the 2009-2014 EY Principal window."
     }
   ]
 }

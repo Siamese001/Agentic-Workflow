@@ -5890,6 +5890,66 @@
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "confidence_grade": "LOW",
       "confidence_grade_derived": "LOW"
+    },
+    {
+      "node_id": "skill_insurance_guidewire",
+      "node_type": "skill_row",
+      "label": "guidewire",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "node_id": "skill_insurance_claims_automation",
+      "node_type": "skill_row",
+      "label": "claims_automation",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "node_id": "skill_insurance_policy_administration",
+      "node_type": "skill_row",
+      "label": "policy_administration",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "node_id": "skill_cloud_aws_rehosting",
+      "node_type": "skill_row",
+      "label": "aws_rehosting",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
     }
   ],
   "graph_edges": [
@@ -33909,7 +33969,8 @@
         "GraphRAG and dense/sparse retrieval design for evidence grounding."
       ],
       "fact_id_links": [
-        "fact_engineering_platform_001"
+        "fact_engineering_platform_001",
+        "fact_rag_insurance_001"
       ],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
@@ -33939,11 +34000,17 @@
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "derived_supported_with_fact",
       "ats_keywords": [
+        "GraphRAG",
+        "RAG",
+        "claims triage",
         "dense",
-        "sparse",
+        "design",
         "exact",
+        "policy Q&A",
         "retrieval",
-        "design"
+        "retrieval-augmented generation",
+        "sparse",
+        "underwriting copilot"
       ],
       "achievement_framing_guidance": "Frame Dense sparse exact retrieval design with scope, mechanism, and outcome; metrics only from linked fact_id.",
       "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
@@ -39460,6 +39527,234 @@
       "node_type": "skill_row",
       "ats_keywords": [
         "pricing_actuarial"
+      ],
+      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "skill_id": "skill_insurance_guidewire",
+      "fact_id_links": [
+        "fact_ey_guidewire_001"
+      ],
+      "pillar": "pillar_capital_modeling",
+      "subpillar": "guidewire",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0
+      },
+      "allowed_phrases": [
+        "Guidewire",
+        "PolicyCenter",
+        "ClaimCenter",
+        "BillingCenter"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "ey_bullets",
+        "ey_narrative",
+        "competencies",
+        "executive_summary"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_enterprise_risk",
+      "domain": "Enterprise Risk",
+      "capability": "pricing_actuarial",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "Guidewire",
+        "ClaimCenter",
+        "PolicyCenter",
+        "BillingCenter",
+        "P&C core systems"
+      ],
+      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "skill_id": "skill_insurance_claims_automation",
+      "fact_id_links": [
+        "fact_ey_guidewire_001"
+      ],
+      "pillar": "pillar_capital_modeling",
+      "subpillar": "claims_automation",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0
+      },
+      "allowed_phrases": [
+        "claims automation",
+        "claims processing",
+        "FNOL"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "ey_bullets",
+        "ey_narrative",
+        "competencies",
+        "executive_summary"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_enterprise_risk",
+      "domain": "Enterprise Risk",
+      "capability": "pricing_actuarial",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "claims automation",
+        "claims processing",
+        "FNOL",
+        "straight-through processing",
+        "claims modernization"
+      ],
+      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "skill_id": "skill_insurance_policy_administration",
+      "fact_id_links": [
+        "fact_ey_guidewire_001"
+      ],
+      "pillar": "pillar_capital_modeling",
+      "subpillar": "policy_administration",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0
+      },
+      "allowed_phrases": [
+        "policy administration",
+        "policy admin"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "ey_bullets",
+        "ey_narrative",
+        "competencies",
+        "executive_summary"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_enterprise_risk",
+      "domain": "Enterprise Risk",
+      "capability": "pricing_actuarial",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "policy administration",
+        "PAS",
+        "policy lifecycle",
+        "policy admin modernization",
+        "core insurance systems"
+      ],
+      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "skill_id": "skill_cloud_aws_rehosting",
+      "fact_id_links": [
+        "fact_insurtech_aws_001"
+      ],
+      "pillar": "pillar_capital_modeling",
+      "subpillar": "aws_rehosting",
+      "career_stage": "mid_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0
+      },
+      "allowed_phrases": [
+        "AWS rehosting",
+        "relational database migration",
+        "lift-and-shift"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "insurtech_bullets",
+        "competencies",
+        "executive_summary"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_enterprise_risk",
+      "domain": "Enterprise Risk",
+      "capability": "pricing_actuarial",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "AWS rehosting",
+        "lift-and-shift",
+        "Amazon RDS",
+        "relational database migration",
+        "cloud migration",
+        "datacenter-to-cloud"
       ],
       "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
       "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
