@@ -92,6 +92,8 @@ _APPROVED_ADAPTER_PATHS = (
     # apps_rg Chroma seams (mirror _SANCTIONED_APP_DIRECT_INFRA — exclude from t_infra_importers)
     "apps_rg/runtime/chroma_precomputed_collection.py",
     "apps_rg/runtime/c0/c02_product_hybrid_retrieval.py",
+    # apps_lic W7 Claude X1D judge adapter — sanctioned anthropic SDK caller for Exit-layer judging
+    "apps_lic/engines/x1d_claude_judge_adapter.py",
 )
 
 # Process-boundary adapters: invoked at process level (MCP server launch, filesystem access)
@@ -151,6 +153,8 @@ _SANCTIONED_APP_DIRECT_INFRA = (
     "apps_rg/runtime/chroma_precomputed_collection.py",  # apps_rg Chroma collection boundary — precomputed BGE only
     "apps_rg/runtime/c0/c02_product_hybrid_retrieval.py",  # C0.2 product hybrid retrieval seam
     "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py",  # C0.3 skills graph materialization — sqlite3 adapter for augmented_skills_graph ledger
+    # apps_lic W7 X1D judge — sanctioned anthropic SDK caller for Exit-layer judging (peer of apps_qna/apps_underwriting_ai judge adapters above)
+    "apps_lic/engines/x1d_claude_judge_adapter.py",
 )
 
 # Provider SDKs that must route through infrastructure/sdks_mcps
@@ -655,7 +659,7 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
         infra_adg_names = []
         for pkg in _RAW_INFRA_PACKAGES:
             cursor.execute(
-                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
+                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind IN ('external_module', 'external_provider')",
                 (f"ADG::Symbol::{pkg}",),
             )
             rows = cursor.fetchall()
@@ -671,7 +675,7 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
         provider_adg_names = []
         for pkg in _PROVIDER_SDKS:
             cursor.execute(
-                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind = 'external_module'",
+                "SELECT DISTINCT adg_name FROM nodes WHERE adg_name = ? AND identity_kind IN ('external_module', 'external_provider')",
                 (f"ADG::Symbol::{pkg}",),
             )
             rows = cursor.fetchall()

@@ -19,7 +19,7 @@ _REPO_ROOT_FOR_MCP = _REPO_ROOT
 _RECEIPT_LOG = _REPO_ROOT / "artifacts" / "governance" / "claude_hook_receipts.jsonl"
 
 STATUS_WORDS: tuple[str, ...] = ("STATUS: PASS", "STATUS: PARTIAL", "STATUS: FAIL", "STATUS: BLOCKED")
-PROOF_WORDS: tuple[str, ...] = ("FILES_CHANGED", "COMMANDS_RUN", "TESTS_GATES")
+PROOF_WORDS: tuple[str, ...] = ("FILES_CHANGED", "COMMANDS_RUN", "TESTS_GATES", "ARTIFACTS")
 
 _TEXT_KEYS: tuple[str, ...] = (
     "prompt",

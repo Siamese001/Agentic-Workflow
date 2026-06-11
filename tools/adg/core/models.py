@@ -57,3 +57,4 @@ class HealthStatus(BaseModel):
     cache_hit_capable: bool
     schema_version: str
     adg_snapshot_id: str
+    views_materialized_at: str | None = None  # snapshot timestamp when infra P-views exist, else None
