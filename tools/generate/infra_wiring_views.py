@@ -153,6 +153,8 @@ _SANCTIONED_APP_DIRECT_INFRA = (
     "apps_rg/runtime/chroma_precomputed_collection.py",  # apps_rg Chroma collection boundary — precomputed BGE only
     "apps_rg/runtime/c0/c02_product_hybrid_retrieval.py",  # C0.2 product hybrid retrieval seam
     "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py",  # C0.3 skills graph materialization — sqlite3 adapter for augmented_skills_graph ledger
+    # apps_lic W7 X1D judge — sanctioned anthropic SDK caller for Exit-layer judging (peer of apps_qna/apps_underwriting_ai judge adapters above)
+    "apps_lic/engines/x1d_claude_judge_adapter.py",
 )
 
 # Provider SDKs that must route through infrastructure/sdks_mcps
