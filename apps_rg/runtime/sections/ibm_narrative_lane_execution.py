@@ -328,47 +328,39 @@ def run_ibm_narrative_lane_execution(
                     allowed_fact_ids={str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])},
                 )
                 # Theme-citation derivation (first-run wiring, plan
-                # apps-rg-aig-remaining-lanes-closeout-d4e1f7 W4): the theme-coverage gate
-                # requires every material slot theme the sentence touches to appear in the
-                # claim_ledger union. The theme detector is deterministic and the binding is
-                # mechanical: when a detected theme is IN the allowed proof pool but uncited,
-                # bind it — themes outside the pool still fail scope gates honestly.
-                from apps_rg.runtime.validators.ibm_narrative_x2 import (
-                    ibm_narrative_material_fact_ids_for_sentence,
+                # apps-rg-aig-remaining-lanes-closeout-d4e1f7 W4; clause-grounded
+                # rebinding postW4, b8c3d1): the theme-coverage gate requires every
+                # material slot theme the sentence touches to appear in the
+                # claim_ledger union. Binding is mechanical AND theme-grounded: a
+                # missing pool theme is cited only on a row whose claim_text itself
+                # expresses it and which still has < 2 bul_ibm_* roots — never blindly
+                # appended onto row 0, which recreated the 3-root rows the
+                # clause-decomposition gate rejects (live fail postW4_20260610_1716).
+                # Themes outside the pool, or with no grounded row with capacity,
+                # stay uncited and fail their gates honestly.
+                from apps_rg.runtime.sections.ibm_canonical_hydration import (
+                    bind_missing_ibm_narrative_theme_citations,
                 )
 
-                _allowed_pool = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
-                _themes = ibm_narrative_material_fact_ids_for_sentence(
-                    str(parsed.get("narrative_sentence") or "")
+                _bound_theme_ids = bind_missing_ibm_narrative_theme_citations(
+                    parsed,
+                    allowed_fact_ids={
+                        str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])
+                    },
                 )
-                _led = list(parsed.get("claim_ledger") or [])
-                if _led and isinstance(_led[0], dict):
-                    _cited = {
-                        str(s)
-                        for r in _led
-                        if isinstance(r, dict)
-                        for s in (r.get("source_fact_ids") or [])
-                    }
-                    _missing_themes = sorted(
-                        t for t in _themes if t in _allowed_pool and t not in _cited
+                if _bound_theme_ids:
+                    from apps_rg.runtime.section_repair_ledger import (
+                        KIND_MECHANICAL as _KIND_MECH,
+                        record_repair as _record_repair,
                     )
-                    if _missing_themes:
-                        _led[0]["source_fact_ids"] = list(
-                            _led[0].get("source_fact_ids") or []
-                        ) + _missing_themes
-                        parsed["claim_ledger"] = _led
-                        from apps_rg.runtime.section_repair_ledger import (
-                            KIND_MECHANICAL as _KIND_MECH,
-                            record_repair as _record_repair,
-                        )
 
-                        _record_repair(
-                            artifact_dir,
-                            kind=_KIND_MECH,
-                            operation="bind_detected_theme_citations",
-                            reason="x2_ibm_narrative_claim_theme_coverage",
-                            replaced_l2=False,
-                        )
+                    _record_repair(
+                        artifact_dir,
+                        kind=_KIND_MECH,
+                        operation="bind_detected_theme_citations",
+                        reason="x2_ibm_narrative_claim_theme_coverage",
+                        replaced_l2=False,
+                    )
         else:
             parsed = None
             parse_error = result.exact_provider_error or "provider blocked"
