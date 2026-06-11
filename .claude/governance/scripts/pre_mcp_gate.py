@@ -175,6 +175,14 @@ artifacts_adg = repo_root / "artifacts" / "adg"
 _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
 session_state = repo_root / "artifacts" / "governance" / f"session_state_{_session_id}.json"
 
+# Notion DB IDs for classification threshold gate (advisory — exit 0 always).
+# Source: .claude/rules/notion-archived-databases.md (active DBs section).
+_NOTION_PLANS_DB_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
+_NOTION_BACKLOG_DB_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+_NOTION_CLASSIFICATION_VIOLATIONS = (
+    repo_root / "artifacts" / "governance" / "notion_classification_violations.jsonl"
+)
+
 # After this many consecutive blocks without a successful memory recall,
 # the gate degrades to open so Cursor Agent is never permanently stuck.
 max_memory_block_attempts = 3
@@ -1268,6 +1276,92 @@ def check_notion_gate() -> int:
     return 0
 
 
+def check_notion_classification_gate(tool_name: str, payload: dict) -> int:
+    """Advisory gate: log sub-threshold Notion DB writes to violation log.
+
+    Intercepts API-post-page calls to the Plans DB or Backlog Items DB and
+    logs when the write may not meet the threshold defined in
+    .claude/rules/work-item-classification.md:
+
+    - Plans DB: only PLAN_MULTI_WAVE (≥2 waves, multi-session) should create rows.
+      Single-session micro-plans use native plan mode only (no disk file, no Notion).
+    - Backlog Items DB: only BUG_SYSTEMIC or ENHANCEMENT_ROADMAP should create rows.
+      BUG_DEFERRED and ENHANCEMENT_BACKLOG should use spawn_task instead.
+
+    ALWAYS exits 0 (advisory only — never blocks Notion writes).
+    Bypass: NOTION_CLASSIFICATION_GATE_BYPASS=1
+    """
+    if os.environ.get("NOTION_CLASSIFICATION_GATE_BYPASS", "").strip() == "1":
+        return 0
+    # Only audit row-creation calls (not patches, queries, or other tools).
+    if "API-post-page" not in tool_name:
+        return 0
+    try:
+        tool_input = payload.get("tool_input")
+        if isinstance(tool_input, str):
+            try:
+                tool_input = json.loads(tool_input)
+            except json.JSONDecodeError:
+                return 0
+        if not isinstance(tool_input, dict):
+            return 0
+
+        parent = tool_input.get("parent") or {}
+        db_id = str(parent.get("database_id") or "").strip().lower()
+        if not db_id:
+            return 0
+
+        # Normalize to bare hex so "ac53d31b-..." matches "ac53d31b..." etc.
+        db_id_norm = db_id.replace("-", "")
+        plans_norm = _NOTION_PLANS_DB_ID.replace("-", "")
+        backlog_norm = _NOTION_BACKLOG_DB_ID.replace("-", "")
+
+        if db_id_norm == plans_norm:
+            target_db = "Plans"
+            threshold_msg = (
+                "Plans DB rows must be PLAN_MULTI_WAVE (≥2 waves, spans sessions). "
+                "Single-session planning uses native plan mode only — no disk file, no Notion. "
+                "Rule: .claude/rules/work-item-classification.md"
+            )
+        elif db_id_norm == backlog_norm:
+            target_db = "BacklogItems"
+            threshold_msg = (
+                "Backlog Items rows must be BUG_SYSTEMIC or ENHANCEMENT_ROADMAP. "
+                "BUG_DEFERRED and ENHANCEMENT_BACKLOG should use spawn_task instead. "
+                "Rule: .claude/rules/work-item-classification.md"
+            )
+        else:
+            return 0  # Not a monitored DB — pass through silently.
+
+        properties = tool_input.get("properties") or {}
+        prop_keys = list(properties.keys())[:10] if isinstance(properties, dict) else []
+
+        violation = {
+            "ts_utc": datetime.now(timezone.utc).isoformat(),
+            "kind": "notion_classification_advisory",
+            "target_db": target_db,
+            "database_id": db_id,
+            "property_keys_present": prop_keys,
+            "threshold_msg": threshold_msg,
+            "advisory": True,
+        }
+        try:
+            _NOTION_CLASSIFICATION_VIOLATIONS.parent.mkdir(parents=True, exist_ok=True)
+            with _NOTION_CLASSIFICATION_VIOLATIONS.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(violation, ensure_ascii=False) + "\n")
+        except OSError:
+            pass
+
+        print(
+            f"[pre_mcp_gate] NOTION-CLASSIFICATION-ADVISORY: writing to {target_db} DB. "
+            f"Verify this is a threshold-appropriate item. {threshold_msg}",
+            file=sys.stderr,
+        )
+    except Exception:  # guardian: allow-broad-exception -- fail-open advisory gate; must never block unrelated Notion writes
+        pass
+    return 0  # Always advisory — never block.
+
+
 def check_tavily_gate() -> int:
     """
     Check Tavily MCP auth gate.
@@ -1539,6 +1633,7 @@ def main() -> int:
         rc = check_notion_wave_deferral(tool_name)
         if rc != 0:
             return rc
+        check_notion_classification_gate(tool_name, payload)  # advisory, always 0
         return check_notion_gate()
 
     # Tavily MCP: verify TAVILY_API_KEY is set in OS env before any API call
