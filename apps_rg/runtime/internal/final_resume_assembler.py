@@ -131,6 +131,30 @@ def _generated_lane_assembly_gap_snapshot(section_id: str, reason: str) -> dict[
     }
 
 
+def _sweep_undeclared_assembly_artifacts(output_dir: Path) -> None:
+    """Start each assembly pass from the declared artifact contract.
+
+    Everything in the assembly dir is derived per pass. Top-level files outside
+    ASSEMBLY_ALLOWED_ARTIFACT_FILES (the same contract the X2 provider/judge
+    scans enforce) and the per-pass coherence_judge_providers/ raws are removed
+    so leftovers from a prior pass can never fail — or masquerade as evidence
+    for — the current one. Stale run-15 provider raws failing patch_run_17's
+    scans (2026-06-11) are the precedent.
+    """
+    import shutil
+
+    from apps_rg.runtime.assembly.final_resume_x2 import ASSEMBLY_ALLOWED_ARTIFACT_FILES
+
+    if not output_dir.is_dir():
+        return
+    for f in output_dir.iterdir():
+        if f.is_file() and f.name.lower() not in ASSEMBLY_ALLOWED_ARTIFACT_FILES:
+            f.unlink()
+    providers_dir = output_dir / "coherence_judge_providers"
+    if providers_dir.is_dir():
+        shutil.rmtree(providers_dir)
+
+
 def assemble_final_resume(
 
     paths: FinalResumePaths | None = None,
@@ -609,6 +633,7 @@ def assemble_final_resume(
     coherence_review: dict[str, Any] | None = None
 
     paths.output_dir.mkdir(parents=True, exist_ok=True)
+    _sweep_undeclared_assembly_artifacts(paths.output_dir)
 
     if coherence_required:
         target_company = os.environ.get("APPS_RG_TARGET_COMPANY", "").strip()

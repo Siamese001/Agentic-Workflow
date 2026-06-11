@@ -35,6 +35,31 @@ LOCKED_EMBEDDED_ORDER_IDS: tuple[str, ...] = (
 
 LOCKED_INVARIANT_IDS: tuple[str, ...] = ("company_names", "titles", "locations", "dates")
 
+# Contract for what may live at the TOP LEVEL of the structural assembly dir.
+# Shared SSOT: the X2 provider/judge scans exempt exactly this set, and the
+# assembler sweeps undeclared top-level leftovers (e.g. provider raws written
+# there by the pre-2026-06-11 coherence runner) before each assembly pass so a
+# prior pass can never fail the current one. Per-provider coherence raws live in
+# the coherence_judge_providers/ subdir (subdirs are not scanned).
+ASSEMBLY_ALLOWED_ARTIFACT_FILES: frozenset[str] = frozenset(
+    {
+        "final_resume.json",
+        "final_resume_manifest.json",
+        "final_resume_x2_gate_outputs.json",
+        "final_resume_receipt.json",
+        "full_resume_llm_coherence_review.json",
+        "x1d_full_resume_judge_outputs.json",
+        "cross_section_x2_gate_outputs.json",
+        "aggregation_preflight.json",
+        "coherent_rollup_policy.json",
+        "review_lane_policy.json",
+        "kept_removed_claims.json",
+        "overlap_decisions.json",
+        "cross_section_warn_resolution.json",
+        "orchestration_fingerprint.json",
+    },
+)
+
 GENERATED_LANE_IDS: tuple[str, ...] = (
     "headline",
     "executive_summary",
@@ -415,24 +440,7 @@ def run_final_resume_x2_gates(
 
     out_dir = paths.output_dir
 
-    allowed_artifact_files = frozenset(
-        {
-            "final_resume.json",
-            "final_resume_manifest.json",
-            "final_resume_x2_gate_outputs.json",
-            "final_resume_receipt.json",
-            "full_resume_llm_coherence_review.json",
-            "x1d_full_resume_judge_outputs.json",
-            "cross_section_x2_gate_outputs.json",
-            "aggregation_preflight.json",
-            "coherent_rollup_policy.json",
-            "review_lane_policy.json",
-            "kept_removed_claims.json",
-            "overlap_decisions.json",
-            "cross_section_warn_resolution.json",
-            "orchestration_fingerprint.json",
-        },
-    )
+    allowed_artifact_files = ASSEMBLY_ALLOWED_ARTIFACT_FILES
     prov_hits: list[str] = []
     qwen_hits: list[str] = []
     judge_hits: list[str] = []

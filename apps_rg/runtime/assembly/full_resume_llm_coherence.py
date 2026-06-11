@@ -307,8 +307,16 @@ def aggregate_full_resume_coherence(
         )
     warnings: list[str] = []
     for o in model_backed:
-        if not o.pass_ or o.decisive_failure:
-            warnings.append(f"judge_dissent:{o.judge_id}")
+        if o.pass_ and not o.decisive_failure:
+            # A passing judge's findings are commentary, not failure evidence. The
+            # keyword scan below is polarity-blind: anthropic's PRAISE "No credential
+            # names are duplicated inside ... COMPETENCIES" matched the cert/competency
+            # heuristic and blocked a 3/3-pass resume (patch_run_17, 2026-06-11). The
+            # authoritative cert-duplication detector is the deterministic preflight
+            # (check_competencies_no_reserved_certification_category + needle scan),
+            # which feeds deterministic_blockers above and is unaffected here.
+            continue
+        warnings.append(f"judge_dissent:{o.judge_id}")
         for f in o.findings or []:
             low = f.lower()
             if "jd" in low and "proof" in low:
