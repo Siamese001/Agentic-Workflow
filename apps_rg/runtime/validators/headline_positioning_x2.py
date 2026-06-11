@@ -25,6 +25,9 @@ from apps_rg.runtime.validators.headline_quality_x2 import (
 
 GOVERNANCE_SIGNAL_FAMILIES: tuple[str, ...] = ("runtime_governance", "regulated_ai_systems")
 
+# Floor enforced by x2_headline_technical_specificity_floor_met (>= this many families).
+POSITIONING_FAMILY_FLOOR: int = 2
+
 
 @dataclass
 class HeadlinePositioningResult:
@@ -40,6 +43,19 @@ def governance_signal_families_matched(headline_line: str) -> list[str]:
     blob = " ".join(headline_line.split(" | ")[1:]).lower() if " | " in headline_line else headline_line.lower()
     tokens = set(blob.replace("|", " ").split())
     return _families_matched(blob, tokens, GOVERNANCE_SIGNAL_FAMILIES)
+
+
+def positioning_families_matched(headline_line: str) -> list[str]:
+    """Positioning families matched by x2_headline_technical_specificity_floor_met's exact predicate.
+
+    Shared by the gate body in run_headline_positioning_x2_gates and the headline
+    content-signal repair trigger (headline_lane.apply_headline_content_signal_repair) —
+    trigger == gate by construction. Delegates to check_headline_positioning_families
+    (the gate's verbatim segment/blob/token construction) rather than copying it, so the
+    repair trigger can never drift from the gate predicate.
+    """
+    fam = check_headline_positioning_families(headline_line, min_families=POSITIONING_FAMILY_FLOOR)
+    return list(fam.observed_value or [])
 
 
 def headline_positioning_consumption_active(meta: dict[str, Any] | None) -> bool:
@@ -250,8 +266,9 @@ def run_headline_positioning_x2_gates(
         f"JD-only phrase lift detected: {jd_hits}" if jd_hits else None,
     )
 
-    # Technical specificity floor (HARD): >=2 positioning families
-    fam = check_headline_positioning_families(headline_line, min_families=2)
+    # Technical specificity floor (HARD): >=POSITIONING_FAMILY_FLOOR positioning families.
+    # positioning_families_matched delegates to this same call — repair trigger == gate.
+    fam = check_headline_positioning_families(headline_line, min_families=POSITIONING_FAMILY_FLOOR)
     add(
         "x2_headline_technical_specificity_floor_met",
         fam.passed,
@@ -298,8 +315,10 @@ def _families_matched(blob: str, tokens: set[str], families: tuple[str, ...]) ->
 
 __all__ = [
     "GOVERNANCE_SIGNAL_FAMILIES",
+    "POSITIONING_FAMILY_FLOOR",
     "HeadlinePositioningResult",
     "governance_signal_families_matched",
     "headline_positioning_consumption_active",
+    "positioning_families_matched",
     "run_headline_positioning_x2_gates",
 ]

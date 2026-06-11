@@ -18,12 +18,15 @@ import pytest
 
 from apps_rg.runtime.validators.headline_positioning_x2 import (
     GOVERNANCE_SIGNAL_FAMILIES,
+    POSITIONING_FAMILY_FLOOR,
     governance_signal_families_matched,
+    positioning_families_matched,
     run_headline_positioning_x2_gates,
 )
 from apps_rg.runtime.validators.headline_quality_x2 import (
     HEADLINE_E0_REFERENCE_TEXTS,
     NARROWING_IT_LABELS,
+    POSITIONING_FAMILIES,
     check_headline_base_ngram_overlap,
     check_headline_e0_ngram_overlap,
     check_headline_no_narrowing_it_labels,
@@ -259,3 +262,46 @@ class TestGovernanceSignalHelperGateEquivalence:
         else:
             assert gate.observed_value == "none"
         assert all(f in GOVERNANCE_SIGNAL_FAMILIES for f in matched)
+
+
+# ---------------------------------------------------------------------------
+# 9. positioning_families_matched <=> specificity-floor gate equivalence
+# ---------------------------------------------------------------------------
+
+_SPECIFICITY_GATE_ID = "x2_headline_technical_specificity_floor_met"
+
+_SPECIFICITY_EQUIVALENCE_HEADLINES = _GOVERNANCE_EQUIVALENCE_HEADLINES + [
+    # live failure shape (postW4fix_20260610_2200): only runtime_governance matched
+    "SVP Engineering | Runtime Governance Gates | Deterministic Policy Controls | Resilient Delivery Programs",
+    # single non-governance family
+    "SVP Engineering | Retrieval Context Programs | Platform Productization Roadmaps | Resilient Delivery Leadership",
+    # single family via token signal only
+    "SVP Engineering | Enterprise IT Programs | Data Center Scale | Vendor Contracts",
+    "SVP Engineering | Agentic AI Platform Engineering | Runtime Governance Controls | Regulated Enterprise AI",
+]
+
+
+class TestPositioningFamiliesHelperGateEquivalence:
+    """helper count < floor <=> specificity gate fails — trigger==gate by construction."""
+
+    @pytest.mark.parametrize("hl", _SPECIFICITY_EQUIVALENCE_HEADLINES)
+    def test_helper_below_floor_iff_gate_fails(self, hl):
+        gates = run_headline_positioning_x2_gates(
+            headline_line=hl,
+            parsed_output={},
+            proof_pool_metadata={},
+        )
+        gate = next(g for g in gates if g.gate_id == _SPECIFICITY_GATE_ID)
+        matched = positioning_families_matched(hl)
+        assert (len(matched) >= POSITIONING_FAMILY_FLOOR) == gate.passed, (
+            f"helper/gate divergence for {hl!r}: matched={matched} gate.passed={gate.passed}"
+        )
+        assert gate.observed_value == matched
+        assert all(f in POSITIONING_FAMILIES for f in matched)
+
+    @pytest.mark.parametrize("hl", _SPECIFICITY_EQUIVALENCE_HEADLINES)
+    def test_helper_matches_gate_predicate_function(self, hl):
+        """The helper delegates to check_headline_positioning_families — byte-identical list."""
+        direct = check_headline_positioning_families(hl, min_families=POSITIONING_FAMILY_FLOOR)
+        assert positioning_families_matched(hl) == list(direct.observed_value or [])
+        assert (len(positioning_families_matched(hl)) < POSITIONING_FAMILY_FLOOR) == (not direct.passed)

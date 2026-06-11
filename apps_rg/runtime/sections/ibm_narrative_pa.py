@@ -60,6 +60,46 @@ def _format_allowed_fact_ids(runtime_payload: dict[str, Any]) -> str:
     )
 
 
+def _theme_family_summary(phrases: tuple[str, ...]) -> str:
+    """Few-word summary of a theme's trigger vocabulary class (prefix-deduped, max 3 terms)."""
+    picked: list[str] = []
+    for phrase in phrases:
+        p = str(phrase).strip()
+        if not p or any(p.startswith(q) or q.startswith(p) for q in picked):
+            continue
+        picked.append(p)
+        if len(picked) == 3:
+            break
+    return " / ".join(picked)
+
+
+def _theme_budget_block() -> str:
+    """Structural theme budget the deterministic X2 ledger math enforces.
+
+    Derived from ``IBM_NARRATIVE_THEME_TRIGGERS`` (the X2 theme-detection SSOT) so the prompt
+    and the gate share provenance: the clause decomposer splits on ', establishing'
+    (max 2 ledger rows) and each row may cite at most 2 bul_ibm_* roots, so a sentence that
+    materially trips 5 theme families can NEVER satisfy both theme-coverage and
+    clause-decomposition gates (live flap postW4fix_20260610_2200).
+    """
+    from apps_rg.runtime.validators.ibm_narrative_x2 import IBM_NARRATIVE_THEME_TRIGGERS
+
+    lines = [
+        "THEME BUDGET (STRUCTURAL — deterministic X2 ledger math, not style advice):",
+        "- narrative_sentence may materially express AT MOST 4 of the 5 IBM bullet theme "
+        "families below, with AT MOST 2 theme families per clause.",
+        "- The ', establishing' clause split yields at most 2 claim_ledger rows and each row "
+        "may cite at most 2 bul_ibm_* roots, so a sentence tripping all 5 families can never "
+        "pass both theme-coverage and clause-decomposition gates.",
+        "- Choose the STRONGEST 4 families for the target role; leave at least one family "
+        "unexpressed (do not even allude to its trigger vocabulary).",
+        "Theme families (trigger vocabulary classes):",
+    ]
+    for fid, phrases in IBM_NARRATIVE_THEME_TRIGGERS:
+        lines.append(f"- {fid}: {_theme_family_summary(phrases)}")
+    return "\n".join(lines)
+
+
 def _yaml_instruction_layers(spec: dict[str, Any]) -> str:
     chunks: list[str] = []
     purpose = str(spec.get("purpose") or "").strip()
@@ -196,6 +236,7 @@ def _i0_from_spec(runtime_payload: dict[str, Any]) -> str:
         f"title={header['title']}, location={header['location']}, dates={header['start_date']} to "
         f"{header['end_date']}.\n\n"
         f"{_format_allowed_fact_ids(runtime_payload)}\n"
+        f"{_theme_budget_block()}\n\n"
         f"{layers}"
     )
     return mechanical.strip()
