@@ -208,10 +208,10 @@
         "bullets": [
           {
             "bullet_id": "bul_early_career_001",
-            "text": "Foundational Engineering: Built high-performance valuation frameworks and deterministic modeling systems for insurance and risk analysis, developing the quantitative rigor, control discipline, and systems thinking that now underpin my work in AI platform architecture and runtime governance.",
+            "text": "Actuarial & Quantitative Foundation: As a Fellow of the Society of Actuaries (FSA), priced exotic derivatives and structured multi-Greek hedging strategies, built stochastic capital models, and supported HPC-based valuation frameworks for scenario testing and capital adequacy — the quantitative rigor and risk discipline that now underpin my work in AI platform architecture and runtime governance.",
             "has_metric": false,
-            "technologies": ["valuation frameworks", "deterministic modeling", "insurance analytics"],
-            "domain": "foundational engineering"
+            "technologies": ["derivatives pricing", "multi-Greek hedging", "stochastic modeling", "capital modeling", "HPC valuation"],
+            "domain": "actuarial & quantitative finance"
           }
         ]
       }

@@ -103,9 +103,7 @@
         "Regulatory-capital compliance for insurance clients"
       ],
       "graph_skill_node_ids": [
-        "skill_capital_regulatory_capital",
-        "skill_capital_capital_modeling",
-        "skill_capital_pricing_actuarial"
+        "skill_capital_regulatory_capital"
       ],
       "linked_source_fact_ids": ["exp_ey_001"],
       "linked_archive_signal_ids": [],

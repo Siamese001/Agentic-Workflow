@@ -924,7 +924,7 @@
         "capital_modeling",
         "fsa"
       ],
-      "claim_text": "Built quantitative rigor through derivatives pricing, capital modeling, and portfolio stress analytics across early-career actuarial roles.",
+      "claim_text": "Built an FSA-grade quantitative foundation - derivatives pricing, capital modeling, and portfolio stress analytics - across early-career actuarial roles.",
       "metric_values": [],
       "company": "Early Career",
       "source_resume_variants": [
@@ -1104,6 +1104,115 @@
         "CONSULTING_DELIVERY_LEADERSHIP",
         "EXECUTIVE_LEADERSHIP"
       ]
+    },
+    {
+      "candidate_fact_id": "fact_quant_act_001",
+      "domain_family": "QUANT_TRADING_HPC",
+      "capability_tags": [
+        "derivatives_pricing",
+        "multi_greek_hedging",
+        "exotic_options",
+        "fsa",
+        "actuarial_modeling"
+      ],
+      "claim_text": "As a credentialed actuary (Fellow of the Society of Actuaries), priced exotic derivatives and structured multi-Greek hedging strategies - building the quantitative foundation later applied to AI-driven risk and trading systems.",
+      "metric_values": [],
+      "company": "Early Career - Actuarial",
+      "source_resume_variants": [
+        "Quantitative Research & Trading - Amit Ayer.txt",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Phase I actuarial archive (FSA-credentialed early-career quantitative work); user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "AI_GOVERNANCE_RISK",
+        "STRATEGIC_FINANCE"
+      ],
+      "proof_text": "Early-career actuarial roles (Philadelphia, 2002-2009): applied FSA-driven quantitative skills to exotic derivatives pricing and multi-Greek hedging strategies while completing Fellowship requirements.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_quant_act_002",
+      "domain_family": "QUANT_TRADING_HPC",
+      "capability_tags": [
+        "stochastic_modeling",
+        "capital_modeling",
+        "risk_assessment",
+        "actuarial_modeling"
+      ],
+      "claim_text": "Built stochastic models and applied rigorous actuarial methods to refine capital models and drive more precise enterprise risk assessment.",
+      "metric_values": [],
+      "company": "Early Career - Actuarial",
+      "source_resume_variants": [
+        "Quantitative Research & Trading - Amit Ayer.txt",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Phase I actuarial archive (FSA-credentialed early-career quantitative work); user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "AI_GOVERNANCE_RISK",
+        "STRATEGIC_FINANCE"
+      ],
+      "proof_text": "Developed deep expertise in stochastic modeling; leveraged rigorous actuarial methods to refine capital models and drive more precise risk assessments.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_quant_act_003",
+      "domain_family": "QUANT_TRADING_HPC",
+      "capability_tags": [
+        "hpc_valuation",
+        "scenario_testing",
+        "capital_adequacy",
+        "hpc",
+        "actuarial_modeling"
+      ],
+      "claim_text": "Supported HPC-based valuation frameworks for scenario testing and capital adequacy, bridging high-performance computing with actuarial risk fundamentals.",
+      "metric_values": [],
+      "company": "Early Career - Actuarial",
+      "source_resume_variants": [
+        "Quantitative Research & Trading - Amit Ayer.txt",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Phase I actuarial archive (FSA-credentialed early-career quantitative work); user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "QUANT_TRADING_HPC",
+        "AI_GOVERNANCE_RISK",
+        "ENGINEERING_PLATFORM"
+      ],
+      "proof_text": "Supported HPC-based valuation frameworks for scenario testing and capital adequacy, bridging advanced technology with risk fundamentals.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
+    },
+    {
+      "candidate_fact_id": "fact_quant_act_004",
+      "domain_family": "QUANT_TRADING_HPC",
+      "capability_tags": [
+        "actuarial_analytics_integration",
+        "risk_governance_foundation",
+        "quant_to_ai_bridge"
+      ],
+      "claim_text": "Pioneered the integration of actuarial discipline with emerging analytics platforms - an early foundation for the enterprise risk-governance and MLOps practices later led at scale.",
+      "metric_values": [],
+      "company": "Early Career - Actuarial",
+      "source_resume_variants": [
+        "Quantitative Research & Trading - Amit Ayer.txt",
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "confidence": "HIGH",
+      "allowed_resume_use": "allowed_after_human_confirm",
+      "risk_notes": "Phase I actuarial archive (FSA-credentialed early-career quantitative work); user-confirmed 2026-06-11.",
+      "role_families_supported": [
+        "AI_GOVERNANCE_RISK",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "QUANT_TRADING_HPC"
+      ],
+      "proof_text": "Pioneered the integration of actuarial thought processes with evolving analytics platforms, creating a foundation for enterprise-scale governance.",
+      "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
     }
   ],
   "capabilities": [

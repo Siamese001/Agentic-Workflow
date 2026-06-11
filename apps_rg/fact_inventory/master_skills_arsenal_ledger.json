@@ -1414,7 +1414,7 @@
       "description": "[",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
-      "activation_status": "DRAFT",
+      "activation_status": "ACTIVE_CONFIRMED",
       "evidence_risk": "low",
       "source_refs": [],
       "projection_behavior": "rank_and_project_facts",
@@ -5845,6 +5845,51 @@
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "confidence_grade": "MEDIUM",
       "confidence_grade_derived": "MEDIUM"
+    },
+    {
+      "node_id": "skill_quant_multi_greek_hedging",
+      "node_type": "skill_row",
+      "label": "multi_greek_hedging",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "node_id": "skill_quant_stochastic_modeling",
+      "node_type": "skill_row",
+      "label": "stochastic_modeling",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "node_id": "skill_hpc_valuation_capital_adequacy",
+      "node_type": "skill_row",
+      "label": "hpc_valuation_capital_adequacy",
+      "description": "[",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
     }
   ],
   "graph_edges": [
@@ -27876,7 +27921,9 @@
     {
       "skill_id": "skill_capital_capital_modeling",
       "fact_id_links": [
-        "fact_quant_hpc_003"
+        "fact_quant_hpc_003",
+        "fact_quant_act_002",
+        "fact_quant_act_003"
       ],
       "pillar": "pillar_capital_modeling",
       "subpillar": "capital_modeling",
@@ -27985,7 +28032,9 @@
     },
     {
       "skill_id": "skill_capital_pricing_actuarial",
-      "fact_id_links": [],
+      "fact_id_links": [
+        "fact_quant_act_001"
+      ],
       "pillar": "pillar_capital_modeling",
       "subpillar": "pricing_actuarial",
       "career_stage": "early_career",
@@ -27995,7 +28044,7 @@
       "source_snippets": [
         "pricing of complex derivatives while completing Fellowship requirements"
       ],
-      "user_confirmed": false,
+      "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
         "QUANT_TRADING_HPC": 1.0
@@ -28009,7 +28058,7 @@
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
-      "activation_status": "DRAFT",
+      "activation_status": "ACTIVE_CONFIRMED",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -28034,7 +28083,8 @@
     {
       "skill_id": "skill_actuarial_fsa_fellowship",
       "fact_id_links": [
-        "fact_certs_001"
+        "fact_certs_001",
+        "fact_quant_act_001"
       ],
       "pillar": "pillar_actuarial_foundation",
       "subpillar": "fsa_fellowship",
@@ -39263,6 +39313,161 @@
       ],
       "link_class_by_fact": {},
       "source_ledger_ref": ""
+    },
+    {
+      "skill_id": "skill_quant_multi_greek_hedging",
+      "fact_id_links": [
+        "fact_quant_act_001"
+      ],
+      "pillar": "pillar_capital_modeling",
+      "subpillar": "multi_greek_hedging",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "stochastic modeling, multi-Greek hedging, and pricing of complex derivatives while completing Fellowship requirements"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0
+      },
+      "allowed_phrases": [
+        "multi-Greek hedging",
+        "Greek hedging",
+        "exotic options hedging"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "early_career"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_enterprise_risk",
+      "domain": "Enterprise Risk",
+      "capability": "pricing_actuarial",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "pricing_actuarial"
+      ],
+      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "skill_id": "skill_quant_stochastic_modeling",
+      "fact_id_links": [
+        "fact_quant_act_002"
+      ],
+      "pillar": "pillar_capital_modeling",
+      "subpillar": "stochastic_modeling",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "stochastic modeling, multi-Greek hedging, and pricing of complex derivatives while completing Fellowship requirements"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0
+      },
+      "allowed_phrases": [
+        "stochastic modeling",
+        "stochastic capital models"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "early_career"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_enterprise_risk",
+      "domain": "Enterprise Risk",
+      "capability": "pricing_actuarial",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "pricing_actuarial"
+      ],
+      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
+    },
+    {
+      "skill_id": "skill_hpc_valuation_capital_adequacy",
+      "fact_id_links": [
+        "fact_quant_act_003"
+      ],
+      "pillar": "pillar_capital_modeling",
+      "subpillar": "hpc_valuation_capital_adequacy",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "stochastic modeling, multi-Greek hedging, and pricing of complex derivatives while completing Fellowship requirements"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "QUANT_TRADING_HPC": 1.0
+      },
+      "allowed_phrases": [
+        "HPC-based valuation",
+        "scenario testing",
+        "capital adequacy"
+      ],
+      "forbidden_phrases": [],
+      "allowed_sections": [
+        "early_career"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_enterprise_risk",
+      "domain": "Enterprise Risk",
+      "capability": "pricing_actuarial",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "ats_keywords": [
+        "pricing_actuarial"
+      ],
+      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
+      "confidence_grade": "LOW",
+      "confidence_grade_derived": "LOW"
     }
   ],
   "actuarial_career_matrix": [
