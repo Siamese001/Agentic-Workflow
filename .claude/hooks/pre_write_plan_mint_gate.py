@@ -39,10 +39,17 @@ def main() -> int:
         if Path(file_path).exists():
             return 0  # editing an existing plan is allowed (rows, statuses, headers)
         print(
-            "PLAN-MINT GATE: creating a NEW plan file is blocked by the 2026-06-10 operating "
-            "model (execute existing waves; findings become rows in the master inventory "
-            "plans/apps-rg-lane-aggregation-gap-closure-b8c3d1.md). If the USER explicitly "
-            "authorized a new plan this turn, retry with PLAN_MINT_OK=1.",
+            "PLAN-MINT GATE: creating a NEW plan file is blocked (operating model 2026-06-10).\n"
+            "\n"
+            "Classify the work first (.claude/rules/work-item-classification.md):\n"
+            "  BUG_IMMEDIATE     → fix directly, proof receipt is the artifact (no plan)\n"
+            "  BUG_DEFERRED      → spawn_task chip (no plan)\n"
+            "  FINDING_APPS_RG   → row in Master Gap Inventory (no plan)\n"
+            "  PLAN_MICRO        → native plan mode only, no disk file, no Notion\n"
+            "  PLAN_MULTI_WAVE   → disk file allowed ONLY with explicit user authorization\n"
+            "\n"
+            "Master Gap Inventory: plans/apps-rg-lane-aggregation-gap-closure-b8c3d1.md\n"
+            "If the USER explicitly authorized a new plan this turn, retry with PLAN_MINT_OK=1.",
             file=sys.stderr,
         )
         return 2
