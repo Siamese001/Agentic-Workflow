@@ -117,6 +117,57 @@ The Qwen/vLLM stack was legitimate tuition: it taught local inference, model ser
 
 **Lesson 5A:** local inference can be tuition and still be the wrong product default. If the provider adds more operational machinery than product value, demote it before the app starts serving the provider instead of the user.
 
+### Failure 5B — Observability and CI control surfaces also lied *(Jan 6 – Jun 8, 2026)*
+The hollow-verification finding is broader than mocks and fake receipts. The dashboards and ratchets that were supposed to show system truth were themselves repeatedly corrected for fabricated, stale, or floor-shifted evidence.
+
+- **Jan 6:** `AutonomyGuardianAgent.py` had health hardcoded to `100.0`, reporting 100% health while invocation was 34.6% (`bebd228`). The fix recalculated health from real metrics and dropped total health to 84.4%.
+- **Jan 10:** the dashboard's per-agent layer used `generateMockAgentData()` with random outliers disconnected from reality; badges were fake while the total row used real aggregates (`2727dd9`). Follow-up commits deprecated the mock function, removed `Math.random()` paths, and restored a working real-data dashboard (`dfdfa97`, `ca2bb2d`, `1582b89`).
+- **Jan 6:** `.dashboard_cache.json` made the dashboard stale even after code fixes, and coverage HTML files were scanned as agents; the correction removed the cache and excluded `coverage_html/`, dropping discovered agent count from 344 to 307 (`70af5e`).
+- **Apr 28:** ADG gates were turned green by absorbing 85 new undeclared env flags and 163 lifecycle-pair leaks into baselines, plus disabled one real semantic-cache readback gap with a plan reference (`8d39ad`). The commit is honest that future leaks still block, but the immediate signal became PASS by redefining the floor.
+- **Apr 28:** `absorb_ratchet_floor.py` raised 15 wiring ratchet ceilings to current+margin and recorded `loosen_history` (`426b00`). The mechanism had an audit trail, but it converted red into green without reducing product risk.
+- **Jun 8:** after Qwen-removal and dotenv-autoload, content-gate baselines were regenerated: test-harness debt moved 1293 → 1295, and config references absorbed +12 new undeclared flags / -13 stale flags (`641222`). A later report column had to explain which P0 ratchets must not be re-baselined (`c10fea`).
+
+**Forensic verdict:** a baseline is useful only when the reader remembers it is a debt ledger, not a quality verdict. This system repeatedly transformed new defects into accepted debt and then displayed PASS. That is not fraud; it is worse for learning: a truthful-looking instrument with a moving zero point.
+
+**Lesson 5B:** when a gate passes because the baseline moved, the report must say **DEBT ABSORBED**, not **PASS**. Dashboards and CI gates need their own truth-source contracts, freshness checks, and no-random/no-hardcoded-data guards.
+
+### Failure 5C — The self-healing repo mutator damaged the repo it was supposed to heal *(Dec 2025 – Mar 2026)*
+The project built autonomous cleanup/healing machinery before it had safe mutation boundaries. This collided directly with the spine law that L2 proposes, Exit clears, UWG commits, and L4 stores — not "healer moves files because similarity says so."
+
+- **Dec 30:** a "Phase 3 Hydration" process created 188 duplicate files; 162 were later deleted as duplicate artifacts, including `retrieve_context.py` duplicated 24 times (`d68d54`). This is not organic complexity — it is generated duplication.
+- **Dec 30:** flattening scripts blindly prepended directory prefixes, producing names such as `healing_healing_strategies.py`; the fix introduced duplicate-prefix guards (`2e1e76`).
+- **Feb 24:** 102 temporary files were accidentally tracked in git because files were staged before `.gitignore` existed: 4 root `_temp_cmd_correlator*` files and 98 `artifacts/windsurf/` temp files (`d23b569`).
+- **Mar 9:** `heal_repository()` was flipped to `dry_run=False` across `apps_*` while the same commit recorded a baseline of 1,775 violations and 25 collision groups (`88d2d8`). That is the wrong risk posture: real mutation enabled before the repo was structurally calm.
+- **Mar 1:** `LocationHealerAgent._find_best_matching_subfolder()` used Jaccard similarity; zero word-overlap for `fixtures` caused `tests/contracts/fixtures/` to be flattened into `tests/contracts/`, and the collision guard wrote `_1` suffix duplicates for every file already present (`041ce1`).
+
+**Forensic verdict:** the repo was not only accumulating bad code; the automated remediation machinery was adding entropy. The operating model confused "the agent can move files" with "the agent has authority to improve the system."
+
+**Lesson 5C:** repo-healing agents must be proposal-only until mutation passes a frozen worktree diff, deterministic replay, human-readable blast radius, and explicit Exit/UWG clearance. Similarity-based relocation should never be allowed to mutate tests, fixtures, archives, or source roots without a preserved-subdir guard.
+
+### Failure 5D — Hidden runtime state made proof non-reproducible across worktrees *(Jun 7 – Jun 10, 2026)*
+The June recovery made the repo safer by moving to worktree-per-chat, but it exposed a deeper problem: product proof depended on state not versioned with the code.
+
+- **Jun 7:** `apps_rg` env loading had to be re-landed from a stale branch 33 commits behind main; provider readiness checks were reading empty env before `.env` bootstrap (`b98607`).
+- **Jun 8:** package import had to auto-load `.env` because any path that read API keys before bootstrap reported BLOCKED despite `.env` containing the key; bare `import apps_rg` was verified to expose `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` under non-pytest execution (`6aad6d`).
+- **Jun 8:** AIG section runs were blocked identically by a pre-existing C0.2 mandatory-sparse infra gap; the demo temporarily relaxed `APPS_RG_C0_DENSE_SPARSE_MANDATORY=0` and appended an RCA of worktree runtime-data gaps (`51c6a8`).
+- **Jun 8:** the sparse-index RCA found a single `fact_vectors` FTS5 sidecar under `data/cache/sparse/fact_vectors.db`; it was gitignored runtime data present in the main repo but absent in a fresh worktree, and the builder could not honor `CHROMA_PERSIST_DIR` before the fix (`5c117b`).
+- **Jun 9–10:** credentials and env state were moved into an explicit SSOT chain: `$APPS_RG_DOTENV -> <repo_root>/.env -> ~/.apps_rg/.env`, then to app-neutral `~/env/.env` so worktree reaps and re-clones would not silently lose keys (`9bfd2a`, `4c7b7a`, `152dda`).
+
+**Forensic verdict:** the project had git discipline for code, but not for runtime prerequisites. If a fresh worktree cannot reproduce the proof without hidden `.env`, hidden Chroma, hidden FTS5 sidecars, or local overrides, the proof is not portable.
+
+**Lesson 5D:** every product proof needs a `runtime_state_manifest`: credentials source class (not values), cache/index artifact inventory, rebuild command, required env, gitignored-but-required sidecars, and a fresh-worktree replay check. Worktrees prevent edit collisions; they do not make runtime state reproducible by themselves.
+
+### Failure 5E — `apps_rg` grew from a product engine into an app-local governance clone *(Dec 2025 – Jun 2026)*
+A recovered Dec 2025 inventory shows the old `apps_rg` surface was already risky — direct Gemini calls, autonomous healing, route/execute/judge merged in one app context — but it was compact. The May/June replacement was safer in theory and far more complex in practice.
+
+- Historical inventory source `5b443166` (2025-12-31) shows `apps_rg/engines/resume_engine/` at ~104 Python files, with `resume_engine` + `autonomous/` swarm as entry surface.
+- The current comparison shows `apps_rg/runtime/` section lanes at ~560 files, `python -m apps_rg -> canonical_dispatch`, validators, X1D/X2/X3 receipts, E4 repair policies, and a provider wrapper. The old model merged plan/route/execute/heal/judge/model access; the governed model split them, but the product inherited a governance stack inside the app.
+- The generated inventory itself classified reintroducing old agents as risky for `ROUTE_AUTHORITY_DRIFT`, `DIRECT_MODEL_BYPASS`, `SAME_AUTHORITY_HEALING_VIOLATION`, `MOCK_AS_PRODUCT_PROOF`, `PROVIDER_SUBSTITUTION_RISK`, `EXIT_X3_BYPASS`, and `EVIDENCE_AUTHORITY_DRIFT`.
+
+**Forensic verdict:** the correct move was not to restore the old autonomous swarm. The miss was allowing the replacement to become another app-local cathedral: hundreds of files of section lanes, repair, proof, judges, provider policy, and CLI gates before the only product metric — DOCX in hand — was protected.
+
+**Lesson 5E:** app-level governance must be thinner than core governance. Put reusable proof machinery in the spine; keep `apps_rg` as domain evidence, section composition, and artifact assembly. If app-local control code grows faster than shippable output, the app is becoming a second framework.
+
 ---
 
 ## 4. The story (conference narrative, chapter by sequence)
@@ -163,6 +214,8 @@ It did not buy a resume — but a resume was never the purchase. The purchase wa
 | 145 plans / 119 Completed / 0 shipped (2026-06-10) | **Partial** | Figures faithfully reproduce the repo's own review. But "no assembled DOCX ever" is false — 102 DOCX artifacts exist (2026-04-28 → 05-11; last DOCX 05-19); apps_lic ran a live E2E certified SPINE_COMPLETE_CERTIFIED on 2026-05-03 (harness-level, no outreach ever sent). Accurate: **no certified, accepted product-grade deliverable shipped**; the certified north star (11/11 + DOCX) never existed. |
 | Machinery plans (1,291) outnumber product plans (415) | **Supported** | Independent 30-plan random sample reproduces it at 4.5–6:1. |
 | L0–L6 architecture predates any working product | **Partial (thrust correct)** | Precision: L1–L5 dirs by 2025-12-13/16; L0/L6 late Dec on branches; full set on main by 2026-02-13. First successful multi-lane E2E: 8/11 on 2026-06-10; all prior full-resume E2Es failed. |
+| Control-plane dashboards and CI gates were themselves unreliable evidence | **Supported** | Hardcoded dashboard health, fake/random per-agent dashboard data, stale dashboard cache, baseline debt absorption, and ratchet-floor loosening are now separately itemized in Failure 5B. |
+| Fresh worktrees could not reproduce product proof without hidden runtime state | **Supported** | June commits show missing `.env`, gitignored sparse FTS5 sidecars, and absent Chroma/sparse data blocked live section proofs until env and index rebuild paths were formalized (Failure 5D). |
 
 ## 6. What worked (the counter-narrative)
 
