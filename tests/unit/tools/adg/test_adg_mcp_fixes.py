@@ -416,6 +416,80 @@ class TestRedisAvailabilityRefresh:
 # ---------------------------------------------------------------------------
 
 
+class TestViewsMaterializedAt:
+    """Regression f7ece2e937: health surfaces views_materialized_at from P-view presence."""
+
+    def test_get_views_materialized_at_returns_snapshot_stem_when_views_exist(self, tmp_path: Path) -> None:
+        db_path = tmp_path / "adg_indexed_20260611_120000.sqlite"
+        conn = sqlite3.connect(str(db_path))
+        conn.execute("CREATE VIEW mv_test_probe AS SELECT 1 AS ok")
+        conn.commit()
+
+        from tools.adg.core.sqlite_backend import SQLiteBackend
+
+        backend = SQLiteBackend.__new__(SQLiteBackend)
+        backend._conn = conn
+        backend._sqlite_path = db_path
+        assert backend.get_views_materialized_at() == "20260611_120000"
+
+    def test_get_views_materialized_at_none_without_views(self, tmp_path: Path) -> None:
+        db_path = tmp_path / "adg_indexed_20260611_120000.sqlite"
+        conn = sqlite3.connect(str(db_path))
+        conn.execute("CREATE TABLE nodes (id INTEGER)")
+        conn.commit()
+
+        from tools.adg.core.sqlite_backend import SQLiteBackend
+
+        backend = SQLiteBackend.__new__(SQLiteBackend)
+        backend._conn = conn
+        backend._sqlite_path = db_path
+        assert backend.get_views_materialized_at() is None
+
+    def test_health_report_includes_views_materialized_at(self) -> None:
+        from tools.adg.core.models import ADGResponse, HealthStatus
+        from tools.adg.mcp.health import HealthDiagnostics
+
+        svc = MagicMock()
+        svc.health.return_value = HealthStatus(
+            mode="sqlite_only",
+            sqlite="healthy",
+            redis="unavailable",
+            cache_hit_capable=False,
+            schema_version="1.0",
+            adg_snapshot_id="20260611_120000",
+            views_materialized_at="20260611_120000",
+        )
+        svc.get_status.return_value = ADGResponse(
+            status="ok",
+            data={"timestamp": "20260611_120000", "node_count": 1, "edge_count": 0},
+            backend_used="sqlite",
+        )
+        svc.get_projection_status.return_value = ADGResponse(
+            status="ok",
+            data={"available": False, "stale": False, "projection_path": None},
+            backend_used="sqlite",
+        )
+
+        report = HealthDiagnostics(svc).full_report()
+        assert report["views_materialized_at"] == "20260611_120000"
+
+    def test_service_health_filters_non_string_views_materialized_at(self) -> None:
+        """Pydantic v2 rejects MagicMock; service must coerce non-str to None."""
+        mock_sqlite = MagicMock()
+        mock_sqlite.get_status.return_value = {"timestamp": "ts_006"}
+        mock_sqlite.health.return_value = ("healthy", {})
+        mock_sqlite.get_views_materialized_at.return_value = MagicMock()
+
+        with patch("tools.adg.core.service.SQLiteBackend", return_value=mock_sqlite):
+            with patch("tools.adg.core.service.RedisCache") as mock_redis_cls:
+                mock_redis_cls.return_value._available = False
+                from tools.adg.core.service import ADGService
+
+                health = ADGService().health()
+
+        assert health.views_materialized_at is None
+
+
 class TestHealthGraphProjectionVisibility:
     def _make_service_mock(self, *, proj_available: bool, proj_stale: bool = False) -> MagicMock:
         from tools.adg.core.models import ADGResponse, HealthStatus
