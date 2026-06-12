@@ -268,6 +268,78 @@ class TestMaterializeInfraViews:
         assert counts["v_infra_violations_summary"] == p0_total
 
 
+class TestP0ProviderBypass:
+    """Tests for v_p0_provider_bypass — provider SDK imports outside sanctioned seams."""
+
+    def test_external_provider_identity_kind_detected(self, tmp_path: Path) -> None:
+        """Regression: provider nodes tagged external_provider must populate provider_in.
+
+        Bug f7ece2e937: identity_kind filter matched only external_module, silently
+        dropping anthropic/openai/google nodes tagged external_provider.
+        """
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::agentic_core/L3_orchestration/bad_provider.py",
+            "module",
+            "L3",
+            "repo_module",
+            "agentic_core/L3_orchestration/bad_provider.py",
+        )
+        _insert_node(
+            conn,
+            2,
+            "ADG::Symbol::anthropic",
+            "external",
+            "external",
+            "external_provider",
+            "anthropic",
+        )
+        _insert_edge(
+            conn,
+            1,
+            2,
+            "imports",
+            "agentic_core/L3_orchestration/bad_provider.py",
+            7,
+            "anthropic",
+        )
+        conn.commit()
+        conn.close()
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p0_provider_bypass"] == 1
+
+    def test_external_module_provider_still_detected(self, tmp_path: Path) -> None:
+        """Sanity: external_module provider SDK tagging still flags bypass."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::agentic_core/L2_execution/bad_provider.py",
+            "module",
+            "L2",
+            "repo_module",
+            "agentic_core/L2_execution/bad_provider.py",
+        )
+        _insert_node(conn, 2, "ADG::Symbol::openai", "external", "external", "external_module", "openai")
+        _insert_edge(conn, 1, 2, "imports", "agentic_core/L2_execution/bad_provider.py", 3, "openai")
+        conn.commit()
+        conn.close()
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p0_provider_bypass"] == 1
+
+
+class TestApprovedAdapterEnrollment:
+    """Approved adapter paths excluded from zero-caller / not-on-spine violations."""
+
+    def test_x1d_claude_judge_adapter_enrolled(self) -> None:
+        """Regression f7ece2e937/34dcf683a2: apps_lic X1D judge adapter is sanctioned."""
+        assert "apps_lic/engines/x1d_claude_judge_adapter.py" in _APPROVED_ADAPTER_PATHS
+
+
 class TestP0WriteBypassUWG:
     """Tests for v_p0_write_bypass_uwg."""
 
