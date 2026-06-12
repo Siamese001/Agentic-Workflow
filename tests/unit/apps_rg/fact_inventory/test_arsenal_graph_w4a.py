@@ -140,11 +140,15 @@ def test_actuarial_graph_chain(ledger: dict) -> None:
 def test_partner_pending_and_repo_portfolio(ledger: dict) -> None:
     pe = [r for r in ledger["skill_rows"] if r["skill_id"] == "skill_partner_partner_engineering"]
     assert pe and not skill_row_eligible_for_external_claim(pe[0])
+    # REPO_EVIDENCE_PORTFOLIO support level retired by the operator-authorized 2026-06-11 removal
+    # of the 16 internal-agentic-runtime skills (they WERE exactly the repo-evidence-portfolio
+    # rows). The invariant — repo-evidence rows must never be externally claimable — still holds
+    # for any that exist; it is vacuous when the category is empty.
     repo_rows = [
         r for r in ledger["agentic_runtime_matrix"] if r["support_level"] == "REPO_EVIDENCE_PORTFOLIO"
     ]
-    assert repo_rows
-    assert not skill_row_eligible_for_external_claim(repo_rows[0])
+    for repo_row in repo_rows:
+        assert not skill_row_eligible_for_external_claim(repo_row)
 
 
 def test_external_claim_policies_present(ledger: dict) -> None:

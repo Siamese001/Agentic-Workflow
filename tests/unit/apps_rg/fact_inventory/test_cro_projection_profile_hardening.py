@@ -57,7 +57,13 @@ def test_composite_profile_registered_in_config_and_ledger(ledger: dict) -> None
 
 
 def test_projection_profile_count_includes_cro_composite(ledger: dict) -> None:
-    assert len(ledger["role_family_projection_profiles"]) == 9
+    # 9 -> 18: the dynamic JD-driven functional-scoring model (2026-06-11) requires a
+    # top_weighted_pillars profile for every projection key the classifier can emit. Added
+    # PARTNER_APPLIED_AI_ARCHITECTURE + 8 senior-role/generalist profiles so no JD falls back
+    # to uniform pillar weighting. CRO composite remains present (asserted above).
+    profiles = ledger["role_family_projection_profiles"]
+    assert len(profiles) == 18
+    assert "CHIEF_REVENUE_OFFICER_COMPOSITE" in profiles
 
 
 def test_revops_pillar_exists_with_supported_facts(ledger: dict) -> None:

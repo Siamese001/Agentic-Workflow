@@ -25369,9 +25369,7 @@
     },
     {
       "skill_id": "skill_capital_reserving",
-      "fact_id_links": [
-        "fact_governance_003"
-      ],
+      "fact_id_links": [],
       "pillar": "pillar_capital_modeling",
       "subpillar": "reserving",
       "career_stage": "early_career",
@@ -26100,9 +26098,7 @@
     },
     {
       "skill_id": "skill_partner_partner_engineering",
-      "fact_id_links": [
-        "fact_partnerships_gtm_001"
-      ],
+      "fact_id_links": [],
       "pillar": "pillar_cosell_partner_engineering",
       "subpillar": "partner_engineering",
       "career_stage": "cross_career",
@@ -26671,9 +26667,7 @@
     },
     {
       "skill_id": "skill_partner_product_feedback_loops",
-      "fact_id_links": [
-        "fact_partnerships_gtm_005"
-      ],
+      "fact_id_links": [],
       "pillar": "pillar_partner_gtm_alliances",
       "subpillar": "product_feedback_loops",
       "career_stage": "cross_career",

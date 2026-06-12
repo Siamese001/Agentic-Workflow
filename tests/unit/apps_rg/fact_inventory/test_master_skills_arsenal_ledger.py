@@ -38,8 +38,11 @@ def test_arsenal_ledger_loads_and_top_level_keys(ledger: dict) -> None:
     assert len(ledger["skill_rows"]) >= 162
     assert len(ledger["actuarial_career_matrix"]) == 22
     assert len(ledger["partner_gtm_matrix"]) == 16
-    assert len(ledger["role_family_projection_profiles"]) == 9
-    assert len(ledger["agentic_runtime_matrix"]) >= 65
+    # 9 -> 18: dynamic functional-scoring model added a pillar-weight profile for every
+    # classifier-emittable projection key (2026-06-11).
+    assert len(ledger["role_family_projection_profiles"]) == 18
+    # 65 -> 58: operator-authorized removal of 16 internal-agentic skills (matrix 78 -> 62).
+    assert len(ledger["agentic_runtime_matrix"]) >= 58
     assert len(arsenal_skill_ids(ledger)) == len(ledger["skill_rows"])
 
 

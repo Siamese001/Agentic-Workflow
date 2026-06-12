@@ -182,7 +182,15 @@ def test_ai_financial_services_governance_and_actuarial(ledger: dict, taxonomy: 
         target_role="AI Financial Services governance risk actuarial",
         jd_text="enterprise risk controls Basel CCAR actuarial foundation derivatives hedging governance.",
     )
-    gov = {fid for fid in exec_ids if "governance" in fid}
+    # Governance/risk-domain facts (AI_GOVERNANCE_RISK). Broadened 2026-06-11 to recognize the
+    # precisely-named banking/ERM risk facts (BCBS 239, three-lines, Solvency II, credit) the
+    # enrichment added — they now outrank the generic fact_governance_* for risk/governance JDs.
+    gov = {
+        fid
+        for fid in exec_ids
+        if any(m in fid for m in ("governance", "bcbs239", "three_lines", "solvency"))
+        or fid.startswith("fact_credit_")
+    }
     quant = {fid for fid in exec_ids if "quant_hpc" in fid or fid == "fact_certs_001"}
     assert gov, "AI Financial Services should include governance/risk facts"
     assert quant or gov

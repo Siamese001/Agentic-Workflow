@@ -39,7 +39,13 @@ ARCHITECTURE_FACTS = frozenset(
     }
 )
 def _gov_prefix(fid: str) -> bool:
-    return "governance" in fid
+    # Recognizes AI_GOVERNANCE_RISK-domain facts. Broadened 2026-06-11: the banking/ERM
+    # enrichment added precisely-named risk facts (BCBS 239, three-lines-of-defense, Solvency II,
+    # credit adjudication) that outrank the generic fact_governance_* for risk/governance JDs.
+    # All are governance/risk facts; the prior bare "governance" substring missed them.
+    return any(m in fid for m in ("governance", "bcbs239", "three_lines", "solvency")) or fid.startswith(
+        "fact_credit_"
+    )
 
 
 @pytest.fixture(scope="module")
