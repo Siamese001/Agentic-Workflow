@@ -98,11 +98,18 @@ def _theme_budget_block() -> str:
         "Each clause names AT MOST TWO families - move the third family's vocabulary into "
         "the ', establishing' clause or drop it entirely.",
         "- SENTENCE SKELETON (follow this shape EXACTLY - two families per clause, no "
-        "third): 'At IBM, led <family-A> and <family-B> programs for enterprise clients, "
+        "third): 'Drove <family-A> and <family-B> programs for enterprise clients at IBM, "
         "establishing <family-C> and <family-D> discipline that <plain outcome with no "
         "additional family vocabulary>.' Choose A-D from four DIFFERENT families; before "
         "returning, count the families each clause expresses and remove vocabulary until "
         "each clause has at most two.",
+        "- OPENER LAW (deterministic gate x2_ibm_narrative_forbidden_opener): the sentence "
+        "MUST begin with a past-tense action verb. NEVER open with a preposition or "
+        "scene-setting lead-in (At/In/As/With/During/While/Throughout/Across/Within/From/"
+        "Upon/Amid) - 'At IBM, ...' is auto-rejected. Avoid mechanical openers led/"
+        "successfully/also/built/delivered/designed/implemented/architected; prefer Drove, "
+        "Owned, Scaled, Championed, Operationalized, Established. Keep the employer anchor "
+        "'IBM' mid-sentence, never as the opener.",
         "Theme families (trigger vocabulary classes):",
     ]
     for fid, phrases in IBM_NARRATIVE_THEME_TRIGGERS:
