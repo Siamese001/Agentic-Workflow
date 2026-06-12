@@ -12,31 +12,38 @@ There is no numeric weighting knob per lane. Emphasis materializes through three
 
 So the proposal below = target bundle-inventory shares + which bundles the selector should prefer per JD archetype.
 
-## 2. Unify (current role) — target mix
+## 2. Unify (current role) — target mix (OPERATOR-CONFIRMED 2026-06-11)
 
 | Theme | Today (6 bundles) | Target share | Bundles |
 |---|---|---|---|
-| Agentic AI platform, governance, productization | 5 of 6 bundles (~83%) | **55–60%** | agentic_platform_architecture, runtime_reliability_governance, production_adoption_lifecycle, platform_commercialization_leadership |
-| **Partnerships / Co-sell / Channel GTM** | **0 bundles (0%)** | **25–30%** | **NEW: `reb_unify_partner_channel_cosell`** — global AI channel program from inception ($3M partner-derived revenue), Confluent/AWS co-sell bundling (+30% upsell), consumption-based SaaS licensing (93% renewal), $5M ACV CFO-aligned enterprise adoption. All four claims already exist as confirmed facts (`fact_partnerships_gtm_001`, `fact_sales_accounts_005/004/001`). |
-| Data platform / retrieval / FSI grounding | 1–2 bundles | **15%** | dependency_graph_accelerator, distributed_ecosystem_engineering |
+| **Agentic / Deep Technical Engineering** | 5 of 6 bundles (~83%) | **70%** | agentic_platform_architecture, runtime_reliability_governance, production_adoption_lifecycle, platform_commercialization_leadership, dependency_graph_accelerator, distributed_ecosystem_engineering |
+| **AI Partnerships / Co-sell Channel** | **0 bundles (0%)** | **30% (OPERATOR-CONFIRMED)** | **NEW: `reb_unify_partner_channel_cosell`** — global AI channel program from inception ($3M partner-derived revenue), Confluent/AWS co-sell bundling (+30% upsell), consumption-based SaaS licensing (93% renewal), $5M ACV CFO-aligned enterprise adoption. All four claims already exist as confirmed facts (`fact_partnerships_gtm_001`, `fact_sales_accounts_005/004/001`). |
 
-## 3. IBM — target mix (mix of all)
+> Data platform / retrieval / FSI grounding (dependency_graph_accelerator, distributed_ecosystem_engineering) folds INTO the 70% "Agentic / Deep Technical Engineering" bucket — it is the technical substrate of the agentic platform story, not a separate share.
+
+## 3. IBM — target mix (OPERATOR-CONFIRMED 2026-06-11)
+
+> ⛔ **Correction (operator, 2026-06-11): IBM = 0% risk / credit / regulatory — that domain is EY's story.** The IBM `hpc_risk_analytics` + Basel/CCAR-regulatory assets and `fact_credit_001` are dropped from IBM lane emphasis (re-homed to EY or de-emphasized — see open question §6).
 
 | Theme | Today (7 bundles) | Target share | Bundles |
 |---|---|---|---|
-| **Partnerships / IBM-AWS alliance co-sell** | 1 bundle | **25%** | hyperscaler_alliance_partner (joint revenue, co-sell, accreditations) |
-| **Pre-sales / GTM / enterprise deal leadership** | 1 bundle — **but its `section_eligibility` is EMPTY → effectively 0% today** | **20%** | technical_presales_gtm (discovery→qualification→solution mapping→executive buyer alignment→deal support; $15M deals, $10M ARR Salesforce pipeline) |
-| Cloud / data platform modernization | 2 bundles | **20%** | cloud_modernization, streaming_realtime_analytics |
-| FSI risk / credit / regulatory | 2 bundles | **20%** | hpc_risk_analytics, metadata_audit_governance (+ credit adjudication −15% default via `fact_credit_001`) |
-| DevSecOps / governance | 1 bundle | **15%** | devsecops_reliability |
+| **Partnerships / IBM-AWS alliance co-sell** | 1 bundle | **30%** | hyperscaler_alliance_partner (joint revenue, co-sell, accreditations) |
+| **Pre-sales / GTM / enterprise deal leadership** | 1 bundle — **but its `section_eligibility` is EMPTY → effectively 0% today** | **30%** | technical_presales_gtm (discovery→qualification→solution mapping→executive buyer alignment→deal support; $15M deals, $10M ARR Salesforce pipeline) |
+| Cloud / data platform modernization | 2 bundles | **25%** | cloud_modernization, streaming_realtime_analytics |
+| DevSecOps / governance | 1–2 bundles | **15%** | devsecops_reliability, metadata_audit_rbac (RBAC/audit-trail half only — Basel/CCAR regulatory skill removed) |
+| ~~FSI risk / credit / regulatory~~ | ~~2 bundles~~ | **0% → moved to EY** | hpc_risk_analytics dropped from IBM; Basel/CCAR → EY regulatory bundle; credit → see §6 |
 
 ## 4. JD-adaptive highlighting (the selector's preference order)
 
-| JD archetype | Unify preference | IBM preference |
+Baseline (operator-confirmed): **Unify 70 Agentic / 30 Partnerships**; **IBM 30 Partnerships / 30 Pre-sales-GTM / 25 Cloud-Data / 15 DevSecOps-Governance / 0 risk-credit-reg**. The selector nudges WITHIN these caps by JD fit:
+
+| JD archetype | Unify nudge | IBM nudge |
 |---|---|---|
-| **Partner/alliances role (Anthropic, OpenAI, hyperscalers)** | Agentic 45% / **Partnerships-GTM 40%** / Data-FSI 15% — lead with channel-program + co-sell bundle, agentic platform as the credibility spine | **Partnerships 35% / Pre-sales GTM 30%** / Cloud-data 15% / FSI 10% / Governance 10% |
-| **AIG (current JD/briefing)** | Agentic 60% / FSI+process 25% / Partnerships 15% — partnerships surfaces via the JD's own "co-lead AI platform evaluations across Anthropic, AWS, Palantir" hook | FSI 30% / Cloud-data 20% / Partnerships 20% / Pre-sales 15% / Governance 15% |
-| **Enterprise AI platform leadership (generic)** | Agentic 60% / Partnerships 20% / Data-FSI 20% | Balanced 20×5 |
+| **Partner/alliances role (Anthropic, OpenAI, hyperscalers)** | Push Partnerships to the top of the 30% — lead with channel-program + co-sell bundle, agentic platform as the credibility spine | Lead **Partnerships 30 + Pre-sales 30** (60% partner-facing); Cloud-data 25; Governance 15 |
+| **AIG (current JD/briefing)** | Agentic 70 forward (process re-engineering / governed autonomy); Partnerships surfaces via the JD's own "co-lead AI platform evaluations across Anthropic, AWS, Palantir" hook | Cloud-data + Pre-sales forward; Partnerships via hyperscaler-alliance; Governance steady |
+| **Enterprise AI platform leadership (generic)** | Agentic 70 / Partnerships 30 as-is | Even across the four IBM themes |
+
+_Note: insurance/FSI risk depth still surfaces strongly — but via the **EY** lane (Solvency II/AG43, ERM three-lines/BCBS 239, regulatory analytics), not IBM._
 
 ## 5. What blocks this split today (ranked by yield)
 
@@ -49,5 +56,15 @@ So the proposal below = target bundle-inventory shares + which bundles the selec
 | 5 | 3 DRAFT skills: MEDDPICC, CPQ, SaaS ARR/LTV/CAC metrics | confirm + activate + fact-link | sales-ops depth for partner/sales JDs |
 | 6 | Employer-attribution mismatches (Salesforce/CRM analytics ledger says IBM, archive says Unify too; `co_selling` bound only to IBM lanes) | add Unify-attributed fact / bind co_selling into Unify bundle | removes WRONG_EMPLOYER_LANE class (32 rows) |
 | 7 | 21 MISSING claims (variable-comp design, sales playbooks/enablement, engagement-profitability, Gainsight cert, partner-delivered automation −25%, investor-relations/cap-structure set…) | mint facts **only after operator confirmation** (no fabrication) | closes the long tail |
+
+## 6. OPEN QUESTION — where does `fact_credit_001` belong? (blocks the IBM build)
+
+I minted `fact_credit_001` (AI-driven credit adjudication, −15% default exposure) as an **IBM** fact. The operator directive "credit = EY" conflicts with that attribution, and I must not silently re-home a factual claim about where work was done. Three options:
+
+1. **Re-attribute to EY** — the credit/risk work was EY consulting; move the fact + `skill_credit_adjudication_default_risk` into an EY bundle.
+2. **Keep IBM-attributed, drop from IBM emphasis** — the engagement was IBM, but the resume shouldn't foreground it in the IBM lane.
+3. **Early-career / other** — it belongs to a different period.
+
+`hpc_risk_analytics` (Greek stress testing) traces to `fact_sales_accounts_002` ("$15M deals demonstrating ROI on HPC stress-testing simulations") — that is an **IBM sales/GTM** story (selling HPC), so it stays in IBM under Pre-sales/GTM, NOT risk. Basel/CCAR (`skill_sr_basel_ccar_lineage_regulatory`) is already shared with the EY regulatory bundle → cleanly removed from IBM.
 
 _No gate, schema, or rubric changes anywhere in this proposal — content/bundle layer only._
