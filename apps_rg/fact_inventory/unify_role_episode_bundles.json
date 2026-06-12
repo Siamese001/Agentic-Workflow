@@ -202,6 +202,45 @@
       "section_eligibility": ["unify_bullets", "unify_narrative", "competencies", "headline"],
       "external_claim_policy": "approved_metric_linked",
       "activation_status": "ACTIVE_CONFIRMED"
+    },
+    {
+      "role_episode_bundle_id": "reb_unify_partner_channel_cosell",
+      "employer": "Unify Consulting",
+      "title": "AI Platform Leader",
+      "employer_node_id": "employment_exp_unify_001",
+      "bundle_theme": "AI Partnerships, Co-Sell Channel & Alliance GTM",
+      "executive_scope_signals": [
+        "Built a global AI channel program from inception with strategic partners",
+        "Drove partner-derived revenue through co-sell bundling and consumption-based licensing"
+      ],
+      "architecture_scope_signals": [
+        "Partner co-sell motions and alliance go-to-market",
+        "Cloud/streaming vendor bundling (joint AI + data-ingestion offerings)",
+        "Channel program design and partner enablement"
+      ],
+      "graph_skill_node_ids": [
+        "skill_partner_partner_motions",
+        "skill_partner_co_selling",
+        "skill_partner_partner_led_ai_solutions",
+        "skill_partner_cloud_vendor_joint_gtm",
+        "skill_partner_gtm_enablement",
+        "skill_partner_partner_revenue_3m"
+      ],
+      "linked_source_fact_ids": ["exp_unify_001"],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [],
+      "held_metrics": [
+        "$3M partner-derived revenue (HOLD - base_resume anchored)",
+        "30% upsell increase via co-sell bundling (HOLD - base_resume anchored)",
+        "93% annual renewal via consumption-based licensing (HOLD - base_resume anchored)"
+      ],
+      "excluded_metrics": [],
+      "operating_context": "Global AI channel program from inception: co-developed analytics frameworks with strategic partners, co-sell bundling with cloud/streaming vendors, consumption-based SaaS licensing driving partner-derived revenue and renewals.",
+      "bullet_intent": "Frame as AI partnerships / co-sell channel leadership; metrics only from base-resume anchored Unify facts (fact_partnerships_gtm_001, fact_sales_accounts_004/005).",
+      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "notes": "Partnerships/co-sell is a primary Unify theme that JD-fit selection surfaces for partner-facing roles (operator 2026-06-11). Unify-attributed partner facts; graph skills grounded in the Unify AI-platform window."
     }
   ]
 }

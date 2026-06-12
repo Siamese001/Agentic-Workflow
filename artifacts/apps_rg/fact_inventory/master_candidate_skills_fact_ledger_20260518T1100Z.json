@@ -1307,11 +1307,11 @@
         "credit_adjudication",
         "underwriting"
       ],
-      "claim_text": "Guided an AI-driven credit-adjudication program that reduced default exposure by 15% through dynamic risk profiling and improved underwriting accuracy.",
+      "claim_text": "Led an AI-driven credit-adjudication and default-risk program for a banking client, reducing default exposure by 15% through dynamic risk profiling and improved underwriting accuracy.",
       "metric_values": [
         "15% default exposure reduction"
       ],
-      "company": "IBM",
+      "company": "Ernst & Young",
       "source_resume_variants": [
         "Industry Solutions - Amit Ayer.txt",
         "Strategic Finance - Amit Ayer.txt",
@@ -1319,13 +1319,13 @@
       ],
       "confidence": "HIGH",
       "allowed_resume_use": "allowed_after_human_confirm",
-      "risk_notes": "Banking/insurance/ERM domain fact; user-confirmed 2026-06-11.",
+      "risk_notes": "Banking credit-risk fact; EY-attributed per operator 2026-06-11.",
       "role_families_supported": [
         "AI_GOVERNANCE_RISK",
         "DATA_ANALYTICS_LEADERSHIP",
         "AI_SOLUTIONS_ARCHITECTURE"
       ],
-      "proof_text": "IBM Lead Client Partner: AI-driven credit adjudication; dynamic risk profiling cut default exposure 15%.",
+      "proof_text": "EY engagement: AI-driven credit adjudication for a banking client; dynamic risk profiling cut default exposure 15% (operator re-attribution 2026-06-11: credit/risk domain is EY, not IBM).",
       "claim_proof_split_version": "master_skills_arsenal_claim_proof_v2"
     },
     {

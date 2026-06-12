@@ -25994,7 +25994,9 @@
       "forbidden_phrases": [],
       "allowed_sections": [
         "executive_summary",
-        "headline"
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -26058,7 +26060,8 @@
       "forbidden_phrases": [],
       "allowed_sections": [
         "executive_summary",
-        "unify_bullets"
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -26561,7 +26564,9 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "competencies"
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -26624,7 +26629,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "unify_bullets"
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -26798,7 +26804,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "unify_bullets"
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "medium",
@@ -27394,7 +27401,8 @@
       "forbidden_phrases": [],
       "allowed_sections": [
         "competencies",
-        "unify_bullets"
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "medium",
@@ -35304,7 +35312,9 @@
       "forbidden_phrases": [],
       "allowed_sections": [
         "competencies",
-        "executive_summary"
+        "executive_summary",
+        "ey_bullets",
+        "ey_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",

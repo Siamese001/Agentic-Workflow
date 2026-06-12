@@ -176,7 +176,8 @@
       "graph_skill_node_ids": [
         "skill_risk_three_lines_of_defense",
         "skill_risk_data_aggregation_bcbs239",
-        "skill_risk_enterprise_risk_controls"
+        "skill_risk_enterprise_risk_controls",
+        "skill_credit_adjudication_default_risk"
       ],
       "linked_source_fact_ids": [
         "exp_ey_001"

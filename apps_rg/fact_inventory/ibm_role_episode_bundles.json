@@ -210,8 +210,7 @@
     "Role-based data access controls in governance pipelines"
    ],
    "graph_skill_node_ids": [
-    "skill_ibm_metadata_audit_rbac",
-    "skill_sr_basel_ccar_lineage_regulatory"
+    "skill_ibm_metadata_audit_rbac"
    ],
    "linked_source_fact_ids": [],
    "linked_archive_signal_ids": [
@@ -248,7 +247,6 @@
     "GPU-powered parallel computation for scenario analysis"
    ],
    "graph_skill_node_ids": [
-    "skill_risk_greek_stress_testing",
     "skill_sr_cloud_data_platform_engineering",
     "skill_confluent_streaming_platforms"
    ],
@@ -359,9 +357,12 @@
    "bullet_intent": "Commercial-engineering bullets: pipeline analytics, buyer alignment, estimation/diligence — grounded in the slot fact's GTM activity",
    "held_metrics": [],
    "excluded_metrics": [],
-   "section_eligibility": [],
+   "section_eligibility": [
+    "ibm_bullets",
+    "ibm_narrative"
+   ],
    "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-   "notes": "20% joint revenue is the primary promotable IBM metric in this bundle."
+   "notes": "Pre-sales/GTM is a primary IBM theme (operator split 2026-06-11: 30%). Empty section_eligibility was a bug — the bundle's 7 GTM skills were unreachable in IBM lanes."
   }
  ]
 }
