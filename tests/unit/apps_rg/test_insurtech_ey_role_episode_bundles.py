@@ -3,10 +3,10 @@
 Deterministic, hermetic. Guards the dependency-root invariants for the two new employer lanes:
 
 1. Both bundle JSONs are well-formed and mirror the IBM/Unify role-episode schema.
-2. Identity (employer, node_id, dates) is verbatim from the base resume — not invented.
+2. Identity (employer, node_id, dates) is taken from the static employment spine — not invented.
 3. Every graph_skill_node_id resolves to a real node in the master skills graph (grounding rule).
 4. section_eligibility targets only the matching employer's generated lanes.
-5. The three bundles per employer anchor the three base-resume bullet_ids.
+5. Metric outcome nodes are graph-native, approved by presence, and bundle-linked.
 """
 from __future__ import annotations
 
@@ -27,6 +27,10 @@ REQUIRED_BUNDLE_FIELDS = {
     "bundle_theme",
     "graph_skill_node_ids",
     "linked_source_fact_ids",
+    "linked_metric_outcome_ids",
+    "promotable_metrics",
+    "held_metrics",
+    "excluded_metrics",
     "section_eligibility",
     "config_gate",
 }
@@ -38,6 +42,8 @@ CASES = [
         "node_id": "employment_exp_insurtech_001",
         "lanes": {"insurtech_bullets", "insurtech_narrative"},
         "source_fact": "exp_insurtech_001",
+        "bundle_count": 12,
+        "extra_required": {"claim_text", "support_level", "metric_candidates", "graph_edge_contract"},
     },
     {
         "file": FI / "ey_role_episode_bundles.json",
@@ -45,8 +51,41 @@ CASES = [
         "node_id": "employment_exp_ey_001",
         "lanes": {"ey_bullets", "ey_narrative"},
         "source_fact": "exp_ey_001",
+        "bundle_count": 6,
+        "extra_required": {"claim_text", "support_level", "metric_candidates"},
     },
 ]
+
+INSURTECH_REQUIRED_ROOTS = {
+    "reb_insurtech_founder_led_market_creation",
+    "reb_insurtech_founder_led_gtm_revenue",
+    "reb_insurtech_lean_delivery_operating_model",
+    "reb_insurtech_public_vs_private_cloud_strategy",
+    "reb_insurtech_aws_cloud_economics",
+    "reb_insurtech_aws_migration_execution",
+    "reb_insurtech_aws_shared_responsibility_operating_model",
+    "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+    "reb_insurtech_regulated_aws_control_implementation",
+    "reb_insurtech_aws_guidewire_core_modernization",
+    "reb_insurtech_insurance_data_bi_decisioning",
+    "reb_insurtech_resilient_core_operations",
+}
+
+EY_REQUIRED_ROOTS = {
+    "reb_ey_regulatory_analytics_modernization",
+    "reb_ey_model_validation_regulatory_remediation",
+    "reb_ey_capital_optimization_solvency",
+    "reb_ey_ccar_capital_liquidity_stress_testing",
+    "reb_ey_guidewire_insurance_platform",
+    "reb_ey_erm_risk_governance",
+}
+
+GENERIC_METRIC_FORBIDDEN_SUBSTRINGS = {
+    "saved $10m",
+    "$10m tco",
+    "10m tco",
+    "generic tco",
+}
 
 
 def _real_graph_node_ids() -> set[str]:
@@ -107,7 +146,7 @@ def test_bundle_required_fields_and_employer_consistency() -> None:
     for c in CASES:
         doc = json.loads(c["file"].read_text(encoding="utf-8"))
         for b in doc["bundles"]:
-            missing = REQUIRED_BUNDLE_FIELDS - set(b)
+            missing = (REQUIRED_BUNDLE_FIELDS | c["extra_required"]) - set(b)
             assert not missing, f"{b.get('role_episode_bundle_id')} missing {missing}"
             assert b["employer"] == c["employer"]
             assert b["employer_node_id"] == c["node_id"]
@@ -115,20 +154,123 @@ def test_bundle_required_fields_and_employer_consistency() -> None:
             assert c["source_fact"] in b["linked_source_fact_ids"]
 
 
-def test_three_bundles_per_employer() -> None:
+def test_expected_bundles_per_employer() -> None:
     for c in CASES:
         doc = json.loads(c["file"].read_text(encoding="utf-8"))
-        assert len(doc["bundles"]) == 3
+        assert len(doc["bundles"]) == c["bundle_count"]
         ids = {b["role_episode_bundle_id"] for b in doc["bundles"]}
-        assert len(ids) == 3, "duplicate role_episode_bundle_id"
+        assert len(ids) == c["bundle_count"], "duplicate role_episode_bundle_id"
 
 
-def test_no_promotable_metrics_yet_held_are_provenance_tagged() -> None:
-    # W1 discipline: base-resume metrics are HELD (single canonical source), not promoted,
-    # until the X2 gates (P4) define promotion. No metric is silently promotable.
+def test_metric_outcome_nodes_are_graph_ssot_and_bundle_linked() -> None:
+    # Graph metric nodes are the claim surface. Candidate/deferred metrics are not proof.
     for c in CASES:
         doc = json.loads(c["file"].read_text(encoding="utf-8"))
+        nodes = doc.get("metric_outcome_nodes") or {}
+        approved = doc.get("approved_metric_outcome_ids") or {}
+        policy = doc.get("metric_surface_policy") or {}
+        assert nodes, f"{c['file'].name} missing metric_outcome_nodes"
+        assert set(nodes) == set(approved)
+        assert policy.get("approval_model") == "presence_in_metric_outcome_nodes_is_approval"
+
+        linked_seen: set[str] = set()
+        for mid, node in nodes.items():
+            assert node["metric_outcome_id"] == mid
+            assert node["employer"] == c["employer"]
+            assert node["time_window"]
+            assert node["approved"] is True
+            assert node["approval_status"] == "APPROVED_GRAPH_SSOT"
+            assert node["support_level"] == "approved_by_graph_presence"
+            assert node["bundle_bindings"], f"{mid} missing bundle_bindings"
+            assert node["metric"].strip(), f"{mid} missing metric label"
+
         for b in doc["bundles"]:
-            assert b.get("promotable_metrics", []) == [], "no metric should be promotable pre-X2"
+            linked = list(b.get("linked_metric_outcome_ids") or [])
+            assert linked, f"{b['role_episode_bundle_id']} missing linked metric ids"
+            promotable_ids = {
+                str(m.get("metric_outcome_id"))
+                for m in b.get("promotable_metrics") or []
+                if isinstance(m, dict)
+            }
+            assert promotable_ids == set(linked)
+            for mid in linked:
+                assert mid in nodes, f"{b['role_episode_bundle_id']} links unknown metric {mid}"
+                assert b["role_episode_bundle_id"] in nodes[mid]["bundle_bindings"]
+                linked_seen.add(mid)
             for hm in b.get("held_metrics", []):
-                assert "HOLD" in hm and "base_resume" in hm, f"held metric needs provenance: {hm}"
+                assert "HOLD" in hm and "source artifact required" in hm, f"held metric needs provenance: {hm}"
+
+        assert linked_seen == set(nodes)
+
+
+def test_role_episode_graphs_do_not_use_base_resume_bullet_ids_as_proof() -> None:
+    forbidden_by_file = {
+        FI / "insurtech_role_episode_bundles.json": "bul_insurtech_",
+        FI / "ey_role_episode_bundles.json": "bul_ey_",
+    }
+    for path, forbidden in forbidden_by_file.items():
+        raw = path.read_text(encoding="utf-8")
+        assert forbidden not in raw
+
+
+def test_insurtech_roots_are_mece_and_reviewable() -> None:
+    doc = json.loads((FI / "insurtech_role_episode_bundles.json").read_text(encoding="utf-8"))
+    ids = {b["role_episode_bundle_id"] for b in doc["bundles"]}
+    assert ids == INSURTECH_REQUIRED_ROOTS
+    for b in doc["bundles"]:
+        contract = b["graph_edge_contract"]
+        assert contract["source_employer_node_id"] == "employment_exp_insurtech_001"
+        assert len(contract["root_to_skill_edges"]) == len(b["graph_skill_node_ids"])
+        assert b["claim_text"].strip(), f"{b['role_episode_bundle_id']} missing claim_text"
+        assert b["linked_metric_outcome_ids"], f"{b['role_episode_bundle_id']} missing linked metric ids"
+
+
+def test_insurtech_deferred_metrics_are_not_graph_claim_authority() -> None:
+    doc = json.loads((FI / "insurtech_role_episode_bundles.json").read_text(encoding="utf-8"))
+    candidates = list(doc.get("metric_candidates_for_approval") or [])
+    for b in doc["bundles"]:
+        candidates.extend(b.get("metric_candidates") or [])
+
+    assert candidates, "InsurTech should retain held/deferred metric candidates as audit backlog"
+    for m in candidates:
+        status = str(m.get("approval_status") or "")
+        assert status != "APPROVED_GRAPH_SSOT"
+        assert m.get("claim_authority") == "not_claimable_until_promoted_to_metric_outcome_nodes" or status.startswith("HELD")
+        haystack = json.dumps(m, sort_keys=True).lower()
+        forbidden = [s for s in GENERIC_METRIC_FORBIDDEN_SUBSTRINGS if s in haystack]
+        assert not forbidden, f"generic metric language leaked into {m.get('metric_id')}: {forbidden}"
+        assert "proof_shape" in m and m["proof_shape"], f"{m.get('metric_id')} missing proof_shape"
+
+    approved_blob = json.dumps(doc.get("metric_outcome_nodes") or {}, sort_keys=True).lower()
+    assert "tco" not in approved_blob
+
+
+def test_ey_roots_are_complete_phase_i_without_typed_edges() -> None:
+    doc = json.loads((FI / "ey_role_episode_bundles.json").read_text(encoding="utf-8"))
+    ids = {b["role_episode_bundle_id"] for b in doc["bundles"]}
+    assert ids == EY_REQUIRED_ROOTS
+    invariants = doc.get("invariants") or {}
+    assert invariants.get("typed_edges_deferred_to_phase_ii") is True
+    assert invariants.get("graph_edge_contract_excluded_phase_i") is True
+    for b in doc["bundles"]:
+        serialized = json.dumps(b, sort_keys=True)
+        assert "graph_edge_contract" not in b
+        assert "root_to_skill_edges" not in serialized
+        assert "edge_type" not in serialized
+        assert b["claim_text"].strip(), f"{b['role_episode_bundle_id']} missing claim_text"
+        assert b["support_level"].strip(), f"{b['role_episode_bundle_id']} missing support_level"
+        assert b["linked_metric_outcome_ids"], f"{b['role_episode_bundle_id']} missing linked metric ids"
+
+
+def test_ey_metrics_are_promoted_to_graph_nodes_not_stale_candidates() -> None:
+    doc = json.loads((FI / "ey_role_episode_bundles.json").read_text(encoding="utf-8"))
+    candidates = list(doc.get("metric_candidates_for_approval") or [])
+    for b in doc["bundles"]:
+        candidates.extend(b.get("metric_candidates") or [])
+
+    assert candidates == []
+    nodes = doc.get("metric_outcome_nodes") or {}
+    assert len(nodes) >= 18
+    approved_blob = json.dumps(nodes, sort_keys=True).lower()
+    forbidden = [s for s in GENERIC_METRIC_FORBIDDEN_SUBSTRINGS if s in approved_blob]
+    assert not forbidden

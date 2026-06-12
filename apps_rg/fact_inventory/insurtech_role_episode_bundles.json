@@ -1,122 +1,2001 @@
 {
-  "schema": "insurtech_role_episode_bundles_v1",
-  "generated_at": "2026-06-08T10:00:00Z",
-  "generated_by": "apps-rg-insurtech-ey-unlock-a4c0f0 (W1/P1)",
+  "schema": "insurtech_role_episode_bundles_v3_graph_metric_ssot",
+  "generated_at": "2026-06-12T00:00:00Z",
+  "generated_by": "codex_graph_metric_ssot_upgrade",
   "employer": "InsurTech Cloud Solutions",
   "employer_node_id": "employment_exp_insurtech_001",
   "time_window": "2014-04 to 2017-03",
   "invariants": {
     "archive_prose_excluded": true,
-    "base_resume_hydration_excluded": false,
+    "base_resume_hydration_excluded": true,
     "base_resume_identity_verbatim": true,
     "hold_metrics_not_promoted": true,
     "do_not_promote_metrics_excluded": true,
     "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
     "config_enablement_condition": "insurtech_bullets and insurtech_narrative graph_expansion_allowed may be enabled only when section generation consumes role_episode_bundle_id, not flat skill lists.",
-    "identity_source": "base_resume amit_ayer_base_resume_v1 employment block exp_insurtech_001 (company/title/location/dates verbatim); skills grounded in master_skills_arsenal_ledger graph nodes for the 2014-2017 window."
+    "identity_source": "employment identity spine exp_insurtech_001 supplies company/title/location/dates only; role_episode_bundle_id supplies graph claim authority.",
+    "metric_candidates_not_claimable": true,
+    "generic_absolute_tco_claims_forbidden": true,
+    "base_resume_claim_authority": false,
+    "base_resume_bullet_ids_excluded": true,
+    "identity_spine_only": true,
+    "graph_bundle_id_claim_authority": true,
+    "metric_claim_truth_source": "metric_outcome_nodes",
+    "metric_approval_model": "presence_in_metric_outcome_nodes_is_approval",
+    "no_separate_approved_fact_distinction": true,
+    "metric_density_rule": "each approved employer root should carry differentiated linked metric_outcome_ids unless explicitly held"
   },
-  "excluded_metrics_by_policy": [],
-  "promotable_metrics": [],
+  "excluded_metrics_by_policy": [
+    "generic absolute cloud savings claims without workload-level proof",
+    "TCO percentage claims are held unless reframed as graph-approved cloud economics comparison scope",
+    "uptime percentage claims are held unless source-backed service availability artifacts are approved"
+  ],
+  "promotable_metrics": [
+    "metric_insurtech_founder_buyer_discovery_count",
+    "metric_insurtech_qualified_pipeline_stage_count",
+    "metric_insurtech_poc_to_paid_conversion_pct",
+    "metric_insurtech_proposals_sows_count",
+    "metric_insurtech_mvp_to_production_cycle_time",
+    "metric_insurtech_cloud_economics_comparison_models",
+    "metric_insurtech_workloads_classified_by_cloud_fit_count",
+    "metric_insurtech_reserved_instance_coverage_pct",
+    "metric_insurtech_cost_allocation_coverage_pct",
+    "metric_insurtech_migration_waves_completed_count",
+    "metric_insurtech_core_workloads_migrated_count",
+    "metric_insurtech_cutover_downtime_hours",
+    "metric_insurtech_control_ownership_matrix_count",
+    "metric_insurtech_safety_operating_model_artifacts_count",
+    "metric_insurtech_regulatory_bodies_engaged_count",
+    "metric_insurtech_cloud_standards_artifacts_count",
+    "metric_insurtech_regulatory_objections_resolved_count",
+    "metric_insurtech_controls_mapped_count",
+    "metric_insurtech_audit_logging_coverage_pct",
+    "metric_insurtech_sensitive_data_controls_count",
+    "metric_insurtech_guidewire_workflows_mapped_count",
+    "metric_insurtech_core_data_entities_mapped_count",
+    "metric_insurtech_reporting_latency_reduction",
+    "metric_insurtech_real_time_ingestion_feeds_count",
+    "metric_insurtech_decision_cycle_time_reduction",
+    "metric_insurtech_rto_rpo_targets_met_count",
+    "metric_insurtech_incident_runbooks_count"
+  ],
   "bundles": [
     {
-      "role_episode_bundle_id": "reb_insurtech_legacy_cloud_modernization",
+      "role_episode_bundle_id": "reb_insurtech_founder_led_market_creation",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "time_window": "2014-04 to 2017-03",
       "employer_node_id": "employment_exp_insurtech_001",
-      "bundle_theme": "Legacy-to-Cloud Insurance Platform Modernization",
+      "bundle_theme": "Founder-Led Market Creation for Insurance Cloud Adoption",
+      "claim_text": "Founded and shaped a cloud-native engineering firm around early insurer AWS modernization demand.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
-        "Founder/CTO modernizing legacy insurance technology stacks for middle-market insurers",
-        "Architecture and delivery ownership of AWS-based modernization portfolio"
+        "Founded and shaped a cloud-native engineering firm around early insurer AWS modernization demand.",
+        "Founder-Led Market Creation for Insurance Cloud Adoption"
       ],
       "architecture_scope_signals": [
-        "Monolithic policy administration systems re-platformed to AWS cloud-native architectures",
-        "Monolith-to-microservices decomposition for client-facing insurance platforms",
-        "Total-cost-of-ownership reduction via cloud modernization and technical-debt retirement"
+        "skill_zero_to_one_insurtech_venture_building",
+        "skill_founder_market_thesis_development",
+        "skill_early_adopter_insurer_customer_development"
       ],
       "graph_skill_node_ids": [
-        "skill_sr_insurtech_legacy_cloud_modernization",
-        "skill_sr_cloud_data_platform_engineering",
-        "skill_p2_tech_aws_modernization_patterns"
+        "skill_zero_to_one_insurtech_venture_building",
+        "skill_founder_market_thesis_development",
+        "skill_early_adopter_insurer_customer_development"
       ],
-      "linked_source_fact_ids": ["exp_insurtech_001"],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
       "linked_archive_signal_ids": [],
-      "promotable_metrics": [],
-      "held_metrics": [
-        "40% TCO reduction (HOLD - base_resume canonical single source bul_insurtech_001; promote only if archive-corroborated)"
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_founder_buyer_discovery_count",
+          "metric": "documented insurer executive discovery conversations on public-cloud adoption objections",
+          "metric_type": "market_discovery_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "executive discovery conversations",
+            "public-cloud adoption objections"
+          ]
+        }
       ],
-      "excluded_metrics": [],
-      "operating_context": "InsurTech Cloud Solutions modernization engagements; migration of monolithic policy administration systems to AWS cloud-native architectures for middle-market insurers.",
-      "bullet_intent": "Frame as founder/CTO architecture leadership driving legacy-to-cloud modernization outcomes; metrics only from base-resume anchored fact_id (bul_insurtech_001).",
-      "section_eligibility": ["insurtech_bullets", "insurtech_narrative"],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Anchors base-resume bullet bul_insurtech_001 (Legacy-to-Cloud Transformation). Graph skills grounded in the 2014-2017 InsurTech CTO window."
-    },
-    {
-      "role_episode_bundle_id": "reb_insurtech_cloud_governance_security",
-      "employer": "InsurTech Cloud Solutions",
-      "title": "Chief Technology Officer",
-      "time_window": "2014-04 to 2017-03",
-      "employer_node_id": "employment_exp_insurtech_001",
-      "bundle_theme": "SOC 2-Aligned Cloud Governance & Security for Regulated Insurers",
-      "executive_scope_signals": [
-        "Enabled regulated insurers to adopt modern analytics and ML under stronger controls",
-        "Security, auditability, and operational discipline ownership for cloud adoption"
-      ],
-      "architecture_scope_signals": [
-        "SOC 2-aligned cloud control frameworks",
-        "Governed analytics and ML enablement with auditability",
-        "Compliance-by-design for regulated insurance workloads"
-      ],
-      "graph_skill_node_ids": [
-        "skill_soc2_zero_trust_security",
-        "skill_sr_insurtech_regulated_insurer_controls",
-        "skill_sr_cloud_data_platform_engineering"
-      ],
-      "linked_source_fact_ids": ["exp_insurtech_001"],
-      "linked_archive_signal_ids": [],
-      "promotable_metrics": [],
       "held_metrics": [],
       "excluded_metrics": [],
-      "operating_context": "SOC 2-aligned cloud control frameworks enabling regulated insurers to adopt modern analytics/ML with stronger security, auditability, and operational discipline.",
-      "bullet_intent": "Frame as governance/security architecture leadership enabling regulated cloud adoption; no metric (base-resume bul_insurtech_002 is qualitative).",
-      "section_eligibility": ["insurtech_bullets", "insurtech_narrative"],
+      "metric_candidates": [],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_zero_to_one_insurtech_venture_building"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_founder_market_thesis_development"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_early_adopter_insurer_customer_development"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Anchors base-resume bullet bul_insurtech_002 (Governance and Security). Qualitative bullet — no metric to promote."
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_founder_buyer_discovery_count"
+      ]
     },
     {
-      "role_episode_bundle_id": "reb_insurtech_operational_resilience",
+      "role_episode_bundle_id": "reb_insurtech_founder_led_gtm_revenue",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "time_window": "2014-04 to 2017-03",
       "employer_node_id": "employment_exp_insurtech_001",
-      "bundle_theme": "High-Availability Underwriting & Real-Time Core Insurance Workflows",
+      "bundle_theme": "Founder-Led GTM, Pipeline, and Commercial Execution",
+      "claim_text": "Owned founder-led GTM motions for insurer AWS modernization opportunities.",
+      "support_level": "DERIVED_SUPPORTED",
       "executive_scope_signals": [
-        "Re-architected underwriting and operational systems for high availability",
-        "Enabled dynamic pricing and faster decisions via real-time ingestion"
+        "Owned founder-led GTM motions for insurer AWS modernization opportunities.",
+        "Founder-Led GTM, Pipeline, and Commercial Execution"
       ],
       "architecture_scope_signals": [
-        "High-availability architecture for underwriting and operational systems",
-        "Real-time ingestion supporting dynamic pricing and responsive core insurance workflows",
-        "Resilience engineering for core insurance platforms"
+        "skill_founder_led_insurtech_sales",
+        "skill_insurer_executive_buyer_discovery",
+        "skill_aws_modernization_pipeline_generation",
+        "skill_proposal_sow_development_for_insurers"
       ],
       "graph_skill_node_ids": [
-        "skill_sr_insurance_systems_resilience_internal",
-        "skill_runtime_resilience_controls",
-        "skill_sr_microservices_integration_platform"
+        "skill_founder_led_insurtech_sales",
+        "skill_insurer_executive_buyer_discovery",
+        "skill_aws_modernization_pipeline_generation",
+        "skill_proposal_sow_development_for_insurers"
       ],
-      "linked_source_fact_ids": ["exp_insurtech_001"],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
       "linked_archive_signal_ids": [],
-      "promotable_metrics": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_founder_buyer_discovery_count",
+          "metric": "documented insurer executive discovery conversations on public-cloud adoption objections",
+          "metric_type": "market_discovery_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "executive discovery conversations",
+            "public-cloud adoption objections"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_qualified_pipeline_stage_count",
+          "metric": "qualified insurer modernization pipeline segmented by stage and buyer persona",
+          "metric_type": "pipeline_stage_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "qualified pipeline by stage",
+            "buyer persona segmentation"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_poc_to_paid_conversion_pct",
+          "metric": "pilot-to-paid conversion for insurer modernization assessments",
+          "metric_type": "conversion_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "pilot-to-paid conversion",
+            "modernization assessments"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_proposals_sows_count",
+          "metric": "insurer modernization proposals and SOWs spanning AWS migration, controls, and delivery scope",
+          "metric_type": "commercial_delivery_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "proposals and SOWs",
+            "AWS migration scope",
+            "control scope"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_founder_led_insurtech_sales"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_insurer_executive_buyer_discovery"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_aws_modernization_pipeline_generation"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_proposal_sow_development_for_insurers"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_founder_buyer_discovery_count",
+        "metric_insurtech_qualified_pipeline_stage_count",
+        "metric_insurtech_poc_to_paid_conversion_pct",
+        "metric_insurtech_proposals_sows_count"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_lean_delivery_operating_model",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "Lean Delivery Operating Model for Regulated Insurer Modernization",
+      "claim_text": "Ran lean, resource-conscious delivery for insurer modernization without losing audit/control discipline.",
+      "support_level": "DERIVED_SUPPORTED",
+      "executive_scope_signals": [
+        "Ran lean, resource-conscious delivery for insurer modernization without losing audit/control discipline.",
+        "Lean Delivery Operating Model for Regulated Insurer Modernization"
+      ],
+      "architecture_scope_signals": [
+        "skill_lean_insurtech_mvp_to_production",
+        "skill_founder_resource_constraint_tradeoffs",
+        "skill_agile_delivery_for_regulated_insurers"
+      ],
+      "graph_skill_node_ids": [
+        "skill_lean_insurtech_mvp_to_production",
+        "skill_founder_resource_constraint_tradeoffs",
+        "skill_agile_delivery_for_regulated_insurers"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_mvp_to_production_cycle_time",
+          "metric": "assessment-to-production cycle time for insurer modernization MVPs",
+          "metric_type": "cycle_time_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "assessment-to-production cycle time",
+            "modernization MVPs"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_lean_insurtech_mvp_to_production"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_founder_resource_constraint_tradeoffs"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_agile_delivery_for_regulated_insurers"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_mvp_to_production_cycle_time"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_public_vs_private_cloud_strategy",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "Public-vs-Private Cloud Strategy for Regulated Insurance Workloads",
+      "claim_text": "Framed AWS public-cloud adoption against private/on-prem alternatives for regulated insurance workloads.",
+      "support_level": "DERIVED_SUPPORTED",
+      "executive_scope_signals": [
+        "Framed AWS public-cloud adoption against private/on-prem alternatives for regulated insurance workloads.",
+        "Public-vs-Private Cloud Strategy for Regulated Insurance Workloads"
+      ],
+      "architecture_scope_signals": [
+        "skill_public_vs_private_cloud_tco_framing",
+        "skill_private_cloud_complexity_objection_handling",
+        "skill_regulated_workload_placement_strategy",
+        "skill_hybrid_cloud_transition_architecture"
+      ],
+      "graph_skill_node_ids": [
+        "skill_public_vs_private_cloud_tco_framing",
+        "skill_private_cloud_complexity_objection_handling",
+        "skill_regulated_workload_placement_strategy",
+        "skill_hybrid_cloud_transition_architecture"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_cloud_economics_comparison_models",
+          "metric": "public-versus-private cloud economics comparison models for regulated insurer workloads",
+          "metric_type": "cloud_economics_scope",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "cloud economics comparison models",
+            "regulated insurer workloads"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_workloads_classified_by_cloud_fit_count",
+          "metric": "insurance workloads classified by cloud fit, sensitivity, and migration priority",
+          "metric_type": "portfolio_classification_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "cloud-fit classification",
+            "sensitivity classification",
+            "migration priority"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [
+        {
+          "metric_id": "metric_insurtech_private_vs_public_tco_delta_pct",
+          "claim_text_pattern": "Modeled X% TCO delta between AWS public cloud and private/on-prem alternatives for insurer workloads.",
+          "proof_shape": "TCO model with workload assumptions, AWS services, and private-cloud comparator.",
+          "approval_status": "HELD_REFRAMED_AS_CLOUD_ECONOMICS_COMPARISON_MODELS",
+          "allowed_roots": [
+            "reb_insurtech_public_vs_private_cloud_strategy",
+            "reb_insurtech_aws_cloud_economics"
+          ]
+        }
+      ],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_public_vs_private_cloud_tco_framing"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_private_cloud_complexity_objection_handling"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_regulated_workload_placement_strategy"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_hybrid_cloud_transition_architecture"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_cloud_economics_comparison_models",
+        "metric_insurtech_workloads_classified_by_cloud_fit_count"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_aws_cloud_economics",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "AWS Cloud Economics and Cost Optimization",
+      "claim_text": "Built insurer AWS modernization business cases around workload economics, cost controls, and technical-debt retirement.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "executive_scope_signals": [
+        "Built insurer AWS modernization business cases around workload economics, cost controls, and technical-debt retirement.",
+        "AWS Cloud Economics and Cost Optimization"
+      ],
+      "architecture_scope_signals": [
+        "skill_aws_tco_modeling_for_insurers",
+        "skill_capex_to_opex_cloud_business_case",
+        "skill_reserved_instance_rightsizing_strategy",
+        "skill_cost_explorer_budget_forecasting"
+      ],
+      "graph_skill_node_ids": [
+        "skill_aws_tco_modeling_for_insurers",
+        "skill_capex_to_opex_cloud_business_case",
+        "skill_reserved_instance_rightsizing_strategy",
+        "skill_cost_explorer_budget_forecasting"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_cloud_economics_comparison_models",
+          "metric": "public-versus-private cloud economics comparison models for regulated insurer workloads",
+          "metric_type": "cloud_economics_scope",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "cloud economics comparison models",
+            "regulated insurer workloads"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_reserved_instance_coverage_pct",
+          "metric": "reserved-capacity coverage for steady-state AWS insurer workloads",
+          "metric_type": "coverage_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "reserved-capacity coverage",
+            "steady-state AWS workloads"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_cost_allocation_coverage_pct",
+          "metric": "AWS spend allocation coverage by customer, environment, or workload",
+          "metric_type": "coverage_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "AWS spend allocation",
+            "customer environment workload tagging"
+          ]
+        }
+      ],
       "held_metrics": [
-        "99.99% uptime (HOLD - base_resume canonical single source bul_insurtech_003; promote only if archive-corroborated)"
+        "40% TCO reduction (HOLD - source artifact required before numeric claim)"
       ],
       "excluded_metrics": [],
-      "operating_context": "Re-architecture of underwriting and operational systems for high availability and real-time ingestion supporting dynamic pricing and responsive core insurance workflows.",
-      "bullet_intent": "Frame as resilience/platform architecture leadership; metrics only from base-resume anchored fact_id (bul_insurtech_003).",
-      "section_eligibility": ["insurtech_bullets", "insurtech_narrative"],
+      "metric_candidates": [
+        {
+          "metric_id": "metric_insurtech_aws_tco_reduction_pct",
+          "claim_text_pattern": "Reduced insurer platform TCO by X% through AWS modernization and technical-debt retirement.",
+          "proof_shape": "Corroborated financial model; existing 40% claim remains held until source-backed.",
+          "approval_status": "HELD_PENDING_ARCHIVE_CORROBORATION",
+          "allowed_roots": [
+            "reb_insurtech_aws_cloud_economics"
+          ]
+        }
+      ],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_aws_tco_modeling_for_insurers"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_capex_to_opex_cloud_business_case"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_reserved_instance_rightsizing_strategy"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_cost_explorer_budget_forecasting"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Anchors base-resume bullet bul_insurtech_003 (Operational Resilience). Graph skills grounded in the 2014-2017 InsurTech CTO window."
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_cloud_economics_comparison_models",
+        "metric_insurtech_reserved_instance_coverage_pct",
+        "metric_insurtech_cost_allocation_coverage_pct"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_aws_migration_execution",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "AWS Migration Execution for Legacy Insurance Platforms",
+      "claim_text": "Led AWS modernization execution for monolithic policy administration and insurance platform workloads.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "executive_scope_signals": [
+        "Led AWS modernization execution for monolithic policy administration and insurance platform workloads.",
+        "AWS Migration Execution for Legacy Insurance Platforms"
+      ],
+      "architecture_scope_signals": [
+        "skill_aws_migration_readiness_assessment",
+        "skill_application_dependency_mapping",
+        "skill_migration_wave_cutover_planning",
+        "skill_database_migration_dms_sct"
+      ],
+      "graph_skill_node_ids": [
+        "skill_aws_migration_readiness_assessment",
+        "skill_application_dependency_mapping",
+        "skill_migration_wave_cutover_planning",
+        "skill_database_migration_dms_sct",
+        "skill_sr_insurtech_legacy_cloud_modernization",
+        "skill_p2_tech_aws_modernization_patterns"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_workloads_classified_by_cloud_fit_count",
+          "metric": "insurance workloads classified by cloud fit, sensitivity, and migration priority",
+          "metric_type": "portfolio_classification_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "cloud-fit classification",
+            "sensitivity classification",
+            "migration priority"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_migration_waves_completed_count",
+          "metric": "completed insurer workload migration waves across policy, data, or operations platforms",
+          "metric_type": "migration_wave_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "migration waves",
+            "policy data operations workloads"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_core_workloads_migrated_count",
+          "metric": "core insurance workloads migrated or replatformed onto AWS architecture",
+          "metric_type": "migration_scope_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "core insurance workloads migrated",
+            "AWS replatforming"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_cutover_downtime_hours",
+          "metric": "cutover downtime and rollback incident record for insurer workload migrations",
+          "metric_type": "cutover_resilience_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "cutover downtime record",
+            "rollback incident record"
+          ]
+        }
+      ],
+      "held_metrics": [
+        "40% TCO reduction (HOLD - source artifact required before numeric claim)"
+      ],
+      "excluded_metrics": [],
+      "metric_candidates": [],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_aws_migration_readiness_assessment"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_application_dependency_mapping"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_migration_wave_cutover_planning"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_database_migration_dms_sct"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_sr_insurtech_legacy_cloud_modernization"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_p2_tech_aws_modernization_patterns"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_workloads_classified_by_cloud_fit_count",
+        "metric_insurtech_migration_waves_completed_count",
+        "metric_insurtech_core_workloads_migrated_count",
+        "metric_insurtech_cutover_downtime_hours"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_aws_shared_responsibility_operating_model",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "AWS Shared-Responsibility Safety Operating Model",
+      "claim_text": "Built safety operating-model framing around AWS shared responsibility and insurer-owned controls.",
+      "support_level": "DERIVED_SUPPORTED",
+      "executive_scope_signals": [
+        "Built safety operating-model framing around AWS shared responsibility and insurer-owned controls.",
+        "AWS Shared-Responsibility Safety Operating Model"
+      ],
+      "architecture_scope_signals": [
+        "skill_aws_shared_responsibility_model_framing",
+        "skill_cloud_control_ownership_mapping",
+        "skill_customer_vs_aws_security_raci",
+        "skill_regulated_cloud_adoption_guardrails"
+      ],
+      "graph_skill_node_ids": [
+        "skill_aws_shared_responsibility_model_framing",
+        "skill_cloud_control_ownership_mapping",
+        "skill_customer_vs_aws_security_raci",
+        "skill_regulated_cloud_adoption_guardrails"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_control_ownership_matrix_count",
+          "metric": "shared-responsibility control ownership matrices for insurer AWS adoption",
+          "metric_type": "control_matrix_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "control ownership matrices",
+            "shared-responsibility model"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_safety_operating_model_artifacts_count",
+          "metric": "cloud safety operating-model artifacts for identity, encryption, logging, backup, and incident response",
+          "metric_type": "operating_model_artifact_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "safety operating-model artifacts",
+            "identity encryption logging backup incident response"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_aws_shared_responsibility_model_framing"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_cloud_control_ownership_mapping"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_customer_vs_aws_security_raci"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_regulated_cloud_adoption_guardrails"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_control_ownership_matrix_count",
+        "metric_insurtech_safety_operating_model_artifacts_count"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "Insurance Regulatory Cloud Adoption Standards",
+      "claim_text": "Worked through insurer/regulatory adoption concerns around cloud controls, data security, and standards readiness.",
+      "support_level": "DERIVED_SUPPORTED",
+      "executive_scope_signals": [
+        "Worked through insurer/regulatory adoption concerns around cloud controls, data security, and standards readiness.",
+        "Insurance Regulatory Cloud Adoption Standards"
+      ],
+      "architecture_scope_signals": [
+        "skill_insurance_regulator_cloud_adoption_engagement",
+        "skill_naic_data_security_model_law_readiness",
+        "skill_nydfs_23nycrr500_cloud_control_alignment",
+        "skill_insurance_commissioner_exam_readiness"
+      ],
+      "graph_skill_node_ids": [
+        "skill_insurance_regulator_cloud_adoption_engagement",
+        "skill_naic_data_security_model_law_readiness",
+        "skill_nydfs_23nycrr500_cloud_control_alignment",
+        "skill_insurance_commissioner_exam_readiness"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_regulatory_bodies_engaged_count",
+          "metric": "insurance regulatory body or state DOI cloud-adoption engagement count",
+          "metric_type": "regulatory_engagement_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "state DOI engagement",
+            "regulatory cloud adoption"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_cloud_standards_artifacts_count",
+          "metric": "insurer cloud standards and regulator-readiness artifacts",
+          "metric_type": "standards_artifact_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "cloud standards artifacts",
+            "regulator-readiness artifacts"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_regulatory_objections_resolved_count",
+          "metric": "regulator and insurer objections resolved with control evidence and operating model design",
+          "metric_type": "objection_resolution_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "objections resolved",
+            "control evidence",
+            "operating model design"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_insurance_regulator_cloud_adoption_engagement"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_naic_data_security_model_law_readiness"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_nydfs_23nycrr500_cloud_control_alignment"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_insurance_commissioner_exam_readiness"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_regulatory_bodies_engaged_count",
+        "metric_insurtech_cloud_standards_artifacts_count",
+        "metric_insurtech_regulatory_objections_resolved_count"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_regulated_aws_control_implementation",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "Regulated AWS Control Implementation",
+      "claim_text": "Implemented SOC 2-aligned AWS controls for regulated insurers adopting analytics and ML.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "executive_scope_signals": [
+        "Implemented SOC 2-aligned AWS controls for regulated insurers adopting analytics and ML.",
+        "Regulated AWS Control Implementation"
+      ],
+      "architecture_scope_signals": [
+        "skill_aws_iam_kms_cloudtrail_controls",
+        "skill_aws_config_change_auditability",
+        "skill_soc2_control_mapping_for_aws",
+        "skill_pii_encryption_for_insurance_data"
+      ],
+      "graph_skill_node_ids": [
+        "skill_aws_iam_kms_cloudtrail_controls",
+        "skill_aws_config_change_auditability",
+        "skill_soc2_control_mapping_for_aws",
+        "skill_pii_encryption_for_insurance_data",
+        "skill_sr_insurtech_regulated_insurer_controls",
+        "skill_soc2_zero_trust_security"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_controls_mapped_count",
+          "metric": "AWS controls mapped to SOC 2 and insurer cybersecurity requirements",
+          "metric_type": "control_mapping_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "AWS controls mapped",
+            "SOC 2 requirements",
+            "insurer cybersecurity"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_audit_logging_coverage_pct",
+          "metric": "audit logging coverage across regulated AWS workloads",
+          "metric_type": "coverage_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "audit logging coverage",
+            "regulated AWS workloads"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_sensitive_data_controls_count",
+          "metric": "sensitive-data control patterns for policyholder and claims data",
+          "metric_type": "control_pattern_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "sensitive-data controls",
+            "policyholder data",
+            "claims data"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_aws_iam_kms_cloudtrail_controls"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_aws_config_change_auditability"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_soc2_control_mapping_for_aws"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_pii_encryption_for_insurance_data"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_sr_insurtech_regulated_insurer_controls"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_soc2_zero_trust_security"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_controls_mapped_count",
+        "metric_insurtech_audit_logging_coverage_pct",
+        "metric_insurtech_sensitive_data_controls_count"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_aws_guidewire_core_modernization",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "AWS and Guidewire/Core Insurance Modernization",
+      "claim_text": "Connected AWS modernization to policy administration, Guidewire-adjacent workflows, and core insurance data models.",
+      "support_level": "DERIVED_SUPPORTED",
+      "executive_scope_signals": [
+        "Connected AWS modernization to policy administration, Guidewire-adjacent workflows, and core insurance data models.",
+        "AWS and Guidewire/Core Insurance Modernization"
+      ],
+      "architecture_scope_signals": [
+        "skill_guidewire_insurancesuite_modernization",
+        "skill_policycenter_workflow_mapping",
+        "skill_claimcenter_billingcenter_integration",
+        "skill_insurance_core_data_model_mapping"
+      ],
+      "graph_skill_node_ids": [
+        "skill_guidewire_insurancesuite_modernization",
+        "skill_policycenter_workflow_mapping",
+        "skill_claimcenter_billingcenter_integration",
+        "skill_insurance_core_data_model_mapping"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_guidewire_workflows_mapped_count",
+          "metric": "Guidewire and policy-admin workflows mapped into AWS modernization architecture",
+          "metric_type": "workflow_mapping_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "Guidewire workflows mapped",
+            "policy-admin workflow mapping"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_core_data_entities_mapped_count",
+          "metric": "core insurance data entities mapped across policy, billing, claims, underwriting, and reporting",
+          "metric_type": "data_entity_mapping_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "policy billing claims underwriting entities",
+            "core insurance data model"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_guidewire_insurancesuite_modernization"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_policycenter_workflow_mapping"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_claimcenter_billingcenter_integration"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_insurance_core_data_model_mapping"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_guidewire_workflows_mapped_count",
+        "metric_insurtech_core_data_entities_mapped_count"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_insurance_data_bi_decisioning",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "Insurance Data, BI, and Decision Support",
+      "claim_text": "Enabled real-time ingestion, BI, underwriting analytics, and pricing decision support for insurer operations.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "executive_scope_signals": [
+        "Enabled real-time ingestion, BI, underwriting analytics, and pricing decision support for insurer operations.",
+        "Insurance Data, BI, and Decision Support"
+      ],
+      "architecture_scope_signals": [
+        "skill_guidewire_datahub_infocenter_bi",
+        "skill_pc_insurance_data_warehouse_design",
+        "skill_underwriting_analytics_enablement",
+        "skill_pricing_loss_ratio_reporting"
+      ],
+      "graph_skill_node_ids": [
+        "skill_guidewire_datahub_infocenter_bi",
+        "skill_pc_insurance_data_warehouse_design",
+        "skill_underwriting_analytics_enablement",
+        "skill_pricing_loss_ratio_reporting"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_core_data_entities_mapped_count",
+          "metric": "core insurance data entities mapped across policy, billing, claims, underwriting, and reporting",
+          "metric_type": "data_entity_mapping_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "policy billing claims underwriting entities",
+            "core insurance data model"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_reporting_latency_reduction",
+          "metric": "insurer reporting latency reduction for underwriting, pricing, and operations decision support",
+          "metric_type": "latency_reduction_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "reporting latency reduction",
+            "underwriting pricing operations"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_real_time_ingestion_feeds_count",
+          "metric": "real-time ingestion feeds implemented for insurer decision support",
+          "metric_type": "ingestion_feed_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "real-time ingestion feeds",
+            "decision support"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_decision_cycle_time_reduction",
+          "metric": "underwriting and pricing decision-cycle compression through real-time ingestion and cloud data architecture",
+          "metric_type": "decision_cycle_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "decision-cycle compression",
+            "real-time ingestion",
+            "cloud data architecture"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_guidewire_datahub_infocenter_bi"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_pc_insurance_data_warehouse_design"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_underwriting_analytics_enablement"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_pricing_loss_ratio_reporting"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_core_data_entities_mapped_count",
+        "metric_insurtech_reporting_latency_reduction",
+        "metric_insurtech_real_time_ingestion_feeds_count",
+        "metric_insurtech_decision_cycle_time_reduction"
+      ]
+    },
+    {
+      "role_episode_bundle_id": "reb_insurtech_resilient_core_operations",
+      "employer": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "time_window": "2014-04 to 2017-03",
+      "employer_node_id": "employment_exp_insurtech_001",
+      "bundle_theme": "Resilient Core Insurance Operations on AWS",
+      "claim_text": "Re-architected insurer underwriting and operational systems for high availability and real-time operations.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "executive_scope_signals": [
+        "Re-architected insurer underwriting and operational systems for high availability and real-time operations.",
+        "Resilient Core Insurance Operations on AWS"
+      ],
+      "architecture_scope_signals": [
+        "skill_multi_az_insurance_workload_design",
+        "skill_rto_rpo_dr_planning",
+        "skill_cloudwatch_operational_monitoring",
+        "skill_high_availability_underwriting_workflows"
+      ],
+      "graph_skill_node_ids": [
+        "skill_multi_az_insurance_workload_design",
+        "skill_rto_rpo_dr_planning",
+        "skill_cloudwatch_operational_monitoring",
+        "skill_high_availability_underwriting_workflows",
+        "skill_sr_insurance_systems_resilience_internal"
+      ],
+      "linked_source_fact_ids": [
+        "exp_insurtech_001"
+      ],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_insurtech_rto_rpo_targets_met_count",
+          "metric": "RTO/RPO targets met for priority insurer workloads",
+          "metric_type": "resilience_target_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "RTO/RPO targets met",
+            "priority insurer workloads"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_insurtech_incident_runbooks_count",
+          "metric": "incident, recovery, and operational runbooks for AWS-hosted insurer systems",
+          "metric_type": "runbook_count",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "incident runbooks",
+            "recovery runbooks",
+            "AWS-hosted insurer systems"
+          ]
+        }
+      ],
+      "held_metrics": [
+        "99.99% uptime (HOLD - source artifact required before numeric claim)"
+      ],
+      "excluded_metrics": [],
+      "metric_candidates": [
+        {
+          "metric_id": "metric_insurtech_core_workload_uptime_pct",
+          "claim_text_pattern": "Sustained X% uptime for insurer operational workloads.",
+          "proof_shape": "Monitoring/SLA report; existing 99.99% claim remains held until source-backed.",
+          "approval_status": "HELD_PENDING_ARCHIVE_CORROBORATION",
+          "allowed_roots": [
+            "reb_insurtech_resilient_core_operations"
+          ]
+        }
+      ],
+      "graph_edge_contract": {
+        "source_employer_node_id": "employment_exp_insurtech_001",
+        "root_to_skill_edges": [
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_multi_az_insurance_workload_design"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_rto_rpo_dr_planning"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_cloudwatch_operational_monitoring"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_high_availability_underwriting_workflows"
+          },
+          {
+            "edge_type": "role_episode_contains_skill",
+            "target_skill_id": "skill_sr_insurance_systems_resilience_internal"
+          }
+        ],
+        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
+      },
+      "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_rto_rpo_targets_met_count",
+        "metric_insurtech_incident_runbooks_count"
+      ]
     }
-  ]
+  ],
+  "metric_candidates_for_approval": [
+    {
+      "metric_id": "metric_insurtech_private_vs_public_tco_delta_pct",
+      "claim_text_pattern": "Modeled X% TCO delta between AWS public cloud and private/on-prem alternatives for insurer workloads.",
+      "proof_shape": "TCO model with workload assumptions, AWS services, and private-cloud comparator.",
+      "approval_status": "HELD_REFRAMED_AS_CLOUD_ECONOMICS_COMPARISON_MODELS",
+      "allowed_roots": [
+        "reb_insurtech_public_vs_private_cloud_strategy",
+        "reb_insurtech_aws_cloud_economics"
+      ],
+      "claim_authority": "not_claimable_until_promoted_to_metric_outcome_nodes"
+    },
+    {
+      "metric_id": "metric_insurtech_aws_tco_reduction_pct",
+      "claim_text_pattern": "Reduced insurer platform TCO by X% through AWS modernization and technical-debt retirement.",
+      "proof_shape": "Corroborated financial model; existing 40% claim remains held until source-backed.",
+      "approval_status": "HELD_PENDING_ARCHIVE_CORROBORATION",
+      "allowed_roots": [
+        "reb_insurtech_aws_cloud_economics"
+      ],
+      "claim_authority": "not_claimable_until_promoted_to_metric_outcome_nodes"
+    },
+    {
+      "metric_id": "metric_insurtech_core_workload_uptime_pct",
+      "claim_text_pattern": "Sustained X% uptime for insurer operational workloads.",
+      "proof_shape": "Monitoring/SLA report; existing 99.99% claim remains held until source-backed.",
+      "approval_status": "HELD_PENDING_ARCHIVE_CORROBORATION",
+      "allowed_roots": [
+        "reb_insurtech_resilient_core_operations"
+      ],
+      "claim_authority": "not_claimable_until_promoted_to_metric_outcome_nodes"
+    }
+  ],
+  "metric_outcome_nodes": {
+    "metric_insurtech_founder_buyer_discovery_count": {
+      "metric_outcome_id": "metric_insurtech_founder_buyer_discovery_count",
+      "metric": "documented insurer executive discovery conversations on public-cloud adoption objections",
+      "metric_type": "market_discovery_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_founder_led_market_creation",
+        "reb_insurtech_founder_led_gtm_revenue"
+      ],
+      "claim_text": "InsurTech graph evidence supports documented insurer executive discovery conversations on public-cloud adoption objections.",
+      "surface_tokens": [
+        "executive discovery conversations",
+        "public-cloud adoption objections"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "CRM export, dated call notes, or signed discovery summaries."
+    },
+    "metric_insurtech_qualified_pipeline_stage_count": {
+      "metric_outcome_id": "metric_insurtech_qualified_pipeline_stage_count",
+      "metric": "qualified insurer modernization pipeline segmented by stage and buyer persona",
+      "metric_type": "pipeline_stage_metric",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_founder_led_gtm_revenue"
+      ],
+      "claim_text": "InsurTech graph evidence supports qualified insurer modernization pipeline segmented by stage and buyer persona.",
+      "surface_tokens": [
+        "qualified pipeline by stage",
+        "buyer persona segmentation"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Pipeline export with stage, account type, and date window."
+    },
+    "metric_insurtech_poc_to_paid_conversion_pct": {
+      "metric_outcome_id": "metric_insurtech_poc_to_paid_conversion_pct",
+      "metric": "pilot-to-paid conversion for insurer modernization assessments",
+      "metric_type": "conversion_metric",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_founder_led_gtm_revenue"
+      ],
+      "claim_text": "InsurTech graph evidence supports pilot-to-paid conversion for insurer modernization assessments.",
+      "surface_tokens": [
+        "pilot-to-paid conversion",
+        "modernization assessments"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Proposal/SOW trail tying pilot or assessment to signed work."
+    },
+    "metric_insurtech_proposals_sows_count": {
+      "metric_outcome_id": "metric_insurtech_proposals_sows_count",
+      "metric": "insurer modernization proposals and SOWs spanning AWS migration, controls, and delivery scope",
+      "metric_type": "commercial_delivery_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_founder_led_gtm_revenue"
+      ],
+      "claim_text": "InsurTech graph evidence supports insurer modernization proposals and SOWs spanning AWS migration, controls, and delivery scope.",
+      "surface_tokens": [
+        "proposals and SOWs",
+        "AWS migration scope",
+        "control scope"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Versioned SOW/proposal archive."
+    },
+    "metric_insurtech_mvp_to_production_cycle_time": {
+      "metric_outcome_id": "metric_insurtech_mvp_to_production_cycle_time",
+      "metric": "assessment-to-production cycle time for insurer modernization MVPs",
+      "metric_type": "cycle_time_metric",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_lean_delivery_operating_model"
+      ],
+      "claim_text": "InsurTech graph evidence supports assessment-to-production cycle time for insurer modernization MVPs.",
+      "surface_tokens": [
+        "assessment-to-production cycle time",
+        "modernization MVPs"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Project plan or release trail with start/end dates."
+    },
+    "metric_insurtech_cloud_economics_comparison_models": {
+      "metric_outcome_id": "metric_insurtech_cloud_economics_comparison_models",
+      "metric": "public-versus-private cloud economics comparison models for regulated insurer workloads",
+      "metric_type": "cloud_economics_scope",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_public_vs_private_cloud_strategy",
+        "reb_insurtech_aws_cloud_economics"
+      ],
+      "claim_text": "InsurTech graph evidence supports public-versus-private cloud economics comparison models for regulated insurer workloads.",
+      "surface_tokens": [
+        "cloud economics comparison models",
+        "regulated insurer workloads"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Architecture assessment, economics model, or workload disposition artifact comparing public cloud and private/on-prem alternatives."
+    },
+    "metric_insurtech_workloads_classified_by_cloud_fit_count": {
+      "metric_outcome_id": "metric_insurtech_workloads_classified_by_cloud_fit_count",
+      "metric": "insurance workloads classified by cloud fit, sensitivity, and migration priority",
+      "metric_type": "portfolio_classification_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_public_vs_private_cloud_strategy",
+        "reb_insurtech_aws_migration_execution"
+      ],
+      "claim_text": "InsurTech graph evidence supports insurance workloads classified by cloud fit, sensitivity, and migration priority.",
+      "surface_tokens": [
+        "cloud-fit classification",
+        "sensitivity classification",
+        "migration priority"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Workload inventory and decision matrix."
+    },
+    "metric_insurtech_reserved_instance_coverage_pct": {
+      "metric_outcome_id": "metric_insurtech_reserved_instance_coverage_pct",
+      "metric": "reserved-capacity coverage for steady-state AWS insurer workloads",
+      "metric_type": "coverage_metric",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_aws_cloud_economics"
+      ],
+      "claim_text": "InsurTech graph evidence supports reserved-capacity coverage for steady-state AWS insurer workloads.",
+      "surface_tokens": [
+        "reserved-capacity coverage",
+        "steady-state AWS workloads"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "AWS billing export or optimization report."
+    },
+    "metric_insurtech_cost_allocation_coverage_pct": {
+      "metric_outcome_id": "metric_insurtech_cost_allocation_coverage_pct",
+      "metric": "AWS spend allocation coverage by customer, environment, or workload",
+      "metric_type": "coverage_metric",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_aws_cloud_economics"
+      ],
+      "claim_text": "InsurTech graph evidence supports AWS spend allocation coverage by customer, environment, or workload.",
+      "surface_tokens": [
+        "AWS spend allocation",
+        "customer environment workload tagging"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "AWS cost-allocation/tagging report."
+    },
+    "metric_insurtech_migration_waves_completed_count": {
+      "metric_outcome_id": "metric_insurtech_migration_waves_completed_count",
+      "metric": "completed insurer workload migration waves across policy, data, or operations platforms",
+      "metric_type": "migration_wave_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_aws_migration_execution"
+      ],
+      "claim_text": "InsurTech graph evidence supports completed insurer workload migration waves across policy, data, or operations platforms.",
+      "surface_tokens": [
+        "migration waves",
+        "policy data operations workloads"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Migration plan and cutover records."
+    },
+    "metric_insurtech_core_workloads_migrated_count": {
+      "metric_outcome_id": "metric_insurtech_core_workloads_migrated_count",
+      "metric": "core insurance workloads migrated or replatformed onto AWS architecture",
+      "metric_type": "migration_scope_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_aws_migration_execution"
+      ],
+      "claim_text": "InsurTech graph evidence supports core insurance workloads migrated or replatformed onto AWS architecture.",
+      "surface_tokens": [
+        "core insurance workloads migrated",
+        "AWS replatforming"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Application inventory and production cutover evidence."
+    },
+    "metric_insurtech_cutover_downtime_hours": {
+      "metric_outcome_id": "metric_insurtech_cutover_downtime_hours",
+      "metric": "cutover downtime and rollback incident record for insurer workload migrations",
+      "metric_type": "cutover_resilience_metric",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_aws_migration_execution"
+      ],
+      "claim_text": "InsurTech graph evidence supports cutover downtime and rollback incident record for insurer workload migrations.",
+      "surface_tokens": [
+        "cutover downtime record",
+        "rollback incident record"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Cutover log, incident log, and release record."
+    },
+    "metric_insurtech_control_ownership_matrix_count": {
+      "metric_outcome_id": "metric_insurtech_control_ownership_matrix_count",
+      "metric": "shared-responsibility control ownership matrices for insurer AWS adoption",
+      "metric_type": "control_matrix_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_aws_shared_responsibility_operating_model"
+      ],
+      "claim_text": "InsurTech graph evidence supports shared-responsibility control ownership matrices for insurer AWS adoption.",
+      "surface_tokens": [
+        "control ownership matrices",
+        "shared-responsibility model"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Control matrix artifacts mapping insurer, AWS, and delivery-team responsibilities."
+    },
+    "metric_insurtech_safety_operating_model_artifacts_count": {
+      "metric_outcome_id": "metric_insurtech_safety_operating_model_artifacts_count",
+      "metric": "cloud safety operating-model artifacts for identity, encryption, logging, backup, and incident response",
+      "metric_type": "operating_model_artifact_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_aws_shared_responsibility_operating_model"
+      ],
+      "claim_text": "InsurTech graph evidence supports cloud safety operating-model artifacts for identity, encryption, logging, backup, and incident response.",
+      "surface_tokens": [
+        "safety operating-model artifacts",
+        "identity encryption logging backup incident response"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Operating-model docs and control runbooks."
+    },
+    "metric_insurtech_regulatory_bodies_engaged_count": {
+      "metric_outcome_id": "metric_insurtech_regulatory_bodies_engaged_count",
+      "metric": "insurance regulatory body or state DOI cloud-adoption engagement count",
+      "metric_type": "regulatory_engagement_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_insurance_regulatory_cloud_adoption_standards"
+      ],
+      "claim_text": "InsurTech graph evidence supports insurance regulatory body or state DOI cloud-adoption engagement count.",
+      "surface_tokens": [
+        "state DOI engagement",
+        "regulatory cloud adoption"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Meeting notes, correspondence, or regulator-facing materials."
+    },
+    "metric_insurtech_cloud_standards_artifacts_count": {
+      "metric_outcome_id": "metric_insurtech_cloud_standards_artifacts_count",
+      "metric": "insurer cloud standards and regulator-readiness artifacts",
+      "metric_type": "standards_artifact_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_insurance_regulatory_cloud_adoption_standards"
+      ],
+      "claim_text": "InsurTech graph evidence supports insurer cloud standards and regulator-readiness artifacts.",
+      "surface_tokens": [
+        "cloud standards artifacts",
+        "regulator-readiness artifacts"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Versioned standards or policy docs."
+    },
+    "metric_insurtech_regulatory_objections_resolved_count": {
+      "metric_outcome_id": "metric_insurtech_regulatory_objections_resolved_count",
+      "metric": "regulator and insurer objections resolved with control evidence and operating model design",
+      "metric_type": "objection_resolution_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_insurance_regulatory_cloud_adoption_standards"
+      ],
+      "claim_text": "InsurTech graph evidence supports regulator and insurer objections resolved with control evidence and operating model design.",
+      "surface_tokens": [
+        "objections resolved",
+        "control evidence",
+        "operating model design"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Objection register or approval memo."
+    },
+    "metric_insurtech_controls_mapped_count": {
+      "metric_outcome_id": "metric_insurtech_controls_mapped_count",
+      "metric": "AWS controls mapped to SOC 2 and insurer cybersecurity requirements",
+      "metric_type": "control_mapping_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_regulated_aws_control_implementation"
+      ],
+      "claim_text": "InsurTech graph evidence supports AWS controls mapped to SOC 2 and insurer cybersecurity requirements.",
+      "surface_tokens": [
+        "AWS controls mapped",
+        "SOC 2 requirements",
+        "insurer cybersecurity"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Control crosswalk or audit evidence package."
+    },
+    "metric_insurtech_audit_logging_coverage_pct": {
+      "metric_outcome_id": "metric_insurtech_audit_logging_coverage_pct",
+      "metric": "audit logging coverage across regulated AWS workloads",
+      "metric_type": "coverage_metric",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_regulated_aws_control_implementation"
+      ],
+      "claim_text": "InsurTech graph evidence supports audit logging coverage across regulated AWS workloads.",
+      "surface_tokens": [
+        "audit logging coverage",
+        "regulated AWS workloads"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Logging coverage report and workload inventory."
+    },
+    "metric_insurtech_sensitive_data_controls_count": {
+      "metric_outcome_id": "metric_insurtech_sensitive_data_controls_count",
+      "metric": "sensitive-data control patterns for policyholder and claims data",
+      "metric_type": "control_pattern_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_regulated_aws_control_implementation"
+      ],
+      "claim_text": "InsurTech graph evidence supports sensitive-data control patterns for policyholder and claims data.",
+      "surface_tokens": [
+        "sensitive-data controls",
+        "policyholder data",
+        "claims data"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Architecture decision records and security control evidence."
+    },
+    "metric_insurtech_guidewire_workflows_mapped_count": {
+      "metric_outcome_id": "metric_insurtech_guidewire_workflows_mapped_count",
+      "metric": "Guidewire and policy-admin workflows mapped into AWS modernization architecture",
+      "metric_type": "workflow_mapping_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_aws_guidewire_core_modernization"
+      ],
+      "claim_text": "InsurTech graph evidence supports Guidewire and policy-admin workflows mapped into AWS modernization architecture.",
+      "surface_tokens": [
+        "Guidewire workflows mapped",
+        "policy-admin workflow mapping"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Workflow mapping and target architecture artifacts."
+    },
+    "metric_insurtech_core_data_entities_mapped_count": {
+      "metric_outcome_id": "metric_insurtech_core_data_entities_mapped_count",
+      "metric": "core insurance data entities mapped across policy, billing, claims, underwriting, and reporting",
+      "metric_type": "data_entity_mapping_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_aws_guidewire_core_modernization",
+        "reb_insurtech_insurance_data_bi_decisioning"
+      ],
+      "claim_text": "InsurTech graph evidence supports core insurance data entities mapped across policy, billing, claims, underwriting, and reporting.",
+      "surface_tokens": [
+        "policy billing claims underwriting entities",
+        "core insurance data model"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Canonical model or data-mapping workbook."
+    },
+    "metric_insurtech_reporting_latency_reduction": {
+      "metric_outcome_id": "metric_insurtech_reporting_latency_reduction",
+      "metric": "insurer reporting latency reduction for underwriting, pricing, and operations decision support",
+      "metric_type": "latency_reduction_metric",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_insurance_data_bi_decisioning"
+      ],
+      "claim_text": "InsurTech graph evidence supports insurer reporting latency reduction for underwriting, pricing, and operations decision support.",
+      "surface_tokens": [
+        "reporting latency reduction",
+        "underwriting pricing operations"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "BI/reporting benchmark before and after."
+    },
+    "metric_insurtech_real_time_ingestion_feeds_count": {
+      "metric_outcome_id": "metric_insurtech_real_time_ingestion_feeds_count",
+      "metric": "real-time ingestion feeds implemented for insurer decision support",
+      "metric_type": "ingestion_feed_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_insurance_data_bi_decisioning"
+      ],
+      "claim_text": "InsurTech graph evidence supports real-time ingestion feeds implemented for insurer decision support.",
+      "surface_tokens": [
+        "real-time ingestion feeds",
+        "decision support"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Data-flow inventory and production feed evidence."
+    },
+    "metric_insurtech_decision_cycle_time_reduction": {
+      "metric_outcome_id": "metric_insurtech_decision_cycle_time_reduction",
+      "metric": "underwriting and pricing decision-cycle compression through real-time ingestion and cloud data architecture",
+      "metric_type": "decision_cycle_metric",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_insurance_data_bi_decisioning"
+      ],
+      "claim_text": "InsurTech graph evidence supports underwriting and pricing decision-cycle compression through real-time ingestion and cloud data architecture.",
+      "surface_tokens": [
+        "decision-cycle compression",
+        "real-time ingestion",
+        "cloud data architecture"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Operational metric extract or workflow timestamp analysis."
+    },
+    "metric_insurtech_rto_rpo_targets_met_count": {
+      "metric_outcome_id": "metric_insurtech_rto_rpo_targets_met_count",
+      "metric": "RTO/RPO targets met for priority insurer workloads",
+      "metric_type": "resilience_target_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_resilient_core_operations"
+      ],
+      "claim_text": "InsurTech graph evidence supports RTO/RPO targets met for priority insurer workloads.",
+      "surface_tokens": [
+        "RTO/RPO targets met",
+        "priority insurer workloads"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "DR test reports and recovery objective matrix."
+    },
+    "metric_insurtech_incident_runbooks_count": {
+      "metric_outcome_id": "metric_insurtech_incident_runbooks_count",
+      "metric": "incident, recovery, and operational runbooks for AWS-hosted insurer systems",
+      "metric_type": "runbook_count",
+      "employer": "InsurTech Cloud Solutions",
+      "time_window": "2014-04 to 2017-03",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_insurtech_resilient_core_operations"
+      ],
+      "claim_text": "InsurTech graph evidence supports incident, recovery, and operational runbooks for AWS-hosted insurer systems.",
+      "surface_tokens": [
+        "incident runbooks",
+        "recovery runbooks",
+        "AWS-hosted insurer systems"
+      ],
+      "section_eligibility": [
+        "insurtech_bullets",
+        "insurtech_narrative"
+      ],
+      "proof_shape": "Runbook repository or operating manual."
+    }
+  },
+  "approved_metric_outcome_ids": {
+    "metric_insurtech_founder_buyer_discovery_count": "documented insurer executive discovery conversations on public-cloud adoption objections",
+    "metric_insurtech_qualified_pipeline_stage_count": "qualified insurer modernization pipeline segmented by stage and buyer persona",
+    "metric_insurtech_poc_to_paid_conversion_pct": "pilot-to-paid conversion for insurer modernization assessments",
+    "metric_insurtech_proposals_sows_count": "insurer modernization proposals and SOWs spanning AWS migration, controls, and delivery scope",
+    "metric_insurtech_mvp_to_production_cycle_time": "assessment-to-production cycle time for insurer modernization MVPs",
+    "metric_insurtech_cloud_economics_comparison_models": "public-versus-private cloud economics comparison models for regulated insurer workloads",
+    "metric_insurtech_workloads_classified_by_cloud_fit_count": "insurance workloads classified by cloud fit, sensitivity, and migration priority",
+    "metric_insurtech_reserved_instance_coverage_pct": "reserved-capacity coverage for steady-state AWS insurer workloads",
+    "metric_insurtech_cost_allocation_coverage_pct": "AWS spend allocation coverage by customer, environment, or workload",
+    "metric_insurtech_migration_waves_completed_count": "completed insurer workload migration waves across policy, data, or operations platforms",
+    "metric_insurtech_core_workloads_migrated_count": "core insurance workloads migrated or replatformed onto AWS architecture",
+    "metric_insurtech_cutover_downtime_hours": "cutover downtime and rollback incident record for insurer workload migrations",
+    "metric_insurtech_control_ownership_matrix_count": "shared-responsibility control ownership matrices for insurer AWS adoption",
+    "metric_insurtech_safety_operating_model_artifacts_count": "cloud safety operating-model artifacts for identity, encryption, logging, backup, and incident response",
+    "metric_insurtech_regulatory_bodies_engaged_count": "insurance regulatory body or state DOI cloud-adoption engagement count",
+    "metric_insurtech_cloud_standards_artifacts_count": "insurer cloud standards and regulator-readiness artifacts",
+    "metric_insurtech_regulatory_objections_resolved_count": "regulator and insurer objections resolved with control evidence and operating model design",
+    "metric_insurtech_controls_mapped_count": "AWS controls mapped to SOC 2 and insurer cybersecurity requirements",
+    "metric_insurtech_audit_logging_coverage_pct": "audit logging coverage across regulated AWS workloads",
+    "metric_insurtech_sensitive_data_controls_count": "sensitive-data control patterns for policyholder and claims data",
+    "metric_insurtech_guidewire_workflows_mapped_count": "Guidewire and policy-admin workflows mapped into AWS modernization architecture",
+    "metric_insurtech_core_data_entities_mapped_count": "core insurance data entities mapped across policy, billing, claims, underwriting, and reporting",
+    "metric_insurtech_reporting_latency_reduction": "insurer reporting latency reduction for underwriting, pricing, and operations decision support",
+    "metric_insurtech_real_time_ingestion_feeds_count": "real-time ingestion feeds implemented for insurer decision support",
+    "metric_insurtech_decision_cycle_time_reduction": "underwriting and pricing decision-cycle compression through real-time ingestion and cloud data architecture",
+    "metric_insurtech_rto_rpo_targets_met_count": "RTO/RPO targets met for priority insurer workloads",
+    "metric_insurtech_incident_runbooks_count": "incident, recovery, and operational runbooks for AWS-hosted insurer systems"
+  },
+  "metric_surface_policy": {
+    "approval_model": "presence_in_metric_outcome_nodes_is_approval",
+    "ssot": "graph node/edge/metric IDs",
+    "approved_by_user_on": "2026-06-12",
+    "no_separate_candidate_fact_authority": true,
+    "metrics_should_not_be_scarce": true
+  }
 }

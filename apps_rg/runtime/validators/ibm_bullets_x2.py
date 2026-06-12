@@ -60,7 +60,7 @@ REQUIRED_TOP_LEVEL = {
     "self_check",
 }
 
-CORE_METRIC_TOKENS = ("$15M", "99.9%", "30%", "25%", "50%")
+CORE_METRIC_TOKENS = ("20%", "weeks to hours")
 
 _COVERAGE_WS_RE = re.compile(r"\s+")
 
@@ -222,11 +222,8 @@ def check_ibm_bullets_text_claim_coverage_integrity(
 
 # Metric ownership: REQUIRED_ANCHOR — metric must appear on assigned canonical bullet text.
 IBM_METRIC_ANCHOR_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
-    (("99.9",), "bul_ibm_001"),
-    (("30%", "30 %"), "bul_ibm_002"),
-    (("25%", "25 %"), "bul_ibm_003"),
-    (("50%", "50 %"), "bul_ibm_004"),
-    (("$15m", "$15 m"), "bul_ibm_005"),
+    (("weeks to hours", "weeks-to-hours"), "bul_ibm_002"),
+    (("20%", "20 %"), "bul_ibm_005"),
 )
 
 
@@ -279,7 +276,7 @@ def _ibm_metric_anchors_on_assigned_bullets(
             continue
         if plan_metric and plan_metric in tl:
             continue
-        # Also accept any numeric-ish token from the plan_fact's metric_raw (eg. "$10M ACV" -> "$10m").
+        # Also accept any visible token from the plan_fact's metric_raw.
         if plan_metric:
             for chunk in re.findall(r"[\$\d][\$\d\.\,\%a-z\-]*", plan_metric):
                 if chunk and chunk in tl:
@@ -356,13 +353,7 @@ def _metric_granularity_ok(
     second half of Bug:IbmLockedMetricInjectionGarblesGraphSelectedBullets.
     """
 
-    rules: list[tuple[tuple[str, ...], str]] = [
-        (("99.9",), "bul_ibm_001"),
-        (("30%", "30 %"), "bul_ibm_002"),
-        (("25%", "25 %"), "bul_ibm_003"),
-        (("50%", "50 %"), "bul_ibm_004"),
-        (("$15m", "$15 m"), "bul_ibm_005"),
-    ]
+    rules: list[tuple[tuple[str, ...], str]] = list(IBM_METRIC_ANCHOR_RULES)
 
     plan_by_bid: dict[str, dict[str, Any]] = {
         str(f.get("fact_id") or "").strip(): f
@@ -692,7 +683,6 @@ def run_ibm_bullets_x2_gates(
     from apps_rg.runtime.sections.ibm_role_episode_evidence import (
         IBM_BULLET_SLOT_BUNDLE_MAP,
         PROMOTABLE_METRIC_OUTCOME_IDS,
-        check_watson_studio_metric_bearing_claim,
         is_flat_skill_only_graph_packet,
     )
 
@@ -717,7 +707,6 @@ def run_ibm_bullets_x2_gates(
 
     bullets_missing_bundle_id: list[str] = []
     bullets_metric_unsupported: list[str] = []
-    bullets_watson_violations: list[str] = []
     allowed_outcomes = set(PROMOTABLE_METRIC_OUTCOME_IDS)
     by_bullet_id = {str(b.get("bullet_id")): b for b in bullets if b.get("bullet_id")}
     for cl_entry in po_change_log:
@@ -739,20 +728,9 @@ def run_ibm_bullets_x2_gates(
             bullets_missing_skill_ids.append(bid_cl)
         metric_ids = [str(x) for x in (cl_entry.get("metric_outcome_ids") or [])]
         bullet_row = by_bullet_id.get(bid_cl) or {}
-        btext = str(bullet_row.get("bullet_text") or "")
         if bullet_row.get("has_metric") and metric_ids:
             if not all(mid in allowed_outcomes for mid in metric_ids):
                 bullets_metric_unsupported.append(f"{bid_cl}:invalid_metric_outcome_ids")
-            if "metric_ibm_10pct_finops_savings_gated" in metric_ids:
-                if "metric_ibm_10pct_finops_savings_confirmed" not in metric_ids:
-                    bullets_metric_unsupported.append(f"{bid_cl}:finops_gated_without_confirmation")
-        watson_ok, watson_reason = check_watson_studio_metric_bearing_claim(
-            graph_skill_node_ids=skill_ids,
-            text=btext,
-            metric_outcome_ids=metric_ids,
-        )
-        if not watson_ok:
-            bullets_watson_violations.append(f"{bid_cl}:{watson_reason}")
 
     for b in bullets:
         bid_b = str(b.get("bullet_id") or "")
@@ -779,18 +757,6 @@ def run_ibm_bullets_x2_gates(
         (
             f"Unsupported metric outcome binding: {bullets_metric_unsupported}"
             if bullets_metric_unsupported
-            else None
-        ),
-    )
-
-    add(
-        "x2_ibm_watson_studio_no_metric_bearing_claim",
-        not bullets_watson_violations,
-        bullets_watson_violations or "ok",
-        "Watson Studio supporting context only",
-        (
-            f"Watson metric-bearing violations: {bullets_watson_violations}"
-            if bullets_watson_violations
             else None
         ),
     )

@@ -5,8 +5,8 @@ Enforces the role_episode_bundle_id gating invariant: EY bullets/narrative may o
 graph context when a role_episode_bundle_id is explicitly bound, not from flat skill lists.
 
 Mirror of ibm_graph_role_episode_registry.py (plan apps-rg-insurtech-ey-unlock-a4c0f0 W2/P2).
-Identity is verbatim from the base resume (employment block exp_ey_001); skills are grounded in
-master_skills_arsenal_ledger graph nodes for the 2009-2014 window.
+Identity is limited to the employment spine (company/title/location/dates); skills and claims are
+grounded in graph role-episode bundles for the 2009-2014 window.
 """
 from __future__ import annotations
 
@@ -34,17 +34,24 @@ REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
     "title",
     "time_window",
     "employer_node_id",
+    "bundle_theme",
+    "claim_text",
+    "support_level",
     "executive_scope_signals",
     "architecture_scope_signals",
     "graph_skill_node_ids",
     "linked_source_fact_ids",
     "linked_archive_signal_ids",
+    "linked_metric_outcome_ids",
+    "promotable_metrics",
+    "metric_candidates",
     "operating_context",
     "bullet_intent",
     "section_eligibility",
 })
 
-# Base-resume EY metrics ($15M, 40%, 12%) are HELD, never promotable, until X2 rules (P4).
+# EY held numeric claims ($15M, 40%, 12%) remain non-promotable. Graph-native metric outcome
+# nodes carry the approved surface without those overloaded numeric claims.
 HOLD_AND_DO_NOT_PROMOTE_METRICS: frozenset[str] = frozenset({
     "25%", "30%", "35%", "40%",
     "$15M", "15M", "12%",
@@ -107,6 +114,27 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
 
     if not bundle.get("graph_skill_node_ids"):
         violations.append("graph_skill_node_ids must not be empty")
+    if not bundle.get("linked_metric_outcome_ids"):
+        violations.append("linked_metric_outcome_ids must not be empty")
+
+    bundle_blob = json.dumps(bundle, sort_keys=True)
+    if "bul_ey_" in bundle_blob:
+        violations.append(
+            "base-resume bullet ids are forbidden as EY graph proof; use role_episode_bundle_id"
+        )
+    typed_edge_fields = {
+        "graph_edge_contract",
+        "root_to_skill_edges",
+        "selected_edges",
+        "selected_graph_edges",
+        "edge_type",
+        "typed_edges",
+    }
+    leaked_edge_fields = sorted(typed_edge_fields & set(bundle.keys()))
+    if leaked_edge_fields:
+        violations.append(
+            f"typed-edge fields are deferred to Phase II and forbidden in EY Phase I: {leaked_edge_fields}"
+        )
 
     section_elig = bundle.get("section_eligibility") or []
     unknown = set(section_elig) - VALID_SECTIONS - {"competencies", "executive_summary"}
@@ -121,6 +149,20 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
                 violations.append(
                     f"Forbidden metric '{forbidden}' found in promotable_metrics: {metric_entry}"
                 )
+
+    for candidate in bundle.get("metric_candidates") or []:
+        if not isinstance(candidate, dict):
+            violations.append(f"metric_candidates must be structured metric records: {candidate}")
+            continue
+        for required in ("metric_id", "claim_text_pattern", "proof_shape", "approval_status"):
+            if not str(candidate.get(required) or "").strip():
+                violations.append(
+                    f"metric candidate missing {required}: {candidate}"
+                )
+        if str(candidate.get("approval_status") or "").upper() == "PROMOTABLE":
+            violations.append(
+                f"metric candidate cannot be PROMOTABLE in EY Phase I: {candidate.get('metric_id')}"
+            )
 
     if not bundle.get("executive_scope_signals"):
         violations.append(

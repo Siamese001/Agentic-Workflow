@@ -6,8 +6,8 @@ InsurTech bullets/narrative may only consume graph context when a role_episode_b
 explicitly bound, not from flat skill lists.
 
 Mirror of ibm_graph_role_episode_registry.py (plan apps-rg-insurtech-ey-unlock-a4c0f0 W2/P2).
-Identity is verbatim from the base resume (employment block exp_insurtech_001); skills are
-grounded in master_skills_arsenal_ledger graph nodes for the 2014-2017 window.
+Identity is limited to the employment spine (company/title/location/dates); skills and claims are
+grounded in graph role-episode bundles for the 2014-2017 window.
 """
 from __future__ import annotations
 
@@ -36,21 +36,32 @@ REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
     "title",
     "time_window",
     "employer_node_id",
+    "bundle_theme",
+    "claim_text",
+    "support_level",
     "executive_scope_signals",
     "architecture_scope_signals",
     "graph_skill_node_ids",
     "linked_source_fact_ids",
     "linked_archive_signal_ids",
+    "linked_metric_outcome_ids",
+    "promotable_metrics",
+    "metric_candidates",
+    "graph_edge_contract",
     "operating_context",
     "bullet_intent",
     "section_eligibility",
 })
 
-# Metrics forbidden from promotion (overloaded / single-source). Base-resume InsurTech metrics
-# (40% TCO, 99.99% uptime) are HELD, never promotable, until X2 promotion rules (P4).
+# Metrics forbidden from promotion (overloaded / insufficiently sourced). InsurTech TCO and
+# uptime percentages remain HELD; graph-native metric outcome nodes carry the approved surface.
 HOLD_AND_DO_NOT_PROMOTE_METRICS: frozenset[str] = frozenset({
     "25%", "30%", "35%", "40%",
     "99.99%",
+    "SAVED $10M",
+    "$10M TCO",
+    "10M TCO",
+    "GENERIC TCO",
 })
 
 VALID_SECTIONS: frozenset[str] = frozenset({"insurtech_bullets", "insurtech_narrative"})
@@ -110,6 +121,14 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
 
     if not bundle.get("graph_skill_node_ids"):
         violations.append("graph_skill_node_ids must not be empty")
+    if not bundle.get("linked_metric_outcome_ids"):
+        violations.append("linked_metric_outcome_ids must not be empty")
+
+    bundle_blob = json.dumps(bundle, sort_keys=True)
+    if "bul_insurtech_" in bundle_blob:
+        violations.append(
+            "base-resume bullet ids are forbidden as InsurTech graph proof; use role_episode_bundle_id"
+        )
 
     section_elig = bundle.get("section_eligibility") or []
     unknown = set(section_elig) - VALID_SECTIONS - {"competencies", "executive_summary"}
@@ -124,6 +143,22 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
                 violations.append(
                     f"Forbidden metric '{forbidden}' found in promotable_metrics: {metric_entry}"
                 )
+
+    for candidate in bundle.get("metric_candidates") or []:
+        candidate_text = str(candidate).upper()
+        if "METRIC_ID" not in candidate_text or "CLAIM_TEXT_PATTERN" not in candidate_text:
+            violations.append(
+                f"metric_candidates must be structured metric records: {candidate}"
+            )
+        for forbidden in ("SAVED $10M", "$10M TCO", "10M TCO"):
+            if forbidden in candidate_text:
+                violations.append(
+                    f"Generic absolute TCO claim '{forbidden}' found in metric_candidates: {candidate}"
+                )
+
+    edge_contract = bundle.get("graph_edge_contract") or {}
+    if not isinstance(edge_contract, dict) or not edge_contract.get("root_to_skill_edges"):
+        violations.append("graph_edge_contract.root_to_skill_edges must bind root bundle to skills")
 
     if not bundle.get("executive_scope_signals"):
         violations.append(
@@ -144,5 +179,5 @@ def assert_role_episode_bundle_id_present(context: dict[str, Any]) -> None:
         raise ValueError(
             "InsurTech bullets/narrative graph context requires role_episode_bundle_id. "
             "Consuming flat skill lists without bundle_id binding is forbidden. "
-            "STATUS: BLOCKED_FOR_CONFIG_ENABLEMENT."
+            "STATUS: ROLE_EPISODE_BUNDLE_ID_REQUIRED."
         )

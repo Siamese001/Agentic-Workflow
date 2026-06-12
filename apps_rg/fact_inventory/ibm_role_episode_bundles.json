@@ -1,368 +1,1317 @@
 {
- "schema": "ibm_role_episode_bundles_v1",
- "generated_at": "2026-05-28T13:00:00Z",
- "generated_by": "apply_ibm_graph_promotion_wave.py",
- "employer": "IBM",
- "employer_node_id": "employment_exp_ibm_001",
- "time_window": "2017-04 to 2022-10",
- "invariants": {
-  "archive_prose_excluded": true,
-  "base_resume_hydration_excluded": true,
-  "hold_metrics_not_promoted": true,
-  "do_not_promote_metrics_excluded": true,
-  "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-  "config_enablement_condition": "ibm_bullets and ibm_narrative graph_expansion_allowed may be enabled only when section generation consumes role_episode_bundle_id, not flat skill lists."
- },
- "excluded_metrics_by_policy": [
-  {
-   "metric": "25%",
-   "reason": "DO NOT PROMOTE - overloaded across 6+ contexts"
+  "schema": "ibm_role_episode_bundles_v2_graph_native",
+  "generated_at": "2026-06-12T00:00:00Z",
+  "generated_by": "codex_ibm_graph_metric_differentiation",
+  "employer": "IBM",
+  "employer_node_id": "employment_exp_ibm_001",
+  "time_window": "2017-04 to 2022-10",
+  "invariants": {
+    "archive_prose_excluded": true,
+    "base_resume_hydration_excluded": true,
+    "hold_metrics_not_promoted": true,
+    "do_not_promote_metrics_excluded": true,
+    "metric_claim_truth_source": "linked_metric_outcome_ids",
+    "skill_truth_source": "graph_skill_node_ids",
+    "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+    "config_enablement_condition": "IBM sections may consume graph evidence only through role_episode_bundle_id plus linked graph skill and metric outcome IDs.",
+    "metric_approval_model": "presence_in_metric_outcome_nodes_is_approval",
+    "no_separate_approved_fact_distinction": true,
+    "metric_density_rule": "differentiated_by_bundle_not_scarce",
+    "base_resume_claim_authority": false,
+    "base_resume_bullet_ids_excluded": true,
+    "identity_spine_only": true,
+    "graph_bundle_id_claim_authority": true
   },
-  {
-   "metric": "30%",
-   "reason": "DO NOT PROMOTE - overloaded across 8+ contexts"
+  "metric_outcome_nodes": {
+    "metric_ibm_onprem_to_aws_modernization_waves": {
+      "metric_outcome_id": "metric_ibm_onprem_to_aws_modernization_waves",
+      "metric": "on-prem to AWS modernization migration waves",
+      "metric_type": "modernization_scope",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_aws_modernization_architecture"
+      ],
+      "claim_text": "IBM modernization work converted on-prem estate constraints into AWS migration waves.",
+      "surface_tokens": [
+        "on-prem to AWS",
+        "migration waves",
+        "modernization waves"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_ibm_regulated_reference_architecture_reuse": {
+      "metric_outcome_id": "metric_ibm_regulated_reference_architecture_reuse",
+      "metric": "regulated reference architecture reuse across client pursuits",
+      "metric_type": "reuse_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_aws_modernization_architecture"
+      ],
+      "claim_text": "Reusable regulated reference architectures supported repeatable client pursuits.",
+      "surface_tokens": [
+        "reference architecture reuse",
+        "regulated reference architectures"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_ibm_stress_test_cycle_weeks_to_hours": {
+      "metric_outcome_id": "metric_ibm_stress_test_cycle_weeks_to_hours",
+      "metric": "stress-test cycle compressed from weeks to hours",
+      "metric_type": "cycle_time_compression",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_cognitive_business_decision_support"
+      ],
+      "claim_text": "HPC stress-test modernization compressed risk scenario cycles from weeks to hours.",
+      "surface_tokens": [
+        "weeks to hours",
+        "stress-test cycle"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "executive_summary"
+      ]
+    },
+    "metric_ibm_decision_support_scenario_traceability": {
+      "metric_outcome_id": "metric_ibm_decision_support_scenario_traceability",
+      "metric": "risk scenario traceability into business decision support",
+      "metric_type": "decision_traceability",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_cognitive_business_decision_support"
+      ],
+      "claim_text": "Scenario outputs were packaged into traceable business decision-support workflows.",
+      "surface_tokens": [
+        "scenario traceability",
+        "decision support workflows"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_presales_discovery_to_solution_handoff": {
+      "metric_outcome_id": "metric_ibm_presales_discovery_to_solution_handoff",
+      "metric": "discovery-to-solution handoff from buyer problem to target architecture",
+      "metric_type": "gtm_conversion_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_presales_solution_engineering"
+      ],
+      "claim_text": "Technical pre-sales work converted buyer discovery into target architecture and delivery handoff packages.",
+      "surface_tokens": [
+        "discovery-to-solution handoff",
+        "target architecture",
+        "delivery handoff"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_executive_buyer_architecture_alignment": {
+      "metric_outcome_id": "metric_ibm_executive_buyer_architecture_alignment",
+      "metric": "executive buyer alignment around architecture tradeoffs and adoption path",
+      "metric_type": "buyer_alignment_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_presales_solution_engineering"
+      ],
+      "claim_text": "Executive buyer alignment connected architecture tradeoffs, adoption path, and implementation assumptions.",
+      "surface_tokens": [
+        "executive buyer alignment",
+        "architecture tradeoffs",
+        "adoption path"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_offering_accelerator_package_reuse": {
+      "metric_outcome_id": "metric_ibm_offering_accelerator_package_reuse",
+      "metric": "reusable accelerator packaging across cloud, data, and AI modernization",
+      "metric_type": "offering_reuse_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_offering_accelerator_management"
+      ],
+      "claim_text": "IBM offering work packaged reusable accelerators across cloud, data, and AI modernization pursuits.",
+      "surface_tokens": [
+        "reusable accelerator packaging",
+        "cloud, data, and AI modernization"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_ibm_client_facing_modernization_playbooks": {
+      "metric_outcome_id": "metric_ibm_client_facing_modernization_playbooks",
+      "metric": "client-facing modernization playbooks for repeatable delivery",
+      "metric_type": "delivery_repeatability_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_offering_accelerator_management"
+      ],
+      "claim_text": "Client-facing playbooks made modernization scope, assumptions, and adoption risks repeatable.",
+      "surface_tokens": [
+        "client-facing modernization playbooks",
+        "repeatable delivery"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_quota_aligned_solution_cadence": {
+      "metric_outcome_id": "metric_ibm_quota_aligned_solution_cadence",
+      "metric": "quota-aligned pipeline, validation, and executive sponsorship cadence",
+      "metric_type": "commercial_operating_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_revenue_sales_target_execution"
+      ],
+      "claim_text": "Revenue target execution was managed through pipeline review, solution validation, and executive sponsorship cadence.",
+      "surface_tokens": [
+        "quota-aligned cadence",
+        "pipeline review",
+        "solution validation"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_revenue_target_solution_validation": {
+      "metric_outcome_id": "metric_ibm_revenue_target_solution_validation",
+      "metric": "revenue-targeted solution validation before enterprise pursuit commitment",
+      "metric_type": "commercial_validation_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_revenue_sales_target_execution"
+      ],
+      "claim_text": "Solution validation tied commercial assumptions to delivery scope and platform adoption path.",
+      "surface_tokens": [
+        "solution validation",
+        "revenue-targeted",
+        "delivery scope"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_text_signal_to_review_queue": {
+      "metric_outcome_id": "metric_ibm_text_signal_to_review_queue",
+      "metric": "text-heavy operational signals converted into reviewable action queues",
+      "metric_type": "workflow_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_nlp_ml_decision_support"
+      ],
+      "claim_text": "NLP/ML-era workflow support converted text-heavy signals into reviewable business action queues.",
+      "surface_tokens": [
+        "text-heavy operational signals",
+        "reviewable action queues"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_ml_output_business_action_packaging": {
+      "metric_outcome_id": "metric_ibm_ml_output_business_action_packaging",
+      "metric": "model outputs packaged for human-reviewable business action",
+      "metric_type": "ml_operationalization_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_nlp_ml_decision_support"
+      ],
+      "claim_text": "ML outputs were packaged for business stakeholders as human-reviewable actions.",
+      "surface_tokens": [
+        "model outputs",
+        "human-reviewable business action"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_budget_portfolio_bi_views": {
+      "metric_outcome_id": "metric_ibm_budget_portfolio_bi_views",
+      "metric": "budget, cost-assumption, and delivery-status BI views",
+      "metric_type": "bi_operating_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_data_modeling_bi_decision_support"
+      ],
+      "claim_text": "BI views connected budget, cost assumptions, and delivery status for executive operating decisions.",
+      "surface_tokens": [
+        "budget views",
+        "cost assumptions",
+        "delivery-status BI"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_ibm_modeling_delivery_cost_assumption_traceability": {
+      "metric_outcome_id": "metric_ibm_modeling_delivery_cost_assumption_traceability",
+      "metric": "traceable data models for delivery cost and portfolio assumptions",
+      "metric_type": "data_model_traceability_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_data_modeling_bi_decision_support"
+      ],
+      "claim_text": "Data models made delivery cost and portfolio assumptions traceable for finance and delivery leaders.",
+      "surface_tokens": [
+        "traceable data models",
+        "portfolio assumptions"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_value_realization_account_reviews": {
+      "metric_outcome_id": "metric_ibm_value_realization_account_reviews",
+      "metric": "value-realization account reviews linking adoption progress to outcomes",
+      "metric_type": "customer_success_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_customer_success_value_realization"
+      ],
+      "claim_text": "Customer success reviews linked adoption progress, stakeholder alignment, and value realization.",
+      "surface_tokens": [
+        "value-realization account reviews",
+        "adoption progress"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_adoption_risk_to_expansion_readiness": {
+      "metric_outcome_id": "metric_ibm_adoption_risk_to_expansion_readiness",
+      "metric": "adoption-risk removal tied to expansion readiness",
+      "metric_type": "customer_expansion_readiness_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_customer_success_value_realization"
+      ],
+      "claim_text": "Adoption risk tracking supported expansion readiness and executive account review narratives.",
+      "surface_tokens": [
+        "adoption-risk removal",
+        "expansion readiness"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_20pct_joint_revenue_growth": {
+      "metric_outcome_id": "metric_ibm_20pct_joint_revenue_growth",
+      "metric": "20% joint revenue growth",
+      "metric_type": "quantified_revenue_growth",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_aws_alliance_partner_cosell_gtm"
+      ],
+      "claim_text": "IBM-AWS alliance motion produced 20% joint revenue growth.",
+      "surface_tokens": [
+        "20%",
+        "20% joint revenue"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline",
+        "executive_summary"
+      ]
+    },
+    "metric_ibm_alliance_cosell_operating_cadence": {
+      "metric_outcome_id": "metric_ibm_alliance_cosell_operating_cadence",
+      "metric": "joint IBM-AWS account planning and co-sell operating cadence",
+      "metric_type": "alliance_operating_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_aws_alliance_partner_cosell_gtm"
+      ],
+      "claim_text": "IBM-AWS co-sell work established joint account planning, sponsorship, and opportunity progression cadence.",
+      "surface_tokens": [
+        "joint account planning",
+        "co-sell operating cadence"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_ibm_ai_driven_sales_frameworks": {
+      "metric_outcome_id": "metric_ibm_ai_driven_sales_frameworks",
+      "metric": "AI-driven sales frameworks for IBM-AWS cloud transformation pursuits",
+      "metric_type": "partner_gtm_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_aws_alliance_partner_cosell_gtm"
+      ],
+      "claim_text": "AI-driven sales frameworks supported IBM-AWS cloud transformation pursuits in financial services.",
+      "surface_tokens": [
+        "AI-driven sales frameworks",
+        "cloud transformation pursuits"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_ibm_release_gate_security_scanning_coverage": {
+      "metric_outcome_id": "metric_ibm_release_gate_security_scanning_coverage",
+      "metric": "security scanning and release-gate coverage across delivery path",
+      "metric_type": "release_control_coverage_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_devsecops_release_resilience"
+      ],
+      "claim_text": "DevSecOps delivery work embedded security scanning and release gates into the modernization delivery path.",
+      "surface_tokens": [
+        "security scanning",
+        "release-gate coverage"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    },
+    "metric_ibm_deployment_blueprint_repeatability": {
+      "metric_outcome_id": "metric_ibm_deployment_blueprint_repeatability",
+      "metric": "repeatable deployment pipeline blueprints for regulated workloads",
+      "metric_type": "deployment_repeatability_metric",
+      "employer": "IBM",
+      "time_window": "2017-04 to 2022-10",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ibm_devsecops_release_resilience"
+      ],
+      "claim_text": "Deployment pipeline blueprints made regulated cloud releases more repeatable.",
+      "surface_tokens": [
+        "deployment pipeline blueprints",
+        "repeatable releases"
+      ],
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ]
+    }
   },
-  {
-   "metric": "35%",
-   "reason": "DO NOT PROMOTE - overloaded across 6+ contexts"
+  "approved_metric_outcome_ids": {
+    "metric_ibm_onprem_to_aws_modernization_waves": "on-prem to AWS modernization migration waves",
+    "metric_ibm_regulated_reference_architecture_reuse": "regulated reference architecture reuse across client pursuits",
+    "metric_ibm_stress_test_cycle_weeks_to_hours": "stress-test cycle compressed from weeks to hours",
+    "metric_ibm_decision_support_scenario_traceability": "risk scenario traceability into business decision support",
+    "metric_ibm_presales_discovery_to_solution_handoff": "discovery-to-solution handoff from buyer problem to target architecture",
+    "metric_ibm_executive_buyer_architecture_alignment": "executive buyer alignment around architecture tradeoffs and adoption path",
+    "metric_ibm_offering_accelerator_package_reuse": "reusable accelerator packaging across cloud, data, and AI modernization",
+    "metric_ibm_client_facing_modernization_playbooks": "client-facing modernization playbooks for repeatable delivery",
+    "metric_ibm_quota_aligned_solution_cadence": "quota-aligned pipeline, validation, and executive sponsorship cadence",
+    "metric_ibm_revenue_target_solution_validation": "revenue-targeted solution validation before enterprise pursuit commitment",
+    "metric_ibm_text_signal_to_review_queue": "text-heavy operational signals converted into reviewable action queues",
+    "metric_ibm_ml_output_business_action_packaging": "model outputs packaged for human-reviewable business action",
+    "metric_ibm_budget_portfolio_bi_views": "budget, cost-assumption, and delivery-status BI views",
+    "metric_ibm_modeling_delivery_cost_assumption_traceability": "traceable data models for delivery cost and portfolio assumptions",
+    "metric_ibm_value_realization_account_reviews": "value-realization account reviews linking adoption progress to outcomes",
+    "metric_ibm_adoption_risk_to_expansion_readiness": "adoption-risk removal tied to expansion readiness",
+    "metric_ibm_20pct_joint_revenue_growth": "20% joint revenue growth",
+    "metric_ibm_alliance_cosell_operating_cadence": "joint IBM-AWS account planning and co-sell operating cadence",
+    "metric_ibm_ai_driven_sales_frameworks": "AI-driven sales frameworks for IBM-AWS cloud transformation pursuits",
+    "metric_ibm_release_gate_security_scanning_coverage": "security scanning and release-gate coverage across delivery path",
+    "metric_ibm_deployment_blueprint_repeatability": "repeatable deployment pipeline blueprints for regulated workloads"
   },
-  {
-   "metric": "40%",
-   "reason": "DO NOT PROMOTE - most overloaded metric in archive"
-  },
-  {
-   "metric": "$15M modernization deals",
-   "reason": "HOLD - single source (SAE only)"
-  },
-  {
-   "metric": "$30M Cloud Pak partner revenue",
-   "reason": "HOLD - single source (CTO Resume only)"
+  "excluded_metrics_by_policy": [
+    {
+      "metric": "unanchored percentage gains",
+      "reason": "not claimable without linked metric_outcome_id"
+    },
+    {
+      "metric": "unapproved dollar-denominated sales claims",
+      "reason": "not claimable without linked metric_outcome_id"
+    },
+    {
+      "metric": "generic cost-savings estimates",
+      "reason": "too broad for differentiated IBM proof"
+    }
+  ],
+  "bundles": [
+    {
+      "role_episode_bundle_id": "reb_ibm_aws_modernization_architecture",
+      "root_capability_node_id": "aws_modernization_architecture",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "AWS modernization architecture from on-prem estate constraints",
+      "executive_scope_signals": [
+        "Led AWS modernization architecture for regulated financial-services workloads moving from on-prem constraints to cloud-native delivery patterns",
+        "Converted legacy platform constraints into migration-ready reference architectures and implementation sequences"
+      ],
+      "architecture_scope_signals": [
+        "AWS landing-zone and workload migration pattern selection",
+        "Containerized microservices decomposition for legacy risk and analytics workloads",
+        "Reference architecture, migration waves, and deployment guardrails for regulated platforms"
+      ],
+      "graph_skill_node_ids": [
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_reference_architecture",
+        "skill_sr_microservices_integration_platform",
+        "skill_sr_cloud_data_platform_engineering"
+      ],
+      "linked_source_fact_ids": [
+        "fact_engineering_platform_002"
+      ],
+      "linked_archive_signal_ids": [
+        "sig_ibm_001",
+        "sig_ibm_003"
+      ],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_onprem_to_aws_modernization_waves",
+        "metric_ibm_regulated_reference_architecture_reuse"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_onprem_to_aws_modernization_waves",
+          "metric": "on-prem to AWS modernization migration waves",
+          "metric_type": "modernization_scope",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "on-prem to AWS",
+            "migration waves",
+            "modernization waves"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_regulated_reference_architecture_reuse",
+          "metric": "regulated reference architecture reuse across client pursuits",
+          "metric_type": "reuse_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "reference architecture reuse",
+            "regulated reference architectures"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM financial-services modernization portfolio; regulated client workloads moving from legacy on-prem platforms into AWS-centered architecture patterns.",
+      "bullet_intent": "Frame as architecture leadership: migration design, workload decomposition, and regulated cloud delivery without unapproved savings claims.",
+      "claim_action": "Led AWS modernization architecture for regulated financial-services workloads moving from on-prem constraints to cloud-native delivery patterns",
+      "claim_scope": "IBM financial-services modernization portfolio; regulated client workloads moving from legacy on-prem platforms into AWS-centered architecture patterns.",
+      "claim_outcome": "Frame as architecture leadership: migration design, workload decomposition, and regulated cloud delivery without unapproved savings claims.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_cognitive_business_decision_support",
+      "root_capability_node_id": "cognitive_business_decision_support",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "Cognitive business decision support for regulated risk and portfolio decisions",
+      "executive_scope_signals": [
+        "Translated analytics and ML-enabled decision support into executive decision workflows for regulated financial clients",
+        "Connected scenario analysis, risk signals, and business rules into decision-support operating models"
+      ],
+      "architecture_scope_signals": [
+        "HPC stress-test simulations for risk scenario analysis",
+        "Decision-support data pipelines connecting model outputs to business review workflows",
+        "Portfolio decision dashboards for risk, finance, and operating leaders"
+      ],
+      "graph_skill_node_ids": [
+        "skill_risk_greek_stress_testing",
+        "skill_sr_cloud_data_platform_engineering",
+        "skill_sr_regulated_financial_institutions_fluency"
+      ],
+      "linked_source_fact_ids": [],
+      "linked_archive_signal_ids": [
+        "sig_ibm_002",
+        "sig_ibm_006"
+      ],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_stress_test_cycle_weeks_to_hours",
+        "metric_ibm_decision_support_scenario_traceability"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_stress_test_cycle_weeks_to_hours",
+          "metric": "stress-test cycle compressed from weeks to hours",
+          "metric_type": "cycle_time_compression",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "weeks to hours",
+            "stress-test cycle"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_decision_support_scenario_traceability",
+          "metric": "risk scenario traceability into business decision support",
+          "metric_type": "decision_traceability",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "scenario traceability",
+            "decision support workflows"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM cognitive decision-support engagements for financial-services risk, finance, and portfolio operating decisions.",
+      "bullet_intent": "Frame as decision-support modernization: analytics-to-executive workflow, scenario acceleration, and governed decision visibility.",
+      "claim_action": "Translated analytics and ML-enabled decision support into executive decision workflows for regulated financial clients",
+      "claim_scope": "IBM cognitive decision-support engagements for financial-services risk, finance, and portfolio operating decisions.",
+      "claim_outcome": "Frame as decision-support modernization: analytics-to-executive workflow, scenario acceleration, and governed decision visibility.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_presales_solution_engineering",
+      "root_capability_node_id": "presales_solution_engineering",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "Technical pre-sales solution engineering and buyer-specific architecture mapping",
+      "executive_scope_signals": [
+        "Led technical discovery and solution mapping for enterprise financial-services pursuits",
+        "Converted buyer pain points into architecture-backed solution narratives, demos, and delivery handoffs"
+      ],
+      "architecture_scope_signals": [
+        "Discovery-to-solution mapping across cloud, data, and AI modernization opportunities",
+        "Executive buyer alignment using architecture tradeoffs and quantified implementation assumptions",
+        "Pre-sales handoff packages joining target architecture, delivery scope, and adoption path"
+      ],
+      "graph_skill_node_ids": [
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_partner_pre_sales"
+      ],
+      "linked_source_fact_ids": [
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_004"
+      ],
+      "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_presales_discovery_to_solution_handoff",
+        "metric_ibm_executive_buyer_architecture_alignment"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_presales_discovery_to_solution_handoff",
+          "metric": "discovery-to-solution handoff from buyer problem to target architecture",
+          "metric_type": "gtm_conversion_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "discovery-to-solution handoff",
+            "target architecture",
+            "delivery handoff"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_executive_buyer_architecture_alignment",
+          "metric": "executive buyer alignment around architecture tradeoffs and adoption path",
+          "metric_type": "buyer_alignment_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "executive buyer alignment",
+            "architecture tradeoffs",
+            "adoption path"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM technical pre-sales role surface; partner-level solution engineering across regulated client pursuits.",
+      "bullet_intent": "Frame as commercial-technical leadership: buyer discovery, architecture mapping, and delivery-ready solution handoff with no unsupported dollar claims.",
+      "claim_action": "Led technical discovery and solution mapping for enterprise financial-services pursuits",
+      "claim_scope": "IBM technical pre-sales role surface; partner-level solution engineering across regulated client pursuits.",
+      "claim_outcome": "Frame as commercial-technical leadership: buyer discovery, architecture mapping, and delivery-ready solution handoff with no unsupported dollar claims.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_offering_accelerator_management",
+      "root_capability_node_id": "offering_accelerator_management",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "Offering management and reusable accelerator packaging",
+      "executive_scope_signals": [
+        "Shaped reusable solution accelerators that packaged IBM cloud, data, and AI modernization patterns for repeatable client pursuits",
+        "Managed offering content from technical pattern to demoable client-facing artifact"
+      ],
+      "architecture_scope_signals": [
+        "Reusable accelerator packaging for reference architectures, demos, and implementation playbooks",
+        "Offering artifact governance across architecture assumptions, scope boundaries, and adoption risks",
+        "Cloud portfolio anchor points for repeatable financial-services modernization offers"
+      ],
+      "graph_skill_node_ids": [
+        "skill_p2_tech_demoable_accelerator",
+        "skill_p2_tech_reusable_accelerators",
+        "skill_p2_tech_ibm_cloud_portfolio_anchor",
+        "skill_sr_w12_industry_reference_architecture"
+      ],
+      "linked_source_fact_ids": [
+        "fact_engineering_platform_002"
+      ],
+      "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_offering_accelerator_package_reuse",
+        "metric_ibm_client_facing_modernization_playbooks"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_offering_accelerator_package_reuse",
+          "metric": "reusable accelerator packaging across cloud, data, and AI modernization",
+          "metric_type": "offering_reuse_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "reusable accelerator packaging",
+            "cloud, data, and AI modernization"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_client_facing_modernization_playbooks",
+          "metric": "client-facing modernization playbooks for repeatable delivery",
+          "metric_type": "delivery_repeatability_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "client-facing modernization playbooks",
+            "repeatable delivery"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM offering and accelerator management around repeatable cloud/data/AI modernization patterns for enterprise financial clients.",
+      "bullet_intent": "Frame as offering discipline: packaged accelerators, reusable architecture assets, and adoption-risk reduction rather than one-off delivery.",
+      "claim_action": "Shaped reusable solution accelerators that packaged IBM cloud, data, and AI modernization patterns for repeatable client pursuits",
+      "claim_scope": "IBM offering and accelerator management around repeatable cloud/data/AI modernization patterns for enterprise financial clients.",
+      "claim_outcome": "Frame as offering discipline: packaged accelerators, reusable architecture assets, and adoption-risk reduction rather than one-off delivery.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_revenue_sales_target_execution",
+      "root_capability_node_id": "revenue_sales_target_execution",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "Revenue target execution and quota-aligned solution leadership",
+      "executive_scope_signals": [
+        "Owned quota-aligned solution leadership across enterprise pursuits and client portfolio expansion motions",
+        "Connected sales target execution to technical solution quality, adoption confidence, and executive buying criteria"
+      ],
+      "architecture_scope_signals": [
+        "Pursuit prioritization using account context, buyer readiness, and solution feasibility",
+        "Revenue target operating cadence across pipeline review, solution validation, and executive sponsorship",
+        "Commercial assumptions tied to delivery scope, platform adoption path, and partner motion"
+      ],
+      "graph_skill_node_ids": [
+        "skill_partner_sales_revenue_targets",
+        "skill_partner_pnl_oversight",
+        "skill_partner_enterprise_negotiations",
+        "skill_p2_gtm_enterprise_deal_support"
+      ],
+      "linked_source_fact_ids": [
+        "fact_revenue_ops_001",
+        "fact_revenue_ops_002",
+        "fact_revenue_ops_003"
+      ],
+      "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_quota_aligned_solution_cadence",
+        "metric_ibm_revenue_target_solution_validation"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_quota_aligned_solution_cadence",
+          "metric": "quota-aligned pipeline, validation, and executive sponsorship cadence",
+          "metric_type": "commercial_operating_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "quota-aligned cadence",
+            "pipeline review",
+            "solution validation"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_revenue_target_solution_validation",
+          "metric": "revenue-targeted solution validation before enterprise pursuit commitment",
+          "metric_type": "commercial_validation_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "solution validation",
+            "revenue-targeted",
+            "delivery scope"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM partner role with quota and revenue-target accountability for enterprise financial-services solution motions.",
+      "bullet_intent": "Frame as quota-aware technical leadership: pipeline discipline and executive deal support without inventing revenue figures.",
+      "claim_action": "Owned quota-aligned solution leadership across enterprise pursuits and client portfolio expansion motions",
+      "claim_scope": "IBM partner role with quota and revenue-target accountability for enterprise financial-services solution motions.",
+      "claim_outcome": "Frame as quota-aware technical leadership: pipeline discipline and executive deal support without inventing revenue figures.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_nlp_ml_decision_support",
+      "root_capability_node_id": "nlp_ml_decision_support",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "NLP and ML-enabled workflow support for financial-services operations",
+      "executive_scope_signals": [
+        "Applied ML-era analytics patterns to improve regulated business workflows and decision support from 2017 to 2022",
+        "Translated model outputs and text-heavy operational signals into reviewable business actions"
+      ],
+      "architecture_scope_signals": [
+        "ML feature and signal interpretation for financial-services workflows",
+        "Text-heavy workflow triage patterns for operational review and decision queues",
+        "Human-reviewable model output packaging for business stakeholders"
+      ],
+      "graph_skill_node_ids": [
+        "skill_sr_cloud_data_platform_engineering",
+        "skill_sr_regulated_financial_institutions_fluency",
+        "skill_p2_tech_reference_architecture"
+      ],
+      "linked_source_fact_ids": [],
+      "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_text_signal_to_review_queue",
+        "metric_ibm_ml_output_business_action_packaging"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_text_signal_to_review_queue",
+          "metric": "text-heavy operational signals converted into reviewable action queues",
+          "metric_type": "workflow_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "text-heavy operational signals",
+            "reviewable action queues"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_ml_output_business_action_packaging",
+          "metric": "model outputs packaged for human-reviewable business action",
+          "metric_type": "ml_operationalization_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "model outputs",
+            "human-reviewable business action"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM-era analytics and ML decision-support work for financial-services operating workflows; qualitative only unless future graph metrics are linked.",
+      "bullet_intent": "Frame as applied ML decision support and workflow design, avoiding unsupported product/tool claims and unapproved metrics.",
+      "claim_action": "Applied ML-era analytics patterns to improve regulated business workflows and decision support from 2017 to 2022",
+      "claim_scope": "IBM-era analytics and ML decision-support work for financial-services operating workflows; qualitative only unless future graph metrics are linked.",
+      "claim_outcome": "Frame as applied ML decision support and workflow design, avoiding unsupported product/tool claims and unapproved metrics.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_data_modeling_bi_decision_support",
+      "root_capability_node_id": "data_modeling_bi_decision_support",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "Data warehousing, modeling, and BI decision support",
+      "executive_scope_signals": [
+        "Built decision-support data models and BI views that connected modernization programs to executive operating decisions",
+        "Converted fragmented financial-services data into governed models for portfolio, budget, and delivery visibility"
+      ],
+      "architecture_scope_signals": [
+        "Dimensional modeling and executive BI semantic views for modernization portfolios",
+        "Budget and portfolio dashboards joining delivery scope, cost assumptions, and adoption status",
+        "Data-quality and lineage controls embedded in reporting workflows"
+      ],
+      "graph_skill_node_ids": [
+        "skill_sr_cloud_data_platform_engineering",
+        "skill_sr_enterprise_portfolio_data_governance",
+        "skill_p2_tech_reference_architecture"
+      ],
+      "linked_source_fact_ids": [
+        "fact_revenue_ops_004",
+        "fact_revenue_ops_005"
+      ],
+      "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_budget_portfolio_bi_views",
+        "metric_ibm_modeling_delivery_cost_assumption_traceability"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_budget_portfolio_bi_views",
+          "metric": "budget, cost-assumption, and delivery-status BI views",
+          "metric_type": "bi_operating_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "budget views",
+            "cost assumptions",
+            "delivery-status BI"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_modeling_delivery_cost_assumption_traceability",
+          "metric": "traceable data models for delivery cost and portfolio assumptions",
+          "metric_type": "data_model_traceability_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "traceable data models",
+            "portfolio assumptions"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM data modeling and BI work supporting portfolio, finance, and delivery decisions for regulated financial-services clients.",
+      "bullet_intent": "Frame as decision-grade BI and data modeling: governed data views, portfolio transparency, and executive operating cadence.",
+      "claim_action": "Built decision-support data models and BI views that connected modernization programs to executive operating decisions",
+      "claim_scope": "IBM data modeling and BI work supporting portfolio, finance, and delivery decisions for regulated financial-services clients.",
+      "claim_outcome": "Frame as decision-grade BI and data modeling: governed data views, portfolio transparency, and executive operating cadence.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_customer_success_value_realization",
+      "root_capability_node_id": "customer_success_value_realization",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "Customer success and value-realization operating cadence",
+      "executive_scope_signals": [
+        "Ran client value-realization motions that connected adoption progress, stakeholder alignment, and expansion readiness",
+        "Turned modernization delivery evidence into customer success narratives and executive account reviews"
+      ],
+      "architecture_scope_signals": [
+        "Adoption-risk tracking across platform migration, data readiness, and stakeholder commitment",
+        "Executive account review artifacts linking solution progress to value realization",
+        "Feedback loops from delivery teams into offering and partner motion refinement"
+      ],
+      "graph_skill_node_ids": [
+        "skill_partner_customer_deal_support",
+        "skill_partner_product_feedback_loops",
+        "skill_p2_tech_adoption_derisking",
+        "skill_p2_gtm_presales_delivery_handoff"
+      ],
+      "linked_source_fact_ids": [
+        "fact_revenue_ops_004"
+      ],
+      "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_value_realization_account_reviews",
+        "metric_ibm_adoption_risk_to_expansion_readiness"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_value_realization_account_reviews",
+          "metric": "value-realization account reviews linking adoption progress to outcomes",
+          "metric_type": "customer_success_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "value-realization account reviews",
+            "adoption progress"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_adoption_risk_to_expansion_readiness",
+          "metric": "adoption-risk removal tied to expansion readiness",
+          "metric_type": "customer_expansion_readiness_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "adoption-risk removal",
+            "expansion readiness"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM customer success and value-realization motion across financial-services modernization programs.",
+      "bullet_intent": "Frame as adoption and value-realization leadership: client success cadence, risk removal, and expansion readiness without unsupported NPS or savings figures.",
+      "claim_action": "Ran client value-realization motions that connected adoption progress, stakeholder alignment, and expansion readiness",
+      "claim_scope": "IBM customer success and value-realization motion across financial-services modernization programs.",
+      "claim_outcome": "Frame as adoption and value-realization leadership: client success cadence, risk removal, and expansion readiness without unsupported NPS or savings figures.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_aws_alliance_partner_cosell_gtm",
+      "root_capability_node_id": "aws_alliance_partner_cosell_gtm",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "AWS partnership, alliance co-sell, and joint GTM execution",
+      "executive_scope_signals": [
+        "Led IBM-AWS alliance co-sell motions for financial-services modernization opportunities",
+        "Aligned partner sales, solution architecture, and executive sponsors around joint cloud and AI modernization pursuits"
+      ],
+      "architecture_scope_signals": [
+        "Joint IBM-AWS account planning and co-sell motion design",
+        "Partner solution architecture mapped to regulated financial-services workloads",
+        "Alliance operating cadence across enablement, executive sponsorship, and opportunity progression"
+      ],
+      "graph_skill_node_ids": [
+        "skill_partner_ibm_aws_alliance_joint_revenue",
+        "skill_sr_w12_hyperscaler_alliance_co_sell",
+        "skill_partner_cloud_vendor_joint_gtm",
+        "skill_partner_hyperscaler_cosell",
+        "skill_partner_joint_solution_development",
+        "skill_partner_alliance_gtm_execution"
+      ],
+      "linked_source_fact_ids": [
+        "fact_partnerships_gtm_002"
+      ],
+      "linked_archive_signal_ids": [
+        "sig_ibm_009",
+        "sig_comp_001"
+      ],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_20pct_joint_revenue_growth",
+        "metric_ibm_alliance_cosell_operating_cadence",
+        "metric_ibm_ai_driven_sales_frameworks"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_20pct_joint_revenue_growth",
+          "metric": "20% joint revenue growth",
+          "metric_type": "quantified_revenue_growth",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "20%",
+            "20% joint revenue"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_alliance_cosell_operating_cadence",
+          "metric": "joint IBM-AWS account planning and co-sell operating cadence",
+          "metric_type": "alliance_operating_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "joint account planning",
+            "co-sell operating cadence"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_ai_driven_sales_frameworks",
+          "metric": "AI-driven sales frameworks for IBM-AWS cloud transformation pursuits",
+          "metric_type": "partner_gtm_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "AI-driven sales frameworks",
+            "cloud transformation pursuits"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM-AWS financial-services alliance and co-sell motion across cloud and AI modernization opportunities.",
+      "bullet_intent": "Frame as alliance GTM leadership: joint planning, solution architecture, co-sell execution, and 20% joint revenue growth only when the metric outcome ID is selected.",
+      "claim_action": "Led IBM-AWS alliance co-sell motions for financial-services modernization opportunities",
+      "claim_scope": "IBM-AWS financial-services alliance and co-sell motion across cloud and AI modernization opportunities.",
+      "claim_outcome": "Frame as alliance GTM leadership: joint planning, solution architecture, co-sell execution, and 20% joint revenue growth only when the metric outcome ID is selected.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies",
+        "headline",
+        "executive_summary"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    },
+    {
+      "role_episode_bundle_id": "reb_ibm_devsecops_release_resilience",
+      "root_capability_node_id": "devsecops_release_resilience",
+      "employer": "IBM",
+      "title": "Lead Client Partner",
+      "time_window": "2017-04 to 2022-10",
+      "employer_node_id": "employment_exp_ibm_001",
+      "bundle_theme": "DevSecOps release resilience and governed delivery automation",
+      "executive_scope_signals": [
+        "Embedded release automation and security scanning into regulated modernization delivery paths",
+        "Improved delivery resilience through pipeline controls, code scanning, and repeatable deployment gates"
+      ],
+      "architecture_scope_signals": [
+        "Automated release pipelines for containerized workloads",
+        "Code scanning and security checks embedded into delivery gates",
+        "Deployment pipeline blueprints for regulated cloud modernization programs"
+      ],
+      "graph_skill_node_ids": [
+        "skill_ibm_devsecops_pipeline_security",
+        "skill_ibm_automated_release_pipelines",
+        "skill_p2_tech_devops_pipeline_blueprint"
+      ],
+      "linked_source_fact_ids": [
+        "fact_engineering_platform_002"
+      ],
+      "linked_archive_signal_ids": [
+        "sig_ibm_003",
+        "sig_ibm_004"
+      ],
+      "linked_metric_outcome_ids": [
+        "metric_ibm_release_gate_security_scanning_coverage",
+        "metric_ibm_deployment_blueprint_repeatability"
+      ],
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_ibm_release_gate_security_scanning_coverage",
+          "metric": "security scanning and release-gate coverage across delivery path",
+          "metric_type": "release_control_coverage_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "security scanning",
+            "release-gate coverage"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_ibm_deployment_blueprint_repeatability",
+          "metric": "repeatable deployment pipeline blueprints for regulated workloads",
+          "metric_type": "deployment_repeatability_metric",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "deployment pipeline blueprints",
+            "repeatable releases"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "operating_context": "IBM regulated delivery programs requiring release governance, security scanning, and deployment repeatability.",
+      "bullet_intent": "Frame as delivery resilience: pipeline automation and security controls, qualitative unless future graph metrics are linked.",
+      "claim_action": "Embedded release automation and security scanning into regulated modernization delivery paths",
+      "claim_scope": "IBM regulated delivery programs requiring release governance, security scanning, and deployment repeatability.",
+      "claim_outcome": "Frame as delivery resilience: pipeline automation and security controls, qualitative unless future graph metrics are linked.",
+      "section_eligibility": [
+        "ibm_bullets",
+        "ibm_narrative",
+        "competencies"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+    }
+  ],
+  "metric_surface_policy": {
+    "approval_model": "presence_in_metric_outcome_nodes_is_approval",
+    "ssot": "graph node/edge/metric IDs",
+    "metrics_should_not_be_scarce": true,
+    "metric_density_rule": "each IBM bundle should carry differentiated outcome metrics where evidence supports it",
+    "forbidden_metric_patterns": [
+      "generic cost-savings claims",
+      "unsupported ARR figures",
+      "unconfirmed savings claims",
+      "unsupported tool-specific claims"
+    ]
   }
- ],
- "promotable_metrics": [
-  {
-   "metric": "20% joint revenue growth",
-   "employer": "IBM",
-   "context": "IBM-AWS alliance",
-   "archive_signal_ids": [
-    "sig_ibm_009"
-   ]
-  },
-  {
-   "metric": "$10M IBM ARR",
-   "employer": "IBM",
-   "context": "IBM Salesforce pipeline expansion",
-   "archive_signal_ids": []
-  },
-  {
-   "metric": "10% FinOps savings",
-   "employer": "IBM",
-   "context": "CI/CD DevSecOps practices",
-   "archive_signal_ids": [
-    "sig_comp_002"
-   ],
-   "caveat": "Unique metric - verify with base resume"
-  }
- ],
- "bundles": [
-  {
-   "role_episode_bundle_id": "reb_ibm_cloud_modernization",
-   "employer": "IBM",
-   "title": "Lead Client Partner",
-   "time_window": "2017-04 to 2022-10",
-   "employer_node_id": "employment_exp_ibm_001",
-   "bundle_theme": "Cloud Modernization / Containerized Microservices",
-   "executive_scope_signals": [
-    "Fortune 500 financial services clients migrating to distributed cloud-native platforms",
-    "Architecture and commercial ownership of cloud and AI transformation portfolio"
-   ],
-   "architecture_scope_signals": [
-    "Containerized microservices replacing monolithic risk calculation engines",
-    "Cloud-native data platforms enabling governed analytics",
-    "Kubernetes, AWS, distributed deployment"
-   ],
-   "graph_skill_node_ids": [
-    "skill_sr_microservices_integration_platform",
-    "skill_sr_cloud_data_platform_engineering",
-    "skill_ibm_automated_release_pipelines"
-   ],
-   "linked_source_fact_ids": [
-    "fact_engineering_platform_002"
-   ],
-   "linked_archive_signal_ids": [
-    "sig_ibm_001",
-    "sig_ibm_003"
-   ],
-   "promotable_metrics": [],
-   "held_metrics": [
-    "$15M modernization deals (HOLD - single source)"
-   ],
-   "excluded_metrics": [
-    "40% calculation latency (DO NOT PROMOTE - overloaded)"
-   ],
-   "operating_context": "IBM Financial Services modernization engagements; migration from monolithic risk systems to cloud-native microservices.",
-   "bullet_intent": "Frame as architecture leadership driving modernization outcomes at scale; no metric without fact_id anchor.",
-   "section_eligibility": [
-    "ibm_bullets",
-    "ibm_narrative"
-   ],
-   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-   "notes": "skill_sr_microservices_integration_platform allowed_sections does not currently include ibm_bullets — add ibm_bullets/ibm_narrative when graph expansion authorized."
-  },
-  {
-   "role_episode_bundle_id": "reb_ibm_devsecops_reliability",
-   "employer": "IBM",
-   "title": "Lead Client Partner",
-   "time_window": "2017-04 to 2022-10",
-   "employer_node_id": "employment_exp_ibm_001",
-   "bundle_theme": "DevSecOps / Release Reliability",
-   "executive_scope_signals": [
-    "Enterprise-grade release governance for financial services clients",
-    "Security embedded into development pipelines from code to production"
-   ],
-   "architecture_scope_signals": [
-    "Automated CI/CD pipelines with integrated code scanning",
-    "DevSecOps scanning on containerized workloads",
-    "Role-based data access controls in pipeline gates"
-   ],
-   "graph_skill_node_ids": [
-    "skill_ibm_devsecops_pipeline_security",
-    "skill_ibm_automated_release_pipelines",
-    "skill_ibm_metadata_audit_rbac"
-   ],
-   "linked_source_fact_ids": [],
-   "linked_archive_signal_ids": [
-    "sig_ibm_003",
-    "sig_ibm_004",
-    "sig_comp_002"
-   ],
-   "promotable_metrics": [
-    "10% FinOps savings via CI/CD best practices (unique metric from Chief AI Officer resume)"
-   ],
-   "held_metrics": [],
-   "excluded_metrics": [
-    "35% production incident reduction (DO NOT PROMOTE - overloaded across 5+ contexts)",
-    "40% DevSecOps overhead reduction (DO NOT PROMOTE - overloaded)"
-   ],
-   "operating_context": "IBM financial services delivery governance; DevSecOps embedded into regulated cloud workloads.",
-   "bullet_intent": "Frame as engineering governance leadership: security + release velocity + RBAC; 10% FinOps savings is uniquely promotable if base resume second-source confirms.",
-   "section_eligibility": [
-    "ibm_bullets",
-    "ibm_narrative"
-   ],
-   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-   "notes": "10% FinOps savings metric is unique (Chief AI Officer resume only) — confirm against base resume before activating."
-  },
-  {
-   "role_episode_bundle_id": "reb_ibm_streaming_realtime_analytics",
-   "employer": "IBM",
-   "title": "Lead Client Partner",
-   "time_window": "2017-04 to 2022-10",
-   "employer_node_id": "employment_exp_ibm_001",
-   "bundle_theme": "Streaming / Near-Real-Time Analytics",
-   "executive_scope_signals": [
-    "Transition from batch-only to streaming ecosystems for financial risk decisions",
-    "Confluent-based pipeline deployments for real-time risk scoring"
-   ],
-   "architecture_scope_signals": [
-    "Streaming analytics ecosystems replacing batch-only data processing",
-    "Confluent event-driven pipelines for market data validation",
-    "Near-real-time risk monitoring for trading and compliance"
-   ],
-   "graph_skill_node_ids": [
-    "skill_confluent_streaming_platforms",
-    "skill_sr_cloud_data_platform_engineering"
-   ],
-   "linked_source_fact_ids": [],
-   "linked_archive_signal_ids": [
-    "sig_ibm_006",
-    "sig_ibm_007"
-   ],
-   "promotable_metrics": [],
-   "held_metrics": [],
-   "excluded_metrics": [
-    "25% system downtime reduction (DO NOT PROMOTE - overloaded)",
-    "25% capacity increase (DO NOT PROMOTE - overloaded)"
-   ],
-   "operating_context": "IBM financial services data modernization; batch-to-streaming migration for risk and market analytics.",
-   "bullet_intent": "Frame as data architecture modernization: real-time risk monitoring, Confluent pipelines, streaming analytics; avoid 25% metric unanchored.",
-   "section_eligibility": [
-    "ibm_bullets",
-    "ibm_narrative"
-   ],
-   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-   "notes": "skill_confluent_streaming_platforms promoted DRAFT→ACTIVE_CONFIRMED in this wave."
-  },
-  {
-   "role_episode_bundle_id": "reb_ibm_metadata_audit_governance",
-   "employer": "IBM",
-   "title": "Lead Client Partner",
-   "time_window": "2017-04 to 2022-10",
-   "employer_node_id": "employment_exp_ibm_001",
-   "bundle_theme": "Metadata / Audit Trail / RBAC Governance",
-   "executive_scope_signals": [
-    "Standardized audit trails and metadata tagging for client compliance obligations",
-    "Role-based access controls governing data governance protocols"
-   ],
-   "architecture_scope_signals": [
-    "Metadata tagging on shared data assets",
-    "Audit trails for alliance partner data sharing",
-    "Role-based data access controls in governance pipelines"
-   ],
-   "graph_skill_node_ids": [
-    "skill_ibm_metadata_audit_rbac"
-   ],
-   "linked_source_fact_ids": [],
-   "linked_archive_signal_ids": [
-    "sig_ibm_008"
-   ],
-   "promotable_metrics": [],
-   "held_metrics": [],
-   "excluded_metrics": [
-    "30% compliance gap reduction (DO NOT PROMOTE - overloaded across 6+ contexts)"
-   ],
-   "operating_context": "IBM financial services compliance governance; partner data sharing protocols and RBAC for regulated environments.",
-   "bullet_intent": "Frame as governance architecture: metadata lineage, audit-ready controls, RBAC; qualitative framing — no 30% metric unanchored.",
-   "section_eligibility": [
-    "ibm_bullets",
-    "ibm_narrative"
-   ],
-   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-   "notes": "skill_ibm_metadata_audit_rbac is a new node added in this wave."
-  },
-  {
-   "role_episode_bundle_id": "reb_ibm_hpc_risk_analytics",
-   "employer": "IBM",
-   "title": "Lead Client Partner",
-   "time_window": "2017-04 to 2022-10",
-   "employer_node_id": "employment_exp_ibm_001",
-   "bundle_theme": "Risk Analytics / HPC Stress Testing",
-   "executive_scope_signals": [
-    "HPC-based stress test acceleration for capital adequacy decisions",
-    "Real-time risk analytics for Fortune 500 financial portfolios"
-   ],
-   "architecture_scope_signals": [
-    "HPC simulations for stress testing — weeks to hours compression",
-    "Containerized HPC clusters for near-real-time risk analytics",
-    "GPU-powered parallel computation for scenario analysis"
-   ],
-   "graph_skill_node_ids": [
-    "skill_sr_cloud_data_platform_engineering",
-    "skill_confluent_streaming_platforms"
-   ],
-   "linked_source_fact_ids": [],
-   "linked_archive_signal_ids": [
-    "sig_ibm_002",
-    "sig_ibm_006"
-   ],
-   "promotable_metrics": [],
-   "held_metrics": [
-    "$15M modernization deals (HOLD - single source, SAE only)"
-   ],
-   "excluded_metrics": [
-    "40% scenario runtime reduction (DO NOT PROMOTE - overloaded)"
-   ],
-   "operating_context": "IBM financial services HPC risk analytics; stress testing modernization from weekly batch to real-time.",
-   "bullet_intent": "Frame as HPC architecture leadership: weeks-to-hours compression, real-time risk; no 40% or $15M metric without anchor.",
-   "section_eligibility": [
-    "ibm_bullets",
-    "ibm_narrative"
-   ],
-   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-   "notes": "skill_risk_greek_stress_testing promoted DRAFT→ACTIVE_CONFIRMED in this wave."
-  },
-  {
-   "role_episode_bundle_id": "reb_ibm_hyperscaler_alliance_partner",
-   "employer": "IBM",
-   "title": "Lead Client Partner",
-   "time_window": "2017-04 to 2022-10",
-   "employer_node_id": "employment_exp_ibm_001",
-   "bundle_theme": "IBM-AWS Hyperscaler Alliance / Partner Execution",
-   "executive_scope_signals": [
-    "P&L accountability within IBM-AWS financial services alliance",
-    "Joint revenue growth through AI-driven sales frameworks"
-   ],
-   "architecture_scope_signals": [
-    "IBM-AWS alliance co-sell framework for financial services",
-    "AI-driven sales motions for cloud transformation deals"
-   ],
-   "graph_skill_node_ids": [
-    "skill_partner_ibm_aws_alliance_joint_revenue",
-    "skill_sr_w12_hyperscaler_alliance_co_sell",
-    "skill_partner_co_selling"
-   ],
-   "linked_source_fact_ids": [
-    "fact_partnerships_gtm_002"
-   ],
-   "linked_archive_signal_ids": [
-    "sig_ibm_009",
-    "sig_comp_001"
-   ],
-   "promotable_metrics": [
-    "20% joint revenue growth (PROMOTABLE - consistent across 2 resumes, IBM-AWS alliance context)",
-    "$10M IBM ARR (PROMOTABLE - consistent across 2 resumes, IBM Salesforce pipeline context)"
-   ],
-   "held_metrics": [
-    "$30M Cloud Pak partner revenue (HOLD - single source, CTO Resume only)"
-   ],
-   "excluded_metrics": [],
-   "operating_context": "IBM-AWS financial services alliance P&L; co-sell revenue growth through AI solutions.",
-   "bullet_intent": "Frame as alliance leadership: IBM-AWS P&L, 20% joint revenue, co-sell motions; 20% and $10M IBM ARR are promotable with fact_id anchor.",
-   "section_eligibility": [
-    "ibm_bullets",
-    "ibm_narrative"
-   ],
-   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-   "notes": "20% joint revenue is the primary promotable IBM metric in this bundle."
-  },
-  {
-   "role_episode_bundle_id": "reb_ibm_technical_presales_gtm",
-   "employer": "IBM",
-   "title": "Lead Client Partner",
-   "time_window": "2017-04 to 2022-10",
-   "employer_node_id": "employment_exp_ibm_001",
-   "bundle_theme": "Technical Pre-Sales / GTM Solution Leadership",
-   "executive_scope_signals": [
-    "Pipeline analytics and discovery-to-qualification motion driving enterprise deal flow",
-    "Executive/CFO buyer alignment on data-centric solution value and ROI",
-    "Estimation, sizing, and technology due-diligence for enterprise pursuits"
-   ],
-   "architecture_scope_signals": [
-    "Demoable solution accelerators and reusable implementation IP for pursuit engineering",
-    "Salesforce-driven pipeline analytics and deal prioritization tooling",
-    "Transparent budget/cost-optimization dashboards backing commercial proposals"
-   ],
-   "graph_skill_node_ids": [
-    "skill_p2_gtm_discovery_qualification",
-    "skill_p2_gtm_solution_mapping",
-    "skill_p2_gtm_executive_buyer_alignment",
-    "skill_p2_gtm_enterprise_deal_support",
-    "skill_p2_tech_demoable_accelerator",
-    "skill_p2_tech_ibm_cloud_portfolio_anchor",
-    "skill_partner_pre_sales"
-   ],
-   "linked_source_fact_ids": [
-    "fact_revenue_ops_001",
-    "fact_revenue_ops_004",
-    "fact_revenue_ops_005"
-   ],
-   "linked_archive_signal_ids": [],
-   "linked_metric_outcome_ids": [
-    "metric_ibm_10m_arr"
-   ],
-   "promotable_metrics": [
-    "$10M IBM ARR (PROMOTABLE - consistent across 2 resumes, IBM Salesforce pipeline context)"
-   ],
-   "operating_context": "IBM financial-services technical pre-sales and GTM solution leadership (career-phase: pre-sales/GTM blended with platform delivery)",
-   "bullet_intent": "Commercial-engineering bullets: pipeline analytics, buyer alignment, estimation/diligence — grounded in the slot fact's GTM activity",
-   "held_metrics": [],
-   "excluded_metrics": [],
-   "section_eligibility": [
-    "ibm_bullets",
-    "ibm_narrative"
-   ],
-   "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-   "notes": "Pre-sales/GTM is a primary IBM theme (operator split 2026-06-11: 30%). Empty section_eligibility was a bug — the bundle's 7 GTM skills were unreachable in IBM lanes."
-  }
- ]
 }

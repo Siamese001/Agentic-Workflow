@@ -24,26 +24,19 @@ _SECTION_COMPANY_HINTS: dict[str, tuple[str, ...]] = {
     "ey_narrative": ("ey", "ernst", "young", "regulatory", "audit"),
 }
 
-# Employers whose lanes are grounded in their OWN base-resume employment bullets (not the generic
-# substrate-ledger company-hint fallback). Plan apps-rg-insurtech-ey-unlock-a4c0f0 W3/P3: InsurTech
-# and EY were unlocked to generate like Unify/IBM, grounded in the candidate's verbatim, in-period
-# base-resume facts. Needles match the base-resume employer label (base["facts"]["employment"]).
-_ROLE_EPISODE_BASE_RESUME_NEEDLES: dict[str, tuple[str, ...]] = {
-    "insurtech_bullets": ("insurtech",),
-    "insurtech_narrative": ("insurtech",),
-    "ey_bullets": ("ernst", "young"),
-    "ey_narrative": ("ernst", "young"),
-}
+# Deprecated compatibility surface. Role-episode lanes now use graph bundle ids as claim evidence;
+# base-resume employment bullets are identity-only and must not be used as proof.
+_ROLE_EPISODE_BASE_RESUME_NEEDLES: dict[str, tuple[str, ...]] = {}
 
 _SECTION_MIN_FACTS: dict[str, int] = {
     "ibm_bullets": 6,
     "ibm_narrative": 6,
     "unify_bullets": 6,
     "unify_narrative": 6,
-    "insurtech_bullets": 3,
-    "insurtech_narrative": 3,
-    "ey_bullets": 3,
-    "ey_narrative": 3,
+    "insurtech_bullets": 12,
+    "insurtech_narrative": 12,
+    "ey_bullets": 6,
+    "ey_narrative": 6,
 }
 
 _ROLE_BUNDLE_FILE_BY_SECTION: dict[str, str] = {
@@ -124,12 +117,13 @@ def _role_episode_bundle_plan(
     for bundle in doc.get("bundles") or []:
         if not isinstance(bundle, dict):
             continue
-        linked = [str(x).strip() for x in (bundle.get("linked_source_fact_ids") or []) if str(x).strip()]
-        fid = linked[0] if linked else ""
+        fid = str(bundle.get("role_episode_bundle_id") or "").strip()
         if not fid:
             continue
         signals = [str(x).strip() for x in (bundle.get("executive_scope_signals") or []) if str(x).strip()]
-        claim = signals[0] if signals else str(bundle.get("bullet_intent") or bundle.get("bundle_theme") or "").strip()
+        claim = str(bundle.get("claim_text") or "").strip()
+        if not claim:
+            claim = signals[0] if signals else str(bundle.get("bullet_intent") or bundle.get("bundle_theme") or "").strip()
         facts.append(
             {
                 "fact_id": fid,
@@ -138,6 +132,11 @@ def _role_episode_bundle_plan(
                 "role_episode_bundle_id": str(bundle.get("role_episode_bundle_id") or ""),
                 "graph_skill_node_ids": [str(x) for x in (bundle.get("graph_skill_node_ids") or [])],
                 "metric_outcome_ids": [str(x) for x in (bundle.get("linked_metric_outcome_ids") or [])],
+                "source_fact_ids": [fid],
+                "linked_identity_fact_ids": [str(x) for x in (bundle.get("linked_source_fact_ids") or [])],
+                "srfs_verification_status": "GRAPH_ROLE_EPISODE_BUNDLE",
+                "confidence": str(bundle.get("support_level") or "HIGH"),
+                "claim_eligible_medium": True,
                 "source_trace_archive_relpaths": [],
             }
         )
@@ -152,9 +151,9 @@ def _role_episode_bundle_plan(
         "required_fact_ids": [str(f["fact_id"]) for f in facts],
         "role_episode_bundle_fallback": True,
     }
-    from apps_rg.runtime.proof_pool_resolver import _stamp_unify_canonical_bullet_ids
+    from apps_rg.runtime.sections.selected_role_fact_set import build_allowed_fact_ids_for_plan_facts
 
-    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
+    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
     return {k: v for k, v in plan.items() if not str(k).startswith("_")}, ordered, allowed
 
 
@@ -394,70 +393,13 @@ def _base_resume_role_episode_plan(
     limit: int,
     repo_root: Path,
 ) -> tuple[dict[str, Any], list[str], set[str]] | None:
-    """Ground insurtech/ey lanes in the candidate's OWN base-resume employment bullets.
+    """Deprecated: role-episode proof is graph bundle based.
 
-    Unlike the company-hint fallback (which searches a generic substrate ledger and returns
-    borrowed facts), this sources the exact base-resume bullets for the employer
-    (``bul_insurtech_*`` / ``bul_ey_*``) — the verbatim, canonical, in-period facts. Mirrors the
-    dedicated-planner pattern of IBM/Unify so InsurTech and EY are grounded in real experience for
-    that time window (plan a4c0f0 W3/P3). Returns None when the employer/bullets are absent.
+    The base resume is retained only for static identity fields, so this compatibility hook must
+    never return claim evidence.
     """
-    from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
-    from apps_rg.runtime.proof_pool_resolver import _sanitize_plan
-    from apps_rg.runtime.sections.selected_role_fact_set import (
-        build_allowed_fact_ids_for_plan_facts,
-    )
-
-    try:
-        base, _bp, _bh = load_lane_base_resume_json(source_resume_ref=None, repo_root=repo_root)
-    except (FileNotFoundError, ValueError, RuntimeError):
-        return None
-    employment = ((base.get("facts") or {}).get("employment")) or []
-    block: dict[str, Any] | None = None
-    for emp_row in employment:
-        if not isinstance(emp_row, dict):
-            continue
-        label = str(emp_row.get("employer") or emp_row.get("company") or "").lower()
-        if any(n in label for n in needles):
-            block = emp_row
-            break
-    if block is None:
-        return None
-    bullets = [b for b in (block.get("bullets") or []) if isinstance(b, dict)]
-    facts: list[dict[str, Any]] = []
-    for b in bullets[: max(limit, 3)]:
-        bid = str(b.get("bullet_id") or "").strip()
-        text = str(b.get("text") or b.get("bullet_text") or "").strip()
-        if not bid or not text:
-            continue
-        facts.append(
-            {
-                "fact_id": bid,
-                "candidate_fact_id": bid,
-                "claim_text": text,
-                "source_fact_ids": [bid],
-                "srfs_verification_status": "BASE_RESUME_CANONICAL",
-                "confidence": "HIGH",
-                "claim_eligible_medium": True,
-                "employer": block.get("employer"),
-                "technologies": list(b.get("technologies") or []),
-                "domain": b.get("domain"),
-            }
-        )
-    if not facts:
-        return None
-    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
-    plan = {
-        "section_id": section_id,
-        "selection_method": f"base_resume_employment_{section_id}",
-        "facts": facts,
-        "required_fact_ids": [str(f["fact_id"]) for f in facts],
-        "employer": block.get("employer"),
-        "employment_window": (
-            f"{block.get('start_date', '')} to {block.get('end_date', '')}".strip()
-        ),
-    }
-    return _sanitize_plan(plan), ordered, allowed
+    _ = (section_id, needles, limit, repo_root)
+    return None
 
 
 def allocate_section_facts_from_graph_substrate(
@@ -518,19 +460,14 @@ def allocate_section_facts_from_graph_substrate(
             f">={IBM_BULLETS_MIN_PHASE2_FACTS} Phase 2 track facts; ranked plan unavailable"
         )
 
-    # InsurTech/EY: grounded in the candidate's own base-resume employment bullets (plan a4c0f0
-    # W3/P3). These employers were unlocked from locked-copy to generate like Unify/IBM; their
-    # verbatim, in-period bullets are the authoritative facts, NOT the generic substrate ledger.
-    base_resume_needles = _ROLE_EPISODE_BASE_RESUME_NEEDLES.get(section_id)
-    if base_resume_needles:
-        grounded = _base_resume_role_episode_plan(
-            section_id,
-            needles=base_resume_needles,
-            limit=min_required or 3,
+    if section_id in _ROLE_BUNDLE_FILE_BY_SECTION:
+        bundled = _role_episode_bundle_plan(
+            section_id=section_id,
             repo_root=repo_root,
+            limit=min_required or 3,
         )
-        if grounded is not None:
-            return grounded
+        if bundled is not None:
+            return bundled
 
     srfs = select_candidate_facts_for_role(
         target_company=target_company,

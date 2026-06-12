@@ -24,20 +24,20 @@ Score contract:
 
 Rubric dimensions:
 1. factual_support: every material claim maps to claim_ledger and source_fact_ids from the allowed proof pool.
-2. claim_ledger_grounding: claim_ledger rows have non-empty claim_text and cite only bul_insurtech_* or bul_ey_* source facts.
+2. claim_ledger_grounding: claim_ledger rows have non-empty claim_text and cite only role_episode_bundle_id graph evidence.
 3. jd_briefing_targeting_discipline: JD and briefing are targeting only; never JD-as-proof or briefing-as-proof.
 4. role_fit_targeting: targeting may shape emphasis without becoming proof of experience.
 
 Role-lane product shape:
 - Bullet lanes: exactly 3 bullets, one high-impact thought per bullet, no embedded newline.
 - Narrative lanes: exactly one sentence, no more than {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters.
-- Source namespaces: InsurTech uses bul_insurtech_* only; EY uses bul_ey_* only.
+- Source namespaces: InsurTech uses reb_insurtech_* graph bundle ids; EY uses reb_ey_* graph bundle ids.
 - No first-person voice and no em dash in display text.
 
 Decisive failure triggers:
 - unsupported claim, missing source_fact_ids, or claim_ledger omission
 - JD, briefing, or target company used as proof of experience
-- wrong source namespace, cross-employer leakage, or mixed bul_insurtech_* / bul_ey_* evidence
+- wrong source namespace, cross-employer leakage, or mixed InsurTech/EY graph evidence
 - keyword stuffing, copied JD phrases, or ATS laundry-list phrasing
 - wrong output shape: not 3 bullets for bullet lanes or not exactly one sentence for narrative lanes
 """.strip()

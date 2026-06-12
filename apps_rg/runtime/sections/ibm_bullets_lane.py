@@ -453,11 +453,8 @@ def bullets_display_text(bullets: list[dict[str, Any]]) -> str:
 
 
 IBM_LOCKED_METRIC_CANONICAL: dict[str, str] = {
-    "bul_ibm_001": "99.9%",
-    "bul_ibm_002": "30%",
-    "bul_ibm_003": "25%",
-    "bul_ibm_004": "50%",
-    "bul_ibm_005": "$15M",
+    "bul_ibm_002": "weeks to hours",
+    "bul_ibm_005": "20%",
 }
 
 _IBM_FOREIGN_METRIC_SCRUB_RE = (
@@ -466,7 +463,6 @@ _IBM_FOREIGN_METRIC_SCRUB_RE = (
     re.compile(r"\b25\s*%", re.IGNORECASE),
     re.compile(r"\b50\s*%", re.IGNORECASE),
     re.compile(r"\$15\s*m(?:illion)?\b", re.IGNORECASE),
-    re.compile(r"\$10\s*m(?:illion)?\b", re.IGNORECASE),
     re.compile(r"\b40\s*%", re.IGNORECASE),
 )
 
@@ -496,20 +492,9 @@ def inject_ibm_locked_metric_anchors(
 ) -> None:
     """Inject locked IBM metric tokens per ``IBM_METRIC_ANCHOR_RULES`` when model output omits them.
 
-    Closes Bug:IbmLockedMetricInjectionGarblesGraphSelectedBullets (Brown SVP
-    full_resume_6ec3b47aeda0 ibm_bullets X3_BLOCK: all 3 judges decisive-failed on garbled
-    text like "generating in new annual recurring revenue Delivered 30% outcomes at enterprise
-    scale" because the canonical IBM_LOCKED_METRIC_CANONICAL hardcoded "30%" for
-    ``bul_ibm_002`` but the augmented_skills_graph_ibm_bullets_phase2_track_ranked selector
-    had assigned bul_ibm_002 to fact_revenue_ops_001 ("$10M ACV"); injector then scrubbed the
-    legitimate $10M and appended the wrong canonical metric.
-
-    Resolution rule: when the active plan_fact for a bullet slot carries its own metric_raw
-    that conflicts with the canonical IBM_LOCKED_METRIC_CANONICAL token (semantic mismatch),
-    skip canonical-metric injection for that slot. The bullet keeps its graph-selected metric
-    naturally. Only fall back to the canonical token when:
-      (a) the plan_fact has no metric_raw AND the bullet text has no metric, OR
-      (b) the plan_fact's metric_raw aligns with the canonical (already-correct case).
+    Only stable graph-approved visible metrics are eligible for deterministic insertion.
+    If the active plan fact carries a different metric, the plan metric wins; if it
+    carries no metric, this helper does not fabricate one.
     """
     from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_METRIC_ANCHOR_RULES
     from apps_rg.runtime.validators.bullet_line_discipline_x2 import DEFAULT_BULLET_MAX_CHARS
@@ -568,9 +553,8 @@ def inject_ibm_locked_metric_anchors(
             #   (a) plan_metric exists but conflicts with canonical -> surface the PLAN fact's
             #       own metric token (it is genuinely fact-backed) so the bullet owns a metric
             #       anchor without fabricating the canonical figure. This closes the case where
-            #       the model omitted its own approved metric (e.g. fact carries "$10M new ARR"
-            #       but the model wrote a qualitative bullet) and x2_ibm_metric_anchor_bullet_
-            #       ownership fails for *_missing_metric_token.
+            #       the model omitted its own approved graph metric and
+            #       x2_ibm_metric_anchor_bullet_ownership fails for *_missing_metric_token.
             #   (b) plan_metric is empty/has_metric is false -> the graph fact has no metric to
             #       claim; forcing any metric token would fabricate an unsupported claim, so skip.
             plan_token = _plan_metric_display_token(plan_metric)
@@ -631,65 +615,40 @@ def inject_ibm_locked_metric_anchors(
         )
 
 
-_GATED_FINOPS_OUTCOME_ID = "metric_ibm_10pct_finops_savings_gated"
-_CONFIRMED_FINOPS_OUTCOME_ID = "metric_ibm_10pct_finops_savings_confirmed"
-
-
 def demote_gated_ibm_metrics(parsed: dict[str, Any]) -> None:
-    """Demote unconfirmed/gated IBM metrics to qualitative claims.
-
-    The 10% FinOps savings figure is bound to ``metric_ibm_10pct_finops_savings_gated``; without
-    the matching ``_confirmed`` outcome id it is not promotable, and
-    ``x2_ibm_metric_outcome_id_required_when_has_metric`` blocks. When a bullet/change_log carries
-    only the gated id, drop that outcome id and strip the ``10%`` (FinOps/savings/cost) figure from
-    the bullet text so the bullet reads qualitatively instead of asserting an unpromotable metric.
-    No confirmed metric is ever removed.
-    """
+    """Demote metric IDs that are not approved by the IBM graph allow-list."""
     if not isinstance(parsed, dict):
         return
     changelog = parsed.get("change_log")
     if not isinstance(changelog, list):
         return
-    gated_bullet_ids: set[str] = set()
+    from apps_rg.runtime.sections.ibm_role_episode_evidence import PROMOTABLE_METRIC_OUTCOME_IDS
+
+    allowed = set(PROMOTABLE_METRIC_OUTCOME_IDS)
+    demoted_bullet_ids: set[str] = set()
     for entry in changelog:
         if not isinstance(entry, dict):
             continue
         ids = [str(x) for x in (entry.get("metric_outcome_ids") or [])]
-        if _GATED_FINOPS_OUTCOME_ID in ids and _CONFIRMED_FINOPS_OUTCOME_ID not in ids:
+        approved_ids = [x for x in ids if x in allowed]
+        rejected_ids = [x for x in ids if x not in allowed and x.startswith("metric_ibm_")]
+        if rejected_ids:
             bid = str(entry.get("bullet_id") or "").strip()
-            if bid:
-                gated_bullet_ids.add(bid)
-            entry["metric_outcome_ids"] = [
-                x for x in ids if x != _GATED_FINOPS_OUTCOME_ID
-            ]
+            if bid and not approved_ids:
+                demoted_bullet_ids.add(bid)
+            entry["metric_outcome_ids"] = approved_ids
             entry.setdefault("change_notes", [])
             if isinstance(entry["change_notes"], list):
-                entry["change_notes"].append("demoted_gated_finops_metric_to_qualitative")
-    if not gated_bullet_ids:
+                entry["change_notes"].append("demoted_unapproved_ibm_metric_to_qualitative")
+    if not demoted_bullet_ids:
         return
     for bullet in parsed.get("bullets") or []:
         if not isinstance(bullet, dict):
             continue
-        if str(bullet.get("bullet_id") or "").strip() not in gated_bullet_ids:
+        if str(bullet.get("bullet_id") or "").strip() not in demoted_bullet_ids:
             continue
-        text = str(bullet.get("bullet_text") or "")
-        # Strip a "10%" figure tied to finops/savings/cost; keep the surrounding clause readable.
-        new_text = re.sub(
-            r"\b(?:achieving|delivering|driving|with|of)?\s*10\s*%\s*"
-            r"(?:in\s+)?(?:finops|cost|savings|efficiency)[^.,;]*",
-            "",
-            text,
-            flags=re.IGNORECASE,
-        )
-        new_text = re.sub(r"\b10\s*%\b", "", new_text)
-        new_text = re.sub(r"\s{2,}", " ", new_text).replace(" ,", ",").replace(" .", ".").strip()
-        if new_text and not new_text.rstrip().endswith((".", "!", "?")):
-            new_text = new_text.rstrip() + "."
-        if new_text != text:
-            bullet["bullet_text"] = new_text
-            if str(bullet.get("metric_raw") or "").strip().startswith("10"):
-                bullet["metric_raw"] = ""
-                bullet["has_metric"] = bool(re.search(r"[\$\d]", new_text))
+        bullet["metric_raw"] = ""
+        bullet["has_metric"] = False
 
 
 # HOLD/DO_NOT_PROMOTE figures (x2_ibm_hold_metric_forbidden_in_output) — never promotable.
@@ -706,8 +665,7 @@ def demote_hold_metrics(parsed: dict[str, Any]) -> None:
     W5 (plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): sibling of
     ``demote_gated_ibm_metrics`` — the PA forbids these figures, but when a generation path
     still surfaces one, this deterministic backstop removes the unpromotable figure so the
-    bullet reads qualitatively. Promotable metrics ($10M ARR, 20% joint revenue growth) are
-    never touched.
+    bullet reads qualitatively. Graph-approved IBM metrics are never touched.
     """
     if not isinstance(parsed, dict):
         return
@@ -742,8 +700,7 @@ def scrub_cross_slot_plan_metrics(parsed: dict[str, Any], plan_facts: list[dict[
     """Remove a slot's plan-fact metric token from every OTHER slot's bullet text.
 
     W4-residual (plan apps-rg-aig-remaining-lanes-closeout-d4e1f7): the gemini X1D judge
-    decisive-failed ibm_bullets because a bullet carried ANOTHER slot's metric (e.g. bullet 5
-    claiming the "$10M new ARR" that belongs to bul_ibm_001's fact). The canonical-anchor scrub
+    decisive-failed ibm_bullets because a bullet carried ANOTHER slot's metric. The canonical-anchor scrub
     only covers IBM_METRIC_ANCHOR_RULES tokens; plan-fact metrics (graph-selected) were not
     scrubbed cross-slot. A metric claim not supported by the slot's own source fact is
     unsupported by construction — remove it deterministically.
@@ -768,9 +725,7 @@ def scrub_cross_slot_plan_metrics(parsed: dict[str, Any], plan_facts: list[dict[
         for root, tok in tokens_by_root.items():
             if root == own or not tok or tok.lower() not in text.lower():
                 continue
-            # Clause-aware removal: strip the token PLUS its dangling verb/prepositional shell
-            # ("generating $10M in new ARR" -> remove the whole clause, not just "$10M", which
-            # left fragments like "generating in new ARR" that the X1D judge flagged).
+            # Clause-aware removal: strip the token plus its dangling verb/prepositional shell.
             clause = re.compile(
                 r"(?:,?\s*(?:and\s+)?(?:generating|delivering|driving|producing|securing|adding)\s+)?"
                 + re.escape(tok)
@@ -796,8 +751,7 @@ def _plan_metric_display_token(plan_metric: str) -> str:
 
     Mirrors the X2 gate's accepted-chunk regex (``[\\$\\d][\\$\\d.,%a-z-]*``) so the injected token
     is recognized by ``x2_ibm_metric_anchor_bullet_ownership``. Returns the first numeric/currency
-    token from the first ``|``-delimited metric segment (e.g. ``"$10M new ARR|..."`` -> ``"$10M"``,
-    ``"30% cost optimization"`` -> ``"30%"``). Empty when no numeric token is present.
+    token from the first ``|``-delimited metric segment. Empty when no numeric token is present.
     """
     seg = str(plan_metric or "").split("|")[0].strip()
     m = re.search(r"[\$\d][\$\d.,%]*[A-Za-z%]?", seg)
@@ -1088,24 +1042,21 @@ def run_ibm_bullets_execution(
                 would_hydrate_fn=should_hydrate_ibm_bullets_from_canonical,
             )
             # Deterministic metric anchoring: when a bullet's graph-selected plan fact carries
-            # an approved metric the model dropped (e.g. fact_revenue_ops_001 "$10M new ARR"
-            # surfaced as a qualitative bullet), surface that fact-backed token so
+            # an approved metric the model dropped, surface that fact-backed token so
             # x2_ibm_metric_anchor_bullet_ownership is satisfied without fabricating figures.
             inject_ibm_locked_metric_anchors(
                 parsed,
                 plan_facts=ibm_facts,
                 allowed_fact_ids=allowed_fact_ids,
             )
-            # Demote gated/unconfirmed metrics (e.g. 10% FinOps savings bound only to
-            # metric_ibm_10pct_finops_savings_gated) to qualitative so
+            # Demote gated/unconfirmed metrics to qualitative so
             # x2_ibm_metric_outcome_id_required_when_has_metric does not block on an
             # unpromotable figure.
             demote_gated_ibm_metrics(parsed)
             # W5 backstop: strip HOLD/DO_NOT_PROMOTE figures (25/30/35/40%, $15M, $30M)
             # any path still surfaced despite the PA ban.
             demote_hold_metrics(parsed)
-            # W4-residual: a bullet must not claim ANOTHER slot's plan metric (judge
-            # decisive-failed on cross-slot "$10M new ARR"); scrub deterministically.
+            # W4-residual: a bullet must not claim ANOTHER slot's plan metric; scrub deterministically.
             scrub_cross_slot_plan_metrics(parsed, ibm_facts)
             align_ibm_claim_ledger_from_canonical_facts(
                 parsed,

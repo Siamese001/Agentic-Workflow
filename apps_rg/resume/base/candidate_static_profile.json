@@ -1,0 +1,72 @@
+{
+  "name": "Amit Ayer",
+  "phone": "+1-917-239-3830",
+  "email": "amitayer1@gmail.com",
+  "linkedin": "linkedin.com/in/amitayer1",
+  "github": "github.com/Siamese001/Agentic-Workflow",
+  "location": "Boca Raton, FL",
+  "certifications": [
+    {
+      "name": "Certified Machine Learning Engineer \u2013 Associate",
+      "issuing_organization": "AWS",
+      "year": "2025"
+    },
+    {
+      "name": "Databricks Lakehouse Fundamentals Accreditation",
+      "issuing_organization": "Databricks",
+      "year": "2023"
+    },
+    {
+      "name": "Certified Solutions Architect \u2013 Professional",
+      "issuing_organization": "AWS",
+      "year": "2023"
+    },
+    {
+      "name": "Fellow of the Society of Actuaries",
+      "issuing_organization": "Society of Actuaries",
+      "year": "2010"
+    }
+  ],
+  "employment_identity": [
+    {
+      "company": "Unify Consulting",
+      "title": "SVP Engineering, Agentic AI Platforms",
+      "location": "Boca Raton, FL",
+      "start_date": "2023-02",
+      "end_date": "present",
+      "dos": "2023-02-present"
+    },
+    {
+      "company": "IBM",
+      "title": "Partner",
+      "location": "Edgewater, NJ",
+      "start_date": "2017-04",
+      "end_date": "2022-10",
+      "dos": "2017-04-2022-10"
+    },
+    {
+      "company": "InsurTech Cloud Solutions",
+      "title": "Chief Technology Officer",
+      "location": "New York, NY",
+      "start_date": "2014-04",
+      "end_date": "2017-03",
+      "dos": "2014-04-2017-03"
+    },
+    {
+      "company": "Ernst & Young",
+      "title": "Principal",
+      "location": "New York, NY",
+      "start_date": "2009-10",
+      "end_date": "2014-03",
+      "dos": "2009-10-2014-03"
+    },
+    {
+      "company": "Early Career Roles",
+      "title": "Actuarial Consultant and Quantitative Roles",
+      "location": "Philadelphia, PA",
+      "start_date": "2002-10",
+      "end_date": "2009-09",
+      "dos": "2002-10-2009-09"
+    }
+  ]
+}

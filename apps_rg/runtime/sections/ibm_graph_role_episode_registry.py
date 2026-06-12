@@ -117,7 +117,7 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
     # Section eligibility — ibm_bullets or ibm_narrative
     section_elig = bundle.get("section_eligibility") or []
     valid_sections = {"ibm_bullets", "ibm_narrative"}
-    unknown = set(section_elig) - valid_sections - {"competencies", "executive_summary"}
+    unknown = set(section_elig) - valid_sections - {"competencies", "executive_summary", "headline"}
     if unknown:
         violations.append(f"Unknown section_eligibility values: {sorted(unknown)}")
 

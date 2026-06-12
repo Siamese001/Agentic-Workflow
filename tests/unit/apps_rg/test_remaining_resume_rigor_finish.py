@@ -273,6 +273,42 @@ def test_unify_role_episode_bundles_validate_with_bindings():
         assert b["graph_skill_node_ids"]
 
 
+def test_unify_metric_outcome_nodes_are_graph_ssot():
+    data = json.loads(
+        (REPO_ROOT / "apps_rg" / "fact_inventory" / "unify_role_episode_bundles.json").read_text("utf-8")
+    )
+    nodes = data.get("metric_outcome_nodes") or {}
+    approved = data.get("approved_metric_outcome_ids") or {}
+    policy = data.get("metric_surface_policy") or {}
+
+    assert nodes
+    assert set(nodes) == set(approved)
+    assert policy.get("approval_model") == "presence_in_metric_outcome_nodes_is_approval"
+    for mid, node in nodes.items():
+        assert node["metric_outcome_id"] == mid
+        assert node["approved"] is True
+        assert node["approval_status"] == "APPROVED_GRAPH_SSOT"
+        assert node["support_level"] == "approved_by_graph_presence"
+        assert node["bundle_bindings"]
+
+    linked_seen: set[str] = set()
+    for b in data["bundles"]:
+        linked = list(b.get("linked_metric_outcome_ids") or [])
+        if not linked:
+            continue
+        promotable_ids = {
+            str(m.get("metric_outcome_id"))
+            for m in b.get("promotable_metrics") or []
+            if isinstance(m, dict)
+        }
+        assert promotable_ids == set(linked)
+        for mid in linked:
+            assert mid in nodes
+            assert b["role_episode_bundle_id"] in nodes[mid]["bundle_bindings"]
+            linked_seen.add(mid)
+    assert linked_seen == set(nodes)
+
+
 def test_unify_internal_only_bundle_not_external_claim():
     from apps_rg.runtime.sections.unify_graph_role_episode_registry import get_bundle_by_id
 

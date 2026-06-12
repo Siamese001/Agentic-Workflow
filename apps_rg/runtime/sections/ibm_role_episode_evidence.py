@@ -6,7 +6,6 @@ Base resume and archive material are calibration/provenance only — never prose
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 from typing import Any
 
@@ -35,34 +34,38 @@ IBM_BULLET_SLOT_IDS: tuple[str, ...] = (
     "bul_ibm_005",
 )
 
-# One primary role episode bundle per bullet slot (employer-bound themes).
-# Slot -> bundle coherence (user directive, plan apps-rg-aig-remaining-lanes-closeout-d4e1f7):
-# the IBM career phase blends platform delivery with Technical Pre-Sales / GTM. The graph-selected
-# slot facts are: 001 Salesforce pipeline analytics ($10M ARR), 002 budget/cost-optimization
-# dashboards, 003 M&A diligence/estimation, 004 regulatory IT/legacy modernization, 005 alliance
-# revenue. Slots 001-003 previously bound platform bundles (cloud_modernization/devsecops) whose
-# themes contradicted their GTM facts — the X1D judge decisive-failed the mismatch. They now bind
-# the dedicated reb_ibm_technical_presales_gtm episode; 004 moves to cloud_modernization
-# (its fact IS legacy modernization; metadata_audit_governance carries Basel/CCAR, an EY-phase
-# theme per the career-phase mapping).
+# One primary role episode bundle per bullet slot. The full IBM graph has more
+# roots than five bullets; these are the highest-signal bullet lanes.
 IBM_BULLET_SLOT_BUNDLE_MAP: dict[str, str] = {
-    "bul_ibm_001": "reb_ibm_technical_presales_gtm",
-    "bul_ibm_002": "reb_ibm_technical_presales_gtm",
-    "bul_ibm_003": "reb_ibm_technical_presales_gtm",
-    "bul_ibm_004": "reb_ibm_cloud_modernization",
-    "bul_ibm_005": "reb_ibm_hyperscaler_alliance_partner",
+    "bul_ibm_001": "reb_ibm_aws_modernization_architecture",
+    "bul_ibm_002": "reb_ibm_cognitive_business_decision_support",
+    "bul_ibm_003": "reb_ibm_presales_solution_engineering",
+    "bul_ibm_004": "reb_ibm_data_modeling_bi_decision_support",
+    "bul_ibm_005": "reb_ibm_aws_alliance_partner_cosell_gtm",
 }
 
-# Promotable metric outcome IDs (explicit allow-list for X2 metric binding).
-PROMOTABLE_METRIC_OUTCOME_IDS: tuple[str, ...] = (
-    "metric_ibm_20pct_joint_revenue_growth",
-    "metric_ibm_10m_arr",
-    "metric_ibm_10pct_finops_savings_gated",
-)
+def _ibm_bundle_doc() -> dict[str, Any]:
+    path = Path(__file__).resolve().parents[3] / "apps_rg" / "fact_inventory" / "ibm_role_episode_bundles.json"
+    return json.loads(path.read_text(encoding="utf-8"))
 
-# FinOps metric requires second-source confirmation before metric-bearing claims.
-FINOPS_METRIC_OUTCOME_ID = "metric_ibm_10pct_finops_savings_gated"
-FINOPS_CONFIRMED_OUTCOME_ID = "metric_ibm_10pct_finops_savings_confirmed"
+
+def _ibm_metric_outcome_nodes() -> dict[str, dict[str, Any]]:
+    nodes = _ibm_bundle_doc().get("metric_outcome_nodes") or {}
+    return {str(k): v for k, v in nodes.items() if isinstance(v, dict)}
+
+
+def _ibm_promotable_metric_ids() -> tuple[str, ...]:
+    ids: list[str] = []
+    for bundle in get_all_bundles():
+        for mid in bundle.get("linked_metric_outcome_ids") or []:
+            s = str(mid).strip()
+            if s and s not in ids:
+                ids.append(s)
+    return tuple(ids)
+
+
+# Promotable metric outcome IDs (graph-native allow-list for X2 metric binding).
+PROMOTABLE_METRIC_OUTCOME_IDS: tuple[str, ...] = _ibm_promotable_metric_ids()
 
 FORBIDDEN_METRIC_SUBSTRINGS: tuple[str, ...] = (
     "$15m",
@@ -77,9 +80,6 @@ FORBIDDEN_METRIC_SUBSTRINGS: tuple[str, ...] = (
     "40%",
     "50%",
 )
-
-# Watson Studio: supporting technical context only — not metric-bearing authority.
-WATSON_STUDIO_SKILL_ID = "skill_ibm_watson_studio_analytics"
 
 IBM_FORBIDDEN_C0_PROMPT_SUBSTRINGS: tuple[str, ...] = (
     "CANONICAL IBM FACTS",
@@ -119,17 +119,24 @@ def _skill_rows_by_id(repo_root: Path | None = None) -> dict[str, dict[str, Any]
 
 
 def _bundle_allowed_metric_outcome_ids(bundle: dict[str, Any]) -> list[str]:
-    """Map bundle promotable_metrics strings to stable outcome IDs."""
+    """Return graph-native metric outcome IDs linked to this bundle."""
+    linked = [str(x) for x in (bundle.get("linked_metric_outcome_ids") or []) if str(x).strip()]
+    if linked:
+        return linked
     ids: list[str] = []
     for entry in bundle.get("promotable_metrics") or []:
         s = str(entry).lower()
         if "20%" in s and "joint" in s:
             ids.append("metric_ibm_20pct_joint_revenue_growth")
-        elif "$10m" in s or "10m arr" in s:
-            ids.append("metric_ibm_10m_arr")
-        elif "10%" in s and "finops" in s:
-            ids.append(FINOPS_METRIC_OUTCOME_ID)
+        elif "weeks" in s and "hours" in s:
+            ids.append("metric_ibm_stress_test_cycle_weeks_to_hours")
     return ids
+
+
+def _metric_label(metric_id: str) -> str:
+    node = _ibm_metric_outcome_nodes().get(metric_id) or {}
+    label = str(node.get("metric") or "").strip()
+    return f"{metric_id} | {label}" if label else metric_id
 
 
 def _mechanism_vocab_from_bundle(bundle: dict[str, Any]) -> list[str]:
@@ -148,16 +155,21 @@ def _mechanism_vocab_from_bundle(bundle: dict[str, Any]) -> list[str]:
         else:
             # Extract known tech tokens from longer signals.
             for kw in (
+                "AWS",
                 "microservices",
                 "cloud-native",
                 "DevSecOps",
                 "CI/CD",
-                "streaming",
-                "Confluent",
+                "HPC",
+                "BI",
+                "data models",
+                "decision support",
+                "reference architecture",
+                "accelerator",
+                "pre-sales",
+                "offering",
                 "metadata",
                 "audit",
-                "RBAC",
-                "HPC",
                 "stress testing",
                 "IBM-AWS",
                 "alliance",
@@ -212,6 +224,11 @@ def build_ibm_role_episode_section_packet(
                 "architecture_scope_signals": list(bundle.get("architecture_scope_signals") or []),
                 "operating_context": bundle.get("operating_context"),
                 "bullet_intent": bundle.get("bullet_intent"),
+                "graph_bundle_story": {
+                    "claim_action": bundle.get("claim_action"),
+                    "claim_scope": bundle.get("claim_scope"),
+                    "claim_outcome": bundle.get("claim_outcome"),
+                },
                 "section_eligibility": list(bundle.get("section_eligibility") or []),
                 "bound_skills": skill_nodes,
             }
@@ -312,7 +329,6 @@ def format_ibm_role_episode_evidence_pack(
         "- skill_id alone is not proof; linked_source_fact_ids and allowed_metric_outcome_ids bind claims.",
         "- Do NOT copy, paraphrase, or lightly rewrite base-resume or archive bullet wording.",
         "- HOLD and DO_NOT_PROMOTE metrics are forbidden in output (25/30/35/40%, $15M, $30M).",
-        f"- {WATSON_STUDIO_SKILL_ID}: supporting technical context only — not metric-bearing authority.",
     ]
     if allowed_fact_ids_raw:
         ordered = sorted(str(x) for x in allowed_fact_ids_raw)
@@ -328,11 +344,7 @@ def format_ibm_role_episode_evidence_pack(
         "(metric claims allowed only when bound to these IDs):"
     )
     for mid in PROMOTABLE_METRIC_OUTCOME_IDS:
-        header_lines.append(f"- {mid}")
-    header_lines.append(
-        f"- {FINOPS_METRIC_OUTCOME_ID} requires base-resume second-source confirmation "
-        f"before metric-bearing use (else use {FINOPS_CONFIRMED_OUTCOME_ID} only if confirmed)."
-    )
+        header_lines.append(f"- {_metric_label(mid)}")
 
     header = "\n".join(header_lines)
 
@@ -371,7 +383,7 @@ def format_ibm_role_episode_evidence_pack(
             f"  employer: {bundle.get('employer')} | time_window: {bundle.get('time_window')}",
             f"  title: {bundle.get('title')}",
             f"  allowed_source_fact_ids: {list(bundle.get('linked_source_fact_ids') or []) + [slot_id]}",
-            f"  allowed_metric_outcome_ids: {allowed_metrics or '(none — qualitative only)'}",
+            f"  allowed_metric_outcome_ids: {[_metric_label(mid) for mid in allowed_metrics] or '(none)'}",
             "  executive_scope_signals:",
         ]
         for sig in bundle.get("executive_scope_signals") or []:
@@ -381,6 +393,10 @@ def format_ibm_role_episode_evidence_pack(
             lines.append(f"    - {sig}")
         lines.append(f"  operating_context: {bundle.get('operating_context')}")
         lines.append(f"  bullet_intent: {bundle.get('bullet_intent')}")
+        lines.append("  graph_bundle_story:")
+        lines.append(f"    claim_action: {bundle.get('claim_action')}")
+        lines.append(f"    claim_scope: {bundle.get('claim_scope')}")
+        lines.append(f"    claim_outcome: {bundle.get('claim_outcome')}")
         _slot_fact = _plan_fact_by_slot.get(slot_id) or {}
         _story = str(_slot_fact.get("claim_text") or "").strip()
         if _story:
@@ -390,7 +406,7 @@ def format_ibm_role_episode_evidence_pack(
                 "(1) open with a STRONG executive verb (Led/Directed/Drove/Owned/Architected — never "
                 "the ledger's weak verb like 'Conducted'); (2) carry an organizational scale signal "
                 "(enterprise/portfolio/cross-functional); (3) name >=1 concrete technology or "
-                "mechanism token IN the sentence (e.g. platform, architecture, AWS, Salesforce, "
+                "mechanism token IN the sentence (e.g. platform, architecture, AWS, BI, "
                 "microservices, pipeline, infrastructure) — a bullet with zero named tech fails "
                 "the deterministic specificity gate even when the story is faithful):"
             )
@@ -404,11 +420,7 @@ def format_ibm_role_episode_evidence_pack(
             for sid in skill_ids:
                 sk = skill_index.get(sid) or {}
                 phrases = ", ".join(list(sk.get("allowed_phrases") or [])[:5])
-                conf = sk.get("confidence_grade", "")
-                note = ""
-                if sid == WATSON_STUDIO_SKILL_ID:
-                    note = " | SUPPORTING_CONTEXT_ONLY — no metric-bearing claims"
-                lines.append(f"    - {sid} | allowed_phrases: {phrases}{note}")
+                lines.append(f"    - {sid} | allowed_phrases: {phrases}")
         lines.append("  proof_atoms (structured tokens only — no prose):")
         if vocab:
             lines.append(f"    - mechanism_vocab: {vocab}")
@@ -432,9 +444,10 @@ def _format_narrative_bundle_block(
         f"  title: {bundle_record.get('title')}",
         f"  graph_skill_node_ids: {bundle_record.get('graph_skill_node_ids')}",
         f"  linked_source_fact_ids: {bundle_record.get('linked_source_fact_ids')}",
-        f"  allowed_metric_outcome_ids: {bundle_record.get('allowed_metric_outcome_ids')}",
+        f"  allowed_metric_outcome_ids: {[_metric_label(str(mid)) for mid in (bundle_record.get('allowed_metric_outcome_ids') or [])]}",
         f"  operating_context: {bundle_record.get('operating_context')}",
         f"  bullet_intent: {bundle_record.get('bullet_intent')}",
+        f"  graph_bundle_story: {bundle_record.get('graph_bundle_story')}",
         "  Synthesize one IBM role arc sentence from these bundles — do not recap each bullet line.",
     ]
     bound = bundle_record.get("bound_skills") or []
@@ -445,8 +458,7 @@ def _format_narrative_bundle_block(
                 continue
             sid = str(sk.get("skill_id") or "")
             phrases = ", ".join(list(sk.get("allowed_phrases") or [])[:5])
-            note = " (supporting context only — no metrics)" if sid == WATSON_STUDIO_SKILL_ID else ""
-            lines.append(f"    - {sid} | allowed_phrases: {phrases}{note}")
+            lines.append(f"    - {sid} | allowed_phrases: {phrases}")
     return "\n".join(lines)
 
 
@@ -465,26 +477,6 @@ def scan_forbidden_metrics_in_text(text: str) -> list[str]:
     return hits
 
 
-def check_watson_studio_metric_bearing_claim(
-    *,
-    graph_skill_node_ids: list[str],
-    text: str,
-    metric_outcome_ids: list[str] | None = None,
-) -> tuple[bool, str]:
-    """Watson Studio may appear as supporting context only — not as sole metric authority."""
-    sids = {str(x) for x in (graph_skill_node_ids or [])}
-    if WATSON_STUDIO_SKILL_ID not in sids:
-        return True, "watson_not_used"
-    # If Watson is the only skill and text has metrics, fail.
-    if len(sids) == 1 and re.search(r"[\$%]|\d+\s*%", text):
-        return False, "watson_only_skill_with_metric_claim"
-    allowed = set(metric_outcome_ids or [])
-    if WATSON_STUDIO_SKILL_ID in sids and re.search(r"watson.*(\$|%|\d+%)", text, re.I):
-        if not allowed:
-            return False, "watson_metric_claim_without_outcome_id"
-    return True, "ok"
-
-
 # Backward-compatible alias used by ibm_bullets_graph_evidence / PA.
 def format_ibm_graph_bullet_evidence_pack(runtime_payload: dict[str, Any]) -> str:
     return format_ibm_role_episode_evidence_pack(runtime_payload, section_id="ibm_bullets")
@@ -497,12 +489,10 @@ __all__ = [
     "IBM_ROLE_EPISODE_EVIDENCE_MARKER",
     "PROMOTABLE_METRIC_OUTCOME_IDS",
     "FORBIDDEN_METRIC_SUBSTRINGS",
-    "WATSON_STUDIO_SKILL_ID",
     "attach_role_episode_bundles_to_proof_pool_metadata",
     "assert_ibm_role_episode_evidence_pack_has_no_forbidden_leaks",
     "assert_ibm_section_may_consume_graph_context",
     "build_ibm_role_episode_section_packet",
-    "check_watson_studio_metric_bearing_claim",
     "format_ibm_graph_bullet_evidence_pack",
     "format_ibm_role_episode_evidence_pack",
     "is_flat_skill_only_graph_packet",

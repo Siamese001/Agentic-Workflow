@@ -88,7 +88,9 @@ from apps_rg.runtime.assembly.final_resume_x2 import (
 
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root, sha256_hex
 
-from apps_rg.runtime.render.resume_export_enrich import verbatim_identity_from_base_resume
+from apps_rg.runtime.render.resume_export_enrich import verbatim_identity_from_static_profile
+
+from apps_rg.runtime.resume_resolution import load_candidate_static_profile_json
 
 
 
@@ -187,7 +189,15 @@ def assemble_final_resume(
 
     base_digest = sha256_hex(base_raw)
 
-    base_blob: dict[str, Any] = json.loads(base_raw)
+    if paths.candidate_static_profile is not None:
+        static_profile_path = paths.candidate_static_profile
+        static_profile_raw = static_profile_path.read_text(encoding="utf-8")
+        static_profile_blob: dict[str, Any] = json.loads(static_profile_raw)
+        static_profile_digest = sha256_hex(static_profile_raw)
+    else:
+        static_profile_blob, static_profile_path, static_profile_digest = load_candidate_static_profile_json(
+            repo_root=repo
+        )
 
     expected_locked = str(locked_blob.get("base_resume_json_hash") or "")
 
@@ -565,7 +575,7 @@ def assemble_final_resume(
 
 
 
-    candidate_identity = verbatim_identity_from_base_resume(base_blob)
+    candidate_identity = verbatim_identity_from_static_profile(static_profile_blob)
 
 
 
@@ -587,6 +597,8 @@ def assemble_final_resume(
 
             "canonical_base_resume_json": paths.rel(paths.base_resume),
 
+            "candidate_static_profile_json": paths.rel(static_profile_path),
+
         },
 
         "rollup_id": str(rollup_blob.get("rollup_id") or ""),
@@ -594,6 +606,8 @@ def assemble_final_resume(
         "locked_manifest_id": str(locked_blob.get("manifest_id") or ""),
 
         "canonical_base_resume_sha256_hex": base_digest,
+
+        "candidate_static_profile_sha256_hex": static_profile_digest,
 
         "verified_base_resume_hash_matches_locked_manifest": bool(expected_locked) and base_digest == expected_locked,
 

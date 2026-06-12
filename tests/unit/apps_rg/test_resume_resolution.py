@@ -12,6 +12,7 @@ from apps_rg.runtime.resume_resolution import (
     ResumeSource,
     build_canonical_resume_payload,
     canonical_resume_digest,
+    load_candidate_static_profile_json,
     resolve_resume_for_lanes,
     u0_inline_text_from_payload,
 )
@@ -90,3 +91,23 @@ def test_inline_precedes_ref(tmp_path: Path) -> None:
         repo_root=tmp_path,
     )
     assert rr.resume_dict == {"inline": True}
+
+
+def test_candidate_static_profile_default_loads_static_identity_only() -> None:
+    repo = Path(__file__).resolve().parents[3]
+    profile, path, digest = load_candidate_static_profile_json(repo_root=repo)
+    assert path.name == "candidate_static_profile.json"
+    assert digest
+    assert profile["name"] == "Amit Ayer"
+    assert "employment_identity" in profile
+    assert "skills" not in profile
+    assert "facts" not in profile
+
+
+def test_final_resume_default_paths_include_candidate_static_profile() -> None:
+    from apps_rg.runtime.assembly.final_resume_manifest import resolve_default_paths
+
+    repo = Path(__file__).resolve().parents[3]
+    paths = resolve_default_paths(repo)
+    assert paths.candidate_static_profile is not None
+    assert paths.candidate_static_profile.name == "candidate_static_profile.json"

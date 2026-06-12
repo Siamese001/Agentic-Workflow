@@ -181,24 +181,15 @@ def _stamp_ibm_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, Any
 
 
 def _stamp_role_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, Any], list[str], set[str]]:
-    """Map role-lane ledger rows to canonical ``bul_insurtech_*`` / ``bul_ey_*`` ids."""
+    """Deprecated role-lane compatibility: preserve graph proof ids unchanged."""
     section_id = str(plan.get("section_id") or "")
-    prefix_by_section = {
-        "insurtech_bullets": "bul_insurtech_",
-        "insurtech_narrative": "bul_insurtech_",
-        "ey_bullets": "bul_ey_",
-        "ey_narrative": "bul_ey_",
-    }
-    prefix = prefix_by_section.get(section_id)
-    if not prefix:
+    if section_id in ("insurtech_bullets", "insurtech_narrative", "ey_bullets", "ey_narrative"):
         facts = list(plan.get("facts") or [])
         ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
         return plan, ordered, allowed
-    return _stamp_canonical_surface_ids(
-        plan,
-        canonical_ids=tuple(f"{prefix}{idx:03d}" for idx in range(1, 4)),
-        prefix=prefix,
-    )
+    facts = list(plan.get("facts") or [])
+    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+    return plan, ordered, allowed
 
 
 def _stamp_canonical_surface_ids(
@@ -229,14 +220,16 @@ def _stamp_canonical_surface_ids(
 
 
 def _stamp_unify_canonical_bullet_ids(plan: dict[str, Any]) -> tuple[dict[str, Any], list[str], set[str]]:
-    """Map ledger ``fact_*`` rows to canonical surface ids (``bul_unify_*`` / ``bul_ibm_*``)."""
+    """Map Unify/IBM ledger rows to canonical surface ids while preserving role-lane graph ids."""
     from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 
     section_id = str(plan.get("section_id") or "")
     if section_id == "ibm_bullets":
         return _stamp_ibm_canonical_bullet_ids(plan)
     if section_id in ("insurtech_bullets", "insurtech_narrative", "ey_bullets", "ey_narrative"):
-        return _stamp_role_canonical_bullet_ids(plan)
+        facts = list(plan.get("facts") or [])
+        ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+        return plan, ordered, allowed
     if section_id not in ("unify_bullets", "unify_narrative"):
         facts = list(plan.get("facts") or [])
         ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)

@@ -1,12 +1,13 @@
 """EY role-episode evidence — proof-pool attachment + evidence-pack markers.
 
 Mirror of ibm_role_episode_evidence.py (plan apps-rg-insurtech-ey-unlock-a4c0f0 W2/P2). Makes the
-ey_bullets/ey_narrative proof pool non-empty by attaching graph-backed role-episode bundles (each
-anchored to a base-resume bullet) to the proof_pool_metadata. Identity verbatim from base resume;
-skills grounded in real graph nodes.
+ey_bullets/ey_narrative proof pool non-empty by attaching graph-backed role-episode bundles to the
+proof_pool_metadata. Identity is employment-spine only; skills and claims are grounded in real
+graph nodes.
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,7 @@ from apps_rg.runtime.sections.ey_graph_role_episode_registry import (
     EY_EMPLOYER_ID,
     EY_EMPLOYER_NODE_ID,
     EY_TIME_WINDOW,
+    get_all_bundles,
     get_bundles_for_section,
     validate_bundle,
 )
@@ -28,14 +30,40 @@ EY_BULLET_SLOT_IDS: tuple[str, ...] = (
     "bul_ey_003",
 )
 
+# Output slots remain presentation ids; claim evidence uses role_episode_bundle_id.
 EY_BULLET_SLOT_BUNDLE_MAP: dict[str, str] = {
     "bul_ey_001": "reb_ey_regulatory_analytics_modernization",
-    "bul_ey_002": "reb_ey_commercial_turnaround_lineage",
+    "bul_ey_002": "reb_ey_model_validation_regulatory_remediation",
     "bul_ey_003": "reb_ey_capital_optimization_solvency",
 }
 
-# Base-resume EY metrics are HELD (single canonical source), none promotable pre-X2 (P4).
-PROMOTABLE_METRIC_OUTCOME_IDS: tuple[str, ...] = ()
+def _ey_bundle_doc() -> dict[str, Any]:
+    path = (
+        Path(__file__).resolve().parents[3]
+        / "apps_rg"
+        / "fact_inventory"
+        / "ey_role_episode_bundles.json"
+    )
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _ey_metric_outcome_nodes() -> dict[str, dict[str, Any]]:
+    nodes = _ey_bundle_doc().get("metric_outcome_nodes") or {}
+    return {str(k): v for k, v in nodes.items() if isinstance(v, dict)}
+
+
+def _ey_promotable_metric_ids() -> tuple[str, ...]:
+    ids: list[str] = []
+    for bundle in get_all_bundles():
+        for mid in bundle.get("linked_metric_outcome_ids") or []:
+            s = str(mid).strip()
+            if s and s not in ids:
+                ids.append(s)
+    return tuple(ids)
+
+
+# Graph-native allow-list for approved EY metric binding.
+PROMOTABLE_METRIC_OUTCOME_IDS: tuple[str, ...] = _ey_promotable_metric_ids()
 
 FORBIDDEN_METRIC_SUBSTRINGS: tuple[str, ...] = (
     "25%", "30%", "35%", "50%",
@@ -58,8 +86,16 @@ def _skill_rows_by_id(repo_root: Path | None = None) -> dict[str, dict[str, Any]
 
 
 def _bundle_allowed_metric_outcome_ids(bundle: dict[str, Any]) -> list[str]:
-    """Map bundle promotable_metrics to stable outcome IDs. Empty pre-X2 (metrics are HELD)."""
-    return []
+    """Return graph-native metric outcome IDs linked to this bundle."""
+    linked = [str(x) for x in (bundle.get("linked_metric_outcome_ids") or []) if str(x).strip()]
+    if linked:
+        return linked
+    nodes = _ey_metric_outcome_nodes()
+    return [
+        mid
+        for mid, node in nodes.items()
+        if bundle.get("role_episode_bundle_id") in (node.get("bundle_bindings") or [])
+    ]
 
 
 def build_ey_role_episode_section_packet(
@@ -96,10 +132,14 @@ def build_ey_role_episode_section_packet(
                 "employer_node_id": bundle["employer_node_id"],
                 "title": bundle.get("title"),
                 "time_window": bundle["time_window"],
+                "bundle_theme": bundle.get("bundle_theme"),
+                "claim_text": bundle.get("claim_text"),
+                "support_level": bundle.get("support_level"),
                 "graph_skill_node_ids": list(bundle.get("graph_skill_node_ids") or []),
                 "linked_source_fact_ids": list(bundle.get("linked_source_fact_ids") or []),
                 "linked_archive_signal_ids": list(bundle.get("linked_archive_signal_ids") or []),
                 "allowed_metric_outcome_ids": _bundle_allowed_metric_outcome_ids(bundle),
+                "metric_candidates": list(bundle.get("metric_candidates") or []),
                 "held_metrics": list(bundle.get("held_metrics") or []),
                 "excluded_metrics": list(bundle.get("excluded_metrics") or []),
                 "executive_scope_signals": list(bundle.get("executive_scope_signals") or []),
@@ -120,7 +160,10 @@ def build_ey_role_episode_section_packet(
         "consumption_mode": "role_episode_bundle_required",
         "flat_skill_only_forbidden": True,
         "promotable_metric_outcome_ids": list(PROMOTABLE_METRIC_OUTCOME_IDS),
+        "approved_metric_outcome_ids": list(PROMOTABLE_METRIC_OUTCOME_IDS),
         "forbidden_metric_substrings": list(FORBIDDEN_METRIC_SUBSTRINGS),
+        "base_resume_usage": "identity_spine_only",
+        "graph_claim_authority_ids": [b["role_episode_bundle_id"] for b in bundle_records],
     }
 
 
@@ -142,6 +185,7 @@ def attach_role_episode_bundles_to_proof_pool_metadata(
     out["ey_role_episode_section_packet"] = packet
     out["graph_expansion_consumes_role_episode_bundles"] = True
     out["flat_skill_only_graph_context_forbidden"] = True
+    out["approved_metric_outcome_ids"] = packet["approved_metric_outcome_ids"]
     return out
 
 

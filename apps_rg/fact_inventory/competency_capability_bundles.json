@@ -183,7 +183,7 @@
    "graph_skill_node_ids": [
     "skill_sr_cloud_data_platform_engineering",
     "skill_sr_microservices_integration_platform",
-    "skill_confluent_streaming_platforms"
+    "skill_p2_tech_reference_architecture"
    ],
    "linked_source_fact_ids": [
     "fact_engineering_platform_002"
@@ -193,7 +193,7 @@
    ],
    "role_episode_bindings": [
     "reb_ibm_cloud_modernization",
-    "reb_ibm_streaming_realtime_analytics"
+    "reb_ibm_data_modeling_bi_decision_support"
    ],
    "allowed_sections": [
     "competencies"
@@ -205,11 +205,11 @@
    "seniority_signal": "distributed_platform_architecture",
    "technical_density_signal": "high",
    "commercial_or_operating_scope_signal": "cloud_native_platform_scale",
-   "target_relevance_rationale": "Cloud-native microservices, streaming pipelines, and data platform engineering underpin distributed systems leadership.",
+   "target_relevance_rationale": "Cloud-native microservices, reference architectures, and data platform engineering underpin distributed systems leadership.",
    "vocabulary_anchors": [
     "cloud-native data platform engineering",
     "containerized microservices integration",
-    "streaming analytics pipelines"
+    "regulated reference architecture reuse"
    ]
   },
   {
@@ -329,7 +329,7 @@
    ],
    "graph_skill_node_ids": [
     "skill_sr_basel_ccar_lineage_regulatory",
-    "skill_ibm_metadata_audit_rbac"
+    "skill_sr_enterprise_portfolio_data_governance"
    ],
    "linked_source_fact_ids": [
     "fact_solutions_002"
@@ -338,7 +338,7 @@
     "employment_exp_ibm_001"
    ],
    "role_episode_bindings": [
-    "reb_ibm_metadata_audit_governance"
+    "reb_ibm_data_modeling_bi_decision_support"
    ],
    "allowed_sections": [
     "competencies"
@@ -350,10 +350,10 @@
    "seniority_signal": "regulated_data_governance",
    "technical_density_signal": "medium_high",
    "commercial_or_operating_scope_signal": "regulatory_lineage_controls",
-   "target_relevance_rationale": "Optional supporting family: regulated lineage and RBAC governance when financial-services data governance relevance is present.",
+   "target_relevance_rationale": "Optional supporting family: regulated lineage and portfolio data governance when financial-services data governance relevance is present.",
    "vocabulary_anchors": [
     "regulatory data lineage controls",
-    "metadata audit and RBAC governance"
+    "portfolio data governance"
    ]
   },
   {

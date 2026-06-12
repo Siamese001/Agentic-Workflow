@@ -1,7 +1,7 @@
 {
-  "schema": "unify_role_episode_bundles_v1",
+  "schema": "unify_role_episode_bundles_v2_graph_metric_ssot",
   "generated_at": "2026-05-28T15:35:00Z",
-  "generated_by": "remaining_resume_rigor_architecture_finish_wave",
+  "generated_by": "codex_graph_metric_ssot_upgrade",
   "employer": "Unify",
   "employer_node_id": "employment_exp_unify_001",
   "time_window": "2023-02 to present",
@@ -11,16 +11,24 @@
     "new_archive_metrics_not_introduced_without_reconciliation": true,
     "internal_only_signals_not_external_claims": true,
     "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-    "config_enablement_condition": "unify_bullets and unify_narrative graph_expansion_allowed may be enabled only when section generation consumes role_episode_bundle_id (graph_expansion_mode=role_episode_bundle_only), not flat skill lists."
+    "config_enablement_condition": "unify_bullets and unify_narrative graph_expansion_allowed may be enabled only when section generation consumes role_episode_bundle_id (graph_expansion_mode=role_episode_bundle_only), not flat skill lists.",
+    "metric_approval_model": "presence_in_metric_outcome_nodes_is_approval",
+    "no_separate_approved_fact_distinction": true,
+    "base_resume_claim_authority": false,
+    "base_resume_bullet_ids_excluded": true,
+    "identity_spine_only": true,
+    "graph_bundle_id_claim_authority": true,
+    "metric_density_rule": "approved_metric_outcome_nodes_are_the_metric_claim_surface",
+    "metric_claim_truth_source": "metric_outcome_nodes"
   },
   "approved_metric_outcome_ids": {
-    "metric_unify_22m_ip_led_revenue": "$22M IP-led revenue (canonical, linked to fact_engineering_platform_006)",
-    "metric_unify_20pct_gross_margin_expansion": "20% gross margin expansion (canonical, linked to fact_engineering_platform_006)",
-    "metric_unify_team_scaled_8_to_28": "team scaled 8 to 28 (canonical, linked to fact_engineering_platform_006)",
-    "metric_unify_cycle_six_months_to_three_weeks": "six months to three weeks cycle reduction (canonical, linked to fact_engineering_platform_004)"
+    "metric_unify_22m_ip_led_revenue": "$22M IP-led revenue",
+    "metric_unify_20pct_gross_margin_expansion": "20% gross margin expansion",
+    "metric_unify_team_scaled_8_to_28": "engineering team scaled from 8 to 28",
+    "metric_unify_cycle_six_months_to_three_weeks": "AI systems lifecycle compressed from six months to three weeks"
   },
   "conditional_metric_outcome_ids": {
-    "metric_unify_14m_operating_capacity": "$14M operating capacity — allowed only if already canonical and linked; otherwise HOLD."
+    "metric_unify_14m_operating_capacity": "$14M operating capacity \u2014 allowed only if already canonical and linked; otherwise HOLD."
   },
   "bundles": [
     {
@@ -47,13 +55,23 @@
         "skill_runtime_gate_mesh_design",
         "skill_replayable_runtime_design"
       ],
-      "linked_source_fact_ids": ["fact_engineering_platform_001"],
+      "linked_source_fact_ids": [
+        "fact_engineering_platform_001"
+      ],
       "linked_metric_outcome_ids": [],
       "operating_context": "Production-grade generative AI Solution Accelerator within a consulting firm; governed agentic platform serving regulated financial institutions.",
       "bullet_intent": "Frame as governed agentic platform architecture ownership; mechanisms named, no metric without approved outcome id.",
-      "section_eligibility": ["unify_bullets", "unify_narrative", "competencies", "headline"],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ],
       "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE_CONFIRMED"
+      "activation_status": "ACTIVE_CONFIRMED",
+      "promotable_metrics": [],
+      "held_metrics": [],
+      "excluded_metrics": []
     },
     {
       "role_episode_bundle_id": "reb_unify_dependency_graph_accelerator",
@@ -74,13 +92,21 @@
         "skill_dependency_and_join_control",
         "skill_static_governance_drift_detection"
       ],
-      "linked_source_fact_ids": ["fact_engineering_platform_005"],
+      "linked_source_fact_ids": [
+        "fact_engineering_platform_005"
+      ],
       "linked_metric_outcome_ids": [],
       "operating_context": "Internal dependency-graph accelerator (ADG) used for legacy-to-agentic modernization; internal architecture evidence, not an external metric claim.",
-      "bullet_intent": "Frame as dependency-graph-driven modernization; internal-only architecture evidence — no unqualified external metric.",
-      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "bullet_intent": "Frame as dependency-graph-driven modernization; internal-only architecture evidence \u2014 no unqualified external metric.",
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative"
+      ],
       "external_claim_policy": "internal_only_not_external_claim",
-      "activation_status": "ACTIVE_INTERNAL_ONLY"
+      "activation_status": "ACTIVE_INTERNAL_ONLY",
+      "promotable_metrics": [],
+      "held_metrics": [],
+      "excluded_metrics": []
     },
     {
       "role_episode_bundle_id": "reb_unify_runtime_reliability_governance",
@@ -103,13 +129,21 @@
         "skill_runtime_resilience_controls",
         "skill_context_engineering"
       ],
-      "linked_source_fact_ids": ["fact_engineering_platform_003"],
+      "linked_source_fact_ids": [
+        "fact_engineering_platform_003"
+      ],
       "linked_metric_outcome_ids": [],
       "operating_context": "Runtime reliability and governance for production agentic systems; evaluation gates, telemetry, and rollback controls.",
       "bullet_intent": "Frame as runtime reliability/governance leadership; named mechanisms, no metric without approved outcome id.",
-      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative"
+      ],
       "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE_CONFIRMED"
+      "activation_status": "ACTIVE_CONFIRMED",
+      "promotable_metrics": [],
+      "held_metrics": [],
+      "excluded_metrics": []
     },
     {
       "role_episode_bundle_id": "reb_unify_production_adoption_lifecycle",
@@ -131,13 +165,36 @@
         "skill_replayable_runtime_design",
         "skill_exit_disposition_governance"
       ],
-      "linked_source_fact_ids": ["fact_engineering_platform_004"],
-      "linked_metric_outcome_ids": ["metric_unify_cycle_six_months_to_three_weeks"],
+      "linked_source_fact_ids": [
+        "fact_engineering_platform_004"
+      ],
+      "linked_metric_outcome_ids": [
+        "metric_unify_cycle_six_months_to_three_weeks"
+      ],
       "operating_context": "Standardized AI systems lifecycle; lab-to-production acceleration with deterministic auditability.",
       "bullet_intent": "Frame as lifecycle standardization and lab-to-production acceleration; six-months-to-three-weeks cycle reduction allowed only via metric_unify_cycle_six_months_to_three_weeks.",
-      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative"
+      ],
       "external_claim_policy": "approved_metric_linked",
-      "activation_status": "ACTIVE_CONFIRMED"
+      "activation_status": "ACTIVE_CONFIRMED",
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_unify_cycle_six_months_to_three_weeks",
+          "metric": "AI systems lifecycle compressed from six months to three weeks",
+          "metric_type": "cycle_time_outcome",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "six months to three weeks",
+            "cycle-time compression",
+            "lab-to-production"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": []
     },
     {
       "role_episode_bundle_id": "reb_unify_distributed_ecosystem_engineering",
@@ -162,13 +219,21 @@
         "skill_provider_and_egress_governance",
         "skill_runtime_resilience_controls"
       ],
-      "linked_source_fact_ids": ["fact_engineering_platform_002"],
+      "linked_source_fact_ids": [
+        "fact_engineering_platform_002"
+      ],
       "linked_metric_outcome_ids": [],
       "operating_context": "Distributed cloud/data execution infrastructure; AWS, Databricks Lakehouse, vector services, identity controls, high availability.",
       "bullet_intent": "Frame as distributed infrastructure architecture; identity controls and API gateways framed as internal/supporting where not externally claimable.",
-      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative"
+      ],
       "external_claim_policy": "skill_projection_not_proof",
-      "activation_status": "ACTIVE_CONFIRMED"
+      "activation_status": "ACTIVE_CONFIRMED",
+      "promotable_metrics": [],
+      "held_metrics": [],
+      "excluded_metrics": []
     },
     {
       "role_episode_bundle_id": "reb_unify_platform_commercialization_leadership",
@@ -191,7 +256,9 @@
         "skill_operating_model_for_agentic_ai",
         "skill_svp_it_strategy_innovation"
       ],
-      "linked_source_fact_ids": ["fact_engineering_platform_006"],
+      "linked_source_fact_ids": [
+        "fact_engineering_platform_006"
+      ],
       "linked_metric_outcome_ids": [
         "metric_unify_22m_ip_led_revenue",
         "metric_unify_20pct_gross_margin_expansion",
@@ -199,9 +266,52 @@
       ],
       "operating_context": "Platform productization and commercialization; reusable IP, margin expansion, engineering organization scale-out.",
       "bullet_intent": "Frame as platform commercialization leadership; $22M IP-led revenue, 20% gross margin expansion, team scaled 8 to 28 allowed only via their approved metric_outcome_ids.",
-      "section_eligibility": ["unify_bullets", "unify_narrative", "competencies", "headline"],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ],
       "external_claim_policy": "approved_metric_linked",
-      "activation_status": "ACTIVE_CONFIRMED"
+      "activation_status": "ACTIVE_CONFIRMED",
+      "promotable_metrics": [
+        {
+          "metric_outcome_id": "metric_unify_22m_ip_led_revenue",
+          "metric": "$22M IP-led revenue",
+          "metric_type": "commercial_outcome",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "$22M IP-led revenue",
+            "IP-led revenue",
+            "platform commercialization"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_unify_20pct_gross_margin_expansion",
+          "metric": "20% gross margin expansion",
+          "metric_type": "margin_outcome",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "20% gross margin expansion",
+            "gross margin expansion"
+          ]
+        },
+        {
+          "metric_outcome_id": "metric_unify_team_scaled_8_to_28",
+          "metric": "engineering team scaled from 8 to 28",
+          "metric_type": "organization_scale",
+          "approval_status": "APPROVED_GRAPH_SSOT",
+          "support_level": "approved_by_graph_presence",
+          "surface_tokens": [
+            "team scaled 8 to 28",
+            "engineering team scale-out"
+          ]
+        }
+      ],
+      "held_metrics": [],
+      "excluded_metrics": []
     },
     {
       "role_episode_bundle_id": "reb_unify_partner_channel_cosell",
@@ -226,23 +336,29 @@
         "skill_partner_gtm_enablement",
         "skill_partner_partner_revenue_3m"
       ],
-      "linked_source_fact_ids": ["exp_unify_001"],
+      "linked_source_fact_ids": [
+        "exp_unify_001"
+      ],
       "linked_archive_signal_ids": [],
       "promotable_metrics": [],
       "held_metrics": [
-        "$3M partner-derived revenue (HOLD - base_resume anchored)",
-        "30% upsell increase via co-sell bundling (HOLD - base_resume anchored)",
-        "93% annual renewal via consumption-based licensing (HOLD - base_resume anchored)"
+        "$3M partner-derived revenue (HOLD - source artifact required before numeric claim)",
+        "30% upsell increase via co-sell bundling (HOLD - source artifact required before numeric claim)",
+        "93% annual renewal via consumption-based licensing (HOLD - source artifact required before numeric claim)"
       ],
       "excluded_metrics": [],
       "operating_context": "Global AI channel program from inception: co-developed analytics frameworks with strategic partners, co-sell bundling with cloud/streaming vendors, consumption-based SaaS licensing driving partner-derived revenue and renewals.",
-      "bullet_intent": "Frame as AI partnerships / co-sell channel leadership; metrics only from base-resume anchored Unify facts (fact_partnerships_gtm_001, fact_sales_accounts_004/005).",
+      "bullet_intent": "Frame as AI partnerships / co-sell channel leadership; metrics only from graph-selected Unify facts (fact_partnerships_gtm_001, fact_sales_accounts_004/005).",
       "time_window": "2023-02 to present",
       "external_claim_policy": "skill_projection_not_proof",
-      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative"
+      ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
       "activation_status": "ACTIVE_CONFIRMED",
-      "notes": "Partnerships/co-sell is a primary Unify theme that JD-fit selection surfaces for partner-facing roles (operator 2026-06-11). Unify-attributed partner facts; graph skills grounded in the Unify AI-platform window."
+      "notes": "Partnerships/co-sell is a primary Unify theme that JD-fit selection surfaces for partner-facing roles (operator 2026-06-11). Unify-attributed partner facts; graph skills grounded in the Unify AI-platform window.",
+      "linked_metric_outcome_ids": []
     },
     {
       "role_episode_bundle_id": "reb_unify_enterprise_adoption_revenue",
@@ -265,22 +381,136 @@
         "skill_revops_usage_based_subscription_forecasting",
         "skill_enterprise_workflow_adoption"
       ],
-      "linked_source_fact_ids": ["exp_unify_001"],
+      "linked_source_fact_ids": [
+        "exp_unify_001"
+      ],
       "linked_archive_signal_ids": [],
       "promotable_metrics": [],
       "held_metrics": [
-        "$5M ACV from CFO-aligned enterprise adoption (HOLD - base_resume anchored)",
-        "93% annual renewal via consumption-based licensing (HOLD - base_resume anchored)"
+        "$5M ACV from CFO-aligned enterprise adoption (HOLD - source artifact required before numeric claim)",
+        "93% annual renewal via consumption-based licensing (HOLD - source artifact required before numeric claim)"
       ],
       "excluded_metrics": [],
       "operating_context": "Enterprise AI adoption aligned to CFO priorities driving $5M ACV; consumption-based SaaS licensing shortening sales cycles and sustaining high renewals.",
-      "bullet_intent": "Frame as enterprise AI adoption / commercial revenue leadership; metrics only from base-resume anchored Unify facts (fact_sales_accounts_001/004, fact_revenue_ops_003).",
+      "bullet_intent": "Frame as enterprise AI adoption / commercial revenue leadership; metrics only from graph-selected Unify facts (fact_sales_accounts_001/004, fact_revenue_ops_003).",
       "time_window": "2023-02 to present",
       "external_claim_policy": "skill_projection_not_proof",
-      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative"
+      ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
       "activation_status": "ACTIVE_CONFIRMED",
-      "notes": "Second Unify commercial bundle so partnerships/revenue can reach ~2 of 6 unify bullets for partner-facing JDs (operator split ~30%). Unify-attributed revenue facts."
+      "notes": "Second Unify commercial bundle so partnerships/revenue can reach ~2 of 6 unify bullets for partner-facing JDs (operator split ~30%). Unify-attributed revenue facts.",
+      "linked_metric_outcome_ids": []
     }
-  ]
+  ],
+  "metric_surface_policy": {
+    "approval_model": "presence_in_metric_outcome_nodes_is_approval",
+    "ssot": "graph node/edge/metric IDs",
+    "approved_by_user_on": "2026-06-12",
+    "no_separate_candidate_fact_authority": true,
+    "metrics_should_not_be_scarce": true,
+    "metric_density_rule": "existing approved Unify metrics are represented as metric_outcome_nodes; new numeric values require new graph nodes"
+  },
+  "metric_outcome_nodes": {
+    "metric_unify_22m_ip_led_revenue": {
+      "metric_outcome_id": "metric_unify_22m_ip_led_revenue",
+      "metric": "$22M IP-led revenue",
+      "metric_type": "commercial_outcome",
+      "employer": "Unify",
+      "time_window": "2023-02 to present",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_platform_commercialization_leadership"
+      ],
+      "claim_text": "Platform commercialization generated $22M in IP-led revenue.",
+      "surface_tokens": [
+        "$22M IP-led revenue",
+        "IP-led revenue",
+        "platform commercialization"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_20pct_gross_margin_expansion": {
+      "metric_outcome_id": "metric_unify_20pct_gross_margin_expansion",
+      "metric": "20% gross margin expansion",
+      "metric_type": "margin_outcome",
+      "employer": "Unify",
+      "time_window": "2023-02 to present",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_platform_commercialization_leadership"
+      ],
+      "claim_text": "Commercial platform operating model expanded gross margin by 20%.",
+      "surface_tokens": [
+        "20% gross margin expansion",
+        "gross margin expansion"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_team_scaled_8_to_28": {
+      "metric_outcome_id": "metric_unify_team_scaled_8_to_28",
+      "metric": "engineering team scaled from 8 to 28",
+      "metric_type": "organization_scale",
+      "employer": "Unify",
+      "time_window": "2023-02 to present",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_platform_commercialization_leadership"
+      ],
+      "claim_text": "Scaled the platform engineering team from 8 to 28 while commercializing reusable AI platform capability.",
+      "surface_tokens": [
+        "team scaled 8 to 28",
+        "engineering team scale-out"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_cycle_six_months_to_three_weeks": {
+      "metric_outcome_id": "metric_unify_cycle_six_months_to_three_weeks",
+      "metric": "AI systems lifecycle compressed from six months to three weeks",
+      "metric_type": "cycle_time_outcome",
+      "employer": "Unify",
+      "time_window": "2023-02 to present",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_production_adoption_lifecycle"
+      ],
+      "claim_text": "Standardized AI systems lifecycle practices reduced lab-to-production cycle time from six months to three weeks.",
+      "surface_tokens": [
+        "six months to three weeks",
+        "cycle-time compression",
+        "lab-to-production"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    }
+  }
 }

@@ -3,9 +3,9 @@
 Deterministic, hermetic. No provider calls. Covers token extraction, magnitude/unit
 normalization equivalence, per-slot corpus provenance (selected_fact_plan C0-pool facts +
 bundle NON-metric text), fail-open behavior, and the ibm shared-bundle metric-leak
-regression: bul_ibm_001-003 share ``reb_ibm_technical_presales_gtm`` whose
-``linked_metric_outcome_ids`` carry ``metric_ibm_10m_arr`` — a $10M-class token from a
-sibling slot's metric id must NOT entail for a slot whose own fact has no such metric.
+regression: IBM bundle ``linked_metric_outcome_ids`` are graph routing metadata, not
+free-floating proof text. A metric token from one IBM slot must NOT entail for a
+slot whose own selected fact has no such metric.
 """
 
 from __future__ import annotations
@@ -24,9 +24,9 @@ from apps_rg.runtime.reasoning.bullet_fact_entailment import (
 
 
 def test_extract_currency_percent_multiplier_and_worded_tokens() -> None:
-    text = "Drove $10M ARR and $2.5 million savings, 20% growth, 3x throughput, 10 million events."
+    text = "Drove $12M ARR and $2.5 million savings, 20% growth, 3x throughput, 10 million events."
     tokens = extract_numeric_tokens(text)
-    assert "$10M" in tokens
+    assert "$12M" in tokens
     assert "$2.5 million" in tokens
     assert "20%" in tokens
     assert "3x" in tokens
@@ -53,11 +53,11 @@ def test_extract_no_tokens_in_qualitative_text() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_normalize_currency_equivalence_10m() -> None:
-    # $10M == $10,000,000 (usd) and 10 million (count) share magnitude "10000000".
-    assert normalize_numeric_token("$10M") == ("10000000", "usd")
-    assert normalize_numeric_token("$10,000,000") == ("10000000", "usd")
-    assert normalize_numeric_token("10 million") == ("10000000", "count")
+def test_normalize_currency_equivalence_12m() -> None:
+    # $12M == $12,000,000 (usd) and 12 million (count) share magnitude "12000000".
+    assert normalize_numeric_token("$12M") == ("12000000", "usd")
+    assert normalize_numeric_token("$12,000,000") == ("12000000", "usd")
+    assert normalize_numeric_token("12 million") == ("12000000", "count")
 
 
 def test_normalize_percent_and_multiplier() -> None:
@@ -77,8 +77,8 @@ def test_normalize_invalid_token_returns_none() -> None:
 
 
 def test_entailment_currency_matches_worded_and_digit_forms() -> None:
-    for corpus in ("generated $10M in new ARR", "generated $10,000,000 ARR", "10 million in ARR"):
-        entailed, missing = numeric_entailment_check("Delivered $10M ARR uplift.", corpus)
+    for corpus in ("generated $12M in new ARR", "generated $12,000,000 ARR", "12 million in ARR"):
+        entailed, missing = numeric_entailment_check("Delivered $12M ARR uplift.", corpus)
         assert entailed is True, corpus
         assert missing == []
 
@@ -94,7 +94,7 @@ def test_entailment_percent_only_matches_percent() -> None:
 def test_entailment_fabricated_magnitude_fails_with_missing_tokens() -> None:
     entailed, missing = numeric_entailment_check(
         "Generated $25M pipeline at 40% margin.",
-        "Salesforce pipeline analytics generating $10M new ARR",
+        "Pipeline analytics generating $12M new ARR",
     )
     assert entailed is False
     assert "$25M" in missing
@@ -115,16 +115,16 @@ def test_entailment_no_numeric_claims_is_entailed() -> None:
 
 _IBM_PLAN_FACTS = [
     {
-        "fact_id": "bul_ibm_001",
-        "claim_text": "Designed Salesforce pipeline analytics prioritizing high-potential deals.",
-        "metric_raw": "$10M new ARR",
-        "has_metric": True,
-    },
-    {
-        "fact_id": "bul_ibm_002",
-        "claim_text": "Deployed transparent budget and cost-optimization dashboards.",
+        "fact_id": "bul_ibm_004",
+        "claim_text": "Built budget and delivery-status BI views for executive portfolio decisions.",
         "metric_raw": "",
         "has_metric": False,
+    },
+    {
+        "fact_id": "bul_ibm_005",
+        "claim_text": "Led IBM-AWS alliance co-sell frameworks that expanded joint revenue.",
+        "metric_raw": "20% joint revenue growth",
+        "has_metric": True,
     },
 ]
 
@@ -177,36 +177,30 @@ def test_unify_slot_bundle_map_is_distinct_per_slot() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_ibm_shared_bundle_metric_id_does_not_leak_into_sibling_slot_corpus() -> None:
-    """bul_ibm_001-003 share reb_ibm_technical_presales_gtm (linked_metric_outcome_ids =
-    [metric_ibm_10m_arr]). The $10M magnitude must come ONLY from the slot's own fact
-    metric_raw — never from the shared bundle's metric fields."""
-    from apps_rg.runtime.sections.ibm_role_episode_evidence import IBM_BULLET_SLOT_BUNDLE_MAP
-
-    assert IBM_BULLET_SLOT_BUNDLE_MAP["bul_ibm_001"] == IBM_BULLET_SLOT_BUNDLE_MAP["bul_ibm_002"]
-
+def test_ibm_bundle_metric_id_does_not_leak_into_unmet_slot_corpus() -> None:
+    """IBM graph metric IDs are metadata; visible metric proof comes from the slot fact."""
     corpus = build_slot_entailment_corpus("ibm_bullets", {"facts": _IBM_PLAN_FACTS})
-    assert set(corpus) == {"bul_ibm_001", "bul_ibm_002"}
+    assert set(corpus) == {"bul_ibm_004", "bul_ibm_005"}
 
-    # Slot 002's corpus carries neither the raw metric text nor the metric outcome id token.
-    blob_002 = corpus["bul_ibm_002"].lower()
-    assert "$10m" not in blob_002
-    assert "metric_ibm_10m_arr" not in blob_002
-    assert "10m arr" not in blob_002
+    # Slot 004's corpus carries neither the alliance metric text nor the metric outcome id token.
+    blob_004 = corpus["bul_ibm_004"].lower()
+    assert "20%" not in blob_004
+    assert "metric_ibm_20pct_joint_revenue_growth" not in blob_004
+    assert "joint revenue growth" not in blob_004
 
 
-def test_ibm_sibling_slot_10m_claim_not_entailed_own_slot_entailed() -> None:
+def test_ibm_sibling_slot_20pct_claim_not_entailed_own_slot_entailed() -> None:
     corpus = build_slot_entailment_corpus("ibm_bullets", {"facts": _IBM_PLAN_FACTS})
-    drifted_bullet = "Deployed cost dashboards generating $10M in new ARR."
+    drifted_bullet = "Built portfolio BI views generating 20% joint revenue growth."
 
-    # Sibling-slot drift: 002's own fact has no $10M — the shared bundle must not entail it.
-    entailed_002, missing_002 = numeric_entailment_check(drifted_bullet, corpus["bul_ibm_002"])
-    assert entailed_002 is False
-    assert "$10M" in missing_002
+    # Sibling-slot drift: 004's own fact has no 20% — the graph bundle must not entail it.
+    entailed_004, missing_004 = numeric_entailment_check(drifted_bullet, corpus["bul_ibm_004"])
+    assert entailed_004 is False
+    assert "20%" in missing_004
 
-    # Own-slot metric: 001's fact metric_raw carries $10M — entailed.
-    entailed_001, missing_001 = numeric_entailment_check(
-        "Designed pipeline analytics generating $10M in new ARR.", corpus["bul_ibm_001"]
+    # Own-slot metric: 005's fact metric_raw carries 20% — entailed.
+    entailed_005, missing_005 = numeric_entailment_check(
+        "Led IBM-AWS co-sell frameworks generating 20% joint revenue growth.", corpus["bul_ibm_005"]
     )
-    assert entailed_001 is True
-    assert missing_001 == []
+    assert entailed_005 is True
+    assert missing_005 == []

@@ -73,7 +73,7 @@
       "graph_skill_node_ids": [
         "skill_sr_cloud_data_platform_engineering",
         "skill_sr_microservices_integration_platform",
-        "skill_confluent_streaming_platforms"
+        "skill_p2_tech_reference_architecture"
       ],
       "linked_source_fact_ids": ["fact_engineering_platform_002"],
       "graph_lineage_refs": ["ccb_distributed_systems_engineering", "reb_ibm_cloud_modernization"],

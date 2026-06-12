@@ -1,7 +1,43 @@
 {
-  "fetched_at": "2026-06-11T12:35:04Z",
-  "fetched_at_epoch": 1781181304.858239,
+  "fetched_at": "2026-06-12T20:26:49Z",
+  "fetched_at_epoch": 1781296009.7049253,
   "plans": {
+    "candidate-static-profile-migration-6d2a4f": {
+      "status": "Not Started",
+      "page_id": "37d27693-f55c-8168-98cd-d2a8be3b254c",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "resume-evidence-graph-refactor-c4e9b2": {
+      "status": "Not Started",
+      "page_id": "37d27693-f55c-8172-b06c-ec10096f0a60",
+      "exists_on_disk": false,
+      "has_ai_summary": true
+    },
+    "apps-rg-graph-skills-sliding-scale-cost-e2e-f6a8c2": {
+      "status": "Not Started",
+      "page_id": "37d27693-f55c-8164-a310-c7e1577b3edf",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "historical-plans-memorial-archive-d4e7a2": {
+      "status": "Archived",
+      "page_id": "37c27693-f55c-819e-a5e0-f8dac02f098d",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "codex-claude-mcp-access-parity-c6d4e2": {
+      "status": "Completed",
+      "page_id": "37c27693-f55c-8109-8837-f3169f38fff7",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "cursor-deletion-final-cleanup-c7d4a9": {
+      "status": "Completed",
+      "page_id": "37c27693-f55c-815f-9415-d4af060b6a7e",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
     "apps-rg-skills-bindability-closure-a7e2f9": {
       "status": "Lower Priority",
       "page_id": "37b27693-f55c-81bb-9587-ff4d809bb23d",

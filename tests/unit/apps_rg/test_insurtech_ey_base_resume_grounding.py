@@ -1,8 +1,7 @@
-"""W3 (apps-rg-insurtech-ey-unlock-a4c0f0) — InsurTech/EY grounded in own base-resume bullets.
+"""InsurTech/EY role lanes use graph bundle proof, not base-resume bullets.
 
-Deterministic, hermetic. Guards that the insurtech/ey lanes source proof from the candidate's
-verbatim, in-period base-resume employment bullets (bul_insurtech_* / bul_ey_*) — not the generic
-substrate-ledger company-hint fallback — closing the REQUIRED_PROOF_ABSENT / empty-slice gap.
+The base resume is retained as an identity spine only. Claim evidence for these lanes must come
+from role_episode_bundle_id values (reb_insurtech_* / reb_ey_*).
 """
 from __future__ import annotations
 
@@ -12,58 +11,64 @@ import pytest
 
 from apps_rg.runtime.section_graph_skills_proof_pool import (
     _ROLE_EPISODE_BASE_RESUME_NEEDLES,
+    _SECTION_MIN_FACTS,
     _base_resume_role_episode_plan,
+    _role_episode_bundle_plan,
 )
 
 REPO = Path(__file__).resolve().parents[3]
 
 
-@pytest.mark.parametrize(
-    "section,needles,expected_ids",
-    [
-        ("insurtech_bullets", ("insurtech",), {"bul_insurtech_001", "bul_insurtech_002", "bul_insurtech_003"}),
-        ("ey_bullets", ("ernst", "young"), {"bul_ey_001", "bul_ey_002", "bul_ey_003"}),
-    ],
-)
-def test_planner_sources_own_base_resume_bullets(section, needles, expected_ids) -> None:
-    result = _base_resume_role_episode_plan(section, needles=needles, limit=3, repo_root=REPO)
-    assert result is not None, f"{section} planner returned None — base-resume bullets not found"
-    plan, ordered, allowed = result
-    fact_ids = {str(f["fact_id"]) for f in plan["facts"]}
-    assert fact_ids == expected_ids, f"{section} fact ids {fact_ids} != {expected_ids}"
-    assert set(ordered) == expected_ids
-    assert expected_ids <= allowed
-    assert plan["selection_method"] == f"base_resume_employment_{section}"
-    # Every fact carries verbatim base-resume claim text and self-referential provenance.
-    for f in plan["facts"]:
-        assert f["claim_text"].strip(), "empty claim_text"
-        assert f["source_fact_ids"] == [f["fact_id"]]
-        assert f["srfs_verification_status"] == "BASE_RESUME_CANONICAL"
-
-
-def test_needles_map_covers_four_role_episode_lanes() -> None:
-    assert set(_ROLE_EPISODE_BASE_RESUME_NEEDLES) == {
-        "insurtech_bullets",
-        "insurtech_narrative",
-        "ey_bullets",
-        "ey_narrative",
-    }
-
-
-def test_planner_returns_none_for_unknown_employer() -> None:
+def test_base_resume_role_episode_planner_is_deprecated() -> None:
+    assert _ROLE_EPISODE_BASE_RESUME_NEEDLES == {}
     assert _base_resume_role_episode_plan(
-        "insurtech_bullets", needles=("nonexistent_employer_xyz",), limit=3, repo_root=REPO
+        "insurtech_bullets", needles=("insurtech",), limit=3, repo_root=REPO
+    ) is None
+    assert _base_resume_role_episode_plan(
+        "ey_bullets", needles=("ernst", "young"), limit=3, repo_root=REPO
     ) is None
 
 
+@pytest.mark.parametrize(
+    "section,expected_prefix,forbidden_prefix",
+    [
+        ("insurtech_bullets", "reb_insurtech_", "bul_insurtech_"),
+        ("insurtech_narrative", "reb_insurtech_", "bul_insurtech_"),
+        ("ey_bullets", "reb_ey_", "bul_ey_"),
+        ("ey_narrative", "reb_ey_", "bul_ey_"),
+    ],
+)
+def test_role_episode_bundle_plan_uses_graph_ids(section, expected_prefix, forbidden_prefix) -> None:
+    result = _role_episode_bundle_plan(
+        section_id=section,
+        repo_root=REPO,
+        limit=_SECTION_MIN_FACTS[section],
+    )
+    assert result is not None, f"{section} graph bundle planner returned None"
+    plan, ordered, allowed = result
+    facts = plan["facts"]
+    assert len(facts) == _SECTION_MIN_FACTS[section]
+    assert len(ordered) == len(facts)
+    assert set(ordered) == allowed
+    assert plan["selection_method"] == f"augmented_skills_graph_{section}_role_episode_bundle"
+    assert plan["role_episode_bundle_fallback"] is True
+    for f in facts:
+        fact_id = str(f["fact_id"])
+        assert fact_id.startswith(expected_prefix), fact_id
+        assert not fact_id.startswith(forbidden_prefix), fact_id
+        assert f["source_fact_ids"] == [fact_id]
+        assert f["role_episode_bundle_id"] == fact_id
+        assert f["srfs_verification_status"] == "GRAPH_ROLE_EPISODE_BUNDLE"
+        assert f["claim_text"].strip()
+
+
 def test_planner_not_applied_to_ibm_or_unify() -> None:
-    # IBM/Unify keep their dedicated graph-ranked planners; they must NOT be in the base-resume map.
     assert "ibm_bullets" not in _ROLE_EPISODE_BASE_RESUME_NEEDLES
     assert "unify_bullets" not in _ROLE_EPISODE_BASE_RESUME_NEEDLES
 
 
 def test_end_to_end_proof_pool_nonempty_for_all_four_lanes() -> None:
-    """Full proof resolution: insurtech/ey bullets+narrative no longer REQUIRED_PROOF_ABSENT."""
+    """Full proof resolution: insurtech/ey bullets+narrative use graph bundle ids."""
     from types import SimpleNamespace
 
     from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
@@ -75,9 +80,17 @@ def test_end_to_end_proof_pool_nonempty_for_all_four_lanes() -> None:
         target_role="VP", jd_text="Lead agentic AI platform strategy.",
         briefing="AIG agentic AI.", base_resume_ref="",
     )
-    for sid in ("insurtech_bullets", "ey_bullets", "insurtech_narrative", "ey_narrative"):
+    expectations = {
+        "insurtech_bullets": ("reb_insurtech_", 12),
+        "insurtech_narrative": ("reb_insurtech_", 12),
+        "ey_bullets": ("reb_ey_", 6),
+        "ey_narrative": ("reb_ey_", 6),
+    }
+    for sid, (prefix, expected_count) in expectations.items():
         pool, *_ = load_section_proof_for_lane(section_id=sid, args=args, repo_root=REPO)
         facts = (pool.selected_fact_plan or {}).get("facts") or []
         allowed = pool.allowed_fact_ids_ordered or []
-        assert len(facts) == 3, f"{sid}: expected 3 grounded facts, got {len(facts)}"
-        assert len(allowed) == 3, f"{sid}: expected 3 allowed fact ids, got {len(allowed)}"
+        assert len(facts) == expected_count, f"{sid}: expected graph facts, got {len(facts)}"
+        assert len(allowed) == expected_count, f"{sid}: expected allowed fact ids, got {len(allowed)}"
+        assert pool.base_resume_fallback_used is False
+        assert all(str(fid).startswith(prefix) for fid in allowed)

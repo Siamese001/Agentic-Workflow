@@ -35,8 +35,8 @@ def test_all_bundles_pass_their_registry_validator(reg) -> None:
 @pytest.mark.parametrize(
     "build,section,n",
     [
-        (build_insurtech_role_episode_section_packet, "insurtech_bullets", 3),
-        (build_ey_role_episode_section_packet, "ey_bullets", 3),
+        (build_insurtech_role_episode_section_packet, "insurtech_bullets", 12),
+        (build_ey_role_episode_section_packet, "ey_bullets", 6),
     ],
 )
 def test_packet_nonempty_with_bound_skills(build, section, n) -> None:
@@ -46,6 +46,14 @@ def test_packet_nonempty_with_bound_skills(build, section, n) -> None:
     for b in packet["role_episode_bundles"]:
         assert b["bound_skills"], f"{b['role_episode_bundle_id']} has no resolved bound skills"
     assert packet["consumption_mode"] == "role_episode_bundle_required"
+    assert packet["base_resume_usage"] == "identity_spine_only"
+    assert packet["graph_claim_authority_ids"] == packet["role_episode_bundle_ids"]
+    assert packet["promotable_metric_outcome_ids"]
+    assert packet["approved_metric_outcome_ids"] == packet["promotable_metric_outcome_ids"]
+    for b in packet["role_episode_bundles"]:
+        assert b["allowed_metric_outcome_ids"], (
+            f"{b['role_episode_bundle_id']} dropped graph metric outcome IDs"
+        )
 
 
 @pytest.mark.parametrize(
@@ -63,6 +71,7 @@ def test_proof_pool_metadata_populated(attach, section) -> None:
     assert meta.get("role_episode_bundles"), "proof pool still empty — REQUIRED_PROOF_ABSENT would fire"
     assert meta.get("role_episode_bundle_ids")
     assert meta.get("flat_skill_only_graph_context_forbidden") is True
+    assert meta.get("approved_metric_outcome_ids")
 
 
 def test_attach_is_noop_for_other_sections() -> None:

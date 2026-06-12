@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
-from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
+from apps_rg.runtime.resume_resolution import load_candidate_static_profile_json, load_lane_base_resume_json
 
 
 @dataclass
@@ -18,6 +18,7 @@ class FinalResumePaths:
     locked_x2: Path
     base_resume: Path
     output_dir: Path
+    candidate_static_profile: Path | None = None
 
     def rel(self, p: Path) -> str:
         try:
@@ -35,6 +36,7 @@ def resolve_default_paths(repo: Path | None = None) -> FinalResumePaths:
     root = repo or find_repo_root()
     locked = root / DEFAULT_LOCKED_REL
     _, base_resume_path, _digest = load_lane_base_resume_json(repo_root=root)
+    _, static_profile_path, _static_digest = load_candidate_static_profile_json(repo_root=root)
     return FinalResumePaths(
         repo_root=root,
         rollup_json=root / DEFAULT_ROLLUP_REL,
@@ -42,6 +44,7 @@ def resolve_default_paths(repo: Path | None = None) -> FinalResumePaths:
         locked_x2=locked / "locked_copy_x2_gate_outputs.json",
         base_resume=base_resume_path,
         output_dir=root / DEFAULT_OUTPUT_REL,
+        candidate_static_profile=static_profile_path,
     )
 
 
@@ -65,6 +68,11 @@ def build_assembly_manifest(
             "locked_copy_manifest": paths.rel(paths.locked_manifest),
             "locked_copy_x2_gate_outputs": paths.rel(paths.locked_x2),
             "canonical_base_resume": paths.rel(paths.base_resume),
+            "candidate_static_profile": (
+                paths.rel(paths.candidate_static_profile)
+                if paths.candidate_static_profile is not None
+                else None
+            ),
         },
         "outputs": {
             "final_resume": paths.rel(paths.output_dir / "final_resume.json"),

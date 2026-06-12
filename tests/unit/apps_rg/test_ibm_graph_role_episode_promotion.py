@@ -26,11 +26,8 @@ PROFILE_PATH = REPO / "apps_rg" / "config" / "domain_contract" / "section_retrie
 NEWLY_PROMOTED_IBM_SKILLS: tuple[str, ...] = (
     "skill_ibm_automated_release_pipelines",
     "skill_ibm_devsecops_pipeline_security",
-    "skill_ibm_metadata_audit_rbac",
-    "skill_ibm_watson_studio_analytics",
 )
 DRAFT_PROMOTED_IBM_SKILLS: tuple[str, ...] = (
-    "skill_confluent_streaming_platforms",
     "skill_risk_greek_stress_testing",
 )
 
@@ -41,12 +38,16 @@ ALL_FORBIDDEN_METRICS: frozenset[str] = HOLD_METRICS | DO_NOT_PROMOTE_METRICS
 
 # Expected bundle IDs
 EXPECTED_BUNDLE_IDS: tuple[str, ...] = (
-    "reb_ibm_cloud_modernization",
-    "reb_ibm_devsecops_reliability",
-    "reb_ibm_streaming_realtime_analytics",
-    "reb_ibm_metadata_audit_governance",
-    "reb_ibm_hpc_risk_analytics",
-    "reb_ibm_hyperscaler_alliance_partner",
+    "reb_ibm_aws_modernization_architecture",
+    "reb_ibm_cognitive_business_decision_support",
+    "reb_ibm_presales_solution_engineering",
+    "reb_ibm_offering_accelerator_management",
+    "reb_ibm_revenue_sales_target_execution",
+    "reb_ibm_nlp_ml_decision_support",
+    "reb_ibm_data_modeling_bi_decision_support",
+    "reb_ibm_customer_success_value_realization",
+    "reb_ibm_aws_alliance_partner_cosell_gtm",
+    "reb_ibm_devsecops_release_resilience",
 )
 
 
@@ -122,14 +123,8 @@ class TestIBMSkillEmployerBinding:
         row = next((r for r in skill_rows if r.get("skill_id") == skill_id), None)
         assert row is not None
         sections = set(row.get("allowed_sections") or [])
-        # Watson Studio is medium-confidence, narrative only initially
-        if skill_id == "skill_ibm_watson_studio_analytics":
-            assert sections & {"ibm_bullets", "ibm_narrative"}, (
-                f"{skill_id} should be eligible for ibm_bullets or ibm_narrative"
-            )
-        else:
-            assert "ibm_bullets" in sections, f"{skill_id} missing ibm_bullets in allowed_sections"
-            assert "ibm_narrative" in sections, f"{skill_id} missing ibm_narrative in allowed_sections"
+        assert "ibm_bullets" in sections, f"{skill_id} missing ibm_bullets in allowed_sections"
+        assert "ibm_narrative" in sections, f"{skill_id} missing ibm_narrative in allowed_sections"
 
     @pytest.mark.parametrize("skill_id", NEWLY_PROMOTED_IBM_SKILLS)
     def test_new_ibm_skill_has_graph_node(self, graph_nodes: list[dict], skill_id: str) -> None:
@@ -332,7 +327,6 @@ class TestMetricHoldEnforcement:
         guarded_skills = {
             "skill_ibm_automated_release_pipelines": "35%",
             "skill_ibm_devsecops_pipeline_security": "40%",
-            "skill_ibm_metadata_audit_rbac": "30%",
             "skill_risk_greek_stress_testing": "40%",
         }
         for skill_id, expected_guard in guarded_skills.items():
@@ -356,7 +350,7 @@ class TestRoleEpisodeBundleIDGate:
         from apps_rg.runtime.sections.ibm_graph_role_episode_registry import (
             assert_role_episode_bundle_id_present,
         )
-        context = {"role_episode_bundle_id": "reb_ibm_cloud_modernization", "section": "ibm_bullets"}
+        context = {"role_episode_bundle_id": "reb_ibm_aws_modernization_architecture", "section": "ibm_bullets"}
         # Should not raise
         assert_role_episode_bundle_id_present(context)
 
@@ -475,7 +469,7 @@ class TestRoleEpisodeBundleIDGate:
 
     def test_get_bundle_by_id_returns_bundle(self) -> None:
         from apps_rg.runtime.sections.ibm_graph_role_episode_registry import get_bundle_by_id
-        b = get_bundle_by_id("reb_ibm_cloud_modernization")
+        b = get_bundle_by_id("reb_ibm_aws_modernization_architecture")
         assert b is not None
         assert b["employer"] == "IBM"
 

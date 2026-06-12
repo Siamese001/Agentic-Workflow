@@ -17,10 +17,14 @@ from typing import Any
 # apps_rg package root (directory containing ``runtime/``, ``resume/``, …)
 _APPS_RG_ROOT = Path(__file__).resolve().parent.parent
 _DEFAULT_RESUME_REL_TO_PKG = Path("resume") / "base" / "amit_ayer_base_resume_v1.json"
+_DEFAULT_STATIC_PROFILE_REL_TO_PKG = Path("resume") / "base" / "candidate_static_profile.json"
 _DEFAULT_RESUME_FILE = _APPS_RG_ROOT / _DEFAULT_RESUME_REL_TO_PKG
+_DEFAULT_STATIC_PROFILE_FILE = _APPS_RG_ROOT / _DEFAULT_STATIC_PROFILE_REL_TO_PKG
 
 DEFAULT_RESUME_SSOT_PATH: Path = _DEFAULT_RESUME_FILE
 DEFAULT_RESUME_REPO_RELPATH: Path = Path("apps_rg") / _DEFAULT_RESUME_REL_TO_PKG
+DEFAULT_STATIC_PROFILE_SSOT_PATH: Path = _DEFAULT_STATIC_PROFILE_FILE
+DEFAULT_STATIC_PROFILE_REPO_RELPATH: Path = Path("apps_rg") / _DEFAULT_STATIC_PROFILE_REL_TO_PKG
 ALLOWED_RESUME_SUFFIXES: frozenset[str] = frozenset({".json", ".txt", ".md", ".markdown"})
 
 
@@ -226,15 +230,34 @@ def load_lane_base_resume_json(
     return rr.resume_dict, rr.resolved_path, rr.resume_digest
 
 
+def load_candidate_static_profile_json(
+    *,
+    source_static_profile_ref: str | None = None,
+    repo_root: Path | None = None,
+) -> tuple[dict[str, Any], Path, str]:
+    """Return ``(profile_dict, resolved_path, canonical_digest)`` for static identity anchors."""
+    root = repo_root or _repo_root()
+    ref = str(source_static_profile_ref or "").strip()
+    path = _resolve_resume_path(ref, repo_root=root) if ref else (root / DEFAULT_STATIC_PROFILE_REPO_RELPATH).resolve()
+    raw, _disk_ref = _load_file_body(path)
+    payload = build_canonical_resume_payload(raw)
+    if payload.get("material_kind") != "json" or not isinstance(payload.get("document"), dict):
+        raise ResumeResolutionError("candidate static profile must be a JSON object")
+    return payload["document"], path, canonical_resume_digest(payload)
+
+
 __all__ = [
     "ALLOWED_RESUME_SUFFIXES",
     "DEFAULT_RESUME_REPO_RELPATH",
     "DEFAULT_RESUME_SSOT_PATH",
+    "DEFAULT_STATIC_PROFILE_REPO_RELPATH",
+    "DEFAULT_STATIC_PROFILE_SSOT_PATH",
     "ResumeResolutionError",
     "ResumeSource",
     "ResolvedResume",
     "build_canonical_resume_payload",
     "canonical_resume_digest",
+    "load_candidate_static_profile_json",
     "load_lane_base_resume_json",
     "resolve_resume_for_lanes",
     "u0_inline_text_from_payload",
