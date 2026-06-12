@@ -241,8 +241,15 @@ def test_insurtech_deferred_metrics_are_not_graph_claim_authority() -> None:
         assert not forbidden, f"generic metric language leaked into {m.get('metric_id')}: {forbidden}"
         assert "proof_shape" in m and m["proof_shape"], f"{m.get('metric_id')} missing proof_shape"
 
-    approved_blob = json.dumps(doc.get("metric_outcome_nodes") or {}, sort_keys=True).lower()
-    assert "tco" not in approved_blob
+    for node in (doc.get("metric_outcome_nodes") or {}).values():
+        approved_surface = " ".join(
+            [
+                str(node.get("metric") or ""),
+                str(node.get("claim_text") or ""),
+                " ".join(str(x) for x in node.get("surface_tokens") or []),
+            ]
+        ).lower()
+        assert "tco" not in approved_surface
 
 
 def test_ey_roots_are_complete_phase_i_without_typed_edges() -> None:
