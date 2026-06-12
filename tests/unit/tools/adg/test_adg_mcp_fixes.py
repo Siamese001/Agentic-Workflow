@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import sqlite3
 import sys
+import threading
 import time
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
@@ -428,6 +429,7 @@ class TestViewsMaterializedAt:
         from tools.adg.core.sqlite_backend import SQLiteBackend
 
         backend = SQLiteBackend.__new__(SQLiteBackend)
+        backend._lifecycle_lock = threading.RLock()
         backend._conn = conn
         backend._sqlite_path = db_path
         assert backend.get_views_materialized_at() == "20260611_120000"
@@ -441,6 +443,7 @@ class TestViewsMaterializedAt:
         from tools.adg.core.sqlite_backend import SQLiteBackend
 
         backend = SQLiteBackend.__new__(SQLiteBackend)
+        backend._lifecycle_lock = threading.RLock()
         backend._conn = conn
         backend._sqlite_path = db_path
         assert backend.get_views_materialized_at() is None
