@@ -66,7 +66,10 @@ def test_w4a_graph_top_level_and_layers(ledger: dict) -> None:
 def test_fourteen_capability_domains(ledger: dict) -> None:
     domains = {d["domain_id"] for d in ledger["agentic_capability_domains"]}
     assert domains == EXPECTED_DOMAINS
-    assert len(ledger["agentic_runtime_matrix"]) >= 65
+    # Floor lowered 65 -> 58 after the operator-authorized 2026-06-11 curation that removed
+    # 16 inward/meta internal-agentic-runtime skills from the matrix (78 -> 62), keeping the
+    # externally-meaningful agentic-platform skills. The 14 capability domains are unchanged.
+    assert len(ledger["agentic_runtime_matrix"]) >= 58
 
 
 def test_deep_agentic_rows_have_domain_metadata(ledger: dict) -> None:

@@ -2,6 +2,25 @@
 
 _2026-06-11. Companion to [archive_skill_lane_alignment_audit.md](archive_skill_lane_alignment_audit.md) (498 archive skills mapped). Constraint set by operator: Unify mostly Agentic; IBM a mix of all; Partnerships is the most critical domain (Anthropic / OpenAI-class partner-role opportunities); JD + briefing decide final per-run highlighting._
 
+> ⛔ **SUPERSEDED by the DYNAMIC model (2026-06-11, operator directive).** A static % per
+> employer cannot work in an ATS-driven recruiting environment: the same profile must read
+> ~100% agentic for an SVP-Agentic-Engineering JD and 70-80% partnerships for an Anthropic
+> AI-Partnerships JD. The emphasis is now **computed per-JD from approved graph skills** — no
+> hardcoded caps. Mechanism (shipped this session):
+> 1. **Functional pillar-weight scoring** (`track_weighted_graph_expansion`): a skill's score =
+>    career-track weight × `profile.top_weighted_pillars[skill.pillar]`. Fixed a dead lookup
+>    (`role_family_weights` keyed by taxonomy id but looked up by projection key → always 0.0).
+>    Drives exec_summary + competencies. **Proven swing: Anthropic-partnerships JD → 63% partner /
+>    22% agentic; SVP-eng JD → 0% partner / 66% agentic** — same approved skill set.
+> 2. **JD-fit bundle selection** (`jd_fit_bundle_selection`): experience-lane bullet slots rank
+>    role-episode bundles by the same pillar weighting. **Unify bullets: partnerships JD → 2/6
+>    partner; eng JD → 0/6 (identical to static, zero regression).**
+> 3. **Calibration** lives in `role_family_projection_profiles[*].top_weighted_pillars` +
+>    `deprioritize_pillars` — tune emphasis there, never with a static %.
+>
+> The tables below are retained as the **bundle-inventory** reference (what candidates exist per
+> employer); the *shares* are now emergent, not prescribed.
+
 ## 1. How a "% split" actually manifests in apps_rg
 
 There is no numeric weighting knob per lane. Emphasis materializes through three levers:
