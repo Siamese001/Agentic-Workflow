@@ -4,7 +4,7 @@
 **PLAN_ID:** phase2-gtm-presales-remaining-f7a2c9
 **WAVE:** W4/W14
 **SCOPE_MATCH:** True
-**SECTION_PROJECTION_PASS_RATE:** 1.0 (49/49 cells)
+**SECTION_PROJECTION_PASS_RATE:** 1.0 (77/77 cells)
 **PROOF_CLASSIFICATION:** offline_section_projection_and_srfs_allocation_not_runtime_proof
 
 ## Archetype × section summary

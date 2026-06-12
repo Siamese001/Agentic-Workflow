@@ -1,6 +1,6 @@
 # P1-W4 — Track-weighted graph expansion
 
-**Generated:** 2026-05-27T19:18:11Z  
+**Generated:** 2026-06-12T11:34:15Z  
 **Plan:** graph-skills-hardening-f3a8c1  
 **Role family:** SVP_ENGINEERING_AI_PLATFORM
 
@@ -12,9 +12,9 @@
 
 ## Selected facts by track
 
-- `track_actuarial_risk_derivatives`: 3 facts
-- `track_data_tech_cloud_ml`: 5 facts
-- `track_genai_agentic`: 8 facts
+- `track_actuarial_risk_derivatives`: 4 facts
+- `track_data_tech_cloud_ml`: 4 facts
+- `track_genai_agentic`: 6 facts
 
 ## Graph hop sample (first skill)
 
@@ -23,20 +23,20 @@
   {
     "edge_type": "career_track_contains_pillar",
     "from": "track_actuarial_risk_derivatives",
-    "to": "pillar_actuarial_foundation",
+    "to": "pillar_regulatory_governance",
     "note": "track-weighted pillar scope"
   },
   {
     "edge_type": "skill_row_pillar_projection",
-    "from": "pillar_actuarial_foundation",
-    "to": "skill_actuarial_fsa_fellowship",
+    "from": "pillar_regulatory_governance",
+    "to": "skill_finra_sec_regulatory_compliance",
     "note": "ACTIVE skill_row pillar match (not causal)"
   },
   {
-    "edge_type": "skill_supported_by_fact",
-    "from": "skill_actuarial_fsa_fellowship",
-    "to": "fact_certs_001",
-    "note": "graph edge skill_supported_by_fact"
+    "edge_type": "skill_row_fact_id_links",
+    "from": "skill_finra_sec_regulatory_compliance",
+    "to": "fact_consulting_001",
+    "note": "fact_id_links on skill_row (no separate fact node)"
   }
 ]
 ```
@@ -45,7 +45,7 @@
 
 - c03_graph_bound_status: **BOUND**
 - c03_binding_surface: `apps_rg/fact_inventory/track_weighted_graph_expansion`
-- c03_graph_expansion_ref: `ref:graph:track_weighted_expansion:db95cdec12c1d10f`
+- c03_graph_expansion_ref: `ref:graph:track_weighted_expansion:57237b432afebaea`
 - c03_graph_hop_paths_count: **22**
 - c03_selected_tracks: ['track_actuarial_risk_derivatives', 'track_data_tech_cloud_ml', 'track_genai_agentic']
 - non_graph_evidence_items_count: **0**

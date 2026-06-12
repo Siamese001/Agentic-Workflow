@@ -308,7 +308,7 @@
     "graph_skills_quality_w3": {
       "plan_id": "graph-skills-quality-enhancement-c4e8a1",
       "schema_tag": "master_skills_arsenal_graph_v2_quality",
-      "applied_at": "2026-05-25T22:55:30Z"
+      "applied_at": "2026-06-12T11:31:00Z"
     },
     "draft_skill_promotion_brown_wave": {
       "applied_at": "2026-05-27T12:26:11Z",
@@ -2419,6 +2419,134 @@
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "confidence_grade": "MEDIUM",
       "confidence_grade_derived": "MEDIUM"
+    },
+    {
+      "node_id": "skill_partner_gsi_enablement",
+      "node_type": "skill",
+      "pillar": "pillar_partner_gtm_alliances",
+      "label": "GSI Partner Enablement",
+      "description": "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_partnerships_gtm_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_partner_hyperscaler_cosell",
+      "node_type": "skill",
+      "pillar": "pillar_hyperscaler_marketplace_partner_gtm",
+      "label": "Hyperscaler Co-Sell Motion",
+      "description": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM-AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_partnerships_gtm_002"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_partner_joint_solution_development",
+      "node_type": "skill",
+      "pillar": "pillar_applied_ai_partner_architecture",
+      "label": "Joint Solution Development",
+      "description": "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_partnerships_gtm_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_partner_presales_sa_support",
+      "node_type": "skill",
+      "pillar": "pillar_presales_solutioning",
+      "label": "Partner Pre-Sales SA Support",
+      "description": "Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_solutions_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_partner_indirect_revenue_models",
+      "node_type": "skill",
+      "pillar": "pillar_revenue_commercialization",
+      "label": "Indirect Revenue Models",
+      "description": "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_partnerships_gtm_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_partner_alliance_gtm_execution",
+      "node_type": "skill",
+      "pillar": "pillar_partner_gtm_alliances",
+      "label": "Alliance GTM Execution",
+      "description": "Forged relationships with cloud and AI vendors, combining market influence with solution roadmaps and joint go-to-market strategies to accelerate enterprise adoption of advanced analytics and platform services.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_partnerships_gtm_004"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_partner_partner_enablement_training",
+      "node_type": "skill",
+      "pillar": "pillar_partner_gtm_alliances",
+      "label": "Partner Enablement Training",
+      "description": "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_partnerships_gtm_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_partner_ai_architecture_advisory",
+      "node_type": "skill",
+      "pillar": "pillar_applied_ai_partner_architecture",
+      "label": "AI Architecture Advisory to Partners",
+      "description": "Forged relationships with cloud and AI vendors, combining market influence with solution roadmaps and joint go-to-market strategies to accelerate enterprise adoption of advanced analytics and platform services.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_partnerships_gtm_004"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
     },
     {
       "node_id": "skill_finance_cost_optimization_dashboards",
@@ -5677,6 +5805,120 @@
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "confidence_grade": "HIGH",
       "confidence_grade_derived": "HIGH"
+    },
+    {
+      "node_id": "skill_svp_it_strategy_innovation",
+      "node_type": "skill",
+      "pillar": "pillar_insurer_it_strategy_ai_enablement",
+      "label": "Svp IT Strategy Innovation",
+      "description": "Partnered with C-suite executives and cross-functional leaders to align AI, analytics, cloud, risk, and financial strategies with measurable business outcomes.",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "medium",
+      "source_refs": [
+        "fact_exec_001",
+        "fact_consulting_001",
+        "fact_partnerships_gtm_005"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_soc2_zero_trust_security",
+      "node_type": "skill",
+      "pillar": "pillar_regulatory_governance",
+      "label": "SOC2 Zero Trust Security",
+      "description": "Embedded zero-trust security and compliance (SOC2, GDPR, CCPA), enabling sales to Fortune 100 clients",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_governance_005"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_confluent_streaming_platforms",
+      "node_type": "skill",
+      "pillar": "pillar_interoperability_integration_ecosystem",
+      "label": "Confluent Streaming Platforms",
+      "description": "integrating CPQ automations with real-time data ingestion, collaborating with Confluent and AWS to unify customer intelligence",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_data_analytics_003"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_watson_studio_fraud_aml",
+      "node_type": "skill",
+      "pillar": "pillar_banking_platform_responsible_ai",
+      "label": "Watson Studio Fraud AML",
+      "description": "Utilized Watson Studio for fraud detection and money laundering analytics, ensuring regulatory compliance and operational security",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_quant_hpc_004"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_algo_trading_sub_ms_inference",
+      "node_type": "skill",
+      "pillar": "pillar_derivatives_structured",
+      "label": "Algo Trading Sub Ms Inference",
+      "description": "enabling sub-millisecond inference for algorithmic trading",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_quant_hpc_002"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_finra_sec_regulatory_compliance",
+      "node_type": "skill",
+      "pillar": "pillar_regulatory_governance",
+      "label": "Finra SEC Regulatory Compliance",
+      "description": "satisfying rigorous FINRA and SEC mandates",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_consulting_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
+    },
+    {
+      "node_id": "skill_credit_adjudication_default_risk",
+      "node_type": "skill",
+      "pillar": "pillar_risk_management",
+      "label": "Credit Adjudication Default Risk",
+      "description": "AI-driven credit adjudication project that cut default exposure by 15% through dynamic risk profiling and improved underwriting accuracy",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_credit_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet"
     }
   ],
   "graph_edges": [
@@ -24733,7 +24975,6 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career",
         "competencies"
       ],
       "visibility_rule": "role_family_match",
@@ -24760,7 +25001,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim exotic_options beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_derivatives_structured",
+        "skill_derivatives_exotic_options",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_derivatives_structured_derivatives",
@@ -24783,11 +25034,11 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career"
+        "competencies"
       ],
       "visibility_rule": "human_confirm",
       "evidence_risk": "high",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": true,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "internal_rank_only",
@@ -24808,7 +25059,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim structured_derivatives beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_derivatives_structured",
+        "skill_derivatives_structured_derivatives",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_insurance_liabilities_embedded_options",
@@ -24835,11 +25096,11 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career"
+        "competencies"
       ],
       "visibility_rule": "human_confirm",
       "evidence_risk": "high",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": true,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "internal_rank_only",
@@ -24861,7 +25122,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim embedded_options beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_embedded_options_insurance",
+        "skill_insurance_liabilities_embedded_options",
+        "fact_insurance_liabilities_001"
+      ],
+      "link_class_by_fact": {
+        "fact_insurance_liabilities_001": "primary"
+      },
+      "source_ledger_ref": "fact_insurance_liabilities_001"
     },
     {
       "skill_id": "skill_insurance_liabilities_insurance_liabilities",
@@ -24886,11 +25157,11 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career"
+        "competencies"
       ],
       "visibility_rule": "human_confirm",
       "evidence_risk": "high",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": true,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "internal_rank_only",
@@ -24912,7 +25183,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim insurance_liabilities beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_embedded_options_insurance",
+        "skill_insurance_liabilities_insurance_liabilities",
+        "fact_insurance_liabilities_001"
+      ],
+      "link_class_by_fact": {
+        "fact_insurance_liabilities_001": "primary"
+      },
+      "source_ledger_ref": "fact_insurance_liabilities_001"
     },
     {
       "skill_id": "skill_greeks_gamma",
@@ -24940,7 +25221,6 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career",
         "competencies"
       ],
       "visibility_rule": "role_family_match",
@@ -24966,7 +25246,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim gamma beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_greeks_hedging",
+        "skill_greeks_gamma",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_greeks_vega",
@@ -24979,9 +25269,7 @@
       "source_resume_files": [
         "Amit Ayer Resume - AI Financial Services.docx"
       ],
-      "source_snippets": [
-        "gamma, Vega, Theta"
-      ],
+      "source_snippets": [],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
@@ -25020,7 +25308,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim vega beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_greeks_hedging",
+        "skill_greeks_vega",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_greeks_theta",
@@ -25033,9 +25331,7 @@
       "source_resume_files": [
         "Amit Ayer Resume - AI Financial Services.docx"
       ],
-      "source_snippets": [
-        "gamma, Vega, Theta"
-      ],
+      "source_snippets": [],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
@@ -25073,7 +25369,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim theta beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_greeks_hedging",
+        "skill_greeks_theta",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_greeks_delta",
@@ -25103,7 +25409,7 @@
       ],
       "visibility_rule": "human_confirm",
       "evidence_risk": "medium",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": true,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "internal_rank_only",
@@ -25124,7 +25430,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim delta beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_greeks_hedging",
+        "skill_greeks_delta",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_greeks_rho",
@@ -25154,7 +25470,7 @@
       ],
       "visibility_rule": "human_confirm",
       "evidence_risk": "medium",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": true,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "internal_rank_only",
@@ -25175,7 +25491,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim rho beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_greeks_hedging",
+        "skill_greeks_rho",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_greeks_convexity",
@@ -25205,7 +25531,7 @@
       ],
       "visibility_rule": "human_confirm",
       "evidence_risk": "medium",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": true,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "internal_rank_only",
@@ -25225,7 +25551,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim convexity beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_greeks_hedging",
+        "skill_greeks_convexity",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill_risk_greek_stress_testing",
@@ -25258,7 +25594,6 @@
         "HPC stress testing",
         "near-real-time stress analytics",
         "scenario analysis",
-        "scenario runtimes",
         "stress test simulations"
       ],
       "forbidden_phrases": [
@@ -25267,7 +25602,6 @@
         "40%"
       ],
       "allowed_sections": [
-        "early_career",
         "ibm_bullets",
         "ibm_narrative"
       ],
@@ -25301,7 +25635,17 @@
       "time_window": "2017-04 to 2022-10",
       "archive_signal_ids": [
         "sig_ibm_002"
-      ]
+      ],
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_risk_management",
+        "skill_risk_greek_stress_testing",
+        "fact_quant_hpc_001"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_001": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_001"
     },
     {
       "skill_id": "skill_capital_capital_modeling",
@@ -25379,7 +25723,7 @@
         "Strategic Finance - Amit Ayer.docx"
       ],
       "source_snippets": [],
-      "user_confirmed": true,
+      "user_confirmed": false,
       "support_level": "USER_CONFIRMED_PENDING_SOURCE",
       "role_family_weights": {
         "STRATEGIC_FINANCE": 1.0
@@ -25390,12 +25734,10 @@
         "reserving"
       ],
       "forbidden_phrases": [],
-      "allowed_sections": [
-        "early_career"
-      ],
+      "allowed_sections": [],
       "visibility_rule": "human_confirm",
       "evidence_risk": "high",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": true,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "internal_rank_only",
@@ -25418,7 +25760,15 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim reserving beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_capital_modeling",
+        "skill_capital_reserving",
+        "fact_missing"
+      ],
+      "link_class_by_fact": {},
+      "source_ledger_ref": "skill_capital_reserving"
     },
     {
       "skill_id": "skill_capital_pricing_actuarial",
@@ -25444,7 +25794,7 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career"
+        "competencies"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -25468,7 +25818,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_capital_modeling",
+        "skill_capital_pricing_actuarial",
+        "fact_quant_act_001"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_act_001": "primary"
+      },
+      "source_ledger_ref": "fact_quant_act_001"
     },
     {
       "skill_id": "skill_actuarial_fsa_fellowship",
@@ -25561,7 +25921,6 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career",
         "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
@@ -25588,7 +25947,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim actuarial_software beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_actuarial_foundation",
+        "skill_actuarial_actuarial_software",
+        "fact_insurance_software_001"
+      ],
+      "link_class_by_fact": {
+        "fact_insurance_software_001": "primary"
+      },
+      "source_ledger_ref": "fact_insurance_software_001"
     },
     {
       "skill_id": "skill_risk_enterprise_risk_controls",
@@ -25664,9 +26033,7 @@
       "source_resume_files": [
         "Quantitative Research & Trading - Amit Ayer.docx"
       ],
-      "source_snippets": [
-        "market risk scenarios"
-      ],
+      "source_snippets": [],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
@@ -25707,7 +26074,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim market_risk beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_risk_management",
+        "skill_risk_market_risk",
+        "fact_quant_hpc_002"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_002": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_002"
     },
     {
       "skill_id": "skill_risk_model_risk",
@@ -25900,7 +26277,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_partnerships_gtm_002",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_cloud_data_aws",
+        "skill_partner_aws_ecosystem",
+        "fact_partnerships_gtm_002"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_002": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_002"
     },
     {
       "skill_id": "skill_partner_cloud_partner_ecosystem",
@@ -25964,7 +26351,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_partnerships_gtm_002",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_cloud_data_aws",
+        "skill_partner_cloud_partner_ecosystem",
+        "fact_partnerships_gtm_002"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_002": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_002"
     },
     {
       "skill_id": "skill_partner_partner_motions",
@@ -26029,7 +26426,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_partnerships_gtm_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_partner_motions",
+        "fact_partnerships_gtm_001"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001"
     },
     {
       "skill_id": "skill_partner_co_selling",
@@ -26121,7 +26528,7 @@
       ],
       "visibility_rule": "human_confirm",
       "evidence_risk": "low",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": true,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "internal_rank_only",
@@ -26143,7 +26550,15 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim partner_engineering beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_cosell_partner_engineering",
+        "skill_partner_partner_engineering",
+        "fact_missing"
+      ],
+      "link_class_by_fact": {},
+      "source_ledger_ref": "skill_partner_partner_engineering"
     },
     {
       "skill_id": "skill_partner_pre_sales",
@@ -26207,7 +26622,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_solutions_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_presales_solutioning",
+        "skill_partner_pre_sales",
+        "fact_solutions_001"
+      ],
+      "link_class_by_fact": {
+        "fact_solutions_001": "primary"
+      },
+      "source_ledger_ref": "fact_solutions_001"
     },
     {
       "skill_id": "skill_partner_solution_architecture",
@@ -26283,9 +26708,7 @@
       "source_resume_files": [
         "Partnerships & Alliances - Amit Ayer.docx"
       ],
-      "source_snippets": [
-        "executive workshops"
-      ],
+      "source_snippets": [],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
@@ -26332,7 +26755,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_solutions_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_presales_solutioning",
+        "skill_partner_workshops",
+        "fact_solutions_001"
+      ],
+      "link_class_by_fact": {
+        "fact_solutions_001": "primary"
+      },
+      "source_ledger_ref": "fact_solutions_001"
     },
     {
       "skill_id": "skill_partner_customer_deal_support",
@@ -26471,7 +26904,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_partnerships_gtm_005",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_customer_stakeholder",
+        "skill_partner_enterprise_negotiations",
+        "fact_partnerships_gtm_005"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_005": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_005"
     },
     {
       "skill_id": "skill_partner_sales_revenue_targets",
@@ -26546,9 +26989,7 @@
       "source_resume_files": [
         "Partnerships & Alliances - Amit Ayer.docx"
       ],
-      "source_snippets": [
-        "co-marketing campaigns"
-      ],
+      "source_snippets": [],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
@@ -26599,7 +27040,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_partnerships_gtm_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_gtm_enablement",
+        "fact_partnerships_gtm_001"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001"
     },
     {
       "skill_id": "skill_partner_partner_led_ai_solutions",
@@ -26690,7 +27141,7 @@
       ],
       "visibility_rule": "human_confirm",
       "evidence_risk": "low",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": true,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "internal_rank_only",
@@ -26711,7 +27162,15 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim product_feedback_loops beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_product_feedback_loops",
+        "fact_missing"
+      ],
+      "link_class_by_fact": {},
+      "source_ledger_ref": "skill_partner_product_feedback_loops"
     },
     {
       "skill_id": "skill_partner_pnl_oversight",
@@ -26724,9 +27183,7 @@
       "source_resume_files": [
         "Partnerships & Alliances - Amit Ayer.docx"
       ],
-      "source_snippets": [
-        "P&L oversight"
-      ],
+      "source_snippets": [],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
@@ -26774,7 +27231,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_partnerships_gtm_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_revenue_commercialization",
+        "skill_partner_pnl_oversight",
+        "fact_partnerships_gtm_001"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001"
     },
     {
       "skill_id": "skill_partner_partner_revenue_3m",
@@ -27098,7 +27565,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_revenue_ops_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_revenue_operations",
+        "skill_revops_sales_forecasting_frameworks",
+        "fact_revenue_ops_001"
+      ],
+      "link_class_by_fact": {
+        "fact_revenue_ops_001": "primary"
+      },
+      "source_ledger_ref": "fact_revenue_ops_001"
     },
     {
       "skill_id": "skill_revops_multi_channel_gtm_alignment",
@@ -27127,8 +27604,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "executive_summary",
-        "competencies"
+        "competencies",
+        "executive_summary"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -27163,7 +27640,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_revenue_ops_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_revenue_operations",
+        "skill_revops_multi_channel_gtm_alignment",
+        "fact_revenue_ops_001"
+      ],
+      "link_class_by_fact": {
+        "fact_revenue_ops_001": "primary"
+      },
+      "source_ledger_ref": "fact_revenue_ops_001"
     },
     {
       "skill_id": "skill_sales_modernization_deals_15m",
@@ -27437,6 +27924,607 @@
       "source_ledger_ref": "fact_partnerships_gtm_004"
     },
     {
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85
+      },
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_partner_gtm",
+      "domain": "Partner GTM",
+      "node_type": "skill_row",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_partner_gsi_enablement",
+      "display_name": "GSI Partner Enablement",
+      "fact_id_links": [
+        "fact_partnerships_gtm_001"
+      ],
+      "pillar": "pillar_partner_gtm_alliances",
+      "subpillar": "gsi_partner_enablement",
+      "source_snippets": [
+        "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue."
+      ],
+      "allowed_phrases": [
+        "global AI channel program",
+        "partner enablement",
+        "GSI partner enablement",
+        "co-marketing campaigns"
+      ],
+      "forbidden_phrases": [
+        "formal GSI certification program ownership",
+        "Accenture",
+        "Deloitte",
+        "Infosys"
+      ],
+      "capability": "gsi_partner_enablement",
+      "ats_keywords": [
+        "global AI channel program",
+        "partner enablement",
+        "GSI partner enablement",
+        "co-marketing campaigns"
+      ],
+      "achievement_framing_guidance": "Frame GSI Partner Enablement with partner scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim GSI Partner Enablement beyond repo evidence and linked facts; fail closed if proof missing.",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "primary_fact_id": "fact_partnerships_gtm_001",
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_gsi_enablement",
+        "fact_partnerships_gtm_001"
+      ]
+    },
+    {
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85
+      },
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_partner_gtm",
+      "domain": "Partner GTM",
+      "node_type": "skill_row",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_partner_hyperscaler_cosell",
+      "display_name": "Hyperscaler Co-Sell Motion",
+      "fact_id_links": [
+        "fact_partnerships_gtm_002"
+      ],
+      "pillar": "pillar_hyperscaler_marketplace_partner_gtm",
+      "subpillar": "hyperscaler_cosell",
+      "source_snippets": [
+        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM-AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%."
+      ],
+      "allowed_phrases": [
+        "IBM-AWS alliance",
+        "hyperscaler co-sell",
+        "AI-driven sales frameworks",
+        "joint revenue"
+      ],
+      "forbidden_phrases": [
+        "GCP Marketplace",
+        "Azure Marketplace",
+        "co-sell credits",
+        "cloud marketplace listing"
+      ],
+      "capability": "hyperscaler_cosell",
+      "ats_keywords": [
+        "IBM-AWS alliance",
+        "hyperscaler co-sell",
+        "AI-driven sales frameworks",
+        "joint revenue"
+      ],
+      "achievement_framing_guidance": "Frame Hyperscaler Co-Sell Motion with partner scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim Hyperscaler Co-Sell Motion beyond repo evidence and linked facts; fail closed if proof missing.",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "primary_fact_id": "fact_partnerships_gtm_002",
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_002": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_002",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_hyperscaler_marketplace_partner_gtm",
+        "skill_partner_hyperscaler_cosell",
+        "fact_partnerships_gtm_002"
+      ]
+    },
+    {
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85
+      },
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_partner_gtm",
+      "domain": "Partner GTM",
+      "node_type": "skill_row",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_partner_joint_solution_development",
+      "display_name": "Joint Solution Development",
+      "fact_id_links": [
+        "fact_partnerships_gtm_001"
+      ],
+      "pillar": "pillar_applied_ai_partner_architecture",
+      "subpillar": "joint_solution_development",
+      "source_snippets": [
+        "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue."
+      ],
+      "allowed_phrases": [
+        "co-developing analytics frameworks",
+        "joint solution development",
+        "partner-led AI solutions"
+      ],
+      "forbidden_phrases": [
+        "Anthropic reference architecture",
+        "formal certification path"
+      ],
+      "capability": "joint_solution_development",
+      "ats_keywords": [
+        "co-developing analytics frameworks",
+        "joint solution development",
+        "partner-led AI solutions"
+      ],
+      "achievement_framing_guidance": "Frame Joint Solution Development with partner scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim Joint Solution Development beyond repo evidence and linked facts; fail closed if proof missing.",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "primary_fact_id": "fact_partnerships_gtm_001",
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_applied_ai_partner_architecture",
+        "skill_partner_joint_solution_development",
+        "fact_partnerships_gtm_001"
+      ]
+    },
+    {
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85
+      },
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_partner_gtm",
+      "domain": "Partner GTM",
+      "node_type": "skill_row",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_partner_presales_sa_support",
+      "display_name": "Partner Pre-Sales SA Support",
+      "fact_id_links": [
+        "fact_solutions_001"
+      ],
+      "pillar": "pillar_presales_solutioning",
+      "subpillar": "partner_presales_sa_support",
+      "source_snippets": [
+        "Translated complex AI, data, and cloud architecture into executive value propositions and measurable ROI for senior stakeholders."
+      ],
+      "allowed_phrases": [
+        "solution architecture",
+        "pre-sales technical support",
+        "executive value propositions",
+        "measurable ROI"
+      ],
+      "forbidden_phrases": [
+        "managed Partner SA team",
+        "quota-carrying partner SE team"
+      ],
+      "capability": "partner_presales_sa_support",
+      "ats_keywords": [
+        "solution architecture",
+        "pre-sales technical support",
+        "executive value propositions",
+        "measurable ROI"
+      ],
+      "achievement_framing_guidance": "Frame Partner Pre-Sales SA Support with partner scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim Partner Pre-Sales SA Support beyond repo evidence and linked facts; fail closed if proof missing.",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "primary_fact_id": "fact_solutions_001",
+      "link_class_by_fact": {
+        "fact_solutions_001": "primary"
+      },
+      "source_ledger_ref": "fact_solutions_001",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_presales_solutioning",
+        "skill_partner_presales_sa_support",
+        "fact_solutions_001"
+      ]
+    },
+    {
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85
+      },
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_partner_gtm",
+      "domain": "Partner GTM",
+      "node_type": "skill_row",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_partner_indirect_revenue_models",
+      "display_name": "Indirect Revenue Models",
+      "fact_id_links": [
+        "fact_partnerships_gtm_001"
+      ],
+      "pillar": "pillar_revenue_commercialization",
+      "subpillar": "indirect_revenue_models",
+      "source_snippets": [
+        "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue."
+      ],
+      "allowed_phrases": [
+        "partner-derived revenue",
+        "channel program",
+        "indirect revenue models",
+        "bundled consulting packages"
+      ],
+      "forbidden_phrases": [
+        "indirect ARR",
+        "partner attach rates",
+        "reseller margin program"
+      ],
+      "capability": "indirect_revenue_models",
+      "ats_keywords": [
+        "partner-derived revenue",
+        "channel program",
+        "indirect revenue models",
+        "bundled consulting packages"
+      ],
+      "achievement_framing_guidance": "Frame Indirect Revenue Models with partner scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim Indirect Revenue Models beyond repo evidence and linked facts; fail closed if proof missing.",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "primary_fact_id": "fact_partnerships_gtm_001",
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_revenue_commercialization",
+        "skill_partner_indirect_revenue_models",
+        "fact_partnerships_gtm_001"
+      ]
+    },
+    {
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85
+      },
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_partner_gtm",
+      "domain": "Partner GTM",
+      "node_type": "skill_row",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_partner_alliance_gtm_execution",
+      "display_name": "Alliance GTM Execution",
+      "fact_id_links": [
+        "fact_partnerships_gtm_004"
+      ],
+      "pillar": "pillar_partner_gtm_alliances",
+      "subpillar": "alliance_gtm_execution",
+      "source_snippets": [
+        "Forged relationships with cloud and AI vendors, combining market influence with solution roadmaps and joint go-to-market strategies to accelerate enterprise adoption of advanced analytics and platform services."
+      ],
+      "allowed_phrases": [
+        "joint go-to-market strategies",
+        "cloud and AI vendors",
+        "solution roadmaps",
+        "alliance GTM execution"
+      ],
+      "forbidden_phrases": [
+        "MDF allocation",
+        "formal partner QBR ownership"
+      ],
+      "capability": "alliance_gtm_execution",
+      "ats_keywords": [
+        "joint go-to-market strategies",
+        "cloud and AI vendors",
+        "solution roadmaps",
+        "alliance GTM execution"
+      ],
+      "achievement_framing_guidance": "Frame Alliance GTM Execution with partner scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim Alliance GTM Execution beyond repo evidence and linked facts; fail closed if proof missing.",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "primary_fact_id": "fact_partnerships_gtm_004",
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_004": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_004",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_alliance_gtm_execution",
+        "fact_partnerships_gtm_004"
+      ]
+    },
+    {
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85
+      },
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_partner_gtm",
+      "domain": "Partner GTM",
+      "node_type": "skill_row",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_partner_partner_enablement_training",
+      "display_name": "Partner Enablement Training",
+      "fact_id_links": [
+        "fact_partnerships_gtm_001"
+      ],
+      "pillar": "pillar_partner_gtm_alliances",
+      "subpillar": "partner_enablement_training",
+      "source_snippets": [
+        "Built a global AI channel program from inception, co-developing analytics frameworks with strategic partners, bundling consulting packages with LLM-driven compliance analysis, and using co-marketing campaigns to generate $3M in partner-derived revenue."
+      ],
+      "allowed_phrases": [
+        "global AI channel program",
+        "partner enablement training",
+        "AI channel program"
+      ],
+      "forbidden_phrases": [
+        "certification tracks",
+        "enablement portal ownership"
+      ],
+      "capability": "partner_enablement_training",
+      "ats_keywords": [
+        "global AI channel program",
+        "partner enablement training",
+        "AI channel program"
+      ],
+      "achievement_framing_guidance": "Frame Partner Enablement Training with partner scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim Partner Enablement Training beyond repo evidence and linked facts; fail closed if proof missing.",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "primary_fact_id": "fact_partnerships_gtm_001",
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_001",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_partner_gtm_alliances",
+        "skill_partner_partner_enablement_training",
+        "fact_partnerships_gtm_001"
+      ]
+    },
+    {
+      "career_stage": "cross_career",
+      "source_resume_files": [
+        "Amit Ayer Resume - Partner Development Manager.txt",
+        "Sales - Amit Ayer.txt"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "PARTNERSHIPS_GTM": 1.0,
+        "PARTNER_APPLIED_AI_ARCHITECTURE": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.85
+      },
+      "allowed_sections": [
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_partner_gtm_revenue_leadership",
+      "domain_id": "domain_partner_gtm",
+      "domain": "Partner GTM",
+      "node_type": "skill_row",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_partner_ai_architecture_advisory",
+      "display_name": "AI Architecture Advisory to Partners",
+      "fact_id_links": [
+        "fact_partnerships_gtm_004"
+      ],
+      "pillar": "pillar_applied_ai_partner_architecture",
+      "subpillar": "ai_architecture_advisory",
+      "source_snippets": [
+        "Forged relationships with cloud and AI vendors, combining market influence with solution roadmaps and joint go-to-market strategies to accelerate enterprise adoption of advanced analytics and platform services."
+      ],
+      "allowed_phrases": [
+        "AI architecture advisory",
+        "solution roadmaps",
+        "cloud and AI vendors",
+        "enterprise adoption"
+      ],
+      "forbidden_phrases": [
+        "validated Anthropic reference designs",
+        "Claude deployment owner"
+      ],
+      "capability": "ai_architecture_advisory",
+      "ats_keywords": [
+        "AI architecture advisory",
+        "solution roadmaps",
+        "cloud and AI vendors",
+        "enterprise adoption"
+      ],
+      "achievement_framing_guidance": "Frame AI Architecture Advisory to Partners with partner scope, mechanism, and outcome; metrics only from linked fact_id.",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "zero_hallucination_guardrail": "Do not claim AI Architecture Advisory to Partners beyond repo evidence and linked facts; fail closed if proof missing.",
+      "career_track_id": "TRACK_DATA_TECH_CLOUD_ML",
+      "primary_fact_id": "fact_partnerships_gtm_004",
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_004": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_004",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_applied_ai_partner_architecture",
+        "skill_partner_ai_architecture_advisory",
+        "fact_partnerships_gtm_004"
+      ]
+    },
+    {
       "skill_id": "skill_finance_cost_optimization_dashboards",
       "fact_id_links": [
         "fact_revenue_ops_004"
@@ -27603,7 +28691,7 @@
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "medium",
-      "activation_status": "ACTIVE",
+      "activation_status": "DRAFT",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -27623,7 +28711,15 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim net_revenue_retention_predictive_analytics beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_customer_stakeholder",
+        "skill_customer_nrr_predictive_analytics_20pct",
+        "fact_missing"
+      ],
+      "link_class_by_fact": {},
+      "source_ledger_ref": "skill_customer_nrr_predictive_analytics_20pct"
     },
     {
       "skill_id": "skill_customer_satisfaction_nps_25pct",
@@ -27662,7 +28758,7 @@
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
-      "activation_status": "ACTIVE",
+      "activation_status": "DRAFT",
       "human_confirmation_required": false,
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
@@ -27682,7 +28778,15 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim customer_satisfaction_nps_program beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_customer_stakeholder",
+        "skill_customer_satisfaction_nps_25pct",
+        "fact_missing"
+      ],
+      "link_class_by_fact": {},
+      "source_ledger_ref": "skill_customer_satisfaction_nps_25pct"
     },
     {
       "skill_id": "skill_commercial_board_level_stakeholder_alignment",
@@ -27747,7 +28851,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_exec_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_executive_leadership",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "fact_exec_001"
+      ],
+      "link_class_by_fact": {
+        "fact_exec_001": "primary"
+      },
+      "source_ledger_ref": "fact_exec_001"
     },
     {
       "skill_id": "skill_commercial_gtm_investment_pipeline",
@@ -27812,7 +28926,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_revenue_ops_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_revenue_operations",
+        "skill_commercial_gtm_investment_pipeline",
+        "fact_revenue_ops_001"
+      ],
+      "link_class_by_fact": {
+        "fact_revenue_ops_001": "primary"
+      },
+      "source_ledger_ref": "fact_revenue_ops_001"
     },
     {
       "skill_id": "skill_p2_gtm_discovery_qualification",
@@ -28099,8 +29223,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "ibm_bullets",
-        "competencies"
+        "competencies",
+        "ibm_bullets"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -28135,7 +29259,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_consulting_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_gtm_presales_motion",
+        "skill_p2_gtm_commercial_validation_pilots",
+        "fact_consulting_001"
+      ],
+      "link_class_by_fact": {
+        "fact_consulting_001": "primary"
+      },
+      "source_ledger_ref": "fact_consulting_001"
     },
     {
       "skill_id": "skill_p2_gtm_enterprise_deal_support",
@@ -28227,8 +29361,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "unify_narrative",
-        "unify_bullets"
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -28263,7 +29397,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_consulting_002",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_gtm_presales_motion",
+        "skill_p2_gtm_presales_delivery_handoff",
+        "fact_consulting_002"
+      ],
+      "link_class_by_fact": {
+        "fact_consulting_002": "primary"
+      },
+      "source_ledger_ref": "fact_consulting_002"
     },
     {
       "skill_id": "skill_p2_gtm_joint_vendor_roadmaps",
@@ -28551,8 +29695,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "unify_narrative",
-        "executive_summary"
+        "executive_summary",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -28587,7 +29731,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_engineering_platform_006",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_technical_presales_accelerators",
+        "skill_p2_tech_demoable_accelerator",
+        "fact_engineering_platform_006"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_006": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_006"
     },
     {
       "skill_id": "skill_p2_tech_reusable_accelerators",
@@ -28679,8 +29833,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "ibm_narrative",
-        "competencies"
+        "competencies",
+        "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -28715,7 +29869,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_solutions_001",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_technical_presales_accelerators",
+        "skill_p2_tech_adoption_derisking",
+        "fact_solutions_001"
+      ],
+      "link_class_by_fact": {
+        "fact_solutions_001": "primary"
+      },
+      "source_ledger_ref": "fact_solutions_001"
     },
     {
       "skill_id": "skill_p2_tech_ibm_cloud_portfolio_anchor",
@@ -28743,8 +29907,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "ibm_narrative",
-        "executive_summary"
+        "executive_summary",
+        "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -28779,7 +29943,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_solutions_002",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_technical_presales_accelerators",
+        "skill_p2_tech_ibm_cloud_portfolio_anchor",
+        "fact_solutions_002"
+      ],
+      "link_class_by_fact": {
+        "fact_solutions_002": "primary"
+      },
+      "source_ledger_ref": "fact_solutions_002"
     },
     {
       "skill_id": "skill_sr_insurtech_legacy_cloud_modernization",
@@ -28939,10 +30113,12 @@
         "operational resilience"
       ],
       "forbidden_phrases": [],
-      "allowed_sections": [],
+      "allowed_sections": [
+        "competencies"
+      ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "activation_status": "ACTIVE_CONFIRMED",
+      "activation_status": "DRAFT",
       "human_confirmation_required": false,
       "external_claim_policy": "pending_source_internal_only",
       "projection_behavior": "rank_and_project_facts",
@@ -28964,7 +30140,18 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim insurance_systems_resilience_internal beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "BLOCKED",
-      "confidence_grade_derived": "BLOCKED"
+      "confidence_grade_derived": "BLOCKED",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_underwriting_claims_ops_ai",
+        "skill_sr_insurance_systems_resilience_internal",
+        "bul_insurtech_003"
+      ],
+      "link_class_by_fact": {
+        "bul_insurtech_003": "primary",
+        "fact_consulting_001": "primary"
+      },
+      "source_ledger_ref": "bul_insurtech_003"
     },
     {
       "skill_id": "skill_sr_insurtech_cto_it_enablement",
@@ -29356,7 +30543,17 @@
         "author_gate_scope": "brown_relevant_archive_only"
       },
       "primary_fact_id": "fact_sales_accounts_003",
-      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z"
+      "draft_skill_promotion_applied_at": "2026-05-27T12:26:11Z",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_banking_platform_responsible_ai",
+        "skill_sr_regulated_financial_institutions_fluency",
+        "fact_sales_accounts_003"
+      ],
+      "link_class_by_fact": {
+        "fact_sales_accounts_003": "primary"
+      },
+      "source_ledger_ref": "fact_sales_accounts_003"
     },
     {
       "skill_id": "skill_sr_microservices_integration_platform",
@@ -34522,9 +35719,9 @@
         "customer success primary"
       ],
       "allowed_sections": [
+        "competencies",
         "executive_summary",
         "headline",
-        "competencies",
         "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
@@ -34565,7 +35762,19 @@
       "primary_fact_id": "fact_exec_001",
       "svp_it_strategy_skill_minted_at": "2026-05-27T12:29:57Z",
       "confidence_grade_derived": "MEDIUM",
-      "confidence_grade": "MEDIUM"
+      "confidence_grade": "MEDIUM",
+      "graph_hop_path": [
+        "track_data_tech_cloud_ml",
+        "pillar_insurer_it_strategy_ai_enablement",
+        "skill_svp_it_strategy_innovation",
+        "fact_exec_001"
+      ],
+      "link_class_by_fact": {
+        "fact_exec_001": "primary",
+        "fact_consulting_001": "primary",
+        "fact_partnerships_gtm_005": "primary"
+      },
+      "source_ledger_ref": "fact_exec_001"
     },
     {
       "skill_id": "skill_meddpicc_sales_qualification",
@@ -34784,11 +35993,15 @@
       "confidence_grade": "HIGH",
       "confidence_grade_derived": "HIGH",
       "graph_hop_path": [
+        "track_engineering_platform",
         "pillar_regulatory_governance",
-        "skill_soc2_zero_trust_security"
+        "skill_soc2_zero_trust_security",
+        "fact_governance_005"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "link_class_by_fact": {
+        "fact_governance_005": "primary"
+      },
+      "source_ledger_ref": "fact_governance_005"
     },
     {
       "skill_id": "skill_saas_arr_ltv_cac_metrics",
@@ -34950,11 +36163,15 @@
       "confidence_grade": "HIGH",
       "confidence_grade_derived": "HIGH",
       "graph_hop_path": [
+        "track_partnerships_gtm",
         "pillar_interoperability_integration_ecosystem",
-        "skill_confluent_streaming_platforms"
+        "skill_confluent_streaming_platforms",
+        "fact_data_analytics_003"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": "",
+      "link_class_by_fact": {
+        "fact_data_analytics_003": "primary"
+      },
+      "source_ledger_ref": "fact_data_analytics_003",
       "employer": "IBM",
       "employer_node_id": "employment_exp_ibm_001",
       "time_window": "2017-04 to 2022-10",
@@ -35034,11 +36251,15 @@
       "confidence_grade": "MEDIUM",
       "confidence_grade_derived": "MEDIUM",
       "graph_hop_path": [
+        "track_banking_platform_ai",
         "pillar_banking_platform_responsible_ai",
-        "skill_watson_studio_fraud_aml"
+        "skill_watson_studio_fraud_aml",
+        "fact_quant_hpc_004"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "link_class_by_fact": {
+        "fact_quant_hpc_004": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_004"
     },
     {
       "skill_id": "skill_algo_trading_sub_ms_inference",
@@ -35113,11 +36334,15 @@
       "confidence_grade": "HIGH",
       "confidence_grade_derived": "HIGH",
       "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
         "pillar_derivatives_structured",
-        "skill_algo_trading_sub_ms_inference"
+        "skill_algo_trading_sub_ms_inference",
+        "fact_quant_hpc_002"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "link_class_by_fact": {
+        "fact_quant_hpc_002": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_002"
     },
     {
       "skill_id": "skill_nps_customer_health_scoring",
@@ -35266,11 +36491,15 @@
       "confidence_grade": "HIGH",
       "confidence_grade_derived": "HIGH",
       "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
         "pillar_regulatory_governance",
-        "skill_finra_sec_regulatory_compliance"
+        "skill_finra_sec_regulatory_compliance",
+        "fact_consulting_001"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "link_class_by_fact": {
+        "fact_consulting_001": "primary"
+      },
+      "source_ledger_ref": "fact_consulting_001"
     },
     {
       "skill_id": "skill_credit_adjudication_default_risk",
@@ -35350,11 +36579,15 @@
       "confidence_grade": "HIGH",
       "confidence_grade_derived": "HIGH",
       "graph_hop_path": [
+        "track_banking_platform_ai",
         "pillar_risk_management",
-        "skill_credit_adjudication_default_risk"
+        "skill_credit_adjudication_default_risk",
+        "fact_credit_001"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "link_class_by_fact": {
+        "fact_credit_001": "primary"
+      },
+      "source_ledger_ref": "fact_credit_001"
     },
     {
       "skill_id": "skill_ibm_automated_release_pipelines",
@@ -35400,9 +36633,9 @@
         "35%"
       ],
       "allowed_sections": [
+        "competencies",
         "ibm_bullets",
-        "ibm_narrative",
-        "competencies"
+        "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -35439,12 +36672,14 @@
       "confidence_grade_derived": "HIGH",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
-        "employment_exp_ibm_001",
         "pillar_interoperability_integration_ecosystem",
-        "skill_ibm_automated_release_pipelines"
+        "skill_ibm_automated_release_pipelines",
+        "fact_engineering_platform_004"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "link_class_by_fact": {
+        "fact_engineering_platform_004": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_004"
     },
     {
       "skill_id": "skill_ibm_devsecops_pipeline_security",
@@ -35492,9 +36727,9 @@
         "15% overhead"
       ],
       "allowed_sections": [
+        "competencies",
         "ibm_bullets",
-        "ibm_narrative",
-        "competencies"
+        "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -35531,12 +36766,14 @@
       "confidence_grade_derived": "HIGH",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
-        "employment_exp_ibm_001",
         "pillar_interoperability_integration_ecosystem",
-        "skill_ibm_devsecops_pipeline_security"
+        "skill_ibm_devsecops_pipeline_security",
+        "fact_engineering_platform_004"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "link_class_by_fact": {
+        "fact_engineering_platform_004": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_004"
     },
     {
       "skill_id": "skill_ibm_metadata_audit_rbac",
@@ -35584,9 +36821,9 @@
         "30%"
       ],
       "allowed_sections": [
+        "competencies",
         "ibm_bullets",
-        "ibm_narrative",
-        "competencies"
+        "ibm_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -35625,12 +36862,14 @@
       "confidence_grade_derived": "HIGH",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
-        "employment_exp_ibm_001",
         "pillar_enterprise_portfolio_governance",
-        "skill_ibm_metadata_audit_rbac"
+        "skill_ibm_metadata_audit_rbac",
+        "fact_data_analytics_001"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "link_class_by_fact": {
+        "fact_data_analytics_001": "primary"
+      },
+      "source_ledger_ref": "fact_data_analytics_001"
     },
     {
       "skill_id": "skill_ibm_watson_studio_analytics",
@@ -35704,12 +36943,14 @@
       "confidence_grade_derived": "MEDIUM",
       "graph_hop_path": [
         "track_data_tech_cloud_ml",
-        "employment_exp_ibm_001",
         "pillar_banking_platform_responsible_ai",
-        "skill_ibm_watson_studio_analytics"
+        "skill_ibm_watson_studio_analytics",
+        "fact_engineering_platform_004"
       ],
-      "link_class_by_fact": {},
-      "source_ledger_ref": ""
+      "link_class_by_fact": {
+        "fact_engineering_platform_004": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_004"
     },
     {
       "skill_id": "skill_quant_multi_greek_hedging",
@@ -35737,7 +36978,7 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career"
+        "competencies"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -35761,7 +37002,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_capital_modeling",
+        "skill_quant_multi_greek_hedging",
+        "fact_quant_act_001"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_act_001": "primary"
+      },
+      "source_ledger_ref": "fact_quant_act_001"
     },
     {
       "skill_id": "skill_quant_stochastic_modeling",
@@ -35788,7 +37039,7 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career"
+        "competencies"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -35812,7 +37063,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_capital_modeling",
+        "skill_quant_stochastic_modeling",
+        "fact_quant_act_002"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_act_002": "primary"
+      },
+      "source_ledger_ref": "fact_quant_act_002"
     },
     {
       "skill_id": "skill_hpc_valuation_capital_adequacy",
@@ -35840,7 +37101,7 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "early_career"
+        "competencies"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -35864,7 +37125,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_capital_modeling",
+        "skill_hpc_valuation_capital_adequacy",
+        "fact_quant_act_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_act_003": "primary"
+      },
+      "source_ledger_ref": "fact_quant_act_003"
     },
     {
       "skill_id": "skill_insurance_guidewire",
@@ -35891,10 +37162,10 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "ey_bullets",
-        "ey_narrative",
         "competencies",
-        "executive_summary"
+        "executive_summary",
+        "ey_bullets",
+        "ey_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -35922,7 +37193,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_capital_modeling",
+        "skill_insurance_guidewire",
+        "fact_ey_guidewire_001"
+      ],
+      "link_class_by_fact": {
+        "fact_ey_guidewire_001": "primary"
+      },
+      "source_ledger_ref": "fact_ey_guidewire_001"
     },
     {
       "skill_id": "skill_insurance_claims_automation",
@@ -35948,10 +37229,10 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "ey_bullets",
-        "ey_narrative",
         "competencies",
-        "executive_summary"
+        "executive_summary",
+        "ey_bullets",
+        "ey_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -35979,7 +37260,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_capital_modeling",
+        "skill_insurance_claims_automation",
+        "fact_ey_guidewire_001"
+      ],
+      "link_class_by_fact": {
+        "fact_ey_guidewire_001": "primary"
+      },
+      "source_ledger_ref": "fact_ey_guidewire_001"
     },
     {
       "skill_id": "skill_insurance_policy_administration",
@@ -36004,10 +37295,10 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "ey_bullets",
-        "ey_narrative",
         "competencies",
-        "executive_summary"
+        "executive_summary",
+        "ey_bullets",
+        "ey_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -36035,7 +37326,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_capital_modeling",
+        "skill_insurance_policy_administration",
+        "fact_ey_guidewire_001"
+      ],
+      "link_class_by_fact": {
+        "fact_ey_guidewire_001": "primary"
+      },
+      "source_ledger_ref": "fact_ey_guidewire_001"
     },
     {
       "skill_id": "skill_cloud_aws_rehosting",
@@ -36061,9 +37362,9 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "insurtech_bullets",
         "competencies",
-        "executive_summary"
+        "executive_summary",
+        "insurtech_bullets"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -36092,7 +37393,17 @@
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
       "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
       "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade_derived": "LOW",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_capital_modeling",
+        "skill_cloud_aws_rehosting",
+        "fact_insurtech_aws_001"
+      ],
+      "link_class_by_fact": {
+        "fact_insurtech_aws_001": "primary"
+      },
+      "source_ledger_ref": "fact_insurtech_aws_001"
     },
     {
       "skill_id": "skill_insurance_solvency_regimes",

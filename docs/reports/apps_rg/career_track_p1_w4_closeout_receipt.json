@@ -1,12 +1,12 @@
 {
   "schema": "career_track_p1_w4_closeout_receipt_v1",
-  "generated_at": "2026-05-27T19:18:11Z",
+  "generated_at": "2026-06-12T11:34:15Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4-CLOSEOUT",
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:db95cdec12c1d10f",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:57237b432afebaea",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -18,6 +18,7 @@
     "graph_expansion_mode": "TRACK_WEIGHTED_MULTI_HOP",
     "graph_hop_edge_types_used": [
       "career_track_contains_pillar",
+      "skill_row_fact_id_links",
       "skill_row_pillar_projection",
       "skill_supported_by_fact"
     ]
@@ -35,7 +36,7 @@
       "tests/_apps_contract/test_career_track_p1_w4_weighted_expansion_contract.py",
       "docs/reports/apps_rg/career_track_p1_w4",
       "docs/reports/apps_rg/fixtures/p1_w4",
-      ".cursor/plans/graph-skills-hardening-f3a8c1.md"
+      ".claude/plans/graph-skills-hardening-f3a8c1.md"
     ],
     "workspace_guard_clean": true,
     "isolation_verdict": "CLEAN",
