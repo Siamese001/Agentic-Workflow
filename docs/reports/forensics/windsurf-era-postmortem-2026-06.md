@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-11
 **Scope:** Full project history, 2025-10-09 → 2026-06-10 (GitHub web-UI era → Codex era → Windsurf era → Cursor era → Claude Code era)
-**Author's objective (stated, and the lens for this report):** *master agentic architecture by building a best-in-class resume shipper* — starting from zero programming and zero AI knowledge in September 2025.
+**Author's objective (stated, and the lens for this report):** *master agentic architecture by building a best-in-class resume shipper* — starting from operator-reported zero programming and zero AI knowledge in early August/September 2025 (repo evidence begins 2025-10-09).
 
 ---
 
@@ -168,6 +168,147 @@ A recovered Dec 2025 inventory shows the old `apps_rg` surface was already risky
 
 **Lesson 5E:** app-level governance must be thinner than core governance. Put reusable proof machinery in the spine; keep `apps_rg` as domain evidence, section composition, and artifact assembly. If app-local control code grows faster than shippable output, the app is becoming a second framework.
 
+### Failure 5F — Swarm/reference-architecture advice amplified beginner mistakes before workflow boundaries existed *(Aug 2025 – Feb 2026)*
+This section adds the missing learning arc. It uses the uploaded process map as the mature architecture yardstick: deterministic workflow first, single agent second, multi-agent only after the workflow has contracts, gates, replay, and state authority. It also uses the uploaded insurance AI report only as business framing: durable value comes from domain/workflow rewiring and reusable components, not scattered narrow use cases or proliferating approaches that become tomorrow's legacy.
+
+The key distinction is important: **the bad advice was not "agents exist."** I found no repo evidence proving that official OpenAI documentation told me to build hundreds of agents. The evidence supports a narrower verdict: **agent-swarm advice was prematurely applied**. ChatGPT-style/model-assisted decomposition and agentic reference architectures made "make another agent" feel like the default first move before I understood Python/runtime binding, Git, state, tests, evidence, or product proof.
+
+#### Ground zero: JSON before Python
+August–September 2025 remains **operator-reported / pre-git context** unless external artifacts are later found. The repository proves only that by **2025-10-09** I was uploading artifacts through the GitHub web UI. The first upload commit (`92d3d807`, message `Add files via upload`) added JSON-style artifacts and templates: an application tracker schema, a resume JSON converted from a DOCX, Git LFS patterns, and a 526-line patch template instructing Gemini to review/edit/execute patches. That is not yet an app runtime. It is artifact manipulation plus prompt/config thinking.
+
+The earliest deleted artifacts make the same point. On **2025-11-07**, the log shows a web-UI cleanup burst deleting `App Schema v4.json` (`f5a5df0`), `Application_Tracker_10.9.2025_v1.json` (`0d055ad`), `Chief AI Officer Resume_v1.json` (`d870f6f`), `Patch_Template_v1.5.json` (`c488515`), `Prof_Services_AI_Resume_v1.json` (`5573c20`), `Resume_Generator.ipynb` (`b2f2ba3`), and other loose artifacts. That is the JSON/notebook/GitHub-file phase: app = file, version = filename, correction = delete/re-upload.
+
+#### Git literacy by upload/delete
+The repo's first era says it plainly: GitHub web UI from **2025-10-09 → 2025-11-10**, first commit `Add files via upload`, two October commits, then filename versioning (`agent_swarm_v6_2.py` → `v10_1`). That is not a moral failure. It was the healthiest phase because the surface was small and mistakes were cheap. The rework problem began when the abstraction level jumped from JSON files and notebooks to agents/orchestrators before Git, tests, and proof instincts were stable.
+
+#### Reference architectures I was following
+| Window | Reference architecture / guidance | Repo evidence | My apparent interpretation | Result | Later correction |
+|---|---|---|---|---|---|
+| Aug–Sep 2025 | Operator-reported ChatGPT/model guidance; no repo artifacts | No commit evidence before 2025-10-09 | Treat AI prompts/configs as enough to drive work | ? pre-git | Explicit caveat: pre-git unless artifacts are found |
+| Oct 9–Nov 10 | GitHub web UI + JSON/app schemas + notebook | `92d3d807`; deletes `f5a5df0`, `0d055ad`, `b2f2ba3` | App = schema/file; version = filename | Upload/delete churn; no runtime binding | v10_7 flat-file runtime |
+| Nov 11–25 | Codex + flat-file Python workflow | v10_7 baseline: 63 `*_v10_7.py`, 105KB `core_v10_7.py`, writes `final_resume.json` | Python files can coordinate a product if kept flat | It worked, but became unmodifiable | Later spine needed, but proof discipline should have come first |
+| Nov 26–Dec 31 | Windsurf agent + agentic-core layering + swarm decomposition | `agentic_core` hardening; Dec 31 inventory `5b443166`; `apps_rg` 112 files / 104 Python / 33 primary symbols | Responsibility = agent class; healing/judging/routing can live inside app agents | Agent multiplication, direct Gemini, route/heal/judge merged | Canonical runtime: `python -m apps_rg`, X2/X3, provider contract, no autonomous restore |
+| Jan 2026 | Architecture cathedral / observability surfaces | hardcoded dashboard health (`bebd228`), fake random agent dashboard (`2727dd9`) | Professional control plane implies truth | Dashboard/control-plane illusion | No-random/no-hardcoded-data gates; evidence contracts |
+| Feb 2026 | Prompt-governance + governed spine wrappers | `prompt_governance_gap_phase1.md`: 86 prompt-governance files at baseline `6f71bee`; 57 tests reference it | Prompt governance folder = prompt authority | Large governance surface without complete retrieval/telemetry/citation support | PA prompt assembly with source, slot, hash, and runtime boundary separation |
+| Mar–Apr 2026 | ADG, five-tier governance, external authority ingestion | `five-tier-governance-model-a3f7c2.md`; `wave_b_b6_source_additions.md` adds OpenAI cookbook + OpenAI Swarm as optional T3 guidance and notes pre-existing `openai/openai-agents-python`, LangGraph, AutoGen | Reference architecture as build order | More gates/plans than shippable product; scattered approach risk | Process-map laws; reusable spine; workflow-first sequencing |
+| May–Jun 2026 | PA contracts, canonical dispatch, Claude Code operating model | `apps_rg_pa_prompt_contract.md`; `apps_rg/AGENTIC_SPINE.md`; `apps_rg_canonical_runtime_boundary.md`; `.claude/rules/apps-rg-execution-bias.md` | App prompts live in app domain; core owns contracts; product proof is executable path | 102 DOCX window, then certification ice | Plan minting blocked; DOCX-in-hand becomes only success metric |
+
+#### Swarm as premature decomposition
+The agent swarm was not useless. It was the wrong abstraction at the wrong time. It gave names to responsibilities before the system had contracts for responsibility.
+
+The clearest evidence is the Dec 2025 `apps_rg` inventory (`docs/reports/agent_inventory/dec2025_apps_rg_agent_inventory.md`). It reconstructs commit `5b443166` (2025-12-31), finding **112 apps_rg files, 104 Python files, and 33 primary symbols** in the autonomous swarm and engine surface. Representative rows include:
+
+- `ConversationalRepair`, `Phase4Orchestrator`, and `GitOpsManager` in `autonomous/gitops.py`, with `google_gemini`, healing, orchestration, validation, and direct model calls.
+- `HealingOrchestrator`, `SignalRouter`, and `AgentFactory` in `autonomous/healing.py`, with `agent_execute`, heal, judge, orchestrate, plan, and route roles.
+- `ResumeAgent` in `autonomous/resume_base.py`, using `google_gemini` for `agent_execute`, model calls, and validation.
+- Six validator agents — `ContentQualityAgent`, `FactCheckAgent`, `BrandComplianceAgent`, `SectionBalanceAgent`, `ATSCompatibilityAgent`, and `TestPilot` — classified as superseded by X2/X3.
+
+The inventory's risk map is blunt: `ROUTE_AUTHORITY_DRIFT`, `DIRECT_MODEL_BYPASS`, `SAME_AUTHORITY_HEALING_VIOLATION`, `EXIT_X3_BYPASS`, `PROMPT_AUTHORITY_DRIFT`, `MOCK_AS_PRODUCT_PROOF`, and `UWG_L4_BYPASS`. Its lesson section says Dec 2025 `apps_rg` experimented with a ResumeAgent swarm using shared `ResumeEngineContext`, signal-driven healing cycles, and embedded Gemini calls; it accelerated iteration but merged plan, route, execute, heal, judge, and model access inside the app without L2 packet boundaries, Exit, or UWG.
+
+That is the core failure: **agent count is not architecture.** A multi-agent system without workflow proof is just parallel ambiguity.
+
+#### Prompt-governance misunderstanding
+I initially confused prompt location/authority. Mature architecture separates U0 request intake from PA prompt assembly; `apps_*` domain prompts must be bound through the governed spine rather than living as generic `prompt_governance` text.
+
+Evidence of the confusion appears in the Feb 20 `Prompt Governance Gap Analysis — Phase 1 Evidence`: baseline commit `6f71bee` had **86 files under `agentic_core/prompt_governance/**`** and **57 test files referencing prompt_governance**. It also found no matches for semantic recall terms, no citation/source-anchor fields, no telemetry terms such as hit/miss/empty-result, and no iterative refinement terms. In other words, the folder looked like governance, but the supporting retrieval/evidence/telemetry contract was incomplete.
+
+The later correction is the May `apps_rg` PA contract. `docs/guides/apps_rg_pa_prompt_contract.md` makes `apps_rg/prompt_assembly/` the canonical location for app PA artifacts: `prompt_bom.yaml`, `prompt_registry.yaml`, templates, examples, section prompt contracts, `rg_output_schema.json`, compiler, and typed `CompiledPromptArtifact`. It defines the 8-slot authority model, C0 source separation, fail-closed behavior, prompt hashing, and explicitly says the compile path is **not runtime wiring**: no C0 retrieval, no L2 execution, no Exit evaluation, no UWG writeback, and no model/provider calls. `apps_rg/AGENTIC_SPINE.md` makes the same boundary explicit: W10 PA is compile-time only, pure functions, zero side effects, no provider calls; runtime dispatch is future scope.
+
+That is the lesson: prompts are not "wherever prompt text lives." They are governed artifacts whose authority depends on source, slot, binding, and runtime stage.
+
+#### `agentic_core` vs `apps_*` misunderstanding
+The Dec 2025 model treated `apps_rg` as an autonomous framework. The May/June correction treated `apps_rg` as a domain surface bound to a reusable spine.
+
+The current Claude operating contract says it directly: **"Apps customize inputs; core enforces contracts. No app-specific behavior in `agentic_core` without a migration receipt."** The `apps_rg` canonical runtime boundary then defines the product path: `python -m apps_rg` → dispatch through core or `canonical_dispatch`; section lanes; judges; X2 validators; X3 disposition; proof under `artifacts/apps_rg/runtime_proofs/`; durable write owned by UWG/L4, **not apps_rg direct write**. It also identifies what is not canonical product proof: dry-run modules, stub flags, mock judges without explicit test allowance, legacy dispatch, and reasoning orchestrators.
+
+The expensive misunderstanding was treating files/imports/schemas as runtime binding. The correction is sharper: app binding means a live packet traverses U0/L1/L0/C0/PA/L2/Exit/UWG/L4 contracts. Importing a shared helper is not being bound to the spine.
+
+#### Why this caused rework
+| Cause code | Representative evidence | Why it mattered | Later correction |
+|---|---|---|---|
+| `NOVICE_FORMAT` | `92d3d807` JSON/application tracker/resume/patch template upload | JSON/config files were treated as app substrate | v10_7 Python workflow; later domain contracts |
+| `GIT_LITERACY` | Nov 7 delete burst: `f5a5df0`, `0d055ad`, `b2f2ba3` | Delete/reupload replaced version control | Commits, branches, worktrees, forensic recoverability |
+| `SWARM_OVERDECOMP` | Dec inventory: 33 apps_rg symbols | Agent roles multiplied before proof boundaries | Canonical dispatch + X2/X3 + section lanes |
+| `AUTHORITY_MERGE` | `HealingOrchestrator`, `SignalRouter`, `AgentFactory` plan/route/execute/heal/judge | Same surface decided and repaired its own work | L2 proposes; Exit clears; UWG commits; L4 stores |
+| `DIRECT_PROVIDER` | `ResumeAgent` / `ConversationalRepair` / `GitOpsManager` with `google_gemini` | Model calls bypassed governed provider contracts | Provider-neutral request/result contracts; Qwen demotion; Claude sole generator |
+| `PROMPT_AUTHORITY_CONFUSION` | Feb prompt_governance 86-file surface; May PA contract says compile-only/no runtime wiring | Folder location looked like authority | Slot/source/hash/runtime-stage PA model |
+| `APP_CORE_BOUNDARY_CONFUSION` | `apps_rg` autonomous framework vs Claude contract "Apps customize inputs; core enforces contracts" | App-local governance cloned the spine | Core contracts, migration receipts, app-thin runtime |
+| `MOCK_PROOF` | Failure 3: stubs, simulated PASS, hardcoded judge | Green feedback corrupted learning | PASS/PARTIAL/FAIL/BLOCKED proof contract |
+| `PLAN_FACTORY` | 418/417/377/498 plans Feb–May | Planning became cheaper than shipping | Plan minting blocked; findings become rows |
+| `BASELINE_GREENWASH` | Failure 5B baseline absorption and ratchet-floor loosen history | Red became green by moving the floor | Report debt absorbed, not PASS |
+| `MUTATOR_DAMAGE` | Failure 5C duplicate hydration, flattening, dry_run=False mutator | Self-healing added entropy | Proposal-only repair until Exit/UWG clearance |
+| `HIDDEN_STATE` | Failure 5D `.env`, FTS5 sparse sidecar, Chroma/worktree gaps | Proof was non-portable | Runtime state manifest + fresh-worktree replay |
+| `REFERENCE_ARCH_OVERFIT` | Apr 15 ext_authority adds OpenAI Swarm as T3 guidance after agent swarm already existed | Reference maps were treated like build order | Deterministic workflow first; agents only after contracts |
+| `APP_BINDING_MISREAD` | `apps_rg_pa_prompt_contract.md` says PA is not runtime wiring | Compiled prompts/tests were mistaken for live binding | W11 runtime binding decision, canonical product path proof |
+
+#### Monthly agentic understanding matrix
+| Dimension | Aug 2025 | Sep 2025 | Oct 2025 | Nov 2025 | Dec 2025 | Jan 2026 | Feb 2026 | Mar 2026 | Apr 2026 | May 2026 | Jun 2026 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Coding substrate | ? operator zero-code | ? pre-git | JSON/schema/notebook | Python flat files ↑ | app engines + swarm ⚠ | agent classes/observability ⚠ | governed wrappers + stubs ⚠ | ADG/CI machinery ↑ | audits + DOCX breakthrough ↑ | app runtime/certification ice ⚠ | governed runtime + execution bias ↑ |
+| Git maturity | no git ? | pre-git ? | GitHub upload | delete/reupload | commits but huge surfaces | commits/dashboards | plan-heavy commits | ratchets/CI | forensic recovery | Cursor migration | worktree-per-chat ↑ |
+| Prompt understanding | prompts as config ? | prompts as text ? | patch template text | LLM patch schemas | app-local prompts | meta prompts | prompt_governance catch-all ⚠ | prompt scatter audits | PA/PromptEnvelope starts ↑ | apps_rg PA contract ↑ | runtime binding distinction ↑ |
+| Agent model | none ? | none ? | no agents/app schema | agent_swarm filenames | many app-local agents ↓ | HealerMixins/control plane | spine wrappers but stubbed ⚠ | CI/ADG agents | ext authority/agents as refs | bounded lanes/judges | agents subordinate to workflow ↑ |
+| `agentic_core` vs `apps_*` | none | none | no distinction | file modules | apps as autonomous swarms ↓ | app/core blur | core wrappers | app-local governance grows | reusable spine idea ↑ | app-thin correction begins | apps customize, core enforces ↑ |
+| State/write authority | manual files | manual files | direct upload | writes `final_resume.json` | gitops/autonomous mutation ↓ | dashboard cache/stale state | ledgers/baselines | mutators/dry-run flips | missing UWG discovered | certification ledgers | UWG/L4 law + runtime manifest need ↑ |
+| Model/provider understanding | ChatGPT/Gemini as tool ? | prompt use ? | Gemini executor patch template | direct calls | google_gemini in agents ↓ | provider use spread | wrappers begin | local/provider experiments | vLLM/Qwen substrate | Qwen product default ↓ | external Claude sole generator ↑ |
+| Proof understanding | artifact exists | artifact exists | file exists = progress | final JSON = proof | mocks/no receipts ⚠ | dashboards lie | stubs look green ↓ | simulated PASS ↓ | theater audits ↑ | DOCX + Fort Knox conflict ⚠ | DOCX in hand as DoD ↑ |
+| Retrieval/evidence | none | manual | none/manual | manual JSON | context files | ad hoc | prompt governance lacks citations | ADG/RAG reports | C0/PromptEnvelope concepts | SRFS/fact vectors | runtime state/evidence manifest ↑ |
+| Planning behavior | ad hoc | ad hoc | notes/config | ad hoc planning | architecture plans | ~12/mo | 418/mo ↓ | 417/mo ↓ | 377/mo ↓ | 498/mo ↓ | plan minting blocked ↑ |
+| Reference source | ChatGPT-style ? | ChatGPT-style ? | none explicit | Codex/flat workflow | Windsurf/agentic | internal layers | prompt governance | ADG/five-tier | OpenAI Swarm/Agents as T3 refs | PA/core/app docs | process-map laws |
+| Product shippability | none | none | JSON artifacts | `final_resume.json` | app engines | little product | stubs | simulated outputs | first E2E success | 102 DOCX then ice ⚠ | 8/11 lanes, no DOCX ⚠ |
+| App binding | app=file | app=file | app=schema | app=flat Python | app=swarm ↓ | app imports shared code | app wrapped in spine | gates around app | partial C0/PA/L2 | canonical dispatch docs | live packet path as binding ↑ |
+| Governance placement | none | none | none | comments/templates | app-local validators | dashboards | prompt_governance | CI/ADG | five-tier governance | app-local clone risk | app-thin/spine-owned gates ↑ |
+| Human operating model | learner | learner | uploader | filename versioner | agent operator | reviewer | plan approver | plan factory throttle | audit responder | certification operator | execution-biased operator ↑ |
+
+Representative evidence by month: Aug–Sep is operator-reported only; Oct = `92d3d807`; Nov = delete burst + v10_7; Dec = `5b443166` Dec inventory; Jan = hardcoded/random dashboards; Feb = `prompt_governance_gap_phase1.md` at `6f71bee`; Mar = simulated PASS / ADG churn; Apr = five-tier governance and OpenAI Swarm ext_authority; May = apps_rg PA contract + 102 DOCX window + missing UWG; Jun = `.claude/rules/apps-rg-execution-bias.md` and worktree/runtime-state correction.
+
+#### Weekly maturity arc
+Maturity score: 0 = file/artifact manipulation only; 1 = JSON/config/product idea, no reliable execution; 2 = Python scripts/direct calls/fragile outputs; 3 = multi-agent/orchestrator code, weak proof; 4 = contracts/tests/gates, possible false greens; 5 = fresh-worktree reproducible product artifact with Exit disposition.
+
+| Week(s) | Stage | Evidence | Maturity | Regression / lesson |
+|---|---|---|---:|---|
+| 2025-W31–W36 | Ground Zero / Artifact Phase | Operator-reported early Aug zero coding; no repo artifacts | 0 | Pre-git caveat |
+| 2025-W37–W40 | JSON / Schema Phase | Operator-reported; repo not yet created | 0–1 | Do not infer more than reported |
+| 2025-W41 | GitHub Upload Phase | First upload `92d3d807` | 1 | App = file/schema |
+| 2025-W42–W44 | Filename-Versioning Phase | Two October commits; filename versioning noted in era table | 1 | Cheap mistakes |
+| 2025-W45 | GitHub Upload-Delete Phase | Nov 7 delete burst of app schemas/notebook | 1 | Delete/reupload is not version control |
+| 2025-W46 | First Python Product Phase | v10_7 writes `final_resume.json` | 2 | Working monolith beats unwired architecture |
+| 2025-W47–W48 | Codex Transition | codex PRs / flat files | 2 | Tooling improves faster than proof instinct |
+| 2025-W49 | Swarm Adoption Phase | Dec 1 production-ready claim; Dec 6 product apps | 3 | Claims outran instruments |
+| 2025-W50–W52 | Architecture Cathedral Phase | L1–L5 directories; apps_rg swarm growing | 3 | Architecture learning real, proof weak |
+| 2026-W01 | Swarm/Healer Expansion | New Year's HealerMixin batches | 3 | More code, not necessarily more maturity |
+| 2026-W02 | Dashboard Illusion | hardcoded/random dashboard data | 3↓ | Control surface can lie |
+| 2026-W03–W05 | Cathedral Continues | agentic-core and app-local agents | 3 | Responsibility named before contracted |
+| 2026-W06 | Plan Factory Ignites | Feb stubs / ratchets begin | 4↓ | Green is color, not fact |
+| 2026-W07–W09 | Prompt Governance Phase | Feb 20 86-file prompt_governance inventory | 4⚠ | Folder authority confused with runtime authority |
+| 2026-W10–W13 | ADG/Plan Factory Phase | Mar simulated PASS, plan-format failures, 183-commit day | 4↓ | More gates can reduce product maturity |
+| 2026-W14 | Mutator Damage / Cleanup | Apr 5 hard-deletes 933 plans | 3↓ | Self-healing without UWG damages state |
+| 2026-W15–W17 | Reference Architecture Overfit | five-tier governance, ext_authority, OpenAI Swarm optional source | 4⚠ | Reference architecture is not build order |
+| 2026-W18 | Product Breakthrough | Apr 29/May 1 E2E/DOCX success | 4↑ | Product proof appears before governance matures |
+| 2026-W19 | Certification Ice | Fort Knox zero sign-off; UWG missing; DOCX still exists | 4⚠ | Governance must prove it can still ship |
+| 2026-W20 | Cursor Migration | status treadmill, plan tracker corruption | 3↓ | Operating model amplifies user mode |
+| 2026-W21 | Prompt/App Binding Rework | apps_rg PA W10 docs, prompt contracts | 4↑ | PA compile proof is not runtime proof |
+| 2026-W22 | Proof Reckoning | ADR-088: 0/118 agents proven invoked | 4↑ | Invocation proof matters more than class count |
+| 2026-W23 | Runtime-State Reckoning | worktree, dotenv, sparse sidecar gaps | 4⚠ | Worktrees do not make hidden state reproducible |
+| 2026-W24 | Operating-Model Correction | execution-bias rule; plan minting blocked; 8/11 lanes | 4→5 target | DOCX-in-hand becomes DoD; full 5 still not reached |
+
+The arc is not monotonic. Some weeks had more code and lower product maturity. The decisive shift was not "more agents"; it was removing authority from agents and making proof portable.
+
+#### Lessons retained
+1. Agent count is not architecture.
+2. A multi-agent system without workflow proof is parallel ambiguity.
+3. The first lesson of agentic architecture is not how to add agents; it is how to remove authority from agents.
+4. Prompts are not "wherever the prompt text lives." They are governed artifacts whose authority depends on slot, source, binding, and runtime stage.
+5. `apps_*` are domain surfaces; `agentic_core` owns reusable runtime authority. Importing core modules is not the same as being bound to the spine.
+6. Reference architectures must be adapted to maturity level. A beginner needs deterministic workflow and proof before agent swarms.
+7. Multi-agent architectures only become valuable after contracts, replay, state authority, and Exit disposition exist.
+8. The correct progression is deterministic workflow → single bounded agent → multi-agent only when the workflow already proves itself.
+9. App-local governance grows faster than product value unless the app is forced to ship artifacts.
+10. The repo's eventual process map is the corrective architecture: runtime gates decide proceed/stop, Exit emits one X3, L5 certifies evidence, L2 proposes, UWG commits, L4 stores.
+11. Prompt authority is a runtime contract, not a folder location.
+12. App binding means a live packet traverses U0/L1/L0/C0/PA/L2/Exit/UWG/L4 contracts; it does not mean the app imports a shared helper.
+13. Official/reference architectures are destination maps, not beginner build orders.
+
 ---
 
 ## 4. The story (conference narrative, chapter by sequence)
@@ -216,13 +357,20 @@ It did not buy a resume — but a resume was never the purchase. The purchase wa
 | L0–L6 architecture predates any working product | **Partial (thrust correct)** | Precision: L1–L5 dirs by 2025-12-13/16; L0/L6 late Dec on branches; full set on main by 2026-02-13. First successful multi-lane E2E: 8/11 on 2026-06-10; all prior full-resume E2Es failed. |
 | Control-plane dashboards and CI gates were themselves unreliable evidence | **Supported** | Hardcoded dashboard health, fake/random per-agent dashboard data, stale dashboard cache, baseline debt absorption, and ratchet-floor loosening are now separately itemized in Failure 5B. |
 | Fresh worktrees could not reproduce product proof without hidden runtime state | **Supported** | June commits show missing `.env`, gitignored sparse FTS5 sidecars, and absent Chroma/sparse data blocked live section proofs until env and index rebuild paths were formalized (Failure 5D). |
+| Agent-swarm decomposition preceded proof discipline and caused rework | **Supported** | Dec 2025 apps_rg inventory finds 33 primary symbols, shared context, direct Gemini paths, route/heal/judge merged in app agents, and later replacement by canonical dispatch/X2/X3. |
+| Prompt authority/location was misunderstood before PA/spine binding matured | **Supported** | Feb prompt_governance inventory captured a large governance folder with missing recall/citation/telemetry signals; May apps_rg PA docs later separated app prompt artifacts, slots, hashes, and compile-only vs runtime binding. |
+| `agentic_core` vs `apps_*` boundaries were learned through rework | **Supported** | Dec apps_rg acted as an autonomous app framework; June Claude contract and canonical boundary state that apps customize inputs while core enforces contracts, with durable write owned by UWG/L4. |
+| Reference architectures were over-applied before maturity fit | **Partial** | Repo proves later OpenAI Swarm/Agents/LangGraph/AutoGen sources were ingested as optional T3 guidance and proves swarm-shaped app code before proof boundaries. It does not prove official docs instructed agent multiplication. |
 
 ## 6. What worked (the counter-narrative)
 
-- **The learning arc is the proof artifact:** Sep 2025 web-uploader → Jun 2026 operator of multi-agent forensic fleets, ADG materialized-view optimization (~98× speedup, byte-identical), local Qwen2.5-32B vLLM stack on an RTX 5090, this post-mortem itself.
+- **The learning arc is the proof artifact:** Aug/Sep 2025 zero-coding operator report → Oct 2025 web-uploader → Jun 2026 operator of multi-agent forensic fleets, ADG materialized-view optimization (~98× speedup, byte-identical), local Qwen2.5-32B vLLM stack on an RTX 5090, this post-mortem itself.
 - **apps_rg reached 72% lane authorization** with all deterministic defects fixed — the residual is a stochastic/judge content tail, not architectural failure.
 - **The system eventually caught its own lies** — the honest audits (ADR-091/092/093, zero-yield, provenance discipline) are in the record because the later machinery worked.
 - **Git discipline made a zero-loss forensic possible** — all 1,123 destroyed plans were recoverable from history.
+- **The swarm phase was tuition, not product:** it taught why agent count is not architecture and why authority has to be removed from agents before agents can safely multiply.
+- **The reference-architecture phase became valuable only after translation:** OpenAI Swarm/Agents, LangGraph, AutoGen, and governance maps became useful when reduced to process-map laws, runtime contracts, and proof boundaries.
+- **The later architecture is not a refutation of agents:** it is the learned sequencing discipline for agents — deterministic workflow first, bounded agent second, multi-agent only after contracts, replay, state authority, and Exit disposition exist.
 
 ## 7. Disposition of the corpus (the Notion question)
 
