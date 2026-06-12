@@ -131,6 +131,85 @@ def build_headline_positioning_section_packet(
     }
 
 
+def _selected_graph_plan(source: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(source, dict):
+        return {}
+    plan = source.get("selected_graph_evidence_plan")
+    if isinstance(plan, dict):
+        return plan
+    pp_meta = source.get("proof_pool_metadata")
+    if isinstance(pp_meta, dict) and isinstance(pp_meta.get("selected_graph_evidence_plan"), dict):
+        return pp_meta["selected_graph_evidence_plan"]
+    return {}
+
+
+def _filter_packet_by_selected_graph_plan(
+    packet: dict[str, Any],
+    selected_graph_plan: dict[str, Any],
+) -> dict[str, Any]:
+    if not isinstance(selected_graph_plan, dict) or not selected_graph_plan:
+        return packet
+    selected_families = {
+        str(x).strip()
+        for x in (selected_graph_plan.get("selected_headline_positioning_families") or [])
+        if str(x).strip()
+    }
+    selected_skills = {
+        str(x).strip()
+        for x in (selected_graph_plan.get("selected_skill_ids") or [])
+        if str(x).strip()
+    }
+    if not selected_families and not selected_skills:
+        return packet
+    filtered: list[dict[str, Any]] = []
+    for rec in packet.get("headline_positioning_bundles") or []:
+        if not isinstance(rec, dict):
+            continue
+        family = str(rec.get("positioning_family") or "").strip()
+        skills = {str(x).strip() for x in (rec.get("graph_skill_node_ids") or []) if str(x).strip()}
+        if selected_families:
+            include = family in selected_families
+        else:
+            include = bool(selected_skills and skills.intersection(selected_skills))
+        if include:
+            filtered.append(rec)
+    if not filtered:
+        return packet
+
+    out = dict(packet)
+    out["headline_positioning_bundles"] = filtered
+    out["headline_positioning_bundle_ids"] = [
+        str(r.get("headline_positioning_bundle_id") or "") for r in filtered
+    ]
+    out["competency_bundle_ids"] = sorted(
+        {
+            str(c)
+            for r in filtered
+            for c in (r.get("source_competency_bundle_ids") or [])
+            if str(c).strip()
+        }
+    )
+    out["graph_skill_node_ids"] = sorted(
+        {
+            str(s)
+            for r in filtered
+            for s in (r.get("graph_skill_node_ids") or [])
+            if str(s).strip()
+        }
+    )
+    out["source_fact_ids"] = sorted(
+        {
+            str(f)
+            for r in filtered
+            for f in (r.get("linked_source_fact_ids") or [])
+            if str(f).strip()
+        }
+    )
+    out["selected_graph_evidence_plan_applied"] = True
+    out["selected_headline_positioning_families"] = sorted(selected_families)
+    return out
+
+
 def attach_headline_positioning_bundles_to_proof_pool_metadata(
     meta: dict[str, Any],
     *,
@@ -141,6 +220,7 @@ def attach_headline_positioning_bundles_to_proof_pool_metadata(
     if section_id != HEADLINE_SECTION_ID:
         return meta
     packet = build_headline_positioning_section_packet(section_id, repo_root=repo_root)
+    packet = _filter_packet_by_selected_graph_plan(packet, _selected_graph_plan(meta))
     out = dict(meta)
     out["headline_positioning_bundle_consumption"] = True
     out["headline_positioning_bundle_consumption_mode"] = "headline_positioning_bundle_required"
@@ -168,6 +248,7 @@ def format_headline_positioning_evidence_pack(
 ) -> str:
     """C0 body: headline positioning bundles as proof authority."""
     packet = build_headline_positioning_section_packet(section_id)
+    packet = _filter_packet_by_selected_graph_plan(packet, _selected_graph_plan(runtime_payload))
     runtime_payload["headline_positioning_section_packet"] = packet
     runtime_payload["headline_positioning_bundle_ids"] = packet["headline_positioning_bundle_ids"]
 

@@ -106,7 +106,7 @@ from apps_rg.runtime.runtime_proof_layout import (
     resolve_effective_lane_l2_path,
 )
 from apps_rg.runtime.sections.ibm_canonical_hydration import remap_ibm_narrative_claim_ledger_to_fact_pool
-from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
 
 def _generation_status_allows_structure_parse(runtime_generation_status: str) -> bool:
     return runtime_generation_status in {"REAL_LLM", OFFLINE_CONTRACT_STUB_RUNTIME_STATUS}
@@ -179,8 +179,8 @@ def build_selected_fact_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def build_selected_fact_plan_ibm_narrative_srfs(facts: list[dict[str, Any]]) -> dict[str, Any]:
-    from apps_rg.runtime.sections.selected_role_fact_set import selection_method_for_section
+def build_selected_graph_evidence_plan_ibm_narrative(facts: list[dict[str, Any]]) -> dict[str, Any]:
+    from apps_rg.runtime.sections.graph_evidence_contract import selection_method_for_section
 
     return {
         "section_id": "ibm_narrative",

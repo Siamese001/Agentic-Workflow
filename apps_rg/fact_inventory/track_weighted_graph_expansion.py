@@ -387,7 +387,7 @@ def infer_projection_role_family_key(
     taxonomy: dict[str, Any] | None = None,
 ) -> str:
     """Map taxonomy inference to ledger role_family_projection_profiles key."""
-    from apps_rg.fact_inventory.selected_role_fact_set import infer_role_family_priorities
+    from apps_rg.fact_inventory.role_family_selection import infer_role_family_priorities
 
     if taxonomy is None:
         tax_path = ROOT / "apps_rg/config/domain_contract/master_role_family_taxonomy.yaml"

@@ -109,7 +109,7 @@ from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
     prepare_runtime_proof_run_dir,
 )
-from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
 
 def _artifact_repo_rel(path: Path, repo_root: Path) -> str:
     try:

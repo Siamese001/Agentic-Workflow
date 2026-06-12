@@ -269,7 +269,8 @@ def test_unify_role_episode_bundles_validate_with_bindings():
         ok, violations = validate_bundle(b)
         assert ok, f"{b['role_episode_bundle_id']}: {violations}"
         assert b["employer_node_id"] == UNIFY_EMPLOYER_NODE_ID
-        assert b["time_window"] == UNIFY_TIME_WINDOW
+        assert "time_window" not in b
+        assert UNIFY_TIME_WINDOW == "2023-02 to present"
         assert b["graph_skill_node_ids"]
 
 
@@ -284,29 +285,88 @@ def test_unify_metric_outcome_nodes_are_graph_ssot():
     assert nodes
     assert set(nodes) == set(approved)
     assert policy.get("approval_model") == "presence_in_metric_outcome_nodes_is_approval"
+    assert policy.get("approved_metric_outcome_ids_role") == "derived_review_index_not_claim_authority"
+    assert policy.get("bundle_metric_surface") == (
+        "linked_metric_outcome_ids only; metric_outcome_nodes is claim authority"
+    )
     for mid, node in nodes.items():
         assert node["metric_outcome_id"] == mid
         assert node["approved"] is True
         assert node["approval_status"] == "APPROVED_GRAPH_SSOT"
         assert node["support_level"] == "approved_by_graph_presence"
         assert node["bundle_bindings"]
+        assert "time_window" not in node
 
     linked_seen: set[str] = set()
     for b in data["bundles"]:
         linked = list(b.get("linked_metric_outcome_ids") or [])
         if not linked:
             continue
-        promotable_ids = {
-            str(m.get("metric_outcome_id"))
-            for m in b.get("promotable_metrics") or []
-            if isinstance(m, dict)
-        }
-        assert promotable_ids == set(linked)
+        assert "promotable_metrics" not in b
         for mid in linked:
             assert mid in nodes
             assert b["role_episode_bundle_id"] in nodes[mid]["bundle_bindings"]
             linked_seen.add(mid)
     assert linked_seen == set(nodes)
+
+
+def test_unify_agentic_root_has_svp_engineering_agentic_grain():
+    data = json.loads(
+        (REPO_ROOT / "apps_rg" / "fact_inventory" / "unify_role_episode_bundles.json").read_text("utf-8")
+    )
+    ledger = json.loads(
+        (REPO_ROOT / "apps_rg" / "fact_inventory" / "master_skills_arsenal_ledger.json").read_text("utf-8")
+    )
+    bundle = next(
+        b
+        for b in data["bundles"]
+        if b["role_episode_bundle_id"] == "reb_unify_agentic_platform_architecture"
+    )
+
+    expected_skill_ids = {
+        "skill_unify_agentic_l0_route_policy_dispatch",
+        "skill_unify_agentic_multi_agent_orchestration_contracts",
+        "skill_unify_agentic_graphrag_context_pack_grounding",
+        "skill_unify_agentic_tool_sandbox_egress_controls",
+        "skill_unify_agentic_runtime_gate_verdict_contracts",
+        "skill_unify_agentic_human_override_escalation_paths",
+        "skill_unify_agentic_replay_key_audit_manifest_design",
+        "skill_unify_agentic_runtime_proof_bundle_lineage",
+    }
+    expected_metric_ids = {
+        "metric_unify_agentic_l0_route_policy_dispatch_surface",
+        "metric_unify_agentic_multi_agent_orchestration_contract_surface",
+        "metric_unify_agentic_graphrag_context_pack_grounding_surface",
+        "metric_unify_agentic_tool_sandbox_egress_policy_surface",
+        "metric_unify_agentic_runtime_gate_verdict_contract_surface",
+        "metric_unify_agentic_human_override_escalation_surface",
+        "metric_unify_agentic_replay_key_audit_manifest_surface",
+        "metric_unify_agentic_runtime_proof_bundle_lineage_surface",
+    }
+
+    assert expected_skill_ids <= set(bundle["graph_skill_node_ids"])
+    assert expected_metric_ids <= set(bundle["linked_metric_outcome_ids"])
+    assert len(bundle["graph_skill_node_ids"]) >= 14
+    assert len(bundle["linked_metric_outcome_ids"]) >= 10
+
+    real_skill_ids = {
+        str(r.get("skill_id"))
+        for r in ledger.get("skill_rows", [])
+        if isinstance(r, dict) and r.get("skill_id")
+    }
+    real_node_ids = {
+        str(n.get("node_id"))
+        for n in ledger.get("graph_nodes", [])
+        if isinstance(n, dict) and n.get("node_id")
+    }
+    assert expected_skill_ids <= real_skill_ids
+    assert expected_skill_ids <= real_node_ids
+
+    for mid in expected_metric_ids:
+        node = data["metric_outcome_nodes"][mid]
+        assert node["approval_status"] == "APPROVED_GRAPH_SSOT"
+        assert "reb_unify_agentic_platform_architecture" in node["bundle_bindings"]
+        assert node["surface_tokens"], f"{mid} lacks ATS surface tokens"
 
 
 def test_unify_internal_only_bundle_not_external_claim():

@@ -229,7 +229,7 @@ def format_unify_graph_bullet_evidence_pack(
         allowed_ids = [slot_id]
         mr = str(fact.get("metric_raw") or "").strip()
         if mr:
-            from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
+            from apps_rg.runtime.sections.graph_evidence_contract import metric_derivative_fact_id
 
             allowed_ids.append(metric_derivative_fact_id(slot_id, mr))
 

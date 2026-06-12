@@ -86,7 +86,7 @@ from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
 from apps_rg.runtime.sections.ibm_canonical_hydration import should_hydrate_ibm_bullets_from_canonical
-from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
 
 PROMPT_ID = "ibm_bullet_tailor_dispatch_v1"
 IBM_TEMP_DEFAULT = 0.45
@@ -1646,7 +1646,7 @@ def run_ibm_bullets_execution(
         "proof_eligible": bundle["proof_eligible"],
         "judge_proof_eligible": bundle["judge_proof_eligible"],
     }
-    merge_normalized_srfs_reporting_into_dict(
+    merge_graph_evidence_reporting_into_dict(
         _smr_ibm_b,
         section_id="ibm_bullets",
         runtime_payload=runtime_payload,

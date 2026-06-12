@@ -14,11 +14,11 @@ from apps_rg.runtime.sections.executive_summary_composition import (
     format_composition_plan_for_pa,
     is_mechanism_inventory_sentence,
 )
-from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
 
-def _srfs() -> dict[str, object]:
-    return {"artifact_path_resolved": "artifacts/apps_rg/fact_inventory/selected_role_fact_set_active.json"}
+def _graph_pool() -> dict[str, object]:
+    return {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
 
 
 def _facts() -> list[dict[str, object]]:
@@ -73,10 +73,11 @@ def test_s2_platform_brushstroke_routing_passes_shape_gate() -> None:
         "Designed runtime systems combining deterministic routing, multi-agent orchestration, and "
         "GraphRAG retrieval with validation controls and traceability. "
         "Standardized AI lifecycle practices across intake, validation, execution, monitoring, and remediation. "
+        "Connected governance themes to enterprise operating rhythms without adding unsupported metrics. "
         "Delivered measurable commercial outcomes grounded in cited executive facts. "
         "Integrated AWS and FSA credentials reinforce quantitative credibility for stakeholders."
     )
-    ok, reason = check_srfs_sentence_responsibility_shape(text, _srfs())
+    ok, reason = check_graph_evidence_sentence_responsibility_shape(text, _graph_pool())
     assert ok is True, reason
 
 

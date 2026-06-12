@@ -14,7 +14,7 @@ from typing import Any
 
 from apps_rg.runtime.sections.executive_summary_token_budget import estimate_tokens_approximate
 from apps_rg.runtime.sections.executive_summary_pa import format_allowed_source_fact_ids_contract
-from apps_rg.runtime.sections.selected_role_fact_set import (
+from apps_rg.runtime.sections.graph_evidence_contract import (
     build_allowed_fact_ids_for_plan_facts,
     metric_derivative_fact_id,
 )

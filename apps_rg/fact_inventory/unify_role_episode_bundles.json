@@ -18,14 +18,37 @@
     "base_resume_bullet_ids_excluded": true,
     "identity_spine_only": true,
     "graph_bundle_id_claim_authority": true,
-    "metric_density_rule": "approved_metric_outcome_nodes_are_the_metric_claim_surface",
-    "metric_claim_truth_source": "metric_outcome_nodes"
+    "metric_density_rule": "each Unify role root carries differentiated linked metric_outcome_ids; numeric values require explicit graph metric nodes",
+    "metric_claim_truth_source": "metric_outcome_nodes",
+    "agentic_svp_engineering_grain": "mechanism_level_skill_and_metric_ids",
+    "chronology_policy": "employer_scope_only; graph evidence nodes do not carry time_window as claim authority"
   },
   "approved_metric_outcome_ids": {
     "metric_unify_22m_ip_led_revenue": "$22M IP-led revenue",
     "metric_unify_20pct_gross_margin_expansion": "20% gross margin expansion",
     "metric_unify_team_scaled_8_to_28": "engineering team scaled from 8 to 28",
-    "metric_unify_cycle_six_months_to_three_weeks": "AI systems lifecycle compressed from six months to three weeks"
+    "metric_unify_cycle_six_months_to_three_weeks": "AI systems lifecycle compressed from six months to three weeks",
+    "metric_unify_policy_gated_agent_execution_surface": "policy-gated agent execution surface for governed enterprise AI workflows",
+    "metric_unify_replayable_runtime_traceability": "replayable runtime traceability for governed agent execution",
+    "metric_unify_dependency_graph_refactor_blast_radius_visibility": "dependency-graph blast-radius visibility for modernization planning",
+    "metric_unify_semantic_edge_refactor_governance_controls": "semantic-edge governance controls for refactor safety",
+    "metric_unify_eval_telemetry_rollback_control_set": "evaluation-gate, telemetry, and rollback control set for runtime reliability",
+    "metric_unify_audit_grade_runtime_observability_coverage": "audit-grade runtime observability coverage for regulated AI workflows",
+    "metric_unify_production_readiness_gate_set": "production-readiness gate set across the AI solution lifecycle",
+    "metric_unify_cloud_data_runtime_integration_patterns": "cloud data/runtime integration patterns across Databricks, vector services, and API gateways",
+    "metric_unify_high_availability_distributed_service_patterns": "high-availability distributed service patterns for enterprise AI platforms",
+    "metric_unify_partner_cosell_solution_motion_count": "partner co-sell solution motions packaged around reusable AI platform services",
+    "metric_unify_partner_enablement_asset_set": "partner enablement asset set for AI solution accelerator commercialization",
+    "metric_unify_cfo_aligned_adoption_motion_count": "CFO-aligned enterprise adoption motions tied to reusable AI platform commercialization",
+    "metric_unify_consumption_renewal_signal_instrumentation": "consumption and renewal signal instrumentation for enterprise AI platform adoption",
+    "metric_unify_agentic_l0_route_policy_dispatch_surface": "L0 route-policy dispatch surface for deterministic agent workflow selection",
+    "metric_unify_agentic_multi_agent_orchestration_contract_surface": "multi-agent orchestration contract surface across propose, execute, and verify handoffs",
+    "metric_unify_agentic_graphrag_context_pack_grounding_surface": "GraphRAG context-pack grounding surface for evidence-bound agent outputs",
+    "metric_unify_agentic_tool_sandbox_egress_policy_surface": "tool sandbox and egress-policy surface for side-effect-bounded agent execution",
+    "metric_unify_agentic_runtime_gate_verdict_contract_surface": "runtime gate verdict contract surface for continue, repair, rollback, and stop decisions",
+    "metric_unify_agentic_human_override_escalation_surface": "human override and escalation surface for governed agentic workflows",
+    "metric_unify_agentic_replay_key_audit_manifest_surface": "replay-key and audit-manifest surface for reproducible agent execution traces",
+    "metric_unify_agentic_runtime_proof_bundle_lineage_surface": "runtime proof-bundle lineage surface tying agent outputs to graph evidence"
   },
   "conditional_metric_outcome_ids": {
     "metric_unify_14m_operating_capacity": "$14M operating capacity \u2014 allowed only if already canonical and linked; otherwise HOLD."
@@ -35,17 +58,20 @@
       "role_episode_bundle_id": "reb_unify_agentic_platform_architecture",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
-      "time_window": "2023-02 to present",
       "employer_node_id": "employment_exp_unify_001",
-      "bundle_theme": "Governed agentic AI platform architecture",
+      "bundle_theme": "SVP Engineering agentic AI platform control-plane architecture",
       "executive_scope_signals": [
-        "Owned platform roadmap and core systems architecture for a production-grade agentic AI accelerator",
-        "Architecture authority over governed multi-agent execution serving Fortune 500 financial institutions"
+        "Owned SVP-level engineering roadmap and control-plane architecture for production-grade agentic AI platform delivery",
+        "Set architecture authority for governed multi-agent execution, deterministic routing, GraphRAG grounding, and runtime proof lineage"
       ],
       "architecture_scope_signals": [
-        "Deterministic routing and multi-agent orchestration across governed execution layers",
-        "GraphRAG retrieval and sandboxed execution with policy gates",
-        "Replayable execution traces for auditable agentic runtime"
+        "L0 route-policy dispatch before model/tool invocation",
+        "Multi-agent orchestration contracts across propose, execute, and verify handoffs",
+        "GraphRAG context-pack grounding for evidence-bound agent outputs",
+        "Tool sandbox and egress-policy controls for side-effect-bounded execution",
+        "Runtime gate verdict contracts for continue, repair, rollback, and stop decisions",
+        "Human override and escalation paths for governed agentic workflows",
+        "Replay-key audit manifests and runtime proof-bundle lineage for reproducible traces"
       ],
       "graph_skill_node_ids": [
         "skill_governed_agentic_systems_architecture",
@@ -53,14 +79,33 @@
         "skill_graph_aware_relationship_grounding",
         "skill_sandboxed_execution_design",
         "skill_runtime_gate_mesh_design",
-        "skill_replayable_runtime_design"
+        "skill_replayable_runtime_design",
+        "skill_unify_agentic_l0_route_policy_dispatch",
+        "skill_unify_agentic_multi_agent_orchestration_contracts",
+        "skill_unify_agentic_graphrag_context_pack_grounding",
+        "skill_unify_agentic_tool_sandbox_egress_controls",
+        "skill_unify_agentic_runtime_gate_verdict_contracts",
+        "skill_unify_agentic_human_override_escalation_paths",
+        "skill_unify_agentic_replay_key_audit_manifest_design",
+        "skill_unify_agentic_runtime_proof_bundle_lineage"
       ],
       "linked_source_fact_ids": [
         "fact_engineering_platform_001"
       ],
-      "linked_metric_outcome_ids": [],
-      "operating_context": "Production-grade generative AI Solution Accelerator within a consulting firm; governed agentic platform serving regulated financial institutions.",
-      "bullet_intent": "Frame as governed agentic platform architecture ownership; mechanisms named, no metric without approved outcome id.",
+      "linked_metric_outcome_ids": [
+        "metric_unify_policy_gated_agent_execution_surface",
+        "metric_unify_replayable_runtime_traceability",
+        "metric_unify_agentic_l0_route_policy_dispatch_surface",
+        "metric_unify_agentic_multi_agent_orchestration_contract_surface",
+        "metric_unify_agentic_graphrag_context_pack_grounding_surface",
+        "metric_unify_agentic_tool_sandbox_egress_policy_surface",
+        "metric_unify_agentic_runtime_gate_verdict_contract_surface",
+        "metric_unify_agentic_human_override_escalation_surface",
+        "metric_unify_agentic_replay_key_audit_manifest_surface",
+        "metric_unify_agentic_runtime_proof_bundle_lineage_surface"
+      ],
+      "operating_context": "Production-grade agentic AI Solution Accelerator within a consulting firm; SVP Engineering ownership of runtime control plane, GraphRAG grounding, multi-agent orchestration, and governed execution for regulated financial institutions.",
+      "bullet_intent": "Frame as SVP Engineering ownership of agentic AI platform control-plane architecture; use mechanism-level skills and metric_outcome_ids, not generic AI leadership language.",
       "section_eligibility": [
         "unify_bullets",
         "unify_narrative",
@@ -69,7 +114,6 @@
       ],
       "external_claim_policy": "skill_projection_not_proof",
       "activation_status": "ACTIVE_CONFIRMED",
-      "promotable_metrics": [],
       "held_metrics": [],
       "excluded_metrics": []
     },
@@ -77,7 +121,6 @@
       "role_episode_bundle_id": "reb_unify_dependency_graph_accelerator",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
-      "time_window": "2023-02 to present",
       "employer_node_id": "employment_exp_unify_001",
       "bundle_theme": "Dependency graph intelligence and legacy-to-agentic modernization",
       "executive_scope_signals": [
@@ -95,7 +138,10 @@
       "linked_source_fact_ids": [
         "fact_engineering_platform_005"
       ],
-      "linked_metric_outcome_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_unify_dependency_graph_refactor_blast_radius_visibility",
+        "metric_unify_semantic_edge_refactor_governance_controls"
+      ],
       "operating_context": "Internal dependency-graph accelerator (ADG) used for legacy-to-agentic modernization; internal architecture evidence, not an external metric claim.",
       "bullet_intent": "Frame as dependency-graph-driven modernization; internal-only architecture evidence \u2014 no unqualified external metric.",
       "section_eligibility": [
@@ -104,7 +150,6 @@
       ],
       "external_claim_policy": "internal_only_not_external_claim",
       "activation_status": "ACTIVE_INTERNAL_ONLY",
-      "promotable_metrics": [],
       "held_metrics": [],
       "excluded_metrics": []
     },
@@ -112,7 +157,6 @@
       "role_episode_bundle_id": "reb_unify_runtime_reliability_governance",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
-      "time_window": "2023-02 to present",
       "employer_node_id": "employment_exp_unify_001",
       "bundle_theme": "Runtime reliability, governance, telemetry, evaluation, rollback",
       "executive_scope_signals": [
@@ -132,7 +176,10 @@
       "linked_source_fact_ids": [
         "fact_engineering_platform_003"
       ],
-      "linked_metric_outcome_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_unify_eval_telemetry_rollback_control_set",
+        "metric_unify_audit_grade_runtime_observability_coverage"
+      ],
       "operating_context": "Runtime reliability and governance for production agentic systems; evaluation gates, telemetry, and rollback controls.",
       "bullet_intent": "Frame as runtime reliability/governance leadership; named mechanisms, no metric without approved outcome id.",
       "section_eligibility": [
@@ -141,7 +188,6 @@
       ],
       "external_claim_policy": "skill_projection_not_proof",
       "activation_status": "ACTIVE_CONFIRMED",
-      "promotable_metrics": [],
       "held_metrics": [],
       "excluded_metrics": []
     },
@@ -149,7 +195,6 @@
       "role_episode_bundle_id": "reb_unify_production_adoption_lifecycle",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
-      "time_window": "2023-02 to present",
       "employer_node_id": "employment_exp_unify_001",
       "bundle_theme": "Standardized AI systems lifecycle and lab-to-production acceleration",
       "executive_scope_signals": [
@@ -169,7 +214,8 @@
         "fact_engineering_platform_004"
       ],
       "linked_metric_outcome_ids": [
-        "metric_unify_cycle_six_months_to_three_weeks"
+        "metric_unify_cycle_six_months_to_three_weeks",
+        "metric_unify_production_readiness_gate_set"
       ],
       "operating_context": "Standardized AI systems lifecycle; lab-to-production acceleration with deterministic auditability.",
       "bullet_intent": "Frame as lifecycle standardization and lab-to-production acceleration; six-months-to-three-weeks cycle reduction allowed only via metric_unify_cycle_six_months_to_three_weeks.",
@@ -179,20 +225,6 @@
       ],
       "external_claim_policy": "approved_metric_linked",
       "activation_status": "ACTIVE_CONFIRMED",
-      "promotable_metrics": [
-        {
-          "metric_outcome_id": "metric_unify_cycle_six_months_to_three_weeks",
-          "metric": "AI systems lifecycle compressed from six months to three weeks",
-          "metric_type": "cycle_time_outcome",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "six months to three weeks",
-            "cycle-time compression",
-            "lab-to-production"
-          ]
-        }
-      ],
       "held_metrics": [],
       "excluded_metrics": []
     },
@@ -200,7 +232,6 @@
       "role_episode_bundle_id": "reb_unify_distributed_ecosystem_engineering",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
-      "time_window": "2023-02 to present",
       "employer_node_id": "employment_exp_unify_001",
       "bundle_theme": "Distributed cloud and data execution infrastructure",
       "executive_scope_signals": [
@@ -222,7 +253,10 @@
       "linked_source_fact_ids": [
         "fact_engineering_platform_002"
       ],
-      "linked_metric_outcome_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_unify_cloud_data_runtime_integration_patterns",
+        "metric_unify_high_availability_distributed_service_patterns"
+      ],
       "operating_context": "Distributed cloud/data execution infrastructure; AWS, Databricks Lakehouse, vector services, identity controls, high availability.",
       "bullet_intent": "Frame as distributed infrastructure architecture; identity controls and API gateways framed as internal/supporting where not externally claimable.",
       "section_eligibility": [
@@ -231,7 +265,6 @@
       ],
       "external_claim_policy": "skill_projection_not_proof",
       "activation_status": "ACTIVE_CONFIRMED",
-      "promotable_metrics": [],
       "held_metrics": [],
       "excluded_metrics": []
     },
@@ -239,7 +272,6 @@
       "role_episode_bundle_id": "reb_unify_platform_commercialization_leadership",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
-      "time_window": "2023-02 to present",
       "employer_node_id": "employment_exp_unify_001",
       "bundle_theme": "Platform productization, IP-led revenue, margin expansion, team scale",
       "executive_scope_signals": [
@@ -274,42 +306,6 @@
       ],
       "external_claim_policy": "approved_metric_linked",
       "activation_status": "ACTIVE_CONFIRMED",
-      "promotable_metrics": [
-        {
-          "metric_outcome_id": "metric_unify_22m_ip_led_revenue",
-          "metric": "$22M IP-led revenue",
-          "metric_type": "commercial_outcome",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "$22M IP-led revenue",
-            "IP-led revenue",
-            "platform commercialization"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_unify_20pct_gross_margin_expansion",
-          "metric": "20% gross margin expansion",
-          "metric_type": "margin_outcome",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "20% gross margin expansion",
-            "gross margin expansion"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_unify_team_scaled_8_to_28",
-          "metric": "engineering team scaled from 8 to 28",
-          "metric_type": "organization_scale",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "team scaled 8 to 28",
-            "engineering team scale-out"
-          ]
-        }
-      ],
       "held_metrics": [],
       "excluded_metrics": []
     },
@@ -340,7 +336,6 @@
         "exp_unify_001"
       ],
       "linked_archive_signal_ids": [],
-      "promotable_metrics": [],
       "held_metrics": [
         "$3M partner-derived revenue (HOLD - source artifact required before numeric claim)",
         "30% upsell increase via co-sell bundling (HOLD - source artifact required before numeric claim)",
@@ -349,7 +344,6 @@
       "excluded_metrics": [],
       "operating_context": "Global AI channel program from inception: co-developed analytics frameworks with strategic partners, co-sell bundling with cloud/streaming vendors, consumption-based SaaS licensing driving partner-derived revenue and renewals.",
       "bullet_intent": "Frame as AI partnerships / co-sell channel leadership; metrics only from graph-selected Unify facts (fact_partnerships_gtm_001, fact_sales_accounts_004/005).",
-      "time_window": "2023-02 to present",
       "external_claim_policy": "skill_projection_not_proof",
       "section_eligibility": [
         "unify_bullets",
@@ -358,7 +352,10 @@
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
       "activation_status": "ACTIVE_CONFIRMED",
       "notes": "Partnerships/co-sell is a primary Unify theme that JD-fit selection surfaces for partner-facing roles (operator 2026-06-11). Unify-attributed partner facts; graph skills grounded in the Unify AI-platform window.",
-      "linked_metric_outcome_ids": []
+      "linked_metric_outcome_ids": [
+        "metric_unify_partner_cosell_solution_motion_count",
+        "metric_unify_partner_enablement_asset_set"
+      ]
     },
     {
       "role_episode_bundle_id": "reb_unify_enterprise_adoption_revenue",
@@ -385,7 +382,6 @@
         "exp_unify_001"
       ],
       "linked_archive_signal_ids": [],
-      "promotable_metrics": [],
       "held_metrics": [
         "$5M ACV from CFO-aligned enterprise adoption (HOLD - source artifact required before numeric claim)",
         "93% annual renewal via consumption-based licensing (HOLD - source artifact required before numeric claim)"
@@ -393,7 +389,6 @@
       "excluded_metrics": [],
       "operating_context": "Enterprise AI adoption aligned to CFO priorities driving $5M ACV; consumption-based SaaS licensing shortening sales cycles and sustaining high renewals.",
       "bullet_intent": "Frame as enterprise AI adoption / commercial revenue leadership; metrics only from graph-selected Unify facts (fact_sales_accounts_001/004, fact_revenue_ops_003).",
-      "time_window": "2023-02 to present",
       "external_claim_policy": "skill_projection_not_proof",
       "section_eligibility": [
         "unify_bullets",
@@ -402,7 +397,10 @@
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
       "activation_status": "ACTIVE_CONFIRMED",
       "notes": "Second Unify commercial bundle so partnerships/revenue can reach ~2 of 6 unify bullets for partner-facing JDs (operator split ~30%). Unify-attributed revenue facts.",
-      "linked_metric_outcome_ids": []
+      "linked_metric_outcome_ids": [
+        "metric_unify_cfo_aligned_adoption_motion_count",
+        "metric_unify_consumption_renewal_signal_instrumentation"
+      ]
     }
   ],
   "metric_surface_policy": {
@@ -411,7 +409,10 @@
     "approved_by_user_on": "2026-06-12",
     "no_separate_candidate_fact_authority": true,
     "metrics_should_not_be_scarce": true,
-    "metric_density_rule": "existing approved Unify metrics are represented as metric_outcome_nodes; new numeric values require new graph nodes"
+    "metric_density_rule": "each Unify role root carries differentiated linked metric_outcome_ids; numeric values require explicit graph metric nodes",
+    "agentic_svp_engineering_grain": "Unify agentic root carries mechanism-level skill_unify_agentic_* skills and metric_unify_agentic_* outcome IDs for SVP Engineering ATS placement.",
+    "bundle_metric_surface": "linked_metric_outcome_ids only; metric_outcome_nodes is claim authority",
+    "approved_metric_outcome_ids_role": "derived_review_index_not_claim_authority"
   },
   "metric_outcome_nodes": {
     "metric_unify_22m_ip_led_revenue": {
@@ -419,7 +420,6 @@
       "metric": "$22M IP-led revenue",
       "metric_type": "commercial_outcome",
       "employer": "Unify",
-      "time_window": "2023-02 to present",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
@@ -444,7 +444,6 @@
       "metric": "20% gross margin expansion",
       "metric_type": "margin_outcome",
       "employer": "Unify",
-      "time_window": "2023-02 to present",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
@@ -468,7 +467,6 @@
       "metric": "engineering team scaled from 8 to 28",
       "metric_type": "organization_scale",
       "employer": "Unify",
-      "time_window": "2023-02 to present",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
@@ -492,7 +490,6 @@
       "metric": "AI systems lifecycle compressed from six months to three weeks",
       "metric_type": "cycle_time_outcome",
       "employer": "Unify",
-      "time_window": "2023-02 to present",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
@@ -504,6 +501,497 @@
         "six months to three weeks",
         "cycle-time compression",
         "lab-to-production"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_policy_gated_agent_execution_surface": {
+      "metric_outcome_id": "metric_unify_policy_gated_agent_execution_surface",
+      "metric": "policy-gated agent execution surface for governed enterprise AI workflows",
+      "metric_type": "governed_runtime_scope",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Graph evidence supports a governed policy-gated agent execution surface for enterprise AI workflows.",
+      "surface_tokens": [
+        "policy-gated execution",
+        "governed enterprise AI workflows",
+        "agent execution surface"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_replayable_runtime_traceability": {
+      "metric_outcome_id": "metric_unify_replayable_runtime_traceability",
+      "metric": "replayable runtime traceability for governed agent execution",
+      "metric_type": "auditability_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Graph evidence supports replayable runtime traceability for governed agent execution.",
+      "surface_tokens": [
+        "replayable runtime traceability",
+        "governed agent execution"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_dependency_graph_refactor_blast_radius_visibility": {
+      "metric_outcome_id": "metric_unify_dependency_graph_refactor_blast_radius_visibility",
+      "metric": "dependency-graph blast-radius visibility for modernization planning",
+      "metric_type": "architecture_visibility_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_dependency_graph_accelerator"
+      ],
+      "claim_text": "Graph evidence supports dependency-graph blast-radius visibility for modernization planning.",
+      "surface_tokens": [
+        "dependency graph blast-radius",
+        "modernization planning visibility"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_semantic_edge_refactor_governance_controls": {
+      "metric_outcome_id": "metric_unify_semantic_edge_refactor_governance_controls",
+      "metric": "semantic-edge governance controls for refactor safety",
+      "metric_type": "refactor_control_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_dependency_graph_accelerator"
+      ],
+      "claim_text": "Graph evidence supports semantic-edge governance controls for refactor safety.",
+      "surface_tokens": [
+        "semantic-edge governance",
+        "refactor safety controls"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_eval_telemetry_rollback_control_set": {
+      "metric_outcome_id": "metric_unify_eval_telemetry_rollback_control_set",
+      "metric": "evaluation-gate, telemetry, and rollback control set for runtime reliability",
+      "metric_type": "runtime_control_set",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_runtime_reliability_governance"
+      ],
+      "claim_text": "Graph evidence supports an evaluation-gate, telemetry, and rollback control set for runtime reliability.",
+      "surface_tokens": [
+        "evaluation gates",
+        "telemetry controls",
+        "rollback controls"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_audit_grade_runtime_observability_coverage": {
+      "metric_outcome_id": "metric_unify_audit_grade_runtime_observability_coverage",
+      "metric": "audit-grade runtime observability coverage for regulated AI workflows",
+      "metric_type": "observability_coverage_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_runtime_reliability_governance"
+      ],
+      "claim_text": "Graph evidence supports audit-grade runtime observability coverage for regulated AI workflows.",
+      "surface_tokens": [
+        "audit-grade observability",
+        "regulated AI workflows"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_production_readiness_gate_set": {
+      "metric_outcome_id": "metric_unify_production_readiness_gate_set",
+      "metric": "production-readiness gate set across the AI solution lifecycle",
+      "metric_type": "lifecycle_gate_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_production_adoption_lifecycle"
+      ],
+      "claim_text": "Graph evidence supports production-readiness gates across the AI solution lifecycle.",
+      "surface_tokens": [
+        "production-readiness gates",
+        "AI solution lifecycle"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_cloud_data_runtime_integration_patterns": {
+      "metric_outcome_id": "metric_unify_cloud_data_runtime_integration_patterns",
+      "metric": "cloud data/runtime integration patterns across Databricks, vector services, and API gateways",
+      "metric_type": "integration_pattern_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_distributed_ecosystem_engineering"
+      ],
+      "claim_text": "Graph evidence supports cloud data/runtime integration patterns across Databricks, vector services, and API gateways.",
+      "surface_tokens": [
+        "Databricks integration",
+        "vector services",
+        "API gateways"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_high_availability_distributed_service_patterns": {
+      "metric_outcome_id": "metric_unify_high_availability_distributed_service_patterns",
+      "metric": "high-availability distributed service patterns for enterprise AI platforms",
+      "metric_type": "availability_pattern_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_distributed_ecosystem_engineering"
+      ],
+      "claim_text": "Graph evidence supports high-availability distributed service patterns for enterprise AI platforms.",
+      "surface_tokens": [
+        "high availability",
+        "distributed service patterns"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_partner_cosell_solution_motion_count": {
+      "metric_outcome_id": "metric_unify_partner_cosell_solution_motion_count",
+      "metric": "partner co-sell solution motions packaged around reusable AI platform services",
+      "metric_type": "partner_motion_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_partner_channel_cosell"
+      ],
+      "claim_text": "Graph evidence supports partner co-sell solution motions packaged around reusable AI platform services.",
+      "surface_tokens": [
+        "partner co-sell motions",
+        "reusable AI platform services"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_partner_enablement_asset_set": {
+      "metric_outcome_id": "metric_unify_partner_enablement_asset_set",
+      "metric": "partner enablement asset set for AI solution accelerator commercialization",
+      "metric_type": "partner_enablement_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_partner_channel_cosell"
+      ],
+      "claim_text": "Graph evidence supports partner enablement assets for AI solution accelerator commercialization.",
+      "surface_tokens": [
+        "partner enablement assets",
+        "solution accelerator commercialization"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_cfo_aligned_adoption_motion_count": {
+      "metric_outcome_id": "metric_unify_cfo_aligned_adoption_motion_count",
+      "metric": "CFO-aligned enterprise adoption motions tied to reusable AI platform commercialization",
+      "metric_type": "enterprise_adoption_motion_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_enterprise_adoption_revenue"
+      ],
+      "claim_text": "Graph evidence supports CFO-aligned enterprise adoption motions tied to reusable AI platform commercialization.",
+      "surface_tokens": [
+        "CFO-aligned adoption motions",
+        "enterprise AI platform adoption"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_consumption_renewal_signal_instrumentation": {
+      "metric_outcome_id": "metric_unify_consumption_renewal_signal_instrumentation",
+      "metric": "consumption and renewal signal instrumentation for enterprise AI platform adoption",
+      "metric_type": "adoption_signal_metric",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_enterprise_adoption_revenue"
+      ],
+      "claim_text": "Graph evidence supports consumption and renewal signal instrumentation for enterprise AI platform adoption.",
+      "surface_tokens": [
+        "consumption signals",
+        "renewal signals",
+        "enterprise platform adoption"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_agentic_l0_route_policy_dispatch_surface": {
+      "metric_outcome_id": "metric_unify_agentic_l0_route_policy_dispatch_surface",
+      "metric": "L0 route-policy dispatch surface for deterministic agent workflow selection",
+      "metric_type": "agentic_routing_surface",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Unify graph evidence supports L0 route-policy dispatch surface for deterministic agent workflow selection.",
+      "surface_tokens": [
+        "L0 route-policy dispatch",
+        "deterministic agent workflow selection"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_agentic_multi_agent_orchestration_contract_surface": {
+      "metric_outcome_id": "metric_unify_agentic_multi_agent_orchestration_contract_surface",
+      "metric": "multi-agent orchestration contract surface across propose, execute, and verify handoffs",
+      "metric_type": "multi_agent_orchestration_surface",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Unify graph evidence supports multi-agent orchestration contract surface across propose, execute, and verify handoffs.",
+      "surface_tokens": [
+        "multi-agent orchestration contracts",
+        "propose execute verify handoffs"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_agentic_graphrag_context_pack_grounding_surface": {
+      "metric_outcome_id": "metric_unify_agentic_graphrag_context_pack_grounding_surface",
+      "metric": "GraphRAG context-pack grounding surface for evidence-bound agent outputs",
+      "metric_type": "context_grounding_surface",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Unify graph evidence supports GraphRAG context-pack grounding surface for evidence-bound agent outputs.",
+      "surface_tokens": [
+        "GraphRAG context packs",
+        "evidence-bound agent outputs"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_agentic_tool_sandbox_egress_policy_surface": {
+      "metric_outcome_id": "metric_unify_agentic_tool_sandbox_egress_policy_surface",
+      "metric": "tool sandbox and egress-policy surface for side-effect-bounded agent execution",
+      "metric_type": "sandbox_control_surface",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Unify graph evidence supports tool sandbox and egress-policy surface for side-effect-bounded agent execution.",
+      "surface_tokens": [
+        "tool sandbox controls",
+        "egress-policy surface",
+        "side-effect-bounded execution"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_agentic_runtime_gate_verdict_contract_surface": {
+      "metric_outcome_id": "metric_unify_agentic_runtime_gate_verdict_contract_surface",
+      "metric": "runtime gate verdict contract surface for continue, repair, rollback, and stop decisions",
+      "metric_type": "runtime_gate_contract_surface",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Unify graph evidence supports runtime gate verdict contract surface for continue, repair, rollback, and stop decisions.",
+      "surface_tokens": [
+        "gate verdict contracts",
+        "continue repair rollback stop decisions"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_agentic_human_override_escalation_surface": {
+      "metric_outcome_id": "metric_unify_agentic_human_override_escalation_surface",
+      "metric": "human override and escalation surface for governed agentic workflows",
+      "metric_type": "human_override_surface",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Unify graph evidence supports human override and escalation surface for governed agentic workflows.",
+      "surface_tokens": [
+        "human override paths",
+        "agent escalation surface",
+        "governed workflows"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_agentic_replay_key_audit_manifest_surface": {
+      "metric_outcome_id": "metric_unify_agentic_replay_key_audit_manifest_surface",
+      "metric": "replay-key and audit-manifest surface for reproducible agent execution traces",
+      "metric_type": "audit_manifest_surface",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Unify graph evidence supports replay-key and audit-manifest surface for reproducible agent execution traces.",
+      "surface_tokens": [
+        "replay keys",
+        "audit manifests",
+        "reproducible execution traces"
+      ],
+      "section_eligibility": [
+        "unify_bullets",
+        "unify_narrative",
+        "competencies",
+        "headline"
+      ]
+    },
+    "metric_unify_agentic_runtime_proof_bundle_lineage_surface": {
+      "metric_outcome_id": "metric_unify_agentic_runtime_proof_bundle_lineage_surface",
+      "metric": "runtime proof-bundle lineage surface tying agent outputs to graph evidence",
+      "metric_type": "proof_lineage_surface",
+      "employer": "Unify",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_unify_agentic_platform_architecture"
+      ],
+      "claim_text": "Unify graph evidence supports runtime proof-bundle lineage surface tying agent outputs to graph evidence.",
+      "surface_tokens": [
+        "runtime proof bundles",
+        "graph evidence lineage",
+        "claim-safe output binding"
       ],
       "section_eligibility": [
         "unify_bullets",

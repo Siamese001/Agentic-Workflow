@@ -847,13 +847,13 @@ def run_ibm_narrative_x2_gates(
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
     if (srfs_source_fact_slice_gate_active or proof_pool_metadata) and allowed_fact_ids:
-        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.sections import graph_evidence_contract as _graph_evidence
         from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
             evaluate_proof_pool_source_fact_gate,
             proof_pool_x2_gate_id,
         )
 
-        coll_inr = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
+        coll_inr = _graph_evidence.collect_source_fact_ids_from_claim_ledger(claim_ledger)
         allow_inr = {str(x).strip() for x in allowed_fact_ids if str(x).strip()}
         ok_inr, env_inr, fail_inr = evaluate_proof_pool_source_fact_gate(
             section_id="ibm_narrative",

@@ -153,7 +153,7 @@ def build_unify_role_episode_section_packet(
                 "employer": bundle["employer"],
                 "employer_node_id": bundle["employer_node_id"],
                 "title": bundle.get("title"),
-                "time_window": bundle["time_window"],
+                "time_window": UNIFY_TIME_WINDOW,
                 "graph_skill_node_ids": list(bundle.get("graph_skill_node_ids") or []),
                 "linked_source_fact_ids": list(bundle.get("linked_source_fact_ids") or []),
                 "linked_metric_outcome_ids": list(bundle.get("linked_metric_outcome_ids") or []),
@@ -294,7 +294,7 @@ def format_unify_role_episode_evidence_pack(
         lines = [
             f"{slot_id} | compose_one_bullet_from:",
             f"  role_episode_bundle_id: {bundle_id}",
-            f"  employer: {bundle.get('employer')} | time_window: {bundle.get('time_window')}",
+            f"  employer: {bundle.get('employer')} | time_window: {UNIFY_TIME_WINDOW}",
             f"  allowed_source_fact_ids: {list(bundle.get('linked_source_fact_ids') or []) + [slot_id]}",
             f"  allowed_metric_outcome_ids: {list(bundle.get('linked_metric_outcome_ids') or []) or '(none — qualitative only)'}",
             "  executive_scope_signals:",
@@ -327,7 +327,7 @@ def _format_narrative_bundle_block(bundle_record: dict[str, Any]) -> str:
     bid = bundle_record.get("role_episode_bundle_id", "")
     lines = [
         f"ROLE_EPISODE_BUNDLE {bid}:",
-        f"  employer: {bundle_record.get('employer')} | time_window: {bundle_record.get('time_window')}",
+        f"  employer: {bundle_record.get('employer')} | time_window: {bundle_record.get('time_window') or UNIFY_TIME_WINDOW}",
         f"  graph_skill_node_ids: {bundle_record.get('graph_skill_node_ids')}",
         f"  linked_source_fact_ids: {bundle_record.get('linked_source_fact_ids')}",
         f"  allowed_metric_outcome_ids: {bundle_record.get('linked_metric_outcome_ids')}",

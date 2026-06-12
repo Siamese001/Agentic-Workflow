@@ -65,7 +65,6 @@ def _harness_lane_namespace() -> argparse.Namespace:
         jd_text=lane.JD_TEXT_DEFAULT,
         briefing=lane.BRIEFING_DEFAULT,
         allow_non_allow_exit_zero=True,
-        selected_role_fact_set="",
         base_resume_ref="",
     )
 

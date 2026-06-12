@@ -1296,44 +1296,6 @@ def test_l6_shadow_package_offline_only():
         assert nested.get("actual") is False
 
 
-LEDGER_CONTRACT = REPO_ROOT / "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json"
-TAX_CONTRACT = REPO_ROOT / "apps_rg/config/domain_contract/master_role_family_taxonomy.yaml"
-
-
-@pytest.fixture
-def persisted_selected_role_fact_set_path(tmp_path: Path) -> Path:
-    if not LEDGER_CONTRACT.is_file() or not TAX_CONTRACT.is_file():
-        pytest.skip("SRFS ledger/taxonomy fixture files not present")
-
-    from apps_rg.fact_inventory.candidate_fact_ledger import (
-        load_master_candidate_fact_ledger,
-        load_master_role_family_taxonomy,
-    )
-    from apps_rg.fact_inventory.selected_role_fact_set import (
-        select_candidate_facts_for_role,
-        selected_role_fact_set_to_json_dict,
-    )
-
-    ledger = load_master_candidate_fact_ledger(path=LEDGER_CONTRACT)
-    taxonomy = load_master_role_family_taxonomy(path=TAX_CONTRACT)
-    srfs = select_candidate_facts_for_role(
-        target_company="Acme Labs",
-        target_role="SVP Strategic Alliances kubernetes microservices",
-        jd_text="RevOps forecasting pipeline analytics Salesforce quotas ISV alliances.",
-        briefing_text="C-suite steering for platform modernization.",
-        ledger=ledger,
-        taxonomy=taxonomy,
-        source_ledger_path=str(LEDGER_CONTRACT),
-        taxonomy_ref=str(TAX_CONTRACT),
-        repo_root=REPO_ROOT,
-        now_slug="20260518_CONTRACTTESTEXEC",
-    )
-    payload = selected_role_fact_set_to_json_dict(srfs)
-    p = tmp_path / "selected_role_fact_set_exec_fixture.json"
-    p.write_text(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
-    return p
-
-
 def test_git_diff_agentic_core_is_clean():
     r = subprocess.run(
         ["git", "diff", "HEAD", "--", "agentic_core"],
@@ -1345,85 +1307,8 @@ def test_git_diff_agentic_core_is_clean():
     assert r.returncode == 0, r.stderr
     assert (r.stdout or "").strip() == "", r.stdout
 
-
-def test_x2_srfs_gates_omitted_when_no_selected_role_fact_set():
-    """W4: inactive SRFS must not emit PASS-skip structural gate rows."""
-    from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
-
-    gates = run_x2_gates(
-        resume_display_text="Good. Good second.",
-        parsed_output={"resume_display_text": "Good. Good second."},
-        claim_ledger=[{"claim_text": "Good", "source_fact_ids": ["bul_unify_001"]}],
-        text_claim_coverage={"sentences": [], "overall_pass": False},
-        allowed_fact_ids={"bul_unify_001"},
-        target_company="Synthetic Enterprise Corp.",
-        jd_text="enterprise AI platform leadership",
-        temperature=0.45,
-        runtime_generation_status="REAL_LLM",
-        monolithic_prompt_invoked=False,
-        strategic_tailor_v1_invoked=False,
-    )
-    by_id = {g.gate_id: g for g in gates}
-    for gid in (
-        "x2_srfs_executive_selected_fact_scope",
-        "x2_srfs_blocked_or_confirmation_fact_citation_zero",
-        "x2_srfs_jd_or_briefing_standalone_proof_id_zero",
-        "x2_srfs_claim_business_metrics_substrate",
-        "x2_srfs_display_ledger_percent_parity",
-        "x2_source_sensitive_phrases_supported",
-    ):
-        assert gid not in by_id
-    assert "x2_exec_summary_srfs_sentence_count_4_5" not in by_id
-    assert "x2_exec_summary_srfs_density_word_count" not in by_id
-
-
-def test_compile_exec_summary_srfs_includes_style_oneshot_block():
-    from apps_rg.runtime.dispatch.executive_summary_pa import (
-        SRFS_STYLE_ONESHOT_MARKER,
-        compile_executive_summary_prompt,
-    )
-
-    payload = {
-        "run_id": "rt_slice_srfs_style_compile",
-        "target_title": "SVP Engineering",
-        "target_company": "Unify Consulting",
-        "jd_text": "enterprise AI",
-        "briefing": "regulated enterprise",
-        "allowed_fact_ids": ["fact_a", "fact_b"],
-        "selected_fact_plan": {
-            "section_id": "executive_summary",
-            "facts": [
-                {"fact_id": "fact_a", "claim_text": "Claim a."},
-                {"fact_id": "fact_b", "claim_text": "Claim b."},
-            ],
-            "required_fact_ids": ["fact_a", "fact_b"],
-        },
-        "srfs_integration": {
-            "artifact_path_resolved": str(REPO_ROOT / "artifacts" / "dummy_srfs_path.json"),
-            "selection_id": "sel_rt_slice",
-            "executive_summary_selected_fact_ids": ["fact_a", "fact_b"],
-            "blocked_facts_count": 1,
-            "facts_requiring_human_confirmation_count": 2,
-            "unsupported_jd_needs_count": 0,
-            "blocked_candidate_fact_ids": [],
-            "confirmation_required_candidate_fact_ids": [],
-        },
-    }
-    out = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
-    body = out.artifact.messages[0]["content"]
-    assert SRFS_STYLE_ONESHOT_MARKER in body
-    assert "STYLE_ONLY_NOT_PROOF" in body
-    assert "srfs_governance_required_or_explain" in body
-    assert "SRFS_COMPOSITION_ONESHOT_V1" in body
-    assert "<srfs_composition_oneshot" in body
-    assert "<srfs_style_only_oneshot" in body
-    assert "PRODUCT_SHAPE" in body
-    assert "x2_exec_summary_sentence_count_6" in body
-    assert "x2_exec_summary_no_credential_dump" in body
-
-
-def test_srfs_sentence_responsibility_shape_passes_compliant_six_sentences():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+def test_graph_evidence_sentence_responsibility_shape_passes_compliant_six_sentences():
+    from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
     pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
@@ -1438,20 +1323,20 @@ def test_srfs_sentence_responsibility_shape_passes_compliant_six_sentences():
         "improvement, and disciplined deployment cycles grounded in cited executive facts. "
         "Fellow of the Society of Actuaries reinforces quantitative credibility for regulated enterprise stakeholders."
     )
-    ok, reason = check_srfs_sentence_responsibility_shape(text, pp)
+    ok, reason = check_graph_evidence_sentence_responsibility_shape(text, pp)
     assert ok is True, reason
 
 
-def test_srfs_sentence_responsibility_shape_skipped_without_srfs():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+def test_graph_evidence_sentence_responsibility_shape_skipped_without_retired_selector():
+    from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
-    ok, reason = check_srfs_sentence_responsibility_shape("One. Two. Three.", None)
+    ok, reason = check_graph_evidence_sentence_responsibility_shape("One. Two. Three.", None)
     assert ok is True
     assert reason and "skipped" in reason.lower()
 
 
-def test_srfs_sentence_responsibility_shape_fails_s1_integrating():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+def test_graph_evidence_sentence_responsibility_shape_fails_s1_integrating():
+    from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
     pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
@@ -1461,12 +1346,12 @@ def test_srfs_sentence_responsibility_shape_fails_s1_integrating():
         "Fourth holds measurable outcomes only. "
         "Fifth closes with credibility supported by facts."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
+    ok, _ = check_graph_evidence_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
-def test_srfs_sentence_responsibility_shape_fails_s1_to_improve():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+def test_graph_evidence_sentence_responsibility_shape_fails_s1_to_improve():
+    from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
     pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
@@ -1476,12 +1361,12 @@ def test_srfs_sentence_responsibility_shape_fails_s1_to_improve():
         "Outcomes sentence with revenue facts. "
         "Credibility sentence supported by facts."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
+    ok, _ = check_graph_evidence_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
-def test_srfs_sentence_responsibility_shape_fails_s1_digit():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+def test_graph_evidence_sentence_responsibility_shape_fails_s1_digit():
+    from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
     pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
@@ -1491,12 +1376,12 @@ def test_srfs_sentence_responsibility_shape_fails_s1_digit():
         "Outcomes sentence. "
         "Credibility sentence."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
+    ok, _ = check_graph_evidence_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
-def test_srfs_sentence_responsibility_shape_fails_s2_revenue():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+def test_graph_evidence_sentence_responsibility_shape_fails_s2_revenue():
+    from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
     pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
@@ -1506,12 +1391,12 @@ def test_srfs_sentence_responsibility_shape_fails_s2_revenue():
         "Outcomes would belong here. "
         "Credibility closes here."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
+    ok, _ = check_graph_evidence_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
-def test_srfs_sentence_responsibility_shape_fails_s2_team_scale():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+def test_graph_evidence_sentence_responsibility_shape_fails_s2_team_scale():
+    from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
     pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
@@ -1521,12 +1406,12 @@ def test_srfs_sentence_responsibility_shape_fails_s2_team_scale():
         "Outcomes belong here. "
         "Credibility belongs here."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
+    ok, _ = check_graph_evidence_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
-def test_srfs_sentence_responsibility_shape_fails_s4_fellow_opener():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+def test_graph_evidence_sentence_responsibility_shape_fails_s4_fellow_opener():
+    from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
     pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
@@ -1536,12 +1421,12 @@ def test_srfs_sentence_responsibility_shape_fails_s4_fellow_opener():
         "Fellow of the Society of Actuaries must not lead outcomes. "
         "Closing sentence attempts credibility but structure is already invalid."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
+    ok, _ = check_graph_evidence_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
-def test_srfs_sentence_responsibility_shape_fails_s5_holds_certifications_opener():
-    from apps_rg.runtime.validators.executive_summary_x2 import check_srfs_sentence_responsibility_shape
+def test_graph_evidence_sentence_responsibility_shape_fails_s5_holds_certifications_opener():
+    from apps_rg.runtime.validators.executive_summary_x2 import check_graph_evidence_sentence_responsibility_shape
 
     pp = {"graph_skills_proof_pool": True, "proof_pool_type": "augmented_skills_graph"}
     text = (
@@ -1551,11 +1436,11 @@ def test_srfs_sentence_responsibility_shape_fails_s5_holds_certifications_opener
         "Outcomes sentence reports revenue and margin supported by facts. "
         "Holds certifications in cloud and data platforms for executive delivery."
     )
-    ok, _ = check_srfs_sentence_responsibility_shape(text, pp)
+    ok, _ = check_graph_evidence_sentence_responsibility_shape(text, pp)
     assert ok is False
 
 
-def test_srfs_sentence_responsibility_shape_not_emitted_in_run_x2():
+def test_graph_evidence_sentence_responsibility_shape_not_emitted_in_run_x2():
     from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
     gates = run_x2_gates(
@@ -1572,12 +1457,12 @@ def test_srfs_sentence_responsibility_shape_not_emitted_in_run_x2():
         strategic_tailor_v1_invoked=False,
     )
     by_id = {g.gate_id: g for g in gates}
-    assert "x2_exec_summary_srfs_sentence_responsibility_shape" not in by_id
-    assert "x2_exec_summary_srfs_density_word_count" not in by_id
-    assert "x2_exec_summary_srfs_sentence_count_4_5" not in by_id
+    assert "x2_exec_summary_graph_evidence_sentence_responsibility_shape" not in by_id
+    assert "x2_exec_summary_graph_evidence_density_word_count" not in by_id
+    assert "x2_exec_summary_graph_evidence_sentence_count_4_5" not in by_id
 
 
-def test_x2_sentence_count_6_active_for_srfs_and_non_srfs():
+def test_x2_sentence_count_6_active_for_graph_and_non_graph():
     from apps_rg.runtime.validators.executive_summary_x2 import run_x2_gates
 
     resume = (
@@ -1610,13 +1495,13 @@ def test_x2_sentence_count_6_active_for_srfs_and_non_srfs():
     by_id = {g.gate_id: g for g in gates}
     g6 = by_id["x2_exec_summary_sentence_count_6"]
     assert g6.pass_ is True
-    assert "x2_exec_summary_srfs_sentence_responsibility_shape" not in by_id
+    assert "x2_exec_summary_graph_evidence_sentence_responsibility_shape" not in by_id
 
 
-def test_zz_exec_summary_selected_role_fact_set_cli_smoke_retired() -> None:
-    """W2: legacy CLI --selected-role-fact-set path removed; SRFS compile covered elsewhere."""
+def test_zz_exec_summary_retired_role_fact_selector_cli_smoke_retired() -> None:
+    """Legacy CLI --selected-role-fact-set path removed."""
     pytest.skip(
-        "CLI --selected-role-fact-set removed; see test_compile_exec_summary_srfs_includes_style_oneshot_block"
+        "CLI --selected-role-fact-set removed; graph evidence compile path is covered elsewhere."
     )
 
 

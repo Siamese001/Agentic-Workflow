@@ -132,7 +132,7 @@ def build_insurtech_role_episode_section_packet(
                 "employer": bundle["employer"],
                 "employer_node_id": bundle["employer_node_id"],
                 "title": bundle.get("title"),
-                "time_window": bundle["time_window"],
+                "time_window": INSURTECH_TIME_WINDOW,
                 "bundle_theme": bundle.get("bundle_theme"),
                 "claim_text": bundle.get("claim_text"),
                 "support_level": bundle.get("support_level"),

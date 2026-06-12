@@ -29,6 +29,8 @@ PRIOR_RUNTIME_PROOF: [exec_summary_20260520_094345](artifacts/apps_rg/runtime_pr
 
 **GRAPH_SCOPE_COMPLETE** — Senior-role skills graph phase is **closed** for this plan. Graph taxonomy, pillars/skills/bridge edges, seven archetype fixtures, offline traversal (W14/W14b), and multilane section projection (49/49) are complete. **No** graph, prompt, runtime, or SRFS policy change is required before HITL or minimum runtime proof.
 
+**Scoped supersession note (2026-06-12):** Future typed-edge / role-family traversal design is superseded by [typed-edge-role-facet-guardrails-a6f3d2](../../plans/typed-edge-role-facet-guardrails-a6f3d2.md). This note does **not** reopen or retire the completed Phase 2 graph scope; it preserves this plan as historical proof while moving future traversal design to the successor.
+
 **Plan remainder (non-graph):** W1 HITL, W2a/2b evidence decisions, W3 X2 diagnosis, W4 **runtime** proof, W5 ADR, W6 conditional DRAFT activation, W7 certification.
 
 ---

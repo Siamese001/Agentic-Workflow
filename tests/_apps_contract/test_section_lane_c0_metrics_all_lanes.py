@@ -31,7 +31,6 @@ def _args() -> SimpleNamespace:
         jd_text="Lead platform engineering and agentic systems.",
         briefing="Emphasize regulated delivery.",
         base_resume_ref="",
-        selected_role_fact_set="",
     )
 
 

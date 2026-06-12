@@ -58,7 +58,7 @@ def _high_row(candidate_fact_id: str) -> dict:
 
 
 def _srfs_doc(sections: dict[str, list[dict]]) -> dict:
-    from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS
+    from apps_rg.runtime.sections.graph_evidence_contract import SECTION_KEYS
 
     out = {
         "selection_id": "augmented_skills_graph_contract",

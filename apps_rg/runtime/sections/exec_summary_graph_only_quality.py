@@ -223,7 +223,7 @@ def _metric_ids_for_base(base_id: str, row: dict[str, Any], allowed_fact_ids: se
     ids = [base_id]
     mr = str(row.get("metric_raw") or "").strip()
     if mr:
-        from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
+        from apps_rg.runtime.sections.graph_evidence_contract import metric_derivative_fact_id
 
         mid = metric_derivative_fact_id(base_id, mr)
         if mid in allowed_fact_ids:

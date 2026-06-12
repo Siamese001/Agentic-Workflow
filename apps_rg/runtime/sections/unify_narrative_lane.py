@@ -74,7 +74,7 @@ from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS
 from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
 from apps_rg.runtime.sections.section_product_shape_ssot import NARRATIVE_MAX_CHARS, NARRATIVE_MAX_WORDS
-from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
 
 UNIFY_NARRATIVE_BASE_FACT_ID = "unify_narrative_base_001"
 # C0 / model priority: north-star anchor first, then commercialization + architecture + governance;
@@ -231,9 +231,9 @@ def build_selected_fact_plan(
     }
 
 
-def build_selected_fact_plan_srfs(facts: list[dict[str, Any]]) -> dict[str, Any]:
-    """SRFS-only unify_narrative plan: slice facts only (no synthetic narrative anchor unless present on slice)."""
-    from apps_rg.runtime.sections.selected_role_fact_set import selection_method_for_section
+def build_selected_graph_evidence_plan(facts: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build a graph evidence plan for unify_narrative from already-selected facts."""
+    from apps_rg.runtime.sections.graph_evidence_contract import selection_method_for_section
 
     req = [str(f.get("fact_id") or "").strip() for f in facts if f.get("fact_id")]
     return {
@@ -575,7 +575,7 @@ def run_unify_narrative_execution(
     """Single end-to-end unify_narrative run (qwen_vllm): artifacts + X2/X1D/X3/L6."""
     from apps_rg.runtime.sections.resume_employment_bullets import collect_employment_bullets
     from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
-    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+    from apps_rg.runtime.sections import graph_evidence_contract as _graph_evidence
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="unify_narrative",
@@ -587,7 +587,7 @@ def run_unify_narrative_execution(
         base.get("candidate_name") or (base.get("header") or {}).get("name") or ""
     ).strip()
     unify_header, _, _ = extract_unify_employment(base)
-    unify_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
+    unify_facts = [_graph_evidence.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
     selected_fact_plan = build_selected_fact_plan(
         unify_facts,
         role_narrative=str(unify_header.get("role_narrative") or ""),
@@ -1125,7 +1125,7 @@ def run_unify_narrative_execution(
             ],
         },
     }
-    merge_normalized_srfs_reporting_into_dict(
+    merge_graph_evidence_reporting_into_dict(
         _smr_un,
         section_id="unify_narrative",
         runtime_payload=runtime_payload,

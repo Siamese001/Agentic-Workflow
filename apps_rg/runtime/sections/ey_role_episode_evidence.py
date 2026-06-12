@@ -33,7 +33,7 @@ EY_BULLET_SLOT_IDS: tuple[str, ...] = (
 # Output slots remain presentation ids; claim evidence uses role_episode_bundle_id.
 EY_BULLET_SLOT_BUNDLE_MAP: dict[str, str] = {
     "bul_ey_001": "reb_ey_regulatory_analytics_modernization",
-    "bul_ey_002": "reb_ey_model_validation_regulatory_remediation",
+    "bul_ey_002": "reb_ey_ccar_capital_liquidity_stress_testing",
     "bul_ey_003": "reb_ey_capital_optimization_solvency",
 }
 
@@ -131,7 +131,7 @@ def build_ey_role_episode_section_packet(
                 "employer": bundle["employer"],
                 "employer_node_id": bundle["employer_node_id"],
                 "title": bundle.get("title"),
-                "time_window": bundle["time_window"],
+                "time_window": EY_TIME_WINDOW,
                 "bundle_theme": bundle.get("bundle_theme"),
                 "claim_text": bundle.get("claim_text"),
                 "support_level": bundle.get("support_level"),

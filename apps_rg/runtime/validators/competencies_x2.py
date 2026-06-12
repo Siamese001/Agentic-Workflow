@@ -1088,13 +1088,13 @@ def run_competencies_x2_gates(
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
     if srfs_source_fact_slice_gate_active or proof_pool_metadata:
-        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.sections import graph_evidence_contract as _graph_evidence
         from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
             evaluate_proof_pool_source_fact_gate,
             proof_pool_x2_gate_id,
         )
 
-        coll_co = _srfs_w4.collect_source_fact_ids_from_competencies_struct(competencies, claim_ledger)
+        coll_co = _graph_evidence.collect_source_fact_ids_from_competencies_struct(competencies, claim_ledger)
         ok_co, env_co, fail_co = evaluate_proof_pool_source_fact_gate(
             section_id="competencies",
             collected_ids=coll_co,

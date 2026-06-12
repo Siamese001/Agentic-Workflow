@@ -627,16 +627,6 @@ def _build_parser() -> argparse.ArgumentParser:
             "(each lane enforces its own allowed range)."
         ),
     )
-    p.add_argument(
-        "--selected-role-fact-set",
-        dest="selected_role_fact_set",
-        default="",
-        help=(
-            "Optional path to SelectedRoleFactSet JSON for all generated apps_rg section lanes. "
-            "Section-specific proof slice (headline, competencies, bullets, narratives, executive summary). "
-            "Contract-fixture / dev containment only when graph proof pool is bypassed."
-        ),
-    )
     p.add_argument("--artifact-dir", default="", help="Override artifact output directory")
     # In-process best-of-N pin loop (collapses ops_scripts/apps_rg/best_of_n_section_harness.py).
     # Runs the section pipeline up to N times and stops on the first attempt whose runtime

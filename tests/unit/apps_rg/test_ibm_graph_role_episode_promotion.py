@@ -5,7 +5,7 @@ Covers acceptance criteria for the IBM-only graph promotion + role-episode packa
 - Role episode bundles are employer-bound and schema-valid.
 - Bundles cannot be created from flat skill-only nodes.
 - IBM bullets/narrative cannot consume graph context without role_episode_bundle_id.
-- HOLD / DO NOT PROMOTE metrics are not present in promoted skill facts or bundle promotable_metrics.
+- HOLD / DO NOT PROMOTE metrics are not present in promoted skill facts or linked graph metrics.
 - Archive prose is not embedded in allowed_phrases.
 - Config gate for graph_expansion_allowed is BLOCKED_FOR_CONFIG_ENABLEMENT.
 - No agentic_core diff (import-time assertion).
@@ -21,6 +21,7 @@ REPO = Path(__file__).resolve().parents[3]
 LEDGER_PATH = REPO / "apps_rg" / "fact_inventory" / "master_skills_arsenal_ledger.json"
 BUNDLES_PATH = REPO / "apps_rg" / "fact_inventory" / "ibm_role_episode_bundles.json"
 PROFILE_PATH = REPO / "apps_rg" / "config" / "domain_contract" / "section_retrieval_profile.yaml"
+IBM_TIME_WINDOW = "2017-04 to 2022-10"
 
 # Skill IDs promoted in this wave
 NEWLY_PROMOTED_IBM_SKILLS: tuple[str, ...] = (
@@ -207,12 +208,11 @@ class TestRoleEpisodeBundleSchema:
         )
 
     @pytest.mark.parametrize("bundle_id", EXPECTED_BUNDLE_IDS)
-    def test_bundle_has_time_window(self, bundles: list[dict], bundle_id: str) -> None:
+    def test_bundle_omits_child_time_window(self, bundles: list[dict], bundle_id: str) -> None:
         b = next((x for x in bundles if x.get("role_episode_bundle_id") == bundle_id), None)
         assert b is not None
-        tw = b.get("time_window", "")
-        assert tw, f"{bundle_id} missing time_window"
-        assert "2017" in tw, f"{bundle_id} time_window '{tw}' missing IBM start year"
+        assert "time_window" not in b
+        assert IBM_TIME_WINDOW == "2017-04 to 2022-10"
 
     @pytest.mark.parametrize("bundle_id", EXPECTED_BUNDLE_IDS)
     def test_bundle_has_graph_skill_nodes(self, bundles: list[dict], bundle_id: str) -> None:
@@ -283,40 +283,26 @@ class TestMetricHoldEnforcement:
                     f"{skill_id} allowed_phrases contains forbidden metric '{forbidden}': '{phrase}'"
                 )
 
-    def test_bundles_promotable_metrics_no_forbidden(self, bundles: list[dict]) -> None:
+    def test_bundles_do_not_embed_promotable_metric_copies(self, bundles: list[dict]) -> None:
         for b in bundles:
-            bid = b.get("role_episode_bundle_id", "?")
-            for metric_entry in b.get("promotable_metrics") or []:
-                m = str(metric_entry).upper()
-                for forbidden in HOLD_METRICS:
-                    assert forbidden.upper() not in m, (
-                        f"Bundle {bid}: HOLD metric '{forbidden}' found in promotable_metrics: '{metric_entry}'"
-                    )
-                for forbidden in DO_NOT_PROMOTE_METRICS:
-                    # These should be in excluded_metrics, not promotable_metrics
-                    assert forbidden.upper() not in m, (
-                        f"Bundle {bid}: DO NOT PROMOTE metric '{forbidden}' in promotable_metrics: '{metric_entry}'"
-                    )
+            assert "promotable_metrics" not in b
 
     def test_bundles_held_metrics_are_labeled_hold(self, bundles: list[dict]) -> None:
-        """$15M and $30M must appear in held_metrics, not in promotable_metrics."""
+        """$15M and $30M must remain held, not graph-linked metric evidence."""
         for b in bundles:
-            bid = b.get("role_episode_bundle_id", "?")
-            promotable_str = " ".join(str(m) for m in (b.get("promotable_metrics") or [])).upper()
-            # $15M and $30M must NOT appear in promotable
+            linked_str = " ".join(str(m) for m in (b.get("linked_metric_outcome_ids") or [])).upper()
             for m in ("15M", "30M", "$15", "$30"):
-                assert m.upper() not in promotable_str, (
-                    f"Bundle {bid}: HOLD metric '{m}' found in promotable_metrics"
+                assert m.upper() not in linked_str, (
+                    f"Bundle {b.get('role_episode_bundle_id', '?')}: HOLD metric '{m}' found in linked metrics"
                 )
 
     def test_bundles_do_not_promote_appear_in_excluded(self, bundles: list[dict]) -> None:
-        """25%, 30%, 35%, 40% should not appear in promotable_metrics."""
+        """25%, 30%, 35%, 40% should not appear in graph-linked metric evidence."""
         for b in bundles:
-            bid = b.get("role_episode_bundle_id", "?")
-            promotable_str = " ".join(str(m) for m in (b.get("promotable_metrics") or [])).upper()
+            linked_str = " ".join(str(m) for m in (b.get("linked_metric_outcome_ids") or [])).upper()
             for pct in ("25%", "30%", "35%", "40%"):
-                assert pct not in promotable_str, (
-                    f"Bundle {bid}: DO NOT PROMOTE metric '{pct}' in promotable_metrics"
+                assert pct not in linked_str, (
+                    f"Bundle {b.get('role_episode_bundle_id', '?')}: DO NOT PROMOTE metric '{pct}' in linked metrics"
                 )
 
     def test_skill_forbidden_phrases_include_held_metric_guards(
@@ -422,10 +408,10 @@ class TestRoleEpisodeBundleIDGate:
         assert not is_valid
         assert any("employer" in v for v in violations), f"Expected employer violation. Got: {violations}"
 
-    def test_validate_bundle_rejects_hold_metric_in_promotable(self) -> None:
+    def test_validate_bundle_accepts_graph_linked_metrics_without_promotable_copies(self) -> None:
         from apps_rg.runtime.sections.ibm_graph_role_episode_registry import validate_bundle
         b = {
-            "role_episode_bundle_id": "reb_hold_metric_test",
+            "role_episode_bundle_id": "reb_linked_metric_test",
             "employer": "IBM",
             "employer_node_id": "employment_exp_ibm_001",
             "title": "Test",
@@ -435,16 +421,13 @@ class TestRoleEpisodeBundleIDGate:
             "graph_skill_node_ids": ["skill_x"],
             "linked_source_fact_ids": [],
             "linked_archive_signal_ids": [],
-            "promotable_metrics": ["$15M modernization deals"],  # HOLD metric
+            "linked_metric_outcome_ids": ["metric_ibm_onprem_to_aws_modernization_waves"],
             "operating_context": "ctx",
             "bullet_intent": "intent",
             "section_eligibility": ["ibm_bullets"],
         }
         is_valid, violations = validate_bundle(b)
-        assert not is_valid, "Bundle with HOLD metric in promotable_metrics should fail validation"
-        assert any("15M" in v or "Forbidden metric" in v for v in violations), (
-            f"Expected HOLD metric violation. Got: {violations}"
-        )
+        assert is_valid, violations
 
     def test_all_bundle_files_validate(self, bundles: list[dict]) -> None:
         from apps_rg.runtime.sections.ibm_graph_role_episode_registry import validate_bundle

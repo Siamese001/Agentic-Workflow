@@ -16,7 +16,7 @@ from apps_rg.fact_inventory.p2_graph_skills_accelerated_closeout import (
     write_p2_rebaseline,
     write_p2_w1a_all_sections,
 )
-from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS
+from apps_rg.runtime.sections.graph_evidence_contract import SECTION_KEYS
 from apps_rg.fact_inventory.track_weighted_graph_expansion import ROOT
 from apps_rg.runtime.proof_pool_resolver import resolve_section_proof_pool
 from apps_rg.runtime.validators.graph_skills_proof_common import (

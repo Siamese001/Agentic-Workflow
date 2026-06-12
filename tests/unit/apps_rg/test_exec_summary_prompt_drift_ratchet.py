@@ -57,11 +57,12 @@ def test_compiled_prompt_lists_x2_gates_only_under_product_shape():
     assert "x2_exec_summary_sentence_count_6" in after_ps
 
 
-def test_srfs_oneshot_compact_skips_gate_catalog_and_full_exemplars():
-    from apps_rg.runtime.sections.executive_summary_pa import format_srfs_style_only_quality_oneshot_block
+def test_graph_evidence_style_block_compact_skips_gate_catalog_and_full_exemplars():
+    from apps_rg.runtime.sections.executive_summary_pa import format_graph_evidence_style_quality_block
 
-    block = format_srfs_style_only_quality_oneshot_block()
+    block = format_graph_evidence_style_quality_block()
     assert "srfs_product_shape" not in block
+    assert "<srfs_style_only_oneshot" not in block
     assert "<exemplar_platform_led>" not in block
     assert "PRODUCT_SHAPE" in block
     assert len(block) < 3500

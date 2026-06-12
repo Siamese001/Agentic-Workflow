@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS
+from apps_rg.runtime.sections.graph_evidence_contract import SECTION_KEYS
 from apps_rg.fact_inventory.track_weighted_graph_expansion import ROOT, REPORTS_DIR
 from apps_rg.runtime.proof_pool_resolver import resolve_section_proof_pool
 from apps_rg.runtime.runtime_proof_layout import find_repo_root, lane_root

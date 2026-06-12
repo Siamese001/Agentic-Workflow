@@ -93,7 +93,7 @@ def test_compiled_messages_include_only_payload_facts_and_jd_as_non_proof():
 
 
 def test_no_hard_sentence_count_phrases_in_exec_summary_prompt_sources():
-    """No mandate for exactly two sentences in template; SRFS density may reference 4-or-5 in apps_rg PA only."""
+    """No mandate for exactly two sentences; graph composition owns executive-summary shape."""
     yaml_text = _TEMPLATE.read_text(encoding="utf-8")
     pa_src = (
         REPO_ROOT / "apps_rg" / "runtime" / "sections" / "executive_summary_pa.py"
@@ -103,7 +103,7 @@ def test_no_hard_sentence_count_phrases_in_exec_summary_prompt_sources():
         assert not re.search(r"\b4\s*to\s*5\b", raw, re.IGNORECASE), label
         assert re.search(r"composition_heuristics", raw, re.IGNORECASE), label
     assert "exactly TWO synthesized" not in pa_src
-    assert "SRFS_COMPOSITION_ONESHOT_V1" in pa_src
+    assert "GRAPH_EVIDENCE_COMPOSITION_V1" in pa_src
     assert re.search(r"composition", pa_src, re.IGNORECASE)
 
 
@@ -178,9 +178,9 @@ def test_self_check_fields_list_in_r0_matches_contract():
         assert field in raw
 
 
-def test_compiled_srfs_appendix_contains_pool_and_blocking_rules():
-    """When runtime_payload carries SelectedRoleFactSet integration, appendix + INPUT_AUTHORITY switch."""
-    pool_ids = ["fact_exec_srfs_aa", "fact_exec_srfs_bb"]
+def test_compiled_graph_appendix_contains_pool_and_blocking_rules():
+    """When runtime_payload carries graph evidence metadata, appendix + INPUT_AUTHORITY switch."""
+    pool_ids = ["fact_exec_graph_aa", "fact_exec_graph_bb"]
     payload = _minimal_payload()
     payload["allowed_fact_ids"] = pool_ids
     facts = [{"fact_id": pool_ids[i], "claim_text": f"claim{i}"} for i in range(len(pool_ids))]
@@ -204,33 +204,35 @@ def test_compiled_srfs_appendix_contains_pool_and_blocking_rules():
     out = compile_executive_summary_prompt(payload, run_id=payload["run_id"])
     content = out.artifact.messages[0]["content"]
     assert "GRAPH_PROOF_POOL_APPENDIX" in content
-    assert "fact_exec_srfs_aa" in content and "fact_exec_srfs_bb" in content
+    assert "fact_exec_graph_aa" in content and "fact_exec_graph_bb" in content
     assert "MEDIUM, LOW, and NEEDS_VERIFICATION" in content
     assert "JD_TEXT (targeting only" in content
     assert "NOT PROOF" in content
     assert "unsupported jd themes" in content.lower()
     import apps_rg.runtime.sections.executive_summary_pa as pa
 
-    assert pa.SRFS_STYLE_ONESHOT_MARKER in content
+    assert pa.GRAPH_EVIDENCE_STYLE_MARKER in content
     assert "STYLE_ONLY_NOT_PROOF" in content
     assert "judge_alignment_contract" in content.lower() or "six bullets" in content.lower()
-    assert pa.SRFS_COMPOSITION_ONESHOT_MARKER in content
+    assert pa.GRAPH_EVIDENCE_COMPOSITION_MARKER in content
     assert "PRODUCT_SHAPE" in content
     assert "x2_exec_summary_paragraph_max_words" in content
     assert "72–220" not in content and "72-220" not in content
     assert "x2_exec_summary_sentence_count_6" in content
     assert "x2_exec_summary_no_credential_dump" in content
     assert "x2_exec_summary_no_mechanism_inventory" in content
-    assert "srfs_governance_omission_explained" in content
+    assert "graph_evidence_governance_omission_explained" in content
     assert "credential dump" in content.lower() or "credential_policy_v1" in content
     assert "integrated credibility" in content.lower()
     assert "srfs_product_shape" not in content
+    assert "<srfs_style_only_oneshot" not in content
+    assert "SRFS_BASE_RESUME_STYLE_ONESHOT_V1" not in content
     assert "<exemplar_platform_led>" not in content
     assert "srfs_five_part_exec_architecture" not in content
     assert "srfs_suggested_target_shape" not in content
 
 
-def test_non_srfs_compiled_prompt_includes_judge_alignment_contract():
+def test_capsule_compiled_prompt_includes_judge_alignment_contract_without_graph_style_block():
     payload = _minimal_payload()
     payload["evidence_capsule_active"] = True
     payload["evidence_capsule"] = {
@@ -243,11 +245,11 @@ def test_non_srfs_compiled_prompt_includes_judge_alignment_contract():
     assert "six bullets" in content.lower() or "not six bullets" in content.lower()
     import apps_rg.runtime.dispatch.executive_summary_pa as pa
 
-    assert pa.SRFS_STYLE_ONESHOT_MARKER not in content
+    assert pa.GRAPH_EVIDENCE_STYLE_MARKER not in content
     assert "<srfs_style_only_oneshot" not in content
 
 
-def test_srfs_lane_retry_is_x2_aligned_not_five_part_slots():
+def test_graph_lane_retry_is_x2_aligned_not_five_part_slots():
     import apps_rg.runtime.sections.executive_summary_lane as lane
 
     src = Path(lane.__file__).read_text(encoding="utf-8")
@@ -346,7 +348,7 @@ def test_executive_summary_judge_packet_grade_only_shape():
     assert packet["proof_boundary"]["jd_is_targeting_context_only"] is True
     assert packet["proof_boundary"]["judges_must_not_rewrite"] is True
     assert packet["deterministic_gate_summary"]["x2_exec_summary_paragraph_max_words"]["pass"] is True
-    assert "x2_exec_summary_srfs_density_word_count" not in packet["deterministic_gate_summary"]
+    assert "x2_exec_summary_graph_evidence_density_word_count" not in packet["deterministic_gate_summary"]
     prompt = render_judge_prompt_from_packet(packet)
     assert "GRADE_ONLY" in prompt
     assert "Do NOT write a new executive summary" in prompt

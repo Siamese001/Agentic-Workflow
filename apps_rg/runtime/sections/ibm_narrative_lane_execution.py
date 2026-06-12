@@ -45,7 +45,7 @@ def run_ibm_narrative_lane_execution(
     """Single end-to-end ibm_narrative run: artifacts + X1D/X2/X3/L6."""
     _ensure_helpers_hydrated()
     from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
-    from apps_rg.runtime.sections import selected_role_fact_set as _srfs
+    from apps_rg.runtime.sections import graph_evidence_contract as _graph_evidence
 
     pool, base, base_path, base_hash, front_spine = load_section_proof_for_lane(
         section_id="ibm_narrative",
@@ -57,7 +57,7 @@ def run_ibm_narrative_lane_execution(
         base.get("candidate_name") or (base.get("header") or {}).get("name") or ""
     ).strip()
     ibm_header, _, canon_allowed = extract_ibm_employment(base)
-    ibm_facts = [_srfs.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
+    ibm_facts = [_graph_evidence.plan_fact_to_employment_bullet_row(f) for f in pool.selected_fact_plan.get("facts", [])]
     ibm_facts.sort(
         key=lambda r: IBM_BULLET_IDS.index(r["fact_id"]) if r["fact_id"] in IBM_BULLET_IDS else 99,
     )
@@ -806,7 +806,7 @@ def run_ibm_narrative_lane_execution(
             ],
         },
     }
-    merge_normalized_srfs_reporting_into_dict(
+    merge_graph_evidence_reporting_into_dict(
         _smr_in,
         section_id="ibm_narrative",
         runtime_payload=runtime_payload,

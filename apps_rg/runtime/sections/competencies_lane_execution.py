@@ -818,7 +818,7 @@ def run_competencies_lane_execution(
             ],
         },
     }
-    merge_normalized_srfs_reporting_into_dict(
+    merge_graph_evidence_reporting_into_dict(
         _smr_co,
         section_id="competencies",
         runtime_payload=runtime_payload,

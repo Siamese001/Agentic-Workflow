@@ -27,8 +27,8 @@ SECTION_IDS = (
 )
 
 
-def _srfs_doc(sections: dict[str, list[dict]]) -> dict:
-    from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS
+def _selected_graph_evidence_doc(sections: dict[str, list[dict]]) -> dict:
+    from apps_rg.runtime.sections.graph_evidence_contract import SECTION_KEYS
 
     out = {
         "selection_id": "proof_pool_contract",
@@ -70,13 +70,13 @@ def test_default_resolves_augmented_skills_graph(section_id: str) -> None:
 @pytest.mark.parametrize(
     ("section_id", "prefix"),
     (
-        ("insurtech_bullets", "bul_insurtech_"),
-        ("insurtech_narrative", "bul_insurtech_"),
-        ("ey_bullets", "bul_ey_"),
-        ("ey_narrative", "bul_ey_"),
+        ("insurtech_bullets", "reb_insurtech_"),
+        ("insurtech_narrative", "reb_insurtech_"),
+        ("ey_bullets", "reb_ey_"),
+        ("ey_narrative", "reb_ey_"),
     ),
 )
-def test_role_lanes_resolve_canonical_bullet_namespace(section_id: str, prefix: str) -> None:
+def test_role_lanes_resolve_canonical_graph_evidence_namespace(section_id: str, prefix: str) -> None:
     if not LEDGER_PATH.is_file():
         pytest.skip(f"ledger missing: {LEDGER_PATH}")
     pool = resolve_section_proof_pool(

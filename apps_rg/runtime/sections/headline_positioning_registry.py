@@ -5,7 +5,7 @@ Positioning bundles draw from graph-backed competency capability bundles and gra
 skill nodes; they are the proof authority for the headline. Base headline is calibration
 only; JD/briefing are targeting only; E0 examples are style only.
 
-Phase status: ENABLED_WITH_HEADLINE_POSITIONING_BUNDLE_GUARDS — graph_expansion consumes
+Runtime status: ENABLED_WITH_HEADLINE_POSITIONING_BUNDLE_GUARDS — graph_expansion consumes
 positioning bundles only (never flat skill lists or JD-only phrases).
 """
 from __future__ import annotations

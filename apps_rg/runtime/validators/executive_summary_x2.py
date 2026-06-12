@@ -1460,17 +1460,17 @@ def _selected_facts_support_blob(selected_facts: list[dict[str, Any]] | None) ->
     return " ".join(parts).lower()
 
 
-_SRFS_PERCENT_CAPTURE_RE = re.compile(r"\b(\d+)\s*%")
+_GRAPH_EVIDENCE_PERCENT_CAPTURE_RE = re.compile(r"\b(\d+)\s*%")
 
 
 def _percent_values_from_text(text: str) -> set[str]:
     """Capture N% tokens; avoid trailing \\b after % (fails before punctuation)."""
-    return set(_SRFS_PERCENT_CAPTURE_RE.findall(str(text or "").lower()))
+    return set(_GRAPH_EVIDENCE_PERCENT_CAPTURE_RE.findall(str(text or "").lower()))
 
 
 def _metric_tokens_from_text(text: str) -> list[str]:
     tokens: list[str] = []
-    for m in _SRFS_PERCENT_CAPTURE_RE.findall(str(text or "").lower()):
+    for m in _GRAPH_EVIDENCE_PERCENT_CAPTURE_RE.findall(str(text or "").lower()):
         tokens.append(f"{m}%")
     if "gross margin" in str(text or "").lower():
         tokens.append("gross margin")
@@ -1514,7 +1514,7 @@ def check_raw_json_no_selected_fact_plan_echo(raw_output: str | None) -> tuple[b
 
 
 def check_exec_summary_sentence_count_6(resume_display_text: str) -> tuple[bool, str | None]:
-    """Single product shape: exactly six polished sentences (SRFS and non-SRFS)."""
+    """Single product shape: exactly six polished sentences."""
     sentences = [s for s in split_sentences(resume_display_text) if str(s).strip()]
     n = len(sentences)
     if n != EXEC_SUMMARY_MIN_SENTENCES:
@@ -2019,7 +2019,7 @@ def _resume_word_count(resume_display_text: str) -> int:
     return len(re.findall(r"\S+", str(resume_display_text or "").strip()))
 
 
-def _srfs_lane_no_commercial_org_cred(s: str, label: str) -> str | None:
+def _graph_evidence_lane_no_commercial_org_cred(s: str, label: str) -> str | None:
     """Shared S2/S3 lane: no $, revenue, margin, org scale, credential language, credential-led openers."""
     sl = s.lower()
     if "$" in s:
@@ -2045,7 +2045,7 @@ def _srfs_lane_no_commercial_org_cred(s: str, label: str) -> str | None:
     return None
 
 
-def _srfs_outcomes_sentence_opener_ok(s: str) -> str | None:
+def _graph_evidence_outcomes_sentence_opener_ok(s: str) -> str | None:
     """Outcomes (or combined outcomes+cred) sentence must not lead with credential inventory."""
     st = s.strip()
     if not st:
@@ -2057,7 +2057,7 @@ def _srfs_outcomes_sentence_opener_ok(s: str) -> str | None:
     return None
 
 
-def _srfs_credibility_sentence_opener_ok(s: str) -> str | None:
+def _graph_evidence_credibility_sentence_opener_ok(s: str) -> str | None:
     st = s.strip()
     if not st:
         return "credibility sentence empty"
@@ -2069,19 +2069,19 @@ def _srfs_credibility_sentence_opener_ok(s: str) -> str | None:
     return None
 
 
-# SRFS-only structural gate: five-part arc (thesis / mechanism / lifecycle / outcomes / credibility); no semantics.
-_SRFS_S1_CONNECTOR_PHRASES = (
+# Graph-evidence structural gate: six-sentence arc (thesis / mechanism / lifecycle / bridge / outcomes / credibility).
+_GRAPH_EVIDENCE_S1_CONNECTOR_PHRASES = (
     "to improve",
     "to reduce",
     "to streamline",
 )
-_SRFS_S1_CONNECTOR_WORDS = (
+_GRAPH_EVIDENCE_S1_CONNECTOR_WORDS = (
     "integrating",
     "combining",
     "through",
     "while",
 )
-_SRFS_S1_MECHANISM_TERMS = (
+_GRAPH_EVIDENCE_S1_MECHANISM_TERMS = (
     "microservices",
     "hpc",
     "vector services",
@@ -2092,14 +2092,11 @@ _SRFS_S1_MECHANISM_TERMS = (
 )
 
 
-def check_srfs_sentence_responsibility_shape(
+def check_graph_evidence_sentence_responsibility_shape(
     resume_display_text: str,
     proof_pool_metadata: dict[str, Any] | None = None,
-    *,
-    srfs_integration: dict[str, Any] | None = None,
 ) -> tuple[bool, str | None]:
-    """Graph painting-plan sentence arc (legacy ``srfs_integration`` arg ignored)."""
-    _ = srfs_integration
+    """Graph painting-plan sentence arc."""
     from apps_rg.runtime.sections.executive_summary_composition import (
         check_graph_painting_sentence_responsibility_shape,
     )
@@ -2670,13 +2667,13 @@ def run_x2_gates(
     pp_meta = proof_pool_metadata
     pp_x2_active = bool(pp_meta and str(pp_meta.get("proof_pool_type") or "").strip())
     if pp_x2_active:
-        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.sections import graph_evidence_contract as _graph_evidence
         from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
             evaluate_proof_pool_source_fact_gate,
             proof_pool_x2_gate_id,
         )
 
-        coll_ex = _srfs_w4.collect_source_fact_ids_from_claim_ledger(claim_ledger)
+        coll_ex = _graph_evidence.collect_source_fact_ids_from_claim_ledger(claim_ledger)
         ok_ex, env_ex, fail_ex = evaluate_proof_pool_source_fact_gate(
             section_id="executive_summary",
             collected_ids=coll_ex,

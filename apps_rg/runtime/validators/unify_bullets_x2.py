@@ -908,13 +908,13 @@ def run_unify_bullets_x2_gates(
     from apps_rg.runtime.validators.section_input_usage_x2 import append_section_input_usage_x2_gates
 
     if srfs_source_fact_slice_gate_active or proof_pool_metadata:
-        from apps_rg.runtime.sections import selected_role_fact_set as _srfs_w4
+        from apps_rg.runtime.sections import graph_evidence_contract as _graph_evidence
         from apps_rg.runtime.validators.proof_pool_source_fact_validation import (
             evaluate_proof_pool_source_fact_gate,
             proof_pool_x2_gate_id,
         )
 
-        coll = _srfs_w4.collect_source_fact_ids_from_bullets_and_ledger(parsed_output, claim_ledger)
+        coll = _graph_evidence.collect_source_fact_ids_from_bullets_and_ledger(parsed_output, claim_ledger)
         ok_sl, env_sl, fail_sl = evaluate_proof_pool_source_fact_gate(
             section_id="unify_bullets",
             collected_ids=coll,

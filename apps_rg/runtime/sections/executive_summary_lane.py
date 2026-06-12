@@ -79,7 +79,7 @@ from apps_rg.runtime.sections.executive_summary_proof_bundle import (
     emit_executive_summary_post_x3_proof_artifacts,
     write_executive_summary_artifact_inventory,
 )
-from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
 from apps_rg.runtime.sections.executive_summary_evidence_capsule import _capsule_enabled
 from apps_rg.runtime.sections.executive_summary_targeting_context import (
     freeze_executive_summary_targeting_context,
@@ -634,22 +634,6 @@ def prune_exec_summary_claim_ledger_orphans(
         row["source_fact_ids"] = cleaned
 
 
-def _srfs_join_fragments_as_one_sentence(frags: list[str], *, max_parts: int = 3) -> str:
-    """Join fact-derived fragments so :func:`split_sentences` counts one S4/S5 (SRFS arc)."""
-    parts: list[str] = []
-    for raw in frags[:max_parts]:
-        t = str(raw or "").strip()
-        if not t:
-            continue
-        t = t.rstrip(".!?")
-        if t:
-            parts.append(t)
-    if not parts:
-        return ""
-    body = "; ".join(parts)
-    return (body[0].upper() + body[1:] + ".") if body else ""
-
-
 def _first_sentence_from_prose(chunk: str, *, min_len: int = 40, max_len: int = 320) -> str:
     """One sentence for stub glue: split on first strong period after min_len, else hard-cap."""
     c = " ".join(str(chunk).split()).strip()
@@ -671,10 +655,6 @@ def _fact_body_for_mock_synthesis(claim_text: str) -> str:
     return t
 
 
-def _srfs_active_payload(runtime_payload: dict[str, Any]) -> bool:
-    return False
-
-
 def _proof_pool_mode_from_payload(runtime_payload: dict[str, Any]) -> str:
     from apps_rg.runtime.dispatch.input_authority_prompt_block import proof_pool_mode_from_metadata
 
@@ -682,203 +662,8 @@ def _proof_pool_mode_from_payload(runtime_payload: dict[str, Any]) -> str:
     return proof_pool_mode_from_metadata(pp if isinstance(pp, dict) else None)
 
 
-def _build_mock_output_srfs(runtime_payload: dict[str, Any]) -> dict[str, Any]:
-    """Offline SRFS stub: five-sentence arc, >=95 words when possible, X2 SRFS gates safe."""
-    from apps_rg.runtime.validators.executive_summary_x2 import EXEC_SUMMARY_MAX_WORDS
-
-    facts = list(runtime_payload["selected_fact_plan"]["facts"])
-    claims: list[dict[str, Any]] = []
-    for f in facts:
-        bid = str(f["fact_id"])
-        ids: list[str] = [bid]
-        if f.get("metric_raw"):
-            ids.append(f"{bid}_metric_{sha16(str(f['metric_raw']))[:8]}")
-        raw_ct = str(f.get("claim_text") or "").strip() or bid
-        body = _fact_body_for_mock_synthesis(raw_ct) or raw_ct
-        claims.append({"claim_text": body, "source_fact_ids": ids})
-
-    s1 = (
-        "Engineering executive building production-grade governed AI platforms for regulated enterprise environments."
-    )
-    mech_frags: list[str] = []
-    commercial_frags: list[str] = []
-    cred_frag: str | None = None
-    for c in claims:
-        body = c["claim_text"]
-        bl = body.lower()
-        is_cred = any(
-            x in bl
-            for x in ("fellow", "actuar", "society of actuaries", "aws certified", "databricks", "certification")
-        )
-        is_comm = bool(re.search(r"[\d$]|revenue|margin|million", bl))
-        if is_cred:
-            frag = _first_sentence_from_prose(body)
-            if frag and cred_frag is None:
-                cred_frag = frag
-            continue
-        if is_comm:
-            commercial_frags.append(_first_sentence_from_prose(body) or body)
-            continue
-        frag = (_first_sentence_from_prose(body) or body).rstrip(".")
-        if frag:
-            mech_frags.append(frag)
-
-    mech_join = ", ".join(mech_frags[:3]) if mech_frags else (
-        "deterministic routing, multi-agent orchestration, graph-aware retrieval, validation controls, and traceability"
-    )
-    s2 = (
-        f"Designs and operates governed runtime architectures that combine {mech_join} to improve reliability, "
-        "auditability, and deployment discipline."
-    )
-    s3 = (
-        "Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and "
-        "commercialization, converting delivery work into reusable platform services adopted across enterprise programs."
-    )
-    if commercial_frags:
-        s4 = _srfs_join_fragments_as_one_sentence(commercial_frags[:2])
-        if not s4:
-            s4 = "Captured measurable operating outcomes reflected in the cited executive fact lines."
-    else:
-        s4 = "Delivered measurable engineering and platform outcomes grounded in the selected executive fact set."
-
-    if cred_frag:
-        cf0 = cred_frag.strip()
-        if re.match(r"(?i)^holds\b", cf0):
-            tail = re.sub(r"(?i)^holds\s+", "", cf0).strip().rstrip(".")
-            s5 = (
-                f"Pairs {tail} with quantitative engineering and actuarial discipline grounded in the credential fact lines."
-            )
-        else:
-            s5 = cf0
-        if not s5.endswith((".", "!", "?")):
-            s5 += "."
-    else:
-        s5 = "Brings disciplined ownership across complex programs while keeping claims confined to selected fact proof."
-
-    if s5.strip().lower().startswith("holds certifications"):
-        s5 = (
-            "Professional credentials reinforce delivery credibility for regulated stakeholders when the fact ledger "
-            "supports them."
-        )
-
-    text = f"{s1} {s2} {s3} {s4} {s5}"
-    wc = len(re.findall(r"\S+", text))
-    if wc > EXEC_SUMMARY_MAX_WORDS:
-        s2 = (
-            "Designs and operates governed runtime architectures that combine deterministic routing, multi-agent "
-            "orchestration, graph-aware retrieval, validation controls, and traceability to improve reliability, "
-            "auditability, and deployment discipline."
-        )
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-    if wc > 160 and commercial_frags:
-        cf0 = (commercial_frags[0] or "").strip()
-        if cf0:
-            s4 = cf0[0].upper() + cf0[1:] if len(cf0) > 1 else cf0.upper()
-            if not s4.endswith((".", "!", "?")):
-                s4 += "."
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-    if wc > EXEC_SUMMARY_MAX_WORDS:
-        s4 = "Delivered measurable engineering outcomes grounded in selected executive facts."
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-    if wc > EXEC_SUMMARY_MAX_WORDS:
-        s3 = (
-            "Leads platform lifecycle and commercialization, converting delivery into reusable services across programs."
-        )
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-    if wc > EXEC_SUMMARY_MAX_WORDS:
-        s5 = "Brings disciplined ownership across programs grounded in selected executive facts."
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-    if wc > EXEC_SUMMARY_MAX_WORDS:
-        s4 = "Delivered measurable outcomes grounded in selected facts."
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-
-    pool_small = False
-    if wc < 95:
-        s3 = s3.rstrip()
-        if s3.endswith("."):
-            s3 = (
-                s3[:-1]
-                + ", stressing stakeholder alignment, governed change management, and predictable delivery tempo."
-            )
-        else:
-            s3 += (
-                " The operating model stresses stakeholder alignment, governed change management, and predictable delivery "
-                "tempo."
-            )
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-    if wc < 95:
-        s2 = s2.rstrip()
-        if s2.endswith("."):
-            s2 = (
-                s2[:-1]
-                + ", with additional controls for policy enforcement, evidence retention, and replay-friendly audit traces."
-            )
-        else:
-            s2 += " Additional controls cover policy enforcement, evidence retention, and replay-friendly audit traces."
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-    if wc < 95:
-        pool_small = True
-
-    # Padding for the 95-word floor can push the stub over 140 words; re-trim to satisfy paragraph max words.
-    if wc > EXEC_SUMMARY_MAX_WORDS:
-        s2 = (
-            "Designs governed runtime architectures combining deterministic routing, orchestration, retrieval, "
-            "validation, and traceability to improve reliability and auditability."
-        )
-        s3 = (
-            "Leads platform lifecycle and commercialization across enterprise programs and reusable service adoption."
-        )
-        s4 = "Delivered measurable outcomes grounded in selected executive facts."
-        s5 = "Brings disciplined ownership across programs while respecting the offline contract proof pool."
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-    if wc > EXEC_SUMMARY_MAX_WORDS:
-        s1 = "Engineering executive building governed AI platforms for regulated enterprise environments."
-        text = f"{s1} {s2} {s3} {s4} {s5}"
-        wc = len(re.findall(r"\S+", text))
-    if wc < 95:
-        pool_small = True
-
-    self_check: dict[str, Any] = {
-        "no_first_person": True,
-        "no_inline_source_tags": True,
-        "fit_to_evidence": True,
-    }
-    if pool_small:
-        self_check["selected_fact_pool_too_small"] = True
-        self_check["selected_fact_pool_too_small_reason"] = "offline_srfs_mock_compact_facts"
-
-    return {
-        "executive_strategy_thesis": (
-            "Technology strategy executive aligning governed AI platforms, regulatory lineage, and "
-            "commercialization into one enterprise IT direction for regulated programs."
-        ),
-        "resume_display_text": text,
-        "claim_ledger": claims,
-        "jd_alignment": {
-            "targeting_only": True,
-            "jd_used_as_proof": False,
-            "briefing_used_as_proof": False,
-            "companion_context_used_as_proof": False,
-        },
-        "gap_notes": [],
-        "change_log": [{"operation": "offline_contract_stub", "reason": "APPS_RG_QWEN_OFFLINE_CONTRACT_STUB_SRFS"}],
-        "self_check": self_check,
-    }
-
-
 def build_mock_output(runtime_payload: dict[str, Any]) -> dict[str, Any]:
     """Offline-contract stub: five- or six-sentence executive paragraph (same product shape as live)."""
-    if _srfs_active_payload(runtime_payload):
-        return _build_mock_output_srfs(runtime_payload)
     facts = list(runtime_payload["selected_fact_plan"]["facts"])
     claims: list[dict[str, Any]] = []
     for f in facts:
@@ -2823,7 +2608,7 @@ def run_executive_summary_execution(
     from apps_rg.runtime.product_evidence_authority import x2_proof_pool_gate_flags
 
     pp_x2 = runtime_payload.get("proof_pool_metadata") or proof_pool_metadata or {}
-    proof_pool_x2_active, _srfs_slice_x2_active = x2_proof_pool_gate_flags(pp_x2)
+    proof_pool_x2_active, _legacy_slice_x2_active = x2_proof_pool_gate_flags(pp_x2)
 
     x2 = [
         g.to_dict()
@@ -4166,7 +3951,7 @@ def run_executive_summary_execution(
         "c03_sqlite_attach_status": str((proof_pool_metadata or {}).get("c03_sqlite_attach_status") or ""),
         "canonical_c0_3_claimed": False,
     }
-    merge_normalized_srfs_reporting_into_dict(
+    merge_graph_evidence_reporting_into_dict(
         _smr_es,
         section_id="executive_summary",
         runtime_payload=runtime_payload,

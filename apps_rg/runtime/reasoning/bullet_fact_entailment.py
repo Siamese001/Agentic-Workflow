@@ -12,8 +12,8 @@ Corpus provenance: strictly ``runtime_payload["selected_fact_plan"]`` (C0-pool f
 slot's role-episode-bundle NON-metric text.
 
 Shared-bundle metric-leak restriction (closeout2 evidence): ibm slots bul_ibm_001-003
-share ``reb_ibm_technical_presales_gtm``, whose ``linked_metric_outcome_ids`` /
-``promotable_metrics`` carry "$10M ARR"-class tokens. Including those bundle metric
+share ``reb_ibm_technical_presales_gtm``, whose ``linked_metric_outcome_ids``
+carry "$10M ARR"-class tokens. Including those bundle metric
 fields in every sharing slot's corpus would entail cross-slot metric drift — the exact
 failure this filter exists to stop. Metric-magnitude authority is therefore restricted to
 the slot's OWN fact ``claim_text`` + ``metric_raw``; bundle text contributes only the
@@ -67,7 +67,7 @@ _SCALE_SUFFIXES = {
 }
 
 # Bundle fields admitted into the slot corpus. Deliberately EXCLUDES the metric-bearing
-# fields (linked_metric_outcome_ids, promotable_metrics, held_metrics, excluded_metrics,
+# fields (linked_metric_outcome_ids, held_metrics, excluded_metrics,
 # notes) — see shared-bundle metric-leak restriction in the module docstring.
 _BUNDLE_NON_METRIC_TEXT_FIELDS = ("title", "time_window", "operating_context", "bullet_intent")
 _BUNDLE_NON_METRIC_LIST_FIELDS = ("executive_scope_signals", "architecture_scope_signals")

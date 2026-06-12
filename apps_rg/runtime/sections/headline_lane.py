@@ -100,7 +100,7 @@ from apps_rg.runtime.validators.headline_x2 import (
 )
 from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
-from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
 
 PROMPT_ID = "headline_section_v1"
 HEADLINE_TEMP_DEFAULT = 0.55
@@ -2069,7 +2069,7 @@ def run_headline_execution(
             ],
         },
     }
-    merge_normalized_srfs_reporting_into_dict(
+    merge_graph_evidence_reporting_into_dict(
         _smr_h,
         section_id="headline",
         runtime_payload=runtime_payload,
@@ -2264,7 +2264,6 @@ def build_headline_lane_args(
     jd_text: str,
     briefing: str,
     base_resume_ref: str = "",
-    selected_role_fact_set: str = "",
 ) -> SimpleNamespace:
     return SimpleNamespace(
         provider=str(provider).strip() or "external_claude",
@@ -2278,7 +2277,6 @@ def build_headline_lane_args(
         jd_text=str(jd_text).strip() or JD_TEXT_DEFAULT,
         briefing=str(briefing).strip() or BRIEFING_DEFAULT,
         base_resume_ref=str(base_resume_ref or ""),
-        selected_role_fact_set=str(selected_role_fact_set or ""),
     )
 
 

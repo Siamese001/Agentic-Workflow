@@ -540,7 +540,7 @@ def protected_fact_ids_from_payload(runtime_payload: dict[str, Any]) -> set[str]
                 ids.add(fid)
             metric = str(fact.get("metric_raw") or "").strip()
             if fid and metric:
-                from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
+                from apps_rg.runtime.sections.graph_evidence_contract import metric_derivative_fact_id
 
                 ids.add(metric_derivative_fact_id(fid, metric))
     return ids

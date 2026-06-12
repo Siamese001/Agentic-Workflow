@@ -76,7 +76,7 @@ from apps_rg.runtime.shadow.unify_bullets_l6 import build_l6_shadow_package, ext
 from apps_rg.runtime.briefing_resolution import resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import resolve_jd_for_lanes
 from apps_rg.runtime.sections.executive_summary_lane import resolve_provider_model_name, write_x2_gate_outputs
-from apps_rg.runtime.sections.selected_role_fact_set import merge_normalized_srfs_reporting_into_dict
+from apps_rg.runtime.sections.graph_evidence_contract import merge_graph_evidence_reporting_into_dict
 from apps_rg.runtime.validators.fact_id_typo_repair import (
     repair_fact_id_against_allowlist,
     repair_unify_bullet_surface_id,
@@ -1349,7 +1349,7 @@ def run_unify_bullets_execution(
         "proof_eligible": proof_bundle["proof_eligible"],
         "judge_proof_eligible": proof_bundle["judge_proof_eligible"],
     }
-    merge_normalized_srfs_reporting_into_dict(
+    merge_graph_evidence_reporting_into_dict(
         _smr_ub,
         section_id="unify_bullets",
         runtime_payload=runtime_payload,

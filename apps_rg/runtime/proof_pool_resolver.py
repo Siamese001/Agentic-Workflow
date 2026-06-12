@@ -20,24 +20,19 @@ from apps_rg.fact_inventory.candidate_fact_ledger import (
     load_master_candidate_fact_ledger,
     load_master_role_family_taxonomy,
 )
-from apps_rg.fact_inventory.selected_role_fact_set import (
-    SECTION_KEYS,
-    SelectedLedgerFactSlice,
-    select_candidate_facts_for_role,
-)
 from apps_rg.runtime.resume_resolution import ResumeResolutionError, load_lane_base_resume_json
 from apps_rg.fact_inventory.augmented_skills_graph import (
     CLAIM_EVIDENCE_SOURCE_TYPE_AUGMENTED_SKILLS_GRAPH,
     CLAIM_EVIDENCE_SOURCE_TYPE_BASE_RESUME,
     CLAIM_EVIDENCE_SOURCE_TYPE_CANDIDATE_FACT_LEDGER,
-    CLAIM_EVIDENCE_SOURCE_TYPE_SRFS,
     claim_evidence_fields,
     load_augmented_skills_graph,
     merge_dual_source_proof_pool_metadata,
     resolve_augmented_skills_graph_authority,
 )
 from apps_rg.runtime.legacy_proof_sources import PROOF_SOURCE_BROAD_SKILLS_LEDGER
-from apps_rg.runtime.sections.selected_role_fact_set import (
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    SECTION_KEYS,
     build_allowed_fact_ids_for_plan_facts,
     graph_only_proof_pool_metadata,
     plan_fact_to_employment_bullet_row,
@@ -152,7 +147,9 @@ def _ledger_path_explicit(path: str | None, *, repo_root: Path) -> Path:
     return default_ledger_path(repo_root)
 
 
-def _slice_to_plan_fact(sl: SelectedLedgerFactSlice, *, section_id: str) -> dict[str, Any]:
+def _slice_to_plan_fact(sl: Any, *, section_id: str) -> dict[str, Any]:
+    if isinstance(sl, dict):
+        return slice_row_to_plan_fact(sl, section_id=section_id)
     row = {
         "candidate_fact_id": sl.candidate_fact_id,
         "claim_text": sl.claim_text,
@@ -304,28 +301,17 @@ def _resolve_executive_summary_graph_only_proof_pool(
     graph_ref = str(graph_auth.get("graph_ref") or "")
     graph_digest = str(graph_auth.get("graph_digest") or "")
 
-    srfs = select_candidate_facts_for_role(
-        target_company=target_company,
+    from apps_rg.runtime.sections.graph_role_episode_selector import (
+        build_selected_graph_evidence_plan_for_section,
+    )
+
+    plan, ordered, allowed = build_selected_graph_evidence_plan_for_section(
+        repo_root=root,
+        section_id="executive_summary",
         target_role=target_role,
         jd_text=jd_text,
         briefing_text=briefing_text,
-        ledger=ledger,
-        taxonomy=taxonomy,
-        source_ledger_path=str(ledger_path),
-        taxonomy_ref=str(tax_path),
     )
-    exec_slices = list(srfs.selected_facts_by_section.get("executive_summary") or [])
-    if not exec_slices:
-        raise ValueError("executive_summary graph-only: arsenal allocation produced empty slice")
-
-    facts = [_slice_to_plan_fact(sl, section_id="executive_summary") for sl in exec_slices]
-    plan = {
-        "section_id": "executive_summary",
-        "selection_method": "augmented_skills_graph_c03_graphrag",
-        "facts": facts,
-        "required_fact_ids": [str(f.get("fact_id") or "") for f in facts if f.get("fact_id")],
-    }
-    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
     plan = _sanitize_plan(plan)
     plan = _maybe_apply_hybrid_informed_fact_plan_reorder(
         plan,
@@ -336,8 +322,8 @@ def _resolve_executive_summary_graph_only_proof_pool(
         target_role=target_role,
     )
     facts = list(plan.get("facts") or [])
-    ordered = [str(f.get("fact_id") or "") for f in facts if f.get("fact_id")]
-    allowed = set(ordered)
+    root_fact_ids = [str(f.get("fact_id") or "") for f in facts if f.get("fact_id")]
+    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
     bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
 
     from apps_rg.fact_inventory.track_weighted_graph_expansion import (
@@ -357,7 +343,7 @@ def _resolve_executive_summary_graph_only_proof_pool(
         role_family_key=role_family_key,
         jd_text=jd_text,
         briefing_text=briefing_text,
-        seed_fact_ids=ordered,
+        seed_fact_ids=root_fact_ids,
         enforce_hybrid_contract=False,
         bind_c03=True,
         repo_root=root,
@@ -368,7 +354,7 @@ def _resolve_executive_summary_graph_only_proof_pool(
         graph=graph,
         graph_ref=graph_ref,
         graph_digest=graph_digest,
-        selected_fact_ids=ordered,
+        selected_fact_ids=root_fact_ids,
         role_family_key=role_family_key,
         attach_sqlite_context=True,
         repo_root=root,
@@ -406,6 +392,7 @@ def _resolve_executive_summary_graph_only_proof_pool(
         legacy_ledger_ref=ledger_ref_str,
     )
     meta = {**meta, **graph_auth}
+    meta["selected_graph_evidence_plan"] = plan
     meta["broad_skills_ledger_default"] = False
     meta["broad_skills_ledger_fallback"] = False
     meta["broad_skills_ledger_compatibility_authority"] = False
@@ -563,6 +550,7 @@ def _resolve_generic_section_graph_skills_proof_pool(
         taxonomy_path=tax_path,
     )
     facts = list(plan.get("facts") or [])
+    root_fact_ids = [str(f.get("fact_id") or "") for f in facts if f.get("fact_id")]
     bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
 
     c03_doc = build_section_c03_graphrag_bound(
@@ -570,7 +558,7 @@ def _resolve_generic_section_graph_skills_proof_pool(
         graph=graph,
         graph_ref=graph_ref,
         graph_digest=graph_digest,
-        selected_fact_ids=ordered,
+        selected_fact_ids=root_fact_ids,
     )
     c03_status = str(c03_doc.get("c03_graphrag_bound_status") or "NOT_BOUND")
     if int(c03_doc.get("non_graph_evidence_items_count") or 0) > 0:
@@ -584,6 +572,7 @@ def _resolve_generic_section_graph_skills_proof_pool(
         legacy_ledger_ref=ledger_ref_str,
     )
     meta = {**meta, **graph_auth}
+    meta["selected_graph_evidence_plan"] = plan
     meta["graph_skills_proof_pool"] = True
     meta["graph_skills_proof_pool_wave"] = "P2-ACCELERATED"
     meta["broad_skills_ledger_default"] = False
@@ -724,6 +713,19 @@ def _resolve_competencies_graph_skills_proof_pool(
     ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
     bullet_rows = [plan_fact_to_employment_bullet_row(f) for f in facts]
 
+    from apps_rg.runtime.sections.graph_role_episode_selector import (
+        build_selected_graph_evidence_plan_for_section,
+    )
+
+    selected_graph_plan, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=root,
+        section_id="competencies",
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+    )
+    selected_graph_plan = _sanitize_plan(selected_graph_plan)
+
     graph_ref = str(payload.get("graph_source") or graph_auth.get("graph_ref") or "")
     graph_digest = str(graph_auth.get("graph_digest") or "")
     ledger_path = default_ledger_path(root)
@@ -743,6 +745,17 @@ def _resolve_competencies_graph_skills_proof_pool(
         legacy_ledger_ref=ledger_ref_str,
     )
     meta = {**meta, **graph_auth}
+    meta["selected_graph_evidence_plan"] = selected_graph_plan
+    meta["graph_evidence_selection_method"] = selected_graph_plan.get("selection_method")
+    meta["selected_graph_skill_rows"] = selected_graph_plan.get("selected_skills") or []
+    meta["selected_graph_skill_count_by_employer"] = (
+        (selected_graph_plan.get("skew_diagnostics") or {}).get("selected_skill_counts_by_employer")
+        or {}
+    )
+    meta["selected_graph_metric_count_by_employer"] = (
+        (selected_graph_plan.get("skew_diagnostics") or {}).get("selected_metric_counts_by_employer")
+        or {}
+    )
     meta["graph_skills_proof_pool"] = True
     meta["graph_skills_proof_pool_wave"] = "P2-W1A"
     meta["competencies_product_authority"] = "augmented_skills_graph"
@@ -816,7 +829,6 @@ def _resolve_competencies_graph_skills_proof_pool(
 def resolve_section_proof_pool(
     *,
     section: str,
-    selected_role_fact_set_path: str | None = None,
     broad_skills_ledger_path: str | None = None,
     base_resume_ref: str | None = None,
     target_company: str = "",
@@ -834,7 +846,6 @@ def resolve_section_proof_pool(
     legacy_broad_skills_ledger: bool = False,
 ) -> SectionProofPool:
     """Resolve claim-support proof pool for a canonical section lane."""
-    _ = selected_role_fact_set_path  # legacy containment fixtures; graph authority is SSOT
     from apps_rg.runtime.spine.front_contracts import (
         assert_proof_pool_front_spine_preconditions,
     )

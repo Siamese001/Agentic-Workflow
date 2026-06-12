@@ -227,7 +227,7 @@ def enrich_allowed_fact_packet_for_judges(
     from apps_rg.runtime.sections.executive_summary_synthesis_contract import (
         FACT_C0_DISPLAY_OVERRIDES,
     )
-    from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
+    from apps_rg.runtime.sections.graph_evidence_contract import metric_derivative_fact_id
 
     bindings_by_fact = _bindings_by_fact_id(list(graph_bindings or []))
     by_id: dict[str, dict[str, Any]] = {

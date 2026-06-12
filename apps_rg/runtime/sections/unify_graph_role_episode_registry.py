@@ -4,7 +4,7 @@ Loads unify_role_episode_bundles.json and exposes typed accessors plus guards. E
 the role_episode_bundle_id gating invariant: unify_bullets/unify_narrative may only consume
 graph context when a role_episode_bundle_id is explicitly bound, not from flat skill lists.
 
-Phase status: ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS — graph_expansion consumes bundles only.
+Runtime status: ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS — graph_expansion consumes bundles only.
 """
 from __future__ import annotations
 
@@ -32,7 +32,6 @@ REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
     "role_episode_bundle_id",
     "employer",
     "title",
-    "time_window",
     "employer_node_id",
     "executive_scope_signals",
     "architecture_scope_signals",
@@ -47,10 +46,31 @@ REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
 
 # Approved & linked metric outcome ids (allow-list for metric-bearing claims).
 APPROVED_METRIC_OUTCOME_IDS: tuple[str, ...] = (
+    "metric_unify_policy_gated_agent_execution_surface",
+    "metric_unify_replayable_runtime_traceability",
+    "metric_unify_agentic_l0_route_policy_dispatch_surface",
+    "metric_unify_agentic_multi_agent_orchestration_contract_surface",
+    "metric_unify_agentic_graphrag_context_pack_grounding_surface",
+    "metric_unify_agentic_tool_sandbox_egress_policy_surface",
+    "metric_unify_agentic_runtime_gate_verdict_contract_surface",
+    "metric_unify_agentic_human_override_escalation_surface",
+    "metric_unify_agentic_replay_key_audit_manifest_surface",
+    "metric_unify_agentic_runtime_proof_bundle_lineage_surface",
+    "metric_unify_dependency_graph_refactor_blast_radius_visibility",
+    "metric_unify_semantic_edge_refactor_governance_controls",
+    "metric_unify_eval_telemetry_rollback_control_set",
+    "metric_unify_audit_grade_runtime_observability_coverage",
+    "metric_unify_production_readiness_gate_set",
     "metric_unify_22m_ip_led_revenue",
     "metric_unify_20pct_gross_margin_expansion",
     "metric_unify_team_scaled_8_to_28",
     "metric_unify_cycle_six_months_to_three_weeks",
+    "metric_unify_cloud_data_runtime_integration_patterns",
+    "metric_unify_high_availability_distributed_service_patterns",
+    "metric_unify_partner_cosell_solution_motion_count",
+    "metric_unify_partner_enablement_asset_set",
+    "metric_unify_cfo_aligned_adoption_motion_count",
+    "metric_unify_consumption_renewal_signal_instrumentation",
 )
 
 # Conditional — only if already canonical and linked; HOLD by default.
@@ -108,8 +128,6 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
         violations.append(
             f"employer_node_id must be '{UNIFY_EMPLOYER_NODE_ID}', got {bundle.get('employer_node_id')!r}"
         )
-    if not bundle.get("time_window"):
-        violations.append("time_window is required and must not be empty")
     if not bundle.get("graph_skill_node_ids"):
         violations.append("graph_skill_node_ids must not be empty")
     # Source fact lineage OR explicit internal-only classification with graph nodes.

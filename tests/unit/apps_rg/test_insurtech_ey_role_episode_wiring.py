@@ -36,7 +36,7 @@ def test_all_bundles_pass_their_registry_validator(reg) -> None:
     "build,section,n",
     [
         (build_insurtech_role_episode_section_packet, "insurtech_bullets", 12),
-        (build_ey_role_episode_section_packet, "ey_bullets", 6),
+        (build_ey_role_episode_section_packet, "ey_bullets", 5),
     ],
 )
 def test_packet_nonempty_with_bound_skills(build, section, n) -> None:

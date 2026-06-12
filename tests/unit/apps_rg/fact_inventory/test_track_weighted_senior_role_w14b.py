@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from apps_rg.fact_inventory.selected_role_fact_set import infer_role_family_priorities
+from apps_rg.fact_inventory.role_family_selection import infer_role_family_priorities
 from apps_rg.fact_inventory.track_weighted_graph_expansion import (
     ROLE_FAMILY_TRACK_WEIGHTS,
     SENIOR_ROLE_TAXONOMY_IDS,

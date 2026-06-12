@@ -528,9 +528,9 @@ def test_proof_pool_x2_gate_id_is_active_pool_only() -> None:
 
 
 def test_normalized_reporting_never_marks_srfs_authority() -> None:
-    from apps_rg.runtime.sections.selected_role_fact_set import normalized_srfs_section_reporting_fields
+    from apps_rg.runtime.sections.graph_evidence_contract import normalized_graph_evidence_reporting_fields
 
-    fields = normalized_srfs_section_reporting_fields(
+    fields = normalized_graph_evidence_reporting_fields(
         section_id="headline",
         runtime_payload={
             "proof_pool_metadata": {

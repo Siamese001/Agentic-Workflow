@@ -9,7 +9,7 @@ from apps_rg.fact_inventory.candidate_fact_ledger import (
     load_master_candidate_fact_ledger,
     load_master_role_family_taxonomy,
 )
-from apps_rg.fact_inventory.selected_role_fact_set import SECTION_KEYS, select_candidate_facts_for_role
+from apps_rg.runtime.sections.graph_evidence_contract import SECTION_KEYS
 from apps_rg.runtime.sections.unify_bullets_graph_evidence import _UNIFY_METRIC_LEDGER_IDS
 
 GRAPH_SKILLS_AUTHORITY_SECTIONS: frozenset[str] = frozenset(SECTION_KEYS)
@@ -35,8 +35,8 @@ _SECTION_MIN_FACTS: dict[str, int] = {
     "unify_narrative": 6,
     "insurtech_bullets": 12,
     "insurtech_narrative": 12,
-    "ey_bullets": 6,
-    "ey_narrative": 6,
+    "ey_bullets": 5,
+    "ey_narrative": 5,
 }
 
 _ROLE_BUNDLE_FILE_BY_SECTION: dict[str, str] = {
@@ -76,7 +76,7 @@ def _graph_substrate_company_hint_plan(
             "company_hint allocation is forbidden for unify_bullets; "
             "use augmented_skills_graph_unify_bullets_track_ranked"
         )
-    from apps_rg.runtime.sections.selected_role_fact_set import slice_row_to_plan_fact
+    from apps_rg.runtime.sections.graph_evidence_contract import slice_row_to_plan_fact
 
     from apps_rg.runtime.proof_pool_resolver import _stamp_unify_canonical_bullet_ids
 
@@ -151,7 +151,7 @@ def _role_episode_bundle_plan(
         "required_fact_ids": [str(f["fact_id"]) for f in facts],
         "role_episode_bundle_fallback": True,
     }
-    from apps_rg.runtime.sections.selected_role_fact_set import build_allowed_fact_ids_for_plan_facts
+    from apps_rg.runtime.sections.graph_evidence_contract import build_allowed_fact_ids_for_plan_facts
 
     ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
     return {k: v for k, v in plan.items() if not str(k).startswith("_")}, ordered, allowed
@@ -192,7 +192,7 @@ def _graph_ranked_unify_bullets_plan(
         infer_projection_role_family_key,
     )
     from apps_rg.runtime.proof_pool_resolver import _stamp_unify_canonical_bullet_ids
-    from apps_rg.runtime.sections.selected_role_fact_set import slice_row_to_plan_fact
+    from apps_rg.runtime.sections.graph_evidence_contract import slice_row_to_plan_fact
 
     unify_rows = _ledger_rows_matching_company_hints(ledger, ("unify",))
     if not unify_rows:
@@ -469,17 +469,6 @@ def allocate_section_facts_from_graph_substrate(
         if bundled is not None:
             return bundled
 
-    srfs = select_candidate_facts_for_role(
-        target_company=target_company,
-        target_role=target_role,
-        jd_text=jd_text,
-        briefing_text=briefing_text,
-        ledger=ledger,
-        taxonomy=taxonomy,
-        source_ledger_path=str(ledger_path),
-        taxonomy_ref=str(taxonomy_path),
-    )
-    slice_rows = list(srfs.selected_facts_by_section.get(section_id) or [])
     hints = _SECTION_COMPANY_HINTS.get(section_id)
 
     def _hint_if_sufficient() -> tuple[dict[str, Any], list[str], set[str]] | None:
@@ -501,42 +490,19 @@ def allocate_section_facts_from_graph_substrate(
             return None
         return plan, ordered, allowed
 
-    if not slice_rows:
-        hinted = _hint_if_sufficient()
-        if hinted is not None:
-            return hinted
-        bundled = _role_episode_bundle_plan(
-            section_id=section_id,
-            repo_root=repo_root,
-            limit=min_required or 3,
-        )
-        if bundled is not None:
-            return bundled
-        raise ValueError(f"graph-skills allocation produced empty slice for {section_id!r}")
+    from apps_rg.runtime.sections.graph_role_episode_selector import (
+        build_selected_graph_evidence_plan_for_section,
+    )
 
-    facts = [_slice_to_plan_fact(sl, section_id=section_id) for sl in slice_rows]
-    if min_required and len(facts) < min_required:
-        hinted = _hint_if_sufficient()
-        if hinted is not None:
-            return hinted
-        bundled = _role_episode_bundle_plan(
-            section_id=section_id,
-            repo_root=repo_root,
-            limit=min_required or 3,
-        )
-        if bundled is not None:
-            return bundled
-        raise ValueError(
-            f"graph-skills allocation insufficient for {section_id!r}: {len(facts)} < {min_required}"
-        )
-    plan = {
-        "section_id": section_id,
-        "selection_method": f"augmented_skills_graph_{section_id}",
-        "facts": facts,
-        "required_fact_ids": [str(f.get("fact_id") or "") for f in facts if f.get("fact_id")],
-    }
-    plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
-    return _sanitize_plan(plan), ordered, allowed
+    graph_plan = build_selected_graph_evidence_plan_for_section(
+        repo_root=repo_root,
+        section_id=section_id,
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        limit=min_required or None,
+    )
+    return _sanitize_plan(graph_plan[0]), graph_plan[1], graph_plan[2]
 
 
 __all__ = [

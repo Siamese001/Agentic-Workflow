@@ -1,7 +1,7 @@
 {
-  "schema": "ey_role_episode_bundles_v3_graph_metric_ssot_no_typed_edges",
+  "schema": "ey_role_episode_bundles_v4_five_roots_bundle_to_skill_edge_policy",
   "generated_at": "2026-06-12T00:00:00Z",
-  "generated_by": "codex_graph_metric_ssot_upgrade",
+  "generated_by": "codex_ey_five_root_bundle_to_skill_edge_policy",
   "employer": "Ernst & Young",
   "employer_node_id": "employment_exp_ey_001",
   "time_window": "2009-10 to 2014-03",
@@ -18,46 +18,22 @@
     "metric_candidates_not_claimable": true,
     "metric_claim_truth_source": "metric_outcome_nodes",
     "skill_truth_source": "graph_skill_node_ids",
-    "typed_edges_deferred_to_phase_ii": true,
-    "typed_edge_fields_forbidden_phase_i": true,
-    "graph_edge_contract_excluded_phase_i": true,
     "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
     "config_enablement_condition": "ey_bullets and ey_narrative graph_expansion_allowed may be enabled only when section generation consumes role_episode_bundle_id, not flat skill lists.",
     "identity_source": "employment identity spine exp_ey_001 supplies company/title/location/dates only; role_episode_bundle_id supplies graph claim authority.",
     "metric_approval_model": "presence_in_metric_outcome_nodes_is_approval",
     "no_separate_approved_fact_distinction": true,
-    "metric_density_rule": "approved EY roots carry differentiated linked metric_outcome_ids; held numeric claims remain excluded"
-  },
-  "phase_plan": {
-    "phase_i": "complete EY role_episode_bundles without typed edges",
-    "phase_ii": "add typed edges after employer graphs are approved",
-    "phase_iii": "test approved Phase II graphs with sliding-scale role weighting"
+    "metric_density_rule": "approved EY roots carry differentiated linked metric_outcome_ids; held numeric claims remain excluded",
+    "chronology_policy": "employer_scope_only; graph evidence nodes do not carry time_window as claim authority",
+    "typed_edge_policy": "excluded",
+    "edge_model": "bundle_to_skill_only",
+    "graph_edge_contract_policy": "excluded_until_typed_edge_model_adopted"
   },
   "excluded_metrics_by_policy": [
     "Do not claim $15M transformation program without source artifact.",
     "Do not claim 40% audit remediation cost reduction without source artifact.",
     "Do not claim 12% redundant capital reduction without source artifact.",
-    "Do not use generic CCAR, model validation, Guidewire, or ERM counts without source-backed denominator."
-  ],
-  "promotable_metrics": [
-    "metric_ey_regulatory_lineage_domains_count",
-    "metric_ey_predictive_risk_use_cases_count",
-    "metric_ey_audit_control_automation_workflows_count",
-    "metric_ey_model_validation_variant_count",
-    "metric_ey_model_risk_findings_remediated_count",
-    "metric_ey_validation_control_package_count",
-    "metric_ey_derivative_model_family_count",
-    "metric_ey_greek_cross_greek_scenario_count",
-    "metric_ey_va_hedge_program_count",
-    "metric_ey_ccar_stress_scenario_library_count",
-    "metric_ey_capital_liquidity_assumption_sets_count",
-    "metric_ey_regulatory_capital_model_inventory_count",
-    "metric_ey_guidewire_workflow_maps_count",
-    "metric_ey_policy_admin_interface_count",
-    "metric_ey_core_platform_modernization_scope_count",
-    "metric_ey_bcbs239_risk_data_domain_count",
-    "metric_ey_three_lines_control_owner_count",
-    "metric_ey_risk_metric_definition_count"
+    "Do not use generic CCAR, model validation, insurance core, or ERM counts without source-backed denominator."
   ],
   "metric_candidates_for_approval": [],
   "bundles": [
@@ -65,7 +41,6 @@
       "role_episode_bundle_id": "reb_ey_regulatory_analytics_modernization",
       "employer": "Ernst & Young",
       "title": "Principal",
-      "time_window": "2009-10 to 2014-03",
       "employer_node_id": "employment_exp_ey_001",
       "bundle_theme": "Regulatory Analytics Modernization for Global Banks",
       "claim_text": "Led regulatory analytics modernization for global banks by linking predictive risk analytics, audit controls, and lineage-backed regulatory workflows.",
@@ -91,42 +66,6 @@
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
-      "promotable_metrics": [
-        {
-          "metric_outcome_id": "metric_ey_regulatory_lineage_domains_count",
-          "metric": "regulatory analytics data domains mapped through lineage, control ownership, and audit traceability",
-          "metric_type": "lineage_domain_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "regulatory analytics domains",
-            "lineage ownership",
-            "audit traceability"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_predictive_risk_use_cases_count",
-          "metric": "predictive risk analytics use cases implemented across audit and regulatory workflows",
-          "metric_type": "risk_analytics_use_case_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "predictive risk analytics",
-            "audit regulatory workflows"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_audit_control_automation_workflows_count",
-          "metric": "audit-control workflows automated with lineage-backed reconciliation controls",
-          "metric_type": "control_workflow_automation_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "audit-control automation",
-            "lineage-backed reconciliation"
-          ]
-        }
-      ],
       "held_metrics": [
         "$15M regulatory analytics modernization program (HOLD - source artifact required before numeric claim)"
       ],
@@ -139,7 +78,7 @@
         "ey_narrative"
       ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges remain deferred.",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy.",
       "linked_metric_outcome_ids": [
         "metric_ey_regulatory_lineage_domains_count",
         "metric_ey_predictive_risk_use_cases_count",
@@ -147,107 +86,9 @@
       ]
     },
     {
-      "role_episode_bundle_id": "reb_ey_model_validation_regulatory_remediation",
-      "employer": "Ernst & Young",
-      "title": "Principal",
-      "time_window": "2009-10 to 2014-03",
-      "employer_node_id": "employment_exp_ey_001",
-      "bundle_theme": "Model Validation, Challenger Variants, and Regulatory Remediation",
-      "claim_text": "Led model validation and remediation work that converted regulatory or audit findings into validated model variants, control evidence, and closed-loop remediation workflows.",
-      "support_level": "USER_CONFIRMED_DIRECT",
-      "executive_scope_signals": [
-        "Added model validation and challenger variants as a core Dodd-Frank era EY skill lane",
-        "Connected model-risk findings to remediation economics and control closure",
-        "Separated validation evidence from generic audit transformation language"
-      ],
-      "architecture_scope_signals": [
-        "Model validation and challenger model review",
-        "Variant testing across capital, risk, and regulatory workflows",
-        "Audit finding remediation with evidence-backed control closure"
-      ],
-      "graph_skill_node_ids": [
-        "skill_risk_model_risk",
-        "skill_audit_grade_observability",
-        "skill_risk_enterprise_risk_controls",
-        "skill_sr_basel_ccar_lineage_regulatory"
-      ],
-      "linked_source_fact_ids": [
-        "exp_ey_001"
-      ],
-      "linked_archive_signal_ids": [],
-      "promotable_metrics": [
-        {
-          "metric_outcome_id": "metric_ey_audit_control_automation_workflows_count",
-          "metric": "audit-control workflows automated with lineage-backed reconciliation controls",
-          "metric_type": "control_workflow_automation_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "audit-control automation",
-            "lineage-backed reconciliation"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_model_validation_variant_count",
-          "metric": "challenger and model variants validated across regulatory, capital, and remediation workflows",
-          "metric_type": "model_validation_variant_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "challenger model validation",
-            "capital remediation workflows"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_model_risk_findings_remediated_count",
-          "metric": "model-risk and audit findings remediated through validation evidence and control redesign",
-          "metric_type": "finding_remediation_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "model-risk findings",
-            "validation evidence",
-            "control redesign"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_validation_control_package_count",
-          "metric": "validation-control evidence packages produced for model governance and regulatory review",
-          "metric_type": "evidence_package_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "validation-control packages",
-            "model governance",
-            "regulatory review"
-          ]
-        }
-      ],
-      "held_metrics": [
-        "40% reduction in audit remediation costs (HOLD - source artifact required before numeric claim)"
-      ],
-      "metric_candidates": [],
-      "excluded_metrics": [],
-      "operating_context": "Dodd-Frank era model-risk pressure increased demand for model validation, challenger variants, documentation, and remediation controls.",
-      "bullet_intent": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges remain deferred.",
-      "linked_metric_outcome_ids": [
-        "metric_ey_audit_control_automation_workflows_count",
-        "metric_ey_model_validation_variant_count",
-        "metric_ey_model_risk_findings_remediated_count",
-        "metric_ey_validation_control_package_count"
-      ]
-    },
-    {
       "role_episode_bundle_id": "reb_ey_capital_optimization_solvency",
       "employer": "Ernst & Young",
       "title": "Principal",
-      "time_window": "2009-10 to 2014-03",
       "employer_node_id": "employment_exp_ey_001",
       "bundle_theme": "Quant Derivatives, Variable Annuity Hedging, and Insurance Capital",
       "claim_text": "Led quantitative derivatives, variable-annuity hedging, and insurance-capital work using exotic pricing, liability Greeks, higher-order stress testing, and hedge design.",
@@ -280,43 +121,6 @@
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
-      "promotable_metrics": [
-        {
-          "metric_outcome_id": "metric_ey_derivative_model_family_count",
-          "metric": "derivative pricing model families reviewed across exotics, structured derivatives, and liability guarantees",
-          "metric_type": "model_family_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "derivative pricing model families",
-            "liability guarantees"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_greek_cross_greek_scenario_count",
-          "metric": "Greek, higher-order Greek, and cross-Greek stress scenarios run for hedge design",
-          "metric_type": "stress_scenario_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "Greek stress scenarios",
-            "cross-Greek scenarios",
-            "hedge design"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_va_hedge_program_count",
-          "metric": "variable-annuity and liability hedge design programs led using liability Greeks and capital stress testing",
-          "metric_type": "hedge_program_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "variable-annuity hedge design",
-            "liability Greeks",
-            "capital stress testing"
-          ]
-        }
-      ],
       "held_metrics": [
         "12% reduction in redundant capital holdings (HOLD - source artifact required before numeric claim)"
       ],
@@ -329,7 +133,7 @@
         "ey_narrative"
       ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges remain deferred.",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy.",
       "linked_metric_outcome_ids": [
         "metric_ey_derivative_model_family_count",
         "metric_ey_greek_cross_greek_scenario_count",
@@ -340,21 +144,21 @@
       "role_episode_bundle_id": "reb_ey_ccar_capital_liquidity_stress_testing",
       "employer": "Ernst & Young",
       "title": "Principal",
-      "time_window": "2009-10 to 2014-03",
       "employer_node_id": "employment_exp_ey_001",
-      "bundle_theme": "CCAR Capital, Liquidity, and Balance-Sheet Stress Testing",
-      "claim_text": "Led CCAR-era capital, liquidity, and balance-sheet stress testing work by structuring stress scenarios, assumption traceability, and model-governance evidence.",
+      "bundle_theme": "CCAR Capital, Liquidity, Stress Testing, and Model Validation",
+      "claim_text": "Led CCAR-era capital, liquidity, stress testing, and model-validation work by structuring traceable scenarios, challenger variants, model-risk remediation, and governance evidence for regulated financial institutions.",
       "support_level": "USER_CONFIRMED_DIRECT",
       "executive_scope_signals": [
-        "Separated CCAR/capital/liquidity stress testing as its own MECE root",
-        "Mapped capital and liquidity assumptions into stress-testing governance",
-        "Connected regulatory capital models to model validation and traceable scenario design"
+        "Consolidated model validation, challenger variants, and regulatory remediation into the CCAR/capital stress-testing root",
+        "Mapped capital and liquidity assumptions into stress-testing governance and model-risk controls",
+        "Connected regulatory capital models to validation evidence, challenger models, and remediation closure"
       ],
       "architecture_scope_signals": [
-        "CCAR-era stress scenario design",
-        "Capital and liquidity assumption governance",
-        "Balance-sheet stress testing and model traceability",
-        "Regulatory capital model inventory and validation"
+        "CCAR-era capital, liquidity, and balance-sheet stress scenario design",
+        "Capital and liquidity assumption governance across finance, risk, and model validation",
+        "Model validation, challenger model review, and variant testing",
+        "Model-risk and audit finding remediation through evidence packages and control redesign",
+        "Regulatory capital model inventory and traceability controls"
       ],
       "graph_skill_node_ids": [
         "skill_sr_basel_ccar_lineage_regulatory",
@@ -362,48 +166,16 @@
         "skill_capital_capital_modeling",
         "skill_risk_model_risk",
         "skill_risk_enterprise_risk_controls",
-        "skill_hpc_valuation_capital_adequacy"
+        "skill_hpc_valuation_capital_adequacy",
+        "skill_audit_grade_observability"
       ],
       "linked_source_fact_ids": [
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
-      "promotable_metrics": [
-        {
-          "metric_outcome_id": "metric_ey_ccar_stress_scenario_library_count",
-          "metric": "CCAR-era capital, liquidity, and balance-sheet stress scenario libraries structured with traceable assumptions",
-          "metric_type": "stress_scenario_library_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "CCAR stress scenarios",
-            "traceable assumptions"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_capital_liquidity_assumption_sets_count",
-          "metric": "capital and liquidity assumption sets reconciled across finance, risk, and model validation",
-          "metric_type": "assumption_set_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "capital liquidity assumptions",
-            "finance risk model validation"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_regulatory_capital_model_inventory_count",
-          "metric": "regulatory-capital model inventory reviewed for stress testing, adequacy, and reserve governance",
-          "metric_type": "model_inventory_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "regulatory-capital models",
-            "stress testing reserve governance"
-          ]
-        }
+      "held_metrics": [
+        "40% reduction in audit remediation costs (HOLD - source artifact required before numeric claim)"
       ],
-      "held_metrics": [],
       "metric_candidates": [],
       "excluded_metrics": [],
       "operating_context": "Post-crisis financial services consulting environment where capital planning, liquidity risk, stress testing, model governance, and auditability were board/regulator priorities.",
@@ -413,102 +185,72 @@
         "ey_narrative"
       ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges remain deferred.",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy.",
       "linked_metric_outcome_ids": [
         "metric_ey_ccar_stress_scenario_library_count",
         "metric_ey_capital_liquidity_assumption_sets_count",
-        "metric_ey_regulatory_capital_model_inventory_count"
+        "metric_ey_regulatory_capital_model_inventory_count",
+        "metric_ey_model_validation_variant_count",
+        "metric_ey_model_risk_findings_remediated_count",
+        "metric_ey_validation_control_package_count"
       ]
     },
     {
-      "role_episode_bundle_id": "reb_ey_guidewire_insurance_platform",
+      "role_episode_bundle_id": "reb_ey_insurance_core_modernization",
       "employer": "Ernst & Young",
       "title": "Principal",
-      "time_window": "2009-10 to 2014-03",
       "employer_node_id": "employment_exp_ey_001",
-      "bundle_theme": "Guidewire and Insurance Core-System Modernization",
-      "claim_text": "Delivered Guidewire and insurance core-system modernization by mapping claims, policy administration, billing, and insurance data workflows into implementation-ready operating models.",
+      "bundle_theme": "Insurance Core Modernization: Policy, Claims, Billing, and Data Workflows",
+      "claim_text": "Led insurance core modernization by decomposing legacy policy and claims operations into configurable policy administration, product/rate rule templates, claims workflow requirements, billing/rating/underwriting handoffs, conversion mappings, and BI-ready data outputs; Guidewire was an implementation example, not the claim boundary.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
-        "Restored EY technology modernization through Guidewire and policy administration work",
-        "Connected insurance-domain expertise to claims automation and core-system modernization",
-        "Mapped insurance carrier workflows into Guidewire implementation scope"
+        "Modernized insurance core operations beyond any single vendor tool",
+        "Converted legacy policy and claims processes into configurable policy, product/rate, claims workflow, billing, rating, and underwriting requirements",
+        "Linked core replacement work to conversion traceability, integration analysis, operational reporting, and BI-ready data handoffs"
       ],
       "architecture_scope_signals": [
-        "Guidewire InsuranceSuite modernization",
-        "ClaimCenter, PolicyCenter, and BillingCenter workflow mapping",
-        "Insurance claims automation and policy administration",
-        "Guidewire DataHub/InfoCenter BI handoffs"
+        "Rules-based policy administration with product, rate, endorsement, renewal, and regulatory-change configuration templates",
+        "Claims workflow requirements and policy-to-claims core handoffs at the platform modernization level",
+        "Billing, rating, underwriting, agency/direct bill, commission, receivables, and policy lifecycle handoffs",
+        "Legacy replacement requirements, source-target data dictionaries, conversion mapping, reconciliation controls, and integration analysis",
+        "Core system data handoffs into operational reporting, DataHub/InfoCenter-style BI layers, and downstream analytics",
+        "Guidewire InsuranceSuite / PolicyCenter / ClaimCenter / BillingCenter as example implementation platforms rather than the root claim"
       ],
       "graph_skill_node_ids": [
-        "skill_insurance_guidewire",
-        "skill_insurance_claims_automation",
         "skill_insurance_policy_administration",
-        "skill_policycenter_workflow_mapping",
-        "skill_guidewire_datahub_infocenter_bi",
-        "skill_guidewire_insurancesuite_modernization"
+        "skill_insurance_product_rate_rules_configuration",
+        "skill_insurance_claims_automation",
+        "skill_insurance_billing_rating_underwriting_handoffs",
+        "skill_insurance_core_integration_data_conversion",
+        "skill_insurance_core_to_bi_reporting_handoff",
+        "skill_insurance_guidewire"
       ],
       "linked_source_fact_ids": [
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
-      "promotable_metrics": [
-        {
-          "metric_outcome_id": "metric_ey_guidewire_workflow_maps_count",
-          "metric": "Guidewire ClaimCenter, PolicyCenter, and BillingCenter workflow maps for core modernization",
-          "metric_type": "workflow_mapping_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "Guidewire workflow maps",
-            "ClaimCenter PolicyCenter BillingCenter"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_policy_admin_interface_count",
-          "metric": "policy administration interfaces and data handoffs defined across Guidewire, claims, billing, and analytics",
-          "metric_type": "interface_definition_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "policy administration interfaces",
-            "data handoffs"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_core_platform_modernization_scope_count",
-          "metric": "insurance core-platform modernization components scoped across policy, claims, billing, and data/BI workflows",
-          "metric_type": "modernization_scope_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "core-platform modernization scope",
-            "policy claims billing data BI"
-          ]
-        }
-      ],
       "held_metrics": [],
       "metric_candidates": [],
       "excluded_metrics": [],
-      "operating_context": "Insurance technology modernization work where EY shifted from actuarial/risk advisory into Guidewire, policy administration, claims automation, and insurance platform delivery.",
+      "operating_context": "Insurance core modernization in the 2009-2014 period emphasized replacing hard-coded legacy policy, billing, and claims systems with configurable, rules-based platforms; mapping requirements, integrations, source-target data dictionaries, conversion controls, policy lifecycle workflows, claims workflow requirements, and reporting/BI handoffs.",
       "bullet_intent": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges remain deferred.",
+      "notes": "Typed edges excluded by policy. Guidewire is retained as an example platform family, while the claimable skill is broader policy/claims/billing/rating/underwriting/data modernization.",
       "linked_metric_outcome_ids": [
-        "metric_ey_guidewire_workflow_maps_count",
-        "metric_ey_policy_admin_interface_count",
-        "metric_ey_core_platform_modernization_scope_count"
+        "metric_ey_core_workflow_maps_count",
+        "metric_ey_policy_admin_rules_interfaces_count",
+        "metric_ey_core_integration_data_mapping_count",
+        "metric_ey_core_conversion_rule_traceability_count"
       ]
     },
     {
       "role_episode_bundle_id": "reb_ey_erm_risk_governance",
       "employer": "Ernst & Young",
       "title": "Principal",
-      "time_window": "2009-10 to 2014-03",
       "employer_node_id": "employment_exp_ey_001",
       "bundle_theme": "Enterprise Risk Management Operating Model and Risk-Data Aggregation",
       "claim_text": "Architected ERM operating models and BCBS 239-aligned risk-data aggregation by defining three-lines-of-defense accountability, metadata standards, and auditable risk metrics.",
@@ -535,41 +277,6 @@
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
-      "promotable_metrics": [
-        {
-          "metric_outcome_id": "metric_ey_bcbs239_risk_data_domain_count",
-          "metric": "BCBS 239 risk-data domains with lineage, metadata, and aggregation controls",
-          "metric_type": "risk_data_domain_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "BCBS 239 domains",
-            "lineage metadata aggregation controls"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_three_lines_control_owner_count",
-          "metric": "control-owner handoffs defined across first, second, and third lines of defense",
-          "metric_type": "control_owner_handoff_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "three lines of defense",
-            "control-owner handoffs"
-          ]
-        },
-        {
-          "metric_outcome_id": "metric_ey_risk_metric_definition_count",
-          "metric": "risk metric definitions standardized across business units, control owners, and reporting stakeholders",
-          "metric_type": "risk_metric_definition_count",
-          "approval_status": "APPROVED_GRAPH_SSOT",
-          "support_level": "approved_by_graph_presence",
-          "surface_tokens": [
-            "risk metric definitions",
-            "control owners reporting stakeholders"
-          ]
-        }
-      ],
       "held_metrics": [],
       "metric_candidates": [],
       "excluded_metrics": [],
@@ -580,7 +287,7 @@
         "ey_narrative"
       ],
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges remain deferred.",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy.",
       "linked_metric_outcome_ids": [
         "metric_ey_bcbs239_risk_data_domain_count",
         "metric_ey_three_lines_control_owner_count",
@@ -589,65 +296,16 @@
     }
   ],
   "metric_outcome_nodes": {
-    "metric_ey_regulatory_lineage_domains_count": {
-      "metric_outcome_id": "metric_ey_regulatory_lineage_domains_count",
-      "metric": "regulatory analytics data domains mapped through lineage, control ownership, and audit traceability",
-      "metric_type": "lineage_domain_count",
-      "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
-      "approved": true,
-      "approval_status": "APPROVED_GRAPH_SSOT",
-      "support_level": "approved_by_graph_presence",
-      "bundle_bindings": [
-        "reb_ey_regulatory_analytics_modernization"
-      ],
-      "claim_text": "EY graph evidence supports regulatory analytics data domains mapped through lineage, control ownership, and audit traceability.",
-      "surface_tokens": [
-        "regulatory analytics domains",
-        "lineage ownership",
-        "audit traceability"
-      ],
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "proof_shape": "Source artifact naming the regulatory analytics domains, lineage/control ownership scope, and EY delivery role."
-    },
-    "metric_ey_predictive_risk_use_cases_count": {
-      "metric_outcome_id": "metric_ey_predictive_risk_use_cases_count",
-      "metric": "predictive risk analytics use cases implemented across audit and regulatory workflows",
-      "metric_type": "risk_analytics_use_case_count",
-      "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
-      "approved": true,
-      "approval_status": "APPROVED_GRAPH_SSOT",
-      "support_level": "approved_by_graph_presence",
-      "bundle_bindings": [
-        "reb_ey_regulatory_analytics_modernization"
-      ],
-      "claim_text": "EY graph evidence supports predictive risk analytics use cases implemented across audit and regulatory workflows.",
-      "surface_tokens": [
-        "predictive risk analytics",
-        "audit regulatory workflows"
-      ],
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "proof_shape": "Source artifact listing predictive analytics use cases, business process owners, and production or pilot status."
-    },
     "metric_ey_audit_control_automation_workflows_count": {
       "metric_outcome_id": "metric_ey_audit_control_automation_workflows_count",
       "metric": "audit-control workflows automated with lineage-backed reconciliation controls",
       "metric_type": "control_workflow_automation_count",
       "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
-        "reb_ey_regulatory_analytics_modernization",
-        "reb_ey_model_validation_regulatory_remediation"
+        "reb_ey_regulatory_analytics_modernization"
       ],
       "claim_text": "EY graph evidence supports audit-control workflows automated with lineage-backed reconciliation controls.",
       "surface_tokens": [
@@ -660,83 +318,123 @@
       ],
       "proof_shape": "Source artifact showing pre/post workflow inventory, control automation scope, and remediation ownership."
     },
-    "metric_ey_model_validation_variant_count": {
-      "metric_outcome_id": "metric_ey_model_validation_variant_count",
-      "metric": "challenger and model variants validated across regulatory, capital, and remediation workflows",
-      "metric_type": "model_validation_variant_count",
+    "metric_ey_bcbs239_risk_data_domain_count": {
+      "metric_outcome_id": "metric_ey_bcbs239_risk_data_domain_count",
+      "metric": "BCBS 239 risk-data domains with lineage, metadata, and aggregation controls",
+      "metric_type": "risk_data_domain_count",
       "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
-        "reb_ey_model_validation_regulatory_remediation"
+        "reb_ey_erm_risk_governance"
       ],
-      "claim_text": "EY graph evidence supports challenger and model variants validated across regulatory, capital, and remediation workflows.",
+      "claim_text": "EY graph evidence supports BCBS 239 risk-data domains with lineage, metadata, and aggregation controls.",
       "surface_tokens": [
-        "challenger model validation",
-        "capital remediation workflows"
+        "BCBS 239 domains",
+        "lineage metadata aggregation controls"
       ],
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
-      "proof_shape": "Model validation inventory, challenger-model register, or remediation tracker with model family and review outcome."
+      "proof_shape": "Risk-data domain catalog, lineage artifact, or BCBS 239 program plan naming domains and controls."
     },
-    "metric_ey_model_risk_findings_remediated_count": {
-      "metric_outcome_id": "metric_ey_model_risk_findings_remediated_count",
-      "metric": "model-risk and audit findings remediated through validation evidence and control redesign",
-      "metric_type": "finding_remediation_count",
+    "metric_ey_capital_liquidity_assumption_sets_count": {
+      "metric_outcome_id": "metric_ey_capital_liquidity_assumption_sets_count",
+      "metric": "capital and liquidity assumption sets reconciled across finance, risk, and model validation",
+      "metric_type": "assumption_set_count",
       "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
-        "reb_ey_model_validation_regulatory_remediation"
+        "reb_ey_ccar_capital_liquidity_stress_testing"
       ],
-      "claim_text": "EY graph evidence supports model-risk and audit findings remediated through validation evidence and control redesign.",
+      "claim_text": "EY graph evidence supports capital and liquidity assumption sets reconciled across finance, risk, and model validation.",
       "surface_tokens": [
-        "model-risk findings",
-        "validation evidence",
-        "control redesign"
+        "capital liquidity assumptions",
+        "finance risk model validation"
       ],
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
-      "proof_shape": "Finding log or remediation evidence tying model-risk issues to validation/control fixes and closure status."
+      "proof_shape": "Assumption inventory, model governance artifact, or stress testing pack naming reconciled assumption sets."
     },
-    "metric_ey_validation_control_package_count": {
-      "metric_outcome_id": "metric_ey_validation_control_package_count",
-      "metric": "validation-control evidence packages produced for model governance and regulatory review",
-      "metric_type": "evidence_package_count",
+    "metric_ey_ccar_stress_scenario_library_count": {
+      "metric_outcome_id": "metric_ey_ccar_stress_scenario_library_count",
+      "metric": "CCAR-era capital, liquidity, and balance-sheet stress scenario libraries structured with traceable assumptions",
+      "metric_type": "stress_scenario_library_count",
       "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
-        "reb_ey_model_validation_regulatory_remediation"
+        "reb_ey_ccar_capital_liquidity_stress_testing"
       ],
-      "claim_text": "EY graph evidence supports validation-control evidence packages produced for model governance and regulatory review.",
+      "claim_text": "EY graph evidence supports CCAR-era capital, liquidity, and balance-sheet stress scenario libraries structured with traceable assumptions.",
       "surface_tokens": [
-        "validation-control packages",
-        "model governance",
-        "regulatory review"
+        "CCAR stress scenarios",
+        "traceable assumptions"
       ],
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
-      "proof_shape": "Validation package inventory, control evidence log, or regulator/audit remediation tracker."
+      "proof_shape": "Stress testing scenario inventory or governance pack showing scenario purpose, assumptions, and traceability controls."
+    },
+    "metric_ey_core_integration_data_mapping_count": {
+      "metric_outcome_id": "metric_ey_core_integration_data_mapping_count",
+      "metric": "integration, data-conversion, and analytics handoff maps defined across insurance core systems and downstream platforms",
+      "metric_type": "core_integration_data_mapping_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_insurance_core_modernization"
+      ],
+      "claim_text": "EY graph evidence supports integration, data-conversion, and analytics handoff maps across insurance core systems and downstream platforms.",
+      "surface_tokens": [
+        "integration analysis",
+        "data conversion mapping",
+        "BI analytics handoffs"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Integration analysis, data dictionary, conversion map, or BI handoff artifact naming source/target systems and data ownership."
+    },
+    "metric_ey_core_workflow_maps_count": {
+      "metric_outcome_id": "metric_ey_core_workflow_maps_count",
+      "metric": "policy, claims, billing, rating, and underwriting workflow maps for insurance core modernization",
+      "metric_type": "core_workflow_mapping_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_insurance_core_modernization"
+      ],
+      "claim_text": "EY graph evidence supports policy, claims, billing, rating, and underwriting workflow maps for insurance core modernization.",
+      "surface_tokens": [
+        "policy lifecycle workflows",
+        "claims workflow requirements",
+        "billing rating underwriting handoffs"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Core modernization workflow inventory, implementation plan, or requirements traceability artifact naming policy, claims, billing, rating, or underwriting workflows."
     },
     "metric_ey_derivative_model_family_count": {
       "metric_outcome_id": "metric_ey_derivative_model_family_count",
       "metric": "derivative pricing model families reviewed across exotics, structured derivatives, and liability guarantees",
       "metric_type": "model_family_count",
       "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
@@ -759,7 +457,6 @@
       "metric": "Greek, higher-order Greek, and cross-Greek stress scenarios run for hedge design",
       "metric_type": "stress_scenario_count",
       "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
@@ -778,12 +475,190 @@
       ],
       "proof_shape": "Scenario library, hedge design pack, or model output inventory with Greek/cross-Greek stress definitions."
     },
+    "metric_ey_model_risk_findings_remediated_count": {
+      "metric_outcome_id": "metric_ey_model_risk_findings_remediated_count",
+      "metric": "model-risk and audit findings remediated through validation evidence and control redesign",
+      "metric_type": "finding_remediation_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_ccar_capital_liquidity_stress_testing"
+      ],
+      "claim_text": "EY graph evidence supports model-risk and audit findings remediated through validation evidence and control redesign.",
+      "surface_tokens": [
+        "model-risk findings",
+        "validation evidence",
+        "control redesign"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Finding log or remediation evidence tying model-risk issues to validation/control fixes and closure status."
+    },
+    "metric_ey_model_validation_variant_count": {
+      "metric_outcome_id": "metric_ey_model_validation_variant_count",
+      "metric": "challenger and model variants validated across regulatory, capital, and remediation workflows",
+      "metric_type": "model_validation_variant_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_ccar_capital_liquidity_stress_testing"
+      ],
+      "claim_text": "EY graph evidence supports challenger and model variants validated across regulatory, capital, and remediation workflows.",
+      "surface_tokens": [
+        "challenger model validation",
+        "capital remediation workflows"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Model validation inventory, challenger-model register, or remediation tracker with model family and review outcome."
+    },
+    "metric_ey_policy_admin_rules_interfaces_count": {
+      "metric_outcome_id": "metric_ey_policy_admin_rules_interfaces_count",
+      "metric": "rules-based policy administration configuration templates and interface handoffs defined for product, rate, or regulatory change",
+      "metric_type": "policy_admin_configuration_interface_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_insurance_core_modernization"
+      ],
+      "claim_text": "EY graph evidence supports rules-based policy administration configuration templates and interface handoffs for product, rate, or regulatory change.",
+      "surface_tokens": [
+        "rules-based policy administration",
+        "configuration templates",
+        "product rate regulatory change"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Policy administration configuration, requirements, or interface artifact showing product/rate/rule setup and handoffs to adjacent systems."
+    },
+    "metric_ey_predictive_risk_use_cases_count": {
+      "metric_outcome_id": "metric_ey_predictive_risk_use_cases_count",
+      "metric": "predictive risk analytics use cases implemented across audit and regulatory workflows",
+      "metric_type": "risk_analytics_use_case_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_regulatory_analytics_modernization"
+      ],
+      "claim_text": "EY graph evidence supports predictive risk analytics use cases implemented across audit and regulatory workflows.",
+      "surface_tokens": [
+        "predictive risk analytics",
+        "audit regulatory workflows"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Source artifact listing predictive analytics use cases, business process owners, and production or pilot status."
+    },
+    "metric_ey_regulatory_capital_model_inventory_count": {
+      "metric_outcome_id": "metric_ey_regulatory_capital_model_inventory_count",
+      "metric": "regulatory-capital model inventory reviewed for stress testing, adequacy, and reserve governance",
+      "metric_type": "model_inventory_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_ccar_capital_liquidity_stress_testing"
+      ],
+      "claim_text": "EY graph evidence supports regulatory-capital model inventory reviewed for stress testing, adequacy, and reserve governance.",
+      "surface_tokens": [
+        "regulatory-capital models",
+        "stress testing reserve governance"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Model inventory, validation tracker, or capital governance artifact with model component list and review role."
+    },
+    "metric_ey_regulatory_lineage_domains_count": {
+      "metric_outcome_id": "metric_ey_regulatory_lineage_domains_count",
+      "metric": "regulatory analytics data domains mapped through lineage, control ownership, and audit traceability",
+      "metric_type": "lineage_domain_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_regulatory_analytics_modernization"
+      ],
+      "claim_text": "EY graph evidence supports regulatory analytics data domains mapped through lineage, control ownership, and audit traceability.",
+      "surface_tokens": [
+        "regulatory analytics domains",
+        "lineage ownership",
+        "audit traceability"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Source artifact naming the regulatory analytics domains, lineage/control ownership scope, and EY delivery role."
+    },
+    "metric_ey_risk_metric_definition_count": {
+      "metric_outcome_id": "metric_ey_risk_metric_definition_count",
+      "metric": "risk metric definitions standardized across business units, control owners, and reporting stakeholders",
+      "metric_type": "risk_metric_definition_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_erm_risk_governance"
+      ],
+      "claim_text": "EY graph evidence supports risk metric definitions standardized across business units, control owners, and reporting stakeholders.",
+      "surface_tokens": [
+        "risk metric definitions",
+        "control owners reporting stakeholders"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Risk metric catalog, reporting governance pack, or metadata standard with metric ownership and definition."
+    },
+    "metric_ey_three_lines_control_owner_count": {
+      "metric_outcome_id": "metric_ey_three_lines_control_owner_count",
+      "metric": "control-owner handoffs defined across first, second, and third lines of defense",
+      "metric_type": "control_owner_handoff_count",
+      "employer": "Ernst & Young",
+      "approved": true,
+      "approval_status": "APPROVED_GRAPH_SSOT",
+      "support_level": "approved_by_graph_presence",
+      "bundle_bindings": [
+        "reb_ey_erm_risk_governance"
+      ],
+      "claim_text": "EY graph evidence supports control-owner handoffs defined across first, second, and third lines of defense.",
+      "surface_tokens": [
+        "three lines of defense",
+        "control-owner handoffs"
+      ],
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "proof_shape": "Operating model artifact, RACI, control inventory, or governance pack naming line-of-defense responsibilities."
+    },
     "metric_ey_va_hedge_program_count": {
       "metric_outcome_id": "metric_ey_va_hedge_program_count",
       "metric": "variable-annuity and liability hedge design programs led using liability Greeks and capital stress testing",
       "metric_type": "hedge_program_count",
       "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
@@ -802,239 +677,81 @@
       ],
       "proof_shape": "Hedging practice artifact, client engagement summary, or model pack naming VA/insurance liability hedge scope."
     },
-    "metric_ey_ccar_stress_scenario_library_count": {
-      "metric_outcome_id": "metric_ey_ccar_stress_scenario_library_count",
-      "metric": "CCAR-era capital, liquidity, and balance-sheet stress scenario libraries structured with traceable assumptions",
-      "metric_type": "stress_scenario_library_count",
+    "metric_ey_validation_control_package_count": {
+      "metric_outcome_id": "metric_ey_validation_control_package_count",
+      "metric": "validation-control evidence packages produced for model governance and regulatory review",
+      "metric_type": "evidence_package_count",
       "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
         "reb_ey_ccar_capital_liquidity_stress_testing"
       ],
-      "claim_text": "EY graph evidence supports CCAR-era capital, liquidity, and balance-sheet stress scenario libraries structured with traceable assumptions.",
+      "claim_text": "EY graph evidence supports validation-control evidence packages produced for model governance and regulatory review.",
       "surface_tokens": [
-        "CCAR stress scenarios",
-        "traceable assumptions"
+        "validation-control packages",
+        "model governance",
+        "regulatory review"
       ],
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
-      "proof_shape": "Stress testing scenario inventory or governance pack showing scenario purpose, assumptions, and traceability controls."
+      "proof_shape": "Validation package inventory, control evidence log, or regulator/audit remediation tracker."
     },
-    "metric_ey_capital_liquidity_assumption_sets_count": {
-      "metric_outcome_id": "metric_ey_capital_liquidity_assumption_sets_count",
-      "metric": "capital and liquidity assumption sets reconciled across finance, risk, and model validation",
-      "metric_type": "assumption_set_count",
+    "metric_ey_core_conversion_rule_traceability_count": {
+      "metric_outcome_id": "metric_ey_core_conversion_rule_traceability_count",
+      "metric": "legacy-to-core data conversion rules, source-target mappings, and reconciliation controls defined for policy, claims, billing, and customer data",
+      "metric_type": "core_conversion_rule_traceability_count",
       "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
       "approved": true,
       "approval_status": "APPROVED_GRAPH_SSOT",
       "support_level": "approved_by_graph_presence",
       "bundle_bindings": [
-        "reb_ey_ccar_capital_liquidity_stress_testing"
+        "reb_ey_insurance_core_modernization"
       ],
-      "claim_text": "EY graph evidence supports capital and liquidity assumption sets reconciled across finance, risk, and model validation.",
+      "claim_text": "EY graph evidence supports source-target conversion mapping and reconciliation controls across policy, claims, billing, and customer data domains.",
       "surface_tokens": [
-        "capital liquidity assumptions",
-        "finance risk model validation"
+        "source-target data dictionary",
+        "legacy-to-core conversion rules",
+        "conversion reconciliation controls"
       ],
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
-      "proof_shape": "Assumption inventory, model governance artifact, or stress testing pack naming reconciled assumption sets."
-    },
-    "metric_ey_regulatory_capital_model_inventory_count": {
-      "metric_outcome_id": "metric_ey_regulatory_capital_model_inventory_count",
-      "metric": "regulatory-capital model inventory reviewed for stress testing, adequacy, and reserve governance",
-      "metric_type": "model_inventory_count",
-      "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
-      "approved": true,
-      "approval_status": "APPROVED_GRAPH_SSOT",
-      "support_level": "approved_by_graph_presence",
-      "bundle_bindings": [
-        "reb_ey_ccar_capital_liquidity_stress_testing"
-      ],
-      "claim_text": "EY graph evidence supports regulatory-capital model inventory reviewed for stress testing, adequacy, and reserve governance.",
-      "surface_tokens": [
-        "regulatory-capital models",
-        "stress testing reserve governance"
-      ],
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "proof_shape": "Model inventory, validation tracker, or capital governance artifact with model component list and review role."
-    },
-    "metric_ey_guidewire_workflow_maps_count": {
-      "metric_outcome_id": "metric_ey_guidewire_workflow_maps_count",
-      "metric": "Guidewire ClaimCenter, PolicyCenter, and BillingCenter workflow maps for core modernization",
-      "metric_type": "workflow_mapping_count",
-      "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
-      "approved": true,
-      "approval_status": "APPROVED_GRAPH_SSOT",
-      "support_level": "approved_by_graph_presence",
-      "bundle_bindings": [
-        "reb_ey_guidewire_insurance_platform"
-      ],
-      "claim_text": "EY graph evidence supports Guidewire ClaimCenter, PolicyCenter, and BillingCenter workflow maps for core modernization.",
-      "surface_tokens": [
-        "Guidewire workflow maps",
-        "ClaimCenter PolicyCenter BillingCenter"
-      ],
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "proof_shape": "Guidewire implementation artifact, workflow inventory, or delivery plan naming mapped insurance workflows."
-    },
-    "metric_ey_policy_admin_interface_count": {
-      "metric_outcome_id": "metric_ey_policy_admin_interface_count",
-      "metric": "policy administration interfaces and data handoffs defined across Guidewire, claims, billing, and analytics",
-      "metric_type": "interface_definition_count",
-      "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
-      "approved": true,
-      "approval_status": "APPROVED_GRAPH_SSOT",
-      "support_level": "approved_by_graph_presence",
-      "bundle_bindings": [
-        "reb_ey_guidewire_insurance_platform"
-      ],
-      "claim_text": "EY graph evidence supports policy administration interfaces and data handoffs defined across Guidewire, claims, billing, and analytics.",
-      "surface_tokens": [
-        "policy administration interfaces",
-        "data handoffs"
-      ],
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "proof_shape": "Interface inventory, data mapping artifact, or architecture pack showing systems and handoff ownership."
-    },
-    "metric_ey_core_platform_modernization_scope_count": {
-      "metric_outcome_id": "metric_ey_core_platform_modernization_scope_count",
-      "metric": "insurance core-platform modernization components scoped across policy, claims, billing, and data/BI workflows",
-      "metric_type": "modernization_scope_count",
-      "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
-      "approved": true,
-      "approval_status": "APPROVED_GRAPH_SSOT",
-      "support_level": "approved_by_graph_presence",
-      "bundle_bindings": [
-        "reb_ey_guidewire_insurance_platform"
-      ],
-      "claim_text": "EY graph evidence supports insurance core-platform modernization components scoped across policy, claims, billing, and data/BI workflows.",
-      "surface_tokens": [
-        "core-platform modernization scope",
-        "policy claims billing data BI"
-      ],
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "proof_shape": "Implementation scope artifact, modernization roadmap, or client delivery plan naming components and ownership."
-    },
-    "metric_ey_bcbs239_risk_data_domain_count": {
-      "metric_outcome_id": "metric_ey_bcbs239_risk_data_domain_count",
-      "metric": "BCBS 239 risk-data domains with lineage, metadata, and aggregation controls",
-      "metric_type": "risk_data_domain_count",
-      "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
-      "approved": true,
-      "approval_status": "APPROVED_GRAPH_SSOT",
-      "support_level": "approved_by_graph_presence",
-      "bundle_bindings": [
-        "reb_ey_erm_risk_governance"
-      ],
-      "claim_text": "EY graph evidence supports BCBS 239 risk-data domains with lineage, metadata, and aggregation controls.",
-      "surface_tokens": [
-        "BCBS 239 domains",
-        "lineage metadata aggregation controls"
-      ],
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "proof_shape": "Risk-data domain catalog, lineage artifact, or BCBS 239 program plan naming domains and controls."
-    },
-    "metric_ey_three_lines_control_owner_count": {
-      "metric_outcome_id": "metric_ey_three_lines_control_owner_count",
-      "metric": "control-owner handoffs defined across first, second, and third lines of defense",
-      "metric_type": "control_owner_handoff_count",
-      "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
-      "approved": true,
-      "approval_status": "APPROVED_GRAPH_SSOT",
-      "support_level": "approved_by_graph_presence",
-      "bundle_bindings": [
-        "reb_ey_erm_risk_governance"
-      ],
-      "claim_text": "EY graph evidence supports control-owner handoffs defined across first, second, and third lines of defense.",
-      "surface_tokens": [
-        "three lines of defense",
-        "control-owner handoffs"
-      ],
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "proof_shape": "Operating model artifact, RACI, control inventory, or governance pack naming line-of-defense responsibilities."
-    },
-    "metric_ey_risk_metric_definition_count": {
-      "metric_outcome_id": "metric_ey_risk_metric_definition_count",
-      "metric": "risk metric definitions standardized across business units, control owners, and reporting stakeholders",
-      "metric_type": "risk_metric_definition_count",
-      "employer": "Ernst & Young",
-      "time_window": "2009-10 to 2014-03",
-      "approved": true,
-      "approval_status": "APPROVED_GRAPH_SSOT",
-      "support_level": "approved_by_graph_presence",
-      "bundle_bindings": [
-        "reb_ey_erm_risk_governance"
-      ],
-      "claim_text": "EY graph evidence supports risk metric definitions standardized across business units, control owners, and reporting stakeholders.",
-      "surface_tokens": [
-        "risk metric definitions",
-        "control owners reporting stakeholders"
-      ],
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "proof_shape": "Risk metric catalog, reporting governance pack, or metadata standard with metric ownership and definition."
+      "proof_shape": "Data dictionary, conversion rule catalog, source-target mapping, or reconciliation-control artifact for policy, claims, billing, or customer data."
     }
   },
   "approved_metric_outcome_ids": {
-    "metric_ey_regulatory_lineage_domains_count": "regulatory analytics data domains mapped through lineage, control ownership, and audit traceability",
-    "metric_ey_predictive_risk_use_cases_count": "predictive risk analytics use cases implemented across audit and regulatory workflows",
     "metric_ey_audit_control_automation_workflows_count": "audit-control workflows automated with lineage-backed reconciliation controls",
-    "metric_ey_model_validation_variant_count": "challenger and model variants validated across regulatory, capital, and remediation workflows",
-    "metric_ey_model_risk_findings_remediated_count": "model-risk and audit findings remediated through validation evidence and control redesign",
-    "metric_ey_validation_control_package_count": "validation-control evidence packages produced for model governance and regulatory review",
+    "metric_ey_bcbs239_risk_data_domain_count": "BCBS 239 risk-data domains with lineage, metadata, and aggregation controls",
+    "metric_ey_capital_liquidity_assumption_sets_count": "capital and liquidity assumption sets reconciled across finance, risk, and model validation",
+    "metric_ey_ccar_stress_scenario_library_count": "CCAR-era capital, liquidity, and balance-sheet stress scenario libraries structured with traceable assumptions",
+    "metric_ey_core_integration_data_mapping_count": "integration, data-conversion, and analytics handoff maps defined across insurance core systems and downstream platforms",
+    "metric_ey_core_workflow_maps_count": "policy, claims, billing, rating, and underwriting workflow maps for insurance core modernization",
     "metric_ey_derivative_model_family_count": "derivative pricing model families reviewed across exotics, structured derivatives, and liability guarantees",
     "metric_ey_greek_cross_greek_scenario_count": "Greek, higher-order Greek, and cross-Greek stress scenarios run for hedge design",
-    "metric_ey_va_hedge_program_count": "variable-annuity and liability hedge design programs led using liability Greeks and capital stress testing",
-    "metric_ey_ccar_stress_scenario_library_count": "CCAR-era capital, liquidity, and balance-sheet stress scenario libraries structured with traceable assumptions",
-    "metric_ey_capital_liquidity_assumption_sets_count": "capital and liquidity assumption sets reconciled across finance, risk, and model validation",
+    "metric_ey_model_risk_findings_remediated_count": "model-risk and audit findings remediated through validation evidence and control redesign",
+    "metric_ey_model_validation_variant_count": "challenger and model variants validated across regulatory, capital, and remediation workflows",
+    "metric_ey_policy_admin_rules_interfaces_count": "rules-based policy administration configuration templates and interface handoffs defined for product, rate, or regulatory change",
+    "metric_ey_predictive_risk_use_cases_count": "predictive risk analytics use cases implemented across audit and regulatory workflows",
     "metric_ey_regulatory_capital_model_inventory_count": "regulatory-capital model inventory reviewed for stress testing, adequacy, and reserve governance",
-    "metric_ey_guidewire_workflow_maps_count": "Guidewire ClaimCenter, PolicyCenter, and BillingCenter workflow maps for core modernization",
-    "metric_ey_policy_admin_interface_count": "policy administration interfaces and data handoffs defined across Guidewire, claims, billing, and analytics",
-    "metric_ey_core_platform_modernization_scope_count": "insurance core-platform modernization components scoped across policy, claims, billing, and data/BI workflows",
-    "metric_ey_bcbs239_risk_data_domain_count": "BCBS 239 risk-data domains with lineage, metadata, and aggregation controls",
+    "metric_ey_regulatory_lineage_domains_count": "regulatory analytics data domains mapped through lineage, control ownership, and audit traceability",
+    "metric_ey_risk_metric_definition_count": "risk metric definitions standardized across business units, control owners, and reporting stakeholders",
     "metric_ey_three_lines_control_owner_count": "control-owner handoffs defined across first, second, and third lines of defense",
-    "metric_ey_risk_metric_definition_count": "risk metric definitions standardized across business units, control owners, and reporting stakeholders"
+    "metric_ey_va_hedge_program_count": "variable-annuity and liability hedge design programs led using liability Greeks and capital stress testing",
+    "metric_ey_validation_control_package_count": "validation-control evidence packages produced for model governance and regulatory review",
+    "metric_ey_core_conversion_rule_traceability_count": "legacy-to-core data conversion rules, source-target mappings, and reconciliation controls defined for policy, claims, billing, and customer data"
   },
   "metric_surface_policy": {
     "approval_model": "presence_in_metric_outcome_nodes_is_approval",
     "ssot": "graph node/edge/metric IDs",
     "approved_by_user_on": "2026-06-12",
     "no_separate_candidate_fact_authority": true,
-    "metrics_should_not_be_scarce": true
+    "metrics_should_not_be_scarce": true,
+    "bundle_metric_surface": "linked_metric_outcome_ids only; metric_outcome_nodes is claim authority",
+    "approved_metric_outcome_ids_role": "derived_review_index_not_claim_authority"
   }
 }

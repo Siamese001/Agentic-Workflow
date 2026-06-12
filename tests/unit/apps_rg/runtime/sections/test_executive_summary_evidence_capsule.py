@@ -15,7 +15,7 @@ from apps_rg.runtime.sections.executive_summary_evidence_capsule import (
     compile_executive_summary_evidence_capsule,
     format_evidence_capsule_c0_block,
 )
-from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
+from apps_rg.runtime.sections.graph_evidence_contract import metric_derivative_fact_id
 
 
 @pytest.fixture(autouse=True)

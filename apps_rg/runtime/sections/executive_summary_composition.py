@@ -486,11 +486,10 @@ def build_executive_summary_composition_plan(
     target_role: str,
     target_company: str,
     proof_pool_metadata: dict[str, Any] | None = None,
-    srfs_integration: dict[str, Any] | None = None,
     briefing_text: str = "",
     jd_text: str = "",
 ) -> dict[str, Any]:
-    """Deterministic composition plan from SRFS/graph proof pool (runtime authority)."""
+    """Deterministic composition plan from the graph proof pool (runtime authority)."""
     from apps_rg.runtime.sections.executive_summary_pa import is_strategy_executive_target_title
 
     facts = [f for f in selected_facts if isinstance(f, dict)]
@@ -547,7 +546,7 @@ def build_executive_summary_composition_plan(
         "brushstroke_covered_ids": brushstroke_bind["brushstroke_covered_ids"],
         "brushstroke_missing_ids": brushstroke_bind["brushstroke_missing_ids"],
         "brushstroke_fact_bindings": brushstroke_bind["brushstroke_fact_bindings"],
-        "srfs_active": False,
+        "legacy_fact_selector_active": False,
         "graph_backed_composition_claimed": bool(graph_refs) or bool(
             proof_pool_metadata and proof_pool_metadata.get("graph_skills_proof_pool")
         ),
@@ -697,26 +696,13 @@ def check_graph_painting_sentence_responsibility_shape(
     resume_display_text: str,
     proof_pool_metadata: dict[str, Any] | None,
 ) -> tuple[bool, str | None]:
-    """Graph-backed painting-plan sentence arc (replaces legacy SRFS JSON envelope)."""
-    return check_srfs_sentence_responsibility_shape_painting(
-        resume_display_text, proof_pool_metadata
-    )
-
-
-def check_srfs_sentence_responsibility_shape_painting(
-    resume_display_text: str,
-    proof_pool_metadata: dict[str, Any] | None = None,
-    *,
-    srfs_integration: dict[str, Any] | None = None,
-) -> tuple[bool, str | None]:
-    """Legacy alias — graph painting only."""
-    _ = srfs_integration
+    """Graph-backed painting-plan sentence arc."""
     if not _graph_painting_active(proof_pool_metadata):
         return True, "skipped_not_graph_painting"
     from apps_rg.runtime.validators.executive_summary_x2 import (
-        _srfs_credibility_sentence_opener_ok,
-        _srfs_lane_no_commercial_org_cred,
-        _srfs_outcomes_sentence_opener_ok,
+        _graph_evidence_credibility_sentence_opener_ok,
+        _graph_evidence_lane_no_commercial_org_cred,
+        _graph_evidence_outcomes_sentence_opener_ok,
     )
 
     sentences = [s.strip() for s in split_sentences(resume_display_text) if str(s).strip()]
@@ -724,13 +710,13 @@ def check_srfs_sentence_responsibility_shape_painting(
     if n != 6:
         return (
             False,
-            f"x2_exec_summary_srfs_sentence_responsibility_shape requires exactly 6 sentences; found {n}",
+            f"x2_exec_summary_graph_evidence_sentence_responsibility_shape requires exactly 6 sentences; found {n}",
         )
     ok1, r1 = check_s1_dominant_brushstroke_thesis(sentences[0])
     if not ok1:
         return False, r1
 
-    bad2 = _srfs_lane_no_commercial_org_cred(sentences[1], "S2 mechanism-only")
+    bad2 = _graph_evidence_lane_no_commercial_org_cred(sentences[1], "S2 mechanism-only")
     if bad2:
         return False, bad2
     inv2, r2 = is_mechanism_inventory_sentence(sentences[1])
@@ -741,17 +727,17 @@ def check_srfs_sentence_responsibility_shape_painting(
     ):
         return False, f"S2 platform brushstroke: {r2}"
 
-    bad3 = _srfs_lane_no_commercial_org_cred(sentences[2], "S3 lifecycle bridge")
+    bad3 = _graph_evidence_lane_no_commercial_org_cred(sentences[2], "S3 lifecycle bridge")
     if bad3:
         return False, bad3
 
-    bad4 = _srfs_lane_no_commercial_org_cred(sentences[3], "S4 theme bridge")
+    bad4 = _graph_evidence_lane_no_commercial_org_cred(sentences[3], "S4 theme bridge")
     if bad4:
         return False, bad4
-    bad5 = _srfs_outcomes_sentence_opener_ok(sentences[4])
+    bad5 = _graph_evidence_outcomes_sentence_opener_ok(sentences[4])
     if bad5:
         return False, bad5
-    bad6 = _srfs_credibility_sentence_opener_ok(sentences[5])
+    bad6 = _graph_evidence_credibility_sentence_opener_ok(sentences[5])
     if bad6:
         return False, bad6
     return True, "ok"
@@ -785,9 +771,7 @@ def check_composition_plan_present(
     *,
     artifacts_dir: Any | None,
     proof_pool_metadata: dict[str, Any] | None = None,
-    srfs_integration: dict[str, Any] | None = None,
 ) -> tuple[bool, str | None]:
-    _ = srfs_integration
     if not _graph_painting_active(proof_pool_metadata):
         return True, "skipped_not_graph_painting"
     plan = resolve_composition_plan(parsed_output, artifacts_dir=artifacts_dir)

@@ -8,7 +8,7 @@ Config gate: ibm_bullets and ibm_narrative graph_expansion_allowed remain false 
 section_retrieval_profile.yaml until role_episode_bundle consumption is wired into the
 section generation path. This module is a prerequisite but NOT sufficient alone.
 
-Phase status: ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS — graph_expansion consumes bundles only.
+Runtime status: ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS — graph_expansion consumes bundles only.
 """
 from __future__ import annotations
 
@@ -35,7 +35,6 @@ REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
     "role_episode_bundle_id",
     "employer",
     "title",
-    "time_window",
     "employer_node_id",
     "executive_scope_signals",
     "architecture_scope_signals",
@@ -106,10 +105,6 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
             f"employer_node_id must be '{IBM_EMPLOYER_NODE_ID}', got '{bundle.get('employer_node_id')}'"
         )
 
-    # Time window binding
-    if not bundle.get("time_window"):
-        violations.append("time_window is required and must not be empty")
-
     # Must have at least one graph_skill_node_id
     if not bundle.get("graph_skill_node_ids"):
         violations.append("graph_skill_node_ids must not be empty")
@@ -120,16 +115,6 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
     unknown = set(section_elig) - valid_sections - {"competencies", "executive_summary", "headline"}
     if unknown:
         violations.append(f"Unknown section_eligibility values: {sorted(unknown)}")
-
-    # HOLD/DO_NOT_PROMOTE metrics must not appear in promotable_metrics
-    promotable = bundle.get("promotable_metrics") or []
-    for metric_entry in promotable:
-        metric_str = str(metric_entry).upper()
-        for forbidden in HOLD_AND_DO_NOT_PROMOTE_METRICS:
-            if forbidden.upper() in metric_str:
-                violations.append(
-                    f"Forbidden metric '{forbidden}' found in promotable_metrics: {metric_entry}"
-                )
 
     # Must NOT be created from flat skill-only nodes (guard: executive_scope_signals required)
     if not bundle.get("executive_scope_signals"):

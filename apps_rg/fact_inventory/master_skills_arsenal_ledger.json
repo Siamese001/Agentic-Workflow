@@ -413,7 +413,7 @@
     {
       "node_id": "identity_amit_ayer_governed_ai_platform_leader",
       "node_type": "identity_north_star",
-      "label": "Amit Ayer — Governed AI Platform Leader",
+      "label": "Amit Ayer \u2014 Governed AI Platform Leader",
       "description": "Governed AI platform and agentic runtime engineering leader with actuarial, derivatives, risk, governance, AWS/cloud, partner GTM, revenue, and commercialization depth.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -538,7 +538,7 @@
       "node_id": "pillar_partner_gtm_alliances",
       "node_type": "domain_pillar",
       "label": "Partner GTM / Alliances",
-      "description": "Channel programs, strategic alliances, ecosystem GTM, IBM–AWS alliance motions.",
+      "description": "Channel programs, strategic alliances, ecosystem GTM, IBM\u2013AWS alliance motions.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -639,7 +639,7 @@
       "node_id": "pillar_actuarial_foundation",
       "node_type": "domain_pillar",
       "label": "Actuarial Foundation",
-      "description": "FSA, early-career actuarial depth, stochastic modeling, actuarial software—not credential label only.",
+      "description": "FSA, early-career actuarial depth, stochastic modeling, actuarial software\u2014not credential label only.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -851,7 +851,7 @@
       "node_id": "pillar_insurance_carrier_transformation",
       "node_type": "domain_pillar",
       "label": "Insurance Carrier Technology Transformation",
-      "description": "Legacy insurance technology modernization and regulated insurer cloud adoption — middle-market carrier fluency from InsurTech employment; not carrier underwriting/claims ownership.",
+      "description": "Legacy insurance technology modernization and regulated insurer cloud adoption \u2014 middle-market carrier fluency from InsurTech employment; not carrier underwriting/claims ownership.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -868,7 +868,7 @@
       "node_id": "pillar_underwriting_claims_ops_ai",
       "node_type": "domain_pillar",
       "label": "Insurance Systems Resilience (Internal Traversal)",
-      "description": "Internal-only traversal pillar for legacy insurance platform resilience signals — does not assert underwriting/claims/policy-admin AI product ownership.",
+      "description": "Internal-only traversal pillar for legacy insurance platform resilience signals \u2014 does not assert underwriting/claims/policy-admin AI product ownership.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -883,7 +883,7 @@
       "node_id": "pillar_insurer_it_strategy_ai_enablement",
       "node_type": "domain_pillar",
       "label": "Insurer IT Strategy & AI Enablement",
-      "description": "Insurer IT strategy, cloud data platforms, and AI enablement from InsurTech CTO and engineering platform facts — not brokerage distribution.",
+      "description": "Insurer IT strategy, cloud data platforms, and AI enablement from InsurTech CTO and engineering platform facts \u2014 not brokerage distribution.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -900,7 +900,7 @@
       "node_id": "pillar_enterprise_portfolio_governance",
       "node_type": "domain_pillar",
       "label": "Enterprise Portfolio & Data Governance",
-      "description": "Enterprise portfolio governance, data catalogs, and executive alignment — EY/regulatory program and governance facts.",
+      "description": "Enterprise portfolio governance, data catalogs, and executive alignment \u2014 EY/regulatory program and governance facts.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -916,7 +916,7 @@
       "node_id": "pillar_banking_platform_responsible_ai",
       "node_type": "domain_pillar",
       "label": "Banking Platform & Responsible AI (Regulated)",
-      "description": "Regulated financial-institutions platform fluency, Basel/CCAR lineage, and responsible AI governance — not transaction banking product lines.",
+      "description": "Regulated financial-institutions platform fluency, Basel/CCAR lineage, and responsible AI governance \u2014 not transaction banking product lines.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -932,7 +932,7 @@
       "node_id": "pillar_interoperability_integration_ecosystem",
       "node_type": "domain_pillar",
       "label": "Interoperability & Integration Platform",
-      "description": "Microservices and integration-platform patterns for regulated enterprises — not insurance brokerage distribution.",
+      "description": "Microservices and integration-platform patterns for regulated enterprises \u2014 not insurance brokerage distribution.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -947,7 +947,7 @@
       "node_id": "pillar_hyperscaler_marketplace_partner_gtm",
       "node_type": "domain_pillar",
       "label": "Hyperscaler Alliance & Co-Sell GTM",
-      "description": "Hyperscaler alliances (IBM/AWS), AWS partner accreditations, alliance co-sell motions, and partner-derived revenue — not cloud marketplace listing GTM (no marketplace evidence).",
+      "description": "Hyperscaler alliances (IBM/AWS), AWS partner accreditations, alliance co-sell motions, and partner-derived revenue \u2014 not cloud marketplace listing GTM (no marketplace evidence).",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -965,7 +965,7 @@
       "node_id": "pillar_applied_ai_partner_architecture",
       "node_type": "domain_pillar",
       "label": "Applied AI Partner Architecture",
-      "description": "Partner-applied reference architectures, joint AI solution development, solution accelerators, and presales solution architecture — distinct from generic quota-carrying partner sales.",
+      "description": "Partner-applied reference architectures, joint AI solution development, solution accelerators, and presales solution architecture \u2014 distinct from generic quota-carrying partner sales.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -1612,7 +1612,7 @@
         "Partnerships & Alliances - Amit Ayer.docx"
       ],
       "source_snippets": [
-        "IBM–AWS alliance for financial services"
+        "IBM\u2013AWS alliance for financial services"
       ],
       "user_confirmed": true,
       "role_family_weights": {
@@ -1620,7 +1620,7 @@
         "AI_SOLUTIONS_ARCHITECTURE": 1.0
       },
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "cloud transformations"
       ],
       "forbidden_phrases": [],
@@ -3409,7 +3409,7 @@
       "human_confirmation_required": false,
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "regulated_financial_institutions_fluency",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -5226,7 +5226,7 @@
       "node_id": "track_actuarial_risk_derivatives",
       "node_type": "career_track",
       "label": "Track Actuarial Risk Derivatives",
-      "description": "Career track TRACK_ACTUARIAL_RISK_DERIVATIVES (2002–2010)",
+      "description": "Career track TRACK_ACTUARIAL_RISK_DERIVATIVES (2002\u20132010)",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -5245,7 +5245,7 @@
       "node_id": "track_data_tech_cloud_ml",
       "node_type": "career_track",
       "label": "Track Data Tech Cloud Ml",
-      "description": "Career track TRACK_DATA_TECH_CLOUD_ML (2010–2022)",
+      "description": "Career track TRACK_DATA_TECH_CLOUD_ML (2010\u20132022)",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -5264,7 +5264,7 @@
       "node_id": "track_genai_agentic",
       "node_type": "career_track",
       "label": "Track Genai Agentic",
-      "description": "Career track TRACK_GENAI_AGENTIC (2022–present)",
+      "description": "Career track TRACK_GENAI_AGENTIC (2022\u2013present)",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -5282,7 +5282,7 @@
     {
       "node_id": "employment_exp_unify_001",
       "node_type": "employment",
-      "label": "Unify Consulting — SVP Engineering, Agentic AI Platforms",
+      "label": "Unify Consulting \u2014 SVP Engineering, Agentic AI Platforms",
       "description": "Led the platform roadmap, core systems architecture, and commercialization of a production-grade generative AI Solution Accelerator within a consulting firm, serving Fortune 500 financial institutions and converting bespoke client delivery into reusable IP deployed across enterprise lines of business.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -5305,7 +5305,7 @@
     {
       "node_id": "employment_exp_ibm_001",
       "node_type": "employment",
-      "label": "IBM — Partner",
+      "label": "IBM \u2014 Partner",
       "description": "Led architecture and commercial ownership of a $30M cloud and AI transformation portfolio, serving as systems architect for Fortune 500 financial institutions migrating to distributed cloud-native data platforms enabling governed analytics and enterprise AI adoption.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -5328,7 +5328,7 @@
     {
       "node_id": "employment_exp_insurtech_001",
       "node_type": "employment",
-      "label": "InsurTech Cloud Solutions — Chief Technology Officer",
+      "label": "InsurTech Cloud Solutions \u2014 Chief Technology Officer",
       "description": "Founded and led a cloud-native engineering firm modernizing legacy insurance technology stacks for middle-market insurers, enabling faster delivery, stronger controls, and greater operating agility.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -5351,7 +5351,7 @@
     {
       "node_id": "employment_exp_ey_001",
       "node_type": "employment",
-      "label": "Ernst & Young — Principal",
+      "label": "Ernst & Young \u2014 Principal",
       "description": "Led a $18M regulatory analytics modernization program for global banks, transforming cost-center audit functions into value-added predictive risk capabilities with stronger lineage and controls.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -5374,8 +5374,8 @@
     {
       "node_id": "employment_exp_early_career_001",
       "node_type": "employment",
-      "label": "Early Career Roles — Actuarial Consultant and Quantitative Roles",
-      "description": "Early Career Roles — Actuarial Consultant and Quantitative Roles",
+      "label": "Early Career Roles \u2014 Actuarial Consultant and Quantitative Roles",
+      "description": "Early Career Roles \u2014 Actuarial Consultant and Quantitative Roles",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -5710,47 +5710,53 @@
     {
       "node_id": "skill_insurance_guidewire",
       "node_type": "skill_row",
-      "label": "guidewire",
-      "description": "[",
+      "label": "insurance_core_platform_tooling",
+      "description": "EY Insurance Core Modernization skill: insurance core platform tooling.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
       "activation_status": "ACTIVE_CONFIRMED",
       "evidence_risk": "low",
-      "source_refs": [],
+      "source_refs": [
+        "fact_ey_guidewire_001"
+      ],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM"
     },
     {
       "node_id": "skill_insurance_claims_automation",
       "node_type": "skill_row",
-      "label": "claims_automation",
-      "description": "[",
+      "label": "claims_process_modernization",
+      "description": "EY Insurance Core Modernization skill: claims process modernization at the core platform requirements level.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
       "activation_status": "ACTIVE_CONFIRMED",
       "evidence_risk": "low",
-      "source_refs": [],
+      "source_refs": [
+        "fact_ey_guidewire_001"
+      ],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM"
     },
     {
       "node_id": "skill_insurance_policy_administration",
       "node_type": "skill_row",
-      "label": "policy_administration",
-      "description": "[",
+      "label": "policy_lifecycle_rules_configuration",
+      "description": "EY Insurance Core Modernization skill: policy lifecycle rules configuration.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "visibility_rule": "role_family_match",
       "activation_status": "ACTIVE_CONFIRMED",
       "evidence_risk": "low",
-      "source_refs": [],
+      "source_refs": [
+        "fact_ey_guidewire_001"
+      ],
       "projection_behavior": "rank_and_project_facts",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
-      "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW"
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM"
     },
     {
       "node_id": "skill_cloud_aws_rehosting",
@@ -6707,6 +6713,362 @@
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "confidence_grade": "HIGH",
       "confidence_grade_derived": "HIGH"
+    },
+    {
+      "node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "node_type": "skill_row",
+      "label": "L0 route policy dispatch for agentic runtime selection",
+      "description": "Designed L0 route-policy dispatch so agentic workflows select deterministic execution paths before tool or model invocation.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "L0RouteContract",
+        "G07RoutePolicy",
+        "RoutePolicyDispatch"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "domain": "Agentic Runtime Routing and Dispatch",
+      "domain_id": "domain_agentic_runtime_routing_dispatch",
+      "pillar": "pillar_agentic_ai_platforms",
+      "subpillar": "L0 route policy dispatch",
+      "capability": "L0 route policy dispatch for agentic runtime selection",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "ats_keywords": [
+        "agentic AI platform",
+        "deterministic routing",
+        "runtime orchestration",
+        "route policy"
+      ]
+    },
+    {
+      "node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "node_type": "skill_row",
+      "label": "multi-agent orchestration contracts for propose/execute handoff",
+      "description": "Designed multi-agent orchestration contracts separating proposal, execution, and verification responsibilities across governed runtime layers.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "L2ProposeL3Execute",
+        "OrchestrationContract",
+        "AgentHandoffBoundary"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "domain": "Agentic Multi-Agent Orchestration",
+      "domain_id": "domain_agentic_multi_agent_orchestration",
+      "pillar": "pillar_agentic_ai_platforms",
+      "subpillar": "Multi-agent orchestration contracts",
+      "capability": "multi-agent orchestration contracts for propose/execute handoff",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "ats_keywords": [
+        "multi-agent orchestration",
+        "agent handoff",
+        "agentic AI architecture",
+        "workflow orchestration"
+      ]
+    },
+    {
+      "node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "node_type": "skill_row",
+      "label": "GraphRAG context-pack grounding for evidence-bound agent outputs",
+      "description": "Designed graph-grounded context packs so generated agent outputs consume graph evidence rather than flat skill lists or JD-only language.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "GraphRAG",
+        "ContextPackAssembly",
+        "EvidenceGrounding"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "domain": "Agentic Context Engineering and Graph Grounding",
+      "domain_id": "domain_agentic_context_graph_grounding",
+      "pillar": "pillar_agentic_ai_platforms",
+      "subpillar": "GraphRAG context pack grounding",
+      "capability": "GraphRAG context-pack grounding for evidence-bound agent outputs",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "ats_keywords": [
+        "GraphRAG",
+        "context engineering",
+        "retrieval grounding",
+        "evidence graph"
+      ]
+    },
+    {
+      "node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "node_type": "skill_row",
+      "label": "tool sandbox egress controls for bounded agent execution",
+      "description": "Designed sandbox and egress-control boundaries for agent tool execution with explicit side-effect limits.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "SandboxedExecution",
+        "SideEffectBounds",
+        "EgressPolicy"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "domain": "Agentic Tool Execution and Sandbox Controls",
+      "domain_id": "domain_agentic_tool_sandbox_controls",
+      "pillar": "pillar_agentic_ai_platforms",
+      "subpillar": "Tool sandbox egress controls",
+      "capability": "tool sandbox egress controls for bounded agent execution",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "ats_keywords": [
+        "tool use",
+        "sandboxed execution",
+        "egress controls",
+        "AI safety controls"
+      ]
+    },
+    {
+      "node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "node_type": "skill_row",
+      "label": "runtime gate verdict contracts for agent execution release control",
+      "description": "Designed gate verdict contracts that decide whether agent outputs continue, repair, roll back, or stop.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "GateMesh",
+        "GateVerdict",
+        "ExitControl"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "domain": "Agentic Runtime Gates and Verdict Contracts",
+      "domain_id": "domain_agentic_runtime_gate_verdicts",
+      "pillar": "pillar_agentic_ai_platforms",
+      "subpillar": "Runtime gate verdict contracts",
+      "capability": "runtime gate verdict contracts for agent execution release control",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "ats_keywords": [
+        "AI governance",
+        "runtime gates",
+        "evaluation gates",
+        "release control"
+      ]
+    },
+    {
+      "node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "node_type": "skill_row",
+      "label": "human override and escalation paths for governed agentic workflows",
+      "description": "Designed human override and escalation paths for governed agentic workflows when runtime gates cannot prove safe continuation.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "HumanOverride",
+        "EscalationPath",
+        "HITLGovernance"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_unify_agentic_human_override_escalation_paths",
+      "domain": "Agentic Human Override and Escalation Design",
+      "domain_id": "domain_agentic_human_override_escalation",
+      "pillar": "pillar_agentic_ai_platforms",
+      "subpillar": "Human override escalation paths",
+      "capability": "human override and escalation paths for governed agentic workflows",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "ats_keywords": [
+        "human-in-the-loop",
+        "AI governance",
+        "agent escalation",
+        "risk controls"
+      ]
+    },
+    {
+      "node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "node_type": "skill_row",
+      "label": "replay key and audit manifest design for reproducible agent runs",
+      "description": "Designed replay keys and audit manifests to make agent runs reproducible and reviewable after execution.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "ReplayKey",
+        "AuditManifestRef",
+        "ExecutionTrace"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "domain": "Agentic Replay and Audit Manifests",
+      "domain_id": "domain_agentic_replay_audit_manifests",
+      "pillar": "pillar_agentic_ai_platforms",
+      "subpillar": "Replay key audit manifest design",
+      "capability": "replay key and audit manifest design for reproducible agent runs",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "ats_keywords": [
+        "observability",
+        "audit trail",
+        "execution traces",
+        "AI platform reliability"
+      ]
+    },
+    {
+      "node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "node_type": "skill_row",
+      "label": "runtime proof bundle lineage for claim-safe agent outputs",
+      "description": "Designed runtime proof bundle lineage tying agent outputs back to graph evidence and proof-pool metadata.",
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "RuntimeProofBundle",
+        "ClaimLineage",
+        "ProofPoolMetadata"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "skill_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "domain": "Agentic Runtime Proof and Lineage",
+      "domain_id": "domain_agentic_runtime_proof_lineage",
+      "pillar": "pillar_agentic_ai_platforms",
+      "subpillar": "Runtime proof bundle lineage",
+      "capability": "runtime proof bundle lineage for claim-safe agent outputs",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "ats_keywords": [
+        "AI platform governance",
+        "proof lineage",
+        "traceability",
+        "agentic AI runtime"
+      ]
+    },
+    {
+      "node_id": "skill_insurance_product_rate_rules_configuration",
+      "node_type": "skill_row",
+      "label": "product_rate_rules_configuration",
+      "description": "EY Insurance Core Modernization skill: product rate rules configuration.",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_ey_guidewire_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM"
+    },
+    {
+      "node_id": "skill_insurance_billing_rating_underwriting_handoffs",
+      "node_type": "skill_row",
+      "label": "billing_rating_underwriting_handoffs",
+      "description": "EY Insurance Core Modernization skill: billing rating underwriting handoffs.",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_ey_guidewire_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM"
+    },
+    {
+      "node_id": "skill_insurance_core_integration_data_conversion",
+      "node_type": "skill_row",
+      "label": "core_integration_data_conversion",
+      "description": "EY Insurance Core Modernization skill: core integration data conversion.",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_ey_guidewire_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM"
+    },
+    {
+      "node_id": "skill_insurance_core_to_bi_reporting_handoff",
+      "node_type": "skill_row",
+      "label": "core_to_bi_reporting_handoff",
+      "description": "EY Insurance Core Modernization skill: core to bi reporting handoff.",
+      "support_level": "DERIVED_SUPPORTED",
+      "visibility_rule": "role_family_match",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "evidence_risk": "low",
+      "source_refs": [
+        "fact_ey_guidewire_001"
+      ],
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM"
     }
   ],
   "graph_edges": [
@@ -18619,7 +18981,7 @@
       "edge_type": "pillar_phase_bridge",
       "source_node_id": "pillar_insurance_carrier_transformation",
       "target_node_id": "pillar_underwriting_claims_ops_ai",
-      "rationale": "Directional internal bridge to resilience pillar — external claims blocked.",
+      "rationale": "Directional internal bridge to resilience pillar \u2014 external claims blocked.",
       "projection_behavior": "graph_traversal_forward",
       "external_claim_policy": "internal_traversal_only",
       "validation_status": "validated",
@@ -18740,7 +19102,7 @@
       "edge_type": "pillar_phase_bridge",
       "source_node_id": "pillar_hyperscaler_marketplace_partner_gtm",
       "target_node_id": "pillar_partner_gtm_alliances",
-      "rationale": "Co-sell/alliance traversal to partner GTM pillar — not cloud marketplace listing (marketplace phrase blocked on pillar).",
+      "rationale": "Co-sell/alliance traversal to partner GTM pillar \u2014 not cloud marketplace listing (marketplace phrase blocked on pillar).",
       "projection_behavior": "graph_traversal_forward",
       "external_claim_policy": "internal_traversal_only",
       "validation_status": "validated",
@@ -23499,6 +23861,726 @@
       "projection_behavior": "graph_traversal",
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_unify_agentic_l0_route_policy_dispatch",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_runtime_routing_dispatch",
+      "target_node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_unify_agentic_l0_route_policy_dispatch",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_agentic_ai_runtime_architecture",
+      "target_node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_unify_agentic_l0_route_policy_dispatch_fact_engineering_platform_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "target_node_id": "fact_engineering_platform_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_unify_agentic_l0_route_policy_dispatch",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_l0_route_policy_dispatch_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_l0_route_policy_dispatch_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_l0_route_policy_dispatch_headline",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "target_node_id": "section_headline",
+      "rationale": "Allowed in headline",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_l0_route_policy_dispatch_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_l0_route_policy_dispatch_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_unify_agentic_multi_agent_orchestration_contracts",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_multi_agent_orchestration",
+      "target_node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_unify_agentic_multi_agent_orchestration_contracts",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_agentic_ai_runtime_architecture",
+      "target_node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_unify_agentic_multi_agent_orchestration_contracts_fact_engineering_platform_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "target_node_id": "fact_engineering_platform_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_unify_agentic_multi_agent_orchestration_contracts",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_multi_agent_orchestration_contracts_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_multi_agent_orchestration_contracts_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_multi_agent_orchestration_contracts_headline",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "target_node_id": "section_headline",
+      "rationale": "Allowed in headline",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_multi_agent_orchestration_contracts_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_multi_agent_orchestration_contracts_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_unify_agentic_graphrag_context_pack_grounding",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_context_graph_grounding",
+      "target_node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_unify_agentic_graphrag_context_pack_grounding",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_agentic_ai_runtime_architecture",
+      "target_node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_unify_agentic_graphrag_context_pack_grounding_fact_engineering_platform_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "target_node_id": "fact_engineering_platform_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_unify_agentic_graphrag_context_pack_grounding",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_graphrag_context_pack_grounding_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_graphrag_context_pack_grounding_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_graphrag_context_pack_grounding_headline",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "target_node_id": "section_headline",
+      "rationale": "Allowed in headline",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_graphrag_context_pack_grounding_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_graphrag_context_pack_grounding_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_unify_agentic_tool_sandbox_egress_controls",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_tool_sandbox_controls",
+      "target_node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_unify_agentic_tool_sandbox_egress_controls",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_agentic_ai_runtime_architecture",
+      "target_node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_unify_agentic_tool_sandbox_egress_controls_fact_engineering_platform_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "target_node_id": "fact_engineering_platform_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_unify_agentic_tool_sandbox_egress_controls",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_tool_sandbox_egress_controls_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_tool_sandbox_egress_controls_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_tool_sandbox_egress_controls_headline",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "target_node_id": "section_headline",
+      "rationale": "Allowed in headline",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_tool_sandbox_egress_controls_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_tool_sandbox_egress_controls_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_unify_agentic_runtime_gate_verdict_contracts",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_runtime_gate_verdicts",
+      "target_node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_unify_agentic_runtime_gate_verdict_contracts",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_agentic_ai_runtime_architecture",
+      "target_node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_unify_agentic_runtime_gate_verdict_contracts_fact_engineering_platform_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "target_node_id": "fact_engineering_platform_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_unify_agentic_runtime_gate_verdict_contracts",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_gate_verdict_contracts_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_gate_verdict_contracts_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_gate_verdict_contracts_headline",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "target_node_id": "section_headline",
+      "rationale": "Allowed in headline",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_gate_verdict_contracts_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_gate_verdict_contracts_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_unify_agentic_human_override_escalation_paths",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_human_override_escalation",
+      "target_node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_unify_agentic_human_override_escalation_paths",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_agentic_ai_runtime_architecture",
+      "target_node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_unify_agentic_human_override_escalation_paths_fact_engineering_platform_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "target_node_id": "fact_engineering_platform_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_unify_agentic_human_override_escalation_paths",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_human_override_escalation_paths_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_human_override_escalation_paths_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_human_override_escalation_paths_headline",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "target_node_id": "section_headline",
+      "rationale": "Allowed in headline",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_human_override_escalation_paths_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_human_override_escalation_paths_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_human_override_escalation_paths",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_unify_agentic_replay_key_audit_manifest_design",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_replay_audit_manifests",
+      "target_node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_unify_agentic_replay_key_audit_manifest_design",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_agentic_ai_runtime_architecture",
+      "target_node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_unify_agentic_replay_key_audit_manifest_design_fact_engineering_platform_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "target_node_id": "fact_engineering_platform_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_unify_agentic_replay_key_audit_manifest_design",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_replay_key_audit_manifest_design_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_replay_key_audit_manifest_design_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_replay_key_audit_manifest_design_headline",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "target_node_id": "section_headline",
+      "rationale": "Allowed in headline",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_replay_key_audit_manifest_design_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_replay_key_audit_manifest_design_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_domain_skill_skill_unify_agentic_runtime_proof_bundle_lineage",
+      "edge_type": "capability_domain_contains_skill",
+      "source_node_id": "domain_agentic_runtime_proof_lineage",
+      "target_node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "rationale": "Domain contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_epoch_skill_skill_unify_agentic_runtime_proof_bundle_lineage",
+      "edge_type": "epoch_contains_skill",
+      "source_node_id": "epoch_agentic_ai_runtime_architecture",
+      "target_node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "rationale": "Epoch contains skill",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_fact_skill_unify_agentic_runtime_proof_bundle_lineage_fact_engineering_platform_001",
+      "edge_type": "skill_supported_by_fact",
+      "source_node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "target_node_id": "fact_engineering_platform_001",
+      "rationale": "Skill anchored to atomic proof fact",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "atomic_fact_default_external_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_external_eligible_skill_unify_agentic_runtime_proof_bundle_lineage",
+      "edge_type": "skill_external_claim_eligible",
+      "source_node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "target_node_id": "policy_external_claim_policy",
+      "rationale": "Conditionally eligible when fact active",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_proof_bundle_lineage_executive_summary",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "target_node_id": "section_executive_summary",
+      "rationale": "Allowed in executive_summary",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_proof_bundle_lineage_competencies",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "target_node_id": "section_competencies",
+      "rationale": "Allowed in competencies",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_proof_bundle_lineage_headline",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "target_node_id": "section_headline",
+      "rationale": "Allowed in headline",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_proof_bundle_lineage_unify_bullets",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "target_node_id": "section_unify_bullets",
+      "rationale": "Allowed in unify_bullets",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
+    },
+    {
+      "edge_id": "edge_skill_section_skill_unify_agentic_runtime_proof_bundle_lineage_unify_narrative",
+      "edge_type": "skill_allowed_in_section",
+      "source_node_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "target_node_id": "section_unify_narrative",
+      "rationale": "Allowed in unify_narrative",
+      "projection_behavior": "graph_traversal",
+      "external_claim_policy": "skill_projection_not_proof",
+      "validation_status": "validated"
     }
   ],
   "external_claim_policies": {
@@ -23658,7 +24740,7 @@
       ],
       "source_resume_files": [],
       "source_snippets": [
-        "Layered L0–L6 spine: L2 proposes, Exit clears, UWG commits, L4 stores, L6 learns after run boundary."
+        "Layered L0\u2013L6 spine: L2 proposes, Exit clears, UWG commits, L4 stores, L6 learns after run boundary."
       ],
       "fact_id_links": [
         "fact_engineering_platform_001"
@@ -24435,7 +25517,7 @@
       ],
       "source_resume_files": [],
       "source_snippets": [
-        "Multi-step quality loops: L2 propose → X2 gates → X1D judges → X3 disposition."
+        "Multi-step quality loops: L2 propose \u2192 X2 gates \u2192 X1D judges \u2192 X3 disposition."
       ],
       "fact_id_links": [
         "fact_engineering_platform_003"
@@ -27861,7 +28943,7 @@
     {
       "pillar_id": "pillar_partner_gtm_alliances",
       "name": "Partner GTM / Alliances",
-      "description": "Channel programs, strategic alliances, ecosystem GTM, IBM–AWS alliance motions.",
+      "description": "Channel programs, strategic alliances, ecosystem GTM, IBM\u2013AWS alliance motions.",
       "subskills": [
         "channel_program_build",
         "strategic_alliances",
@@ -27877,7 +28959,7 @@
       ],
       "allowed_phrases": [
         "global AI channel program",
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "strategic alliances",
         "partner-derived revenue"
       ],
@@ -27901,7 +28983,7 @@
       },
       "archive_snippets": [
         "Built a global AI channel program from inception",
-        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM–AWS alliance",
+        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance",
         "generate 3 million dollars in partner-derived revenue"
       ],
       "evidence_sources": [
@@ -28183,7 +29265,7 @@
     {
       "pillar_id": "pillar_actuarial_foundation",
       "name": "Actuarial Foundation",
-      "description": "FSA, early-career actuarial depth, stochastic modeling, actuarial software—not credential label only.",
+      "description": "FSA, early-career actuarial depth, stochastic modeling, actuarial software\u2014not credential label only.",
       "subskills": [
         "fsa_credential",
         "stochastic_modeling",
@@ -28223,7 +29305,7 @@
         "early_career": true
       },
       "archive_snippets": [
-        "eight years cultivating quant rigor—earning my Fellow of the Society of Actuaries credential",
+        "eight years cultivating quant rigor\u2014earning my Fellow of the Society of Actuaries credential",
         "sale and rollout of specialized actuarial software",
         "stochastic modeling, multi-Greek hedging, and pricing of complex derivatives while completing Fellowship requirements"
       ],
@@ -28886,7 +29968,7 @@
     {
       "pillar_id": "pillar_insurance_carrier_transformation",
       "name": "Insurance Carrier Technology Transformation",
-      "description": "Legacy insurance technology modernization and regulated insurer cloud adoption — middle-market carrier fluency from InsurTech employment; not carrier underwriting/claims ownership.",
+      "description": "Legacy insurance technology modernization and regulated insurer cloud adoption \u2014 middle-market carrier fluency from InsurTech employment; not carrier underwriting/claims ownership.",
       "subskills": [
         "legacy_cloud_modernization",
         "regulated_insurer_controls",
@@ -28940,7 +30022,7 @@
     {
       "pillar_id": "pillar_underwriting_claims_ops_ai",
       "name": "Insurance Systems Resilience (Internal Traversal)",
-      "description": "Internal-only traversal pillar for legacy insurance platform resilience signals — does not assert underwriting/claims/policy-admin AI product ownership.",
+      "description": "Internal-only traversal pillar for legacy insurance platform resilience signals \u2014 does not assert underwriting/claims/policy-admin AI product ownership.",
       "subskills": [
         "platform_resilience_internal"
       ],
@@ -28983,7 +30065,7 @@
     {
       "pillar_id": "pillar_insurer_it_strategy_ai_enablement",
       "name": "Insurer IT Strategy & AI Enablement",
-      "description": "Insurer IT strategy, cloud data platforms, and AI enablement from InsurTech CTO and engineering platform facts — not brokerage distribution.",
+      "description": "Insurer IT strategy, cloud data platforms, and AI enablement from InsurTech CTO and engineering platform facts \u2014 not brokerage distribution.",
       "subskills": [
         "it_strategy",
         "cloud_enablement",
@@ -29032,7 +30114,7 @@
     {
       "pillar_id": "pillar_enterprise_portfolio_governance",
       "name": "Enterprise Portfolio & Data Governance",
-      "description": "Enterprise portfolio governance, data catalogs, and executive alignment — EY/regulatory program and governance facts.",
+      "description": "Enterprise portfolio governance, data catalogs, and executive alignment \u2014 EY/regulatory program and governance facts.",
       "subskills": [
         "portfolio_governance",
         "data_catalogs",
@@ -29074,7 +30156,7 @@
     {
       "pillar_id": "pillar_banking_platform_responsible_ai",
       "name": "Banking Platform & Responsible AI (Regulated)",
-      "description": "Regulated financial-institutions platform fluency, Basel/CCAR lineage, and responsible AI governance — not transaction banking product lines.",
+      "description": "Regulated financial-institutions platform fluency, Basel/CCAR lineage, and responsible AI governance \u2014 not transaction banking product lines.",
       "subskills": [
         "basel_ccar_lineage",
         "responsible_ai_governance",
@@ -29126,7 +30208,7 @@
     {
       "pillar_id": "pillar_interoperability_integration_ecosystem",
       "name": "Interoperability & Integration Platform",
-      "description": "Microservices and integration-platform patterns for regulated enterprises — not insurance brokerage distribution.",
+      "description": "Microservices and integration-platform patterns for regulated enterprises \u2014 not insurance brokerage distribution.",
       "subskills": [
         "microservices_integration",
         "cloud_native_integration"
@@ -29171,7 +30253,7 @@
     {
       "pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
       "name": "Hyperscaler Alliance & Co-Sell GTM",
-      "description": "Hyperscaler alliances (IBM/AWS), AWS partner accreditations, alliance co-sell motions, and partner-derived revenue — not cloud marketplace listing GTM (no marketplace evidence).",
+      "description": "Hyperscaler alliances (IBM/AWS), AWS partner accreditations, alliance co-sell motions, and partner-derived revenue \u2014 not cloud marketplace listing GTM (no marketplace evidence).",
       "subskills": [
         "aws_partner_accreditation",
         "hyperscaler_alliance_co_sell",
@@ -29189,7 +30271,7 @@
         "hyperscaler alliances",
         "co-sell",
         "co-selling",
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "partner-derived revenue",
         "Databricks Lakehouse Fundamentals"
       ],
@@ -29239,7 +30321,7 @@
     {
       "pillar_id": "pillar_applied_ai_partner_architecture",
       "name": "Applied AI Partner Architecture",
-      "description": "Partner-applied reference architectures, joint AI solution development, solution accelerators, and presales solution architecture — distinct from generic quota-carrying partner sales.",
+      "description": "Partner-applied reference architectures, joint AI solution development, solution accelerators, and presales solution architecture \u2014 distinct from generic quota-carrying partner sales.",
       "subskills": [
         "reference_architectures",
         "joint_ai_solutions",
@@ -30769,7 +31851,7 @@
         "Partnerships & Alliances - Amit Ayer.docx"
       ],
       "source_snippets": [
-        "IBM–AWS alliance for financial services"
+        "IBM\u2013AWS alliance for financial services"
       ],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
@@ -30778,7 +31860,7 @@
         "AI_SOLUTIONS_ARCHITECTURE": 1.0
       },
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "cloud transformations"
       ],
       "forbidden_phrases": [],
@@ -32270,7 +33352,7 @@
         "Partnerships_Alliances_-_Amit_Ayer.txt"
       ],
       "source_snippets": [
-        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM–AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%"
+        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%"
       ],
       "user_confirmed": false,
       "support_level": "DERIVED_SUPPORTED",
@@ -32280,7 +33362,7 @@
         "AI_SOLUTIONS_ARCHITECTURE": 1.0
       },
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "20% joint revenue",
         "AI-driven sales frameworks"
       ],
@@ -34463,7 +35545,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "insurtech_legacy_cloud_modernization",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -34529,7 +35611,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "insurtech_regulated_insurer_controls",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -34569,7 +35651,7 @@
         "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
       ],
       "source_snippets": [
-        "Re-architected systems for high availability (99.99% uptime) and real-time ingestion — internal traversal only; no underwriting/claims ops AI ownership."
+        "Re-architected systems for high availability (99.99% uptime) and real-time ingestion \u2014 internal traversal only; no underwriting/claims ops AI ownership."
       ],
       "user_confirmed": true,
       "support_level": "INTERNAL_ONLY",
@@ -34592,7 +35674,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "insurance_systems_resilience_internal",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -34660,7 +35742,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "insurtech_cto_it_enablement",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -34724,7 +35806,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "cloud_data_platform_engineering",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -34789,7 +35871,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "enterprise_portfolio_data_governance",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -34856,7 +35938,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "basel_ccar_lineage_regulatory",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -34920,7 +36002,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "banking_ai_governance_controls",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -34986,7 +36068,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "regulated_financial_institutions_fluency",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -35061,7 +36143,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "microservices_integration_platform",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -35458,7 +36540,7 @@
       ],
       "source_resume_files": [],
       "source_snippets": [
-        "Layered L0–L6 spine: L2 proposes, Exit clears, UWG commits, L4 stores, L6 learns after run boundary."
+        "Layered L0\u2013L6 spine: L2 proposes, Exit clears, UWG commits, L4 stores, L6 learns after run boundary."
       ],
       "fact_id_links": [
         "fact_engineering_platform_001"
@@ -36377,7 +37459,7 @@
       ],
       "source_resume_files": [],
       "source_snippets": [
-        "Multi-step quality loops: L2 propose → X2 gates → X1D judges → X3 disposition."
+        "Multi-step quality loops: L2 propose \u2192 X2 gates \u2192 X1D judges \u2192 X3 disposition."
       ],
       "fact_id_links": [
         "fact_engineering_platform_003"
@@ -40200,7 +41282,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "svp_it_strategy_innovation",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -40482,7 +41564,7 @@
         "Revenue Operations - Amit Ayer.docx"
       ],
       "source_snippets": [
-        "SaaS metric optimization (ARR, churn, LTV/CAC), enterprise data governance — driving recurring revenue growth",
+        "SaaS metric optimization (ARR, churn, LTV/CAC), enterprise data governance \u2014 driving recurring revenue growth",
         "Drove an additional 5 million dollars in annual recurring subscription contract value by forging multi-year deals aligned with CFO priorities"
       ],
       "user_confirmed": false,
@@ -41131,7 +42213,7 @@
         "DevOps",
         "container orchestration"
       ],
-      "achievement_framing_guidance": "Frame automated_release_pipelines with IBM scope, scanning mechanism, and reliability outcome; metrics only from linked fact_id — do not use 35% or 40% unanchored.",
+      "achievement_framing_guidance": "Frame automated_release_pipelines with IBM scope, scanning mechanism, and reliability outcome; metrics only from linked fact_id \u2014 do not use 35% or 40% unanchored.",
       "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
       "narrative_synthesis_guidance": "Synthesize from IBM-employer archive snippets and approved bundles; skill_id is not proof. No archive prose recitation.",
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
@@ -41402,11 +42484,11 @@
         "fraud detection",
         "financial crime analytics"
       ],
-      "achievement_framing_guidance": "Frame watson_studio_analytics with IBM scope and use case (fraud/AML); single-source — medium confidence only; verify with base resume before metric claims.",
+      "achievement_framing_guidance": "Frame watson_studio_analytics with IBM scope and use case (fraud/AML); single-source \u2014 medium confidence only; verify with base resume before metric claims.",
       "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
       "narrative_synthesis_guidance": "Synthesize from single source (Head of Customer Success); verify before use.",
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
-      "zero_hallucination_guardrail": "Do not claim Watson Studio beyond single archive source; medium confidence — fail closed if second source missing.",
+      "zero_hallucination_guardrail": "Do not claim Watson Studio beyond single archive source; medium confidence \u2014 fail closed if second source missing.",
       "confidence_grade": "MEDIUM",
       "confidence_grade_derived": "MEDIUM",
       "graph_hop_path": [
@@ -41610,25 +42692,33 @@
       "fact_id_links": [
         "fact_ey_guidewire_001"
       ],
-      "pillar": "pillar_capital_modeling",
-      "subpillar": "guidewire",
+      "pillar": "pillar_insurance_carrier_transformation",
+      "subpillar": "insurance_core_platform_tooling",
       "career_stage": "early_career",
       "source_resume_files": [
         "Chief AI Officer - Amit Ayer.docx"
       ],
-      "source_snippets": [],
+      "source_snippets": [
+        "User-approved EY graph design: insurance core modernization spanning policy administration, claims automation, billing, rating, underwriting handoffs, integration/data conversion, and BI handoffs; Guidewire is an example platform, not the claim boundary."
+      ],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
-        "QUANT_TRADING_HPC": 1.0
+        "INSURANCE_CARRIER_TRANSFORMATION": 1.0,
+        "INSURER_IT_AI_ENABLEMENT": 0.95,
+        "REGULATED_AI_GOVERNANCE": 0.8,
+        "CONSULTING_DELIVERY_LEADERSHIP": 0.75,
+        "DATA_ANALYTICS_LEADERSHIP": 0.65
       },
       "allowed_phrases": [
-        "Guidewire",
-        "PolicyCenter",
-        "ClaimCenter",
-        "BillingCenter"
+        "Guidewire InsuranceSuite implementation context",
+        "PolicyCenter / ClaimCenter / BillingCenter",
+        "Guidewire as an example insurance core platform"
       ],
-      "forbidden_phrases": [],
+      "forbidden_phrases": [
+        "Guidewire as the whole claim boundary",
+        "vendor-only modernization claim"
+      ],
       "allowed_sections": [
         "competencies",
         "executive_summary",
@@ -41642,60 +42732,73 @@
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_actuarial_financial_engineering",
-      "domain_id": "domain_enterprise_risk",
-      "domain": "Enterprise Risk",
-      "capability": "pricing_actuarial",
+      "domain_id": "domain_insurance_core_modernization",
+      "domain": "Insurance Core Modernization",
+      "capability": "insurance_core_platform_tooling",
       "source_concepts": [],
       "repo_evidence_files": [],
       "node_type": "skill_row",
       "ats_keywords": [
         "Guidewire",
-        "ClaimCenter",
+        "InsuranceSuite",
         "PolicyCenter",
+        "ClaimCenter",
         "BillingCenter",
-        "P&C core systems"
+        "P&C core modernization"
       ],
-      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
-      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
-      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
-      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
-      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
-      "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW",
+      "achievement_framing_guidance": "Use Guidewire as one implementation example inside a broader policy/claims/billing core modernization claim.",
+      "quantification_policy": "No invented numbers; require approved metric_outcome_ids for counts, dollar values, percentages, or cycle-time claims.",
+      "narrative_synthesis_guidance": "Synthesize through reb_ey_insurance_core_modernization and linked metric_outcome_ids; skill_id alone is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when EY role_episode_bundle_id and approved metric_outcome_ids support the claim.",
+      "zero_hallucination_guardrail": "Do not turn Guidewire into the full claim; bind it to EY Insurance Core Modernization bundle evidence and approved metric IDs.",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM",
       "graph_hop_path": [
-        "track_unknown",
-        "pillar_capital_modeling",
+        "track_actuarial_risk_derivatives",
+        "pillar_insurance_carrier_transformation",
         "skill_insurance_guidewire",
         "fact_ey_guidewire_001"
       ],
       "link_class_by_fact": {
         "fact_ey_guidewire_001": "primary"
       },
-      "source_ledger_ref": "fact_ey_guidewire_001"
+      "source_ledger_ref": "fact_ey_guidewire_001",
+      "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES"
     },
     {
       "skill_id": "skill_insurance_claims_automation",
       "fact_id_links": [
         "fact_ey_guidewire_001"
       ],
-      "pillar": "pillar_capital_modeling",
-      "subpillar": "claims_automation",
+      "pillar": "pillar_insurance_carrier_transformation",
+      "subpillar": "claims_process_modernization",
       "career_stage": "early_career",
       "source_resume_files": [
         "Chief AI Officer - Amit Ayer.docx"
       ],
-      "source_snippets": [],
+      "source_snippets": [
+        "User-approved EY graph design: insurance core modernization spanning policy administration, claims automation, billing, rating, underwriting handoffs, integration/data conversion, and BI handoffs; Guidewire is an example platform, not the claim boundary."
+      ],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
-        "QUANT_TRADING_HPC": 1.0
+        "INSURANCE_CARRIER_TRANSFORMATION": 1.0,
+        "INSURER_IT_AI_ENABLEMENT": 0.95,
+        "REGULATED_AI_GOVERNANCE": 0.8,
+        "CONSULTING_DELIVERY_LEADERSHIP": 0.75,
+        "DATA_ANALYTICS_LEADERSHIP": 0.65
       },
       "allowed_phrases": [
-        "claims automation",
-        "claims processing",
-        "FNOL"
+        "claims process modernization",
+        "claims workflow requirements",
+        "policy-to-claims core handoff awareness"
       ],
-      "forbidden_phrases": [],
+      "forbidden_phrases": [
+        "detailed claims operations ownership",
+        "straight-through claims processing",
+        "AI claims automation outcomes",
+        "unsupported claims leakage reduction"
+      ],
       "allowed_sections": [
         "competencies",
         "executive_summary",
@@ -41709,59 +42812,71 @@
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_actuarial_financial_engineering",
-      "domain_id": "domain_enterprise_risk",
-      "domain": "Enterprise Risk",
-      "capability": "pricing_actuarial",
+      "domain_id": "domain_insurance_core_modernization",
+      "domain": "Insurance Core Modernization",
+      "capability": "claims_process_modernization",
       "source_concepts": [],
       "repo_evidence_files": [],
       "node_type": "skill_row",
       "ats_keywords": [
-        "claims automation",
-        "claims processing",
-        "FNOL",
-        "straight-through processing",
-        "claims modernization"
+        "claims modernization",
+        "claims workflow requirements",
+        "policy-to-claims handoffs",
+        "P&C core systems"
       ],
-      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
-      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
-      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
-      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
-      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
-      "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW",
+      "achievement_framing_guidance": "Frame only as claims-process modernization within insurance core platform requirements and handoffs; do not claim detailed claims operations ownership.",
+      "quantification_policy": "No invented numbers; require approved metric_outcome_ids for counts, dollar values, percentages, or cycle-time claims.",
+      "narrative_synthesis_guidance": "Synthesize through reb_ey_insurance_core_modernization and linked metric_outcome_ids; skill_id alone is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when EY role_episode_bundle_id and approved metric_outcome_ids support the claim.",
+      "zero_hallucination_guardrail": "Do not claim detailed claims operations ownership, straight-through claims processing, or AI claims automation outcomes.",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM",
       "graph_hop_path": [
-        "track_unknown",
-        "pillar_capital_modeling",
+        "track_actuarial_risk_derivatives",
+        "pillar_insurance_carrier_transformation",
         "skill_insurance_claims_automation",
         "fact_ey_guidewire_001"
       ],
       "link_class_by_fact": {
         "fact_ey_guidewire_001": "primary"
       },
-      "source_ledger_ref": "fact_ey_guidewire_001"
+      "source_ledger_ref": "fact_ey_guidewire_001",
+      "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES"
     },
     {
       "skill_id": "skill_insurance_policy_administration",
       "fact_id_links": [
         "fact_ey_guidewire_001"
       ],
-      "pillar": "pillar_capital_modeling",
-      "subpillar": "policy_administration",
+      "pillar": "pillar_insurance_carrier_transformation",
+      "subpillar": "policy_lifecycle_rules_configuration",
       "career_stage": "early_career",
       "source_resume_files": [
         "Chief AI Officer - Amit Ayer.docx"
       ],
-      "source_snippets": [],
+      "source_snippets": [
+        "User-approved EY graph design: insurance core modernization spanning policy administration, claims automation, billing, rating, underwriting handoffs, integration/data conversion, and BI handoffs; Guidewire is an example platform, not the claim boundary."
+      ],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "role_family_weights": {
-        "QUANT_TRADING_HPC": 1.0
+        "INSURANCE_CARRIER_TRANSFORMATION": 1.0,
+        "INSURER_IT_AI_ENABLEMENT": 0.95,
+        "REGULATED_AI_GOVERNANCE": 0.8,
+        "CONSULTING_DELIVERY_LEADERSHIP": 0.75,
+        "DATA_ANALYTICS_LEADERSHIP": 0.65
       },
       "allowed_phrases": [
-        "policy administration",
-        "policy admin"
+        "rules-based policy administration",
+        "policy lifecycle modernization",
+        "product/rate/rule configuration",
+        "endorsement and renewal workflow design",
+        "policy admin system-of-record modernization"
       ],
-      "forbidden_phrases": [],
+      "forbidden_phrases": [
+        "unsupported speed-to-market percentage",
+        "policy administration ownership without EY bundle evidence"
+      ],
       "allowed_sections": [
         "competencies",
         "executive_summary",
@@ -41775,9 +42890,9 @@
       "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_actuarial_financial_engineering",
-      "domain_id": "domain_enterprise_risk",
-      "domain": "Enterprise Risk",
-      "capability": "pricing_actuarial",
+      "domain_id": "domain_insurance_core_modernization",
+      "domain": "Insurance Core Modernization",
+      "capability": "policy_lifecycle_rules_configuration",
       "source_concepts": [],
       "repo_evidence_files": [],
       "node_type": "skill_row",
@@ -41785,26 +42900,29 @@
         "policy administration",
         "PAS",
         "policy lifecycle",
-        "policy admin modernization",
-        "core insurance systems"
+        "product configuration",
+        "rate rules",
+        "endorsements",
+        "renewals"
       ],
-      "achievement_framing_guidance": "Frame pricing_actuarial with scope, mechanism, and outcome; metrics only from linked fact_id.",
-      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
-      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
-      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
-      "zero_hallucination_guardrail": "Do not claim pricing_actuarial beyond repo evidence and linked facts; fail closed if proof missing.",
-      "confidence_grade": "LOW",
-      "confidence_grade_derived": "LOW",
+      "achievement_framing_guidance": "Frame as configurable policy lifecycle modernization, not generic policy admin exposure.",
+      "quantification_policy": "No invented numbers; require approved metric_outcome_ids for counts, dollar values, percentages, or cycle-time claims.",
+      "narrative_synthesis_guidance": "Synthesize through reb_ey_insurance_core_modernization and linked metric_outcome_ids; skill_id alone is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when EY role_episode_bundle_id and approved metric_outcome_ids support the claim.",
+      "zero_hallucination_guardrail": "Do not claim product launch speed or regulatory-change cycle-time metrics unless promoted to metric_outcome_nodes.",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM",
       "graph_hop_path": [
-        "track_unknown",
-        "pillar_capital_modeling",
+        "track_actuarial_risk_derivatives",
+        "pillar_insurance_carrier_transformation",
         "skill_insurance_policy_administration",
         "fact_ey_guidewire_001"
       ],
       "link_class_by_fact": {
         "fact_ey_guidewire_001": "primary"
       },
-      "source_ledger_ref": "fact_ey_guidewire_001"
+      "source_ledger_ref": "fact_ey_guidewire_001",
+      "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES"
     },
     {
       "skill_id": "skill_cloud_aws_rehosting",
@@ -45337,6 +46455,1009 @@
         "exp_insurtech_001": "primary"
       },
       "source_ledger_ref": "exp_insurtech_001"
+    },
+    {
+      "node_type": "skill_row",
+      "pillar": "pillar_agentic_ai_platforms",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "source_resume_files": [],
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.95,
+        "CTO_FIELD_CTO": 0.95,
+        "EXECUTIVE_LEADERSHIP": 0.9,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.9,
+        "REGULATED_AI_GOVERNANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.85,
+        "PARTNERSHIPS_GTM": 0.45
+      },
+      "forbidden_phrases": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "primary_fact_id": "fact_engineering_platform_001",
+      "source_ledger_ref": "fact_engineering_platform_001",
+      "skill_id": "skill_unify_agentic_l0_route_policy_dispatch",
+      "domain": "Agentic Runtime Routing and Dispatch",
+      "domain_id": "domain_agentic_runtime_routing_dispatch",
+      "subpillar": "L0 route policy dispatch",
+      "capability": "L0 route policy dispatch for agentic runtime selection",
+      "source_concepts": [
+        "L0RouteContract",
+        "G07RoutePolicy",
+        "RoutePolicyDispatch"
+      ],
+      "repo_evidence_files": [
+        "apps_rg/runtime/orchestration/"
+      ],
+      "source_snippets": [
+        "Designed L0 route-policy dispatch so agentic workflows select deterministic execution paths before tool or model invocation."
+      ],
+      "allowed_phrases": [
+        "L0 route-policy dispatch",
+        "deterministic agent routing policy",
+        "agentic runtime route contract"
+      ],
+      "ats_keywords": [
+        "agentic AI platform",
+        "deterministic routing",
+        "runtime orchestration",
+        "route policy"
+      ],
+      "achievement_framing_guidance": "Frame L0 route policy dispatch for agentic runtime selection with platform scope, runtime mechanism, and graph-approved metric IDs.",
+      "zero_hallucination_guardrail": "Do not claim L0 route policy dispatch for agentic runtime selection beyond Unify graph evidence and linked facts; fail closed if proof missing.",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_unify_agentic_l0_route_policy_dispatch",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      }
+    },
+    {
+      "node_type": "skill_row",
+      "pillar": "pillar_agentic_ai_platforms",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "source_resume_files": [],
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.95,
+        "CTO_FIELD_CTO": 0.95,
+        "EXECUTIVE_LEADERSHIP": 0.9,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.9,
+        "REGULATED_AI_GOVERNANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.85,
+        "PARTNERSHIPS_GTM": 0.45
+      },
+      "forbidden_phrases": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "primary_fact_id": "fact_engineering_platform_001",
+      "source_ledger_ref": "fact_engineering_platform_001",
+      "skill_id": "skill_unify_agentic_multi_agent_orchestration_contracts",
+      "domain": "Agentic Multi-Agent Orchestration",
+      "domain_id": "domain_agentic_multi_agent_orchestration",
+      "subpillar": "Multi-agent orchestration contracts",
+      "capability": "multi-agent orchestration contracts for propose/execute handoff",
+      "source_concepts": [
+        "L2ProposeL3Execute",
+        "OrchestrationContract",
+        "AgentHandoffBoundary"
+      ],
+      "repo_evidence_files": [
+        "apps_rg/runtime/orchestration/",
+        "docs/architecture/adr/"
+      ],
+      "source_snippets": [
+        "Designed multi-agent orchestration contracts separating proposal, execution, and verification responsibilities across governed runtime layers."
+      ],
+      "allowed_phrases": [
+        "multi-agent orchestration contracts",
+        "propose/execute handoff boundaries",
+        "agent handoff contract design"
+      ],
+      "ats_keywords": [
+        "multi-agent orchestration",
+        "agent handoff",
+        "agentic AI architecture",
+        "workflow orchestration"
+      ],
+      "achievement_framing_guidance": "Frame multi-agent orchestration contracts for propose/execute handoff with platform scope, runtime mechanism, and graph-approved metric IDs.",
+      "zero_hallucination_guardrail": "Do not claim multi-agent orchestration contracts for propose/execute handoff beyond Unify graph evidence and linked facts; fail closed if proof missing.",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_unify_agentic_multi_agent_orchestration_contracts",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      }
+    },
+    {
+      "node_type": "skill_row",
+      "pillar": "pillar_agentic_ai_platforms",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "source_resume_files": [],
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.95,
+        "CTO_FIELD_CTO": 0.95,
+        "EXECUTIVE_LEADERSHIP": 0.9,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.9,
+        "REGULATED_AI_GOVERNANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.85,
+        "PARTNERSHIPS_GTM": 0.45
+      },
+      "forbidden_phrases": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "primary_fact_id": "fact_engineering_platform_001",
+      "source_ledger_ref": "fact_engineering_platform_001",
+      "skill_id": "skill_unify_agentic_graphrag_context_pack_grounding",
+      "domain": "Agentic Context Engineering and Graph Grounding",
+      "domain_id": "domain_agentic_context_graph_grounding",
+      "subpillar": "GraphRAG context pack grounding",
+      "capability": "GraphRAG context-pack grounding for evidence-bound agent outputs",
+      "source_concepts": [
+        "GraphRAG",
+        "ContextPackAssembly",
+        "EvidenceGrounding"
+      ],
+      "repo_evidence_files": [
+        "apps_rg/fact_inventory/",
+        "artifacts/adg/"
+      ],
+      "source_snippets": [
+        "Designed graph-grounded context packs so generated agent outputs consume graph evidence rather than flat skill lists or JD-only language."
+      ],
+      "allowed_phrases": [
+        "GraphRAG context-pack grounding",
+        "graph-grounded context assembly",
+        "evidence-bound agent output"
+      ],
+      "ats_keywords": [
+        "GraphRAG",
+        "context engineering",
+        "retrieval grounding",
+        "evidence graph"
+      ],
+      "achievement_framing_guidance": "Frame GraphRAG context-pack grounding for evidence-bound agent outputs with platform scope, runtime mechanism, and graph-approved metric IDs.",
+      "zero_hallucination_guardrail": "Do not claim GraphRAG context-pack grounding for evidence-bound agent outputs beyond Unify graph evidence and linked facts; fail closed if proof missing.",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_unify_agentic_graphrag_context_pack_grounding",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      }
+    },
+    {
+      "node_type": "skill_row",
+      "pillar": "pillar_agentic_ai_platforms",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "source_resume_files": [],
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.95,
+        "CTO_FIELD_CTO": 0.95,
+        "EXECUTIVE_LEADERSHIP": 0.9,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.9,
+        "REGULATED_AI_GOVERNANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.85,
+        "PARTNERSHIPS_GTM": 0.45
+      },
+      "forbidden_phrases": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "primary_fact_id": "fact_engineering_platform_001",
+      "source_ledger_ref": "fact_engineering_platform_001",
+      "skill_id": "skill_unify_agentic_tool_sandbox_egress_controls",
+      "domain": "Agentic Tool Execution and Sandbox Controls",
+      "domain_id": "domain_agentic_tool_sandbox_controls",
+      "subpillar": "Tool sandbox egress controls",
+      "capability": "tool sandbox egress controls for bounded agent execution",
+      "source_concepts": [
+        "SandboxedExecution",
+        "SideEffectBounds",
+        "EgressPolicy"
+      ],
+      "repo_evidence_files": [
+        "apps_rg/runtime/"
+      ],
+      "source_snippets": [
+        "Designed sandbox and egress-control boundaries for agent tool execution with explicit side-effect limits."
+      ],
+      "allowed_phrases": [
+        "tool sandbox egress controls",
+        "bounded agent tool execution",
+        "side-effect-limited tool use"
+      ],
+      "ats_keywords": [
+        "tool use",
+        "sandboxed execution",
+        "egress controls",
+        "AI safety controls"
+      ],
+      "achievement_framing_guidance": "Frame tool sandbox egress controls for bounded agent execution with platform scope, runtime mechanism, and graph-approved metric IDs.",
+      "zero_hallucination_guardrail": "Do not claim tool sandbox egress controls for bounded agent execution beyond Unify graph evidence and linked facts; fail closed if proof missing.",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_unify_agentic_tool_sandbox_egress_controls",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      }
+    },
+    {
+      "node_type": "skill_row",
+      "pillar": "pillar_agentic_ai_platforms",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "source_resume_files": [],
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.95,
+        "CTO_FIELD_CTO": 0.95,
+        "EXECUTIVE_LEADERSHIP": 0.9,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.9,
+        "REGULATED_AI_GOVERNANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.85,
+        "PARTNERSHIPS_GTM": 0.45
+      },
+      "forbidden_phrases": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "primary_fact_id": "fact_engineering_platform_001",
+      "source_ledger_ref": "fact_engineering_platform_001",
+      "skill_id": "skill_unify_agentic_runtime_gate_verdict_contracts",
+      "domain": "Agentic Runtime Gates and Verdict Contracts",
+      "domain_id": "domain_agentic_runtime_gate_verdicts",
+      "subpillar": "Runtime gate verdict contracts",
+      "capability": "runtime gate verdict contracts for agent execution release control",
+      "source_concepts": [
+        "GateMesh",
+        "GateVerdict",
+        "ExitControl"
+      ],
+      "repo_evidence_files": [
+        "apps_rg/runtime/validators/"
+      ],
+      "source_snippets": [
+        "Designed gate verdict contracts that decide whether agent outputs continue, repair, roll back, or stop."
+      ],
+      "allowed_phrases": [
+        "runtime gate verdict contracts",
+        "agent execution release control",
+        "continue/repair/rollback gate logic"
+      ],
+      "ats_keywords": [
+        "AI governance",
+        "runtime gates",
+        "evaluation gates",
+        "release control"
+      ],
+      "achievement_framing_guidance": "Frame runtime gate verdict contracts for agent execution release control with platform scope, runtime mechanism, and graph-approved metric IDs.",
+      "zero_hallucination_guardrail": "Do not claim runtime gate verdict contracts for agent execution release control beyond Unify graph evidence and linked facts; fail closed if proof missing.",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_unify_agentic_runtime_gate_verdict_contracts",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      }
+    },
+    {
+      "node_type": "skill_row",
+      "pillar": "pillar_agentic_ai_platforms",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "source_resume_files": [],
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.95,
+        "CTO_FIELD_CTO": 0.95,
+        "EXECUTIVE_LEADERSHIP": 0.9,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.9,
+        "REGULATED_AI_GOVERNANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.85,
+        "PARTNERSHIPS_GTM": 0.45
+      },
+      "forbidden_phrases": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "primary_fact_id": "fact_engineering_platform_001",
+      "source_ledger_ref": "fact_engineering_platform_001",
+      "skill_id": "skill_unify_agentic_human_override_escalation_paths",
+      "domain": "Agentic Human Override and Escalation Design",
+      "domain_id": "domain_agentic_human_override_escalation",
+      "subpillar": "Human override escalation paths",
+      "capability": "human override and escalation paths for governed agentic workflows",
+      "source_concepts": [
+        "HumanOverride",
+        "EscalationPath",
+        "HITLGovernance"
+      ],
+      "repo_evidence_files": [
+        "apps_rg/runtime/validators/",
+        "docs/architecture/adr/"
+      ],
+      "source_snippets": [
+        "Designed human override and escalation paths for governed agentic workflows when runtime gates cannot prove safe continuation."
+      ],
+      "allowed_phrases": [
+        "human override escalation paths",
+        "human-in-the-loop agent governance",
+        "safe continuation escalation"
+      ],
+      "ats_keywords": [
+        "human-in-the-loop",
+        "AI governance",
+        "agent escalation",
+        "risk controls"
+      ],
+      "achievement_framing_guidance": "Frame human override and escalation paths for governed agentic workflows with platform scope, runtime mechanism, and graph-approved metric IDs.",
+      "zero_hallucination_guardrail": "Do not claim human override and escalation paths for governed agentic workflows beyond Unify graph evidence and linked facts; fail closed if proof missing.",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_unify_agentic_human_override_escalation_paths",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      }
+    },
+    {
+      "node_type": "skill_row",
+      "pillar": "pillar_agentic_ai_platforms",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "source_resume_files": [],
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.95,
+        "CTO_FIELD_CTO": 0.95,
+        "EXECUTIVE_LEADERSHIP": 0.9,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.9,
+        "REGULATED_AI_GOVERNANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.85,
+        "PARTNERSHIPS_GTM": 0.45
+      },
+      "forbidden_phrases": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "primary_fact_id": "fact_engineering_platform_001",
+      "source_ledger_ref": "fact_engineering_platform_001",
+      "skill_id": "skill_unify_agentic_replay_key_audit_manifest_design",
+      "domain": "Agentic Replay and Audit Manifests",
+      "domain_id": "domain_agentic_replay_audit_manifests",
+      "subpillar": "Replay key audit manifest design",
+      "capability": "replay key and audit manifest design for reproducible agent runs",
+      "source_concepts": [
+        "ReplayKey",
+        "AuditManifestRef",
+        "ExecutionTrace"
+      ],
+      "repo_evidence_files": [
+        "artifacts/apps_rg/runtime_proofs/"
+      ],
+      "source_snippets": [
+        "Designed replay keys and audit manifests to make agent runs reproducible and reviewable after execution."
+      ],
+      "allowed_phrases": [
+        "replay key audit manifest design",
+        "reproducible agent run traces",
+        "agent execution audit manifests"
+      ],
+      "ats_keywords": [
+        "observability",
+        "audit trail",
+        "execution traces",
+        "AI platform reliability"
+      ],
+      "achievement_framing_guidance": "Frame replay key and audit manifest design for reproducible agent runs with platform scope, runtime mechanism, and graph-approved metric IDs.",
+      "zero_hallucination_guardrail": "Do not claim replay key and audit manifest design for reproducible agent runs beyond Unify graph evidence and linked facts; fail closed if proof missing.",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_unify_agentic_replay_key_audit_manifest_design",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      }
+    },
+    {
+      "node_type": "skill_row",
+      "pillar": "pillar_agentic_ai_platforms",
+      "career_stage": "current",
+      "career_epoch": "epoch_agentic_ai_runtime_architecture",
+      "source_resume_files": [],
+      "fact_id_links": [
+        "fact_engineering_platform_001"
+      ],
+      "user_confirmed": true,
+      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "role_family_weights": {
+        "ENGINEERING_PLATFORM": 1.0,
+        "AI_SOLUTIONS_ARCHITECTURE": 0.95,
+        "CTO_FIELD_CTO": 0.95,
+        "EXECUTIVE_LEADERSHIP": 0.9,
+        "PRODUCT_TECHNICAL_STRATEGY": 0.9,
+        "REGULATED_AI_GOVERNANCE": 0.85,
+        "AI_GOVERNANCE_RISK": 0.85,
+        "PARTNERSHIPS_GTM": 0.45
+      },
+      "forbidden_phrases": [
+        "autonomous AGI without oversight",
+        "unsupervised production agents"
+      ],
+      "allowed_sections": [
+        "executive_summary",
+        "competencies",
+        "headline",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "projection_behavior": "rank_and_project_facts",
+      "external_claim_policy": "derived_supported_with_fact",
+      "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
+      "narrative_synthesis_guidance": "Synthesize only from linked fact_id_links and approved bundles; skill_id is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
+      "career_track_id": "TRACK_GENAI_AGENTIC",
+      "confidence_grade": "HIGH",
+      "confidence_grade_derived": "HIGH",
+      "primary_fact_id": "fact_engineering_platform_001",
+      "source_ledger_ref": "fact_engineering_platform_001",
+      "skill_id": "skill_unify_agentic_runtime_proof_bundle_lineage",
+      "domain": "Agentic Runtime Proof and Lineage",
+      "domain_id": "domain_agentic_runtime_proof_lineage",
+      "subpillar": "Runtime proof bundle lineage",
+      "capability": "runtime proof bundle lineage for claim-safe agent outputs",
+      "source_concepts": [
+        "RuntimeProofBundle",
+        "ClaimLineage",
+        "ProofPoolMetadata"
+      ],
+      "repo_evidence_files": [
+        "apps_rg/runtime/sections/",
+        "artifacts/apps_rg/runtime_proofs/"
+      ],
+      "source_snippets": [
+        "Designed runtime proof bundle lineage tying agent outputs back to graph evidence and proof-pool metadata."
+      ],
+      "allowed_phrases": [
+        "runtime proof bundle lineage",
+        "claim-safe agent output lineage",
+        "proof-pool metadata binding"
+      ],
+      "ats_keywords": [
+        "AI platform governance",
+        "proof lineage",
+        "traceability",
+        "agentic AI runtime"
+      ],
+      "achievement_framing_guidance": "Frame runtime proof bundle lineage for claim-safe agent outputs with platform scope, runtime mechanism, and graph-approved metric IDs.",
+      "zero_hallucination_guardrail": "Do not claim runtime proof bundle lineage for claim-safe agent outputs beyond Unify graph evidence and linked facts; fail closed if proof missing.",
+      "graph_hop_path": [
+        "track_genai_agentic",
+        "pillar_agentic_ai_platforms",
+        "skill_unify_agentic_runtime_proof_bundle_lineage",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary"
+      }
+    },
+    {
+      "fact_id_links": [
+        "fact_ey_guidewire_001"
+      ],
+      "pillar": "pillar_insurance_carrier_transformation",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "User-approved EY graph design: insurance core modernization spanning policy administration, claims automation, billing, rating, underwriting handoffs, integration/data conversion, and BI handoffs; Guidewire is an example platform, not the claim boundary."
+      ],
+      "user_confirmed": true,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "INSURANCE_CARRIER_TRANSFORMATION": 1.0,
+        "INSURER_IT_AI_ENABLEMENT": 0.95,
+        "REGULATED_AI_GOVERNANCE": 0.8,
+        "CONSULTING_DELIVERY_LEADERSHIP": 0.75,
+        "DATA_ANALYTICS_LEADERSHIP": 0.65
+      },
+      "forbidden_phrases": [
+        "unsupported TCO savings",
+        "unsupported implementation count",
+        "unsupported cycle-time reduction"
+      ],
+      "allowed_sections": [
+        "competencies",
+        "executive_summary",
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_insurance_core_modernization",
+      "domain": "Insurance Core Modernization",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "quantification_policy": "No invented numbers; require approved metric_outcome_ids for counts, dollar values, percentages, or cycle-time claims.",
+      "narrative_synthesis_guidance": "Synthesize through reb_ey_insurance_core_modernization and linked metric_outcome_ids; skill_id alone is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when EY role_episode_bundle_id and approved metric_outcome_ids support the claim.",
+      "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM",
+      "link_class_by_fact": {
+        "fact_ey_guidewire_001": "primary"
+      },
+      "source_ledger_ref": "fact_ey_guidewire_001",
+      "skill_id": "skill_insurance_product_rate_rules_configuration",
+      "subpillar": "product_rate_rules_configuration",
+      "capability": "product_rate_rules_configuration",
+      "allowed_phrases": [
+        "product/rate/rule configuration",
+        "insurance product configuration templates",
+        "rating and underwriting rule handoffs",
+        "regulatory-change configuration workflow"
+      ],
+      "ats_keywords": [
+        "product configuration",
+        "rate rules",
+        "rating",
+        "underwriting rules",
+        "regulatory change"
+      ],
+      "achievement_framing_guidance": "Show policy modernization through product/rate/rule configuration and underwriting handoffs; avoid unsupported launch-time metrics.",
+      "zero_hallucination_guardrail": "Do not claim ownership of actuarial rate filing or pricing approval unless another graph node proves it.",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_insurance_carrier_transformation",
+        "skill_insurance_product_rate_rules_configuration",
+        "fact_ey_guidewire_001"
+      ]
+    },
+    {
+      "fact_id_links": [
+        "fact_ey_guidewire_001"
+      ],
+      "pillar": "pillar_insurance_carrier_transformation",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "User-approved EY graph design: insurance core modernization spanning policy administration, claims automation, billing, rating, underwriting handoffs, integration/data conversion, and BI handoffs; Guidewire is an example platform, not the claim boundary."
+      ],
+      "user_confirmed": true,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "INSURANCE_CARRIER_TRANSFORMATION": 1.0,
+        "INSURER_IT_AI_ENABLEMENT": 0.95,
+        "REGULATED_AI_GOVERNANCE": 0.8,
+        "CONSULTING_DELIVERY_LEADERSHIP": 0.75,
+        "DATA_ANALYTICS_LEADERSHIP": 0.65
+      },
+      "forbidden_phrases": [
+        "unsupported TCO savings",
+        "unsupported implementation count",
+        "unsupported cycle-time reduction"
+      ],
+      "allowed_sections": [
+        "competencies",
+        "executive_summary",
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_insurance_core_modernization",
+      "domain": "Insurance Core Modernization",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "quantification_policy": "No invented numbers; require approved metric_outcome_ids for counts, dollar values, percentages, or cycle-time claims.",
+      "narrative_synthesis_guidance": "Synthesize through reb_ey_insurance_core_modernization and linked metric_outcome_ids; skill_id alone is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when EY role_episode_bundle_id and approved metric_outcome_ids support the claim.",
+      "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM",
+      "link_class_by_fact": {
+        "fact_ey_guidewire_001": "primary"
+      },
+      "source_ledger_ref": "fact_ey_guidewire_001",
+      "skill_id": "skill_insurance_billing_rating_underwriting_handoffs",
+      "subpillar": "billing_rating_underwriting_handoffs",
+      "capability": "billing_rating_underwriting_handoffs",
+      "allowed_phrases": [
+        "billing/rating/underwriting handoff design",
+        "agency and direct bill workflow handoffs",
+        "commission and receivables workflow integration",
+        "underwriting-to-policy lifecycle handoffs"
+      ],
+      "ats_keywords": [
+        "billing",
+        "rating",
+        "underwriting",
+        "agency bill",
+        "direct bill",
+        "commissions",
+        "receivables"
+      ],
+      "achievement_framing_guidance": "Position as cross-core handoff design across billing, rating, underwriting, policy, and commissions workflows.",
+      "zero_hallucination_guardrail": "Do not claim billing cost reduction or premium lift without approved metric nodes.",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_insurance_carrier_transformation",
+        "skill_insurance_billing_rating_underwriting_handoffs",
+        "fact_ey_guidewire_001"
+      ]
+    },
+    {
+      "fact_id_links": [
+        "fact_ey_guidewire_001"
+      ],
+      "pillar": "pillar_insurance_carrier_transformation",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "User-approved EY graph design: insurance core modernization spanning policy administration, claims automation, billing, rating, underwriting handoffs, integration/data conversion, and BI handoffs; Guidewire is an example platform, not the claim boundary."
+      ],
+      "user_confirmed": true,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "INSURANCE_CARRIER_TRANSFORMATION": 1.0,
+        "INSURER_IT_AI_ENABLEMENT": 0.95,
+        "REGULATED_AI_GOVERNANCE": 0.8,
+        "CONSULTING_DELIVERY_LEADERSHIP": 0.75,
+        "DATA_ANALYTICS_LEADERSHIP": 0.65
+      },
+      "forbidden_phrases": [
+        "unsupported TCO savings",
+        "unsupported implementation count",
+        "unsupported cycle-time reduction"
+      ],
+      "allowed_sections": [
+        "competencies",
+        "executive_summary",
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_insurance_core_modernization",
+      "domain": "Insurance Core Modernization",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "quantification_policy": "No invented numbers; require approved metric_outcome_ids for counts, dollar values, percentages, or cycle-time claims.",
+      "narrative_synthesis_guidance": "Synthesize through reb_ey_insurance_core_modernization and linked metric_outcome_ids; skill_id alone is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when EY role_episode_bundle_id and approved metric_outcome_ids support the claim.",
+      "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM",
+      "link_class_by_fact": {
+        "fact_ey_guidewire_001": "primary"
+      },
+      "source_ledger_ref": "fact_ey_guidewire_001",
+      "skill_id": "skill_insurance_core_integration_data_conversion",
+      "subpillar": "core_integration_data_conversion",
+      "capability": "core_integration_data_conversion",
+      "allowed_phrases": [
+        "legacy-to-core data conversion mapping",
+        "source-target data dictionary design",
+        "core system integration analysis",
+        "conversion reconciliation controls"
+      ],
+      "ats_keywords": [
+        "data conversion",
+        "data dictionary",
+        "source-target mapping",
+        "integration analysis",
+        "reconciliation controls"
+      ],
+      "achievement_framing_guidance": "Frame modernization through data dictionary, source-target mapping, integrations, and conversion controls.",
+      "zero_hallucination_guardrail": "Do not claim number of converted policies, claims, or accounts unless a source artifact promotes that metric.",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_insurance_carrier_transformation",
+        "skill_insurance_core_integration_data_conversion",
+        "fact_ey_guidewire_001"
+      ]
+    },
+    {
+      "fact_id_links": [
+        "fact_ey_guidewire_001"
+      ],
+      "pillar": "pillar_insurance_carrier_transformation",
+      "career_stage": "early_career",
+      "source_resume_files": [
+        "Chief AI Officer - Amit Ayer.docx"
+      ],
+      "source_snippets": [
+        "User-approved EY graph design: insurance core modernization spanning policy administration, claims automation, billing, rating, underwriting handoffs, integration/data conversion, and BI handoffs; Guidewire is an example platform, not the claim boundary."
+      ],
+      "user_confirmed": true,
+      "support_level": "DERIVED_SUPPORTED",
+      "role_family_weights": {
+        "INSURANCE_CARRIER_TRANSFORMATION": 1.0,
+        "INSURER_IT_AI_ENABLEMENT": 0.95,
+        "REGULATED_AI_GOVERNANCE": 0.8,
+        "CONSULTING_DELIVERY_LEADERSHIP": 0.75,
+        "DATA_ANALYTICS_LEADERSHIP": 0.65
+      },
+      "forbidden_phrases": [
+        "unsupported TCO savings",
+        "unsupported implementation count",
+        "unsupported cycle-time reduction"
+      ],
+      "allowed_sections": [
+        "competencies",
+        "executive_summary",
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "visibility_rule": "role_family_match",
+      "evidence_risk": "low",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "human_confirmation_required": false,
+      "external_claim_policy": "external_resume_claim_requires_active_fact_or_confirmed_snippet",
+      "projection_behavior": "rank_and_project_facts",
+      "career_epoch": "epoch_actuarial_financial_engineering",
+      "domain_id": "domain_insurance_core_modernization",
+      "domain": "Insurance Core Modernization",
+      "source_concepts": [],
+      "repo_evidence_files": [],
+      "node_type": "skill_row",
+      "quantification_policy": "No invented numbers; require approved metric_outcome_ids for counts, dollar values, percentages, or cycle-time claims.",
+      "narrative_synthesis_guidance": "Synthesize through reb_ey_insurance_core_modernization and linked metric_outcome_ids; skill_id alone is not proof.",
+      "claim_verification_policy": "External resume claims allowed only when EY role_episode_bundle_id and approved metric_outcome_ids support the claim.",
+      "career_track_id": "TRACK_ACTUARIAL_RISK_DERIVATIVES",
+      "confidence_grade": "MEDIUM",
+      "confidence_grade_derived": "MEDIUM",
+      "link_class_by_fact": {
+        "fact_ey_guidewire_001": "primary"
+      },
+      "source_ledger_ref": "fact_ey_guidewire_001",
+      "skill_id": "skill_insurance_core_to_bi_reporting_handoff",
+      "subpillar": "core_to_bi_reporting_handoff",
+      "capability": "core_to_bi_reporting_handoff",
+      "allowed_phrases": [
+        "core-to-BI reporting handoff design",
+        "claims/policy/billing data mart handoffs",
+        "operational reporting requirements traceability",
+        "insurance core analytics readiness"
+      ],
+      "ats_keywords": [
+        "DataHub",
+        "InfoCenter",
+        "BI",
+        "reporting",
+        "data mart",
+        "analytics readiness"
+      ],
+      "achievement_framing_guidance": "Connect core modernization to BI-ready policy, claims, billing, and operational reporting data flows.",
+      "zero_hallucination_guardrail": "Do not claim dashboard adoption, analytics ROI, or BI warehouse delivery beyond approved graph evidence.",
+      "graph_hop_path": [
+        "track_actuarial_risk_derivatives",
+        "pillar_insurance_carrier_transformation",
+        "skill_insurance_core_to_bi_reporting_handoff",
+        "fact_ey_guidewire_001"
+      ]
     }
   ],
   "actuarial_career_matrix": [
@@ -45851,12 +47972,12 @@
     },
     {
       "skill": "cloud_partner_ecosystem",
-      "description": "IBM–AWS and multi-vendor ecosystem",
+      "description": "IBM\u2013AWS and multi-vendor ecosystem",
       "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
-      "source_evidence": "IBM–AWS alliance for financial services",
+      "source_evidence": "IBM\u2013AWS alliance for financial services",
       "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "cloud transformations"
       ],
       "role_relevance": [
@@ -46136,7 +48257,7 @@
       "where_to_use": [
         "executive_summary"
       ],
-      "risk_notes": "Partial P&L wording in archive—do not upgrade to full P&L owner.",
+      "risk_notes": "Partial P&L wording in archive\u2014do not upgrade to full P&L owner.",
       "linked_fact_id": null,
       "skill_id": "skill_partner_pnl_oversight"
     },
@@ -46330,12 +48451,12 @@
     },
     {
       "skill": "ibm_aws_alliance_joint_revenue",
-      "description": "IBM–AWS alliance joint revenue growth frameworks",
+      "description": "IBM\u2013AWS alliance joint revenue growth frameworks",
       "source_resume_file": "Partnerships_Alliances_-_Amit_Ayer.txt",
-      "source_evidence": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM–AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%",
+      "source_evidence": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%",
       "support_status": "DERIVED_SUPPORTED",
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "20% joint revenue",
         "AI-driven sales frameworks"
       ],
@@ -46445,7 +48566,7 @@
         "executive_summary",
         "unify_narrative"
       ],
-      "risk_notes": "Archive-only; no MEDIUM/HIGH candidate fact — not linked to fact_customer_success_001 (LOW).",
+      "risk_notes": "Archive-only; no MEDIUM/HIGH candidate fact \u2014 not linked to fact_customer_success_001 (LOW).",
       "linked_fact_id": null,
       "skill_id": "skill_customer_nrr_predictive_analytics_20pct",
       "target_pillar": "pillar_customer_stakeholder"
@@ -46567,7 +48688,7 @@
         "competencies",
         "ibm_narrative"
       ],
-      "risk_notes": "MEDIUM; fact_solutions_001 BLOCKED in SRFS audit — graph skill anchor only.",
+      "risk_notes": "MEDIUM; fact_solutions_001 BLOCKED in SRFS audit \u2014 graph skill anchor only.",
       "linked_fact_id": "fact_solutions_001",
       "skill_id": "skill_p2_gtm_solution_mapping",
       "target_pillar": "pillar_gtm_presales_motion",
@@ -46741,7 +48862,7 @@
         "competencies",
         "ibm_bullets"
       ],
-      "risk_notes": "MEDIUM; fact_solutions_002 BLOCKED in SRFS audit — graph anchor only.",
+      "risk_notes": "MEDIUM; fact_solutions_002 BLOCKED in SRFS audit \u2014 graph anchor only.",
       "linked_fact_id": "fact_solutions_002",
       "skill_id": "skill_p2_tech_reference_architecture",
       "target_pillar": "pillar_technical_presales_accelerators",
@@ -46918,7 +49039,7 @@
         "competencies",
         "ibm_bullets"
       ],
-      "risk_notes": "Policy-admin systems mentioned as legacy modernization target only — not ownership of policy-admin product.",
+      "risk_notes": "Policy-admin systems mentioned as legacy modernization target only \u2014 not ownership of policy-admin product.",
       "linked_fact_id": "bul_insurtech_001",
       "evidence_confidence": "HIGH"
     },
@@ -46954,14 +49075,14 @@
       "target_pillar": "pillar_underwriting_claims_ops_ai",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
-      "source_evidence": "Re-architected systems for high availability (99.99% uptime) and real-time ingestion — internal traversal only; no underwriting/claims ops AI ownership.",
+      "source_evidence": "Re-architected systems for high availability (99.99% uptime) and real-time ingestion \u2014 internal traversal only; no underwriting/claims ops AI ownership.",
       "support_status": "INTERNAL_ONLY",
       "allowed_phrases": [],
       "role_relevance": [
         "INSURANCE_CARRIER_TRANSFORMATION"
       ],
       "where_to_use": [],
-      "risk_notes": "Source bullet references underwriting systems — forbidden for external claims; INTERNAL_ONLY.",
+      "risk_notes": "Source bullet references underwriting systems \u2014 forbidden for external claims; INTERNAL_ONLY.",
       "linked_fact_id": "bul_insurtech_003",
       "evidence_confidence": "LOW"
     },
@@ -46987,7 +49108,7 @@
         "competencies",
         "ibm_narrative"
       ],
-      "risk_notes": "InsurTech employment spine — exp_insurtech_001.",
+      "risk_notes": "InsurTech employment spine \u2014 exp_insurtech_001.",
       "linked_fact_id": "exp_insurtech_001",
       "evidence_confidence": "HIGH"
     },
@@ -47036,7 +49157,7 @@
         "executive_summary",
         "competencies"
       ],
-      "risk_notes": "fact_governance_004 MEDIUM — DRAFT until human confirm.",
+      "risk_notes": "fact_governance_004 MEDIUM \u2014 DRAFT until human confirm.",
       "linked_fact_id": "fact_governance_004",
       "evidence_confidence": "MEDIUM"
     },
@@ -47063,7 +49184,7 @@
         "competencies",
         "unify_bullets"
       ],
-      "risk_notes": "fact_governance_003 HIGH candidate — human_confirm per ledger policy.",
+      "risk_notes": "fact_governance_003 HIGH candidate \u2014 human_confirm per ledger policy.",
       "linked_fact_id": "fact_governance_003",
       "evidence_confidence": "HIGH"
     },
@@ -47087,7 +49208,7 @@
       "where_to_use": [
         "executive_summary"
       ],
-      "risk_notes": "fact_governance_001 MEDIUM — not transaction-banking product scope.",
+      "risk_notes": "fact_governance_001 MEDIUM \u2014 not transaction-banking product scope.",
       "linked_fact_id": "fact_governance_001",
       "evidence_confidence": "MEDIUM"
     },
@@ -47113,7 +49234,7 @@
         "competencies",
         "ibm_narrative"
       ],
-      "risk_notes": "Broad regulated-enterprise fluency — not payments/liquidity/trade claims.",
+      "risk_notes": "Broad regulated-enterprise fluency \u2014 not payments/liquidity/trade claims.",
       "linked_fact_id": null,
       "evidence_confidence": "HIGH"
     },
@@ -47138,7 +49259,7 @@
         "competencies",
         "unify_bullets"
       ],
-      "risk_notes": "W11 interoperability via platform integration evidence — not brokerage distribution.",
+      "risk_notes": "W11 interoperability via platform integration evidence \u2014 not brokerage distribution.",
       "linked_fact_id": "fact_engineering_platform_002",
       "evidence_confidence": "MEDIUM"
     },
@@ -48505,7 +50626,7 @@
         "unify_bullets",
         "competencies"
       ],
-      "risk_notes": "fact_partnerships_gtm_001 MEDIUM — human confirmation before external MEDIUM claim.",
+      "risk_notes": "fact_partnerships_gtm_001 MEDIUM \u2014 human confirmation before external MEDIUM claim.",
       "linked_fact_id": "fact_partnerships_gtm_001",
       "evidence_confidence": "MEDIUM"
     },
@@ -48545,17 +50666,17 @@
     },
     {
       "item_id": "skill_partner_cloud_partner_ecosystem",
-      "topic": "IBM–AWS alliance",
+      "topic": "IBM\u2013AWS alliance",
       "evidence_class": "DIRECT_EVIDENCE",
       "activation_decision": "DRAFT",
-      "notes": "Partnerships archive IBM–AWS alliance line."
+      "notes": "Partnerships archive IBM\u2013AWS alliance line."
     },
     {
       "item_id": "skill_partner_co_selling",
       "topic": "Co-sell with SI/ISV",
       "evidence_class": "DIRECT_EVIDENCE",
       "activation_decision": "DRAFT",
-      "notes": "Archive co-selling frameworks; fact_partnerships_gtm_003 MEDIUM — not marketplace co-sell."
+      "notes": "Archive co-selling frameworks; fact_partnerships_gtm_003 MEDIUM \u2014 not marketplace co-sell."
     },
     {
       "item_id": "skill_partner_partner_engineering",
@@ -48583,7 +50704,7 @@
       "topic": "Hyperscaler alliance co-sell",
       "evidence_class": "DIRECT_EVIDENCE",
       "activation_decision": "DRAFT",
-      "notes": "bul_ibm_005 base resume; co-sell/alliance — forbidden: marketplace listing."
+      "notes": "bul_ibm_005 base resume; co-sell/alliance \u2014 forbidden: marketplace listing."
     },
     {
       "item_id": "skill_sr_w12_joint_ai_solution_development",
@@ -48675,7 +50796,7 @@
       "evidence_sources": [
         "internal_only_resilience_signal"
       ],
-      "rationale": "Directional internal bridge to resilience pillar — external claims blocked.",
+      "rationale": "Directional internal bridge to resilience pillar \u2014 external claims blocked.",
       "external_claim_policy": "internal_traversal_only",
       "edge_id": "edge_bridge_insurance_to_underwriting_claims_ops_pillar_insurance_carrier_transformation_to_pillar_underwriting_claims_ops_ai"
     },
@@ -48777,7 +50898,7 @@
       "evidence_fact_ids": [
         "fact_partnerships_gtm_003"
       ],
-      "rationale": "Co-sell/alliance traversal to partner GTM pillar — not cloud marketplace listing (marketplace phrase blocked on pillar).",
+      "rationale": "Co-sell/alliance traversal to partner GTM pillar \u2014 not cloud marketplace listing (marketplace phrase blocked on pillar).",
       "external_claim_policy": "internal_traversal_only",
       "edge_id": "edge_bridge_marketplace_to_partner_gtm_pillar_hyperscaler_marketplace_partner_gtm_to_pillar_partner_gtm_alliances"
     },

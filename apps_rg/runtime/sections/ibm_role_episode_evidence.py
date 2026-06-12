@@ -120,17 +120,7 @@ def _skill_rows_by_id(repo_root: Path | None = None) -> dict[str, dict[str, Any]
 
 def _bundle_allowed_metric_outcome_ids(bundle: dict[str, Any]) -> list[str]:
     """Return graph-native metric outcome IDs linked to this bundle."""
-    linked = [str(x) for x in (bundle.get("linked_metric_outcome_ids") or []) if str(x).strip()]
-    if linked:
-        return linked
-    ids: list[str] = []
-    for entry in bundle.get("promotable_metrics") or []:
-        s = str(entry).lower()
-        if "20%" in s and "joint" in s:
-            ids.append("metric_ibm_20pct_joint_revenue_growth")
-        elif "weeks" in s and "hours" in s:
-            ids.append("metric_ibm_stress_test_cycle_weeks_to_hours")
-    return ids
+    return [str(x) for x in (bundle.get("linked_metric_outcome_ids") or []) if str(x).strip()]
 
 
 def _metric_label(metric_id: str) -> str:
@@ -213,7 +203,7 @@ def build_ibm_role_episode_section_packet(
                 "employer": bundle["employer"],
                 "employer_node_id": bundle["employer_node_id"],
                 "title": bundle.get("title"),
-                "time_window": bundle["time_window"],
+                "time_window": IBM_TIME_WINDOW,
                 "graph_skill_node_ids": list(bundle.get("graph_skill_node_ids") or []),
                 "linked_source_fact_ids": list(bundle.get("linked_source_fact_ids") or []),
                 "linked_archive_signal_ids": list(bundle.get("linked_archive_signal_ids") or []),
@@ -310,7 +300,7 @@ def format_ibm_role_episode_evidence_pack(
     section_id: str = "ibm_bullets",
 ) -> str:
     """C0 body: IBM role episode bundles as proof authority (ibm_bullets slot layout or narrative list)."""
-    from apps_rg.runtime.sections.selected_role_fact_set import metric_derivative_fact_id
+    from apps_rg.runtime.sections.graph_evidence_contract import metric_derivative_fact_id
 
     packet = build_ibm_role_episode_section_packet(section_id)
     runtime_payload["ibm_role_episode_section_packet"] = packet
@@ -380,7 +370,7 @@ def format_ibm_role_episode_evidence_pack(
         lines = [
             f"{slot_id} | compose_one_bullet_from:",
             f"  role_episode_bundle_id: {bundle_id}",
-            f"  employer: {bundle.get('employer')} | time_window: {bundle.get('time_window')}",
+            f"  employer: {bundle.get('employer')} | time_window: {IBM_TIME_WINDOW}",
             f"  title: {bundle.get('title')}",
             f"  allowed_source_fact_ids: {list(bundle.get('linked_source_fact_ids') or []) + [slot_id]}",
             f"  allowed_metric_outcome_ids: {[_metric_label(mid) for mid in allowed_metrics] or '(none)'}",
@@ -440,7 +430,7 @@ def _format_narrative_bundle_block(
     bid = bundle_record.get("role_episode_bundle_id", "")
     lines = [
         f"ROLE_EPISODE_BUNDLE {bid}:",
-        f"  employer: {bundle_record.get('employer')} | time_window: {bundle_record.get('time_window')}",
+        f"  employer: {bundle_record.get('employer')} | time_window: {bundle_record.get('time_window') or IBM_TIME_WINDOW}",
         f"  title: {bundle_record.get('title')}",
         f"  graph_skill_node_ids: {bundle_record.get('graph_skill_node_ids')}",
         f"  linked_source_fact_ids: {bundle_record.get('linked_source_fact_ids')}",

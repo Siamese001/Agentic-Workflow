@@ -8,7 +8,7 @@ from apps_rg.runtime.section_proof.section_input_usage_ledger import (
     _is_forbidden_proof_source_fact_id,
     source_fact_base_id,
 )
-from apps_rg.runtime.sections.selected_role_fact_set import is_srfs_disallowed_proof_id
+from apps_rg.runtime.sections.graph_evidence_contract import is_disallowed_proof_id
 
 VALID_PROOF_SOURCES = frozenset({PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH})
 
@@ -113,7 +113,7 @@ def validate_active_proof_pool_source_fact_ids(
             continue
         seen.add(s)
         checked.append(s)
-        if is_srfs_disallowed_proof_id(s):
+        if is_disallowed_proof_id(s):
             rejected_non_proof.append(s)
             su = s.upper().replace(" ", "_")
             if su in ("BRIEFING_ONLY",) or "briefing" in s.lower():
@@ -256,7 +256,7 @@ def scope_ids_membership_only(
         s = str(sid)
         if any(s.startswith(p) for p in forbidden_prefixes):
             forbidden_hits.append(s)
-        if is_srfs_disallowed_proof_id(s) or _is_forbidden_proof_source_fact_id(s)[0]:
+        if is_disallowed_proof_id(s) or _is_forbidden_proof_source_fact_id(s)[0]:
             forbidden_hits.append(s)
             continue
         if not is_id_in_active_proof_pool(s, allowed_fact_ids):

@@ -166,7 +166,7 @@ def build_ibm_phase2_graph_plan_fact(
     section_id: str = "ibm_bullets",
 ) -> dict[str, Any] | None:
     """Plan fact from Phase 2 graph expansion (ledger row optional; graph hop required)."""
-    from apps_rg.runtime.sections.selected_role_fact_set import slice_row_to_plan_fact
+    from apps_rg.runtime.sections.graph_evidence_contract import slice_row_to_plan_fact
 
     hop = list((hop_entry or {}).get("graph_hop_path") or [])
     if not hop:

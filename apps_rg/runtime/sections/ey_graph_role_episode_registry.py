@@ -32,7 +32,6 @@ REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
     "role_episode_bundle_id",
     "employer",
     "title",
-    "time_window",
     "employer_node_id",
     "bundle_theme",
     "claim_text",
@@ -43,7 +42,6 @@ REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
     "linked_source_fact_ids",
     "linked_archive_signal_ids",
     "linked_metric_outcome_ids",
-    "promotable_metrics",
     "metric_candidates",
     "operating_context",
     "bullet_intent",
@@ -109,9 +107,6 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
             f"employer_node_id must be '{EY_EMPLOYER_NODE_ID}', got '{bundle.get('employer_node_id')}'"
         )
 
-    if not bundle.get("time_window"):
-        violations.append("time_window is required and must not be empty")
-
     if not bundle.get("graph_skill_node_ids"):
         violations.append("graph_skill_node_ids must not be empty")
     if not bundle.get("linked_metric_outcome_ids"):
@@ -133,22 +128,13 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
     leaked_edge_fields = sorted(typed_edge_fields & set(bundle.keys()))
     if leaked_edge_fields:
         violations.append(
-            f"typed-edge fields are deferred to Phase II and forbidden in EY Phase I: {leaked_edge_fields}"
+            f"typed-edge fields are excluded by EY edge policy: {leaked_edge_fields}"
         )
 
     section_elig = bundle.get("section_eligibility") or []
     unknown = set(section_elig) - VALID_SECTIONS - {"competencies", "executive_summary"}
     if unknown:
         violations.append(f"Unknown section_eligibility values: {sorted(unknown)}")
-
-    promotable = bundle.get("promotable_metrics") or []
-    for metric_entry in promotable:
-        metric_str = str(metric_entry).upper()
-        for forbidden in HOLD_AND_DO_NOT_PROMOTE_METRICS:
-            if forbidden.upper() in metric_str:
-                violations.append(
-                    f"Forbidden metric '{forbidden}' found in promotable_metrics: {metric_entry}"
-                )
 
     for candidate in bundle.get("metric_candidates") or []:
         if not isinstance(candidate, dict):
@@ -161,7 +147,7 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
                 )
         if str(candidate.get("approval_status") or "").upper() == "PROMOTABLE":
             violations.append(
-                f"metric candidate cannot be PROMOTABLE in EY Phase I: {candidate.get('metric_id')}"
+                f"metric candidate cannot be PROMOTABLE under EY metric policy: {candidate.get('metric_id')}"
             )
 
     if not bundle.get("executive_scope_signals"):

@@ -50,7 +50,6 @@ def build_competencies_lane_args(
     briefing: str,
     target_role: str | None = None,
     base_resume_ref: str = "",
-    selected_role_fact_set: str = "",
 ) -> SimpleNamespace:
     """Namespace compatible with competencies lane execution."""
     ns = SimpleNamespace(
@@ -65,7 +64,6 @@ def build_competencies_lane_args(
         briefing=str(briefing).strip() or BRIEFING_DEFAULT,
         target_role=(str(target_role).strip() if target_role else None),
         base_resume_ref=str(base_resume_ref or ""),
-        selected_role_fact_set=str(selected_role_fact_set or ""),
     )
     return ns
 

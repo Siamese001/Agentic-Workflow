@@ -159,11 +159,9 @@ def format_jd_targeting_block(
     target_company: str,
     jd_text: str,
     briefing: str,
-    srfs_mode: bool = False,
-    graph_proof_pool_mode: bool | None = None,
+    graph_proof_pool_mode: bool = False,
 ) -> str:
     """Targeting payload only; non-proof rules live in I0 proof_law_v1."""
-    graph_mode = graph_proof_pool_mode if graph_proof_pool_mode is not None else srfs_mode
     block = (
         f"TARGET_TITLE (positioning only - NOT PROOF): {target_title}\n"
         f"TARGET_COMPANY (targeting only - NOT PROOF): {target_company}\n"
@@ -172,7 +170,7 @@ def format_jd_targeting_block(
         "Use JD_TEXT and BRIEFING to rank and frame evidenced themes only - never as proof. "
         "jd_alignment: targeting_only=true; jd_used_as_proof=false; briefing_used_as_proof=false."
     )
-    if graph_mode:
+    if graph_proof_pool_mode:
         block += (
             " augmented_skills_graph proof pool filters ALLOWED_SOURCE_FACT_IDS; "
             "cite only listed IDs in claim_ledger."
@@ -253,22 +251,12 @@ def format_graph_proof_pool_appendix(runtime_payload: dict[str, Any]) -> str:
     )
 
 
-def format_srfs_role_adaptive_appendix(srfs_integration: dict[str, Any]) -> str:
-    """Deprecated alias: legacy SRFS dicts are ignored; callers should use format_graph_proof_pool_appendix."""
-    _ = srfs_integration
-    return format_graph_proof_pool_appendix({})
-
-
-SRFS_STYLE_ONESHOT_MARKER = "SRFS_BASE_RESUME_STYLE_ONESHOT_V1"
-SRFS_COMPOSITION_ONESHOT_MARKER = "SRFS_COMPOSITION_ONESHOT_V1"
-# Legacy markers retained for grep/tooling continuity only (not emitted in SRFS appendix).
-SRFS_THREE_SENTENCE_EXEC_ARCH_MARKER = "SRFS_THREE_SENTENCE_EXEC_ARCH_V1"
-SRFS_FIVE_PART_EXEC_ARCH_MARKER = "SRFS_FIVE_PART_EXEC_ARCH_V1"
-SRFS_SENTENCE_RESP_SEP_MARKER = "SRFS_SENTENCE_RESP_SEP_V1"
-SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER = "SRFS_FORBIDDEN_PHRASE_CONTRACT_V1"
+GRAPH_EVIDENCE_STYLE_MARKER = "GRAPH_EVIDENCE_STYLE_ONESHOT_V1"
+GRAPH_EVIDENCE_COMPOSITION_MARKER = "GRAPH_EVIDENCE_COMPOSITION_V1"
+GRAPH_EVIDENCE_FORBIDDEN_PHRASE_CONTRACT_MARKER = "GRAPH_EVIDENCE_FORBIDDEN_PHRASE_CONTRACT_V1"
 
 # W4C: global resume_display_text bans (prompt contract; judge_safe may also strip at repair).
-SRFS_FORBIDDEN_PHRASES_ALWAYS: tuple[str, ...] = (
+GRAPH_EVIDENCE_FORBIDDEN_PHRASES_ALWAYS: tuple[str, ...] = (
     "applied depth",
     "documented credential training",
     "quantitative methods training",
@@ -285,11 +273,11 @@ SRFS_FORBIDDEN_PHRASES_ALWAYS: tuple[str, ...] = (
 )
 
 
-def format_srfs_forbidden_phrase_guardrails_block() -> str:
-    """SRFS-only: explicit banned phrases + fact-supported exceptions for GraphRAG/partner engineering."""
-    always = ", ".join(SRFS_FORBIDDEN_PHRASES_ALWAYS)
+def format_graph_evidence_forbidden_phrase_guardrails_block() -> str:
+    """Explicit banned phrases plus fact-supported exceptions for graph-selected evidence."""
+    always = ", ".join(GRAPH_EVIDENCE_FORBIDDEN_PHRASES_ALWAYS)
     return (
-        f'<srfs_forbidden_phrase_contract marker="{SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER}">\n'
+        f'<graph_evidence_forbidden_phrase_contract marker="{GRAPH_EVIDENCE_FORBIDDEN_PHRASE_CONTRACT_MARKER}">\n'
         "**Global forbidden phrases (never emit in resume_display_text):**\n"
         f"- {always}.\n"
         "- **Unsupported GraphRAG claims:** Do not introduce GraphRAG, graph-aware retrieval, or Graph-RAG "
@@ -304,42 +292,35 @@ def format_srfs_forbidden_phrase_guardrails_block() -> str:
         "- **Preserve allowed fact text:** When claim_text for an ALLOWED_SOURCE_FACT_ID includes GraphRAG or partner "
         "terms, you may reuse that exact vocabulary in prose tied to that fact_id; ban **unsupported extrapolation**, "
         "not verbatim allowed-fact wording.\n"
-        "</srfs_forbidden_phrase_contract>\n\n"
+        "</graph_evidence_forbidden_phrase_contract>\n\n"
     )
 
-
-# SRFS_BASE_RESUME_STYLE_ONESHOT_EXEMPLAR removed 2026-05-27 — was never injected into any
-# prompt path (format_srfs_style_only_quality_oneshot_block does not reference it).
-# It also diverged from the YAML example (different S5 wording) creating a maintenance hazard.
-# Style exemplar is now exclusively in executive_summary_examples.yaml (E0 SSOT).
 
 def load_executive_summary_example_after(example_id: str) -> str:
     """Return the ``after`` prose for a multishot example id (style-only; not proof)."""
     return example_after_text("executive_summary", example_id)
 
 
-def format_srfs_style_only_quality_oneshot_block() -> str:
-    """SRFS-only compact reinforcement; style from E0 slot. X2 gates: appended PRODUCT_SHAPE only."""
+def format_graph_evidence_style_quality_block() -> str:
+    """Graph-evidence compact reinforcement; style comes from E0, not from legacy SRFS prompts."""
     return (
-        f'<srfs_style_only_oneshot marker="{SRFS_STYLE_ONESHOT_MARKER}">\n'
-        f'<srfs_composition_oneshot marker="{SRFS_COMPOSITION_ONESHOT_MARKER}">\n'
-        "STYLE_ONLY_NOT_PROOF - SelectedRoleFactSet reinforcement (compact).\n"
+        f'<graph_evidence_style_quality marker="{GRAPH_EVIDENCE_STYLE_MARKER}">\n'
+        f'<graph_evidence_composition marker="{GRAPH_EVIDENCE_COMPOSITION_MARKER}">\n'
+        "STYLE_ONLY_NOT_PROOF - selected_graph_evidence_plan reinforcement (compact).\n"
         "- Proof: C0 HIGH facts + ALLOWED_SOURCE_FACT_IDS only (pa_proof_binding_v1).\n"
         "- JD_TEXT/BRIEFING: targeting-only (pa_targeting_only_v1).\n"
         "- Product shape and X2 gate IDs: see appended PRODUCT_SHAPE (do not restate here).\n"
         "- Voice/density: use E0 many_shot_examples (judge-aligned SVP positives / negatives); do not copy exemplar metrics.\n"
         "- Arc, voice, and credential rules: I0 judge_alignment_contract (not restated here).\n"
         "- Cite every non-credential allowed fact_id (credential/cert facts are waived); document any credential omissions in gap_notes/self_check.\n"
-        + format_srfs_forbidden_phrase_guardrails_block()
+        + format_graph_evidence_forbidden_phrase_guardrails_block()
         + (
-            "<srfs_governance_required_or_explain>\n"
+            "<graph_evidence_governance_required_or_explain>\n"
             "When governance facts are in the allowlist and JD emphasizes governance: cite in claim_ledger or explain "
-            "omission via self_check.srfs_governance_omission_explained=true.\n"
-            "</srfs_governance_required_or_explain>\n"
-            f"</srfs_composition_oneshot>\n"
-            f"<!-- Retired markers (grep only): {SRFS_FIVE_PART_EXEC_ARCH_MARKER}, "
-            f"{SRFS_SENTENCE_RESP_SEP_MARKER}, {SRFS_THREE_SENTENCE_EXEC_ARCH_MARKER} -->\n"
-            "</srfs_style_only_oneshot>\n"
+            "omission via self_check.graph_evidence_governance_omission_explained=true.\n"
+            "</graph_evidence_governance_required_or_explain>\n"
+            "</graph_evidence_composition>\n"
+            "</graph_evidence_style_quality>\n"
         )
     )
 
@@ -485,7 +466,7 @@ def build_executive_summary_assembly_input(
             )
 
             product_patch += "\n\n" + format_graph_targeting_capsule_for_pa(capsule)
-        product_patch += "\n\n" + format_srfs_style_only_quality_oneshot_block()
+        product_patch += "\n\n" + format_graph_evidence_style_quality_block()
     if composition_block:
         product_patch += "\n\n" + composition_block
     return PromptAssemblyInput(
@@ -591,13 +572,13 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
     else:
         compiled = augment_section_compiled_with_product_shape(compiled)
     graph_guard = format_graph_only_quality_guardrails_block()
-    forbidden_guard = format_srfs_forbidden_phrase_guardrails_block()
+    forbidden_guard = format_graph_evidence_forbidden_phrase_guardrails_block()
     art = compiled.artifact
     msgs = [dict(m) for m in art.messages]
     if msgs:
         last = msgs[-1]
         content = str(last.get("content") or "").rstrip()
-        if SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER not in content:
+        if GRAPH_EVIDENCE_FORBIDDEN_PHRASE_CONTRACT_MARKER not in content:
             content = f"{content}\n\n{forbidden_guard}".rstrip()
         last["content"] = f"{content}\n\n{graph_guard}".rstrip() + "\n"
         msgs[-1] = last
@@ -610,20 +591,16 @@ def compile_executive_summary_prompt(runtime_payload: dict[str, Any], *, run_id:
 
 
 __all__ = [
-    "SRFS_COMPOSITION_ONESHOT_MARKER",
-    "SRFS_FORBIDDEN_PHRASE_CONTRACT_MARKER",
-    "SRFS_FORBIDDEN_PHRASES_ALWAYS",
-    "SRFS_STYLE_ONESHOT_MARKER",
-    "SRFS_THREE_SENTENCE_EXEC_ARCH_MARKER",
-    "SRFS_FIVE_PART_EXEC_ARCH_MARKER",
-    "SRFS_SENTENCE_RESP_SEP_MARKER",
+    "GRAPH_EVIDENCE_COMPOSITION_MARKER",
+    "GRAPH_EVIDENCE_FORBIDDEN_PHRASE_CONTRACT_MARKER",
+    "GRAPH_EVIDENCE_FORBIDDEN_PHRASES_ALWAYS",
+    "GRAPH_EVIDENCE_STYLE_MARKER",
     "load_executive_summary_example_after",
     "build_executive_summary_assembly_input",
     "compile_executive_summary_prompt",
-    "format_srfs_forbidden_phrase_guardrails_block",
+    "format_graph_evidence_forbidden_phrase_guardrails_block",
     "format_graph_proof_pool_appendix",
-    "format_srfs_role_adaptive_appendix",
-    "format_srfs_style_only_quality_oneshot_block",
+    "format_graph_evidence_style_quality_block",
     "format_graph_only_quality_guardrails_block",
     "format_jd_targeting_block",
     "load_executive_summary_template_slots",

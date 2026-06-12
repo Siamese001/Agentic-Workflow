@@ -138,6 +138,83 @@ def build_competency_capability_section_packet(
     }
 
 
+def _selected_graph_plan(source: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(source, dict):
+        return {}
+    plan = source.get("selected_graph_evidence_plan")
+    if isinstance(plan, dict):
+        return plan
+    pp_meta = source.get("proof_pool_metadata")
+    if isinstance(pp_meta, dict) and isinstance(pp_meta.get("selected_graph_evidence_plan"), dict):
+        return pp_meta["selected_graph_evidence_plan"]
+    return {}
+
+
+def _filter_packet_by_selected_graph_plan(
+    packet: dict[str, Any],
+    selected_graph_plan: dict[str, Any],
+) -> dict[str, Any]:
+    if not isinstance(selected_graph_plan, dict) or not selected_graph_plan:
+        return packet
+    selected_families = {
+        str(x).strip()
+        for x in (selected_graph_plan.get("selected_competency_families") or [])
+        if str(x).strip()
+    }
+    selected_skills = {
+        str(x).strip()
+        for x in (selected_graph_plan.get("selected_skill_ids") or [])
+        if str(x).strip()
+    }
+    if not selected_families and not selected_skills:
+        return packet
+
+    filtered: list[dict[str, Any]] = []
+    for rec in packet.get("competency_bundles") or []:
+        if not isinstance(rec, dict):
+            continue
+        family = str(rec.get("capability_family") or "").strip()
+        skills = {str(x).strip() for x in (rec.get("graph_skill_node_ids") or []) if str(x).strip()}
+        if selected_families:
+            include = family in selected_families
+        else:
+            include = bool(selected_skills and skills.intersection(selected_skills))
+        if include:
+            filtered.append(rec)
+    if not filtered:
+        return packet
+
+    graph_skill_node_ids_by_category: dict[str, list[str]] = {}
+    source_fact_ids_by_category: dict[str, list[str]] = {}
+    families_present: set[str] = set()
+    for rec in filtered:
+        family = str(rec.get("capability_family") or "").strip()
+        if family:
+            families_present.add(family)
+        for cat_id in rec.get("target_taxonomy_category_ids") or []:
+            cat = str(cat_id)
+            graph_skill_node_ids_by_category.setdefault(cat, [])
+            for sid in rec.get("graph_skill_node_ids") or []:
+                sid_s = str(sid)
+                if sid_s not in graph_skill_node_ids_by_category[cat]:
+                    graph_skill_node_ids_by_category[cat].append(sid_s)
+            source_fact_ids_by_category.setdefault(cat, [])
+            for fid in rec.get("linked_source_fact_ids") or []:
+                fid_s = str(fid)
+                if fid_s not in source_fact_ids_by_category[cat]:
+                    source_fact_ids_by_category[cat].append(fid_s)
+
+    out = dict(packet)
+    out["competency_bundles"] = filtered
+    out["competency_bundle_ids"] = [str(r.get("competency_bundle_id") or "") for r in filtered]
+    out["capability_families_present"] = sorted(families_present)
+    out["graph_skill_node_ids_by_category"] = graph_skill_node_ids_by_category
+    out["source_fact_ids_by_category"] = source_fact_ids_by_category
+    out["selected_graph_evidence_plan_applied"] = True
+    out["selected_competency_families"] = sorted(selected_families)
+    return out
+
+
 def attach_competency_bundles_to_proof_pool_metadata(
     meta: dict[str, Any],
     *,
@@ -148,6 +225,7 @@ def attach_competency_bundles_to_proof_pool_metadata(
     if section_id != "competencies":
         return meta
     packet = build_competency_capability_section_packet(section_id, repo_root=repo_root)
+    packet = _filter_packet_by_selected_graph_plan(packet, _selected_graph_plan(meta))
     out = dict(meta)
     out["competency_capability_bundle_consumption"] = True
     out["competency_capability_bundle_consumption_mode"] = "competency_bundle_required"
@@ -180,6 +258,7 @@ def format_competency_capability_evidence_pack(
 ) -> str:
     """C0 body: competency capability bundles as proof authority (graph-backed, per family)."""
     packet = build_competency_capability_section_packet(section_id)
+    packet = _filter_packet_by_selected_graph_plan(packet, _selected_graph_plan(runtime_payload))
     runtime_payload["competency_capability_section_packet"] = packet
     runtime_payload["competency_bundle_ids"] = packet["competency_bundle_ids"]
 

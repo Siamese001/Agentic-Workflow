@@ -22,13 +22,11 @@ REQUIRED_BUNDLE_FIELDS = {
     "role_episode_bundle_id",
     "employer",
     "title",
-    "time_window",
     "employer_node_id",
     "bundle_theme",
     "graph_skill_node_ids",
     "linked_source_fact_ids",
     "linked_metric_outcome_ids",
-    "promotable_metrics",
     "held_metrics",
     "excluded_metrics",
     "section_eligibility",
@@ -51,7 +49,7 @@ CASES = [
         "node_id": "employment_exp_ey_001",
         "lanes": {"ey_bullets", "ey_narrative"},
         "source_fact": "exp_ey_001",
-        "bundle_count": 6,
+        "bundle_count": 5,
         "extra_required": {"claim_text", "support_level", "metric_candidates"},
     },
 ]
@@ -73,10 +71,9 @@ INSURTECH_REQUIRED_ROOTS = {
 
 EY_REQUIRED_ROOTS = {
     "reb_ey_regulatory_analytics_modernization",
-    "reb_ey_model_validation_regulatory_remediation",
     "reb_ey_capital_optimization_solvency",
     "reb_ey_ccar_capital_liquidity_stress_testing",
-    "reb_ey_guidewire_insurance_platform",
+    "reb_ey_insurance_core_modernization",
     "reb_ey_erm_risk_governance",
 }
 
@@ -172,12 +169,16 @@ def test_metric_outcome_nodes_are_graph_ssot_and_bundle_linked() -> None:
         assert nodes, f"{c['file'].name} missing metric_outcome_nodes"
         assert set(nodes) == set(approved)
         assert policy.get("approval_model") == "presence_in_metric_outcome_nodes_is_approval"
+        assert policy.get("approved_metric_outcome_ids_role") == "derived_review_index_not_claim_authority"
+        assert policy.get("bundle_metric_surface") == (
+            "linked_metric_outcome_ids only; metric_outcome_nodes is claim authority"
+        )
 
         linked_seen: set[str] = set()
         for mid, node in nodes.items():
             assert node["metric_outcome_id"] == mid
             assert node["employer"] == c["employer"]
-            assert node["time_window"]
+            assert "time_window" not in node
             assert node["approved"] is True
             assert node["approval_status"] == "APPROVED_GRAPH_SSOT"
             assert node["support_level"] == "approved_by_graph_presence"
@@ -187,12 +188,7 @@ def test_metric_outcome_nodes_are_graph_ssot_and_bundle_linked() -> None:
         for b in doc["bundles"]:
             linked = list(b.get("linked_metric_outcome_ids") or [])
             assert linked, f"{b['role_episode_bundle_id']} missing linked metric ids"
-            promotable_ids = {
-                str(m.get("metric_outcome_id"))
-                for m in b.get("promotable_metrics") or []
-                if isinstance(m, dict)
-            }
-            assert promotable_ids == set(linked)
+            assert "promotable_metrics" not in b
             for mid in linked:
                 assert mid in nodes, f"{b['role_episode_bundle_id']} links unknown metric {mid}"
                 assert b["role_episode_bundle_id"] in nodes[mid]["bundle_bindings"]
@@ -252,13 +248,15 @@ def test_insurtech_deferred_metrics_are_not_graph_claim_authority() -> None:
         assert "tco" not in approved_surface
 
 
-def test_ey_roots_are_complete_phase_i_without_typed_edges() -> None:
+def test_ey_roots_are_complete_with_bundle_to_skill_edge_policy() -> None:
     doc = json.loads((FI / "ey_role_episode_bundles.json").read_text(encoding="utf-8"))
     ids = {b["role_episode_bundle_id"] for b in doc["bundles"]}
     assert ids == EY_REQUIRED_ROOTS
     invariants = doc.get("invariants") or {}
-    assert invariants.get("typed_edges_deferred_to_phase_ii") is True
-    assert invariants.get("graph_edge_contract_excluded_phase_i") is True
+    assert "phase_plan" not in doc
+    assert invariants.get("typed_edge_policy") == "excluded"
+    assert invariants.get("edge_model") == "bundle_to_skill_only"
+    assert invariants.get("graph_edge_contract_policy") == "excluded_until_typed_edge_model_adopted"
     for b in doc["bundles"]:
         serialized = json.dumps(b, sort_keys=True)
         assert "graph_edge_contract" not in b

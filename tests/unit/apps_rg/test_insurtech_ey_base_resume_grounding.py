@@ -83,8 +83,8 @@ def test_end_to_end_proof_pool_nonempty_for_all_four_lanes() -> None:
     expectations = {
         "insurtech_bullets": ("reb_insurtech_", 12),
         "insurtech_narrative": ("reb_insurtech_", 12),
-        "ey_bullets": ("reb_ey_", 6),
-        "ey_narrative": ("reb_ey_", 6),
+        "ey_bullets": ("reb_ey_", 5),
+        "ey_narrative": ("reb_ey_", 5),
     }
     for sid, (prefix, expected_count) in expectations.items():
         pool, *_ = load_section_proof_for_lane(section_id=sid, args=args, repo_root=REPO)

@@ -23,7 +23,7 @@ from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
     skill_row_eligible_for_external_claim,
     skill_row_eligible_for_internal_ranking,
 )
-from apps_rg.fact_inventory.selected_role_fact_set import infer_role_family_priorities
+from apps_rg.fact_inventory.role_family_selection import infer_role_family_priorities
 from apps_rg.fact_inventory.track_weighted_graph_expansion import (
     DEFAULT_TRACK_WEIGHTS,
     TAXONOMY_TO_PROJECTION_ROLE,

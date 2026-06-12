@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from apps_rg.fact_inventory.selected_role_fact_set import digest_text
+from apps_rg.fact_inventory.role_family_selection import digest_text
 from apps_rg.runtime.briefing_resolution import BriefingResolutionError, resolve_briefing_for_lanes
 from apps_rg.runtime.jd_resolution import JdResolutionError, resolve_jd_for_lanes
 

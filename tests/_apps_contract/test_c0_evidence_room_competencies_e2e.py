@@ -45,7 +45,6 @@ def _competencies_args() -> argparse.Namespace:
         target_role=TARGET_TITLE_DEFAULT,
         jd_text=JD_TEXT_DEFAULT,
         briefing=BRIEFING_DEFAULT,
-        selected_role_fact_set="",
         broad_skills_ledger_path="",
         base_resume_ref="",
         provider="qwen_vllm",

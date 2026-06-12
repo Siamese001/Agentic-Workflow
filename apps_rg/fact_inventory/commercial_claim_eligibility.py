@@ -246,20 +246,42 @@ def merge_claim_eligible_into_lane_pool(
     taxonomy: dict[str, Any],
     role_family_priorities: tuple[Any, ...],
 ) -> list[dict[str, Any]]:
-    from apps_rg.fact_inventory.selected_role_fact_set import (
-        classify_company_lane,
-        sorted_high_rows_global,
-    )
+    from apps_rg.fact_inventory import candidate_fact_ledger as ledger_mod
 
-    lane_rows = [r for r in claim_eligible_rows if classify_company_lane(str(r.get("company") or "")) == lane]
+    def _classify_company_lane(company_raw: str) -> str:
+        u = company_raw.upper()
+        if "UNIFY" in u:
+            return "unify"
+        if "IBM" in u:
+            return "ibm_only"
+        if "INSUR" in u or "POLICY ADMINISTRATION" in u:
+            return "insurtech"
+        if "ERNST" in u or "YOUNG" in u or u.strip() == "EY" or " EY " in f" {u} ":
+            return "ey"
+        return "other"
+
+    priority_rank = {str(rp.role_family): i for i, rp in enumerate(role_family_priorities)}
+    if not priority_rank:
+        priority_rank = {rid: i for i, rid in enumerate(sorted(ledger_mod.taxonomy_role_family_ids(taxonomy)))}
+
+    def _rank(row: dict[str, Any]) -> tuple[int, int, str]:
+        rf_norm = {
+            ledger_mod.normalize_role_family_id(str(x), taxonomy=taxonomy)
+            for x in row.get("role_families_supported") or []
+        }
+        overlaps = rf_norm.intersection(priority_rank.keys())
+        if overlaps:
+            best = min(priority_rank[rf] for rf in overlaps)
+            summed = sum(priority_rank[rf] for rf in overlaps)
+            return (best, summed, str(row.get("candidate_fact_id") or ""))
+        penal = len(priority_rank) + 10
+        return (penal, penal, str(row.get("candidate_fact_id") or ""))
+
+    lane_rows = [r for r in claim_eligible_rows if _classify_company_lane(str(r.get("company") or "")) == lane]
     if not lane_rows:
         return high_lane_rows
     merged = list(high_lane_rows) + list(lane_rows)
-    return sorted_high_rows_global(
-        merged,
-        role_family_priorities=role_family_priorities,
-        taxonomy=taxonomy,
-    )
+    return sorted(merged, key=lambda row: (_rank(row), -len(str(row.get("claim_text") or ""))))
 
 
 __all__ = [
