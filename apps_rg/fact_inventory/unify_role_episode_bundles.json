@@ -241,6 +241,42 @@
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
       "activation_status": "ACTIVE_CONFIRMED",
       "notes": "Partnerships/co-sell is a primary Unify theme that JD-fit selection surfaces for partner-facing roles (operator 2026-06-11). Unify-attributed partner facts; graph skills grounded in the Unify AI-platform window."
+    },
+    {
+      "role_episode_bundle_id": "reb_unify_enterprise_adoption_revenue",
+      "employer": "Unify Consulting",
+      "title": "AI Platform Leader",
+      "employer_node_id": "employment_exp_unify_001",
+      "bundle_theme": "Enterprise AI Adoption, Commercial Revenue & Renewals",
+      "executive_scope_signals": [
+        "Drove enterprise AI adoption by aligning generative-AI workflows to CFO priorities",
+        "Grew commercial revenue and renewals via consumption-based licensing"
+      ],
+      "architecture_scope_signals": [
+        "CFO-aligned enterprise AI adoption and value realization",
+        "Consumption-based / usage-based SaaS licensing and forecasting",
+        "Commercial revenue growth and renewal expansion"
+      ],
+      "graph_skill_node_ids": [
+        "skill_partner_customer_deal_support",
+        "skill_partner_sales_revenue_targets",
+        "skill_revops_usage_based_subscription_forecasting",
+        "skill_enterprise_workflow_adoption"
+      ],
+      "linked_source_fact_ids": ["exp_unify_001"],
+      "linked_archive_signal_ids": [],
+      "promotable_metrics": [],
+      "held_metrics": [
+        "$5M ACV from CFO-aligned enterprise adoption (HOLD - base_resume anchored)",
+        "93% annual renewal via consumption-based licensing (HOLD - base_resume anchored)"
+      ],
+      "excluded_metrics": [],
+      "operating_context": "Enterprise AI adoption aligned to CFO priorities driving $5M ACV; consumption-based SaaS licensing shortening sales cycles and sustaining high renewals.",
+      "bullet_intent": "Frame as enterprise AI adoption / commercial revenue leadership; metrics only from base-resume anchored Unify facts (fact_sales_accounts_001/004, fact_revenue_ops_003).",
+      "section_eligibility": ["unify_bullets", "unify_narrative"],
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "notes": "Second Unify commercial bundle so partnerships/revenue can reach ~2 of 6 unify bullets for partner-facing JDs (operator split ~30%). Unify-attributed revenue facts."
     }
   ]
 }

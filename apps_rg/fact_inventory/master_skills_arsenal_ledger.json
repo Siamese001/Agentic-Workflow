@@ -26370,7 +26370,8 @@
         "customer success leader"
       ],
       "allowed_sections": [
-        "unify_narrative"
+        "unify_narrative",
+        "unify_bullets"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -26500,7 +26501,8 @@
       ],
       "forbidden_phrases": [],
       "allowed_sections": [
-        "unify_bullets"
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",
@@ -27002,7 +27004,8 @@
       "forbidden_phrases": [],
       "allowed_sections": [
         "executive_summary",
-        "unify_bullets"
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "medium",
@@ -34298,7 +34301,8 @@
       "allowed_sections": [
         "competencies",
         "executive_summary",
-        "unify_bullets"
+        "unify_bullets",
+        "unify_narrative"
       ],
       "visibility_rule": "role_family_match",
       "evidence_risk": "low",

@@ -42,6 +42,29 @@ UNIFY_BULLET_SLOT_BUNDLE_MAP: dict[str, str] = {
     "bul_unify_006": "reb_unify_platform_commercialization_leadership",
 }
 
+def resolve_unify_bullet_slot_bundle_map(
+    role_family_key: str = "",
+    *,
+    repo_root: Path | None = None,
+) -> dict[str, str]:
+    """JD-fit slot→bundle map for unify_bullets (delegates to the shared selector)."""
+    from apps_rg.runtime.sections.jd_fit_bundle_selection import (
+        resolve_jd_fit_slot_bundle_map,
+    )
+
+    if not role_family_key:
+        return dict(UNIFY_BULLET_SLOT_BUNDLE_MAP)
+    graph = load_augmented_skills_graph(repo_root=repo_root or _repo_root())
+    return resolve_jd_fit_slot_bundle_map(
+        role_family_key=role_family_key,
+        default_map=UNIFY_BULLET_SLOT_BUNDLE_MAP,
+        slot_ids=UNIFY_BULLET_SLOT_IDS,
+        bundles_for_section=lambda sec: get_bundles_for_section(sec),
+        section_id="unify_bullets",
+        skill_index=_skill_rows_by_id(repo_root),
+        graph=graph,
+    )
+
 UNIFY_FORBIDDEN_C0_PROMPT_SUBSTRINGS: tuple[str, ...] = (
     "CANONICAL UNIFY FACTS",
     "rewrite from these",
@@ -248,9 +271,21 @@ def format_unify_role_episode_evidence_pack(
         return out
 
     skill_index = _skill_rows_by_id()
+    # JD-fit slot→bundle map: a partnerships JD promotes the partner/co-sell bundle into a
+    # slot; an engineering JD reproduces the static default. Resolved role family flows in
+    # via proof_pool_metadata (set by the lane); absent → static default.
+    _ppm = runtime_payload.get("proof_pool_metadata") or {}
+    _tw = _ppm.get("track_weighted_graph_expansion") or {}
+    _role_family_key = str(
+        _tw.get("projection_role_family_key")
+        or _ppm.get("projection_role_family_key")
+        or ""
+    )
+    slot_bundle_map = resolve_unify_bullet_slot_bundle_map(_role_family_key)
+    runtime_payload["unify_bullet_slot_bundle_map_resolved"] = slot_bundle_map
     slot_blocks: list[str] = []
     for slot_id in UNIFY_BULLET_SLOT_IDS:
-        bundle_id = UNIFY_BULLET_SLOT_BUNDLE_MAP.get(slot_id, "")
+        bundle_id = slot_bundle_map.get(slot_id, "")
         bundle = get_bundle_by_id(bundle_id) if bundle_id else None
         if not bundle:
             slot_blocks.append(f"{slot_id} | ERROR: missing bundle {bundle_id}")
@@ -328,6 +363,7 @@ __all__ = [
     "assert_unify_section_may_consume_graph_context",
     "attach_role_episode_bundles_to_proof_pool_metadata",
     "build_unify_role_episode_section_packet",
+    "resolve_unify_bullet_slot_bundle_map",
     "format_unify_role_episode_evidence_pack",
     "is_flat_skill_only_graph_packet",
 ]
