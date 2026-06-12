@@ -11,12 +11,16 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     EM_DASH,
     FIRST_PERSON_PATTERN,
     INLINE_SOURCE_PATTERN,
-    REQUIRED_JUDGE_PROVIDERS,
     check_json_parse_valid,
     check_judge_rows_present,
     check_judge_schema_valid,
     check_target_title_inflation,
     has_jd_phrase_copy,
+    required_judges_for_section,
+)
+from apps_rg.runtime.sections.section_product_shape_ssot import (
+    HEADLINE_WORD_MAX,
+    HEADLINE_WORD_MIN,
 )
 from apps_rg.runtime.sections.section_product_shape_ssot import (
     HEADLINE_WORD_MAX,
@@ -1102,8 +1106,9 @@ def run_headline_x2_gates(
         "Silent mock fallback detected.",
     )
 
-    judges_ok, judges_reason = check_judge_rows_present(x1d_judges)
-    add("x2_x1d_required_judges_present", judges_ok, judges_reason, REQUIRED_JUDGE_PROVIDERS, judges_reason)
+    _required_judges = required_judges_for_section("headline")
+    judges_ok, judges_reason = check_judge_rows_present(x1d_judges, required_providers=_required_judges)
+    add("x2_x1d_required_judges_present", judges_ok, judges_reason, _required_judges, judges_reason)
 
     if x1d_judges:
         blocked_invalid = []

@@ -65,14 +65,27 @@ def test_u0_jd_targeting_mode_default_ssot():
 
 
 def test_jd_resolution_logs_warning_on_default_ssot(caplog):
-    """resolve_jd_for_lanes emits a WARNING when falling back to DEFAULT_SSOT."""
+    """A REAL run (run-context present) that falls back to DEFAULT_SSOT emits a WARNING.
+
+    The warning is gated on run-context (target_company/target_role) so the module-level
+    ``JD_TEXT_DEFAULT = resolve_jd_for_lanes()`` no-arg constant does not emit it at import (G23 noise).
+    """
     with caplog.at_level(logging.WARNING, logger="apps_rg.runtime.jd_resolution"):
-        r = resolve_jd_for_lanes()
+        r = resolve_jd_for_lanes(target_company="AIG", target_role="VP")
     assert r.jd_source == JdSource.DEFAULT_SSOT
     warning_msgs = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert any("DEFAULT_SSOT" in m.getMessage() for m in warning_msgs), (
         "Expected a DEFAULT_SSOT warning log, got: " + str([m.getMessage() for m in caplog.records])
     )
+
+
+def test_jd_resolution_no_warning_on_module_default_no_context(caplog):
+    """The no-arg (module-default) computation must NOT warn — it is not a real run (G23 hygiene)."""
+    with caplog.at_level(logging.WARNING, logger="apps_rg.runtime.jd_resolution"):
+        r = resolve_jd_for_lanes()
+    assert r.jd_source == JdSource.DEFAULT_SSOT
+    warning_msgs = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert not any("DEFAULT_SSOT" in m.getMessage() for m in warning_msgs)
 
 
 def test_jd_resolution_no_warning_on_run_specific(caplog):

@@ -201,8 +201,20 @@ def _build_section_evidence_trace(
     app_payload: dict[str, Any],
     *,
     timestamp_iso: str,
+    raw_dense_hit_count: int = 0,
+    post_filter_survivor_count: int | None = None,
+    applied_where_filter: str = "",
+    similarity_threshold: float = 0.0,
+    embedding_model_id: str = "",
+    embedding_dimension: int = 0,
+    filter_removed_all: bool = False,
 ) -> SectionEvidenceTrace:
-    """One ``SectionEvidenceTrace`` per profile section after dense+sparse merge."""
+    """One ``SectionEvidenceTrace`` per profile section after dense+sparse merge.
+
+    G8 observability fields (raw hit count / applied where / post-filter survivors / threshold /
+    embedding id+dim) are additive and default to neutral values when a caller does not supply
+    them — no behavior change to retrieval.
+    """
     del timestamp_iso  # reserved for future receipt alignment
     resume_text = str((app_payload.get("resume_payload") or {}).get("resume_text") or "")
     jd_text = str((app_payload.get("jd_payload") or {}).get("jd_text") or "")
@@ -243,6 +255,17 @@ def _build_section_evidence_trace(
         source_classes=classes,
         retrieval_query=query or "",
         retrieval_score=0.0,
+        raw_dense_hit_count=int(raw_dense_hit_count),
+        post_filter_survivor_count=(
+            len(section_dense_items)
+            if post_filter_survivor_count is None
+            else int(post_filter_survivor_count)
+        ),
+        applied_where_filter=applied_where_filter,
+        similarity_threshold=float(similarity_threshold),
+        embedding_model_id=embedding_model_id,
+        embedding_dimension=int(embedding_dimension),
+        filter_removed_all=bool(filter_removed_all),
     )
 
 
@@ -405,6 +428,13 @@ def c0_retrieve_apps_rg(
             raise C0EvidenceGapError(emb_settings.decisive_reason)
 
     if not merged_items and validated_request is not None:
+        # G11/G14: base-resume + JD enter C0 as identity/targeting CONTEXT only — explicitly tagged
+        # non-authoritative so they can never be admitted as proof for generated content.
+        from apps_rg.runtime.c0.c0_section_authority import (
+            AUTHORITY_CLASS_NON_PROOF_CONTEXT,
+            assert_base_resume_identity_only,
+        )
+
         app_payload = getattr(validated_request, "app_payload", None) or {}
         jd_payload = app_payload.get("jd_payload", {})
         if jd_payload and "jd_text" in jd_payload:
@@ -415,6 +445,8 @@ def c0_retrieve_apps_rg(
                     source_type="app_payload_inline",
                     retrieval_timestamp=ts,
                     allowed_prompt_slot=ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
+                    authority_class=AUTHORITY_CLASS_NON_PROOF_CONTEXT,
+                    source_owner_or_authority="jd_targeting_non_authoritative",
                 )
             )
         resume_payload = app_payload.get("resume_payload", {})
@@ -426,8 +458,13 @@ def c0_retrieve_apps_rg(
                     source_type="app_payload_inline",
                     retrieval_timestamp=ts,
                     allowed_prompt_slot=ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
+                    authority_class=AUTHORITY_CLASS_NON_PROOF_CONTEXT,
+                    source_owner_or_authority="base_resume_identity_non_authoritative",
                 )  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             )
+        # Lock the declared base_resume_static_anchors_only constraint: non-proof context must
+        # never carry proof authority. Fails loud if a future change mistags it.
+        assert_base_resume_identity_only(merged_items)
 
     chroma_lane_items: list[EvidenceItem] = []
     section_gate_verdicts: list[Any] = []
@@ -1260,6 +1297,8 @@ def _perform_bounded_section_retrieval(
     _sec_emb = resolve_apps_rg_embedding_settings(chroma_persist_dir=chromadb_path)
     assert_dense_retrieval_allowed(_sec_emb)
     model = _get_embedding_model()
+    # G8: embedding identity is a run-level constant; capture once for per-section traces.
+    _embedding_model_id = str(getattr(_sec_emb, "embedding_model_name", "") or "")
 
     sections = profile.get_sections()
     if section_id_filter:
@@ -1321,6 +1360,38 @@ def _perform_bounded_section_retrieval(
                 n_results=min(nk, 32),
                 where=where,
             )  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
+
+            # G8: raw dense hits (post-where, pre exact-match), applied filter, embedding dim.
+            _raw_hit_count = (
+                len(result["ids"][0]) if result and result.get("ids") and result["ids"] else 0
+            )
+            try:
+                _where_filter_str = json.dumps(where, sort_keys=True, default=str)
+            except (TypeError, ValueError):
+                _where_filter_str = str(where)
+            _embedding_dimension = len(qemb) if qemb is not None else 0
+
+            # G7: a section-scoped filter must not silently discard 100% of candidates. If the
+            # narrow filter matched nothing, re-query ONCE with the broad app+source_class clause;
+            # if THAT matches, the JD/section metadata filter removed all candidates — fall back to
+            # the broader group and name the reason rather than reporting a falsely empty section.
+            _filter_removed_all = False
+            _broad_where = {"$and": [{"app": "apps_rg"}, {"source_class": {"$in": allow}}]}
+            _narrow_empty = not (result and result.get("ids") and result["ids"][0])
+            if _narrow_empty and where != _broad_where:
+                broad_result = collection.query(
+                    query_embeddings=[qemb],
+                    n_results=min(nk, 32),
+                    where=_broad_where,
+                )
+                if broad_result and broad_result.get("ids") and broad_result["ids"][0]:
+                    _filter_removed_all = True
+                    result = broad_result
+                    _raw_hit_count = len(broad_result["ids"][0])
+                    _where_filter_str = (
+                        json.dumps(_broad_where, sort_keys=True, default=str)
+                        + " (G7_fallback_from_section_filter)"
+                    )
 
             section_dense_items: list[EvidenceItem] = []
             if result and result.get("ids"):
@@ -1453,6 +1524,16 @@ def _perform_bounded_section_retrieval(
                     section_dense_items,  # guardian: allow-log-and-swallow -- P2 burndown: fail-soft optional boundary  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
                     app_payload,
                     timestamp_iso=timestamp_iso,
+                    raw_dense_hit_count=_raw_hit_count,
+                    post_filter_survivor_count=len(section_dense_items),
+                    applied_where_filter=_where_filter_str,
+                    similarity_threshold=min(
+                        (float(getattr(it, "dense_score", 0.0)) for it in section_dense_items),
+                        default=0.0,
+                    ),
+                    embedding_model_id=_embedding_model_id,
+                    embedding_dimension=_embedding_dimension,
+                    filter_removed_all=_filter_removed_all,
                 )
             )
             evidence_items.extend(section_dense_items)

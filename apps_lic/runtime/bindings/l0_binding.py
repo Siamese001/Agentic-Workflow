@@ -88,9 +88,12 @@ _CACHE_POLICY_RELPATH: str = (
     "apps_lic/config/domain_contract/final_draft_cache_policy.outreach_message.v1.json"
 )
 
-# apps_lic allowed models: Qwen32B for draft generation
-_ALLOWED_MODELS: tuple[str, ...] = ("Qwen/Qwen2.5-32B-Instruct-AWQ",)
-_ALLOWED_NETWORKS: tuple[str, ...] = ("localhost:8000",)
+# apps_lic allowed models: Qwen32B for draft generation; Claude Sonnet 4.6 for X1D judge.
+_ALLOWED_MODELS: tuple[str, ...] = (
+    "Qwen/Qwen2.5-32B-Instruct-AWQ",
+    "claude-sonnet-4-6",
+)
+_ALLOWED_NETWORKS: tuple[str, ...] = ("localhost:8000", "api.anthropic.com")
 _ALLOWED_FILE_ROOTS: tuple[str, ...] = ("artifacts/apps_lic/",)
 
 # Permitted tools (from capability_profiles.yaml)
@@ -391,7 +394,7 @@ def l0_route_apps_lic(l1_plan: L1PlanContract) -> RouteContract:
         model_generation_required=l1_plan.model_generation_required,
         write_authority_present=l1_plan.write_authority_present,
         sandbox_required=True,  # apps_lic requires no-network-egress sandbox
-        egress_policy_ref="egress-policy:vllm-only+no-send",
+        egress_policy_ref="egress-policy:vllm-generation+anthropic-x1d-judge+no-send",
         allowed_models=_ALLOWED_MODELS,
         allowed_tools=_ALLOWED_TOOLS,
         allowed_networks=_ALLOWED_NETWORKS,

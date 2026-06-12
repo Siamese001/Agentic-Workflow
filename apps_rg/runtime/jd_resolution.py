@@ -262,11 +262,16 @@ def resolve_jd_for_lanes(
             raise JdResolutionError(f"DEFAULT_SSOT job description file is empty: {_DEFAULT_FILE}")
         ref_used = f"DEFAULT_SSOT:{_DEFAULT_FILE.as_posix()}"
         source = JdSource.DEFAULT_SSOT
-        logger.warning(
-            "jd targeting DEFAULT_SSOT: no run-specific JD provided; "
-            "resume will target the generic role profile. "
-            "Supply job_description_text, job_description_ref, or jd_data for targeted generation."
-        )
+        # Only warn for a REAL run that fell to DEFAULT_SSOT (a true "no JD" signal). The module-level
+        # `JD_TEXT_DEFAULT = resolve_jd_for_lanes()` constants call this with no run context (empty
+        # company/role) purely to compute the fallback string — emitting the warning there at import
+        # time is noise that misleads diagnosis (G23). Gate on run-context presence.
+        if str(target_company or "").strip() or str(target_role or "").strip():
+            logger.warning(
+                "jd targeting DEFAULT_SSOT: no run-specific JD provided; "
+                "resume will target the generic role profile. "
+                "Supply job_description_text, job_description_ref, or jd_data for targeted generation."
+            )
 
     payload = build_canonical_jd_payload(
         raw,

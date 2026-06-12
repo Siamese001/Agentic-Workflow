@@ -36,9 +36,24 @@ def test_executive_summary_template_rejects_legacy_2_3_default_band():
 
 
 def test_competency_pa_slots_category_band_matches_x2():
+    """Competency pa_slots must state the exactly-N category contract the X2 rigor SSOT enforces.
+
+    The 6->8 migration (plan prompt-gate-ssot-consolidation-e7c9a2 W0-B) made the category count a
+    fixed value (competencies_rigor MIN==MAX==8), so the prompt must say "exactly 8", not a legacy
+    "6 to 8" range. Expected count is sourced from the rigor SSOT so this test cannot drift from the
+    gate it guards.
+    """
+    from apps_rg.runtime.sections.competencies_rigor import (
+        MAX_CATEGORY_COUNT,
+        MIN_CATEGORY_COUNT,
+    )
+
+    assert MIN_CATEGORY_COUNT == MAX_CATEGORY_COUNT, "category count is no longer a fixed band"
+    n = MIN_CATEGORY_COUNT
     raw = PA_SLOTS.read_text(encoding="utf-8")
-    assert "Exactly EIGHT" not in raw
-    assert "6 to 8" in raw or "6–8" in raw
+    assert f"exactly {n}" in raw.lower(), f"pa_slots must state the exactly-{n} category contract"
+    # legacy range phrasing must not return
+    assert "6 to 8" not in raw and "6–8" not in raw, "legacy 6-to-8 category range must not reappear"
 
 
 def _jd_alignment_fixture() -> dict:

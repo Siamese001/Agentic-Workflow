@@ -1,0 +1,8 @@
+{
+  "auto_research_internal": true,
+  "generation_mode": "strategic_tailor",
+  "manual_brief": "apps_rg/config/targeting/aig_vp_global_head_agentic_ai_briefing.md",
+  "research_via": null,
+  "target_company": "AIG",
+  "target_role": "VP, Global Head of Agentic AI Solutions"
+}

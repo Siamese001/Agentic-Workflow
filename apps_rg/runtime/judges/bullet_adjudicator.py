@@ -40,11 +40,11 @@ TRIGGER_JUDGE_CONFIDENCE_LOW = "JUDGE_CONFIDENCE_LOW"
 TRIGGER_X2_PASS_JUDGE_RISK = "X2_PASS_JUDGE_RISK"
 TRIGGER_METRIC_BULLET_BORDERLINE = "METRIC_BULLET_BORDERLINE"
 
-# The optional adjudicator panel (the full 3-provider panel). Reached ONLY when a trigger fires.
+# The optional adjudicator panel. Reached ONLY when a trigger fires. Claude-base recalibration:
+# drop anthropic_claude (Claude is the generator → self-judge); cross-provider escalation panel of 2.
 ADJUDICATOR_PANEL_PROVIDER_KEYS: tuple[str, ...] = (
     "gemini_pro",
     "openai_chatgpt",
-    "anthropic_claude",
 )
 
 

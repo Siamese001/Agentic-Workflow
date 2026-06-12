@@ -74,8 +74,8 @@ output_contract:
   required_fields:
     - name: competencies
       type: "array"
-      min_items: 6
-      max_items: 6
+      min_items: 8
+      max_items: 8
       item_schema:
         category_label: "string (approved taxonomy label or graph-grounded equivalent)"
         terms: "array[object] — each term {text, source_fact_id, source_fact_ids[], optional jd_signal_ids[]}"
@@ -141,8 +141,8 @@ output_contract:
       type: "object"
       schema:
         category_count_exactly_eight: "boolean (exactly 8 categories, must be true)"
-        candidate_categories_ranked: "array (optional) — up to 10 ranked category candidates with scores before top-6 cut"
-        min_two_terms_per_category: "boolean (must be true)"
+        candidate_categories_ranked: "array (optional) — up to 10 ranked category candidates with scores before top-8 cut"
+        min_three_terms_per_category: "boolean (must be true) — generic capability labels require >=3 graph-backed terms"
         format_valid: "boolean (must be true) — Category Label: term, term, term"
         no_full_sentences: "boolean (must be true)"
         no_bullets: "boolean (must be true)"

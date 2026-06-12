@@ -1,0 +1,7 @@
+{
+  "provider_requested": "external_claude",
+  "provider_attempted": false,
+  "provider_available": false,
+  "runtime_generation_status": "REQUIRED_PROOF_ABSENT",
+  "exact_provider_error": "required upstream proof absent for competencies: C0.2 product hybrid dense lane required for 'competencies' but did not complete"
+}

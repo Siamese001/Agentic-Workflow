@@ -31,7 +31,8 @@ slot_bodies:
     be 3 words (4 only when a 4-word phrase reads cleaner and total stays ≤13). Two-word segments are
     NEVER acceptable: the overall headline word_count MUST land in 10-13 inclusive (SVP Engineering = 2
     words + 9-11 words across X/Y/Z). If a draft segment is 2 words, expand it with ONE specific modifier
-    drawn from its cited fact's claim_text (preferred) or a stoplist framing noun before emitting.
+    drawn from its cited fact's claim_text before emitting (NOT a generic framing noun -- segments built
+    only of generic stoplist words are rejected as ungrounded by the literal-grounding floor).
     Rank by JD/briefing relevance (ranking only, never proof). Prefer strong nouns over adjectives.
     </north_star_task>
     <task_contract>
@@ -90,10 +91,11 @@ slot_bodies:
     WORD-COUNT SELF-CHECK (MANDATORY before emitting): count words by replacing each "|" with a space
     and counting whitespace-separated tokens. The total MUST be in [10, 13]. If count < 10, you have
     at least one 2-word segment — DO NOT EMIT. Instead, lengthen the shortest segment by adding ONE
-    word that EITHER (a) literally appears in its cited fact's claim_text, OR (b) comes from the
-    generic-noun stoplist above (Architecture, Engineering, Platforms, Infrastructure, Systems,
-    Leadership, Strategy, Governance, Operations, Delivery, Production, Runtime, Data) which carries
-    framing-only weight, then recount. Repeat until 10 ≤ count ≤ 13. NEVER add a brand-new substantive
+    word that literally appears in its cited fact's claim_text, then recount. Do NOT pad with a
+    generic-noun stoplist word (Architecture, Engineering, Platforms, Infrastructure, Systems,
+    Leadership, Strategy, Governance, Operations, Delivery, Production, Runtime, Data): a segment whose
+    content nouns are all stoplist words is rejected as ungrounded by the literal-grounding floor.
+    Repeat until 10 ≤ count ≤ 13. NEVER add a brand-new substantive
     noun (e.g. "Catalogs", "Frameworks",
     "Harness") that does not appear in any cited fact's claim_text — judges will reject it as
     ungrounded. If count > 13, shorten the longest segment. Re-count until 10 <= count <= 13.

@@ -27,7 +27,9 @@ from apps_rg.runtime.sections.competencies_certification_contract import (
 )
 
 FULL_RESUME_COHERENCE_RUBRIC_VERSION = "full_resume_llm_coherence_v1"
-DEFAULT_JUDGE_ROSTER: tuple[str, ...] = ("gemini_pro", "openai_chatgpt", "anthropic_claude")
+# Claude-base recalibration (plan x2-gate-slimdown / judge recalibration): drop anthropic_claude
+# as a self-judge (Claude is the generator). Cross-provider panel of 2; quorum 2 => both must pass.
+DEFAULT_JUDGE_ROSTER: tuple[str, ...] = ("gemini_pro", "openai_chatgpt")
 DEFAULT_QUORUM = 2
 DEFAULT_PASS_THRESHOLD = DEFAULT_THRESHOLD
 
