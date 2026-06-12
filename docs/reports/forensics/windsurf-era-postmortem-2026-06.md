@@ -13,7 +13,7 @@
 - **45 exemplar quotes** mined from the recovered corpus.
 - **Six headline claims adversarially verified** by independent agents instructed to refute them; two of the author-agent's own claims were corrected as a result (see §5).
 - **Corpus recovery:** 1,731 plans that ever existed in `.windsurf/plans/` and `docs/reports/plans/` were recovered from git history with authorship dates (`windsurf-plans-recovered/manifest_enriched.csv`, copied alongside this report). 1,123 of them exist nowhere in the current tree.
-- **Spend caveat:** the ~$10K figure is operator-reported. The repo contains **$0.00 of recorded spend** — a USD pricing table was committed 2026-04-30 with zero consumers and zero output artifacts; total token telemetry across the entire project covers ~201 turns. That absence is itself a finding (§3, Failure 5).
+- **Spend caveat:** the repo itself contains **$0.00 of recorded spend** — a USD pricing table was committed 2026-04-30 with zero consumers and zero output artifacts; total token telemetry across the entire project covers ~201 turns. That absence is itself a finding (§3, Failure 5). External receipt evidence later supplied outside git documents **$7,048.00** of Windsurf receipts paid Apr 20-May 3, 2026, including **$6,848.00** in overage/recharge charges plus one **$200.00** Windsurf Max subscription charge during the same service-failure window (§3, Failure 5H).
 
 ---
 
@@ -169,7 +169,7 @@ A recovered Dec 2025 inventory shows the old `apps_rg` surface was already risky
 **Lesson 5E:** app-level governance must be thinner than core governance. Put reusable proof machinery in the spine; keep `apps_rg` as domain evidence, section composition, and artifact assembly. If app-local control code grows faster than shippable output, the app is becoming a second framework.
 
 ### Failure 5F — Swarm/reference-architecture advice amplified beginner mistakes before workflow boundaries existed *(Aug 2025 – Feb 2026)*
-This section adds the missing learning arc. It uses the uploaded process map as the mature architecture yardstick: deterministic workflow first, single agent second, multi-agent only after the workflow has contracts, gates, replay, and state authority. It also uses the uploaded insurance AI report only as business framing: durable value comes from domain/workflow rewiring and reusable components, not scattered narrow use cases or proliferating approaches that become tomorrow's legacy.
+This section adds the missing learning arc. It uses repo-native digital forensics and the uploaded process map as the mature architecture yardstick: deterministic workflow first, single agent second, multi-agent only after the workflow has contracts, gates, replay, and state authority. The external insurance/consulting framing is intentionally removed here as a red herring; the decisive evidence is already in the commit graph, plan corpus, artifact trail, and failed proof surfaces.
 
 The key distinction is important: **the bad advice was not "agents exist."** I found no repo evidence proving that official OpenAI documentation told me to build hundreds of agents. The evidence supports a narrower verdict: **agent-swarm advice was prematurely applied**. ChatGPT-style/model-assisted decomposition and agentic reference architectures made "make another agent" feel like the default first move before I understood Python/runtime binding, Git, state, tests, evidence, or product proof.
 
@@ -309,6 +309,115 @@ The arc is not monotonic. Some weeks had more code and lower product maturity. T
 12. App binding means a live packet traverses U0/L1/L0/C0/PA/L2/Exit/UWG/L4 contracts; it does not mean the app imports a shared helper.
 13. Official/reference architectures are destination maps, not beginner build orders.
 
+### Failure 5G — Archived Windsurf plans show the hidden bottleneck was runtime consumption, not coding speed *(Nov 26, 2025 – Jun 10, 2026)*
+
+The two-week drill-down changes the diagnosis. The hidden bottleneck was not that I could not create code quickly. The bottleneck was that I repeatedly created **architecture objects** before proving that the live product path consumed them.
+
+The pattern is visible across the Windsurf archived plans, Notion mirrors, and git history:
+
+| Object type | What existed | What was missing | Lesson |
+|---|---|---|---|
+| CI gates | `ops_scripts/ci/` contained 183 Python files, with ~125 files (68%) orphaned and ~26,750 lines of dead governance code | Runtime protection; many files were not wired into any governance layer | A script is not a gate unless a live chain invokes it. |
+| ADG gates | Wave B shipped 4 exception contracts with `PASS — 4 verified` | All four were skipped due to broken caller resolution | PASS requires negative tests and caller proof. |
+| Windsurf hooks | Plan/status hooks, post-cascade capture, heartbeat/replay bypasses | Native hook dispatcher reliability; post-cascade chain could silently skip | IDE hooks need their own heartbeat, replay, and retirement plan. |
+| Fort Knox / L7 auditability | 87/87 signoff, mutation rejection, bundle verification, trust-level ladder, route-family coverage | Complete runtime substrate for R3/R4/UWG_COMMIT/MW_REAL | Signed proof preserves truth; it cannot create runtime truth. |
+| `apps_rg` L0 cache/route components | R1A/R1B adapters, intent payload, env gates, route registry | `__main__.py` call-sites, post-run write-back, runtime registry reader | Component exists ≠ live path. |
+| Notion lifecycle | Plan rows, markers, scripts, wave state | Deterministic bridge from on-disk state to Notion without relying on Cursor Agent memory | Reminders are not enforcement. |
+| Prompt assembly SSOT | Examples YAML, prompt BOM, registry rows | Compile-time consumption by the PA compiler | SSOT must be consumed, not merely present. |
+| `apps_*` spine binding | Imports, manifests, shared runners, `PromptEnvelope`, static scorecards | Observed live packet traversal through U0/L1/L0/C0/PA/L2/Exit/UWG/L4 | Static evidence is not runtime certification. |
+
+The corrected rule is simple:
+
+```text
+file exists
+≠ import exists
+≠ registry exists
+≠ gate exists
+≠ receipt exists
+≠ signed proof exists
+≠ runtime path consumed it
+≠ product artifact shipped
+```
+
+#### Fort Knox / L7 auditability lesson
+
+Fort Knox/L7 was a real learning milestone. It forced the project to think in terms of signed proof, trust levels, mutation rejection, git-clean reproducibility, evidence freshness, hostile-review packets, and route-family coverage. The mistake was not building auditability. The mistake was allowing auditability to sound like runtime certification before the runtime substrate existed.
+
+The Fort Knox gap plan is honest about this. It says the current signoff claim was 87/87 with `trust_level=INTEGRITY_PROOF`, but the L7 plane certified only four of nine route families as `REAL_RUNTIME`, one as `STRUCTURAL_ONLY`, and four as `NOT_CERTIFIED` (`R3_GROUNDED_READ`, `R4_SINGLE_ACTION`, `UWG_COMMIT_PATH`, and `MANAGED_WORKFLOW_REAL_EXECUTION`). It also says the L7 plane was initially unbound to the RTC-REQ universe, `INTEGRITY_PROOF` was below the final trust ceiling, and sandbox mutation rejection was not the same as real production-artifact tamper testing.
+
+**Lesson 5G-A:** Fort Knox/L7 taught the right instinct — proof must be signed, fresh, mutation-resistant, and hostile-reviewable. The sequencing error was trying to certify the whole governed spine before the governed spine had complete runtime substrate. A signed proof packet can preserve truth, but it cannot create runtime truth.
+
+#### `apps_*` binding struggle lesson
+
+The `apps_*` binding problem was not a one-off bug. It was a multi-month misunderstanding of what “bound to the spine” means.
+
+| Stage | What “binding” meant at the time | Why it was insufficient |
+|---|---|---|
+| App-local swarm | `apps_rg` had planners, validators, healers, direct provider calls, and local orchestration | The app was its own framework, not a domain surface |
+| Shared imports | Apps imported `agentic_core` / `apps_shared` helpers | Importing code does not prove runtime traversal |
+| Static overlay evidence | Manifests and import-contract scorecards existed | The scorecards explicitly said classifications were static evidence only, not runtime certification |
+| Partial direct contract surfacing | `apps_rg` consumed `PromptEnvelope` directly | One load-bearing R3 contract did not prove all required contracts fired on live runs |
+| Mature binding | A live packet traverses U0/L1/L0/C0/PA/L2/Exit/UWG/L4 and leaves replayable evidence | This is the first definition that protects product truth |
+
+**Lesson 5G-B:** I struggled for months to bind `apps_*` to `agentic_core` because I kept treating static evidence as runtime evidence: files, imports, manifests, helper classes, route labels, and scorecards looked like binding. The correction was learning that an app is bound only when a live packet traverses the spine contracts and leaves behind replayable evidence.
+
+#### Two-week bottleneck ledger
+
+| Period | IDE | What I was doing | Hidden bottleneck I likely missed | Better move |
+|---|---|---|---|---|
+| 2025-11-26 → 2025-12-09 | Windsurf | Moved from v10_7 into IDE-agent architecture | Architecture started before a trustworthy proof instrument existed | Freeze v10_7 trace; add one replay test before expanding spine |
+| 2025-12-10 → 2025-12-23 | Windsurf | Layering L1-L5, app engines, shared infrastructure | Directories and layers looked like runtime binding | One app, one route, one provider, one artifact |
+| 2025-12-24 → 2026-01-06 | Windsurf | Healers, swarms, autonomous repair, dashboards | Same authority could plan, execute, heal, and judge | Proposal-only repair until Exit/UWG clearance |
+| 2026-01-07 → 2026-01-20 | Windsurf | Dashboard and agent-health surfaces | Observability became narrative, not truth | No metric without source/freshness/no-random guard |
+| 2026-01-21 → 2026-02-03 | Windsurf | Governed wrappers, ratchets, process-map work | Architecture shape displaced product trace | Make DOCX/JSON in hand the first metric |
+| 2026-02-04 → 2026-02-17 | Windsurf | Plan factory and governed wrappers | False-green stubs could satisfy governance | UNKNOWN/default/skipped never PASS |
+| 2026-02-18 → 2026-03-03 | Windsurf | Process-map vXX, prompt governance, Qwen/vLLM | Architecture map became backlog | Implement only pieces demanded by live trace |
+| 2026-03-04 → 2026-03-17 | Windsurf | ADG generator, CI ratchets, graph tooling | Graph truth did not prove product path truth | Every graph/gate feature needs live consumer |
+| 2026-03-18 → 2026-03-31 | Windsurf | Anti-pattern burndown, simulated PASSes | Machine processed itself more than product | Require artifact smoke after debt burndown |
+| 2026-04-01 → 2026-04-14 | Windsurf | Constitutional rules, theater detection, CI rationalization | Governance code was orphaned/unwired | Archive or wire; no script is governance otherwise |
+| 2026-04-15 → 2026-04-28 | Windsurf | ADG gates, Author-Gate, hooks, Fort Knox prep | PASS could mean skipped; hooks could be dead | Heartbeat + negative tests + skipped-is-fail |
+| 2026-04-29 → 2026-05-12 | Windsurf | DOCX breakthrough, Fort Knox/L7, Notion sync, L0 wiring | Shippable product got surrounded by certification work | Freeze/polish/ship DOCX; certify one route after shipping |
+| 2026-05-13 → 2026-05-26 | Windsurf → Cursor | PA contracts, app binding, prompt SSOT gaps | Static evidence/imports still did not prove runtime traversal | Separate STATIC, TRACE_OBSERVED, RUNTIME_CERTIFIED |
+| 2026-05-27 → 2026-06-10 | Cursor → Claude Code | Qwen removal, AIG final11, worktrees, runtime-state fixes | Hidden state and all-or-nothing aggregation blocked output | Fresh-worktree manifest, partial artifact output, WIP=1 |
+
+**Lesson 5G-C:** the late-Windsurf overage window is best understood as an "architecture-object inflation" period. I was not blocked by typing speed. I was blocked by the absence of a mandatory live-consumption test for every architecture object.
+
+### Failure 5H — Windsurf overages were driven by platform-routing defects and false completion semantics *(Apr 9 – May 15, 2026)*
+
+The receipt/appeal evidence changes the overage analysis. The overage cluster was not ordinary high usage. It was the financial surface of two overlapping Windsurf failures:
+
+1. **Product/billing-routing failure:** Adaptive and lower-cost/free model paths did not behave as represented, while higher-cost/premium models remained available. The support record says this forced higher-cost usage and repeated overage-credit purchases.
+2. **IDE-agent execution-truth failure:** Cascade repeatedly treated work-shaped artifacts as proof of working software — plans, receipts, sidecar harnesses, dry-run demos, implementation summaries — while the real runtime path was often unproven, mocked, sidecar-only, still running, or not the provider path requested.
+
+Uploaded receipt pages show **$7,048.00** in paid Windsurf receipts from **Apr 20 through May 3, 2026**: **$6,848.00 in overage/recharge charges** plus one **$200.00 Windsurf Max subscription charge** for the Apr 23-May 23 service period. The subscription charge should be analyzed as part of the same service-failure pattern, but its receipt line item is subscription, not overage credits.
+
+| Paid-date window | Receipt count | Amount | Report interpretation |
+|---|---:|---:|---|
+| Apr 20-Apr 28, 2026 | 12 | $3,600.00 | Defect reports already existed; overage purchases continued while lower-cost/free/Adaptive paths were reported as failing. |
+| Apr 29-May 3, 2026 | 8 | $3,448.00 | DOCX breakthrough and Fort Knox/L7 work overlapped with continued forced overage/recharge purchases. |
+| **Total** | **20** | **$7,048.00** | Financial cost of unresolved platform-routing plus execution-truth failure during the same period. |
+
+The written defect record is consistent across the packets:
+
+- **Apr 9:** unauthorized Adaptive-to-higher-cost model escalation; requested refund, engineering review, session/model/billing logs, and a written explanation.
+- **Apr 15:** Adaptive routing forced higher-cost models; requested routing logs, model confirmation, refund review, and a formal ticket.
+- **Apr 17:** Ticket 58008 unresolved; free/lower-cost model failures; Adaptive misrouting; billing impact.
+- **Apr 18:** SWE-1.6 Fast lower-cost model failure forced higher-cost usage.
+- **May 15:** cancellation reply stated the core product defect: Cascade should not mark work complete based on implementation-shaped artifacts; it should require runtime proof before PASS or COMPLETE language.
+
+Where Windsurf fell short:
+
+1. **Adaptive did not behave as a trustworthy cost-control lane.** The support record says Adaptive moved or locked work into higher-cost models without clear affirmative selection.
+2. **Lower-cost/free models were not reliable fallback lanes.** Kimi, SWE-1.6, SWE-1.5, and SWE-1.6 Fast failures were reported while premium models stayed available.
+3. **Billing proof was not provided.** The packets repeatedly state Windsurf did not provide routing logs, model-change records, timestamps, billing calculations, or proof of approval for higher-cost usage.
+4. **Support correction was not transaction-level.** A partial $100 credit did not address the full defect-driven receipt cluster.
+5. **Cascade completion semantics were unsafe.** The product allowed COMPLETE/PASS drift based on adjacent artifacts instead of actual runtime proof.
+6. **Cascade did not reliably distinguish proof classes.** It needed to separate code written, tests running, tests passed, real runtime command executed, real provider called, mocked path only, sidecar proof only, actual product path changed, and final disposition.
+
+**Forensic verdict:** the overage period should be framed as **Windsurf-induced execution and billing overhead**, not simply aggressive usage by the operator. The receipt dates show charges accumulating after written product/billing defect reports and during the same repo window where false greens, dead hooks, gate machinery, proof receipts, Fort Knox/L7 certification, Notion status automation, and app wiring gaps were peaking. The core failure was that Windsurf/Cascade charged for usage while falling short on two promises: cost-controlled routing and truthful completion.
+
+Supporting external receipt analysis lives in `docs/reports/forensics/windsurf-overage-root-cause-2026-04-20-to-2026-05-03.md`.
+
 ---
 
 ## 4. The story (conference narrative, chapter by sequence)
@@ -361,6 +470,9 @@ It did not buy a resume — but a resume was never the purchase. The purchase wa
 | Prompt authority/location was misunderstood before PA/spine binding matured | **Supported** | Feb prompt_governance inventory captured a large governance folder with missing recall/citation/telemetry signals; May apps_rg PA docs later separated app prompt artifacts, slots, hashes, and compile-only vs runtime binding. |
 | `agentic_core` vs `apps_*` boundaries were learned through rework | **Supported** | Dec apps_rg acted as an autonomous app framework; June Claude contract and canonical boundary state that apps customize inputs while core enforces contracts, with durable write owned by UWG/L4. |
 | Reference architectures were over-applied before maturity fit | **Partial** | Repo proves later OpenAI Swarm/Agents/LangGraph/AutoGen sources were ingested as optional T3 guidance and proves swarm-shaped app code before proof boundaries. It does not prove official docs instructed agent multiplication. |
+| Archived plans show component-exists-but-not-consumed bottlenecks | **Supported** | `apps_rg` L0 wiring plan says six prior plans built cache/registry components but none wired them into the live call path; CI rationalization found ~125 orphaned CI files; prompt SSOT plan found examples YAML existed but was not consumed at compile. |
+| Fort Knox/L7 auditability improved proof discipline but outran runtime substrate | **Supported** | The Fort Knox gap plan admits the L7 plane was not initially bound to the RTC-REQ universe, `INTEGRITY_PROOF` was below final certification, sandbox mutation was insufficient, and R3/R4/UWG_COMMIT/MW_REAL were still NOT_CERTIFIED. |
+| Windsurf overage receipts cluster with product-routing and completion-semantics failures | **Supported from uploaded external receipt packets; not repo-native telemetry** | Uploaded receipt packets document $7,048 paid Apr 20-May 3, 2026, and repeat the defect record: Adaptive/lower-cost/free model paths did not work as represented, premium paths remained available, and Windsurf did not provide transaction-level routing/model/billing proof. The repo corroborates that the same dates overlap false greens, dead hooks, proof machinery, Fort Knox/L7, DOCX breakthrough, and `apps_rg` wiring gaps. |
 
 ## 6. What worked (the counter-narrative)
 
@@ -371,6 +483,9 @@ It did not buy a resume — but a resume was never the purchase. The purchase wa
 - **The swarm phase was tuition, not product:** it taught why agent count is not architecture and why authority has to be removed from agents before agents can safely multiply.
 - **The reference-architecture phase became valuable only after translation:** OpenAI Swarm/Agents, LangGraph, AutoGen, and governance maps became useful when reduced to process-map laws, runtime contracts, and proof boundaries.
 - **The later architecture is not a refutation of agents:** it is the learned sequencing discipline for agents — deterministic workflow first, bounded agent second, multi-agent only after contracts, replay, state authority, and Exit disposition exist.
+- **The Fort Knox/L7 phase raised the proof bar:** it taught signed evidence, freshness, mutation rejection, and hostile-review discipline, while also proving that signed proof is not runtime certification unless live route-family substrate exists.
+- **The two-week Windsurf drill-down identified the real bottleneck:** symbolic architecture objects were being created faster than the runtime path consumed them. The correction is live-consumption proof for every gate, registry, prompt, cache, route family, and app binding claim.
+- **The receipt-aligned overage analysis narrowed the external cost story:** the strongest cost finding is not “high usage”; it is high usage during a documented product-routing and completion-truth failure window.
 
 ## 7. Disposition of the corpus (the Notion question)
 
@@ -408,3 +523,4 @@ It did not buy a resume — but a resume was never the purchase. The purchase wa
 - `windsurf_plans_manifest_enriched.csv` (alongside this report): 1,731 recovered plans with original path, last commit, authorship date, and lost/survived status.
 - Recovered corpus: `C:\Git\windsurf-plans-recovered\` (not committed; 33.1 MB).
 - Forensic workflow transcripts: session `7d10543e`, workflow run `wf_cfda8f23-c2e`.
+- External receipt-alignment addendum: `docs/reports/forensics/windsurf-overage-root-cause-2026-04-20-to-2026-05-03.md`.
