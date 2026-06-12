@@ -340,6 +340,55 @@ def _parse_json_object(raw: str) -> tuple[dict[str, Any] | None, str]:
     return loaded, ""
 
 
+def _role_episode_evidence_block(runtime_payload: dict[str, Any]) -> str:
+    """Proof-substrate block from the role-episode bundles already attached to
+    ``proof_pool_metadata`` (the candidate's bound graph skills + their approved
+    phrases). This lets the InsurTech/EY lanes compose JD-targeted prose from the
+    graph-skill arsenal — surfacing understated capabilities (e.g. actuarial /
+    capital-modeling) — instead of paraphrasing the locked base facts. The skill
+    phrases are approved VOCABULARY for wording, never claim proof: claims still
+    bind to the allowed ``source_fact_ids``. ACTIVE_CONFIRMED skills are
+    foregrounded; others are offered as JD-relevance-gated options.
+    """
+    ppm = runtime_payload.get("proof_pool_metadata") or {}
+    bundles = ppm.get("role_episode_bundles") or []
+    if not bundles:
+        return ""
+    lines = [
+        "GRAPH_SKILL_EVIDENCE (compose JD-targeted prose from these bound skills; the phrases are "
+        "approved vocabulary, NOT verbatim claims; skill_id alone is not proof — every claim still "
+        "cites allowed source_fact_ids):",
+    ]
+    for bundle in bundles:
+        if not isinstance(bundle, dict):
+            continue
+        head = f"- role_episode_bundle_id: {bundle.get('role_episode_bundle_id')}"
+        intent = str(bundle.get("bullet_intent") or "").strip()
+        if intent:
+            head += f" | intent: {intent}"
+        lines.append(head)
+        primary: list[str] = []
+        optional: list[str] = []
+        for skill in bundle.get("bound_skills") or []:
+            if not isinstance(skill, dict):
+                continue
+            phrases = [str(p).strip() for p in (skill.get("allowed_phrases") or []) if str(p).strip()]
+            if not phrases:
+                continue
+            entry = f"    {skill.get('skill_id')}: {', '.join(phrases)}"
+            if str(skill.get("activation_status") or "").upper() == "ACTIVE_CONFIRMED":
+                primary.append(entry)
+            else:
+                optional.append(entry)
+        if primary:
+            lines.append("  primary_skills (foreground these for the target role):")
+            lines.extend(primary)
+        if optional:
+            lines.append("  optional_skills (use only when JD-relevant):")
+            lines.extend(optional)
+    return "\n".join(lines)
+
+
 def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]) -> str:
     facts = _facts_from_plan(runtime_payload.get("selected_fact_plan") or {})
     fact_lines = [
@@ -353,9 +402,49 @@ def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]
         if cfg.is_bullet_lane
         else "Return JSON with narrative_sentence, claim_ledger:[{claim_text, source_fact_ids}], "
         "jd_alignment:{targeting_only:true,jd_used_as_proof:false}. The narrative is exactly one sentence "
+        f"of at most {NARRATIVE_MAX_WORDS} words and {NARRATIVE_MAX_CHARS} characters, "
         "in first-person-implied resume voice: start with a past-tense action verb and never use a "
         "third-person subject such as 'the candidate' or the candidate's name."
     )
+
+    # JD-targeted tailoring path: when role-episode graph bundles are attached, steer prose by the
+    # target JD using the candidate's bound graph skills (parity with the Unify/IBM lanes), while
+    # keeping the locked-identity law and fact-bound proof contract intact. Falls back to the legacy
+    # fact-only prompt when no bundles are present (proof-absent / non-targeted runs).
+    ppm = runtime_payload.get("proof_pool_metadata") or {}
+    evidence_block = (
+        _role_episode_evidence_block(runtime_payload)
+        if ppm.get("role_episode_bundle_consumption")
+        else ""
+    )
+    if evidence_block:
+        from apps_rg.runtime.sections.executive_summary_pa import format_jd_targeting_block
+
+        jd_block = format_jd_targeting_block(
+            target_title=str(runtime_payload.get("target_title") or ""),
+            target_company=str(runtime_payload.get("target_company") or ""),
+            jd_text=str(runtime_payload.get("jd_text") or ""),
+            briefing=str(runtime_payload.get("briefing") or ""),
+            graph_proof_pool_mode=True,
+        )
+        instruction = (
+            "Use JD_TEXT and BRIEFING to choose emphasis, ordering, and which bound graph skills to "
+            "foreground for the target role — NOT to invent employers, tools, or metrics. Every claim "
+            "MUST cite only allowed source_fact_ids; the graph-skill phrases are approved wording, not "
+            "proof. targeting_only=true; jd_used_as_proof=false."
+        )
+        return "\n".join(
+            [
+                f"Section: {cfg.section_id}",
+                instruction,
+                jd_block,
+                evidence_block,
+                shape,
+                "Allowed facts (claim proof — source_fact_ids must cite only these):",
+                *fact_lines,
+            ]
+        )
+
     return "\n".join(
         [
             f"Section: {cfg.section_id}",
