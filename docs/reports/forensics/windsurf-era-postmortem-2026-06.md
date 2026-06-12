@@ -90,6 +90,33 @@ Dated exhibits:
 - **Zero cost instrumentation:** a USD pricing table with an aggregator computing `cost_per_call_usd` was committed 2026-04-30 — no CLI, no consumers, no outputs. Weekly token report 2026-W20, in full: *"No turns recorded this week."* The system that authored ~2,400 plans had ~201 sampled turns of approximate telemetry and $0.00 of recorded spend.
 - **Operator throttle:** recorded mode *"NO STOPPING 1M TOKENS"*; the review's own words: *"~10 plans/day when user active, 0 on vacation — the agent system is a mode-faithful amplifier with the user as sole throttle."*
 
+### Failure 5A — Local Qwen/vLLM became an `apps_rg` product default before it earned the default slot *(Feb 19 – Jun 8, 2026)*
+The Qwen/vLLM stack was legitimate tuition: it taught local inference, model serving, Docker/WSL2 operations, runtime health probes, provider contracts, and proof binding. It was inefficient as the `apps_rg` production default. The commit record shows a clear escalation path:
+
+- **Feb 19:** vLLM entered main as a governed boundary client and routing substrate (`c559df7a`), with real HTTP connectivity, deterministic timeout, and no-test-network guarantees.
+- **Feb 28:** Qwen2.5-14B-AWQ vLLM integration for RTX 5090 landed (`2342596`): WSL2 Ubuntu, CUDA 12.8, localhost/WSL fallback, startup scripts, and `VLLM_BASE_URL`.
+- **Apr 5:** `apps_qwen` importers moved into `agentic_core/L3_orchestration/inference/qwen_vllm`; `apps_rg/reasoning/RgResumeOrchestrator.py` became one of the consumers (`fcd9211`).
+- **May 2:** the cross-app rollout made `apps_rg` Qwen-first (`539a804`): `_llm_client.make_generator()` put local Qwen first, and HOP4a/HOP4b/HOP4c inherited it.
+- **May 6:** Docker `local-qwen-vllm` became the canonical runtime and the WSL2 systemd path was retired (`3c7ec37`). The app now depended on Docker Desktop state, container lifecycle, `/v1/models`, and model-load semantics.
+- **May 9:** the first real `apps_rg` Qwen E2E landed (`f78f2f0`) with a 120s timeout, live vLLM POST, JSON fence stripping, preflight health, and artifact write. The same commit admitted a prior plan had been marked complete while `python -m apps_rg` was non-functional — a DoD failure disguised by negative-pattern tests.
+- **May 18–27:** transport reliability, SRFS gates, density repair, context-window calibration, stale-targeting guards, and live/fast harness splits accumulated around the local provider (`92aac6b`, `9cfc79c`, `9b4650c`, `2e2404f`, `ec93cdd`). These were useful controls, but their volume is the cost signal.
+- **Jun 8:** PR #256 removed Qwen/vLLM from `apps_rg` end-to-end (`ffc5391` → `15c8dcb` → merge `cb2235f`). External Claude became the sole section generator; 7 section lanes were rewired; 7 Qwen-only modules and 7 pure-Qwen tests were deleted; 81 files changed, +569 / -4,296.
+- **Jun 8–10:** the cleanup proved Qwen-era assumptions had leaked into policy: a Qwen-named guard was renamed to live-judge intent (`27685da`), and Qwen-era judge panels were recalibrated after the Claude switch, cutting per-run judge calls from ~33 to ~14 (`9a2b518`).
+
+**Forensic verdict:** Qwen/vLLM was not a total technical failure. It was a poor `apps_rg` default. It optimized for local sovereignty and marginal API cost while the product needed executive-grade generation quality, low operator toil, predictable latency, and proof that does not require a workstation operations playbook. "Local" was not cheap: the project paid in Docker/WSL2/CUDA/Hugging Face/VRAM/model-id/timeout/retry/readiness/context-budget complexity.
+
+**Specific lessons retained:**
+
+1. **Provider-neutral first, provider-specific last.** `apps_rg` should depend on `ProviderRequest -> ProviderResult -> SectionGenerationResult`, not Qwen health, Docker restart, vLLM endpoint, model substring checks, and Qwen-specific stubs.
+2. **A local model must earn product-default status.** Before promotion, require blind quality wins, cold/warm reliability, p50/p95 latency, proof-gate cleanliness, and one-config demotion. "It rewrote a test prompt" is not a product bar.
+3. **Health is model readiness, not process aliveness.** Docker running is insufficient; port open is insufficient; restart exit code is insufficient. Readiness must bind `/v1/models` to the intended model ID and fail closed on mismatch.
+4. **No hardcoded served model identity.** The 7B-vs-32B mismatch showed that model ID must come from runtime discovery or a signed provider profile; otherwise the system either fails noisily or writes poisoned attestations.
+5. **DoD must exercise the real executable surface.** A plan touching `python -m apps_rg` cannot close on contract-shape tests alone. It must run the command, write the artifact, and prove the intended provider path.
+6. **Judge panels should be calibrated to generator risk.** Qwen-era 3-provider panels were compensating for a weaker base generator. Once Claude became the generator, proof could be preserved with smaller cross-provider panels.
+7. **Keep local vLLM in the right lane.** It belongs as a comparison provider, offline experiment, retrieval/context testbed, or cost-reduction candidate — not inside `apps_rg` CLI defaults, proof semantics, or section generation until the promotion scorecard is green.
+
+**Lesson 5A:** local inference can be tuition and still be the wrong product default. If the provider adds more operational machinery than product value, demote it before the app starts serving the provider instead of the user.
+
 ---
 
 ## 4. The story (conference narrative, chapter by sequence)
