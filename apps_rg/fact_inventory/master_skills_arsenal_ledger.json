@@ -38523,7 +38523,15 @@
         }
       ],
       "deprioritize_pillars": [
-        "pillar_sales_revenue_only"
+        "pillar_partner_gtm_alliances",
+        "pillar_cosell_partner_engineering",
+        "pillar_presales_solutioning",
+        "pillar_gtm_presales_motion",
+        "pillar_revenue_operations",
+        "pillar_revenue_commercialization",
+        "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_applied_ai_partner_architecture",
+        "pillar_customer_stakeholder"
       ],
       "executive_summary_skill_budget": {
         "architecture": 3,
@@ -38576,27 +38584,39 @@
         },
         {
           "pillar_id": "pillar_cosell_partner_engineering",
-          "weight": 0.95
+          "weight": 0.97
         },
         {
-          "pillar_id": "pillar_presales_solutioning",
-          "weight": 0.9
+          "pillar_id": "pillar_gtm_presales_motion",
+          "weight": 0.96
         },
         {
-          "pillar_id": "pillar_agentic_ai_platforms",
-          "weight": 0.85
-        },
-        {
-          "pillar_id": "pillar_customer_stakeholder",
-          "weight": 0.8
+          "pillar_id": "pillar_applied_ai_partner_architecture",
+          "weight": 0.94
         },
         {
           "pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
           "weight": 0.92
         },
         {
-          "pillar_id": "pillar_applied_ai_partner_architecture",
-          "weight": 0.94
+          "pillar_id": "pillar_presales_solutioning",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_customer_stakeholder",
+          "weight": 0.82
+        },
+        {
+          "pillar_id": "pillar_revenue_commercialization",
+          "weight": 0.8
+        },
+        {
+          "pillar_id": "pillar_revenue_operations",
+          "weight": 0.72
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.5
         }
       ],
       "user_confirmed_pending_source": [
@@ -38607,6 +38627,11 @@
         "marketplace listing owner",
         "owned marketplace listing",
         "marketplace listing claim"
+      ],
+      "deprioritize_pillars": [
+        "pillar_actuarial_foundation",
+        "pillar_greeks_hedging",
+        "pillar_derivatives_structured"
       ]
     },
     "FIELD_CTO": {
@@ -38805,6 +38830,289 @@
         "executive_operating_model": 1
       },
       "notes": "Composite projection only; not a canonical role_families taxonomy id."
+    },
+    "PARTNER_APPLIED_AI_ARCHITECTURE": {
+      "label": "Partner / Applied-AI Solutions Architecture",
+      "taxonomy_ids": [
+        "PARTNERSHIPS_GTM",
+        "AI_SOLUTIONS_ARCHITECTURE",
+        "PRODUCT_TECHNICAL_STRATEGY"
+      ],
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_applied_ai_partner_architecture",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_partner_gtm_alliances",
+          "weight": 0.96
+        },
+        {
+          "pillar_id": "pillar_cosell_partner_engineering",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_presales_solutioning",
+          "weight": 0.93
+        },
+        {
+          "pillar_id": "pillar_gtm_presales_motion",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
+          "weight": 0.88
+        },
+        {
+          "pillar_id": "pillar_customer_stakeholder",
+          "weight": 0.82
+        },
+        {
+          "pillar_id": "pillar_cloud_data_aws",
+          "weight": 0.8
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.62
+        }
+      ],
+      "deprioritize_pillars": [
+        "pillar_actuarial_foundation",
+        "pillar_greeks_hedging",
+        "pillar_derivatives_structured"
+      ]
+    },
+    "INSURANCE_CARRIER_TRANSFORMATION": {
+      "label": "Insurance Carrier Agentic Transformation",
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_insurance_carrier_transformation",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_underwriting_claims_ops_ai",
+          "weight": 0.96
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_regulatory_governance",
+          "weight": 0.82
+        },
+        {
+          "pillar_id": "pillar_risk_management",
+          "weight": 0.78
+        },
+        {
+          "pillar_id": "pillar_executive_leadership",
+          "weight": 0.72
+        }
+      ]
+    },
+    "INSURER_IT_AI_ENABLEMENT": {
+      "label": "Insurer IT / AI Enablement",
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_insurer_it_strategy_ai_enablement",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_cloud_data_aws",
+          "weight": 0.86
+        },
+        {
+          "pillar_id": "pillar_enterprise_portfolio_governance",
+          "weight": 0.8
+        },
+        {
+          "pillar_id": "pillar_interoperability_integration_ecosystem",
+          "weight": 0.76
+        }
+      ]
+    },
+    "INSURANCE_BROKERAGE_IT_INNOVATION": {
+      "label": "Insurance Brokerage IT Innovation",
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_interoperability_integration_ecosystem",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_insurer_it_strategy_ai_enablement",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.86
+        },
+        {
+          "pillar_id": "pillar_cloud_data_aws",
+          "weight": 0.84
+        },
+        {
+          "pillar_id": "pillar_enterprise_portfolio_governance",
+          "weight": 0.8
+        }
+      ]
+    },
+    "BANKING_PLATFORM_AI": {
+      "label": "Banking Platform Responsible AI",
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_banking_platform_responsible_ai",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_regulatory_governance",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_enterprise_risk_controls",
+          "weight": 0.86
+        },
+        {
+          "pillar_id": "pillar_risk_management",
+          "weight": 0.84
+        },
+        {
+          "pillar_id": "pillar_cloud_data_aws",
+          "weight": 0.8
+        }
+      ]
+    },
+    "REGULATED_AI_GOVERNANCE": {
+      "label": "Regulated AI Governance",
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_regulatory_governance",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_enterprise_risk_controls",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_risk_management",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.85
+        },
+        {
+          "pillar_id": "pillar_banking_platform_responsible_ai",
+          "weight": 0.8
+        }
+      ]
+    },
+    "HYPERSCALER_MARKETPLACE_GTM": {
+      "label": "Hyperscaler Marketplace GTM",
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
+          "weight": 1.0
+        },
+        {
+          "pillar_id": "pillar_partner_gtm_alliances",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_cosell_partner_engineering",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_gtm_presales_motion",
+          "weight": 0.88
+        },
+        {
+          "pillar_id": "pillar_presales_solutioning",
+          "weight": 0.85
+        },
+        {
+          "pillar_id": "pillar_cloud_data_aws",
+          "weight": 0.8
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.5
+        }
+      ]
+    },
+    "CONSULTING_DELIVERY_LEADERSHIP": {
+      "label": "Consulting Delivery Leadership",
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_presales_solutioning",
+          "weight": 0.95
+        },
+        {
+          "pillar_id": "pillar_gtm_presales_motion",
+          "weight": 0.92
+        },
+        {
+          "pillar_id": "pillar_customer_stakeholder",
+          "weight": 0.9
+        },
+        {
+          "pillar_id": "pillar_partner_gtm_alliances",
+          "weight": 0.85
+        },
+        {
+          "pillar_id": "pillar_executive_leadership",
+          "weight": 0.8
+        },
+        {
+          "pillar_id": "pillar_cloud_data_aws",
+          "weight": 0.76
+        },
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.7
+        }
+      ]
+    },
+    "THREE_PHASE_GENERALIST": {
+      "label": "Three-Phase Generalist (balanced eras)",
+      "top_weighted_pillars": [
+        {
+          "pillar_id": "pillar_agentic_ai_platforms",
+          "weight": 0.92
+        },
+        {
+          "pillar_id": "pillar_cloud_data_aws",
+          "weight": 0.86
+        },
+        {
+          "pillar_id": "pillar_actuarial_foundation",
+          "weight": 0.8
+        },
+        {
+          "pillar_id": "pillar_regulatory_governance",
+          "weight": 0.76
+        },
+        {
+          "pillar_id": "pillar_partner_gtm_alliances",
+          "weight": 0.72
+        },
+        {
+          "pillar_id": "pillar_risk_management",
+          "weight": 0.7
+        },
+        {
+          "pillar_id": "pillar_executive_leadership",
+          "weight": 0.7
+        }
+      ]
     }
   },
   "validation_rules": {

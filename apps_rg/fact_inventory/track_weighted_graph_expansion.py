@@ -40,6 +40,12 @@ DEFAULT_TRACK_WEIGHTS: dict[str, float] = {
     "track_genai_agentic": 0.65,
 }
 
+# Functional pillar-weight defaults (within-track skill re-ranking).
+# A skill whose pillar is not in the active profile's top_weighted_pillars gets the
+# neutral default; a pillar in the profile's deprioritize list is suppressed near-zero.
+DEFAULT_FUNCTIONAL_PILLAR_WEIGHT = 0.55
+DEPRIORITIZED_PILLAR_WEIGHT = 0.10
+
 ROLE_FAMILY_TRACK_WEIGHTS: dict[str, dict[str, float]] = {
     "SVP_ENGINEERING_AI_PLATFORM": dict(DEFAULT_TRACK_WEIGHTS),
     "CHIEF_AI_OFFICER": {
@@ -94,9 +100,9 @@ ROLE_FAMILY_TRACK_WEIGHTS: dict[str, dict[str, float]] = {
         "track_genai_agentic": 0.30,
     },
     "PARTNER_APPLIED_AI_ARCHITECTURE": {
-        "track_actuarial_risk_derivatives": 0.05,
-        "track_data_tech_cloud_ml": 0.55,
-        "track_genai_agentic": 0.40,
+        "track_actuarial_risk_derivatives": 0.03,
+        "track_data_tech_cloud_ml": 0.70,
+        "track_genai_agentic": 0.27,
     },
     "HYPERSCALER_MARKETPLACE_GTM": {
         "track_actuarial_risk_derivatives": 0.05,
@@ -729,6 +735,24 @@ def build_track_weighted_expansion(
     rows_by_id = _skill_rows_by_id(g)
     seed = {str(x) for x in (seed_fact_ids or []) if str(x).strip()}
 
+    # Functional pillar-weight signal: the projection profile's top_weighted_pillars
+    # re-rank approved skills WITHIN each career track by JD-resolved role family.
+    # (Replaces the dead role_family_weights lookup — those weights are keyed by taxonomy
+    # id, never the projection key, so the prior `rf_w` was silently always 0.0.)
+    profiles = g.get("role_family_projection_profiles") or {}
+    _profile = profiles.get(role_family_key) or {}
+    _pillar_w = {
+        str(p.get("pillar_id")): float(p.get("weight") or 0.0)
+        for p in (_profile.get("top_weighted_pillars") or [])
+        if isinstance(p, dict) and p.get("pillar_id")
+    }
+    _deprio_pillars = {str(x) for x in (_profile.get("deprioritize_pillars") or [])}
+
+    def _functional_pillar_weight(pillar_id: str) -> float:
+        if pillar_id in _deprio_pillars:
+            return DEPRIORITIZED_PILLAR_WEIGHT
+        return _pillar_w.get(pillar_id, DEFAULT_FUNCTIONAL_PILLAR_WEIGHT)
+
     selected_skills: list[dict[str, Any]] = []
     selected_facts: list[dict[str, Any]] = []
     excluded: list[dict[str, str]] = []
@@ -762,8 +786,8 @@ def build_track_weighted_expansion(
             if not links:
                 excluded.append({"id": sid, "reason": "empty_fact_id_links"})
                 continue
-            rf_w = float((row.get("role_family_weights") or {}).get(role_family_key, 0.0))
-            score = w * (1.0 + rf_w)
+            functional_w = _functional_pillar_weight(pillar)
+            score = w * functional_w
             candidates.append((score, sid, row))
         candidates.sort(key=lambda t: (-t[0], t[1]))
         for _, sid, row in candidates[:cap]:
