@@ -74,6 +74,23 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 
 **Live-API floor ≈ 4 sequential E2Es (~50-70 min total)** — measured, parallel; not the pre-parallel ~4 h. The first **finished Anthropic resume** lands at the END of Stage B (W2.3). C/D/E refine targeting + composition on an already-shipping pipeline.
 
+### Graph-% + Waterfall Variance Evidence — REQUIRED (proves the graph is correct)
+
+> ⛔ **This is the original plan's whole reason for being and MUST NOT be dropped by the cost rebaseline.**
+> The proof that the graph is implemented correctly is the **graph-skill % breakout for all 3 targets
+> (Anthropic, Truist, Brown & Brown) × all 11 lanes**, plus the **stage-to-stage variance** showing each
+> waterfall step changed the selected-skill composition the way its one causal change predicts.
+
+**Required at EVERY waterfall stage (A captured, B, C, D, E0, E1) — not deferred to W5:**
+1. **3 targets × 11 lanes × graph-skill %**, broken out by dimension: role family · role facet · pillar · source-fact-family · employer scope · metric type.
+2. **Per-step variance**: each stage diffed against (a) the immediately-prior stage AND (b) immutable Stage A (`artifacts/w1/`), per target, per lane — top added / removed / promoted / demoted graph skills, each tagged expected/unexpected.
+
+**Two-tier production (code-grounded):**
+- **Authoritative (assembly-based):** `tools/apps_rg/graph_skill_utilization_report.py` — **requires `final_resume_assembly/final_resume.json` (verified: raises without it)**, so it yields a target's full graph-% only once that target reaches 11/11. Anthropic gets this at Stage B (W2.3); all 3 at Stage E1 (W5.4).
+- **Cheap every-stage (selection-based) — the lever that keeps this affordable for all 3 targets at every stage:** the **W3.1 `tools/apps_rg/selection_diagnostic.py` runner MUST emit the per-lane graph-skill % breakout (all 6 dimensions) for all 3 targets directly from selection/traversal artifacts (proof-pool / selected-graph-evidence), WITHOUT full generation or assembly.** This is non-generation (≈ seconds, zero LLM) so the 3-target × 11-lane × per-stage matrix + variance is produced at every stage without 3× full generation.
+
+**Consequence for the build order:** the selection-based graph-% diagnostic is a hard W3.1 deliverable (not optional), and it is what makes the 3-target evidence requirement compatible with the single-resume *live-gate* cost rebaseline. The single live E2E per stage confirms X3 gates for the chosen target; the **graph-% correctness evidence for all 3 targets comes from the cheap diagnostic at the same stage.** W5.4 then assembles the full A→E1 variance report across all targets/lanes.
+
 ### Prerequisites — corrected status (verified in code)
 
 | ID | Prereq | Status |
@@ -754,7 +771,8 @@ source_of_truth = graph_config | graph_row | static_taxonomy   # where facet ass
 - After the single-resume successful E2E, run a **non-generation selection/traversal diagnostic for all three targets** (Anthropic, Truist, Brown & Brown). Per target and lane it must emit the selected / demoted / blocked / missing rows and the role-family / facet / pillar breakouts **without full generated output or X3 disposition**.
 - Purpose: surface role-family regressions for Truist and Brown & Brown at W3, so they are not first observed at W5 where sliding-scale is also active and attribution is harder.
 - Cheap (selection/traversal only) and a W3 completion requirement; it does NOT replace the single-resume successful-E2E gate.
-- **Implementation locus (built in W3.1, reused by W4):** `tools/apps_rg/selection_diagnostic.py` (or equivalent CLI mode such as `python -m apps_rg --selection-diagnostic --target-company ... --target-role ... --jd ...`) that drives the same selection/traversal path used by full generation but short-circuits before LLM dispatch and emits selected/demoted/blocked/missing rows + breakouts to a JSON artifact. This runner does NOT yet exist in `python -m apps_rg`; W3.1 includes building it. W3.2 (and the W4 smoke run) invoke it; W3 cannot be marked complete without this runner existing and producing artifacts for all 3 targets.
+- **Implementation locus (built in W3.1, reused by W4):** `tools/apps_rg/selection_diagnostic.py` (or equivalent CLI mode such as `python -m apps_rg --selection-diagnostic --target-company ... --target-role ... --jd ...`) that drives the same selection/traversal path used by full generation but short-circuits before LLM dispatch and emits, **per target and per lane, to a JSON artifact**: (a) selected / demoted / blocked / missing rows, AND (b) **the graph-skill % breakout across all 6 dimensions — role family · role facet · pillar · source-fact-family · employer scope · metric type** (this is the every-stage, all-3-targets correctness evidence required by "### Graph-% + Waterfall Variance Evidence"). It must also emit a **per-step variance** block diffing the current stage's graph-% against the prior stage AND immutable Stage A (`artifacts/w1/`) per target/lane. This runner does NOT yet exist in `python -m apps_rg`; **W3.1 includes building it, and the graph-% + variance output is a hard part of its spec (not just selected/demoted rows).** W3.2 (and the W4 smoke run) invoke it; W3 cannot be marked complete without this runner existing and producing the graph-% + variance artifacts for all 3 targets × 11 lanes.
+- **Back-fill for already-passed stages:** because this runner is built at W3.1, run it retroactively against Stage A/B0/B selection artifacts (deterministic — they re-derive from the merged graph) so the A→B→C variance chain has the 3-target graph-% at every prior step, not just from C onward.
 
 ---
 
@@ -1271,6 +1289,10 @@ DoD-12: Notion and disk status are synchronized.
 
 DoD-13: Hardening contract is enforced.
 - Evidence: The authority stack invariant, waterfall atomicity and E2E gate, no-silent-fallback rule, canonical traversal verdict enum, candidate-fact authority fence, diagnostic-only no-effect rule, and prompt-hack exclusion are covered by tests or runtime validators. Prompt-only changes are not accepted as closure evidence for W3, W4, or W5.
+- Status: TODO
+
+DoD-14: Graph correctness is proven by the 3-target × 11-lane graph-% breakout + per-step waterfall variance. **(The original plan's core proof — must not be dropped by the cost rebaseline; see "### Graph-% + Waterfall Variance Evidence".)**
+- Evidence: For all 3 targets (Anthropic, Truist, Brown & Brown) × all 11 generated lanes, the **graph-skill % breakout across 6 dimensions** (role family, role facet, pillar, source-fact-family, employer scope, metric type) is produced **at every waterfall stage** (A, B, C, D, E0, E1) — via `tools/apps_rg/selection_diagnostic.py` (selection-based, non-generation, cheap) for all 3 targets at every stage, and via `tools/apps_rg/graph_skill_utilization_report.py` (assembly-based, authoritative) for each target once it reaches 11/11. Each stage carries a **per-step variance** vs the immediately-prior stage AND immutable Stage A, per target/lane, with every material delta tagged expected/unexpected. The W5.4 waterfall report joins the full A→B0→B→C→D→E0→E1 chain across all targets/lanes (subsumes DoD-10A).
 - Status: TODO
 
 ---
