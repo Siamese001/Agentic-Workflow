@@ -46,6 +46,9 @@ CANONICAL_NODE_TYPES = frozenset(
         "policy",
         "policy_rule",
         "graph_ref",
+        # W2.0 (typed-edge-role-facet-guardrails-a6f3d2): first-class metric_outcome
+        # nodes materialized from role_episode_bundle metric_outcome_nodes dicts.
+        "metric_outcome",
     }
 )
 
@@ -323,6 +326,11 @@ def infer_node_type_from_id(node_id: str) -> str:
         return "certification"
     if nid.startswith("fact_") or nid.startswith("node_fact_"):
         return "fact"
+    # W2.0: metric_outcome IDs are minted as ``metric_<employer>_<...>`` in
+    # role_episode_bundle files. Inference precedes the skill_ branch because
+    # neither prefix collides with the other.
+    if nid.startswith("metric_"):
+        return "metric_outcome"
     if nid.startswith("skill_"):
         return "skill"
     if nid.startswith("pillar_"):
@@ -1461,6 +1469,32 @@ def materialize_augmented_skills_graph_sqlite(
         )
 
     edge_rows = _dedupe_edge_rows(edge_by_id)
+
+    # W2.0 (typed-edge-role-facet-guardrails-a6f3d2): materialize first-class
+    # metric_outcome nodes + edges from role_episode_bundle JSON files. New rows
+    # are net-additive (node_type="metric_outcome" + 3 new edge_types in
+    # METRIC_OUTCOME_EDGE_TYPES) — existing node_type/edge_type queries are
+    # unaffected. Validators do not consume these yet; W2.2 migrates consumers
+    # to the resolver in metric_outcome_materializer.resolve_metric_outcome_graph_node.
+    from apps_rg.fact_inventory.metric_outcome_materializer import (
+        metric_outcome_node_and_edge_rows,
+    )
+
+    _mo_node_rows, _mo_edge_rows = metric_outcome_node_and_edge_rows(
+        root, ts=ts, known_node_ids=set(node_rows.keys())
+    )
+    for _row in _mo_node_rows:
+        _nid = _row["node_id"]
+        # Behavior-neutral guard: never overwrite an existing node row. If a
+        # metric ID collides with a pre-existing graph node, the bundle JSON is
+        # malformed and W2.0 fails closed at materialization.
+        if _nid in node_rows:
+            raise ValueError(
+                f"metric_outcome materialization: id collision with existing graph_node {_nid!r}"
+            )
+        node_rows[_nid] = _row
+    edge_rows.extend(_mo_edge_rows)
+
     section_rows = list(section_by_key.values())
     projection_rows: list[dict[str, Any]] = []
     profiles = payload.get("role_family_projection_profiles") or {}

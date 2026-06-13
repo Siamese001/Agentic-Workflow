@@ -21,14 +21,16 @@ from apps_rg.runtime.sections.executive_summary_token_budget import (
 
 
 def test_regen_max_output_defaults_and_cap(monkeypatch) -> None:
+    """Claude-era defaults (post-Qwen-removal 2026-06-13): scratch/regen 4096."""
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_MAX_OUTPUT_TOKENS", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_QWEN_REGEN_MAX_OUTPUT_TOKENS", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_QWEN_MAX_OUTPUT_TOKENS", raising=False)
-    assert resolve_scratch_max_output_tokens() == 2048
-    assert resolve_regen_max_output_tokens() == 2048
+    assert resolve_scratch_max_output_tokens() == 4096
+    assert resolve_regen_max_output_tokens() == 4096
+    # Regen capped by scratch cap; explicit regen value within new scratch budget passes through.
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_MAX_OUTPUT_TOKENS", "3000")
-    assert resolve_regen_max_output_tokens() == 2048
+    assert resolve_regen_max_output_tokens() == 3000
 
 
 def test_regen_dispatch_blocks_when_thread_exceeds_window(monkeypatch) -> None:
