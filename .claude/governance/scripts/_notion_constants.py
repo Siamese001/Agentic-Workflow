@@ -30,6 +30,13 @@ PLANS_DB_ID: str = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
 PLANS_DATA_SOURCE_ID: str = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 
+# Backlog Items DB — physically the same Notion DB as Wave/Phase Convergence.
+# Aliases added 2026-06-13 so callers can reference semantic names instead of
+# reusing WAVE_PHASE_* names that obscure intent in unrelated call sites.
+BACKLOG_ITEMS_DB_ID: str = WAVE_PHASE_DB_ID            # aa8d2507-101e-4384-81d9-60ea3fe33876
+BACKLOG_ITEMS_DS_ID: str = WAVE_PHASE_DATA_SOURCE_ID   # fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7
+
+
 # ADR Registry DB — ARCHIVED 2026-05-02 (commit b11200e833; filesystem SSOT only)
 # Retained for reference; post_agent_adr_registry_capture.py now logs to filesystem only.
 ADR_REGISTRY_DB_ID: str = "6ed25e12-bd92-4352-ac7a-3a971311f024"
@@ -132,6 +139,8 @@ __all__ = [
     "WAVE_PHASE_DATA_SOURCE_ID",
     "PLANS_DB_ID",
     "PLANS_DATA_SOURCE_ID",
+    "BACKLOG_ITEMS_DB_ID",
+    "BACKLOG_ITEMS_DS_ID",
     "ADR_REGISTRY_DB_ID",
     "ADR_REGISTRY_DS_ID",
     "AUTHOR_GATE_LEDGER_DB_ID",

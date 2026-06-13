@@ -60,9 +60,12 @@ FORBIDDEN_AT_CREATION = {
 _AUDIT_LOG_PATH = _REPO_ROOT / "artifacts" / "governance" / "plan_creation_corrections.jsonl"
 _ALERT_LOG_PATH = _REPO_ROOT / "artifacts" / "governance" / "plan_creation_alerts.jsonl"
 
-# Plans DB identifiers
-PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-PLANS_DATABASE_ID = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
+# Plans DB identifiers — imported from _notion_constants SSOT.
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+from _notion_constants import PLANS_DATA_SOURCE_ID, PLANS_DB_ID as PLANS_DATABASE_ID  # noqa: E402
+
 PLANS_PARENT_IDS = frozenset({PLANS_DATA_SOURCE_ID, PLANS_DATABASE_ID})
 
 _NOTION_MCP_SERVER_KEY = "notion"

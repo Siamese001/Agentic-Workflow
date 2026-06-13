@@ -37,6 +37,13 @@ FORBIDDEN_AT_CREATION = {"In Progress", "Retired", "Archived"}  # SSOT 5-status:
 # registered in the Notion Plans DB unless its canonical disk file exists first.
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
+# Plans DB identifiers — imported from _notion_constants SSOT.
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+from _notion_constants import PLANS_DATA_SOURCE_ID as _PLANS_DATA_SOURCE_ID  # noqa: E402
+from _notion_constants import PLANS_DB_ID as _PLANS_DB_ID  # noqa: E402
+
 
 def _get_payload_from_stdin() -> dict[str, Any] | None:
     """Parse JSON payload from stdin (Cursor Agent hook contract)."""
@@ -76,10 +83,7 @@ def _extract_plans_creation_payload(
         block_content = match.group(1)
         
         # Check if targeting Plans DB data_source_id
-        plans_ids = [
-            "ac53d31b-3068-4039-9ebe-856c12caab32",  # data_source_id
-            "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9",  # database_id (legacy)
-        ]
+        plans_ids = [_PLANS_DATA_SOURCE_ID, _PLANS_DB_ID]
         
         is_plans_target = any(pid in block_content for pid in plans_ids)
         if not is_plans_target:

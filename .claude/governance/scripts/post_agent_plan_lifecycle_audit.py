@@ -40,6 +40,10 @@ from pathlib import Path
 from typing import Any, Optional
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+from _notion_constants import PLANS_DATA_SOURCE_ID as _NOTION_PLANS_DS_ID  # noqa: E402
 
 # Violation log paths (preserved from original hooks)
 LOG_PATHS = {
@@ -285,7 +289,7 @@ def cmd_duplicate(args: argparse.Namespace) -> int:
     if post_page_match:
         parent_content = post_page_match.group(1)
         # Check if targeting Plans DB
-        if "database_id" in parent_content or "ac53d31b" in parent_content:
+        if "database_id" in parent_content or _NOTION_PLANS_DS_ID in parent_content:
             # Extract slug
             slug_match = re.search(r'"Slug"[^}]*"title"[^}]*"content"\s*:\s*"([^"]+)"', response_text, re.DOTALL)
             if slug_match:
