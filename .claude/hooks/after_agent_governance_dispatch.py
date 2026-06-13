@@ -44,6 +44,7 @@ _AG_CHAIN: tuple[str, ...] = (
     "post_agent_adg_burndown_inline_audit.py",
     "post_agent_work_classification_audit.py",  # Operating Model 2026-06-10: plan-reflex detection
     "post_agent_runtime_rca_audit.py",  # constitutional §37: RCA-on-runtime-failure enforcement
+    "post_agent_recommendation_gate_audit.py",  # trigger side: decision surfaced in prose without AskUserQuestion
 )
 
 
