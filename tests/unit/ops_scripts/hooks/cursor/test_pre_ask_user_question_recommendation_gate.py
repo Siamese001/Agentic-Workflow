@@ -109,15 +109,38 @@ def test_missing_recommended_marker_is_advisory():
     assert "no option marked" in reason
 
 
-def test_recommended_without_confidence_is_advisory():
+def test_recommended_without_confidence_blocks_by_default():
+    # Default-to-enforcement (user directive 2026-06-13): a marked recommendation with no
+    # confidence signal is the core violation → BLOCK (exit 2) without needing strict mode.
     payload = _auq(
         _opt("Pick this one (Recommended)", "just a plain trade-off, no band"),
         _opt("Other", "x"),
     )
     code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "contract" in reason
+    assert "confidence signal" in reason
+
+
+def test_recommended_without_confidence_bypass_allows(_clean_env):
+    # The bypass escape hatch still overrides the default block.
+    _clean_env.setenv(gate._BYPASS_ENV, "1")
+    payload = _auq(
+        _opt("Pick this one (Recommended)", "no band"),
+        _opt("Other", "x"),
+    )
+    code, reason = gate.evaluate(payload)
+    assert code == 0
+    assert "bypass" in reason.lower()
+
+
+def test_symmetric_question_not_blocked_by_default():
+    # No option marked (Recommended) — a legitimate symmetric question — stays advisory,
+    # NOT blocked, so the enforcement default does not false-block preference questions.
+    payload = _auq(_opt("Red", "warm"), _opt("Blue", "cool"))
+    code, reason = gate.evaluate(payload)
     assert code == 0
     assert reason.startswith("ADVISORY")
-    assert "confidence signal" in reason
 
 
 def test_recommended_not_first_is_flagged():

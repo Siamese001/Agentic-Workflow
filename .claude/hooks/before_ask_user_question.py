@@ -10,7 +10,9 @@ checkouts). Fail-open on every error so a broken gate never wedges a turn.
 
 Contract enforced by the gate: §6 / CLAUDE.md Author-Gate — an AskUserQuestion for an
 Author-Gate-class decision must mark the recommended option ``(Recommended)`` and carry a
-confidence signal. Advisory by default; ``ASK_REC_GUARD_STRICT=1`` makes it blocking.
+confidence signal. A marked recommendation with NO confidence signal **blocks by default**
+(``ASK_REC_GUARD_BYPASS=1`` overrides); a missing/last recommendation stays advisory unless
+``ASK_REC_GUARD_STRICT=1``.
 """
 
 from __future__ import annotations

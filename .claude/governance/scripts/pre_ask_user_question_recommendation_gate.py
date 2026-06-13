@@ -32,13 +32,17 @@ Returns ``(0, reason)`` to allow or ``(2, reason)`` to block.
 * Not an ``AskUserQuestion`` call ............ allow
 * ``ASK_REC_GUARD_BYPASS=1`` ................. allow (logged)
 * Every question has a marked + confident recommendation ... allow
-* A question is missing the marker / confidence ............ **ADVISORY warn (exit 0)** by
-  default; **BLOCK (exit 2)** only when ``ASK_REC_GUARD_STRICT=1``.
+* A marked ``(Recommended)`` option with **no confidence signal** ... **BLOCK (exit 2) by
+  default** — the exact §6 / user-directive violation (a recommendation must carry a
+  confidence level). Override only with ``ASK_REC_GUARD_BYPASS=1``.
+* **No** option marked ``(Recommended)`` at all, or recommended-not-first ... **ADVISORY
+  (exit 0)** by default; **BLOCK** only when ``ASK_REC_GUARD_STRICT=1``.
 
-Advisory-by-default because not every AskUserQuestion is an Author-Gate-class decision (a
-symmetric preference question legitimately has no recommendation); strict mode is opt-in for
-sessions that want a hard contract. Fail policy: OPEN — any unexpected error → allow
-(exit 0). A governance gate must never be the reason a turn hangs or dies.
+Default-to-enforcement (user directive 2026-06-13): the core case — *a recommendation was
+made but carries no confidence* — blocks by default. The soft case stays advisory because a
+missing recommendation may be a legitimate symmetric preference question, not a miss. Fail
+policy: OPEN — any unexpected error → allow (exit 0). A governance gate must never be the
+reason a turn hangs or dies.
 """
 
 from __future__ import annotations
@@ -71,8 +75,13 @@ def _strict() -> bool:
     return os.environ.get(_STRICT_ENV) == "1"
 
 
-def question_findings(idx: int, question: dict) -> list[str]:
-    """Return human-readable findings for one question (empty list == compliant)."""
+def question_findings(idx: int, question: dict) -> list[tuple[str, str]]:
+    """Return ``(severity, message)`` findings for one question (empty == compliant).
+
+    severity is ``"block"`` (a marked recommendation with NO confidence — the core
+    violation, blocks by default) or ``"advisory"`` (no recommendation marked at all, or
+    recommended-not-first — soft, advisory unless ``ASK_REC_GUARD_STRICT=1``).
+    """
     if not isinstance(question, dict):
         return []
     options = question.get("options")
@@ -83,18 +92,22 @@ def question_findings(idx: int, question: dict) -> list[str]:
     labels = [str(o.get("label", "")) for o in opt_dicts]
     rec_positions = [i for i, label in enumerate(labels) if _RECOMMENDED_RE.search(label)]
     header = str(question.get("header") or question.get("question") or f"q{idx}")[:48]
-    findings: list[str] = []
     if not rec_positions:
-        findings.append(f"[{header}] no option marked '(Recommended)' (§6 marker absent)")
-        return findings
+        # Possibly a legitimate symmetric preference question — advisory, not a hard block.
+        return [(
+            "advisory",
+            f"[{header}] no option marked '(Recommended)' (§6 marker absent, or a symmetric question)",
+        )]
+    findings: list[tuple[str, str]] = []
     rec_descs = [str(opt_dicts[i].get("description", "")) for i in rec_positions]
     if not any(_CONFIDENCE_RE.search(d) for d in rec_descs):
-        findings.append(
+        findings.append((
+            "block",
             f"[{header}] recommended option carries no confidence signal "
-            "(high/medium/low or 'confidence')"
-        )
+            "(e.g. 'confidence=0.NN' or high/medium/low)",
+        ))
     if 0 not in rec_positions:
-        findings.append(f"[{header}] recommended option is not placed first")
+        findings.append(("advisory", f"[{header}] recommended option is not placed first"))
     return findings
 
 
@@ -114,18 +127,26 @@ def evaluate(payload: dict) -> tuple[int, str]:
     if not isinstance(questions, list) or not questions:
         return 0, "no questions — allow"
 
-    all_findings: list[str] = []
+    block_findings: list[str] = []
+    advisory_findings: list[str] = []
     for idx, question in enumerate(questions):
-        all_findings.extend(question_findings(idx, question))
+        for severity, message in question_findings(idx, question):
+            (block_findings if severity == "block" else advisory_findings).append(message)
 
-    if not all_findings:
+    if not block_findings and not advisory_findings:
         return 0, "ok: every question has a marked, confidence-bearing recommendation"
 
-    reason = "; ".join(all_findings)
-    _log_violation(payload, reason)
+    _log_violation(payload, "; ".join(block_findings + advisory_findings))
+
+    # Default to enforcement: a marked (Recommended) option with no confidence signal is the
+    # exact contract violation — block by default (override only via ASK_REC_GUARD_BYPASS=1).
+    if block_findings:
+        return 2, f"AskUserQuestion recommendation/confidence contract: {'; '.join(block_findings)}"
+    # Soft findings (no recommendation marked — possibly a symmetric question; or not-first):
+    # advisory by default, blocking only under strict mode.
     if _strict():
-        return 2, f"AskUserQuestion recommendation/confidence contract: {reason}"
-    return 0, f"ADVISORY (AskUserQuestion recommendation/confidence): {reason}"
+        return 2, f"AskUserQuestion recommendation/confidence contract (strict): {'; '.join(advisory_findings)}"
+    return 0, f"ADVISORY (AskUserQuestion recommendation/confidence): {'; '.join(advisory_findings)}"
 
 
 def _log_violation(payload: dict, reason: str) -> None:
