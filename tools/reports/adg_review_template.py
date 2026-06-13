@@ -12,11 +12,13 @@ import datetime as _dt
 import hashlib
 import json
 import os
+import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
 
 from tools.generate.core.helpers import _write_text_artifact
+from tools.reports.exhaustive_adg_ci_report import MV_DESCRIPTIONS
 from tools.reports.gate_signal_catalog import (
     display_verdict,
     display_verdict_sub,
@@ -57,6 +59,46 @@ ATTACK_CLASS_PRIORITY = {
     "Burn down ratchets": 1,
     "Open non-ratchet work": 2,
     "Severity audit": 3,
+}
+
+MV_GATE_DRIVERS: dict[str, tuple[str, ...]] = {
+    "mv_actionable_surface_without_schema": ("M_taint_actionable_ratchet",),
+    "mv_authority_boundary_breaches": ("2_authority_boundary",),
+    "mv_capability_and_egress_gaps": ("4_capability_egress",),
+    "mv_determinism_provenance_drift": ("6_determinism_provenance",),
+    "mv_exit_disposition_coverage": ("I1_exit_disposition_ratchet",),
+    "mv_gateway_bypass_paths": ("C1_uwg_bypass_pview",),
+    "mv_graph_vs_report_mismatches": ("H4_mv_staleness_ratchet",),
+    "mv_heal_retry_exit_gaps": ("8_trace_replay_eval",),
+    "mv_hitl_reclearance_gaps": ("11_architecture_witness",),
+    "mv_l2_phase_coverage": ("7_lifecycle_coverage",),
+    "mv_new_write_bypass_paths": ("S2_uwg_bypass_ratchet", "3_write_sovereignty"),
+    "mv_prompt_assembly_wiring_gaps": ("12_prompt_assembly_wiring",),
+    "mv_replay_surface_gaps": ("I2_replay_surface_gaps_ratchet",),
+    "mv_runtime_spine_gaps": ("11_architecture_witness",),
+    "mv_structured_output_gaps": ("P_structured_output_ratchet",),
+    "mv_trace_replay_eval_gaps": ("8_trace_replay_eval",),
+    "mv_untrusted_text_to_action_risk": ("5_text_to_action",),
+    "mv_write_sovereignty_paths": ("3_write_sovereignty", "S2_uwg_bypass_ratchet"),
+}
+
+MV_ANALYST_SIGNALS: dict[str, str] = {
+    "mv_debt_concentration_hotspots": "Rank refactor slices after red gates clear.",
+    "mv_dependency_cone_risk": "Prefer fixes that reduce downstream blast radius.",
+    "mv_exemptions_near_critical_paths": "Audit guardian exceptions near critical paths.",
+    "mv_graph_chokepoint_bridges": "Avoid risky edits at single-bridge chokepoints without tests.",
+    "mv_graph_critical_path_blast_radius": "Choose high-blast-radius seams for careful refactor/test work.",
+    "mv_graph_reverse_dependency_hotspots": "Treat highly imported hubs as test-required change areas.",
+    "mv_high_fan_in_out_with_defects": "Prioritize defects in high fan-in/fan-out symbols.",
+    "mv_hotspot_centrality": "Use as structural leverage ranking for refactor waves.",
+    "mv_hotspot_coverage_risk": "Use as first-class testing-hotspot next-step input.",
+    "mv_modified_area_regressions": "Check defects in files touched by this run.",
+    "mv_new_cross_layer_dependencies": "Review newly introduced layer drift before it becomes baseline debt.",
+    "mv_new_provider_surfaces": "Review new provider surfaces for egress/control gaps.",
+    "mv_newly_introduced_critical_paths": "Inspect newly created critical-path edges for regressions.",
+    "mv_path_criticality_rollup": "Use as impact weighting for any fix or refactor slice.",
+    "mv_repeated_p3_near_critical_paths": "Promote recurring style debt near critical paths when planning P3 work.",
+    "mv_snapshot_integrity_anomalies": "Treat as generator/ingest health signal, not product-code work by itself.",
 }
 
 
@@ -140,6 +182,20 @@ def _artifact_ref(key: str, path: Path | None, *, required: bool = False) -> dic
 
 def _fmt_int(value: Any) -> str:
     return f"{int(value or 0):,}"
+
+
+def _int_value(value: Any, *, default: int = 0) -> int:
+    try:
+        return int(float(value))
+    except (TypeError, ValueError):
+        return default
+
+
+def _float_value(value: Any, *, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
 
 
 def _plural(value: int, singular: str, plural: str | None = None) -> str:
@@ -368,11 +424,626 @@ def _action_rows(action_queue: dict[str, Any] | None, *, limit: int = 10) -> lis
                 or action.get("source_id")
                 or action.get("target")
                 or "?",
+                "band": action.get("sort_band"),
+                "records": int(action.get("violation_count") or 0),
                 "ordering_reason": action.get("ordering_reason"),
+                "source_artifact": action.get("source_artifact"),
                 "signal": action.get("signal", ""),
             }
         )
     return rows
+
+
+def _testing_hotspot_overlay(action_rows: list[dict[str, Any]], *, limit: int = 3) -> dict[str, Any]:
+    rows = [
+        row
+        for row in action_rows
+        if row.get("lane") == "GRAPHDB" and str(row.get("kind", "")).startswith("test_hotspot")
+    ][:limit]
+    ranked: list[dict[str, Any]] = []
+    for idx, row in enumerate(rows, start=1):
+        ranked.append(
+            {
+                "rank": idx,
+                "target": row.get("target"),
+                "kind": row.get("kind"),
+                "signal": row.get("signal"),
+                "how_to_use": (
+                    "Add or repair tests here if the current slice touches this path or its callers."
+                ),
+            }
+        )
+    return {
+        "title": "Internal Testing Hotspot Map",
+        "purpose": (
+            "GraphDB/MV hotspots do not replace the gate priority order; they tell where tests should "
+            "be added while executing the next burn-down or cleanup slice."
+        ),
+        "rows": ranked,
+        "comments": [
+            "Use hotspot rows as a test-placement overlay for the next implementation slice.",
+            "A hotspot does not become Fix now by itself; it changes where tests are most valuable.",
+            "If a burn-down target overlaps a hotspot path, include the test in the same change.",
+        ],
+    }
+
+
+def _resolve_snapshot_path(gate_results: dict[str, Any], gate_results_path: Path) -> Path | None:
+    raw = gate_results.get("snapshot_path")
+    if not raw and isinstance(gate_results.get("snapshot"), dict):
+        raw = gate_results["snapshot"].get("path") or gate_results["snapshot"].get("sqlite_path")
+    if not raw:
+        return None
+    path = Path(str(raw))
+    if not path.is_absolute():
+        path = (gate_results_path.parent / path).resolve()
+        if not path.exists():
+            path = (REPO_ROOT / raw).resolve()
+    return path if path.exists() else None
+
+
+def _mv_action_names(action_rows: list[dict[str, Any]]) -> set[str]:
+    names: set[str] = set()
+    for row in action_rows:
+        source = str(row.get("source_artifact") or "")
+        if source.startswith("sqlite:mv_"):
+            names.add(source.split("sqlite:", 1)[1])
+        reason = str(row.get("ordering_reason") or "")
+        if reason.startswith("mv_"):
+            names.add(reason.rsplit("_priority", 1)[0])
+    return names
+
+
+def _gate_status_by_id(gate_rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    return {str(row.get("gate_id")): row for row in gate_rows}
+
+
+def _mv_description(name: str) -> str:
+    desc = MV_DESCRIPTIONS.get(name)
+    if desc:
+        return desc[0]
+    return "Materialized-view signal from the ADG SQLite graph."
+
+
+def _mv_driver_status(
+    *,
+    name: str,
+    count: int,
+    action_mv_names: set[str],
+    gate_status: dict[str, dict[str, Any]],
+) -> tuple[str, str, str, str]:
+    """Return routing_status, priority, role, next_action for an MV."""
+    gate_ids = MV_GATE_DRIVERS.get(name, ())
+    related_gates = [gate_status[gate_id] for gate_id in gate_ids if gate_id in gate_status]
+    related_fix = [row for row in related_gates if row.get("action") == "FIX"]
+    related_track = [row for row in related_gates if row.get("action") == "TRACK"]
+
+    if count <= 0:
+        return (
+            "clean",
+            "none",
+            "No rows in this run.",
+            "No action from this MV.",
+        )
+    if name in action_mv_names:
+        return (
+            "action_driver",
+            "next",
+            "Directly promoted into the action queue.",
+            "Use this MV to choose where to add tests or scope the next slice.",
+        )
+    if related_fix:
+        gates = ", ".join(f"`{_md_cell(row.get('gate_id'))}`" for row in related_fix)
+        return (
+            "gate_driver",
+            "next",
+            f"Supports current FIX gate(s): {gates}.",
+            "Inspect this MV's rows while clearing the red gate.",
+        )
+    if related_track:
+        gates = ", ".join(f"`{_md_cell(row.get('gate_id'))}`" for row in related_track)
+        return (
+            "gate_driver",
+            "later",
+            f"Supports TRACK/backlog gate(s): {gates}.",
+            "Use after red gates clear to burn down the related floor or inventory.",
+        )
+    if name in MV_ANALYST_SIGNALS:
+        return (
+            "analyst_signal",
+            "supporting",
+            MV_ANALYST_SIGNALS[name],
+            "Use as a tie-breaker for scope, test placement, or refactor order.",
+        )
+    return (
+        "diagnostic_only",
+        "monitor",
+        "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
+        "Do not treat as immediate work unless it explains a FIX gate or planned slice.",
+    )
+
+
+def _mv_sort_key(row: dict[str, Any]) -> tuple[int, int, str]:
+    priority_order = {"next": 0, "later": 1, "supporting": 2, "monitor": 3, "none": 4}
+    return (
+        priority_order.get(str(row.get("priority")), 9),
+        -int(row.get("rows", 0) or 0),
+        str(row.get("mv_name", "")),
+    )
+
+
+def _coverage_pct_text(value: Any) -> str:
+    try:
+        pct = float(value)
+    except (TypeError, ValueError):
+        return "absent"
+    if pct < 0:
+        return "absent"
+    return f"{pct:.1f}%"
+
+
+def _empty_testing_gap_summary() -> dict[str, Any]:
+    return {
+        "status": "missing",
+        "plain_language": (
+            "No mv_hotspot_coverage_risk table was available, so GraphDB could not quantify "
+            "high-risk under-tested files for this run."
+        ),
+        "counts": {},
+        "top_files": [],
+        "what_to_do": [
+            "Use the ranked action queue for test placement if GraphDB hotspot rows are present.",
+        ],
+    }
+
+
+def _graphdb_mv_analyst_summary(
+    *,
+    gate_results: dict[str, Any],
+    gate_results_path: Path,
+    gate_rows: list[dict[str, Any]],
+    action_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    snapshot_path = _resolve_snapshot_path(gate_results, gate_results_path)
+    action_mv_names = _mv_action_names(action_rows)
+    gate_status = _gate_status_by_id(gate_rows)
+
+    inventory: list[dict[str, Any]] = []
+    testing_gap_summary = _empty_testing_gap_summary()
+    if snapshot_path is not None:
+        try:
+            con = sqlite3.connect(f"file:{snapshot_path}?mode=ro", uri=True)
+            try:
+                mv_names = [
+                    str(row[0])
+                    for row in con.execute(
+                        "SELECT name FROM sqlite_master "
+                        "WHERE type='table' AND name LIKE 'mv_%' ORDER BY name"
+                    ).fetchall()
+                ]
+                for name in mv_names:
+                    try:
+                        count = int(con.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0])
+                    except sqlite3.Error:
+                        count = 0
+                    routing_status, priority, role, next_action = _mv_driver_status(
+                        name=name,
+                        count=count,
+                        action_mv_names=action_mv_names,
+                        gate_status=gate_status,
+                    )
+                    inventory.append(
+                        {
+                            "mv_name": name,
+                            "rows": count,
+                            "routing_status": routing_status,
+                            "priority": priority,
+                            "role": role,
+                            "description": _mv_description(name),
+                            "next_action": next_action,
+                            "related_gates": list(MV_GATE_DRIVERS.get(name, ())),
+                        }
+                    )
+                if "mv_hotspot_coverage_risk" in mv_names:
+                    agg = con.execute(
+                        """
+                        SELECT
+                          COUNT(*) AS total,
+                          SUM(CASE WHEN priority_band = 'P1_URGENT' THEN 1 ELSE 0 END) AS p1_urgent,
+                          SUM(CASE WHEN priority_band = 'P2_GAP' THEN 1 ELSE 0 END) AS p2_gap,
+                          SUM(CASE WHEN coverage_band = 'ABSENT' THEN 1 ELSE 0 END) AS absent,
+                          SUM(CASE WHEN coverage_band = 'LOW' THEN 1 ELSE 0 END) AS low,
+                          SUM(CASE WHEN risk_band = 'CRITICAL' THEN 1 ELSE 0 END) AS critical,
+                          SUM(CASE WHEN risk_band = 'HIGH' THEN 1 ELSE 0 END) AS high
+                        FROM mv_hotspot_coverage_risk
+                        """
+                    ).fetchone()
+                    top_rows = con.execute(
+                        """
+                        SELECT file, layer, priority_band, risk_band, coverage_band,
+                               coverage_pct, criticality_score, combined_risk_score,
+                               fan_in, fan_out, violation_count
+                        FROM mv_hotspot_coverage_risk
+                        WHERE priority_band IN ('P1_URGENT', 'P2_GAP')
+                        ORDER BY
+                          CASE priority_band WHEN 'P1_URGENT' THEN 0 ELSE 1 END,
+                          CASE risk_band WHEN 'CRITICAL' THEN 0 WHEN 'HIGH' THEN 1 ELSE 2 END,
+                          criticality_score DESC,
+                          combined_risk_score DESC,
+                          fan_in DESC,
+                          file ASC
+                        LIMIT 8
+                        """
+                    ).fetchall()
+                    top_files: list[dict[str, Any]] = []
+                    for idx, row in enumerate(top_rows, start=1):
+                        top_files.append(
+                            {
+                                "rank": idx,
+                                "file": str(row[0] or "").replace("\\", "/"),
+                                "layer": row[1],
+                                "priority_band": row[2],
+                                "risk_band": row[3],
+                                "coverage_band": row[4],
+                                "coverage_pct": _coverage_pct_text(row[5]),
+                                "criticality_score": _float_value(row[6]),
+                                "combined_risk_score": _float_value(row[7]),
+                                "fan_in": _int_value(row[8]),
+                                "fan_out": _int_value(row[9]),
+                                "violation_count": _int_value(row[10]),
+                                "analyst_read": (
+                                    "High-blast-radius code with weak or absent tests. "
+                                    "Test this when a gate fix or burn-down slice touches it."
+                                ),
+                            }
+                        )
+                    counts = {
+                        "total_hotspots": _int_value(agg[0] if agg else 0),
+                        "p1_urgent": _int_value(agg[1] if agg else 0),
+                        "p2_gap": _int_value(agg[2] if agg else 0),
+                        "coverage_absent": _int_value(agg[3] if agg else 0),
+                        "coverage_low": _int_value(agg[4] if agg else 0),
+                        "risk_critical": _int_value(agg[5] if agg else 0),
+                        "risk_high": _int_value(agg[6] if agg else 0),
+                    }
+                    testing_gap_summary = {
+                        "status": "present",
+                        "plain_language": (
+                            "GraphDB found important files with absent or weak test coverage. "
+                            "These are not abstract metrics: they are the files where a change is most likely "
+                            "to create an undetected regression."
+                        ),
+                        "counts": counts,
+                        "top_files": top_files,
+                        "what_to_do": [
+                            "Treat this as the test-placement map for the next gate fix or ratchet burn-down slice.",
+                            "Start with P1_URGENT + CRITICAL + ABSENT rows.",
+                            "When a current fix touches a listed file or its callers, add or repair tests in that same change.",
+                            "Do not open a separate mega testing project; attach tests to the work already being prioritized.",
+                        ],
+                    }
+            finally:
+                con.close()
+        except (OSError, sqlite3.Error):
+            inventory = []
+            testing_gap_summary = _empty_testing_gap_summary()
+
+    routed_next = [row for row in inventory if row.get("priority") == "next"]
+    routed_later = [row for row in inventory if row.get("priority") == "later"]
+    supporting = [row for row in inventory if row.get("priority") == "supporting"]
+    diagnostic = [row for row in inventory if row.get("routing_status") == "diagnostic_only"]
+    clean = [row for row in inventory if row.get("routing_status") == "clean"]
+    nonempty = [row for row in inventory if int(row.get("rows", 0) or 0) > 0]
+
+    priority_rows: list[dict[str, Any]] = []
+    fix_actions = [row for row in action_rows if row.get("lane") == "FIX"]
+    graph_actions = [row for row in action_rows if row.get("lane") == "GRAPHDB"]
+    refactor_actions = [row for row in action_rows if row.get("lane") == "REFACTOR"]
+    if fix_actions:
+        priority_rows.append(
+            {
+                "rank": len(priority_rows) + 1,
+                "priority": "Unblock red ADG gates",
+                "plain_language": "The run is not green. Fix the red gates before burn-down work.",
+                "graphdb_mv_signal": (
+                    "Use any gate-driver MVs marked priority=next to inspect the failing surface."
+                ),
+                "next_action": "Fix the first FIX row in the ranked queue, rerun ADG, then continue.",
+            }
+        )
+    if graph_actions:
+        targets = "; ".join(
+            f"`{_md_cell(row.get('target'), limit=80)}`" for row in graph_actions[:3]
+        )
+        priority_rows.append(
+            {
+                "rank": len(priority_rows) + 1,
+                "priority": "Place tests where GraphDB says risk is highest",
+                "plain_language": "GraphDB is telling you where a change is most likely under-tested.",
+                "graphdb_mv_signal": targets,
+                "next_action": "When the current fix or burn-down slice touches these paths, add or repair tests there.",
+            }
+        )
+    if refactor_actions:
+        targets = "; ".join(
+            f"`{_md_cell(row.get('target'), limit=80)}`" for row in refactor_actions[:3]
+        )
+        priority_rows.append(
+            {
+                "rank": len(priority_rows) + 1,
+                "priority": "Use structural hotspots after blockers",
+                "plain_language": "These are leverage points, not emergency blockers.",
+                "graphdb_mv_signal": targets,
+                "next_action": "Use after FIX gates are green or when a blocker overlaps the same file.",
+            }
+        )
+    if not fix_actions and routed_later:
+        top = sorted(routed_later, key=_mv_sort_key)[:3]
+        priority_rows.append(
+            {
+                "rank": len(priority_rows) + 1,
+                "priority": "Burn down gate-driver MV backlog",
+                "plain_language": "These MVs explain the tracked gate floors and inventories.",
+                "graphdb_mv_signal": "; ".join(
+                    f"`{_md_cell(row.get('mv_name'))}` {_fmt_int(row.get('rows'))}" for row in top
+                ),
+                "next_action": "Start with the matching P0/P1 ratchet or inventory gate, not the raw largest MV.",
+            }
+        )
+
+    if not priority_rows:
+        priority_rows.append(
+            {
+                "rank": 1,
+                "priority": "No GraphDB/MV action promoted",
+                "plain_language": "The MV layer did not emit a first-class action for this run.",
+                "graphdb_mv_signal": "No promoted GraphDB/MV rows.",
+                "next_action": "Use ADG gates as the work queue and keep MV rows as diagnostics.",
+            }
+        )
+
+    routing_counts: dict[str, int] = {}
+    for row in inventory:
+        status = str(row.get("routing_status") or "unknown")
+        routing_counts[status] = routing_counts.get(status, 0) + 1
+
+    return {
+        "title": "ADG + GraphDB/MV Analyst Summary",
+        "snapshot_sqlite": _repo_rel(snapshot_path),
+        "summary": {
+            "mv_tables": len(inventory),
+            "nonempty_mv_tables": len(nonempty),
+            "empty_mv_tables": len(clean),
+            "routing_counts": routing_counts,
+            "action_driver_mvs": len([row for row in inventory if row.get("routing_status") == "action_driver"]),
+            "gate_driver_mvs": len([row for row in inventory if row.get("routing_status") == "gate_driver"]),
+            "diagnostic_only_mvs": len(diagnostic),
+        },
+        "plain_english": [
+            "P0-P3 gates say what must be fixed or burned down.",
+            "GraphDB/MVs say where the risk lives, where tests are missing, and which areas have the most blast radius.",
+            "A large MV count is not automatically next work; it becomes next work when it feeds a red gate, a ratchet, or the action queue.",
+            "Diagnostic-only MVs are still useful, but they should explain or scope a chosen gate/action rather than create a parallel backlog.",
+        ],
+        "testing_gap_summary": testing_gap_summary,
+        "priority_rows": priority_rows,
+        "top_mv_signals": sorted(nonempty, key=_mv_sort_key)[:10],
+        "top_unrouted_mv_signals": sorted(diagnostic, key=lambda row: -int(row.get("rows", 0) or 0))[:8],
+        "mv_inventory": sorted(inventory, key=lambda row: str(row.get("mv_name", ""))),
+    }
+
+
+def _testing_gap_counts_text(testing_gap: dict[str, Any]) -> str:
+    counts = testing_gap.get("counts") or {}
+    if not counts:
+        return "testing gap not quantified"
+    return (
+        f"{_fmt_int(counts.get('p1_urgent', 0))} urgent; "
+        f"{_fmt_int(counts.get('risk_critical', 0))} critical-risk; "
+        f"{_fmt_int(counts.get('coverage_absent', 0))} absent coverage"
+    )
+
+
+def _testing_gap_targets(testing_gap: dict[str, Any], *, limit: int = 3) -> str:
+    files = testing_gap.get("top_files") or []
+    if not files:
+        return "No GraphDB test-gap targets emitted."
+    return "; ".join(f"`{_md_cell(row.get('file'), limit=80)}`" for row in files[:limit])
+
+
+def _executive_decision_brief(
+    *,
+    operator_summary: dict[str, Any],
+    graphdb_summary: dict[str, Any],
+    action_rows: list[dict[str, Any]],
+    priority_actions: list[str],
+) -> dict[str, Any]:
+    verdict = str(operator_summary.get("overall_verdict") or "UNKNOWN")
+    fix_gates = int(operator_summary.get("fix_gates", 0) or 0)
+    fix_records = int(operator_summary.get("fix_records", 0) or 0)
+    ratchet_records = int(operator_summary.get("ratchet_floor_records", 0) or 0)
+    cleanup_records = int(operator_summary.get("cleanup_records", 0) or 0)
+    testing_gap = graphdb_summary.get("testing_gap_summary") or {}
+    testing_counts = testing_gap.get("counts") or {}
+    urgent_tests = int(testing_counts.get("p1_urgent", 0) or 0)
+    critical_tests = int(testing_counts.get("risk_critical", 0) or 0)
+    absent_tests = int(testing_counts.get("coverage_absent", 0) or 0)
+    mv_summary = graphdb_summary.get("summary") or {}
+
+    if fix_gates:
+        decision = "Fund a narrow unblock-and-test slice now."
+        situation = (
+            f"ADG is {verdict}: {_fmt_int(fix_gates)} red gate(s) covering "
+            f"{_fmt_int(fix_records)} record(s). The run is not green."
+        )
+        priority = "Clear red gates first; use GraphDB test gaps to decide where tests must be added in the same slice."
+    else:
+        decision = "Do not declare the system done; fund a ratchet burn-down slice with targeted tests."
+        situation = (
+            f"ADG is {verdict}: no red gates, but {_fmt_int(ratchet_records)} ratchet-floor "
+            f"records and {_fmt_int(cleanup_records)} open non-ratchet records remain."
+        )
+        priority = "Burn down ratchets first; attach tests where GraphDB shows hotspot coverage risk."
+
+    risk = "High" if fix_gates or urgent_tests or critical_tests else "Moderate"
+    test_readout = (
+        f"Testing risk is {risk}: {_fmt_int(urgent_tests)} urgent GraphDB hotspots, "
+        f"{_fmt_int(critical_tests)} critical-risk hotspots, "
+        f"{_fmt_int(absent_tests)} with absent coverage."
+    )
+    mv_readout = (
+        f"GraphDB/MV is not unused: {_fmt_int(mv_summary.get('action_driver_mvs', 0))} MV(s) "
+        "drive the action queue, "
+        f"{_fmt_int(mv_summary.get('gate_driver_mvs', 0))} feed gates, and "
+        f"{_fmt_int(mv_summary.get('diagnostic_only_mvs', 0))} are diagnostic/context only."
+    )
+    fix_actions = [row for row in action_rows if row.get("lane") == "FIX"]
+    if fix_actions:
+        first_fix = fix_actions[0]
+        stabilize_action = (
+            f"Fix first red gate: `{_md_cell(first_fix.get('target'))}` "
+            f"({_md_cell(first_fix.get('band') or '?')}, "
+            f"{_fmt_int(first_fix.get('records', 0))} record(s)); then continue down Priority Execution Plan."
+        )
+    else:
+        stabilize_action = priority_actions[0] if priority_actions else priority
+
+    actions = [
+        {
+            "rank": 1,
+            "move": "Stabilize the run",
+            "action": stabilize_action,
+            "why": "This is the smallest path to a credible green ADG signal.",
+            "graphdb_mv_signal": "Use gate-driver MVs and the hotspot table to scope the fix.",
+        },
+        {
+            "rank": 2,
+            "move": "Close the testing exposure",
+            "action": (
+                "Use the Testing Gap Risk table below; start with ranks 1-3 when the current slice touches them."
+            ),
+            "why": "These are high-blast-radius files with weak or absent test coverage.",
+            "graphdb_mv_signal": _testing_gap_counts_text(testing_gap),
+        },
+        {
+            "rank": 3,
+            "move": "Reduce accepted debt",
+            "action": (
+                "After red gates are clear, burn down ratchet floors before broad cleanup."
+                if fix_gates
+                else "Burn down the largest P0/P1 ratchet floors before broad cleanup."
+            ),
+            "why": "Ratchet burn-down lowers the accepted baseline; broad cleanup does not.",
+            "graphdb_mv_signal": "Use centrality, blast-radius, and coverage MVs as tie-breakers.",
+        },
+    ]
+
+    return {
+        "title": "Executive Decision Brief",
+        "decision": decision,
+        "situation": situation,
+        "risk": risk,
+        "testing_gap_readout": test_readout,
+        "graphdb_mv_readout": mv_readout,
+        "priority": priority,
+        "actions": actions,
+        "what_not_to_do": [
+            "Do not chase the largest raw MV table just because it is large.",
+            "Do not treat guardian exemptions as the work queue.",
+            "Do not run broad cleanup before red gates and ratchet floors are controlled.",
+        ],
+    }
+
+
+def _execution_test_action(bullet: str, testing_gap: dict[str, Any]) -> str:
+    if bullet.startswith("Rerun ADG"):
+        return "Run focused tests plus ADG; confirm the new review output reflects the lower risk."
+    if bullet.startswith("Fix ") or "ratchet" in bullet.lower() or "open non-ratchet" in bullet.lower():
+        return "If this work touches a Testing Gap Risk file or caller, add/repair tests in the same change."
+    if "guardian" in bullet.lower():
+        return "No test work; this is audit context, not the execution queue."
+    return "Use GraphDB/MV signals as scope guardrails for the selected work."
+
+
+def _execution_done_when(bullet: str) -> str:
+    text = bullet.lower()
+    if bullet.startswith("Fix `"):
+        return "Gate no longer appears as FIX after rerun."
+    if "burn down" in text and "ratchet" in text:
+        return "Record count drops and the ratchet floor can be lowered."
+    if "open non-ratchet" in text:
+        return "Open work count drops without creating a new red gate."
+    if bullet.startswith("Rerun ADG"):
+        return "Fresh ADG review is generated and read before the next slice."
+    if "guardian" in text:
+        return "Only escalated if it maps to a failing gate or critical-path risk."
+    return "Action either closed or deliberately deferred with evidence."
+
+
+def _execution_priority_work(bullet: str) -> str:
+    if ": " in bullet:
+        return bullet.split(": ", 1)[0]
+    return bullet
+
+
+def _execution_reason(bullet: str) -> str:
+    if ": " in bullet:
+        return bullet.split(": ", 1)[1]
+    if bullet.startswith("Rerun ADG"):
+        return "Locks in the corrected state before burn-down work starts."
+    if "guardian" in bullet.lower():
+        return "Keeps exception math separate from the engineering queue."
+    return "Next item in ADG priority order."
+
+
+def _execution_plan_rows(priority_bullets: list[str], testing_gap: dict[str, Any]) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for bullet in priority_bullets:
+        if bullet.startswith("While fixing red gates, use GraphDB/MV testing hotspots"):
+            continue
+        if bullet.startswith("Apply GraphDB/MV testing hotspot overlay"):
+            continue
+        rows.append(
+            {
+                "rank": str(len(rows) + 1),
+                "priority_work": _execution_priority_work(bullet),
+                "why_now": _execution_reason(bullet),
+                "testing_mv_action": _execution_test_action(bullet, testing_gap),
+                "done_when": _execution_done_when(bullet),
+            }
+        )
+    if not rows:
+        rows.append(
+            {
+                "rank": "1",
+                "priority_work": "No immediate ADG work emitted.",
+                "why_now": "No red gate, ratchet, or open-work action was emitted.",
+                "testing_mv_action": _execution_test_action("", testing_gap),
+                "done_when": "No ADG action required for this run.",
+            }
+        )
+    return rows
+
+
+def _priority_execution_plan(
+    *,
+    priority_actions: list[str],
+    graphdb_summary: dict[str, Any],
+) -> dict[str, Any]:
+    testing_gap = graphdb_summary.get("testing_gap_summary") or {}
+    return {
+        "title": "Priority Execution Plan",
+        "purpose": (
+            "One merged work queue. It combines red gates, ratchets, rerun steps, guardian audit context, "
+            "and GraphDB/MV testing guidance so the next action is not split across repeated sections."
+        ),
+        "rows": _execution_plan_rows(priority_actions, testing_gap),
+        "merged_from": [
+            "ADG gate priority bullets",
+            "GraphDB/MV testing gap risk",
+            "guardian exception audit context",
+        ],
+    }
 
 
 def _p0_priority_why(*, work_type: str, ordinal: int, records: int) -> str:
@@ -575,29 +1246,83 @@ def _priority_actions(
     band_rows: list[dict[str, Any]],
     action_rows: list[dict[str, Any]],
     p0_plan: dict[str, Any],
+    hotspot_overlay: dict[str, Any],
 ) -> list[str]:
     bullets: list[str] = []
     fix_bands = [row for row in band_rows if int(row.get("fix_gates", 0) or 0)]
     if fix_bands:
-        for row in fix_bands:
+        fix_actions = [row for row in action_rows if row.get("lane") == "FIX"]
+        if fix_actions:
+            for row in fix_actions[:5]:
+                target = _md_cell(row.get("target"), limit=90)
+                band = _md_cell(row.get("band") or "?")
+                records = _fmt_int(row.get("records", 0))
+                signal = _md_cell(row.get("signal"), limit=150)
+                bullets.append(
+                    f"Fix `{target}` ({band}, {records} record(s)): {signal}"
+                )
+        else:
+            for row in fix_bands:
+                bullets.append(
+                    f"Fix {row['band']} red gates first: "
+                    f"{_fmt_int(row.get('fix_gates', 0))} gate(s), "
+                    f"{_fmt_int(row.get('fix_records', 0))} record(s)."
+                )
+        if len(fix_actions) > 5:
             bullets.append(
-                f"Fix {row['band']} red gates first: "
-                f"{_fmt_int(row.get('fix_gates', 0))} gate(s), "
-                f"{_fmt_int(row.get('fix_records', 0))} record(s)."
+                f"Fix remaining red gates after the top five: {_fmt_int(len(fix_actions) - 5)} more gate(s)."
             )
+        if hotspot_overlay.get("rows"):
+            targets = "; ".join(
+                f"`{_md_cell(item.get('target'), limit=80)}`"
+                for item in list(hotspot_overlay.get("rows") or [])[:3]
+            )
+            bullets.append(
+                "While fixing red gates, use GraphDB/MV testing hotspots as the test-placement map: "
+                + targets
+                + "."
+            )
+        bullets.append("Rerun ADG after the red gates clear; only then treat ratchet burn-down as the main queue.")
+        bullets.append("Review guardian exceptions separately; they are severity audit math, not burn-down work.")
         return bullets
 
+    inserted_hotspot_overlay = False
     for row in p0_plan.get("rows") or []:
         if row.get("work_type") == "Burn down ratchet":
             bullets.append(
                 f"Burn down P0 ratchet `{_md_cell(row.get('label'))}` "
                 f"({_fmt_int(row.get('records', 0))}): {_md_cell(row.get('next_step'))}"
             )
-        elif row.get("work_type") == "Open non-ratchet work":
+            continue
+
+        if not inserted_hotspot_overlay and hotspot_overlay.get("rows"):
+            targets = "; ".join(
+                f"`{_md_cell(item.get('target'), limit=80)}`"
+                for item in list(hotspot_overlay.get("rows") or [])[:3]
+            )
+            bullets.append(
+                "Apply GraphDB/MV testing hotspot overlay while executing the next burn-down slice: "
+                + targets
+                + "."
+            )
+            inserted_hotspot_overlay = True
+
+        if row.get("work_type") == "Open non-ratchet work":
             bullets.append(
                 f"Close P0 open non-ratchet work `{_md_cell(row.get('label'))}` "
                 f"({_fmt_int(row.get('records', 0))}): {_md_cell(row.get('next_step'))}"
             )
+
+    if not inserted_hotspot_overlay and hotspot_overlay.get("rows"):
+        targets = "; ".join(
+            f"`{_md_cell(item.get('target'), limit=80)}`"
+            for item in list(hotspot_overlay.get("rows") or [])[:3]
+        )
+        bullets.append(
+            "Apply GraphDB/MV testing hotspot overlay before the next code slice: "
+            + targets
+            + "."
+        )
 
     p0 = next((row for row in band_rows if row.get("band") == "P0"), None)
     if p0 and int(p0.get("cleanup_records", 0) or 0) and not bullets:
@@ -622,13 +1347,6 @@ def _priority_actions(
                 + _format_bullet_items(list(row.get("cleanup_items") or []))
                 + "."
             )
-
-    graph_actions = [row for row in action_rows if row.get("lane") == "GRAPHDB"]
-    if graph_actions:
-        targets = "; ".join(
-            f"`{_md_cell(row.get('target'), limit=80)}`" for row in graph_actions[:3]
-        )
-        bullets.append(f"Use GraphDB/MV test-hotspot actions to choose where to add tests next: {targets}.")
 
     bullets.append("Review guardian exceptions separately; they are severity audit math, not burn-down work.")
     return bullets
@@ -718,41 +1436,6 @@ def _high_signal_review(
     }
 
 
-def _review_checklist() -> list[dict[str, str]]:
-    return [
-        {
-            "id": "fix_now",
-            "question": "If any band has Fix now > 0, fix those gates before treating ADG as green.",
-            "status": "pending",
-            "notes": "",
-        },
-        {
-            "id": "burn_down_cleanup",
-            "question": "Burn down ratchet floors first, then close listed open non-ratchet work.",
-            "status": "pending",
-            "notes": "",
-        },
-        {
-            "id": "review_exceptions",
-            "question": "Review Severity Inventory only for gross/guardian/net rationale.",
-            "status": "pending",
-            "notes": "",
-        },
-        {
-            "id": "next_best_action",
-            "question": "Accept or edit the ranked next-best-action queue, especially GRAPHDB/MV test hotspots.",
-            "status": "pending",
-            "notes": "",
-        },
-        {
-            "id": "verify_artifacts",
-            "question": "Confirm required run artifacts exist and point to the same ADG run.",
-            "status": "pending",
-            "notes": "",
-        },
-    ]
-
-
 def build_review_template(
     *,
     gate_results_path: Path,
@@ -786,12 +1469,29 @@ def build_review_template(
     action_rows = _action_rows(action_queue)
     severity_rows = _severity_inventory(burndown)
     attack_order = _adg_attack_order(band_rows, severity_rows)
-    priority_actions = _priority_actions(band_rows, action_rows, p0_plan)
+    hotspot_overlay = _testing_hotspot_overlay(action_rows)
+    priority_actions = _priority_actions(band_rows, action_rows, p0_plan, hotspot_overlay)
     operator_summary = {
         "overall_verdict": "PASS" if gate_results.get("overall_exit_code", 1) == 0 else "BLOCKED",
         **action_counts,
         "band_status": band_rows,
     }
+    graphdb_summary = _graphdb_mv_analyst_summary(
+        gate_results=gate_results,
+        gate_results_path=gate_results_path,
+        gate_rows=gate_rows,
+        action_rows=action_rows,
+    )
+    executive_brief = _executive_decision_brief(
+        operator_summary=operator_summary,
+        graphdb_summary=graphdb_summary,
+        action_rows=action_rows,
+        priority_actions=priority_actions,
+    )
+    priority_execution_plan = _priority_execution_plan(
+        priority_actions=priority_actions,
+        graphdb_summary=graphdb_summary,
+    )
 
     return {
         "schema_version": "1.0",
@@ -804,7 +1504,6 @@ def build_review_template(
             "reviewed_at": "",
             "decision": "pending",
             "notes": "",
-            "checklist": _review_checklist(),
         },
         "terminology": {
             "tracked_records": (
@@ -828,6 +1527,9 @@ def build_review_template(
             "guardian_math_location": "severity_inventory; net = gross - guardian",
         },
         "operator_summary": operator_summary,
+        "executive_decision_brief": executive_brief,
+        "graphdb_mv_analyst_summary": graphdb_summary,
+        "priority_execution_plan": priority_execution_plan,
         "adg_attack_order": attack_order,
         "p0_action_plan": p0_plan,
         "adg_ci_gates": gate_rows,
@@ -851,6 +1553,7 @@ def build_review_template(
         "graphdb_mv_positioning": {
             "purpose": "GraphDB/MV actions rank structural test hotspots and refactor targets after FIX gates.",
             "graphdb_actions_present": any(row.get("lane") == "GRAPHDB" for row in action_rows),
+            "testing_hotspots_promoted": bool(hotspot_overlay.get("rows")),
         },
         "artifacts": {
             "gate_results": _artifact_ref("gate_results", gate_results_path, required=True),
@@ -888,6 +1591,9 @@ def validate_review_template(doc: dict[str, Any]) -> list[str]:
         "review_template",
         "terminology",
         "operator_summary",
+        "executive_decision_brief",
+        "graphdb_mv_analyst_summary",
+        "priority_execution_plan",
         "adg_attack_order",
         "p0_action_plan",
         "adg_ci_gates",
@@ -910,13 +1616,21 @@ def validate_review_template(doc: dict[str, Any]) -> list[str]:
     ]
     if required:
         errors.append(f"required artifacts missing: {', '.join(required)}")
-    if not doc.get("review_template", {}).get("checklist"):
-        errors.append("review_template.checklist must not be empty")
     high_signal = doc.get("high_signal_review") or {}
     if not high_signal.get("what_this_means"):
         errors.append("high_signal_review.what_this_means must not be empty")
     if not high_signal.get("do_this_next"):
         errors.append("high_signal_review.do_this_next must not be empty")
+    executive = doc.get("executive_decision_brief") or {}
+    if not executive.get("actions"):
+        errors.append("executive_decision_brief.actions must not be empty")
+    graphdb = doc.get("graphdb_mv_analyst_summary") or {}
+    testing_gap = graphdb.get("testing_gap_summary") or {}
+    if "top_files" not in testing_gap:
+        errors.append("graphdb_mv_analyst_summary.testing_gap_summary.top_files must be present")
+    execution_plan = doc.get("priority_execution_plan") or {}
+    if not execution_plan.get("rows"):
+        errors.append("priority_execution_plan.rows must not be empty")
     p0_plan = doc.get("p0_action_plan") or {}
     if not p0_plan.get("comments"):
         errors.append("p0_action_plan.comments must not be empty")
@@ -935,11 +1649,14 @@ def render_inline_review_template(
     summary = doc.get("operator_summary", {})
     terminology = doc.get("terminology", {})
     actions = doc.get("next_best_action", {}).get("actions") or []
-    checklist = doc.get("review_template", {}).get("checklist") or []
     band_rows = summary.get("band_status") or []
     high_signal = doc.get("high_signal_review") or {}
     attack_order = doc.get("adg_attack_order") or high_signal.get("adg_attack_order") or {}
     p0_plan = doc.get("p0_action_plan") or high_signal.get("p0_action_plan") or {}
+    executive = doc.get("executive_decision_brief") or {}
+    graphdb = doc.get("graphdb_mv_analyst_summary") or {}
+    testing_gap = graphdb.get("testing_gap_summary") or {}
+    execution_plan = doc.get("priority_execution_plan") or {}
     what_this_means = high_signal.get("what_this_means") or []
     priority_bullets = high_signal.get("do_this_next") or doc.get("next_best_action", {}).get(
         "priority_bullets",
@@ -953,9 +1670,78 @@ def render_inline_review_template(
         f"- **YAML:** `{_repo_rel(yaml_path) or 'not written'}`",
         f"- **Run ID:** `{doc.get('run_id') or 'n/a'}`",
         "",
-        "### What This Means",
+        "### Executive Decision Brief",
         "",
+        f"- **Decision:** {_md_cell(executive.get('decision'))}",
+        f"- **Situation:** {_md_cell(executive.get('situation'))}",
+        f"- **Risk:** {_md_cell(executive.get('risk'))}",
+        f"- **Testing gap:** {_md_cell(executive.get('testing_gap_readout'))}",
+        f"- **GraphDB/MV read:** {_md_cell(executive.get('graphdb_mv_readout'))}",
+        "",
+        "| # | Move | Action | Why | GraphDB/MV signal |",
+        "|--:|------|--------|-----|-------------------|",
     ]
+    for row in executive.get("actions") or []:
+        lines.append(
+            f"| {_fmt_int(row.get('rank', 0))} | {_md_cell(row.get('move'), limit=42)} | "
+            f"{_md_cell(row.get('action'), limit=120)} | "
+            f"{_md_cell(row.get('why'), limit=90)} | "
+            f"{_md_cell(row.get('graphdb_mv_signal'), limit=90)} |"
+        )
+    lines.extend(
+        [
+            "",
+            "### Testing Gap Risk",
+            "",
+            f"- **Analyst read:** {_md_cell(testing_gap.get('plain_language'))}",
+            "",
+            "| Rank | File | Risk | Coverage | Testing implication |",
+            "|-----:|------|------|----------|------------|",
+        ]
+    )
+    top_test_files = testing_gap.get("top_files") or []
+    if top_test_files:
+        for row in top_test_files[:5]:
+            risk = (
+                f"{_md_cell(row.get('priority_band'))} / "
+                f"{_md_cell(row.get('risk_band'))}"
+            )
+            coverage = (
+                f"{_md_cell(row.get('coverage_band'))} "
+                f"({_md_cell(row.get('coverage_pct'))})"
+            )
+            lines.append(
+                f"| {_fmt_int(row.get('rank', 0))} | "
+                f"`{_md_cell(row.get('file'), limit=88)}` | "
+                f"{risk} | {coverage} | "
+                f"{_md_cell(row.get('analyst_read'), limit=115)} |"
+            )
+    else:
+        lines.append("| - | None | Not quantified | Not quantified | No GraphDB testing-gap table available. |")
+    lines.extend(
+        [
+            "",
+            "### Priority Execution Plan",
+            "",
+            "| # | Priority work | Why now | Testing / MV action | Done when |",
+            "|--:|---------------|---------|---------------------|-----------|",
+        ]
+    )
+    execution_rows = execution_plan.get("rows") or _execution_plan_rows(priority_bullets, testing_gap)
+    for row in execution_rows:
+        lines.append(
+            f"| {row.get('rank')} | {_md_cell(row.get('priority_work'), limit=130)} | "
+            f"{_md_cell(row.get('why_now'), limit=110)} | "
+            f"{_md_cell(row.get('testing_mv_action'), limit=105)} | "
+            f"{_md_cell(row.get('done_when'), limit=95)} |"
+        )
+    lines.extend(
+        [
+            "",
+            "### What This Means",
+            "",
+        ]
+    )
     lines.extend(f"- {_md_cell(item)}" for item in what_this_means)
 
     lines.extend(
@@ -1007,10 +1793,6 @@ def render_inline_review_template(
     lines.extend(["", "Comments:"])
     for comment in p0_plan.get("comments") or []:
         lines.append(f"- {_md_cell(comment)}")
-
-    lines.extend(["", "### Do This Next", ""])
-    for idx, bullet in enumerate(priority_bullets, start=1):
-        lines.append(f"{idx}. {bullet}")
 
     lines.extend(
         [
@@ -1068,17 +1850,6 @@ def render_inline_review_template(
     else:
         lines.append("| - | - | - | No current actions emitted |")
 
-    lines.extend(
-        [
-            "",
-            "### Review Checklist",
-            "",
-            "| Item | Status |",
-            "|------|--------|",
-        ]
-    )
-    for item in checklist:
-        lines.append(f"| {_md_cell(item.get('id'))} | {_md_cell(item.get('status'))} |")
     return "\n".join(lines) + "\n"
 
 

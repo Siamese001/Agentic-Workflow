@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from pathlib import Path
 
 from tools.generate.core.helpers import _write_text_artifact
@@ -136,6 +137,62 @@ def _write_action_queue(path: Path) -> None:
     )
 
 
+def _write_hotspot_sqlite(path: Path) -> None:
+    con = sqlite3.connect(path)
+    try:
+        con.execute(
+            """
+            CREATE TABLE mv_hotspot_coverage_risk (
+                file TEXT,
+                layer TEXT,
+                priority_band TEXT,
+                risk_band TEXT,
+                coverage_band TEXT,
+                criticality_score REAL,
+                combined_risk_score REAL,
+                fan_in INTEGER,
+                fan_out INTEGER,
+                violation_count INTEGER,
+                coverage_pct REAL
+            )
+            """
+        )
+        con.executemany(
+            "INSERT INTO mv_hotspot_coverage_risk VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                (
+                    "apps_rg/runtime/sections/executive_summary_lane.py",
+                    "L_APP",
+                    "P1_URGENT",
+                    "CRITICAL",
+                    "ABSENT",
+                    9.5,
+                    8.2,
+                    42,
+                    11,
+                    3,
+                    -1.0,
+                ),
+                (
+                    "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
+                    "L5",
+                    "P2_GAP",
+                    "HIGH",
+                    "LOW",
+                    7.0,
+                    6.5,
+                    21,
+                    8,
+                    1,
+                    12.5,
+                ),
+            ],
+        )
+        con.commit()
+    finally:
+        con.close()
+
+
 def test_inline_bypass_flag_is_declared_in_env_example() -> None:
     env_example = Path(".env.example").read_text(encoding="utf-8")
 
@@ -178,6 +235,10 @@ def test_review_template_names_tracked_records_and_separates_guardian_math(tmp_p
     assert doc["p0_action_plan"]["rows"][0]["why_this_priority"].startswith("Largest P0 ratchet")
     assert doc["p0_action_plan"]["rows"][3]["work_type"] == "Open non-ratchet work"
     assert doc["p0_action_plan"]["comments"]
+    assert "testing_hotspot_overlay" not in doc
+    assert doc["priority_execution_plan"]["title"] == "Priority Execution Plan"
+    assert doc["priority_execution_plan"]["rows"]
+    assert "Testing Gap Risk" in doc["priority_execution_plan"]["rows"][0]["testing_mv_action"]
     attack_rows = doc["adg_attack_order"]["rows"]
     assert [row["work_class"] for row in attack_rows[:4]] == [
         "Burn down ratchets",
@@ -202,8 +263,56 @@ def test_review_template_names_tracked_records_and_separates_guardian_math(tmp_p
     )
     assert high_signal["p0_relationships"]["non_ratchet_cleanup_records"] == 848
     assert high_signal["p0_relationships"]["open_non_ratchet_work_records"] == 848
-    assert doc["review_template"]["checklist"]
+    assert "checklist" not in doc["review_template"]
     assert validate_review_template(doc) == []
+
+
+def test_review_template_renders_executive_graphdb_testing_gap_brief(tmp_path: Path) -> None:
+    gate = tmp_path / "adg_gate_results_test.json"
+    burndown = tmp_path / "adg_burndown_table.json"
+    queue = tmp_path / "adg_action_queue_06132026_1324.json"
+    sqlite_path = tmp_path / "adg_indexed_test.sqlite"
+    out = tmp_path / "adg_review_template_06132026_1324.json"
+    _write_gate_results(gate)
+    _write_burndown(burndown)
+    _write_action_queue(queue)
+    _write_hotspot_sqlite(sqlite_path)
+
+    gate_doc = json.loads(gate.read_text(encoding="utf-8"))
+    gate_doc["overall_exit_code"] = 1
+    gate_doc["snapshot_path"] = str(sqlite_path)
+    for gate_row in gate_doc["gates"]:
+        if gate_row["gate_id"] == "B2_layer_skip_ratchet":
+            gate_row["classification"] = "regressed"
+            gate_row["violation_count"] = 901
+            gate_row["baseline_count"] = 900
+    gate.write_text(json.dumps(gate_doc), encoding="utf-8")
+
+    doc = build_review_template(
+        gate_results_path=gate,
+        burndown_path=burndown,
+        action_queue_path=queue,
+        run_id="06132026_1324",
+    )
+    inline = render_inline_review_template(doc, output_path=out)
+
+    assert validate_review_template(doc) == []
+    assert doc["executive_decision_brief"]["decision"] == "Fund a narrow unblock-and-test slice now."
+    testing = doc["graphdb_mv_analyst_summary"]["testing_gap_summary"]
+    assert testing["status"] == "present"
+    assert testing["counts"]["p1_urgent"] == 1
+    assert testing["counts"]["coverage_absent"] == 1
+    assert testing["top_files"][0]["file"] == "apps_rg/runtime/sections/executive_summary_lane.py"
+    assert "### Executive Decision Brief" in inline
+    assert "### Testing Gap Risk" in inline
+    assert "Fund a narrow unblock-and-test slice now." in inline
+    assert "### Priority Execution Plan" in inline
+    assert doc["priority_execution_plan"]["rows"][0]["priority_work"].startswith("Fix P1 red gates first")
+    assert "Testing implication" in inline
+    assert "If this work touches a Testing Gap Risk file or caller" in inline
+    assert "What to do:" not in inline
+    assert "Do This Next" not in inline
+    assert "`apps_rg/runtime/sections/executive_summary_lane.py`" in inline
 
 
 def test_emit_mandatory_review_template_writes_timestamped_json_and_yaml(tmp_path: Path) -> None:
@@ -235,8 +344,12 @@ def test_emit_mandatory_review_template_writes_timestamped_json_and_yaml(tmp_pat
     assert data["operator_summary"]["tracked_records"] == 6124
     yaml_text = yaml_out.read_text(encoding="utf-8")
     assert "high_signal_review:" in yaml_text
+    assert "priority_execution_plan:" in yaml_text
+    assert "Testing Gap Risk" in yaml_text
     assert "adg_attack_order:" in yaml_text
     assert "p0_action_plan:" in yaml_text
+    assert "testing_hotspot_overlay:" not in yaml_text
+    assert "checklist:" not in yaml_text
     assert "Largest P0 ratchet floor" in yaml_text
 
 
@@ -276,15 +389,20 @@ def test_inline_review_template_renders_chat_summary(tmp_path: Path) -> None:
     assert "| 4 | Open non-ratchet work | `write_sovereignty` | 848 | Real open P0 work" in inline
     assert "Comments:" in inline
     assert "Open non-ratchet work is still real work; it is second because it does not lower the P0 ratchet floor." in inline
-    assert "### Do This Next" in inline
-    assert "1. Burn down P0 ratchet `G_REACH` (2,792):" in inline
-    assert "2. Burn down P0 ratchet `S2_UWG` (1,583):" in inline
-    assert "4. Close P0 open non-ratchet work `write_sovereignty` (848):" in inline
+    assert "### Priority Execution Plan" in inline
+    assert "`apps_rg/runtime/sections/executive_summary_lane.py`" in inline
+    assert "### Testing Hotspot Overlay" not in inline
+    assert "Do This Next" not in inline
+    assert "Burn down P0 ratchet `G_REACH` (2,792)" in inline
+    assert "Burn down P0 ratchet `S2_UWG` (1,583)" in inline
+    assert "If this work touches a Testing Gap Risk file or caller" in inline
+    assert "Close P0 open non-ratchet work `write_sovereignty` (848)" in inline
     assert "| Band | Fix now | 1) Burn down ratchets | 2) Open non-ratchet work | Work order |" in inline
     assert "### Exception Audit" in inline
     assert "| P0 | 46 | 41 | 5 |" in inline
     assert "### Ranked Queue" in inline
     assert "`apps_rg/runtime/sections/executive_summary_lane.py`" in inline
+    assert "### Review Checklist" not in inline
 
 
 def test_emit_mandatory_review_template_prints_inline_by_default(
@@ -313,5 +431,6 @@ def test_emit_mandatory_review_template_prints_inline_by_default(
     assert out is not None and out.is_file()
     assert "## ADG Review" in captured.out
     assert "### What This Means" in captured.out
-    assert "### Do This Next" in captured.out
+    assert "### Priority Execution Plan" in captured.out
+    assert "Do This Next" not in captured.out
     assert "inline markdown emitted" in captured.err

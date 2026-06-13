@@ -888,11 +888,43 @@ def _render_next_action_section(snapshot_ts: str | None = None) -> list[str]:
     )
     actions = doc.get("actions") or []
     if actions:
+        hotspots = [
+            action
+            for action in actions
+            if action.get("verdict_cluster") == "GRAPHDB"
+            and str(action.get("action_kind", "")).startswith("test_hotspot")
+        ][:3]
+        if hotspots:
+            lines.append("")
+            lines.append("### Testing hotspot overlay")
+            lines.append("")
+            lines.append("Use these paths to place tests while executing the next burn-down or cleanup slice.")
+            lines.append("")
+            lines.append("| Rank | Target | How this changes next steps |")
+            lines.append("|-----:|--------|-----------------------------|")
+            for action in hotspots:
+                target = (
+                    action.get("gate_id")
+                    or action.get("file_path")
+                    or action.get("source_id")
+                    or action.get("target")
+                    or "?"
+                )
+                lines.append(
+                    f"| {action.get('rank')} | `{target}` | "
+                    "Add or repair tests here if the current slice touches this path or its callers. |"
+                )
         lines.append("")
         lines.append("| Rank | Lane | Kind | Target | ordering_reason | Signal |")
         lines.append("|-----:|------|------|--------|-----------------|--------|")
         for action in actions[:5]:
-            target = action.get("gate_id") or action.get("source_id") or "?"
+            target = (
+                action.get("gate_id")
+                or action.get("file_path")
+                or action.get("source_id")
+                or action.get("target")
+                or "?"
+            )
             signal = str(action.get("signal", ""))
             if len(signal) > 120:
                 signal = signal[:117] + "..."
