@@ -399,6 +399,9 @@ def run_competencies_lane_execution(
             resume_support_blob_lower=c0_proof_blob,
         )
         if pp_meta.get("competency_capability_bundle_consumption"):
+            from apps_rg.runtime.sections.competencies_lane_runtime import (
+                backfill_graph_bundle_min_terms,
+            )
             from apps_rg.runtime.sections.competency_capability_evidence import (
                 augment_bound_category_family_terms,
                 stamp_competency_bundle_bindings,
@@ -424,6 +427,16 @@ def run_competencies_lane_execution(
                 packet=_pkt,
                 allowed_fact_ids=allowed_fact_ids,
             )
+            # W2.2 (typed-edge-role-facet-guardrails-a6f3d2): final floor-filler for
+            # graph-bundle categories that augment_bound_category_family_terms could NOT
+            # top up because the bound bundle has no linked fact in the allowed pool
+            # (e.g. platform_productization's only linked fact, fact_engineering_platform_006,
+            # was not selected for this target). This backfill runs AFTER bundle stamping, so
+            # categories carry competency_bundle_id + graph_skill_node_ids; it appends the
+            # bundle's vocabulary_anchors backed by the category's OWN allowed source_fact_ids
+            # plus the bundle's graph_skill_node_ids — graph-backed proof under the GraphDB-SSOT
+            # model, no fact-provenance stretch. Only fires for bundle-bound categories below floor.
+            backfill_graph_bundle_min_terms(parsed)
             # Injected anchor terms need claim_ledger rows so x2_all_terms_source_fact_ids holds.
             rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
         _post_finalize = json.dumps(parsed, sort_keys=True, separators=(",", ":"))

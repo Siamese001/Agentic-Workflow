@@ -867,6 +867,133 @@ def expand_structured_competencies_min_two_terms(
                 break
 
 
+def backfill_graph_bundle_min_terms(parsed: dict[str, Any]) -> None:
+    """Fill graph-bundle competency categories below the min-term floor (W2.2).
+
+    Plan: typed-edge-role-facet-guardrails-a6f3d2. The fact-centric
+    :func:`expand_structured_competencies_min_two_terms` sources candidate phrases
+    from bullet ``technologies`` / claim fragments and requires the category's
+    ``source_fact_ids`` to validate against bullet facts. A **graph-bundle** category
+    (bound to a ``competency_bundle_id``, graph-backed rather than bullet-fact-backed)
+    therefore cannot be expanded by it — the LLM occasionally emits such a category
+    with fewer than ``MIN_ITEMS_PER_CATEGORY`` terms (observed: platform_productization
+    at 2 terms), failing ``x2_competencies_min_items_per_category`` and (for generic
+    labels) ``x2_competencies_generic_category_blocked_without_graph``.
+
+    This deterministic pass appends unused ``vocabulary_anchors`` from the bound bundle
+    as graph-backed terms (attributed to the category's own ``source_fact_ids`` plus the
+    bundle's ``graph_skill_node_ids``) until the floor is met. Anchors are the bundle's
+    curated, graph-backed competency phrases — this is SSOT reconciliation, not fabrication.
+    Only categories that BOTH carry a ``competency_bundle_id`` AND fall below the floor
+    are touched; fact-based categories and already-compliant categories are untouched.
+    """
+    from apps_rg.runtime.sections.competencies_capability_projection import (
+        _accumulate_keyword_freq_from_categories,
+        _phrase_violates_keyword_budget,
+        _register_phrase_keyword_freq,
+    )
+    from apps_rg.runtime.sections.competencies_rigor import MIN_ITEMS_PER_CATEGORY
+    from apps_rg.runtime.sections.competency_capability_registry import get_bundle_by_id
+
+    cats = parsed.get("competencies")
+    if not isinstance(cats, list):
+        cats = parsed.get("categories")
+    if not isinstance(cats, list):
+        return
+
+    # Shared keyword-repetition budget across ALL categories so a backfilled anchor
+    # cannot breach x2_competencies_keyword_repetition_limit (e.g. a 4th "platform").
+    keyword_freq = _accumulate_keyword_freq_from_categories(cats)
+
+    def _count(ts: Any) -> int:
+        if not isinstance(ts, list):
+            return 0
+        n = 0
+        for t in ts:
+            if isinstance(t, dict) and term_phrase(t):
+                n += 1
+            elif isinstance(t, str) and t.strip():
+                n += 1
+        return n
+
+    changelog = parsed.setdefault("change_log", [])
+    if not isinstance(changelog, list):
+        changelog = []
+        parsed["change_log"] = changelog
+
+    for cat in cats:
+        if not isinstance(cat, dict):
+            continue
+        bundle_id = str(cat.get("competency_bundle_id") or "").strip()
+        if not bundle_id:
+            continue
+        terms = cat.get("terms")
+        if not isinstance(terms, list):
+            continue
+        if _count(terms) >= MIN_ITEMS_PER_CATEGORY:
+            continue
+        bundle = get_bundle_by_id(bundle_id)
+        if not isinstance(bundle, dict):
+            continue
+        anchors = [str(a).strip() for a in (bundle.get("vocabulary_anchors") or []) if str(a).strip()]
+        if not anchors:
+            continue
+
+        seen: set[str] = set()
+        for t in terms:
+            if isinstance(t, dict):
+                pv = term_phrase(t)
+                if pv:
+                    seen.add(pv.lower().strip().rstrip("."))
+            elif isinstance(t, str) and t.strip():
+                seen.add(t.lower().strip().rstrip("."))
+
+        cat_fact_ids = [str(f).strip() for f in (cat.get("source_fact_ids") or []) if str(f).strip()]
+        cat_skill_ids = [str(s).strip() for s in (cat.get("graph_skill_node_ids") or []) if str(s).strip()]
+        bundle_skill_ids = [
+            str(s).strip() for s in (bundle.get("graph_skill_node_ids") or []) if str(s).strip()
+        ]
+        graph_ids = cat_skill_ids or bundle_skill_ids
+
+        for anchor in anchors:
+            if _count(terms) >= MIN_ITEMS_PER_CATEGORY:
+                break
+            key = anchor.lower().strip().rstrip(".")
+            if key in seen:
+                continue
+            # Skip anchors that would breach the shared keyword-repetition budget
+            # (prefer anchors with fresh keywords, e.g. "demoable solution accelerators"
+            # over a 4th "...platform..." term).
+            if _phrase_violates_keyword_budget(anchor, keyword_freq):
+                continue
+            new_term: dict[str, Any] = {
+                "term": anchor,
+                "text": anchor,
+                "source_skill_ids": list(graph_ids),
+                "graph_skill_node_ids": list(graph_ids),
+                "support_class": "GRAPH_BACKED_BUNDLE",
+            }
+            if cat_fact_ids:
+                new_term["source_fact_ids"] = list(cat_fact_ids)
+                new_term["source_fact_id"] = cat_fact_ids[0]
+            terms.append(new_term)
+            seen.add(key)
+            _register_phrase_keyword_freq(anchor, keyword_freq)
+            changelog.append(
+                {
+                    "operation": "backfill_graph_bundle_min_terms",
+                    "reason": (
+                        f"graph-bundle category below {MIN_ITEMS_PER_CATEGORY} terms — "
+                        "appended bundle vocabulary_anchor (graph-backed)"
+                    ),
+                    "category_label": cat.get("category_label"),
+                    "competency_bundle_id": bundle_id,
+                    "phrase": anchor,
+                }
+            )
+        cat["terms"] = terms
+
+
 def collapse_duplicate_competency_terms(
     parsed: dict[str, Any],
     bullet_rows: list[dict[str, Any]],
