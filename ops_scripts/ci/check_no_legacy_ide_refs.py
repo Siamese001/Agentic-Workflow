@@ -38,17 +38,17 @@ ACTIVE_GLOBS = (
 ACTIVE_APP_GLOB = "apps_*"
 ACTIVE_EXTS = {".py", ".ps1", ".yml", ".yaml"}
 EXCLUDE_SUBSTR = ("/_legacy_", "/_archive/", "/__pycache__/", "/docs/archive/",
-                  "tools/migration/", "tools/cursor/")
+                  "tools/migration/", "tools/governance_legacy/")
 # Legacy/self/historical-purpose files that intentionally retain .cursor references
 # (one-shot migration tools, the cursor-era RULES_INDEX generator, this gate itself).
 DENYLIST_FILES = {
     "ops_scripts/ci/check_no_legacy_ide_refs.py",
-    "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py",
-    "ops_scripts/maintenance/rewrite_cascade_to_cursor.py",
+    "ops_scripts/maintenance/rewrite_legacy_refs.py",
+    "ops_scripts/maintenance/rewrite_cascade_refs.py",
     "ops_scripts/ci/governance_w2_dedupe_report.py",  # historical cursor-era report emitter
     ".claude/governance/scripts/generate_rules_index.py",
     ".claude/governance/scripts/sync_mcp_config.py",  # obsolete MCP-mirror sync (mirror retired)
-    "tools/cursor/verify_cursor_author_gate_wiring.py",
+    "tools/governance_legacy/verify_author_gate_wiring.py",
 }
 
 # A real repo-local .cursor filesystem path construction (not a

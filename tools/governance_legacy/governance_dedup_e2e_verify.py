@@ -12,7 +12,7 @@ REPO = Path(__file__).resolve().parents[2]
 GATES: list[tuple[str, list[str]]] = [
     ("check_ag_hook_wiring", ["python", "ops_scripts/ci/check_ag_hook_wiring.py"]),
     ("check_agents_md_sync", ["python", "ops_scripts/ci/check_agents_md_sync.py"]),
-    ("check_cursor_optimized_config", ["python", ".claude/governance/scripts/check_cursor_optimized_config.py"]),
+    ("check_optimized_config", ["python", ".claude/governance/scripts/check_optimized_config.py"]),
     ("generate_rules_index_check", ["python", ".claude/governance/scripts/generate_rules_index.py", "--check"]),
     ("check_always_on_token_budget", ["python", "ops_scripts/ci/check_always_on_token_budget.py"]),
     (

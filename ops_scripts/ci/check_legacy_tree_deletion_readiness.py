@@ -51,7 +51,7 @@ ALLOW_PREFIXES = (
 ALLOW_FILES = {
     "ops_scripts/ci/check_no_active_windsurf_changes.py",
     "ops_scripts/ci/check_windsurf_deletion_readiness.py",
-    "tools/migration/deprecate_windsurf_refs.py",
+    "tools/migration/deprecate_legacy_refs.py",
 }
 LOCAL_WINDSURF_PATH_RE = re.compile(r"(?<![A-Za-z0-9_])\.windsurf(?=[$/\\\"' )},\]])")
 
