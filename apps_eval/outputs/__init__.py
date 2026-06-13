@@ -1,3 +1,5 @@
-"""Outputs package for apps_eval."""
+"""Output rendering helpers."""
 
-from __future__ import annotations
+from apps_eval.outputs.render import render_report, render_record_markdown
+
+__all__ = ["render_report", "render_record_markdown"]

@@ -1,0 +1,20 @@
+{
+  "thresholds": {
+    "apps_rg.dev.resume_generation": {
+      "pass_score": 0.95,
+      "block_on_severity": "block"
+    },
+    "apps_rg.holdout.resume_generation": {
+      "pass_score": 0.98,
+      "block_on_severity": "block"
+    },
+    "apps_lic.dev.outreach_message": {
+      "pass_score": 0.95,
+      "block_on_severity": "block"
+    },
+    "apps_lic.holdout.outreach_message": {
+      "pass_score": 0.98,
+      "block_on_severity": "block"
+    }
+  }
+}

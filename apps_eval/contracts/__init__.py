@@ -1,6 +1,6 @@
-"""Deterministic evaluation harness for apps_rg and apps_lic."""
+"""Public contracts for the apps_eval harness."""
 
-from apps_eval.contracts import (
+from apps_eval.contracts.models import (
     AppOutputSnapshot,
     CompletedEvalRecord,
     EvalFixture,

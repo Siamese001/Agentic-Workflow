@@ -1,0 +1,36 @@
+{
+  "app_id": "apps_rg",
+  "artifacts": [
+    "resume.md"
+  ],
+  "claims": [
+    {
+      "id": "rg_claim_1",
+      "source_ids": [
+        "resume:leadership"
+      ],
+      "supported": true,
+      "text": "Led modernization programs"
+    }
+  ],
+  "deterministic_hash": "a3e3850d09195d86bced60c9a36ed8e173d21aed4e96683aacb5edbafb7882b1",
+  "output": {
+    "sections": {
+      "executive_summary": "Strategic technology leader aligning platform modernization, governed AI delivery, and measurable operating outcomes for enterprise teams.",
+      "experience": "Led cross-functional modernization programs, improved delivery governance, and translated evidence-backed achievements into role-relevant resume language.",
+      "skills": "AI strategy, platform modernization, stakeholder leadership, governance, analytics, enterprise transformation."
+    }
+  },
+  "provenance": {
+    "evidence_refs": [
+      "resume:leadership"
+    ],
+    "rubric_refs": []
+  },
+  "scenario_id": "resume_tailor_basic",
+  "side_effects": {
+    "product_state_mutated": false,
+    "writes": []
+  },
+  "x3_disposition": "X3D_ALLOW_FINISH"
+}

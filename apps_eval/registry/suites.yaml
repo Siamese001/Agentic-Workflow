@@ -1,0 +1,49 @@
+{
+  "suites": {
+    "apps_rg.dev.resume_generation": {
+      "app_id": "apps_rg",
+      "split": "dev",
+      "task": "resume_generation",
+      "rubric_id": "apps_rg_resume_generation_v1",
+      "fixture_root": "apps_eval/fixtures/dev/apps_rg",
+      "scenarios": [
+        "resume_tailor_basic",
+        "resume_tailor_grounding",
+        "resume_tailor_safety",
+        "resume_tailor_escalation",
+        "resume_tailor_determinism"
+      ]
+    },
+    "apps_rg.holdout.resume_generation": {
+      "app_id": "apps_rg",
+      "split": "holdout",
+      "task": "resume_generation",
+      "rubric_id": "apps_rg_resume_generation_v1",
+      "fixture_root": "apps_eval/fixtures/holdout/apps_rg",
+      "scenarios": []
+    },
+    "apps_lic.dev.outreach_message": {
+      "app_id": "apps_lic",
+      "split": "dev",
+      "task": "outreach_message",
+      "rubric_id": "apps_lic_outreach_v1",
+      "fixture_root": "apps_eval/fixtures/dev/apps_lic",
+      "scenarios": [
+        "outreach_basic",
+        "outreach_grounding",
+        "outreach_non_contrivance",
+        "outreach_safety_authority",
+        "outreach_escalation",
+        "outreach_determinism"
+      ]
+    },
+    "apps_lic.holdout.outreach_message": {
+      "app_id": "apps_lic",
+      "split": "holdout",
+      "task": "outreach_message",
+      "rubric_id": "apps_lic_outreach_v1",
+      "fixture_root": "apps_eval/fixtures/holdout/apps_lic",
+      "scenarios": []
+    }
+  }
+}

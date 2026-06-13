@@ -1,0 +1,19 @@
+{
+  "apps": {
+    "apps_rg": {
+      "display_name": "apps_rg resume generation",
+      "adapter": "apps_eval.adapters.apps_rg",
+      "allowed_entrypoints": [
+        "agentic_core.runtime.entry.apps_rg_dispatch:dispatch_apps_rg_run"
+      ]
+    },
+    "apps_lic": {
+      "display_name": "apps_lic outreach messaging",
+      "adapter": "apps_eval.adapters.apps_lic",
+      "allowed_entrypoints": [
+        "apps_lic.runtime.dispatch.canonical_dispatch:build_cli_ingress_raw",
+        "apps_lic.runtime.dispatch.canonical_dispatch:run_canonical_apps_lic_spine"
+      ]
+    }
+  }
+}

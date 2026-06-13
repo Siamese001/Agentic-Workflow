@@ -1,0 +1,1 @@
+resume_tailor_basic artifact

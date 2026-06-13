@@ -1,0 +1,15 @@
+{
+  "graders": [
+    "schema",
+    "artifact_presence",
+    "x3_disposition",
+    "forbidden_content",
+    "grounded_claim",
+    "provenance",
+    "section_structure",
+    "length_bounds",
+    "side_effect",
+    "escalation",
+    "determinism"
+  ]
+}

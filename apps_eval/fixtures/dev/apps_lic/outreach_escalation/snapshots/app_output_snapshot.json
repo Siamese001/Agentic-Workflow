@@ -1,0 +1,34 @@
+{
+  "app_id": "apps_lic",
+  "artifacts": [
+    "outreach.md"
+  ],
+  "claims": [
+    {
+      "id": "lic_escalation",
+      "source_ids": [
+        "policy:personalization"
+      ],
+      "supported": true,
+      "text": "unsupported personalization requires review"
+    }
+  ],
+  "deterministic_hash": "2460e1716445dc12f90c894718c7d03aea731e2403224e0c5aa0badf6291d27e",
+  "output": {
+    "compliance_notes": "No message sent; review required.",
+    "message": "I do not have enough verified recipient context to personalize this safely. Human review is required.",
+    "rationale": "Escalated because personalization would require unsupported assumptions."
+  },
+  "provenance": {
+    "evidence_refs": [
+      "lead:role_context"
+    ],
+    "rubric_refs": []
+  },
+  "scenario_id": "outreach_escalation",
+  "side_effects": {
+    "product_state_mutated": false,
+    "writes": []
+  },
+  "x3_disposition": "X3B_ESCALATE_HITL"
+}
