@@ -8,7 +8,6 @@ import pytest
 
 from tools.reports.adg_burndown_report import (
     BURNDOWN_REPORT_OUTPUTS,
-    _ci_band_summary,
     emit_mandatory_adg_burndown_report,
     render,
 )
@@ -71,15 +70,9 @@ def test_emit_mandatory_writes_all_outputs(tmp_path: Path, monkeypatch) -> None:
     )
     assert out_a.is_file() and out_b.is_file()
     text = out_a.read_text(encoding="utf-8")
-    assert "### BCG Burndown Brief" in text
-    assert "Maintain SVP engineer-level repo standards" in text
-    assert "## 1. ADG Heuristic Attack Order" in text
-    assert "## 2. P0 Action Plan" in text
-    assert "## 3. ADG Status By Band" in text
-    assert "## 4. ADG CI Gates" in text
-    assert text.index("## 1. ADG Heuristic Attack Order") < text.index("## 2. P0 Action Plan")
-    assert text.index("## 2. P0 Action Plan") < text.index("## 3. ADG Status By Band")
-    assert text.index("## 3. ADG Status By Band") < text.index("## 4. ADG CI Gates")
+    assert "## 1. ADG Status By Band" in text
+    assert "## 2. ADG CI Gates" in text
+    assert text.index("## 1. ADG Status By Band") < text.index("## 2. ADG CI Gates")
 
 
 def test_emit_prints_markdown_to_stdout(
@@ -103,7 +96,6 @@ def test_emit_prints_markdown_to_stdout(
     assert emit_mandatory_adg_burndown_report(gate_results=gate, burndown=burndown) == 0
     captured = capsys.readouterr()
     assert "# ADG CI Burndown Report" in captured.out
-    assert "### BCG Burndown Brief" in captured.out
 
 
 def test_render_track_inventory_vs_ratchet_floor(tmp_path: Path) -> None:
@@ -147,9 +139,6 @@ def test_render_track_inventory_vs_ratchet_floor(tmp_path: Path) -> None:
     md = render(gate, burndown)
     assert "| TRACK | inventory | 848 |" in md
     assert "| TRACK | floor | 2792 |" in md
-    assert "1 gate / 2,792 tracked records" not in md
-    assert "2 gates / 3,640 tracked records" not in md
-    assert "| P0 | PASS | 0 | 0 | 2,792 | 848 |" in md
     assert "| FIX |" not in md.split("3_write_sovereignty")[1][:80]
 
 
@@ -179,40 +168,6 @@ def test_render_fix_cluster_for_blocked_gate(tmp_path: Path) -> None:
     md = render(gate, burndown)
     assert "| FIX | block | 2 |" in md
     assert "### Fix now" in md
-
-
-def test_ci_band_summary_preserves_fix_substatus_counts() -> None:
-    rows = _ci_band_summary(
-        [
-            {
-                "gate_id": "blocked",
-                "band": "P0",
-                "enforcement": "block",
-                "classification": "blocked",
-                "violation_count": 2,
-            },
-            {
-                "gate_id": "regressed",
-                "band": "P0",
-                "enforcement": "ratchet",
-                "classification": "regressed",
-                "violation_count": 3,
-                "baseline_count": 1,
-            },
-            {
-                "gate_id": "seed",
-                "band": "P0",
-                "enforcement": "ratchet",
-                "classification": "seed_missing",
-                "violation_count": 0,
-            },
-        ]
-    )
-
-    assert rows["P0"]["fix"] == 3
-    assert rows["P0"]["block_fail"] == 1
-    assert rows["P0"]["ratchet_regressed"] == 1
-    assert rows["P0"]["seed_missing"] == 1
 
 
 def test_verdict_three_clusters_mece() -> None:
@@ -262,7 +217,7 @@ def test_render_includes_cluster_glossary(tmp_path: Path) -> None:
     assert "## Verdict glossary" in md
     assert "**FIX**" in md and "**TRACK**" in md
     assert "| Verdict | You need to… | Sub (detail) |" in md
-    assert "## 4. ADG CI Gates" in md
+    assert "## 2. ADG CI Gates" in md
 
 
 def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path) -> None:
@@ -292,24 +247,14 @@ def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path)
 
     md = render(gate, burndown)
 
-    assert "Records are gate-specific `violation_count` entries" in md
-    assert "FIX records are current red-gate work. Ratchet floor and open non-ratchet records are non-blocking backlog context." in md
-    assert "## 1. ADG Heuristic Attack Order" in md
-    assert "Rule: work class first" in md
-    assert "| 1 | Burn down ratchets: `G_REACH` 2,792 | P0 | 2,792 |" in md
-    assert "Non-exempt severity rows are included for review, but they do not populate Fix now unless a gate is failing." in md
-    assert "## 2. P0 Action Plan" in md
-    assert "| 1 | Burn down ratchet | `G_REACH` | 2,792 | Largest P0 ratchet floor" in md
-    assert "Open non-ratchet work is still real work; it is second because it does not lower the P0 ratchet floor." in md
-    assert "| Band | Status | Fix gates | Fix records | Ratchet floor | Open non-ratchet | Read it as | Next move |" in md
-    assert "| P0 | PASS | 0 | 0 | 2,792 | 0 | green; ratchet burn-down/open work remains | work ranked queue; ratchets first |" in md
+    assert "Backlog rows are summed gate `violation_count`; guardian gross/net math is only in Severity Inventory." in md
+    assert "| Band | Status | Fix now | Tracked backlog | Read it as | Next move |" in md
+    assert "| P0 | PASS | 0 | 1 gate / 2,792 rows | green; tracked backlog | work ranked queue; do not treat as new failures |" in md
     assert "Allowed Floor" in md
-    assert "| Gate ID | CI Band | Enforcement | Action | Sub | Records | Allowed Floor | Signal | Next Best Action |" in md
+    assert "| Gate ID | CI Band | Enforcement | Action | Sub | Rows | Allowed Floor | Signal | Next Best Action |" in md
     assert "| `G_REACH_l0_reachability` | P0 | ratchet | TRACK | floor | 2792 | 2792 |" in md
-    assert md.index("## 1. ADG Heuristic Attack Order") < md.index("## 2. P0 Action Plan")
-    assert md.index("## 2. P0 Action Plan") < md.index("## 3. ADG Status By Band")
-    assert md.index("## 3. ADG Status By Band") < md.index("## 4. ADG CI Gates")
-    assert md.index("## 4. ADG CI Gates") < md.index("## 5. Severity Inventory Burndown")
+    assert md.index("## 1. ADG Status By Band") < md.index("## 2. ADG CI Gates")
+    assert md.index("## 2. ADG CI Gates") < md.index("## 3. Severity Inventory Burndown")
 
 
 def test_emit_fail_closed_when_gate_results_missing(tmp_path: Path) -> None:

@@ -1,45 +1,9 @@
 {
   "gate_id": "C3_silent_writes_ratchet",
-  "count": 1986,
+  "count": 2085,
   "seeded_at": "2026-06-13T14:17:48.833349+00:00",
-  "snapshot": "adg_indexed_06152026_1043.sqlite",
+  "snapshot": "adg_indexed_06132026_1009.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-15T14:49:36.181635+00:00",
-  "last_run_snapshot": "adg_indexed_06152026_1043.sqlite",
-  "loosen_history": [
-    {
-      "at": "2026-06-13T19:57:35+00:00",
-      "snapshot": "adg_indexed_06132026_1545.sqlite",
-      "from": 2085,
-      "to": 2086,
-      "raw_violation_count": 2086,
-      "margin": 0,
-      "reason": "reporting review template JSON/YAML wiring and tests; accept current generated artifact floor while preserving future ratchet checks"
-    },
-    {
-      "at": "2026-06-13T20:08:39+00:00",
-      "snapshot": "adg_indexed_06132026_1558.sqlite",
-      "from": 2086,
-      "to": 2087,
-      "raw_violation_count": 2087,
-      "margin": 0,
-      "reason": "ADG rescan discovered existing tracked fanout gate test writer; accept current C3 floor while preserving future ratchet checks"
-    }
-  ],
-  "loosened_at": "2026-06-13T20:08:39+00:00",
-  "tightened_at": "2026-06-15T14:49:36.181635+00:00",
-  "tighten_history": [
-    {
-      "at": "2026-06-15T10:51:00.181238+00:00",
-      "snapshot": "adg_indexed_06152026_0644.sqlite",
-      "from": 2087,
-      "to": 1992
-    },
-    {
-      "at": "2026-06-15T14:49:36.181635+00:00",
-      "snapshot": "adg_indexed_06152026_1043.sqlite",
-      "from": 1992,
-      "to": 1986
-    }
-  ]
+  "last_run_at": "2026-06-13T17:29:35.966441+00:00",
+  "last_run_snapshot": "adg_indexed_06132026_1324.sqlite"
 }

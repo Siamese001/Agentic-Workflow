@@ -15,8 +15,8 @@ from ``tools/generate/generate_full_adg.py``, ``tools/adg/run_full_adg_audit.py`
 
   * artifacts/adg/adg_burndown_report.md
   * docs/reports/adg/adg_burndown_report.md
-  * **stdout** — full markdown for inline legacy editor chat (see ``.claude/rules/adg-post-run-burndown.mdc``)
-  * **legacy editor Canvas** — ``adg-ci-burndown.canvas.tsx`` via ``tools/reports/adg_burndown_canvas.py``
+  * **stdout** — full markdown for inline Cursor chat (see ``.claude/rules/adg-post-run-burndown.mdc``)
+  * **Cursor Canvas** — ``adg-ci-burndown.canvas.tsx`` via ``tools/reports/adg_burndown_canvas.py``
 
 Set ``ADG_BURNDOWN_INLINE_BYPASS=1`` to suppress stdout markdown (files still written).
 Set ``ADG_BURNDOWN_CANVAS_BYPASS=1`` to skip canvas generation (markdown/files still written).
@@ -24,13 +24,11 @@ Set ``ADG_BURNDOWN_CANVAS_BYPASS=1`` to skip canvas generation (markdown/files s
 The report is intentionally one file with fixed sections:
 
   1. Header — snapshot, timestamp, overall verdict
-  2. ADG heuristic attack order — cross-band work-class priority
-  3. P0 action plan — prioritized fix/ratchet/open-work rows
-  4. ADG status by band — operator rollup from gate results
-  5. ADG CI gates — all gates: band, enforcement, action, records, signal, next best action
-  6. Severity inventory — raw MV defect inventory by severity/source band
-  7. Aggregates — block_pass / block_fail / ratchet_pass / ratchet_regressed / warn
-  8. Top blockers and next action — queue-backed dispatch guidance
+  2. ADG status by band — operator rollup from gate results
+  3. ADG CI gates — all gates: band, enforcement, action, rows, signal, next best action
+  4. Severity inventory — raw MV defect inventory by severity/source band
+  5. Aggregates — block_pass / block_fail / ratchet_pass / ratchet_regressed / warn
+  6. Top blockers and next action — queue-backed dispatch guidance
 
 No SQL, no MCP, no dependencies beyond stdlib.
 """
@@ -45,8 +43,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from tools.reports.adg_bcg_adapter import build_bcg_brief, render_bcg_brief_md
-from tools.reports.adg_decision_synthesis import band_decision_summary
 from tools.reports.gate_signal_catalog import (
     VERDICT_CLUSTER_DEFINITIONS,
     display_verdict,
@@ -68,35 +64,9 @@ BURNDOWN_REPORT_OUTPUTS: tuple[Path, ...] = (
     REPO / "docs" / "reports" / "adg" / "adg_burndown_report.md",
 )
 
-GATE_SHORT_NAMES = {
-    "G_REACH_l0_reachability": "G_REACH",
-    "S2_uwg_bypass_ratchet": "S2_UWG",
-    "L2_lpg_drift_ratchet": "L2_LPG",
-    "3_write_sovereignty": "write_sovereignty",
-    "J1_canonical_pipeline_wiring": "pipeline_wiring",
-    "C3_silent_writes_ratchet": "C3_silent_writes",
-    "E1_trace_stub_module": "E1_trace_stub",
-    "B2_layer_skip_ratchet": "B2_layer_skip",
-    "I2_replay_surface_gaps_ratchet": "I2_replay_gaps",
-    "F1_untyped_seam_ratchet": "F1_untyped_seam",
-    "S4_unused_imports_ratchet": "S4_unused_imports",
-    "Q2_cyclomatic_complexity_ratchet": "Q2_complexity",
-    "M1_module_loc_ratchet": "M1_module_loc",
-    "D1_layer_doc_binding": "D1_layer_doc",
-    "D2_role_duplication_warn": "D2_role_duplication",
-}
-
-BAND_PRIORITY = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
-ATTACK_CLASS_PRIORITY = {
-    "Fix now": 0,
-    "Burn down ratchets": 1,
-    "Open non-ratchet work": 2,
-    "Severity audit": 3,
-}
-
 
 def _describe(gate: dict[str, Any]) -> str:
-    """High-signal cell: what Records measures + why Verdict is PASS/FAIL/REGR."""
+    """High-signal cell: what Rows measures + why Verdict is PASS/FAIL/REGR."""
     return format_gate_signal(gate)
 
 
@@ -132,28 +102,46 @@ def _allowed_floor_display(gate: dict[str, Any]) -> str:
     return "0"
 
 
-def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int | str]]:
-    """Return canonical per-band FIX/floor/open/CLEAR counts.
-
-    Keep the legacy keys used by the markdown renderer while adding explicit
-    record buckets so future report projections cannot confuse ratchet-floor
-    records with open non-ratchet inventory or clear gates.
-    """
-    rows = band_decision_summary(gates)
-    for row in rows.values():
-        ratchet_floor_records = int(row.get("ratchet_floor_records", 0))
-        open_non_ratchet_records = int(row.get("open_non_ratchet_records", 0))
-        row["total"] = int(row.get("total_gates", 0))
-        row["fix"] = int(row.get("fix_gates", 0))
-        row["track"] = int(row.get("ratchet_floor_gates", 0)) + int(
-            row.get("open_non_ratchet_gates", 0)
+def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
+    rows: dict[str, dict[str, int]] = {}
+    for band in ("P0", "P1", "P2", "P3"):
+        rows[band] = {
+            "total": 0,
+            "fix": 0,
+            "track": 0,
+            "clear": 0,
+            "block_fail": 0,
+            "ratchet_regressed": 0,
+            "seed_missing": 0,
+            "findings": 0,
+        }
+    for gate in gates:
+        band = str(gate.get("band", "P3"))
+        row = rows.setdefault(
+            band,
+            {
+                "total": 0,
+                "fix": 0,
+                "track": 0,
+                "clear": 0,
+                "block_fail": 0,
+                "ratchet_regressed": 0,
+                "seed_missing": 0,
+                "findings": 0,
+            },
         )
-        row["clear"] = int(row.get("clear_gates", 0))
-        row["block_fail"] = int(row.get("fix_block_gates", 0))
-        row["ratchet_regressed"] = int(row.get("fix_regressed_gates", 0))
-        row["seed_missing"] = int(row.get("fix_seed_missing_gates", 0))
-        row["track_records"] = ratchet_floor_records + open_non_ratchet_records
-        row["findings"] = row["track_records"]
+        row["total"] += 1
+        row["findings"] += int(gate.get("violation_count") or 0)
+        cluster = display_verdict(gate).lower()
+        if cluster in ("fix", "track", "clear"):
+            row[cluster] += 1
+        sub = display_verdict_sub(gate)
+        if sub == "block":
+            row["block_fail"] += 1
+        elif sub == "regr":
+            row["ratchet_regressed"] += 1
+        elif sub == "seed":
+            row["seed_missing"] += 1
     return rows
 
 
@@ -161,19 +149,15 @@ def _fmt_int(value: Any) -> str:
     return f"{int(value or 0):,}"
 
 
-def _md(value: Any) -> str:
-    return str(value or "").replace("\n", " ").replace("|", "\\|").strip()
-
-
 def _plural(value: int, singular: str, plural: str | None = None) -> str:
     word = singular if value == 1 else (plural or f"{singular}s")
     return f"{_fmt_int(value)} {word}"
 
 
-def _band_records_cell(row: dict[str, int]) -> str:
+def _band_backlog_cell(row: dict[str, int]) -> str:
     track = int(row.get("track", 0))
-    findings = int(row.get("track_records", 0))
-    return f"{_plural(track, 'gate')} / {_plural(findings, 'tracked record')}"
+    findings = int(row.get("findings", 0))
+    return f"{_plural(track, 'gate')} / {_plural(findings, 'row')}"
 
 
 def _band_status(row: dict[str, int]) -> str:
@@ -183,279 +167,17 @@ def _band_status(row: dict[str, int]) -> str:
 def _band_plain_read(row: dict[str, int]) -> str:
     if int(row.get("fix", 0)):
         return "red gates present"
-    if int(row.get("track", 0)) or int(row.get("track_records", 0)):
-        return "green; ratchet burn-down/open work remains"
-    return "green; no backlog records"
+    if int(row.get("track", 0)) or int(row.get("findings", 0)):
+        return "green; tracked backlog"
+    return "green; no backlog"
 
 
 def _band_next_move(row: dict[str, int]) -> str:
     if int(row.get("fix", 0)):
         return "fix red gates first"
-    if int(row.get("track", 0)) or int(row.get("track_records", 0)):
-        return "work ranked queue; ratchets first"
+    if int(row.get("track", 0)) or int(row.get("findings", 0)):
+        return "work ranked queue; do not treat as new failures"
     return "no action"
-
-
-def _burndown_bcg_brief(gates_doc: dict[str, Any], burndown: dict[str, Any]) -> dict[str, Any]:
-    gates: list[dict[str, Any]] = gates_doc.get("gates") or []
-    cluster_counts = _count_by_cluster(gates)
-    attack_rows = _adg_attack_order_rows(gates, burndown)
-    severity = burndown.get("summary") or {}
-    priority_rows: list[dict[str, Any]] = []
-    for row in attack_rows[:4]:
-        priority_rows.append(
-            {
-                "priority": row.get("rank"),
-                "move": row.get("work_class"),
-                "scope": f"{row.get('band')}: {row.get('target')}",
-                "business_reason": row.get("why"),
-                "technical_reason": (
-                    f"{_fmt_int(row.get('records', 0))} records; {row.get('next_step')}"
-                ),
-                "why_this_rank": row.get("why"),
-                "decision": row.get("next_step"),
-            }
-        )
-    return build_bcg_brief(
-        title="BCG Burndown Brief",
-        status="BLOCKED" if gates_doc.get("overall_exit_code", 1) else "PASS",
-        business_read=(
-            f"Fix {cluster_counts.get('FIX', 0)} blocker(s) first, then burn down "
-            f"{cluster_counts.get('TRACK', 0)} backlog item(s) so the run stays green."
-        ),
-        technical_read=[
-            f"Snapshot timestamp: {gates_doc.get('timestamp', 'n/a')}",
-            f"Total gates: {gates_doc.get('total_gates', len(gates))}",
-            f"FIX={cluster_counts.get('FIX', 0)}; TRACK={cluster_counts.get('TRACK', 0)}; CLEAR={cluster_counts.get('CLEAR', 0)}",
-            (
-                f"P0 gross/net: {(severity.get('P0') or {}).get('gross', 0)}/"
-                f"{(severity.get('P0') or {}).get('net', 0)}"
-            ),
-            (
-                f"P1 gross/net: {(severity.get('P1') or {}).get('gross', 0)}/"
-                f"{(severity.get('P1') or {}).get('net', 0)}"
-            ),
-        ],
-        priority_rule=(
-            "Work class first (Fix now > ratchets > open work > severity audit), then "
-            "P-band (P0 > P1 > P2 > P3), then record count within the same class and band."
-        ),
-        priority_rows=priority_rows,
-        why_this_order=[
-            "Non-exempt severity rows are review context only, not Fix-now work unless a gate is failing.",
-            "Record count breaks ties inside the same work class and P-band; it does not make P3 outrank P0.",
-            "When the top row is P0 ratchets, use the P0 Action Plan for the exact gate order.",
-        ],
-        next_step="Use the P0 Action Plan for the exact gate order.",
-        table_limit=4,
-    )
-
-
-def _short_gate_id(gate_id: str) -> str:
-    if gate_id in GATE_SHORT_NAMES:
-        return GATE_SHORT_NAMES[gate_id]
-    label = gate_id
-    for suffix in ("_ratchet", "_warn"):
-        if label.endswith(suffix):
-            label = label[: -len(suffix)]
-    return label
-
-
-def _p0_priority_why(*, work_type: str, ordinal: int, records: int) -> str:
-    if work_type == "Fix now":
-        return "Blocks green ADG; fix before burn-down work."
-    if work_type == "Burn down ratchet":
-        if ordinal == 1:
-            return "Largest P0 ratchet floor; reduces the biggest accepted baseline first."
-        if records <= 5:
-            return "Small P0 ratchet; close opportunistically after the larger P0 floors."
-        return "Next-largest P0 ratchet floor; keep burning down accepted baseline debt."
-    if records <= 5:
-        return "Small open P0 work item; bundle if it is already in the same files."
-    return "Real open P0 work, but it does not reduce the ratchet floor."
-
-
-def _p0_next_step(*, work_type: str, records: int) -> str:
-    if work_type == "Fix now":
-        return "Fix the gate condition and rerun ADG before treating the run as green."
-    if work_type == "Burn down ratchet":
-        if records <= 5:
-            return "Close or bundle this small floor, rerun ADG, then absorb the lower baseline."
-        return "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline."
-    if records <= 5:
-        return "Close when touching nearby code; it is open work but not ratchet burn-down."
-    return "Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage."
-
-
-def _p0_action_plan_rows(gates: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    p0_gates = [
-        g
-        for g in gates
-        if str(g.get("band")) == "P0"
-        and display_verdict(g) in {"FIX", "TRACK"}
-        and int(g.get("violation_count") or 0) > 0
-    ]
-    fix_rows = sorted(
-        (g for g in p0_gates if display_verdict(g) == "FIX"),
-        key=lambda g: (-int(g.get("violation_count") or 0), str(g.get("gate_id", ""))),
-    )
-    ratchet_rows = sorted(
-        (g for g in p0_gates if display_verdict(g) == "TRACK" and display_verdict_sub(g) == "floor"),
-        key=lambda g: (-int(g.get("violation_count") or 0), str(g.get("gate_id", ""))),
-    )
-    open_rows = sorted(
-        (g for g in p0_gates if display_verdict(g) == "TRACK" and display_verdict_sub(g) != "floor"),
-        key=lambda g: (-int(g.get("violation_count") or 0), str(g.get("gate_id", ""))),
-    )
-
-    out: list[dict[str, Any]] = []
-    for work_type, rows in (
-        ("Fix now", fix_rows),
-        ("Burn down ratchet", ratchet_rows),
-        ("Open non-ratchet work", open_rows),
-    ):
-        for ordinal, gate in enumerate(rows, start=1):
-            records = int(gate.get("violation_count") or 0)
-            gate_id = str(gate.get("gate_id", "?"))
-            out.append(
-                {
-                    "rank": len(out) + 1,
-                    "work_type": work_type,
-                    "gate_id": gate_id,
-                    "label": _short_gate_id(gate_id),
-                    "records": records,
-                    "why": _p0_priority_why(work_type=work_type, ordinal=ordinal, records=records),
-                    "next_step": _p0_next_step(work_type=work_type, records=records),
-                }
-            )
-    return out
-
-
-def _format_attack_items(items: list[dict[str, Any]]) -> str:
-    if not items:
-        return "None"
-    sorted_items = sorted(
-        items,
-        key=lambda row: (-int(row.get("records", 0) or 0), str(row.get("label", ""))),
-    )
-    visible = sorted_items[:3]
-    text = "; ".join(
-        f"`{_md(item.get('label'))}` {_fmt_int(item.get('records', 0))}" for item in visible
-    )
-    if len(sorted_items) > len(visible):
-        remaining = len(sorted_items) - len(visible)
-        total = sum(int(item.get("records", 0) or 0) for item in sorted_items)
-        text += f"; +{remaining} more = {_fmt_int(total)} total"
-    return text
-
-
-def _attack_row_sort_key(row: dict[str, Any]) -> tuple[int, int, int, str]:
-    return (
-        ATTACK_CLASS_PRIORITY.get(str(row.get("work_class")), 99),
-        BAND_PRIORITY.get(str(row.get("band")), 99),
-        -int(row.get("records", 0) or 0),
-        str(row.get("target", "")),
-    )
-
-
-def _adg_attack_order_rows(gates: list[dict[str, Any]], burndown: dict[str, Any]) -> list[dict[str, Any]]:
-    rows: list[dict[str, Any]] = []
-    for band in ("P0", "P1", "P2", "P3"):
-        band_gates = [g for g in gates if str(g.get("band", "P3")) == band]
-        fix_gates = [g for g in band_gates if display_verdict(g) == "FIX"]
-        ratchet_gates = [
-            g for g in band_gates if display_verdict(g) == "TRACK" and display_verdict_sub(g) == "floor"
-        ]
-        open_gates = [
-            g for g in band_gates if display_verdict(g) == "TRACK" and display_verdict_sub(g) != "floor"
-        ]
-        if fix_gates:
-            records = sum(int(g.get("violation_count") or 0) for g in fix_gates)
-            rows.append(
-                {
-                    "band": band,
-                    "work_class": "Fix now",
-                    "target": f"{band} CI blockers",
-                    "records": records,
-                    "why": "CI blocker; ADG is not green until this clears.",
-                    "next_step": "Fix the blocking gate condition and rerun ADG before burn-down work.",
-                }
-            )
-        if ratchet_gates:
-            items = [
-                {
-                    "label": _short_gate_id(str(g.get("gate_id", "?"))),
-                    "records": int(g.get("violation_count") or 0),
-                }
-                for g in ratchet_gates
-            ]
-            records = sum(int(item["records"]) for item in items)
-            rows.append(
-                {
-                    "band": band,
-                    "work_class": "Burn down ratchets",
-                    "target": _format_attack_items(items),
-                    "records": records,
-                    "why": "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size.",
-                    "next_step": (
-                        "Use the P0 Action Plan below."
-                        if band == "P0"
-                        else "Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline."
-                    ),
-                }
-            )
-        if open_gates:
-            items = [
-                {
-                    "label": _short_gate_id(str(g.get("gate_id", "?"))),
-                    "records": int(g.get("violation_count") or 0),
-                }
-                for g in open_gates
-            ]
-            records = sum(int(item["records"]) for item in items)
-            rows.append(
-                {
-                    "band": band,
-                    "work_class": "Open non-ratchet work",
-                    "target": _format_attack_items(items),
-                    "records": records,
-                    "why": "Real open work, but it does not lower a ratchet floor or block CI.",
-                    "next_step": "Schedule after ratchets unless the item is tiny, already in hand, or high-leverage.",
-                }
-            )
-
-    for band in ("P0", "P1", "P2", "P3"):
-        row = (burndown.get("summary") or {}).get(band) or {}
-        net = int(row.get("net", 0) or 0)
-        if not net:
-            continue
-        gross = int(row.get("gross", 0) or 0)
-        rows.append(
-            {
-                "band": band,
-                "work_class": "Severity audit",
-                "target": f"{_fmt_int(net)} non-exempt from {_fmt_int(gross)} gross",
-                "records": net,
-                "why": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
-                "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
-            }
-        )
-
-    ordered = sorted(rows, key=_attack_row_sort_key)
-    if not ordered:
-        ordered = [
-            {
-                "band": "ALL",
-                "work_class": "No action",
-                "target": "No fix, ratchet, open-work, or severity-audit rows",
-                "records": 0,
-                "why": "All tracked ADG work buckets are empty.",
-                "next_step": "No ADG burn-down action.",
-            }
-        ]
-    for rank, row in enumerate(ordered, start=1):
-        row["rank"] = rank
-    return ordered
 
 
 def _load_gate_results(path: Path) -> dict[str, Any]:
@@ -500,7 +222,7 @@ def emit_mandatory_adg_burndown_report(
     fail_closed: bool = True,
     print_inline: bool = True,
 ) -> int:
-    """Write burndown markdown to disk and stdout (legacy editor inline display).
+    """Write burndown markdown to disk and stdout (Cursor inline display).
 
     Called automatically from ``generate_full_adg`` and ``run_full_adg_audit``
     so every ADG run produces a human-readable CI burndown report.
@@ -509,7 +231,7 @@ def emit_mandatory_adg_burndown_report(
         gate_results: ``adg_gate_results_<ts>.json`` (defaults to newest).
         burndown: ``adg_burndown_table.json`` (defaults to artifacts/adg/).
         fail_closed: When True, return 2 if inputs are missing; else 0 with warning.
-        print_inline: When True, emit full markdown to stdout for Codex chat.
+        print_inline: When True, emit full markdown to stdout for Cursor Agent chat.
 
     Returns:
         0 on success, 2 when inputs missing (if fail_closed), 2 on write errors.
@@ -553,7 +275,7 @@ def emit_mandatory_adg_burndown_report(
             if not md.endswith("\n"):
                 sys.stdout.write("\n")
             print(
-                "[adg_burndown_report] inline markdown emitted to stdout for legacy editor display",
+                "[adg_burndown_report] inline markdown emitted to stdout for Cursor display",
                 file=sys.stderr,
             )
         elif _inline_burndown_bypassed():
@@ -610,95 +332,39 @@ def render(
             f"**CLEAR**={cluster_counts.get('CLEAR', 0)}"
         )
     a("")
-    for line in render_bcg_brief_md(_burndown_bcg_brief(gates_doc, burndown)).splitlines():
-        a(line)
-    a("")
 
-    # ---------------------------------------------------- §1 ADG heuristic attack order
-    a("## 1. ADG Heuristic Attack Order")
-    a("")
-    a(
-        "Rule: work class first (Fix now > ratchets > open work > severity audit), "
-        "then P-band (P0 > P1 > P2 > P3), then record count within the same class and band."
-    )
-    a("")
-    a("| # | Attack | Band | Records | Why | Next step |")
-    a("|--:|--------|------|--------:|-----|-----------|")
-    for row in _adg_attack_order_rows(gates, burndown):
-        a(
-            f"| {_fmt_int(row.get('rank', 0))} | {_md(row.get('work_class'))}: "
-            f"{_md(row.get('target'))} | {row.get('band')} | "
-            f"{_fmt_int(row.get('records', 0))} | {_md(row.get('why'))} | "
-            f"{_md(row.get('next_step'))} |"
-        )
-    a("")
-    a("Comments:")
-    a("- Non-exempt severity rows are included for review, but they do not populate Fix now unless a gate is failing.")
-    a("- Record count breaks ties inside the same work class and P-band; it does not make P3 outrank P0.")
-    a("- When the top row is P0 ratchets, use the P0 Action Plan for the exact gate order.")
-    a("")
-
-    # ---------------------------------------------------- §2 P0 action plan
-    a("## 2. P0 Action Plan")
-    a("")
-    a("Read this table top to bottom. It is the action surface; the band table below is status context.")
-    a("")
-    a("| # | Work | Gate | Records | Why this priority | Next step |")
-    a("|--:|------|------|--------:|-------------------|-----------|")
-    p0_plan_rows = _p0_action_plan_rows(gates)
-    if p0_plan_rows:
-        for row in p0_plan_rows:
-            a(
-                f"| {_fmt_int(row.get('rank', 0))} | {_md(row.get('work_type'))} | "
-                f"`{_md(row.get('label'))}` | {_fmt_int(row.get('records', 0))} | "
-                f"{_md(row.get('why'))} | {_md(row.get('next_step'))} |"
-            )
-    else:
-        a("| — | None | None | 0 | No P0 fix, ratchet, or open-work records. | No P0 action. |")
-    a("")
-    a("Comments:")
-    a("- If Fix now rows exist, they override ratchets because ADG is not green.")
-    a("- With Fix now = 0, P0 ratchets are sorted by tracked records so the largest accepted floor burns down first.")
-    a("- Open non-ratchet work is still real work; it is second because it does not lower the P0 ratchet floor.")
-    a("- Guardian/non-exempt severity counts are an exception audit and should not reorder this P0 work list.")
-    a("")
-
-    # ---------------------------------------------------- §3 ADG status by band
-    a("## 3. ADG Status By Band")
+    # ---------------------------------------------------- §1 ADG status by band
+    a("## 1. ADG Status By Band")
     a("")
     a("Operator summary from `adg_gate_results_*.json`.")
-    a("Records are gate-specific `violation_count` entries: orphan modules, UWG bypass paths, write-inventory paths, etc.")
-    a("FIX records are current red-gate work. Ratchet floor and open non-ratchet records are non-blocking backlog context.")
+    a("Backlog rows are summed gate `violation_count`; guardian gross/net math is only in Severity Inventory.")
     a("")
-    a("| Band | Status | Fix gates | Fix records | Ratchet floor | Open non-ratchet | Read it as | Next move |")
-    a("|------|:------:|----------:|------------:|--------------:|------------------:|------------|-----------|")
+    a("| Band | Status | Fix now | Tracked backlog | Read it as | Next move |")
+    a("|------|:------:|--------:|-----------------|------------|-----------|")
     band_rows = _ci_band_summary(gates)
     for band in ("P0", "P1", "P2", "P3"):
         row = band_rows.get(band, {})
         a(
             f"| {band} | {_band_status(row)} | {_fmt_int(row.get('fix', 0))} | "
-            f"{_fmt_int(row.get('fix_records', 0))} | "
-            f"{_fmt_int(row.get('ratchet_floor_records', 0))} | "
-            f"{_fmt_int(row.get('open_non_ratchet_records', 0))} | "
-            f"{_band_plain_read(row)} | {_band_next_move(row)} |"
+            f"{_band_backlog_cell(row)} | {_band_plain_read(row)} | {_band_next_move(row)} |"
         )
     a("")
-    a("`Fix gates` counts red gates. `Fix records` are current blockers/regressions. `Ratchet floor` is accepted baseline debt; `Open non-ratchet` is non-blocking work.")
+    a("`Fix now` counts red gates. `Tracked backlog` is old or advisory inventory that does not block this run.")
     a("")
 
-    # ---------------------------------------------------- §4 all gates
-    a("## 4. ADG CI Gates")
+    # ---------------------------------------------------- §2 all gates
+    a("## 2. ADG CI Gates")
     a("")
     a("One row per registered gate.")
     a("")
-    a("- **Action** — **FIX** = address now · **TRACK** = backlog, CI OK · **CLEAR** = zero records.")
+    a("- **Action** — **FIX** = address now · **TRACK** = backlog, CI OK · **CLEAR** = zero rows.")
     a("- **Sub** — detail (block / regr / floor / inventory / …); see glossary.")
     a("- **Allowed Floor** — zero-tolerance for block gates, baseline for ratchets, advisory/inventory otherwise.")
-    a("- **Records** — gate-specific `violation_count`; the Signal cell names what kind of record it is.")
-    a("- **Signal** — what Records count + short Sub note.")
+    a("- **Rows** — gate-specific `violation_count`; meaning depends on Action/Sub.")
+    a("- **Signal** — what Rows count + short Sub note.")
     a("- **Next Best Action** — concrete action for this gate (fix / re-baseline / defer / none).")
     a("")
-    a("| Gate ID | CI Band | Enforcement | Action | Sub | Records | Allowed Floor | Signal | Next Best Action |")
+    a("| Gate ID | CI Band | Enforcement | Action | Sub | Rows | Allowed Floor | Signal | Next Best Action |")
     a("|---------|:-------:|-------------|:------:|:---:|---------:|---------------|--------|------------------|")
     band_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
     sorted_gates = sorted(
@@ -726,7 +392,7 @@ def render(
         a("")
         a("### Fix now (Verdict FIX)")
         a("")
-        a("| Gate ID | Sub | Records |")
+        a("| Gate ID | Sub | Rows |")
         a("|---------|:---:|---------:|")
         for g in sorted(
             fix_gates,
@@ -742,7 +408,7 @@ def render(
         a("")
         a("### Track later (Verdict TRACK — CI OK, backlog remains)")
         a("")
-        a("| Gate ID | Sub | Records |")
+        a("| Gate ID | Sub | Rows |")
         a("|---------|:---:|---------:|")
         for g in sorted(
             track_gates,
@@ -755,8 +421,8 @@ def render(
             )
     a("")
 
-    # ---------------------------------------------------- §5 severity inventory by band
-    a("## 5. Severity Inventory Burndown")
+    # ---------------------------------------------------- §3 severity inventory by band
+    a("## 3. Severity Inventory Burndown")
     a("")
     a("Counts come from the canonical `adg_burndown_table.json` (schema 2.2).")
     a("This is raw MV defect inventory by severity/source band; it is not one row per CI gate.")
@@ -781,17 +447,17 @@ def render(
     )
     a("")
 
-    # ---------------------------------------------------- verdict glossary
+    # ---------------------------------------------------- §4 verdict glossary
     a(render_verdict_legend_markdown())
 
-    # ---------------------------------------------------- §6 aggregates
-    a("## 6. Aggregate Verdicts")
+    # ---------------------------------------------------- §4 aggregates
+    a("## 4. Aggregate Verdicts")
     a("")
     a("| Verdict | Count | Meaning |")
     a("|---------|------:|---------|")
     a(
         f"| block_pass | {summary.get('block_pass', 0)} | "
-        "Block-class gates that did not halt the run (exit 0). Records may be non-zero. |"
+        "Block-class gates that did not halt the run (exit 0). Rows may be non-zero. |"
     )
     a(
         f"| block_fail | {summary.get('block_fail', 0)} | "
@@ -800,7 +466,7 @@ def render(
     a(f"| ratchet_pass | {summary.get('ratchet_pass', 0)} | Ratchet-class gates within their baseline ceiling. |")
     a(
         f"| ratchet_regressed | {summary.get('ratchet_regressed', 0)} | "
-        "Ratchet-class gates with NEW records beyond baseline. |"
+        "Ratchet-class gates with NEW rows beyond baseline. |"
     )
     a(f"| ratchet_seed_missing | {summary.get('ratchet_seed_missing', 0)} | Ratchet-class gates without a baseline seed (first run). |")
     a(f"| warn | {summary.get('warn', 0)} | Advisory-class gates (do not gate the run). |")
@@ -816,14 +482,14 @@ def render(
         a(f"| {label} | {n} | {VERDICT_CLUSTER_DEFINITIONS[label]} |")
     a("")
 
-    # ---------------------------------------------------- §7 top blockers
-    a("## 7. Fix now (detail)")
+    # ---------------------------------------------------- §5 top blockers
+    a("## 5. Fix now (detail)")
     a("")
     blockers = [g for g in gates if needs_fix(g)]
     if not blockers:
         a("_No FIX gates._")
     else:
-        a("| Gate | Band | Enf | Sub | Records | Signal |")
+        a("| Gate | Band | Enf | Sub | Rows | Signal |")
         a("|------|:----:|:---:|:---:|---------:|--------|")
         for g in sorted(
             blockers, key=lambda r: (-int(r.get("violation_count", 0)), r.get("gate_id", ""))
@@ -933,43 +599,11 @@ def _render_next_action_section(snapshot_ts: str | None = None) -> list[str]:
     )
     actions = doc.get("actions") or []
     if actions:
-        hotspots = [
-            action
-            for action in actions
-            if action.get("verdict_cluster") == "GRAPHDB"
-            and str(action.get("action_kind", "")).startswith("test_hotspot")
-        ][:3]
-        if hotspots:
-            lines.append("")
-            lines.append("### Testing hotspot overlay")
-            lines.append("")
-            lines.append("Use these paths to place tests while executing the next burn-down or cleanup slice.")
-            lines.append("")
-            lines.append("| Rank | Target | How this changes next steps |")
-            lines.append("|-----:|--------|-----------------------------|")
-            for action in hotspots:
-                target = (
-                    action.get("gate_id")
-                    or action.get("file_path")
-                    or action.get("source_id")
-                    or action.get("target")
-                    or "?"
-                )
-                lines.append(
-                    f"| {action.get('rank')} | `{target}` | "
-                    "Add or repair tests here if the current slice touches this path or its callers. |"
-                )
         lines.append("")
         lines.append("| Rank | Lane | Kind | Target | ordering_reason | Signal |")
         lines.append("|-----:|------|------|--------|-----------------|--------|")
         for action in actions[:5]:
-            target = (
-                action.get("gate_id")
-                or action.get("file_path")
-                or action.get("source_id")
-                or action.get("target")
-                or "?"
-            )
+            target = action.get("gate_id") or action.get("source_id") or "?"
             signal = str(action.get("signal", ""))
             if len(signal) > 120:
                 signal = signal[:117] + "..."
