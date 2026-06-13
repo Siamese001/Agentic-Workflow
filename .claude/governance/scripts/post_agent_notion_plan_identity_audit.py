@@ -44,6 +44,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _post_agent_payload import extract_response_text  # noqa: E402
+
 # Import the verification logic from the pre-write gate module
 REPO_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -241,7 +244,7 @@ def main() -> int:
     context_text = os.environ.get("CASCADE_CONTEXT_TEXT", "")
     
     if not response_text and not sys.stdin.isatty():
-        response_text = sys.stdin.read()
+        response_text = extract_response_text(sys.stdin.read())
     
     if not response_text:
         # Nothing to audit

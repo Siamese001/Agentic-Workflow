@@ -35,6 +35,7 @@ if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
 import _plan_supersession as sup  # noqa: E402
+from _post_agent_payload import extract_response_text  # noqa: E402
 
 
 def _drain_stdin() -> None:
@@ -42,7 +43,7 @@ def _drain_stdin() -> None:
     # (the engine scans plan files), but draining keeps the dispatch contract.
     try:
         if not sys.stdin.isatty():
-            sys.stdin.read()
+            extract_response_text(sys.stdin.read())
     except (OSError, ValueError):
         pass
 

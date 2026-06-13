@@ -8,8 +8,9 @@ Reads agent response stdin once, then runs (fail-open, exit 0):
   4. In-process post_agent_dispatch (POST_AGENT_DISPATCHER=1)
 
 Replaces three separate subprocess hook wrappers to cut spawn overhead while
-preserving deterministic coverage. AG-WIRE CI recognizes this file as the
-post-response chain SSOT (see ops_scripts/ci/check_ag_hook_wiring.py).
+preserving deterministic coverage. This file is the post-response chain SSOT.
+(The former AG-WIRE CI gate ``ops_scripts/ci/check_ag_hook_wiring.py`` was
+decommissioned with the legacy tree — see tests/_archived_obsolete/legacy_tree/.)
 """
 
 from __future__ import annotations
@@ -42,6 +43,7 @@ _AG_CHAIN: tuple[str, ...] = (
     "post_agent_long_command_audit.py",
     "post_agent_adg_burndown_inline_audit.py",
     "post_agent_work_classification_audit.py",  # Operating Model 2026-06-10: plan-reflex detection
+    "post_agent_runtime_rca_audit.py",  # constitutional §37: RCA-on-runtime-failure enforcement
 )
 
 

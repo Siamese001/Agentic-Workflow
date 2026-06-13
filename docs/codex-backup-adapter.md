@@ -52,6 +52,7 @@ These files are evidence snapshots. For live routing decisions, read `.mcp.json`
 4. Prefer repo scripts and `.claude` guidance over ad hoc shell logic.
 5. Do not duplicate Claude Code hooks in Codex. Use `scripts/governance/verify_codex_backup.py` as the Codex-facing adapter check.
 6. Do not create a Codex-specific MCP registry. If a Claude MCP is unavailable in Codex, name the missing route and use the documented substitute or degraded fallback.
+7. On any runtime failure (`STATUS: FAIL` or a runtime-failure signal — `X3_BLOCK`, traceback, non-zero exit, pytest `N failed`, `BLOCKED_*`/`MISSING_GRAPH_PATH`), include an `RCA:` block in the run summary (symptom · root_cause · evidence · fix_or_next · recurrence_guard) per `.claude/rules/001-cursor-runtime-seam-execution.md` and constitutional §37. Never report a green status over a body failure-signal.
 
 ## Test
 

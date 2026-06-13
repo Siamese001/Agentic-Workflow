@@ -39,6 +39,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _post_agent_payload import extract_response_text  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 # Violation log paths (preserved from original hooks)
@@ -94,8 +97,7 @@ def check_bypass(subcommand: str) -> bool:
 def _read_stdin() -> str:
     """Read response from stdin with cap."""
     try:
-        data = sys.stdin.read(MAX_RESPONSE_BYTES)
-        return data
+        return extract_response_text(sys.stdin.read(MAX_RESPONSE_BYTES))
     except Exception:
         return ""
 

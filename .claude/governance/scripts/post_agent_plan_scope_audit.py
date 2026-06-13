@@ -22,6 +22,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _post_agent_payload import extract_response_text  # noqa: E402
+
 # Load W2 module via importlib.  The canonical copy lives alongside this script.
 # (old: REPO_ROOT = parents[2] which resolves to .claude/ — not the repo root)
 W2_MODULE_PATH = Path(__file__).parent / "_plan_scope_expansion_check.py"
@@ -239,8 +242,8 @@ def main() -> int:
     response_text = os.getenv("CASCADE_RESPONSE", "")
     if not response_text and not sys.stdin.isatty():
         try:
-            response_text = sys.stdin.read()
-        except:
+            response_text = extract_response_text(sys.stdin.read())
+        except (OSError, ValueError):
             pass
     
     # Detect work and markers
