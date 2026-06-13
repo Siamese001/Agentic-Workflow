@@ -8,6 +8,8 @@ conditions correctly abort generation when critical conditions are not met.
 import sqlite3
 import sys
 import json
+import ast
+from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -26,6 +28,54 @@ def _discover_repo_root(start: Path) -> Path:
 REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+
+
+class TestZipFlagWiring:
+    """Static regression coverage for generate_full_adg CLI flag wiring."""
+
+    def test_create_zip_archive_is_guarded_by_enable_zip(self):
+        source_path = next(
+            candidate / "tools" / "generate" / "generate_full_adg.py"
+            for candidate in Path(__file__).resolve().parents
+            if (candidate / "tools" / "generate" / "generate_full_adg.py").is_file()
+        )
+        source = source_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        func = next(
+            node
+            for node in tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == "generate_full_adg"
+        )
+
+        parents: dict[ast.AST, ast.AST] = {}
+        for parent in ast.walk(func):
+            for child in ast.iter_child_nodes(parent):
+                parents[child] = parent
+
+        calls = [
+            node
+            for node in ast.walk(func)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "_create_zip_archive"
+        ]
+        assert calls, "expected generate_full_adg to contain a zip creation call"
+
+        def has_enable_zip_guard(node: ast.AST) -> bool:
+            current = parents.get(node)
+            while current is not None:
+                if (
+                    isinstance(current, ast.If)
+                    and isinstance(current.test, ast.Name)
+                    and current.test.id == "enable_zip"
+                ):
+                    return True
+                current = parents.get(current)
+            return False
+
+        assert all(has_enable_zip_guard(call) for call in calls)
+        assert "zip_label = \"ON\" if enable_zip else \"OFF\"" in source
+        assert "Zip creation skipped" in source
 
 
 class TestArtifactValidityCheck:
@@ -254,6 +304,54 @@ class TestRepairRunnerSqliteResolution:
 
         resolved = _resolve_repair_sqlite(adg_dir, "04192026_0622", invalid)
         assert resolved is None
+
+    def test_repair_runner_passes_dry_run_to_orchestrator(self, tmp_path, monkeypatch):
+        import tools.adg.repair as repair_pkg
+        import tools.adg.repair.rule_engine as rule_engine
+        from tools.generate.integration.repair_runner import _run_p1_p2_auto_fix
+
+        adg_dir = tmp_path / "adg"
+        adg_dir.mkdir()
+        current = adg_dir / "adg_indexed_04192026_0622.sqlite"
+        self._create_valid_sqlite(current)
+        calls: dict[str, object] = {}
+
+        class FakeOrchestrator:
+            def __init__(self, **kwargs):
+                calls["init"] = kwargs
+
+            def run(self, *, dry_run: bool):
+                calls["dry_run"] = dry_run
+                return SimpleNamespace(
+                    deficiencies_found=3,
+                    fixes_applied=0,
+                    fixes_suggested=2,
+                    fixes_blocked=1,
+                )
+
+        monkeypatch.setattr(repair_pkg, "ADGRepairOrchestrator", FakeOrchestrator)
+        monkeypatch.setattr(rule_engine, "register_builtin_rules", lambda: calls.setdefault("registered", True))
+
+        _run_p1_p2_auto_fix(adg_dir, "04192026_0622", sqlite_path=current, dry_run=True)
+
+        assert calls["registered"] is True
+        assert calls["dry_run"] is True
+        assert calls["init"]["sqlite_path"] == current.resolve()
+
+    def test_generate_full_adg_has_one_repair_runner_call(self):
+        repo_root = next(
+            candidate for candidate in Path(__file__).resolve().parents if (candidate / ".git").exists()
+        )
+        source = (repo_root / "tools" / "generate" / "generate_full_adg.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        calls = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "_run_p1_p2_auto_fix"
+        ]
+        assert len(calls) == 1
 
 
 class TestArtifactConsistencyCheck:

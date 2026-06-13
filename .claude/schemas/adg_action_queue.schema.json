@@ -84,7 +84,9 @@
             "burndown",
             "p0_wave_plan",
             "refactor_accelerator",
-            "failure_clusters"
+            "failure_clusters",
+            "structural_outputs",
+            "graphdb_queries"
           ]
         },
         "path": { "type": "string" },
@@ -118,13 +120,20 @@
         "rank": { "type": "integer", "minimum": 1 },
         "verdict_cluster": {
           "type": "string",
-          "enum": ["FIX", "REFACTOR", "P0_WAVE"]
+          "enum": ["FIX", "REFACTOR", "P0_WAVE", "GRAPHDB"]
         },
         "gate_id": { "type": ["string", "null"] },
         "source_id": { "type": ["string", "null"] },
         "action_kind": {
           "type": "string",
-          "enum": ["fix_gate", "p0_wave_file", "refactor_candidate"]
+          "enum": [
+            "fix_gate",
+            "p0_wave_file",
+            "refactor_candidate",
+            "test_hotspot_gap",
+            "graphdb_hotspot",
+            "graphdb_structural_signal"
+          ]
         },
         "file_path": { "type": ["string", "null"] },
         "symbol": { "type": ["string", "null"] },

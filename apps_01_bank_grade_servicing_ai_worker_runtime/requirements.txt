@@ -1,4 +1,0 @@
-# Fee-Adjustment Mechanics Lab
-# The deterministic engine (src/runtime) and tests use only the Python stdlib.
-# Streamlit is required only for the interactive UI (app.py).
-streamlit>=1.36,<2.0

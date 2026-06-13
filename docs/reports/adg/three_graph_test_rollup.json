@@ -1,8 +1,8 @@
 {
   "suite": "quick",
-  "snapshot_id": "adg_indexed_05242026_2005",
-  "started_at": "2026-05-25T00:28:36.040046+00:00",
-  "finished_at": "2026-05-25T00:28:43.946786+00:00",
+  "snapshot_id": "adg_indexed_06132026_1042",
+  "started_at": "2026-06-13T14:52:40.149651+00:00",
+  "finished_at": "2026-06-13T14:52:47.182178+00:00",
   "strict_mode": true,
   "gates": [
     {
@@ -11,7 +11,7 @@
       "status": "PASS",
       "evidence_mode": "inventory",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "artifacts/adg/adg_indexed_*.sqlite"
       ],
@@ -25,9 +25,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "bd7e6bb3cc6edc8c",
-      "duration_ms": 2,
-      "started_at": "2026-05-25T00:28:36.187512+00:00"
+      "artifact_hash": "b323d85b5d631497",
+      "duration_ms": 1,
+      "started_at": "2026-06-13T14:52:40.284496+00:00"
     },
     {
       "gate_id": "preflight.schema_version",
@@ -35,7 +35,7 @@
       "status": "PASS",
       "evidence_mode": "inventory",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "meta"
       ],
@@ -49,9 +49,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "940bc0afcfe51edf",
-      "duration_ms": 3,
-      "started_at": "2026-05-25T00:28:36.340784+00:00"
+      "artifact_hash": "e6ef8b99816c8ac6",
+      "duration_ms": 1,
+      "started_at": "2026-06-13T14:52:40.424499+00:00"
     },
     {
       "gate_id": "static.snapshot_has_mvs",
@@ -59,7 +59,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "sqlite_master (mv_*, v_p*, infra views)",
         "meta.artifact_digest"
@@ -72,9 +72,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "6ece5a5a213febca",
-      "duration_ms": 43,
-      "started_at": "2026-05-25T00:28:36.402783+00:00"
+      "artifact_hash": "73d1aade790edd22",
+      "duration_ms": 42,
+      "started_at": "2026-06-13T14:52:40.480841+00:00"
     },
     {
       "gate_id": "static.edge_authority_well_formed",
@@ -82,7 +82,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "edges.authority"
       ],
@@ -94,9 +94,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "81b56a00f74a6c5a",
-      "duration_ms": 6123,
-      "started_at": "2026-05-25T00:28:42.526028+00:00"
+      "artifact_hash": "5f54ee4886f22bbf",
+      "duration_ms": 5353,
+      "started_at": "2026-06-13T14:52:45.836091+00:00"
     },
     {
       "gate_id": "static.no_null_triplet",
@@ -104,7 +104,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "edges (bucket, resolution_status, authority_status)"
       ],
@@ -118,9 +118,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "fc904bd807b85310",
-      "duration_ms": 150,
-      "started_at": "2026-05-25T00:28:42.814574+00:00"
+      "artifact_hash": "75b5d3e167df4511",
+      "duration_ms": 155,
+      "started_at": "2026-06-13T14:52:46.112587+00:00"
     },
     {
       "gate_id": "registry.graph_integrity",
@@ -128,30 +128,30 @@
       "status": "WARN",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "edges WHERE bucket='registry'",
         "nodes WHERE entity_type='registry_node'",
         "meta.artifact_digest"
       ],
       "counts": {
-        "total_registry_edges": 338,
-        "total_registry_nodes": 75,
+        "total_registry_edges": 245,
+        "total_registry_nodes": 58,
         "relation:AGENT_SPEC_DECLARED": 8,
-        "relation:MCP_SERVER_DECLARED": 14,
+        "relation:MCP_SERVER_DECLARED": 8,
         "relation:PROMPT_SLOT_DECLARED": 2,
         "relation:ROUTE_CONTRACT_DECLARED": 3,
         "relation:references_agent_spec": 17,
-        "relation:references_mcp_server": 294,
-        "missing_owner": 27,
-        "missing_version": 27,
-        "missing_digest": 27,
-        "missing_declared_surface": 27,
+        "relation:references_mcp_server": 207,
+        "missing_owner": 21,
+        "missing_version": 21,
+        "missing_digest": 21,
+        "missing_declared_surface": 21,
         "missing_AGENT_SPEC_DECLARED.execution_profile": 8,
-        "missing_references_mcp_server.capability_binding": 294,
+        "missing_references_mcp_server.capability_binding": 207,
         "missing_ROUTE_CONTRACT_DECLARED.gateway_resolution": 3,
-        "missing_MCP_SERVER_DECLARED.transport": 14,
-        "missing_MCP_SERVER_DECLARED.scope": 14,
+        "missing_MCP_SERVER_DECLARED.transport": 8,
+        "missing_MCP_SERVER_DECLARED.scope": 8,
         "fail_codes_count": 0,
         "warn_codes_count": 2
       },
@@ -160,70 +160,70 @@
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "owner",
-          "node_id": 176202,
+          "node_id": 184348,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "version",
-          "node_id": 176202,
+          "node_id": 184348,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "digest",
-          "node_id": 176202,
+          "node_id": 184348,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "declared_surface",
-          "node_id": 176202,
+          "node_id": 184348,
           "adg_name": "Registry::MCP::GitKraken"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "owner",
-          "node_id": 176203,
+          "node_id": 184349,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "version",
-          "node_id": 176203,
+          "node_id": 184349,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "digest",
-          "node_id": 176203,
+          "node_id": 184349,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "declared_surface",
-          "node_id": 176203,
+          "node_id": 184349,
           "adg_name": "Registry::MCP::adg_sqlite"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "owner",
-          "node_id": 176204,
+          "node_id": 184350,
           "adg_name": "Registry::MCP::deepwiki"
         },
         {
           "code": "B_WARN_NODE_FIELDS_ASPIRATIONAL",
           "field": "version",
-          "node_id": 176204,
+          "node_id": 184350,
           "adg_name": "Registry::MCP::deepwiki"
         }
       ],
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "670cad5d141d8bb8",
-      "duration_ms": 4,
-      "started_at": "2026-05-25T00:28:42.965080+00:00"
+      "artifact_hash": "34fa5cfb25f3dc7a",
+      "duration_ms": 3,
+      "started_at": "2026-06-13T14:52:46.239067+00:00"
     },
     {
       "gate_id": "registry.bucket_count_floor",
@@ -231,12 +231,12 @@
       "status": "PASS",
       "evidence_mode": "inventory",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "edges WHERE bucket='registry'"
       ],
       "counts": {
-        "observed_value": 338
+        "observed_value": 245
       },
       "thresholds": {
         "expect_min": 1
@@ -245,9 +245,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "b8c34820f7395a41",
+      "artifact_hash": "303197258d3c2e7e",
       "duration_ms": 2,
-      "started_at": "2026-05-25T00:28:43.118396+00:00"
+      "started_at": "2026-06-13T14:52:46.374225+00:00"
     },
     {
       "gate_id": "runtime.proof_view_well_formed",
@@ -255,7 +255,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "v_runtime_proof"
       ],
@@ -267,9 +267,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "938871f9aca35e13",
+      "artifact_hash": "d681640b983baddf",
       "duration_ms": 48,
-      "started_at": "2026-05-25T00:28:43.187027+00:00"
+      "started_at": "2026-06-13T14:52:46.436598+00:00"
     },
     {
       "gate_id": "runtime.trace_topology",
@@ -277,7 +277,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "v_runtime_proof (latest_trace_id, latest_span_id, evidence_refs)",
         "agentic_core/L4_state/memory/runtime_adg/<trace>/spans.json (when present)"
@@ -305,9 +305,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "17da25199b47ea4f",
-      "duration_ms": 3,
-      "started_at": "2026-05-25T00:28:43.309024+00:00"
+      "artifact_hash": "9ccb60b3cfaf2333",
+      "duration_ms": 1,
+      "started_at": "2026-06-13T14:52:46.546202+00:00"
     },
     {
       "gate_id": "cross_bucket.gap_thresholds",
@@ -315,7 +315,7 @@
       "status": "PASS",
       "evidence_mode": "inventory",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "docs/reports/adg/THREE_BUCKET_GAP_REPORT.json"
       ],
@@ -327,9 +327,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "929c7073c2546d22",
-      "duration_ms": 51,
-      "started_at": "2026-05-25T00:28:43.377397+00:00"
+      "artifact_hash": "ee351c9c2b5c12a0",
+      "duration_ms": 53,
+      "started_at": "2026-06-13T14:52:46.614924+00:00"
     },
     {
       "gate_id": "cross_bucket.impossible_states",
@@ -337,7 +337,7 @@
       "status": "PASS",
       "evidence_mode": "proof",
       "enforcement_mode": "strict",
-      "snapshot_id": "adg_indexed_05242026_2005",
+      "snapshot_id": "adg_indexed_06132026_1042",
       "input_refs": [
         "edges (bucket, evidence_refs, source_file)",
         "v_runtime_proof (latest_trace_id, latest_span_id, static_edge_id)",
@@ -350,7 +350,7 @@
         "i4_triplet_missing_ref": 0,
         "i5_auth_runtime_no_span": 0,
         "i6_registry_only_prod_route": 0,
-        "i7_static_critical_unclassified": 184468,
+        "i7_static_critical_unclassified": 187674,
         "fail_codes_count": 0
       },
       "thresholds": {},
@@ -358,9 +358,9 @@
       "bypass_env_detected": [],
       "expected_fail_reason": "",
       "actual_fail_reason": "",
-      "artifact_hash": "c19073cd69488bc0",
-      "duration_ms": 439,
-      "started_at": "2026-05-25T00:28:43.931370+00:00"
+      "artifact_hash": "f3264af6cf5f9ddc",
+      "duration_ms": 374,
+      "started_at": "2026-06-13T14:52:47.165614+00:00"
     }
   ],
   "summary_by_bucket": {

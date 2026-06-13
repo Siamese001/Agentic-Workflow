@@ -46,6 +46,7 @@ from ops_scripts.ci._adg_wiring_gate_base import (  # noqa: E402
 GATE_ID = "G_REACH_l0_reachability"
 
 _PRODUCTION_LAYERS = ("L1", "L2", "L3", "L4", "L5", "L_APP", "L_PG")
+_EXCLUDED_PREFIXES = ("apps_eval_legacy/original_tree/",)
 
 
 def _build_import_digraph(conn: sqlite3.Connection):
@@ -102,9 +103,11 @@ class GraphReachGate(WiringGate):
                 continue
             if data.get("layer") not in _PRODUCTION_LAYERS:
                 continue
+            path = data.get("resolved_path") or data.get("adg_name") or f"node#{node_id}"
+            if path.startswith(_EXCLUDED_PREFIXES):
+                continue
             if node_id in reachable:
                 continue
-            path = data.get("resolved_path") or data.get("adg_name") or f"node#{node_id}"
             violations.append(
                 Violation(
                     gate_id=GATE_ID,

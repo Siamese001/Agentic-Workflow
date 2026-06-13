@@ -255,6 +255,26 @@ def test_promoted_gate_blocks_on_next_nonzero_run(fake_snapshot: Path, isolated_
     assert result.summary["declared_tier"] == "R"
 
 
+def test_promoted_gate_with_nonzero_absorbed_floor_stays_ratchet(
+    fake_snapshot: Path, isolated_baseline_dir: Path
+) -> None:
+    baseline_path = isolated_baseline_dir / "test_fake_r_ratchet.json"
+    _write_baseline(
+        baseline_path,
+        {
+            "gate_id": "TEST_FAKE_R",
+            "count": 1,
+            "auto_promoted_tier": "B",
+            "loosened_at": "2026-06-08T12:37:25+00:00",
+        },
+    )
+    gate = _FakeGate(fake_snapshot, violation_count=1)
+    result = gate.execute()
+    assert result.status == "pass"
+    assert result.tier == "R"
+    assert "effective_tier" not in result.summary
+
+
 def test_promoted_gate_passes_on_zero(fake_snapshot: Path, isolated_baseline_dir: Path) -> None:
     baseline_path = isolated_baseline_dir / "test_fake_r_ratchet.json"
     _write_baseline(

@@ -72,6 +72,13 @@ def assert_chroma_default_ef_forbidden() -> None:
         )
 
 
+def persistent_chroma_client(path: str) -> Any:
+    """Create an apps_rg Chroma client through the sanctioned Chroma boundary."""
+    import chromadb
+
+    return chromadb.PersistentClient(path=path)
+
+
 def _collection_embedding_function() -> ForbidChromaDefaultEmbeddingFunction | None:
     if not chroma_default_ef_forbidden():
         return None
@@ -171,4 +178,5 @@ __all__ = [
     "collection_uses_chroma_default_ef",
     "get_precomputed_embeddings_collection",
     "get_precomputed_embeddings_collection_for_query",
+    "persistent_chroma_client",
 ]

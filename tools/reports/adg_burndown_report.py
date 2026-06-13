@@ -21,13 +21,14 @@ from ``tools/generate/generate_full_adg.py``, ``tools/adg/run_full_adg_audit.py`
 Set ``ADG_BURNDOWN_INLINE_BYPASS=1`` to suppress stdout markdown (files still written).
 Set ``ADG_BURNDOWN_CANVAS_BYPASS=1`` to skip canvas generation (markdown/files still written).
 
-The report is intentionally one file with five fixed sections:
+The report is intentionally one file with fixed sections:
 
   1. Header — snapshot, timestamp, overall verdict
-  2. Burndown by band — P0..P3 gross / net / diff / guardian
-  3. CI gates — all 48 gates: band, enforcement, verdict, findings, signal, recommended next step
-  4. Aggregates — block_pass / block_fail / ratchet_pass / ratchet_regressed / warn
-  5. Top blockers — gates currently failing, ordered by finding count
+  2. P0-P3 CI band summary — gate/enforcement rollup from gate results
+  3. ADG CI gates — all gates: band, enforcement, action, findings, signal, next best action
+  4. Severity inventory — raw MV defect inventory by severity/source band
+  5. Aggregates — block_pass / block_fail / ratchet_pass / ratchet_regressed / warn
+  6. Top blockers and next action — queue-backed dispatch guidance
 
 No SQL, no MCP, no dependencies beyond stdlib.
 """
@@ -84,6 +85,64 @@ def _count_by_cluster(gates: list[dict[str, Any]]) -> dict[str, int]:
         v = display_verdict(g)
         counts[v] = counts.get(v, 0) + 1
     return counts
+
+
+def _allowed_floor_display(gate: dict[str, Any]) -> str:
+    enforcement = str(gate.get("enforcement", ""))
+    baseline = gate.get("baseline_count")
+    sub = display_verdict_sub(gate)
+    if enforcement == "ratchet":
+        if baseline is not None:
+            return str(baseline)
+        return "missing seed" if sub == "seed" else "unseeded"
+    if enforcement == "warn":
+        return "advisory"
+    if sub == "inventory":
+        return "warn inventory"
+    return "0"
+
+
+def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
+    rows: dict[str, dict[str, int]] = {}
+    for band in ("P0", "P1", "P2", "P3"):
+        rows[band] = {
+            "total": 0,
+            "fix": 0,
+            "track": 0,
+            "clear": 0,
+            "block_fail": 0,
+            "ratchet_regressed": 0,
+            "seed_missing": 0,
+            "findings": 0,
+        }
+    for gate in gates:
+        band = str(gate.get("band", "P3"))
+        row = rows.setdefault(
+            band,
+            {
+                "total": 0,
+                "fix": 0,
+                "track": 0,
+                "clear": 0,
+                "block_fail": 0,
+                "ratchet_regressed": 0,
+                "seed_missing": 0,
+                "findings": 0,
+            },
+        )
+        row["total"] += 1
+        row["findings"] += int(gate.get("violation_count") or 0)
+        cluster = display_verdict(gate).lower()
+        if cluster in ("fix", "track", "clear"):
+            row[cluster] += 1
+        sub = display_verdict_sub(gate)
+        if sub == "block":
+            row["block_fail"] += 1
+        elif sub == "regr":
+            row["ratchet_regressed"] += 1
+        elif sub == "seed":
+            row["seed_missing"] += 1
+    return rows
 
 
 def _load_gate_results(path: Path) -> dict[str, Any]:
@@ -239,43 +298,39 @@ def render(
         )
     a("")
 
-    # ---------------------------------------------------- §2 burndown by band
-    a("## 1. Burndown by Severity Band")
+    # ---------------------------------------------------- §1 P0-P3 CI band summary
+    a("## 1. P0-P3 CI Band Summary")
     a("")
-    a("Counts come from the canonical `adg_burndown_table.json` (schema 2.2).")
-    a("`gross` = raw violations found. `guardian` = guardian-exempted (still counted).")
-    a("`net` = `gross - guardian`. `diff` = delta vs prior snapshot baseline.")
+    a("This is the gate/enforcement view from `adg_gate_results_*.json`, not the raw severity inventory.")
     a("")
-    a("| Band | Label | Gross | Guardian | Net | Diff vs prev |")
-    a("|------|-------|------:|---------:|----:|-------------:|")
+    a("| CI Band | Gates | FIX | TRACK | CLEAR | Block Fail | Ratchet Regr | Seed Missing | Findings |")
+    a("|---------|------:|----:|------:|------:|-----------:|-------------:|-------------:|---------:|")
+    band_rows = _ci_band_summary(gates)
     for band in ("P0", "P1", "P2", "P3"):
-        row = burndown.get("summary", {}).get(band, {})
+        row = band_rows.get(band, {})
         a(
-            f"| {band} | {row.get('label', '?')} | "
-            f"{row.get('gross', 0)} | {row.get('guardian', 0)} | "
-            f"{row.get('net', 0)} | {row.get('diff', 0):+d} |"
+            f"| {band} | {row.get('total', 0)} | {row.get('fix', 0)} | "
+            f"{row.get('track', 0)} | {row.get('clear', 0)} | "
+            f"{row.get('block_fail', 0)} | {row.get('ratchet_regressed', 0)} | "
+            f"{row.get('seed_missing', 0)} | {row.get('findings', 0)} |"
         )
     a("")
-    a(
-        f"_p0_clean = {burndown.get('p0_clean')} • "
-        f"p1_no_ratchet = {burndown.get('p1_no_ratchet')} • "
-        f"counting_mode = `{burndown.get('provenance', {}).get('counting_mode', '?')}`_"
-    )
+    a("`FIX` is the only action class that must be cleared for green ADG. `TRACK` is backlog.")
     a("")
 
-    # ---------------------------------------------------- §2 verdict glossary + gates
-    a(render_verdict_legend_markdown())
-    a("## 3. All CI Gates")
+    # ---------------------------------------------------- §2 all gates
+    a("## 2. ADG CI Gates")
     a("")
     a("One row per registered gate.")
     a("")
-    a("- **Verdict** — **FIX** = address now · **TRACK** = backlog, CI OK · **CLEAR** = zero findings.")
+    a("- **Action** — **FIX** = address now · **TRACK** = backlog, CI OK · **CLEAR** = zero findings.")
     a("- **Sub** — detail (block / regr / floor / inventory / …); see glossary.")
+    a("- **Allowed Floor** — zero-tolerance for block gates, baseline for ratchets, advisory/inventory otherwise.")
     a("- **Signal** — what Findings count + short Sub note.")
-    a("- **Recommended Next Step** — concrete action for this gate (fix / re-baseline / defer / none).")
+    a("- **Next Best Action** — concrete action for this gate (fix / re-baseline / defer / none).")
     a("")
-    a("| Gate ID | Band | Enf | Verdict | Sub | Findings | Signal | Recommended Next Step |")
-    a("|---------|:----:|:---:|:-------:|:---:|---------:|--------|-----------------------|")
+    a("| Gate ID | CI Band | Enforcement | Action | Sub | Findings | Allowed Floor | Signal | Next Best Action |")
+    a("|---------|:-------:|-------------|:------:|:---:|---------:|---------------|--------|------------------|")
     band_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
     sorted_gates = sorted(
         gates,
@@ -293,6 +348,7 @@ def render(
             f"{_verdict_display(g)} | "
             f"{_verdict_sub_display(g)} | "
             f"{g.get('violation_count', 0)} | "
+            f"{_allowed_floor_display(g)} | "
             f"{_describe(g)} | "
             f"{recommended_next_step(g)} |"
         )
@@ -329,6 +385,34 @@ def render(
                 f"{g.get('violation_count', 0)} |"
             )
     a("")
+
+    # ---------------------------------------------------- §3 severity inventory by band
+    a("## 3. Severity Inventory Burndown")
+    a("")
+    a("Counts come from the canonical `adg_burndown_table.json` (schema 2.2).")
+    a("This is raw MV defect inventory by severity/source band; it is not one row per CI gate.")
+    a("`gross` = raw violations found. `guardian` = guardian-exempted (still counted).")
+    a("`net` = `gross - guardian`. `diff` = delta vs prior snapshot baseline.")
+    a("")
+    a("| Severity Band | Label | Gross | Guardian | Net | Diff vs prev |")
+    a("|---------------|-------|------:|---------:|----:|-------------:|")
+    for band in ("P0", "P1", "P2", "P3"):
+        row = burndown.get("summary", {}).get(band, {})
+        a(
+            f"| {band} | {row.get('label', '?')} | "
+            f"{row.get('gross', 0)} | {row.get('guardian', 0)} | "
+            f"{row.get('net', 0)} | {row.get('diff', 0):+d} |"
+        )
+    a("")
+    a(
+        f"_p0_clean = {burndown.get('p0_clean')} • "
+        f"p1_no_ratchet = {burndown.get('p1_no_ratchet')} • "
+        f"counting_mode = `{burndown.get('provenance', {}).get('counting_mode', '?')}`_"
+    )
+    a("")
+
+    # ---------------------------------------------------- §4 verdict glossary
+    a(render_verdict_legend_markdown())
 
     # ---------------------------------------------------- §4 aggregates
     a("## 4. Aggregate Verdicts")
@@ -385,7 +469,7 @@ def render(
     a("")
 
     a("---")
-    for line in _render_next_action_section(gate_results_path):
+    for line in _render_next_action_section(gates_doc.get("timestamp")):
         a(line)
     a("---")
     a(
@@ -396,26 +480,68 @@ def render(
     return "\n".join(lines) + "\n"
 
 
-def _render_next_action_section(gate_results_path: Path) -> list[str]:
-    """Link burndown to latest adg_action_queue artifact (W2)."""
+def _queue_snapshot_ts(doc: dict[str, Any]) -> str | None:
+    """Return the ADG snapshot timestamp declared by an action queue."""
+    provenance = doc.get("provenance") or {}
+    if isinstance(provenance, dict):
+        active = provenance.get("active_snapshot_ts")
+        if active:
+            return str(active)
+        for item in provenance.get("inputs") or []:
+            if isinstance(item, dict) and item.get("artifact_key") == "gate_results":
+                snapshot_ts = item.get("snapshot_ts")
+                if snapshot_ts:
+                    return str(snapshot_ts)
+    snapshot_ts = doc.get("snapshot_ts") or doc.get("snapshot_timestamp")
+    return str(snapshot_ts) if snapshot_ts else None
+
+
+def _select_action_queue(snapshot_ts: str | None) -> tuple[Path, dict[str, Any] | None] | None:
+    queues = sorted(ARTIFACTS.glob("adg_action_queue_*.json"), key=lambda p: p.stat().st_mtime)
+    if not queues:
+        return None
+
+    loaded: list[tuple[Path, dict[str, Any] | None, str | None]] = []
+    for queue_path in queues:
+        try:
+            doc = json.loads(queue_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            loaded.append((queue_path, None, None))
+            continue
+        loaded.append((queue_path, doc, _queue_snapshot_ts(doc)))
+
+    if snapshot_ts:
+        matching = [(path, doc) for path, doc, ts in loaded if doc is not None and ts == snapshot_ts]
+        if matching:
+            return matching[-1]
+        if any(ts for _path, _doc, ts in loaded):
+            return None
+
+    path, doc, _ts = loaded[-1]
+    return path, doc
+
+
+def _render_next_action_section(snapshot_ts: str | None = None) -> list[str]:
+    """Link burndown to the action queue for this ADG snapshot."""
     lines: list[str] = []
     lines.append("## Next action")
     lines.append("")
-    queues = sorted(ARTIFACTS.glob("adg_action_queue_*.json"), key=lambda p: p.stat().st_mtime)
-    if not queues:
+    selected = _select_action_queue(snapshot_ts)
+    if selected is None:
+        if snapshot_ts:
+            lines.append(f"No current-run `adg_action_queue_*.json` found for snapshot `{snapshot_ts}`.")
+        else:
+            lines.append("No `adg_action_queue_*.json` found.")
         lines.append(
-            "No `adg_action_queue_*.json` found. Emit with: "
-            "`python tools/reports/adg_action_queue.py --latest`"
+            "Emit with: `python tools/reports/adg_action_queue.py --latest`"
         )
         lines.append("")
         lines.append("Playbook: [adg_action_dispatch_playbook.md](../../docs/reports/cursor/adg_action_dispatch_playbook.md)")
         lines.append("")
         return lines
 
-    latest = queues[-1]
-    try:
-        doc = json.loads(latest.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    latest, doc = selected
+    if doc is None:
         lines.append(f"- **Queue:** `{_display_path(latest)}` (unreadable)")
         lines.append("")
         return lines
@@ -438,13 +564,17 @@ def _render_next_action_section(gate_results_path: Path) -> list[str]:
     actions = doc.get("actions") or []
     if actions:
         lines.append("")
-        lines.append("| Rank | Verdict | Target | ordering_reason |")
-        lines.append("|-----:|---------|--------|-----------------|")
+        lines.append("| Rank | Lane | Kind | Target | ordering_reason | Signal |")
+        lines.append("|-----:|------|------|--------|-----------------|--------|")
         for action in actions[:5]:
             target = action.get("gate_id") or action.get("source_id") or "?"
+            signal = str(action.get("signal", ""))
+            if len(signal) > 120:
+                signal = signal[:117] + "..."
             lines.append(
                 f"| {action.get('rank')} | {action.get('verdict_cluster')} | "
-                f"`{target}` | {action.get('ordering_reason', '')} |"
+                f"{action.get('action_kind', '')} | `{target}` | "
+                f"{action.get('ordering_reason', '')} | {signal} |"
             )
     lines.append("")
     lines.append(

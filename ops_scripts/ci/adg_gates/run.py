@@ -540,6 +540,8 @@ def main(argv: list[str] | None = None) -> int:
     payload = {
         "schema_version": 1,
         "timestamp": datetime.now(timezone.utc).isoformat(),
+        "snapshot": snapshot.name if snapshot else None,
+        "snapshot_path": str(snapshot) if snapshot else None,
         "total_gates": len(rows),
         "overall_exit_code": overall_exit,
         "summary": {

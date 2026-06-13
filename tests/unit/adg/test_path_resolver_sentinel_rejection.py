@@ -188,6 +188,66 @@ def test_require_nodes_table_skips_files_without_nodes(temp_adg_dir: Path) -> No
         gc.collect()
 
 
+def test_required_tables_skip_partial_current_run_snapshot(temp_adg_dir: Path) -> None:
+    """Gate consumers skip newer partial snapshots that only have base tables."""
+    import sqlite3
+    import time
+
+    from tools.adg.shared_modules.path_resolver import latest_sqlite
+
+    complete = temp_adg_dir / "adg_indexed_06132026_0906.sqlite"
+    conn = sqlite3.connect(str(complete))
+    try:
+        for table in (
+            "nodes",
+            "edges",
+            "mv_gateway_bypass_paths",
+            "mv_cross_cutting_witness_tiers",
+        ):
+            conn.execute(f"CREATE TABLE {table} (id INTEGER)")  # noqa: S608
+        conn.commit()
+    finally:
+        conn.close()
+
+    partial = temp_adg_dir / "adg_indexed_06132026_0924.sqlite"
+    conn = sqlite3.connect(str(partial))
+    try:
+        conn.execute("CREATE TABLE nodes (id INTEGER)")
+        conn.execute("CREATE TABLE edges (id INTEGER)")
+        conn.commit()
+    finally:
+        conn.close()
+
+    os.utime(complete, (time.time() - 100, time.time() - 100))
+    os.utime(partial, (time.time(), time.time()))
+
+    original_adg_dir = os.environ.get("ADG_DIR")
+    original_allow_external = os.environ.get("ADG_ALLOW_EXTERNAL_DIR")
+    os.environ["ADG_DIR"] = str(temp_adg_dir)
+    os.environ["ADG_ALLOW_EXTERNAL_DIR"] = "1"
+
+    try:
+        assert latest_sqlite(require_nodes_table=True) == partial
+        result = latest_sqlite(
+            required_tables=(
+                "nodes",
+                "edges",
+                "mv_gateway_bypass_paths",
+                "mv_cross_cutting_witness_tiers",
+            )
+        )
+        assert result == complete
+    finally:
+        if original_adg_dir is None:
+            os.environ.pop("ADG_DIR", None)
+        else:
+            os.environ["ADG_DIR"] = original_adg_dir
+        if original_allow_external is None:
+            os.environ.pop("ADG_ALLOW_EXTERNAL_DIR", None)
+        else:
+            os.environ["ADG_ALLOW_EXTERNAL_DIR"] = original_allow_external
+
+
 def test_empty_directory_returns_none(temp_adg_dir: Path) -> None:
     """Empty ADG directory returns None."""
     from tools.adg.shared_modules.path_resolver import latest_sqlite

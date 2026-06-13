@@ -48,6 +48,19 @@ LOG_FILE = LOG_DIR / "wiring_gate_violations.jsonl"
 BASELINE_DIR = REPO_ROOT / "ops_scripts" / "ci" / "baselines"
 WAIVER_FILE = REPO_ROOT / "config" / "wiring_gate_waivers.yaml"
 
+GATE_SNAPSHOT_REQUIRED_TABLES = (
+    "nodes",
+    "edges",
+    "mv_gateway_bypass_paths",
+    "mv_exit_disposition_coverage",
+    "mv_replay_surface_gaps",
+    "mv_actionable_surface_without_schema",
+    "mv_structured_output_gaps",
+    "mv_hotspot_centrality",
+    "mv_cross_cutting_witness_tiers",
+    "mv_handoff_witness_tiers",
+)
+
 
 Tier = Literal["B", "R", "W", "K"]
 
@@ -99,11 +112,13 @@ def latest_snapshot() -> Path:
             raise FileNotFoundError(f"ADG_SNAPSHOT not found: {p}")
         return p
 
-    # Delegate to canonical resolver with nodes-table validation
+    # Delegate to canonical resolver with gate materialized-view validation.
+    # Failed/deferred generator runs can leave a timestamped SQLite with base
+    # nodes/edges but without the mv_* tables CI gates require.
     try:
         from tools.adg.shared_modules.path_resolver import latest_sqlite  # noqa: PLC0415
 
-        snap = latest_sqlite(require_nodes_table=True)
+        snap = latest_sqlite(required_tables=GATE_SNAPSHOT_REQUIRED_TABLES)
     except Exception:  # noqa: BLE001
         snap = None
 
@@ -186,7 +201,8 @@ class WiringGate(ABC):
             return self.tier
         rec = self._load_baseline_record()
         promoted = rec.get("auto_promoted_tier")
-        if promoted == "B":
+        baseline_count = int(rec.get("count", 0) or 0)
+        if promoted == "B" and baseline_count == 0:
             return "B"
         if promoted == "W":
             return "W"

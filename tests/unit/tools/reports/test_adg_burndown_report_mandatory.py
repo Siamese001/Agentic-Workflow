@@ -69,7 +69,10 @@ def test_emit_mandatory_writes_all_outputs(tmp_path: Path, monkeypatch) -> None:
         == 0
     )
     assert out_a.is_file() and out_b.is_file()
-    assert "Burndown by Severity Band" in out_a.read_text(encoding="utf-8")
+    text = out_a.read_text(encoding="utf-8")
+    assert "## 1. P0-P3 CI Band Summary" in text
+    assert "## 2. ADG CI Gates" in text
+    assert text.index("## 1. P0-P3 CI Band Summary") < text.index("## 2. ADG CI Gates")
 
 
 def test_emit_prints_markdown_to_stdout(
@@ -213,8 +216,41 @@ def test_render_includes_cluster_glossary(tmp_path: Path) -> None:
     md = render(gate, burndown)
     assert "## Verdict glossary" in md
     assert "**FIX**" in md and "**TRACK**" in md
-    assert "| Verdict | Sub | Findings |" in md
-    assert "## 3. All CI Gates" in md
+    assert "| Verdict | You need to… | Sub (detail) |" in md
+    assert "## 2. ADG CI Gates" in md
+
+
+def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path) -> None:
+    gate = tmp_path / "gates.json"
+    burndown = tmp_path / "burndown.json"
+    gate.write_text(
+        json.dumps(
+            {
+                "overall_exit_code": 0,
+                "timestamp": "2026-05-25T00:00:00Z",
+                "summary": {},
+                "gates": [
+                    {
+                        "gate_id": "G_REACH_l0_reachability",
+                        "band": "P0",
+                        "enforcement": "ratchet",
+                        "classification": "pass",
+                        "violation_count": 2792,
+                        "baseline_count": 2792,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    burndown.write_text(json.dumps({"schema_version": "2.2", "summary": {}}), encoding="utf-8")
+
+    md = render(gate, burndown)
+
+    assert "Allowed Floor" in md
+    assert "| `G_REACH_l0_reachability` | P0 | ratchet | TRACK | floor | 2792 | 2792 |" in md
+    assert md.index("## 1. P0-P3 CI Band Summary") < md.index("## 2. ADG CI Gates")
+    assert md.index("## 2. ADG CI Gates") < md.index("## 3. Severity Inventory Burndown")
 
 
 def test_emit_fail_closed_when_gate_results_missing(tmp_path: Path) -> None:

@@ -10,13 +10,19 @@ from __future__ import annotations
 import textwrap
 from pathlib import Path
 
-from tools.generate.truth_expansion_enricher import _gate_self_check
+from tools.generate.truth_expansion_enricher import PATH_REF_RE, _gate_self_check
 
 
 def _write(tmp_path: Path, content: str) -> Path:
     p = tmp_path / "check_fake_gate.py"
     p.write_text(textwrap.dedent(content), encoding="utf-8")
     return p
+
+
+def test_path_ref_regex_captures_full_reference() -> None:
+    match = PATH_REF_RE.search("target = 'tools/generate/truth_expansion_enricher.py'")
+    assert match is not None
+    assert match.group(1) == "tools/generate/truth_expansion_enricher.py"
 
 
 # ---------- consistent cases (must NOT flag) ----------

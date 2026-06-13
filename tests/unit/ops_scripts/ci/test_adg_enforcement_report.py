@@ -60,3 +60,45 @@ def test_build_report_merges_planes(tmp_path: Path) -> None:
     )
     assert report["planes"]["generator"]["failed"] == []
     assert report["planes"]["dispatcher"]["block_fail"] == 0
+
+
+def test_dispatcher_summary_does_not_count_warn_rows_as_block_fail(tmp_path: Path) -> None:
+    gate_manifest = tmp_path / "gate.json"
+    gate_manifest.write_text(
+        json.dumps({"certification_status": "clean", "gates": []}),
+        encoding="utf-8",
+    )
+    rollup = tmp_path / "rollup.json"
+    rollup.write_text(
+        json.dumps({"suite": "quick", "overall_status": "WARN", "gates": []}),
+        encoding="utf-8",
+    )
+    disp = tmp_path / "disp.json"
+    disp.write_text(
+        json.dumps(
+            {
+                "overall_exit_code": 0,
+                "summary": {"block_fail": 0, "ratchet_regressed": 0},
+                "gates": [
+                    {
+                        "gate_id": "J1_canonical_pipeline_wiring",
+                        "enforcement": "block",
+                        "status": "warn",
+                        "classification": "warn",
+                        "exit_code": 0,
+                    }
+                ],
+                "total_gates": 1,
+            }
+        ),
+        encoding="utf-8",
+    )
+    report = build_enforcement_report(
+        snapshot_path=None,
+        gate_manifest_path=gate_manifest,
+        three_graph_rollup_path=rollup,
+        dispatcher_results_path=disp,
+    )
+    assert report["planes"]["dispatcher"]["block_fail"] == 0
+    assert report["p0_bug_gates_failed"] == []
+    assert report["certified_rollup"] == "CERTIFIED"

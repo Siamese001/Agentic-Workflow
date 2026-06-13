@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -142,6 +143,101 @@ def test_refactor_does_not_outrank_fix(tmp_path: Path) -> None:
     assert fix_ranks
     assert refactor_ranks
     assert max(fix_ranks) < min(refactor_ranks)
+
+
+def test_refactor_accelerator_accepts_resolved_path(tmp_path: Path) -> None:
+    gate = tmp_path / "gates.json"
+    burndown = tmp_path / "burndown.json"
+    accel = tmp_path / "accel.json"
+    _write_gate_results(gate, [])
+    _write_burndown(burndown)
+    accel.write_text(
+        json.dumps(
+            {
+                "timestamp": "2026-05-25T12:00:00+00:00",
+                "candidates": [
+                    {
+                        "adg_name": "ADG::Symbol::agentic_core.foo.bar",
+                        "resolved_path": "agentic_core/foo.py",
+                        "score": 0.42,
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    doc = build_action_queue(
+        gate_results_path=gate,
+        burndown_path=burndown,
+        refactor_accelerator_path=accel,
+        max_actions=10,
+    )
+
+    refactor = next(a for a in doc["actions"] if a["verdict_cluster"] == "REFACTOR")
+    assert refactor["file_path"] == "agentic_core/foo.py"
+    assert refactor["symbol"] == "ADG::Symbol::agentic_core.foo.bar"
+
+
+def test_hotspot_coverage_mv_becomes_graphdb_action(tmp_path: Path) -> None:
+    gate = tmp_path / "gates.json"
+    burndown = tmp_path / "burndown.json"
+    sqlite_path = tmp_path / "adg.sqlite"
+    _write_gate_results(gate, [])
+    _write_burndown(burndown)
+
+    con = sqlite3.connect(sqlite_path)
+    try:
+        con.execute(
+            """
+            CREATE TABLE mv_hotspot_coverage_risk (
+                file TEXT,
+                layer TEXT,
+                priority_band TEXT,
+                risk_band TEXT,
+                coverage_band TEXT,
+                criticality_score REAL,
+                combined_risk_score REAL,
+                fan_in INTEGER,
+                fan_out INTEGER,
+                violation_count INTEGER,
+                coverage_pct REAL
+            )
+            """
+        )
+        con.execute(
+            "INSERT INTO mv_hotspot_coverage_risk VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                "agentic_core/L5_safety/contracts/registry.py",
+                "L5",
+                "P1_URGENT",
+                "CRITICAL",
+                "ABSENT",
+                810.0,
+                822.0,
+                12,
+                4,
+                0,
+                -1.0,
+            ),
+        )
+        con.commit()
+    finally:
+        con.close()
+
+    doc = build_action_queue(
+        gate_results_path=gate,
+        burndown_path=burndown,
+        sqlite_snapshot_path=sqlite_path,
+        max_actions=10,
+    )
+
+    action = doc["actions"][0]
+    assert action["verdict_cluster"] == "GRAPHDB"
+    assert action["action_kind"] == "test_hotspot_gap"
+    assert action["file_path"] == "agentic_core/L5_safety/contracts/registry.py"
+    assert "mv_hotspot_coverage_risk" in action["signal"]
+    assert validate_action_queue(doc) == []
 
 
 def test_missing_accelerator_fix_only_degraded(tmp_path: Path) -> None:

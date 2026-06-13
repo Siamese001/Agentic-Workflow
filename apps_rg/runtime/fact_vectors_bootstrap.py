@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from apps_rg.runtime.cli_exit_codes import EXIT_CONFIG_ERROR, EXIT_GENERIC_FAILURE, EXIT_SUCCESS
 
 # Generated resume lanes that draw dense enrichment from fact_vectors (employer bullets + narratives
@@ -121,9 +122,9 @@ def build_section_atoms(*, repo_root: Path | None = None) -> tuple[list[dict[str
 
 
 def _reset_collection(chroma_path: str, collection_name: str = "fact_vectors") -> int:
-    import chromadb
+    from apps_rg.runtime.chroma_precomputed_collection import persistent_chroma_client
 
-    client = chromadb.PersistentClient(path=chroma_path)
+    client = persistent_chroma_client(chroma_path)
     try:
         existing = client.get_collection(collection_name)
         count = int(existing.count())
@@ -156,9 +157,9 @@ def _build_sparse_sidecar(chroma_path: str, manifest: dict[str, Any]) -> None:
 
 
 def _collection_count(chroma_path: str, collection_name: str = "fact_vectors") -> int:
-    import chromadb
+    from apps_rg.runtime.chroma_precomputed_collection import persistent_chroma_client
 
-    client = chromadb.PersistentClient(path=chroma_path)
+    client = persistent_chroma_client(chroma_path)
     try:
         return int(client.get_collection(collection_name).count())
     except Exception:  # guardian: allow-broad-exception -- absent collection reports 0
@@ -173,8 +174,11 @@ def _sha256_json(payload: dict[str, Any]) -> str:
 
 def _write_manifest(repo_root: Path, manifest: dict[str, Any]) -> Path:
     path = repo_root / MANIFEST_REL
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.write_text(
+        path,
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
     return path
 
 

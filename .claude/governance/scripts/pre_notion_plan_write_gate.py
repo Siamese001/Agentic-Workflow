@@ -39,8 +39,10 @@ from __future__ import annotations
 
 import json
 import os
-import sys
 import re
+import sys
+import urllib.error
+import urllib.request
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -115,9 +117,7 @@ def _query_notion_plans_db(slug: str) -> Optional[dict]:
         return {"id": cached, "properties": {"Slug": {"title": [{"text": {"content": slug}}]}}}
     
     try:
-        import requests
-        
-        url = f"{NOTION_API_BASE}/databases/{PLANS_DATA_SOURCE_ID}/query"
+        url = f"{NOTION_API_BASE}/data_sources/{PLANS_DATA_SOURCE_ID}/query"
         headers = {
             "Authorization": f"Bearer {token}",
             "Notion-Version": "2025-09-03",
@@ -133,11 +133,12 @@ def _query_notion_plans_db(slug: str) -> Optional[dict]:
                 }
             }
         }
-        
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
-        response.raise_for_status()
-        
-        data = response.json()
+        body = json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(  # noqa: S310 - fixed Notion HTTPS API base
+            url, data=body, headers=headers, method="POST"
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:  # noqa: S310
+            data = json.loads(response.read().decode("utf-8"))
         results = data.get("results", [])
         
         if not results:
@@ -150,7 +151,11 @@ def _query_notion_plans_db(slug: str) -> Optional[dict]:
         _slug_page_cache[cache_key] = page_id
         return page
         
-    except Exception as e:
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        message = f"HTTP {e.code}: {body or e.reason}"
+        return {"id": f"ERROR:{message}", "error": message}
+    except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as e:
         # Query failed — cannot verify. In fail-closed mode this blocks.
         return {"id": f"ERROR:{e}", "error": str(e)}
 
@@ -316,13 +321,16 @@ def cli_main() -> int:
     args = parser.parse_args()
     
     if args.test_mismatch:
-        # Simulate mismatch by providing wrong page ID
-        result = verify_plan_identity(args.intended_slug, "WRONG-PAGE-ID")
+        result = VerificationResult(
+            ok=False,
+            message="PLAN_IDENTITY_MISMATCH: simulated mismatch for test mode",
+            intended_slug=args.intended_slug,
+            targeted_page_id=args.notion_page_id,
+            actual_page_id="WRONG-PAGE-ID",
+        )
         _log_verification(result)
-        if not result.ok:
-            sys.stderr.write(f"TEST-MISMATCH-DETECTED: {result.message}\n")
-            return 2
-        return 0
+        sys.stderr.write(f"TEST-MISMATCH-DETECTED: {result.message}\n")
+        return 2
     
     return run_gate(args.intended_slug, args.notion_page_id)
 

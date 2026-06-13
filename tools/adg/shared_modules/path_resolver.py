@@ -146,34 +146,48 @@ def get_adg_dir() -> Path:
     return local_adg_dir
 
 
-def _has_nodes_table(path: Path) -> bool:
-    """Return True iff the SQLite file has a `nodes` base table.
+def _has_required_tables(path: Path, required_tables: tuple[str, ...]) -> bool:
+    """Return True iff the SQLite file has all required tables.
 
     Stub/sentinel snapshots (e.g. adg_indexed_99999999_9999.sqlite or partial
-    pipeline outputs) can be present in artifacts/adg/ without the nodes
-    table. Picking such a stub by mtime would crash consumers with
-    `sqlite3.OperationalError: no such table: nodes`.
+    pipeline outputs) can be present in artifacts/adg/ without the materialized
+    views consumers need. Picking such a stub by mtime would crash consumers
+    with `sqlite3.OperationalError: no such table: ...`.
     """
     conn: sqlite3.Connection | None = None
     try:
         conn = connect_adg_snapshot_readonly(path)
-        row = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
-        ).fetchone()
-        return row is not None
-    except Exception:  # noqa: BLE001
+        placeholders = ",".join("?" for _ in required_tables)
+        rows = conn.execute(
+            f"SELECT name FROM sqlite_master WHERE type='table' AND name IN ({placeholders})",  # noqa: S608
+            required_tables,
+        ).fetchall()
+        present = {row[0] for row in rows}
+        return set(required_tables).issubset(present)
+    except (OSError, sqlite3.Error):
         return False
     finally:
         if conn is not None:
             conn.close()
 
 
-def latest_sqlite(require_nodes_table: bool = False) -> Path | None:
+def _has_nodes_table(path: Path) -> bool:
+    """Return True iff the SQLite file has a `nodes` base table."""
+    return _has_required_tables(path, ("nodes",))
+
+
+def latest_sqlite(
+    require_nodes_table: bool = False,
+    required_tables: tuple[str, ...] | None = None,
+) -> Path | None:
     """Return the most recent adg_indexed_*.sqlite file in ADG_DIR.
 
     Args:
         require_nodes_table: If True, skip files without a `nodes` table
             (filters out stub/sentinel snapshots even further).
+        required_tables: Optional table contract. When provided, skip files
+            missing any of these tables. Use this for gate consumers that need
+            materialized views, not just base `nodes`/`edges`.
 
     Returns None if no SQLite files found.
     """
@@ -199,6 +213,12 @@ def latest_sqlite(require_nodes_table: bool = False) -> Path | None:
 
     # Sort by mtime descending for selection
     sorted_files = sorted(valid_files, key=lambda p: p.stat().st_mtime, reverse=True)
+
+    if required_tables:
+        for candidate in sorted_files:
+            if _has_required_tables(candidate, required_tables):
+                return candidate
+        return None
 
     if require_nodes_table:
         for candidate in sorted_files:

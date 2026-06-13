@@ -43,16 +43,22 @@ def _plane2_failed(rollup: dict[str, Any]) -> list[str]:
 
 def _plane3_summary(dispatcher: dict[str, Any]) -> dict[str, Any]:
     rows = dispatcher.get("gates", [])
-    block_fail = sum(
-        1
-        for r in rows
-        if r.get("enforcement") == "block" and r.get("classification") != "pass"
-    )
-    ratchet_regressed = sum(1 for r in rows if r.get("classification") == "regressed")
+    summary = dispatcher.get("summary") if isinstance(dispatcher.get("summary"), dict) else {}
+    block_fail = summary.get("block_fail")
+    if block_fail is None:
+        block_fail = sum(
+            1
+            for r in rows
+            if r.get("enforcement") == "block"
+            and (r.get("status") == "fail" or int(r.get("exit_code") or 0) != 0)
+        )
+    ratchet_regressed = summary.get("ratchet_regressed")
+    if ratchet_regressed is None:
+        ratchet_regressed = sum(1 for r in rows if r.get("classification") == "regressed")
     return {
         "overall_exit_code": dispatcher.get("overall_exit_code"),
-        "block_fail": block_fail,
-        "ratchet_regressed": ratchet_regressed,
+        "block_fail": int(block_fail or 0),
+        "ratchet_regressed": int(ratchet_regressed or 0),
         "total_gates": dispatcher.get("total_gates", len(rows)),
         "results_path": None,
     }

@@ -589,6 +589,7 @@ def generate_full_adg(
     enable_zip: bool = True,
     enable_reports: bool = True,
     enable_analysis: bool = True,
+    repair_dry_run: bool = False,
 ) -> tuple[ADGArtifact, dict[str, int], list[str]]:
     """Generate full ADG and write all artifact tiers.
 
@@ -599,6 +600,7 @@ def generate_full_adg(
         enable_zip: Write a zip archive of all artifacts (default True)
         enable_reports: Generate all 8 standardized reports (default True)
         enable_analysis: Run score_edges + route_violations analytics (default True)
+        repair_dry_run: Analyze repair candidates without applying AUTO_FIX rules.
 
     Always runs in full mode with all artifacts enabled.
     """
@@ -607,7 +609,9 @@ def generate_full_adg(
     from tools.generate._gate_manifest import run_recorded_validation  # noqa: PLC0415
 
     # --- Startup mode banner (visible before any work begins) ---
-    print(f"[ADG] Mode: FULL  zip=ON  reports=ON  {_three_bucket_mode_banner()}")
+    zip_label = "ON" if enable_zip else "OFF"
+    reports_label = "ON" if enable_reports else "OFF"
+    print(f"[ADG] Mode: FULL  zip={zip_label}  reports={reports_label}  {_three_bucket_mode_banner()}")
 
     # Track semantic enrichment warnings for P4 defect reporting
     semantic_warnings: list[str] = []
@@ -1412,8 +1416,14 @@ def generate_full_adg(
             print(f"[ADG] P5 graph watchlist artifact: {graph_watchlist_path.name}")
 
     # --- Repair orchestrator: classify + fix remaining issues ---
-    print("[ADG] Running repair orchestrator on committed artifacts...")
-    _run_p1_p2_auto_fix(adg_artifacts_dir, ts, sqlite_path=prod_sqlite_path)
+    _repair_mode = "DRY RUN" if repair_dry_run else "APPLY"
+    print(f"[ADG] Running repair orchestrator on committed artifacts ({_repair_mode})...")
+    _run_p1_p2_auto_fix(
+        adg_artifacts_dir,
+        ts,
+        sqlite_path=prod_sqlite_path,
+        dry_run=repair_dry_run,
+    )
 
     # Size report
     sizes = paths.size_report()
@@ -1607,19 +1617,6 @@ def generate_full_adg(
         enable_determinism_probe=_env_flag("ADG_ENABLE_DETERMINISM_PROBE", default=True),
     )
 
-    # --- Mandatory CI burndown markdown (gate results + burndown table SSOTs) ---
-    from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
-
-    _burndown_emit_rc = emit_mandatory_adg_burndown_report(
-        burndown=adg_artifacts_dir / "adg_burndown_table.json",
-        fail_closed=False,
-    )
-    if _burndown_emit_rc != 0:
-        print(
-            f"[ADG] WARNING: burndown report emit returned {_burndown_emit_rc} "
-            "(gate-results or burndown-table not yet available)"
-        )
-
     # --- Post-run action queue (plan adg-action-dispatch-c9e4a2 W1.2; non-blocking) ---
     try:
         from tools.reports.adg_action_queue import emit_adg_action_queue_from_adg_run  # noqa: PLC0415
@@ -1638,6 +1635,19 @@ def generate_full_adg(
         print(
             f"[adg_action_queue] NEXT_ACTION_ERROR={_action_queue_exc}",
             file=sys.stderr,
+        )
+
+    # --- Mandatory CI burndown markdown (gate results + burndown table SSOTs) ---
+    from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
+
+    _burndown_emit_rc = emit_mandatory_adg_burndown_report(
+        burndown=adg_artifacts_dir / "adg_burndown_table.json",
+        fail_closed=False,
+    )
+    if _burndown_emit_rc != 0:
+        print(
+            f"[ADG] WARNING: burndown report emit returned {_burndown_emit_rc} "
+            "(gate-results or burndown-table not yet available)"
         )
 
     _rec_burndown = _current_recorder()
@@ -1670,17 +1680,19 @@ def generate_full_adg(
     # Include GraphDB NetworkX projection (P6b) staged outputs
     if graphdb_staged:
         artifact_files.extend(graphdb_staged)
-        print(
-            f"[ADG] Adding {len(graphdb_staged)} GraphDB NetworkX artifacts to zip archive",
-        )
+        if enable_zip:
+            print(
+                f"[ADG] Adding {len(graphdb_staged)} GraphDB NetworkX artifacts to zip archive",
+            )
 
     # Include P7 analyst reports (structural outputs, refactor accelerator,
     # GraphDB queries, runtime spine) in the zip archive
     if p7_staged:
         artifact_files.extend(p7_staged)
-        print(
-            f"[ADG] Adding {len(p7_staged)} P7 analyst reports to zip archive",
-        )
+        if enable_zip:
+            print(
+                f"[ADG] Adding {len(p7_staged)} P7 analyst reports to zip archive",
+            )
 
     # Add high-signal reports to zip archive
     report_files = [
@@ -1694,7 +1706,8 @@ def generate_full_adg(
     existing_reports = [f for f in report_files if f.exists()]
     if existing_reports:
         artifact_files.extend(existing_reports)
-        print(f"[ADG] Adding {len(existing_reports)} reports to zip archive")
+        if enable_zip:
+            print(f"[ADG] Adding {len(existing_reports)} reports to zip archive")
 
     # W4.1 (plan adg-pipeline-simplification-e2e-9b4c27): deterministic
     # zip file list — reference the Path objects returned by the P4/P5
@@ -1718,39 +1731,43 @@ def generate_full_adg(
         extra_files.append(graph_watchlist_path)
     if extra_files:
         artifact_files.extend(extra_files)
-        print(f"[ADG] Adding {len(extra_files)} extra artifacts to zip archive (burndown/watchlists)")
+        if enable_zip:
+            print(f"[ADG] Adding {len(extra_files)} extra artifacts to zip archive (burndown/watchlists)")
 
     for _plan_key in ("json_path", "markdown_path"):
         _plan_path = p0_wave_plan.get(_plan_key)
         if _plan_path and Path(_plan_path).exists():
             artifact_files.append(Path(_plan_path))
 
-    # --- Create zip archive (always enabled) ---
+    # --- Create zip archive (when enabled) ---
     zip_created = False
-    try:
-        _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
-        zip_created = True
-        print(f"[ADG] Zip creation successful for {ts}")
-    except RuntimeError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
-        print(f"[ADG] WARNING: Zip creation failed: {e}")
-        print("[ADG] Individual files will be archived using legacy path")
-        zip_created = False
-        # P2b of RCA 2026-04-28: leave a breadcrumb so the next run (and
-        # any operator triaging an overgrown artifacts/adg/ directory) can
-        # see *why* the prior cleanup was skipped instead of only a single
-        # WARNING line buried in stdout.
+    if enable_zip:
         try:
-            breadcrumb = adg_artifacts_dir / f"archive_skipped_{ts}.txt"
-            breadcrumb.write_text(
-                f"[ADG] Archive skipped for run {ts}\n"
-                f"Reason: zip creation failed\n"
-                f"Error: {e}\n"
-                "Likely cause: an MCP or other process holds a .sqlite open.\n"
-                "Fix: call adg_close_connections() then re-run generate_full_adg.py.\n",
-                encoding="utf-8",
-            )
-        except OSError:
-            pass  # breadcrumb is best-effort
+            _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
+            zip_created = True
+            print(f"[ADG] Zip creation successful for {ts}")
+        except RuntimeError as e:  # guardian: allow-silent-swallow -- acceptable exception handling
+            print(f"[ADG] WARNING: Zip creation failed: {e}")
+            print("[ADG] Individual files will be archived using legacy path")
+            zip_created = False
+            # P2b of RCA 2026-04-28: leave a breadcrumb so the next run (and
+            # any operator triaging an overgrown artifacts/adg/ directory) can
+            # see *why* the prior cleanup was skipped instead of only a single
+            # WARNING line buried in stdout.
+            try:
+                breadcrumb = adg_artifacts_dir / f"archive_skipped_{ts}.txt"
+                breadcrumb.write_text(
+                    f"[ADG] Archive skipped for run {ts}\n"
+                    f"Reason: zip creation failed\n"
+                    f"Error: {e}\n"
+                    "Likely cause: an MCP or other process holds a .sqlite open.\n"
+                    "Fix: call adg_close_connections() then re-run generate_full_adg.py.\n",
+                    encoding="utf-8",
+                )
+            except OSError:
+                pass  # breadcrumb is best-effort
+    else:
+        print(f"[ADG] Zip creation skipped for {ts} (--no-zip)")
 
     # --- Archive old runs (keep_runs=1 leaves only the current run in artifacts/adg/) ---
     # Runs even when zip creation failed — loose artifacts gzip/move under _archive/.
@@ -1920,7 +1937,11 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--force", action="store_true", help="Force regeneration even if cache exists")
-    parser.add_argument("--repair", action="store_true", help="Run repair orchestrator after ADG generation")
+    parser.add_argument(
+        "--repair",
+        action="store_true",
+        help="Deprecated compatibility flag; repair runs once during generation.",
+    )
     parser.add_argument("--repair-dry-run", action="store_true", help="Show repairs without applying them")
     parser.add_argument(
         "--no-zip",
@@ -2065,6 +2086,7 @@ def main() -> None:
             enable_zip=not args.no_zip,
             enable_reports=not args.no_reports,
             enable_analysis=True,
+            repair_dry_run=args.repair_dry_run,
         )
     except RuntimeError as e:
         if "Zip creation failed" in str(e) and not args.no_zip:
@@ -2165,9 +2187,8 @@ def main() -> None:
     if _gate_specs:
         _run_post_adg_gates_parallel(_gate_specs)
 
-    # Run repair orchestrator if requested
     if args.repair:
-        _run_p1_p2_auto_fix(adg_artifacts_dir, ts)
+        print("[ADG] --repair is deprecated: repair already ran once during generation; skipping duplicate pass")
 
     # W8 (plan adg-pipeline-simplification-e2e-9b4c27): if a P0 failure was
     # deferred via --continue-on-p0 (or env ADG_CONTINUE_ON_P0=1), surface

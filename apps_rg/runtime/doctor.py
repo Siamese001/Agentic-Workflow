@@ -156,13 +156,12 @@ def _check_fact_vectors() -> DoctorCheck:
             f"Configure CHROMA_PERSIST_DIR, then build the collection: {BOOTSTRAP_CMD}.",
         )
     try:
-        import chromadb
-
         from apps_rg.runtime.chroma_precomputed_collection import (
             get_precomputed_embeddings_collection_for_query,
+            persistent_chroma_client,
         )
 
-        client = chromadb.PersistentClient(path=path)
+        client = persistent_chroma_client(path)
         collection = get_precomputed_embeddings_collection_for_query(
             client, FACT_VECTORS_COLLECTION
         )

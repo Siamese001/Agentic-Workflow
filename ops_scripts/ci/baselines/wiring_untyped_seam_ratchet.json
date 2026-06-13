@@ -1,19 +1,9 @@
 {
   "gate_id": "F1_untyped_seam_ratchet",
   "count": 1075,
-  "seeded_at": "2026-05-25T17:02:07.915791+00:00",
-  "snapshot": "adg_indexed_05252026_1248.sqlite",
+  "seeded_at": "2026-06-13T14:17:49.412724+00:00",
+  "snapshot": "adg_indexed_06132026_1009.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-10T18:23:42.013502+00:00",
-  "last_run_snapshot": "adg_indexed_06102026_1413.sqlite",
-  "loosen_history": [
-    {
-      "at": "2026-06-08T13:47:24.731650+00:00",
-      "snapshot": "adg_indexed_06072026_2219.sqlite",
-      "from": 1074,
-      "to": 1075,
-      "reason": "Re-baseline +1 absorbing wiring churn from already-merged work (#256 qwen-removal, InsurTech/EY registry + proof-pool additions, dotenv autoload) observed in burndown snapshot adg_indexed_06072026_2219.sqlite. Count-ratchet stores no membership and the prior snapshot is unavailable in this container, so the 1 new path(s) cannot be isolated; they trace to already-reviewed merged code. Ratchet stays active for FUTURE regressions \u2014 not gate-weakening. Operator-approved 2026-06-08."
-    }
-  ],
-  "loosened_at": "2026-06-08T13:47:24.731650+00:00"
+  "last_run_at": "2026-06-13T16:27:03.008742+00:00",
+  "last_run_snapshot": "adg_indexed_06132026_1222.sqlite"
 }

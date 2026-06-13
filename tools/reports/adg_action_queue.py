@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sqlite3
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -285,13 +286,16 @@ def _build_p0_wave_actions(plan: dict[str, Any], source_digest: str, max_files: 
 
 def _build_refactor_actions(accelerator: dict[str, Any], source_digest: str, max_candidates: int = 3) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    for cand in (accelerator.get("candidates") or [])[:max_candidates]:
-        file_path = str(cand.get("file_path") or cand.get("path") or "")
-        if not file_path:
+    seen_paths: set[str] = set()
+    for cand in accelerator.get("candidates") or []:
+        file_path = _candidate_path(cand)
+        if not file_path or file_path in seen_paths:
             continue
+        seen_paths.add(file_path)
         tests = cand.get("impacted_tests") or []
         if not isinstance(tests, list):
             tests = []
+        dimensions = cand.get("dimensions") if isinstance(cand.get("dimensions"), dict) else {}
         rows.append(
             {
                 "verdict_cluster": "REFACTOR",
@@ -299,16 +303,262 @@ def _build_refactor_actions(accelerator: dict[str, Any], source_digest: str, max
                 "source_id": file_path,
                 "action_kind": "refactor_candidate",
                 "file_path": file_path,
-                "symbol": cand.get("symbol"),
+                "symbol": cand.get("symbol") or cand.get("adg_name"),
                 "scoped_tests": [str(t) for t in tests[:5]],
                 "plan_hint": "refactor_when_fix_clear",
                 "signal": f"Refactor candidate; score={cand.get('score', cand.get('priority_score', 'n/a'))}",
                 "sort_bucket": 4,
                 "sort_band": str(cand.get("layer") or cand.get("band") or "L_APP"),
-                "violation_count": int(cand.get("violation_count") or 0),
+                "violation_count": _int_value(cand.get("violation_count"), dimensions.get("violations"), default=0),
                 "source_artifact": "refactor_accelerator",
                 "source_digest": source_digest,
                 "ordering_reason": "refactor_accelerator_candidates_desc",
+            }
+        )
+        if len(rows) >= max_candidates:
+            break
+    return rows
+
+
+def _int_value(*values: Any, default: int = 0) -> int:
+    for value in values:
+        if value is None or value == "":
+            continue
+        try:
+            return int(float(value))
+        except (TypeError, ValueError):
+            continue
+    return default
+
+
+def _float_value(*values: Any, default: float = 0.0) -> float:
+    for value in values:
+        if value is None or value == "":
+            continue
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            continue
+    return default
+
+
+def _candidate_path(cand: dict[str, Any]) -> str:
+    for key in ("file_path", "path", "resolved_path", "file", "source_file", "module_path"):
+        value = cand.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip().replace("\\", "/")
+    return ""
+
+
+def _resolve_snapshot_from_gate_data(gate_data: dict[str, Any], repo_root: Path) -> Path | None:
+    raw = gate_data.get("snapshot_path")
+    if not raw and isinstance(gate_data.get("snapshot"), dict):
+        raw = gate_data["snapshot"].get("path") or gate_data["snapshot"].get("sqlite_path")
+    if not raw:
+        return None
+    path = Path(str(raw))
+    if not path.is_absolute():
+        path = repo_root / path
+    return path.resolve() if path.exists() else None
+
+
+def _build_test_hotspot_actions(
+    sqlite_snapshot_path: Path | None,
+    source_digest: str,
+    *,
+    max_candidates: int = 3,
+) -> list[dict[str, Any]]:
+    """Promote mv_hotspot_coverage_risk into next-best testing actions when available."""
+    if sqlite_snapshot_path is None or not sqlite_snapshot_path.is_file():
+        return []
+
+    rows: list[dict[str, Any]] = []
+    try:
+        con = sqlite3.connect(f"file:{sqlite_snapshot_path}?mode=ro", uri=True)
+        con.row_factory = sqlite3.Row
+        try:
+            has_mv = con.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' "
+                "AND name='mv_hotspot_coverage_risk'"
+            ).fetchone()
+            if not has_mv:
+                return []
+            result_rows = con.execute(
+                """
+                SELECT file, layer, priority_band, risk_band, coverage_band,
+                       criticality_score, combined_risk_score, fan_in, fan_out,
+                       violation_count, coverage_pct
+                FROM mv_hotspot_coverage_risk
+                WHERE priority_band IN ('P1_URGENT', 'P2_GAP')
+                ORDER BY
+                  CASE priority_band WHEN 'P1_URGENT' THEN 0 ELSE 1 END,
+                  criticality_score DESC,
+                  combined_risk_score DESC,
+                  fan_in DESC,
+                  file ASC
+                LIMIT ?
+                """,
+                (max_candidates,),
+            ).fetchall()
+        finally:
+            con.close()
+    except (sqlite3.Error, OSError):
+        return []
+
+    for row in result_rows:
+        file_path = str(row["file"] or "").replace("\\", "/")
+        if not file_path:
+            continue
+        leaf = Path(file_path).stem
+        coverage_pct = _float_value(row["coverage_pct"], default=-1.0)
+        coverage_text = "absent" if coverage_pct < 0 else f"{coverage_pct:.1f}%"
+        priority = str(row["priority_band"] or "P?_GAP")
+        rows.append(
+            {
+                "verdict_cluster": "GRAPHDB",
+                "gate_id": None,
+                "source_id": file_path,
+                "action_kind": "test_hotspot_gap",
+                "file_path": file_path,
+                "symbol": None,
+                "scoped_tests": [f"tests/**/test_{leaf}.py"],
+                "plan_hint": "test_hotspot_when_fix_clear",
+                "signal": (
+                    f"Test hotspot gap from mv_hotspot_coverage_risk; priority={priority}; "
+                    f"risk={row['risk_band']}; coverage={row['coverage_band']} ({coverage_text}); "
+                    f"criticality={_float_value(row['criticality_score']):.2f}; "
+                    f"fan_in={_int_value(row['fan_in'])}"
+                ),
+                "sort_bucket": 3,
+                "sort_band": priority,
+                "violation_count": _int_value(row["violation_count"], default=0),
+                "source_artifact": "sqlite:mv_hotspot_coverage_risk",
+                "source_digest": source_digest,
+                "ordering_reason": "mv_hotspot_coverage_risk_priority",
+            }
+        )
+    return rows
+
+
+def _build_structural_hotspot_actions(
+    structural: dict[str, Any],
+    source_digest: str,
+    *,
+    max_candidates: int = 3,
+) -> list[dict[str, Any]]:
+    candidates: list[dict[str, Any]] = []
+    blast_radius = structural.get("blast_radius") if isinstance(structural.get("blast_radius"), dict) else {}
+    centrality = structural.get("centrality") if isinstance(structural.get("centrality"), dict) else {}
+    for cand in blast_radius.get("hotspots") or []:
+        if isinstance(cand, dict):
+            item = dict(cand)
+            item["_mv_source"] = "blast_radius.hotspots"
+            candidates.append(item)
+    for cand in centrality.get("nodes") or []:
+        if isinstance(cand, dict):
+            item = dict(cand)
+            item["_mv_source"] = "centrality.nodes"
+            candidates.append(item)
+
+    def _rank(cand: dict[str, Any]) -> tuple[float, int, str]:
+        return (
+            _float_value(cand.get("centrality_score"), default=0.0),
+            _int_value(cand.get("direct_fan_in"), cand.get("fan_in"), default=0),
+            _candidate_path(cand),
+        )
+
+    rows: list[dict[str, Any]] = []
+    seen_paths: set[str] = set()
+    for cand in sorted(candidates, key=_rank, reverse=True):
+        file_path = _candidate_path(cand)
+        if not file_path or file_path in seen_paths:
+            continue
+        seen_paths.add(file_path)
+        fan_in = _int_value(cand.get("direct_fan_in"), cand.get("fan_in"), default=0)
+        rows.append(
+            {
+                "verdict_cluster": "GRAPHDB",
+                "gate_id": None,
+                "source_id": file_path,
+                "action_kind": "graphdb_hotspot",
+                "file_path": file_path,
+                "symbol": cand.get("adg_name") or cand.get("symbol"),
+                "scoped_tests": [],
+                "plan_hint": "graphdb_when_fix_clear",
+                "signal": (
+                    f"GraphDB/MV hotspot from {cand.get('_mv_source')}; "
+                    f"fan_in={fan_in}; centrality={_float_value(cand.get('centrality_score')):.4f}"
+                ),
+                "sort_bucket": 5,
+                "sort_band": str(cand.get("layer") or "L_APP"),
+                "violation_count": 0,
+                "source_artifact": "structural_outputs",
+                "source_digest": source_digest,
+                "ordering_reason": "structural_outputs_hotspot_desc",
+            }
+        )
+        if len(rows) >= max_candidates:
+            break
+    return rows
+
+
+def _list_at(data: dict[str, Any], dotted_path: str) -> list[Any]:
+    current: Any = data
+    for part in dotted_path.split("."):
+        if not isinstance(current, dict):
+            return []
+        current = current.get(part)
+    return current if isinstance(current, list) else []
+
+
+def _build_graphdb_structural_actions(
+    graphdb: dict[str, Any],
+    source_digest: str,
+    *,
+    max_candidates: int = 2,
+) -> list[dict[str, Any]]:
+    checks = [
+        (
+            "structural.uwg_durable_write_conformance",
+            "UWG durable write conformance rows",
+        ),
+        ("structural.gravity_import_violations", "gravity import violations"),
+        ("structural.illegal_layer_reach", "illegal layer reach rows"),
+        (
+            "structural.capability_tool_provider_chokepoint_conformance.providers.violations",
+            "provider chokepoint conformance rows",
+        ),
+        ("structural.l2_lifecycle_conformance.non_conformant_modules", "L2 lifecycle non-conformant modules"),
+    ]
+    scored: list[tuple[int, str, str]] = []
+    for key, label in checks:
+        count = len(_list_at(graphdb, key))
+        if count > 0:
+            scored.append((count, key, label))
+    scored.sort(reverse=True)
+
+    rows: list[dict[str, Any]] = []
+    for count, key, label in scored[:max_candidates]:
+        rows.append(
+            {
+                "verdict_cluster": "GRAPHDB",
+                "gate_id": None,
+                "source_id": key,
+                "action_kind": "graphdb_structural_signal",
+                "file_path": None,
+                "symbol": None,
+                "scoped_tests": [],
+                "plan_hint": "graphdb_when_fix_clear",
+                "signal": (
+                    f"GraphDB structural signal; rows={count}; {label}. "
+                    "Inspect adg_graphdb_queries for concrete rows."
+                ),
+                "sort_bucket": 5,
+                "sort_band": "GRAPHDB",
+                "violation_count": count,
+                "source_artifact": "graphdb_queries",
+                "source_digest": source_digest,
+                "ordering_reason": "graphdb_structural_signal_count_desc",
             }
         )
     return rows
@@ -356,6 +606,9 @@ def build_action_queue(
     p0_wave_plan_path: Path | None = None,
     refactor_accelerator_path: Path | None = None,
     failure_clusters_path: Path | None = None,
+    structural_outputs_path: Path | None = None,
+    graphdb_queries_path: Path | None = None,
+    sqlite_snapshot_path: Path | None = None,
     max_actions: int = DEFAULT_MAX_ACTIONS,
     repo_root: Path = REPO_ROOT,
 ) -> dict[str, Any]:
@@ -400,6 +653,18 @@ def build_action_queue(
         active_snapshot_ts=active_ts,
         reject_unless_match=True,
     )
+    structural_prov = _inspect_artifact(
+        "structural_outputs",
+        structural_outputs_path,
+        required=False,
+        active_snapshot_ts=active_ts,
+    )
+    graphdb_prov = _inspect_artifact(
+        "graphdb_queries",
+        graphdb_queries_path,
+        required=False,
+        active_snapshot_ts=active_ts,
+    )
 
     degradation: list[str] = []
     if p0_prov.status == "missing":
@@ -414,6 +679,14 @@ def build_action_queue(
         degradation.append("failure_clusters stale — excluded from merge")
     elif cluster_prov.status == "rejected":
         degradation.append("failure_clusters rejected — excluded from merge")
+    if structural_prov.status == "missing":
+        degradation.append("structural_outputs missing")
+    elif structural_prov.status == "stale":
+        degradation.append("structural_outputs stale vs active snapshot")
+    if graphdb_prov.status == "missing":
+        degradation.append("graphdb_queries missing")
+    elif graphdb_prov.status == "stale":
+        degradation.append("graphdb_queries stale vs active snapshot")
 
     gates = gate_data.get("gates") or []
     fix_n, track_n, clear_n = _count_verdicts(gates)
@@ -425,9 +698,16 @@ def build_action_queue(
     if p0_prov.status == "present" and p0_prov.raw:
         combined.extend(_build_p0_wave_actions(p0_prov.raw, p0_prov.digest_sha256 or ""))
 
+    snapshot_path = sqlite_snapshot_path or _resolve_snapshot_from_gate_data(gate_data, repo_root)
+    combined.extend(_build_test_hotspot_actions(snapshot_path, gate_prov.digest_sha256))
+
     fix_count = len(fix_rows)
     if accel_prov.status == "present" and accel_prov.raw and (fix_count < max_actions or not fix_rows):
         combined.extend(_build_refactor_actions(accel_prov.raw, accel_prov.digest_sha256 or ""))
+    if structural_prov.status == "present" and structural_prov.raw and (fix_count < max_actions or not fix_rows):
+        combined.extend(_build_structural_hotspot_actions(structural_prov.raw, structural_prov.digest_sha256 or ""))
+    if graphdb_prov.status == "present" and graphdb_prov.raw and (fix_count < max_actions or not fix_rows):
+        combined.extend(_build_graphdb_structural_actions(graphdb_prov.raw, graphdb_prov.digest_sha256 or ""))
 
     combined = _apply_cap(combined, max_actions)
     actions = _assign_ranks(combined)
@@ -449,6 +729,8 @@ def build_action_queue(
                 p0_prov.to_dict(),
                 accel_prov.to_dict(),
                 cluster_prov.to_dict(),
+                structural_prov.to_dict(),
+                graphdb_prov.to_dict(),
             ],
         },
         "summary": {
@@ -506,9 +788,9 @@ def validate_action_queue(doc: dict[str, Any], schema_path: Path = SCHEMA_PATH) 
             errors.append("action missing gate_id and source_id")
 
     fix_ranks = [a["rank"] for a in actions if a.get("verdict_cluster") == "FIX"]
-    refactor_ranks = [a["rank"] for a in actions if a.get("verdict_cluster") == "REFACTOR"]
-    if fix_ranks and refactor_ranks and min(refactor_ranks) < max(fix_ranks):
-        errors.append("refactor candidate outranks FIX")
+    non_fix_ranks = [a["rank"] for a in actions if a.get("verdict_cluster") != "FIX"]
+    if fix_ranks and non_fix_ranks and min(non_fix_ranks) < max(fix_ranks):
+        errors.append("non-FIX action outranks FIX")
 
     return errors
 
@@ -559,13 +841,14 @@ def render_markdown_table(doc: dict[str, Any], top: int = 10) -> str:
         f"- **emit_status:** {doc.get('emit_status')}",
         f"- **degraded:** {doc.get('provenance', {}).get('degraded')}",
         "",
-        "| Rank | Verdict | Target | ordering_reason | signal |",
-        "|-----:|---------|--------|-----------------|--------|",
+        "| Rank | Lane | Kind | Target | ordering_reason | signal |",
+        "|-----:|------|------|--------|-----------------|--------|",
     ]
     for action in (doc.get("actions") or [])[:top]:
         target = action.get("gate_id") or action.get("source_id") or "?"
         lines.append(
-            f"| {action.get('rank')} | {action.get('verdict_cluster')} | `{target}` | "
+            f"| {action.get('rank')} | {action.get('verdict_cluster')} | "
+            f"{action.get('action_kind')} | `{target}` | "
             f"{action.get('ordering_reason')} | {action.get('signal', '')[:80]} |"
         )
     if doc.get("provenance", {}).get("degradation_reasons"):
@@ -582,6 +865,9 @@ def emit_adg_action_queue(
     p0_wave_plan: Path | None = None,
     refactor_accelerator: Path | None = None,
     failure_clusters: Path | None = None,
+    structural_outputs: Path | None = None,
+    graphdb_queries: Path | None = None,
+    sqlite_snapshot: Path | None = None,
     output_path: Path | None = None,
     ts: str | None = None,
     max_actions: int = DEFAULT_MAX_ACTIONS,
@@ -610,11 +896,32 @@ def emit_adg_action_queue(
         p0_wave_plan = _resolve_latest("issues/p0_remediation_wave_plan_*.json", artifacts)
 
     if refactor_accelerator is None:
+        if ts:
+            candidate = artifacts / f"adg_refactor_accelerator_{ts}.json"
+            if candidate.is_file():
+                refactor_accelerator = candidate
+    if refactor_accelerator is None:
         refactor_accelerator = _resolve_latest("adg_refactor_accelerator_*.json", artifacts)
 
     if failure_clusters is None:
         fc = artifacts / "adg_failure_clusters.json"
         failure_clusters = fc if fc.is_file() else None
+
+    if structural_outputs is None:
+        if ts:
+            candidate = artifacts / f"adg_structural_outputs_{ts}.json"
+            if candidate.is_file():
+                structural_outputs = candidate
+    if structural_outputs is None:
+        structural_outputs = _resolve_latest("adg_structural_outputs_*.json", artifacts)
+
+    if graphdb_queries is None:
+        if ts:
+            candidate = artifacts / f"adg_graphdb_queries_{ts}.json"
+            if candidate.is_file():
+                graphdb_queries = candidate
+    if graphdb_queries is None:
+        graphdb_queries = _resolve_latest("adg_graphdb_queries_*.json", artifacts)
 
     try:
         doc = build_action_queue(
@@ -623,6 +930,9 @@ def emit_adg_action_queue(
             p0_wave_plan_path=p0_wave_plan,
             refactor_accelerator_path=refactor_accelerator,
             failure_clusters_path=failure_clusters,
+            structural_outputs_path=structural_outputs,
+            graphdb_queries_path=graphdb_queries,
+            sqlite_snapshot_path=sqlite_snapshot,
             max_actions=max_actions,
             repo_root=repo_root,
         )
@@ -680,6 +990,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--p0-wave-plan", type=Path, default=None)
     parser.add_argument("--refactor-accelerator", type=Path, default=None)
     parser.add_argument("--failure-clusters", type=Path, default=None)
+    parser.add_argument("--structural-outputs", type=Path, default=None)
+    parser.add_argument("--graphdb-queries", type=Path, default=None)
+    parser.add_argument("--sqlite-snapshot", type=Path, default=None)
     parser.add_argument("--out", type=Path, default=None)
     parser.add_argument("--ts", type=str, default=None)
     parser.add_argument("--max-actions", type=int, default=DEFAULT_MAX_ACTIONS)
@@ -709,6 +1022,9 @@ def main(argv: list[str] | None = None) -> int:
                 if (ARTIFACTS_ADG / "adg_failure_clusters.json").is_file()
                 else None
             ),
+            structural_outputs_path=_resolve_latest("adg_structural_outputs_*.json", ARTIFACTS_ADG),
+            graphdb_queries_path=_resolve_latest("adg_graphdb_queries_*.json", ARTIFACTS_ADG),
+            sqlite_snapshot_path=args.sqlite_snapshot,
             max_actions=args.max_actions,
         )
         print(render_markdown_table(doc, top=args.top))
@@ -720,6 +1036,9 @@ def main(argv: list[str] | None = None) -> int:
         p0_wave_plan=args.p0_wave_plan,
         refactor_accelerator=args.refactor_accelerator,
         failure_clusters=args.failure_clusters,
+        structural_outputs=args.structural_outputs,
+        graphdb_queries=args.graphdb_queries,
+        sqlite_snapshot=args.sqlite_snapshot,
         output_path=args.out,
         ts=args.ts,
         max_actions=args.max_actions,

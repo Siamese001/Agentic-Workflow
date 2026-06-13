@@ -56,8 +56,14 @@ def _resolve_repair_sqlite(adg_artifacts_dir: Path, ts: str, sqlite_path: Path |
     return candidate
 
 
-def _run_p1_p2_auto_fix(adg_artifacts_dir: Path, ts: str, sqlite_path: Path | None = None) -> None:
-    """Run P1/P2 auto-fix via repair orchestrator."""
+def _run_p1_p2_auto_fix(
+    adg_artifacts_dir: Path,
+    ts: str,
+    sqlite_path: Path | None = None,
+    *,
+    dry_run: bool = False,
+) -> None:
+    """Run P1/P2 repair analysis via repair orchestrator."""
     try:
         from tools.adg.repair import ADGRepairOrchestrator as _orchestrator_cls
         from tools.adg.repair.rule_engine import register_builtin_rules as _register_rules
@@ -83,8 +89,9 @@ def _run_p1_p2_auto_fix(adg_artifacts_dir: Path, ts: str, sqlite_path: Path | No
     )
 
     try:
-        result = orchestrator.run(dry_run=False)
-        print(f"[ADG] Repair orchestrator completed: {result.deficiencies_found} deficiencies found")
+        result = orchestrator.run(dry_run=dry_run)
+        mode = "DRY RUN" if dry_run else "APPLY"
+        print(f"[ADG] Repair orchestrator completed ({mode}): {result.deficiencies_found} deficiencies found")
         print(f"[ADG]   AUTO_FIX: {result.fixes_applied}")
         print(f"[ADG]   SUGGEST_FIX: {result.fixes_suggested}")
         print(f"[ADG]   BLOCK_FIX: {result.fixes_blocked}")

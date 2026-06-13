@@ -79,6 +79,59 @@ def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _is_generator_run_stamp(value: str) -> bool:
+    try:
+        datetime.strptime(value, "%m%d%Y_%H%M")
+    except ValueError:
+        return False
+    return True
+
+
+def _stamp_from_artifact_name(path: Path | None, *, prefix: str, suffix: str) -> str | None:
+    if path is None:
+        return None
+    name = path.name
+    if not name.startswith(prefix) or not name.endswith(suffix):
+        return None
+    stamp = name[len(prefix):-len(suffix)]
+    return stamp if _is_generator_run_stamp(stamp) else None
+
+
+def _derive_adg_run_stamp(
+    generation_manifest: dict[str, Any],
+    generation_manifest_path: Path | None,
+    snapshot_path: Path | None,
+) -> str | None:
+    manifest_stamp = _stamp_from_artifact_name(
+        generation_manifest_path,
+        prefix="adg_generation_manifest_",
+        suffix=".json",
+    )
+    if manifest_stamp:
+        return manifest_stamp
+
+    snapshot_stamp = _stamp_from_artifact_name(
+        snapshot_path,
+        prefix="adg_indexed_",
+        suffix=".sqlite",
+    )
+    if snapshot_stamp:
+        return snapshot_stamp
+
+    for key in ("sqlite_path", "snapshot_path"):
+        raw = generation_manifest.get(key)
+        if isinstance(raw, str) and raw:
+            snapshot_stamp = _stamp_from_artifact_name(
+                Path(raw),
+                prefix="adg_indexed_",
+                suffix=".sqlite",
+            )
+            if snapshot_stamp:
+                return snapshot_stamp
+
+    return None
+
+
 def _append_manifest_gate_record(
     gate_manifest_path: Path,
     *,
@@ -394,6 +447,7 @@ def run_audit(
         )
         disp_path = disp_candidates[-1] if disp_candidates else None
         snap_path = Path(snapshot) if snapshot else None
+        run_ts = _derive_adg_run_stamp(generation_manifest, gen_manifest_path, snap_path)
         report = build_enforcement_report(
             snapshot_path=snap_path if snap_path and snap_path.is_file() else None,
             gate_manifest_path=gate_manifest_path,
@@ -401,8 +455,9 @@ def run_audit(
             dispatcher_results_path=disp_path,
             runtime_proof_status=runtime_proof_status,
             require_runtime_proof=require_runtime_proof,
+            ts=run_ts,
         )
-        enforcement_path = write_enforcement_report(report)
+        enforcement_path = write_enforcement_report(report, ts=run_ts)
         if certification_mode and report.get("certified_rollup") == "NOT_CERTIFIED":
             reasons.append("enforcement_report certified_rollup=NOT_CERTIFIED")
     except (ImportError, OSError, TypeError, ValueError) as exc:

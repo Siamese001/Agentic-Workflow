@@ -43,7 +43,19 @@ def _check_l5_cert_ref_c0(ref: str) -> None:
         _logger.warning(msg, ref)
 
 
+# Pre-retrieval gate (C0.0b -- ACL/tenant/freshness scope check) lives in
+# the L_PG knowledge plane because it is shared with non-L0 retrieval
+# callers (e.g., L3 evidence-binding paths). The dispatcher invokes it
+# once per request immediately after preflight. See canonical pipeline
+# manifest stage `C01_acl_gate` and Author-Gate decision 2026-04-30
+# (refactor_scope, selected=finish_two_items_introduced_this_chat).
+from agentic_core.knowledge.gates import (
+    AccessDecision,
+    check_access,
+)
+
 from .candidate_pool import CandidateEvidencePool
+from .contradiction_gap import ConflictGapReport
 from .contradiction_gap import scan_conflicts_and_gaps
 from .evidence_contract import EvidenceContract, verify_and_score
 from .evidence_projections import (
@@ -69,18 +81,6 @@ from .final_contract import (
     seal_final_contract,
 )
 from .gates import GateReport, run_all_gates
-# Pre-retrieval gate (C0.0b -- ACL/tenant/freshness scope check) lives in
-# the L_PG knowledge plane because it is shared with non-L0 retrieval
-# callers (e.g., L3 evidence-binding paths). The dispatcher invokes it
-# once per request immediately after preflight. See canonical pipeline
-# manifest stage `C01_acl_gate` and Author-Gate decision 2026-04-30
-# (refactor_scope, selected=finish_two_items_introduced_this_chat).
-from agentic_core.knowledge.gates import (
-    AccessDecision,
-    GateDecision,
-    check_access,
-)
-from .contradiction_gap import ConflictGapReport
 from .graph_traverse import AdjacencyFn, GraphExpandedEvidencePool, expand_graph
 from .hydration import HydratedEvidencePool, normalize_pool
 from .plan import RetrievalPlan, build_retrieval_plan

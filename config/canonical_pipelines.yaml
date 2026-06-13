@@ -43,7 +43,7 @@ pipelines:
 
       - id: C01_acl_gate
         description: "Plan: pre-retrieval gate (ACL, tenant, freshness)."
-        module: agentic_core/knowledge/gates/preretrieval_gate.py
+        module: agentic_core/knowledge/gates/__init__.py
         # Activated 2026-04-30 (Author-Gate refactor_scope: finish_two_items
         # _introduced_this_chat). Wired into agentic_core/L0_routing/
         # c0_retrieval/dispatcher.py as new pipeline stage C0.0b

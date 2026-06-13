@@ -411,6 +411,56 @@ def test_certification_fails_when_dispatcher_block(temp_artifacts, monkeypatch):
     assert any("adg_gate_dispatcher" in r for r in result.reasons)
 
 
+def test_derive_adg_run_stamp_falls_back_to_snapshot_filename():
+    stamp = "06132026_0906"
+    assert (
+        wrapper._derive_adg_run_stamp(
+            {"sqlite_path": f"artifacts/adg/adg_indexed_{stamp}.sqlite"},
+            None,
+            None,
+        )
+        == stamp
+    )
+
+
+def test_enforcement_report_uses_generation_manifest_run_stamp(temp_artifacts, monkeypatch):
+    stamp = "06132026_0906"
+    snap = _make_snapshot(
+        wrapper.ARTIFACTS_ADG / f"adg_indexed_{stamp}.sqlite",
+        with_runtime_view=True,
+        attested=3,
+    )
+    _patch_generator(monkeypatch, snapshot=snap, gate_kwargs={"ts": stamp})
+    _patch_report(monkeypatch)
+    monkeypatch.setattr(wrapper, "_run_certification_plane2", lambda **_: [])
+
+    captured: dict[str, str | None] = {}
+
+    def _certified_report(**kwargs):  # noqa: ANN003
+        captured["build_ts"] = kwargs.get("ts")
+        return {
+            "certified_rollup": "CERTIFIED",
+            "p0_failed": [],
+            "planes": {"plane1": [], "plane2": [], "plane3": {}},
+        }
+
+    def _write_report(_report, *, ts=None):  # noqa: ANN001
+        captured["write_ts"] = ts
+        out = wrapper.ARTIFACTS_ADG / f"adg_enforcement_report_{ts}.json"
+        out.write_text(json.dumps(_report), encoding="utf-8")
+        return out
+
+    import tools.adg.integration.enforcement_report as enforcement_mod
+
+    monkeypatch.setattr(enforcement_mod, "build_enforcement_report", _certified_report)
+    monkeypatch.setattr(enforcement_mod, "write_enforcement_report", _write_report)
+
+    result = wrapper.run_audit(mode="certification", require_runtime_proof=True)
+
+    assert result.ok
+    assert captured == {"build_ts": stamp, "write_ts": stamp}
+
+
 def test_clean_certification_run_returns_ok(temp_artifacts, monkeypatch):
     snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=3)
     _patch_generator(monkeypatch, snapshot=snap)

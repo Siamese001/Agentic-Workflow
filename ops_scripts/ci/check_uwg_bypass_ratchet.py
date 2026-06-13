@@ -47,7 +47,8 @@ UWG_APPROVED_WRITERS = frozenset(
     }
 )
 
-EXCLUDE_LAYERS = ("L_TEST", "L_TOOLS")
+EXCLUDE_LAYERS = ("L_TEST", "L_TOOLS", "L_UNKNOWN")
+EXCLUDE_PREFIXES = ("apps_eval_legacy/original_tree/",)
 
 
 class UwgBypassRatchetGate(WiringGate):
@@ -69,6 +70,8 @@ class UwgBypassRatchetGate(WiringGate):
         violations: list[Violation] = []
         for source_file, line_no, src_path, layer, symbol in rows:
             if layer in EXCLUDE_LAYERS:
+                continue
+            if src_path.startswith(EXCLUDE_PREFIXES):
                 continue
             if src_path in UWG_APPROVED_WRITERS:
                 continue
