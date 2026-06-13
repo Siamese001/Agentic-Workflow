@@ -35,6 +35,7 @@ root_directories:
   - docs
   - data
   - config
+  - plans            # relocated plans SSOT (repo root; superseded .claude/plans)
   # Infrastructure / generated
   - artifacts
   - infrastructure
@@ -49,8 +50,7 @@ root_directories:
   - .gravity_state
   - .backup
   - .vscode
-  - .cursor          # Cursor IDE project config (rules, hooks, MCP SSOT)
-  - .windsurf
+  - .claude          # Claude Code governance tree (rules/hooks/skills/schemas) — SSOT
   - .locks           # git-lfs / xet lock directory (runtime artifact)
   # git-xet extension working directory
   - xet
