@@ -6,7 +6,9 @@ setting ``PLAN_MINT_OK=1`` in the environment for that write.
 
 Scope: blocks creation of files matching ``plans/*.md`` or ``.claude/plans/*.md`` (any worktree)
 that do not already exist on disk. Edits to EXISTING plan files pass through untouched (status
-updates, inventory rows, supersession headers are the encouraged path).
+updates, inventory rows, supersession headers are the encouraged path). Native Claude Code
+plan-mode scratch files under the user-home ``~/.claude`` (e.g. ``~/.claude/plans/<name>.md``) are
+the harness's own plan file, NOT a repo execution-plan mint — they are exempt.
 
 Fail-soft: any internal error exits 0 (never blocks unrelated work). Block signal = exit 2 +
 reason on stderr, per house hook contract.
@@ -36,6 +38,16 @@ def main() -> int:
         lowered = file_path.replace("\\", "/").lower()
         if "/_archive/" in lowered or "/templates/" in lowered:
             return 0
+        # Native Claude Code plan-mode scratch lives under the user-home ``~/.claude``
+        # (e.g. ``~/.claude/plans/<name>.md``), never under a repo checkout or worktree.
+        # It is the harness's own plan file, not a repo execution-plan mint — skip it.
+        try:
+            home_claude = (Path.home() / ".claude").resolve()
+            fp_resolved = Path(file_path).expanduser().resolve()
+            if fp_resolved == home_claude or home_claude in fp_resolved.parents:
+                return 0
+        except (OSError, ValueError, RuntimeError):
+            pass
         if Path(file_path).exists():
             return 0  # editing an existing plan is allowed (rows, statuses, headers)
         print(

@@ -39,9 +39,15 @@ STATUS: PASS | PARTIAL | FAIL | BLOCKED
 FILES_CHANGED:
 - [basename](repo/relative/path)
 COMMANDS_RUN:
-- command -> result
+- command -> runtime outcome (real result, not just exit code / label)
 TESTS_GATES:
-- command -> result
+- command -> pass/fail with counts
+RCA: (REQUIRED when STATUS: FAIL, or any runtime-failure signal appears above)
+- symptom: <exact failing command/lane + observed error>
+- root_cause: <actual cause> [DIRECTLY OBSERVED | DERIVED | UNRESOLVED]
+- evidence: <artifact path or quoted bytes proving the cause>
+- fix_or_next: <smallest safe patch applied, OR the next diagnostic command>
+- recurrence_guard: <test/gate that catches it next time, or N/A>
 ARTIFACTS:
 - [basename](repo/relative/path) or NONE
 REPORTS_GENERATED: (when applicable)
@@ -51,3 +57,58 @@ NOTES:
 ```
 
 **Receipt hyperlinks (required):** In chat responses and companion `*_receipt.md` / manifest JSON, every repo path in `FILES_CHANGED`, `ARTIFACTS`, and `REPORTS_GENERATED` MUST be a markdown link `[label](path)` using forward slashes (e.g. `[human_benchmark_plan.md](artifacts/apps_rg/plans/human_benchmark_plan.md)`). JSON manifests SHOULD also include parallel `*_links` objects via `ops_scripts/apps_rg/l6_benchmarks/receipt_links.py` (`path` + `markdown` fields).
+
+## Runtime failure ⇒ RCA mandatory
+
+A response reports a **runtime failure** when it sets `STATUS: FAIL` **or** surfaces any
+runtime-failure signal in its receipt — `X3_BLOCK`, a Python traceback, a non-zero exit, a pytest
+`N failed`, `PRE_RUN_BLOCKED`, or a `BLOCKED_*` / `MISSING_GRAPH_PATH` verdict. A green/optimistic
+status (`PASS` / `PARTIAL`) over a body that carries a runtime-failure signal is **forbidden** — the
+green-theater pattern this contract exists to stop.
+
+**Minimum (any runtime failure).** The floor's `RCA:` block, all five fields:
+
+- `root_cause` graded per §20 (DIRECTLY OBSERVED / DERIVED / UNRESOLVED) — never present UNRESOLVED as fact.
+- `fix_or_next` honours §7 (RCA auto-closure): apply the safe in-scope fix this turn; else name the exact next command.
+- An exit code or an `X3_*` label alone is **not** a runtime outcome — `COMMANDS_RUN` / `TESTS_GATES` show the real result.
+- `BLOCKED` (missing key / service / permission) names its blocker; it needs an `RCA:` block only when a failure signal is also present.
+
+**Refactoring turns (T2/T3 code changes) ⇒ the Layered RCA is mandatory**, emitted as a fenced block:
+
+```text
+**Outcome**
+Did it run? <yes/no>   Did it pass? <yes/no>
+Verdict source: <command + exit code + score + verdict string>
+Runtime provenance: <live harness → live adapter; what was observer-only; zero mocks>
+
+**What worked**
+<what passed> — and explicitly what it does NOT prove.
+
+**Failure**
+<violated contract: expected X, got Y>
+
+**Layered RCA**   (required when Did it pass? = No)
+Immediate symptom: <the surface failure as reported>
+Failing layer:     <the layer that ACTUALLY failed — rule out the layer where it merely surfaced>
+Why-chain (dig until root — each level a real "but why?", keep going even if many levels):
+  why1: <why did the symptom happen?>
+  why2: <and why did THAT happen?>
+  why3: <… continue until a cause you can act on>
+Mechanism: <causal chain in one line: first failure → cascade, with real error tokens>
+Root cause: <the deepest level — must be DISTINCT from the symptom>
+Evidence:   <artifact paths / quoted bytes proving the layer, the why-chain, and the cause>
+Confidence / unknowns: <confirmed vs needs-a-targeted-rerun>
+
+**Next**
+<smallest next action + the exact command to rerun>
+```
+
+**Depth is the enforced part — dig to the true root, even across many levels.** The *"but why?"*
+test: if you can still ask *why did that happen?* after your Root cause, you named a **symptom** —
+keep digging. Required descent ≥ 2 levels (Failing-layer / Mechanism / `whyN` lines), Root cause ≠
+Immediate symptom, and the **failing layer isolated from the surfacing layer** — *where it showed up
+≠ where it broke ≠ why it broke*. Stopping at the symptom is non-compliant (`shallow_rca`).
+
+Enforced by `post_agent_runtime_rca_audit.py` → `artifacts/governance/runtime_rca_violations.jsonl`
+(advisory; kinds `missing_rca` / `incomplete_rca` / `status_signal_mismatch` / `shallow_rca`;
+constitutional §37). Bypass: `RUNTIME_RCA_AUDIT_BYPASS=1`.
