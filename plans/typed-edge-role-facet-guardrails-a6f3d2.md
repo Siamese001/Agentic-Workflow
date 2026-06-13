@@ -79,6 +79,27 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 | W5.3 | Enable active sliding-scale enforcement and pre-prompt rebalancing | TODO |
 | W5.4 | Run active sliding-scale E2E, produce waterfall analysis, and update Notion closeout | TODO |
 
+### Rebaselined Effort Model (replay + parallelization, 2026-06-13)
+
+> Conditional on the prerequisites in "## Parallelization & Replay Prerequisites" (P2/P4/P5 are open gaps).
+
+**Three forces reshape the remaining cost:**
+1. **Deterministic replay** cuts the *number* of live API calls — post-generation work (binding, backfill, gate logic, typed-edge contracts, diagnostics, field-renames) validates offline via `tools/apps_rg/replay_section_gates.py` (zero API). Only pre-generation changes (prompt/evidence/selection) and the per-stage gate confirmation need a live call.
+2. **Parallelization** cuts *wall-clock* of the calls that remain — intra-run lane concurrency (P3), GPU fp16 embedding, concurrent multi-target runs at W5 (P4), and agent fan-out for the offline build (P5).
+3. **Serial waterfall (irreducible)** — stages B→C→D→E1 each compare against the prior stage, so the live confirmations cannot overlap each other; parallelism compresses work *inside* a stage and lanes *inside* a run only.
+
+**Rebaselined remainder:**
+
+| Block | Offline (agent-parallel, ~0 API) | Live API | Est. wall-clock (live) |
+|---|---|---|---|
+| Stage B / W2.3 | ibm_bullets metric_outcome wiring · headline lineage · exec_summary alias · `fact_ledger` fence (replay-validated) | 1 batched 11/11 E2E | ~8 min (lanes N-wide) |
+| Stage C / W3 | `role_facet_contract` · `selection_diagnostic` runner · neg-tests · 3-target smoke (non-gen) | 1 single-resume E2E | ~8 min |
+| Stage D / W4 | 7 typed-edge contracts · traversal packet · tests · 3-target smoke (non-gen) | 1 single-resume E2E | ~8 min |
+| Stage E0 / W5.2 | dry-run diagnostic engine · 2 threshold tables · **E0 = replay of Stage D** | 0 | replay |
+| Stage E1 / W5.4 | active-enforcement engine · waterfall report | 1 × 33-lane (3 targets concurrent) | ~12 min |
+
+**Live-API floor = 4 sequential E2Es (~35-45 min total)**, vs the pre-rebaseline ~13 serial 20-min regens (≈ 4+ hours). The dominant remaining work is the **offline build**, parallelizable across agents on local compute. Net: roughly **1–2 focused sessions**, gated by the 4 serial live confirmations, not by the API loop.
+
 ---
 
 ## Out Of Scope
@@ -330,17 +351,19 @@ P0 is a prerequisite, not a waterfall stage. P0 must pass before W1 starts, and 
 
 Stage A is the immutable comparison baseline for this plan. Do not overwrite or reclassify Stage A artifacts after W1 is accepted. Every later E2E stage must compare against both the immediately prior stage and Stage A so the plan has one stable baseline plus stepwise causal attribution. B0 is a pre-B schema/materialization gate, not a ranking or selection stage.
 
-The waterfall stages are:
+The waterfall stages are (the **Validation Method** column is the 2026-06-13 rebaseline — replay/offline where the change is deterministic, live only for the stage-gate confirmation; see "## Parallelization & Replay Prerequisites" and "### Rebaselined Effort Model"):
 
-| Stage | Required state | E2E requirement |
-|---|---|---|
-| A | Post-P0 finalized graphs without typed edges | Run 1 chosen resume x 11 generated lanes (successful E2E — all lanes `X3_ALLOW`, resume assembles); typed edges disabled or absent; `candidate_fact` authority removed or fenced |
-| B0 | First-class `metric_outcome` materialization only | Run 1 chosen resume x 11 generated lanes; compare to A; prove metric IDs resolve through GraphDB rows and prove no selection, ranking, prompt-input, generated-output, or lane-status effect except explicit fail-closed unresolved-metric blockers |
-| B | GraphDB SSOT with `fact_ledger` skills/metrics authority removed and graph-era runtime fields preferred | Run 1 chosen resume x 11 generated lanes; explain variance from B0 and A |
-| C | Role family and role facets enabled | Run 1 chosen resume x 11 generated lanes; explain variance from B and A (plus W3 cross-role non-generation diagnostic smoke run for all 3 targets) |
-| D | Typed edges enabled | Run 1 chosen resume x 11 generated lanes; explain variance from C and A (plus W4 cross-role non-generation diagnostic smoke run for all 3 targets) |
-| E0 | Sliding-scale diagnostics dry-run enabled, enforcement disabled | Run 3 targets x 11 lanes (full 33-lane matrix); explain diagnostic-only variance from D and A; prove no pre-prompt blocking or ranking effect |
-| E1 | Sliding-scale active enforcement and pre-prompt rebalancing enabled | Run 3 targets x 11 lanes (full 33-lane matrix); explain variance from E0, D, and A; prove concentration breaches produce `REBALANCE_REQUIRED` before prompt assembly |
+| Stage | Required state | E2E requirement | Validation Method (rebaselined) |
+|---|---|---|---|
+| A | Post-P0 finalized graphs without typed edges | Run 1 chosen resume x 11 generated lanes (successful E2E — all lanes `X3_ALLOW`, resume assembles); typed edges disabled or absent; `candidate_fact` authority removed or fenced | ✅ DONE (live, `artifacts/w1/`) |
+| B0 | First-class `metric_outcome` materialization only | Run 1 chosen resume x 11 generated lanes; compare to A; prove metric IDs resolve through GraphDB rows and prove no selection, ranking, prompt-input, generated-output, or lane-status effect except explicit fail-closed unresolved-metric blockers | ✅ DONE (live, `artifacts/w2_b0/`); structural no-effect proof |
+| B | GraphDB SSOT with `fact_ledger` skills/metrics authority removed and graph-era runtime fields preferred | Run 1 chosen resume x 11 generated lanes; explain variance from B0 and A | **live-confirm ×1** — lane fixes replay-validated offline (`replay_section_gates.py`), then 1 batched 11/11 live E2E (lanes N-wide) |
+| C | Role family and role facets enabled | Run 1 chosen resume x 11 generated lanes; explain variance from B and A (plus W3 cross-role non-generation diagnostic smoke run for all 3 targets) | **live-confirm ×1** (single resume) + **offline-smoke** (3-target diagnostic is non-generation) |
+| D | Typed edges enabled | Run 1 chosen resume x 11 generated lanes; explain variance from C and A (plus W4 cross-role non-generation diagnostic smoke run for all 3 targets) | **live-confirm ×1** (single resume) + **offline-smoke** (3-target diagnostic is non-generation) |
+| E0 | Sliding-scale diagnostics dry-run enabled, enforcement disabled | Run 3 targets x 11 lanes (full 33-lane matrix); explain diagnostic-only variance from D and A; prove no pre-prompt blocking or ranking effect | **replay (Stage D)** — E0 is a declared no-effect stage; per the Deterministic/Replay Rule the 33-lane requirement is satisfied by replaying Stage D's frozen responses + computing diagnostics offline (input-parity proof). **0 live** |
+| E1 | Sliding-scale active enforcement and pre-prompt rebalancing enabled | Run 3 targets x 11 lanes (full 33-lane matrix); explain variance from E0, D, and A; prove concentration breaches produce `REBALANCE_REQUIRED` before prompt assembly | **live ×1** — the one genuinely-live 33-lane run; **3 targets concurrent** via the multi-target launcher (prereq P4) |
+
+> **Rebaselined live-API floor = 4 sequential E2Es** (Stage B, C, D, E1). E0 is replay-validated; the W3/W4 3-target cross-role smokes are non-generation (offline); all post-generation lane fixes are validated offline via `tools/apps_rg/replay_section_gates.py` (zero API). Validation moving offline is a **cost reduction, not a rigor reduction** — the same X2 gates run, just without a live generation where the change is deterministic. The 4 live confirmations stay **serial** (waterfall atomicity: each compares against the prior stage).
 
 Every run artifact must include:
 - Target slug, briefing/resume input path, graph version, run id, stage id, lane id, and lane status.
@@ -355,6 +378,27 @@ Every run artifact must include:
 - An expected/unexpected classification for each material variance.
 
 A stage is not complete unless every required lane — the single chosen resume's 11 generated lanes for stages A, B0, B, C, D; all 33 target-lane combinations for E0 and E1 — either passes or has an explicit blocker with blocker class, failed command, artifact path, and next action.
+
+---
+
+## Parallelization & Replay Prerequisites
+
+> Added 2026-06-13. The rebaselined effort numbers (4 live E2Es, offline build) are **conditional**: they
+> hold only when the prerequisites below are satisfied. P2/P4/P5 are the **open gaps**. The serial-waterfall
+> constraint (B→C→D→E1 cannot overlap) is **irreducible** — no prerequisite removes it.
+
+| ID | Prerequisite | Why required | Owner | Status |
+|---|---|---|---|---|
+| **P1** | Replay harness for all 11 lanes (`tools/apps_rg/replay_section_gates.py`) | each lane's post-gen fix validates offline (zero API) instead of a live regen | orchestration | 🟡 1 of 11 (competencies; extend per-lane) |
+| **P2** | Provider + judge **concurrency + 429 backoff** in `section_provider_call.py` / `section_judge_policy.py` | wave-1 N-wide ⇒ N concurrent Claude + judge calls; no async/semaphore/backoff found ⇒ rate-limit failures (observed live: the rebaseline workflow's 6 concurrent agents were server-rate-limited) | apps_rg runtime | ❌ **GAP — load-bearing for all lane concurrency** |
+| **P3** | Intra-run lane concurrency (`workflow_manifest` wave-1 `max_parallel 1→4`, wave-0 `2→5`) | makes one E2E fast | apps_rg runtime | 🟡 in-flight (A/B in sibling chat) |
+| **P4** | Multi-target launcher (run 3 targets concurrently) | W5 E1 33-lane runs ~1× wall-clock instead of 3× | apps_rg runtime / ops | ❌ GAP (no launcher) |
+| **P5** | Agent fan-out (Workflow over the offline build) | parallelize the 3 W2.2 lanes + W3/W4 contracts + W5 tables; **subject to P2-class throttling — stagger/backoff** | orchestration | ❌ not started (first attempt rate-limited) |
+| **P6** | Worktree runtime junctions + `.env` (`data/cache/sparse` + `chromadb`) | any E2E fails closed without them | operator | ✅ done (this worktree) |
+| **P7** | Measured A/B lane-parallel speedup | replaces the estimated ~8-min figure with the real number | sibling chat | ⏳ pending |
+
+**Dependency note:** P2 underpins P3/P4/P5 — concurrency without backoff is throttled, not faster. Close P2
+before trusting any parallel speedup (including the A/B in P7 and the agent fan-out in P5).
 
 ---
 
@@ -740,7 +784,7 @@ CHECKPOINT: E
 | E0 | Dry-run diagnostics only | Computes facet, source, metric, section, and repeated-concept mix for every target/lane; emits would-be `REBALANCE_REQUIRED` without changing ranking, selection order, prompt inputs, or lane pass/fail status |
 | E1 | Active enforcement | Applies caps, floors, penalties, and rebalancing before prompt assembly; concentration breaches block or rebalance with `REBALANCE_REQUIRED`; all variance is compared to E0, D, and A |
 
-**Sliding-scale design requirements**:
+> **Rebaselined validation (2026-06-13):** **E0 is replay-validated, 0 live calls** — it is a declared no-effect stage (diagnostics only), so the 33-lane requirement is met by replaying Stage D's frozen provider responses and computing the dry-run diagnostics offline, proving input-parity (selected evidence + ranking + lane status unchanged) per the Deterministic/Replay Rule. **E1 is the one genuinely-live 33-lane run** (active enforcement changes pre-prompt selection ⇒ generation changes ⇒ must run live), with the **3 targets run concurrently** via the multi-target launcher (prereq **P4**). So W5's live cost rebaselines from 2×33-lane to **1×33-lane (3 targets parallel)**.
 - Use ranges, caps, floors, and penalties rather than fixed one-size percentages.
 - Compute percentages from eligible graph skills, not JD keyword counts.
 - Use section-specific thresholds so headline, executive summary, competencies, bullets, and narratives can differ.
@@ -1100,6 +1144,13 @@ rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bu
 ---
 
 ## Definition of Done
+
+> **Validation-method note (2026-06-13 rebaseline):** DoD evidence is unchanged, but *how* it is produced
+> is rebaselined per "### Rebaselined Effort Model" + the waterfall "Validation Method" column. Deterministic
+> evidence (DoD-2B/4/6/13 — gates, contracts, fences, hardening) is **replay/offline-validated** via
+> `tools/apps_rg/replay_section_gates.py` + unit tests (zero API). E2E DoDs (DoD-3/5/7/9/10/10A) take their
+> **one live-confirm** per stage (DoD-9/E0 by replay). The 3-target smokes (DoD-5/7) are non-generation/offline.
+> Replay reduces validation COST, not rigor — the same gates run.
 
 DoD-0: Candidate-fact authority is deprecated and tested before W1.
 - Evidence: P0 inventory classifies all live `candidate_fact` references, disallowed authority paths fail closed, `candidate_fact_runtime_authority_read_fails_closed_before_W1` passes, W1 is blocked on failure, and remaining `candidate_fact_id` fields are lineage/compatibility only.
