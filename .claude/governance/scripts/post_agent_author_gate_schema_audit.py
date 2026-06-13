@@ -60,6 +60,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _post_agent_payload import extract_response_text  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_LOG = (
     REPO_ROOT / "artifacts" / "governance" / "author_gate_schema_violations.jsonl"
@@ -339,22 +342,7 @@ def audit_response(response_text: str) -> list[dict[str, Any]]:
 
 
 def _read_stdin_text() -> str:
-    raw = sys.stdin.read()
-    if not raw.strip():
-        return ""
-    try:
-        payload = json.loads(raw)
-    except json.JSONDecodeError:
-        return raw
-    if isinstance(payload, dict):
-        for key in ("response_text", "response", "text", "assistant_text", "content"):
-            val = payload.get(key)
-            if isinstance(val, str):
-                return val
-        return json.dumps(payload, ensure_ascii=False)
-    if isinstance(payload, str):
-        return payload
-    return raw
+    return extract_response_text(sys.stdin.read())
 
 
 def main() -> int:

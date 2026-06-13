@@ -21,6 +21,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _post_agent_payload import extract_response_text  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_FILE = REPO_ROOT / "artifacts" / "governance" / "work_classification_violations.jsonl"
 
@@ -94,9 +97,7 @@ def main() -> int:
         ):
             return 0
 
-        raw = sys.stdin.read()
-        data = json.loads(raw) if raw.strip() else {}
-        response_text = _extract_response(data)
+        response_text = extract_response_text(sys.stdin.read())
 
         if not response_text.strip():
             return 0

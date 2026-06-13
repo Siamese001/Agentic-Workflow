@@ -11,6 +11,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _post_agent_payload import extract_response_text  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_LOGS = {
     "grep": REPO_ROOT / "artifacts" / "governance" / "grep_budget_violations.jsonl",
@@ -29,7 +32,7 @@ BYPASS_VARS = {
 
 def _read_stdin() -> str:
     try:
-        return sys.stdin.read(MAX_RESPONSE_BYTES)
+        return extract_response_text(sys.stdin.read(MAX_RESPONSE_BYTES))
     except Exception:
         return ""
 
