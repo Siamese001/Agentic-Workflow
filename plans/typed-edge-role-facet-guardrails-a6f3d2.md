@@ -470,7 +470,14 @@ CHECKPOINT: B
 **Phases**:
 - **W2.0** - Materialize first-class `metric_outcome` nodes only | ~6K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES (92 metric_outcome nodes + 452 edges materialized 2026-06-13)
 - **W2.1** - Run pre-B metric-outcome E2E and prove behavior-neutral materialization | ~5K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES (first valid full-substrate B0 E2E 2026-06-13: 6 X3_ALLOW / 4 X3_BLOCK / 1 cascade; W2.0 no-effect proven structurally — see W2.1 note below)
-- **W2.2** - Migrate fact-era runtime fields behind graph-era aliases and fence `fact_ledger` / proof-pool authority | ~8K tokens | PHASE_STATUS: IN_PROGRESS | PHASE_COMPLETE: NO (alias layer landed 2026-06-13: `apps_rg/runtime/graph_era_aliases.py` + 13 tests passing; consumer migration scope-cut to the 6 W1-deferred lanes; full 158-file fact-era surface migration deferred to follow-up wave)
+- **W2.2** - Migrate fact-era runtime fields behind graph-era aliases and fence `fact_ledger` / proof-pool authority | ~8K tokens | PHASE_STATUS: IN_PROGRESS | PHASE_COMPLETE: NO (alias layer + competencies lane DONE; ibm_bullets/headline/exec_summary remaining)
+  - **W2.2 lane-fix progress (authorized 11/11 sub-scope):**
+    - ✅ **competencies** — X3_ALLOW live (2026-06-13). Fixes: required-family pack retention (`competency_capability_evidence._filter_packet_by_selected_graph_plan`), llmops bundle enrichment (4 graph skills + 5 anchors), prompt term-floor 2→3 + bundle-label pin (`competencies_pa.py`), graph-bundle min-term backfill with keyword-budget (`competencies_lane_runtime.backfill_graph_bundle_min_terms` + wired in `competencies_lane_execution`). Commits `5d1e814c3a` + unlock chain.
+    - ⏳ **ibm_bullets** — root cause located: `ibm_bullets_graph_evidence.py:213` `has_metric=bool(metric_raw)` marks HELD metrics claimable; fix = approved-metric_outcome-only + graph-aware anchor gate.
+    - ⏳ **headline** — positioning bundle + graph lineage + grounded XYZ literal.
+    - ⏳ **executive_summary** — claim grounding via `graph_era_aliases` + generation discipline.
+  - **#1 unlock built**: `tools/apps_rg/replay_section_gates.py` validates post-gen fixes offline in ~11s, ZERO API (harness verdict confirmed == live X3_ALLOW for competencies). Remaining lanes use: offline iterate → 1 confirming regen each.
+  - Alias layer landed 2026-06-13: `apps_rg/runtime/graph_era_aliases.py` + 13 tests. Full 158-file fact-era surface migration deferred to follow-up wave.
 - **W2.3** - Run GraphDB SSOT Stage B E2E and explain variance from B0 and W1 | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
 **Pre-W2 cleanup status**:
