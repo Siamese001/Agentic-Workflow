@@ -99,7 +99,7 @@ _OUTCOME_FRAME_RE = re.compile(r"(?i)did\s+it\s+pass\s*\??")
 _REMEDY = (
     "Add an RCA: block to the response (symptom · root_cause[graded §20] · evidence · "
     "fix_or_next[§7] · recurrence_guard). Never stamp PASS/PARTIAL over a runtime-failure "
-    "signal. SSOT: .claude/rules/001-cursor-runtime-seam-execution.md § Runtime failure ⇒ "
+    "signal. SSOT: .claude/rules/001-runtime-seam-execution.md § Runtime failure ⇒ "
     "RCA mandatory; constitutional §37."
 )
 

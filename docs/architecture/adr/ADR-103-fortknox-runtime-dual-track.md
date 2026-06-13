@@ -26,7 +26,7 @@ Agents and CI must never substitute one for the other.
 |------|-----------------|-------|
 | `verify_final_requirement_signoff_bundle.py` | **fail-closed** on certification PRs | Pair with compiler regen |
 | `check_fortknox_*` advisory cluster | **advisory** unless branch policy tightens | See `ops_scripts/ci/run_contract_gates.py` ordering |
-| Runtime seam rules | **001-cursor-runtime-seam-execution** | PASS requires command + test evidence |
+| Runtime seam rules | **001-runtime-seam-execution** | PASS requires command + test evidence |
 
 ## Consequences
 

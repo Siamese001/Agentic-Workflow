@@ -8,7 +8,7 @@ metadata:
 ---
 # Author-Gate Packet Builder
 
-> **Tier map:** Tier-1 invariant pipeline → `003-cursor-author-gate-hitl.md`. This skill is procedural SSOT for packet emission. Workflow `/author-gate-decision-gate` is a thin alias only.
+> **Tier map:** Tier-1 invariant pipeline → `003-author-gate-hitl.md`. This skill is procedural SSOT for packet emission. Workflow `/author-gate-decision-gate` is a thin alias only.
 
 **PURPOSE:** Turn ambiguous Author-Gate decisions into schema-valid, didactic packets.
 
