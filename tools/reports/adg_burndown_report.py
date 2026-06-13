@@ -24,8 +24,8 @@ Set ``ADG_BURNDOWN_CANVAS_BYPASS=1`` to skip canvas generation (markdown/files s
 The report is intentionally one file with fixed sections:
 
   1. Header — snapshot, timestamp, overall verdict
-  2. P0-P3 CI band summary — gate/enforcement rollup from gate results
-  3. ADG CI gates — all gates: band, enforcement, action, findings, signal, next best action
+  2. ADG status by band — operator rollup from gate results
+  3. ADG CI gates — all gates: band, enforcement, action, rows, signal, next best action
   4. Severity inventory — raw MV defect inventory by severity/source band
   5. Aggregates — block_pass / block_fail / ratchet_pass / ratchet_regressed / warn
   6. Top blockers and next action — queue-backed dispatch guidance
@@ -66,7 +66,7 @@ BURNDOWN_REPORT_OUTPUTS: tuple[Path, ...] = (
 
 
 def _describe(gate: dict[str, Any]) -> str:
-    """High-signal cell: what Findings measures + why Verdict is PASS/FAIL/REGR."""
+    """High-signal cell: what Rows measures + why Verdict is PASS/FAIL/REGR."""
     return format_gate_signal(gate)
 
 
@@ -143,6 +143,41 @@ def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
         elif sub == "seed":
             row["seed_missing"] += 1
     return rows
+
+
+def _fmt_int(value: Any) -> str:
+    return f"{int(value or 0):,}"
+
+
+def _plural(value: int, singular: str, plural: str | None = None) -> str:
+    word = singular if value == 1 else (plural or f"{singular}s")
+    return f"{_fmt_int(value)} {word}"
+
+
+def _band_backlog_cell(row: dict[str, int]) -> str:
+    track = int(row.get("track", 0))
+    findings = int(row.get("findings", 0))
+    return f"{_plural(track, 'gate')} / {_plural(findings, 'row')}"
+
+
+def _band_status(row: dict[str, int]) -> str:
+    return "BLOCKED" if int(row.get("fix", 0)) else "PASS"
+
+
+def _band_plain_read(row: dict[str, int]) -> str:
+    if int(row.get("fix", 0)):
+        return "red gates present"
+    if int(row.get("track", 0)) or int(row.get("findings", 0)):
+        return "green; tracked backlog"
+    return "green; no backlog"
+
+
+def _band_next_move(row: dict[str, int]) -> str:
+    if int(row.get("fix", 0)):
+        return "fix red gates first"
+    if int(row.get("track", 0)) or int(row.get("findings", 0)):
+        return "work ranked queue; do not treat as new failures"
+    return "no action"
 
 
 def _load_gate_results(path: Path) -> dict[str, Any]:
@@ -298,24 +333,23 @@ def render(
         )
     a("")
 
-    # ---------------------------------------------------- §1 P0-P3 CI band summary
-    a("## 1. P0-P3 CI Band Summary")
+    # ---------------------------------------------------- §1 ADG status by band
+    a("## 1. ADG Status By Band")
     a("")
-    a("This is the gate/enforcement view from `adg_gate_results_*.json`, not the raw severity inventory.")
+    a("Operator summary from `adg_gate_results_*.json`.")
+    a("Backlog rows are summed gate `violation_count`; guardian gross/net math is only in Severity Inventory.")
     a("")
-    a("| CI Band | Gates | FIX | TRACK | CLEAR | Block Fail | Ratchet Regr | Seed Missing | Findings |")
-    a("|---------|------:|----:|------:|------:|-----------:|-------------:|-------------:|---------:|")
+    a("| Band | Status | Fix now | Tracked backlog | Read it as | Next move |")
+    a("|------|:------:|--------:|-----------------|------------|-----------|")
     band_rows = _ci_band_summary(gates)
     for band in ("P0", "P1", "P2", "P3"):
         row = band_rows.get(band, {})
         a(
-            f"| {band} | {row.get('total', 0)} | {row.get('fix', 0)} | "
-            f"{row.get('track', 0)} | {row.get('clear', 0)} | "
-            f"{row.get('block_fail', 0)} | {row.get('ratchet_regressed', 0)} | "
-            f"{row.get('seed_missing', 0)} | {row.get('findings', 0)} |"
+            f"| {band} | {_band_status(row)} | {_fmt_int(row.get('fix', 0))} | "
+            f"{_band_backlog_cell(row)} | {_band_plain_read(row)} | {_band_next_move(row)} |"
         )
     a("")
-    a("`FIX` is the only action class that must be cleared for green ADG. `TRACK` is backlog.")
+    a("`Fix now` counts red gates. `Tracked backlog` is old or advisory inventory that does not block this run.")
     a("")
 
     # ---------------------------------------------------- §2 all gates
@@ -323,13 +357,14 @@ def render(
     a("")
     a("One row per registered gate.")
     a("")
-    a("- **Action** — **FIX** = address now · **TRACK** = backlog, CI OK · **CLEAR** = zero findings.")
+    a("- **Action** — **FIX** = address now · **TRACK** = backlog, CI OK · **CLEAR** = zero rows.")
     a("- **Sub** — detail (block / regr / floor / inventory / …); see glossary.")
     a("- **Allowed Floor** — zero-tolerance for block gates, baseline for ratchets, advisory/inventory otherwise.")
-    a("- **Signal** — what Findings count + short Sub note.")
+    a("- **Rows** — gate-specific `violation_count`; meaning depends on Action/Sub.")
+    a("- **Signal** — what Rows count + short Sub note.")
     a("- **Next Best Action** — concrete action for this gate (fix / re-baseline / defer / none).")
     a("")
-    a("| Gate ID | CI Band | Enforcement | Action | Sub | Findings | Allowed Floor | Signal | Next Best Action |")
+    a("| Gate ID | CI Band | Enforcement | Action | Sub | Rows | Allowed Floor | Signal | Next Best Action |")
     a("|---------|:-------:|-------------|:------:|:---:|---------:|---------------|--------|------------------|")
     band_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
     sorted_gates = sorted(
@@ -357,7 +392,7 @@ def render(
         a("")
         a("### Fix now (Verdict FIX)")
         a("")
-        a("| Gate ID | Sub | Findings |")
+        a("| Gate ID | Sub | Rows |")
         a("|---------|:---:|---------:|")
         for g in sorted(
             fix_gates,
@@ -373,7 +408,7 @@ def render(
         a("")
         a("### Track later (Verdict TRACK — CI OK, backlog remains)")
         a("")
-        a("| Gate ID | Sub | Findings |")
+        a("| Gate ID | Sub | Rows |")
         a("|---------|:---:|---------:|")
         for g in sorted(
             track_gates,
@@ -391,6 +426,7 @@ def render(
     a("")
     a("Counts come from the canonical `adg_burndown_table.json` (schema 2.2).")
     a("This is raw MV defect inventory by severity/source band; it is not one row per CI gate.")
+    a("Use this section for guardian math, not the status table above.")
     a("`gross` = raw violations found. `guardian` = guardian-exempted (still counted).")
     a("`net` = `gross - guardian`. `diff` = delta vs prior snapshot baseline.")
     a("")
@@ -421,7 +457,7 @@ def render(
     a("|---------|------:|---------|")
     a(
         f"| block_pass | {summary.get('block_pass', 0)} | "
-        "Block-class gates that did not halt the run (exit 0). Findings may be non-zero. |"
+        "Block-class gates that did not halt the run (exit 0). Rows may be non-zero. |"
     )
     a(
         f"| block_fail | {summary.get('block_fail', 0)} | "
@@ -430,7 +466,7 @@ def render(
     a(f"| ratchet_pass | {summary.get('ratchet_pass', 0)} | Ratchet-class gates within their baseline ceiling. |")
     a(
         f"| ratchet_regressed | {summary.get('ratchet_regressed', 0)} | "
-        "Ratchet-class gates with NEW findings beyond baseline. |"
+        "Ratchet-class gates with NEW rows beyond baseline. |"
     )
     a(f"| ratchet_seed_missing | {summary.get('ratchet_seed_missing', 0)} | Ratchet-class gates without a baseline seed (first run). |")
     a(f"| warn | {summary.get('warn', 0)} | Advisory-class gates (do not gate the run). |")
@@ -453,7 +489,7 @@ def render(
     if not blockers:
         a("_No FIX gates._")
     else:
-        a("| Gate | Band | Enf | Sub | Findings | Signal |")
+        a("| Gate | Band | Enf | Sub | Rows | Signal |")
         a("|------|:----:|:---:|:---:|---------:|--------|")
         for g in sorted(
             blockers, key=lambda r: (-int(r.get("violation_count", 0)), r.get("gate_id", ""))
