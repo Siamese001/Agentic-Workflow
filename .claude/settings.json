@@ -110,6 +110,15 @@
             "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/before_mcp_execution.py\""
           }
         ]
+      },
+      {
+        "matcher": "Workflow",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre_workflow_fanout_gate.py\""
+          }
+        ]
       }
     ],
     "PostToolUse": [
