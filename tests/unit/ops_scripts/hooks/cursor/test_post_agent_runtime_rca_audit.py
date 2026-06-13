@@ -55,8 +55,13 @@ _FULL_RCA = (
     "- recurrence_guard: test_ibm_bullets.py::test_held_metric_not_anchored\n"
 )
 
-# A refactoring turn = code files changed (or an edit tool invoked).
+# A refactoring turn = code files changed (or an edit tool invoked). Per the contract it
+# must carry the Outcome frame ("Did it pass?") on every turn, so the failing-refactor
+# fixtures below include it and exercise the Layered-RCA depth checks.
 _REFACTOR_HEADER = (
+    "**Outcome**\n"
+    "Did it run? Yes.  Did it pass? No.\n"
+    "Verdict source: python -m pytest -> exit 1\n"
     "STATUS: FAIL\n"
     "FILES_CHANGED:\n- [foo.py](foo.py)\n"
     "COMMANDS_RUN:\n- python -m pytest -> exit 1\n"
@@ -178,6 +183,34 @@ class TestRuntimeRcaAudit:
         text = "STATUS: FAIL\nCOMMANDS_RUN:\n- run -> exit 1\n" + _SHALLOW_RCA
         assert _run(rca_mod, text, monkeypatch) == 0
         assert not any(r["kind"] == "shallow_rca" for r in _rows(rca_mod))
+
+    def test_refactor_pass_missing_outcome_flagged(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # A PASSING refactor turn reported with the bare STATUS floor (no Outcome frame).
+        text = "STATUS: PASS\nFILES_CHANGED:\n- [foo.py](foo.py)\nCOMMANDS_RUN:\n- pytest -> 5 passed\n"
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        assert any(r["kind"] == "missing_refactor_outcome" for r in rows), [r["kind"] for r in rows]
+        assert rows[0]["refactor_turn"] is True
+        assert rows[0]["has_outcome_frame"] is False
+
+    def test_refactor_pass_with_outcome_clean(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # A PASSING refactor turn that DOES carry the Outcome frame -> compliant.
+        text = (
+            "**Outcome**\nDid it run? Yes.  Did it pass? Yes.\n"
+            "Verdict source: pytest -> 5 passed\n"
+            "STATUS: PASS\nFILES_CHANGED:\n- [foo.py](foo.py)\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == []
+
+    def test_refactor_fail_missing_outcome_subsumes_rca(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # A FAILING refactor turn with neither the Outcome frame nor an RCA -> the single
+        # missing_refactor_outcome violation (it subsumes missing_rca).
+        text = "STATUS: FAIL\nFILES_CHANGED:\n- [foo.py](foo.py)\nCOMMANDS_RUN:\n- run -> X3_BLOCK\n"
+        assert _run(rca_mod, text, monkeypatch) == 0
+        kinds = {r["kind"] for r in _rows(rca_mod)}
+        assert "missing_refactor_outcome" in kinds
+        assert "missing_rca" not in kinds  # subsumed
 
     def test_bypass(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("RUNTIME_RCA_AUDIT_BYPASS", "1")

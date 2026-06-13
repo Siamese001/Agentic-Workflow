@@ -73,7 +73,7 @@ green-theater pattern this contract exists to stop.
 - An exit code or an `X3_*` label alone is **not** a runtime outcome — `COMMANDS_RUN` / `TESTS_GATES` show the real result.
 - `BLOCKED` (missing key / service / permission) names its blocker; it needs an `RCA:` block only when a failure signal is also present.
 
-**Refactoring turns (T2/T3 code changes) ⇒ the Layered RCA is mandatory**, emitted as a fenced block:
+**Refactoring turns (T2/T3 code changes) ⇒ the Outcome frame is mandatory on EVERY turn (pass or fail)**, emitted as a fenced block — its absence is `missing_refactor_outcome`; the **Layered RCA** sub-block is required when `Did it pass? = No`:
 
 ```text
 **Outcome**

@@ -20,12 +20,15 @@ The RCA block (rule 001 § Runtime failure ⇒ RCA mandatory):
     - fix_or_next: ...
     - recurrence_guard: ...
 
-On REFACTORING turns (code files changed / an edit tool invoked) a failure additionally
-requires the deep Layered RCA — the failing layer isolated from the surfacing layer, a
-multi-level why-chain (dig until root, >= 2 levels), and a root cause distinct from the
-symptom. A symptom-only or single-hop RCA on a refactoring failure is ``shallow_rca``.
+On REFACTORING turns (code files changed / an edit tool invoked) the response MUST carry the
+Outcome frame on EVERY turn (pass or fail) — "Did it run? / Did it pass?" + verdict source +
+provenance, What worked, Failure, Next. Its absence is ``missing_refactor_outcome``. A failure
+additionally requires the deep Layered RCA inside that frame — the failing layer isolated from
+the surfacing layer, a multi-level why-chain (dig until root, >= 2 levels), and a root cause
+distinct from the symptom. A symptom-only or single-hop RCA is ``shallow_rca``.
 
-Violation kinds: missing_rca, incomplete_rca, status_signal_mismatch, shallow_rca.
+Violation kinds: missing_refactor_outcome, missing_rca, incomplete_rca,
+status_signal_mismatch, shallow_rca.
 
 This audit is advisory and fail-open: it always exits 0 and never blocks the response.
 Some matches are necessarily heuristic (a PASS summary that merely *discusses* a failure
@@ -89,6 +92,10 @@ _FILES_CHANGED_RE = re.compile(r"(?im)^\s*FILES_CHANGED\s*:")
 _CODE_FILE_RE = re.compile(r"\.(?:py|js|ts|tsx|jsx|go|rs|java|rb|c|cc|cpp|h|hpp|sql|sh|ps1)\b")
 _EDIT_TOOL_RE = re.compile(r'<invoke\s+name="(?:Edit|Write|MultiEdit|NotebookEdit)"')
 
+# Outcome frame: refactoring turns must carry it on EVERY turn (pass or fail).
+# "Did it pass?" is the load-bearing marker the legacy STATUS floor never uses.
+_OUTCOME_FRAME_RE = re.compile(r"(?i)did\s+it\s+pass\s*\??")
+
 _REMEDY = (
     "Add an RCA: block to the response (symptom · root_cause[graded §20] · evidence · "
     "fix_or_next[§7] · recurrence_guard). Never stamp PASS/PARTIAL over a runtime-failure "
@@ -102,6 +109,13 @@ _SHALLOW_REMEDY = (
     "levels) -> Root cause (distinct from the symptom) -> Evidence -> Confidence. Apply the "
     "'but why?' test until you reach a cause you can act on. SSOT: 001 § Runtime failure ⇒ "
     "RCA mandatory; constitutional §37."
+)
+
+_MISSING_OUTCOME_REMEDY = (
+    "Refactoring turn: report it in the Outcome frame (Did it run? / Did it pass? + verdict "
+    "source + runtime provenance; What worked; Failure; Next), not the bare STATUS floor. On a "
+    "failure the frame's Layered RCA is also required. SSOT: 001 § Runtime failure ⇒ RCA "
+    "mandatory; constitutional §37."
 )
 
 
@@ -174,6 +188,7 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
         and (bool(_RCA_EVIDENCE_RE.search(text)) or bool(_RCA_FIXNEXT_RE.search(text)))
     )
     refactor_turn = _is_refactor_turn(text)
+    has_outcome = bool(_OUTCOME_FRAME_RE.search(text))
 
     violations: list[dict] = []
     ts = datetime.now(timezone.utc).isoformat()
@@ -185,6 +200,7 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
             "kind": kind,
             "status": status_value,
             "refactor_turn": refactor_turn,
+            "has_outcome_frame": has_outcome,
             "failure_signals": signal_set,
             "has_rca": has_rca,
             "rca_complete": rca_complete,
@@ -201,6 +217,16 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
     body_signals = [s for s in signals if s != "status_fail"]
     if _GREEN_STATUS_RE.search(text) and body_signals:
         violations.append(_record("status_signal_mismatch", body_signals))
+
+    # Refactoring turns must carry the Outcome frame on EVERY turn (pass or fail), not
+    # only on failure — passing turns that fall back to the bare STATUS floor are the most
+    # common gap. A frame-less refactor turn is flagged here and subsumes the failure-path
+    # RCA checks below (the frame is where the Layered RCA would live).
+    if refactor_turn and not has_outcome:
+        violations.append(
+            _record("missing_refactor_outcome", signals, extra={"remedy": _MISSING_OUTCOME_REMEDY})
+        )
+        return status_value, violations
 
     if not signals:
         return status_value, violations
