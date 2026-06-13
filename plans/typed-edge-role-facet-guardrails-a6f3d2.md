@@ -24,13 +24,69 @@ Make GraphDB the skills and metrics SSOT, remove legacy candidate-fact authority
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W2
-LAST_COMPLETED_WAVE: W1
+CURRENT_WAVE: W2 (W2.2 — 3 lanes left to the W2.3 11/11 exit gate = first finished resume)
+LAST_COMPLETED_WAVE: W1 (+ W2.0/W2.1 + W2.2 competencies, all merged to main)
 LAST_UPDATED: 2026-06-13
+REBASELINE_2026_06_13: Full waterfall rebaselined against merged main (HEAD 1495ffb548) — see "## Rebaselined Waterfall — Current Main" (the status SSOT). Parallel executor merged (11.7 min/E2E, 1.96×); W1/W2.0/W2.1/W2.2-competencies + replay harness merged; lane board 7 ALLOW / 4 BLOCK (ibm_bullets, headline, exec_summary, +ibm_narrative cascade); P3/P7 DONE, P2 not-a-blocker, P4/P5 open; live-API floor ~4 E2Es (~50-70 min). Prior "~8 min / P3-pending / conditional-on-merge" framing was stale (relied on memory + session-PR-state, both wrong); corrected by reading code.
 E2E_GATE_POLICY: 1-resume successful E2E gates W1..W4 (single target); full 3-resume / 33-lane E2E required only at W5 sliding-scale
 PLAN_AMENDMENTS_2026_06_13: (1) W2.1/W2.3 Execution Details scope corrected to single-resume; (2) W3/W4 cross-role smoke-run implementation locus named (`tools/apps_rg/selection_diagnostic.py`, built in W3.1); (3) W5.0 phase added — Truist + B&B threshold-table authoring before W5.1; (4) W2.1 output-hash made conditional on Deterministic/Replay Rule mode; (5) Stage A canonical artifact path = `artifacts/w1/`; (6) Stage A prior-stage variance carve-out; (7) W2.2 `candidate_fact_id` search removed (P0.1 owns it).
 W1_RESET_NOTE: 2026-06-13 operator directive "assume nothing was done, start at beginning" — prior W1 blocking-baseline DONE markers retired; W1 re-passed under the amended current-substrate-passable bar with 6-lane W2 blocker ledger (see W1 Blocker Ledger below).
 W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (operator decision 2026-06-13). 5 lanes X3_ALLOW on existing graph substrate (unify_bullets, insurtech_bullets, ey_bullets, insurtech_narrative, ey_narrative). 6 lanes deferred to W2 — see W1 Blocker Ledger. Durable config landed: (a) `apps_rg/runtime/section_model_limits.py` `SECTION_MODEL_MAX_MODEL_LEN` default 24576 → 32768; (b) `apps_rg/runtime/sections/executive_summary_context_limits.py` `DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS` / `DEFAULT_REGEN_MAX_OUTPUT_TOKENS` 2048 → 4096, `HARD_CAP_SCRATCH_MAX_OUTPUT_TOKENS` 4096 → 8192, `_DEFAULT_CONTEXT_WINDOW` 24576 → 32768; (c) `resolve_provider_context_window` precedence flipped — app-local `APPS_RG_SECTION_MAX_MODEL_LEN` wins, legacy `VLLM_MAX_MODEL_LEN` kept as fallback only. Tests passing (13/13). MAX_PATH lesson: every W2–W5 run MUST use a short `--artifact-dir` (e.g. `artifacts/w2`, `artifacts/w3`).
+
+---
+
+## Rebaselined Waterfall — Current Main (2026-06-13, HEAD 1495ffb548)
+
+> ⛔ **SSOT for current status. Code-grounded (verified against merged `main`, not memory or the chat
+> narrative). Supersedes any conflicting inline status below.** The North Star is unchanged: a finished
+> resume = all 11 generated lanes `X3_ALLOW` → run assembles `final_resume.json` → DOCX built from it.
+
+### What is MERGED in main (verified in code)
+
+| Capability | Where (code) | Effect |
+|---|---|---|
+| **Parallel lane execution** | `section_lane_executor.py` lock-free (`_ENV_OVERLAY_LOCK` removed); manifest `default_max_parallel: 5`, wave-1 `max_parallel: 4` | **A full 11-lane E2E ≈ 11.7 min** (measured 704s vs 1383s serial = 1.96×), identical dispositions |
+| **W1 Claude-era token config** | `section_model_limits.py` (ctx 32768), `executive_summary_context_limits.py` (output 4096 / cap 8192) | exec_summary parse-truncation fixed |
+| **W2.0 metric_outcome materialization** | `metric_outcome_materializer.py` (92 nodes + 452 edges) | metrics are first-class GraphDB rows |
+| **W2.2 alias layer** | `graph_era_aliases.py` (`source_fact_ids↔graph_evidence_ids`) | graph-era field foundation |
+| **competencies lane fix** | required-family pack retention + bundle enrichment + prompt align + graph-bundle backfill | **competencies → X3_ALLOW** |
+| **Offline gate-replay harness** | `tools/apps_rg/replay_section_gates.py` | post-gen fixes validate in ~11s, **zero API** |
+
+### Current lane board (Stage B substrate — confirm with one ~12-min E2E on main)
+
+**7 of 11 pass · 4 blocked.**
+
+| Status | Lanes |
+|---|---|
+| ✅ X3_ALLOW | competencies, unify_bullets, unify_narrative, insurtech_bullets, insurtech_narrative, ey_bullets, ey_narrative |
+| ❌ X3_BLOCK | **ibm_bullets** (claims held "$10M"; should surface approved "20%" metric_outcome — fix at `section_graph_skills_proof_pool.py:355`) · **headline** (needs positioning bundle + graph lineage) · **executive_summary** (claim grounding via `graph_evidence_ids` + no unsupported sentences) |
+| ⛔ cascade | **ibm_narrative** (unblocks when ibm_bullets passes) |
+
+### The remaining waterfall (each stage = one ~12-min live E2E, run serial; offline build in between)
+
+| Stage | Wave | Goal | Validation | Live E2E |
+|---|---|---|---|---|
+| **B** | W2.2 → **W2.3** | Fix the 4 blocked lanes → **11/11 X3_ALLOW → `final_resume.json` assembles → first finished Anthropic DOCX** | replay-offline per lane; 1 batched 11/11 confirm | **1 × ~12 min** |
+| **C** | W3 | Role-family / facet targeting over the now-passing pool | replay + 3-target diagnostic (non-gen, offline) | 1 × ~12 min |
+| **D** | W4 | Typed proof/traversal edges | replay + 3-target diagnostic (offline) | 1 × ~12 min |
+| **E0** | W5.0-W5.2 | Sliding-scale % **diagnostics** (Truist + B&B threshold tables; dry-run) | **replay of Stage D** (no-effect stage) | **0** |
+| **E1** | W5.3-W5.4 | Sliding-scale % **active enforcement** + full waterfall report | 33-lane (3 targets concurrent — needs the launcher, P4) | 1 × ~12-35 min |
+
+**Live-API floor ≈ 4 sequential E2Es (~50-70 min total)** — measured, parallel; not the pre-parallel ~4 h. The first **finished Anthropic resume** lands at the END of Stage B (W2.3). C/D/E refine targeting + composition on an already-shipping pipeline.
+
+### Prerequisites — corrected status (verified in code)
+
+| ID | Prereq | Status |
+|---|---|---|
+| P1 | Replay harness | 🟡 **IN MAIN**, competencies-only; extend per-lane |
+| P2 | Provider/judge concurrency + backoff | ⚠️ **NOT an apps_rg blocker** (elevated ceilings; lock was the real serializer, now removed). Real scope = **agent fan-out** throttle only |
+| P3 | Intra-run lane concurrency | ✅ **DONE-IN-MAIN** (PR #325; lock removed) |
+| P4 | Multi-target launcher (W5) | ❌ GAP — ~20-min W5 optimization, not a blocker |
+| P5 | Agent fan-out for offline build | ❌ not started; stagger ≤2-3 (server-rate-limits concurrent agents) |
+| P6 | Worktree runtime junctions + `.env` | ✅ done |
+| P7 | Measured A/B speedup | ✅ **DONE** (1.96×) |
+
+**Immediate next action:** one ~12-min baseline E2E on main → confirm the lane board + capture raw outputs → fix ibm_bullets / headline / exec_summary (validate offline via replay) → one 11/11 confirm E2E → build DOCX. That is the first finished resume.
 
 ---
 
@@ -51,7 +107,7 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | P0 | P0.1, P0.2, P0.3 | Candidate-fact deprecation and test gate | ~12K | GraphDB can expose equivalent fact/proof/source identifiers or fail closed where missing | DONE | `candidate_fact` authority is deprecated and tested before W1 starts |
 | W1 | W1.1, W1.2 | Finalized graph baseline without typed edges | ~14K | Current graph receipts, fixtures, and E2E command path are discoverable | DONE | Met current-substrate-passable bar 2026-06-13: 5 lanes X3_ALLOW (unify_bullets, insurtech_bullets, ey_bullets, insurtech_narrative, ey_narrative); 6 lanes deferred to W2 with blocker ledger; durable Claude-era ctx/output config landed in code defaults (32768 ctx / 4096 output / 8192 hard cap). Full 11/11 successful E2E is the W2 exit gate. |
-| W2 | W2.0, W2.1, W2.2, W2.3 | Pre-B metric-outcome materialization, GraphDB SSOT, graph-era runtime field migration, and `fact_ledger` reference removal | ~24K | GraphDB can expose all skills, metrics, and metric outcomes needed by generation before Stage B E2E | TODO | Metric outcomes are first-class and behavior-neutral at B0; no skills or metrics eligibility path depends on `fact_ledger` at B; both E2E deltas are explained |
+| W2 | W2.0, W2.1, W2.2, W2.3 | Pre-B metric-outcome materialization, GraphDB SSOT, graph-era runtime field migration, and `fact_ledger` reference removal | ~24K | GraphDB can expose all skills, metrics, and metric outcomes needed by generation before Stage B E2E | IN_PROGRESS | W2.0 ✅ (metric_outcome merged in main) · W2.1 ✅ (B0 E2E ran) · W2.2 🟡 (competencies lane ✅ X3_ALLOW merged; ibm_bullets/headline/exec_summary open) · W2.3 ⏳ (11/11 exit gate → first finished resume) |
 | W3 | W3.1, W3.2 | Role-family and role-facet targeting | ~18K | Role facets can be implemented as targeting weights over eligible graph paths | TODO | Three-target E2E shows role-family variance without partner-only overfit |
 | W4 | W4.1, W4.2 | Typed GraphDB proof/traversal edges | ~20K | Typed edges can be layered over the GraphDB SSOT without changing app/core boundaries | TODO | Three-target E2E shows typed edges explain eligibility and block unsupported paths |
 | W5 | W5.0, W5.1, W5.2, W5.3, W5.4 | Per-target threshold authoring, sliding-scale dry-run, active enforcement, anti-overfit guardrails, and waterfall closeout | ~31K | Composition metrics can be emitted before prompt assembly and enforcement can be toggled independently from diagnostics | TODO | All 3 target threshold tables exist before W5.1; dry-run and active-enforcement E2E each cover all 33 target-lane combinations and isolate sliding-scale behavior against W1 and prior stage |
@@ -65,10 +121,10 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 | P0.3 | Run candidate-fact deprecation tests and block W1 on failures | DONE |
 | W1.1 | Resolve canonical E2E commands, target fixtures, and baseline graph receipts | DONE |
 | W1.2 | Run single-resume successful E2E without typed edges (Stage A gate) | DONE (current-substrate-passable; 6 lanes deferred to W2 — see W1 Blocker Ledger) |
-| W2.0 | Materialize first-class `metric_outcome` nodes only | DONE |
-| W2.1 | Run pre-B metric-outcome E2E and prove behavior-neutral materialization | TODO |
-| W2.2 | Migrate graph-era runtime fields and fence `fact_ledger` / proof-pool authority | TODO |
-| W2.3 | Run GraphDB SSOT Stage B E2E and explain variance from B0 and W1 | TODO |
+| W2.0 | Materialize first-class `metric_outcome` nodes only | DONE (merged in main) |
+| W2.1 | Run pre-B metric-outcome E2E and prove behavior-neutral materialization | DONE (B0 E2E `artifacts/w2_b0/`; structural no-effect proof) |
+| W2.2 | Migrate graph-era runtime fields and fence `fact_ledger` / proof-pool authority | IN_PROGRESS (alias layer + competencies lane DONE in main; ibm_bullets/headline/exec_summary open — see lane board) |
+| W2.3 | Run GraphDB SSOT Stage B E2E and explain variance from B0 and W1 (= 11/11 exit gate → first finished resume) | TODO |
 | W3.1 | Introduce reusable role-family facets and target alignment diagnostics | TODO |
 | W3.2 | Run role-family E2E and explain variance from W2 | TODO |
 | W4.1 | Implement typed GraphDB edge contracts for proof, traversal, and targeting | TODO |
@@ -81,7 +137,7 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 
 ### Rebaselined Effort Model (replay + parallelization, 2026-06-13)
 
-> Conditional on the prerequisites in "## Parallelization & Replay Prerequisites" (P2/P4/P5 are open gaps).
+> Status corrected against merged main (see "## Rebaselined Waterfall — Current Main"): **P3 + P7 are DONE-in-main** (parallel executor merged, 1.96× measured). Remaining open gaps: **P4** (W5 launcher) and **P5** (agent fan-out). **P2 is NOT an apps_rg blocker** (agent-layer only).
 
 **Three forces reshape the remaining cost:**
 1. **Deterministic replay** cuts the *number* of live API calls — post-generation work (binding, backfill, gate logic, typed-edge contracts, diagnostics, field-renames) validates offline via `tools/apps_rg/replay_section_gates.py` (zero API). Only pre-generation changes (prompt/evidence/selection) and the per-stage gate confirmation need a live call.
@@ -90,15 +146,15 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 
 **Rebaselined remainder:**
 
-| Block | Offline (agent-parallel, ~0 API) | Live API | Est. wall-clock (live) |
+| Block | Offline (agent-parallel, ~0 API) | Live API | Est. wall-clock (live, MEASURED parallel) |
 |---|---|---|---|
-| Stage B / W2.3 | ibm_bullets metric_outcome wiring · headline lineage · exec_summary alias · `fact_ledger` fence (replay-validated) | 1 batched 11/11 E2E | ~8 min (lanes N-wide) |
-| Stage C / W3 | `role_facet_contract` · `selection_diagnostic` runner · neg-tests · 3-target smoke (non-gen) | 1 single-resume E2E | ~8 min |
-| Stage D / W4 | 7 typed-edge contracts · traversal packet · tests · 3-target smoke (non-gen) | 1 single-resume E2E | ~8 min |
+| Stage B / W2.3 | ibm_bullets metric_outcome wiring · headline lineage · exec_summary alias · `fact_ledger` fence (replay-validated) | 1 batched 11/11 E2E | **~12 min** (measured 11.7 min, parallel executor in main) |
+| Stage C / W3 | `role_facet_contract` · `selection_diagnostic` runner · neg-tests · 3-target smoke (non-gen) | 1 single-resume E2E | ~12 min |
+| Stage D / W4 | 7 typed-edge contracts · traversal packet · tests · 3-target smoke (non-gen) | 1 single-resume E2E | ~12 min |
 | Stage E0 / W5.2 | dry-run diagnostic engine · 2 threshold tables · **E0 = replay of Stage D** | 0 | replay |
-| Stage E1 / W5.4 | active-enforcement engine · waterfall report | 1 × 33-lane (3 targets concurrent) | ~12 min |
+| Stage E1 / W5.4 | active-enforcement engine · waterfall report | 1 × 33-lane (3 targets) | ~12 min if P4 launcher (3 concurrent), else ~35 min (3 sequential) |
 
-**Live-API floor = 4 sequential E2Es (~35-45 min total)**, vs the pre-rebaseline ~13 serial 20-min regens (≈ 4+ hours). The dominant remaining work is the **offline build**, parallelizable across agents on local compute. Net: roughly **1–2 focused sessions**, gated by the 4 serial live confirmations, not by the API loop.
+**Live-API floor = 4 sequential E2Es (~50-70 min total, measured-parallel)** — not the estimated ~8-min figure (corrected upward by the measured 11.7 min) and not the pre-parallel ~4 h. The dominant remaining work is the **offline build**, parallelizable across agents on local compute. Net: roughly **1–2 focused sessions**, gated by the 4 serial live confirmations, not by the API loop. **First finished Anthropic resume lands at the end of Stage B (W2.3).**
 
 ---
 
@@ -383,19 +439,20 @@ A stage is not complete unless every required lane — the single chosen resume'
 
 ## Parallelization & Replay Prerequisites
 
-> Added 2026-06-13. The rebaselined effort numbers (4 live E2Es, offline build) are **conditional**: they
-> hold only when the prerequisites below are satisfied. P2/P4/P5 are the **open gaps**. The serial-waterfall
+> Added 2026-06-13, status corrected against merged main. **P3 + P7 are DONE-in-main** (parallel executor
+> merged, 1.96× measured); **P2 is NOT an apps_rg blocker** (the lock was the serializer, now removed). The
+> remaining **open gaps are P4** (W5 multi-target launcher) **and P5** (agent fan-out). The serial-waterfall
 > constraint (B→C→D→E1 cannot overlap) is **irreducible** — no prerequisite removes it.
 
 | ID | Prerequisite | Why required | Owner | Status |
 |---|---|---|---|---|
-| **P1** | Replay harness for all 11 lanes (`tools/apps_rg/replay_section_gates.py`) | each lane's post-gen fix validates offline (zero API) instead of a live regen | orchestration | 🟡 1 of 11 (competencies; extend per-lane) |
-| **P2** | Provider + judge **concurrency + 429 backoff** in `section_provider_call.py` / `section_judge_policy.py` | wave-1 N-wide ⇒ N concurrent Claude + judge calls; no async/semaphore/backoff found ⇒ rate-limit failures (observed live: the rebaseline workflow's 6 concurrent agents were server-rate-limited) | apps_rg runtime | ❌ **GAP — load-bearing for all lane concurrency** |
-| **P3** | Intra-run lane concurrency (`workflow_manifest` wave-1 `max_parallel 1→4`, wave-0 `2→5`) | makes one E2E fast | apps_rg runtime | 🟡 in-flight (A/B in sibling chat) |
-| **P4** | Multi-target launcher (run 3 targets concurrently) | W5 E1 33-lane runs ~1× wall-clock instead of 3× | apps_rg runtime / ops | ❌ GAP (no launcher) |
-| **P5** | Agent fan-out (Workflow over the offline build) | parallelize the 3 W2.2 lanes + W3/W4 contracts + W5 tables; **subject to P2-class throttling — stagger/backoff** | orchestration | ❌ not started (first attempt rate-limited) |
-| **P6** | Worktree runtime junctions + `.env` (`data/cache/sparse` + `chromadb`) | any E2E fails closed without them | operator | ✅ done (this worktree) |
-| **P7** | Measured A/B lane-parallel speedup | replaces the estimated ~8-min figure with the real number | sibling chat | ⏳ pending |
+| **P1** | Replay harness for all 11 lanes (`tools/apps_rg/replay_section_gates.py`) | each lane's post-gen fix validates offline (zero API) instead of a live regen | orchestration | 🟡 **IN MAIN**, competencies-only (1/11); extend per-lane |
+| **P2** | Provider + judge concurrency + 429 backoff in `section_provider_call.py` / `section_judge_policy.py` | concurrent provider/judge calls | apps_rg runtime | ✅ **NOT an apps_rg blocker** — code-verified: the serializer was `_ENV_OVERLAY_LOCK` (now removed), provider ceilings are elevated (Claude 5000 RPM). Real scope = **agent fan-out (P5)** throttle only (6 concurrent agents were server-rate-limited) |
+| **P3** | Intra-run lane concurrency (lock-free executor + manifest caps) | makes one E2E fast | apps_rg runtime | ✅ **DONE-IN-MAIN** (PR #325 / commit `06502b57f8`; `_ENV_OVERLAY_LOCK` removed, `default_max_parallel: 5`, wave-1 `max_parallel: 4`) |
+| **P4** | Multi-target launcher (run 3 targets concurrently) | W5 E1 33-lane runs ~1× wall-clock instead of 3× | apps_rg runtime / ops | ❌ GAP (verified: no launcher in code) — ~20-min W5 optimization, not a blocker |
+| **P5** | Agent fan-out (Workflow over the offline build) | parallelize the 3 W2.2 lanes + W3/W4 contracts + W5 tables; **server-rate-limits concurrent agents — stagger ≤2-3** | orchestration | ❌ not started (first attempt server-rate-limited) |
+| **P6** | Worktree runtime junctions + `.env` (`data/cache/sparse` + `chromadb`) | any E2E fails closed without them | operator | ✅ done |
+| **P7** | Measured A/B lane-parallel speedup | replaces the estimated ~8-min figure with the real number | sibling chat | ✅ **DONE — 1.96× (704s vs 1383s); use 11.7 min/E2E** |
 
 **Dependency note:** P2 underpins P3/P4/P5 — concurrency without backoff is throttled, not faster. Close P2
 before trusting any parallel speedup (including the A/B in P7 and the agent fan-out in P5).
