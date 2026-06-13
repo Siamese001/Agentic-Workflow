@@ -390,7 +390,7 @@ def main():
             "ops_scripts/ci/adg_gates/gate_agentic_core_purity.py",
             "AG-PURITY",
         ),
-        # NOTE: check_windsurf_config_schema.py is canonical in wiring_gates (§26 label).
+        # NOTE: check_legacy_tree_config_schema.py is canonical in wiring_gates (§26 label).
         # Removed from assurance_gates 2026-05-05 to eliminate true CI-plane duplication.
         # See: ops_scripts/ci/run_contract_gates.py wiring_gates entry "§26 Windsurf config schema purity".
         ("W1 runtime trace contract", "ops_scripts/ci/check_runtime_trace_contract.py"),
@@ -1041,7 +1041,7 @@ def main():
         # .cursor/ files + no active .cursor/ path construction in live code.
         (
             "NO-CURSOR-REFS .cursor decommission anti-regression",
-            "ops_scripts/ci/check_no_cursor_refs.py",
+            "ops_scripts/ci/check_no_legacy_ide_refs.py",
         ),
         # MCP-PARITY — canonical fleet parity across editor configs.
         (
@@ -1087,7 +1087,7 @@ def main():
         ),
         (
             "WIND-DEL docs/archive/windsurf/legacy-tree deletion readiness report (advisory)",
-            "ops_scripts/ci/check_windsurf_deletion_readiness.py",
+            "ops_scripts/ci/check_legacy_tree_deletion_readiness.py",
         ),
         # GOV-1..GOV-4 — Agentic Core governance enforcement gates
         # Plan: agentic-core-governance-remediation-c4e8a2 W1.
@@ -1359,7 +1359,7 @@ def main():
         ("W5 waiver expiry", "ops_scripts/ci/check_waiver_expiry.py"),
         (
             "§26 Windsurf config schema purity",
-            "ops_scripts/ci/check_windsurf_config_schema.py",
+            "ops_scripts/ci/check_legacy_tree_config_schema.py",
         ),
         # §31 — SSOT folder routing for NEW Python files. Pre-commit covers
         # commit-time staged-file checks; this aggregator entry ensures CI

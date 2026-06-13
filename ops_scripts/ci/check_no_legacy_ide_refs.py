@@ -42,7 +42,7 @@ EXCLUDE_SUBSTR = ("/_legacy_", "/_archive/", "/__pycache__/", "/docs/archive/",
 # Legacy/self/historical-purpose files that intentionally retain .cursor references
 # (one-shot migration tools, the cursor-era RULES_INDEX generator, this gate itself).
 DENYLIST_FILES = {
-    "ops_scripts/ci/check_no_cursor_refs.py",
+    "ops_scripts/ci/check_no_legacy_ide_refs.py",
     "ops_scripts/maintenance/rewrite_windsurf_refs_to_cursor.py",
     "ops_scripts/maintenance/rewrite_cascade_to_cursor.py",
     "ops_scripts/ci/governance_w2_dedupe_report.py",  # historical cursor-era report emitter
