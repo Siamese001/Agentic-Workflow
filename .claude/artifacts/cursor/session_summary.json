@@ -1,9 +1,0 @@
-{
-  "timestamp_utc": "2026-06-07T18:48:29.688405+00:00",
-  "via": "dispatcher",
-  "lines_kept": {
-    "spawned_processes.jsonl": 0,
-    "mcp_tool_audit.jsonl": 0,
-    "mcp_lint_audit.jsonl": 0
-  }
-}
