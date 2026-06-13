@@ -74,11 +74,15 @@ waves:
     description: upstream proof-bearing sections (competencies + bullets), parallel-eligible
     lanes: [competencies, unify_bullets, ibm_bullets, insurtech_bullets, ey_bullets]
     max_parallel_env: APPS_RG_PHASE1_MAX_PARALLEL
-    default_max_parallel: 2
+    default_max_parallel: 5
   - id: 1
+    # 2026-06-13: unpinned from max_parallel:1 (stale vLLM-era serialization). The 4
+    # narratives are mutually independent (each depends only on its own bullets lane in
+    # wave 0), so they parallelize safely now that run_lane_in_context is lock-free
+    # (section_lane_executor.py). See memory apps-rg-parallel-orchestration-nonfunctional.
     description: downstream narratives (after finalized companion bullets)
     lanes: [unify_narrative, ibm_narrative, insurtech_narrative, ey_narrative]
-    max_parallel: 1
+    max_parallel: 4
   - id: 2
     description: heavy downstream synthesis (executive_summary) solo
     lanes: [executive_summary]
