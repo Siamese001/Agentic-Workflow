@@ -16,7 +16,7 @@
 | "Track this as tasks" | ✅ Yes | — |
 | "Decompose into subtasks" across sessions | ✅ Yes | — |
 | Long-horizon multi-session epic | ✅ Yes | — |
-| In-session multi-step work | ❌ No | `structured-reasoning` (SR_PLAN) |
+| In-session multi-step work | ❌ No | native plan mode + `structured-reasoning` guidance |
 | Plan-file work | ❌ No | `.claude/plans/*.md` |
 
 ### Tool Routing

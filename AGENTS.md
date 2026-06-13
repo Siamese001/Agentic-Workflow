@@ -4,11 +4,11 @@
 
 Root `AGENTS.md` is always-on. Push specialized guidance to subdirectory `AGENTS.md` files or `.claude/rules/` / skills.
 
-**T2/T3** (2+ files, cross-layer, architecture, multi-file debug): first output = plan; invoke `structured-reasoning` skill → `SR_INTAKE` … `SR_VERIFY`. See `.claude/rules/plan-first-enforcement.mdc`.
+**T2/T3** (2+ files, cross-layer, architecture, multi-file debug): enter native plan mode and present the plan for approval before any edit. Use the `structured-reasoning` skill only as decomposition / retrieval guidance inside that plan-mode workflow. See `.claude/rules/plan-first-enforcement.md`.
 
 **T0/T1**: single file ≤20 lines or questions — answer/edit directly.
 
-**Layer separation:** Reasoning / Routing / Execution / Verification — no edits before `SR_APPROVAL`.
+**Layer separation:** Reasoning / Routing / Execution / Verification — no edits before plan approval.
 
 ## MCP Quick Reference
 

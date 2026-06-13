@@ -190,7 +190,7 @@ Once both healthy, **return to and resume the original user prompt** that trigge
 - Skill: `.claude/skills/structured-reasoning/SKILL.md`
 - Reference: `docs/mcp/sequential-thinking-replacement.md`
 
-**If you see `sequentialthinking` tool calls in old code or logs**: These are stale references to the retired `@modelcontextprotocol/server-sequential-thinking` package. Update them to use the SR_INTAKE + SR_PLAN pattern described in the skill.
+**If you see `sequentialthinking` tool calls in old code or logs**: These are stale references to the retired `@modelcontextprotocol/server-sequential-thinking` package. Update them to use native plan mode with `structured-reasoning` decomposition guidance.
 
 **If zombie node.exe processes remain from old invocations:**
 // turbo
@@ -249,4 +249,4 @@ If connection refused → OTel collector is not running. This is acceptable if O
 
 **Grep CANNOT be used as a fallback when ANY MCP is down.** Per constitutional §2.3 fail-closed rule: stop work, fix the MCP, then resume. This workflow IS the fix path.
 
-**This applies to ALL MCPs:** ADG SQLite, Redis, Sequential Thinking, PyTest, OTel.
+**This applies to active MCPs and the retired Sequential Thinking tombstone:** ADG SQLite, Redis, PyTest, OTel, and stale Sequential Thinking references.

@@ -1,8 +1,8 @@
 ---
 name: structured-reasoning
-description: Provides the plan-first, execute-second reasoning packet (SR_INTAKE, SR_PLAN, SR_APPROVAL, SR_EXECUTE, SR_VERIFY) for complex multi-step tasks. Use when the task is T2/T3 (2+ files, cross-layer, architecture decisions, or multi-file debugging) and requires explicit decomposition, branching, revision, and evidence validation before any edits begin.
+description: Provides plan-first decomposition, retrieval discipline, branching, revision, and evidence validation guidance for complex T2/T3 work. Use inside native plan mode; do not emit the retired SR_* marker packet.
 metadata:
-  enforcement_layer: cursor
+  enforcement_layer: claude_code
   enforcement_timing: before_work
   enforcement_type: behavioural
 ---
@@ -18,7 +18,7 @@ metadata:
 
 **Prerequisite**: None. This skill is self-contained.
 
-**Invocation**: Automatically applies to all T2/T3 tasks. Manually via `/structured-reasoning` (workflow is a thin alias to this skill — do not duplicate phase bodies in the workflow file).
+**Invocation**: Applies as guidance inside native plan mode for T2/T3 tasks. Manually via `/structured-reasoning` (workflow is a thin alias to this skill — do not duplicate phase bodies in the workflow file).
 
 ---
 
@@ -31,9 +31,9 @@ Four layers — keep them separated at all times:
 | Layer | What happens here | Allowed tools |
 |-------|------------------|---------------|
 | **Reasoning** | Goal normalization, decomposition, branch analysis | Claude Code reasoning only |
-| **Routing** | Tool selection, MCP health check, fallback planning | `adg_health` (server: `adg_sqlite`), `create_task` (server: `task_manager`) |
-| **Execution** | Edits, writes, commands | All tools — only after APPROVED |
-| **Verification** | Tests, health checks, diff review | `run_tests` (server: `pytest_mcp`), `git_status` (server: `GitKraken`) |
+| **Routing** | Tool selection, MCP health check, fallback planning | Read-only health checks and documented fallbacks |
+| **Execution** | Edits, writes, commands | All tools — only after plan approval |
+| **Verification** | Tests, health checks, diff review | Repo test command, MCP health check, git diff/status |
 
 Collapsing all four into one opaque step is **FORBIDDEN**.
 
@@ -55,80 +55,84 @@ Collapsing all four into one opaque step is **FORBIDDEN**.
 
 ---
 
-## Plan-First Protocol
+## Native Plan-Mode Protocol
 
-### Step 1 — Emit SR_INTAKE block
+### Step 1 — Enter plan mode
 
-Before any tool calls, write:
+For T2/T3 work, enter native plan mode before edits. Normalize the objective, constraints,
+assumptions, tier, and touched surfaces.
+
+### Step 2 — Decompose the plan
+
+Present numbered, verb-first steps:
 
 ```
-## SR_INTAKE
 Objective: <one sentence>
-Constraints: [list]
-Assumptions: [list — flag uncertain ones]
+Constraints:
+  - <constraint>
+Assumptions:
+  - <assumption, flagged if uncertain>
 Tier: T2 | T3
+
+Plan:
+1. <read/evidence step>
+2. <implementation step>
+N. <verification step>
+
+Tools needed:
+  - <tool or repo script> — <why>
+
+Missing information:
+  - <gap or NONE>
+
+Risks / stop conditions:
+  - <risk>
 ```
 
-### Step 2 — Decompose into SR_PLAN
-
-Use `create_task` + `decompose_task` (server: `task_manager`) for tracking. Emit numbered steps:
-
-```
-## SR_PLAN
-1. [verb-first concrete step]
-2. ...
-N. [verification]
-
-Tools needed: [list with justification]
-Missing info: [list gaps]
-Risks / stop conditions: [list]
-```
+Use `task_manager` only when the user explicitly wants durable tracked tasks across sessions. Ordinary
+in-session decomposition belongs in the plan itself.
 
 ### Step 3 — Pull evidence (reads only, no writes)
 
-Execute only query/read calls. Confirm:
-- ADG MCP healthy (`mcp__adg_sqlite__adg_health`)
-- Session context loaded (`mcp__memory__mem_recall_session_start`)
+Execute only query/read calls while still in the planning phase. Confirm:
+- ADG health or the documented local fallback when structural dependency evidence matters
+- Memory/session context when durable precedent matters
 - All relevant files read
-- Blast radius confirmed via ADG fanout/fanin
+- Blast radius confirmed for cross-file changes
 
-### Step 4 — Validate plan against evidence
+### Step 4 — Validate the plan against evidence
 
-Emit one of:
-- `SR_APPROVAL: APPROVED`
-- `SR_APPROVAL: REVISED` (re-emit plan, loop back)
-- `SR_APPROVAL: CLARIFY` (ask user a specific question)
-- `SR_APPROVAL: ABSTAIN` (evidence too weak)
+Choose one outcome:
+- proceed with the plan if the user has already approved implementation or approves the plan
+- revise the plan and re-present the changed steps
+- clarify with a focused user question
+- abstain when evidence is too weak to proceed safely
 
-### Step 5 — Execute (only after APPROVED)
+### Step 5 — Execute only after approval
 
-Step-by-step. Name each step. State tool. Check result before next step.
+Step-by-step. Name each step. State the tool or command. Check result before moving to the next step.
 
-### Step 6 — Emit SR_SUMMARY
+### Step 6 — Verify and summarize
 
-After execution, emit this block with all fields:
+After execution, report:
 
 ```
-## SR_SUMMARY
 What changed:
-  - <file or artifact> — <what was done>
+  - <file or artifact>: <what was done>
 
 What was verified:
   - <test run / health check / diff review>
 
 What remains uncertain:
-  - <item> — <why uncertain>
+  - <item>: <why uncertain>
   - NONE (if fully resolved)
 
 Rollback / repair note:
-  - <git reset or file restore command>
-  - N/A (if no destructive changes)
+  - <git restore / revert command or N/A>
 
 Recommended next step:
-  - <concrete action — who, what, when>
+  - <concrete action, or NONE>
 ```
-
-Then update task: `update_task` (server: `task_manager`) with `status=done` and `lessons_learned`.
 
 ---
 
@@ -191,7 +195,7 @@ Revision is required after:
 
 Each revision must:
 - State what changed and why
-- Re-emit the affected steps as `SR_PLAN_v2` (or v3, etc.)
+- Re-present the affected plan steps
 - Not silently carry forward stale assumptions
 
 ---
@@ -249,15 +253,15 @@ These evidence rules apply when this skill is used:
 - Relies on stale session context (>30 min since last `mem_recall`)
 - Missing blast radius confirmation for cross-file changes
 
-Weak evidence → `SR_APPROVAL: CLARIFY` or `SR_APPROVAL: ABSTAIN`.
+Weak evidence means revise the plan, ask a focused clarification question, or abstain.
 
 ---
 
 ## Forbidden Patterns
 
-- ❌ Emitting edits before `SR_APPROVAL: APPROVED`
+- ❌ Emitting edits before native plan approval
 - ❌ Silently collapsing a branch without evidence
-- ❌ Skipping `SR_INTAKE` block
+- ❌ Skipping plan mode for T2/T3 work
 - ❌ Retrying a hung MCP tool call in a loop
 - ❌ Using grep as a substitute for ADG MCP when ADG fails
 - ❌ Leaving tasks in `in_progress` indefinitely
@@ -269,6 +273,6 @@ Weak evidence → `SR_APPROVAL: CLARIFY` or `SR_APPROVAL: ABSTAIN`.
 ## Supporting Files
 
 - `checklist.md` — pre-execution gate checklist
-- `plan-template.md` — copy-paste SR_INTAKE + SR_PLAN template
-- `verification-template.md` — copy-paste SR_SUMMARY template
+- `plan-template.md` — copy-paste native plan-mode template
+- `verification-template.md` — copy-paste verification summary template
 - `failure-template.md` — what to emit when a step fails mid-execution

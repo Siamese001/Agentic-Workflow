@@ -1,10 +1,10 @@
-# Structured Reasoning — Step Failure Template
+# Structured Reasoning - Step Failure Template
 
-Emit this block when a step fails during Phase E (execution).
+Use this when an execution or verification step fails.
 
 ```
-## SR_STEP_FAILURE
-Failed step: N — <step title>
+## STEP_FAILURE
+Failed step: N - <step title>
 Timestamp: <ISO>
 Error: <exact error message or behavior>
 
@@ -18,16 +18,15 @@ Impact:
   - Partial state: <describe inconsistency, if any>
 
 Recovery action:
-  OPTION A — Rollback and retry:
-    git reset --hard <baseline>
-    <restore commands>
+  OPTION A - Roll back and retry:
+    <restore/revert commands>
     Retry from step N with: <corrected approach>
 
-  OPTION B — Route around:
+  OPTION B - Route around:
     Skip step N; proceed to step N+1 with caveat: <what is now missing>
-    Document gap: [GAP — <description>]
+    Document gap: [GAP - <description>]
 
-  OPTION C — Abstain:
+  OPTION C - Abstain:
     Cannot safely proceed. Recommend: <specific user action>
 
 Selected: OPTION <A|B|C>
@@ -40,13 +39,13 @@ MCP failure? YES | NO
 
 ---
 
-## MCP Hang Recovery (quick reference)
+## MCP Hang Recovery
 
-1. STOP — do not retry
-2. If ADG (`mcp1`): run `/mcp-failure-rca` STEP 1
-3. If Task Manager (`mcp13`): use `todo_list` fallback
-4. If Filesystem (`mcp7`): use `read_file` native tool
-5. If Pytest (`mcp11`): use `run_command` with pytest CLI
-6. If GitKraken (`mcp0`): use `run_command` with git CLI
-7. Note `[MCP UNAVAILABLE — <name> — proceeding with fallback]` in response
-8. Never use grep as ADG substitute
+1. STOP; do not retry the hung call in a loop.
+2. If ADG (`adg_sqlite`) is required, run `/mcp-failure-rca`.
+3. If Task Manager is unavailable, skip durable tracking unless the user requested it.
+4. If Filesystem MCP is unavailable, use the native file tools.
+5. If Pytest MCP is unavailable, use the repo pytest command.
+6. If GitKraken is unavailable, use the git CLI.
+7. Note `[MCP UNAVAILABLE - <name> - proceeding with fallback]` in the response.
+8. Never use grep as an ADG substitute for structural dependency evidence.

@@ -1,296 +1,95 @@
-# Sequential Thinking MCP — Retirement & Replacement
+# Sequential Thinking MCP - Retirement & Replacement
 
 **Status**: RETIRED (2026-04-07)
-**Replacement**: Native Cursor Agent reasoning + compositional MCP pattern
-**Workflow**: `/structured-reasoning`
-**Skill**: `.windsurf/skills/structured-reasoning/SKILL.md`
-**Rule**: `.windsurf/rules/sequential-thinking-enforcement.md`
+**Current replacement**: Claude Code native plan mode plus the `structured-reasoning` skill for
+decomposition and retrieval discipline.
+**Skill**: `.claude/skills/structured-reasoning/SKILL.md`
+**Rule**: `.claude/rules/plan-first-enforcement.md`
+
+`structured-reasoning` is not the old MCP. The old MCP was the
+`@modelcontextprotocol/server-sequential-thinking` package and its `sequentialthinking` tool.
 
 ---
 
 ## Why Sequential Thinking Was Retired
 
-### Root Cause Assessment
+Confirmed findings:
 
-**Confirmed findings:**
+1. **stdio transport fragility on Windows** - The MCP used Node.js stdio transport. In Windows
+   subprocess contexts, `npx` resolution was fragile unless routed through `npx.cmd` or a hardcoded
+   `node.exe` path.
+2. **Zombie node.exe processes** - Hangs left orphaned Node processes that blocked later starts.
+3. **Over-configuration** - Prior config attempts added environment variables that were not part of
+   the published MCP protocol.
+4. **Suppressed diagnostics** - `DISABLE_THOUGHT_LOGGING=true` removed useful failure signal.
+5. **Architectural mismatch** - A reasoning MCP added latency and failure modes on top of a model that
+   already performs native reasoning.
 
-1. **stdio transport fragility on Windows** — The Sequential Thinking MCP used `@modelcontextprotocol/server-sequential-thinking` via Node.js stdio transport. On Windows, `npx` without `.cmd` extension fails to resolve in subprocess context. The backup config (`mcp_config_backup.json`) shows the server was launched with a hardcoded absolute path to `node.exe` — a fragile workaround for this exact problem.
-
-2. **Zombie node.exe processes** — When the MCP hung, it left orphaned `node.exe` processes that blocked subsequent starts. Recovery required `taskkill /f /im node.exe`, which kills all Node processes in the system.
-
-3. **The `mcp_config_enhanced.json` shows attempted over-configuration** — The file contains 7 custom environment variables (`SEQUENTIAL_THINKING_KIMI_MODE`, `SEQUENTIAL_THINKING_AUTO_TRIGGER`, `SEQUENTIAL_THINKING_INTEGRATION_MODE`, etc.) that are not part of the published MCP protocol. These are cargo-cult knobs — they have no effect on the actual server but indicate increasingly desperate tuning attempts.
-
-4. **`DISABLE_THOUGHT_LOGGING=true` was set** — This suppresses the only diagnostic output the server emits, making hang diagnosis impossible. The fix for "it's noisy" created "it's silent when broken."
-
-5. **Capability negotiation mismatch** — The server expects to be invoked repeatedly as a "reasoning loop" tool. In practice, Windsurf's Cursor Agent model drives the reasoning natively; the MCP was being used as a meta-layer on top of an already-reasoning model, creating a redundant abstraction with no performance guarantee.
-
-**Likely findings (not fully confirmed):**
-
-6. **Bad invocation pattern** — Cursor Agent was expected to call `mcp7_sequentialthinking` as a blocking reasoning primitive, then act on its output. This created a synchronous dependency on a process that could hang indefinitely. No timeout was configured at the Windsurf layer.
-
-7. **Oversized tool surface** — The server exposed a single tool (`sequentialthinking`) with open-ended parameters. This made parameter validation impossible and created an opaque black box that violated the compositional principle.
-
-**Unknowns:**
-
-- Whether the server would have been stable on a Unix host (stdio is more reliable there)
-- The exact hang trigger (network call? file system? node module resolution?)
-- Whether the ADG-awareness env vars were ever parsed by any code
-
-**Operationally irrelevant:**
-
-Even if the root cause is fully resolved, the architectural case for a dedicated "reasoning MCP" is weak. Cursor Agent's native reasoning is more capable, observable, and reliable than a tool-server abstraction that adds latency and failure modes without adding capability.
+Operationally, the dedicated reasoning MCP was the wrong abstraction. Plan-first behavior belongs in
+the agent contract, not in a tool server.
 
 ---
 
-## Replacement Architecture
+## Current Contract
 
-The replacement reproduces all Sequential Thinking behaviors using current healthy MCPs and native Windsurf features.
+For T2/T3 work:
 
-### What Sequential Thinking Was Supposed to Provide
+1. Enter native plan mode.
+2. Normalize objective, constraints, assumptions, tier, and touched surfaces.
+3. Gather evidence with read/query tools only.
+4. Present a numbered plan for approval.
+5. Make no edits until the plan is approved.
+6. Execute step by step.
+7. Verify with tests, health checks, and diff review.
 
-| Capability | Old approach | Replacement |
-|------------|-------------|-------------|
-| Task decomposition | `sequentialthinking` tool call | `mcp13_create_task` + `mcp13_decompose_task` + native Cursor Agent |
-| Ordered reasoning | MCP thought chain | SR_PLAN numbered steps (explicit, inspectable) |
-| Revision / self-correction | MCP internal state | SR_PLAN_v2 with explicit revision reason |
-| Branching under uncertainty | MCP branch parameter | BRANCH POINT blocks + HITL via `ask_user_question` |
-| Explicit tool selection | MCP output | "Tools needed:" section in SR_PLAN |
-| Controlled execution after plan validation | MCP gate | SR_APPROVAL gate (APPROVED / REVISED / CLARIFY / ABSTAIN) |
+The `structured-reasoning` skill remains useful for:
 
-### Five-Phase Pattern
+- decomposition shape
+- evidence ordering
+- branch handling
+- revision discipline
+- verification summaries
 
-```
-A: Intake        → normalize goal, constraints, assumptions
-B: Decompose     → numbered plan, branch points, tool selection
-C: Evidence pull → read-only — ADG, files, session context
-D: Approval gate → APPROVED / REVISED / CLARIFY / ABSTAIN
-E: Execute       → step by step, named tools, result check before next step
-F: Verify        → SR_SUMMARY — what changed, what verified, what uncertain
-```
-
-**Key invariant**: Phases A–D produce no edits. Phase E only runs if D emits APPROVED.
+It must not be used as a marker-emission workflow. The old SR marker packet was retired by
+`claude-native-supersession-9d3f7a` / ADR-094 because native plan mode now provides the approval gate.
 
 ---
 
-## MCP Role Mapping
+## Replacement Mapping
 
-Each MCP has exactly one functional role. No single MCP is an opaque reasoning black box.
+| Capability | Old Sequential Thinking MCP | Current replacement |
+|------------|-----------------------------|---------------------|
+| Task decomposition | `sequentialthinking` tool call | Native plan mode, optionally guided by `structured-reasoning` |
+| Ordered reasoning | MCP thought chain | Numbered plan in plan mode |
+| Revision | MCP internal state | Re-present changed plan steps with the evidence reason |
+| Branching under uncertainty | MCP branch parameter | Branch point text plus Author-Gate / `AskUserQuestion` when genuinely ambiguous |
+| Tool selection | MCP output | "Tools needed" in the plan |
+| Execution gate | MCP-controlled gate | Native plan approval |
 
-| MCP | Prefix | Role | Reliability |
-|-----|--------|------|-------------|
-| ADG SQLite | `mcp1` | Context / evidence — primary structural truth | High (Python, local SQLite) |
-| Memory | `mcp9` | Memory / checkpointing — session context | Medium (SQLite, depends on memory server) |
-| Task Manager | `mcp13` | Plan tracking / decomposition | Medium (npx-based, can degrade) |
-| Filesystem | `mcp7` | Context / evidence — file reads | High (npx, but `read_file` native fallback always available) |
-| Pytest MCP | `mcp11` | Validation / verification | Medium (Python, depends on pytest server) |
-| GitKraken | `mcp0` | Validation / version control | High (gk.exe, binary) |
-| Brave Search | `mcp2` | External lookup | Medium (requires API key, network) |
-| Enhanced HTTP | `mcp4` | External lookup — HTTP requests | Medium (Python, local) |
-| DeepWiki | `mcp3` | External lookup — repo docs | Low (remote URL, network dependent) |
-| Redis MCP | `mcp12` | Cache / state inspection | Medium (depends on Redis server running) |
-| Playwright | `mcp10` | External lookup / browser automation | Low (heavy, use only when needed) |
-| Figma | `mcp6` | External lookup — design assets | Low (requires API key, use only when needed) |
-
-**Fallback chain for evidence failure:**
-1. ADG MCP fails → `/mcp-failure-rca` → do NOT grep
-2. Memory MCP fails → proceed without session context, note `[MEMORY UNAVAILABLE]`
-3. All file MCPs fail → use `read_file` Windsurf native (always present)
-
----
-
-## Invocation Examples
-
-### Example 1 — T2 Scoped Refactor (complete A→F cycle)
-
-This example shows every phase in sequence. Real output would contain actual tool results.
-
-**PHASE A — Intake**
-```
-/structured-reasoning
-
-## SR_INTAKE
-Objective: Move RedisClient instantiation in L3 orchestration to use the shared connection pool
-Constraints:
-  - Must not break existing L3 integration tests
-  - L3→L4 layer direction must be preserved
-Assumptions:
-  - Shared pool is at agentic_core/L4_memory/redis_pool.py (to confirm)
-Tier: T2
-Complexity: medium
-```
-
-**PHASE B — Plan**
-```
-## SR_PLAN
-1. mcp1_adg_health — confirm ADG healthy
-2. mcp9_mem_recall_session_start — load session context
-3. mcp1_adg_nodes_by_file on L3 orchestration files — find RedisClient nodes
-4. mcp1_adg_edge_fanout — find what depends on current Redis usage
-5. Read agentic_core/L4_memory/redis_pool.py — confirm pool API exists
-6. Edit L3 file: replace inline RedisClient with pool.get_client()
-7. mcp11_run_tests tests/unit/agentic_core/L3_orchestration/ -q
-
-Tools needed: mcp1_adg_health, mcp1_adg_nodes_by_file, mcp1_adg_edge_fanout,
-              mcp9_mem_recall_session_start, read_file, mcp11_run_tests
-Missing information: None
-Risks: Pool API may differ from inline client — STOP if pool.get_client() not found
-```
-
-**PHASE C — Evidence Pull (reads only)**
-```
-[mcp1_adg_health → OK]
-[mcp9_mem_recall_session_start → session loaded]
-[mcp1_adg_nodes_by_file: agentic_core/L3_orchestration/broker.py →
-  found: RedisClient at line 14 (constructor), line 87 (publish call)]
-[mcp1_adg_edge_fanout from broker.py →
-  dependents: tests/unit/agentic_core/L3_orchestration/test_broker.py]
-[read_file: agentic_core/L4_memory/redis_pool.py →
-  found: get_client() → redis.Redis, confirmed pool exists]
-
-## SR_EVIDENCE_SUMMARY
-Evidence gathered: 5 items
-Plan still valid: YES
-Revision needed: NONE — pool API confirmed as get_client(), matches plan
-Branch selected: NONE — single clear path
-Missing gaps resolved: YES
-```
-
-**PHASE D — Approval Gate**
-```
-SR_APPROVAL: APPROVED — proceeding to execution
-```
-
-**PHASE E — Execution**
-```
-## EXECUTING Step 6 — Edit L3 file
-Tool: edit (agentic_core/L3_orchestration/broker.py)
-Change: replace `self._redis = RedisClient(host=..., port=...)` with
-        `self._redis = redis_pool.get_client()`
-Import added: `from agentic_core.L4_memory.redis_pool import redis_pool`
-[mcp13_update_task → step 6 done]
-
-## EXECUTING Step 7 — Run scoped tests
-Tool: mcp11_run_tests tests/unit/agentic_core/L3_orchestration/ -q
-Result: 12 passed, 0 failed, 0 errors
-[mcp13_update_task → step 7 done, task complete]
-```
-
-**PHASE F — Summary**
-```
-## SR_SUMMARY
-What changed:
-  - agentic_core/L3_orchestration/broker.py — replaced inline RedisClient
-    with redis_pool.get_client(); added import
-
-What was verified:
-  - 12 unit tests passed (tests/unit/agentic_core/L3_orchestration/)
-  - No new ADG layer violations (L3→L4 direction preserved)
-
-What remains uncertain:
-  - Integration test coverage for pool exhaustion / reconnect behavior
-    (not in scope of this change)
-
-Rollback / repair note:
-  - git revert HEAD -- agentic_core/L3_orchestration/broker.py
-
-Recommended next step:
-  - Add integration test for pool exhaustion path in test_broker.py
-```
-
----
-
-### Example 2 — T3 Architecture Decision (with branching)
-
-```
-/structured-reasoning
-
-## SR_INTAKE
-Objective: Introduce a new L2 execution engine for async task dispatch
-Constraints:
-  - Must fit L2 layer; cannot import from L3+
-  - Must have unit tests before any integration wiring
-Assumptions:
-  - No existing async dispatch engine (to confirm via ADG dedup check)
-Tier: T3
-Complexity: complex
-
-BRANCH POINT — Step 3:
-  Plan A: Extend base_exec_engine.py — use if async interface already abstract
-  Plan B: Create new async_exec_engine.py — use if base class is sync-only
-  Selecting after reading base_exec_engine.py
-```
-
-### Example 3 — MCP Failure Mid-Execution
-
-```
-## EXECUTING Step 4 — ADG fanout query
-mcp1_adg_edge_fanout called → HANG (no response after 10s)
-
-## SR_STEP_FAILURE
-Failed step: 4
-Error: mcp1_adg_edge_fanout hung indefinitely
-Recovery: OPTION A — Run /mcp-failure-rca before continuing
-[MCP UNAVAILABLE — ADG SQLite — running /mcp-failure-rca]
-```
+`task_manager` is only for durable, queryable task state across sessions. It is not required for
+ordinary in-session decomposition.
 
 ---
 
 ## Failure Handling
 
-### If ADG MCP is down
-→ Run `/mcp-failure-rca`. Do NOT grep. Work is blocked until MCP is healthy.
+If old logs, docs, or code mention `sequentialthinking`, treat that as a stale retired-MCP reference.
+Do not attempt to recover the old MCP. Update the reference to native plan mode with
+`structured-reasoning` as guidance.
 
-### If Task Manager is down
-→ Use `todo_list` native Windsurf tool. Note `[TASK MANAGER UNAVAILABLE]`.
-
-### If Memory MCP is down
-→ Proceed without session context. Note `[MEMORY UNAVAILABLE]`. Do not block on this.
-
-### If plan evidence is too weak
-→ Emit `SR_APPROVAL: ABSTAIN`. Explain what's missing. Ask user to provide missing information.
-
-### If execution partially completes then fails
-→ Emit `SR_STEP_FAILURE` block. Select recovery option. Do not silently continue.
+If an active MCP needed for evidence is unavailable, use `/mcp-failure-rca` or the documented fallback
+for that MCP. Do not substitute grep for ADG structural dependency evidence.
 
 ---
 
-## Operator Guidance
+## What Was Not Replaced
 
-### Daily use
-- T0/T1 tasks: skip this workflow entirely — answer directly or edit directly
-- T2/T3 tasks: invoke `/structured-reasoning` or apply the skill naturally
-- The plan block does not need to be verbose — 5–8 steps is enough for most T2 tasks
+The Sequential Thinking MCP was never responsible for:
 
-### When the plan changes mid-execution
-- Stop. Emit `SR_PLAN_v2`. Re-validate before continuing.
-- Do not silently carry forward stale assumptions.
+- file reads
+- code execution
+- test running
+- git operations
 
-### When to ABSTAIN
-- Evidence contradicts the plan and you cannot resolve it
-- A required MCP is down and its data is critical to the plan
-- The blast radius is larger than estimated and the user needs to decide scope
-
-### Maintaining this replacement
-- **Skill**: `.windsurf/skills/structured-reasoning/SKILL.md`
-- **Workflow**: `.windsurf/workflows/structured-reasoning.md`
-- **Rule**: `.windsurf/rules/sequential-thinking-enforcement.md`
-- **This doc**: `docs/mcp/sequential-thinking-replacement.md`
-
-If the Task Manager MCP (`mcp13`) becomes unreliable, replace its role with the `todo_list` native tool — the pattern does not depend on it.
-
----
-
-## What Was NOT Replaced
-
-The Sequential Thinking MCP was never used for:
-- File reads (that's Filesystem MCP / native `read_file`)
-- Code execution (that's `run_command`)
-- Test running (that's Pytest MCP / `run_command`)
-- Git operations (that's GitKraken MCP / `run_command`)
-
-It was used only for "structured thinking about what to do." That capability is now provided by:
-1. Cursor Agent's native reasoning (the model itself)
-2. The explicit SR_INTAKE + SR_PLAN + SR_APPROVAL protocol (the behavioral rule)
-3. Task Manager MCP for durable step tracking
-
-This is simpler, more observable, and more reliable than the MCP it replaces.
+It only attempted to externalize "thinking about what to do." That capability now lives in the
+Claude Code operating contract and the plan-first governance rule.

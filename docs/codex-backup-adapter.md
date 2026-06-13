@@ -8,8 +8,8 @@ Use these repo files as authoritative:
 
 | Concern | SSOT |
 | --- | --- |
-| Agent operating rules | `AGENTS.md` |
-| Always-on and on-demand rules | `.claude/rules/*.mdc` |
+| Agent operating rules | `CLAUDE.md` and the Codex-facing `AGENTS.md` adapter |
+| Always-on and on-demand rules | `.claude/rules/*.md` / `.claude/rules/*.mdc` |
 | Structured reasoning | `.claude/skills/structured-reasoning/SKILL.md` |
 | MCP live routing | `.mcp.json` and `.claude/skills/mcp-integration/SKILL.md` |
 | MCP dormant/re-add routing | `.claude/mcp-notes.md` and `.claude/skills/mcp-integration/sections/*.md` |
@@ -46,8 +46,8 @@ These files are evidence snapshots. For live routing decisions, read `.mcp.json`
 
 ## Operating rules for Codex
 
-1. For T0/T1 tasks, answer or edit directly while honoring `AGENTS.md`.
-2. For T2/T3 tasks, first output a structured plan using the repo's `SR_INTAKE` through `SR_VERIFY` phases.
+1. For T0/T1 tasks, answer or edit directly while honoring `CLAUDE.md` and the Codex-facing `AGENTS.md` adapter.
+2. For T2/T3 tasks, enter the repo's native plan-mode workflow: present a structured plan for approval before edits, using `structured-reasoning` only as decomposition / retrieval guidance.
 3. Do not edit during the planning phase.
 4. Prefer repo scripts and `.claude` guidance over ad hoc shell logic.
 5. Do not duplicate Claude Code hooks in Codex. Use `scripts/governance/verify_codex_backup.py` as the Codex-facing adapter check.

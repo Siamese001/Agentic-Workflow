@@ -1,63 +1,62 @@
-# Structured Reasoning — Plan Template
+# Structured Reasoning - Plan-Mode Template
 
-Copy-paste this at the start of any T2/T3 task.
+Use this inside native plan mode for T2/T3 work.
 
-> **MCP tool-name note:** Tool names below use the stable server-name style. In Claude Code the live tool id is `mcp__<server>__<tool>` (e.g. `adg_health` on server `adg_sqlite` → `mcp__adg_sqlite__adg_health`).
+> **MCP tool-name note:** Tool names below use the stable server-name style. In Claude Code the live
+> tool id is `mcp__<server>__<tool>` when that MCP is available.
 
 ---
 
 ```
-## SR_INTAKE
-Objective: 
+Objective:
 Constraints:
-  - 
+  -
 Assumptions:
-  - 
+  -
 Tier: T2 | T3
-Complexity: simple | medium | complex
+Touched surfaces:
+  -
 
-## SR_PLAN
-1. Call adg_health (server: adg_sqlite) — confirm ADG MCP is healthy
-2. Call mem_recall_session_start (server: memory) — load session context
-3. 
-4. 
-5. 
-N. Verification: run scoped tests / check git diff / confirm no layer violations
+Plan:
+1. Gather/read evidence:
+2. Confirm blast radius and stop conditions:
+3. Apply the scoped change:
+4. Verify:
 
 Tools needed:
-  - adg_health (server: adg_sqlite)
-  - mem_recall_session_start (server: memory)
-  - create_task (server: task_manager)
-  - 
+  - <tool or repo script>: <why>
 
 Missing information:
-  - 
+  - NONE | <specific gap>
 
 Risks / stop conditions:
-  - 
+  - <risk>
 ```
 
 ---
 
-## Branch Point Template (use when uncertain)
+## Branch Point Template
+
+Use when evidence could support multiple approaches.
 
 ```
-BRANCH POINT — Step N:
-  Plan A: <approach> — use if <condition from evidence>
-  Plan B: <approach> — use if <condition from evidence>
-  Plan C: <approach> — use if <condition from evidence>
-  [Selecting after evidence pull in Phase C]
+BRANCH POINT - Step N:
+  Plan A: <approach> - use if <condition from evidence>
+  Plan B: <approach> - use if <condition from evidence>
+  Plan C: <approach> - use if <condition from evidence>
+  Selecting after evidence pull.
 ```
 
 ---
 
-## Revision Template (use after evidence changes the plan)
+## Revision Template
+
+Use after evidence changes the plan.
 
 ```
-## SR_PLAN_v2
 Revision reason: <what evidence changed>
 Changed steps: N, M
 1. [unchanged]
-2. [revised step — what changed and why]
+2. [revised step - what changed and why]
 ...
 ```

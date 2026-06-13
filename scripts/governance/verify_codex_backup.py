@@ -13,6 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 CODEX_SKILLS_ROOT = Path.home() / ".codex" / "skills"
 
 REQUIRED_REPO_FILES = [
+    "CLAUDE.md",
     "AGENTS.md",
     "docs/codex-backup-adapter.md",
     ".claude/skills/structured-reasoning/SKILL.md",
@@ -44,12 +45,12 @@ REQUIRED_SKILL_ANCHORS = {
     "agentic-workflow-governance/SKILL.md": [
         ".claude/skills/structured-reasoning/SKILL.md",
         ".claude/skills/mcp-integration/SKILL.md",
-        "SR_INTAKE",
+        "native plan mode",
     ],
     "agentic-workflow-verification/SKILL.md": [
         "scripts/governance/verify_codex_backup.py",
         "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
-        "SR_VERIFY",
+        "verification phase",
     ],
 }
 
