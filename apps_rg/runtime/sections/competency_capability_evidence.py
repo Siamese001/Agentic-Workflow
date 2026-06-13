@@ -175,7 +175,17 @@ def _filter_packet_by_selected_graph_plan(
             continue
         family = str(rec.get("capability_family") or "").strip()
         skills = {str(x).strip() for x in (rec.get("graph_skill_node_ids") or []) if str(x).strip()}
-        if selected_families:
+        # W2.2 (typed-edge-role-facet-guardrails-a6f3d2): required capability families
+        # are a coverage FLOOR enforced by x2_required_capability_families_covered +
+        # the per-category bundle_id / graph_skill_node_ids gates. JD-fit graph selection
+        # (selected_competency_families) may narrow/rank the OPTIONAL families, but it must
+        # NOT drop a required-family bundle — doing so left the LLM asked to cover the family
+        # (it's in the prompt header) with no bundle to bind, yielding an orphan category
+        # (bundle_id=None, graph_skill_node_ids=[]). Required-family bundles are graph-backed
+        # ACTIVE bundles, so retaining them admits no non-graph content.
+        if family in REQUIRED_CAPABILITY_FAMILIES:
+            include = True
+        elif selected_families:
             include = family in selected_families
         else:
             include = bool(selected_skills and skills.intersection(selected_skills))
