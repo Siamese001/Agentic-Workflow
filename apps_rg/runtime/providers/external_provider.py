@@ -10,6 +10,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import queue
+import threading
 import urllib.error
 import urllib.request
 from collections.abc import Callable
@@ -18,11 +20,13 @@ from typing import Any, Mapping
 from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
 from apps_rg.runtime.providers.provider_gateway import ProviderGatewayError, ProviderProfile
 from apps_rg.runtime.providers.provider_contract import ProviderResult
+from apps_rg.runtime.section_model_limits import external_claude_generation_model
 
 ExternalTransport = Callable[[dict[str, Any]], dict[str, Any]]
 
 DEFAULT_ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages"
 DEFAULT_OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
+DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_SECONDS = 90.0
 
 
 def _prompt_text(compiled_prompt: Any) -> str:
@@ -37,6 +41,20 @@ def _prompt_text(compiled_prompt: Any) -> str:
         )
         if part
     ).strip()
+
+
+def _coerce_timeout_seconds(value: Any) -> float:
+    try:
+        timeout = float(value)
+    except (TypeError, ValueError):
+        return DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_SECONDS
+    if timeout <= 0:
+        return DEFAULT_EXTERNAL_PROVIDER_TIMEOUT_SECONDS
+    return timeout
+
+
+def _format_timeout_seconds(value: float) -> str:
+    return str(int(value)) if value.is_integer() else f"{value:.3f}".rstrip("0").rstrip(".")
 
 
 class ExternalProvider:
@@ -59,8 +77,10 @@ class ExternalProvider:
         ):
             raise ProviderGatewayError(f"ExternalProvider cannot serve profile={provider_profile.value}")
         self.provider_profile = provider_profile
+        self.environ = os.environ if environ is None else environ
+        self._uses_process_environ = self.environ is os.environ
         self.model = model or (
-            "claude-sonnet-4-6"
+            external_claude_generation_model(self.environ)
             if provider_profile == ProviderProfile.EXTERNAL_CLAUDE
             else "gpt-5.4"
         )
@@ -71,8 +91,6 @@ class ExternalProvider:
         )
         self.base_url = base_url or ""
         self.transport = transport
-        self.environ = os.environ if environ is None else environ
-        self._uses_process_environ = self.environ is os.environ
 
     def _default_transport(self, request: dict[str, Any]) -> dict[str, Any]:
         if self.provider_profile == ProviderProfile.EXTERNAL_CLAUDE:
@@ -81,6 +99,7 @@ class ExternalProvider:
 
     def _anthropic_messages_transport(self, request: dict[str, Any]) -> dict[str, Any]:
         prompt = str(request.get("prompt") or "")
+        timeout_seconds = _coerce_timeout_seconds(request.get("timeout_seconds"))
         body = {
             "model": str(request.get("model") or self.model),
             "max_tokens": int(request.get("max_tokens") or 900),
@@ -100,7 +119,7 @@ class ExternalProvider:
             },
             method="POST",
         )
-        with urllib.request.urlopen(http_req, timeout=90) as resp:
+        with urllib.request.urlopen(http_req, timeout=timeout_seconds) as resp:
             data = json.loads(resp.read().decode("utf-8"))
         text_parts: list[str] = []
         for block in data.get("content") or []:
@@ -114,6 +133,7 @@ class ExternalProvider:
 
     def _openai_responses_transport(self, request: dict[str, Any]) -> dict[str, Any]:
         prompt = str(request.get("prompt") or "")
+        timeout_seconds = _coerce_timeout_seconds(request.get("timeout_seconds"))
         body = {
             "model": str(request.get("model") or self.model),
             "input": prompt,
@@ -131,7 +151,7 @@ class ExternalProvider:
             },
             method="POST",
         )
-        with urllib.request.urlopen(http_req, timeout=90) as resp:
+        with urllib.request.urlopen(http_req, timeout=timeout_seconds) as resp:
             data = json.loads(resp.read().decode("utf-8"))
         text = str(data.get("output_text") or "")
         if not text:
@@ -149,14 +169,49 @@ class ExternalProvider:
             "raw_response": data,
         }
 
+    def _transport_with_wall_clock_timeout(
+        self,
+        transport: ExternalTransport,
+        request: dict[str, Any],
+        *,
+        timeout_seconds: float,
+    ) -> dict[str, Any]:
+        result_queue: queue.Queue[tuple[str, Any]] = queue.Queue(maxsize=1)
+
+        def _runner() -> None:
+            try:
+                result_queue.put(("ok", transport(request)), block=False)
+            except Exception as exc:
+                result_queue.put(("error", exc), block=False)
+
+        worker = threading.Thread(
+            target=_runner,
+            name=f"apps-rg-{self.provider_profile.value}-provider-call",
+            daemon=True,
+        )
+        worker.start()
+        worker.join(timeout_seconds)
+        if worker.is_alive():
+            formatted = _format_timeout_seconds(timeout_seconds)
+            raise TimeoutError(f"External provider wall-clock timeout after {formatted}s")
+        try:
+            kind, payload = result_queue.get_nowait()
+        except queue.Empty as exc:
+            raise TimeoutError("External provider returned without a transport result") from exc
+        if kind == "error":
+            raise payload
+        return payload
+
     def generate(
         self,
         compiled_prompt: Any,
         *,
         token_budget: int,
         temperature: float = 0.7,
+        timeout_seconds: int | float | None = None,
     ) -> ProviderResult:
         prompt = _prompt_text(compiled_prompt)
+        provider_timeout_seconds = _coerce_timeout_seconds(timeout_seconds)
         request = {
             "provider_profile": self.provider_profile.value,
             "model": self.model,
@@ -164,6 +219,7 @@ class ExternalProvider:
             "max_tokens": int(token_budget),
             "temperature": float(temperature),
             "base_url": self.base_url,
+            "timeout_seconds": provider_timeout_seconds,
         }
         if self._uses_process_environ:
             bootstrap_process_env_if_needed(self.environ)
@@ -180,7 +236,11 @@ class ExternalProvider:
             )
         transport = self.transport or self._default_transport
         try:
-            response = transport(request)
+            response = self._transport_with_wall_clock_timeout(
+                transport,
+                request,
+                timeout_seconds=provider_timeout_seconds,
+            )
         except urllib.error.HTTPError as exc:
             try:
                 detail = exc.read().decode("utf-8", errors="replace")[:1000]

@@ -45,6 +45,10 @@ def _make_run(tmp: Path) -> Path:
             "competency_capability_bundles": [
                 {
                     "linked_source_fact_ids": ["fact_p1"],
+                    "linked_metric_outcome_ids": ["metric_p1"],
+                    "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+                    "confidence_grade": "HIGH",
+                    "external_claim_policy": "approved_metric_linked",
                     "bound_skills": [
                         {"skill_id": "skill_alpha", "allowed_phrases": ["governed agentic platform"]},
                         {"skill_id": "skill_beta", "allowed_phrases": ["unused phrase nowhere"]},
@@ -70,6 +74,9 @@ def test_build_report_competencies_d8_and_per_lane(tmp_path: Path) -> None:
     assert comp["used_skill_count"] == 1
     assert "skill_alpha" in comp["used_skill_ids"]
     assert "skill_beta" not in comp["used_skill_ids"]
+    assert comp["average_evidence_strength_score"] >= 0.75
+    assert comp["evidence_strength_band_counts"]["HIGH"] == 2
+    assert comp["top_evidence_strength_skill_ids"] == ["skill_alpha", "skill_beta"]
 
     by_lane = {r["section_id"]: r for r in report["per_lane_selection_plan_skill_refs"]}
     assert by_lane["competencies"]["selection_plan_skill_ref_count"] == 2
@@ -82,4 +89,5 @@ def test_render_markdown_smoke(tmp_path: Path) -> None:
     md = render_markdown(report)
     assert "Graph-Skill Utilization" in md
     assert "D8 genuine utilization" in md
+    assert "avg evidence strength" in md
     assert "skill_alpha" in md

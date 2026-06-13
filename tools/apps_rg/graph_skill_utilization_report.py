@@ -12,6 +12,8 @@ Two signals are emitted:
   * competencies — full D8 utilization (eligible / used / score) reconstructed
     from ``proof_pool_metadata.competency_capability_bundles`` (the only lane that
     carries allowed_phrases on disk).
+  * competencies — derived evidence-strength score from existing graph metadata
+    (report-only; never proof authority).
   * every lane — a lighter "graph skills referenced in the selection plan" count
     from each section's ``l2_output_snapshot.selected_fact_plan`` (reflection
     breadth, not D8-proven use).
@@ -102,11 +104,36 @@ def _competencies_skill_rows(runtime_payload: dict[str, Any]) -> list[dict[str, 
         for skill in bundle.get("bound_skills") or []:
             if not isinstance(skill, dict) or not str(skill.get("skill_id") or "").strip():
                 continue
+            metric_ids = [
+                str(x)
+                for x in (
+                    skill.get("linked_metric_outcome_ids")
+                    or bundle.get("linked_metric_outcome_ids")
+                    or bundle.get("metric_outcome_ids")
+                    or []
+                )
+                if str(x).strip()
+            ]
             rows.append(
                 {
                     "skill_id": str(skill["skill_id"]),
                     "allowed_phrases": [str(p) for p in (skill.get("allowed_phrases") or [])],
                     "fact_id_links": list(links),
+                    "linked_source_fact_ids": list(links),
+                    "linked_metric_outcome_ids": metric_ids,
+                    "support_level": str(skill.get("support_level") or bundle.get("support_level") or ""),
+                    "confidence_grade": str(
+                        skill.get("confidence_grade")
+                        or bundle.get("confidence_grade")
+                        or bundle.get("evidence_confidence")
+                        or bundle.get("confidence")
+                        or ""
+                    ),
+                    "external_claim_policy": str(
+                        skill.get("external_claim_policy") or bundle.get("external_claim_policy") or ""
+                    ),
+                    "human_confirmed": bool(skill.get("human_confirmed") or bundle.get("human_confirmed")),
+                    "source_trace": bundle.get("source_trace") or bundle.get("source_trace_archive_relpaths") or [],
                     "forbidden_phrases": [],
                 }
             )
@@ -145,11 +172,18 @@ def build_report(run_dir: Path) -> dict[str, Any]:
                 text_claim_coverage=coverage,
                 allowed_fact_ids=[str(x) for x in (rp.get("allowed_fact_ids") or [])],
             )
+            strength = receipt.get("evidence_strength") or {}
             competencies = {
                 "available": True,
                 "eligible_skill_count": receipt["eligible_skill_count"],
                 "used_skill_count": len(receipt["used_skill_ids"]),
                 "utilization_score": receipt["utilization_score"],
+                "average_evidence_strength_score": strength.get("average_score", 0.0),
+                "evidence_strength_band_counts": strength.get("band_counts", {}),
+                "top_evidence_strength_skill_ids": [
+                    row.get("skill_id") for row in (strength.get("top_skill_strength") or [])[:8]
+                ],
+                "top_evidence_strength": (strength.get("top_skill_strength") or [])[:8],
                 "pass": receipt["pass"],
                 "used_skill_ids": receipt["used_skill_ids"],
                 "semantic_variants_matched": len(receipt["semantic_variants_matched"]),
@@ -173,12 +207,16 @@ def render_markdown(report: dict[str, Any]) -> str:
         lines += [
             "## Competencies — D8 genuine utilization",
             "",
-            "| eligible skills | D8-used | utilization | semantic-variant matches | pass |",
-            "|---|---|---|---|---|",
+            "| eligible skills | D8-used | utilization | avg evidence strength | semantic-variant matches | pass |",
+            "|---|---|---|---|---|---|",
             f"| {comp['eligible_skill_count']} | {comp['used_skill_count']} | "
-            f"{comp['utilization_score']} | {comp['semantic_variants_matched']} | {comp['pass']} |",
+            f"{comp['utilization_score']} | {comp.get('average_evidence_strength_score', 0.0)} | "
+            f"{comp['semantic_variants_matched']} | {comp['pass']} |",
             "",
             f"D8-used skill ids: {', '.join(comp['used_skill_ids']) or '_none_'}",
+            "",
+            "Top evidence-strength skill ids: "
+            f"{', '.join(comp.get('top_evidence_strength_skill_ids') or []) or '_none_'}",
             "",
         ]
     else:

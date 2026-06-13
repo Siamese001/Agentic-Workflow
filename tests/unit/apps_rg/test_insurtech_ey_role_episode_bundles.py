@@ -41,7 +41,7 @@ CASES = [
         "lanes": {"insurtech_bullets", "insurtech_narrative"},
         "source_fact": "exp_insurtech_001",
         "bundle_count": 12,
-        "extra_required": {"claim_text", "support_level", "metric_candidates", "graph_edge_contract"},
+        "extra_required": {"claim_text", "support_level", "metric_candidates"},
     },
     {
         "file": FI / "ey_role_episode_bundles.json",
@@ -209,14 +209,16 @@ def test_role_episode_graphs_do_not_use_base_resume_bullet_ids_as_proof() -> Non
         assert forbidden not in raw
 
 
-def test_insurtech_roots_are_mece_and_reviewable() -> None:
+def test_insurtech_roots_are_mece_and_reviewable_with_derived_edges() -> None:
     doc = json.loads((FI / "insurtech_role_episode_bundles.json").read_text(encoding="utf-8"))
     ids = {b["role_episode_bundle_id"] for b in doc["bundles"]}
     assert ids == INSURTECH_REQUIRED_ROOTS
     for b in doc["bundles"]:
-        contract = b["graph_edge_contract"]
-        assert contract["source_employer_node_id"] == "employment_exp_insurtech_001"
-        assert len(contract["root_to_skill_edges"]) == len(b["graph_skill_node_ids"])
+        serialized = json.dumps(b, sort_keys=True)
+        assert "graph_edge_contract" not in b
+        assert "root_to_skill_edges" not in serialized
+        assert b["employer_node_id"] == "employment_exp_insurtech_001"
+        assert b["graph_skill_node_ids"], f"{b['role_episode_bundle_id']} missing skill edges"
         assert b["claim_text"].strip(), f"{b['role_episode_bundle_id']} missing claim_text"
         assert b["linked_metric_outcome_ids"], f"{b['role_episode_bundle_id']} missing linked metric ids"
 
@@ -248,15 +250,15 @@ def test_insurtech_deferred_metrics_are_not_graph_claim_authority() -> None:
         assert "tco" not in approved_surface
 
 
-def test_ey_roots_are_complete_with_bundle_to_skill_edge_policy() -> None:
+def test_ey_roots_are_complete_without_typed_edge_payloads() -> None:
     doc = json.loads((FI / "ey_role_episode_bundles.json").read_text(encoding="utf-8"))
     ids = {b["role_episode_bundle_id"] for b in doc["bundles"]}
     assert ids == EY_REQUIRED_ROOTS
     invariants = doc.get("invariants") or {}
     assert "phase_plan" not in doc
-    assert invariants.get("typed_edge_policy") == "excluded"
-    assert invariants.get("edge_model") == "bundle_to_skill_only"
-    assert invariants.get("graph_edge_contract_policy") == "excluded_until_typed_edge_model_adopted"
+    assert "typed_edge_policy" not in invariants
+    assert "edge_model" not in invariants
+    assert "graph_edge_contract_policy" not in invariants
     for b in doc["bundles"]:
         serialized = json.dumps(b, sort_keys=True)
         assert "graph_edge_contract" not in b

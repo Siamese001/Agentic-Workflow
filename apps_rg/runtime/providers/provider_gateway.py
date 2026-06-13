@@ -47,6 +47,7 @@ class ModelProvider(Protocol):
         *,
         token_budget: int,
         temperature: float = 0.7,
+        timeout_seconds: int | float | None = None,
     ) -> ProviderResult:
         """Generate model output for a compiled prompt-like object."""
         ...
@@ -145,6 +146,7 @@ class ProviderGateway:
         *,
         token_budget: int,
         temperature: float = 0.7,
+        timeout_seconds: int | float | None = None,
     ) -> ProviderResult:
         selected = normalize_provider_profile(profile)
         provider = self._providers.get(selected)
@@ -154,10 +156,17 @@ class ProviderGateway:
             )
         if provider is None:
             raise ProviderProfileNotRegisteredError(f"Provider not registered: {selected.value}")
+        if timeout_seconds is None:
+            return provider.generate(
+                compiled_prompt,
+                token_budget=token_budget,
+                temperature=temperature,
+            )
         return provider.generate(
             compiled_prompt,
             token_budget=token_budget,
             temperature=temperature,
+            timeout_seconds=timeout_seconds,
         )
 
 

@@ -12,9 +12,16 @@ Runtime status: ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS — graph_expansion cons
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
+
+from apps_rg.runtime.sections.role_episode_bundle_registry import (
+    get_all_role_episode_bundles,
+    get_role_episode_bundle_by_id,
+    get_role_episode_bundles_for_section,
+    load_role_episode_bundle_doc,
+    validate_role_episode_bundle_base,
+)
 
 BUNDLES_PATH: Path = (
     Path(__file__).resolve().parents[3]
@@ -22,8 +29,6 @@ BUNDLES_PATH: Path = (
     / "fact_inventory"
     / "ibm_role_episode_bundles.json"
 )
-
-_BUNDLES_CACHE: dict[str, Any] | None = None
 
 # Immutable registry: employer and time window for all IBM role episode bundles.
 IBM_EMPLOYER_ID: str = "IBM"
@@ -55,32 +60,22 @@ HOLD_AND_DO_NOT_PROMOTE_METRICS: frozenset[str] = frozenset({
 
 
 def _load_bundles(path: Path = BUNDLES_PATH) -> dict[str, Any]:
-    global _BUNDLES_CACHE
-    if _BUNDLES_CACHE is None:
-        with open(path, encoding="utf-8") as fh:
-            _BUNDLES_CACHE = json.load(fh)
-    return _BUNDLES_CACHE
+    return load_role_episode_bundle_doc(path)
 
 
 def get_all_bundles(path: Path = BUNDLES_PATH) -> list[dict[str, Any]]:
     """Return all IBM role episode bundles."""
-    return list(_load_bundles(path).get("bundles", []))
+    return get_all_role_episode_bundles(path)
 
 
 def get_bundle_by_id(bundle_id: str, path: Path = BUNDLES_PATH) -> dict[str, Any] | None:
     """Return a single role episode bundle by ID, or None if not found."""
-    for b in get_all_bundles(path):
-        if b.get("role_episode_bundle_id") == bundle_id:
-            return b
-    return None
+    return get_role_episode_bundle_by_id(path, bundle_id)
 
 
 def get_bundles_for_section(section_id: str, path: Path = BUNDLES_PATH) -> list[dict[str, Any]]:
     """Return bundles eligible for the given section_id."""
-    return [
-        b for b in get_all_bundles(path)
-        if section_id in (b.get("section_eligibility") or [])
-    ]
+    return get_role_episode_bundles_for_section(path, section_id)
 
 
 def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -88,39 +83,13 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
 
     Returns (is_valid, list_of_violations).
     """
-    violations: list[str] = []
-
-    # Required fields
-    missing = REQUIRED_BUNDLE_FIELDS - set(bundle.keys())
-    if missing:
-        violations.append(f"Missing required fields: {sorted(missing)}")
-
-    # Employer binding
-    if bundle.get("employer") != IBM_EMPLOYER_ID:
-        violations.append(
-            f"employer must be '{IBM_EMPLOYER_ID}', got '{bundle.get('employer')}'"
-        )
-    if bundle.get("employer_node_id") != IBM_EMPLOYER_NODE_ID:
-        violations.append(
-            f"employer_node_id must be '{IBM_EMPLOYER_NODE_ID}', got '{bundle.get('employer_node_id')}'"
-        )
-
-    # Must have at least one graph_skill_node_id
-    if not bundle.get("graph_skill_node_ids"):
-        violations.append("graph_skill_node_ids must not be empty")
-
-    # Section eligibility — ibm_bullets or ibm_narrative
-    section_elig = bundle.get("section_eligibility") or []
-    valid_sections = {"ibm_bullets", "ibm_narrative"}
-    unknown = set(section_elig) - valid_sections - {"competencies", "executive_summary", "headline"}
-    if unknown:
-        violations.append(f"Unknown section_eligibility values: {sorted(unknown)}")
-
-    # Must NOT be created from flat skill-only nodes (guard: executive_scope_signals required)
-    if not bundle.get("executive_scope_signals"):
-        violations.append(
-            "executive_scope_signals required: bundles must not be created from flat skill-only nodes"
-        )
+    violations = validate_role_episode_bundle_base(
+        bundle,
+        required_fields=REQUIRED_BUNDLE_FIELDS,
+        employer_id=IBM_EMPLOYER_ID,
+        employer_node_id=IBM_EMPLOYER_NODE_ID,
+        valid_sections={"ibm_bullets", "ibm_narrative"},
+    )
 
     return len(violations) == 0, violations
 

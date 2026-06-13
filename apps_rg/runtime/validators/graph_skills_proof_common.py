@@ -11,6 +11,10 @@ from apps_rg.runtime.legacy_proof_sources import (
     PROOF_SOURCE_SRFS,
 )
 from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH, SectionProofPool
+from apps_rg.runtime.validators.fact_ledger_authority import (
+    BLOCKED_FACT_LEDGER_AUTHORITY,
+    fact_ledger_authority_violation_reason,
+)
 
 FORBIDDEN_PROOF_SOURCES = FORBIDDEN_PRODUCT_PROOF_SOURCES
 
@@ -24,9 +28,130 @@ FORBIDDEN_SELECTED_FACT_PLAN_METHODS = frozenset(
     }
 )
 
+BLOCKED_CANDIDATE_FACT_AUTHORITY = "BLOCKED_CANDIDATE_FACT_AUTHORITY"
+
+_CANDIDATE_FACT_AUTHORITY_LABELS = frozenset(
+    {
+        "candidate_fact",
+        "candidate_facts",
+        "candidate_fact_ledger",
+        "master_candidate_skills_fact_ledger",
+        "selected_role_fact_set",
+        "srfs",
+    }
+)
+
+_CANDIDATE_FACT_AUTHORITY_FLAGS = (
+    "candidate_fact_authority",
+    "candidate_fact_ledger_authority",
+    "candidate_fact_ledger_used_as_authority",
+    "candidate_fact_ledger_claim_authority",
+    "candidate_fact_ledger_proof_authority",
+    "candidate_facts_as_proof",
+    "candidate_facts_used_as_authority",
+    "selected_role_fact_set_used",
+)
+
+_AUTHORITY_SOURCE_FIELDS = (
+    "proof_source",
+    "proof_pool_type",
+    "source_authority",
+    "skills_source_type",
+    "skills_authority_source_type",
+    "claim_authority_source_type",
+    "proof_authority_source_type",
+)
+
 
 class GraphSkillsProofError(ValueError):
     """Graph-skills proof contract violation."""
+
+
+def _normalize_authority_label(value: Any) -> str:
+    return str(value or "").strip().lower().replace("-", "_").replace(" ", "_")
+
+
+def _candidate_fact_block(section_id: str, reason: str) -> GraphSkillsProofError:
+    return GraphSkillsProofError(
+        f"{section_id}: {BLOCKED_CANDIDATE_FACT_AUTHORITY}: {reason}"
+    )
+
+
+def _fact_ledger_block(section_id: str, reason: str) -> GraphSkillsProofError:
+    return GraphSkillsProofError(
+        f"{section_id}: {BLOCKED_FACT_LEDGER_AUTHORITY}: {reason}"
+    )
+
+
+def assert_fact_ledger_not_skills_metrics_authority(
+    *,
+    section_id: str,
+    proof_pool_metadata: dict[str, Any] | None,
+    selected_fact_plan: dict[str, Any] | None = None,
+) -> None:
+    """W2 gate: fact ledger may be lineage/substrate only, never runtime authority."""
+    reason = fact_ledger_authority_violation_reason(
+        proof_pool_metadata=proof_pool_metadata,
+        selected_fact_plan=selected_fact_plan,
+    )
+    if reason:
+        raise _fact_ledger_block(section_id, reason)
+
+
+def assert_candidate_fact_authority_deprecated(
+    *,
+    section_id: str,
+    proof_pool_metadata: dict[str, Any] | None,
+    selected_fact_plan: dict[str, Any] | None = None,
+) -> None:
+    """P0 gate: candidate_fact may be lineage only, never runtime authority.
+
+    `candidate_fact_id` compatibility aliases are allowed when the product path
+    is already graph-authorized. Any field that presents candidate facts or SRFS
+    as proof/skills/claim authority fails closed.
+    """
+    meta = proof_pool_metadata if isinstance(proof_pool_metadata, dict) else {}
+    plan = selected_fact_plan if isinstance(selected_fact_plan, dict) else {}
+
+    for flag in _CANDIDATE_FACT_AUTHORITY_FLAGS:
+        if meta.get(flag) is True:
+            raise _candidate_fact_block(section_id, f"{flag}=true")
+
+    for field in _AUTHORITY_SOURCE_FIELDS:
+        label = _normalize_authority_label(meta.get(field))
+        if label in _CANDIDATE_FACT_AUTHORITY_LABELS:
+            raise _candidate_fact_block(section_id, f"{field}={label!r}")
+
+    candidate_role = _normalize_authority_label(
+        meta.get("candidate_fact_role")
+        or meta.get("candidate_fact_ledger_role")
+        or meta.get("candidate_facts_role")
+    )
+    if candidate_role in {
+        "authority",
+        "proof_authority",
+        "claim_authority",
+        "skills_authority",
+    }:
+        raise _candidate_fact_block(section_id, f"candidate_fact_role={candidate_role!r}")
+
+    claim_source = _normalize_authority_label(meta.get("claim_evidence_source_type"))
+    if claim_source in _CANDIDATE_FACT_AUTHORITY_LABELS:
+        graph_authorized = (
+            meta.get("source_authority") == SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH
+            and meta.get("graph_only_claim_authority") is True
+        )
+        if not graph_authorized:
+            raise _candidate_fact_block(
+                section_id,
+                "candidate_fact claim substrate without GraphDB authority",
+            )
+
+    method = _normalize_authority_label(plan.get("selection_method"))
+    if method in _CANDIDATE_FACT_AUTHORITY_LABELS or method.startswith("candidate_fact_ledger"):
+        raise _candidate_fact_block(section_id, f"selection_method={method!r}")
+    if "selected_role_fact_set" in method or method.startswith("srfs"):
+        raise _candidate_fact_block(section_id, f"selection_method={method!r}")
 
 
 def assert_pool_not_ledger_authority(pool: SectionProofPool) -> None:
@@ -51,6 +176,16 @@ def assert_pool_not_ledger_authority(pool: SectionProofPool) -> None:
         raise GraphSkillsProofError(f"fallback flags set for {pool.section!r}")
     if pool.broad_skills_ledger_present and meta.get("broad_skills_ledger_used_as_authority") is not False:
         raise GraphSkillsProofError(f"broad_skills_ledger_present without deprecation for {pool.section!r}")
+    assert_fact_ledger_not_skills_metrics_authority(
+        section_id=pool.section,
+        proof_pool_metadata=meta,
+        selected_fact_plan=pool.selected_fact_plan,
+    )
+    assert_candidate_fact_authority_deprecated(
+        section_id=pool.section,
+        proof_pool_metadata=meta,
+        selected_fact_plan=pool.selected_fact_plan,
+    )
 
 
 def assert_c03_bound_claim_valid(*, section_id: str, meta: dict[str, Any]) -> None:
@@ -242,8 +377,12 @@ def validate_section_graph_pool(pool: SectionProofPool) -> dict[str, Any]:
 
 
 __all__ = [
+    "BLOCKED_CANDIDATE_FACT_AUTHORITY",
+    "BLOCKED_FACT_LEDGER_AUTHORITY",
     "GraphSkillsProofError",
     "FORBIDDEN_SELECTED_FACT_PLAN_METHODS",
+    "assert_candidate_fact_authority_deprecated",
+    "assert_fact_ledger_not_skills_metrics_authority",
     "assert_capsule_phrase_cannot_satisfy_unsupported_claim",
     "assert_capsule_phrases_not_proof_authority",
     "assert_forbidden_proof_source",

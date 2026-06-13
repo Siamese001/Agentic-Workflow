@@ -23,10 +23,10 @@ Make GraphDB the skills and metrics SSOT, remove legacy candidate-fact authority
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W1
-LAST_COMPLETED_WAVE: NONE
-LAST_UPDATED: 2026-06-12
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W1
+LAST_UPDATED: 2026-06-13
 
 ---
 
@@ -45,8 +45,8 @@ LAST_UPDATED: 2026-06-12
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| P0 | P0.1, P0.2, P0.3 | Candidate-fact deprecation and test gate | ~12K | GraphDB can expose equivalent fact/proof/source identifiers or fail closed where missing | TODO | `candidate_fact` authority is deprecated and tested before W1 starts |
-| W1 | W1.1, W1.2 | Finalized graph baseline without typed edges | ~14K | Current graph receipts, fixtures, and E2E command path are discoverable | TODO | Three targets x 11 lanes run without typed edges, with graph-skill percent breakouts |
+| P0 | P0.1, P0.2, P0.3 | Candidate-fact deprecation and test gate | ~12K | GraphDB can expose equivalent fact/proof/source identifiers or fail closed where missing | DONE | `candidate_fact` authority is deprecated and tested before W1 starts |
+| W1 | W1.1, W1.2 | Finalized graph baseline without typed edges | ~14K | Current graph receipts, fixtures, and E2E command path are discoverable | DONE | Three targets x 11 lanes run without typed edges, with graph-skill percent breakouts |
 | W2 | W2.1, W2.2 | GraphDB SSOT and `fact_ledger` reference removal | ~18K | GraphDB already contains or can expose all skills and metrics authority needed by generation | TODO | No skills or metrics eligibility path depends on `fact_ledger`; E2E parity delta is explained |
 | W3 | W3.1, W3.2 | Role-family and role-facet targeting | ~18K | Role facets can be implemented as targeting weights over eligible graph paths | TODO | Three-target E2E shows role-family variance without partner-only overfit |
 | W4 | W4.1, W4.2 | Typed GraphDB proof/traversal edges | ~20K | Typed edges can be layered over the GraphDB SSOT without changing app/core boundaries | TODO | Three-target E2E shows typed edges explain eligibility and block unsupported paths |
@@ -56,11 +56,11 @@ LAST_UPDATED: 2026-06-12
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| P0.1 | Inventory and classify `candidate_fact` usage before W1 | TODO |
-| P0.2 | Deprecate or fence `candidate_fact` authority | TODO |
-| P0.3 | Run candidate-fact deprecation tests and block W1 on failures | TODO |
-| W1.1 | Resolve canonical E2E commands, target fixtures, and baseline graph receipts | TODO |
-| W1.2 | Run finalized graph baseline without typed edges across all targets and lanes | TODO |
+| P0.1 | Inventory and classify `candidate_fact` usage before W1 | DONE |
+| P0.2 | Deprecate or fence `candidate_fact` authority | DONE |
+| P0.3 | Run candidate-fact deprecation tests and block W1 on failures | DONE |
+| W1.1 | Resolve canonical E2E commands, target fixtures, and baseline graph receipts | DONE |
+| W1.2 | Run finalized graph baseline without typed edges across all targets and lanes | DONE |
 | W2.1 | Remove or fence `fact_ledger` skills/metrics authority behind GraphDB SSOT | TODO |
 | W2.2 | Run GraphDB SSOT E2E and explain variance from W1 | TODO |
 | W3.1 | Introduce reusable role-family facets and target alignment diagnostics | TODO |
@@ -82,6 +82,8 @@ LAST_UPDATED: 2026-06-12
 - Implementing `agentic_core` runtime `EdgeContract` handoffs between U0, L1, L0, C0, PA, L3, L2, Exit, UWG, L4, or L6.
 - Changing runtime handoff authority outside `apps_rg` resume generation.
 - Changing `agentic_core`.
+- Removing `master_skills_arsenal_ledger.json` as a serialization, export, bootstrap, or review artifact. This plan may fence it behind the `augmented_skills_graph` authority interface, but DB-only persistence migration is not part of W2 closure.
+- Implementing ADG-style graph-skill materialized views, Redis hot projections, or GraphDB Lite/NetworkX projections as production runtime dependencies before W5 closeout. Read-only/offline analysis is allowed only under the Post-Waterfall Graph Projection Recommendation.
 - Weakening final text anti-overfit, X2, X1D, or C0 evidence discipline.
 
 ---
@@ -202,6 +204,39 @@ Remove `fact_ledger` authority immediately after the finalized-graph/no-typed-ed
 
 ---
 
+## Post-Waterfall Graph Projection Recommendation
+
+**Recommendation: defer production implementation of ADG-style graph-skill materialized views, GraphDB Lite/NetworkX projections, Redis hot projections, and selector-manifest wiring until after W5 closes.**
+
+During P0-W5, only read-only/offline exploratory artifacts are allowed. They may inspect copied waterfall outputs or graph snapshots, but they must not feed proof pools, C0/C0.3 receipts, traversal verdicts, packet generation, validators, prompt assembly, or waterfall pass/fail status.
+
+**Defense**:
+- P0-W5 is a causal waterfall. Each stage is supposed to isolate one source of variance: candidate-fact deprecation, GraphDB SSOT, role-family facets, typed edges, then sliding-scale composition. Adding a derived projection layer mid-waterfall would introduce a second variance source and weaken stage attribution.
+- The authority boundary is already the core invariant: GraphDB / `augmented_skills_graph` is the skills and metrics SSOT; materialized views, GraphDB Lite projections, Redis keys, and manifests are derived receipts or projections. They may narrow, rank, explain, cache, or audit; they may not admit new skills, metrics, proof, or claims.
+- Implementing the projection layer after W5 lets it reuse stable verdicts, breakout dimensions, artifact paths, row-count expectations, and variance categories proven by the waterfall instead of freezing intermediate contracts.
+- The useful ADG pattern is the discipline, not the ADG schema: bounded materialized query surfaces, manifest row counts, fail-closed presence checks, and analyst artifacts. The `apps_rg` version should be purpose-built around section evidence candidates, allowed-pool closure, skill/fact support strength, hop paths, bundle skew, and utilization.
+
+**Allowed before W5**:
+- Design notes naming candidate `apps_rg` views and receipt fields.
+- Offline reports that read existing graph snapshots or waterfall artifacts without changing runtime behavior.
+- Static row-count or schema experiments that are clearly labeled non-authoritative and disposable.
+
+**Not allowed before W5**:
+- Runtime consumption of new graph-skill MVs, Redis projections, or NetworkX projections.
+- Fallbacks from missing GraphDB proof into derived projections.
+- Product proof, release claims, or pass/fail gates based on derived projection rows.
+
+**Post-W5 candidate follow-up scope**:
+- `mv_section_evidence_candidates`
+- `mv_role_episode_bundle_rank`
+- `mv_skill_fact_support_strength`
+- `mv_allowed_pool_closure`
+- `mv_hop_paths_by_fact`
+- `mv_bundle_skew_diagnostics`
+- A bounded graph-selection analyst artifact with selected/demoted/blocked/missing rows and row-count manifest.
+
+---
+
 ## Mandatory E2E Matrix And Waterfall
 
 Every E2E gate in this plan must run the same target matrix:
@@ -255,17 +290,17 @@ A stage is not complete unless every target-lane combination either passes or ha
 
 ## P0 - Candidate-Fact Deprecation And Test Gate
 
-P0_STATUS: TODO
-P0_COMPLETE: NO
+P0_STATUS: DONE
+P0_COMPLETE: YES
 AUTHORIZATION_STATUS: REQUIRED
 CHECKPOINT: P0
 
 **Authorization**: REQUIRED - Candidate-fact authority deprecation can touch proof, selection, validators, prompts, and legacy artifact compatibility.
 
 **Phases**:
-- **P0.1** - Inventory and classify `candidate_fact` usage before W1 | ~4K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **P0.2** - Deprecate or fence `candidate_fact` authority | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **P0.3** - Run candidate-fact deprecation tests and block W1 on failures | ~3K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **P0.1** - Inventory and classify `candidate_fact` usage before W1 | ~4K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **P0.2** - Deprecate or fence `candidate_fact` authority | ~5K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **P0.3** - Run candidate-fact deprecation tests and block W1 on failures | ~3K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Allowed after P0**:
 - `candidate_fact_id` as a compatibility alias or lineage identifier in historical artifacts.
@@ -289,16 +324,16 @@ CHECKPOINT: P0
 ## Wave 1 - Finalized Graph Baseline Without Typed Edges
 
 WAVE_ID: W1
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: A
 
 **Authorization**: NOT_REQUIRED - Command discovery, fixture resolution, and baseline evidence collection only.
 
 **Phases**:
-- **W1.1** - Resolve canonical E2E commands, target fixtures, and baseline graph receipts | ~6K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W1.2** - Run finalized graph baseline without typed edges across all targets and lanes | ~8K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W1.1** - Resolve canonical E2E commands, target fixtures, and baseline graph receipts | ~6K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W1.2** - Run finalized graph baseline without typed edges across all targets and lanes | ~8K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - P0 has passed, so `candidate_fact` cannot act as skills, metrics, proof, eligibility, selection, or weighting authority.
@@ -328,18 +363,24 @@ CHECKPOINT: B
 
 GraphDB is the SSOT for skills, metrics, skill eligibility, metric eligibility, graph traversal, and skill weighting. `fact_ledger` references must be removed, renamed, or fenced so they cannot act as a skills or metrics source of truth.
 
+Selected skill references, including `selection_plan_skill_ref` values and lane-selected `skill_id` values, must resolve through the `augmented_skills_graph` authority interface. The current `master_skills_arsenal_ledger.json` file may remain as the backing serialization/export/bootstrap artifact for that authority, but it must not be named, queried, or reported as an independent skills authority.
+
 Allowed after W2:
 - A clearly named claim-audit or generation-audit artifact that records what was emitted.
 - Backward-compatible adapters that fail closed and delegate to GraphDB.
+- JSON ledger artifacts only when labeled as non-authoritative serialization/export/bootstrap/review artifacts or hidden behind the `augmented_skills_graph` resolver boundary.
 - Historical documentation describing the migration.
 
 Not allowed after W2:
 - Any runtime read from `fact_ledger` to admit, weight, prove, or select a skill or metric.
 - Any fallback path where missing GraphDB data is silently filled from `fact_ledger`.
 - Any diagnostic that reports `fact_ledger` as an authoritative source for skills or metrics.
+- Any runtime, report, or diagnostic contract that tells consumers to look up selected skills against "master skills" as an authority instead of the `augmented_skills_graph` authority interface.
+- Any DB-vs-JSON arbitration path during generation; if the GraphDB authority cannot resolve a required skill, metric, proof, employer, provenance, or section path, traversal fails closed.
 
 **Acceptance**:
 - Static search and runtime tracing show no skills or metrics authority depends on `fact_ledger`.
+- Per-lane diagnostics resolve `selection_plan_skill_ref` and selected `skill_id` values through the `augmented_skills_graph` authority interface; any `lookup_backend` detail is explicitly non-authoritative.
 - Missing GraphDB skill, metric, proof, employer, provenance, or section paths emit `MISSING_GRAPH_PATH` or a `BLOCKED_*` verdict; no runtime path silently backfills from `fact_ledger`.
 - `fact_ledger_runtime_skill_read_fails_closed_after_W2` passes.
 - GraphDB SSOT E2E covers all 33 target-lane combinations.
@@ -533,9 +574,13 @@ rg -n "candidate_fact|candidate facts|CandidateFact" apps_rg tests docs plans .c
 - Allowed: lineage identifier, historical artifact reference, or compatibility alias that resolves to a GraphDB-backed path.
 - Disallowed: any use that admits, proves, ranks, weights, selects, or backfills a skill, metric, claim, proof path, or section.
 
+**Completion evidence**: `docs/reports/apps_rg/candidate_fact_p0_authority_inventory_20260612.md` classifies remaining references as lineage/compatibility, fact-vector substrate labels pending W2, tombstones, or historical prompt/test artifacts. The post-patch static search found no remaining `candidate_facts_as_proof: true` declarations or tests expecting candidate facts to prove claims.
+
 ### P0.2 - Candidate-Fact Authority Deprecation
 
 **Scope**: Deprecate, rename, or fence disallowed `candidate_fact` authority before any W1 E2E baseline run.
+
+**Completion evidence**: `apps_rg/runtime/validators/graph_skills_proof_common.py` now emits `BLOCKED_CANDIDATE_FACT_AUTHORITY` for candidate-fact/SRFS authority flags, authority source fields, selection methods, and candidate-fact claim substrate without GraphDB claim authority. `apps_rg/runtime/sections/section_spec.py` forces deprecated `candidate_facts_as_proof` input closed and preserves `candidate_fact_lineage_allowed` as lineage-only configuration.
 
 ### P0.3 - Candidate-Fact Deprecation Tests
 
@@ -548,6 +593,8 @@ rg -n "candidate_fact|candidate facts|CandidateFact" apps_rg tests docs plans .c
 - A compatibility map for any remaining `candidate_fact_id` fields.
 - Explicit W1 block if the test fails or if any disallowed authority read remains.
 
+**Completion evidence**: Focused P0 gate passed: `tests/unit/apps_rg/runtime/sections/test_section_spec_wave6.py`, `tests/unit/apps_rg/test_candidate_fact_deprecation_p0.py`, `tests/unit/apps_rg/test_graph_skills_authority_separation.py`, `tests/unit/apps_rg/test_selected_role_fact_set_retirement_guard.py`, and `tests/_apps_contract/test_apps_rg_augmented_skills_graph_source_authority.py` reported 47 passed, 3 warnings with `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` and local `addopts` override for the unavailable timeout plugin.
+
 ### W1.1 - Resolve Commands And Fixtures
 
 **Scope**: Identify the canonical E2E command, target fixtures, graph receipt paths, and generated-content lane list before changing behavior.
@@ -558,16 +605,45 @@ rg -n "anthropic_partner_applied_ai|truist_head_of_agentic_engineering|brown_bro
 rg -n "GENERATED_CONTENT_LANES|section_execution_plan|e2e|end to end" apps_rg tests docs/reports/apps_rg plans
 ```
 
+**Completion evidence**:
+- Canonical generated lane matrix resolved from `apps_rg.runtime.section_execution_plan.GENERATED_CONTENT_LANES`: 11 generated lanes per target.
+- Canonical target fixtures resolved:
+  - Anthropic AI Partner: `apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt` and `apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md`.
+  - Truist Head of Agentic Engineering: `apps_rg/config/targeting/truist_head_agentic_ai_engineering_jd.txt` and `apps_rg/config/targeting/truist_head_agentic_ai_engineering_briefing.md`.
+  - Brown & Brown SVP IT Strategy & Innovation: `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt` and `apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md`.
+- `python -m apps_rg doctor --strict --json` passed before W1 runs.
+
+### W1.2 - Finalized Graph Baseline E2E
+
+**Scope**: Run the Post-P0 finalized graph/no-typed-edge baseline for the three required targets across all 11 generated lanes and capture graph-skill breakouts plus explicit blockers.
+
+**Completion evidence**:
+- W1 report: `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/w1_finalized_graph_baseline_report.md`.
+- Machine-readable W1 report: `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/w1_finalized_graph_baseline_report.json`.
+- Anthropic baseline run: `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/anthropic_partner_applied_ai`; patch receipt `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/anthropic_partner_applied_ai/patch_run_receipt.json`.
+- Truist baseline run: `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/truist_head_of_agentic_engineering`; patch receipt `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/truist_head_of_agentic_engineering/patch_run_receipt.json`.
+- Brown & Brown baseline run: `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/brown_brown_svp_it_strategy_innovation`.
+
+**Waterfall outcome**:
+- Coverage: 33 explicit target-lane rows captured: 13 executed-and-blocked rows, 15 pre-run blocked rows, and 5 selected/authorized rows.
+- Anthropic target graph-skill mix: partnerships ecosystem 27.9%, enterprise technology delivery 24.8%, agentic AI governance platform 18.5%, cloud data platform 15.2%, actuarial/capital/risk 7.1%, insurance/insurtech 5.4%, product commercialization 1.2%.
+- Truist target graph-skill mix: agentic AI governance platform 37.0%, enterprise technology delivery 30.4%, partnerships ecosystem 18.5%, cloud data platform 9.8%, actuarial/capital/risk 2.2%, product commercialization 2.2%.
+- Brown & Brown target graph-skill mix: cloud data platform 28.1%, enterprise technology delivery 24.9%, agentic AI governance platform 16.1%, insurance/insurtech 10.4%, partnerships ecosystem 10.0%, actuarial/capital/risk 9.2%, product commercialization 1.2%.
+- `tools/apps_rg/graph_skill_utilization_report.py` could not run because W1 did not reach `final_resume_assembly/final_resume.json`; this is expected for the W1 blocking baseline. The W1-specific report uses lane receipts, X3 dispositions, provider responses, and patch receipts instead.
+- Variance against P0 is classified as baseline creation and fail-closed behavior, not a percentage delta, because P0 was a candidate-fact authority deprecation/test gate rather than an all-lane E2E composition stage.
+- W1 completion is accepted because every target-lane combination either reached authorized/generated evidence or has an explicit fail-closed blocker with artifact path. Final resume assembly is not required for this baseline stage.
+
 ### W2.1 - GraphDB SSOT And Fact Ledger Removal
 
-**Scope**: Replace or fence every `fact_ledger` skills/metrics authority reference.
+**Scope**: Replace or fence every `fact_ledger` skills/metrics authority reference, and ensure selected skill references resolve through the `augmented_skills_graph` authority interface rather than any separately named "master skills" authority.
 
 **Required searches**:
 ```bash
 rg -n "fact_ledger|fact ledger|FactLedger" apps_rg tests docs plans .claude
+rg -n "master_skills|master skills|master_skills_arsenal_ledger|selection_plan_skill_ref" apps_rg tests docs plans .claude
 ```
 
-**Review rule**: references that only describe historical migration may remain in docs. Runtime, fixture, traversal, validator, and generator paths may not use `fact_ledger` as skills or metrics authority after W2.
+**Review rule**: references that only describe historical migration may remain in docs. Runtime, fixture, traversal, validator, and generator paths may not use `fact_ledger` as skills or metrics authority after W2. References to `master_skills_arsenal_ledger.json` may remain only as non-authoritative serialization/export/bootstrap/review labels or as resolver implementation detail behind `augmented_skills_graph`; user-facing diagnostics must not present it as a separate skills SSOT.
 
 ### W4.2 - Traversal Explanation Packet
 
@@ -611,6 +687,10 @@ rg -n "fact_ledger|fact ledger|FactLedger" apps_rg tests docs plans .claude
 - Impact: Skills and metrics authority can drift between sources.
 - Closure: Remove or fence `fact_ledger` skills/metrics authority before role-family or typed-edge changes.
 
+**GAP-5A: `master_skills` wording creates a second-SSOT impression**
+- Impact: Reports or diagnostics can appear to require a separate "master skills" authority even when the intended authority is GraphDB / `augmented_skills_graph`.
+- Closure: Resolve selected skill refs through the `augmented_skills_graph` authority interface and label any JSON ledger usage as non-authoritative serialization/backend detail.
+
 **GAP-6: No waterfall means no causal attribution**
 - Impact: E2E differences cannot be attributed to SSOT migration, role family, typed edges, or sliding-scale policy.
 - Closure: Require the same three targets and 11 lanes at every stage with variance rationalization.
@@ -633,14 +713,14 @@ rg -n "fact_ledger|fact ledger|FactLedger" apps_rg tests docs plans .claude
 
 DoD-0: Candidate-fact authority is deprecated and tested before W1.
 - Evidence: P0 inventory classifies all live `candidate_fact` references, disallowed authority paths fail closed, `candidate_fact_runtime_authority_read_fails_closed_before_W1` passes, W1 is blocked on failure, and remaining `candidate_fact_id` fields are lineage/compatibility only.
-- Status: TODO
+- Status: DONE
 
 DoD-1: Finalized graph baseline without typed edges is captured.
-- Evidence: Post-P0 W1 E2E run covers Anthropic, Truist, and Brown & Brown across all 11 lanes with graph-skill percent breakouts.
-- Status: TODO
+- Evidence: Post-P0 W1 E2E run covers Anthropic, Truist, and Brown & Brown across all 11 lanes with graph-skill percent breakouts in `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/w1_finalized_graph_baseline_report.md` and `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/w1_finalized_graph_baseline_report.json`.
+- Status: DONE
 
 DoD-2: GraphDB is the skills and metrics SSOT.
-- Evidence: Static and runtime evidence shows `fact_ledger` is not used for skill eligibility, metric eligibility, weighting, proof, or traversal.
+- Evidence: Static and runtime evidence shows `fact_ledger` is not used for skill eligibility, metric eligibility, weighting, proof, or traversal; per-lane selected skill refs resolve through the `augmented_skills_graph` authority interface, with any JSON ledger usage labeled as non-authoritative backend detail.
 - Status: TODO
 
 DoD-3: GraphDB SSOT migration has E2E parity or explained variance.

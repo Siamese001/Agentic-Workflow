@@ -18,7 +18,8 @@ PROFILE = REPO / "apps_rg" / "config" / "domain_contract" / "section_retrieval_p
 
 def test_source_authority_defaults_match_wave6_policy() -> None:
     spec = SourceAuthoritySpec()
-    assert spec.candidate_facts_as_proof is True
+    assert spec.candidate_facts_as_proof is False
+    assert spec.candidate_fact_lineage_allowed is True
     assert spec.graph_as_claim_proof is False
     assert spec.graph_as_routing_support is True
     assert spec.graph_claim_proof_allowed_only_when_fact_bound is True
@@ -27,12 +28,19 @@ def test_source_authority_defaults_match_wave6_policy() -> None:
     assert spec.companion_context_authority is False
 
 
-def test_effective_claim_proof_uses_candidate_facts_not_graph_by_default() -> None:
+def test_effective_claim_proof_requires_graphdb_backed_proof_by_default() -> None:
     spec = SourceAuthoritySpec()
-    assert spec.candidate_facts_may_prove_claim(fact_bound=True) is True
+    assert spec.candidate_facts_may_prove_claim(fact_bound=True) is False
     assert spec.graph_may_prove_claim(fact_bound=True) is False
-    assert spec.effective_claim_proof(fact_bound=True) is True
+    assert spec.effective_claim_proof(fact_bound=True) is False
     assert spec.effective_claim_proof(fact_bound=False) is False
+
+
+def test_candidate_facts_as_proof_true_is_deprecated_and_forced_closed() -> None:
+    spec = SourceAuthoritySpec.from_mapping({"candidate_facts_as_proof": True})
+    assert spec.candidate_facts_as_proof is False
+    assert spec.candidate_fact_lineage_allowed is True
+    assert spec.candidate_facts_may_prove_claim(fact_bound=True) is False
 
 
 def test_graph_claim_proof_opt_in_still_requires_fact_bound() -> None:
@@ -52,7 +60,8 @@ def test_all_canonical_sections_have_wave6_source_authority_yaml() -> None:
     for section_id in CANONICAL_SECTION_IDS:
         authority = sections[section_id].get("source_authority")
         assert authority == {
-            "candidate_facts_as_proof": True,
+            "candidate_facts_as_proof": False,
+            "candidate_fact_lineage_allowed": True,
             "graph_as_claim_proof": False,
             "graph_as_routing_support": True,
             "graph_claim_proof_allowed_only_when_fact_bound": True,
@@ -69,6 +78,8 @@ def test_loaded_section_specs_preserve_graph_routing_support_for_all_sections() 
         spec = specs[section_id]
         assert spec.graph_expansion_allowed is True
         assert spec.graph_supports_routing() is True
+        assert spec.source_authority.candidate_facts_as_proof is False
+        assert spec.source_authority.candidate_fact_lineage_allowed is True
         assert spec.source_authority.graph_as_claim_proof is False
         assert spec.source_authority.graph_as_routing_support is True
 

@@ -21,7 +21,8 @@
     "metric_density_rule": "each Unify role root carries differentiated linked metric_outcome_ids; numeric values require explicit graph metric nodes",
     "metric_claim_truth_source": "metric_outcome_nodes",
     "agentic_svp_engineering_grain": "mechanism_level_skill_and_metric_ids",
-    "chronology_policy": "employer_scope_only; graph evidence nodes do not carry time_window as claim authority"
+    "chronology_policy": "employer_scope_only; graph evidence nodes do not carry time_window as claim authority",
+    "skill_truth_source": "graph_skill_node_ids"
   },
   "approved_metric_outcome_ids": {
     "metric_unify_22m_ip_led_revenue": "$22M IP-led revenue",
@@ -50,16 +51,19 @@
     "metric_unify_agentic_replay_key_audit_manifest_surface": "replay-key and audit-manifest surface for reproducible agent execution traces",
     "metric_unify_agentic_runtime_proof_bundle_lineage_surface": "runtime proof-bundle lineage surface tying agent outputs to graph evidence"
   },
-  "conditional_metric_outcome_ids": {
-    "metric_unify_14m_operating_capacity": "$14M operating capacity \u2014 allowed only if already canonical and linked; otherwise HOLD."
-  },
   "bundles": [
     {
       "role_episode_bundle_id": "reb_unify_agentic_platform_architecture",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
       "employer_node_id": "employment_exp_unify_001",
+      "root_capability_node_id": "agentic_platform_architecture",
       "bundle_theme": "SVP Engineering agentic AI platform control-plane architecture",
+      "claim_text": "SVP Engineering agentic AI platform control-plane architecture",
+      "claim_action": "SVP Engineering agentic AI platform control-plane architecture",
+      "claim_scope": "Production-grade agentic AI Solution Accelerator within a consulting firm; SVP Engineering ownership of runtime control plane, GraphRAG grounding, multi-agent orchestration, and governed execution for regulated financial institutions.",
+      "claim_outcome": "Frame as SVP Engineering ownership of agentic AI platform control-plane architecture; use mechanism-level skills and metric_outcome_ids, not generic AI leadership language.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Owned SVP-level engineering roadmap and control-plane architecture for production-grade agentic AI platform delivery",
         "Set architecture authority for governed multi-agent execution, deterministic routing, GraphRAG grounding, and runtime proof lineage"
@@ -92,6 +96,7 @@
       "linked_source_fact_ids": [
         "fact_engineering_platform_001"
       ],
+      "linked_archive_signal_ids": [],
       "linked_metric_outcome_ids": [
         "metric_unify_policy_gated_agent_execution_surface",
         "metric_unify_replayable_runtime_traceability",
@@ -104,6 +109,9 @@
         "metric_unify_agentic_replay_key_audit_manifest_surface",
         "metric_unify_agentic_runtime_proof_bundle_lineage_surface"
       ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Production-grade agentic AI Solution Accelerator within a consulting firm; SVP Engineering ownership of runtime control plane, GraphRAG grounding, multi-agent orchestration, and governed execution for regulated financial institutions.",
       "bullet_intent": "Frame as SVP Engineering ownership of agentic AI platform control-plane architecture; use mechanism-level skills and metric_outcome_ids, not generic AI leadership language.",
       "section_eligibility": [
@@ -114,15 +122,21 @@
       ],
       "external_claim_policy": "skill_projection_not_proof",
       "activation_status": "ACTIVE_CONFIRMED",
-      "held_metrics": [],
-      "excluded_metrics": []
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_unify_dependency_graph_accelerator",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
       "employer_node_id": "employment_exp_unify_001",
+      "root_capability_node_id": "dependency_graph_accelerator",
       "bundle_theme": "Dependency graph intelligence and legacy-to-agentic modernization",
+      "claim_text": "Dependency graph intelligence and legacy-to-agentic modernization",
+      "claim_action": "Dependency graph intelligence and legacy-to-agentic modernization",
+      "claim_scope": "Internal dependency-graph accelerator (ADG) used for legacy-to-agentic modernization; internal architecture evidence, not an external metric claim.",
+      "claim_outcome": "Frame as dependency-graph-driven modernization; internal-only architecture evidence \u2014 no unqualified external metric.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Directed dependency-graph-driven modernization of legacy systems toward agentic architecture",
         "Architecture visibility tooling reducing refactor risk across enterprise codebases"
@@ -138,10 +152,14 @@
       "linked_source_fact_ids": [
         "fact_engineering_platform_005"
       ],
+      "linked_archive_signal_ids": [],
       "linked_metric_outcome_ids": [
         "metric_unify_dependency_graph_refactor_blast_radius_visibility",
         "metric_unify_semantic_edge_refactor_governance_controls"
       ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Internal dependency-graph accelerator (ADG) used for legacy-to-agentic modernization; internal architecture evidence, not an external metric claim.",
       "bullet_intent": "Frame as dependency-graph-driven modernization; internal-only architecture evidence \u2014 no unqualified external metric.",
       "section_eligibility": [
@@ -150,15 +168,21 @@
       ],
       "external_claim_policy": "internal_only_not_external_claim",
       "activation_status": "ACTIVE_INTERNAL_ONLY",
-      "held_metrics": [],
-      "excluded_metrics": []
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_unify_runtime_reliability_governance",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
       "employer_node_id": "employment_exp_unify_001",
+      "root_capability_node_id": "runtime_reliability_governance",
       "bundle_theme": "Runtime reliability, governance, telemetry, evaluation, rollback",
+      "claim_text": "Runtime reliability, governance, telemetry, evaluation, rollback",
+      "claim_action": "Runtime reliability, governance, telemetry, evaluation, rollback",
+      "claim_scope": "Runtime reliability and governance for production agentic systems; evaluation gates, telemetry, and rollback controls.",
+      "claim_outcome": "Frame as runtime reliability/governance leadership; named mechanisms, no metric without approved outcome id.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Owned runtime reliability and governance for production agentic AI execution",
         "Established evaluation gates, telemetry instrumentation, and rollback controls"
@@ -176,10 +200,14 @@
       "linked_source_fact_ids": [
         "fact_engineering_platform_003"
       ],
+      "linked_archive_signal_ids": [],
       "linked_metric_outcome_ids": [
         "metric_unify_eval_telemetry_rollback_control_set",
         "metric_unify_audit_grade_runtime_observability_coverage"
       ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Runtime reliability and governance for production agentic systems; evaluation gates, telemetry, and rollback controls.",
       "bullet_intent": "Frame as runtime reliability/governance leadership; named mechanisms, no metric without approved outcome id.",
       "section_eligibility": [
@@ -188,15 +216,21 @@
       ],
       "external_claim_policy": "skill_projection_not_proof",
       "activation_status": "ACTIVE_CONFIRMED",
-      "held_metrics": [],
-      "excluded_metrics": []
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_unify_production_adoption_lifecycle",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
       "employer_node_id": "employment_exp_unify_001",
+      "root_capability_node_id": "production_adoption_lifecycle",
       "bundle_theme": "Standardized AI systems lifecycle and lab-to-production acceleration",
+      "claim_text": "Standardized AI systems lifecycle and lab-to-production acceleration",
+      "claim_action": "Standardized AI systems lifecycle and lab-to-production acceleration",
+      "claim_scope": "Standardized AI systems lifecycle; lab-to-production acceleration with deterministic auditability.",
+      "claim_outcome": "Frame as lifecycle standardization and lab-to-production acceleration; six-months-to-three-weeks cycle reduction allowed only via metric_unify_cycle_six_months_to_three_weeks.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Standardized the AI systems lifecycle from intake through production monitoring",
         "Accelerated lab-to-production cycle time for client AI deployments"
@@ -213,10 +247,14 @@
       "linked_source_fact_ids": [
         "fact_engineering_platform_004"
       ],
+      "linked_archive_signal_ids": [],
       "linked_metric_outcome_ids": [
         "metric_unify_cycle_six_months_to_three_weeks",
         "metric_unify_production_readiness_gate_set"
       ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Standardized AI systems lifecycle; lab-to-production acceleration with deterministic auditability.",
       "bullet_intent": "Frame as lifecycle standardization and lab-to-production acceleration; six-months-to-three-weeks cycle reduction allowed only via metric_unify_cycle_six_months_to_three_weeks.",
       "section_eligibility": [
@@ -225,15 +263,21 @@
       ],
       "external_claim_policy": "approved_metric_linked",
       "activation_status": "ACTIVE_CONFIRMED",
-      "held_metrics": [],
-      "excluded_metrics": []
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_unify_distributed_ecosystem_engineering",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
       "employer_node_id": "employment_exp_unify_001",
+      "root_capability_node_id": "distributed_ecosystem_engineering",
       "bundle_theme": "Distributed cloud and data execution infrastructure",
+      "claim_text": "Distributed cloud and data execution infrastructure",
+      "claim_action": "Distributed cloud and data execution infrastructure",
+      "claim_scope": "Distributed cloud/data execution infrastructure; AWS, Databricks Lakehouse, vector services, identity controls, high availability.",
+      "claim_outcome": "Frame as distributed infrastructure architecture; identity controls and API gateways framed as internal/supporting where not externally claimable.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Architected distributed cloud and data execution infrastructure for agentic workloads",
         "Owned high-availability execution layers and parallel decision workflows"
@@ -253,10 +297,14 @@
       "linked_source_fact_ids": [
         "fact_engineering_platform_002"
       ],
+      "linked_archive_signal_ids": [],
       "linked_metric_outcome_ids": [
         "metric_unify_cloud_data_runtime_integration_patterns",
         "metric_unify_high_availability_distributed_service_patterns"
       ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Distributed cloud/data execution infrastructure; AWS, Databricks Lakehouse, vector services, identity controls, high availability.",
       "bullet_intent": "Frame as distributed infrastructure architecture; identity controls and API gateways framed as internal/supporting where not externally claimable.",
       "section_eligibility": [
@@ -265,15 +313,21 @@
       ],
       "external_claim_policy": "skill_projection_not_proof",
       "activation_status": "ACTIVE_CONFIRMED",
-      "held_metrics": [],
-      "excluded_metrics": []
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_unify_platform_commercialization_leadership",
       "employer": "Unify",
       "title": "SVP Engineering, Agentic AI Platforms",
       "employer_node_id": "employment_exp_unify_001",
+      "root_capability_node_id": "platform_commercialization_leadership",
       "bundle_theme": "Platform productization, IP-led revenue, margin expansion, team scale",
+      "claim_text": "Platform productization, IP-led revenue, margin expansion, team scale",
+      "claim_action": "Platform productization, IP-led revenue, margin expansion, team scale",
+      "claim_scope": "Platform productization and commercialization; reusable IP, margin expansion, engineering organization scale-out.",
+      "claim_outcome": "Frame as platform commercialization leadership; $22M IP-led revenue, 20% gross margin expansion, team scaled 8 to 28 allowed only via their approved metric_outcome_ids.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Converted bespoke client delivery into reusable platform IP deployed across enterprise lines of business",
         "Scaled the engineering organization and the platform operating model"
@@ -291,11 +345,15 @@
       "linked_source_fact_ids": [
         "fact_engineering_platform_006"
       ],
+      "linked_archive_signal_ids": [],
       "linked_metric_outcome_ids": [
         "metric_unify_22m_ip_led_revenue",
         "metric_unify_20pct_gross_margin_expansion",
         "metric_unify_team_scaled_8_to_28"
       ],
+      "held_metrics": [],
+      "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Platform productization and commercialization; reusable IP, margin expansion, engineering organization scale-out.",
       "bullet_intent": "Frame as platform commercialization leadership; $22M IP-led revenue, 20% gross margin expansion, team scaled 8 to 28 allowed only via their approved metric_outcome_ids.",
       "section_eligibility": [
@@ -306,15 +364,21 @@
       ],
       "external_claim_policy": "approved_metric_linked",
       "activation_status": "ACTIVE_CONFIRMED",
-      "held_metrics": [],
-      "excluded_metrics": []
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_unify_partner_channel_cosell",
       "employer": "Unify Consulting",
       "title": "AI Platform Leader",
       "employer_node_id": "employment_exp_unify_001",
+      "root_capability_node_id": "partner_channel_cosell",
       "bundle_theme": "AI Partnerships, Co-Sell Channel & Alliance GTM",
+      "claim_text": "AI Partnerships, Co-Sell Channel & Alliance GTM",
+      "claim_action": "AI Partnerships, Co-Sell Channel & Alliance GTM",
+      "claim_scope": "Global AI channel program from inception: co-developed analytics frameworks with strategic partners, co-sell bundling with cloud/streaming vendors, consumption-based SaaS licensing driving partner-derived revenue and renewals.",
+      "claim_outcome": "Frame as AI partnerships / co-sell channel leadership; metrics only from graph-selected Unify facts (fact_partnerships_gtm_001, fact_sales_accounts_004/005).",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Built a global AI channel program from inception with strategic partners",
         "Drove partner-derived revenue through co-sell bundling and consumption-based licensing"
@@ -336,33 +400,40 @@
         "exp_unify_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_unify_partner_cosell_solution_motion_count",
+        "metric_unify_partner_enablement_asset_set"
+      ],
       "held_metrics": [
         "$3M partner-derived revenue (HOLD - source artifact required before numeric claim)",
         "30% upsell increase via co-sell bundling (HOLD - source artifact required before numeric claim)",
         "93% annual renewal via consumption-based licensing (HOLD - source artifact required before numeric claim)"
       ],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Global AI channel program from inception: co-developed analytics frameworks with strategic partners, co-sell bundling with cloud/streaming vendors, consumption-based SaaS licensing driving partner-derived revenue and renewals.",
       "bullet_intent": "Frame as AI partnerships / co-sell channel leadership; metrics only from graph-selected Unify facts (fact_partnerships_gtm_001, fact_sales_accounts_004/005).",
-      "external_claim_policy": "skill_projection_not_proof",
       "section_eligibility": [
         "unify_bullets",
         "unify_narrative"
       ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "external_claim_policy": "skill_projection_not_proof",
       "activation_status": "ACTIVE_CONFIRMED",
-      "notes": "Partnerships/co-sell is a primary Unify theme that JD-fit selection surfaces for partner-facing roles (operator 2026-06-11). Unify-attributed partner facts; graph skills grounded in the Unify AI-platform window.",
-      "linked_metric_outcome_ids": [
-        "metric_unify_partner_cosell_solution_motion_count",
-        "metric_unify_partner_enablement_asset_set"
-      ]
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Partnerships/co-sell is a primary Unify theme that JD-fit selection surfaces for partner-facing roles (operator 2026-06-11). Unify-attributed partner facts; graph skills grounded in the Unify AI-platform window."
     },
     {
       "role_episode_bundle_id": "reb_unify_enterprise_adoption_revenue",
       "employer": "Unify Consulting",
       "title": "AI Platform Leader",
       "employer_node_id": "employment_exp_unify_001",
+      "root_capability_node_id": "enterprise_adoption_revenue",
       "bundle_theme": "Enterprise AI Adoption, Commercial Revenue & Renewals",
+      "claim_text": "Enterprise AI Adoption, Commercial Revenue & Renewals",
+      "claim_action": "Enterprise AI Adoption, Commercial Revenue & Renewals",
+      "claim_scope": "Enterprise AI adoption aligned to CFO priorities driving $5M ACV; consumption-based SaaS licensing shortening sales cycles and sustaining high renewals.",
+      "claim_outcome": "Frame as enterprise AI adoption / commercial revenue leadership; metrics only from graph-selected Unify facts (fact_sales_accounts_001/004, fact_revenue_ops_003).",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Drove enterprise AI adoption by aligning generative-AI workflows to CFO priorities",
         "Grew commercial revenue and renewals via consumption-based licensing"
@@ -382,25 +453,26 @@
         "exp_unify_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_unify_cfo_aligned_adoption_motion_count",
+        "metric_unify_consumption_renewal_signal_instrumentation"
+      ],
       "held_metrics": [
         "$5M ACV from CFO-aligned enterprise adoption (HOLD - source artifact required before numeric claim)",
         "93% annual renewal via consumption-based licensing (HOLD - source artifact required before numeric claim)"
       ],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Enterprise AI adoption aligned to CFO priorities driving $5M ACV; consumption-based SaaS licensing shortening sales cycles and sustaining high renewals.",
       "bullet_intent": "Frame as enterprise AI adoption / commercial revenue leadership; metrics only from graph-selected Unify facts (fact_sales_accounts_001/004, fact_revenue_ops_003).",
-      "external_claim_policy": "skill_projection_not_proof",
       "section_eligibility": [
         "unify_bullets",
         "unify_narrative"
       ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "external_claim_policy": "skill_projection_not_proof",
       "activation_status": "ACTIVE_CONFIRMED",
-      "notes": "Second Unify commercial bundle so partnerships/revenue can reach ~2 of 6 unify bullets for partner-facing JDs (operator split ~30%). Unify-attributed revenue facts.",
-      "linked_metric_outcome_ids": [
-        "metric_unify_cfo_aligned_adoption_motion_count",
-        "metric_unify_consumption_renewal_signal_instrumentation"
-      ]
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Second Unify commercial bundle so partnerships/revenue can reach ~2 of 6 unify bullets for partner-facing JDs (operator split ~30%). Unify-attributed revenue facts."
     }
   ],
   "metric_surface_policy": {
@@ -1000,5 +1072,7 @@
         "headline"
       ]
     }
-  }
+  },
+  "excluded_metrics_by_policy": [],
+  "metric_candidates_for_approval": []
 }

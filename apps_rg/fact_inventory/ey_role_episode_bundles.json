@@ -1,7 +1,7 @@
 {
-  "schema": "ey_role_episode_bundles_v4_five_roots_bundle_to_skill_edge_policy",
+  "schema": "ey_role_episode_bundles_v5_graph_metric_ssot",
   "generated_at": "2026-06-12T00:00:00Z",
-  "generated_by": "codex_ey_five_root_bundle_to_skill_edge_policy",
+  "generated_by": "codex_graph_metric_ssot_normalization",
   "employer": "Ernst & Young",
   "employer_node_id": "employment_exp_ey_001",
   "time_window": "2009-10 to 2014-03",
@@ -24,10 +24,7 @@
     "metric_approval_model": "presence_in_metric_outcome_nodes_is_approval",
     "no_separate_approved_fact_distinction": true,
     "metric_density_rule": "approved EY roots carry differentiated linked metric_outcome_ids; held numeric claims remain excluded",
-    "chronology_policy": "employer_scope_only; graph evidence nodes do not carry time_window as claim authority",
-    "typed_edge_policy": "excluded",
-    "edge_model": "bundle_to_skill_only",
-    "graph_edge_contract_policy": "excluded_until_typed_edge_model_adopted"
+    "chronology_policy": "employer_scope_only; graph evidence nodes do not carry time_window as claim authority"
   },
   "excluded_metrics_by_policy": [
     "Do not claim $15M transformation program without source artifact.",
@@ -42,8 +39,12 @@
       "employer": "Ernst & Young",
       "title": "Principal",
       "employer_node_id": "employment_exp_ey_001",
+      "root_capability_node_id": "regulatory_analytics_modernization",
       "bundle_theme": "Regulatory Analytics Modernization for Global Banks",
       "claim_text": "Led regulatory analytics modernization for global banks by linking predictive risk analytics, audit controls, and lineage-backed regulatory workflows.",
+      "claim_action": "Led regulatory analytics modernization for global banks by linking predictive risk analytics, audit controls, and lineage-backed regulatory workflows.",
+      "claim_scope": "Dodd-Frank era regulatory analytics and audit modernization for global banking clients, focused on predictive risk, lineage, controls, and regulator-facing traceability.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
         "Led regulatory analytics modernization for global banking clients",
@@ -66,32 +67,38 @@
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ey_regulatory_lineage_domains_count",
+        "metric_ey_predictive_risk_use_cases_count",
+        "metric_ey_audit_control_automation_workflows_count"
+      ],
       "held_metrics": [
         "$15M regulatory analytics modernization program (HOLD - source artifact required before numeric claim)"
       ],
-      "metric_candidates": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Dodd-Frank era regulatory analytics and audit modernization for global banking clients, focused on predictive risk, lineage, controls, and regulator-facing traceability.",
       "bullet_intent": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy.",
-      "linked_metric_outcome_ids": [
-        "metric_ey_regulatory_lineage_domains_count",
-        "metric_ey_predictive_risk_use_cases_count",
-        "metric_ey_audit_control_automation_workflows_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy."
     },
     {
       "role_episode_bundle_id": "reb_ey_capital_optimization_solvency",
       "employer": "Ernst & Young",
       "title": "Principal",
       "employer_node_id": "employment_exp_ey_001",
+      "root_capability_node_id": "capital_optimization_solvency",
       "bundle_theme": "Quant Derivatives, Variable Annuity Hedging, and Insurance Capital",
       "claim_text": "Led quantitative derivatives, variable-annuity hedging, and insurance-capital work using exotic pricing, liability Greeks, higher-order stress testing, and hedge design.",
+      "claim_action": "Led quantitative derivatives, variable-annuity hedging, and insurance-capital work using exotic pricing, liability Greeks, higher-order stress testing, and hedge design.",
+      "claim_scope": "Insurance and capital-markets work requiring derivatives pricing, VA guarantee modeling, hedge design, Greek stress testing, and capital adequacy under insurance regulatory regimes.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "USER_CONFIRMED_DIRECT",
       "executive_scope_signals": [
         "Led hedging-practice work with deep derivatives and exotic derivatives experience",
@@ -121,32 +128,38 @@
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ey_derivative_model_family_count",
+        "metric_ey_greek_cross_greek_scenario_count",
+        "metric_ey_va_hedge_program_count"
+      ],
       "held_metrics": [
         "12% reduction in redundant capital holdings (HOLD - source artifact required before numeric claim)"
       ],
-      "metric_candidates": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Insurance and capital-markets work requiring derivatives pricing, VA guarantee modeling, hedge design, Greek stress testing, and capital adequacy under insurance regulatory regimes.",
       "bullet_intent": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy.",
-      "linked_metric_outcome_ids": [
-        "metric_ey_derivative_model_family_count",
-        "metric_ey_greek_cross_greek_scenario_count",
-        "metric_ey_va_hedge_program_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy."
     },
     {
       "role_episode_bundle_id": "reb_ey_ccar_capital_liquidity_stress_testing",
       "employer": "Ernst & Young",
       "title": "Principal",
       "employer_node_id": "employment_exp_ey_001",
+      "root_capability_node_id": "ccar_capital_liquidity_stress_testing",
       "bundle_theme": "CCAR Capital, Liquidity, Stress Testing, and Model Validation",
       "claim_text": "Led CCAR-era capital, liquidity, stress testing, and model-validation work by structuring traceable scenarios, challenger variants, model-risk remediation, and governance evidence for regulated financial institutions.",
+      "claim_action": "Led CCAR-era capital, liquidity, stress testing, and model-validation work by structuring traceable scenarios, challenger variants, model-risk remediation, and governance evidence for regulated financial institutions.",
+      "claim_scope": "Post-crisis financial services consulting environment where capital planning, liquidity risk, stress testing, model governance, and auditability were board/regulator priorities.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "USER_CONFIRMED_DIRECT",
       "executive_scope_signals": [
         "Consolidated model validation, challenger variants, and regulatory remediation into the CCAR/capital stress-testing root",
@@ -173,19 +186,6 @@
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
-      "held_metrics": [
-        "40% reduction in audit remediation costs (HOLD - source artifact required before numeric claim)"
-      ],
-      "metric_candidates": [],
-      "excluded_metrics": [],
-      "operating_context": "Post-crisis financial services consulting environment where capital planning, liquidity risk, stress testing, model governance, and auditability were board/regulator priorities.",
-      "bullet_intent": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
-      "section_eligibility": [
-        "ey_bullets",
-        "ey_narrative"
-      ],
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy.",
       "linked_metric_outcome_ids": [
         "metric_ey_ccar_stress_scenario_library_count",
         "metric_ey_capital_liquidity_assumption_sets_count",
@@ -193,15 +193,34 @@
         "metric_ey_model_validation_variant_count",
         "metric_ey_model_risk_findings_remediated_count",
         "metric_ey_validation_control_package_count"
-      ]
+      ],
+      "held_metrics": [
+        "40% reduction in audit remediation costs (HOLD - source artifact required before numeric claim)"
+      ],
+      "excluded_metrics": [],
+      "metric_candidates": [],
+      "operating_context": "Post-crisis financial services consulting environment where capital planning, liquidity risk, stress testing, model governance, and auditability were board/regulator priorities.",
+      "bullet_intent": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
+      "section_eligibility": [
+        "ey_bullets",
+        "ey_narrative"
+      ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy."
     },
     {
       "role_episode_bundle_id": "reb_ey_insurance_core_modernization",
       "employer": "Ernst & Young",
       "title": "Principal",
       "employer_node_id": "employment_exp_ey_001",
+      "root_capability_node_id": "insurance_core_modernization",
       "bundle_theme": "Insurance Core Modernization: Policy, Claims, Billing, and Data Workflows",
       "claim_text": "Led insurance core modernization by decomposing legacy policy and claims operations into configurable policy administration, product/rate rule templates, claims workflow requirements, billing/rating/underwriting handoffs, conversion mappings, and BI-ready data outputs; Guidewire was an implementation example, not the claim boundary.",
+      "claim_action": "Led insurance core modernization by decomposing legacy policy and claims operations into configurable policy administration, product/rate rule templates, claims workflow requirements, billing/rating/underwriting handoffs, conversion mappings, and BI-ready data outputs; Guidewire was an implementation example, not the claim boundary.",
+      "claim_scope": "Insurance core modernization in the 2009-2014 period emphasized replacing hard-coded legacy policy, billing, and claims systems with configurable, rules-based platforms; mapping requirements, integrations, source-target data dictionaries, conversion controls, policy lifecycle workflows, claims workflow requirements, and reporting/BI handoffs.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
         "Modernized insurance core operations beyond any single vendor tool",
@@ -229,31 +248,37 @@
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ey_core_workflow_maps_count",
+        "metric_ey_policy_admin_rules_interfaces_count",
+        "metric_ey_core_integration_data_mapping_count",
+        "metric_ey_core_conversion_rule_traceability_count"
+      ],
       "held_metrics": [],
-      "metric_candidates": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Insurance core modernization in the 2009-2014 period emphasized replacing hard-coded legacy policy, billing, and claims systems with configurable, rules-based platforms; mapping requirements, integrations, source-target data dictionaries, conversion controls, policy lifecycle workflows, claims workflow requirements, and reporting/BI handoffs.",
       "bullet_intent": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Typed edges excluded by policy. Guidewire is retained as an example platform family, while the claimable skill is broader policy/claims/billing/rating/underwriting/data modernization.",
-      "linked_metric_outcome_ids": [
-        "metric_ey_core_workflow_maps_count",
-        "metric_ey_policy_admin_rules_interfaces_count",
-        "metric_ey_core_integration_data_mapping_count",
-        "metric_ey_core_conversion_rule_traceability_count"
-      ]
+      "notes": "Typed edges excluded by policy. Guidewire is retained as an example platform family, while the claimable skill is broader policy/claims/billing/rating/underwriting/data modernization."
     },
     {
       "role_episode_bundle_id": "reb_ey_erm_risk_governance",
       "employer": "Ernst & Young",
       "title": "Principal",
       "employer_node_id": "employment_exp_ey_001",
+      "root_capability_node_id": "erm_risk_governance",
       "bundle_theme": "Enterprise Risk Management Operating Model and Risk-Data Aggregation",
       "claim_text": "Architected ERM operating models and BCBS 239-aligned risk-data aggregation by defining three-lines-of-defense accountability, metadata standards, and auditable risk metrics.",
+      "claim_action": "Architected ERM operating models and BCBS 239-aligned risk-data aggregation by defining three-lines-of-defense accountability, metadata standards, and auditable risk metrics.",
+      "claim_scope": "Enterprise risk management transformation for regulated banking and insurance clients, emphasizing operating model, risk-data aggregation, lineage, and governance controls.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "USER_CONFIRMED_DIRECT",
       "executive_scope_signals": [
         "Enterprise risk management was a major EY focus area during 2009-2014",
@@ -277,22 +302,24 @@
         "exp_ey_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_ey_bcbs239_risk_data_domain_count",
+        "metric_ey_three_lines_control_owner_count",
+        "metric_ey_risk_metric_definition_count"
+      ],
       "held_metrics": [],
-      "metric_candidates": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "Enterprise risk management transformation for regulated banking and insurance clients, emphasizing operating model, risk-data aggregation, lineage, and governance controls.",
       "bullet_intent": "Use only role_episode_bundle_id-bound graph evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "ey_bullets",
         "ey_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy.",
-      "linked_metric_outcome_ids": [
-        "metric_ey_bcbs239_risk_data_domain_count",
-        "metric_ey_three_lines_control_owner_count",
-        "metric_ey_risk_metric_definition_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable. Typed edges are excluded by policy."
     }
   ],
   "metric_outcome_nodes": {

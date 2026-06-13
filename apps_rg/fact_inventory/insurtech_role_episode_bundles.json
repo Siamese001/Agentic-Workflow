@@ -24,7 +24,8 @@
     "metric_approval_model": "presence_in_metric_outcome_nodes_is_approval",
     "no_separate_approved_fact_distinction": true,
     "metric_density_rule": "each approved employer root should carry differentiated linked metric_outcome_ids unless explicitly held",
-    "chronology_policy": "employer_scope_only; graph evidence nodes do not carry time_window as claim authority"
+    "chronology_policy": "employer_scope_only; graph evidence nodes do not carry time_window as claim authority",
+    "skill_truth_source": "graph_skill_node_ids"
   },
   "excluded_metrics_by_policy": [
     "generic absolute cloud savings claims without workload-level proof",
@@ -37,8 +38,12 @@
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "founder_led_market_creation",
       "bundle_theme": "Founder-Led Market Creation for Insurance Cloud Adoption",
       "claim_text": "Founded and shaped a cloud-native engineering firm around early insurer AWS modernization demand.",
+      "claim_action": "Founded and shaped a cloud-native engineering firm around early insurer AWS modernization demand.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
         "Founded and shaped a cloud-native engineering firm around early insurer AWS modernization demand.",
@@ -58,46 +63,34 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_founder_buyer_discovery_count"
+      ],
       "held_metrics": [],
       "excluded_metrics": [],
       "metric_candidates": [],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_zero_to_one_insurtech_venture_building"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_founder_market_thesis_development"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_early_adopter_insurer_customer_development"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_founder_buyer_discovery_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_founder_led_gtm_revenue",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "founder_led_gtm_revenue",
       "bundle_theme": "Founder-Led GTM, Pipeline, and Commercial Execution",
       "claim_text": "Owned founder-led GTM motions for insurer AWS modernization opportunities.",
+      "claim_action": "Owned founder-led GTM motions for insurer AWS modernization opportunities.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DERIVED_SUPPORTED",
       "executive_scope_signals": [
         "Owned founder-led GTM motions for insurer AWS modernization opportunities.",
@@ -119,53 +112,37 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_founder_buyer_discovery_count",
+        "metric_insurtech_qualified_pipeline_stage_count",
+        "metric_insurtech_poc_to_paid_conversion_pct",
+        "metric_insurtech_proposals_sows_count"
+      ],
       "held_metrics": [],
       "excluded_metrics": [],
       "metric_candidates": [],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_founder_led_insurtech_sales"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_insurer_executive_buyer_discovery"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_aws_modernization_pipeline_generation"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_proposal_sow_development_for_insurers"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_founder_buyer_discovery_count",
-        "metric_insurtech_qualified_pipeline_stage_count",
-        "metric_insurtech_poc_to_paid_conversion_pct",
-        "metric_insurtech_proposals_sows_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_lean_delivery_operating_model",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "lean_delivery_operating_model",
       "bundle_theme": "Lean Delivery Operating Model for Regulated Insurer Modernization",
       "claim_text": "Ran lean, resource-conscious delivery for insurer modernization without losing audit/control discipline.",
+      "claim_action": "Ran lean, resource-conscious delivery for insurer modernization without losing audit/control discipline.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DERIVED_SUPPORTED",
       "executive_scope_signals": [
         "Ran lean, resource-conscious delivery for insurer modernization without losing audit/control discipline.",
@@ -185,46 +162,34 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_mvp_to_production_cycle_time"
+      ],
       "held_metrics": [],
       "excluded_metrics": [],
       "metric_candidates": [],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_lean_insurtech_mvp_to_production"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_founder_resource_constraint_tradeoffs"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_agile_delivery_for_regulated_insurers"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_mvp_to_production_cycle_time"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_public_vs_private_cloud_strategy",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "public_vs_private_cloud_strategy",
       "bundle_theme": "Public-vs-Private Cloud Strategy for Regulated Insurance Workloads",
       "claim_text": "Framed AWS public-cloud adoption against private/on-prem alternatives for regulated insurance workloads.",
+      "claim_action": "Framed AWS public-cloud adoption against private/on-prem alternatives for regulated insurance workloads.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DERIVED_SUPPORTED",
       "executive_scope_signals": [
         "Framed AWS public-cloud adoption against private/on-prem alternatives for regulated insurance workloads.",
@@ -246,6 +211,10 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_cloud_economics_comparison_models",
+        "metric_insurtech_workloads_classified_by_cloud_fit_count"
+      ],
       "held_metrics": [],
       "excluded_metrics": [],
       "metric_candidates": [
@@ -260,48 +229,28 @@
           ]
         }
       ],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_public_vs_private_cloud_tco_framing"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_private_cloud_complexity_objection_handling"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_regulated_workload_placement_strategy"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_hybrid_cloud_transition_architecture"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_cloud_economics_comparison_models",
-        "metric_insurtech_workloads_classified_by_cloud_fit_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_aws_cloud_economics",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "aws_cloud_economics",
       "bundle_theme": "AWS Cloud Economics and Cost Optimization",
       "claim_text": "Built insurer AWS modernization business cases around workload economics, cost controls, and technical-debt retirement.",
+      "claim_action": "Built insurer AWS modernization business cases around workload economics, cost controls, and technical-debt retirement.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
         "Built insurer AWS modernization business cases around workload economics, cost controls, and technical-debt retirement.",
@@ -323,6 +272,11 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_cloud_economics_comparison_models",
+        "metric_insurtech_reserved_instance_coverage_pct",
+        "metric_insurtech_cost_allocation_coverage_pct"
+      ],
       "held_metrics": [
         "40% TCO reduction (HOLD - source artifact required before numeric claim)"
       ],
@@ -338,49 +292,28 @@
           ]
         }
       ],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_aws_tco_modeling_for_insurers"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_capex_to_opex_cloud_business_case"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_reserved_instance_rightsizing_strategy"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_cost_explorer_budget_forecasting"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_cloud_economics_comparison_models",
-        "metric_insurtech_reserved_instance_coverage_pct",
-        "metric_insurtech_cost_allocation_coverage_pct"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_aws_migration_execution",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "aws_migration_execution",
       "bundle_theme": "AWS Migration Execution for Legacy Insurance Platforms",
       "claim_text": "Led AWS modernization execution for monolithic policy administration and insurance platform workloads.",
+      "claim_action": "Led AWS modernization execution for monolithic policy administration and insurance platform workloads.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
         "Led AWS modernization execution for monolithic policy administration and insurance platform workloads.",
@@ -404,63 +337,39 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_workloads_classified_by_cloud_fit_count",
+        "metric_insurtech_migration_waves_completed_count",
+        "metric_insurtech_core_workloads_migrated_count",
+        "metric_insurtech_cutover_downtime_hours"
+      ],
       "held_metrics": [
         "40% TCO reduction (HOLD - source artifact required before numeric claim)"
       ],
       "excluded_metrics": [],
       "metric_candidates": [],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_aws_migration_readiness_assessment"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_application_dependency_mapping"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_migration_wave_cutover_planning"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_database_migration_dms_sct"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_sr_insurtech_legacy_cloud_modernization"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_p2_tech_aws_modernization_patterns"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_workloads_classified_by_cloud_fit_count",
-        "metric_insurtech_migration_waves_completed_count",
-        "metric_insurtech_core_workloads_migrated_count",
-        "metric_insurtech_cutover_downtime_hours"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_aws_shared_responsibility_operating_model",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "aws_shared_responsibility_operating_model",
       "bundle_theme": "AWS Shared-Responsibility Safety Operating Model",
       "claim_text": "Built safety operating-model framing around AWS shared responsibility and insurer-owned controls.",
+      "claim_action": "Built safety operating-model framing around AWS shared responsibility and insurer-owned controls.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DERIVED_SUPPORTED",
       "executive_scope_signals": [
         "Built safety operating-model framing around AWS shared responsibility and insurer-owned controls.",
@@ -482,51 +391,35 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_control_ownership_matrix_count",
+        "metric_insurtech_safety_operating_model_artifacts_count"
+      ],
       "held_metrics": [],
       "excluded_metrics": [],
       "metric_candidates": [],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_aws_shared_responsibility_model_framing"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_cloud_control_ownership_mapping"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_customer_vs_aws_security_raci"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_regulated_cloud_adoption_guardrails"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_control_ownership_matrix_count",
-        "metric_insurtech_safety_operating_model_artifacts_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "insurance_regulatory_cloud_adoption_standards",
       "bundle_theme": "Insurance Regulatory Cloud Adoption Standards",
       "claim_text": "Worked through insurer/regulatory adoption concerns around cloud controls, data security, and standards readiness.",
+      "claim_action": "Worked through insurer/regulatory adoption concerns around cloud controls, data security, and standards readiness.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DERIVED_SUPPORTED",
       "executive_scope_signals": [
         "Worked through insurer/regulatory adoption concerns around cloud controls, data security, and standards readiness.",
@@ -548,52 +441,36 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_regulatory_bodies_engaged_count",
+        "metric_insurtech_cloud_standards_artifacts_count",
+        "metric_insurtech_regulatory_objections_resolved_count"
+      ],
       "held_metrics": [],
       "excluded_metrics": [],
       "metric_candidates": [],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_insurance_regulator_cloud_adoption_engagement"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_naic_data_security_model_law_readiness"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_nydfs_23nycrr500_cloud_control_alignment"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_insurance_commissioner_exam_readiness"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_regulatory_bodies_engaged_count",
-        "metric_insurtech_cloud_standards_artifacts_count",
-        "metric_insurtech_regulatory_objections_resolved_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_regulated_aws_control_implementation",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "regulated_aws_control_implementation",
       "bundle_theme": "Regulated AWS Control Implementation",
       "claim_text": "Implemented SOC 2-aligned AWS controls for regulated insurers adopting analytics and ML.",
+      "claim_action": "Implemented SOC 2-aligned AWS controls for regulated insurers adopting analytics and ML.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
         "Implemented SOC 2-aligned AWS controls for regulated insurers adopting analytics and ML.",
@@ -617,60 +494,36 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_controls_mapped_count",
+        "metric_insurtech_audit_logging_coverage_pct",
+        "metric_insurtech_sensitive_data_controls_count"
+      ],
       "held_metrics": [],
       "excluded_metrics": [],
       "metric_candidates": [],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_aws_iam_kms_cloudtrail_controls"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_aws_config_change_auditability"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_soc2_control_mapping_for_aws"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_pii_encryption_for_insurance_data"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_sr_insurtech_regulated_insurer_controls"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_soc2_zero_trust_security"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_controls_mapped_count",
-        "metric_insurtech_audit_logging_coverage_pct",
-        "metric_insurtech_sensitive_data_controls_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_aws_guidewire_core_modernization",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "aws_guidewire_core_modernization",
       "bundle_theme": "AWS and Guidewire/Core Insurance Modernization",
       "claim_text": "Connected AWS modernization to policy administration, Guidewire-adjacent workflows, and core insurance data models.",
+      "claim_action": "Connected AWS modernization to policy administration, Guidewire-adjacent workflows, and core insurance data models.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DERIVED_SUPPORTED",
       "executive_scope_signals": [
         "Connected AWS modernization to policy administration, Guidewire-adjacent workflows, and core insurance data models.",
@@ -692,51 +545,35 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_guidewire_workflows_mapped_count",
+        "metric_insurtech_core_data_entities_mapped_count"
+      ],
       "held_metrics": [],
       "excluded_metrics": [],
       "metric_candidates": [],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_guidewire_insurancesuite_modernization"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_policycenter_workflow_mapping"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_claimcenter_billingcenter_integration"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_insurance_core_data_model_mapping"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_guidewire_workflows_mapped_count",
-        "metric_insurtech_core_data_entities_mapped_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_insurance_data_bi_decisioning",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "insurance_data_bi_decisioning",
       "bundle_theme": "Insurance Data, BI, and Decision Support",
       "claim_text": "Enabled real-time ingestion, BI, underwriting analytics, and pricing decision support for insurer operations.",
+      "claim_action": "Enabled real-time ingestion, BI, underwriting analytics, and pricing decision support for insurer operations.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
         "Enabled real-time ingestion, BI, underwriting analytics, and pricing decision support for insurer operations.",
@@ -758,53 +595,37 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_core_data_entities_mapped_count",
+        "metric_insurtech_reporting_latency_reduction",
+        "metric_insurtech_real_time_ingestion_feeds_count",
+        "metric_insurtech_decision_cycle_time_reduction"
+      ],
       "held_metrics": [],
       "excluded_metrics": [],
       "metric_candidates": [],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_guidewire_datahub_infocenter_bi"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_pc_insurance_data_warehouse_design"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_underwriting_analytics_enablement"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_pricing_loss_ratio_reporting"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_core_data_entities_mapped_count",
-        "metric_insurtech_reporting_latency_reduction",
-        "metric_insurtech_real_time_ingestion_feeds_count",
-        "metric_insurtech_decision_cycle_time_reduction"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     },
     {
       "role_episode_bundle_id": "reb_insurtech_resilient_core_operations",
       "employer": "InsurTech Cloud Solutions",
       "title": "Chief Technology Officer",
       "employer_node_id": "employment_exp_insurtech_001",
+      "root_capability_node_id": "resilient_core_operations",
       "bundle_theme": "Resilient Core Insurance Operations on AWS",
       "claim_text": "Re-architected insurer underwriting and operational systems for high availability and real-time operations.",
+      "claim_action": "Re-architected insurer underwriting and operational systems for high availability and real-time operations.",
+      "claim_scope": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
+      "claim_outcome": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
       "executive_scope_signals": [
         "Re-architected insurer underwriting and operational systems for high availability and real-time operations.",
@@ -827,6 +648,10 @@
         "exp_insurtech_001"
       ],
       "linked_archive_signal_ids": [],
+      "linked_metric_outcome_ids": [
+        "metric_insurtech_rto_rpo_targets_met_count",
+        "metric_insurtech_incident_runbooks_count"
+      ],
       "held_metrics": [
         "99.99% uptime (HOLD - source artifact required before numeric claim)"
       ],
@@ -842,44 +667,16 @@
           ]
         }
       ],
-      "graph_edge_contract": {
-        "source_employer_node_id": "employment_exp_insurtech_001",
-        "root_to_skill_edges": [
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_multi_az_insurance_workload_design"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_rto_rpo_dr_planning"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_cloudwatch_operational_monitoring"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_high_availability_underwriting_workflows"
-          },
-          {
-            "edge_type": "role_episode_contains_skill",
-            "target_skill_id": "skill_sr_insurance_systems_resilience_internal"
-          }
-        ],
-        "metric_claim_policy": "metric_outcome_nodes_are_approved_by_graph_presence"
-      },
       "operating_context": "2014-2017 InsurTech CTO role episode for AWS modernization of regulated insurance workloads.",
       "bullet_intent": "Use only role_episode_bundle_id-bound evidence; metric_outcome_nodes are the approved metric surface.",
       "section_eligibility": [
         "insurtech_bullets",
         "insurtech_narrative"
       ],
+      "external_claim_policy": "approved_by_graph_presence",
+      "activation_status": "ACTIVE_CONFIRMED",
       "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
-      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable.",
-      "linked_metric_outcome_ids": [
-        "metric_insurtech_rto_rpo_targets_met_count",
-        "metric_insurtech_incident_runbooks_count"
-      ]
+      "notes": "Graph-native metric outcome IDs are approved by presence; held numeric claims remain non-claimable."
     }
   ],
   "metric_candidates_for_approval": [

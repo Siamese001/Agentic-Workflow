@@ -76,6 +76,7 @@ def call_section_model_provider(
     profile = normalize_provider_profile(provider_profile)
     compiled = _compiled_prompt_from_payload(provider_payload, run_id=run_id)
     budget = int(token_budget or provider_payload.get("max_tokens") or provider_payload.get("max_output_tokens") or 900)
+    timeout_seconds = provider_payload.get("timeout_seconds")
     temperature = float(
         temperature_override
         if temperature_override is not None
@@ -86,6 +87,7 @@ def call_section_model_provider(
         compiled,
         token_budget=budget,
         temperature=temperature,
+        timeout_seconds=timeout_seconds,
     )
 
 

@@ -13,6 +13,28 @@ from apps_rg.runtime.validators.graph_skills_proof_common import (
 PLAN_ID = "graph-skills-quality-enhancement-c4e8a1"
 RECEIPT_SCHEMA = "graph_skills_utilization_receipt_v1"
 
+CONFIDENCE_STRENGTH_WEIGHTS: dict[str, float] = {
+    "HIGH": 0.35,
+    "MEDIUM": 0.2,
+    "LOW": 0.05,
+    "BLOCKED": 0.0,
+}
+
+SUPPORT_STRENGTH_WEIGHTS: dict[str, float] = {
+    "DIRECT_FROM_RESUME_ARCHIVE": 0.18,
+    "USER_CONFIRMED_DIRECT": 0.18,
+    "ACTIVE_CONFIRMED": 0.16,
+    "BUNDLE_SUPPORTED": 0.14,
+    "DERIVED_SUPPORTED": 0.12,
+    "FACT_SUBSTRATE": 0.1,
+    "USER_CONFIRMED_PENDING_SOURCE": 0.04,
+}
+
+APPROVED_POLICY_TOKENS = ("approved", "eligible", "allowed")
+BLOCKING_POLICY_TOKENS = ("blocked", "forbidden", "held", "unapproved", "not claimable", "do_not_promote")
+BLOCKING_STATUS_TOKENS = ("BLOCKED", "DO_NOT_PROMOTE", "FORBIDDEN", "SUPPRESSED")
+PENDING_STATUS_TOKENS = ("DRAFT", "PENDING", "USER_CONFIRMED_PENDING_SOURCE")
+
 # Configured synonym map (deterministic — not LLM-judged).
 SEMANTIC_VARIANT_MAP: dict[str, tuple[str, ...]] = {
     "agentic ai platform": ("agentic-ai platform", "agentic ai platforms"),
@@ -116,6 +138,142 @@ def _collect_values_for_keys(payloads: Sequence[Any], keys: set[str]) -> set[str
                 if key in row:
                     out.update(_collect_string_values(row.get(key)))
     return out
+
+
+def _truthy(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    text = str(value or "").strip().casefold()
+    return text in {"1", "true", "yes", "y", "confirmed"}
+
+
+def _row_strings(row: Mapping[str, Any], keys: set[str]) -> set[str]:
+    return _collect_values_for_keys([row], keys)
+
+
+def _policy_has_token(text: str, tokens: Sequence[str]) -> bool:
+    lowered = str(text or "").casefold()
+    return any(token in lowered for token in tokens)
+
+
+def _band_for_evidence_strength(score: float, *, blocked: bool) -> str:
+    if blocked:
+        return "BLOCKED"
+    if score >= 0.75:
+        return "HIGH"
+    if score >= 0.45:
+        return "MEDIUM"
+    if score > 0:
+        return "LOW"
+    return "NONE"
+
+
+def score_evidence_strength_for_skill_row(row: Mapping[str, Any]) -> dict[str, Any]:
+    """Derive local evidence strength from existing graph-skill metadata.
+
+    This score is report-only metadata. It does not create proof authority and
+    does not make skill ids, capsule phrases, or JD text claim evidence.
+    """
+    skill_id = str(row.get("skill_id") or row.get("node_id") or "").strip()
+    confidence = str(
+        row.get("confidence_grade") or row.get("confidence") or row.get("evidence_confidence") or ""
+    ).strip().upper()
+    support = str(row.get("support_level") or "").strip().upper()
+    activation = str(row.get("activation_status") or "").strip().upper()
+    external_policy = str(row.get("external_claim_policy") or row.get("claim_verification_policy") or "")
+
+    fact_ids = _row_strings(row, {"fact_id_links", "linked_source_fact_ids", "source_fact_ids", "fact_ids"})
+    metric_ids = _row_strings(
+        row,
+        {
+            "linked_metric_outcome_ids",
+            "metric_outcome_ids",
+            "approved_metric_outcome_ids",
+            "metric_ids",
+        },
+    )
+    source_refs = _row_strings(
+        row,
+        {
+            "source_trace",
+            "archive_trace",
+            "source_resume_files",
+            "source_evidence",
+            "source_fact_ids",
+            "linked_source_fact_ids",
+        },
+    )
+
+    components = {
+        "confidence": CONFIDENCE_STRENGTH_WEIGHTS.get(confidence, 0.0),
+        "support": SUPPORT_STRENGTH_WEIGHTS.get(support, 0.0),
+        "fact_links": 0.0,
+        "metric_outcomes": 0.0,
+        "source_confirmation": 0.0,
+        "claim_policy": 0.0,
+    }
+    if fact_ids:
+        components["fact_links"] = 0.18 + min(0.06, 0.01 * len(fact_ids))
+    if metric_ids:
+        components["metric_outcomes"] = 0.14 + min(0.06, 0.02 * len(metric_ids))
+    if source_refs or _truthy(row.get("human_confirmed")) or _truthy(row.get("human_confirmed_archive_promotion")):
+        components["source_confirmation"] = 0.05
+    policy_blocked = _policy_has_token(external_policy, BLOCKING_POLICY_TOKENS)
+    if not policy_blocked and (
+        _policy_has_token(external_policy, APPROVED_POLICY_TOKENS) or _truthy(row.get("external_eligible"))
+    ):
+        components["claim_policy"] = 0.07
+
+    penalties: dict[str, float] = {}
+    status_blob = " ".join(x for x in (confidence, support, activation) if x)
+    if any(token in status_blob for token in BLOCKING_STATUS_TOKENS):
+        penalties["blocked_or_suppressed_status"] = 0.5
+    elif any(token in status_blob for token in PENDING_STATUS_TOKENS):
+        penalties["pending_or_draft_status"] = 0.18
+    if policy_blocked:
+        penalties["blocking_claim_policy"] = 0.25
+    if not fact_ids and not metric_ids:
+        penalties["no_fact_or_metric_links"] = 0.12
+
+    raw_score = sum(components.values()) - sum(penalties.values())
+    score = round(max(0.0, min(1.0, raw_score)), 4)
+    blocked = bool(
+        penalties.get("blocked_or_suppressed_status")
+        or penalties.get("blocking_claim_policy")
+        or confidence == "BLOCKED"
+    )
+    return {
+        "skill_id": skill_id,
+        "evidence_strength_score": score,
+        "evidence_strength_band": _band_for_evidence_strength(score, blocked=blocked),
+        "confidence_grade": confidence,
+        "support_level": support,
+        "fact_id_count": len(fact_ids),
+        "metric_outcome_id_count": len(metric_ids),
+        "components": {k: round(v, 4) for k, v in components.items() if v},
+        "penalties": {k: round(v, 4) for k, v in penalties.items() if v},
+        "authority_note": "derived_score_only_not_claim_proof",
+    }
+
+
+def summarize_evidence_strength(skill_rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    rows = [score_evidence_strength_for_skill_row(row) for row in skill_rows if isinstance(row, Mapping)]
+    rows.sort(key=lambda r: (-float(r["evidence_strength_score"]), str(r.get("skill_id") or "")))
+    band_counts: dict[str, int] = {}
+    for row in rows:
+        band = str(row.get("evidence_strength_band") or "NONE")
+        band_counts[band] = band_counts.get(band, 0) + 1
+    average = round(
+        sum(float(row["evidence_strength_score"]) for row in rows) / len(rows), 4
+    ) if rows else 0.0
+    return {
+        "schema": "apps_rg_evidence_strength_summary_v1",
+        "scoring_mode": "derived_report_only_no_claim_authority",
+        "eligible_skill_count": len(rows),
+        "average_score": average,
+        "band_counts": band_counts,
+        "top_skill_strength": rows[:12],
+    }
 
 
 def _role_episode_bundles_from_metadata(meta: Mapping[str, Any]) -> tuple[set[str], set[str], set[str]]:
@@ -295,6 +453,7 @@ def score_graph_skills_utilization(
     eligible_rows, suppressed_lookup = _skill_rows_to_maps(
         skill_rows, suppressed_skill_ids=suppressed_skill_ids
     )
+    evidence_strength = summarize_evidence_strength(eligible_rows)
     cited = _cited_fact_ids(text_claim_coverage)
     text = resume_display_text or ""
 
@@ -368,6 +527,7 @@ def score_graph_skills_utilization(
         "forbidden_phrase_violations": forbidden_phrase_violations,
         "unsupported_skill_phrase_violations": unsupported_skill_phrase_violations,
         "utilization_score": round(score, 4),
+        "evidence_strength": evidence_strength,
         "eligible_skill_count": denom,
         "pass": passed,
     }
@@ -503,5 +663,7 @@ __all__ = [
     "RECEIPT_SCHEMA",
     "SEMANTIC_VARIANT_MAP",
     "score_graph_skills_utilization",
+    "score_evidence_strength_for_skill_row",
+    "summarize_evidence_strength",
     "validate_scorer_inputs_neg6",
 ]

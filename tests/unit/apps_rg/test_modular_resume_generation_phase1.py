@@ -23,7 +23,7 @@ from apps_rg.runtime.sections_root_manifest import (
 )
 
 
-def test_phase1_runs_seven_lanes_mock_provider_no_envelope(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_phase1_runs_all_generated_lanes_mock_provider_no_envelope(monkeypatch: pytest.MonkeyPatch) -> None:
     repo = find_repo_root()
     art = repo / "artifacts" / "apps_rg" / "runs" / f"phase1_pytest_{uuid.uuid4().hex[:10]}"
     art.mkdir(parents=True, exist_ok=True)
@@ -82,7 +82,7 @@ def test_phase1_runs_seven_lanes_mock_provider_no_envelope(monkeypatch: pytest.M
     raw = json.loads(calls_path.read_text(encoding="utf-8"))
     assert raw["schema_version"] == "apps_rg.section_provider_calls.phase1.v2"
     assert isinstance(raw.get("recipe_lane_policy"), dict)
-    assert len(raw["records"]) == 7
+    assert len(raw["records"]) == len(GENERATED_LANES)
     assert {r["section_lane"] for r in raw["records"]} == set(GENERATED_LANES)
     assert all(r.get("section_lane") != "full_resume" for r in raw["records"])
     assert res.locked_sections_provider_calls_detected is False
@@ -162,5 +162,14 @@ def test_modular_env_scoped_to_run() -> None:
     assert os.environ.get(MODULAR_R4_SECTIONS_ROOT_ENV) == prior
 
 
-def test_lane_dispatch_modules_still_seven() -> None:
-    assert len(LANE_DISPATCH_MODULES) == 7
+def test_lane_dispatch_modules_cover_current_runtime_entrypoints() -> None:
+    assert LANE_DISPATCH_MODULES == (
+        "apps_rg.runtime.sections.headline_lane",
+        "apps_rg.runtime.sections.executive_summary_lane",
+        "apps_rg.runtime.sections.unify_bullets_lane",
+        "apps_rg.runtime.sections.unify_narrative_lane",
+        "apps_rg.runtime.sections.ibm_bullets_lane",
+        "apps_rg.runtime.sections.ibm_narrative_lane",
+        "apps_rg.runtime.sections.role_episode_lane",
+        "apps_rg.runtime.sections.competencies_lane",
+    )

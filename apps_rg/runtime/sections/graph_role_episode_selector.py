@@ -356,8 +356,6 @@ def _token_score(bundle: dict[str, Any], *, target_role: str, jd_text: str, brie
     ):
         if token in target_blob and token in bundle_blob:
             score += 1.0
-    if str(bundle.get("support_level") or "").upper().startswith("DIRECT"):
-        score += 0.25
     score += min(len(bundle.get("linked_metric_outcome_ids") or []), 4) * 0.05
     return score
 

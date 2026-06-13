@@ -5,6 +5,7 @@ import pytest
 
 from apps_rg.runtime.graph_skills_utilization_scorer import (
     RECEIPT_SCHEMA,
+    score_evidence_strength_for_skill_row,
     score_graph_skills_utilization,
     validate_scorer_inputs_neg6,
 )
@@ -47,6 +48,8 @@ def test_utilization_passes_phrase_and_fact_grounding() -> None:
     assert "agentic ai platform" in receipt["used_phrases"]
     assert receipt["utilization_score"] == 1.0
     assert receipt["cited_fact_ids"] == ["fact_exec_001"]
+    assert receipt["evidence_strength"]["schema"] == "apps_rg_evidence_strength_summary_v1"
+    assert receipt["evidence_strength"]["eligible_skill_count"] == 1
 
 
 def test_utilization_fails_phrase_only_without_fact() -> None:
@@ -132,3 +135,34 @@ def test_semantic_variant_match_recorded() -> None:
     )
     assert receipt["pass"] is True
     assert "agentic ai platform" in receipt["used_phrases"]
+
+
+def test_evidence_strength_scores_fact_metric_and_confidence_without_proof_promotion() -> None:
+    row = {
+        "skill_id": "skill_metric_backed",
+        "confidence_grade": "HIGH",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "fact_id_links": ["fact_a"],
+        "linked_metric_outcome_ids": ["metric_a"],
+        "external_claim_policy": "approved_metric_linked",
+        "source_trace": ["archive/resume.md"],
+    }
+    scored = score_evidence_strength_for_skill_row(row)
+    assert scored["evidence_strength_band"] == "HIGH"
+    assert scored["evidence_strength_score"] >= 0.75
+    assert scored["fact_id_count"] == 1
+    assert scored["metric_outcome_id_count"] == 1
+    assert scored["authority_note"] == "derived_score_only_not_claim_proof"
+
+
+def test_evidence_strength_blocks_pending_or_unapproved_claims() -> None:
+    row = {
+        "skill_id": "skill_unapproved",
+        "confidence_grade": "BLOCKED",
+        "support_level": "USER_CONFIRMED_PENDING_SOURCE",
+        "external_claim_policy": "not claimable without linked metric_outcome_id",
+    }
+    scored = score_evidence_strength_for_skill_row(row)
+    assert scored["evidence_strength_band"] == "BLOCKED"
+    assert scored["evidence_strength_score"] == 0.0
+    assert "blocking_claim_policy" in scored["penalties"]

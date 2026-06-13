@@ -29,6 +29,8 @@ from apps_rg.runtime.judges.bullet_x2_aggregation import (
     aggregate_bullet_section,
 )
 
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
 
 def _judge(score: float, threshold: float = 0.8, **kw) -> dict:
     base = {
@@ -112,6 +114,17 @@ def test_adjudicator_no_escalation_when_x2_hard_fails_and_score_high() -> None:
         bullets=[],
     )
     assert TRIGGER_X2_PASS_JUDGE_RISK not in d.triggers
+
+
+@pytest.mark.parametrize("lane_file", ["unify_bullets_lane.py", "ibm_bullets_lane.py"])
+def test_unify_and_ibm_bullet_lanes_wire_optional_adjudicator(lane_file: str) -> None:
+    source = (REPO_ROOT / "apps_rg" / "runtime" / "sections" / lane_file).read_text(encoding="utf-8")
+
+    assert "evaluate_bullet_adjudicator_trigger" in source
+    assert "aggregate_bullet_section" in source
+    assert "ADJUDICATOR_PANEL_PROVIDER_KEYS" in source
+    assert 'artifact_dir / "bullet_adjudication.json"' in source
+    assert 'artifact_dir / "bullet_x2_aggregation.json"' in source
 
 
 # --------------------------------------------------------------- X2 aggregation accept/reject

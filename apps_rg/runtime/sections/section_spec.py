@@ -32,11 +32,13 @@ SECTION_RETRIEVAL_PROFILE_RELPATH = Path(
 class SourceAuthoritySpec:
     """Proof source authority configuration.
 
-    Candidate facts prove claims. Graph topology supports routing unless a
+    Candidate fact references are lineage/substrate only. GraphDB-backed proof
+    remains the claim authority; graph topology supports routing unless a
     section opts into fact-bound graph proof explicitly.
     """
 
-    candidate_facts_as_proof: bool = True
+    candidate_facts_as_proof: bool = False
+    candidate_fact_lineage_allowed: bool = True
     graph_as_claim_proof: bool = False
     graph_as_routing_support: bool = True
     graph_claim_proof_allowed_only_when_fact_bound: bool = True
@@ -48,7 +50,10 @@ class SourceAuthoritySpec:
     def from_mapping(cls, raw: Mapping[str, Any] | None) -> "SourceAuthoritySpec":
         data = dict(raw or {})
         return cls(
-            candidate_facts_as_proof=bool(data.get("candidate_facts_as_proof", True)),
+            candidate_facts_as_proof=False,
+            candidate_fact_lineage_allowed=bool(
+                data.get("candidate_fact_lineage_allowed", True)
+            ),
             graph_as_claim_proof=bool(data.get("graph_as_claim_proof", False)),
             graph_as_routing_support=bool(data.get("graph_as_routing_support", True)),
             graph_claim_proof_allowed_only_when_fact_bound=bool(
@@ -60,7 +65,8 @@ class SourceAuthoritySpec:
         )
 
     def candidate_facts_may_prove_claim(self, *, fact_bound: bool = True) -> bool:
-        return bool(self.candidate_facts_as_proof and fact_bound)
+        _ = fact_bound
+        return False
 
     def graph_may_prove_claim(self, *, fact_bound: bool = True) -> bool:
         if not self.graph_as_claim_proof:
@@ -70,10 +76,8 @@ class SourceAuthoritySpec:
         return True
 
     def effective_claim_proof(self, fact_bound: bool = True) -> bool:
-        """True when a candidate fact or fact-bound graph proof can prove a claim."""
-        return self.candidate_facts_may_prove_claim(
-            fact_bound=fact_bound
-        ) or self.graph_may_prove_claim(fact_bound=fact_bound)
+        """True when GraphDB-backed, fact-bound proof can prove a claim."""
+        return self.graph_may_prove_claim(fact_bound=fact_bound)
 
 
 @dataclass(frozen=True, slots=True)

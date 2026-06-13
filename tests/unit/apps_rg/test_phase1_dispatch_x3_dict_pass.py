@@ -162,6 +162,20 @@ def test_phase1_dispatch_hard_failed_false_on_x3_block_without_fault() -> None:
     assert phase1_dispatch_hard_failed(dispatch) is False  # but no cascade
 
 
+def test_phase1_dispatch_hard_failed_false_on_provider_timeout_block_without_fault() -> None:
+    """Provider timeout converted to a normal lane X3 block must not skip later lanes."""
+    from apps_rg.runtime.product_output_policy import phase1_dispatch_hard_failed
+
+    dispatch = {
+        "exit_status": "error",
+        "fault": "",
+        "x3_disposition": "X3_BLOCK",
+        "exact_provider_error": "External provider wall-clock timeout after 90s",
+    }
+
+    assert phase1_dispatch_hard_failed(dispatch) is False
+
+
 def test_phase1_dispatch_hard_failed_true_on_fault() -> None:
     """Transport-level faults DO still cascade (provider blocked, OOM, etc.)."""
     from apps_rg.runtime.product_output_policy import phase1_dispatch_hard_failed

@@ -29,7 +29,8 @@ global_constraints:
   max_query_budget_ms: 12000
 
 source_authority_defaults:
-  candidate_facts_as_proof: true
+  candidate_facts_as_proof: false
+  candidate_fact_lineage_allowed: true
   graph_as_claim_proof: false
   graph_as_routing_support: true
   graph_claim_proof_allowed_only_when_fact_bound: true
@@ -73,7 +74,8 @@ sections:
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
     source_authority:
-      candidate_facts_as_proof: true
+      candidate_facts_as_proof: false
+      candidate_fact_lineage_allowed: true
       graph_as_claim_proof: false
       graph_as_routing_support: true
       graph_claim_proof_allowed_only_when_fact_bound: true
@@ -114,7 +116,8 @@ sections:
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
     source_authority:
-      candidate_facts_as_proof: true
+      candidate_facts_as_proof: false
+      candidate_fact_lineage_allowed: true
       graph_as_claim_proof: false
       graph_as_routing_support: true
       graph_claim_proof_allowed_only_when_fact_bound: true
@@ -154,7 +157,8 @@ sections:
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
     source_authority:
-      candidate_facts_as_proof: true
+      candidate_facts_as_proof: false
+      candidate_fact_lineage_allowed: true
       graph_as_claim_proof: false
       graph_as_routing_support: true
       graph_claim_proof_allowed_only_when_fact_bound: true
@@ -194,7 +198,8 @@ sections:
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
     source_authority:
-      candidate_facts_as_proof: true
+      candidate_facts_as_proof: false
+      candidate_fact_lineage_allowed: true
       graph_as_claim_proof: false
       graph_as_routing_support: true
       graph_claim_proof_allowed_only_when_fact_bound: true
@@ -236,7 +241,8 @@ sections:
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
     source_authority:
-      candidate_facts_as_proof: true
+      candidate_facts_as_proof: false
+      candidate_fact_lineage_allowed: true
       graph_as_claim_proof: false
       graph_as_routing_support: true
       graph_claim_proof_allowed_only_when_fact_bound: true
@@ -276,7 +282,8 @@ sections:
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
     source_authority:
-      candidate_facts_as_proof: true
+      candidate_facts_as_proof: false
+      candidate_fact_lineage_allowed: true
       graph_as_claim_proof: false
       graph_as_routing_support: true
       graph_claim_proof_allowed_only_when_fact_bound: true
@@ -318,7 +325,8 @@ sections:
     authority_classes_allowed: [PRIMARY, SUPPORTING, REFERENCE]
     graph_expansion_allowed: true
     source_authority:
-      candidate_facts_as_proof: true
+      candidate_facts_as_proof: false
+      candidate_fact_lineage_allowed: true
       graph_as_claim_proof: false
       graph_as_routing_support: true
       graph_claim_proof_allowed_only_when_fact_bound: true

@@ -17,6 +17,10 @@ from typing import TYPE_CHECKING, Any, Mapping
 from apps_rg.runtime.legacy_proof_sources import FORBIDDEN_PROOF_POOL_TYPE_LABELS
 from apps_rg.runtime.proof_pool_resolver import PROOF_SOURCE_AUGMENTED_SKILLS_GRAPH
 from apps_rg.runtime.section_cli_defaults import SectionCliConfigError
+from apps_rg.runtime.validators.fact_ledger_authority import (
+    BLOCKED_FACT_LEDGER_AUTHORITY,
+    fact_ledger_authority_violation_reason,
+)
 
 if TYPE_CHECKING:
     from apps_rg.runtime.proof_pool_resolver import SectionProofPool
@@ -278,6 +282,7 @@ def validate_proof_pool_metadata_product_law(
     validate_evidence_authority_block(meta.get("evidence_authority") or {}, section_id=label)
     validate_selection_scope_block(meta.get("selection_scope") or {}, section_id=label)
     validate_layout_context_block(meta.get("layout_context") or {}, section_id=label)
+    _reject_fact_ledger_authority(meta, section_id=label)
 
     # Reject legacy authority switches on receipt fields (after EA block is valid).
     legacy_pt = str(meta.get("proof_pool_type") or "").strip()
@@ -336,6 +341,7 @@ def _reject_incoming_forbidden_authority_switches(
     label = section_id or "section"
     if not isinstance(meta, Mapping):
         return
+    _reject_fact_ledger_authority(meta, section_id=label)
     legacy_pt = str(meta.get("proof_pool_type") or "").strip()
     if legacy_pt in FORBIDDEN_EVIDENCE_AUTHORITIES or legacy_pt in FORBIDDEN_PROOF_POOL_TYPE_LABELS:
         raise ProductEvidenceAuthorityError(
@@ -361,10 +367,31 @@ def _reject_incoming_forbidden_authority_switches(
         raise ProductEvidenceAuthorityError(f"{label}: base_resume_fallback forbidden on product path")
 
 
+def _reject_fact_ledger_authority(
+    meta: Mapping[str, Any],
+    *,
+    section_id: str,
+    selected_fact_plan: Mapping[str, Any] | None = None,
+) -> None:
+    reason = fact_ledger_authority_violation_reason(
+        proof_pool_metadata=meta,
+        selected_fact_plan=selected_fact_plan,
+    )
+    if reason:
+        raise ProductEvidenceAuthorityError(
+            f"{section_id}: {BLOCKED_FACT_LEDGER_AUTHORITY}: {reason}"
+        )
+
+
 def finalize_product_section_proof_pool(pool: "SectionProofPool") -> "SectionProofPool":
     """Attach three-concept metadata and validate product law."""
     incoming = dict(pool.proof_pool_metadata or {})
     _reject_incoming_forbidden_authority_switches(incoming, section_id=pool.section)
+    _reject_fact_ledger_authority(
+        incoming,
+        section_id=pool.section,
+        selected_fact_plan=pool.selected_fact_plan,
+    )
     meta = attach_product_evidence_law_to_metadata(incoming, pool=pool)
     validate_proof_pool_metadata_product_law(
         meta,

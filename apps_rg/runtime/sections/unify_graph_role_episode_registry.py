@@ -8,9 +8,19 @@ Runtime status: ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS — graph_expansion cons
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
+
+from apps_rg.runtime.sections.role_episode_bundle_registry import (
+    get_all_role_episode_bundles,
+    get_role_episode_bundle_by_id,
+    get_role_episode_bundles_for_section,
+    load_role_episode_bundle_doc,
+    validate_role_episode_bundle_base,
+)
+from apps_rg.runtime.sections.role_episode_metric_registry import (
+    approved_metric_outcome_ids_from_path,
+)
 
 BUNDLES_PATH: Path = (
     Path(__file__).resolve().parents[3]
@@ -18,8 +28,6 @@ BUNDLES_PATH: Path = (
     / "fact_inventory"
     / "unify_role_episode_bundles.json"
 )
-
-_BUNDLES_CACHE: dict[str, Any] | None = None
 
 UNIFY_EMPLOYER_ID: str = "Unify"
 UNIFY_EMPLOYER_NODE_ID: str = "employment_exp_unify_001"
@@ -44,39 +52,8 @@ REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
     "activation_status",
 })
 
-# Approved & linked metric outcome ids (allow-list for metric-bearing claims).
-APPROVED_METRIC_OUTCOME_IDS: tuple[str, ...] = (
-    "metric_unify_policy_gated_agent_execution_surface",
-    "metric_unify_replayable_runtime_traceability",
-    "metric_unify_agentic_l0_route_policy_dispatch_surface",
-    "metric_unify_agentic_multi_agent_orchestration_contract_surface",
-    "metric_unify_agentic_graphrag_context_pack_grounding_surface",
-    "metric_unify_agentic_tool_sandbox_egress_policy_surface",
-    "metric_unify_agentic_runtime_gate_verdict_contract_surface",
-    "metric_unify_agentic_human_override_escalation_surface",
-    "metric_unify_agentic_replay_key_audit_manifest_surface",
-    "metric_unify_agentic_runtime_proof_bundle_lineage_surface",
-    "metric_unify_dependency_graph_refactor_blast_radius_visibility",
-    "metric_unify_semantic_edge_refactor_governance_controls",
-    "metric_unify_eval_telemetry_rollback_control_set",
-    "metric_unify_audit_grade_runtime_observability_coverage",
-    "metric_unify_production_readiness_gate_set",
-    "metric_unify_22m_ip_led_revenue",
-    "metric_unify_20pct_gross_margin_expansion",
-    "metric_unify_team_scaled_8_to_28",
-    "metric_unify_cycle_six_months_to_three_weeks",
-    "metric_unify_cloud_data_runtime_integration_patterns",
-    "metric_unify_high_availability_distributed_service_patterns",
-    "metric_unify_partner_cosell_solution_motion_count",
-    "metric_unify_partner_enablement_asset_set",
-    "metric_unify_cfo_aligned_adoption_motion_count",
-    "metric_unify_consumption_renewal_signal_instrumentation",
-)
-
-# Conditional — only if already canonical and linked; HOLD by default.
-CONDITIONAL_METRIC_OUTCOME_IDS: tuple[str, ...] = (
-    "metric_unify_14m_operating_capacity",
-)
+# Metric approval is graph-native: presence in metric_outcome_nodes.
+APPROVED_METRIC_OUTCOME_IDS: tuple[str, ...] = approved_metric_outcome_ids_from_path(BUNDLES_PATH)
 
 VALID_ACTIVATION_STATUS: frozenset[str] = frozenset({
     "ACTIVE_CONFIRMED",
@@ -88,48 +65,32 @@ VALID_ACTIVATION_STATUS: frozenset[str] = frozenset({
 
 
 def _load_bundles(path: Path = BUNDLES_PATH) -> dict[str, Any]:
-    global _BUNDLES_CACHE
-    if _BUNDLES_CACHE is None:
-        with open(path, encoding="utf-8") as fh:
-            _BUNDLES_CACHE = json.load(fh)
-    return _BUNDLES_CACHE
+    return load_role_episode_bundle_doc(path)
 
 
 def get_all_bundles(path: Path = BUNDLES_PATH) -> list[dict[str, Any]]:
-    return list(_load_bundles(path).get("bundles", []))
+    return get_all_role_episode_bundles(path)
 
 
 def get_bundle_by_id(bundle_id: str, path: Path = BUNDLES_PATH) -> dict[str, Any] | None:
-    for b in get_all_bundles(path):
-        if b.get("role_episode_bundle_id") == bundle_id:
-            return b
-    return None
+    return get_role_episode_bundle_by_id(path, bundle_id)
 
 
 def get_bundles_for_section(section_id: str, path: Path = BUNDLES_PATH) -> list[dict[str, Any]]:
-    return [
-        b for b in get_all_bundles(path)
-        if section_id in (b.get("section_eligibility") or [])
-    ]
+    return get_role_episode_bundles_for_section(path, section_id)
 
 
 def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
     """Validate a Unify role episode bundle against required schema and invariants."""
-    violations: list[str] = []
-    missing = REQUIRED_BUNDLE_FIELDS - set(bundle.keys())
-    if missing:
-        violations.append(f"Missing required fields: {sorted(missing)}")
-
-    if bundle.get("employer") not in _VALID_EMPLOYER_LABELS:
-        violations.append(
-            f"employer must be one of {sorted(_VALID_EMPLOYER_LABELS)}, got {bundle.get('employer')!r}"
-        )
-    if bundle.get("employer_node_id") != UNIFY_EMPLOYER_NODE_ID:
-        violations.append(
-            f"employer_node_id must be '{UNIFY_EMPLOYER_NODE_ID}', got {bundle.get('employer_node_id')!r}"
-        )
-    if not bundle.get("graph_skill_node_ids"):
-        violations.append("graph_skill_node_ids must not be empty")
+    violations = validate_role_episode_bundle_base(
+        bundle,
+        required_fields=REQUIRED_BUNDLE_FIELDS,
+        employer_id=UNIFY_EMPLOYER_ID,
+        employer_node_id=UNIFY_EMPLOYER_NODE_ID,
+        valid_sections={"unify_bullets", "unify_narrative", "competencies", "headline"},
+        valid_employer_labels=_VALID_EMPLOYER_LABELS,
+        shared_sections=(),
+    )
     # Source fact lineage OR explicit internal-only classification with graph nodes.
     if not bundle.get("linked_source_fact_ids") and bundle.get("external_claim_policy") not in (
         "internal_only_not_external_claim",
@@ -144,17 +105,11 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
     if bundle.get("activation_status") not in VALID_ACTIVATION_STATUS:
         violations.append(f"Unknown activation_status: {bundle.get('activation_status')!r}")
 
-    # Metric outcome ids must be approved (or conditional).
-    allowed = set(APPROVED_METRIC_OUTCOME_IDS) | set(CONDITIONAL_METRIC_OUTCOME_IDS)
+    # Metric outcome ids must be present in metric_outcome_nodes.
+    allowed = set(APPROVED_METRIC_OUTCOME_IDS)
     for mid in bundle.get("linked_metric_outcome_ids") or []:
         if str(mid) not in allowed:
             violations.append(f"Unapproved metric_outcome_id in bundle: {mid}")
-
-    section_elig = set(bundle.get("section_eligibility") or [])
-    valid_sections = {"unify_bullets", "unify_narrative", "competencies", "headline"}
-    unknown = section_elig - valid_sections
-    if unknown:
-        violations.append(f"Unknown section_eligibility values: {sorted(unknown)}")
 
     return len(violations) == 0, violations
 
@@ -172,7 +127,6 @@ def assert_role_episode_bundle_id_present(context: dict[str, Any]) -> None:
 __all__ = [
     "APPROVED_METRIC_OUTCOME_IDS",
     "BUNDLES_PATH",
-    "CONDITIONAL_METRIC_OUTCOME_IDS",
     "REQUIRED_BUNDLE_FIELDS",
     "UNIFY_EMPLOYER_ID",
     "UNIFY_EMPLOYER_NODE_ID",

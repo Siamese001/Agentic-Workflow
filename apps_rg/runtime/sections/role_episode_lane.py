@@ -34,6 +34,7 @@ from apps_rg.runtime.providers import (
     ProviderProfile,
 )
 from apps_rg.runtime.providers.provider_contract import ProviderResult
+from apps_rg.runtime.section_model_limits import external_claude_generation_model
 from apps_rg.runtime.runtime_proof_layout import (
     finalize_runtime_proof_run,
     prepare_runtime_proof_run_dir,
@@ -471,7 +472,7 @@ def _prompt_object(prompt_text: str, *, run_id: str, prompt_hash: str) -> Simple
 
 
 def _provider_gateway() -> ProviderGateway:
-    claude_model = os.environ.get("APPS_RG_EXTERNAL_CLAUDE_MODEL", "claude-sonnet-4-6")
+    claude_model = external_claude_generation_model()
     claude_url = os.environ.get("APPS_RG_EXTERNAL_CLAUDE_BASE_URL", "")
     openai_model = os.environ.get("APPS_RG_EXTERNAL_OPENAI_MODEL", "gpt-5.5")
     openai_url = os.environ.get("APPS_RG_EXTERNAL_OPENAI_BASE_URL", "")

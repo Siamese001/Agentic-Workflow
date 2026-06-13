@@ -1,11 +1,15 @@
 """Wave 10A apps_rg provider gateway tests."""
 from __future__ import annotations
 
+import time
 from types import SimpleNamespace
 
 import pytest
 
 import apps_rg.runtime.providers.external_provider as external_provider_module
+import apps_rg.runtime.providers.section_provider_call as section_provider_call_module
+from apps_rg.runtime.section_model_limits import DEFAULT_EXTERNAL_CLAUDE_MODEL, external_claude_generation_model
+from apps_rg.runtime.sections.section_generation import build_section_request
 from apps_rg.runtime.providers import (
     ExternalProvider,
     ProviderGateway,
@@ -35,7 +39,25 @@ def test_provider_profiles_config_uses_external_claude_default() -> None:
     profiles = data["profiles"]
     assert profiles["external_openai_generator"]["default"] is False
     assert profiles["external_claude_generator"]["default"] is True
+    assert profiles["external_claude_generator"]["default_model"] == DEFAULT_EXTERNAL_CLAUDE_MODEL
     assert "local_qwen_generator" not in profiles
+
+
+def test_external_claude_default_model_is_haiku() -> None:
+    assert DEFAULT_EXTERNAL_CLAUDE_MODEL == "claude-haiku-4-5"
+    assert external_claude_generation_model({}) == "claude-haiku-4-5"
+
+
+def test_competencies_section_request_defaults_to_external_claude_haiku() -> None:
+    request, payload = build_section_request(
+        messages=[{"role": "user", "content": "Return competencies JSON."}],
+        prompt_hash="prompt-hash",
+        input_payload_hash="input-hash",
+    )
+
+    assert request.provider_requested == "external_claude"
+    assert request.model == DEFAULT_EXTERNAL_CLAUDE_MODEL
+    assert payload["model"] == DEFAULT_EXTERNAL_CLAUDE_MODEL
 
 
 def test_provider_profile_resolution_defaults_to_external_claude(monkeypatch) -> None:
@@ -56,7 +78,14 @@ def test_provider_gateway_dispatches_registered_provider() -> None:
     class _Provider:
         provider_profile = ProviderProfile.EXTERNAL_CLAUDE
 
-        def generate(self, compiled_prompt, *, token_budget: int, temperature: float = 0.7):
+        def generate(
+            self,
+            compiled_prompt,
+            *,
+            token_budget: int,
+            temperature: float = 0.7,
+            timeout_seconds: int | float | None = None,
+        ):
             return ProviderResult(
                 provider_requested="external_claude",
                 provider_attempted=True,
@@ -64,13 +93,19 @@ def test_provider_gateway_dispatches_registered_provider() -> None:
                 exact_provider_error=None,
                 runtime_generation_status="REAL_LLM",
                 model="m",
-                raw_model_output=f"{compiled_prompt.run_id}:{token_budget}:{temperature}",
+                raw_model_output=f"{compiled_prompt.run_id}:{token_budget}:{temperature}:{timeout_seconds}",
                 provider_response={},
             )
 
     gateway = ProviderGateway({ProviderProfile.EXTERNAL_CLAUDE: _Provider()})
-    result = gateway.generate(ProviderProfile.EXTERNAL_CLAUDE, _prompt(), token_budget=123, temperature=0.2)
-    assert result.raw_model_output == "run-1:123:0.2"
+    result = gateway.generate(
+        ProviderProfile.EXTERNAL_CLAUDE,
+        _prompt(),
+        token_budget=123,
+        temperature=0.2,
+        timeout_seconds=12,
+    )
+    assert result.raw_model_output == "run-1:123:0.2:12"
 
 
 def test_provider_gateway_blocks_unregistered_profile() -> None:
@@ -119,6 +154,7 @@ def test_external_provider_uses_injected_transport(monkeypatch) -> None:
     def _transport(request):
         assert request["provider_profile"] == "external_openai"
         assert request["max_tokens"] == 100
+        assert request["timeout_seconds"] == 90.0
         return {"text": "external output", "model": "external-test-model"}
 
     provider = ExternalProvider(
@@ -133,6 +169,88 @@ def test_external_provider_uses_injected_transport(monkeypatch) -> None:
     assert result.runtime_generation_status == "REAL_LLM"
     assert result.raw_model_output == "external output"
     assert result.provider_requested == "external_openai"
+
+
+def test_section_provider_call_threads_payload_timeout_to_gateway(monkeypatch) -> None:
+    calls: dict[str, object] = {}
+
+    class _Gateway:
+        def generate(
+            self,
+            profile,
+            compiled_prompt,
+            *,
+            token_budget: int,
+            temperature: float = 0.7,
+            timeout_seconds: int | float | None = None,
+        ):
+            calls.update(
+                {
+                    "profile": profile,
+                    "prompt_blocks": len(compiled_prompt.prompt_blocks),
+                    "token_budget": token_budget,
+                    "temperature": temperature,
+                    "timeout_seconds": timeout_seconds,
+                }
+            )
+            return ProviderResult(
+                provider_requested="external_claude",
+                provider_attempted=True,
+                provider_available=True,
+                exact_provider_error=None,
+                runtime_generation_status="REAL_LLM",
+                model="m",
+                raw_model_output="ok",
+                provider_response={},
+            )
+
+    monkeypatch.setattr(
+        section_provider_call_module,
+        "build_section_provider_gateway",
+        lambda: _Gateway(),
+    )
+
+    result = section_provider_call_module.call_section_model_provider(
+        "external_claude",
+        {
+            "messages": [{"role": "user", "content": "Write one bullet."}],
+            "max_tokens": 44,
+            "temperature": 0.33,
+            "timeout_seconds": 7,
+        },
+    )
+
+    assert result.runtime_generation_status == "REAL_LLM"
+    assert calls == {
+        "profile": ProviderProfile.EXTERNAL_CLAUDE,
+        "prompt_blocks": 1,
+        "token_budget": 44,
+        "temperature": 0.33,
+        "timeout_seconds": 7,
+    }
+
+
+def test_external_provider_wall_clock_timeout_fails_closed(monkeypatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+
+    def _slow_transport(_request):
+        time.sleep(0.25)
+        return {"text": "late output"}
+
+    provider = ExternalProvider(
+        provider_profile=ProviderProfile.EXTERNAL_OPENAI,
+        transport=_slow_transport,
+    )
+
+    started = time.perf_counter()
+    result = provider.generate(_prompt(), token_budget=100, timeout_seconds=0.01)
+    elapsed = time.perf_counter() - started
+
+    assert elapsed < 0.2
+    assert result.runtime_generation_status == "BLOCKED"
+    assert result.provider_attempted is True
+    assert result.provider_available is False
+    assert "wall-clock timeout" in str(result.exact_provider_error)
 
 
 def test_external_default_routes_to_registered_external_provider(monkeypatch) -> None:

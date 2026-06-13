@@ -11,9 +11,17 @@ grounded in graph role-episode bundles for the 2014-2017 window.
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
+
+from apps_rg.runtime.sections.role_episode_bundle_registry import (
+    get_all_role_episode_bundles,
+    get_role_episode_bundle_by_id,
+    get_role_episode_bundles_for_section,
+    load_role_episode_bundle_doc,
+    validate_no_surface_bullet_ids,
+    validate_role_episode_bundle_base,
+)
 
 BUNDLES_PATH: Path = (
     Path(__file__).resolve().parents[3]
@@ -21,8 +29,6 @@ BUNDLES_PATH: Path = (
     / "fact_inventory"
     / "insurtech_role_episode_bundles.json"
 )
-
-_BUNDLES_CACHE: dict[str, Any] | None = None
 
 # Immutable registry: employer and time window for all InsurTech role episode bundles.
 INSURTECH_EMPLOYER_ID: str = "InsurTech Cloud Solutions"
@@ -45,7 +51,6 @@ REQUIRED_BUNDLE_FIELDS: frozenset[str] = frozenset({
     "linked_archive_signal_ids",
     "linked_metric_outcome_ids",
     "metric_candidates",
-    "graph_edge_contract",
     "operating_context",
     "bullet_intent",
     "section_eligibility",
@@ -66,32 +71,22 @@ VALID_SECTIONS: frozenset[str] = frozenset({"insurtech_bullets", "insurtech_narr
 
 
 def _load_bundles(path: Path = BUNDLES_PATH) -> dict[str, Any]:
-    global _BUNDLES_CACHE
-    if _BUNDLES_CACHE is None:
-        with open(path, encoding="utf-8") as fh:
-            _BUNDLES_CACHE = json.load(fh)
-    return _BUNDLES_CACHE
+    return load_role_episode_bundle_doc(path)
 
 
 def get_all_bundles(path: Path = BUNDLES_PATH) -> list[dict[str, Any]]:
     """Return all InsurTech role episode bundles."""
-    return list(_load_bundles(path).get("bundles", []))
+    return get_all_role_episode_bundles(path)
 
 
 def get_bundle_by_id(bundle_id: str, path: Path = BUNDLES_PATH) -> dict[str, Any] | None:
     """Return a single role episode bundle by ID, or None if not found."""
-    for b in get_all_bundles(path):
-        if b.get("role_episode_bundle_id") == bundle_id:
-            return b
-    return None
+    return get_role_episode_bundle_by_id(path, bundle_id)
 
 
 def get_bundles_for_section(section_id: str, path: Path = BUNDLES_PATH) -> list[dict[str, Any]]:
     """Return bundles eligible for the given section_id."""
-    return [
-        b for b in get_all_bundles(path)
-        if section_id in (b.get("section_eligibility") or [])
-    ]
+    return get_role_episode_bundles_for_section(path, section_id)
 
 
 def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -99,36 +94,23 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
 
     Returns (is_valid, list_of_violations).
     """
-    violations: list[str] = []
+    violations = validate_role_episode_bundle_base(
+        bundle,
+        required_fields=REQUIRED_BUNDLE_FIELDS,
+        employer_id=INSURTECH_EMPLOYER_ID,
+        employer_node_id=INSURTECH_EMPLOYER_NODE_ID,
+        valid_sections=VALID_SECTIONS,
+        shared_sections={"competencies", "executive_summary"},
+        require_linked_metric_outcome_ids=True,
+    )
 
-    missing = REQUIRED_BUNDLE_FIELDS - set(bundle.keys())
-    if missing:
-        violations.append(f"Missing required fields: {sorted(missing)}")
-
-    if bundle.get("employer") != INSURTECH_EMPLOYER_ID:
-        violations.append(
-            f"employer must be '{INSURTECH_EMPLOYER_ID}', got '{bundle.get('employer')}'"
+    violations.extend(
+        validate_no_surface_bullet_ids(
+            bundle,
+            bullet_prefix="bul_insurtech_",
+            label="InsurTech",
         )
-    if bundle.get("employer_node_id") != INSURTECH_EMPLOYER_NODE_ID:
-        violations.append(
-            f"employer_node_id must be '{INSURTECH_EMPLOYER_NODE_ID}', got '{bundle.get('employer_node_id')}'"
-        )
-
-    if not bundle.get("graph_skill_node_ids"):
-        violations.append("graph_skill_node_ids must not be empty")
-    if not bundle.get("linked_metric_outcome_ids"):
-        violations.append("linked_metric_outcome_ids must not be empty")
-
-    bundle_blob = json.dumps(bundle, sort_keys=True)
-    if "bul_insurtech_" in bundle_blob:
-        violations.append(
-            "base-resume bullet ids are forbidden as InsurTech graph proof; use role_episode_bundle_id"
-        )
-
-    section_elig = bundle.get("section_eligibility") or []
-    unknown = set(section_elig) - VALID_SECTIONS - {"competencies", "executive_summary"}
-    if unknown:
-        violations.append(f"Unknown section_eligibility values: {sorted(unknown)}")
+    )
 
     for candidate in bundle.get("metric_candidates") or []:
         candidate_text = str(candidate).upper()
@@ -141,10 +123,6 @@ def validate_bundle(bundle: dict[str, Any]) -> tuple[bool, list[str]]:
                 violations.append(
                     f"Generic absolute TCO claim '{forbidden}' found in metric_candidates: {candidate}"
                 )
-
-    edge_contract = bundle.get("graph_edge_contract") or {}
-    if not isinstance(edge_contract, dict) or not edge_contract.get("root_to_skill_edges"):
-        violations.append("graph_edge_contract.root_to_skill_edges must bind root bundle to skills")
 
     if not bundle.get("executive_scope_signals"):
         violations.append(

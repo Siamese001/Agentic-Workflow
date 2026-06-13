@@ -1,9 +1,21 @@
 {
-  "fetched_at": "2026-06-12T20:26:49Z",
-  "fetched_at_epoch": 1781296009.7049253,
+  "fetched_at": "2026-06-12T23:46:46Z",
+  "fetched_at_epoch": 1781308006.4608476,
   "plans": {
-    "candidate-static-profile-migration-6d2a4f": {
+    "shared-lane-skill-metric-skew-elimination-b4e8c1": {
       "status": "Not Started",
+      "page_id": "37d27693-f55c-812d-be87-c941b2d140a0",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "typed-edge-role-facet-guardrails-a6f3d2": {
+      "status": "In Progress",
+      "page_id": "37d27693-f55c-8106-8877-d4a2ef377cd3",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "candidate-static-profile-migration-6d2a4f": {
+      "status": "Completed",
       "page_id": "37d27693-f55c-8168-98cd-d2a8be3b254c",
       "exists_on_disk": true,
       "has_ai_summary": true

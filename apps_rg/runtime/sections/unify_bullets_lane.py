@@ -1047,6 +1047,66 @@ def run_unify_bullets_execution(
         },
     )
 
+    # Optional adjudicator: Unify follows the same bullet-section pattern as IBM.
+    # Keep the default path at one composite judge, then escalate to the cross-provider
+    # panel only when the deterministic aggregation or borderline trigger says the
+    # single verdict is risky.
+    from apps_rg.runtime.judges.bullet_adjudicator import (
+        ADJUDICATOR_PANEL_PROVIDER_KEYS,
+        evaluate_bullet_adjudicator_trigger,
+    )
+    from apps_rg.runtime.judges.bullet_x2_aggregation import aggregate_bullet_section
+
+    _x2_failed_ids = [g["gate_id"] for g in x2 if not g.get("pass", True)]
+    _existing_judge_keys = {str(j.get("provider_key") or "") for j in x1d}
+    _adj_decision = evaluate_bullet_adjudicator_trigger(
+        section_id="unify_bullets",
+        composite_judges=x1d,
+        x2_failed_gate_ids=_x2_failed_ids,
+        bullets=bullets,
+    )
+    _agg = aggregate_bullet_section(
+        section_id="unify_bullets",
+        composite_judges=x1d,
+        x2_failed_gate_ids=_x2_failed_ids,
+    )
+    _should_adjudicate = _adj_decision.should_escalate or _agg.should_adjudicate
+    _panel_keys = [
+        k for k in ADJUDICATOR_PANEL_PROVIDER_KEYS if k and k not in _existing_judge_keys
+    ]
+    _adjudication_record: dict[str, Any] = {
+        "section_id": "unify_bullets",
+        "trigger_decision": _adj_decision.to_dict(),
+        "aggregation": _agg.to_dict(),
+        "escalated": False,
+        "panel_provider_keys": [],
+    }
+    if _should_adjudicate and _panel_keys:
+        _panel_rows = [
+            j.to_dict()
+            for j in run_unify_bullets_judges(
+                bullets=bullets,
+                claim_ledger=claim_ledger,
+                judge_keys=_panel_keys,
+                mode=judge_mode,
+                artifact_base=artifact_dir,
+                targeting_context={
+                    "target_title": str(runtime_payload.get("target_title") or ""),
+                    "target_company": str(runtime_payload.get("target_company") or ""),
+                    "jd_text": str(runtime_payload.get("jd_text") or ""),
+                    "briefing": str(runtime_payload.get("briefing") or ""),
+                },
+            )
+        ]
+        for _r in _panel_rows:
+            _r["adjudicator_panel_row"] = True
+        x1d = list(x1d) + _panel_rows
+        write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
+        _adjudication_record["escalated"] = True
+        _adjudication_record["panel_provider_keys"] = list(_panel_keys)
+    write_json(artifact_dir / "bullet_adjudication.json", _adjudication_record)
+    write_json(artifact_dir / "bullet_x2_aggregation.json", _agg.to_dict())
+
     # W4.1 (G14): bullet judge-feedback reselection — symmetric to ibm_bullets_lane. Mostly
     # inert on the pool path today (single synthetic selector row, never a trigger); live on
     # the non-pool path (policy panel row, gemini_pro after the policy filter) and for future

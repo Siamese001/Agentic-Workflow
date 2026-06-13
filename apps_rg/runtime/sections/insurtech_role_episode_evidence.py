@@ -7,18 +7,21 @@ grounded in real graph nodes.
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
 from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
 from apps_rg.runtime.sections.insurtech_graph_role_episode_registry import (
+    BUNDLES_PATH as INSURTECH_BUNDLES_PATH,
     INSURTECH_EMPLOYER_ID,
     INSURTECH_EMPLOYER_NODE_ID,
     INSURTECH_TIME_WINDOW,
-    get_all_bundles,
     get_bundles_for_section,
     validate_bundle,
+)
+from apps_rg.runtime.sections.role_episode_metric_registry import (
+    approved_metric_outcome_ids_from_path,
+    metric_outcome_nodes_from_path,
 )
 
 GRAPH_BULLET_EVIDENCE_PACK_MARKER = "INSURTECH_ROLE_EPISODE_EVIDENCE_PACK"
@@ -37,33 +40,14 @@ INSURTECH_BULLET_SLOT_BUNDLE_MAP: dict[str, str] = {
     "bul_insurtech_003": "reb_insurtech_resilient_core_operations",
 }
 
-def _insurtech_bundle_doc() -> dict[str, Any]:
-    path = (
-        Path(__file__).resolve().parents[3]
-        / "apps_rg"
-        / "fact_inventory"
-        / "insurtech_role_episode_bundles.json"
-    )
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
 def _insurtech_metric_outcome_nodes() -> dict[str, dict[str, Any]]:
-    nodes = _insurtech_bundle_doc().get("metric_outcome_nodes") or {}
-    return {str(k): v for k, v in nodes.items() if isinstance(v, dict)}
-
-
-def _insurtech_promotable_metric_ids() -> tuple[str, ...]:
-    ids: list[str] = []
-    for bundle in get_all_bundles():
-        for mid in bundle.get("linked_metric_outcome_ids") or []:
-            s = str(mid).strip()
-            if s and s not in ids:
-                ids.append(s)
-    return tuple(ids)
+    return metric_outcome_nodes_from_path(INSURTECH_BUNDLES_PATH)
 
 
 # Graph-native allow-list for approved InsurTech metric binding.
-PROMOTABLE_METRIC_OUTCOME_IDS: tuple[str, ...] = _insurtech_promotable_metric_ids()
+PROMOTABLE_METRIC_OUTCOME_IDS: tuple[str, ...] = approved_metric_outcome_ids_from_path(
+    INSURTECH_BUNDLES_PATH
+)
 
 FORBIDDEN_METRIC_SUBSTRINGS: tuple[str, ...] = (
     "25%", "30%", "35%", "40%", "50%", "99.99%",
@@ -143,7 +127,6 @@ def build_insurtech_role_episode_section_packet(
                 "metric_candidates": list(bundle.get("metric_candidates") or []),
                 "held_metrics": list(bundle.get("held_metrics") or []),
                 "excluded_metrics": list(bundle.get("excluded_metrics") or []),
-                "graph_edge_contract": dict(bundle.get("graph_edge_contract") or {}),
                 "executive_scope_signals": list(bundle.get("executive_scope_signals") or []),
                 "architecture_scope_signals": list(bundle.get("architecture_scope_signals") or []),
                 "operating_context": bundle.get("operating_context"),

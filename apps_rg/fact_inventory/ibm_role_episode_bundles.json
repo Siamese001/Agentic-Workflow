@@ -10,7 +10,7 @@
     "base_resume_hydration_excluded": true,
     "hold_metrics_not_promoted": true,
     "do_not_promote_metrics_excluded": true,
-    "metric_claim_truth_source": "linked_metric_outcome_ids",
+    "metric_claim_truth_source": "metric_outcome_nodes",
     "skill_truth_source": "graph_skill_node_ids",
     "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
     "config_enablement_condition": "IBM sections may consume graph evidence only through role_episode_bundle_id plus linked graph skill and metric outcome IDs.",
@@ -542,11 +542,16 @@
   "bundles": [
     {
       "role_episode_bundle_id": "reb_ibm_aws_modernization_architecture",
-      "root_capability_node_id": "aws_modernization_architecture",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "aws_modernization_architecture",
       "bundle_theme": "AWS modernization architecture from on-prem estate constraints",
+      "claim_text": "Led AWS modernization architecture for regulated financial-services workloads moving from on-prem constraints to cloud-native delivery patterns",
+      "claim_action": "Led AWS modernization architecture for regulated financial-services workloads moving from on-prem constraints to cloud-native delivery patterns",
+      "claim_scope": "IBM financial-services modernization portfolio; regulated client workloads moving from legacy on-prem platforms into AWS-centered architecture patterns.",
+      "claim_outcome": "Frame as architecture leadership: migration design, workload decomposition, and regulated cloud delivery without unapproved savings claims.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Led AWS modernization architecture for regulated financial-services workloads moving from on-prem constraints to cloud-native delivery patterns",
         "Converted legacy platform constraints into migration-ready reference architectures and implementation sequences"
@@ -575,11 +580,9 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM financial-services modernization portfolio; regulated client workloads moving from legacy on-prem platforms into AWS-centered architecture patterns.",
       "bullet_intent": "Frame as architecture leadership: migration design, workload decomposition, and regulated cloud delivery without unapproved savings claims.",
-      "claim_action": "Led AWS modernization architecture for regulated financial-services workloads moving from on-prem constraints to cloud-native delivery patterns",
-      "claim_scope": "IBM financial-services modernization portfolio; regulated client workloads moving from legacy on-prem platforms into AWS-centered architecture patterns.",
-      "claim_outcome": "Frame as architecture leadership: migration design, workload decomposition, and regulated cloud delivery without unapproved savings claims.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative",
@@ -588,15 +591,21 @@
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_ibm_cognitive_business_decision_support",
-      "root_capability_node_id": "cognitive_business_decision_support",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "cognitive_business_decision_support",
       "bundle_theme": "Cognitive business decision support for regulated risk and portfolio decisions",
+      "claim_text": "Translated analytics and ML-enabled decision support into executive decision workflows for regulated financial clients",
+      "claim_action": "Translated analytics and ML-enabled decision support into executive decision workflows for regulated financial clients",
+      "claim_scope": "IBM cognitive decision-support engagements for financial-services risk, finance, and portfolio operating decisions.",
+      "claim_outcome": "Frame as decision-support modernization: analytics-to-executive workflow, scenario acceleration, and governed decision visibility.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Translated analytics and ML-enabled decision support into executive decision workflows for regulated financial clients",
         "Connected scenario analysis, risk signals, and business rules into decision-support operating models"
@@ -622,26 +631,30 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM cognitive decision-support engagements for financial-services risk, finance, and portfolio operating decisions.",
       "bullet_intent": "Frame as decision-support modernization: analytics-to-executive workflow, scenario acceleration, and governed decision visibility.",
-      "claim_action": "Translated analytics and ML-enabled decision support into executive decision workflows for regulated financial clients",
-      "claim_scope": "IBM cognitive decision-support engagements for financial-services risk, finance, and portfolio operating decisions.",
-      "claim_outcome": "Frame as decision-support modernization: analytics-to-executive workflow, scenario acceleration, and governed decision visibility.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative"
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_ibm_presales_solution_engineering",
-      "root_capability_node_id": "presales_solution_engineering",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "presales_solution_engineering",
       "bundle_theme": "Technical pre-sales solution engineering and buyer-specific architecture mapping",
+      "claim_text": "Led technical discovery and solution mapping for enterprise financial-services pursuits",
+      "claim_action": "Led technical discovery and solution mapping for enterprise financial-services pursuits",
+      "claim_scope": "IBM technical pre-sales role surface; partner-level solution engineering across regulated client pursuits.",
+      "claim_outcome": "Frame as commercial-technical leadership: buyer discovery, architecture mapping, and delivery-ready solution handoff with no unsupported dollar claims.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Led technical discovery and solution mapping for enterprise financial-services pursuits",
         "Converted buyer pain points into architecture-backed solution narratives, demos, and delivery handoffs"
@@ -668,11 +681,9 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM technical pre-sales role surface; partner-level solution engineering across regulated client pursuits.",
       "bullet_intent": "Frame as commercial-technical leadership: buyer discovery, architecture mapping, and delivery-ready solution handoff with no unsupported dollar claims.",
-      "claim_action": "Led technical discovery and solution mapping for enterprise financial-services pursuits",
-      "claim_scope": "IBM technical pre-sales role surface; partner-level solution engineering across regulated client pursuits.",
-      "claim_outcome": "Frame as commercial-technical leadership: buyer discovery, architecture mapping, and delivery-ready solution handoff with no unsupported dollar claims.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative",
@@ -680,15 +691,21 @@
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_ibm_offering_accelerator_management",
-      "root_capability_node_id": "offering_accelerator_management",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "offering_accelerator_management",
       "bundle_theme": "Offering management and reusable accelerator packaging",
+      "claim_text": "Shaped reusable solution accelerators that packaged IBM cloud, data, and AI modernization patterns for repeatable client pursuits",
+      "claim_action": "Shaped reusable solution accelerators that packaged IBM cloud, data, and AI modernization patterns for repeatable client pursuits",
+      "claim_scope": "IBM offering and accelerator management around repeatable cloud/data/AI modernization patterns for enterprise financial clients.",
+      "claim_outcome": "Frame as offering discipline: packaged accelerators, reusable architecture assets, and adoption-risk reduction rather than one-off delivery.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Shaped reusable solution accelerators that packaged IBM cloud, data, and AI modernization patterns for repeatable client pursuits",
         "Managed offering content from technical pattern to demoable client-facing artifact"
@@ -714,11 +731,9 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM offering and accelerator management around repeatable cloud/data/AI modernization patterns for enterprise financial clients.",
       "bullet_intent": "Frame as offering discipline: packaged accelerators, reusable architecture assets, and adoption-risk reduction rather than one-off delivery.",
-      "claim_action": "Shaped reusable solution accelerators that packaged IBM cloud, data, and AI modernization patterns for repeatable client pursuits",
-      "claim_scope": "IBM offering and accelerator management around repeatable cloud/data/AI modernization patterns for enterprise financial clients.",
-      "claim_outcome": "Frame as offering discipline: packaged accelerators, reusable architecture assets, and adoption-risk reduction rather than one-off delivery.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative",
@@ -727,15 +742,21 @@
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_ibm_revenue_sales_target_execution",
-      "root_capability_node_id": "revenue_sales_target_execution",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "revenue_sales_target_execution",
       "bundle_theme": "Revenue target execution and quota-aligned solution leadership",
+      "claim_text": "Owned quota-aligned solution leadership across enterprise pursuits and client portfolio expansion motions",
+      "claim_action": "Owned quota-aligned solution leadership across enterprise pursuits and client portfolio expansion motions",
+      "claim_scope": "IBM partner role with quota and revenue-target accountability for enterprise financial-services solution motions.",
+      "claim_outcome": "Frame as quota-aware technical leadership: pipeline discipline and executive deal support without inventing revenue figures.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Owned quota-aligned solution leadership across enterprise pursuits and client portfolio expansion motions",
         "Connected sales target execution to technical solution quality, adoption confidence, and executive buying criteria"
@@ -763,11 +784,9 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM partner role with quota and revenue-target accountability for enterprise financial-services solution motions.",
       "bullet_intent": "Frame as quota-aware technical leadership: pipeline discipline and executive deal support without inventing revenue figures.",
-      "claim_action": "Owned quota-aligned solution leadership across enterprise pursuits and client portfolio expansion motions",
-      "claim_scope": "IBM partner role with quota and revenue-target accountability for enterprise financial-services solution motions.",
-      "claim_outcome": "Frame as quota-aware technical leadership: pipeline discipline and executive deal support without inventing revenue figures.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative",
@@ -775,15 +794,21 @@
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_ibm_nlp_ml_decision_support",
-      "root_capability_node_id": "nlp_ml_decision_support",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "nlp_ml_decision_support",
       "bundle_theme": "NLP and ML-enabled workflow support for financial-services operations",
+      "claim_text": "Applied ML-era analytics patterns to improve regulated business workflows and decision support from 2017 to 2022",
+      "claim_action": "Applied ML-era analytics patterns to improve regulated business workflows and decision support from 2017 to 2022",
+      "claim_scope": "IBM-era analytics and ML decision-support work for financial-services operating workflows; qualitative only unless future graph metrics are linked.",
+      "claim_outcome": "Frame as applied ML decision support and workflow design, avoiding unsupported product/tool claims and unapproved metrics.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Applied ML-era analytics patterns to improve regulated business workflows and decision support from 2017 to 2022",
         "Translated model outputs and text-heavy operational signals into reviewable business actions"
@@ -806,26 +831,30 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM-era analytics and ML decision-support work for financial-services operating workflows; qualitative only unless future graph metrics are linked.",
       "bullet_intent": "Frame as applied ML decision support and workflow design, avoiding unsupported product/tool claims and unapproved metrics.",
-      "claim_action": "Applied ML-era analytics patterns to improve regulated business workflows and decision support from 2017 to 2022",
-      "claim_scope": "IBM-era analytics and ML decision-support work for financial-services operating workflows; qualitative only unless future graph metrics are linked.",
-      "claim_outcome": "Frame as applied ML decision support and workflow design, avoiding unsupported product/tool claims and unapproved metrics.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative"
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_ibm_data_modeling_bi_decision_support",
-      "root_capability_node_id": "data_modeling_bi_decision_support",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "data_modeling_bi_decision_support",
       "bundle_theme": "Data warehousing, modeling, and BI decision support",
+      "claim_text": "Built decision-support data models and BI views that connected modernization programs to executive operating decisions",
+      "claim_action": "Built decision-support data models and BI views that connected modernization programs to executive operating decisions",
+      "claim_scope": "IBM data modeling and BI work supporting portfolio, finance, and delivery decisions for regulated financial-services clients.",
+      "claim_outcome": "Frame as decision-grade BI and data modeling: governed data views, portfolio transparency, and executive operating cadence.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Built decision-support data models and BI views that connected modernization programs to executive operating decisions",
         "Converted fragmented financial-services data into governed models for portfolio, budget, and delivery visibility"
@@ -851,11 +880,9 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM data modeling and BI work supporting portfolio, finance, and delivery decisions for regulated financial-services clients.",
       "bullet_intent": "Frame as decision-grade BI and data modeling: governed data views, portfolio transparency, and executive operating cadence.",
-      "claim_action": "Built decision-support data models and BI views that connected modernization programs to executive operating decisions",
-      "claim_scope": "IBM data modeling and BI work supporting portfolio, finance, and delivery decisions for regulated financial-services clients.",
-      "claim_outcome": "Frame as decision-grade BI and data modeling: governed data views, portfolio transparency, and executive operating cadence.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative",
@@ -864,15 +891,21 @@
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_ibm_customer_success_value_realization",
-      "root_capability_node_id": "customer_success_value_realization",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "customer_success_value_realization",
       "bundle_theme": "Customer success and value-realization operating cadence",
+      "claim_text": "Ran client value-realization motions that connected adoption progress, stakeholder alignment, and expansion readiness",
+      "claim_action": "Ran client value-realization motions that connected adoption progress, stakeholder alignment, and expansion readiness",
+      "claim_scope": "IBM customer success and value-realization motion across financial-services modernization programs.",
+      "claim_outcome": "Frame as adoption and value-realization leadership: client success cadence, risk removal, and expansion readiness without unsupported NPS or savings figures.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Ran client value-realization motions that connected adoption progress, stakeholder alignment, and expansion readiness",
         "Turned modernization delivery evidence into customer success narratives and executive account reviews"
@@ -898,11 +931,9 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM customer success and value-realization motion across financial-services modernization programs.",
       "bullet_intent": "Frame as adoption and value-realization leadership: client success cadence, risk removal, and expansion readiness without unsupported NPS or savings figures.",
-      "claim_action": "Ran client value-realization motions that connected adoption progress, stakeholder alignment, and expansion readiness",
-      "claim_scope": "IBM customer success and value-realization motion across financial-services modernization programs.",
-      "claim_outcome": "Frame as adoption and value-realization leadership: client success cadence, risk removal, and expansion readiness without unsupported NPS or savings figures.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative",
@@ -910,15 +941,21 @@
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_ibm_aws_alliance_partner_cosell_gtm",
-      "root_capability_node_id": "aws_alliance_partner_cosell_gtm",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "aws_alliance_partner_cosell_gtm",
       "bundle_theme": "AWS partnership, alliance co-sell, and joint GTM execution",
+      "claim_text": "Led IBM-AWS alliance co-sell motions for financial-services modernization opportunities",
+      "claim_action": "Led IBM-AWS alliance co-sell motions for financial-services modernization opportunities",
+      "claim_scope": "IBM-AWS financial-services alliance and co-sell motion across cloud and AI modernization opportunities.",
+      "claim_outcome": "Frame as alliance GTM leadership: joint planning, solution architecture, co-sell execution, and 20% joint revenue growth only when the metric outcome ID is selected.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Led IBM-AWS alliance co-sell motions for financial-services modernization opportunities",
         "Aligned partner sales, solution architecture, and executive sponsors around joint cloud and AI modernization pursuits"
@@ -950,11 +987,9 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM-AWS financial-services alliance and co-sell motion across cloud and AI modernization opportunities.",
       "bullet_intent": "Frame as alliance GTM leadership: joint planning, solution architecture, co-sell execution, and 20% joint revenue growth only when the metric outcome ID is selected.",
-      "claim_action": "Led IBM-AWS alliance co-sell motions for financial-services modernization opportunities",
-      "claim_scope": "IBM-AWS financial-services alliance and co-sell motion across cloud and AI modernization opportunities.",
-      "claim_outcome": "Frame as alliance GTM leadership: joint planning, solution architecture, co-sell execution, and 20% joint revenue growth only when the metric outcome ID is selected.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative",
@@ -964,15 +999,21 @@
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     },
     {
       "role_episode_bundle_id": "reb_ibm_devsecops_release_resilience",
-      "root_capability_node_id": "devsecops_release_resilience",
       "employer": "IBM",
       "title": "Lead Client Partner",
       "employer_node_id": "employment_exp_ibm_001",
+      "root_capability_node_id": "devsecops_release_resilience",
       "bundle_theme": "DevSecOps release resilience and governed delivery automation",
+      "claim_text": "Embedded release automation and security scanning into regulated modernization delivery paths",
+      "claim_action": "Embedded release automation and security scanning into regulated modernization delivery paths",
+      "claim_scope": "IBM regulated delivery programs requiring release governance, security scanning, and deployment repeatability.",
+      "claim_outcome": "Frame as delivery resilience: pipeline automation and security controls, qualitative unless future graph metrics are linked.",
+      "support_level": "approved_by_graph_presence",
       "executive_scope_signals": [
         "Embedded release automation and security scanning into regulated modernization delivery paths",
         "Improved delivery resilience through pipeline controls, code scanning, and repeatable deployment gates"
@@ -1000,11 +1041,9 @@
       ],
       "held_metrics": [],
       "excluded_metrics": [],
+      "metric_candidates": [],
       "operating_context": "IBM regulated delivery programs requiring release governance, security scanning, and deployment repeatability.",
       "bullet_intent": "Frame as delivery resilience: pipeline automation and security controls, qualitative unless future graph metrics are linked.",
-      "claim_action": "Embedded release automation and security scanning into regulated modernization delivery paths",
-      "claim_scope": "IBM regulated delivery programs requiring release governance, security scanning, and deployment repeatability.",
-      "claim_outcome": "Frame as delivery resilience: pipeline automation and security controls, qualitative unless future graph metrics are linked.",
       "section_eligibility": [
         "ibm_bullets",
         "ibm_narrative",
@@ -1012,7 +1051,8 @@
       ],
       "external_claim_policy": "approved_by_graph_presence",
       "activation_status": "ACTIVE_CONFIRMED",
-      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS"
+      "config_gate": "ENABLED_WITH_ROLE_EPISODE_BUNDLE_GUARDS",
+      "notes": "Graph-native metric outcome IDs are approved by presence in metric_outcome_nodes."
     }
   ],
   "metric_surface_policy": {
@@ -1028,5 +1068,6 @@
     ],
     "bundle_metric_surface": "linked_metric_outcome_ids only; metric_outcome_nodes is claim authority",
     "approved_metric_outcome_ids_role": "derived_review_index_not_claim_authority"
-  }
+  },
+  "metric_candidates_for_approval": []
 }

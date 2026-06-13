@@ -5,21 +5,24 @@ Base resume and archive material are calibration/provenance only — never prose
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
 from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
 from apps_rg.runtime.sections.ibm_graph_role_episode_registry import (
+    BUNDLES_PATH as IBM_BUNDLES_PATH,
     HOLD_AND_DO_NOT_PROMOTE_METRICS,
     IBM_EMPLOYER_ID,
     IBM_EMPLOYER_NODE_ID,
     IBM_TIME_WINDOW,
     assert_role_episode_bundle_id_present,
-    get_all_bundles,
     get_bundle_by_id,
     get_bundles_for_section,
     validate_bundle,
+)
+from apps_rg.runtime.sections.role_episode_metric_registry import (
+    approved_metric_outcome_ids_from_path,
+    metric_outcome_nodes_from_path,
 )
 
 # C0 marker — kept for template/X2 compatibility with ORGANIC_FROM_GRAPH_BUNDLE treatment.
@@ -44,28 +47,14 @@ IBM_BULLET_SLOT_BUNDLE_MAP: dict[str, str] = {
     "bul_ibm_005": "reb_ibm_aws_alliance_partner_cosell_gtm",
 }
 
-def _ibm_bundle_doc() -> dict[str, Any]:
-    path = Path(__file__).resolve().parents[3] / "apps_rg" / "fact_inventory" / "ibm_role_episode_bundles.json"
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
 def _ibm_metric_outcome_nodes() -> dict[str, dict[str, Any]]:
-    nodes = _ibm_bundle_doc().get("metric_outcome_nodes") or {}
-    return {str(k): v for k, v in nodes.items() if isinstance(v, dict)}
+    return metric_outcome_nodes_from_path(IBM_BUNDLES_PATH)
 
 
-def _ibm_promotable_metric_ids() -> tuple[str, ...]:
-    ids: list[str] = []
-    for bundle in get_all_bundles():
-        for mid in bundle.get("linked_metric_outcome_ids") or []:
-            s = str(mid).strip()
-            if s and s not in ids:
-                ids.append(s)
-    return tuple(ids)
-
-
-# Promotable metric outcome IDs (graph-native allow-list for X2 metric binding).
-PROMOTABLE_METRIC_OUTCOME_IDS: tuple[str, ...] = _ibm_promotable_metric_ids()
+# Promotable metric outcome IDs are graph-native: presence in metric_outcome_nodes.
+PROMOTABLE_METRIC_OUTCOME_IDS: tuple[str, ...] = approved_metric_outcome_ids_from_path(
+    IBM_BUNDLES_PATH
+)
 
 FORBIDDEN_METRIC_SUBSTRINGS: tuple[str, ...] = (
     "$15m",
