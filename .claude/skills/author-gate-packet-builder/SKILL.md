@@ -1,141 +1,33 @@
 ---
 name: author-gate-packet-builder
-description: Emit a schema-valid Author-Gate Decision packet for harness author-gate (developer-loop) decisions. Use when an author-gate decision point is reached during code authoring (refactoring scope, architecture choice, anti-pattern, deletion, dependency add, test strategy, error handling). Not the same as runtime HITL (v30 step [5] / ADR-023). This skill consults precedent, constructs the AG-10 option shape with didactic.
+description: DEPRECATED — do not invoke. The Author-Gate packet pipeline (AUTHOR_GATE_PACKET emission, schema-validated decision packets, ledger capture) was retired in W1 (ADR-093, claude-native-supersession-9d3f7a). At an Author-Gate-class decision, call the native AskUserQuestion tool directly and follow the ask-user-question-recommendation skill. No packet, no marker, no ledger.
 metadata:
   enforcement_layer: cursor
   enforcement_timing: before_author_gate
   enforcement_type: behavioural
 ---
-# Author-Gate Packet Builder
 
-> **Tier map:** Tier-1 invariant pipeline → `003-author-gate-hitl.md`. This skill is procedural SSOT for packet emission. Workflow `/author-gate-decision-gate` is a thin alias only.
+# DEPRECATED — superseded by native AskUserQuestion (W1, ADR-093)
 
-**PURPOSE:** Turn ambiguous Author-Gate decisions into schema-valid, didactic packets.
+> ⛔ Retired W1 (`claude-native-supersession-9d3f7a`, ADR-093). The packet-builder →
+> ui-renderer → `AUTHOR_GATE_PACKET:` → `DECISION_CAPTURED:` → SQLite-ledger pipeline
+> emulated a structured-choice tool that Claude Code now provides natively. **Do not invoke
+> this skill, do not run `emit_packet.py` / `precedent_injector.py`, and do not emit any
+> `AUTHOR_GATE_PACKET:` / `HITL_PACKET:` marker.**
 
-Every packet emitted by this skill:
+## What to do instead
 
-1. Passes `ops_scripts/ci/author_gate/check_ledger_schema.py` validation
-2. Carries a `context_fingerprint` matching the pending change (for gate correlation)
-3. Includes 3 didactic fields per option: `principle_at_stake`, `what_youd_miss`, `what_would_flip`
-4. Embeds precedent verdict from `refactor-decision-memory` skill
-5. Is captured by `post_agent_author_gate_capture.py` into the decision ledger
+When ≥2 plausible approaches have different blast radius and no unambiguous user directive,
+call the native **`AskUserQuestion`** tool and shape it per the
+**[`ask-user-question-recommendation`](../ask-user-question-recommendation/SKILL.md)** skill
+(recommended option first, label ends `(Recommended)`, every description begins
+`[confidence=0.NN]`, the recommended one `[RECOMMENDED ⭐ confidence=0.NN]`). One tool call is
+the whole mechanism. For typos / single-path fixes / explicit instructions, just proceed.
 
-## When to Invoke
+Invariant SSOT: `CLAUDE.md` § Author-Gate + `.claude/rules/constitutional.md` §6.
 
-Invoke BEFORE `ask_user_question` whenever the decision matches any §AG-1 class:
-
-- architecture_choice — cross-layer structural choice
-- refactor_scope — scope of a refactor
-- anti_pattern — introducing or resolving an anti-pattern
-- deletion_strategy — removing production code
-- dependency_addition — new dep or version change
-- test_strategy — test modification/skip/xfail
-- error_handling — new `except` block or swallow pattern
-
-Do NOT invoke for T0/T1 edits, pure lints, or formatting-only changes.
-
-> ⛔ **Pipeline Completion Invariant**: the emitted `AUTHOR_GATE_PACKET:` block **MUST** be followed by `ask_user_question` **in the same Claude Code response**. Emitting the packet and ending the response without `ask_user_question` is a critical violation. Enforcement: `post_agent_author_gate_pipeline_audit.py`. See plan `author-gate-ui-renderer-hardening-a7f3c2`.
-
-## Files
-
-- `packet_template.md` — fill-in template with AG-10 fields + didactic slots
-- `emit_packet.py` — CLI that takes trigger metadata + candidates, emits `AUTHOR_GATE_PACKET:` block (with `HITL_PACKET:` legacy alias)
-- `precedent_injector.py` — wrapper over `lookup_refactor_decisions.py`; adds verdict to packet
-
-## Usage
-
-### From a skill-aware context
-
-```bash
-echo '{
-  "decision_type": "refactor_scope",
-  "user_goal": "Extract L2 execution adapter into a dedicated module",
-  "normalized_intent": "Split agentic_core/L2_execution/adapters.py into 3 files",
-  "files_in_scope": ["agentic_core/L2_execution/adapters.py"],
-  "candidates": [
-    {
-      "id": "minimal",
-      "thesis": "Extract only SovereignBaseAgent; defer siblings",
-      "confidence_score": 0.88,
-      "key_tradeoffs": ["Gains reversibility, loses coverage of L4 pattern"],
-      "principle_at_stake": "layer gravity",
-      "what_youd_miss": "would keep L4-sibling drift unaddressed",
-      "what_would_flip": "if blast_radius includes L5 safety"
-    },
-    {
-      "id": "comprehensive",
-      "thesis": "Extract all 5 siblings in one wave",
-      "confidence_score": 0.61
-    }
-  ]
-}' | python .claude/skills/author-gate-packet-builder/emit_packet.py
-```
-
-Output (stdout): an `AUTHOR_GATE_PACKET:` block (JSON) that `post_agent_author_gate_capture.py` scans for. The legacy `HITL_PACKET:` alias is emitted alongside for back-compat with older scanners.
-
-### Precedent-only lookup (without packet emit)
-
-```bash
-echo '{"decision_type": "refactor_scope", "normalized_intent": "..."}' | \
-  python .claude/skills/author-gate-packet-builder/precedent_injector.py
-```
-
-## Output Shape (AUTHOR_GATE_PACKET block)
-
-Emitted to stdout, fenced. Consumed by `post_agent_author_gate_capture.py`:
-
-```
-AUTHOR_GATE_PACKET: {
-  "decision_id": "dec_<ulid>",
-  "decision_type": "refactor_scope",
-  "user_goal": "...",
-  "normalized_intent": "...",
-  "principle_at_stake": "layer gravity",
-  "context_fingerprint": {
-    "adg_snapshot": "adg_indexed_<ts>.sqlite",
-    "git_sha": "<sha>",
-    "branch": "main",
-    "files_in_scope": [...],
-    "fp": "<16hex>"
-  },
-  "policy_snapshot": "author-gate@<rule_sha>",
-  "candidates": [
-    {
-      "id": "minimal",
-      "surfaced": true,
-      "confidence_score": 0.88,
-      "suppression_reason": null,
-      "thesis": "...",
-      "key_tradeoffs": [...],
-      "principle_at_stake": "...",
-      "what_youd_miss": "...",
-      "what_would_flip": "..."
-    },
-    { "id": "comprehensive", "surfaced": false, "confidence_score": 0.61,
-      "suppression_reason": "below_surface_threshold" }
-  ],
-  "routing": {
-    "rule_applied": "dominance_fires",
-    "surface_threshold": 0.72,
-    "dominance_delta_observed": 0.27
-  },
-  "precedent": {
-    "verdict": "suggestive",
-    "matched_ids": ["dec_abc123"],
-    "summary": "Prior decision (2026-04-10): minimal scope succeeded"
-  },
-  "status": "surfaced"
-}
-```
-
-## Validation
-
-The emitter runs every packet through `.claude/schemas/decision_record.schema.json` before
-writing. Invalid packets are rejected with a structured error to stderr and exit 1.
-
-## Progressive Disclosure
-
-- `SKILL.md` (this file): when to invoke, high-level shape
-- `packet_template.md`: full AG-10 option shape with didactic field semantics (Claude Code reads on demand)
-- `emit_packet.py`: deterministic emission + schema validation
-- `precedent_injector.py`: isolated precedent lookup used by emit_packet and standalone
+> The `emit_packet.py`, `precedent_injector.py`, and `packet_template.md` files in this
+> directory are dormant residue retained only so existing tests/imports do not break. Their
+> full teardown (with the coupled governance scripts, dormant CI gates, and packet schema) is
+> tracked as a follow-up; see `docs/reports/governance/claude_native_supersession_coupling_map.md`
+> (surface S1).
