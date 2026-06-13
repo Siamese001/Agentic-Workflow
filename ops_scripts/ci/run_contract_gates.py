@@ -1043,6 +1043,14 @@ def main():
             "NO-CURSOR-REFS .cursor decommission anti-regression",
             "ops_scripts/ci/check_no_cursor_refs.py",
         ),
+        # NO-ARCHIVES-IMPORTS — constitutional §12: archived/superseded code is
+        # reference-only and MUST NOT be imported back into production
+        # (agentic_core/ + apps_*/). Fail-closed ratchet (baseline: 0 hits).
+        # Bypass: CHECK_NO_ARCHIVES_IMPORTS_BYPASS=1.
+        (
+            "NO-ARCHIVES-IMPORTS no production imports from archive namespaces (§12)",
+            "ops_scripts/ci/check_no_archives_imports.py",
+        ),
         # MCP-PARITY — canonical fleet parity across editor configs.
         (
             "MCP-PARITY Cursor vs Windsurf MCP editor parity",
