@@ -1,4 +1,9 @@
-"""SSOT defaults and resolvers for executive_summary 24k context limits."""
+"""SSOT defaults and resolvers for executive_summary Claude-era context limits.
+
+Defaults raised 2026-06-13 post-Qwen-removal: ctx 24576→32768, output 2048→4096,
+hard cap 4096→8192. The legacy 24576/2048 numbers belonged to Qwen 32B-AWQ; the
+section now generates on external Claude (~200k provider ctx).
+"""
 
 from __future__ import annotations
 
@@ -34,7 +39,8 @@ def test_bullet_selector_char_defaults() -> None:
         BULLET_SELECTOR_INPUT_SHARE_FRACTION,
         CHARS_PER_TOKEN_ESTIMATE,
     )
-    available = 24_576 - 2_048 - 512
+    # Claude-era defaults: ctx=32768, output=4096, reserved=512.
+    available = 32_768 - 4_096 - 512
     expected = int(available * BULLET_SELECTOR_INPUT_SHARE_FRACTION) * CHARS_PER_TOKEN_ESTIMATE
     assert DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS == expected
     assert DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS == expected
@@ -45,7 +51,7 @@ def test_briefing_ranked_selection_uses_dedicated_cap() -> None:
         BRIEFING_INPUT_SHARE_FRACTION,
         CHARS_PER_TOKEN_ESTIMATE,
     )
-    available = 24_576 - 2_048 - 512
+    available = 32_768 - 4_096 - 512
     expected = int(available * BRIEFING_INPUT_SHARE_FRACTION) * CHARS_PER_TOKEN_ESTIMATE
     assert BRIEFING_RANKED_SELECTION_MAX_CHARS == expected
     long_brief = "## Target priorities\n" + ("regulated modernization emphasis. " * 400)
@@ -55,25 +61,36 @@ def test_briefing_ranked_selection_uses_dedicated_cap() -> None:
     assert receipt["truncation_or_selection_reason"] == "ranked_section_selection"
 
 
-def test_24k_token_defaults() -> None:
-    assert DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS == 2048
-    assert DEFAULT_REGEN_MAX_OUTPUT_TOKENS == 2048
-    assert HARD_CAP_SCRATCH_MAX_OUTPUT_TOKENS == 4096
+def test_claude_era_token_defaults() -> None:
+    """Post-Qwen-removal Claude-era defaults (2026-06-13)."""
+    assert DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS == 4096
+    assert DEFAULT_REGEN_MAX_OUTPUT_TOKENS == 4096
+    assert HARD_CAP_SCRATCH_MAX_OUTPUT_TOKENS == 8192
     assert RESERVED_SYSTEM_SCHEMA_TOKENS == 512
     assert DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX == 0.95
 
 
 def test_available_input_tokens_formula() -> None:
+    # Claude-era defaults: ctx=32768, output=4096, reserved=512 → available=28160.
+    assert available_input_tokens(32768, 4096) == 28160
+    # Legacy formula still computable for back-compat (Qwen-era values).
     assert available_input_tokens(24576, 2048) == 22016
 
 
-def test_resolve_provider_context_window_matches_l0(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("VLLM_MAX_MODEL_LEN", raising=False)
-    from apps_rg.runtime import qwen_vllm_health
+def test_resolve_provider_context_window_uses_app_local_ssot(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Post-Qwen-removal (2026-06-13): the section ctx SSOT is APPS_RG_SECTION_MAX_MODEL_LEN
+    via section_model_limits.SECTION_MODEL_MAX_MODEL_LEN. VLLM_MAX_MODEL_LEN is the Qwen
+    container ctx SSOT and MUST NOT leak into the apps_rg section budget."""
+    # VLLM_MAX_MODEL_LEN being set to a small Qwen value must NOT cap section ctx.
+    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "24576")
+    monkeypatch.setenv("APPS_RG_SECTION_MAX_MODEL_LEN", "32768")
+    from apps_rg.runtime import section_model_limits
 
-    importlib.reload(qwen_vllm_health)
+    importlib.reload(section_model_limits)
     importlib.reload(limits)
-    assert resolve_provider_context_window() == qwen_vllm_health.QWEN_LOCAL_MAX_MODEL_LEN
+    # Resolver returns app-local SSOT, ignoring the (smaller) Qwen container var.
+    assert limits.resolve_provider_context_window() == 32768
+    assert section_model_limits.SECTION_MODEL_MAX_MODEL_LEN == 32768
 
 
 def test_regen_output_capped_by_scratch(monkeypatch: pytest.MonkeyPatch) -> None:

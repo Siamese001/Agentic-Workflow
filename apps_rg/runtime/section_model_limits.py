@@ -12,8 +12,14 @@ import os
 from collections.abc import Mapping
 from typing import Final
 
-# Tuned prompt-truncation budget (historical value preserved across the Qwen removal).
-SECTION_MODEL_MAX_MODEL_LEN: Final[int] = int(os.getenv("APPS_RG_SECTION_MAX_MODEL_LEN", "24576"))
+# Tuned prompt-truncation budget — Claude era (post-Qwen-removal 2026-06-13).
+# Default raised 24576 → 32768 after W1 exec_summary parse-truncation analysis:
+# at 24576 ctx + 2048 output, briefing+JD+bullet-selector inputs exceed the
+# available_input cap on exec_summary and trigger TRUNCATED_JSON. The external
+# Claude generator has ~200k provider ctx, so 32768 is well within bounds.
+# The legacy Qwen container --max-model-len is 24576 — that's the SSOT for
+# apps_lic and agentic_core healers (VLLM_MAX_MODEL_LEN), NOT this constant.
+SECTION_MODEL_MAX_MODEL_LEN: Final[int] = int(os.getenv("APPS_RG_SECTION_MAX_MODEL_LEN", "32768"))
 
 DEFAULT_EXTERNAL_CLAUDE_MODEL: Final[str] = "claude-haiku-4-5"
 

@@ -147,7 +147,10 @@
     "engineering_delivery_leadership"
    ],
    "graph_skill_node_ids": [
-    "skill_audit_grade_observability"
+    "skill_audit_grade_observability",
+    "skill_output_quality_and_schema_gates",
+    "skill_fail_closed_gate_semantics",
+    "skill_runtime_resilience_controls"
    ],
    "linked_source_fact_ids": [
     "fact_engineering_platform_003",
@@ -169,7 +172,9 @@
    "vocabulary_anchors": [
     "audit-grade observability",
     "evaluation gauntlet design",
-    "multi-judge calibration"
+    "multi-judge calibration",
+    "fail-closed gate reliability",
+    "runtime resilience controls"
    ]
   },
   {
