@@ -542,7 +542,6 @@ class TestNoAppLiteralsInCore:
             "apps_underwriting_ai",
             "apps_eval",
             "apps_architect",
-            "apps_repo_brief",
             "apps_shared",
         ]
         

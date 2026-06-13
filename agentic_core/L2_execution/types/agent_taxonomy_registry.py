@@ -801,19 +801,6 @@ _RAW_AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         notes="Test scenario generation execution agent. WAVE 6: Now L2 contract compliant.",
     ),
     # ============================================
-    # APPS_REPO_BRIEF: Canonical successor to apps_exec (W5 P5.4 — shim retired).
-    # ============================================
-    "RepoBriefOrchestrator": AgentClassification(
-        file_path="apps_repo_brief/reasoning/__init__.py",
-        class_name="ExecOrchestrator",
-        current_layer="L3",
-        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
-        status=AgentStatus.ACTIVE,
-        is_shim=False,
-        implements_l2_contract=True,
-        notes="W5 P5.4: Canonical apps_repo_brief orchestrator. apps_exec shim archived.",
-    ),
-    # ============================================
     # APPS_EXEC: ARCHIVED W5 P5.4 — package moved to archives/apps_exec_20260505/
     # Rows retained for audit trail only (status=ARCHIVED).
     # ============================================
@@ -825,7 +812,7 @@ _RAW_AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         status=AgentStatus.ARCHIVED,
         is_shim=False,
         implements_l2_contract=False,
-        notes="ARCHIVED W5 P5.4. Replaced by RepoBriefOrchestrator in apps_repo_brief.",
+        notes="ARCHIVED W5 P5.4. Successor app later retired.",
     ),
     "EnterpriseBriefOrchestrator": AgentClassification(
         file_path="artifacts/archives/apps_exec_20260505/reasoning/enterprise_brief_orchestrator.py",

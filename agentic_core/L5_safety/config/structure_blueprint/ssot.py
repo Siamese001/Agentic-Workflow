@@ -263,7 +263,6 @@ APPS_LIC_DIR: Final[str] = "apps_lic"
 APPS_SHARED_DIR: Final[str] = "apps_shared"
 APPS_EVAL_DIR: Final[str] = "apps_eval"
 APPS_EXEC_DIR: Final[str] = "apps_exec"
-APPS_REPO_BRIEF_DIR: Final[str] = "apps_repo_brief"  # W1: additive; replaces APPS_EXEC_DIR in W5
 APPS_RESEARCH_DIR: Final[str] = "apps_research"
 APPS_RFP_DIR: Final[str] = "apps_rfp"
 
@@ -861,7 +860,6 @@ PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
         "agentic_core",
         "apps_eval",
         "apps_exec",
-        "apps_repo_brief",
         "apps_lic",
         "apps_research",
         "apps_rfp",

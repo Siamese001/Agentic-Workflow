@@ -6,7 +6,7 @@ upstream_artefacts:
   - docs/wave_g/G0_full_runtime_plan/output_contracts.md
   - docs/wave_g/G1_core_runtime_inventory/component_inventory.yaml
   - docs/wave_e/99_integration_v14/canonical/atoms.yaml
-app_count: 9  # W1: added apps_repo_brief (canonical rename of apps_exec; APP-EXEC row retained until W5)
+app_count: 8
 apps:
   - id: APP-EVAL
     path: apps_eval
@@ -46,31 +46,6 @@ apps:
     apps_shared_uses: [apps_shared.data_adapters, apps_shared.spine.base_spine_adapter]
     data_and_outputs_paths: [apps_eval/data, apps_eval/outputs]
     notes: ""
-  # W1: APP-REPO-BRIEF — canonical rename target of apps_exec (plan3-zero-loss-overwrite).
-  # APP-EXEC below is retained as a shim stub until W5 zero-hard-refs gate passes.
-  - id: APP-REPO-BRIEF
-    path: apps_repo_brief
-    module_count: 0  # W1 skeleton only; grows across W2-W5
-    is_library_only: false
-    entry_points:
-      - path: apps_repo_brief/__main__.py  # created W1/P1.10
-        kind: cli
-    sub_surfaces:
-      reasoning: apps_repo_brief/reasoning
-      config: apps_repo_brief/config
-    core_bindings:
-      direct_imports_from: []
-      imports_by_layer: {}
-      resolved_target_files: 0
-      seam_uses: []
-      interface_uses: []
-      l_contract_uses: []
-      adapter_shims: [apps_repo_brief/reasoning/__init__.py]
-      unresolved_imports: []
-    apps_shared_uses: [apps_shared.integrations.governed_app_runner]
-    data_and_outputs_paths: [apps_repo_brief/outputs]
-    notes: "W1 skeleton. Canonical rename of apps_exec. R3_SIMPLE_GROUNDED_READ with C0 mandatory. Full spine in W2-W4."
-
   - id: APP-EXEC
     path: apps_exec
     module_count: 59

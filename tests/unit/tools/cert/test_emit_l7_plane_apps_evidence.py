@@ -97,15 +97,10 @@ class TestAppsL7ArtifactCollection:
         assert "r1a_latest" in result
         assert "apps_eval" in result
         
-        # apps_repo_brief should be marked missing (no runs yet)
-        assert "apps_repo_brief" in result
-        assert result["apps_repo_brief"].get("_missing") is True
-
     def test_apps_l7_chains_constant_defined(self):
         """APPS_L7_CHAINS must be defined and contain expected apps."""
         assert isinstance(APPS_L7_CHAINS, list)
         assert "apps_eval" in APPS_L7_CHAINS
-        assert "apps_repo_brief" in APPS_L7_CHAINS
 
     def test_collect_chain_artifacts_finds_all_l7_targets(self, tmp_path: Path):
         """collect_chain_artifacts must find all expected L7 artifact types."""

@@ -91,7 +91,6 @@ APPS_PACKAGES: Final[list[str]] = [
     "apps_rg",
     "apps_eval",
     # apps_exec REMOVED W5 P5.3 — archived to archives/apps_exec_20260505/
-    "apps_repo_brief",
     "apps_research",
     "apps_rfp",
     "apps_shared",
@@ -136,7 +135,6 @@ APPS_EVAL_DIR: Final[str] = "apps_eval"
 # Kept for one-release grace period to avoid AttributeError in any cached bytecode.
 # Remove in next cleanup cycle.
 APPS_EXEC_DIR: Final[str] = "apps_exec"  # DEPRECATED W5 P5.3
-APPS_REPO_BRIEF_DIR: Final[str] = "apps_repo_brief"  # Canonical — replaced APPS_EXEC_DIR
 APPS_LIC_DIR: Final[str] = "apps_lic"
 APPS_RESEARCH_DIR: Final[str] = "apps_research"
 APPS_RFP_DIR: Final[str] = "apps_rfp"
@@ -567,18 +565,6 @@ APPS_EVAL_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
 # W5 P5.3 — DEPRECATED: APPS_EXEC_SUBFOLDER_MAP retired alongside APPS_EXEC_DIR.
 APPS_EXEC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {}  # DEPRECATED W5 P5.3
 
-# W5: APPS_REPO_BRIEF_SUBFOLDER_MAP is now the canonical map (APPS_EXEC retired).
-APPS_REPO_BRIEF_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    "cert": [],
-    "config": [],
-    "engines": [],
-    "integrations": [],
-    "prompt_assembly": [],
-    "reasoning": [],
-    "types": [],
-    "utils": [],
-}
-
 APPS_RESEARCH_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "config": [],
     "engines": [],
@@ -747,8 +733,6 @@ __all__ = [
     "APPS_EVAL_DIR",
     "APPS_EVAL_SUBFOLDER_MAP",
     # APPS_EXEC_DIR and APPS_EXEC_SUBFOLDER_MAP removed from __all__ W5 P5.3
-    "APPS_REPO_BRIEF_DIR",
-    "APPS_REPO_BRIEF_SUBFOLDER_MAP",
     "APPS_LIC_DIR",
     "APPS_LIC_SUBFOLDER_MAP",
     "APPS_PACKAGES",

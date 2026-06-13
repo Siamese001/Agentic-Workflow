@@ -6,7 +6,6 @@ Tests verify:
   - Partial presence (dir exists but __init__.py missing) is flagged
   - Forbidden tests/integration/apps_<x>/ is flagged
   - Custom app lists are respected
-  - apps_repo_brief is included in ALL_APPS
 
 Plan: apps-test-surface-consolidation-11acd9-v2 W6.4.
 """
@@ -259,11 +258,8 @@ class TestViolationShape:
 # ---------------------------------------------------------------------------
 
 class TestAllApps:
-    def test_all_apps_contains_ten(self) -> None:
-        assert len(ALL_APPS) == 10
-
-    def test_all_apps_contains_apps_repo_brief(self) -> None:
-        assert "apps_repo_brief" in ALL_APPS
+    def test_all_apps_contains_nine(self) -> None:
+        assert len(ALL_APPS) == 9
 
     def test_all_apps_contains_apps_exec(self) -> None:
         assert "apps_exec" in ALL_APPS

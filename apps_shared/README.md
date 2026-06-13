@@ -1,6 +1,6 @@
 # apps_shared — Shared infrastructure for the apps_* tier
 
-**Library-only app.** Exposes the reusable primitives — adapters, validators, orchestration, enforcement, proof harness, emission helpers — that every producer app (`apps_eval`, `apps_lic`, `apps_qna`, `apps_repo_brief`, `apps_research`, `apps_rfp`, `apps_rg`, `apps_underwriting_ai`) depends on. The substrate behind the **single-shape, many-apps** discipline.
+**Library-only app.** Exposes the reusable primitives — adapters, validators, orchestration, enforcement, proof harness, emission helpers — that every producer app (`apps_eval`, `apps_lic`, `apps_qna`, `apps_research`, `apps_rfp`, `apps_rg`, `apps_underwriting_ai`) depends on. The substrate behind the **single-shape, many-apps** discipline.
 
 ## Design Patterns at Work
 

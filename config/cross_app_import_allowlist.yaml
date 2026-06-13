@@ -28,22 +28,6 @@ allowed_imports:
     expires: '2026-11-02'
 
   # --------------------------------------------------------------------------
-  # W1 (apps-repo-brief-plan3): apps_eval → apps_repo_brief parallel scenario entry.
-  # Mirrors the apps_eval → apps_exec entry above; eval harness will be updated
-  # in W1/P1.9 to add parallel apps_repo_brief scenarios. Legacy apps_exec entry
-  # above remains until W5 zero-hard-refs gate passes.
-  # --------------------------------------------------------------------------
-  - source: apps_eval.engines.scenario_runner
-    target: apps_repo_brief
-    reason: >-
-      W1 parallel scenario registration: apps_repo_brief is the canonical rename
-      of apps_exec. Eval harness adds repo_brief scenario variants (P1.9) using
-      the same lazy-import + ImportError->SKIP pattern as the apps_exec coupling.
-      Allowlisted here (additive) so the gate stays green during W1-W4 transition.
-    lazy: true
-    expires: '2027-05-05'
-
-  # --------------------------------------------------------------------------
   # AG-1 baseline discoveries (2026-05-02) — 13 pre-existing peer-to-peer
   # imports surfaced when the gate was introduced. Each is documented here
   # so the gate turns green on main; future refactoring decisions consult

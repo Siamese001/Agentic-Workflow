@@ -42,7 +42,6 @@ ALL_APPS: tuple[str, ...] = (
     "apps_exec",
     "apps_lic",
     "apps_qna",
-    "apps_repo_brief",
     "apps_research",
     "apps_rfp",
     "apps_rg",

@@ -392,7 +392,6 @@ FORBIDDEN_PATTERNS = {
             r'["\']apps_underwriting_ai["\']',
             r'["\']apps_architect["\']',
             r'["\']apps_eval["\']',
-            r'["\']apps_repo_brief["\']',
         ],
         "severity": "HIGH",
         "description": "Hardcoded app name in core"

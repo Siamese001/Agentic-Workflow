@@ -43,12 +43,15 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CHAINS_DIR = REPO_ROOT / "artifacts" / "certification" / "integrated_runtime"
 OUT_RUNTIME_DIR = REPO_ROOT / "artifacts" / "certification" / "runtime"
-from cert_paths import ASSERTIONS_PATH, REQS_PATH
+try:
+    from tools.cert.cert_paths import ASSERTIONS_PATH, REQS_PATH
+except ModuleNotFoundError:  # pragma: no cover - script execution fallback
+    from cert_paths import ASSERTIONS_PATH, REQS_PATH
 
 # The chains that the L7 plane covers. `mw_latest` is structural-only by
 # design but still emits the L7 envelope for its chain-kind. W4 added
 # uwg_commit_latest, r3_latest, r4_latest, mw_real_latest.
-# W3: Added apps_* chains for L7 spine retrofit (apps_eval, apps_repo_brief)
+# W3: Added apps_* chains for L7 spine retrofit.
 CERTIFIED_CHAINS = [
     "latest", "mw_latest", "r1a_latest", "r5_latest", "uwg_block_latest",
     # W4 plan fortknox-100pct-static-runtime-gap-9a3d4f:
@@ -58,7 +61,6 @@ CERTIFIED_CHAINS = [
 # W3: Apps with governed_run L7 emit (populated by build_all_apps_evidence)
 APPS_L7_CHAINS = [
     "apps_eval",
-    "apps_repo_brief",
 ]
 
 GENERATED_BY = "tools/cert/emit_l7_plane_evidence.py"

@@ -32,7 +32,6 @@ claimed_routes:
 
 # References:
 # - apps_research/spine_manifest.yaml  (canonical R3_grounded_read reference)
-# - apps_repo_brief/spine_manifest.yaml  (R3_grounded_read route declaration)
 # - apps_shared/integrations/governed_app_runner.py  (shared substrate)
 # - docs/reference/APP_OVERLAY_VS_CORE_ONLY_RUNTIME.md
 # - tools/analysis/apps_spine_coverage.py
