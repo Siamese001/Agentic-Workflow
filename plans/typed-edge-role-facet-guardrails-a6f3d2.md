@@ -47,7 +47,7 @@ LAST_UPDATED: 2026-06-13
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | P0 | P0.1, P0.2, P0.3 | Candidate-fact deprecation and test gate | ~12K | GraphDB can expose equivalent fact/proof/source identifiers or fail closed where missing | DONE | `candidate_fact` authority is deprecated and tested before W1 starts |
 | W1 | W1.1, W1.2 | Finalized graph baseline without typed edges | ~14K | Current graph receipts, fixtures, and E2E command path are discoverable | DONE | Three targets x 11 lanes run without typed edges, with graph-skill percent breakouts |
-| W2 | W2.1, W2.2 | GraphDB SSOT and `fact_ledger` reference removal | ~18K | GraphDB already contains or can expose all skills and metrics authority needed by generation | TODO | No skills or metrics eligibility path depends on `fact_ledger`; E2E parity delta is explained |
+| W2 | W2.1, W2.2 | GraphDB SSOT, first-class metric outcomes, graph-era runtime field migration, and `fact_ledger` reference removal | ~18K | GraphDB can expose all skills, metrics, and metric outcomes needed by generation before Stage B E2E | TODO | No skills or metrics eligibility path depends on `fact_ledger`; E2E parity delta is explained |
 | W3 | W3.1, W3.2 | Role-family and role-facet targeting | ~18K | Role facets can be implemented as targeting weights over eligible graph paths | TODO | Three-target E2E shows role-family variance without partner-only overfit |
 | W4 | W4.1, W4.2 | Typed GraphDB proof/traversal edges | ~20K | Typed edges can be layered over the GraphDB SSOT without changing app/core boundaries | TODO | Three-target E2E shows typed edges explain eligibility and block unsupported paths |
 | W5 | W5.1, W5.2 | Sliding-scale percent policy, anti-overfit guardrails, and waterfall closeout | ~18K | Composition metrics can be emitted before prompt assembly | TODO | Final E2E emits waterfall deltas, variance rationales, and closeout evidence |
@@ -61,7 +61,7 @@ LAST_UPDATED: 2026-06-13
 | P0.3 | Run candidate-fact deprecation tests and block W1 on failures | DONE |
 | W1.1 | Resolve canonical E2E commands, target fixtures, and baseline graph receipts | DONE |
 | W1.2 | Run finalized graph baseline without typed edges across all targets and lanes | DONE |
-| W2.1 | Remove or fence `fact_ledger` skills/metrics authority behind GraphDB SSOT | TODO |
+| W2.1 | Materialize metric outcomes, migrate fact-era runtime fields behind graph-era aliases, and fence `fact_ledger` skills/metrics authority | TODO |
 | W2.2 | Run GraphDB SSOT E2E and explain variance from W1 | TODO |
 | W3.1 | Introduce reusable role-family facets and target alignment diagnostics | TODO |
 | W3.2 | Run role-family E2E and explain variance from W2 | TODO |
@@ -84,6 +84,8 @@ LAST_UPDATED: 2026-06-13
 - Changing `agentic_core`.
 - Removing `master_skills_arsenal_ledger.json` as a serialization, export, bootstrap, or review artifact. This plan may fence it behind the `augmented_skills_graph` authority interface, but DB-only persistence migration is not part of W2 closure.
 - Implementing ADG-style graph-skill materialized views, Redis hot projections, or GraphDB Lite/NetworkX projections as production runtime dependencies before W5 closeout. Read-only/offline analysis is allowed only under the Post-Waterfall Graph Projection Recommendation.
+- Applying evidence-strength, metric-strength, recency, confidence, or capability-depth as active ranking multipliers before W2.2. W2 may emit those values as diagnostics only; selection behavior changes require a later waterfall stage or separate authorized scope.
+- Adding first-class `ResumeBullet` nodes to the core graph. Bullet scoring and generated-output history remain downstream of role-episode bundles and section outputs for this plan.
 - Weakening final text anti-overfit, X2, X1D, or C0 evidence discipline.
 
 ---
@@ -129,6 +131,14 @@ targeting_weight <= section_eligibility <= claim_eligibility <= proof <= provena
 
 A lower layer may narrow, rank, demote, or block. A lower layer may not admit a skill, metric, or claim that the higher authority layer did not allow.
 
+### Proof Pool Runtime Boundary
+
+`proof_pool`, `proof_pool_resolver`, and any allowed-pool metadata are not a second SSOT. They are runtime transport/cache surfaces for the selected GraphDB-approved evidence set. Their only valid job is to carry forward `selected_graph_evidence_plan`, `allowed_graph_evidence_ids`, selected graph node IDs, selected graph edge IDs, and selected graph metric IDs so validators and generation can enforce the allowed set.
+
+During W2.1, keep proof-pool plumbing only as a compatibility surface while migrating consumers to graph-era names. It may narrow, deduplicate, group, or explain GraphDB-approved evidence. It may not create proof, repair missing graph paths, admit fact-era IDs as authority, or preserve `candidate_fact`, `fact_ledger`, `source_fact_ids`, or `allowed_fact_ids` as proof authority. If a proof-pool row cannot resolve to GraphDB-authorized evidence, traversal fails closed with `MISSING_GRAPH_PATH` or a `BLOCKED_*` verdict.
+
+Do not remove or broadly rename proof-pool plumbing as a standalone pre-W2 cleanup. The controlled implementation point is W2.1, before W2.2 E2E, so any behavior change is captured in the GraphDB SSOT waterfall delta.
+
 ### No Silent Fallback Rule
 
 If GraphDB lacks a required skill, metric, proof edge, employer edge, provenance edge, or section edge, traversal must emit `MISSING_GRAPH_PATH` or a `BLOCKED_*` verdict. It may not infer, synthesize, or backfill eligibility from JD text, briefing text, generated text, `candidate_fact`, `fact_ledger`, prompt context, or historical output.
@@ -159,6 +169,8 @@ Unknown verdicts fail closed.
 - `missing_employer_binding_blocks_employer_scoped_claim`
 - `candidate_fact_runtime_authority_read_fails_closed_before_W1`
 - `fact_ledger_runtime_skill_read_fails_closed_after_W2`
+- `linked_metric_outcome_id_must_resolve_to_graph_metric_outcome_after_W2`
+- `strength_diagnostics_do_not_change_selection_before_ranking_stage`
 - `typed_edge_missing_path_blocks_selected_skill_after_W4`
 - `over_concentrated_pool_blocks_prompt_assembly_after_W5`
 - `repeated_metric_family_triggers_rebalance`
@@ -345,7 +357,7 @@ CHECKPOINT: A
 
 ---
 
-## Wave 2 - GraphDB SSOT And Fact Ledger Removal
+## Wave 2 - GraphDB SSOT, Metric Outcomes, Graph-Era Fields, And Fact Ledger Removal
 
 WAVE_ID: W2
 WAVE_STATUS: TODO
@@ -356,8 +368,38 @@ CHECKPOINT: B
 **Authorization**: REQUIRED - Any schema, traversal, validator, or runtime authority change must be explicitly reviewed before execution.
 
 **Phases**:
-- **W2.1** - Remove or fence `fact_ledger` skills/metrics authority behind GraphDB SSOT | ~10K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.1** - Materialize metric outcomes, migrate fact-era runtime fields behind graph-era aliases, and fence `fact_ledger` skills/metrics authority | ~10K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W2.2** - Run GraphDB SSOT E2E and explain variance from W1 | ~8K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+
+**Pre-W2 cleanup status**:
+
+| Cleanup | Status | Timing decision | Rationale |
+|---|---|---|---|
+| Metric SSOT derivation from graph JSON | DONE before W2 | Pre-waterfall baseline hardening complete | Low-disruption removal of hardcoded metric allowlists; W2 can assume metric approval comes from graph JSON `metric_outcome_nodes`. |
+| First-class `metric_outcome` nodes in materialized GraphDB | OPEN | Execute inside W2.1 before W2.2 E2E | W2 claims GraphDB is the skills and metrics SSOT. Metric outcomes may originate from graph JSON and role-episode bundle references, but Stage B should verify them as graph nodes/edges rather than side fields only. |
+| Generic employer bundle registry behind existing wrappers | DONE before W2 | Pre-waterfall baseline hardening complete | Existing imports keep working while all employer graph wrappers share loader/access/validation primitives. |
+| Normalize graph JSON bundle schema | DONE before W2 | Pre-waterfall baseline hardening complete | All employer bundles share the common graph shape before W2 changes runtime contracts. |
+| Rename fact-era runtime fields to graph-era fields | OPEN | Execute inside W2.1 before W2.2 E2E | Highest blast radius because `selected_fact_plan`, `allowed_fact_ids`, `source_fact_ids`, `fact_id`, and `candidate_fact_id` still cross validators, lanes, proof pools, prompt artifacts, and output schemas. Do not perform as an untracked pre-waterfall cleanup; make it a controlled W2 compatibility migration with variance evidence. |
+| Proof-pool authority boundary | OPEN | Execute inside W2.1 before W2.2 E2E | Keep proof-pool plumbing only as selected graph evidence transport/cache while consumers migrate. Do not delete or rename it as a standalone cleanup; prove it cannot admit, repair, or preserve proof outside GraphDB-approved IDs. |
+
+**W2.1 implementation order**:
+
+1. Materialize first-class metric outcome graph rows before W2.2:
+   - `metric_outcome` node type or equivalent canonical graph row
+   - edges from supporting facts, skills, role episodes, employers, and sections where available
+   - resolver validation for every `linked_metric_outcome_ids` / `metric_outcome_nodes` reference emitted by role-episode bundles
+   - fail-closed `MISSING_GRAPH_PATH` or `BLOCKED_*` verdict for unresolved metric outcome IDs
+2. Introduce graph-era output names while preserving fact-era read aliases for compatibility:
+   - `selected_graph_evidence_plan` beside `selected_fact_plan`
+   - `allowed_graph_evidence_ids` beside `allowed_fact_ids`
+   - `graph_evidence_ids` beside `source_fact_ids`
+   - `graph_evidence_id` beside `fact_id`
+   - `legacy_candidate_fact_id` only as lineage, never authority
+3. Update validators, proof-pool metadata, and section packets to prefer graph-era names.
+4. Treat proof-pool outputs as internal selected-graph-evidence transport/cache only; every retained row must resolve to GraphDB-approved node, edge, or metric IDs.
+5. Emit evidence-strength and metric-strength diagnostics as report-only fields. They may explain selected, weak, blocked, or missing paths, but they may not alter W2.2 skill selection, metric selection, ranking, prompt assembly, or waterfall percentages.
+6. Keep fact-era fields as compatibility aliases until all generated lanes and X2/X1D gates read graph-era fields.
+7. Remove or hard-fail any fact-era field that can still admit, rank, prove, or select a skill, metric, claim, or section.
 
 **Authority rule**:
 
@@ -365,10 +407,14 @@ GraphDB is the SSOT for skills, metrics, skill eligibility, metric eligibility, 
 
 Selected skill references, including `selection_plan_skill_ref` values and lane-selected `skill_id` values, must resolve through the `augmented_skills_graph` authority interface. The current `master_skills_arsenal_ledger.json` file may remain as the backing serialization/export/bootstrap artifact for that authority, but it must not be named, queried, or reported as an independent skills authority.
 
+Metric outcome references, including `linked_metric_outcome_ids` and bundle `metric_outcome_nodes`, must resolve to first-class GraphDB metric outcome rows before W2.2. Role-episode bundle fields may carry references and summaries, but they are not the metric authority once W2 closes.
+
 Allowed after W2:
 - A clearly named claim-audit or generation-audit artifact that records what was emitted.
 - Backward-compatible adapters that fail closed and delegate to GraphDB.
 - JSON ledger artifacts only when labeled as non-authoritative serialization/export/bootstrap/review artifacts or hidden behind the `augmented_skills_graph` resolver boundary.
+- Proof-pool plumbing only as an internal allowed-graph-evidence transport/cache whose rows are derived from GraphDB-approved selected graph evidence and fail closed on unresolved IDs.
+- Evidence-strength and metric-strength diagnostics only when labeled report-only and excluded from ranking, selection, and prompt assembly until a later authorized stage.
 - Historical documentation describing the migration.
 
 Not allowed after W2:
@@ -376,11 +422,18 @@ Not allowed after W2:
 - Any fallback path where missing GraphDB data is silently filled from `fact_ledger`.
 - Any diagnostic that reports `fact_ledger` as an authoritative source for skills or metrics.
 - Any runtime, report, or diagnostic contract that tells consumers to look up selected skills against "master skills" as an authority instead of the `augmented_skills_graph` authority interface.
+- Any proof-pool or allowed-pool path that creates proof, repairs missing GraphDB evidence, accepts fact-era IDs as authority, or reports itself as the source of claim truth.
+- Any metric claim, metric eligibility decision, or metric-strength diagnostic that depends only on side-field bundle references without resolving the metric outcome through GraphDB.
+- Any evidence-strength, metric-strength, recency, confidence, or capability-depth score that changes W2.2 ranking or selected evidence before a distinct ranking waterfall stage is authorized.
 - Any DB-vs-JSON arbitration path during generation; if the GraphDB authority cannot resolve a required skill, metric, proof, employer, provenance, or section path, traversal fails closed.
 
 **Acceptance**:
 - Static search and runtime tracing show no skills or metrics authority depends on `fact_ledger`.
+- Materialized GraphDB exposes first-class metric outcome rows and resolver checks for role-episode `linked_metric_outcome_ids` / `metric_outcome_nodes`.
 - Per-lane diagnostics resolve `selection_plan_skill_ref` and selected `skill_id` values through the `augmented_skills_graph` authority interface; any `lookup_backend` detail is explicitly non-authoritative.
+- Per-lane diagnostics include evidence-strength and metric-strength as report-only fields, and a regression check proves they do not alter W2.2 selected skill IDs, selected metric IDs, ranking order, or prompt inputs.
+- Proof-pool metadata carries graph-era selected evidence IDs and is documented as transport/cache only, not authority.
+- Non-GraphDB-resolvable proof-pool rows fail closed before validators or generation can use them.
 - Missing GraphDB skill, metric, proof, employer, provenance, or section paths emit `MISSING_GRAPH_PATH` or a `BLOCKED_*` verdict; no runtime path silently backfills from `fact_ledger`.
 - `fact_ledger_runtime_skill_read_fails_closed_after_W2` passes.
 - GraphDB SSOT E2E covers all 33 target-lane combinations.
@@ -633,17 +686,26 @@ rg -n "GENERATED_CONTENT_LANES|section_execution_plan|e2e|end to end" apps_rg te
 - Variance against P0 is classified as baseline creation and fail-closed behavior, not a percentage delta, because P0 was a candidate-fact authority deprecation/test gate rather than an all-lane E2E composition stage.
 - W1 completion is accepted because every target-lane combination either reached authorized/generated evidence or has an explicit fail-closed blocker with artifact path. Final resume assembly is not required for this baseline stage.
 
-### W2.1 - GraphDB SSOT And Fact Ledger Removal
+### W2.1 - Graph-Era Runtime Field Migration And GraphDB SSOT
 
-**Scope**: Replace or fence every `fact_ledger` skills/metrics authority reference, and ensure selected skill references resolve through the `augmented_skills_graph` authority interface rather than any separately named "master skills" authority.
+**Scope**: First migrate fact-era runtime field names to graph-era contracts behind compatibility aliases, then fence proof-pool plumbing as transport/cache only, replace or fence every `fact_ledger` skills/metrics authority reference, and ensure selected skill references resolve through the `augmented_skills_graph` authority interface rather than any separately named "master skills" authority.
 
 **Required searches**:
 ```bash
+rg -n "selected_fact_plan|allowed_fact_ids|source_fact_ids|candidate_fact_id|fact_id" apps_rg/runtime apps_rg/config tests docs plans .claude
+rg -n "proof_pool|proof pool|proof_pool_resolver|allowed_pool|proof metadata" apps_rg/runtime apps_rg/config tests docs plans .claude
 rg -n "fact_ledger|fact ledger|FactLedger" apps_rg tests docs plans .claude
 rg -n "master_skills|master skills|master_skills_arsenal_ledger|selection_plan_skill_ref" apps_rg tests docs plans .claude
 ```
 
-**Review rule**: references that only describe historical migration may remain in docs. Runtime, fixture, traversal, validator, and generator paths may not use `fact_ledger` as skills or metrics authority after W2. References to `master_skills_arsenal_ledger.json` may remain only as non-authoritative serialization/export/bootstrap/review labels or as resolver implementation detail behind `augmented_skills_graph`; user-facing diagnostics must not present it as a separate skills SSOT.
+**Review rule**: fact-era names may remain only as explicit compatibility aliases while W2.1 migrates consumers to graph-era names. Proof-pool names may remain only for runtime compatibility when they carry GraphDB-approved selected evidence IDs and fail closed on unresolved IDs. References that only describe historical migration may remain in docs. Runtime, fixture, traversal, validator, and generator paths may not use `fact_ledger` as skills or metrics authority after W2. References to `master_skills_arsenal_ledger.json` may remain only as non-authoritative serialization/export/bootstrap/review labels or as resolver implementation detail behind `augmented_skills_graph`; user-facing diagnostics must not present it as a separate skills SSOT.
+
+**Completion evidence**:
+- Compatibility map from every fact-era runtime field to its graph-era replacement.
+- Static audit showing graph-era fields are the preferred read path in validators, proof-pool metadata, and section packets.
+- Static and runtime audit showing proof-pool plumbing is transport/cache only and all usable rows resolve to GraphDB-approved graph evidence IDs.
+- Runtime proof that fact-era aliases do not admit, rank, prove, or select skills, metrics, claims, or sections.
+- W2.2 E2E artifact includes both graph-era contract proof and compatibility-alias deprecation status.
 
 ### W4.2 - Traversal Explanation Packet
 
@@ -691,6 +753,10 @@ rg -n "master_skills|master skills|master_skills_arsenal_ledger|selection_plan_s
 - Impact: Reports or diagnostics can appear to require a separate "master skills" authority even when the intended authority is GraphDB / `augmented_skills_graph`.
 - Closure: Resolve selected skill refs through the `augmented_skills_graph` authority interface and label any JSON ledger usage as non-authoritative serialization/backend detail.
 
+**GAP-5B: `proof_pool` wording creates a second-SSOT impression**
+- Impact: Reports, validators, or generation code can appear to treat the proof pool as claim truth instead of a selected-evidence transport surface derived from GraphDB.
+- Closure: Keep proof-pool plumbing only as a runtime cache for GraphDB-approved selected evidence IDs, prefer graph-era names in user-facing contracts, and fail closed on any row that cannot resolve to GraphDB authority.
+
 **GAP-6: No waterfall means no causal attribution**
 - Impact: E2E differences cannot be attributed to SSOT migration, role family, typed edges, or sliding-scale policy.
 - Closure: Require the same three targets and 11 lanes at every stage with variance rationalization.
@@ -720,7 +786,7 @@ DoD-1: Finalized graph baseline without typed edges is captured.
 - Status: DONE
 
 DoD-2: GraphDB is the skills and metrics SSOT.
-- Evidence: Static and runtime evidence shows `fact_ledger` is not used for skill eligibility, metric eligibility, weighting, proof, or traversal; per-lane selected skill refs resolve through the `augmented_skills_graph` authority interface, with any JSON ledger usage labeled as non-authoritative backend detail.
+- Evidence: Static and runtime evidence shows `fact_ledger` is not used for skill eligibility, metric eligibility, weighting, proof, or traversal; proof-pool plumbing is transport/cache only and cannot admit proof outside GraphDB-approved selected evidence IDs; per-lane selected skill refs resolve through the `augmented_skills_graph` authority interface, with any JSON ledger usage labeled as non-authoritative backend detail.
 - Status: TODO
 
 DoD-3: GraphDB SSOT migration has E2E parity or explained variance.
