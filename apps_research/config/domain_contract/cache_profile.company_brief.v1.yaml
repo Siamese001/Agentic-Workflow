@@ -63,7 +63,6 @@ semantic_cache:
     exclusions:
       - final_apps_rg_resume_output
       - final_apps_lic_response_output
-      - final_apps_rfp_proposal_output
       - final_apps_underwriting_decision_output
 
 # Cache key construction
@@ -92,7 +91,6 @@ cross_app_reuse:
   permitted_consumer_apps:
     - apps_rg
     - apps_lic
-    - apps_rfp
     - apps_underwriting_ai
   
   # When apps_research is substrate for another app

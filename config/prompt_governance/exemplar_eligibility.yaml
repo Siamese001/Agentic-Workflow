@@ -27,5 +27,4 @@ eligible_task_classes: []
   #
   # - task_class: rfp_section_draft
   #   reason: Section structure + tone are highly stylized; few-shot reduces hallucination.
-  #   owner: apps_rfp
   #   minimum_examples: 3

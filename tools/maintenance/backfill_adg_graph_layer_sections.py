@@ -103,14 +103,14 @@ PLAN_PROFILES: dict[str, dict] = {
         rationale="Research engine is a cross-app consumer of KB + judge; refactor must preserve three-bucket boundaries.",
     ),
     "apps-rfp-first-principles-refactor-9c8d3f.md": dict(
-        domain="apps_rfp first-principles refactor",
+        domain="retired proposal-app first-principles refactor",
         layer="L_APPS",
         surface="Execution Surface",
         archetype="ORCHESTRATOR",
         mvs=("mv_graph_reverse_dependency_hotspots", "mv_dependency_cone_risk", "mv_graph_critical_path_blast_radius"),
         pviews=("v_p0_apps_direct_infra",),
         edges=("flows_to", "resolves_callsite"),
-        rationale="apps_rfp proposal_assembly_engine has high blast radius across knowledge_base; W2+ must verify cone risk.",
+        rationale="retired proposal-app assembly engine has high blast radius across knowledge_base; W2+ must verify cone risk.",
     ),
     "apps-rg-customization-uplift-7c4f12.md": dict(
         domain="apps_rg customization uplift",

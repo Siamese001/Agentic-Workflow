@@ -3,7 +3,7 @@
 
 The point of apps_shared is to be the L_SHARED infrastructure layer with NO
 domain logic. Domain apps (apps_eval, apps_exec, apps_lic, apps_research,
-apps_rfp, apps_underwriting_ai, apps_rg) MUST NOT be imported by apps_shared,
+apps_underwriting_ai, apps_rg) MUST NOT be imported by apps_shared,
 ever — otherwise we get a circular dependency between the shared layer and the
 domain layer it claims to be below.
 
@@ -49,7 +49,6 @@ _DOMAIN_APPS: tuple[str, ...] = (
     "apps_exec",
     "apps_lic",
     "apps_research",
-    "apps_rfp",
     "apps_underwriting_ai",
     "apps_rg",
 )

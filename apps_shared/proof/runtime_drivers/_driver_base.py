@@ -1,6 +1,6 @@
 """Shared helpers for app-runtime drivers.
 
-All Phase 2 drivers (apps_rfp, apps_research, apps_exec, apps_lic, apps_rg,
+All Phase 2 drivers (apps_research, apps_exec, apps_lic, apps_rg,
 apps_eval, apps_shared) follow the same shape:
 
   1. Lazy-import the app's primary engine module (this triggers real

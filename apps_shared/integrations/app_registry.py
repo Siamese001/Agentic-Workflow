@@ -151,15 +151,6 @@ APP_REGISTRY: dict[str, GovernedAppEntry | ExceptionAppEntry | FormalExceptionEn
         routing_target="exec_brief_assembly",
         proof_prefix="EXE",
     ),
-    "apps_rfp": GovernedAppEntry(
-        app_name="apps_rfp",
-        status=GovernanceStatus.GOVERNED,
-        runner_module="apps_rfp.integrations.governed_rfp_run",
-        runner_class="GovernedRfpRun",
-        capability_token="apps_rfp.governed_e2e.v1",
-        routing_target="rfp_proposal_assembly",
-        proof_prefix="RFP",
-    ),
     "apps_rg": GovernedAppEntry(
         app_name="apps_rg",
         status=GovernanceStatus.GOVERNED,

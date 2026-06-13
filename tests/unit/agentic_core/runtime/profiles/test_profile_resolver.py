@@ -538,7 +538,6 @@ class TestNoAppLiteralsInCore:
             "apps_research",
             "apps_qna",
             "apps_exec",
-            "apps_rfp",
             "apps_underwriting_ai",
             "apps_eval",
             "apps_architect",

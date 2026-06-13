@@ -46,7 +46,6 @@ SKIP_FILES = {
 SKIP_DIRS = ("archives", "tools/archive", "tests", "tools/analysis", "_smoke_v1_coerce_e9aa09")
 
 ROOTS = ["agentic_core", "apps_eval", "apps_exec", "apps_lic", "apps_research",
-         "apps_rfp", "apps_rg", "apps_shared", "apps_underwriting_ai", "infrastructure",
          "system_learning"]
 
 

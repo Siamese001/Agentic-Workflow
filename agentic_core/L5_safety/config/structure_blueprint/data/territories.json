@@ -4,7 +4,7 @@
     "purpose": "Core agentic logic and safety layers.",
     "subfolders": {
       "adg": {
-        "purpose": "Architecture Dependency Graph (ADG) — commit-scoped static analysis, MCP-backed graph persistence, and policy enforcement.",
+        "purpose": "Architecture Dependency Graph (ADG) \u2014 commit-scoped static analysis, MCP-backed graph persistence, and policy enforcement.",
         "subfolders": {
           "applications": {
             "purpose": "ADG governance applications (blast radius, gateway enforcement, RAG, UWG)."
@@ -29,7 +29,7 @@
         "notes": "No mixins, types, utils, or exceptions. Mixins are in agentic_core/mixins/."
       },
       "L0_routing": {
-        "purpose": "Core Logic & Routing + Control-Plane Core — ingestion, route election, capability arbitration, policy-aware dispatch; plus boot integrity, SSOT discovery, and guardian runner health checks.",
+        "purpose": "Core Logic & Routing + Control-Plane Core \u2014 ingestion, route election, capability arbitration, policy-aware dispatch; plus boot integrity, SSOT discovery, and guardian runner health checks.",
         "subfolders": {
           "config": {
             "purpose": "Configuration, settings, and constants.",
@@ -320,7 +320,7 @@
             "purpose": "Execution-layer operational scripts."
           },
           "tools": {
-            "purpose": "Standardized tool implementations — strict naming enforced.",
+            "purpose": "Standardized tool implementations \u2014 strict naming enforced.",
             "allowed_suffixes": [
               "_impl.py",
               "_agent.py",
@@ -695,7 +695,7 @@
             ],
             "subfolders": {
               "structure_blueprint": {
-                "purpose": "SSOT structure blueprint module — _constants.py, territories.py, ssot.py, derived.py, and enforcement/ snapshot baseline files."
+                "purpose": "SSOT structure blueprint module \u2014 _constants.py, territories.py, ssot.py, derived.py, and enforcement/ snapshot baseline files."
               }
             }
           },
@@ -1696,7 +1696,7 @@
   },
   "apps_eval": {
     "depth": 2,
-    "purpose": "Evaluation Application domain — scenario running, regression detection, and eval orchestration.",
+    "purpose": "Evaluation Application domain \u2014 scenario running, regression detection, and eval orchestration.",
     "subfolders": {
       "config": {
         "purpose": "Application-specific configuration",
@@ -1758,7 +1758,7 @@
   },
   "apps_exec": {
     "depth": 2,
-    "purpose": "Execution Application domain — brief assembly, exec orchestration, and delivery pipelines.",
+    "purpose": "Execution Application domain \u2014 brief assembly, exec orchestration, and delivery pipelines.",
     "subfolders": {
       "config": {
         "purpose": "Application-specific configuration",
@@ -1820,7 +1820,7 @@
   },
   "apps_research": {
     "depth": 2,
-    "purpose": "Research Application domain — research assembly, source gathering, and synthesis pipelines.",
+    "purpose": "Research Application domain \u2014 research assembly, source gathering, and synthesis pipelines.",
     "subfolders": {
       "config": {
         "purpose": "Application-specific configuration",
@@ -1880,68 +1880,6 @@
       }
     }
   },
-  "apps_rfp": {
-    "depth": 2,
-    "purpose": "RFP Application domain — proposal assembly, RFP orchestration, and bid pipelines.",
-    "subfolders": {
-      "config": {
-        "purpose": "Application-specific configuration",
-        "subfolders": []
-      },
-      "types": {
-        "purpose": "Type definitions and data models",
-        "subfolders": []
-      },
-      "reasoning": {
-        "purpose": "Agent classes and business logic",
-        "subfolders": []
-      },
-      "engines": {
-        "purpose": "Processing engines and pipelines (flat .py files, no nested subdirs)",
-        "subfolders": []
-      },
-      "enforcement": {
-        "purpose": "Constraint execution, guardrails, governors, and strategy gates",
-        "subfolders": []
-      },
-      "utils": {
-        "purpose": "Utility functions",
-        "subfolders": []
-      },
-      "scripts": {
-        "purpose": "CLI entrypoints and one-off scripts",
-        "subfolders": []
-      },
-      "tools": {
-        "purpose": "Tool implementations and wrappers",
-        "subfolders": []
-      },
-      "validators": {
-        "purpose": "Input/output validators",
-        "subfolders": []
-      }
-    },
-    "routing_rules": {
-      "*Agent.py": "reasoning",
-      "*Strategy.py": "enforcement",
-      "*Engine.py": "engines",
-      "*_config.py": "config",
-      "*_types.py": "types",
-      "*_util.py": "utils",
-      "*_validator.py": "validators"
-    },
-    "ast_signals": {
-      "apps_rfp/engines": {
-        "keyword_signals": [
-          "rfp",
-          "proposal",
-          "bid",
-          "assembly"
-        ],
-        "weight": 90
-      }
-    }
-  },
   "tests": {
     "depth": 2,
     "purpose": "Universal test suites organized by Type then Domain.",
@@ -1953,7 +1891,7 @@
         "purpose": "ADG-specific tests and graph validation checks"
       },
       "architecture": {
-        "purpose": "Structural invariant tests — AST-based, no filesystem mutations"
+        "purpose": "Structural invariant tests \u2014 AST-based, no filesystem mutations"
       },
       "ci": {
         "purpose": "CI and compliance gate tests"
@@ -2246,7 +2184,7 @@
     "purpose": "Adaptive learning subsystem: runtime snapshots, training pipelines, and SSOT enforcement.",
     "subfolders": {
       "adapters": {
-        "purpose": "Per-layer adaptation modules (l0_–l5_ prefixes are intentional)"
+        "purpose": "Per-layer adaptation modules (l0_\u2013l5_ prefixes are intentional)"
       },
       "arbitration": {
         "purpose": "Conflict resolution and policy arbitration for learning proposals"
@@ -2267,7 +2205,7 @@
         "purpose": "Policy enforcement for learning outputs"
       },
       "engines": {
-        "purpose": "Learning engine implementations (l0_–l5_ prefixes are intentional)"
+        "purpose": "Learning engine implementations (l0_\u2013l5_ prefixes are intentional)"
       },
       "fingerprinting": {
         "purpose": "Behavioral fingerprinting and change detection"
@@ -2567,7 +2505,7 @@
   },
   "infrastructure": {
     "depth": 1,
-    "purpose": "Infrastructure hardening modules — cross-cutting system optimization and security frameworks.",
+    "purpose": "Infrastructure hardening modules \u2014 cross-cutting system optimization and security frameworks.",
     "subfolders": {},
     "required_dirs": [
       "infrastructure"

@@ -41,7 +41,6 @@ _APPS: tuple[str, ...] = (
     "apps_exec",
     "apps_lic",
     "apps_research",
-    "apps_rfp",
     "apps_underwriting_ai",
     "apps_rg",
 )
@@ -171,9 +170,6 @@ class TestAppsOtelRuntimeCoverage(unittest.TestCase):
 
     def test_apps_research_runtime_coverage(self) -> None:
         self._probe_app("apps_research")
-
-    def test_apps_rfp_runtime_coverage(self) -> None:
-        self._probe_app("apps_rfp")
 
     def test_apps_underwriting_ai_runtime_coverage(self) -> None:
         self._probe_app("apps_underwriting_ai")

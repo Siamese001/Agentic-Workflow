@@ -4,7 +4,7 @@ Adapted from `apps_rg/runtime/contracts.py` by making `app_name` a plain
 `str` (not `Literal["apps_rg"]`) and adding two optional receipt types
 (`C0GroundingReceipt`, `PromptAssemblyManifest`) that apps_rg did not
 need but other apps (apps_eval / apps_exec / apps_lic / apps_research /
-apps_rfp) do, per `AppSpec.expects_c0_grounding` and
+) do, per `AppSpec.expects_c0_grounding` and
 `AppSpec.expects_prompt_assembly`.
 
 Contract identity is by JSON content, not Python class — two apps can
@@ -164,7 +164,7 @@ class L3OrchestrationReceipt(_SpineEnvelope):
 
 
 # ---------------------------------------------------------------------------
-# C0 / Grounding receipt (optional — apps_eval/apps_research/apps_rfp/apps_lic)
+# C0 / Grounding receipt (optional — apps_eval/apps_research/apps_lic)
 # ---------------------------------------------------------------------------
 
 
@@ -182,7 +182,7 @@ class C0GroundingReceipt(_SpineEnvelope):
 
 
 # ---------------------------------------------------------------------------
-# Prompt Assembly manifest (optional — apps_eval/apps_exec/apps_research/apps_rfp/apps_lic)
+# Prompt Assembly manifest (optional — apps_eval/apps_exec/apps_research/apps_lic)
 # ---------------------------------------------------------------------------
 
 

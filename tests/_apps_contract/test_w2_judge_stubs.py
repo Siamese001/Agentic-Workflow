@@ -40,7 +40,6 @@ JUDGE_MODULES: tuple[tuple[str, str], ...] = (
     ("apps_rg.engines.judges.executive_positioning_judge", "rg::executive_positioning_judge::v1"),
     ("apps_lic.engines.judges.response_likelihood_judge", "lic::response_likelihood_judge::v1"),
     ("apps_lic.engines.judges.brand_voice_judge", "lic::brand_voice_judge::v1"),
-    ("apps_rfp.engines.judges.win_theme_alignment_judge", "rfp::win_theme_alignment_judge::v1"),
 )
 
 

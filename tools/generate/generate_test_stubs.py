@@ -78,7 +78,6 @@ class TestStubGenerator:
             "apps_exec",
             "apps_lic",
             "apps_research",
-            "apps_rfp",
             "apps_rg",
             "apps_shared",
             "system_learning",

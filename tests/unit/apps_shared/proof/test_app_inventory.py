@@ -43,7 +43,6 @@ def test_required_apps_filters_to_canonical(tiny_adg_snapshot, tmp_path):
             "apps_exec",
             "apps_lic",
             "apps_research",
-            "apps_rfp",
             "apps_rg",
             "apps_shared",
             "apps_underwriting_ai",

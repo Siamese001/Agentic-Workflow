@@ -139,13 +139,13 @@ def test_none_path_raises_ValueError() -> None:
 
 
 def test_compute_manifest_hash_for_app_works_against_tmp_repo(tmp_path: Path) -> None:
-    app_dir = tmp_path / "apps_rfp"
+    app_dir = tmp_path / "apps_demo"
     app_dir.mkdir()
     manifest = app_dir / MANIFEST_FILENAME
     payload = b"claimed_routes:\n  - R3_grounded_read\n"
     manifest.write_bytes(payload)
 
-    h = compute_manifest_hash_for_app("apps_rfp", repo_root=tmp_path)
+    h = compute_manifest_hash_for_app("apps_demo", repo_root=tmp_path)
     assert _HEX_SHA256_RE.match(h) is not None
     # Same hash as the direct call.
     assert h == compute_manifest_hash(manifest)
@@ -174,18 +174,17 @@ def test_compute_manifest_hash_for_app_missing_manifest(tmp_path: Path) -> None:
 
 def test_compute_manifest_hash_for_app_infers_repo_root() -> None:
     """With ``repo_root=None``, the helper must find the real repo's
-    manifests. apps_rfp is the W12 R3 app \u2014 should always exist in
-    this checkout."""
-    h = compute_manifest_hash_for_app("apps_rfp")
+    manifests for active apps in this checkout."""
+    h = compute_manifest_hash_for_app("apps_rg")
     assert _HEX_SHA256_RE.match(h) is not None
 
 
 def test_compute_manifest_hash_for_app_multiple_apps_differ() -> None:
     """Two distinct apps must produce distinct manifest_hash values
     (unless by astronomical coincidence their manifests are byte-equal)."""
-    h_rfp = compute_manifest_hash_for_app("apps_rfp")
+    h_research = compute_manifest_hash_for_app("apps_research")
     h_rg = compute_manifest_hash_for_app("apps_rg")
-    assert h_rfp != h_rg
+    assert h_research != h_rg
 
 
 # ---------------------------------------------------------------------------

@@ -59,7 +59,6 @@ GENERIC_TEXTS = [
 DIM_BY_APP = {
     "apps_qna": ("question_specificity", "answer_relevance"),
     "apps_research": ("source_diversity", "claim_grounding"),
-    "apps_rfp": ("win_theme_alignment", "compliance_coverage"),
     "apps_exec": ("executive_positioning", "brevity"),
     "apps_underwriting_ai": ("decision_rationale", "risk_coverage"),
     "apps_rg": ("executive_positioning", "lexicon_coverage"),
@@ -69,7 +68,6 @@ DIM_BY_APP = {
 
 TEXTS_BY_APP = {
     "apps_lic": LIC_TEXTS,
-    "apps_rfp": RFP_TEXTS,
     "apps_rg": RG_TEXTS,
 }
 
@@ -95,8 +93,6 @@ for app_id, dims in DIM_BY_APP.items():
         }
         if app_id in PROFILES:
             row["brand_voice_profile"] = PROFILES[app_id]
-        if app_id == "apps_rfp":
-            row["rfp_context"] = {"win_themes": ["scalability", "security", "cost efficiency"]}
         rows.append(json.dumps(row, separators=(",", ":")))
     out = HOLDOUT / f"{app_id}.jsonl"
     out.write_text("\n".join(rows) + "\n", encoding="utf-8")

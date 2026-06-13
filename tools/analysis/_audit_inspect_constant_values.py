@@ -8,7 +8,6 @@ REPO = Path(".")
 results = {c: [] for c in CONSTANTS}
 
 # Scan key directories for assignment patterns
-roots = ["agentic_core", "apps_eval", "apps_exec", "apps_lic", "apps_research", "apps_rfp", "apps_rg", "apps_shared", "apps_underwriting_ai"]
 for root in roots:
     rp = REPO / root
     if not rp.exists():

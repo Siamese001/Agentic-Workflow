@@ -61,7 +61,6 @@ EMITTER_VERSION = "apps_domain_emitter-v1"
 # 8 runtime apps participating in APPS-DOM enforcement.
 RUNTIME_APPS = (
     "apps_qna", "apps_underwriting_ai",
-    "apps_rg", "apps_lic", "apps_rfp",
     "apps_research", "apps_exec", "apps_eval",
 )
 

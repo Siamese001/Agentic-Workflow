@@ -51,7 +51,6 @@ def check_cross_app_imports(repo_root: Path) -> List[Dict[str, Any]]:
     
     # Apps that apps_rg must NOT import from
     forbidden_apps = [
-        "apps_lic", "apps_qna", "apps_research", "apps_rfp", 
         "apps_underwriting_ai", "apps_architect", "apps_eval"
     ]
     

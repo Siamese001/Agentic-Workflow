@@ -187,7 +187,6 @@ _emit_proposal_commits_routing("p1", "derived", "routing_commit")
 _APPS_EVAL_DIR: str = "apps_eval"
 _APPS_EXEC_DIR: str = "apps_exec"
 _APPS_RESEARCH_DIR: str = "apps_research"
-_APPS_RFP_DIR: str = "apps_rfp"
 
 # ============================================================================
 # DERIVATION FUNCTIONS
@@ -290,7 +289,6 @@ APPS_EXEC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfo
 APPS_RESEARCH_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(
     _APPS_RESEARCH_DIR,
 )
-APPS_RFP_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(_APPS_RFP_DIR)
 
 # Type-safe alias
 agentic_core_registry: Final[Mapping[str, Sequence[str]]] = CORE_SUBFOLDER_MAP

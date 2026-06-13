@@ -274,22 +274,6 @@ APP_SPECS: tuple[AppSpec, ...] = (
         notes="company_brief_engine + governed_research_run. Live-cert path wired via apps_shared.spine_emission (plan apps-e2e-spine-cert-wireup-e1c4d7 W4).",
     ),
     AppSpec(
-        app_name="apps_rfp",
-        app_package="apps_rfp",
-        runnable=True,
-        expected_route_form="SINGLE_STEP",
-        expected_execution_form=EXECUTION_FORM_SINGLE_STEP,  # W6
-        expected_l3_path=L3_PATH_BYPASSED,  # W6
-        expects_static_dag=False,
-        expects_c0_grounding=True,
-        expects_prompt_assembly=True,
-        expects_l2_execution=True,
-        expects_durable_mutation=False,
-        entrypoint_args=("--apps-e2e-live",),
-        runs_root_glob="artifacts/apps_rfp/runs/*",
-        notes="proposal_assembly_engine + governed_rfp_run. Live-cert path wired via apps_shared.spine_emission (plan apps-e2e-spine-cert-wireup-e1c4d7 W5).",
-    ),
-    AppSpec(
         app_name="apps_underwriting_ai",
         app_package="apps_underwriting_ai",
         runnable=True,

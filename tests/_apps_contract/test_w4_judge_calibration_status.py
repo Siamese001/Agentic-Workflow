@@ -1,7 +1,7 @@
 """W4 judge calibration status verification.
 
 Plan: apps-core-contract-rectification-a8f3c2 Phase 4
-Confirms all 4 targeted LLM judges are promoted (IS_STUB=False) and have
+Confirms all active targeted LLM judges are promoted (IS_STUB=False) and have
 deterministic v2 GRADER_IDs. These were promoted in plan
 apps-eval-harness-deferred-e4a1b7 and should remain non-stub.
 """
@@ -32,24 +32,15 @@ def test_brand_voice_judge_not_stub() -> None:
     assert "v2" in GRADER_ID, f"Expected v2 GRADER_ID, got {GRADER_ID!r}"
 
 
-def test_win_theme_alignment_judge_not_stub() -> None:
-    from apps_rfp.engines.judges.win_theme_alignment_judge import IS_STUB, GRADER_ID
-
-    assert IS_STUB is False, "win_theme_alignment_judge must not be a stub"
-    assert "v2" in GRADER_ID, f"Expected v2 GRADER_ID, got {GRADER_ID!r}"
-
-
-def test_all_four_judges_have_grade_callable() -> None:
+def test_all_active_judges_have_grade_callable() -> None:
     from apps_rg.engines.judges.executive_positioning_judge import ExecutivePositioningJudge
     from apps_lic.engines.judges.response_likelihood_judge import ResponseLikelihoodJudge
     from apps_lic.engines.judges.brand_voice_judge import BrandVoiceJudge
-    from apps_rfp.engines.judges.win_theme_alignment_judge import WinThemeAlignmentJudge
 
     for cls in (
         ExecutivePositioningJudge,
         ResponseLikelihoodJudge,
         BrandVoiceJudge,
-        WinThemeAlignmentJudge,
     ):
         assert callable(getattr(cls, "grade", None)), (
             f"{cls.__name__} missing callable grade() method"

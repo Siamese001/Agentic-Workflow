@@ -2,7 +2,6 @@
 
 W1: response_likelihood_judge v2
 W2: brand_voice_judge v2
-W3: win_theme_alignment_judge v2
 W4: holdout seed fixtures scaffolded
 W5: verified elsewhere (test_w_final_deferred.py header-state flip)
 """
@@ -79,47 +78,6 @@ def test_brand_voice_judge_with_no_profile_does_not_crash():
     assert refs
 
 
-# ----- W3: win_theme_alignment_judge v2 -----
-
-
-def test_win_theme_judge_is_promoted():
-    from apps_rfp.engines.judges import win_theme_alignment_judge as mod
-
-    assert mod.IS_STUB is False
-    assert mod.GRADER_ID.endswith("::v2")
-
-
-def test_win_theme_judge_abstains_when_themes_missing():
-    from apps_rfp.engines.judges.win_theme_alignment_judge import grade
-    from agentic_core.L3_orchestration.exit_eval.v6.app_grader_registry import (
-        GRADER_UNKNOWN_SENTINEL,
-    )
-
-    score, refs = grade(None, {"output": {"text": "Some RFP response text."}})
-    assert score is GRADER_UNKNOWN_SENTINEL
-    assert refs == []
-
-
-def test_win_theme_judge_scores_covered_vs_uncovered():
-    from apps_rfp.engines.judges.win_theme_alignment_judge import grade
-
-    themes = ["scalability", "security", "cost efficiency"]
-    text_covered = (
-        "Our solution delivers industry-leading scalability across all workloads.\n\n"
-        "We prioritize security with end-to-end encryption and audit trails. "
-        "Security is baked in at every layer.\n\n"
-        "Cost efficiency is achieved through auto-scaling. "
-        "Our cost efficiency framework reduces TCO by 30% over typical RFP response lengths."
-    )
-    text_uncovered = "Our solution is great. You will like it. " * 15
-    ctx_covered = {"output": {"text": text_covered}, "rfp_context": {"win_themes": themes}}
-    ctx_uncovered = {"output": {"text": text_uncovered}, "rfp_context": {"win_themes": themes}}
-    score_c, _ = grade(None, ctx_covered)
-    score_u, _ = grade(None, ctx_uncovered)
-    assert score_c > score_u
-    assert score_c >= 0.6
-
-
 # ----- W4: holdout seed scaffold -----
 
 
@@ -128,7 +86,6 @@ def test_win_theme_judge_scores_covered_vs_uncovered():
     [
         "apps_qna",
         "apps_research",
-        "apps_rfp",
         "apps_exec",
         "apps_underwriting_ai",
         "apps_rg",

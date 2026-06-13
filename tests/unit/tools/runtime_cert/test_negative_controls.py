@@ -33,9 +33,9 @@ from tools.runtime_cert.negative_controls import (
 def test_cc_eval_01_passes_with_no_apps_eval_traces() -> None:
     rows = [
         {"trace_id": "t1", "span_id": "s1", "parent_span_id": None,
-         "app_name": "apps_rfp"},
+         "app_name": "apps_rg"},
         {"trace_id": "t1", "span_id": "s2", "parent_span_id": "s1",
-         "app_name": "apps_rfp"},
+         "app_name": "apps_rg"},
     ]
     r = check_no_eval_of_evaluator_circularity(rows)
     assert r.passed is True
@@ -48,7 +48,7 @@ def test_cc_eval_01_passes_with_apps_eval_root_no_descendants() -> None:
         {"trace_id": "t1", "span_id": "s1", "parent_span_id": None,
          "app_name": "apps_eval"},
         {"trace_id": "t1", "span_id": "s2", "parent_span_id": "s1",
-         "app_name": "apps_rfp"},
+         "app_name": "apps_rg"},
     ]
     r = check_no_eval_of_evaluator_circularity(rows)
     assert r.passed is True
@@ -80,7 +80,7 @@ def test_cc_eval_01_multiple_traces_isolated() -> None:
         {"trace_id": "t2", "span_id": "s3", "parent_span_id": None,
          "app_name": "apps_eval"},
         {"trace_id": "t2", "span_id": "s4", "parent_span_id": "s3",
-         "app_name": "apps_rfp"},
+         "app_name": "apps_rg"},
     ]
     r = check_no_eval_of_evaluator_circularity(rows)
     assert r.violation_count == 1
@@ -150,7 +150,7 @@ def test_cc_eval_02_passes_with_custom_allowed_surfaces() -> None:
 
 def test_cc_eval_02_ignores_rows_for_other_apps() -> None:
     rows = [
-        {"app_name": "apps_rfp", "contract_name": "SealedArtifact",
+        {"app_name": "apps_rg", "contract_name": "SealedArtifact",
          "span_id": "s1", "route_shape": "R3_grounded_read"},
     ]
     r = check_apps_eval_no_r3_contract_leak(rows)

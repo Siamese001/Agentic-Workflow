@@ -38,7 +38,6 @@ Apps currently wired (all 7)
 - ``apps_research.config.agent_spec_config.ResearchAgentSpecs``
 - ``apps_eval.config.agent_spec_config.EvalAgentSpecs``
 - ``apps_exec.config.agent_spec_config.ExecAgentSpecs``
-- ``apps_rfp.config.agent_spec_config.RfpAgentSpecs``
 - ``apps_rg.config.agent_spec_config.RGAgentSpecs``
 - ``apps_lic.config.agent_spec_config.LicAgentSpecs`` (minimal scaffolding)
 - ``apps_underwriting_ai.config.agent_spec_config.UnderwritingAgentSpecs``

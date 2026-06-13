@@ -36,7 +36,6 @@ APPS = [
     "apps_lic",
     "apps_qna",
     "apps_research",
-    "apps_rfp",
     "apps_rg",
     "apps_shared",
     "apps_underwriting_ai",

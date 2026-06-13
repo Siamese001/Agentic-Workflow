@@ -21,7 +21,6 @@ _SCAN_DIRS = (
     "apps_rg",
     "apps_exec",
     "apps_eval",
-    "apps_rfp",
     "apps_research",
     "apps_underwriting_ai",
     "ops_scripts",

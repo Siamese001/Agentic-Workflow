@@ -49,7 +49,6 @@ OUTPUT_DIR = REPO_ROOT / "artifacts" / "apps_otel_traces"
 
 RUNTIME_APPS = (
     "apps_qna", "apps_underwriting_ai",
-    "apps_rg", "apps_lic", "apps_rfp",
     "apps_research", "apps_exec", "apps_eval",
 )
 

@@ -25,7 +25,6 @@ Security / State / Observability) remain unchanged.
 W6.P2 — No new apps_* domains introduced
 ----------------------------------------
 Scope is harness parity for the existing eight runtime apps
-(``apps_rg``, ``apps_lic``, ``apps_rfp``, ``apps_qna``, ``apps_research``,
 ``apps_exec``, ``apps_underwriting_ai``) plus the meta domain ``apps_eval``.
 No new ``apps_*`` directory may be introduced by this plan.
 

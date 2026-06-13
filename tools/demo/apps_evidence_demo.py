@@ -439,7 +439,7 @@ def demo_apps_uw_intake() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 10. apps_exec / apps_research / apps_rfp — share apps_shared.ModelRouter
+# 10. apps_exec / apps_research /  — share apps_shared.ModelRouter
 # ---------------------------------------------------------------------------
 def demo_shared_consumers() -> None:
     from apps_shared.reasoning.core.model_router import ModelRouter, TaskType
@@ -451,8 +451,6 @@ def demo_shared_consumers() -> None:
         ("apps_exec/exec_brief",       TaskType.ANALYTICAL, 4, 0.018),
         ("apps_research/brief",        TaskType.COMPLEX,    7, 0.034),
         ("apps_research/brief_redo",   TaskType.COMPLEX,    8, 0.041),
-        ("apps_rfp/proposal_section",  TaskType.CREATIVE,   6, 0.027),
-        ("apps_rfp/proposal_polish",   TaskType.SIMPLE,     2, 0.004),
     ]
     for app, tt, cx, cost in runs:
         cfg = router.get_model_config(task_type=tt, complexity_score=cx)
@@ -492,7 +490,7 @@ SECTIONS = [
      demo_apps_eval_gate),
     ("apps_underwriting_ai IntakeRouter — file-type ingestion",
      demo_apps_uw_intake),
-    ("apps_exec/apps_research/apps_rfp — shared ModelRouter consumers",
+    ("apps_exec/apps_research/ — shared ModelRouter consumers",
      demo_shared_consumers),
 ]
 

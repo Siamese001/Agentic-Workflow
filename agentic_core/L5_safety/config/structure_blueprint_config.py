@@ -103,7 +103,6 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (  # noqa: F4
     get_apps_exec_subfolder_map,
     get_apps_lic_subfolder_map,
     get_apps_research_subfolder_map,
-    get_apps_rfp_subfolder_map,
     get_apps_rg_subfolder_map,
     get_apps_shared_subfolder_map,
     get_core_subfolder_map,

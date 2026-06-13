@@ -95,7 +95,6 @@ class TestNoAppLiterals:
         "apps_research",
         "apps_qna",
         "apps_eval",
-        "apps_rfp",
         "apps_underwriting",
     ])
     def test_no_app_literal_in_w4_scope_sources(self, literal: str):

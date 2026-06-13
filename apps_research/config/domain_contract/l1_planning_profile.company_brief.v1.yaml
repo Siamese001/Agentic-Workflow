@@ -56,7 +56,6 @@ delegation_hints:
   allowed_consumers:
     - apps_rg
     - apps_lic
-    - apps_rfp
 
 # Context detection hints
 context_hints:

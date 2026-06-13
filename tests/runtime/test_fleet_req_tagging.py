@@ -41,7 +41,6 @@ PRIORITY_REQS = [
         ("apps_exec", "apps_exec.test_fleet_tagging"),
         ("apps_lic", "apps_lic.test_fleet_tagging"),
         ("apps_research", "apps_research.test_fleet_tagging"),
-        ("apps_rfp", "apps_rfp.test_fleet_tagging"),
     ],
 )
 def test_app_emits_all_priority_reqs(app_id, mission, tmp_path):

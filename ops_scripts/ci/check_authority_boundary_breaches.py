@@ -48,7 +48,6 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MAX = 42
 DEFAULT_EXEMPT = (
     "apps_shared/proof/scenario_base.py",
-    "apps_rfp/integrations/u0_intake_adapter.py",
     "apps_lic/runtime/profile_builder_adapter.py",
     "apps_research/runtime/profile_builder_adapter.py",
     "apps_research/integrations/qwen_strict_probe.py",
@@ -58,6 +57,7 @@ DEFAULT_EXEMPT = (
     "apps_rg/runtime/spine/governed_pa_compose.py",
     "apps_rg/enforcement/cli_prerequisite_gate.py",
     "apps_lic/runtime/bindings/l0_binding.py",  # L0 thin binding to generic_route_policy_interpreter (ADR-071 ratcheted)
+    "apps_eval_legacy/original_tree/apps_eval/engines/scenario_runner.py",  # Archived apps_eval mirror; live apps_eval/% is exempt in the MV.
     # ADR-085 W3: executive_summary same-authority regen thin bridges (L_APP -> L2 regen IR)
     "apps_rg/runtime/sections/executive_summary_same_authority_regen_bridge.py",
     "apps_rg/runtime/sections/executive_summary_judge_regen_loop.py",

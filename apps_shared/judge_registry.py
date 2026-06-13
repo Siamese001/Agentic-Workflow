@@ -36,7 +36,6 @@ JUDGE_IMPORT_PATHS: Dict[Tuple[str, str], str] = {
     ("apps_rg", "executive_positioning"): "apps_rg.engines.judges.executive_positioning_judge",
     ("apps_lic", "response_likelihood"): "apps_lic.engines.judges.response_likelihood_judge",
     ("apps_lic", "brand_voice"): "apps_lic.engines.judges.brand_voice_judge",
-    ("apps_rfp", "win_theme_alignment"): "apps_rfp.engines.judges.win_theme_alignment_judge",
 }
 
 

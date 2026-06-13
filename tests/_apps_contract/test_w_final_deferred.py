@@ -75,7 +75,7 @@ def test_grounded_producer_flags_contradictions_as_fail():
             "contradiction_flags": ["conflict1"],
         }
     }
-    fec = fec_producer.resolve_fec("apps_rfp", ctx)
+    fec = fec_producer.resolve_fec("apps_research", ctx)
     assert fec["c0_status"] == "FAIL"
 
 
@@ -161,7 +161,6 @@ def test_judge_registry_reports_promoted_count_at_least_one():
     [
         "apps_qna",
         "apps_research",
-        "apps_rfp",
         "apps_exec",
         "apps_underwriting_ai",
         "apps_rg",
@@ -190,8 +189,6 @@ LEGACY_FILES = [
     "apps_lic/config/lic_thresholds.yaml",
     "apps_research/config/research_policies.yaml",
     "apps_research/config/research_thresholds.yaml",
-    "apps_rfp/config/rfp_policies.yaml",
-    "apps_rfp/config/rfp_thresholds.yaml",
     "apps_rg/config/rg_policies.yaml",
     "apps_rg/config/rg_thresholds.yaml",
     "config/routing_thresholds.yaml",

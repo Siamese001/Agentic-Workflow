@@ -69,7 +69,6 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 APPS_UNDER_TEST = [
     ("apps_rg", "resume_generation"),
     ("apps_lic", "outreach_message"),
-    ("apps_rfp", "rfp_response"),
     ("apps_qna", "qna_pack_build"),
     ("apps_research", "company_brief"),
     ("apps_exec", "brief_assembly"),

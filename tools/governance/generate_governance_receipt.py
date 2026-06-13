@@ -172,7 +172,7 @@ def _build_receipt(plan_slug: str, test_result: dict) -> dict:
                 "reason": "Deferred per original plan out-of-scope declaration",
             },
             {
-                "item": "apps_rfp migration",
+                "item": "retired proposal-app migration",
                 "reason": "Deferred per original plan out-of-scope declaration",
             },
         ],

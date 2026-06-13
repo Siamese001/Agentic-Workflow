@@ -221,7 +221,6 @@ def _get_source_artifacts() -> dict[str, Path]:
         "apps_research",
         "apps_lic",
         "apps_exec",
-        "apps_rfp",
         "apps_qna",
         "apps_underwriting_ai",
     ):

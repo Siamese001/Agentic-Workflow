@@ -108,7 +108,6 @@ def test_discover_apps_packages_includes_all_known_apps() -> None:
         "apps_exec",
         "apps_lic",
         "apps_research",
-        "apps_rfp",
         "apps_rg",
         "apps_underwriting_ai",
     }

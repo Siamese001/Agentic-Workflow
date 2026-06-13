@@ -213,7 +213,6 @@ Eight apps built on the governed control plane. Every app ships the same governa
 | [`apps_lic`](apps_lic/) | Lifecycle Intelligence & Communication — multi-hop profile + research + grounded outbound authoring | — | [→](apps_lic/RUNBOOK.md) | [→](apps_lic/SLO.md) | [→](apps_lic/SVP_ENGINEERING_REVIEW.md) | [→](apps_lic/THREAT_MODEL.md) |
 | [`apps_qna`](apps_qna/) | Interview Q&A Card-Pack Builder — parameterized interview-prep packs with routed retrieval | [→](apps_qna/README.md) | [→](apps_qna/RUNBOOK.md) | [→](apps_qna/SLO.md) | [→](apps_qna/SVP_ENGINEERING_REVIEW.md) | — *(see [`PATHOLOGY_TAXONOMY.md`](apps_qna/PATHOLOGY_TAXONOMY.md))* |
 | [`apps_research`](apps_research/) | Autonomous Research Engine — structured research artifacts from topic + mode | [→](apps_research/README.md) | [→](apps_research/RUNBOOK.md) | [→](apps_research/SLO.md) | [→](apps_research/SVP_ENGINEERING_REVIEW.md) | — |
-| [`apps_rfp`](apps_rfp/) | AI Proposal / RFP Generator — full proposals from a client problem statement | [→](apps_rfp/README.md) | [→](apps_rfp/RUNBOOK.md) | [→](apps_rfp/SLO.md) | [→](apps_rfp/SVP_ENGINEERING_REVIEW.md) | — |
 | [`apps_rg`](apps_rg/) | AI Résumé Generator — grounded résumé synthesis with ATS-coverage gates | [→](apps_rg/README.md) | [→](apps_rg/RUNBOOK.md) | [→](apps_rg/SLO.md) | [→](apps_rg/SVP_ENGINEERING_REVIEW.md) | — |
 | [`apps_underwriting_ai`](apps_underwriting_ai/) | Commercial credit underwriting decision support — zero-authority surface over `agentic_core` | [→](apps_underwriting_ai/README.md) | [→](apps_underwriting_ai/RUNBOOK.md) | [→](apps_underwriting_ai/SLO.md) | [→](apps_underwriting_ai/SVP_ENGINEERING_REVIEW.md) | [→](apps_underwriting_ai/THREAT_MODEL.md) |
 | [`apps_shared`](apps_shared/) | Shared adapters, validators, HOP executor, proof harness — library-only | [→](apps_shared/README.md) | [→](apps_shared/RUNBOOK.md) | [→](apps_shared/SLO.md) | [→](apps_shared/SVP_ENGINEERING_REVIEW.md) | [→](apps_shared/validators/proof/THREAT_MODEL.md) |
@@ -241,7 +240,6 @@ docker compose -f docker-compose.otel.yml up -d
 # Run any app
 python -m apps_eval --all
 python -m apps_research --topic "agentic governance" --mode brief
-python -m apps_rfp --brief "Compliance workflow automation" --industry financial_services
 python -m apps_underwriting_ai --demo
 
 # Architecture proof pack (S1 + S2 + S3, ~17s, exit 0 = green)

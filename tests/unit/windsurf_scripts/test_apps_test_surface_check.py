@@ -134,16 +134,13 @@ class TestMissingUnitInit:
 
 class TestMissingIntgDir:
     def test_missing_intg_dir_flagged(self, tmp_path: Path) -> None:
-        app = "apps_rfp"
         (tmp_path / "tests" / "unit" / app).mkdir(parents=True)
         (tmp_path / "tests" / "unit" / app / "__init__.py").write_text("")
-        # No tests/apps_rfp/
         violations = check(tmp_path, apps=[app])
         kinds = [v.kind for v in violations]
         assert ViolationKind.MISSING_INTG_DIR in kinds
 
     def test_missing_intg_dir_message(self, tmp_path: Path) -> None:
-        app = "apps_rfp"
         (tmp_path / "tests" / "unit" / app).mkdir(parents=True)
         (tmp_path / "tests" / "unit" / app / "__init__.py").write_text("")
         violations = check(tmp_path, apps=[app])

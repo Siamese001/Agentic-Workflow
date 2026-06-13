@@ -185,7 +185,6 @@ def install_and_tag(app_id: str, op: str = "") -> object | None:
     ----------
     app_id
         One of the governed app identifiers (apps_rg, apps_eval, apps_exec,
-        apps_lic, apps_research, apps_rfp). Recorded on every span and
         exemplar; downstream fitness reports group coverage by this value.
     op
         Optional operation tag (defaults to ``"<app_id>.main"``).

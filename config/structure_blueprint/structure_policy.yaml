@@ -25,7 +25,6 @@ root_directories:
   - apps_exec
   - apps_lic
   - apps_research
-  - apps_rfp
   - apps_rg
   - apps_shared
   - ops_scripts

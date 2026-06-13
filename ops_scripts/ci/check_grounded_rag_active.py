@@ -50,7 +50,6 @@ if str(REPO_ROOT) not in sys.path:
 _GROUNDED_APPS: list[str] = [
     "apps_qna",
     "apps_research",
-    "apps_rfp",
     "apps_exec",
     "apps_underwriting_ai",
 ]

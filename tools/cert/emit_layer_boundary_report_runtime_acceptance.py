@@ -48,7 +48,6 @@ PROHIBITED_LAYER_PREFIXES: dict[str, str] = {
     "apps_lic": "apps runtime",
     "apps_qna": "apps runtime",
     "apps_research": "apps runtime",
-    "apps_rfp": "apps runtime",
     "apps_rg": "apps runtime",
     "apps_underwriting_ai": "apps runtime",
     # web/network — verifier should never reach the network

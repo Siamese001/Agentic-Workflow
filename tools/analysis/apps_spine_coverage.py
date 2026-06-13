@@ -151,7 +151,6 @@ ROUTE_TYPE_CONTRACT_REQUIREMENTS: dict[str, frozenset[str]] = {
     #   apps_research, apps_exec.
     "R3_grounded_read": _R3_CONTRACT_CHAIN,
     # Multi-step / workflow with downstream durable write. Adds
-    # ``CommitRequest`` to the R3 chain. Examples: apps_lic, apps_rfp.
     "R3R4_managed_workflow": _R3_CONTRACT_CHAIN | frozenset({"CommitRequest"}),
     # Evaluator surface. Wrapping eval in the generic spine substrate
     # creates a circular evaluation-of-evaluator loop. Empty required-

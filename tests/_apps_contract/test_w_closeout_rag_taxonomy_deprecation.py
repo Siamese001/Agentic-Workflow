@@ -32,7 +32,6 @@ from apps_shared.config.legacy_yaml_deprecation import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-GROUNDED_APPS = ("apps_qna", "apps_research", "apps_rfp", "apps_exec", "apps_underwriting_ai")
 
 RAG_DIMS = ("context_recall", "context_precision", "answer_relevancy")
 

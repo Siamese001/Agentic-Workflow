@@ -43,7 +43,6 @@ APPS = [
     ("apps_lic", "HIGH (canary surface)"),
     ("apps_eval", "MEDIUM (cross-app judge consumer)"),
     ("apps_exec", "MEDIUM"),
-    ("apps_rfp", "MEDIUM-LOW (defensible multi-agent)"),
     ("apps_research", "LOW"),
     ("apps_underwriting_ai", "LOW (reference impl)"),
 ]

@@ -76,10 +76,9 @@ ASYNC_TASK_CREATORS: set[str] = {
 
 # A16 — boundary string heuristic: look for module-looking dotted names
 BOUNDARY_STRING_RE = re.compile(
-    r"^((?:agentic_core|apps_eval|apps_exec|apps_lic|apps_research|apps_rfp|"
-    r"apps_rg|apps_shared|apps_underwriting_ai|system_learning|tools|"
+    r"^(?:apps_rg|apps_shared|apps_underwriting_ai|system_learning|tools|"
     r"ops_scripts|infrastructure)"
-    r"(?:\.[A-Za-z_][A-Za-z0-9_]*){2,})$"
+    r"(?:\.[A-Za-z_][A-Za-z0-9_]*){2,}$"
 )
 
 # A18 — generated-code markers

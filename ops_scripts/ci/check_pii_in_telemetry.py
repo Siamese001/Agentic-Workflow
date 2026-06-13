@@ -109,7 +109,6 @@ _SCAN_DIRS: tuple[str, ...] = (
     "apps_exec",
     "apps_lic",
     "apps_research",
-    "apps_rfp",
     "apps_underwriting_ai",
     "apps_shared",
     "agentic_core",

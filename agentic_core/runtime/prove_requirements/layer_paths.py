@@ -22,7 +22,6 @@ LAYER_CODE_ROOTS: dict[str, Tuple[str, ...]] = {
         "apps_eval/integrations/",
         "apps_exec/integrations/",
         "apps_research/integrations/",
-        "apps_rfp/integrations/",
         "apps_rg/integrations/",
         "apps_lic/integrations/",
         "apps_underwriting_ai/ingestion/",

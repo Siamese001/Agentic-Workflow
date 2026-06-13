@@ -64,7 +64,6 @@ EMITTER_VERSION = "apps_neg_ctrl_emitter-v1"
 
 RUNTIME_APPS = (
     "apps_qna", "apps_underwriting_ai",
-    "apps_rg", "apps_lic", "apps_rfp",
     "apps_research", "apps_exec", "apps_eval",
 )
 

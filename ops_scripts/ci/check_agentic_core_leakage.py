@@ -43,7 +43,6 @@ FORBIDDEN_PATTERNS = [
     (r'"apps_lic"', "Literal apps_lic string"),
     (r'"apps_qna"', "Literal apps_qna string"),
     (r'"apps_research"', "Literal apps_research string"),
-    (r'"apps_rfp"', "Literal apps_rfp string"),
     (r'"apps_exec"', "Literal apps_exec string"),
     (r'"apps_underwriting_ai"', "Literal apps_underwriting_ai string"),
     (r'"apps_architect"', "Literal apps_architect string"),

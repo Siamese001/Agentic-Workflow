@@ -360,8 +360,6 @@ _PROD_MODULE_GLOBS = (
     "apps_lic/integrations/*.py",
     "apps_research/engines/*.py",
     "apps_research/integrations/*.py",
-    "apps_rfp/engines/*.py",
-    "apps_rfp/integrations/*.py",
     "apps_rg/engines/*.py",
     "apps_rg/integrations/*.py",
     "apps_shared/enforcement/*.py",

@@ -55,7 +55,7 @@ _KNOWN_ROUTE_TYPES: dict[str, dict[str, Any]] = {
             "ExitReviewPacket",
         ],
         "uwg_required": False,
-        "known_apps": ["apps_qna", "apps_rfp", "apps_underwriting_ai"],
+        "known_apps": ["apps_qna", "apps_underwriting_ai"],
     },
     "R3R4_managed_workflow": {
         "description": "Full spine; UWG durable write required",

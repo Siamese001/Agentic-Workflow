@@ -91,7 +91,6 @@ SAMPLE_LIMIT = 10
 # Production roots used by I6/I7. A path is "production" if its source_file
 # starts with one of these prefixes.
 PRODUCTION_ROOT_PREFIXES = (
-    "apps_eval/", "apps_exec/", "apps_lic/", "apps_research/", "apps_rfp/",
     "apps_underwriting_ai/", "apps_rg/", "apps_shared/",
     "agentic_core/", "system_learning/", "tools/",
 )

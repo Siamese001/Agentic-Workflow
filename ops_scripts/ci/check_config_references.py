@@ -76,7 +76,6 @@ SCAN_ROOTS = [
     REPO / "apps_exec",
     REPO / "apps_lic",
     REPO / "apps_research",
-    REPO / "apps_rfp",
     REPO / "apps_rg",
     REPO / "apps_shared",
     REPO / "apps_underwriting_ai",

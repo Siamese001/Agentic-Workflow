@@ -609,8 +609,6 @@ def _check_no_unsupported_claims(proof_dir: Path) -> CheckResult:
     Apps covered:
       - apps_underwriting_ai: decision_packet.{key_risks,key_strengths}
                               vs evidence_register.entries
-      - apps_rfp:             unsupported_claims.payload (already detected
-                              by app); fail if any present
       - apps_research:        citation_support_map.anchored == false → FAIL
       - apps_exec:            unsupported_claims.payload non-empty → FAIL
     """
@@ -619,8 +617,6 @@ def _check_no_unsupported_claims(proof_dir: Path) -> CheckResult:
 
     if app == "apps_underwriting_ai":
         return _check_underwriting_claims(proof_dir)
-    if app == "apps_rfp":
-        return _check_rfp_unsupported(proof_dir)
     if app == "apps_research":
         return _check_research_anchored(proof_dir)
     if app == "apps_exec":
@@ -662,55 +658,6 @@ def _check_underwriting_claims(proof_dir: Path) -> CheckResult:
             detail=f"{len(unsupported)} unsupported claim(s) in decision_packet",
             fail_code="FAIL_UNSUPPORTED_MATERIAL_CLAIM",
             evidence={"unsupported": unsupported[:10]},
-        )
-    return CheckResult(name="no_unsupported_claims", ok=True)
-
-
-def _check_rfp_unsupported(proof_dir: Path) -> CheckResult:
-    """apps_rfp: requirement_map vs capability_evidence_map. Any requirement
-    whose ``evidence_ref`` does not resolve in capability_evidence_map →
-    FAIL. Also fail if ``unsupported_claims.payload`` already lists any."""
-    rmap = _load_json(proof_dir / "contracts" / "requirement_map.json")
-    cmap = _load_json(proof_dir / "contracts" / "capability_evidence_map.json")
-    uns = _load_json(proof_dir / "contracts" / "unsupported_claims.json")
-    if not isinstance(rmap, dict) or not isinstance(cmap, dict):
-        return CheckResult(name="no_unsupported_claims", ok=True, detail="artifacts missing")
-    # The driver pre-flags unsupported in unsupported_claims.json.
-    if isinstance(uns, dict):
-        uns_payload = uns.get("payload", uns)
-        items = uns_payload.get("items", []) if isinstance(uns_payload, dict) else []
-        if items:
-            return CheckResult(
-                name="no_unsupported_claims",
-                ok=False,
-                detail=f"{len(items)} pre-flagged unsupported requirement(s)",
-                fail_code="FAIL_UNSUPPORTED_MATERIAL_CLAIM",
-                evidence={"items": items[:10]},
-            )
-    # Cross-check: every requirement evidence_ref must be a key in cmap.
-    rmap_payload = rmap.get("payload", rmap)
-    cmap_payload = cmap.get("payload", cmap)
-    cmap_keys = set(
-        cmap_payload.get("evidence", {}).keys()
-        if isinstance(cmap_payload, dict) else []
-    )
-    requirements = (
-        rmap_payload.get("requirements", []) if isinstance(rmap_payload, dict) else []
-    )
-    missing: list[str] = []
-    for req in requirements:
-        if not isinstance(req, dict):
-            continue
-        ref = req.get("evidence_ref")
-        if ref and ref not in cmap_keys:
-            missing.append(f"{req.get('id', '?')}->{ref}")
-    if missing:
-        return CheckResult(
-            name="no_unsupported_claims",
-            ok=False,
-            detail=f"{len(missing)} requirement(s) reference missing evidence",
-            fail_code="FAIL_UNSUPPORTED_MATERIAL_CLAIM",
-            evidence={"missing_refs": missing[:10]},
         )
     return CheckResult(name="no_unsupported_claims", ok=True)
 

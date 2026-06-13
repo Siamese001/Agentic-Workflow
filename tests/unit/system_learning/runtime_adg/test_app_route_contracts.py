@@ -35,8 +35,8 @@ from agentic_core.L6_system_learning.app_route_contracts import (
 
 def test_r3_factory_includes_exactly_the_8_canonical_contracts() -> None:
     c = build_r3_grounded_read_contract(
-        app_name="apps_rfp",
-        manifest_path="apps_rfp/spine_manifest.yaml",
+        app_name="apps_research",
+        manifest_path="apps_research/spine_manifest.yaml",
         manifest_hash="",  # empty allowed at STATIC_EVIDENCE level
     )
     assert c.route_shape == RouteShape.R3_grounded_read
@@ -61,10 +61,10 @@ def test_r3_factory_requires_CommitRequest_forbidden_explicitly() -> None:
     """Hand-constructing an R3 contract without forbidding CommitRequest must fail."""
     with pytest.raises(ValueError, match="CommitRequest MUST be in forbidden_contracts"):
         AppRouteContract(
-            app_name="apps_rfp",
+            app_name="apps_research",
             route_shape=RouteShape.R3_grounded_read,
             static_runtime_mode="APP_OVERLAY_STATIC_EVIDENCE",
-            manifest_path="apps_rfp/spine_manifest.yaml",
+            manifest_path="apps_research/spine_manifest.yaml",
             manifest_hash="",
             certification_level=CertificationLevel.STATIC_EVIDENCE,
             required_contracts=R3_GROUNDED_READ_CONTRACTS,
@@ -77,10 +77,10 @@ def test_r3_factory_rejects_missing_canonical_contract() -> None:
     shortened = tuple(c for c in R3_GROUNDED_READ_CONTRACTS if c != "RouteContract")
     with pytest.raises(ValueError, match="missing canonical R3 entries"):
         AppRouteContract(
-            app_name="apps_rfp",
+            app_name="apps_research",
             route_shape=RouteShape.R3_grounded_read,
             static_runtime_mode="APP_OVERLAY_STATIC_EVIDENCE",
-            manifest_path="apps_rfp/spine_manifest.yaml",
+            manifest_path="apps_research/spine_manifest.yaml",
             manifest_hash="",
             certification_level=CertificationLevel.STATIC_EVIDENCE,
             required_contracts=shortened,
@@ -166,9 +166,9 @@ def test_formal_exception_factory_requires_compensating_controls() -> None:
 def test_formal_exception_factory_rejects_non_exception_route() -> None:
     with pytest.raises(ValueError, match="route_shape must be one of"):
         build_formal_exception_contract(
-            app_name="apps_rfp",
+            app_name="apps_research",
             route_shape=RouteShape.R3_grounded_read,  # offender
-            manifest_path="apps_rfp/spine_manifest.yaml",
+            manifest_path="apps_research/spine_manifest.yaml",
             manifest_hash="",
             reason_code="irrelevant",
             compensating_controls=("CC-X-01",),
@@ -201,10 +201,10 @@ def test_formal_exception_level_without_controls_is_rejected() -> None:
     FORMAL_EXCEPTION_VERIFIED, must carry compensating_controls."""
     with pytest.raises(ValueError, match="requires non-empty compensating_controls"):
         AppRouteContract(
-            app_name="apps_rfp",
+            app_name="apps_research",
             route_shape=RouteShape.R3_grounded_read,
             static_runtime_mode="APP_OVERLAY_STATIC_EVIDENCE",
-            manifest_path="apps_rfp/spine_manifest.yaml",
+            manifest_path="apps_research/spine_manifest.yaml",
             manifest_hash="sha256:abc",
             certification_level=CertificationLevel.FORMAL_EXCEPTION_VERIFIED,
             required_contracts=R3_GROUNDED_READ_CONTRACTS,
@@ -232,10 +232,10 @@ def test_manifest_hash_required_for_trace_observed_or_higher(
 ) -> None:
     with pytest.raises(ValueError, match="manifest_hash must be"):
         AppRouteContract(
-            app_name="apps_rfp",
+            app_name="apps_research",
             route_shape=RouteShape.R3_grounded_read,
             static_runtime_mode="APP_OVERLAY_STATIC_EVIDENCE",
-            manifest_path="apps_rfp/spine_manifest.yaml",
+            manifest_path="apps_research/spine_manifest.yaml",
             manifest_hash="",  # offender at this level
             certification_level=level,
             required_contracts=R3_GROUNDED_READ_CONTRACTS,
@@ -251,8 +251,8 @@ def test_manifest_hash_empty_allowed_at_static_evidence() -> None:
     """STATIC_EVIDENCE is the post-W14 baseline; empty manifest_hash is
     explicitly allowed there."""
     c = build_r3_grounded_read_contract(
-        app_name="apps_rfp",
-        manifest_path="apps_rfp/spine_manifest.yaml",
+        app_name="apps_research",
+        manifest_path="apps_research/spine_manifest.yaml",
         manifest_hash="",  # allowed at STATIC_EVIDENCE
     )
     assert c.certification_level == CertificationLevel.STATIC_EVIDENCE
@@ -285,7 +285,7 @@ def test_ambiguous_phase_a_status_forces_live_trace_required(
     with pytest.raises(ValueError, match="live_trace_required MUST be True"):
         ContractSpanBinding(
             contract_name="FinalEvidenceContract",
-            normalized_cert_alias="app.apps_rfp.c0.final_evidence_contract",
+            normalized_cert_alias="app.apps_research.c0.final_evidence_contract",
             accepted_emitter_categories=(),
             accepted_span_name_patterns=(),
             accepted_emitter_files=(),
@@ -299,7 +299,7 @@ def test_ambiguous_phase_a_status_forces_live_trace_required(
 def test_ambiguous_phase_a_status_allowed_when_live_trace_required_true() -> None:
     binding = ContractSpanBinding(
         contract_name="FinalEvidenceContract",
-        normalized_cert_alias="app.apps_rfp.c0.final_evidence_contract",
+        normalized_cert_alias="app.apps_research.c0.final_evidence_contract",
         accepted_emitter_categories=(),
         accepted_span_name_patterns=(),
         accepted_emitter_files=(),
@@ -340,7 +340,7 @@ def test_contract_name_must_be_nonempty() -> None:
     with pytest.raises(ValueError, match="contract_name must be non-empty"):
         ContractSpanBinding(
             contract_name="",  # offender
-            normalized_cert_alias="app.apps_rfp.foo",
+            normalized_cert_alias="app.apps_research.foo",
             accepted_emitter_categories=("X",),
             accepted_span_name_patterns=("x.*",),
             accepted_emitter_files=(),
@@ -441,7 +441,7 @@ def test_to_json_produces_valid_json() -> None:
 def test_every_factory_returns_STATIC_EVIDENCE_level() -> None:
     """Phase B.2 is schema-only. No factory may return TRACE_OBSERVED
     or higher -- that is reserved for Phase C+ harness code."""
-    r3 = build_r3_grounded_read_contract("apps_rfp", "apps_rfp/spine_manifest.yaml", "")
+    r3 = build_r3_grounded_read_contract("apps_research", "apps_research/spine_manifest.yaml", "")
     btc = build_build_time_compiler_contract(
         "apps_qna", "apps_qna/spine_manifest.yaml", ""
     )

@@ -71,7 +71,6 @@ CORE_STAGES: tuple[Stage, ...] = (
     Stage(name="code_apps_eval", script="ingest_code.py", args=("--source-dir", "apps_eval")),
     Stage(name="code_apps_exec", script="ingest_code.py", args=("--source-dir", "apps_exec")),
     Stage(name="code_apps_research", script="ingest_code.py", args=("--source-dir", "apps_research")),
-    Stage(name="code_apps_rfp", script="ingest_code.py", args=("--source-dir", "apps_rfp")),
     Stage(name="code_apps_shared", script="ingest_code.py", args=("--source-dir", "apps_shared")),
     Stage(name="code_apps_uw", script="ingest_code.py", args=("--source-dir", "apps_underwriting_ai")),
     Stage(name="code_system_learning", script="ingest_code.py", args=("--source-dir", "system_learning")),

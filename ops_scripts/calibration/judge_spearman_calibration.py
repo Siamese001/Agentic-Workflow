@@ -70,12 +70,6 @@ JUDGE_CALIBRATION_TARGETS: tuple[tuple[str, str, str, str], ...] = (
         "brand_voice",
         "apps_lic",
     ),
-    (
-        "rfp::win_theme_alignment_judge::v2",
-        "apps_rfp.engines.judges.win_theme_alignment_judge",
-        "win_theme_alignment",
-        "apps_rfp",
-    ),
 )
 
 

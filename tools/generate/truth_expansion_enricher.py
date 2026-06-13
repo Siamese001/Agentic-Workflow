@@ -460,9 +460,8 @@ def _file_imports_uwg(tree: ast.Module) -> bool:
 
 # ---------------------------------------------------- A9 config references
 PATH_REF_RE = re.compile(
-    r"(?<![\w/])"
-    r"((?:agentic_core|apps_eval|apps_exec|apps_lic|apps_research|apps_rfp|"
-    r"apps_rg|apps_shared|apps_underwriting_ai|system_learning|tools|"
+    r"(?<![\w/])("
+    r"(?:apps_rg|apps_shared|apps_underwriting_ai|system_learning|tools|"
     r"ops_scripts|infrastructure)"
     r"(?:[/.][\w_-]+)+)",
     re.MULTILINE,

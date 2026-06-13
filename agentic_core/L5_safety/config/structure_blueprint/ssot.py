@@ -264,7 +264,6 @@ APPS_SHARED_DIR: Final[str] = "apps_shared"
 APPS_EVAL_DIR: Final[str] = "apps_eval"
 APPS_EXEC_DIR: Final[str] = "apps_exec"
 APPS_RESEARCH_DIR: Final[str] = "apps_research"
-APPS_RFP_DIR: Final[str] = "apps_rfp"
 
 AGENT_DISCOVERY_JSON: str = "agent_discovery_full.json"
 AGENT_DISCOVERY_MANIFEST_JSON: str = "agent_discovery_full.manifest.json"
@@ -639,11 +638,6 @@ def get_apps_research_subfolder_map() -> Mapping[str, Sequence[str]]:
 
 
 @lru_cache(maxsize=1)
-def get_apps_rfp_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Return APPS_RFP_SUBFOLDER_MAP - now uses wildcard discovery."""
-    return get_apps_wildcard_subfolder_map("apps_rfp")
-
-
 # ============================================================================
 # EXCLUSION LOADING FROM YAML SSOT
 # ============================================================================
@@ -862,7 +856,6 @@ PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
         "apps_exec",
         "apps_lic",
         "apps_research",
-        "apps_rfp",
         "apps_rg",
         "apps_shared",
         "ops_scripts",

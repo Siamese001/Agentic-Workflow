@@ -39,7 +39,6 @@ STAGE_COLLECTIONS: dict[str, tuple[str, ...]] = {
     "code_apps_eval": ("repo_code_chunks",),
     "code_apps_exec": ("repo_code_chunks",),
     "code_apps_research": ("repo_code_chunks",),
-    "code_apps_rfp": ("repo_code_chunks",),
     "code_apps_shared": ("repo_code_chunks",),
     "code_apps_uw": ("repo_code_chunks",),
     "code_system_learning": ("repo_code_chunks",),

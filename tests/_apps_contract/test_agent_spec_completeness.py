@@ -1,7 +1,7 @@
 """Tests for AgentSpec completeness — W2, apps-core-contract-rectification-a8f3c2.
 
 Verifies:
-- All 8 apps have agent_spec_config.py
+- All active apps have agent_spec_config.py
 - Each exports a root *AgentSpecs class
 - Root class inherits PromptReceptionSpec fields (adapter_version, exemplar_task_class)
 - apps_qna QnaAgentSpecs has pack_builder + route sub-specs
@@ -25,7 +25,6 @@ ALL_APPS = [
     "apps_rg",
     "apps_lic",
     "apps_research",
-    "apps_rfp",
     "apps_exec",
     "apps_eval",
     "apps_underwriting_ai",
@@ -36,7 +35,6 @@ ROOT_CLASS_NAMES = {
     "apps_rg": "RGAgentSpecs",
     "apps_lic": "LicAgentSpecs",
     "apps_research": "ResearchAgentSpecs",
-    "apps_rfp": "RfpAgentSpecs",
     "apps_exec": "ExecAgentSpecs",
     "apps_eval": "EvalAgentSpecs",
     "apps_underwriting_ai": "UnderwritingAgentSpecs",

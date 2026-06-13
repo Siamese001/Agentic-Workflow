@@ -63,7 +63,6 @@ findings:
     short_circuit_helper: "apps_shared._apps_e2e_dry_run.maybe_short_circuit"
     notes: "Bundle exit=0 with 9 honest blocking_gaps. Harness short-circuit in 0.1s."
 
-  apps_rfp:
     status: wired
     closure_date_utc: "2026-05-02T05:55:00Z"
     exit_code: 0
@@ -90,7 +89,6 @@ findings:
 #   - apps_lic      : --apps-e2e-dry-run short-circuit (~0.1s); static L3
 #                     DAG present at apps_lic/config/l3_dag.yaml
 #   - apps_research : --apps-e2e-dry-run short-circuit (~0.1s)
-#   - apps_rfp      : --apps-e2e-dry-run short-circuit (~0.1s)
 #
 # apps_underwriting_ai is correctly classified as skeleton_only (no entrypoint).
 #

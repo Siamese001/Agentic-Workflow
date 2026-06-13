@@ -13,8 +13,7 @@ DEFERRED apps (DEFER_WITH_REASON disposition — excluded from pass/fail asserti
   apps_qna  — W1+W3 DONE (2026-05-14); SS-4 exemption added for provider_dispatch.py
               (DispatchResult is defined and owned there — not a shadow import).
               Removed from DEFERRED_APPS in W3.
-  apps_rfp  — W2+W3 DONE (2026-05-14); all 7 stage bindings real. Removed from DEFERRED_APPS in W3.
-
+  
 W1 corrective patch (2026-05-14):
   apps_qna.scripts.run_qna::_run_build amended from MUST_ROUTE to EXEMPT_DOCUMENTED.
   Rationale: build-time compiler path operating on assembled Interview typed object,
@@ -43,7 +42,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 OUTPUT_PATH = REPO_ROOT / "artifacts" / "ci" / "no_shadow_spine_gate.json"
 
-DEFERRED_APPS: set[str] = set()  # W3 (2026-05-14): apps_qna and apps_rfp migrations complete
+DEFERRED_APPS: set[str] = set()  # W3 (2026-05-14): apps_qna migrations complete
 
 _STAGE_PREFIXES = (
     "u0_validate_",
@@ -64,7 +63,7 @@ _DISPATCH_IMPORT_RE = re.compile(
 )
 _DISPATCH_RESULT_RE = re.compile(r"\bDispatchResult\b")
 _CORE_APP_IMPORT_RE = re.compile(r"from\s+apps_[a-z_]+\s+import")
-_APP_NAME_LITERAL_RE = re.compile(r"\b(apps_rg|apps_lic|apps_qna|apps_rfp|apps_research|apps_underwriting_ai)\b")
+_APP_NAME_LITERAL_RE = re.compile(r"\b(apps_rg|apps_lic|apps_qna|apps_research|apps_underwriting_ai)\b")
 
 
 class Finding(NamedTuple):

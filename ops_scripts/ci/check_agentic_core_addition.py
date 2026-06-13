@@ -67,7 +67,6 @@ _FORBIDDEN_LITERALS = [
     "outreach",
     "apps_architect",
     "apps_eval",
-    "apps_rfp",
 ]
 
 _FORBIDDEN_REGEX_PATTERNS = [

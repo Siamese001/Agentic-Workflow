@@ -599,7 +599,6 @@ LAYER_PREFIXES: dict[str, str] = {
     "apps_eval": "L_APP",
     "apps_exec": "L_APP",
     "apps_research": "L_APP",
-    "apps_rfp": "L_APP",
     "apps_underwriting_ai": "L_APP",
     "agentic_core/patterns": "L_SHARED",
     "agentic_core/case_memory": "L_SHARED",

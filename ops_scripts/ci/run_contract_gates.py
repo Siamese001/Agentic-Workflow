@@ -1211,7 +1211,7 @@ def main():
         # W5 — One-spine enforcement (kill-shadow-pipelines-a7f3c2 W5).
         # Scans all apps_* for shadow-spine violations: profile_builder, binding,
         # and general app-code rules (PB-1..5, BM-1..6, SS-1..6, NC-1..5).
-        # apps_qna and apps_rfp are EXCLUDED from pass/fail (DEFER_WITH_REASON disposition).
+        # apps_qna are EXCLUDED from pass/fail (DEFER_WITH_REASON disposition).
         # Advisory by default; fail-closed: NO_SHADOW_SPINE_FAIL_CLOSED=1.
         # Bypass: NO_SHADOW_SPINE_BYPASS=1.
         # Report: artifacts/ci/no_shadow_spine_gate.json.

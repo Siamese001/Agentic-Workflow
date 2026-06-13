@@ -3,7 +3,7 @@
   "generated_at_utc": "2026-05-02T20:41:00+00:00",
   "generator": "hand-authored (W1 of plan apps-fort-knox-parity-c5d9a3)",
   "purpose": "Canonical apps_* end-to-end certification requirement universe. SSOT consumed by scripts/compile_apps_e2e_signoff.py (W3). Sibling to certification/requirements_source.json (agentic_core Fort Knox).",
-  "requirement_count": 45,
+  "requirement_count": 44,
   "positive_control_req_id": "APPS-REQ-001",
   "final_hundred_percent_groups": [
     "Apps_e2e 100 Percent Standard"
@@ -830,40 +830,6 @@
     },
     {
       "req_id": "APPS-REQ-029",
-      "title": "apps_rfp spine certification",
-      "priority": "P0",
-      "requirement_group": "per-app",
-      "claim_type": "APPS_SPINE_CERTIFIED",
-      "required_proof_depth": "STRICT_EVIDENCE",
-      "acceptance_rule": "apps_rfp live invocation yields apps_e2e_proof.json with certification_level=SPINE_COMPLETE_CERTIFIED, zero blocking_gaps under strict.",
-      "fail_closed_if_missing": true,
-      "depends_on_req_ids": [
-        "APPS-REQ-008",
-        "APPS-REQ-010",
-        "APPS-REQ-022",
-        "APPS-REQ-024"
-      ],
-      "is_final_hundred_percent_row": true,
-      "is_positive_control": false,
-      "required_controls": [
-        "spine_emission",
-        "strict_verifier_pass"
-      ],
-      "allowed_verifier_commands": [
-        "tools/cert/apps_e2e/emit_apps_evidence_assertions.py",
-        "tools/certification/apps_e2e/verifier_cli.py"
-      ],
-      "allowed_artifact_classes": [
-        "APPS_E2E_PROOF_BUNDLE",
-        "APPS_E2E_VERIFIER_REPORT"
-      ],
-      "freshness_hours": 168,
-      "required_ci_gate": "check_apps_e2e_spine_certification.py",
-      "owner_component": "apps_rfp",
-      "owner_app": "apps_rfp"
-    },
-    {
-      "req_id": "APPS-REQ-030",
       "title": "apps_lic spine certification (managed workflow + static DAG)",
       "priority": "P0",
       "requirement_group": "per-app",
@@ -900,7 +866,7 @@
       "owner_app": "apps_lic"
     },
     {
-      "req_id": "APPS-REQ-031",
+      "req_id": "APPS-REQ-030",
       "title": "apps_qna spine certification",
       "priority": "P1",
       "requirement_group": "per-app",
@@ -934,7 +900,7 @@
       "owner_app": "apps_qna"
     },
     {
-      "req_id": "APPS-REQ-032",
+      "req_id": "APPS-REQ-031",
       "title": "apps_underwriting_ai spine certification",
       "priority": "P1",
       "requirement_group": "per-app",
@@ -968,7 +934,7 @@
       "owner_app": "apps_underwriting_ai"
     },
     {
-      "req_id": "APPS-REQ-033",
+      "req_id": "APPS-REQ-032",
       "title": "apps_e2e_matrix integrity (sha256 + row count)",
       "priority": "P1",
       "requirement_group": "matrix-governance",

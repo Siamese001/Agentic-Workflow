@@ -92,21 +92,6 @@ APP_CONTRACT_REGISTRY = _Registry(
             request_kwargs={"topic": "platform engineering invariants"},
         ),
         AppContract(
-            app_id="apps_rfp",
-            request_module="apps_rfp.types",
-            request_class="RfpRequest",
-            config_module="apps_rfp.types",
-            config_class="RfpConfig",
-            result_module="apps_rfp.types",
-            result_class="RfpResult",
-            request_kwargs={
-                "problem_statement": (
-                    "Replace legacy underwriting platform without disrupting "
-                    "active loan portfolios."
-                )
-            },
-        ),
-        AppContract(
             app_id="apps_lic",
             request_module="apps_lic.types",
             request_class="CampaignRequest",

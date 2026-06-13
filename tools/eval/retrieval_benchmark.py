@@ -2912,269 +2912,9 @@ def run_dual_app_proof() -> bool:
 
 
 def run_rfp_pilot_proof() -> bool:
-    """Prove apps_rfp wired end-to-end via the shared GovernedAppRunner.
-
-    Checks
-    ------
-    RFP01  L1 called: sub_queries produced from rfp query
-    RFP02  L0 routed: target_name = rfp_proposal_assembly
-    RFP03  C0 EvidenceBundle produced (shaped_count >= 1)
-    RFP04  happy path: no error
-    RFP05  happy path: governed disposition (proceed or refine)
-    RFP06  happy path: grounded = True
-    RFP07  happy path: L6 packet ingested
-    RFP08  degraded path: no error
-    RFP09  degraded path: disposition != proceed
-    RFP10  degraded path: coverage < happy (genuine degradation)
-    RFP11  L2 chokepoint: authorize_and_execute() ran
-    RFP12  runner uses shared GovernedAppRunner base
-
-    Returns True if all checks pass.
-    """
-    from apps_rfp.integrations.governed_rfp_run import (  # guardian: allow-layer-violation -- L_TOOLS->apps_rfp lazy import; rfp pilot proof exercises full E2E governed path
-        GovernedRfpRun,
-    )
-    from apps_rfp.types.rfp_types import RfpRequest
-    from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (  # guardian: allow-layer-violation -- L_TOOLS->L3 lazy import; benchmark injects well-formed chunks into real C0 shaping pipeline
-        HybridSearchResult,
-    )
-    from ops_scripts.reports.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
-        get_async_eval_ingester,
-        reset_async_eval_ingester,
-    )
-    from agentic_core.L2_execution.audit.telemetry_bus import (  # guardian: allow-layer-violation -- L_TOOLS->L2 lazy import; benchmark reads BUS T to verify real audit/obs records
-        BusType,
-        get_telemetry_bus,
-    )
-    from apps_shared.integrations.governed_app_runner import (
-        GovernedAppRunner,
-    )  # guardian: allow-layer-violation -- L_TOOLS->apps_shared lazy import; proof verifies shared base is used
-
-    print(f"\n{'=' * 80}")
-    print("  RFP PILOT PROOF  —  apps_rfp → L1 → L0 → C0 → L5 → L6  (shared runner)")
-    print(f"{'=' * 80}")
-
-    reset_async_eval_ingester()
-    get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=1000)
-    runner = GovernedRfpRun(collection="rfp_docs")
-
-    # ── Well-formed chunks for happy-path demonstration ───────────────────────
-    happy_chunks_rfp = [
-        HybridSearchResult(
-            chunk_id="chunk-rfp-b1",
-            content=(
-                "AI governance framework for enterprise: policy-driven architecture with "
-                "deterministic audit trails, explainability at every decision boundary, and "
-                "human-in-the-loop escalation for high-risk inference paths."
-            ),
-            vector_score=0.93,
-            lexical_score=0.89,
-            combined_score=0.91,
-            metadata={
-                "canonical_digest": "rfp1a2b3c",
-                "file_path": f"{ADR_DIR}/ADR-0010-layer-boundaries.md",
-                "layer": "L0",
-                "doc_type": "adr",
-                "chunk_index": "1",
-            },
-            source="both",
-        ),
-        HybridSearchResult(
-            chunk_id="chunk-rfp-b2",
-            content=(
-                "Proposal roadmap: Discovery (4 weeks), Foundation (8 weeks), Pilot (12 weeks), "
-                "Scale (16 weeks), Govern (ongoing). Each phase has a governance milestone and "
-                "measurable success criteria approved by the executive sponsor."
-            ),
-            vector_score=0.87,
-            lexical_score=0.83,
-            combined_score=0.85,
-            metadata={
-                "canonical_digest": "rfp2b3c4d",
-                "file_path": "apps_rfp/config/agent_spec_config.py",
-                "layer": "L3",
-                "doc_type": "config",
-                "chunk_index": "2",
-            },
-            source="both",
-        ),
-        HybridSearchResult(
-            chunk_id="chunk-rfp-b3",
-            content=(
-                "Risk matrix for AI procurement: technical_complexity (HIGH), data_quality "
-                "(MEDIUM), regulatory_compliance (HIGH for financial services), model_drift "
-                "(MEDIUM). Mitigation: continuous evaluation pipeline with L6 shadow eval."
-            ),
-            vector_score=0.80,
-            lexical_score=0.77,
-            combined_score=0.79,
-            metadata={
-                "canonical_digest": "rfp3c4d5e",
-                "file_path": "docs/architecture/governance-model.md",
-                "layer": "L5",
-                "doc_type": "arch",
-                "chunk_index": "3",
-            },
-            source="lexical",
-        ),
-    ]
-
-    # ── Happy-path run ────────────────────────────────────────────────────────
-    print("\n  [RFP-H] Happy path: real L1→L0→C0 pipeline, 3 injected grounded chunks ...")
-    happy_request_rfp = RfpRequest(
-        problem_statement="Design an AI governance platform to automate compliance and risk management.",
-        industry="financial_services",
-        architecture_posture="sovereign",
-        delivery_timeline_weeks=24,
-        trace_id="RFP-e2e-happy-001",
-    )
-    happy_rec_rfp = runner.run_governed_e2e(happy_request_rfp, inject_chunks=happy_chunks_rfp)
-    print(
-        f"     L1 sub_queries={happy_rec_rfp.l1_sub_queries!r}  fallback={happy_rec_rfp.l1_fallback}\n"
-        f"     L0 target={happy_rec_rfp.l0_target!r}  confidence={happy_rec_rfp.l0_confidence:.2f}"
-        f"  fallback={happy_rec_rfp.l0_fallback}\n"
-        f"     C0: raw={happy_rec_rfp.c0_raw_count}  shaped={happy_rec_rfp.c0_shaped_count}\n"
-        f"     disposition={happy_rec_rfp.disposition!r}  gate={happy_rec_rfp.gate_disposition!r}  "
-        f"grounded={happy_rec_rfp.grounded}  citations={happy_rec_rfp.citation_count}  "
-        f"coverage={happy_rec_rfp.support_coverage:.2f}  l6={happy_rec_rfp.l6_ingested}"
-        f"  error={happy_rec_rfp.error!r}"
-    )
-
-    # ── Degraded-path run ─────────────────────────────────────────────────────
-    print("\n  [RFP-D] Degraded path: real retrieval, no store → empty bundle → ABSTAIN ...")
-    degraded_request_rfp = RfpRequest(
-        problem_statement="Evaluate vendor AI platforms for procurement automation and contract analysis.",
-        industry="technology",
-        architecture_posture="cloud-first",
-        delivery_timeline_weeks=12,
-        trace_id="RFP-e2e-degraded-001",
-    )
-    degraded_rec_rfp = runner.run_governed_e2e(degraded_request_rfp)  # no inject_chunks
-    print(
-        f"     L1={degraded_rec_rfp.l1_sub_queries!r}  L0={degraded_rec_rfp.l0_target!r}\n"
-        f"     C0: raw={degraded_rec_rfp.c0_raw_count}  shaped={degraded_rec_rfp.c0_shaped_count}\n"
-        f"     disposition={degraded_rec_rfp.disposition!r}  gate={degraded_rec_rfp.gate_disposition!r}"
-        f"  grounded={degraded_rec_rfp.grounded}  error={degraded_rec_rfp.error!r}"
-    )
-
-    # ── Verify L6 ingester ────────────────────────────────────────────────────
-    ingester_rfp = get_async_eval_ingester()
-    packets_rfp = ingester_rfp.drain()
-
-    # ── Drain BUS T ───────────────────────────────────────────────────────────
-    bus_t_msgs_rfp = get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=500)
-    _audit_types_rfp = ("guardrail_audit", "safety_plane_validation_audit")
-    audit_bus_msgs_rfp = [m for m in bus_t_msgs_rfp if m.signal_type in _audit_types_rfp]
-
-    # ── Build checks ──────────────────────────────────────────────────────────
-    rfp_checks: list[tuple[str, bool, str]] = [
-        (
-            "RFP01 L1: sub_queries produced from rfp query",
-            len(happy_rec_rfp.l1_sub_queries) >= 1 and happy_rec_rfp.l1_sub_queries[0] != "",
-            str(happy_rec_rfp.l1_sub_queries),
-        ),
-        (
-            "RFP02 L0: target=rfp_proposal_assembly routed",
-            happy_rec_rfp.l0_target == "rfp_proposal_assembly",
-            f"target={happy_rec_rfp.l0_target!r}",
-        ),
-        (
-            "RFP03 C0: EvidenceBundle produced (shaped>=1)",
-            happy_rec_rfp.c0_shaped_count >= 1,
-            f"raw={happy_rec_rfp.c0_raw_count} shaped={happy_rec_rfp.c0_shaped_count}",
-        ),
-        ("RFP04 happy path: no error", happy_rec_rfp.error == "", happy_rec_rfp.error or "ok"),
-        (
-            "RFP05 happy path: governed disposition (proceed or refine)",
-            happy_rec_rfp.disposition in ("proceed", "refine"),
-            happy_rec_rfp.disposition,
-        ),
-        (
-            "RFP06 happy path: grounded=True",
-            happy_rec_rfp.grounded is True,
-            str(happy_rec_rfp.grounded),
-        ),
-        (
-            "RFP07 happy path: L6 packet ingested",
-            happy_rec_rfp.l6_ingested is True,
-            f"{len(packets_rfp)} packets drained",
-        ),
-        (
-            "RFP08 degraded path: no error",
-            degraded_rec_rfp.error == "",
-            degraded_rec_rfp.error or "ok",
-        ),
-        (
-            "RFP09 degraded path: disposition!=PROCEED (refine/abstain/escalate)",
-            degraded_rec_rfp.disposition != "proceed",
-            degraded_rec_rfp.disposition,
-        ),
-        (
-            "RFP10 degraded path: coverage<happy (genuine degradation)",
-            degraded_rec_rfp.c0_shaped_count < happy_rec_rfp.c0_shaped_count,
-            f"degraded={degraded_rec_rfp.c0_shaped_count} happy={happy_rec_rfp.c0_shaped_count}",
-        ),
-        (
-            "RFP11 L2 chokepoint: authorize_and_execute() ran",
-            happy_rec_rfp.l2_executed is True,
-            f"l2_executed={happy_rec_rfp.l2_executed}",
-        ),
-        (
-            "RFP12 runner uses shared GovernedAppRunner base",
-            isinstance(runner, GovernedAppRunner),
-            type(runner).__mro__[1].__name__,
-        ),
-    ]
-
-    _print_proof_table(rfp_checks)
-
-    all_pass = all(ok for _, ok, _ in rfp_checks)
-    verdict = PASS_MARK if all_pass else FAIL_MARK
-    print(
-        f"\n  VERDICT: {verdict}  {'ALL RFP PILOT CHECKS PASS' if all_pass else 'ONE OR MORE CHECKS FAILED'}"
-    )
-
-    print(f"\n{'=' * 80}")
-    print("  RFP ARTIFACT  —  apps_rfp Governed E2E Proof")
-    print(f"{'=' * 80}")
-    print(f"""
-  App:           apps_rfp  (AI Proposal / RFP Generator)
-  Entrypoint:    GovernedRfpRun.run_governed_e2e(request)
-  File:          apps_rfp/integrations/governed_rfp_run.py
-  Shared base:   apps_shared/integrations/governed_app_runner.GovernedAppRunner
-
-  Lane trace (AFTER governed migration):
-    RfpRequest
-      → [query] industry + problem_statement[:100] → query string
-      → L1 query_planner.decompose_query(query)   [intent decomposition]
-      → L0 AgenticRouter.route(query)             [route → rfp_proposal_assembly]
-      → C0 get_hybrid_search_engine()             [grounded retrieval — rfp_docs]
-         EvidenceShaper.shape()                   [C0 shaping → EvidenceBundle]
-    EvidenceBundle
-      → authorize_and_execute(ctx, fn, token)     [L2 chokepoint]
-      → evaluate_and_emit(bundle, ctx)            [L5 exit gate + BUS T + L6]
-    GovernedRfpE2ERunRecord (frozen)
-
-  Shared vs app-specific split:
-    Shared (GovernedAppRunner): L1, L0, C0, L2, L5, L6 — 100% reused
-    App-specific (GovernedRfpRun): _build_query() + record mapper — 2 methods
-
-  Happy path:
-    industry={happy_rec_rfp.industry!r}  posture={happy_rec_rfp.architecture_posture!r}
-    L1={happy_rec_rfp.l1_sub_queries}
-    L0={happy_rec_rfp.l0_target!r}  confidence={happy_rec_rfp.l0_confidence:.2f}
-    C0 raw={happy_rec_rfp.c0_raw_count} shaped={happy_rec_rfp.c0_shaped_count}
-    disposition={happy_rec_rfp.disposition!r}  gate={happy_rec_rfp.gate_disposition!r}
-    grounded={happy_rec_rfp.grounded}  coverage={happy_rec_rfp.support_coverage:.2f}
-
-  Degraded path:
-    C0 raw={degraded_rec_rfp.c0_raw_count} shaped={degraded_rec_rfp.c0_shaped_count}
-    disposition={degraded_rec_rfp.disposition!r}  grounded={degraded_rec_rfp.grounded}
-
-  BUS T audit records this run: {len(audit_bus_msgs_rfp)}
-""")
-    print(f"{'=' * 80}")
-    return all_pass
+    """Retired; the proposal-generation app has been deleted."""
+    print("\nRFP pilot proof retired: proposal-generation app deleted.")
+    return True
 
 
 def run_rg_pilot_proof() -> bool:
@@ -3456,67 +3196,63 @@ def run_lic_pilot_proof() -> bool:
 
 
 def run_triple_app_proof() -> bool:
-    """Run apps_research + apps_exec + apps_rfp E2E proofs; return combined PASS/FAIL.
+    """Run apps_research + apps_exec E2E proofs; return combined PASS/FAIL.
 
     Demonstrates that GovernedAppRunner generalizes across three real governed apps.
     """
     print(f"\n{'#' * 80}")
-    print("  TRIPLE-APP GOVERNED PROOF  —  research + exec + rfp via GovernedAppRunner")
+    print("  DUAL-APP GOVERNED PROOF  —  research + exec via GovernedAppRunner")
     print(f"{'#' * 80}")
 
     research_pass = run_app_pilot_proof()
     exec_pass = run_exec_pilot_proof()
-    rfp_pass = run_rfp_pilot_proof()
 
-    overall = research_pass and exec_pass and rfp_pass
+    overall = research_pass and exec_pass
     verdict = PASS_MARK if overall else FAIL_MARK
     print(f"\n{'#' * 80}")
     print(
-        f"  TRIPLE-APP VERDICT: {verdict}  "
+        f"  DUAL-APP VERDICT: {verdict}  "
         f"research={'PASS' if research_pass else 'FAIL'}  "
-        f"exec={'PASS' if exec_pass else 'FAIL'}  "
-        f"rfp={'PASS' if rfp_pass else 'FAIL'}"
+        f"exec={'PASS' if exec_pass else 'FAIL'}"
     )
     if overall:
         print(
-            "  GovernedAppRunner pattern GENERALIZES: apps_research, apps_exec, and apps_rfp\n"
-            "  all run the same L1→L0→C0→L2→L5+L6 substrate through the shared base class."
+            "  GovernedAppRunner pattern GENERALIZES: apps_research and apps_exec\n"
+            "  both run the same L1→L0→C0→L2→L5+L6 substrate through the shared base class."
         )
     print(f"{'#' * 80}")
     return overall
 
 
 def run_penta_app_proof() -> bool:
-    """Run all five governed apps E2E; return combined PASS/FAIL.
+    """Run the active governed apps E2E; return combined PASS/FAIL.
 
     Proves GovernedAppRunner generalizes across all non-exception governed apps:
-    apps_research, apps_exec, apps_rfp, apps_rg, and apps_lic.
+    apps_research, apps_exec, apps_rg, and apps_lic.
     """
     print(f"\n{'#' * 80}")
-    print("  PENTA-APP GOVERNED PROOF  —  research + exec + rfp + rg + lic")
+    print("  ACTIVE-APP GOVERNED PROOF  —  research + exec + rg + lic")
     print(f"{'#' * 80}")
 
     research_pass = run_app_pilot_proof()
     exec_pass = run_exec_pilot_proof()
-    rfp_pass = run_rfp_pilot_proof()
     rg_pass = run_rg_pilot_proof()
     lic_pass = run_lic_pilot_proof()
 
-    overall = research_pass and exec_pass and rfp_pass and rg_pass and lic_pass
+    overall = research_pass and exec_pass and rg_pass and lic_pass
     verdict = PASS_MARK if overall else FAIL_MARK
     print(f"\n{'#' * 80}")
     print(
-        f"  PENTA-APP VERDICT: {verdict}  "
+        f"  ACTIVE-APP VERDICT: {verdict}  "
         f"research={'PASS' if research_pass else 'FAIL'}  "
         f"exec={'PASS' if exec_pass else 'FAIL'}  "
-        f"rfp={'PASS' if rfp_pass else 'FAIL'}  "
         f"rg={'PASS' if rg_pass else 'FAIL'}  "
         f"lic={'PASS' if lic_pass else 'FAIL'}"
     )
     if overall:
         print(
-            "  GovernedAppRunner pattern GENERALIZES: all five non-exception apps\n"
-            "  (apps_research, apps_exec, apps_rfp, apps_rg, apps_lic) run the same\n"
+            "  GovernedAppRunner pattern GENERALIZES: active non-exception apps\n"
+            "  (apps_research, apps_exec, apps_rg, apps_lic) run the same\n"
             "  L1→L0→C0→L2→L5+L6 substrate through the shared base class.\n"
             "  Governed-app rollout COMPLETE — only permanent exceptions remain."
         )
@@ -3937,7 +3673,7 @@ def main() -> None:
     parser.add_argument(
         "--triple-app-proof",
         action="store_true",
-        help="Run apps_research + apps_exec + apps_rfp E2E proofs via shared GovernedAppRunner (triple-app governed standard).",
+        help="Run apps_research + apps_exec E2E proofs via shared GovernedAppRunner.",
     )
     parser.add_argument(
         "--rg-pilot-proof",
@@ -3952,7 +3688,7 @@ def main() -> None:
     parser.add_argument(
         "--penta-app-proof",
         action="store_true",
-        help="Run all five governed apps (research + exec + rfp + rg + lic) E2E proofs via shared GovernedAppRunner.",
+        help="Run active governed apps (research + exec + rg + lic) E2E proofs via shared GovernedAppRunner.",
     )
     parser.add_argument(
         "--eval-exception-proof",

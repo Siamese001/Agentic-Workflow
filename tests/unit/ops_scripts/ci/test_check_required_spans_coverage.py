@@ -21,7 +21,6 @@ class TestRequiredSpansGate(unittest.TestCase):
         # All 6 apps_* with phase B coverage must be present.
         for app in (
             "apps_eval", "apps_exec", "apps_lic", "apps_research",
-            "apps_rfp", "apps_underwriting_ai",
         ):
             self.assertIn(app, manifest, f"{app} missing from manifest")
             self.assertIn("required_spans", manifest[app])

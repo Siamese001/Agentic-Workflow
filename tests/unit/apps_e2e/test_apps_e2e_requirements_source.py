@@ -10,7 +10,7 @@ against its schema and enforces hand-authored invariants:
     - Every claim_type's claim_type_required_controls entries are present
       on every non-domain row of that claim_type
     - Per-app rows cover exactly the 8 runtime app_names
-    - Expected row count (45 = 33 REQ + 12 DOM) matches requirement_count
+    - Expected row count (44 = 32 REQ + 12 DOM) matches requirement_count
 """
 from __future__ import annotations
 
@@ -28,8 +28,8 @@ from tools.cert.cert_paths import APPS_REQS_PATH, APPS_REQS_SCHEMA  # noqa: E402
 CATALOG_PATH = APPS_REQS_PATH
 SCHEMA_PATH = APPS_REQS_SCHEMA
 
-EXPECTED_ROW_COUNT = 45
-EXPECTED_APPS_REQ_COUNT = 33
+EXPECTED_ROW_COUNT = 44
+EXPECTED_APPS_REQ_COUNT = 32
 EXPECTED_APPS_DOM_COUNT = 12
 _REQ_ID_RE = re.compile(r"^APPS-REQ-\d{3}$")
 _DOM_ID_RE = re.compile(r"^APPS-DOM-\d{3}$")
@@ -45,7 +45,6 @@ EXPECTED_PER_APP_OWNERS = {
     "apps_exec",
     "apps_eval",
     "apps_research",
-    "apps_rfp",
     "apps_lic",
     # Promoted from waiver to APPS_SPINE_CERTIFIED in W11 (apps_qna)
     # and W12 (apps_underwriting_ai) per plan apps-fort-knox-parity-c5d9a3.
@@ -107,7 +106,7 @@ def test_req_namespace_counts(catalog: dict) -> None:
     assert len(dom_ids) == EXPECTED_APPS_DOM_COUNT
 
 
-def test_apps_req_ids_are_sequential_001_to_033(catalog: dict) -> None:
+def test_apps_req_ids_are_sequential_001_to_032(catalog: dict) -> None:
     req_ids = [r["req_id"] for r in catalog["requirements"] if r["req_id"].startswith("APPS-REQ-")]
     expected = [f"APPS-REQ-{i:03d}" for i in range(1, EXPECTED_APPS_REQ_COUNT + 1)]
     assert req_ids == expected, f"APPS-REQ block not sequential. got={req_ids[:5]}..."

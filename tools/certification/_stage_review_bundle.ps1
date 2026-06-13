@@ -77,7 +77,6 @@ Copy-Item (Join-Path $apE 'apps_e2e_matrix.json') $apOut -Force
 Copy-Item (Join-Path $apE 'verifier_report.json') $apOut -Force
 Copy-Item (Join-Path $apE 'apps_mutation_rejection_report.json') (Join-Path $dstApps 'mutation_rejection') -Force
 
-foreach ($app in 'apps_eval','apps_exec','apps_lic','apps_qna','apps_research','apps_rfp','apps_rg','apps_underwriting_ai') {
   $src = Join-Path $apE $app
   if (Test-Path $src) {
     robocopy $src (Join-Path (Join-Path $dstApps 'per_app_evidence') $app) /E /NFL /NDL /NJH /NJS /NP | Out-Null

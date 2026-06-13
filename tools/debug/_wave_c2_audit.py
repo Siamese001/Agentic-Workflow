@@ -37,7 +37,6 @@ config_dirs = [
     "apps_exec/config",
     "apps_research/config",
     "apps_rg/config",
-    "apps_rfp/config",
     "apps_lic/config",
     "apps_underwriting_ai/config",
     "docs/archive/windsurf/legacy-tree",

@@ -64,7 +64,6 @@ Use the helper in `tests/golden/prompt_reception/_recorder.py`:
 from tests.golden.prompt_reception._recorder import record_fixture
 
 record_fixture(
-    app="apps_rfp",
     scenario="proposal_section_draft",
     slots={"S0": "…", "U0": "…"},
     output_dir="tests/golden/prompt_reception/fixtures",

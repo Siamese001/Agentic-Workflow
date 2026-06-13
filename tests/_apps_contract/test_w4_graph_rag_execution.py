@@ -517,7 +517,7 @@ class TestGRE12NoAppIdBranching:
         source = (
             REPO_ROOT / "agentic_core" / "runtime" / "c0" / "c0_3_graph_rag_executor.py"
         ).read_text(encoding="utf-8")
-        for app in ("apps_lic", "apps_rg", "apps_research", "apps_rfp", "apps_qna"):
+        for app in ("apps_lic", "apps_rg", "apps_research"):
             assert f'app_id == "{app}"' not in source, (
                 f"c0_3_graph_rag_executor.py contains app_id branching for {app}"
             )

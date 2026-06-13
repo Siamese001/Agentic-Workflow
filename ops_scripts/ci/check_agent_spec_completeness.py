@@ -40,7 +40,6 @@ APPS = [
     "apps_rg",
     "apps_lic",
     "apps_research",
-    "apps_rfp",
     "apps_exec",
     "apps_eval",
     "apps_underwriting_ai",

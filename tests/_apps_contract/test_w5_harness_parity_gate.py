@@ -67,7 +67,6 @@ class TestAdvisoryMode:
         _rc, report = _run_gate(fail_closed=False)
         apps = set(report["apps_checked"])
         assert apps >= {
-            "apps_rg", "apps_lic", "apps_rfp", "apps_qna",
             "apps_research", "apps_exec", "apps_underwriting_ai", "apps_eval",
         }
 

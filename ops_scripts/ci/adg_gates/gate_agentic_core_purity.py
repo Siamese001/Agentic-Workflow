@@ -607,7 +607,6 @@ class AgenticCorePurityGate(ADGGateBase):
             r'apps_lic',
             r'apps_research',
             r'apps_qna',
-            r'apps_rfp',
             r'apps_exec',
             r'apps_underwriting_ai',
             r'apps_architect',

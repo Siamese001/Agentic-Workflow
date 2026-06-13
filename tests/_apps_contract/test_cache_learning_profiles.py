@@ -20,14 +20,12 @@ ALL_APPS = [
     "apps_rg",
     "apps_lic",
     "apps_research",
-    "apps_rfp",
     "apps_exec",
     "apps_eval",
     "apps_underwriting_ai",
 ]
 
 APPS_WITH_CACHE_ENABLED = sorted(["apps_qna", "apps_research", "apps_exec"])
-APPS_WITH_HOLDOUT_REQUIRED = sorted(["apps_rg", "apps_lic", "apps_rfp", "apps_eval", "apps_underwriting_ai"])
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────

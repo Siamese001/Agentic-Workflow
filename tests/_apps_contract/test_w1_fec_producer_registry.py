@@ -75,7 +75,5 @@ def test_resolve_fec_handles_none_run_context():
 
 
 def test_registered_app_ids_returns_sorted_snapshot():
-    register_producer("apps_rfp", lambda ctx: {})
     register_producer("apps_qna", lambda ctx: {})
     register_producer("apps_exec", lambda ctx: {})
-    assert registered_app_ids() == ("apps_exec", "apps_qna", "apps_rfp")

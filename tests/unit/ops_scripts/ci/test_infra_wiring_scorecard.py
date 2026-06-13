@@ -41,10 +41,10 @@ class TestClassifyViolations:
     def test_short_path_extraction(self) -> None:
         """Edge case: relative path starts at apps_* or agentic_core."""
         violations = {
-            "C:\\Git\\Agentic-Workflow\\apps_rfp\\services\\svc.py": [(1, "import redis")],
+            "C:\\Git\\Agentic-Workflow\\apps_rg\\services\\svc.py": [(1, "import redis")],
         }
         details = _classify_violations(violations)
-        assert "apps_rfp" in details[0]["file"]
+        assert "apps_rg" in details[0]["file"]
 
     def test_multiple_violations_in_same_file(self) -> None:
         """Edge case: multiple violations in one file produce multiple detail records."""
@@ -111,7 +111,7 @@ class TestUpdateScorecard:
         (tmp_path / "artifacts").mkdir()
         violations = {
             str(tmp_path / "apps_eval" / "a.py"): [(1, "import redis")],
-            str(tmp_path / "apps_rfp" / "b.py"): [(2, "import sqlite3")],
+            str(tmp_path / "apps_rg" / "b.py"): [(2, "import sqlite3")],
         }
         update_scorecard(tmp_path, violations)
         data = json.loads(

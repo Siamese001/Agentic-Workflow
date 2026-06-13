@@ -25,7 +25,6 @@ CODE_ROOTS: Tuple[str, ...] = (
     "apps_eval",
     "apps_exec",
     "apps_research",
-    "apps_rfp",
     "apps_rg",
     "apps_lic",
     "apps_shared",

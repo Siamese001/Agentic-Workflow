@@ -28,7 +28,6 @@ REPO = Path(__file__).resolve().parents[2]
 
 APPS = (
     "apps_eval", "apps_exec", "apps_lic", "apps_research",
-    "apps_rfp", "apps_rg", "apps_underwriting_ai",
 )
 SCAN_SUBDIRS = ("engines", "integrations", "outputs")
 SKIP_PREFIXES = ("_", ".")

@@ -388,7 +388,6 @@ FORBIDDEN_PATTERNS = {
             r'["\']apps_qna["\']',
             r'["\']apps_research["\']',
             r'["\']apps_exec["\']',
-            r'["\']apps_rfp["\']',
             r'["\']apps_underwriting_ai["\']',
             r'["\']apps_architect["\']',
             r'["\']apps_eval["\']',

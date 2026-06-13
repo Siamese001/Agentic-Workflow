@@ -32,7 +32,6 @@ FAMILIES: dict[str, list[str]] = {
         "apps_exec/services/repo_signal_service.py",
         "apps_lic/services/repo_signal_service.py",
         "apps_research/services/repo_signal_service.py",
-        "apps_rfp/services/repo_signal_service.py",
         "apps_rg/utils/repo_signal_service.py",
     ],
     "observability_adapter": [
@@ -40,7 +39,6 @@ FAMILIES: dict[str, list[str]] = {
         "apps_exec/integrations/observability_adapter.py",
         "apps_lic/integrations/observability_adapter.py",
         "apps_research/integrations/observability_adapter.py",
-        "apps_rfp/integrations/observability_adapter.py",
         "apps_rg/integrations/observability_adapter.py",
         "apps_underwriting_ai/integrations/observability_adapter.py",
     ],
@@ -48,7 +46,6 @@ FAMILIES: dict[str, list[str]] = {
         "apps_eval/spine/eval_spine_adapter.py",
         "apps_exec/spine/exec_spine_adapter.py",
         "apps_research/spine/research_spine_adapter.py",
-        "apps_rfp/spine/rfp_spine_adapter.py",
         "apps_rg/engines/rg_spine_adapter.py",
     ],
     "ingress_runner": [
@@ -56,7 +53,6 @@ FAMILIES: dict[str, list[str]] = {
         "apps_exec/integrations/exec_ingress_runner.py",
         "apps_lic/integrations/lic_ingress_runner.py",
         "apps_research/integrations/research_ingress_runner.py",
-        "apps_rfp/integrations/rfp_ingress_runner.py",
         "apps_rg/integrations/rg_ingress_runner.py",
         "apps_underwriting_ai/integrations/underwriting_ingress_runner.py",
     ],

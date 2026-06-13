@@ -7,7 +7,7 @@ recomputed `certification_level` of `SPINE_COMPLETE_CERTIFIED`. Strict mode.
 Plan: apps-e2e-two-gate-certification-d8b3a1 §2.2 + §5.3.
 
 Today this gate is EXPECTED to fail until the 5 currently-uncertified
-apps (apps_eval, apps_exec, apps_lic, apps_research, apps_rfp) emit real
+apps (apps_eval, apps_exec, apps_lic, apps_research) emit real
 spine receipts. The CI workflow runs this gate as informational
 (`continue-on-error: true`) until critical mass.
 

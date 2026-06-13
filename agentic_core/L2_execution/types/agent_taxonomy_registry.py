@@ -1230,48 +1230,6 @@ _RAW_AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         notes="Enterprise research orchestrator agent. L2 contract compliant.",
     ),
     # ============================================
-    # APPS_RFP: RFP Agents
-    # ============================================
-    "RfpOrchestrator": AgentClassification(
-        file_path="apps_rfp/reasoning/RfpOrchestrator.py",
-        class_name="RfpOrchestrator",
-        current_layer="L3",
-        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
-        status=AgentStatus.ACTIVE,
-        is_shim=False,
-        implements_l2_contract=True,
-        notes="RFP orchestrator agent. L2 contract compliant.",
-    ),
-    "ComplianceMappingAgent": AgentClassification(
-        file_path="apps_rfp/reasoning/ComplianceMappingAgent.py",
-        class_name="ComplianceMappingAgent",
-        current_layer="L2",
-        canonical_role=CanonicalAgentRole.EXECUTION,
-        status=AgentStatus.ACTIVE,
-        is_shim=False,
-        implements_l2_contract=True,
-        notes="Compliance mapping agent. L2 contract compliant.",
-    ),
-    "RequirementAnalysisAgent": AgentClassification(
-        file_path="apps_rfp/reasoning/RequirementAnalysisAgent.py",
-        class_name="RequirementAnalysisAgent",
-        current_layer="L2",
-        canonical_role=CanonicalAgentRole.EXECUTION,
-        status=AgentStatus.ACTIVE,
-        is_shim=False,
-        implements_l2_contract=True,
-        notes="Requirement analysis agent. L2 contract compliant.",
-    ),
-    "EnterpriseRfpOrchestrator": AgentClassification(
-        file_path="apps_rfp/reasoning/enterprise_orchestrator.py",
-        class_name="EnterpriseRfpOrchestrator",
-        current_layer="L3",
-        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
-        status=AgentStatus.ACTIVE,
-        is_shim=False,
-        implements_l2_contract=True,
-        notes="Enterprise RFP orchestrator agent. L2 contract compliant.",
-    ),
     # APPS_LIC Shims
     "ArchetypeIndicatorsAgent": AgentClassification(
         file_path="apps_lic/reasoning/ArchetypeIndicatorsAgent.py",

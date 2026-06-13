@@ -73,7 +73,7 @@ def record_fixture(
     Parameters
     ----------
     app
-        App identifier (``apps_research``, ``apps_rfp``, ...).
+        App identifier (``apps_research``, ...).
     scenario
         Short kebab-or-snake-case label for the recorded scenario.
     slots

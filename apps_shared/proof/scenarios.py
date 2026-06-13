@@ -138,26 +138,6 @@ def _customize_apps_research(ctx: ScenarioContext) -> None:
     )
 
 
-def _customize_apps_rfp(ctx: ScenarioContext) -> None:
-    """apps_rfp: assert requirement-parser contract + compliance evidence."""
-    parent_id = ctx.spans[-1].span_id if ctx.spans else None
-    sp = ctx.emit_span(
-        layer="L5",
-        name="apps_rfp.requirement_contract",
-        parent_span_id=parent_id,
-        status="PASS",
-        started_at=ctx.runtime_boundary_ts or "",
-        ended_at=ctx.runtime_boundary_ts or "",
-        attrs={"contract_bound": True},
-    )
-    ctx.emit_gate(
-        gate_id="apps_rfp.requirement_contract",
-        verdict="ALLOW_FINISH",
-        span_id=sp.span_id,
-        reasons=("requirement_parser_contract_bound",),
-    )
-
-
 def _customize_apps_rg(ctx: ScenarioContext) -> None:
     """apps_rg: hallucination detector + provider lane registry-bound."""
     parent_id = ctx.spans[-1].span_id if ctx.spans else None
@@ -348,19 +328,6 @@ SCENARIOS: dict[str, RegisteredScenario] = {
             risk_class="NORMAL",
         ),
         customizer=_customize_apps_research,
-    ),
-    "apps_rfp": RegisteredScenario(
-        spec=ScenarioSpec(
-            app_id="apps_rfp",
-            scenario_id="rfp_compliance_response_v1",
-            intake_body='{"rfp_id": "RFP-PROOF-001", "proposal_type": "technology", "deadline": "2026-12-31"}',
-            grounding_required=True,
-            task_spec="rfp_section_response",
-            query_spec="apps_rfp compliance response",
-            expected_layers=("U0", "L1", "L0", "C0", "PromptAssembly", "L3", "L2", "Exit"),
-            risk_class="NORMAL",
-        ),
-        customizer=_customize_apps_rfp,
     ),
     "apps_rg": RegisteredScenario(
         spec=ScenarioSpec(

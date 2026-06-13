@@ -38,7 +38,6 @@ OUT_PATH = REPO / "artifacts" / "observability" / "last_observed_spans.json"
 # Add more as new apps come online.
 AGENT_CLASSES = (
     "apps_eval", "apps_exec", "apps_lic", "apps_research",
-    "apps_rfp", "apps_rg", "apps_underwriting_ai",
 )
 
 

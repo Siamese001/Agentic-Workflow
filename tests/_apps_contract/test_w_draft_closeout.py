@@ -25,7 +25,7 @@ def test_legacy_yaml_disposition_module_importable():
     assert hasattr(mod, "apply")
     assert hasattr(mod, "Disposition")
     assert hasattr(mod, "DISPOSITIONS")
-    assert len(mod.DISPOSITIONS) == 13  # all 13 legacy files covered
+    assert len(mod.DISPOSITIONS) == 11  # active legacy files covered
 
 
 def test_legacy_yaml_disposition_covers_all_expected_files():
@@ -41,8 +41,6 @@ def test_legacy_yaml_disposition_covers_all_expected_files():
         "apps_lic/config/lic_thresholds.yaml",
         "apps_research/config/research_policies.yaml",
         "apps_research/config/research_thresholds.yaml",
-        "apps_rfp/config/rfp_policies.yaml",
-        "apps_rfp/config/rfp_thresholds.yaml",
         "apps_rg/config/rg_policies.yaml",
         "apps_rg/config/rg_thresholds.yaml",
     }
@@ -89,7 +87,7 @@ def test_judge_spearman_calibration_module_importable():
     assert hasattr(mod, "calibrate_judge")
     assert hasattr(mod, "CalibrationResult")
     assert mod.SPEARMAN_THRESHOLD == 0.80
-    assert len(mod.JUDGE_CALIBRATION_TARGETS) == 4
+    assert len(mod.JUDGE_CALIBRATION_TARGETS) == 3
 
 
 def test_judge_spearman_calibration_runs_against_synthetic_holdout():
@@ -126,7 +124,7 @@ def test_judge_spearman_flags_synthetic_as_not_meeting_threshold():
 @pytest.mark.parametrize(
     "app_id",
     [
-        "apps_qna", "apps_research", "apps_rfp", "apps_exec",
+        "apps_qna", "apps_research", "apps_exec",
         "apps_underwriting_ai", "apps_rg", "apps_lic", "apps_eval",
     ],
 )

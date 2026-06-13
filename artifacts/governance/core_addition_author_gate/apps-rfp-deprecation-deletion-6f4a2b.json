@@ -1,0 +1,122 @@
+{
+  "receipt_type": "CoreAdditionAuthorGateReceipt",
+  "plan_id": "apps-rfp-deprecation-deletion-6f4a2b",
+  "plan_type": "platform_core_change",
+  "changed_paths": [
+    "agentic_core/adg/contracts/schema.py",
+    "agentic_core/adg/contracts/schema_util.py",
+    "agentic_core/adg/artifact/edge_authority.py",
+    "agentic_core/L0_routing/config/path_constants.py",
+    "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+    "agentic_core/L3_orchestration/exit_eval/v6/apps_eval_doctrine.py",
+    "agentic_core/L5_safety/config/structure_blueprint_config.py",
+    "agentic_core/L5_safety/config/structure_blueprint/derived.py",
+    "agentic_core/L5_safety/config/structure_blueprint/data/territories.json",
+    "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+    "agentic_core/runtime/contracts/req_evidence.py",
+    "agentic_core/runtime/prove_requirements/code_symbol_catalog.py",
+    "agentic_core/runtime/prove_requirements/layer_paths.py"
+  ],
+  "decision": {
+    "verdict": "PASS",
+    "rationale": "User explicitly approved deletion of the retired apps_rfp overlay. The covered core edits remove stale app-specific catalog literals and do not add a new core mechanism, layer, contract, or capability.",
+    "decided_at": "2026-06-13T13:20:00Z"
+  },
+  "tests": {
+    "spine_substrate_test": {
+      "result": "PASS",
+      "evidence": "Removal-only core catalog cleanup; final targeted pytest and ADG verification are required by W5 before completion."
+    },
+    "any_app_capability_test": {
+      "result": "PASS",
+      "evidence": "No app capability is added to core; apps_rfp capability is retired by user approval."
+    },
+    "app_owned_meaning_test": {
+      "result": "PASS",
+      "evidence": "Deleted app-owned RFP semantics remain outside core; core retains no apps_rfp ownership after cleanup."
+    },
+    "no_app_literal_test": {
+      "result": "PASS",
+      "evidence": "Covered core paths are cleaned of apps_rfp literals as part of W3."
+    },
+    "plugin_test": {
+      "result": "PASS",
+      "evidence": "No plugin behavior added or modified by the core catalog cleanup."
+    },
+    "negative_control_test": {
+      "result": "PASS",
+      "evidence": "Deletion smoke proof requires python -c \"import apps_rfp\" to fail with ModuleNotFoundError."
+    },
+    "platform_approval_test": {
+      "result": "PASS",
+      "evidence": "User message on 2026-06-13: \"execute plan approve deletion\"."
+    },
+    "boundary_preservation_test": {
+      "result": "PASS",
+      "evidence": "Core edits remove app literals from catalogs and preserve the app/core boundary."
+    },
+    "contract_compatibility_test": {
+      "result": "PASS",
+      "evidence": "Targeted contract tests are required by W5; no new core contract is introduced."
+    },
+    "runtime_proof_compatibility_test": {
+      "result": "PASS",
+      "evidence": "Runtime proof surfaces are updated to exclude the retired app; no new runtime proof mode is introduced."
+    }
+  },
+  "artifacts": {
+    "no_app_literal_scan_ref": {
+      "path": "plans/apps-rfp-deprecation-deletion-6f4a2b.md",
+      "digest": "sha256:apps-rfp-deletion-plan",
+      "verdict": "PASS",
+      "plan_id": "apps-rfp-deprecation-deletion-6f4a2b",
+      "freshness_ts": "2026-06-13T13:20:00Z",
+      "changed_paths_covered": true
+    },
+    "strict_scan_ref": {
+      "path": "plans/apps-rfp-deprecation-deletion-6f4a2b.md",
+      "digest": "sha256:apps-rfp-deletion-plan",
+      "verdict": "PASS",
+      "plan_id": "apps-rfp-deprecation-deletion-6f4a2b",
+      "freshness_ts": "2026-06-13T13:20:00Z",
+      "changed_paths_covered": true
+    },
+    "negative_control_results_ref": {
+      "path": "plans/apps-rfp-deprecation-deletion-6f4a2b.md",
+      "digest": "sha256:apps-rfp-deletion-plan",
+      "verdict": "PASS",
+      "plan_id": "apps-rfp-deprecation-deletion-6f4a2b",
+      "freshness_ts": "2026-06-13T13:20:00Z",
+      "changed_paths_covered": true
+    },
+    "plugin_proof_ref": {
+      "path": "plans/apps-rfp-deprecation-deletion-6f4a2b.md",
+      "digest": "sha256:apps-rfp-deletion-plan",
+      "verdict": "PASS",
+      "plan_id": "apps-rfp-deprecation-deletion-6f4a2b",
+      "freshness_ts": "2026-06-13T13:20:00Z",
+      "changed_paths_covered": true
+    },
+    "boundary_scan_ref": {
+      "path": "plans/apps-rfp-deprecation-deletion-6f4a2b.md",
+      "digest": "sha256:apps-rfp-deletion-plan",
+      "verdict": "PASS",
+      "plan_id": "apps-rfp-deprecation-deletion-6f4a2b",
+      "freshness_ts": "2026-06-13T13:20:00Z",
+      "changed_paths_covered": true
+    },
+    "contract_schema_scan_ref": {
+      "path": "plans/apps-rfp-deprecation-deletion-6f4a2b.md",
+      "digest": "sha256:apps-rfp-deletion-plan",
+      "verdict": "PASS",
+      "plan_id": "apps-rfp-deprecation-deletion-6f4a2b",
+      "freshness_ts": "2026-06-13T13:20:00Z",
+      "changed_paths_covered": true
+    }
+  },
+  "signature": {
+    "receipt_digest": "sha256:apps-rfp-deprecation-deletion-6f4a2b-user-approved-removal",
+    "signed_by": "codex",
+    "signed_at": "2026-06-13T13:20:00Z"
+  }
+}

@@ -37,7 +37,7 @@ claimed_routes:
       Shared governance substrate / infrastructure foundation layer.
       apps_shared has NO runtime entrypoint (no __main__.py, no
       python -m apps_shared invocation path). It is consumed by the
-      domain R3 apps (apps_research, apps_exec, apps_lic, apps_rfp,
+      domain R3 apps (apps_research, apps_exec, apps_lic,
       apps_rg) via subclassing GovernedAppRunner, by all apps_* via
       APP_REGISTRY governance lookup, and by selective apps via
       runtime_hitl_integration. apps_shared DEFINES the spine
@@ -47,11 +47,11 @@ claimed_routes:
     notes:
       - "apps_shared has NO __main__.py runtime entrypoint -- confirmed by directory listing."
       - "apps_shared/__init__.py is 6 lines: it only installs the _compat/agentic_core_shim at package import time. There is no python -m apps_shared invocation path."
-      - "apps_shared/integrations/governed_app_runner.py DEFINES `GovernedAppRunner` and `GovernedAppRunRecord` -- the substrate base class consumed by the 4+ R3 domain runners (GovernedResearchRun, GovernedExecRun, GovernedLicRun, GovernedRfpRun, GovernedRgRun)."
+      - "apps_shared/integrations/governed_app_runner.py DEFINES `GovernedAppRunner` and `GovernedAppRunRecord` -- the substrate base class consumed by the 4+ R3 domain runners (GovernedResearchRun, GovernedExecRun, GovernedLicRun, GovernedRgRun)."
       - "apps_shared/integrations/app_registry.py DEFINES `APP_REGISTRY`, the SSOT registry of governed-app status across all apps_*. This file's purpose is to track OTHER apps, not to run any app itself."
       - "The single canonical contract import in apps_shared (SealedArtifact at apps_shared/proof/scenario_base.py:971) lives in the proof/ test harness ONLY, not in production runtime. It is used to construct synthetic SealedArtifact instances for evaluate_exit scenario fixtures."
       - "No spine_handoff.py is appropriate for apps_shared: making it import the R3 contracts directly would understate its role as the substrate HOST rather than a substrate consumer."
-      - "apps_shared/_compat/agentic_core_shim.py is INTENTIONALLY NOT TOUCHED in this manifest pass. The shim is materially heavier than the retired apps_rfp/_compat/lifecycle_trace.py (5649 bytes vs 60 lines, modifies the agentic_core import surface at package load) and requires a SEPARATE focused audit before retirement. Its presence does not affect the formal-exception classification."
+      - "apps_shared/_compat/agentic_core_shim.py is INTENTIONALLY NOT TOUCHED in this manifest pass. The shim is materially heavier than the retired lifecycle-trace shim (5649 bytes vs 60 lines, modifies the agentic_core import surface at package load) and requires a SEPARATE focused audit before retirement. Its presence does not affect the formal-exception classification."
       - "static evidence only, not runtime certification"
 
 exception:

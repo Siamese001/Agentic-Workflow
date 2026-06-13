@@ -116,18 +116,6 @@ DISPOSITIONS: tuple[FileDisposition, ...] = (
         rationale="Re-audit 2026-05-03: no Python file-load consumers. Safe to delete via Author-Gate marker.",
     ),
     FileDisposition(
-        rel_path="apps_rfp/config/rfp_policies.yaml",
-        disposition=Disposition.ORPHANED,
-        consumers=(),
-        rationale="Re-audit 2026-05-03: no Python file-load consumers. Safe to delete via Author-Gate marker.",
-    ),
-    FileDisposition(
-        rel_path="apps_rfp/config/rfp_thresholds.yaml",
-        disposition=Disposition.ORPHANED,
-        consumers=(),
-        rationale="Re-audit 2026-05-03: no Python file-load consumers. Safe to delete via Author-Gate marker.",
-    ),
-    FileDisposition(
         rel_path="apps_rg/config/rg_policies.yaml",
         disposition=Disposition.ORPHANED,
         consumers=(),

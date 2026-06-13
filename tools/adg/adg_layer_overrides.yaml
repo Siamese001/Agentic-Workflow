@@ -46,7 +46,6 @@ overrides:
   "apps_exec/*": "L_APP"
   "apps_lic/*": "L_APP"
   "apps_research/*": "L_APP"
-  "apps_rfp/*": "L_APP"
   "apps_rg/*": "L_APP"
   "apps_shared/*": "L_APP"
   "apps_underwriting_ai/*": "L_APP"

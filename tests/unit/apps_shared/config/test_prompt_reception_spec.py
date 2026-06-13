@@ -44,14 +44,6 @@ def test_exec_spec_inherits_reception_fields() -> None:
     assert specs.exemplar_task_class is None
 
 
-def test_rfp_spec_inherits_reception_fields() -> None:
-    from apps_rfp.config.agent_spec_config import RfpAgentSpecs
-
-    specs = RfpAgentSpecs()
-    assert specs.adapter_version == "v2"
-    assert specs.exemplar_task_class is None
-
-
 def test_rg_spec_inherits_reception_fields() -> None:
     from apps_rg.config.agent_spec_config import RGAgentSpecs
 

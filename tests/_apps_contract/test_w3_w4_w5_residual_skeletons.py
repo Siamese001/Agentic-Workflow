@@ -54,7 +54,6 @@ def test_production_log_miner_filters_by_app_and_redacts(tmp_path: Path):
         "\n".join(
             [
                 json.dumps({"app_id": "apps_qna", "input": "x", "output": "y"}),
-                json.dumps({"app_id": "apps_rfp", "input": "a"}),
                 json.dumps({"app_id": "apps_qna", "input": "z"}),
             ]
         ),
@@ -144,7 +143,6 @@ def test_judge_registry_registered_judges_matches_gate_expectations():
     assert ("apps_rg", "executive_positioning") in judges
     assert ("apps_lic", "response_likelihood") in judges
     assert ("apps_lic", "brand_voice") in judges
-    assert ("apps_rfp", "win_theme_alignment") in judges
 
 
 def test_judge_registry_resolve_unregistered_returns_error():

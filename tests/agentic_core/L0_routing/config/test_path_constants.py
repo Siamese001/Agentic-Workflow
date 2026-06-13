@@ -24,7 +24,6 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_EXEC_DIR,
     APPS_LIC_DIR,
     APPS_RESEARCH_DIR,
-    APPS_RFP_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     ARTIFACTS_DIR,
@@ -75,7 +74,6 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_EVAL_SUBFOLDER_MAP,
     APPS_EXEC_SUBFOLDER_MAP,
     APPS_RESEARCH_SUBFOLDER_MAP,
-    APPS_RFP_SUBFOLDER_MAP,
     ALLOWED_DUPLICATE_FILENAMES,
     FLAT_DIRECTORIES,
     ALLOW_ROOT_PY_TERRITORIES,
@@ -202,7 +200,6 @@ class TestDirectoryConstants:
         assert isinstance(APPS_EXEC_DIR, str)
         assert isinstance(APPS_LIC_DIR, str)
         assert isinstance(APPS_RESEARCH_DIR, str)
-        assert isinstance(APPS_RFP_DIR, str)
         assert isinstance(APPS_RG_DIR, str)
         assert isinstance(APPS_SHARED_DIR, str)
 
@@ -330,7 +327,6 @@ class TestSubfolderMaps:
         assert isinstance(APPS_EVAL_SUBFOLDER_MAP, dict)
         assert isinstance(APPS_EXEC_SUBFOLDER_MAP, dict)
         assert isinstance(APPS_RESEARCH_SUBFOLDER_MAP, dict)
-        assert isinstance(APPS_RFP_SUBFOLDER_MAP, dict)
 
 
 class TestValidationConstants:

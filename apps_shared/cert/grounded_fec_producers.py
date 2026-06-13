@@ -48,7 +48,6 @@ Logger = logging.getLogger(__name__)
 GROUNDED_APP_IDS: tuple[str, ...] = (
     "apps_qna",
     "apps_research",
-    "apps_rfp",
     "apps_exec",
     "apps_underwriting_ai",
 )

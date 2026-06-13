@@ -62,7 +62,6 @@ FORBIDDEN_APP_PATTERNS = [
     # W4 extensions — new app literals and semantic patterns
     (r'["\']apps_architect["\']', "hardcoded apps_architect", "HIGH"),
     (r'["\']apps_eval["\']', "hardcoded apps_eval", "HIGH"),
-    (r'["\']apps_rfp["\']', "hardcoded apps_rfp", "HIGH"),
     (r'company_brief', "app-specific domain: company_brief", "HIGH"),
     (r'interview_card', "app-specific domain: interview_card", "HIGH"),
     (r'resume_generator', "app-specific domain: resume_generator", "HIGH"),

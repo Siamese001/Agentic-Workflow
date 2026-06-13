@@ -50,7 +50,6 @@ import yaml
 _ROSTER_PREFIX_MAP: dict[str, str] = {
     "rg": "apps_rg",
     "lic": "apps_lic",
-    "rfp": "apps_rfp",
     "qna": "apps_qna",
     "research": "apps_research",
     "exec": "apps_exec",
@@ -99,7 +98,6 @@ if str(REPO_ROOT) not in sys.path:
 RUNTIME_APPS: tuple[str, ...] = (
     "apps_rg",
     "apps_lic",
-    "apps_rfp",
     "apps_qna",
     "apps_research",
     "apps_exec",

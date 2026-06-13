@@ -1,7 +1,0 @@
-# apps_rfp Fort Knox app-domain contract — generated from tools/apps_proof/generate_compact_app_contracts.py
-- task_class: rfp_response
-  kind: generation
-  description: Generate a structured RFP response from RFP doc + company KB + past
-    wins library.
-  risk_tier: elevated
-  hitl_required: false

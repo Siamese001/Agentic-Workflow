@@ -25,7 +25,6 @@ ROOTS = (
     "apps_eval",
     "apps_exec",
     "apps_research",
-    "apps_rfp",
     "apps_underwriting_ai",
     "apps_lic",
     "tools",

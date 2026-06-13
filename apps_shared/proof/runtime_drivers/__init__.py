@@ -54,9 +54,6 @@ def get_driver(app_id: str):
             AppsUnderwritingAIDriver,
         )
         return AppsUnderwritingAIDriver()
-    if app_id == "apps_rfp":
-        from apps_shared.proof.runtime_drivers.apps_rfp_driver import AppsRfpDriver
-        return AppsRfpDriver()
     if app_id == "apps_research":
         from apps_shared.proof.runtime_drivers.apps_research_driver import AppsResearchDriver
         return AppsResearchDriver()

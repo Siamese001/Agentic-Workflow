@@ -115,12 +115,6 @@ class TestAppsSharedIntegration:
 
         assert ResearchAgentSpecs is not None
 
-    def test_integration_with_apps_rfp(self) -> None:
-        """Test apps_shared integration with apps_rfp."""
-        from apps_rfp.config.agent_spec_config import RfpAgentSpecs
-
-        assert RfpAgentSpecs is not None
-
     def test_adg_lifecycle_imports_available(self) -> None:
         """Verify ADG lifecycle trace imports are available."""
         from agentic_core.runtime.contracts.lifecycle_trace_contract import (

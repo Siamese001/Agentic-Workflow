@@ -6,11 +6,30 @@
   "extra_payload": {
     "eval_id": "EVAL-PROOF-GOLDEN-001",
     "scenarios": [
-      {"scenario_id": "golden_uw_001", "app": "apps_underwriting_ai", "kind": "golden", "expected_outcome": "PASS"},
-      {"scenario_id": "golden_rfp_001", "app": "apps_rfp", "kind": "golden", "expected_outcome": "PASS"},
-      {"scenario_id": "neg_uw_missing_fs", "app": "apps_underwriting_ai", "kind": "negative", "expected_outcome": "PEND"},
-      {"scenario_id": "ambig_research_001", "app": "apps_research", "kind": "ambiguous", "expected_outcome": "CAVEAT"},
-      {"scenario_id": "stale_policy_uw", "app": "apps_underwriting_ai", "kind": "stale", "expected_outcome": "BLOCK_OR_CAVEAT"}
+      {
+        "scenario_id": "golden_uw_001",
+        "app": "apps_underwriting_ai",
+        "kind": "golden",
+        "expected_outcome": "PASS"
+      },
+      {
+        "scenario_id": "neg_uw_missing_fs",
+        "app": "apps_underwriting_ai",
+        "kind": "negative",
+        "expected_outcome": "PEND"
+      },
+      {
+        "scenario_id": "ambig_research_001",
+        "app": "apps_research",
+        "kind": "ambiguous",
+        "expected_outcome": "CAVEAT"
+      },
+      {
+        "scenario_id": "stale_policy_uw",
+        "app": "apps_underwriting_ai",
+        "kind": "stale",
+        "expected_outcome": "BLOCK_OR_CAVEAT"
+      }
     ],
     "weights": {
       "trace_coverage": 0.25,

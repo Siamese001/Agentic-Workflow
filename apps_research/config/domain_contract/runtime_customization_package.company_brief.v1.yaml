@@ -36,7 +36,6 @@ policy:
   allowed_consumer_apps:
     - apps_rg
     - apps_lic
-    - apps_rfp
     - apps_underwriting_ai
   
   # Execution form

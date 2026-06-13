@@ -95,27 +95,6 @@ apps_research:
     - name: "SectionRenderer.render_json"
       layer: "L1_COGNITION"
 
-apps_rfp:
-  required_spans:
-    - name: "BaseRfpEngine.execute"
-      layer: "L3_ORCHESTRATION"
-    - name: "DocumentParser.can_parse"
-      layer: "L1_COGNITION"
-    - name: "EmbeddingStore.add_proposal"
-      layer: "L4_STATE"
-    - name: "ExecutionAdapter.submit"
-      layer: "L4_STATE"
-    - name: "GovernedRfpRun.run_governed_e2e"
-      layer: "L3_ORCHESTRATION"
-    - name: "ObservabilityAdapter.emit_rfp_start"
-      layer: "L6_OBSERVABILITY"
-    - name: "ProposalAssemblyEngine.execute"
-      layer: "L3_ORCHESTRATION"
-    - name: "ProposalRenderer.render_json"
-      layer: "L1_COGNITION"
-    - name: "SectionRenderer.render_json"
-      layer: "L1_COGNITION"
-
 apps_rg:
   required_spans:
     - name: "ATSCompatibilityEngine.execute"

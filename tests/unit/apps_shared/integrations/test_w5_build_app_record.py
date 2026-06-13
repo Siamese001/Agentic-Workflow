@@ -181,7 +181,6 @@ def test_target_specific_default_field_takes_dataclass_default() -> None:
 
 _GOVERNED_APPS = [
     ("apps_exec.integrations.governed_exec_run", "GovernedExecRun"),
-    ("apps_rfp.integrations.governed_rfp_run", "GovernedRfpRun"),
     ("apps_research.integrations.governed_research_run", "GovernedResearchRun"),
 ]
 

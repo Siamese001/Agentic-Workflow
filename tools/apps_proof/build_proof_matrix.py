@@ -137,7 +137,6 @@ def _scan_app(app_dir: Path) -> AppMatrixRow:
     # Risk tier — derived from app_id; matches plan ADG_HOTSPOT_REPORT.
     risk_tiers = {
         "apps_underwriting_ai": "LOW (HIGH_IMPACT semantics)",
-        "apps_rfp": "LOW",
         "apps_research": "LOW-MED",
         "apps_exec": "MED",
         "apps_eval": "MED (proof harness)",

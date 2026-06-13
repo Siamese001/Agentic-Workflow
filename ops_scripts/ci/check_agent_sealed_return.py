@@ -38,7 +38,6 @@ SCAN_ROOTS = (
     "apps_exec",
     "apps_lic",
     "apps_research",
-    "apps_rfp",
     "apps_rg",
     "apps_shared",
     "apps_underwriting_ai",
