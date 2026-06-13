@@ -1224,7 +1224,7 @@ def check_notion_wave_deferral(tool_name: str) -> int:
     call mid-plan stalls the response and fragments multi-wave execution.
     All Notion plan/backlog writes must batch at plan completion.
 
-    Active state is set/cleared by ``tools/cursor/wave_execution_state.py``
+    Active state is set/cleared by ``tools/governance_legacy/wave_execution_state.py``
     (start|complete). Absent state => no active plan => allow.
 
     Bypass: NOTION_WAVE_DEFERRAL_BYPASS=1 env var (for authored batch scripts
@@ -1247,7 +1247,7 @@ def check_notion_wave_deferral(tool_name: str) -> int:
         f"{state.get('plan')!r} is active (started {state.get('started_at')}). "
         "Per .claude/rules/notion-plan-wave-deferral.md, batch ALL Notion "
         "writes at end of plan. Complete remaining waves, then run: "
-        "python tools/cursor/wave_execution_state.py complete "
+        "python tools/governance_legacy/wave_execution_state.py complete "
         f"--plan {state.get('plan')} -- then reissue the Notion call. "
         "Bypass (exceptional): NOTION_WAVE_DEFERRAL_BYPASS=1"
     )

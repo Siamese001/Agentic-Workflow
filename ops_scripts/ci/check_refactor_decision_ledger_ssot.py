@@ -50,7 +50,7 @@ _FORBIDDEN_TOKENS = (
 
 _ALLOWLIST_FILES = frozenset(
     {
-        "tools/cursor/migrate_refactor_decision_ledger_windsurf_to_cursor.py",
+        "tools/governance_legacy/migrate_refactor_decision_ledger.py",
         "tools/refactor_decisions/ledger_paths.py",
         "ops_scripts/ci/check_notion_decision_parity.py",
         "ops_scripts/ci/check_refactor_decision_ledger_ssot.py",

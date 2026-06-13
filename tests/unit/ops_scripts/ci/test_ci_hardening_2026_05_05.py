@@ -102,10 +102,10 @@ class TestNoDuplicateGatesInSamePlane:
             seen.add(s)
 
     def test_windsurf_schema_gate_in_wiring_only(self) -> None:
-        """check_windsurf_config_schema.py must appear in wiring_gates ONLY (canonical home)."""
+        """check_legacy_tree_config_schema.py must appear in wiring_gates ONLY (canonical home)."""
         assurance = _plane_scripts("assurance_gates")
         wiring = _plane_scripts("wiring_gates")
-        target = "ops_scripts/ci/check_windsurf_config_schema.py"
+        target = "ops_scripts/ci/check_legacy_tree_config_schema.py"
         assert target not in assurance, (
             f"{target} must not be in assurance_gates — wiring_gates is canonical."
         )
@@ -118,7 +118,7 @@ class TestNoDuplicateGatesInSamePlane:
 # 2 & 3. Windsurf working_directory validation (schema gate extension)
 # ---------------------------------------------------------------------------
 
-SCHEMA_GATE = REPO_ROOT / "ops_scripts" / "ci" / "check_windsurf_config_schema.py"
+SCHEMA_GATE = REPO_ROOT / "ops_scripts" / "ci" / "check_legacy_tree_config_schema.py"
 
 
 def _run_schema_gate(tmp_repo: Path, hooks_data: dict) -> tuple[int, str, str]:

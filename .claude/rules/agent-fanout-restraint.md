@@ -61,7 +61,7 @@ opted in" and "**Scale to what the user asked for**."
 
 ## References
 
-- `.claude/rules/001-cursor-runtime-seam-execution.md` — bounded L2 executor; avoid multi-wave unless explicitly asked
+- `.claude/rules/001-runtime-seam-execution.md` — bounded L2 executor; avoid multi-wave unless explicitly asked
 - `.claude/rules/scope-containment.md` — retrieval budgets; no gold-plating; one task at a time
 - `.claude/rules/work-item-classification.md` — tier-aware Fix / File / Plan; `PLAN_MICRO` = native plan mode only
 - Workflow tool contract — opt-in only; scale to the ask; pipeline/parallel patterns are tools, not defaults

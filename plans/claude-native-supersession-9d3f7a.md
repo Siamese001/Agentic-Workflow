@@ -61,7 +61,7 @@ dod_exempt: false
 | P0.1 | Coupling inventory | `ops_scripts/ci/check_*`, `.claude/rules/*`, `.claude/settings.json` | Marker grammar is cited by many gates | ~10k | Not Started |
 | P0.2 | Native-feature fit test | each Sn | Confirm native feature covers the *invariant*, not just the happy path | ~8k | Not Started |
 | P0.3 | Reversibility + cutover order | this plan | Some gates are constitutional §-numbered (load-bearing) | ~7k | Not Started |
-| P1.1 | CLAUDE.md AG invariant rewrite | `CLAUDE.md`, `003-cursor-author-gate-hitl.md` | Keep "stop & ask" trigger doctrine | ~12k | Not Started |
+| P1.1 | CLAUDE.md AG invariant rewrite | `CLAUDE.md`, `003-author-gate-hitl.md` | Keep "stop & ask" trigger doctrine | ~12k | Not Started |
 | P1.2 | Decision precedent → file memory | `memory/`, `refactor-decision-memory` skill | Replace SQLite ledger lookups | ~14k | Not Started |
 | P1.3 | Archive AG scripts + skills | `_author_gate_*`, AG chain, packet-builder/ui-renderer skills | 8+ scripts + 2 skills + queue | ~20k | Not Started |
 | P1.4 | Retire AG CI gates / §30,§35 markers | `ops_scripts/ci/check_*ag*`, `check_decision_ledger_*` | §30/§35 are constitutional | ~14k | Not Started |

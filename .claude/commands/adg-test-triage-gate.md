@@ -18,6 +18,6 @@ description: Thin alias — ADG-backed test triage (/adg-test-triage-gate)
 
 1. `python tools/adg/adg_test_selector.py --from-diff` (or P7 `impacted_tests` when in top-20 accelerator).
 2. Run scoped tests only; expand via ADG fanout if failures cluster.
-3. Record evidence per [001-cursor-runtime-seam-execution.md](../rules/001-cursor-runtime-seam-execution.md).
+3. Record evidence per [001-runtime-seam-execution.md](../rules/001-runtime-seam-execution.md).
 
 ⛔ Do not grep for dependency-based test selection.
