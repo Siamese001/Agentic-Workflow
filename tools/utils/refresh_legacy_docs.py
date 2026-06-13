@@ -2,7 +2,7 @@
 Refreshes the local Windsurf documentation mirror to ensure high-quality context retrieval.
 
 Usage:
-    python scripts/refresh_windsurf_docs.py
+    python scripts/refresh_legacy_docs.py
 """
 
 import os

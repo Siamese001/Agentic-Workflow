@@ -156,7 +156,7 @@ repos:
       # (docs/archive/windsurf/legacy-tree/, docs/archive/windsurf/)
       # so the hook was permanently dormant. Removed during the windsurf/codeium brand
       # decommission (plan cursor-windsurf-codeium-decommission-dec0de). Orphaned script
-      # ops_scripts/ci/check_no_active_windsurf_changes.py left for W6 sweep.
+      # ops_scripts/ci/check_no_active_legacy_surface_changes.py left for W6 sweep.
 
       # -- T6b: MCP Config Sync Integrity ----------------------------------------------
       - id: mcp-sync-integrity

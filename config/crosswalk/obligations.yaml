@@ -56,9 +56,9 @@ obligations:
   - id: const_27_windsurf_config_schema_purity
     source: ".claude/rules/constitutional.md §27"
     description: "hooks.json + mcp_config.json contain only documented fields"
-    gate_script: "ops_scripts/ci/check_windsurf_config_schema.py"
+    gate_script: "ops_scripts/ci/check_legacy_tree_config_schema.py"
     test_ids:
-      - "tests/unit/ops_scripts/ci/test_check_windsurf_config_schema.py"
+      - "tests/unit/ops_scripts/ci/test_check_legacy_tree_config_schema.py"
 
   - id: assurance_p1_runtime_trace
     source: "docs/archive/windsurf/legacy-tree/plans/assurance-p1-gates-ab4758.md (W1)"

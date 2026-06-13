@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ops_scripts.ci import check_no_cursor_refs as gate
+from ops_scripts.ci import check_no_legacy_ide_refs as gate
 
 
 def _write(path: Path, text: str) -> None:

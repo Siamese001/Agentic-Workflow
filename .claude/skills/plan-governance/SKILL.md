@@ -26,7 +26,7 @@ PLAN_CREATED: slug=<slug-6hex> path=plans/<slug>-<6hex>.md status=Not Started|In
 ```
 
 ### Chokepoint Block
-`tools/cursor/wave_execution_state.py start` refuses unregistered plans:
+`tools/governance_legacy/wave_execution_state.py start` refuses unregistered plans:
 ```
 BLOCKED: plan <slug> not registered in Notion Plans DB.
 Required: API-post-page into Plans DB

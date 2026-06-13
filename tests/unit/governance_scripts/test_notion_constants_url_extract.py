@@ -1,4 +1,4 @@
-"""tests.unit.windsurf_scripts.test_notion_constants_url_extract
+"""tests.unit.governance_scripts.test_notion_constants_url_extract
 
 Tests for extract_page_id() and format_uuid() in _notion_constants.py.
 

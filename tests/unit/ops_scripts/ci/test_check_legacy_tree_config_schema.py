@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-GATE = REPO_ROOT / "ops_scripts" / "ci" / "check_windsurf_config_schema.py"
+GATE = REPO_ROOT / "ops_scripts" / "ci" / "check_legacy_tree_config_schema.py"
 HOOKS_JSON = REPO_ROOT / "docs/archive/windsurf/legacy-tree" / "hooks.json"
 
 
