@@ -23,6 +23,7 @@ from tools.generate.core.helpers import (
     _artifact_present,
     _probe_run_zip_for_member,
     _verify_artifacts,
+    _write_text_artifact,
 )
 
 
@@ -144,7 +145,7 @@ class TestVerifyArtifactsArchiveAware:
     """
 
     def _build_full_archive_layout(self, root: Path) -> None:
-        """Place all 5 expected artifacts (zip + 4 reports) in the archive
+        """Place all expected artifacts (zip + reports + review templates) in the archive
         month-dir as the post-archive pipeline state would.
         """
         archive_dir = root / ARCHIVE_MONTH_DIR
@@ -159,9 +160,18 @@ class TestVerifyArtifactsArchiveAware:
             "provenance_report",
             "closure_validation_report",
         ):
-            (archive_dir / f"{rname}_{TS}.json").write_text(
-                json.dumps({"stub": True}), encoding="utf-8"
+            _write_text_artifact(
+                archive_dir / f"{rname}_{TS}.json",
+                json.dumps({"stub": True}),
             )
+        _write_text_artifact(
+            archive_dir / f"adg_review_template_{TS}.json",
+            json.dumps({"stub": True}),
+        )
+        _write_text_artifact(
+            archive_dir / f"adg_review_template_{TS}.yaml",
+            "stub: true\n",
+        )
 
     def test_no_deferred_failure_when_all_artifacts_archived(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
@@ -199,4 +209,5 @@ class TestVerifyArtifactsArchiveAware:
         names = {row["gate_name"] for row in df_mod.deferred_failure_summary()}
         assert "verify_artifacts.zip" in names
         assert "verify_artifacts.reports" in names
+        assert "verify_artifacts.review_template" in names
         assert "Zip archive not found" in out

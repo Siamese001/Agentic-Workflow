@@ -1,13 +1,13 @@
 """Per-gate high-signal copy for ADG burndown reports.
 
-``GATE_WHAT`` explains what the **Findings** number measures.
+``GATE_WHAT`` explains what the gate **Records** number measures.
 ``_verdict_rule()`` in ``adg_burndown_report`` explains why the **Verdict** is PASS/FAIL/REGR
 from enforcement, classification, baseline_count, and exit_code.
 """
 
 from __future__ import annotations
 
-# What the findings column counts (not necessarily CI failures).
+# What the Records column counts (not necessarily CI failures).
 GATE_WHAT: dict[str, str] = {
     # --- Canonical ADGGateBase (12) -----------------------------------------
     "1_critical_path_integrity": (
@@ -162,11 +162,11 @@ GATE_WHAT: dict[str, str] = {
 #
 #   FIX   — address for a green ADG run (was FAIL / REGR / SEED)
 #   TRACK — CI OK this run; hygiene backlog (was DEBT / OPEN / ADVIS)
-#   CLEAR — zero findings (was PASS)
+#   CLEAR — zero records (was PASS)
 VERDICT_CLUSTER_DEFINITIONS: dict[str, str] = {
     "FIX": "Address before treating ADG as green (gate blocked or ratchet regressed).",
-    "TRACK": "CI passed this gate; findings are backlog — plan hygiene, not a halt.",
-    "CLEAR": "Zero findings; nothing to do on this gate.",
+    "TRACK": "CI passed this gate; records are tracked backlog — plan hygiene, not a halt.",
+    "CLEAR": "Zero records; nothing to do on this gate.",
 }
 
 VERDICT_SUB_DEFINITIONS: dict[str, str] = {
@@ -300,7 +300,7 @@ def render_verdict_legend_markdown() -> str:
 
 
 def what_counts(gate_id: str, gate_class: str = "") -> str:
-    """Human text for what the Findings column measures."""
+    """Human text for what the Records column measures."""
     if gate_id in GATE_WHAT:
         return GATE_WHAT[gate_id]
     if gate_class:
@@ -312,7 +312,7 @@ def what_counts(gate_id: str, gate_class: str = "") -> str:
         pretty = "".join(out).replace(" Gate", "")
         if pretty:
             return f"{pretty} (auto-derived from gate_class)"
-    return "Gate-specific finding rows (see handler)."
+    return "Gate-specific records (see handler)."
 
 
 def verdict_rule(gate: dict) -> str:
@@ -333,7 +333,7 @@ def verdict_rule(gate: dict) -> str:
     if detail == "SEED":
         return "Ratchet baseline missing."
     if detail == "PASS":
-        return "No findings."
+        return "No records."
     if detail == "ADVIS":
         return f"{n} advisory; never blocks."
     if detail == "DEBT":
@@ -345,12 +345,12 @@ def verdict_rule(gate: dict) -> str:
             return f"{n} warn inventory; not halt-tier."
         if cls == "warn":
             return f"{n} subprocess warn."
-        return f"{n} open findings; run not blocked."
+        return f"{n} open records; run not blocked."
     return "See gate handler."
 
 
 def format_gate_signal(gate: dict) -> str:
-    """What Findings counts + short Sub rationale."""
+    """What Records count + short Sub rationale."""
     gid = str(gate.get("gate_id", ""))
     cls = str(gate.get("gate_class") or "")
     return f"Counts: {what_counts(gid, cls)} Sub: {verdict_rule(gate)}"
@@ -369,7 +369,7 @@ def recommended_next_step(gate: dict) -> str:
     base = gate.get("baseline_count")
 
     if detail == "PASS":
-        return "None — gate clean (zero findings)."
+        return "None — gate clean (zero records)."
     if detail == "FAIL":
         if band == "P0":
             return (

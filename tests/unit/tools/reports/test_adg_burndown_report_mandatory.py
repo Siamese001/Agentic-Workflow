@@ -70,9 +70,9 @@ def test_emit_mandatory_writes_all_outputs(tmp_path: Path, monkeypatch) -> None:
     )
     assert out_a.is_file() and out_b.is_file()
     text = out_a.read_text(encoding="utf-8")
-    assert "## 1. P0-P3 CI Band Summary" in text
+    assert "## 1. ADG Status By Band" in text
     assert "## 2. ADG CI Gates" in text
-    assert text.index("## 1. P0-P3 CI Band Summary") < text.index("## 2. ADG CI Gates")
+    assert text.index("## 1. ADG Status By Band") < text.index("## 2. ADG CI Gates")
 
 
 def test_emit_prints_markdown_to_stdout(
@@ -247,9 +247,14 @@ def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path)
 
     md = render(gate, burndown)
 
+    assert "Tracked records are gate-specific `violation_count` entries" in md
+    assert "They are backlog records, not guardian exemptions, test failures, or new failures." in md
+    assert "| Band | Status | Fix now | Tracked gate records | Read it as | Next move |" in md
+    assert "| P0 | PASS | 0 | 1 gate / 2,792 tracked records | green; ratchet burn-down/open work remains | work ranked queue; ratchets first |" in md
     assert "Allowed Floor" in md
+    assert "| Gate ID | CI Band | Enforcement | Action | Sub | Records | Allowed Floor | Signal | Next Best Action |" in md
     assert "| `G_REACH_l0_reachability` | P0 | ratchet | TRACK | floor | 2792 | 2792 |" in md
-    assert md.index("## 1. P0-P3 CI Band Summary") < md.index("## 2. ADG CI Gates")
+    assert md.index("## 1. ADG Status By Band") < md.index("## 2. ADG CI Gates")
     assert md.index("## 2. ADG CI Gates") < md.index("## 3. Severity Inventory Burndown")
 
 

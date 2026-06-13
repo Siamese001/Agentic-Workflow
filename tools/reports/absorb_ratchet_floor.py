@@ -97,7 +97,8 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 def _save_json(path: Path, data: dict[str, Any]) -> None:
     content = json.dumps(data, indent=2) + "\n"
-    path.write_text(content, encoding="utf-8")
+    with path.open("w", encoding="utf-8", newline="\n") as fh:
+        fh.write(content)
 
 
 def absorb(

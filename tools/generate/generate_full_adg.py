@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess as _subprocess
 from contextlib import contextmanager
 
@@ -87,6 +88,21 @@ ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
+
+
+def _resolve_dispatcher_results_path(stdout: str, output_dir: Path) -> str:
+    """Resolve the gate dispatcher JSON path without trusting noisy stdout."""
+    pattern = re.compile(r"(?:[A-Za-z]:)?[^\s`'\"]*adg_gate_results_[^\s`'\"]+\.json")
+    for line in reversed(stdout.strip().splitlines()):
+        for raw in reversed(pattern.findall(line)):
+            candidate = Path(raw.strip().strip("`'\""))
+            candidate_paths = [candidate] if candidate.is_absolute() else [ROOT / candidate, output_dir / candidate.name]
+            for path in candidate_paths:
+                if path.is_file():
+                    return str(path)
+
+    candidates = sorted(output_dir.glob("adg_gate_results_*.json"), key=lambda p: p.stat().st_mtime)
+    return str(candidates[-1]) if candidates else ""
 
 
 def _git_rev_parse(*args: str) -> str:
@@ -1239,7 +1255,7 @@ def generate_full_adg(
         )
         _dispatcher_exit = int(_disp.returncode)
         _adg_run_state.dispatcher_exit_code = _dispatcher_exit
-        _dispatcher_json_path = _disp.stdout.strip().splitlines()[-1] if _disp.stdout else ""
+        _dispatcher_json_path = _resolve_dispatcher_results_path(_disp.stdout or "", adg_artifacts_dir)
         _adg_run_state.dispatcher_results_path = _dispatcher_json_path
         print(
             f"[ADG] Gate dispatcher exit={_dispatcher_exit} results={_dispatcher_json_path or '?'} "
@@ -1618,10 +1634,12 @@ def generate_full_adg(
     )
 
     # --- Post-run action queue (plan adg-action-dispatch-c9e4a2 W1.2; non-blocking) ---
+    action_queue_path: Path | None = None
+    review_template_path: Path | None = None
     try:
         from tools.reports.adg_action_queue import emit_adg_action_queue_from_adg_run  # noqa: PLC0415
 
-        _action_queue_rc, _action_queue_path = emit_adg_action_queue_from_adg_run(
+        _action_queue_rc, action_queue_path = emit_adg_action_queue_from_adg_run(
             adg_artifacts_dir=adg_artifacts_dir,
             ts=ts,
             fail_closed=False,
@@ -1661,6 +1679,44 @@ def generate_full_adg(
             exit_code=_burndown_emit_rc,
             script_rel="tools/reports/adg_burndown_report.py",
             message="mandatory markdown burndown",
+        )
+
+    # --- Mandatory machine-readable review template (JSON/YAML) ---
+    try:
+        from tools.reports.adg_review_template import emit_mandatory_adg_review_template  # noqa: PLC0415
+
+        gate_results_path = Path(_dispatcher_json_path) if _dispatcher_json_path else None
+        _review_template_rc, review_template_path = emit_mandatory_adg_review_template(
+            adg_artifacts_dir=adg_artifacts_dir,
+            ts=ts,
+            gate_results=gate_results_path,
+            burndown=adg_artifacts_dir / "adg_burndown_table.json",
+            action_queue=action_queue_path,
+            generation_manifest=adg_artifacts_dir / f"adg_generation_manifest_{ts}.json",
+            fail_closed=False,
+        )
+        if _review_template_rc != 0:
+            print(
+                f"[ADG] WARNING: review template emit returned {_review_template_rc} "
+                "(gate-results or burndown-table not yet available)"
+            )
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _review_template_exc:
+        print(
+            f"[adg_review_template] REVIEW_TEMPLATE_ERROR={_review_template_exc}",
+            file=sys.stderr,
+        )
+
+    _rec_review = _current_recorder()
+    if _rec_review is not None:
+        _rec_review.record(
+            "adg_review_template",
+            phase="post-ADG",
+            kind="subprocess",
+            blocking_mode="warn",
+            status="pass" if review_template_path is not None and review_template_path.is_file() else "fail",
+            exit_code=0 if review_template_path is not None and review_template_path.is_file() else 1,
+            script_rel="tools/reports/adg_review_template.py",
+            message="mandatory JSON/YAML review template",
         )
 
     # --- Create zip archive of consolidated artifacts + Wave 6 reports ---
@@ -1725,6 +1781,11 @@ def generate_full_adg(
     for _burndown_md in BURNDOWN_REPORT_OUTPUTS:
         if _burndown_md.is_file():
             extra_files.append(_burndown_md)
+    if review_template_path is not None and review_template_path.is_file():
+        extra_files.append(review_template_path)
+        review_template_yaml_path = review_template_path.with_suffix(".yaml")
+        if review_template_yaml_path.is_file():
+            extra_files.append(review_template_yaml_path)
     if watchlist_path is not None and watchlist_path.exists():
         extra_files.append(watchlist_path)
     if graph_watchlist_path is not None and graph_watchlist_path.exists():
@@ -2261,6 +2322,19 @@ def main() -> None:
             from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
 
             emit_mandatory_adg_burndown_report(fail_closed=False)
+        except ImportError:
+            pass
+        try:
+            from tools.reports.adg_review_template import emit_mandatory_adg_review_template  # noqa: PLC0415
+
+            emit_mandatory_adg_review_template(
+                adg_artifacts_dir=adg_artifacts_dir,
+                ts=ts,
+                action_queue=adg_artifacts_dir / f"adg_action_queue_{ts}.json",
+                generation_manifest=adg_artifacts_dir / f"adg_generation_manifest_{ts}.json",
+                print_inline=False,
+                fail_closed=False,
+            )
         except ImportError:
             pass
 

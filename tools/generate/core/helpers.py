@@ -151,6 +151,13 @@ def _artifact_present(adg_artifacts_dir: Path, ts: str, name: str) -> Path | Non
     return _probe_run_zip_for_member(adg_artifacts_dir, ts, name)
 
 
+def _write_text_artifact(path: Path, text: str) -> None:
+    """Write a text artifact through the generator's existing artifact-writer module."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as fh:
+        fh.write(text)
+
+
 def _probe_run_zip_for_member(
     adg_artifacts_dir: Path, ts: str, name: str
 ) -> Path | None:
@@ -265,5 +272,29 @@ def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports
             )
         else:
             print(f"[ADG] Reports verification: {len(report_files)} reports exist")
+
+    review_template_files = [
+        f"adg_review_template_{ts}.json",
+        f"adg_review_template_{ts}.yaml",
+    ]
+    missing_review_templates = [
+        name for name in review_template_files if _artifact_present(adg_artifacts_dir, ts, name) is None
+    ]
+    if missing_review_templates:
+        print(
+            "\n[ERROR] Mandatory ADG review template missing: "
+            f"{', '.join(missing_review_templates)}"
+        )
+        print(
+            "[ERROR] Checked: artifacts/adg/, artifacts/adg/_archive/<YYYY-MM>/, "
+            ".gz variants, and the run zip."
+        )
+        record_or_exit(
+            "verify_artifacts.review_template",
+            1,
+            message=f"missing {', '.join(missing_review_templates)}",
+        )
+    else:
+        print("[ADG] Review template verification: JSON/YAML present")
 
     print("[ADG] Full ADG generation verification: all artifacts present")

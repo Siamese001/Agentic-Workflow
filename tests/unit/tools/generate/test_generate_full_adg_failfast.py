@@ -78,6 +78,54 @@ class TestZipFlagWiring:
         assert "Zip creation skipped" in source
 
 
+class TestReviewTemplateWiring:
+    """Static regression coverage for mandatory ADG review template wiring."""
+
+    def test_review_template_emit_and_zip_inclusion_are_wired(self):
+        source_path = next(
+            candidate / "tools" / "generate" / "generate_full_adg.py"
+            for candidate in Path(__file__).resolve().parents
+            if (candidate / "tools" / "generate" / "generate_full_adg.py").is_file()
+        )
+        source = source_path.read_text(encoding="utf-8")
+        assert "emit_mandatory_adg_review_template" in source
+        assert "\"adg_review_template\"" in source
+        assert "extra_files.append(review_template_path)" in source
+        assert "review_template_path.with_suffix(\".yaml\")" in source
+
+
+class TestDispatcherResultsPathResolution:
+    """Regression coverage for noisy gate-dispatcher stdout."""
+
+    def test_resolves_existing_gate_results_path_from_stdout(self, tmp_path):
+        from tools.generate.generate_full_adg import _resolve_dispatcher_results_path
+
+        gate_results = tmp_path / "adg_gate_results_20260613_192959.json"
+        gate_results.write_text("{}", encoding="utf-8")
+
+        resolved = _resolve_dispatcher_results_path(
+            f"some banner\n{gate_results}\n",
+            tmp_path,
+        )
+
+        assert Path(resolved).resolve() == gate_results.resolve()
+
+    def test_ignores_renderer_text_and_falls_back_to_latest_gate_results(self, tmp_path):
+        from tools.generate.generate_full_adg import _resolve_dispatcher_results_path
+
+        older = tmp_path / "adg_gate_results_20260613_180000.json"
+        latest = tmp_path / "adg_gate_results_20260613_192959.json"
+        older.write_text("{}", encoding="utf-8")
+        latest.write_text("{}", encoding="utf-8")
+
+        resolved = _resolve_dispatcher_results_path(
+            "Report renderer: `tools/reports/adg_burndown_report.py`",
+            tmp_path,
+        )
+
+        assert Path(resolved).resolve() == latest.resolve()
+
+
 class TestArtifactValidityCheck:
     """Tests for _check_artifact_validity function."""
 

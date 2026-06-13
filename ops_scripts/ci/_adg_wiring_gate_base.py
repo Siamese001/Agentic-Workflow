@@ -43,6 +43,7 @@ except ImportError:  # pragma: no cover
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = REPO_ROOT / "artifacts" / "adg"
+DEFAULT_ADG_DIR = ADG_DIR
 LOG_DIR = REPO_ROOT / "artifacts" / "governance"
 LOG_FILE = LOG_DIR / "wiring_gate_violations.jsonl"
 BASELINE_DIR = REPO_ROOT / "ops_scripts" / "ci" / "baselines"
@@ -95,6 +96,31 @@ class GateResult:
 # ---------------------------------------------------------------------------
 
 
+def _has_nodes_table(path: Path) -> bool:
+    try:
+        uri = f"file:{path.as_posix()}?mode=ro"
+        conn = sqlite3.connect(uri, uri=True)
+        try:
+            row = conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='nodes' LIMIT 1"
+            ).fetchone()
+            return row is not None
+        finally:
+            conn.close()
+    except (OSError, sqlite3.Error):
+        return False
+
+
+def _latest_snapshot_from_dir(root: Path) -> Path:
+    candidates = sorted(root.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime)
+    if not candidates:
+        raise FileNotFoundError(
+            f"no adg_indexed_*.sqlite under {root}; regenerate via `python tools/generate_full_adg.py`",
+        )
+    usable = [candidate for candidate in candidates if _has_nodes_table(candidate)]
+    return usable[-1] if usable else candidates[-1]
+
+
 def latest_snapshot() -> Path:
     """Return the most-recently modified adg_indexed_*.sqlite that has a
     `nodes` base table (skips stub/sentinel snapshots).
@@ -111,6 +137,9 @@ def latest_snapshot() -> Path:
         if not p.exists():
             raise FileNotFoundError(f"ADG_SNAPSHOT not found: {p}")
         return p
+
+    if ADG_DIR.resolve() != DEFAULT_ADG_DIR.resolve():
+        return _latest_snapshot_from_dir(ADG_DIR)
 
     # Delegate to canonical resolver with gate materialized-view validation.
     # Failed/deferred generator runs can leave a timestamped SQLite with base
@@ -302,7 +331,7 @@ class WiringGate(ABC):
             return
         BASELINE_DIR.mkdir(parents=True, exist_ok=True)
         path = BASELINE_DIR / self.baseline_filename
-        path.write_text(
+        content = (
             json.dumps(
                 {
                     "gate_id": self.gate_id,
@@ -311,9 +340,11 @@ class WiringGate(ABC):
                     "snapshot": self.snapshot.name,
                 },
                 indent=2,
-            ),
-            encoding="utf-8",
+            )
+            + "\n"
         )
+        with path.open("w", encoding="utf-8", newline="\n") as fh:
+            fh.write(content)
 
     # ---- W1.1 monotone ratchet tightening ---------------------------------
     # Default: opt-in per gate via class attr or JSON field. Keep default True
@@ -339,7 +370,8 @@ class WiringGate(ABC):
             return
         BASELINE_DIR.mkdir(parents=True, exist_ok=True)
         path = BASELINE_DIR / self.baseline_filename
-        path.write_text(json.dumps(rec, indent=2), encoding="utf-8")
+        with path.open("w", encoding="utf-8", newline="\n") as fh:
+            fh.write(json.dumps(rec, indent=2) + "\n")
 
     def _maybe_tighten_baseline(self, *, active_count: int, baseline_count: int) -> int | None:
         """Rewrite baseline JSON if count shrank below previous baseline.

@@ -225,6 +225,7 @@ class ADGGateBase(ABC):
             with tempfile.NamedTemporaryFile(
                 "w",
                 encoding="utf-8",
+                newline="\n",
                 dir=CI_RATchet_DIR,
                 prefix=f".{baseline_name}_",
                 suffix=".tmp",
@@ -268,6 +269,7 @@ class ADGGateBase(ABC):
             with tempfile.NamedTemporaryFile(
                 "w",
                 encoding="utf-8",
+                newline="\n",
                 dir=CI_RATchet_DIR,
                 prefix=f".{trend_name}_",
                 suffix=".tmp",

@@ -13,6 +13,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 BASELINE = REPO_ROOT / "artifacts" / "adg" / "ci_ratchets" / "trace_replay_eval_baseline.json"
 
 
+def _gap_key(layer: str, file: str | None, gap_type: str) -> str:
+    return f"{layer}:{file or '<unknown>'}:{gap_type}"
+
+
 def _resolve_snapshot() -> Path:
     import os
 
@@ -35,14 +39,14 @@ def main() -> int:
     gaps: dict[str, bool] = {}
     coverage: dict[str, dict[str, float]] = {}
     with sqlite3.connect(str(snapshot)) as conn:
-        for node_id, _file, layer, _ht, _hr, _he, gap_type in conn.execute(
+        for _node_id, file, layer, _ht, _hr, _he, gap_type in conn.execute(
             """
             SELECT node_id, file, layer, has_trace, has_replay_link, has_eval, gap_type
             FROM mv_trace_replay_eval_gaps
             WHERE gap_type != 'ok'
             """
         ):
-            gaps[f"{layer}:{node_id}"] = True
+            gaps[_gap_key(layer, file, gap_type)] = True
         try:
             for layer, action_node_count, eval_covered_count in conn.execute(
                 """

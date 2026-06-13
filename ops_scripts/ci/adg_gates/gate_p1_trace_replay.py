@@ -51,6 +51,14 @@ class TraceReplayEvalGate(ADGGateBase):
         "mv_replay_surface_gaps",
     ]
 
+    @staticmethod
+    def _gap_key(layer: str, file: str | None, gap_type: str) -> str:
+        return f"{layer}:{file or '<unknown>'}:{gap_type}"
+
+    @staticmethod
+    def _legacy_gap_key(layer: str, node_id: int | str) -> str:
+        return f"{layer}:{node_id}"
+
     def _execute_gate_logic(self) -> GateResult:
         """Execute trace/replay/eval coverage check."""
         violations: list[GateViolation] = []
@@ -89,9 +97,10 @@ class TraceReplayEvalGate(ADGGateBase):
             for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 node_id, file, layer, has_trace, has_replay_link, has_eval, gap_type = row
 
-                key = f"{layer}:{node_id}"
+                key = self._gap_key(layer, file, gap_type)
+                legacy_key = self._legacy_gap_key(layer, node_id)
                 current_gap_keys[key] = True
-                prev_gap = baseline_gaps.get(key, False)
+                prev_gap = baseline_gaps.get(key, False) or baseline_gaps.get(legacy_key, False)
 
                 if gap_type == "no_trace":
                     summary["no_trace"] += 1
