@@ -56,11 +56,12 @@ _FULL_RCA = (
 )
 
 # A refactoring turn = code files changed (or an edit tool invoked). Per the contract it
-# must carry the Outcome frame ("Did it pass?") on every turn, so the failing-refactor
-# fixtures below include it and exercise the Layered-RCA depth checks.
+# must carry the Outcome frame (keyed on "Verdict source:") on every turn, so the
+# failing-refactor fixtures below include it and exercise the Layered-RCA depth checks.
+# The frame proves the STATUS verdict; it no longer re-votes with "Did it pass?".
 _REFACTOR_HEADER = (
     "**Outcome**\n"
-    "Did it run? Yes.  Did it pass? No.\n"
+    "Did it run? Yes.\n"
     "Verdict source: python -m pytest -> exit 1\n"
     "STATUS: FAIL\n"
     "FILES_CHANGED:\n- [foo.py](foo.py)\n"
@@ -196,12 +197,53 @@ class TestRuntimeRcaAudit:
     def test_refactor_pass_with_outcome_clean(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
         # A PASSING refactor turn that DOES carry the Outcome frame -> compliant.
         text = (
-            "**Outcome**\nDid it run? Yes.  Did it pass? Yes.\n"
+            "**Outcome**\nDid it run? Yes.\n"
             "Verdict source: pytest -> 5 passed\n"
             "STATUS: PASS\nFILES_CHANGED:\n- [foo.py](foo.py)\n"
         )
         assert _run(rca_mod, text, monkeypatch) == 0
         assert _rows(rca_mod) == []
+
+    def test_refactor_frame_sentinel_is_verdict_source_not_passvote(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Consolidation (one verdict): the frame proves the STATUS verdict via "Verdict source:"
+        # and no longer re-votes with "Did it pass?". A passing refactor turn carrying the frame
+        # with NO "Did it pass?" line anywhere is fully compliant.
+        text = (
+            "**Outcome**\nDid it run? Yes.\n"
+            "Verdict source: python -m pytest foo -> exit 0, 5 passed\n"
+            "STATUS: PASS\nFILES_CHANGED:\n- [foo.py](foo.py)\n"
+        )
+        assert "Did it pass" not in text  # the re-vote is gone
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    def test_refactor_outcome_without_verdict_source_flagged(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # The sentinel is the runtime-evidence anchor: an Outcome header + "Did it run?" but
+        # NO "Verdict source:" line does not satisfy the frame -> missing_refactor_outcome.
+        text = (
+            "**Outcome**\nDid it run? Yes.\n"
+            "STATUS: PASS\nFILES_CHANGED:\n- [foo.py](foo.py)\nCOMMANDS_RUN:\n- pytest -> 5 passed\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        kinds = {r["kind"] for r in _rows(rca_mod)}
+        assert "missing_refactor_outcome" in kinds, kinds
+
+    def test_refactor_legacy_passvote_without_verdict_source_flagged(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Clean break: the legacy "Did it pass?" line is no longer the frame sentinel. Without
+        # a "Verdict source:" line the frame is not recognized -> missing_refactor_outcome.
+        text = (
+            "**Outcome**\nDid it run? Yes.  Did it pass? Yes.\n"
+            "STATUS: PASS\nFILES_CHANGED:\n- [foo.py](foo.py)\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        kinds = {r["kind"] for r in _rows(rca_mod)}
+        assert "missing_refactor_outcome" in kinds, kinds
 
     def test_refactor_fail_missing_outcome_subsumes_rca(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
         # A FAILING refactor turn with neither the Outcome frame nor an RCA -> the single

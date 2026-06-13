@@ -21,8 +21,9 @@ The RCA block (rule 001 § Runtime failure ⇒ RCA mandatory):
     - recurrence_guard: ...
 
 On REFACTORING turns (code files changed / an edit tool invoked) the response MUST carry the
-Outcome frame on EVERY turn (pass or fail) — "Did it run? / Did it pass?" + verdict source +
-provenance, What worked, Failure, Next. Its absence is ``missing_refactor_outcome``. A failure
+Outcome frame on EVERY turn (pass or fail) — "Did it run?" + verdict source + provenance,
+What worked, Failure, Next. The frame proves the STATUS verdict (it does not re-vote pass/fail);
+its presence is keyed on the ``Verdict source:`` line. Its absence is ``missing_refactor_outcome``. A failure
 additionally requires the deep Layered RCA inside that frame — the failing layer isolated from
 the surfacing layer, a multi-level why-chain (dig until root, >= 2 levels), and a root cause
 distinct from the symptom. A symptom-only or single-hop RCA is ``shallow_rca``.
@@ -92,9 +93,11 @@ _FILES_CHANGED_RE = re.compile(r"(?im)^\s*FILES_CHANGED\s*:")
 _CODE_FILE_RE = re.compile(r"\.(?:py|js|ts|tsx|jsx|go|rs|java|rb|c|cc|cpp|h|hpp|sql|sh|ps1)\b")
 _EDIT_TOOL_RE = re.compile(r'<invoke\s+name="(?:Edit|Write|MultiEdit|NotebookEdit)"')
 
-# Outcome frame: refactoring turns must carry it on EVERY turn (pass or fail).
-# "Did it pass?" is the load-bearing marker the legacy STATUS floor never uses.
-_OUTCOME_FRAME_RE = re.compile(r"(?i)did\s+it\s+pass\s*\??")
+# Outcome frame: refactoring turns must carry it on EVERY turn (pass or fail). The frame
+# proves the STATUS verdict (it does not re-vote pass/fail); "Verdict source:" is its
+# load-bearing line — the runtime evidence the bare STATUS floor never carries — so frame
+# presence keys on it, not on a duplicate pass/fail vote.
+_OUTCOME_FRAME_RE = re.compile(r"(?i)verdict\s+source\s*:")
 
 _REMEDY = (
     "Add an RCA: block to the response (symptom · root_cause[graded §20] · evidence · "
@@ -112,10 +115,10 @@ _SHALLOW_REMEDY = (
 )
 
 _MISSING_OUTCOME_REMEDY = (
-    "Refactoring turn: report it in the Outcome frame (Did it run? / Did it pass? + verdict "
-    "source + runtime provenance; What worked; Failure; Next), not the bare STATUS floor. On a "
-    "failure the frame's Layered RCA is also required. SSOT: 001 § Runtime failure ⇒ RCA "
-    "mandatory; constitutional §37."
+    "Refactoring turn: report it in the Outcome frame (Did it run? + verdict source + runtime "
+    "provenance; What worked; Failure; Next) — the frame proves the STATUS verdict, it does not "
+    "re-vote pass/fail — not the bare STATUS floor. On a failure the frame's Layered RCA is also "
+    "required. SSOT: 001 § Runtime failure ⇒ RCA mandatory; constitutional §37."
 )
 
 

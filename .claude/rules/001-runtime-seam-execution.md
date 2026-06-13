@@ -73,12 +73,12 @@ green-theater pattern this contract exists to stop.
 - An exit code or an `X3_*` label alone is **not** a runtime outcome — `COMMANDS_RUN` / `TESTS_GATES` show the real result.
 - `BLOCKED` (missing key / service / permission) names its blocker; it needs an `RCA:` block only when a failure signal is also present.
 
-**Refactoring turns (T2/T3 code changes) ⇒ the Outcome frame is mandatory on EVERY turn (pass or fail)**, emitted as a fenced block — its absence is `missing_refactor_outcome`; the **Layered RCA** sub-block is required when `Did it pass? = No`:
+**Refactoring turns (T2/T3 code changes) ⇒ the Outcome frame is mandatory on EVERY turn (pass or fail)**, emitted as a fenced block — its absence is `missing_refactor_outcome`. The frame is the **runtime-evidence expansion of the `STATUS:` disposition**, not a second verdict: the `STATUS:` line (above, on every repo turn) is the single `PASS/PARTIAL/FAIL/BLOCKED` verdict, and the frame *proves* it via the verdict source — it does not re-vote pass/fail. The **Layered RCA** sub-block is required when `STATUS: FAIL` (the verdict source shows failure):
 
 ```text
 **Outcome**
-Did it run? <yes/no>   Did it pass? <yes/no>
-Verdict source: <command + exit code + score + verdict string>
+Did it run? <yes/no>   (the PASS/FAIL verdict is the STATUS line above — this frame proves it, it does not re-vote)
+Verdict source: <command + exit code + score + verdict string>   ← this IS the pass/fail evidence behind STATUS
 Runtime provenance: <live harness → live adapter; what was observer-only; zero mocks>
 
 **What worked**
@@ -87,7 +87,7 @@ Runtime provenance: <live harness → live adapter; what was observer-only; zero
 **Failure**
 <violated contract: expected X, got Y>
 
-**Layered RCA**   (required when Did it pass? = No)
+**Layered RCA**   (required when STATUS: FAIL — the verdict source shows failure)
 Immediate symptom: <the surface failure as reported>
 Failing layer:     <the layer that ACTUALLY failed — rule out the layer where it merely surfaced>
 Why-chain (dig until root — each level a real "but why?", keep going even if many levels):
