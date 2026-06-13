@@ -71,7 +71,7 @@ DEFAULT_MIN_FILES = 3
 DEFAULT_RECENCY_SEC = 300
 
 # Status values that indicate "active" plans
-ACTIVE_STATUSES = {"In Progress", "Not Started", "Waiting", "Lower Priority"}
+ACTIVE_STATUSES = {"In Progress", "Not Started"}  # SSOT: _notion_plans_status_check.ACTIVE_STATUSES (5-status; "Waiting"/"Lower Priority" removed)
 
 # ---------------------------------------------------------------------------
 # Data structures

@@ -145,12 +145,14 @@ class TestCIGatePresence:
         assert gate_path.exists(), f"CI gate missing: {gate_path}"
 
     def test_wave_exec_has_current_notion_status_function(self):
-        path = REPO_ROOT / "tools" / "windsurf" / "wave_execution_state.py"
+        # Canonical path (tools/plan_lifecycle/) — not the stale tools/windsurf/ mirror.
+        path = REPO_ROOT / "tools" / "plan_lifecycle" / "wave_execution_state.py"
         text = path.read_text(encoding="utf-8")
         assert "_current_notion_status" in text
 
     def test_wave_exec_has_completed_guard(self):
-        path = REPO_ROOT / "tools" / "windsurf" / "wave_execution_state.py"
+        # Canonical path (tools/plan_lifecycle/) — not the stale tools/windsurf/ mirror.
+        path = REPO_ROOT / "tools" / "plan_lifecycle" / "wave_execution_state.py"
         text = path.read_text(encoding="utf-8")
         assert "status_already_completed" in text
 

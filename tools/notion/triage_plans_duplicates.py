@@ -35,7 +35,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -51,13 +51,16 @@ TIMEOUT_S = 30.0
 THROTTLE_S = 0.35
 
 # Status priority — higher = better. Ties broken by last_edited_time.
+# 5-status SSOT: Completed/In Progress/Not Started/Retired/Archived. The four
+# legacy keys below are NON-canonical (coerced → "In Progress" on write); they
+# remain here only so duplicate-ranking still handles pre-existing legacy rows.
 _STATUS_PRIORITY: dict[str, int] = {
     "Completed": 100,
     "In Progress": 80,
-    "Lower Priority": 60,
-    "Deferred": 55,
-    "Deprioritized": 55,
-    "Waiting": 50,
+    "Lower Priority": 60,  # legacy
+    "Deferred": 55,  # legacy
+    "Deprioritized": 55,  # legacy
+    "Waiting": 50,  # legacy
     "Not Started": 40,
     "Retired": 20,
     "Archived": 10,

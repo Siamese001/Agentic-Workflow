@@ -132,7 +132,7 @@ def materialize_phase_c(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           AND n.resolved_path NOT LIKE 'tests/%'
           AND n.resolved_path NOT LIKE 'tools/%'
           AND n.resolved_path NOT LIKE 'ops_scripts/%'
-          AND n.resolved_path NOT LIKE '.claude/governance/scripts/%'
+          AND n.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/governance_scripts/%'
           AND n.resolved_path NOT LIKE 'agentic_core/adg/%'
           AND n.resolved_path NOT LIKE 'infrastructure/%'
           -- Primitive-provider exemption (config/, types/): hold constants, Enums, and

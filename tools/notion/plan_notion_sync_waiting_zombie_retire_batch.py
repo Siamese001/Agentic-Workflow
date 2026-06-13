@@ -156,7 +156,7 @@ def main() -> int:
         )
         print(f"PLAN_RETIRED: slug={slug} notion_page={page_id}")
 
-    patched = _patch(TSP1_PAGE, "Waiting", TSP1_SUMMARY, TSP1_AI, waiting=False)
+    patched = _patch(TSP1_PAGE, "In Progress", TSP1_SUMMARY, TSP1_AI, waiting=False)  # was "Waiting" (5-status SSOT)
     commented = _comment(TSP1_PAGE, TSP1_COMMENT)
     ok_all = ok_all and patched and commented
     results.append(

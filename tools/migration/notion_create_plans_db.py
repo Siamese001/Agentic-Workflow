@@ -142,8 +142,6 @@ def create_plans_database(tok: str) -> str:
                     "options": [
                         {"name": "In Progress", "color": "green"},
                         {"name": "Not Started", "color": "gray"},
-                        {"name": "Lower Priority", "color": "yellow"},
-                        {"name": "Waiting", "color": "orange"},
                         {"name": "Completed", "color": "blue"},
                         {"name": "Retired", "color": "purple"},
                         {"name": "Archived", "color": "gray"},

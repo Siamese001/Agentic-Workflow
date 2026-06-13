@@ -12,6 +12,8 @@ import pytest
 
 # Ensure script is importable
 REPO_ROOT = Path(__file__).parents[3]  # tests/unit/windsurf_scripts/ -> tests/unit/ -> tests/ -> repo root
+# Test the ACTIVE gate (the one that runs), not the deprecated legacy copy. The legacy copy
+# uses the old plan-path regex + log dir, which is what made these assertions drift/fail.
 SCRIPTS_PATH = REPO_ROOT / ".claude" / "governance/scripts"
 if str(SCRIPTS_PATH) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_PATH))

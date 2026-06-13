@@ -48,7 +48,7 @@ SHORT_WINDOW_HOURS: int = 24  # For quick flips
 TERMINAL_STATUSES: set[str] = {"Completed", "Retired", "Archived"}
 
 # Status values that are "stable" (flips from these are suspicious)
-STABLE_STATUSES: set[str] = {"Completed", "Lower Priority", "Retired"}
+STABLE_STATUSES: set[str] = {"Completed", "Retired"}  # SSOT 5-status: "Lower Priority" removed
 
 
 @dataclass(frozen=True)
@@ -278,7 +278,7 @@ def detect_anomalies(plans: list[dict], audit_logs: list[dict]) -> list[Anomaly]
         time_since_creation = edited_dt - created_dt
         if time_since_creation < timedelta(hours=1) and current_status != "Not Started":
             # Plan created and immediately changed status
-            if current_status in ["Completed", "Lower Priority", "Deferred"]:
+            if current_status in ["Completed"]:  # SSOT 5-status: "Lower Priority"/"Deferred" removed
                 anomaly = Anomaly(
                     plan_slug=slug,
                     plan_page_id=page_id,

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Block new active Windsurf workflow artifacts.
 
-The repository is Claude Code-native. Historical Windsurf material may remain only in
+The repository is Cursor-native. Historical Windsurf material may remain only in
 explicit archive/compatibility locations, and existing `.windsurf/**` files are
 not an authoring surface. This staged-file gate prevents fresh edits from
 reintroducing `.windsurf` as a live SSOT.
@@ -33,7 +33,8 @@ BLOCKED_FILES = {
     ".windsurf/RULES_INDEX.md",
 }
 ARCHIVE_EXEMPT_PREFIXES = (
-    ".claude/plans/_archive/",
+    ".cursor/plans/_archive/",
+    ".cursor/windsurf_compat/",
     "docs/archive/windsurf/",
 )
 
@@ -80,8 +81,8 @@ def main() -> int:
     for path in blocked:
         print(f"  - {path}", file=sys.stderr)
     print(
-        "Move active governance/workflow changes to .claude/**, or archive historical material "
-        "under docs/archive/windsurf/.",
+        "Move active governance/workflow changes to .cursor/**, or archive historical material "
+        "under docs/archive/windsurf/ or .cursor/*_legacy*.",
         file=sys.stderr,
     )
     return 1

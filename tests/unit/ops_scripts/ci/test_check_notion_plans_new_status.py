@@ -279,8 +279,10 @@ class TestMain:
 
 class TestViolationStatuses:
     def test_violation_statuses_set(self):
-        assert "Lower Priority" in VIOLATION_STATUSES
-        assert "Waiting" in VIOLATION_STATUSES
+        # 5-status SSOT: "Lower Priority"/"Waiting" removed from the taxonomy (now globally
+        # non-canonical, caught by NP2 — no longer NP9 new-plan violations).
+        assert "Lower Priority" not in VIOLATION_STATUSES
+        assert "Waiting" not in VIOLATION_STATUSES
         assert "In Progress" in VIOLATION_STATUSES
         assert "Completed" in VIOLATION_STATUSES
         assert CANONICAL_NEW_PLAN_STATUS not in VIOLATION_STATUSES
@@ -298,8 +300,6 @@ class TestViolationStatuses:
     def test_violation_statuses_exhaustiveness(self):
         """Canonical wrong-at-creation statuses (excludes stale legacy names)."""
         assert VIOLATION_STATUSES == frozenset({
-            "Lower Priority",
-            "Waiting",
             "In Progress",
             "Completed",
         })

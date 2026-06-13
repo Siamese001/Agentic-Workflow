@@ -20,7 +20,7 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-# Load module from the active governance scripts directory.
+# Load module from canonical governance scripts (not the stale _legacy_windsurf/ tree).
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
 MODULE_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_plan_scope_audit.py"
 

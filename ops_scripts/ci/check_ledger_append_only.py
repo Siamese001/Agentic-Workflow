@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-MIG_SCRIPT = REPO_ROOT / ".claude" / "governance/scripts" / "apply_append_only_triggers.py"
+MIG_SCRIPT = REPO_ROOT / ".claude" / "governance" / "scripts" / "apply_append_only_triggers.py"
 BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "ledger_append_only_bypass.jsonl"
 
 

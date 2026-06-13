@@ -5,7 +5,7 @@ Reads artifacts/notion/backlog_plan_derived_delta.json.
 For each row where:
   - Status.classification == "conflict"
   - Status.backlog_is_scorer_default == True  (Backlog Status == "Not Started")
-  - Status.plan_value in {"In Progress", "Completed", "Waiting", "Retired", "Archived"}
+  - Status.plan_value in {"In Progress", "Not Started", "Completed", "Retired", "Archived"}
 
 Patches the Backlog row's Status with the Plan-derived value, plus an
 Evidence note and Last Updated timestamp.
@@ -31,7 +31,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
 
 from _notion_constants import NOTION_API_VERSION, NOTION_BASE  # noqa: E402
 
@@ -48,7 +48,7 @@ PAGE_URL_FMT = f"{NOTION_BASE}/pages/{{}}"
 TIMEOUT = 30.0
 THROTTLE_S = 0.35
 
-_VALID_PLAN_STATUSES = {"In Progress", "Completed", "Waiting", "Retired", "Archived"}
+_VALID_PLAN_STATUSES = {"In Progress", "Not Started", "Completed", "Retired", "Archived"}  # SSOT 5-status ("Waiting" removed; "Not Started" added)
 _SCORER_DEFAULT_STATUS = "Not Started"
 _EVIDENCE_NOTE = "W4 P4.3 upgrade — Status promoted from Plan-derived value (was scorer-default Not Started)"
 

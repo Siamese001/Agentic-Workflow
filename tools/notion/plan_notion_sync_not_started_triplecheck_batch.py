@@ -24,7 +24,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
         "l0-l3-parent-gap-remediation-a7f3e2",
         ".claude/plans/l0-l3-parent-gap-remediation-a7f3e2.md",
         "36927693-f55c-812e-9828-ccb5031897fd",
-        "Waiting",
+        "In Progress",
         "VALID backlog: L0/L3 parent §7 validators + apps_rg l3_binding not shipped. "
         "Partial overlap with completed l5-l4-00c-parent-gap; 03 Switching_L3 scope remains.",
         "Author-Gate for touches_agentic_core; W0 vocabulary decision.",
@@ -33,7 +33,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
         "l0-routing-v15-only-cutover-c9e2f1",
         ".claude/plans/l0-routing-v15-only-cutover-c9e2f1.md",
         "36727693-f55c-81e9-b053-ef58e79f02fb",
-        "Waiting",
+        "In Progress",
         "VALID backlog: v12/v15 duality still in agentic_core/L0_routing (bridge, fallback chains). "
         "Not superseded by apps_rg section spine W2–W6.",
         "Author-Gate + dedicated L0 cutover wave; ADG baseline 05212026_0548.",
@@ -42,7 +42,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
         "apps-rg-parallel-section-orchestration-f2a8c4",
         ".claude/plans/apps-rg-parallel-section-orchestration-f2a8c4.md",
         "36627693-f55c-810f-8d37-e31d7656b46c",
-        "Waiting",
+        "In Progress",
         "VALID backlog: whole-run Phase-1 lanes still serial in modular_resume_generation. "
         "Section CLI uses spine runners (serial per invocation) — parallel DAG is separate scope.",
         "Spine master W5 deferred (L3+assembly); vLLM concurrency policy + lane DAG W0–W2.",
@@ -51,7 +51,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
         "semantic-cache-fingerprint-proof-c9f1a3",
         ".claude/plans/semantic-cache-fingerprint-proof-c9f1a3.md",
         "36127693-f55c-81ce-a640-d26133b431de",
-        "Waiting",
+        "In Progress",
         "VALID optional backlog: no artifacts/governance fingerprint receipt per plan DoD. "
         "Related tooling exists (tools/cache, tools/cert semantic_cache_*) but plan W1–W2 open.",
         "Stakeholder request for byte-stable cache proof; low priority optional audit.",
@@ -60,7 +60,7 @@ ROWS: list[tuple[str, str, str, str, str, str]] = [
         "fortknox-runtime-dual-track-b7c4e2",
         ".claude/plans/fortknox-runtime-dual-track-b7c4e2.md",
         "36127693-f55c-811c-8ecc-db4577c8874c",
-        "Waiting",
+        "In Progress",
         "VALID backlog: dual-track governance W0–W4 on disk TODO. FortKnox skill + "
         "fortknox-certification-discipline.md exist; full plan waves (CI posture, runtime template) not executed.",
         "Documentation/ADR waves W0–W1; not blocking apps_rg spine.",

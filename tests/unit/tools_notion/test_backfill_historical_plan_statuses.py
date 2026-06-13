@@ -70,14 +70,14 @@ def test_only_body_text_returns_none(mod):
         ("Completed", "Completed"),
         ("Retired", "Retired"),
         ("Archived", "Archived"),
-        ("Deferred", "Lower Priority"),
-        ("Waiting", "Waiting"),
+        ("Deferred", "In Progress"),  # 5-status SSOT: Deferred coerces to In Progress
+        ("Waiting", "In Progress"),  # 5-status SSOT: Waiting removed → coerces to In Progress
         # Legacy mappings
         ("Live", "In Progress"),
         ("Draft", "Not Started"),
         ("Done", "Completed"),
         ("Superseded", "Retired"),
-        ("Deprioritized", "Lower Priority"),
+        ("Deprioritized", "In Progress"),  # 5-status SSOT: coerces to In Progress
         ("Active", "In Progress"),
         # Quoted variants
         ('"Completed"', "Completed"),

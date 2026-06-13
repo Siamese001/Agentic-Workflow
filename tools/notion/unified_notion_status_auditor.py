@@ -5,7 +5,7 @@ unified_notion_status_auditor.py — Consolidated Notion Plans DB status auditor
 SSOT implementation. Thin entrypoints live at:
 
 - ``.claude/governance/scripts/unified_notion_status_auditor.py`` (sets vendor ``cursor``)
-- ``.claude/governance/scripts/unified_notion_status_auditor.py`` (sets vendor ``windsurf``)
+- ``docs/archive/windsurf/legacy-tree/governance_scripts/unified_notion_status_auditor.py`` (sets vendor ``windsurf``)
 
 Violations log path: ``artifacts/<vendor>/notion_plans_status_violations.jsonl`` where
 ``vendor`` is ``NOTION_STATUS_VIOLATIONS_VENDOR`` (``cursor`` or ``windsurf``, default ``cursor``).
@@ -212,10 +212,8 @@ def _auto_patch_violation(violation: dict[str, Any], invoke_body: str) -> dict[s
         "canonical": canonical,
     }
 
-    if patched and canonical == "Waiting":
-        reminder_ok = _append_waiting_reminder(page_id)
-        result["reminder_appended"] = reminder_ok
-
+    # 5-status SSOT: _canonical_for() never yields "Waiting" (it coerces →
+    # "In Progress"), so the legacy Waiting-reminder branch is dead and removed.
     return result
 
 
@@ -247,7 +245,9 @@ def _detect_violations(response_text: str) -> list[dict[str, Any]]:
             continue
 
         waiting_for_populated = False
-        if status_value == "Waiting" or suggested == "Waiting":
+        # Legacy detection only: writing "Waiting" is itself a violation under the
+        # 5-status SSOT (suggested can never be "Waiting" — it coerces to In Progress).
+        if status_value == "Waiting":
             wf_match = _WAITING_FOR_RE.search(invoke_body)
             if wf_match:
                 wf_content = wf_match.group(1).strip()

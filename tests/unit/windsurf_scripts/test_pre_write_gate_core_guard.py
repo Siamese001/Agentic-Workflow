@@ -147,8 +147,9 @@ def gate(tmp_path, monkeypatch):
     so no real session_state / receipt files are touched.
     """
     # Ensure the module is freshly imported each test (avoids state bleed)
+    # Canonical path — pre_write_gate.py lives in governance/scripts/, not _legacy_windsurf/
     scripts_dir = str(
-        pathlib.Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts"
+        pathlib.Path(__file__).resolve().parents[3] / ".claude" / "governance" / "scripts"
     )
     if scripts_dir not in sys.path:
         sys.path.insert(0, scripts_dir)

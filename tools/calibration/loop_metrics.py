@@ -1,7 +1,7 @@
 """loop_metrics.py — Ledger-agnostic prediction→outcome calibration primitives.
 
 Used by:
-    - .claude/governance/scripts/generate_calibration_report.py (Author-Gate decision ledger)
+    - docs/archive/windsurf/legacy-tree/governance_scripts/generate_calibration_report.py (Author-Gate decision ledger)
     - ops_scripts/calibration/ledger_weekly_report.py (10 intelligence ledgers)
     - any future calibration consumer (tests, ad-hoc analysis, dashboards)
 

@@ -17,34 +17,31 @@ from enum import Enum
 # ============================================================================
 
 class PlanStatus:
-    """Canonical plan statuses. Pure extraction — no new statuses."""
-    
+    """Canonical plan statuses — the 5-option Notion Plans SSOT (aligned 2026-06-08).
+    "Waiting"/"Lower Priority" were never created in the live Plans DB, so they are removed."""
+
     NOT_STARTED = "Not Started"
     IN_PROGRESS = "In Progress"
-    WAITING = "Waiting"
-    LOWER_PRIORITY = "Lower Priority"
     COMPLETED = "Completed"
     RETIRED = "Retired"
     ARCHIVED = "Archived"
-    
+
     ALL = {
         NOT_STARTED,
         IN_PROGRESS,
-        WAITING,
-        LOWER_PRIORITY,
         COMPLETED,
         RETIRED,
         ARCHIVED,
     }
-    
-    # Active statuses (plan is "live" in some form)
-    ACTIVE = {NOT_STARTED, IN_PROGRESS, WAITING, LOWER_PRIORITY}
-    
+
+    # Active (non-terminal) statuses
+    ACTIVE = {NOT_STARTED, IN_PROGRESS}
+
     # Terminal statuses (no further work expected)
     TERMINAL = {COMPLETED, RETIRED, ARCHIVED}
-    
-    # Blocked/waiting statuses
-    BLOCKED = {WAITING, LOWER_PRIORITY}
+
+    # Blocked/waiting statuses — none in the 5-status taxonomy
+    BLOCKED: set = set()
 
 
 # ============================================================================
@@ -86,23 +83,10 @@ VALID_PLAN_TRANSITIONS: Dict[str, Set[str]] = {
     # From -> To set
     PlanStatus.NOT_STARTED: {
         PlanStatus.IN_PROGRESS,
-        PlanStatus.LOWER_PRIORITY,
         PlanStatus.RETIRED,
     },
     PlanStatus.IN_PROGRESS: {
-        PlanStatus.WAITING,
-        PlanStatus.LOWER_PRIORITY,
         PlanStatus.COMPLETED,
-        PlanStatus.RETIRED,
-    },
-    PlanStatus.WAITING: {
-        PlanStatus.IN_PROGRESS,
-        PlanStatus.LOWER_PRIORITY,
-        PlanStatus.RETIRED,
-    },
-    PlanStatus.LOWER_PRIORITY: {
-        PlanStatus.IN_PROGRESS,
-        PlanStatus.NOT_STARTED,  # Undefer
         PlanStatus.RETIRED,
     },
     PlanStatus.COMPLETED: {
@@ -171,8 +155,8 @@ def validate_status(status: str) -> Tuple[bool, Optional[str]]:
         "Live": PlanStatus.IN_PROGRESS,
         "Active": PlanStatus.IN_PROGRESS,
         "Proposed": PlanStatus.NOT_STARTED,
-        "Deprioritized": PlanStatus.LOWER_PRIORITY,
-        "Deferred": PlanStatus.LOWER_PRIORITY,
+        "Deprioritized": PlanStatus.IN_PROGRESS,
+        "Deferred": PlanStatus.IN_PROGRESS,
     }
     
     if status in stale_map:

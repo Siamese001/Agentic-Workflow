@@ -12,7 +12,10 @@ import pytest
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../../.claude/governance/scripts"))
+# Canonical path — _notion_constants.py lives in governance/scripts/, not _legacy_windsurf/
+_SCRIPTS = os.path.join(os.path.dirname(__file__), "../../../.claude/governance/scripts")
+if _SCRIPTS not in sys.path:
+    sys.path.insert(0, _SCRIPTS)
 
 from _notion_constants import extract_page_id, format_uuid
 

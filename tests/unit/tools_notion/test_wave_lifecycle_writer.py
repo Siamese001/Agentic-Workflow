@@ -632,9 +632,10 @@ class TestPatchForMarkerEdgeCases:
         assert spec.is_noop is False
         assert spec.summary_append is not None
 
-    def test_lower_priority_status_is_canonical_in_helpers(self):
-        """Lower Priority must appear in CANONICAL_STATUSES (2026-05-10 rename)."""
-        assert STATUS_LOWER_PRIORITY in CANONICAL_STATUSES
+    def test_lower_priority_status_is_legacy_not_canonical(self):
+        """5-status SSOT: 'Lower Priority' / 'Waiting' removed — NOT canonical."""
+        assert STATUS_LOWER_PRIORITY not in CANONICAL_STATUSES
+        assert STATUS_WAITING not in CANONICAL_STATUSES
         assert "Draft" not in CANONICAL_STATUSES
         assert "Deferred" not in CANONICAL_STATUSES
         assert "Deprioritized" not in CANONICAL_STATUSES

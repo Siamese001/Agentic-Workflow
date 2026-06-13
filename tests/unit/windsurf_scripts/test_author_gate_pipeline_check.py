@@ -25,7 +25,8 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance/scripts"
+# Canonical path — _author_gate_pipeline_check.py lives in governance/scripts/, not _legacy_windsurf/
+SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance" / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 

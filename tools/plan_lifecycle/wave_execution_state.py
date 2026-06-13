@@ -47,7 +47,7 @@ from typing import Any
 
 # Import the shared helpers without polluting sys.path globally.
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_SCRIPTS = _REPO_ROOT / ".claude" / "governance/scripts"
+_SCRIPTS = _REPO_ROOT / ".claude" / "governance" / "scripts"
 sys.path.insert(0, str(_SCRIPTS))
 
 import _wave_execution_state as wes  # noqa: E402
@@ -459,7 +459,10 @@ def _cmd_complete(plan: str, note: str | None = None) -> int:
         removed = wes.clear()
         print(f"[wave-exec] COMPLETE plan={plan} removed={removed}")
 
-    # Status reconciliation: analyze deferred scope and suggest Waiting if all gated
+    # Status reconciliation: analyze deferred scope. Under the 5-status SSOT
+    # ("In Progress"/"Not Started"/"Completed"/"Retired"/"Archived") there is no
+    # "Waiting" status — an all-gated plan stays "In Progress" with the blocker
+    # list recorded in the "Waiting For" field for operator visibility.
     deferred_analysis = _analyze_deferred_scope_status(plan)
     waiting_for_text: str | None = None
 
@@ -474,25 +477,26 @@ def _cmd_complete(plan: str, note: str | None = None) -> int:
         )
 
         if deferred_analysis["all_gated"]:
-            # Suggest Waiting status with blocker list
+            # Record blocker list in "Waiting For" but keep canonical status.
+            # 5-status SSOT: no "Waiting" status — coerce to "In Progress".
             blockers = deferred_analysis["blocker_descriptions"]
             waiting_for_text = "; ".join(blockers) if blockers else "Deferred items blocked on time/volume gates"
             print(
                 f"[wave-exec] STATUS_RECOMMENDATION plan={plan} "
-                f"recommendation=waiting reason=all_deferred_items_gated",
+                f"recommendation=in_progress_blocked reason=all_deferred_items_gated",
                 file=sys.stderr,
             )
 
-            # Attempt direct Notion PATCH for status flip
+            # Attempt direct Notion PATCH: keep "In Progress" (canonical), record blockers in Waiting For.
             token = os.environ.get("NOTION_TOKEN") or os.environ.get("NOTION_API_KEY")
             if token and os.environ.get("WAVE_LIFECYCLE_NOTION_BYPASS") != "1":
                 patch_result = _notion_patch_status_and_waiting_for(
-                    plan, "Waiting", waiting_for_text, token
+                    plan, "In Progress", waiting_for_text, token
                 )
                 if patch_result["ok"]:
                     print(
                         f"[wave-exec] STATUS_PATCHED plan={plan} "
-                        f"status=Waiting page_id={patch_result['page_id']}",
+                        f"status=In Progress page_id={patch_result['page_id']}",
                         file=sys.stderr,
                     )
                 else:

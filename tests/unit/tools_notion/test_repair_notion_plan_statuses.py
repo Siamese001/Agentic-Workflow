@@ -142,8 +142,9 @@ class TestExtractStatusFromPlan:
         assert _extract_status_from_plan(md) == "Retired"
 
     def test_plain_status_line(self):
+        # 5-status SSOT: "Waiting" is coerced → "In Progress" via STALE_EQUIVALENTS.
         md = "Status: Waiting\n"
-        assert _extract_status_from_plan(md) == "Waiting"
+        assert _extract_status_from_plan(md) == "In Progress"
 
     def test_superseded_returns_retired(self):
         md = "# Old Plan\n\nSUPERSEDED by new-plan-abc\n"
@@ -154,8 +155,9 @@ class TestExtractStatusFromPlan:
         assert _extract_status_from_plan(md) == "Not Started"
 
     def test_deferred_status(self):
+        # 5-status SSOT: "Deferred" is coerced → "In Progress" via STALE_EQUIVALENTS.
         md = "---\nstatus: deferred\n---\n"
-        assert _extract_status_from_plan(md) == "Deferred"
+        assert _extract_status_from_plan(md) == "In Progress"
 
     def test_frontmatter_case_insensitive(self):
         md = "---\nstatus: COMPLETED\n---\n"

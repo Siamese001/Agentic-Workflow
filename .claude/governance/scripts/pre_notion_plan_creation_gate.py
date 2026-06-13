@@ -31,7 +31,11 @@ from typing import Any
 # Must match plan_creation_helper.py
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*-[a-f0-9]{6}$")
 VALID_CREATION_STATUSES = frozenset({"Not Started", "Completed"})
-FORBIDDEN_AT_CREATION = {"In Progress", "Waiting", "Lower Priority", "Retired", "Archived"}
+FORBIDDEN_AT_CREATION = {"In Progress", "Retired", "Archived"}  # SSOT 5-status: new plans must be "Not Started" ("Waiting"/"Lower Priority" removed)
+
+# Repo root for the disk-SSOT existence check (tandem enforcement): a plan may not be
+# registered in the Notion Plans DB unless its canonical disk file exists first.
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def _get_payload_from_stdin() -> dict[str, Any] | None:
@@ -182,8 +186,40 @@ def _validate_required_fields(payload: dict[str, Any]) -> tuple[bool, str]:
     
     if missing:
         return False, f"Missing required fields: {', '.join(missing)}"
-    
+
     return True, ""
+
+
+def _extract_slug(payload: dict[str, Any]) -> str:
+    """Best-effort slug extraction from a Plans-DB post-page payload."""
+    props = payload.get("properties", {})
+    slug_field = props.get("Slug", {})
+    if isinstance(slug_field, dict):
+        title = slug_field.get("title", [])
+        if isinstance(title, list) and title and isinstance(title[0], dict):
+            return str(title[0].get("text", {}).get("content", "") or "")
+    return ""
+
+
+def _validate_disk_file(payload: dict[str, Any]) -> tuple[bool, str]:
+    """Tandem enforcement: the plan's canonical disk SSOT file MUST exist before the row is
+    registered in Notion. Verifies the real file on disk — NOT the self-reported
+    ``Exists On Disk`` checkbox. Accepts repo-root ``plans/`` and legacy ``.claude/plans/``.
+    """
+    slug = _extract_slug(payload)
+    if not slug:
+        return True, ""  # slug presence/format is reported by _validate_slug
+    candidates = (
+        REPO_ROOT / "plans" / f"{slug}.md",
+        REPO_ROOT / ".claude" / "plans" / f"{slug}.md",
+    )
+    if any(c.is_file() for c in candidates):
+        return True, ""
+    return False, (
+        f"Plan SSOT disk file missing for slug '{slug}'. Write 'plans/{slug}.md' on disk "
+        f"BEFORE registering it in the Notion Plans DB (disk is the SSOT — tandem enforcement). "
+        f"Bypass: NOTION_PLAN_CREATION_GATE_BYPASS=1."
+    )
 
 
 def _check_payload(payload: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -208,7 +244,12 @@ def _check_payload(payload: dict[str, Any]) -> tuple[bool, list[str]]:
     valid, error = _validate_status(payload)
     if not valid:
         errors.append(error)
-    
+
+    # Tandem enforcement: the canonical disk SSOT file must exist before Notion registration.
+    valid, error = _validate_disk_file(payload)
+    if not valid:
+        errors.append(error)
+
     return len(errors) == 0, errors
 
 

@@ -3,14 +3,14 @@
 Notion Plans New-Plan Status Enforcement (NP6)
 
 Validates that newly-created plans in Notion Plans DB use status "Not Started",
-not "Lower Priority" or "Waiting". Catches PLAN_CREATED marker errors where incorrect
+not "In Progress" or "Completed". Catches PLAN_CREATED marker errors where an incorrect
 status flows through to Notion.
 
-Detection window: 24 hours from creation time. Allows intentional "Lower Priority"
-transitions on older plans.
+Detection window: 24 hours from creation time.
 
 Canonical new-plan status: "Not Started"
-Forbidden statuses for new plans: "Lower Priority", "Waiting", "In Progress", "Completed"
+Forbidden statuses for new plans: "In Progress", "Completed"
+(5-status SSOT: "Lower Priority"/"Waiting" were removed from the taxonomy entirely.)
 
 Usage:
     python ops_scripts/ci/check_notion_plans_new_status.py [--fail-closed]
@@ -59,7 +59,7 @@ DETECTION_WINDOW_HOURS = 24
 CANONICAL_NEW_PLAN_STATUS = "Not Started"
 
 # Statuses that violate the new-plan rule (must be Not Started at creation)
-VIOLATION_STATUSES = frozenset({"Lower Priority", "Waiting", "In Progress", "Completed"})
+VIOLATION_STATUSES = frozenset({"In Progress", "Completed"})  # SSOT 5-status: "Lower Priority"/"Waiting" removed (now globally non-canonical, caught by NP2)
 
 # Stale legacy names — also forbidden at creation (would recreate orphan Select options)
 STALE_NEW_PLAN_STATUSES = frozenset({

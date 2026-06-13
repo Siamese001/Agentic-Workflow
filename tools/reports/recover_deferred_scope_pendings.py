@@ -40,7 +40,7 @@ CAPTURE_LOG = REPO_ROOT / "artifacts" / "governance" / "deferred_scope_capture.j
 
 import sys as _sys
 
-_sys.path.insert(0, str(Path(REPO_ROOT) / ".claude" / "governance/scripts"))
+_sys.path.insert(0, str(Path(REPO_ROOT) / ".claude" / "governance" / "scripts"))
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
     NOTION_HTTP_TIMEOUT_S,

@@ -20,10 +20,12 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance/scripts"
-CLI_PATH = REPO_ROOT / "tools" / "windsurf" / "wave_execution_state.py"
+# Canonical path — _wave_execution_state.py and pre_mcp_gate.py live in governance/scripts/
+SCRIPTS_DIR = REPO_ROOT / ".claude" / "governance" / "scripts"
+CLI_PATH = REPO_ROOT / "tools" / "plan_lifecycle" / "wave_execution_state.py"
 
-sys.path.insert(0, str(SCRIPTS_DIR))
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
 import _wave_execution_state as wes  # noqa: E402
 import pre_mcp_gate  # noqa: E402

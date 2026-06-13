@@ -265,7 +265,8 @@ def run_gate(intended_slug: str, targeted_page_id: str) -> int:
     Honors bypass and fail-closed environment variables.
     """
     bypass = os.environ.get("NOTION_PLAN_IDENTITY_BYPASS", "") == "1"
-    fail_closed = os.environ.get("NOTION_PLAN_IDENTITY_FAIL_CLOSED", "") == "1"
+    # Tandem enforcement: fail-closed by DEFAULT; opt out with NOTION_PLAN_IDENTITY_FAIL_CLOSED=0.
+    fail_closed = os.environ.get("NOTION_PLAN_IDENTITY_FAIL_CLOSED", "").strip().lower() not in {"0", "false", "no"}
     
     result = verify_plan_identity(intended_slug, targeted_page_id)
     _log_verification(result)
@@ -284,8 +285,8 @@ def run_gate(intended_slug: str, targeted_page_id: str) -> int:
         sys.stderr.write("ERROR: NOTION_PLAN_IDENTITY_FAIL_CLOSED=1, blocking operation\n")
         return 2
     else:
-        # Default: warn but allow (advisory mode during rollout)
-        sys.stderr.write("WARNING: Advisory mode — NOTION_PLAN_IDENTITY_FAIL_CLOSED=1 to block\n")
+        # Advisory only when explicitly opted out (NOTION_PLAN_IDENTITY_FAIL_CLOSED=0)
+        sys.stderr.write("WARNING: Advisory mode (NOTION_PLAN_IDENTITY_FAIL_CLOSED=0) — mismatch allowed\n")
         return 0
 
 

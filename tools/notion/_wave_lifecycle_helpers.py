@@ -33,16 +33,21 @@ from _notion_plans_status_check import CANONICAL_STATUSES  # noqa: E402
 # Status taxonomy — SSOT: _notion_plans_status_check.CANONICAL_STATUSES
 # ---------------------------------------------------------------------------
 
+# Canonical 5-status SSOT (writable targets):
 STATUS_NOT_STARTED = "Not Started"
 STATUS_IN_PROGRESS = "In Progress"
-STATUS_WAITING = "Waiting"
 STATUS_COMPLETED = "Completed"
 STATUS_RETIRED = "Retired"
 STATUS_ARCHIVED = "Archived"
+
+# LEGACY (non-canonical, NEVER write these). Retained only so legacy Notion rows
+# that still carry these values can be recognised and coerced → "In Progress".
+STATUS_WAITING = "Waiting"
 STATUS_LOWER_PRIORITY = "Lower Priority"
 
 # Statuses where WAVE_START should flip to In Progress.
 # Already-In-Progress / Completed / Retired / Archived stay put.
+# Legacy "Waiting" is included so wave-start coerces it to canonical In Progress.
 _FLIPPABLE_TO_IN_PROGRESS: frozenset[str] = frozenset({STATUS_NOT_STARTED, STATUS_WAITING})
 
 # ---------------------------------------------------------------------------

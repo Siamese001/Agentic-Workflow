@@ -12,11 +12,13 @@ W1 SCOPE: Pure extraction only. No new statuses. No policy changes.
 from typing import Dict, List, Optional, Set
 
 from _notion_plans_status_check import (  # noqa: E402
+    ACTIVE_STATUSES as _ACTIVE_STATUSES_FS,
     CANONICAL_STATUSES as _CANONICAL_STATUSES_FS,
     FORBIDDEN_PLANS_STATUSES,
     PLANS_DATA_SOURCE_ID,
     PLANS_DB_ID,
     STALE_EQUIVALENTS,
+    TERMINAL_STATUSES as _TERMINAL_STATUSES_FS,
 )
 
 # ============================================================================
@@ -29,8 +31,6 @@ CANONICAL_STATUSES: Set[str] = set(_CANONICAL_STATUSES_FS)
 STATUS_IDS: Dict[str, str] = {
     "In Progress": "521256be-2c96-4522-809e-f3dcb6843af9",
     "Not Started": "503df59f-85d4-4ac0-baae-e457d0354b6f",
-    "Lower Priority": "~nZH",  # ID preserved across Deprioritized/Deferred renames
-    "Waiting": "dOTb",
     "Completed": "3a59faae-e327-4258-a4d3-82c835ff830d",
     "Retired": "3f684881-e5f5-4104-9c28-54e836e71305",
     "Archived": "a33b8816-b222-4db7-922e-f09c260058bf",
@@ -40,8 +40,6 @@ STATUS_IDS: Dict[str, str] = {
 STATUS_COLORS: Dict[str, str] = {
     "In Progress": "green",
     "Not Started": "gray",
-    "Lower Priority": "yellow",
-    "Waiting": "orange",
     "Completed": "blue",
     "Retired": "purple",
     "Archived": "gray",
@@ -149,23 +147,15 @@ def get_status_id(status: str) -> Optional[str]:
 
 
 def get_active_statuses() -> Set[str]:
-    """
-    Get statuses indicating active/living plans.
-    
-    Pure extraction of semantics from notion-plans-taxonomy.md:
-    - Live = In Progress (green)
-    - Draft = Not Started (gray) — NOT "Draft" stale option
-    """
-    return {"In Progress", "Not Started", "Waiting", "Lower Priority"}
+    """Active (non-terminal) plan statuses — derived from the 5-status SSOT
+    (``_notion_plans_status_check.ACTIVE_STATUSES``): {In Progress, Not Started}."""
+    return set(_ACTIVE_STATUSES_FS)
 
 
 def get_terminal_statuses() -> Set[str]:
-    """
-    Get terminal/final statuses.
-    
-    Pure extraction: Completed, Retired, Archived.
-    """
-    return {"Completed", "Retired", "Archived"}
+    """Terminal/final statuses — derived from the 5-status SSOT
+    (``_notion_plans_status_check.TERMINAL_STATUSES``): {Completed, Retired, Archived}."""
+    return set(_TERMINAL_STATUSES_FS)
 
 
 # ============================================================================

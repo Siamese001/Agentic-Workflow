@@ -205,11 +205,13 @@ class TestIsActiveStatus:
     def test_not_started_is_active(self) -> None:
         assert is_active_status("Not Started") is True
 
-    def test_waiting_is_active(self) -> None:
-        assert is_active_status("Waiting") is True
+    def test_waiting_is_not_active(self) -> None:
+        # 5-status SSOT: "Waiting" removed from the taxonomy → not an active status.
+        assert is_active_status("Waiting") is False
 
-    def test_deferred_is_active(self) -> None:
-        assert is_active_status("Lower Priority") is True
+    def test_lower_priority_is_not_active(self) -> None:
+        # 5-status SSOT: "Lower Priority" removed from the taxonomy → not an active status.
+        assert is_active_status("Lower Priority") is False
 
     def test_completed_is_not_active(self) -> None:
         assert is_active_status("Completed") is False

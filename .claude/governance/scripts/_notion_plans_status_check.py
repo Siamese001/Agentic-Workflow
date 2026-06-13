@@ -76,11 +76,13 @@ _BACKLOG_IDS: frozenset[str] = frozenset({
 # Notion option IDs, display names changed in the Notion UI).
 # Added 2026-05-05: "Deprioritized" for paused/deferred plans.
 # Renamed 2026-05-10: "Deprioritized" → "Deferred" → "Lower Priority" (UI rename, same option ID).
+# Aligned 2026-06-08 to the LIVE Plans DB schema, which has exactly these 5 Status
+# options. "Lower Priority" and "Waiting" were never created in the live data source;
+# writing them would make Notion silently auto-create polluting options, so they are
+# now stale-coerced (STALE_EQUIVALENTS) + forbidden (FORBIDDEN_PLANS_STATUSES).
 CANONICAL_STATUSES: frozenset[str] = frozenset({
     "In Progress",
     "Not Started",
-    "Lower Priority",
-    "Waiting",
     "Completed",
     "Retired",
     "Archived",
@@ -107,15 +109,29 @@ STALE_EQUIVALENTS: dict[str, str] = {
     # Pre-2026-05-02 schema (Active→Live→In Progress; Proposed→Draft→Not Started).
     "Active": "In Progress",
     "Proposed": "Not Started",
-    # 2026-05-10: "Deprioritized" / "Deferred" → "Lower Priority" (same option ID).
-    "Deprioritized": "Lower Priority",
-    "Deferred": "Lower Priority",
+    # 2026-06-08: live DB has no "Lower Priority"/"Waiting"/"Deferred" option — coerce
+    # the whole paused/blocked family to the live "In Progress" bucket so writes never
+    # auto-create a polluting option.
+    "Deprioritized": "In Progress",
+    "Deferred": "In Progress",
+    "Lower Priority": "In Progress",
+    "Waiting": "In Progress",
     "Complete": "Completed",
     "Superseded": "Retired",
 }
 
 # Explicitly forbidden — never canonical; must not be written to Notion API.
-FORBIDDEN_PLANS_STATUSES: frozenset[str] = frozenset({"Active", "Deprioritized"})
+FORBIDDEN_PLANS_STATUSES: frozenset[str] = frozenset(
+    {"Active", "Deprioritized", "Deferred", "Lower Priority", "Waiting"}
+)
+
+# Terminal (final) vs active (non-terminal) statuses — DERIVED from the 5-status SSOT
+# so every consumer agrees. Replaces the old hardcoded sets that still listed the
+# removed "Lower Priority"/"Waiting".  ACTIVE_STATUSES == {In Progress, Not Started}.
+TERMINAL_STATUSES: frozenset[str] = frozenset({"Completed", "Retired", "Archived"})
+ACTIVE_STATUSES: frozenset[str] = frozenset(
+    s for s in CANONICAL_STATUSES if s not in TERMINAL_STATUSES
+)
 
 # Lowercase tokens for on-disk frontmatter / repair tooling.
 CANONICAL_STATUSES_LOWER: frozenset[str] = frozenset(s.lower() for s in CANONICAL_STATUSES)
@@ -258,7 +274,8 @@ def decide_waiting_for(
 
     Returns a WaitingForViolation when:
       - db_id targets the Plans surface OR the Backlog Items surface (DS-3), AND
-      - status_value is "Waiting" (canonical), AND
+      - status_value is "Waiting" (LEGACY — not in the 5-status SSOT; coerced /
+        forbidden on write. This guard only fires on pre-existing legacy rows), AND
       - waiting_for_value is blank (None, empty string, or whitespace-only).
     Returns None in all other cases (pass-through for non-enforced writes, non-
     Waiting statuses, or properly populated Waiting For).

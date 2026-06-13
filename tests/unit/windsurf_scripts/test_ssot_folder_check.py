@@ -1,8 +1,8 @@
-"""Unit tests for `.claude/governance/scripts/_ssot_folder_check.py` (SSOT routing helper).
+"""Unit tests for `.claude/governance/scripts/_legacy_windsurf/_ssot_folder_check.py` (SSOT routing helper).
 
 Coverage:
 - Forbidden roots block NEW files (scripts/, repo-root, _oneoff/, _oneshot/)
-- Hook-prefix files outside .claude/governance/scripts/ are blocked
+- Hook-prefix files outside .claude/governance/scripts/_legacy_windsurf/ are blocked
 - Routing rules suggest the right canonical folder per filename pattern
 - Allowlists (verify_tier*_gate.py, conftest.py, scripts/proof/**) pass
 - Pre-existing files (exists=True) NEVER violate
@@ -18,7 +18,8 @@ from pathlib import Path
 import pytest
 
 # Make the helper importable without a package layout.
-HELPER_DIR = Path(__file__).resolve().parents[3] / ".claude" / "governance/scripts"
+# Canonical path — _ssot_folder_check.py lives in governance/scripts/, not _legacy_windsurf/
+HELPER_DIR = Path(__file__).resolve().parents[3] / ".claude" / "governance" / "scripts"
 sys.path.insert(0, str(HELPER_DIR))
 
 import _ssot_folder_check as helper  # noqa: E402
@@ -111,7 +112,7 @@ def test_oneoff_oneshot_blocked(path: str) -> None:
 
 
 # ----------------------------------------------------------------------------
-# Hook-prefix files outside .claude/governance/scripts/ are misrouted
+# Hook-prefix files outside .claude/governance/scripts/_legacy_windsurf/ are misrouted
 # ----------------------------------------------------------------------------
 
 

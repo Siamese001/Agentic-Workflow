@@ -17,6 +17,7 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
+# Canonical path — tests are skipped when ADG unavailable; sys.path must not poison other tests
 sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
 
 

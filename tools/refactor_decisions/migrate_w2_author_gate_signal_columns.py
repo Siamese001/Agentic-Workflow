@@ -72,7 +72,7 @@ def run_migration(*, dry_run: bool) -> int:
         REPO_ROOT / "tools" / "refactor_decisions" / "ledger_w2_schema.py",
         REPO_ROOT / "tools" / "refactor_decisions" / "author_gate_w2_signals.py",
         REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_author_gate_capture.py",
-        REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_author_gate_capture.py",
+        REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "governance_scripts" / "post_cascade_author_gate_capture.py",
     ]
     checksums = {}
     for p in files_to_hash:

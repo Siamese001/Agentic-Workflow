@@ -8,7 +8,8 @@ from pathlib import Path
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_SCRIPTS = _REPO_ROOT / ".claude" / "governance/scripts"
+# Canonical path — _notion_plans_status_check.py lives in governance/scripts/, not _legacy_windsurf/
+_SCRIPTS = _REPO_ROOT / ".claude" / "governance" / "scripts"
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 

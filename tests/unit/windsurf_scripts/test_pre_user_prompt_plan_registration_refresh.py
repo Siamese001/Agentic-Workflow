@@ -1,5 +1,5 @@
 """
-Unit tests for .claude/governance/scripts/pre_user_prompt_plan_registration_refresh.py.
+Unit tests for .claude/governance/scripts/_legacy_windsurf/pre_user_prompt_plan_registration_refresh.py.
 
 Plan: notion-plans-status-rca-followups-b8e3f2 (W2.P2).
 """
@@ -15,14 +15,15 @@ from unittest.mock import patch
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+# Canonical path — pre_user_prompt_plan_registration_refresh.py lives in governance/scripts/
 MODULE_PATH = (
-    REPO_ROOT / ".claude" / "governance/scripts" / "pre_user_prompt_plan_registration_refresh.py"
+    REPO_ROOT / ".claude" / "governance" / "scripts" / "pre_user_prompt_plan_registration_refresh.py"
 )
 
 
 def _load():
     # _plan_registration is imported by the module under test.
-    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))  # canonical
     spec = importlib.util.spec_from_file_location(
         "pre_user_prompt_plan_registration_refresh", MODULE_PATH
     )

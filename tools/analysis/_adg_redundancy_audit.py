@@ -97,7 +97,7 @@ def adg_inventory(con: sqlite3.Connection) -> dict:
 # ---------- CI / test inventory ----------
 
 CI_DIR = REPO / "ops_scripts" / "ci"
-GOVERNANCE_SCRIPTS = REPO / ".claude" / "governance" / "scripts"
+WINDSURF_SCRIPTS = REPO / ".claude" / "governance" / "scripts"
 
 
 def collect_ci_gates() -> list[tuple[Path, str]]:

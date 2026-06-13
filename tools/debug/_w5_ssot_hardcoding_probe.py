@@ -21,7 +21,7 @@ CANDIDATES = [
     ("artifacts/adg/", "agentic_core.L0_routing.config.path_constants", "ADG_ARTIFACTS_DIR"),
     ("artifacts/governance/", "agentic_core.L0_routing.config.path_constants", "WINDSURF_ARTIFACTS_DIR"),
     ("docs/archive/windsurf/legacy-tree/plans/", "agentic_core.L0_routing.config.path_constants", "WINDSURF_PLANS_DIR"),
-    (".claude/governance/scripts/", "agentic_core.L0_routing.config.path_constants", "GOVERNANCE_SCRIPTS_DIR"),
+
     ("docs/reports/", "agentic_core.L0_routing.config.path_constants", "DOCS_REPORTS_DIR"),
     ("docs/architecture/adr/", "agentic_core.L0_routing.config.path_constants", "ADR_DIR"),
 ]

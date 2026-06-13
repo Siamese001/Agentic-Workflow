@@ -4,7 +4,7 @@ Pattern: Microsoft Entra Authorization Fabric — separate Policy Enforcement
 Points (hook scripts that call this module) from Policy Decision Points
 (pure functions in this package).
 
-PEP  = .claude/governance/scripts/post_agent_*.py (hooks) + ops_scripts/ci/check_*.py (CI gates)
+PEP  = docs/archive/windsurf/legacy-tree/governance_scripts/*.py (hooks) + ops_scripts/ci/check_*.py (CI gates)
 PDP  = tools/policy/decisions/*.py (this package)
 
 Benefits:

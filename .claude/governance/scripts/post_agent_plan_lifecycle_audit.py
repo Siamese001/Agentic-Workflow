@@ -58,7 +58,7 @@ _NOTION_TIMEOUT_S = 30
 
 # Valid statuses at creation time
 VALID_CREATION_STATUSES = frozenset({"Not Started", "Completed"})
-FORBIDDEN_AT_CREATION = {"In Progress", "Waiting", "Lower Priority", "Retired", "Archived"}
+FORBIDDEN_AT_CREATION = {"In Progress", "Retired", "Archived"}  # SSOT 5-status ("Waiting"/"Lower Priority" removed)
 
 MAX_RESPONSE_BYTES = 512 * 1024
 

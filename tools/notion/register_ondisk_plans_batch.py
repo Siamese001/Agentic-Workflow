@@ -28,7 +28,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
@@ -41,10 +41,6 @@ from _notion_constants import (  # noqa: E402
 # RCA NOTION_PLANS_STATUS_RCA_2026-05-10 Cause B: shared dedup helper.
 from tools.notion._plan_registration_helpers import (  # noqa: E402
     register_plan_idempotent,
-)
-from tools.notion.plan_wave_summary import (  # noqa: E402
-    build_plan_notion_ai_summary,
-    build_plan_notion_summary,
 )
 
 try:
@@ -81,11 +77,8 @@ def _headers(token: str) -> dict[str, str]:
 # now route through register_plan_idempotent for shared dedup + telemetry.
 
 
-def _extract_summary(md_text: str, max_chars: int = 2000) -> str:
+def _extract_summary(md_text: str, max_chars: int = 200) -> str:
     """First non-header, non-blank line of content, capped to max_chars."""
-    wave_summary = build_plan_notion_summary(md_text)
-    if wave_summary:
-        return wave_summary[:max_chars] if len(wave_summary) <= max_chars else wave_summary[: max_chars - 1] + "\u2026"
     for line in md_text.splitlines():
         s = line.strip()
         if not s:
@@ -108,10 +101,6 @@ _WORD_CAP_AI = 12
 
 def _extract_ai_summary(md_text: str) -> str:
     """First line of `## AI Summary` section, hard-capped at _WORD_CAP_AI words."""
-    wave_ai = build_plan_notion_ai_summary(md_text)
-    if wave_ai:
-        words = wave_ai.split()
-        return " ".join(words[:_WORD_CAP_AI]) + ("\u2026" if len(words) > _WORD_CAP_AI else "")
     m = re.search(r"^##\s+AI\s+Summary\s*$", md_text, flags=re.IGNORECASE | re.MULTILINE)
     if m:
         for line in md_text[m.end():].splitlines():

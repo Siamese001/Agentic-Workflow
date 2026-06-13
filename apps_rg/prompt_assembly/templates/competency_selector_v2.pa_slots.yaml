@@ -55,7 +55,8 @@ slot_bodies:
     </proof_law_v1>
 
     <construction_checklist>
-    - categories[] (legacy mirror competencies[]): exactly 8 objects with category_label, terms (2–6 compact noun phrases),
+    - categories[] (legacy mirror competencies[]): exactly 8 objects with category_label, terms (3–6 compact noun phrases;
+      emit AT LEAST 3 terms per category — generic capability labels REQUIRE >=3 graph-backed terms),
       ranked from 8 graph-matched category candidates;
       source_fact_ids (non-empty bul_* on category).
     - terms[]: prefer objects {text, source_fact_id, source_fact_ids, optional jd_signal_ids} for JD-informed ranking only.

@@ -25,7 +25,7 @@ SSOT
 ----
 - Data source id: ``ac53d31b-3068-4039-9ebe-856c12caab32`` (Plans)
 - Property id: ``lNTq`` (``AI Summary ``)
-- Status enforced-set: ``{"In Progress", "Not Started", "Lower Priority", "Waiting", "Completed"}``
+- Status enforced-set: ``{"In Progress", "Not Started", "Completed"}`` (5-status SSOT; terminal Retired/Archived exempt)
 
 Exit codes
 ----------

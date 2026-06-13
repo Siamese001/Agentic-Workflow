@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_WINDSURF_SCRIPTS = _REPO_ROOT / ".claude" / "governance/scripts"
+_WINDSURF_SCRIPTS = _REPO_ROOT / ".claude" / "governance" / "scripts"
 if str(_WINDSURF_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_WINDSURF_SCRIPTS))
 

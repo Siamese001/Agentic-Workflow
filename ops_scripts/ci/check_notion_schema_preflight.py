@@ -24,7 +24,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
 
 from tools.notion._notion_property_validator import (
     PLANS_DB_REQUIRED_PROPERTIES,
@@ -129,7 +129,7 @@ def check_write_payload(
 def check_payloads_in_response(response_text: str) -> list[dict[str, Any]]:
     """Scan response text for Notion API payloads and validate them.
     
-    This is used by post-agent audits to check what the agent wrote.
+    This is used by post-cursor-agent audits to check what Cursor Agent wrote.
     """
     violations: list[dict[str, Any]] = []
     

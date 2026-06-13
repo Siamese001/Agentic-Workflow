@@ -164,7 +164,7 @@ def materialize_phase_b(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           AND n.resolved_path NOT LIKE 'tools/%'
           AND n.resolved_path NOT LIKE 'ops_scripts/%'
           -- Non-runtime tooling / hook exclusions (2026-04-23):
-          AND n.resolved_path NOT LIKE '.claude/governance/scripts/%'
+          AND n.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/governance_scripts/%'
           AND n.resolved_path NOT LIKE 'agentic_core/adg/%'
           AND n.resolved_path NOT LIKE 'infrastructure/%'
           -- Sanctioned gateway adapter modules ARE the capability route;
@@ -218,7 +218,7 @@ def materialize_phase_b(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           AND src.resolved_path NOT LIKE 'tools/%'
           AND src.resolved_path NOT LIKE 'ops_scripts/%'
           -- Non-runtime tooling / hook exclusions (2026-04-23, same class as W5 write_sov):
-          AND src.resolved_path NOT LIKE '.claude/governance/scripts/%'
+          AND src.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/governance_scripts/%'
           AND src.resolved_path NOT LIKE 'agentic_core/adg/%'
           AND src.resolved_path NOT LIKE 'infrastructure/%'
           -- Pure-string stdlib symbols are scanner false-positives for invokes_provider

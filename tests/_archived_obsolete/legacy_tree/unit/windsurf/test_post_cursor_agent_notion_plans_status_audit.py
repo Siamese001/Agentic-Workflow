@@ -15,10 +15,19 @@ import sys
 from pathlib import Path
 
 # Ensure the scripts dir is importable without installing the package.
+# The canonical module lives in _legacy_cursor/ (renamed from post_cursor_agent_* to match
+# the expected post_agent_* naming used throughout this file).
+import importlib.util as _ilu
+
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_SCRIPTS_DIR = _REPO_ROOT / ".claude" / "governance/scripts" / "_legacy_windsurf"
+_SCRIPTS_DIR = _REPO_ROOT / ".claude" / "governance" / "scripts" / "_legacy_cursor"
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
+
+# Register as the expected module name so all `from post_agent_notion_plans_status_audit import …`
+# calls in this file work without per-call renaming.
+import post_cursor_agent_notion_plans_status_audit as _canonical_mod  # type: ignore
+sys.modules.setdefault("post_agent_notion_plans_status_audit", _canonical_mod)
 
 import pytest
 

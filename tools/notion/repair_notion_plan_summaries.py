@@ -2,7 +2,7 @@
 """Repair all Plans DB rows that have garbage Summary / AI Summary content.
 
 Garbage detection:
-- AI Summary contains '---' OR newlines
+- AI Summary contains '---' OR newlines OR is longer than 100 chars
 - Summary starts with 'plan_id:', '**Tier**:', 'Status: Draft', or '---'
 
 For each garbage row: read the on-disk plan file, re-extract clean summaries
@@ -25,16 +25,12 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
 
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
     NOTION_BASE,
     PLANS_DATA_SOURCE_ID,
-)
-from tools.notion.plan_wave_summary import (  # noqa: E402
-    build_plan_notion_ai_summary,
-    build_plan_notion_summary,
 )
 
 PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
@@ -81,10 +77,7 @@ def _query_all_pages() -> list[dict]:
     return pages
 
 
-def _extract_summary(md_text: str, max_chars: int = 2000) -> str:
-    wave_summary = build_plan_notion_summary(md_text, max_chars=max_chars)
-    if wave_summary:
-        return wave_summary
+def _extract_summary(md_text: str, max_chars: int = 200) -> str:
     for line in md_text.splitlines():
         s = line.strip()
         if not s:
@@ -104,10 +97,6 @@ def _extract_summary(md_text: str, max_chars: int = 2000) -> str:
 
 
 def _extract_ai_summary(md_text: str) -> str:
-    wave_ai = build_plan_notion_ai_summary(md_text)
-    if wave_ai:
-        words = wave_ai.split()
-        return " ".join(words[:_WORD_CAP_AI]) + ("\u2026" if len(words) > _WORD_CAP_AI else "")
     m = re.search(r"^##\s+AI\s+Summary\s*$", md_text, flags=re.IGNORECASE | re.MULTILINE)
     if m:
         for line in md_text[m.end():].splitlines():
@@ -133,6 +122,7 @@ def _is_garbage(text: str) -> bool:
     return (
         "---" in text
         or "\n" in text
+        or len(text) > 100
         or text.startswith("plan_id:")
         or text.startswith("**Tier**")
         or text.startswith("Status: Draft")

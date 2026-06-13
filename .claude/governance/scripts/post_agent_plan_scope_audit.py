@@ -22,10 +22,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Load the sibling W2 module via importlib so this hook also works when run by
-# file path from the Stop dispatcher.
-SCRIPTS_DIR = Path(__file__).resolve().parent
-W2_MODULE_PATH = SCRIPTS_DIR / "_plan_scope_expansion_check.py"
+# Load W2 module via importlib.  The canonical copy lives alongside this script.
+# (old: REPO_ROOT = parents[2] which resolves to .claude/ — not the repo root)
+W2_MODULE_PATH = Path(__file__).parent / "_plan_scope_expansion_check.py"
+REPO_ROOT = Path(__file__).parent.parent.parent.parent  # scripts/ → governance/ → .claude/ → repo root
 
 _w2_spec = importlib.util.spec_from_file_location(
     "_plan_scope_expansion_check", W2_MODULE_PATH

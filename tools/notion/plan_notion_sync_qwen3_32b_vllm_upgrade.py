@@ -14,7 +14,7 @@ from tools.notion.plan_creation_helper import PlanCreationError, create_plan_in_
 SLUG = "qwen3-32b-vllm-upgrade-d7a3f1"
 PLAN_PATH = ".claude/plans/qwen3-32b-vllm-upgrade-d7a3f1.md"
 DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-STATUS = "Lower Priority"
+STATUS = "In Progress"  # was "Lower Priority" — removed from 5-status taxonomy (SSOT)
 
 SUMMARY = (
     "Lower Priority: Upgrade local-qwen-vllm from Qwen2.5-32B-Instruct-AWQ to "

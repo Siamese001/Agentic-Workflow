@@ -38,11 +38,10 @@ class PlanStatus(Enum):
     """Canonical plan statuses aligned with Notion Plans DB."""
     NOT_STARTED = "Not Started"
     IN_PROGRESS = "In Progress"
-    WAITING = "Waiting"
     COMPLETED = "Completed"
     RETIRED = "Retired"
     ARCHIVED = "Archived"
-    LOWER_PRIORITY = "Lower Priority"
+    # "Waiting"/"Lower Priority" removed — 5-status SSOT (not in the live Plans DB)
 
 
 class LifecycleState(Enum):
@@ -283,7 +282,6 @@ class PlanLifecycleManager:
         # Registered but no wave - PREVENTION LAYER TRIGGER
         if status.registered and status.notion_status in (
             PlanStatus.NOT_STARTED.value,
-            PlanStatus.WAITING.value,
             None,
         ):
             return PreFlightResult(

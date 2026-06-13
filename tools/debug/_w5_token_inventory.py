@@ -24,7 +24,7 @@ ROOTS = (
     "tools",
     "ops_scripts",
     "system_learning",
-    ".claude/governance/scripts",
+    "docs/archive/windsurf/legacy-tree/governance_scripts",
     "infrastructure",
 )
 EXCLUDES = (r"\\__pycache__\\", r"\\archives\\", r"\\_archive\\", r"\\tests\\")

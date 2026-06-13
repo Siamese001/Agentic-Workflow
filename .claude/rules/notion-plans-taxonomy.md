@@ -7,6 +7,18 @@
 
 ## Plans DB Status Taxonomy (canonical)
 
+> 🔴 **SSOT (2026-06-08): the live Plans DB has exactly FIVE Status options —**
+> `In Progress`, `Not Started`, `Completed`, `Retired`, `Archived`. **`Lower Priority` and `Waiting`
+> were retired** (they were never created in the live data source; writing them would make Notion
+> silently auto-create polluting options). They are now **stale-coerced → `In Progress` and
+> forbidden** at the code SSOT `.claude/governance/scripts/_notion_plans_status_check.py`
+> (`CANONICAL_STATUSES` / `ACTIVE_STATUSES` / `TERMINAL_STATUSES` / `STALE_EQUIVALENTS` /
+> `FORBIDDEN_PLANS_STATUSES`), with `_notion_canonical.py` + `_plan_lifecycle.PlanStatus` deriving
+> from it and `tests/unit/windsurf_scripts/test_notion_status_ssot_consistency.py` enforcing it.
+> **Any content below that references `Lower Priority`/`Waiting` (the 7-row table, transition matrix,
+> Waiting-For invariants DS-2/DS-3/NP10, time-rules T2/T5) is SUPERSEDED** — retained only as
+> historical context pending a full doc rewrite.
+
 > ⛔ **CANONICAL Status option strings — pass these EXACT plain-word values to the Notion API.** Emoji glyphs elsewhere in this rule are display mnemonics for human readers, NEVER literal API values.
 
 | Canonical Name | API-literal | Meaning | Required Conditions |

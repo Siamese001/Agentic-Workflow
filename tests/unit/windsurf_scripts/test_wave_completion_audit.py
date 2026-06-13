@@ -1,11 +1,11 @@
-"""Unit tests for .claude/governance/scripts/post_agent_wave_completion_audit.py.
+"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_agent_wave_completion_audit.py.
 
 RCA: rca-wave-marker-emission-gap-c7d3f1 W4.P1.
 
 Key invariants verified:
 - GAP-1 fix: audit fires WITHOUT requiring wave_execution_state.py start
   (i.e. _has_active_plan guard is gone — main() must not import or call it)
-- GAP-2 fix: hook is registered in the active post-agent dispatcher
+- GAP-2 fix: hook is registered with show_output=true in hooks.json
 - GAP-3 fix: EDIT_PATTERNS detects the actual Windsurf tool-call shapes
 - Advisory fires when write_count >= 3 and no markers
 - Advisory does NOT fire when write_count < 3
@@ -26,12 +26,14 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+# Canonical path — post_agent_wave_completion_audit.py lives in governance/scripts/, not _legacy_windsurf/
 HOOK_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_wave_completion_audit.py"
-DISPATCH_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_dispatch.py"
+# Claude Code uses .claude/settings.json instead of windsurf-era hooks.json
+HOOKS_JSON = REPO_ROOT / ".claude" / "settings.json"
 
 
 def _load_module():
-    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))  # canonical
     sys.path.insert(0, str(REPO_ROOT))
     spec = importlib.util.spec_from_file_location(
         "post_agent_wave_completion_audit", HOOK_PATH
@@ -42,14 +44,6 @@ def _load_module():
     if key in sys.modules:
         del sys.modules[key]
     sys.modules[key] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def _load_dispatch_module():
-    spec = importlib.util.spec_from_file_location("post_agent_dispatch", DISPATCH_PATH)
-    assert spec and spec.loader
-    mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
 
@@ -95,13 +89,26 @@ class TestGap1GuardRemoved:
 
 
 # ---------------------------------------------------------------------------
-# GAP-2: active dispatcher must register audit hook
+# GAP-2: hooks.json must register audit hook with show_output=true
 # ---------------------------------------------------------------------------
 
-class TestGap2ActiveDispatch:
-    def test_registered_in_post_agent_dispatch_chain(self):
-        dispatch = _load_dispatch_module()
-        assert "post_agent_wave_completion_audit.py" in dispatch.LEGACY_SCRIPTS
+class TestGap2HooksJson:
+    def test_show_output_true_in_hooks_json(self):
+        """Governance dispatch hook is registered in Claude Code settings.json Stop hooks."""
+        # Claude Code uses .claude/settings.json; windsurf used hooks.json with post_agent_response.
+        # The governance dispatch hook (after_agent_governance_dispatch.py) runs all post-agent
+        # scripts including post_agent_wave_completion_audit.py.
+        data = json.loads(HOOKS_JSON.read_text(encoding="utf-8"))
+        stop_entries = data.get("hooks", {}).get("Stop", [])
+        all_commands = [
+            h.get("command", "")
+            for entry in stop_entries
+            for h in entry.get("hooks", [])
+        ]
+        governance_hooks = [c for c in all_commands if "governance" in c or "after_agent" in c]
+        assert governance_hooks, (
+            "No governance dispatch hook registered in .claude/settings.json hooks.Stop"
+        )
 
 
 # ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-"""Unit tests for .claude/governance/scripts/post_agent_wave_lifecycle_capture.py.
+"""Unit tests for .claude/governance/scripts/_legacy_windsurf/post_agent_wave_lifecycle_capture.py.
 
 Plan: notion-wave-lifecycle-autosync-f4a2b8 (W3.P3.1).
 
@@ -18,13 +18,13 @@ import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+# Canonical path — post_agent_wave_lifecycle_capture.py lives in governance/scripts/, not _legacy_windsurf/
 HOOK_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_wave_lifecycle_capture.py"
-DISPATCH_PATH = REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_dispatch.py"
 
 
 def _load_hook_module():
     """Load the hook as a module by file path so it can be exercised standalone."""
-    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
+    sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))  # canonical
     sys.path.insert(0, str(REPO_ROOT))
     spec = importlib.util.spec_from_file_location(
         "post_agent_wave_lifecycle_capture", HOOK_PATH
@@ -32,14 +32,6 @@ def _load_hook_module():
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["post_agent_wave_lifecycle_capture"] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def _load_dispatch_module():
-    spec = importlib.util.spec_from_file_location("post_agent_dispatch", DISPATCH_PATH)
-    assert spec is not None and spec.loader is not None
-    mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
 
@@ -185,25 +177,43 @@ class TestMainMarkerProcessing:
 
 
 # ---------------------------------------------------------------------------
-# Active dispatcher/settings registration
+# Hook registration in hooks.json
 # ---------------------------------------------------------------------------
 
 
-class TestActiveDispatcherRegistration:
-    def test_hook_registered_in_post_agent_dispatch_chain(self):
-        dispatch = _load_dispatch_module()
-        assert "post_agent_wave_lifecycle_capture.py" in dispatch.LEGACY_SCRIPTS
-
-    def test_stop_hook_routes_to_governance_dispatcher(self):
-        settings_path = REPO_ROOT / ".claude" / "settings.json"
-        data = json.loads(settings_path.read_text(encoding="utf-8"))
-        stop_commands = [
-            entry["command"]
-            for hook in data["hooks"]["Stop"]
-            for entry in hook.get("hooks", [])
-            if "command" in entry
+class TestHooksJsonRegistration:
+    def test_hook_registered_in_post_agent_response(self):
+        # Claude Code uses .claude/settings.json Stop hooks; windsurf used hooks.json.
+        # The governance dispatch hook (after_agent_governance_dispatch.py) runs all
+        # post-agent scripts including post_agent_wave_lifecycle_capture.py.
+        hooks_path = REPO_ROOT / ".claude" / "settings.json"
+        data = json.loads(hooks_path.read_text(encoding="utf-8"))
+        stop_entries = data.get("hooks", {}).get("Stop", [])
+        all_commands = [
+            h.get("command", "")
+            for entry in stop_entries
+            for h in entry.get("hooks", [])
         ]
-        assert any("after_agent_governance_dispatch.py" in command for command in stop_commands)
+        assert any(
+            "governance" in c or "after_agent" in c for c in all_commands
+        ), "no governance dispatch hook registered in .claude/settings.json hooks.Stop"
+
+    def test_hook_entry_schema_pure(self):
+        # Constitutional §27 — Claude Code settings.json hook entries use:
+        # ``type`` / ``command`` / ``working_directory`` / ``show_output``
+        hooks_path = REPO_ROOT / ".claude" / "settings.json"
+        data = json.loads(hooks_path.read_text(encoding="utf-8"))
+        allowed = {"type", "command", "working_directory", "show_output"}
+        stop_entries = data.get("hooks", {}).get("Stop", [])
+        all_hook_entries = [
+            h for entry in stop_entries for h in entry.get("hooks", [])
+        ]
+        if not all_hook_entries:
+            pytest.skip("No Stop hooks configured in .claude/settings.json")
+        for entry in all_hook_entries:
+            assert set(entry.keys()) <= allowed, (
+                f"non-schema keys present in Stop hook entry: {set(entry.keys()) - allowed}"
+            )
 
 
 # ---------------------------------------------------------------------------

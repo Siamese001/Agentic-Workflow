@@ -37,7 +37,7 @@ def _repo_root() -> Path:
 
 def _import_helper(repo: Path):
     """Import the canonical SSOT helper from .claude/governance/scripts/."""
-    helper_dir = repo / ".claude" / "governance/scripts"
+    helper_dir = repo / ".claude" / "governance" / "scripts"
     sys.path.insert(0, str(helper_dir))
     try:
         import _ssot_folder_check  # type: ignore[import-not-found]

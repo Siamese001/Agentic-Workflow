@@ -2,29 +2,29 @@
 """
 Notion Plans Status Canonical Enforcement (NP2)
 
-Validates that all Plans DB rows use canonical status values only.
+Validates that all Plans DB rows use canonical status values only
+(imported from _notion_plans_status_check.CANONICAL_STATUSES — the SSOT).
 Also validates status discipline: "In Progress" plans with deferred scope
-items >7 days old should have "Waiting For" populated and may need
-status flipped to "Waiting".
+items >7 days old should have "Waiting For" populated (status stays
+"In Progress").
 
 Plan notion-plan-status-reconciliation-a3f2e1: Adds status reconciliation
 checks to detect the discipline gap identified in RCA of plan
 notion-plan-identity-deferred-scope-a3b7e2.
 
-Canonical statuses:
+Canonical statuses (5-status SSOT):
 - In Progress
 - Not Started
-- Lower Priority
-- Waiting
 - Completed
 - Retired
 - Archived
 
-Stale statuses (must NOT be used):
+Stale statuses (must NOT be used — coerced to "In Progress" / forbidden):
+- Lower Priority, Waiting, Deferred, Deprioritized (removed from taxonomy)
 - Draft (red option, id: 79d24503-da3e-4d22-a0fb-13a0c6d36d11)
 - 🟡Draft (red option, id: f5abd2a2-03bc-4951-9e38-ae9e1343909c)
 - 🔵Completed (pink option, id: 6da99522-3194-4aa3-aac4-44296b4048b7)
-- Live
+- Live, Active
 
 Status discipline violations:
 - IN_PROGRESS_EMPTY_WAITING_FOR: "In Progress" plan with empty "Waiting For"
@@ -337,11 +337,14 @@ def _check_status_discipline(token: str | None) -> list[dict[str, Any]]:
                 "plan_slug": slug,
                 "plan_id": plan.get("id"),
                 "current_status": STATUS_IN_PROGRESS,
-                "recommended_status": STATUS_WAITING,
+                # 5-status SSOT: no "Waiting" status — plan stays In Progress;
+                # only the "Waiting For" field is populated with the blocker list.
+                "recommended_status": STATUS_IN_PROGRESS,
                 "waiting_for": waiting_for,
                 "stale_deferred_items": len(stale_items),
                 "oldest_deferred_days": _calculate_oldest_age_days(stale_items),
-                "recommendation": f"Flip status to '{STATUS_WAITING}' and populate 'Waiting For' with blocker descriptions",
+                "recommendation": "Populate 'Waiting For' with blocker descriptions (status stays 'In Progress' — '"
+                f"{STATUS_WAITING}' is not in the 5-status SSOT)",
             })
     
     return violations
