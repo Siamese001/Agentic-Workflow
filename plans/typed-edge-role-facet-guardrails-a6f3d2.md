@@ -91,6 +91,51 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 
 **Consequence for the build order:** the selection-based graph-% diagnostic is a hard W3.1 deliverable (not optional), and it is what makes the 3-target evidence requirement compatible with the single-resume *live-gate* cost rebaseline. The single live E2E per stage confirms X3 gates for the chosen target; the **graph-% correctness evidence for all 3 targets comes from the cheap diagnostic at the same stage.** W5.4 then assembles the full A→E1 variance report across all targets/lanes.
 
+#### Calculation intervals — compute at EVERY stage boundary (7 capture points)
+
+Compute the matrix at **A, B0, B, C, D, E0, E1** — not a subset; the proof is the variance *pattern*, and two stages are **zero-variance controls** whose job is to show no movement. Skipping any stage breaks the causal chain.
+
+| Stage (wave) | Causal change | Expected variance vs prior |
+|---|---|---|
+| **A** (W1) | baseline | — (reference; `artifacts/w1/`) |
+| **B0** (W2.0/1) | metric_outcome materialization | **~0 — CONTROL** (no-effect proof) |
+| **B** (W2.3) | GraphDB SSOT + 4 lane fixes | only on fixed/blocked lanes (ibm_bullets, headline, exec_summary); neutral elsewhere |
+| **C** (W3.2) | role-family / facet targeting | **deliberate per-target re-weighting** — the key positive signal |
+| **D** (W4.2) | typed proof/traversal edges | eligibility blocks/admits where typed edges bite |
+| **E0** (W5.2) | sliding-scale dry-run | **~0 — CONTROL** (diagnostics only) |
+| **E1** (W5.4) | sliding-scale active enforcement | rebalancing toward the per-target threshold bands |
+
+#### Output format (canonical — emit per stage, markdown + JSON sidecar)
+
+**Cell metric** = lane graph-skill coverage % = `selected graph-skill terms ÷ total selected terms` for that lane×target (the "is the graph driving this lane" number; per memory, most lanes were historically fact-only ≈ low %). Optional cell suffix = dominant graph-skill family. The full **6-dimension** breakout (role family · role facet · pillar · source-fact-family · employer scope · metric type) lives in the JSON sidecar per cell. Lane column keys (fixed order): `comp` competencies · `u_bul` unify_bullets · `ibm_bul` ibm_bullets · `it_bul` insurtech_bullets · `ey_bul` ey_bullets · `u_nar` unify_narrative · `ibm_nar` ibm_narrative · `it_nar` insurtech_narrative · `ey_nar` ey_narrative · `exec` executive_summary · `head` headline.
+
+**(1) Per-stage matrix — 3 resume rows × 11 lane columns:**
+
+```markdown
+Stage <X> (<wave>) — graph-skill coverage % by lane × target
+| Target | comp | u_bul | ibm_bul | it_bul | ey_bul | u_nar | ibm_nar | it_nar | ey_nar | exec | head |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Anthropic       |  |  |  |  |  |  |  |  |  |  |  |
+| Truist          |  |  |  |  |  |  |  |  |  |  |  |
+| Brown & Brown   |  |  |  |  |  |  |  |  |  |  |  |
+```
+
+**(2) Per-stage variance — Δ vs prior stage / Δ vs Stage A (percentage points), + expected verdict:**
+
+```markdown
+Variance Stage <X> vs <prior> (Δpp) / vs A (cum) — material = |Δ| ≥ 3pp
+| Target | comp | u_bul | ibm_bul | it_bul | ey_bul | u_nar | ibm_nar | it_nar | ey_nar | exec | head |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Anthropic       | Δ/cum | … |  |  |  |  |  |  |  |  |  |
+| Truist          |  |  |  |  |  |  |  |  |  |  |  |
+| Brown & Brown   |  |  |  |  |  |  |  |  |  |  |  |
+| **Expected?**   | ✓/✗ + one-line reason for each material (|Δ|≥3pp) cell, tied to this stage's single causal change | … |
+```
+
+**Rules:** every **material** cell (|Δ| ≥ 3pp) needs an explicit expected/unexpected verdict in the `Expected?` row tied to *this stage's one causal change*; an unexplained material delta is a **regression until explained or reverted** (waterfall atomicity). Control stages (B0, E0) must show **all cells ≤ |3pp|** — any material movement there is a no-effect-violation. The `Expected?` row is per-target where targets diverge (split into 3 sub-rows if needed).
+
+**(3) Illustrative (Stage A, from the retired W1 3-target run — aggregate family mix, shown to anchor the shape, not lane-level):** Anthropic partnerships-ecosystem 27.9% / enterprise-tech-delivery 24.8% / agentic-AI-governance 18.5%; Truist agentic-AI-governance 37.0% / enterprise-tech-delivery 30.4%; Brown & Brown cloud-data-platform 28.1% / enterprise-tech-delivery 24.9%. The W3.1 diagnostic produces this **per lane** (11 cells/target), not just aggregate.
+
 ### Prerequisites — corrected status (verified in code)
 
 | ID | Prereq | Status |
