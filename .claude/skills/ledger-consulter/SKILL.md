@@ -65,7 +65,7 @@ Every per-ledger consulting skill MUST:
 | `router_l0_ensemble` | `ledger-consulter-router-l0-ensemble` | EnsembleRouter weights / MetaLearner changes |
 | `router_l0_path` | `ledger-consulter-router-l0-path` | PathRouter abstain threshold / A/B/C/D rules |
 | `router_l1_c0` | `ledger-consulter-router-l1-c0` | RetrievalRouter intent / SLO / downgrade changes |
-| `router_l2_cursor_agent` | `ledger-consulter-router-l2-cursor_agent` | HealingRouter tier / provider selection |
+| `router_l2_cascade` | `ledger-consulter-router-l2-cascade` | HealingRouter tier / provider selection |
 | `router_l3_reroute` | `ledger-consulter-router-l3-reroute` | RerouteCeiling threshold / max_reroutes |
 | `router_l3_sovereign_mcp` | `ledger-consulter-router-l3-sovereign-mcp` | SovereignMcpRouter key_id / dispatch logic |
 | `router_l4_uwg` | `ledger-consulter-router-l4-uwg` | DurableWriteGateway commit policy changes |
