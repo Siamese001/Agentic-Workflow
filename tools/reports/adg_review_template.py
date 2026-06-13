@@ -51,6 +51,14 @@ GATE_SHORT_NAMES = {
     "D2_role_duplication_warn": "D2_role_duplication",
 }
 
+BAND_PRIORITY = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
+ATTACK_CLASS_PRIORITY = {
+    "Fix now": 0,
+    "Burn down ratchets": 1,
+    "Open non-ratchet work": 2,
+    "Severity audit": 3,
+}
+
 
 def _utcnow_iso() -> str:
     return _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds")
@@ -367,7 +375,207 @@ def _action_rows(action_queue: dict[str, Any] | None, *, limit: int = 10) -> lis
     return rows
 
 
-def _priority_actions(band_rows: list[dict[str, Any]], action_rows: list[dict[str, Any]]) -> list[str]:
+def _p0_priority_why(*, work_type: str, ordinal: int, records: int) -> str:
+    if work_type == "Fix now":
+        return "Blocks green ADG; fix before burn-down work."
+    if work_type == "Burn down ratchet":
+        if ordinal == 1:
+            return "Largest P0 ratchet floor; reduces the biggest accepted baseline first."
+        if records <= 5:
+            return "Small P0 ratchet; close opportunistically after the larger P0 floors."
+        return "Next-largest P0 ratchet floor; keep burning down accepted baseline debt."
+    if records <= 5:
+        return "Small open P0 work item; bundle if it is already in the same files."
+    return "Real open P0 work, but it does not reduce the ratchet floor."
+
+
+def _p0_next_step(*, work_type: str, records: int) -> str:
+    if work_type == "Fix now":
+        return "Fix the gate condition and rerun ADG before treating the run as green."
+    if work_type == "Burn down ratchet":
+        if records <= 5:
+            return "Close or bundle this small floor, rerun ADG, then absorb the lower baseline."
+        return "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline."
+    if records <= 5:
+        return "Close when touching nearby code; it is open work but not ratchet burn-down."
+    return "Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage."
+
+
+def _p0_action_plan(gate_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    p0_rows = [
+        row
+        for row in gate_rows
+        if row.get("band") == "P0"
+        and row.get("action") in {"FIX", "TRACK"}
+        and int(row.get("records", 0) or 0) > 0
+    ]
+    fix_rows = sorted(
+        (row for row in p0_rows if row.get("action") == "FIX"),
+        key=lambda row: (-int(row.get("records", 0) or 0), str(row.get("gate_id", ""))),
+    )
+    ratchet_rows = sorted(
+        (row for row in p0_rows if row.get("action") == "TRACK" and row.get("sub") == "floor"),
+        key=lambda row: (-int(row.get("records", 0) or 0), str(row.get("gate_id", ""))),
+    )
+    open_rows = sorted(
+        (row for row in p0_rows if row.get("action") == "TRACK" and row.get("sub") != "floor"),
+        key=lambda row: (-int(row.get("records", 0) or 0), str(row.get("gate_id", ""))),
+    )
+
+    ordered: list[dict[str, Any]] = []
+    for work_type, rows in (
+        ("Fix now", fix_rows),
+        ("Burn down ratchet", ratchet_rows),
+        ("Open non-ratchet work", open_rows),
+    ):
+        for ordinal, row in enumerate(rows, start=1):
+            records = int(row.get("records", 0) or 0)
+            gate_id = str(row.get("gate_id", "?"))
+            ordered.append(
+                {
+                    "rank": len(ordered) + 1,
+                    "work_type": work_type,
+                    "gate_id": gate_id,
+                    "label": _short_gate_id(gate_id),
+                    "records": records,
+                    "record_type": row.get("record_type"),
+                    "why_this_priority": _p0_priority_why(
+                        work_type=work_type,
+                        ordinal=ordinal,
+                        records=records,
+                    ),
+                    "next_step": _p0_next_step(work_type=work_type, records=records),
+                }
+            )
+
+    comments = [
+        "Read this table top to bottom. If Fix now rows exist, they override ratchets because ADG is not green.",
+        "With Fix now = 0, P0 ratchets are sorted by tracked records so the largest accepted floor burns down first.",
+        "Open non-ratchet work is still real work; it is second because it does not lower the P0 ratchet floor.",
+        "Guardian/non-exempt severity counts are an exception audit and should not reorder this P0 work list.",
+    ]
+    return {
+        "title": "P0 Action Plan",
+        "priority_rule": "Fix-now gates first; otherwise P0 ratchets by tracked-record count; then P0 open non-ratchet work.",
+        "rows": ordered,
+        "comments": comments,
+    }
+
+
+def _attack_row_sort_key(row: dict[str, Any]) -> tuple[int, int, int, str]:
+    return (
+        ATTACK_CLASS_PRIORITY.get(str(row.get("work_class")), 99),
+        BAND_PRIORITY.get(str(row.get("band")), 99),
+        -int(row.get("records", 0) or 0),
+        str(row.get("target", "")),
+    )
+
+
+def _adg_attack_order(
+    band_rows: list[dict[str, Any]],
+    severity_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    for row in band_rows:
+        band = str(row.get("band", "?"))
+        fix_records = int(row.get("fix_records", 0) or 0)
+        if int(row.get("fix_gates", 0) or 0) or fix_records:
+            rows.append(
+                {
+                    "band": band,
+                    "work_class": "Fix now",
+                    "target": f"{band} CI blockers",
+                    "records": fix_records,
+                    "why_this_priority": "CI blocker; ADG is not green until this clears.",
+                    "next_step": "Fix the blocking gate condition and rerun ADG before burn-down work.",
+                }
+            )
+        ratchet_records = int(row.get("ratchet_floor_records", 0) or 0)
+        if ratchet_records:
+            rows.append(
+                {
+                    "band": band,
+                    "work_class": "Burn down ratchets",
+                    "target": row.get("ratchet_burn_down"),
+                    "records": ratchet_records,
+                    "why_this_priority": (
+                        "Ratchet floor work lowers accepted baseline debt; P-band outranks raw size."
+                    ),
+                    "next_step": (
+                        "Use the P0 Action Plan below."
+                        if band == "P0"
+                        else "Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline."
+                    ),
+                }
+            )
+        open_records = int(row.get("cleanup_records", 0) or 0)
+        if open_records:
+            rows.append(
+                {
+                    "band": band,
+                    "work_class": "Open non-ratchet work",
+                    "target": row.get("open_non_ratchet_work") or row.get("cleanup_backlog"),
+                    "records": open_records,
+                    "why_this_priority": (
+                        "Real open work, but it does not lower a ratchet floor or block CI."
+                    ),
+                    "next_step": "Schedule after ratchets unless the item is tiny, already in hand, or high-leverage.",
+                }
+            )
+
+    for row in severity_rows:
+        net = int(row.get("net", 0) or 0)
+        if not net:
+            continue
+        gross = int(row.get("gross", 0) or 0)
+        rows.append(
+            {
+                "band": row.get("band"),
+                "work_class": "Severity audit",
+                "target": f"{_fmt_int(net)} non-exempt from {_fmt_int(gross)} gross",
+                "records": net,
+                "why_this_priority": (
+                    "Review-only audit signal; not Fix now unless it maps to a failing gate."
+                ),
+                "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
+            }
+        )
+
+    ordered = sorted(rows, key=_attack_row_sort_key)
+    if not ordered:
+        ordered = [
+            {
+                "band": "ALL",
+                "work_class": "No action",
+                "target": "No fix, ratchet, open-work, or severity-audit rows",
+                "records": 0,
+                "why_this_priority": "All tracked ADG work buckets are empty.",
+                "next_step": "No ADG burn-down action.",
+            }
+        ]
+    for rank, row in enumerate(ordered, start=1):
+        row["rank"] = rank
+
+    return {
+        "title": "ADG Heuristic Attack Order",
+        "priority_rule": (
+            "Sort by work class first (Fix now > ratchets > open work > severity audit), "
+            "then P-band (P0 > P1 > P2 > P3), then record count within the same class and band."
+        ),
+        "rows": ordered,
+        "comments": [
+            "Non-exempt severity rows are included for review, but they do not populate Fix now unless a gate is failing.",
+            "Record count breaks ties inside the same work class and P-band; it does not make P3 outrank P0.",
+            "When the top row is P0 ratchets, use the P0 Action Plan for the exact gate order.",
+        ],
+    }
+
+
+def _priority_actions(
+    band_rows: list[dict[str, Any]],
+    action_rows: list[dict[str, Any]],
+    p0_plan: dict[str, Any],
+) -> list[str]:
     bullets: list[str] = []
     fix_bands = [row for row in band_rows if int(row.get("fix_gates", 0) or 0)]
     if fix_bands:
@@ -379,14 +587,20 @@ def _priority_actions(band_rows: list[dict[str, Any]], action_rows: list[dict[st
             )
         return bullets
 
+    for row in p0_plan.get("rows") or []:
+        if row.get("work_type") == "Burn down ratchet":
+            bullets.append(
+                f"Burn down P0 ratchet `{_md_cell(row.get('label'))}` "
+                f"({_fmt_int(row.get('records', 0))}): {_md_cell(row.get('next_step'))}"
+            )
+        elif row.get("work_type") == "Open non-ratchet work":
+            bullets.append(
+                f"Close P0 open non-ratchet work `{_md_cell(row.get('label'))}` "
+                f"({_fmt_int(row.get('records', 0))}): {_md_cell(row.get('next_step'))}"
+            )
+
     p0 = next((row for row in band_rows if row.get("band") == "P0"), None)
-    if p0 and int(p0.get("ratchet_floor_records", 0) or 0):
-        bullets.append(
-            "Burn down P0 ratchets first: "
-            + _format_bullet_items(list(p0.get("ratchet_floor_items") or []))
-            + "."
-        )
-    if p0 and int(p0.get("cleanup_records", 0) or 0):
+    if p0 and int(p0.get("cleanup_records", 0) or 0) and not bullets:
         bullets.append(
             "Close P0 open non-ratchet work after ratchets: "
             + _format_bullet_items(list(p0.get("cleanup_items") or []))
@@ -427,6 +641,8 @@ def _high_signal_review(
     severity_rows: list[dict[str, Any]],
     action_rows: list[dict[str, Any]],
     priority_actions: list[str],
+    p0_plan: dict[str, Any],
+    attack_order: dict[str, Any],
 ) -> dict[str, Any]:
     p0 = next((row for row in band_rows if row.get("band") == "P0"), {})
     p0_severity = next((row for row in severity_rows if row.get("band") == "P0"), {})
@@ -456,7 +672,9 @@ def _high_signal_review(
             f"{_fmt_int(summary.get('ratchet_floor_records', 0))} ratchet-floor records "
             "still need burn-down."
         ),
-        f"Start with P0 ratchets: {p0_ratchets}.",
+        "Use the ADG Heuristic Attack Order to choose the next bucket across P0-P3.",
+        "Use the P0 Action Plan top to bottom; it prioritizes ratchets by tracked-record count.",
+        f"P0 ratchets in order: {p0_ratchets}.",
         (
             f"P0 open non-ratchet work is separate from P0 ratchets: {p0_cleanup}. "
             "Do it after ratchets unless an item is tiny or high-leverage."
@@ -478,6 +696,8 @@ def _high_signal_review(
         "headline": headline,
         "what_this_means": what_this_means,
         "do_this_next": priority_actions,
+        "adg_attack_order": attack_order,
+        "p0_action_plan": p0_plan,
         "p0_relationships": {
             "ratchet_burn_down_records": int(p0.get("ratchet_floor_records", 0) or 0),
             "ratchet_burn_down_items": list(p0.get("ratchet_floor_items") or []),
@@ -551,6 +771,7 @@ def build_review_template(
     gates = list(gate_results.get("gates") or [])
     band_rows = _band_status_rows(gates)
     gate_rows = _gate_rows(gates)
+    p0_plan = _p0_action_plan(gate_rows)
     action_counts = {
         "fix_gates": sum(1 for g in gates if display_verdict(g) == "FIX"),
         "track_gates": sum(1 for g in gates if display_verdict(g) == "TRACK"),
@@ -563,8 +784,9 @@ def build_review_template(
         "cleanup_records": sum(int(row["cleanup_records"]) for row in band_rows),
     }
     action_rows = _action_rows(action_queue)
-    priority_actions = _priority_actions(band_rows, action_rows)
     severity_rows = _severity_inventory(burndown)
+    attack_order = _adg_attack_order(band_rows, severity_rows)
+    priority_actions = _priority_actions(band_rows, action_rows, p0_plan)
     operator_summary = {
         "overall_verdict": "PASS" if gate_results.get("overall_exit_code", 1) == 0 else "BLOCKED",
         **action_counts,
@@ -606,6 +828,8 @@ def build_review_template(
             "guardian_math_location": "severity_inventory; net = gross - guardian",
         },
         "operator_summary": operator_summary,
+        "adg_attack_order": attack_order,
+        "p0_action_plan": p0_plan,
         "adg_ci_gates": gate_rows,
         "severity_inventory": severity_rows,
         "high_signal_review": _high_signal_review(
@@ -614,6 +838,8 @@ def build_review_template(
             severity_rows=severity_rows,
             action_rows=action_rows,
             priority_actions=priority_actions,
+            p0_plan=p0_plan,
+            attack_order=attack_order,
         ),
         "next_best_action": {
             "source": _repo_rel(action_queue_path),
@@ -662,6 +888,8 @@ def validate_review_template(doc: dict[str, Any]) -> list[str]:
         "review_template",
         "terminology",
         "operator_summary",
+        "adg_attack_order",
+        "p0_action_plan",
         "adg_ci_gates",
         "severity_inventory",
         "high_signal_review",
@@ -689,6 +917,12 @@ def validate_review_template(doc: dict[str, Any]) -> list[str]:
         errors.append("high_signal_review.what_this_means must not be empty")
     if not high_signal.get("do_this_next"):
         errors.append("high_signal_review.do_this_next must not be empty")
+    p0_plan = doc.get("p0_action_plan") or {}
+    if not p0_plan.get("comments"):
+        errors.append("p0_action_plan.comments must not be empty")
+    attack_order = doc.get("adg_attack_order") or {}
+    if not attack_order.get("rows"):
+        errors.append("adg_attack_order.rows must not be empty")
     return errors
 
 
@@ -704,6 +938,8 @@ def render_inline_review_template(
     checklist = doc.get("review_template", {}).get("checklist") or []
     band_rows = summary.get("band_status") or []
     high_signal = doc.get("high_signal_review") or {}
+    attack_order = doc.get("adg_attack_order") or high_signal.get("adg_attack_order") or {}
+    p0_plan = doc.get("p0_action_plan") or high_signal.get("p0_action_plan") or {}
     what_this_means = high_signal.get("what_this_means") or []
     priority_bullets = high_signal.get("do_this_next") or doc.get("next_best_action", {}).get(
         "priority_bullets",
@@ -722,6 +958,56 @@ def render_inline_review_template(
     ]
     lines.extend(f"- {_md_cell(item)}" for item in what_this_means)
 
+    lines.extend(
+        [
+            "",
+            "### ADG Heuristic Attack Order",
+            "",
+            f"- **Rule:** {_md_cell(attack_order.get('priority_rule'))}",
+            "",
+            "| # | Attack | Band | Records | Why | Next step |",
+            "|--:|--------|------|--------:|-----|-----------|",
+        ]
+    )
+    for row in attack_order.get("rows") or []:
+        lines.append(
+            f"| {_fmt_int(row.get('rank', 0))} | {_md_cell(row.get('work_class'))}: "
+            f"{_md_cell(row.get('target'))} | {row.get('band')} | "
+            f"{_fmt_int(row.get('records', 0))} | "
+            f"{_md_cell(row.get('why_this_priority'), limit=90)} | "
+            f"{_md_cell(row.get('next_step'), limit=100)} |"
+        )
+    lines.extend(["", "Comments:"])
+    for comment in attack_order.get("comments") or []:
+        lines.append(f"- {_md_cell(comment)}")
+
+    lines.extend(
+        [
+            "",
+            "### P0 Action Plan",
+            "",
+            f"- **Priority rule:** {_md_cell(p0_plan.get('priority_rule'))}",
+            "",
+            "| # | Work | Gate | Records | Why this priority | Next step |",
+            "|--:|------|------|--------:|-------------------|-----------|",
+        ]
+    )
+    p0_rows = p0_plan.get("rows") or []
+    if p0_rows:
+        for row in p0_rows:
+            lines.append(
+                f"| {_fmt_int(row.get('rank', 0))} | {_md_cell(row.get('work_type'))} | "
+                f"`{_md_cell(row.get('label'))}` | {_fmt_int(row.get('records', 0))} | "
+                f"{_md_cell(row.get('why_this_priority'), limit=96)} | "
+                f"{_md_cell(row.get('next_step'), limit=110)} |"
+            )
+    else:
+        lines.append("| — | None | None | 0 | No P0 fix, ratchet, or open-work records. | No P0 action. |")
+
+    lines.extend(["", "Comments:"])
+    for comment in p0_plan.get("comments") or []:
+        lines.append(f"- {_md_cell(comment)}")
+
     lines.extend(["", "### Do This Next", ""])
     for idx, bullet in enumerate(priority_bullets, start=1):
         lines.append(f"{idx}. {bullet}")
@@ -734,6 +1020,8 @@ def render_inline_review_template(
             f"- **Ratchet floor:** {_md_cell(terminology.get('ratchet_floor'))}",
             f"- **Open non-ratchet work:** {_md_cell(terminology.get('open_non_ratchet_work'))}",
             f"- **Not counted as:** {_md_cell(', '.join(terminology.get('not_counted_as') or []))}",
+            "",
+            "#### P0-P3 Rollup (Status Only)",
             "",
             "| Band | Fix now | 1) Burn down ratchets | 2) Open non-ratchet work | Work order |",
             "|------|--------:|-----------------------|---------------------------|------------|",

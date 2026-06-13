@@ -1,6 +1,6 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-06-13T21:29:17+00:00
+- **Generated:** 2026-06-13T22:13:10+00:00
 - **Gate-results source:** `artifacts\adg\adg_gate_results_20260613_204942.json`
 - **Burndown source:** `artifacts\adg\adg_burndown_table.json`
 - **Snapshot timestamp:** 2026-06-13T20:49:42.453429+00:00
@@ -8,7 +8,48 @@
 - **Overall verdict:** **PASS** (run halt — exit code)
 - **Action:** **FIX**=0 (address for green ADG) · **TRACK**=21 (CI OK, backlog) · **CLEAR**=27
 
-## 1. ADG Status By Band
+## 1. ADG Heuristic Attack Order
+
+Rule: work class first (Fix now > ratchets > open work > severity audit), then P-band (P0 > P1 > P2 > P3), then record count within the same class and band.
+
+| # | Attack | Band | Records | Why | Next step |
+|--:|--------|------|--------:|-----|-----------|
+| 1 | Burn down ratchets: `G_REACH` 2,843; `S2_UWG` 1,583; `L2_LPG` 1 | P0 | 4,427 | Ratchet floor work lowers accepted baseline debt; P-band outranks raw size. | Use the P0 Action Plan below. |
+| 2 | Burn down ratchets: `C3_silent_writes` 2,087; `E1_trace_stub` 1,030; `B2_layer_skip` 951; +6 more = 5,972 total | P1 | 5,972 | Ratchet floor work lowers accepted baseline debt; P-band outranks raw size. | Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline. |
+| 3 | Burn down ratchets: `I2_replay_gaps` 1,100; `F1_untyped_seam` 1,075 | P2 | 2,175 | Ratchet floor work lowers accepted baseline debt; P-band outranks raw size. | Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline. |
+| 4 | Burn down ratchets: `S4_unused_imports` 10,938; `Q2_complexity` 1,083; `M1_module_loc` 459 | P3 | 12,480 | Ratchet floor work lowers accepted baseline debt; P-band outranks raw size. | Open a burn-down slice for the listed ratchets, rerun ADG, then absorb the lower baseline. |
+| 5 | Open non-ratchet work: `write_sovereignty` 917; `pipeline_wiring` 1 | P0 | 918 | Real open work, but it does not lower a ratchet floor or block CI. | Schedule after ratchets unless the item is tiny, already in hand, or high-leverage. |
+| 6 | Open non-ratchet work: `D2_role_duplication` 102 | P2 | 102 | Real open work, but it does not lower a ratchet floor or block CI. | Schedule after ratchets unless the item is tiny, already in hand, or high-leverage. |
+| 7 | Open non-ratchet work: `D1_layer_doc` 3 | P3 | 3 | Real open work, but it does not lower a ratchet floor or block CI. | Schedule after ratchets unless the item is tiny, already in hand, or high-leverage. |
+| 8 | Severity audit: 5 non-exempt from 46 gross | P0 | 5 | Review-only audit signal; not Fix now unless it maps to a failing gate. | Audit or map to a gate; do not treat as a CI blocker by itself. |
+| 9 | Severity audit: 4 non-exempt from 1,197 gross | P1 | 4 | Review-only audit signal; not Fix now unless it maps to a failing gate. | Audit or map to a gate; do not treat as a CI blocker by itself. |
+| 10 | Severity audit: 21 non-exempt from 752 gross | P2 | 21 | Review-only audit signal; not Fix now unless it maps to a failing gate. | Audit or map to a gate; do not treat as a CI blocker by itself. |
+| 11 | Severity audit: 20,068 non-exempt from 20,160 gross | P3 | 20,068 | Review-only audit signal; not Fix now unless it maps to a failing gate. | Audit or map to a gate; do not treat as a CI blocker by itself. |
+
+Comments:
+- Non-exempt severity rows are included for review, but they do not populate Fix now unless a gate is failing.
+- Record count breaks ties inside the same work class and P-band; it does not make P3 outrank P0.
+- When the top row is P0 ratchets, use the P0 Action Plan for the exact gate order.
+
+## 2. P0 Action Plan
+
+Read this table top to bottom. It is the action surface; the band table below is status context.
+
+| # | Work | Gate | Records | Why this priority | Next step |
+|--:|------|------|--------:|-------------------|-----------|
+| 1 | Burn down ratchet | `G_REACH` | 2,843 | Largest P0 ratchet floor; reduces the biggest accepted baseline first. | Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline. |
+| 2 | Burn down ratchet | `S2_UWG` | 1,583 | Next-largest P0 ratchet floor; keep burning down accepted baseline debt. | Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline. |
+| 3 | Burn down ratchet | `L2_LPG` | 1 | Small P0 ratchet; close opportunistically after the larger P0 floors. | Close or bundle this small floor, rerun ADG, then absorb the lower baseline. |
+| 4 | Open non-ratchet work | `write_sovereignty` | 917 | Real open P0 work, but it does not reduce the ratchet floor. | Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage. |
+| 5 | Open non-ratchet work | `pipeline_wiring` | 1 | Small open P0 work item; bundle if it is already in the same files. | Close when touching nearby code; it is open work but not ratchet burn-down. |
+
+Comments:
+- If Fix now rows exist, they override ratchets because ADG is not green.
+- With Fix now = 0, P0 ratchets are sorted by tracked records so the largest accepted floor burns down first.
+- Open non-ratchet work is still real work; it is second because it does not lower the P0 ratchet floor.
+- Guardian/non-exempt severity counts are an exception audit and should not reorder this P0 work list.
+
+## 3. ADG Status By Band
 
 Operator summary from `adg_gate_results_*.json`.
 Tracked records are gate-specific `violation_count` entries: orphan modules, UWG bypass paths, write-inventory paths, etc.
@@ -23,7 +64,7 @@ They are backlog records, not guardian exemptions, test failures, or new failure
 
 `Fix now` counts red gates. `Tracked gate records` are non-blocking open work: burn down ratchet floors first, then close non-ratchet rows.
 
-## 2. ADG CI Gates
+## 4. ADG CI Gates
 
 One row per registered gate.
 
@@ -111,7 +152,7 @@ One row per registered gate.
 | `L2_lpg_drift_ratchet` | floor | 1 |
 | `P_structured_output_ratchet` | floor | 1 |
 
-## 3. Severity Inventory Burndown
+## 5. Severity Inventory Burndown
 
 Counts come from the canonical `adg_burndown_table.json` (schema 2.2).
 This is raw MV defect inventory by severity/source band; it is not one row per CI gate.
@@ -149,7 +190,7 @@ Scan **Verdict** first (3 values). Use **Sub** only when you need detail.
 
 **floor vs inventory (both TRACK):** floor = ratchet ≤ baseline (e.g. G_REACH 2792). inventory = block warn backlog (e.g. write sovereignty 848). Check **Enf**: ratchet → floor; block → inventory.
 
-## 4. Aggregate Verdicts
+## 6. Aggregate Verdicts
 
 | Verdict | Count | Meaning |
 |---------|------:|---------|
@@ -167,7 +208,7 @@ Scan **Verdict** first (3 values). Use **Sub** only when you need detail.
 | TRACK | 21 | CI passed this gate; records are tracked backlog — plan hygiene, not a halt. |
 | CLEAR | 27 | Zero records; nothing to do on this gate. |
 
-## 5. Fix now (detail)
+## 7. Fix now (detail)
 
 _No FIX gates._
 

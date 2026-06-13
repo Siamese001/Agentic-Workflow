@@ -24,7 +24,7 @@ def _write_gate_results(path: Path) -> None:
                 "summary": {
                     "block_pass": 1,
                     "block_fail": 0,
-                    "ratchet_pass": 1,
+                    "ratchet_pass": 3,
                     "ratchet_regressed": 0,
                     "warn": 0,
                 },
@@ -36,6 +36,22 @@ def _write_gate_results(path: Path) -> None:
                         "classification": "pass",
                         "violation_count": 2792,
                         "baseline_count": 2792,
+                    },
+                    {
+                        "gate_id": "S2_uwg_bypass_ratchet",
+                        "band": "P0",
+                        "enforcement": "ratchet",
+                        "classification": "pass",
+                        "violation_count": 1583,
+                        "baseline_count": 1583,
+                    },
+                    {
+                        "gate_id": "L2_lpg_drift_ratchet",
+                        "band": "P0",
+                        "enforcement": "ratchet",
+                        "classification": "pass",
+                        "violation_count": 1,
+                        "baseline_count": 1,
                     },
                     {
                         "gate_id": "1_critical_path_integrity",
@@ -53,6 +69,14 @@ def _write_gate_results(path: Path) -> None:
                         "owner": "adg_gates",
                         "exit_code": 0,
                         "violation_count": 848,
+                    },
+                    {
+                        "gate_id": "B2_layer_skip_ratchet",
+                        "band": "P1",
+                        "enforcement": "ratchet",
+                        "classification": "pass",
+                        "violation_count": 900,
+                        "baseline_count": 900,
                     },
                 ],
             }
@@ -75,6 +99,13 @@ def _write_burndown(path: Path) -> None:
                         "guardian": 41,
                         "net": 5,
                         "diff": 41,
+                    },
+                    "P1": {
+                        "label": "anti_patterns_high",
+                        "gross": 10,
+                        "guardian": 6,
+                        "net": 4,
+                        "diff": 6,
                     }
                 },
                 "provenance": {"counting_mode": "violations_plus_exempted_edge_inference"},
@@ -127,8 +158,8 @@ def test_review_template_names_tracked_records_and_separates_guardian_math(tmp_p
     )
 
     p0 = doc["operator_summary"]["band_status"][0]
-    assert p0["tracked_record_label"] == "2 gates / 3,640 tracked records"
-    assert p0["ratchet_burn_down"] == "`G_REACH` 2,792"
+    assert p0["tracked_record_label"] == "4 gates / 5,224 tracked records"
+    assert p0["ratchet_burn_down"] == "`G_REACH` 2,792; `S2_UWG` 1,583; `L2_LPG` 1"
     assert p0["cleanup_backlog"] == "`write_sovereignty` 848"
     assert p0["open_non_ratchet_work"] == "`write_sovereignty` 848"
     assert p0["read_it_as"] == "green; ratchet burn-down/open work remains"
@@ -137,6 +168,27 @@ def test_review_template_names_tracked_records_and_separates_guardian_math(tmp_p
     assert doc["severity_inventory"][0]["formula"] == "net = gross - guardian"
     assert doc["severity_inventory"][0]["net"] == 5
     assert doc["graphdb_mv_positioning"]["graphdb_actions_present"] is True
+    assert [row["label"] for row in doc["p0_action_plan"]["rows"]] == [
+        "G_REACH",
+        "S2_UWG",
+        "L2_LPG",
+        "write_sovereignty",
+    ]
+    assert doc["p0_action_plan"]["rows"][0]["work_type"] == "Burn down ratchet"
+    assert doc["p0_action_plan"]["rows"][0]["why_this_priority"].startswith("Largest P0 ratchet")
+    assert doc["p0_action_plan"]["rows"][3]["work_type"] == "Open non-ratchet work"
+    assert doc["p0_action_plan"]["comments"]
+    attack_rows = doc["adg_attack_order"]["rows"]
+    assert [row["work_class"] for row in attack_rows[:4]] == [
+        "Burn down ratchets",
+        "Burn down ratchets",
+        "Open non-ratchet work",
+        "Severity audit",
+    ]
+    assert attack_rows[0]["band"] == "P0"
+    assert attack_rows[1]["band"] == "P1"
+    assert attack_rows[2]["target"] == "`write_sovereignty` 848"
+    assert "P-band outranks raw size" in attack_rows[0]["why_this_priority"]
     high_signal = doc["high_signal_review"]
     assert high_signal["headline"] == "Green for enforcement; burn-down work remains."
     assert any(
@@ -180,10 +232,12 @@ def test_emit_mandatory_review_template_writes_timestamped_json_and_yaml(tmp_pat
     data = json.loads(out.read_text(encoding="utf-8"))
     assert data["artifact_kind"] == "adg_run_review_template"
     assert data["run_id"] == "06132026_1324"
-    assert data["operator_summary"]["tracked_records"] == 3640
+    assert data["operator_summary"]["tracked_records"] == 6124
     yaml_text = yaml_out.read_text(encoding="utf-8")
     assert "high_signal_review:" in yaml_text
-    assert "P0 open non-ratchet work is separate from P0 ratchets" in yaml_text
+    assert "adg_attack_order:" in yaml_text
+    assert "p0_action_plan:" in yaml_text
+    assert "Largest P0 ratchet floor" in yaml_text
 
 
 def test_inline_review_template_renders_chat_summary(tmp_path: Path) -> None:
@@ -209,9 +263,23 @@ def test_inline_review_template_renders_chat_summary(tmp_path: Path) -> None:
     assert "### What This Means" in inline
     assert "P0 open non-ratchet work is separate from P0 ratchets: `write_sovereignty` 848." in inline
     assert "Do it after ratchets unless an item is tiny or high-leverage." in inline
+    assert "### ADG Heuristic Attack Order" in inline
+    assert "| 1 | Burn down ratchets: `G_REACH` 2,792; `S2_UWG` 1,583; `L2_LPG` 1 | P0 | 4,376 |" in inline
+    assert "| 2 | Burn down ratchets: `B2_layer_skip` 900 | P1 | 900 |" in inline
+    assert "| 3 | Open non-ratchet work: `write_sovereignty` 848 | P0 | 848 |" in inline
+    assert "Non-exempt severity rows are included for review, but they do not populate Fix now unless a gate is failing." in inline
+    assert "### P0 Action Plan" in inline
+    assert "| # | Work | Gate | Records | Why this priority | Next step |" in inline
+    assert "| 1 | Burn down ratchet | `G_REACH` | 2,792 | Largest P0 ratchet floor" in inline
+    assert "| 2 | Burn down ratchet | `S2_UWG` | 1,583 | Next-largest P0 ratchet floor" in inline
+    assert "| 3 | Burn down ratchet | `L2_LPG` | 1 | Small P0 ratchet" in inline
+    assert "| 4 | Open non-ratchet work | `write_sovereignty` | 848 | Real open P0 work" in inline
+    assert "Comments:" in inline
+    assert "Open non-ratchet work is still real work; it is second because it does not lower the P0 ratchet floor." in inline
     assert "### Do This Next" in inline
-    assert "1. Burn down P0 ratchets first: `G_REACH` 2,792." in inline
-    assert "2. Close P0 open non-ratchet work after ratchets: `write_sovereignty` 848." in inline
+    assert "1. Burn down P0 ratchet `G_REACH` (2,792):" in inline
+    assert "2. Burn down P0 ratchet `S2_UWG` (1,583):" in inline
+    assert "4. Close P0 open non-ratchet work `write_sovereignty` (848):" in inline
     assert "| Band | Fix now | 1) Burn down ratchets | 2) Open non-ratchet work | Work order |" in inline
     assert "### Exception Audit" in inline
     assert "| P0 | 46 | 41 | 5 |" in inline
