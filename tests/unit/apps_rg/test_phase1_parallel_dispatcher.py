@@ -61,7 +61,12 @@ def test_section_dag_narrative_never_precedes_companion_bullets() -> None:
     assert "unify_narrative" not in wave0_lanes
 
 
-def test_build_phase1_waves_narratives_serial_after_bullets() -> None:
+def test_build_phase1_waves_narratives_parallel_after_bullets() -> None:
+    # 2026-06-13: narratives unpinned from max_parallel:1 (stale vLLM-era serialization).
+    # The 4 narratives are mutually independent (each depends only on its own bullets
+    # lane in wave 0), so they parallelize now that run_lane_in_context is lock-free.
+    # Validated: 704s vs 1383s serial baseline. See memory
+    # apps-rg-parallel-orchestration-nonfunctional.
     waves = build_phase1_waves()
     nar_wave = next(w for w in waves if "unify_narrative" in w.lanes)
     assert set(nar_wave.lanes) == {
@@ -70,7 +75,8 @@ def test_build_phase1_waves_narratives_serial_after_bullets() -> None:
         "insurtech_narrative",
         "ey_narrative",
     }
-    assert nar_wave.max_parallel == 1
+    # narratives are now parallel-eligible (>1); manifest pins wave 1 to 4 (one per lane)
+    assert nar_wave.max_parallel == 4
 
 
 def test_dispatch_serial_mock() -> None:

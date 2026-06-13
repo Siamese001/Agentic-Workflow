@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import os
-import threading
 import traceback as _tb
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -13,13 +12,13 @@ from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
 from apps_rg.runtime.section_cli_defaults import CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE
 from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 
-# Held across the entire lane dispatch (not just the os.environ mutation) so the
-# process-global MODULAR_R4_SECTIONS_ROOT overlay cannot be swapped out from under
-# an in-flight lane. This intentionally serializes concurrent wave lanes -- a
-# deliberate vLLM-safe throttle, not merely env protection. If true wave
-# parallelism is wanted later, set the (constant) sections_root once before the
-# wave and drop the per-lane overlay rather than widening this lock.
-_ENV_OVERLAY_LOCK = threading.Lock()
+# 2026-06-13: removed `_ENV_OVERLAY_LOCK` (a process-global lock formerly held across
+# the ENTIRE lane dispatch as a "vLLM-safe throttle"). It serialized all wave lanes
+# despite parallel=True/cap=N (measured: 23-min fully-serial baseline). Since
+# MODULAR_R4_SECTIONS_ROOT is a run-level CONSTANT, run_lane_in_context now sets it
+# idempotently and lock-free — true wave parallelism, validated at 704s vs 1383s
+# (1.96x) with identical per-lane X3 outcomes. See memory
+# apps-rg-parallel-orchestration-nonfunctional.
 
 
 @dataclass
@@ -102,48 +101,52 @@ def run_lane_in_context(
     *,
     dispatch_fn: Callable[..., dict[str, Any]],
 ) -> LaneDispatchOutcome:
-    """Run one lane dispatch with scoped MODULAR_R4_SECTIONS_ROOT."""
-    with _ENV_OVERLAY_LOCK:
-        saved = {k: os.environ.get(k) for k in ctx.env_overlay()}
-        try:
-            for k, v in ctx.env_overlay().items():
-                if v is not None:
-                    os.environ[k] = v
-            result = dispatch_fn(
-                target_company=ctx.target_company,
-                target_role=ctx.target_role,
-                jd="",
-                job_description_ref=ctx.job_description_ref,
-                job_description_text=ctx.job_description_text,
-                manual_brief=ctx.manual_brief,
-                resume_path="",
-                source_resume_text="",
-                generation_mode=ctx.generation_mode,
-                artifact_dir="",
-                section=lane,
-                lane_provider=ctx.lane_provider,
-                lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
-                lane_temperature=default_temperature_for_section(lane),
-                lane_x1d_judges=ctx.x1d_judges_for_lane(lane),
-                lane_mock_judges=ctx.lane_mock_judges,
-                lane_allow_non_allow_exit_zero=bool(ctx.lane_allow_non_allow_exit_zero),
-            )
-            dr = dict(result) if isinstance(result, dict) else {}
-            return LaneDispatchOutcome(lane=lane, dispatch_result=dr, exec_status="ok")
-        except Exception as exc:  # guardian: allow-broad-exception -- phase1 fail-soft boundary
-            trace_fields = _persist_exception_trace(ctx, lane, exc)
-            return LaneDispatchOutcome(
-                lane=lane,
-                dispatch_result={"fault": "exception", "error": str(exc), **trace_fields},
-                exec_status=f"error:{exc!s}",
-                error=str(exc),
-            )
-        finally:
-            for k, prev in saved.items():
-                if prev is None:
-                    os.environ.pop(k, None)
-                else:
-                    os.environ[k] = prev
+    """Run one lane dispatch with the run-constant MODULAR_R4_SECTIONS_ROOT.
+
+    ``sections_root`` is identical for every lane in a run (see ``env_overlay`` — it
+    sets only that one constant key). Set it idempotently and **lock-free** so lanes
+    can execute concurrently. The prior implementation wrapped the ENTIRE lane (C0 +
+    generation + X1D judges + X3) in ``_ENV_OVERLAY_LOCK`` and save/restored the env
+    per-lane, which forced strict-serial execution despite ``parallel=True``/``cap=N``
+    (measured: 23-min fully-serial baseline) AND was racy — one lane's per-lane restore
+    could unset the root while a concurrent lane was still running. Because the value is
+    a run-level constant, a lock-free idempotent set is correct; no per-lane restore is
+    needed (the constant must persist for the run's lifetime). See memory
+    ``apps-rg-parallel-orchestration-nonfunctional``.
+    """
+    for k, v in ctx.env_overlay().items():
+        if v is not None and os.environ.get(k) != v:
+            os.environ[k] = v
+    try:
+        result = dispatch_fn(
+            target_company=ctx.target_company,
+            target_role=ctx.target_role,
+            jd="",
+            job_description_ref=ctx.job_description_ref,
+            job_description_text=ctx.job_description_text,
+            manual_brief=ctx.manual_brief,
+            resume_path="",
+            source_resume_text="",
+            generation_mode=ctx.generation_mode,
+            artifact_dir="",
+            section=lane,
+            lane_provider=ctx.lane_provider,
+            lane_provider_resolution_source=CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
+            lane_temperature=default_temperature_for_section(lane),
+            lane_x1d_judges=ctx.x1d_judges_for_lane(lane),
+            lane_mock_judges=ctx.lane_mock_judges,
+            lane_allow_non_allow_exit_zero=bool(ctx.lane_allow_non_allow_exit_zero),
+        )
+        dr = dict(result) if isinstance(result, dict) else {}
+        return LaneDispatchOutcome(lane=lane, dispatch_result=dr, exec_status="ok")
+    except Exception as exc:  # guardian: allow-broad-exception -- phase1 fail-soft boundary
+        trace_fields = _persist_exception_trace(ctx, lane, exc)
+        return LaneDispatchOutcome(
+            lane=lane,
+            dispatch_result={"fault": "exception", "error": str(exc), **trace_fields},
+            exec_status=f"error:{exc!s}",
+            error=str(exc),
+        )
 
 
 __all__ = ["LaneExecutionContext", "LaneDispatchOutcome", "run_lane_in_context"]
