@@ -138,13 +138,20 @@ APPS_LIC_DIR: Final[str] = "apps_lic"
 APPS_RESEARCH_DIR: Final[str] = "apps_research"
 APPS_RG_DIR: Final[str] = "apps_rg"
 APPS_SHARED_DIR: Final[str] = "apps_shared"
-# DEPRECATED 2026-04-21: root-level `archives/` was removed from SSOT.
-# Still defined for (a) exclusion-filter compatibility in scanners that look for
-# the token "archives" anywhere in a path, and (b) legacy reads that may still
-# reference the old location. NEW CODE MUST use one of:
-#   - HEALING_BACKUPS_DIR   (runtime healing/gatekeeper writes)
-#   - OPS_ARCHIVES_DIR      (ops-scripts historical archives)
+# DEPRECATED 2026-04-21 / FORMALLY RETIRED 2026-06-13: root-level `archives/` was
+# removed from SSOT and is `.gitignored` (local-only, never committed). It survives
+# only as a local runtime healing-backup / scratch sink — NOT a durable destination.
+# The constant is RETAINED ON PURPOSE — do NOT delete or change its value: ~116
+# load-bearing uses, mostly as an exclusion token (`if ARCHIVES_DIR in path.parts:
+# skip`) in healer/discovery agents, plus a few runtime write-paths. Deleting it
+# would make those scanners start traversing archived code.
+# NEW CODE MUST NOT write durable artifacts to root `archives/`. Use instead:
+#   - HEALING_BACKUPS_DIR   (runtime healer/gatekeeper writes; .gitignored)
+#   - OPS_ARCHIVES_DIR      (ops-scripts dev snapshots; .gitignored, local-only)
+#   - docs/archive/         (the ONLY git-tracked, review-durable archive)
 #   - apps_*/data/ or apps_*/archives/ (app-scoped data)
+# The lone zero-loss original previously stranded in root `archives/` was relocated
+# to docs/archive/zero_loss_originals/ (see that dir's README) on 2026-06-13.
 ARCHIVES_DIR: Final[str] = "archives"
 # W5.4 (2026-04-23) — SSOT for top-churn hardcoded paths (123 sites across
 # ~100 files per tools/debug/_w5_ssot_hardcoding_probe.py). These constants
