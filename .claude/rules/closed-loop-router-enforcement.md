@@ -11,7 +11,7 @@ The marker + library-call MUST land together. Audit trail without record = silen
 
 ## The 10-router matrix (SSOT)
 
-`(layer, router)` keys: `L0/bandit`, `L0/r5`, `L1/c0`, `L2/cursor_agent`, `L3/shape`, `L3/reroute`, `L4/uwg`, `L5/hitl`, `L6/promo`, `L6/regret`. Each has its own ledger at `artifacts/ledgers/router_<layer>_<router>.sqlite`.
+`(layer, router)` keys: `L0/bandit`, `L0/r5`, `L1/c0`, `L2/cascade`, `L3/shape`, `L3/reroute`, `L4/uwg`, `L5/hitl`, `L6/promo`, `L6/regret`. Each has its own ledger at `artifacts/ledgers/router_<layer>_<router>.sqlite`.
 
 ## Marker grammar (minimum)
 
