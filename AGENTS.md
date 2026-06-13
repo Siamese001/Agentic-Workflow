@@ -78,7 +78,7 @@ Lookup: `.claude/rules/cursor-config-lookup.mdc` · docs mirror `docs/cursor/`. 
 
 ## Pytest
 
-`PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` — load plugins via `-p` in `pytest.ini` `addopts`. See companion for duplicate-registration caveat.
+Pytest runs with plugin **autoload ON** (CI default); `addopts` carries `--timeout=180` but no `-p pytest_timeout`. **Do NOT** set `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` for ad-hoc runs — it strips pytest-timeout and `--timeout` aborts collection. See companion for the duplicate-registration caveat (don't add `-p pytest_timeout` either).
 
 ## Core vs apps (summary)
 

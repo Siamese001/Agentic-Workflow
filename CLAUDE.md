@@ -103,8 +103,11 @@ Governance hooks are registered in [`.claude/settings.json`](.claude/settings.js
 
 ## Pytest
 
-`PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` — load plugins via `-p` in `pytest.ini` `addopts`. Prefer the
-`pytest_mcp` server over the bare CLI.
+Pytest runs with plugin **autoload ON** (CI default). `addopts` carries `--timeout=180` (and `-n 24`
+in `pyproject.toml`) but **no** `-p pytest_timeout` / `-p xdist` — so **do NOT** set
+`PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` for ad-hoc runs: it strips those plugins and pytest aborts with
+`error: unrecognized arguments: --timeout`. (Harnesses under `tools/` / `ops_scripts/` that set the
+flag pass the matching `-p` flags on their own command line.) Prefer the `pytest_mcp` server over the bare CLI.
 
 ## Core vs apps
 
