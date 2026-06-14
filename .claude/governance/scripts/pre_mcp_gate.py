@@ -182,23 +182,11 @@ artifacts_adg = repo_root / "artifacts" / "adg"
 _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
 session_state = repo_root / "artifacts" / "governance" / f"session_state_{_session_id}.json"
 
-# Notion DB IDs for classification threshold gate (advisory — exit 0 always).
-# Imported from SSOT _notion_constants.py — never hardcode IDs here.
+# [notion-wave-enforcement-removal] Notion classification + wave-deferral enforcement REMOVED.
+# (Formerly imported Plans/Backlog DB IDs from _notion_constants for an advisory threshold gate
+# and read wave-active state from _wave_execution_state.) The auth-token gate below is KEPT.
+# Keep this script-dir on sys.path for any remaining sibling-module imports.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _notion_constants import (  # noqa: E402
-    PLANS_DATA_SOURCE_ID,
-    PLANS_DB_ID,
-    BACKLOG_ITEMS_DATA_SOURCE_ID,
-    BACKLOG_ITEMS_DB_ID,
-)
-
-# A write payload's parent.database_id may carry EITHER the canonical database id
-# or the data-source id (callers conflate the two) — match both, normalized.
-_NOTION_PLANS_IDS = {PLANS_DATA_SOURCE_ID.replace("-", ""), PLANS_DB_ID.replace("-", "")}
-_NOTION_BACKLOG_IDS = {BACKLOG_ITEMS_DATA_SOURCE_ID.replace("-", ""), BACKLOG_ITEMS_DB_ID.replace("-", "")}
-_NOTION_CLASSIFICATION_VIOLATIONS = (
-    repo_root / "artifacts" / "governance" / "notion_classification_violations.jsonl"
-)
 
 # After this many consecutive blocks without a successful memory recall,
 # the gate degrades to open so Cursor Agent is never permanently stuck.
@@ -1247,43 +1235,6 @@ def check_gitkraken_gate(tool_name: str, payload: dict) -> int:
     return 0
 
 
-def check_notion_wave_deferral(tool_name: str) -> int:
-    """
-    Block Notion MCP calls while a multi-wave plan is actively executing.
-
-    Rationale: remote MCPs serialize per constitutional §25, so any Notion
-    call mid-plan stalls the response and fragments multi-wave execution.
-    All Notion plan/backlog writes must batch at plan completion.
-
-    Active state is set/cleared by ``tools/governance_legacy/wave_execution_state.py``
-    (start|complete). Absent state => no active plan => allow.
-
-    Bypass: NOTION_WAVE_DEFERRAL_BYPASS=1 env var (for authored batch scripts
-    or intentional mid-plan reads).
-
-    Returns 0 (allow) or 2 (block).
-    """
-    if os.getenv("NOTION_WAVE_DEFERRAL_BYPASS") == "1":
-        return 0
-    try:
-        import _wave_execution_state as _wes  # type: ignore[import-not-found]
-    except ImportError:
-        # Helper missing — fail-open rather than brick Notion globally.
-        return 0
-    state = _wes.is_active()
-    if state is None:
-        return 0
-    return _exit_block(
-        f"Notion MCP tool {tool_name!r} blocked: multi-wave plan "
-        f"{state.get('plan')!r} is active (started {state.get('started_at')}). "
-        "Per .claude/rules/notion-plan-wave-deferral.md, batch ALL Notion "
-        "writes at end of plan. Complete remaining waves, then run: "
-        "python tools/governance_legacy/wave_execution_state.py complete "
-        f"--plan {state.get('plan')} -- then reissue the Notion call. "
-        "Bypass (exceptional): NOTION_WAVE_DEFERRAL_BYPASS=1"
-    )
-
-
 def check_notion_gate() -> int:
     """
     Check Notion MCP auth gate.
@@ -1305,90 +1256,6 @@ def check_notion_gate() -> int:
             "See .env for the expected format (NOTION_TOKEN=secret_... or ntn_...)."
         )
     return 0
-
-
-def check_notion_classification_gate(tool_name: str, payload: dict) -> int:
-    """Advisory gate: log sub-threshold Notion DB writes to violation log.
-
-    Intercepts API-post-page calls to the Plans DB or Backlog Items DB and
-    logs when the write may not meet the threshold defined in
-    .claude/rules/work-item-classification.md:
-
-    - Plans DB: only PLAN_MULTI_WAVE (≥2 waves, multi-session) should create rows.
-      Single-session micro-plans use native plan mode only (no disk file, no Notion).
-    - Backlog Items DB: only BUG_SYSTEMIC or ENHANCEMENT_ROADMAP should create rows.
-      BUG_DEFERRED and ENHANCEMENT_BACKLOG should use spawn_task instead.
-
-    ALWAYS exits 0 (advisory only — never blocks Notion writes).
-    Bypass: NOTION_CLASSIFICATION_GATE_BYPASS=1
-    """
-    if os.environ.get("NOTION_CLASSIFICATION_GATE_BYPASS", "").strip() == "1":
-        return 0
-    # Only audit row-creation calls (not patches, queries, or other tools).
-    if "API-post-page" not in tool_name:
-        return 0
-    try:
-        tool_input = payload.get("tool_input")
-        if isinstance(tool_input, str):
-            try:
-                tool_input = json.loads(tool_input)
-            except json.JSONDecodeError:
-                return 0
-        if not isinstance(tool_input, dict):
-            return 0
-
-        parent = tool_input.get("parent") or {}
-        db_id = str(parent.get("database_id") or "").strip().lower()
-        if not db_id:
-            return 0
-
-        # Normalize to bare hex so "ac53d31b-..." matches "ac53d31b..." etc.
-        db_id_norm = db_id.replace("-", "")
-
-        if db_id_norm in _NOTION_PLANS_IDS:
-            target_db = "Plans"
-            threshold_msg = (
-                "Plans DB rows must be PLAN_MULTI_WAVE (≥2 waves, spans sessions). "
-                "Single-session planning uses native plan mode only — no disk file, no Notion. "
-                "Rule: .claude/rules/work-item-classification.md"
-            )
-        elif db_id_norm in _NOTION_BACKLOG_IDS:
-            target_db = "BacklogItems"
-            threshold_msg = (
-                "Backlog Items rows must be BUG_SYSTEMIC or ENHANCEMENT_ROADMAP. "
-                "BUG_DEFERRED and ENHANCEMENT_BACKLOG should use spawn_task instead. "
-                "Rule: .claude/rules/work-item-classification.md"
-            )
-        else:
-            return 0  # Not a monitored DB — pass through silently.
-
-        properties = tool_input.get("properties") or {}
-        prop_keys = list(properties.keys())[:10] if isinstance(properties, dict) else []
-
-        violation = {
-            "ts_utc": datetime.now(timezone.utc).isoformat(),
-            "kind": "notion_classification_advisory",
-            "target_db": target_db,
-            "database_id": db_id,
-            "property_keys_present": prop_keys,
-            "threshold_msg": threshold_msg,
-            "advisory": True,
-        }
-        try:
-            _NOTION_CLASSIFICATION_VIOLATIONS.parent.mkdir(parents=True, exist_ok=True)
-            with _NOTION_CLASSIFICATION_VIOLATIONS.open("a", encoding="utf-8") as fh:
-                fh.write(json.dumps(violation, ensure_ascii=False) + "\n")
-        except OSError:
-            pass
-
-        print(
-            f"[pre_mcp_gate] NOTION-CLASSIFICATION-ADVISORY: writing to {target_db} DB. "
-            f"Verify this is a threshold-appropriate item. {threshold_msg}",
-            file=sys.stderr,
-        )
-    except Exception:  # guardian: allow-broad-exception -- fail-open advisory gate; must never block unrelated Notion writes
-        pass
-    return 0  # Always advisory — never block.
 
 
 def check_tavily_gate() -> int:
@@ -1657,12 +1524,9 @@ def main() -> int:
     if server_name == gitkraken_server_name:
         return check_gitkraken_gate(tool_name, payload)
 
-    # Notion MCP: verify NOTION_TOKEN is set in OS env before any API call
+    # Notion MCP: surface a missing NOTION_TOKEN before any API call (auth gate only).
+    # Plan/status/wave-deferral enforcement removed — notion-wave-enforcement-removal.
     if server_name == notion_server_name:
-        rc = check_notion_wave_deferral(tool_name)
-        if rc != 0:
-            return rc
-        check_notion_classification_gate(tool_name, payload)  # advisory, always 0
         return check_notion_gate()
 
     # Tavily MCP: verify TAVILY_API_KEY is set in OS env before any API call

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Post-agent audit: plan edits must keep consolidated wave summary at top.
 
-Scans Cursor Agent response text for ``.claude/plans/*.md`` paths, validates each
-file on disk via ``plan_wave_summary_top`` shared module.
+Scans agent response text for ``plans/*.md`` (canonical repo-root) or legacy
+``.claude/plans/*.md`` paths, validates each file on disk via ``plan_wave_summary_top``.
 
 Bypass: ``PLAN_WAVE_SUMMARY_TOP_AUDIT_BYPASS=1``.
 Strict (stderr + exit 2): ``PLAN_WAVE_SUMMARY_TOP_AUDIT_STRICT=1``.
@@ -22,8 +22,11 @@ _LOG_PATH = _ROOT / "artifacts" / "governance" / "plan_wave_summary_top_violatio
 _BYPASS_ENV = "PLAN_WAVE_SUMMARY_TOP_AUDIT_BYPASS"
 _STRICT_ENV = "PLAN_WAVE_SUMMARY_TOP_AUDIT_STRICT"
 
+# Match canonical repo-root ``plans/<slug>.md`` and legacy ``.claude/plans/<slug>.md``
+# (both end in ``/plans/<slug>.md``). The dead ``.cursor/plans`` pattern was fixed in
+# notion-wave-enforcement-removal — that path no longer exists post-relocation (c1a17d).
 _PLAN_PATH_RE = re.compile(
-    r"(?:[\\/]|^)\.cursor[\\/]plans[\\/]([A-Za-z0-9_\-]+-[0-9a-f]{6})\.md",
+    r"(?:[\\/]|^)plans[\\/]([A-Za-z0-9_\-]+-[0-9a-f]{6})\.md",
     re.IGNORECASE,
 )
 

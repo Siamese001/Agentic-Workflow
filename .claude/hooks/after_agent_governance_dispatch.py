@@ -4,8 +4,11 @@ Reads agent response stdin once, then runs (fail-open, exit 0):
   1. ADG-first audit
   2. Post-response audits (MCP hygiene, long-command). Author-Gate capture chain
      RETIRED W1 (claude-native-supersession-9d3f7a): native AskUserQuestion supersedes it.
-  3. Notion status advisory auditor
-  4. In-process post_agent_dispatch (POST_AGENT_DISPATCHER=1)
+  3. In-process post_agent_dispatch (POST_AGENT_DISPATCHER=1)
+
+Notion status advisory auditor REMOVED (notion-wave-enforcement-removal): the
+windsurf/cursor-era Notion plan/status/wave enforcement never functioned (advisory +
+token-gated, archived DBs) and is retired.
 
 Replaces three separate subprocess hook wrappers to cut spawn overhead while
 preserving deterministic coverage. This file is the post-response chain SSOT.
@@ -28,7 +31,6 @@ from lib.claude_hook_common import cursor_response_payload, read_payload
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO_ROOT / ".claude" / "governance" / "scripts"
-NOTION_AUDITOR = REPO_ROOT / "tools" / "notion" / "unified_notion_status_auditor.py"
 
 _SCRIPT_EXTRA_ARGS: dict[str, tuple[str, ...]] = {
     "post_agent_mcp_hygiene_audit.py": ("agent_response",),
@@ -111,31 +113,11 @@ def main() -> int:
         return 0
 
     env = {**os.environ, "PYTHONPATH": str(REPO_ROOT)}
-    env.setdefault("NOTION_STATUS_VIOLATIONS_VENDOR", "cursor")
 
     _run_script("post_agent_adg_audit.py", raw, env)
 
     for name in _AG_CHAIN:
         _run_script(name, raw, env)
-
-    if NOTION_AUDITOR.is_file():
-        try:
-            proc = subprocess.run(
-                [sys.executable, str(NOTION_AUDITOR)],
-                input=raw,
-                cwd=str(REPO_ROOT),
-                capture_output=True,
-                text=True,
-                timeout=90,
-                check=False,
-                env=env,
-            )
-            if proc.stderr:
-                sys.stderr.write(proc.stderr)
-                if not proc.stderr.endswith("\n"):
-                    sys.stderr.write("\n")
-        except (subprocess.TimeoutExpired, OSError):
-            pass
 
     _run_dispatch(raw)
     return 0

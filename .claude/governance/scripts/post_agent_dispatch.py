@@ -70,19 +70,18 @@ NATIVE_HANDLERS: list[tuple[str, Callable[[ParsedResponse, Path], None]]] = [
 LEGACY_SCRIPTS: list[str] = [
     # Author-Gate + ADG run in after_agent_governance_dispatch before dispatch; skip re-run here.
     "post_agent_scope_drift_detector.py",
-    "post_agent_writeback_audit.py",
     # [W6/W7 enforcement-surface-consolidation-d8b3f6] S4 deferred-scope / next-step capture
     # RETIRED — the DEFERRED_SCOPE: / NEXT_STEP: marker -> hook -> Notion pipeline is superseded by
-    # native spawn_task (constitutional §24, ADR-096). The two capture hooks + next_step_miss_detector
-    # + _deferred_scope_plan_scaffold were deleted in W7; backfill_backlog_plan_relation now owns its
-    # own _resolve_plan_page_id resolver. The deferred_scope_scorer subsystem is KEPT (live consumers).
-    "post_agent_wave_lifecycle_capture.py",
-    "post_agent_wave_completion_audit.py",
+    # native spawn_task (constitutional §24, ADR-096).
+    # [notion-wave-enforcement-removal] Notion-coupled capture/audit scripts RETIRED — the
+    # windsurf/cursor-era Notion plan/status/wave enforcement (advisory + token-gated, archived DBs,
+    # PLAN_CREATED/WAVE_COMPLETE/PHASE_COMPLETE/PLAN_COMPLETE markers) never functioned and is removed:
+    #   post_agent_writeback_audit, post_agent_wave_lifecycle_capture, post_agent_wave_completion_audit,
+    #   post_agent_plan_registration_capture, post_agent_plan_supersession_retire.
+    # Disk-side plan-format audits are KEPT below (self-contained, never touch Notion).
     "post_agent_mcp_preflight_audit.py",
     "post_agent_plan_evidence_gate.py",
     "post_agent_plan_wave_summary_audit.py",
-    "post_agent_plan_registration_capture.py",
-    "post_agent_plan_supersession_retire.py",
     "post_agent_fortknox_integrity_audit.py",
 ]
 
