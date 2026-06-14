@@ -1,10 +1,26 @@
 ---
 name: ledger-consulter
-description: Base template for consulting a single intelligence ledger before acting. This skill itself is not auto-invoked; the ten per-ledger consulting skills (ledger-consulter-tool-routing, ledger-consulter-refactor-outcome, etc.) inherit this contract. See `.claude/plans/intelligence-ledgers-ten-a7c3e2.md` for the full rollout.
+description: Base template for consulting a single intelligence ledger before acting. This skill itself is not auto-invoked; per-ledger consulting skills inherit this contract. STATUS — template only: of the per-ledger skills below, exactly ONE is built (`ledger-consulter-ask-user-question`); the rest are PLANNED, not on disk. See `.claude/plans/intelligence-ledgers-ten-a7c3e2.md` for the rollout.
 trigger: manual
 ---
 
 # Ledger-Consulter Template
+
+> ⚠️ **STATUS — TEMPLATE + 1 REFERENCE IMPLEMENTATION (reconciled 2026-06-14).**
+> This file is the inheritance contract for per-ledger consulting skills. The "Per-Ledger
+> Skills" table below is the **planned roster** — it is NOT a list of files that exist.
+>
+> | Reality on disk | Count |
+> |---|---|
+> | Built reference implementations | **1** — [`ledger-consulter-ask-user-question`](../ledger-consulter-ask-user-question/SKILL.md) (note: keyed on the `ask_user_question` ledger, which is NOT in the roster table below) |
+> | Planned / not yet authored | the roster rows below |
+>
+> Prior versions of this file and `closed-loop-router-enforcement.md` cited three different
+> counts (10 / 12 / 24) for the same roster. The roster table below is the single source of
+> truth for *intended* coverage; do not infer that any row is a callable skill until a folder
+> `.claude/skills/<row-skill-name>/` actually exists. Per repo doctrine (`apps-rg-execution-bias`
+> "subtraction before addition"), build a per-ledger skill **only when a concrete task needs it**,
+> using the contract below — do not bulk-generate the roster.
 
 ## Purpose
 
@@ -44,9 +60,13 @@ Every per-ledger consulting skill MUST:
 - They add at most 500 tokens of precedent text to the prompt context. Top-3 matches only.
 - If `verdict.fts_available == False`, fall back to LIKE search and note reduced confidence.
 
-## Per-Ledger Skills (24 Total)
+## Planned Per-Ledger Skills (roster — author on demand, not pre-built)
 
-| Ledger | Skill | Auto-invoke trigger (indicative) |
+> These 24 rows are the **intended** roster. None exist on disk yet (the one built skill,
+> `ledger-consulter-ask-user-question`, covers a ledger not listed here). Treat this as a
+> backlog of skills to stamp from the contract above when a task actually needs the precedent.
+
+| Ledger | Skill (PLANNED) | Auto-invoke trigger (indicative) |
 |---|---|---|
 | `tool_routing` | `ledger-consulter-tool-routing` | Any retrieval-class tool dispatch |
 | `refactor_outcome` | `ledger-consulter-refactor-outcome` | Wave planning, refactor-scope Author-Gate |

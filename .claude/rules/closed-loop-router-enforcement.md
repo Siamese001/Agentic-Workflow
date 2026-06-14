@@ -39,7 +39,7 @@ Per-router required fields are encoded in `tools/ledgers/hook_helpers.py` — ne
 | Audit hook | `.claude/governance/scripts/post_agent_router_decision_audit.py` → `artifacts/governance/router_enforcement_violations.jsonl` |
 | CI gate | `ops_scripts/ci/check_router_calibration_evidence.py` (advisory; switch to strict via `ROUTER_CI_GATE_MODE=strict`) |
 | Library helper | `tools/ledgers/hook_helpers.emit_ledger_event` |
-| Per-router consulting skills | `.claude/skills/ledger-consulter-router-l*/` (12 skills) |
+| Per-router consulting skills | PLANNED — roster lives in [`ledger-consulter`](../skills/ledger-consulter/SKILL.md) (rows `router_l0_*`..`router_l6_*`). None are built yet; author from the base contract on demand. Do NOT assume `.claude/skills/ledger-consulter-router-l*/` folders exist. |
 | Bypass | `ROUTER_ENFORCEMENT_BYPASS=1` |
 
 ## Forbidden patterns
