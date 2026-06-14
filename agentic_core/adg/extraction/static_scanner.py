@@ -314,7 +314,7 @@ _SCAN_ROOTS: tuple[str, ...] = _STRUCTURAL_SCAN_ROOTS + _NON_STRUCTURAL_SCAN_ROO
 # Hard-exclude these path prefixes from all scans regardless of scan root.
 # These are full relative-path prefixes (forward-slash), matched against normalized paths.
 # Add here when a subtree is archived/inert and should never appear in violation reports.
-_EXCLUDED_PATH_PREFIXES: tuple[str, ...] = ("tools/archive/",)
+_EXCLUDED_PATH_PREFIXES: tuple[str, ...] = ("tools/archive/", "docs/archive/")
 
 _RUNTIME_ONLY_SCAN_SUBDIRS: frozenset[str] = frozenset(
     {

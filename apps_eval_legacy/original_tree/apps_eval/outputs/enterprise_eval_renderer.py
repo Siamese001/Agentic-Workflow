@@ -89,7 +89,7 @@ def write_evaluation_markdown(result: EnterpriseEvalResult, path: Path) -> None:
         ci = result.repo_signals.get("ci", {})
         governance = result.repo_signals.get("governance", {})
 
-        lines.append(f"- **ADG Available:** {'\u2705' if adg.get('available') else '\u274c'}")
+        lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
         lines.append(
             f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}"
         )
@@ -98,7 +98,7 @@ def write_evaluation_markdown(result: EnterpriseEvalResult, path: Path) -> None:
         lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
         lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
         lines.append(
-            f"- **Governance Baseline:** {'\u2705' if governance.get('denominator_baseline_available') else '\u274c'}",
+            f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}",
         )
         lines.append("")
 

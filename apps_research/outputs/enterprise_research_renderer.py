@@ -60,7 +60,7 @@ def write_research_markdown(result: EnterpriseResearchResult, path: Path) -> Non
     lines.append(f"- **Quality Score:** {result.generation_results.get('quality_score', 0):.0%}")
     lines.append(f"- **Sources Count:** {result.generation_results.get('sources_count', 0)}")
     lines.append(
-        f"- **Validation Passed:** {'\u2705' if result.generation_results.get('validation_passed') else '\u274c'}",
+        f"- **Validation Passed:** {'✅' if result.generation_results.get('validation_passed') else '❌'}",
     )
     lines.append("")
 
@@ -72,7 +72,7 @@ def write_research_markdown(result: EnterpriseResearchResult, path: Path) -> Non
             lines.append(f"**Run {i + 1}:**")
             lines.append(f"- Quality Score: {validation.get('quality_score', 0):.0%}")
             lines.append(f"- Source Coverage: {validation.get('source_coverage', 0):.0%}")
-            lines.append(f"- Gates Passed: {'\u2705' if gates.get('gates_passed') else '\u274c'}")
+            lines.append(f"- Gates Passed: {'✅' if gates.get('gates_passed') else '❌'}")
             lines.append("")
 
     # Repository operational context
@@ -84,7 +84,7 @@ def write_research_markdown(result: EnterpriseResearchResult, path: Path) -> Non
         ci = result.repo_signals.get("ci", {})
         governance = result.repo_signals.get("governance", {})
 
-        lines.append(f"- **ADG Available:** {'\u2705' if adg.get('available') else '\u274c'}")
+        lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
         lines.append(
             f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}",
         )
@@ -93,7 +93,7 @@ def write_research_markdown(result: EnterpriseResearchResult, path: Path) -> Non
         lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
         lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
         lines.append(
-            f"- **Governance Baseline:** {'\u2705' if governance.get('denominator_baseline_available') else '\u274c'}",
+            f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}",
         )
         lines.append("")
 

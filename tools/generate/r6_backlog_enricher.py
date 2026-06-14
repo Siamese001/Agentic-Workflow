@@ -125,7 +125,7 @@ class _Progress:
 
     def done(self) -> None:
         sys.stderr.write(
-            f"\r\033[92m[{'\u2588' * 40}]\033[0m 100.0% ({self.total}/{self.total}) - {self.label} done\n"
+            f"\r\033[92m[{'█' * 40}]\033[0m 100.0% ({self.total}/{self.total}) - {self.label} done\n"
         )
 
 
