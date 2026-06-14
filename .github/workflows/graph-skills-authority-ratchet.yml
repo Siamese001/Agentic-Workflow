@@ -27,9 +27,6 @@ on:
       - "ops_scripts/ci/check_graph_skills_agentic_core_boundary.py"
       - ".github/workflows/graph-skills-authority-ratchet.yml"
   workflow_dispatch: {}
-  schedule:
-    # Nightly soak anchor for D13 (graph-skills contract ratchet).
-    - cron: "17 9 * * *"
 
 concurrency:
   group: graph-skills-authority-ratchet-${{ github.ref }}

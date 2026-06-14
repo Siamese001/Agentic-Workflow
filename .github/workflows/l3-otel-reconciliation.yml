@@ -22,10 +22,6 @@
 name: l3-otel-reconciliation
 
 on:
-  schedule:
-    # Nightly at 07:00 UTC. Stagger from calibration-drift (06:00) to avoid
-    # contending for self-hosted runner slots.
-    - cron: "0 7 * * *"
   workflow_dispatch:
     inputs:
       mode:

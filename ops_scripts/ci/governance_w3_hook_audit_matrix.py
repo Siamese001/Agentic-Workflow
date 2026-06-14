@@ -17,14 +17,9 @@ OUT_MD = REPO / "docs/reports/cursor/governance_w3_hook_audit_matrix.md"
 
 HOOK_REQUIRED = {
     "post_agent_adg_audit.py",
-    "post_agent_author_gate_capture.py",
-    "post_agent_author_gate_miss_detector.py",
-    "post_agent_author_gate_ui_audit.py",
-    "post_agent_author_gate_schema_audit.py",
-    "post_agent_ask_user_question_packet_audit.py",
-    "post_agent_author_gate_pipeline_audit.py",
-    "post_agent_ag_queue_drain_audit.py",
-    "post_agent_ag_queue_seed_capture.py",
+    # Author-Gate audits + AG-queue scripts retired + archived (teardown, ADR-093):
+    # capture / miss_detector / ui_audit / schema_audit / ask_user_question_packet_audit /
+    # pipeline_audit / ag_queue_drain / ag_queue_seed -> archives/claude_native_supersession_2026-06-07/.
     "post_agent_mcp_hygiene_audit.py",
     "post_agent_long_command_audit.py",
     "post_agent_deferred_scope_capture.py",
@@ -35,11 +30,7 @@ HOOK_REQUIRED = {
 }
 
 CI_REQUIRED = {
-    "post_agent_author_gate_capture.py",
-    "post_agent_author_gate_miss_detector.py",
-    "post_agent_author_gate_ui_audit.py",
-    "post_agent_ask_user_question_packet_audit.py",
-    "post_agent_author_gate_pipeline_audit.py",
+    # Author-Gate audits retired + archived (teardown, ADR-093).
     "post_agent_adg_audit.py",
 }
 
@@ -63,7 +54,6 @@ OBSOLETE_CANDIDATE = {
 }
 
 DUPLICATE_CANDIDATE = {
-    "post_agent_author_gate_audit.py": ["post_agent_author_gate_capture.py", "post_agent_author_gate_miss_detector.py"],
     "post_agent_notion_plans_status_audit.py": ["tools/notion/unified_notion_status_auditor.py"],
     "post_agent_notion_plan_identity_audit.py": ["post_agent_notion_plans_status_audit.py"],
 }

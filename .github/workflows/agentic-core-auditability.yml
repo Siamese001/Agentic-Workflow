@@ -24,8 +24,6 @@ on:
       - "scripts/regen_integrated_runtime_latest.py"
       - "tools/certification/regen_mw_latest.py"
       - ".github/workflows/agentic-core-auditability.yml"
-  schedule:
-    - cron: "17 6 * * *"
   workflow_dispatch: {}
 
 permissions:

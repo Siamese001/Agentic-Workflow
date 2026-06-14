@@ -327,7 +327,7 @@ def main():
     # packet freshness, AGP1 pipeline freshness, v2 completeness, anomaly detector,
     # bypass rollup) enforced a bespoke packet -> render -> marker -> queue -> SQLite-ledger
     # pipeline that emulated a structured-choice tool. Native AskUserQuestion supersedes
-    # it. Gate scripts under ops_scripts/ci/author_gate/ are dormant (uncalled); the
+    # it. Gate scripts under ops_scripts/ci/decision_ledger/ are dormant (uncalled); the
     # governance hook scripts + 2 skills are dormant in place. Invariant (stop & ask before
     # ambiguous edits) preserved in CLAUDE.md + constitutional s6.
     # ADR: docs/architecture/adr/ADR-093-author-gate-native-ask-user-question.md
@@ -1007,15 +1007,11 @@ def main():
             "GAP001-EXIT apps_rg Exit no direct writes (advisory)",
             "ops_scripts/ci/check_gap001_exit_no_direct_writes.py",
         ),
-        # EC-UI — Enriched Choice UI invariants gate.
-        # Validates ask_user_question calls use enriched format (confidence prefix,
-        # trade-off segment, star marker) per consolidated plan a1e3f7.
-        # Advisory by default; fail-closed via ENRICHED_CHOICE_UI_FAIL_CLOSED=1.
-        # Bypass: ENRICHED_CHOICE_UI_BYPASS=1.
-        (
-            "EC-UI Enriched Choice UI invariants (advisory)",
-            "ops_scripts/ci/check_enriched_choice_ui_invariants.py",
-        ),
+        # EC-UI Enriched Choice UI invariants gate — RETIRED (Author-Gate W1 teardown,
+        # ADR-093). It scanned callsites for the retired enriched-choice/AUTHOR_GATE_PACKET
+        # wrapper; the live native-tool convention (numeric confidence + (Recommended)) is
+        # enforced by the PreToolUse gate pre_ask_user_question_recommendation_gate.py. Gate
+        # archived under archives/claude_native_supersession_2026-06-07/.
         # W6ECE1 — W6 Emit-Contract Enrichment 9-concern gate (ADR-084).
         # Structural field scan across all 11 emit contracts (AST-level).
         # Verifies: C1 identity quad, C2 l5_cert_ref, C3 gate_verdict_refs,

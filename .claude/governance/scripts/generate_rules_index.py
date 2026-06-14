@@ -279,7 +279,7 @@ def generate_index(rules: List[Dict], skills: List[Dict], workflows: List[Dict],
     lines.append("| Always-on invariants | `AGENTS.md`, `000`–`003` `.mdc` | Skills, hook stderr |")
     lines.append("| MCP routing tables | `AGENTS.md` autogen + `mcp-integration` §1–§13 | Per-server redirect stubs |")
     lines.append("| Notion DB IDs | `AGENTS.md` NOTION-MAP | `notion` skill body |")
-    lines.append("| Author-Gate pipeline | `003-cursor-author-gate-hitl.mdc` | `pre_user_prompt_author_gate_reminder` (replay only) |")
+    lines.append("| Author-Gate (native) | `003-author-gate-hitl.md` | `AskUserQuestion` + `ask-user-question-recommendation` skill |")
     lines.append("| Post-agent chain | `after_agent_governance_dispatch.py` | Active `.claude/governance/scripts/post_agent_*` hooks |")
     lines.append("| Plan paths | `plan-location.mdc` | `AGENTS.md` prose |")
     lines.append("")

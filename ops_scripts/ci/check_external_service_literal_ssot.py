@@ -40,10 +40,13 @@ LITERAL_PATTERNS = (
     "anthropic.com",
     "openai.com",
     # Wave/Phase DB IDs (UUID4 prefixes — first 8 hex are unique enough)
-    "aa8d2507-101e-4384",  # WAVE_PHASE_DB_ID
-    "fc7f6bf4-6a73-43cd",  # WAVE_PHASE_DATA_SOURCE_ID
+    "aa8d2507-101e-4384",  # WAVE_PHASE_DB_ID / BACKLOG_ITEMS_DB_ID
+    "fc7f6bf4-6a73-43cd",  # WAVE_PHASE_DATA_SOURCE_ID / BACKLOG_ITEMS_DS_ID
     "6ed25e12-bd92-4352",  # ADR_REGISTRY_DB_ID
     "e59d7640-dc09-48f9",  # ADR_REGISTRY_DS_ID
+    # Plans DB IDs (previously missing from ratchet)
+    "ac53d31b-3068-4039",  # PLANS_DATA_SOURCE_ID — import from _notion_constants
+    "6aba34d9-4d0b-4f4c",  # PLANS_DB_ID — import from _notion_constants
 )
 
 SSOT_ALLOWLIST = (

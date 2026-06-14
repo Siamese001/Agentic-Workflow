@@ -25,6 +25,15 @@ the proposed ``AskUserQuestion`` options and flags when:
   renderer's confidence band is missing (Finding 2);
 * the recommended option is not placed first (native-tool authoring convention).
 
+Canonical option shape (SSOT)
+-----------------------------
+Authoring-convention SSOT: the ``ask-user-question-recommendation`` skill. Recommended option
+first; its ``label`` ends ``(Recommended)``; **every** option ``description`` begins with a
+numeric ``[confidence=0.NN]`` prefix, and the recommended one with
+``[RECOMMENDED ⭐ confidence=0.NN]`` (one star). The confidence check below stays tolerant of a
+bare ``high``/``medium``/``low`` word as a *legacy fallback* so an older-style call never
+hard-blocks — but the numeric ``[confidence=0.NN]`` prefix is the only canonical form.
+
 Decision contract (``evaluate``)
 --------------------------------
 Returns ``(0, reason)`` to allow or ``(2, reason)`` to block.

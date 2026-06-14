@@ -1,6 +1,6 @@
 ---
 name: structured-reasoning
-description: Provides plan-first decomposition, retrieval discipline, branching, revision, and evidence validation guidance for complex T2/T3 work. Use inside native plan mode; do not emit the retired SR_* marker packet.
+description: Provides plan-first decomposition, retrieval discipline, branching, revision, and evidence validation guidance for complex T2/T3 work. Use when decomposing a T2/T3 task inside native plan mode; do not emit the retired SR_* marker packet.
 metadata:
   enforcement_layer: claude_code
   enforcement_timing: before_work

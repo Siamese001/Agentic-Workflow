@@ -31,18 +31,30 @@ The helper does NOT read the environment or the filesystem; callers honor
 ``NOTION_PLANS_STATUS_BYPASS=1`` themselves.
 """
 
+import sys
 from dataclasses import dataclass
+from pathlib import Path
+
+# Import canonical Notion IDs from SSOT (_notion_constants is pure constants,
+# no I/O at import time — safe here).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import (  # noqa: E402
+    PLANS_DB_ID,
+    PLANS_DATA_SOURCE_ID,
+    BACKLOG_ITEMS_DB_ID as BACKLOG_DB_ID,
+    BACKLOG_ITEMS_DS_ID as BACKLOG_DATA_SOURCE_ID,
+)
 
 # ---------------------------------------------------------------------------
 # SSOT — canonical Plans DB identifiers and Status values.
 # ---------------------------------------------------------------------------
 
 # Plans database id (used for API-post-page parent.database_id writes).
-PLANS_DB_ID: str = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
+# Value imported from _notion_constants.PLANS_DB_ID.
 
 # Plans data-source id (used for API-query-data-source reads; sometimes
 # appears in write payloads where the caller conflated the two).
-PLANS_DATA_SOURCE_ID: str = "ac53d31b-3068-4039-9ebe-856c12caab32"
+# Value imported from _notion_constants.PLANS_DATA_SOURCE_ID.
 
 # Set of id strings that identify the Plans surface — both are treated as
 # "plans write target" for validation purposes.
@@ -58,11 +70,11 @@ _PLANS_IDS: frozenset[str] = frozenset({
 # ---------------------------------------------------------------------------
 
 # Backlog Items database id (API-post-page parent.database_id writes).
-BACKLOG_DB_ID: str = "aa8d2507-101e-4384-81d9-60ea3fe33876"
+# Value imported from _notion_constants.BACKLOG_ITEMS_DB_ID (alias: BACKLOG_DB_ID).
 
 # Backlog Items data-source id (API-query-data-source reads; also appears
 # in some write payloads).
-BACKLOG_DATA_SOURCE_ID: str = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+# Value imported from _notion_constants.BACKLOG_ITEMS_DS_ID (alias: BACKLOG_DATA_SOURCE_ID).
 
 _BACKLOG_IDS: frozenset[str] = frozenset({
     BACKLOG_DB_ID.lower(),
