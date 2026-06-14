@@ -31,7 +31,7 @@ Five-status taxonomy, Plans invariants, Backlog Snapshot (`34b27693-f55c-81b4-93
 | Wave start | n/a | Emit `WAVE_START: plan=<slug-6hex> wave=<N>` + `python tools/plan_lifecycle/wave_execution_state.py start` / `wave-progress` |
 | Wave complete | Plan table (hook) | Emit `WAVE_COMPLETE: plan=<slug-6hex> wave=<N> note="..."` |
 
-Full wave lifecycle: `.claude/rules/plan-lifecycle-procedures.md`, `.claude/rules/wave-completion-discipline.md`.
+Full wave lifecycle: `plan-governance` skill §3.
 
 ## MCP sync enforcement
 

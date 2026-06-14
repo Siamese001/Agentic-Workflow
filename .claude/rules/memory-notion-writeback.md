@@ -53,4 +53,4 @@ These events fire writeback without a prompt:
 
 ## Constitutional cross-reference
 
-§17 (Memory lifecycle mandatory). Sibling rule `.claude/rules/deferred-scope-capture.md` covers `DEFERRED_SCOPE:` markers (constitutional §24).
+§17 (Memory lifecycle mandatory). Constitutional §24 (native `spawn_task`) covers `DEFERRED_SCOPE:` work.

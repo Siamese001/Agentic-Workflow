@@ -12,7 +12,7 @@ Operationalizes constitutional §18 (no hidden scope expansion).
 1. **No gold-plating.** Don't improve code Claude Code "noticed needed improving" while doing something else. File a `NEXT_STEP:` marker; move on.
 2. **No "while I'm here" edits.** Touching an unrelated file because it's open / nearby = scope expansion — forbidden without explicit user approval this turn.
 3. **One active task at a time.** Asked for X → do X. Don't start Y because Y "also needs doing". Concurrent scopes require an explicit user turn naming both.
-4. **Out-of-scope improvements → `NEXT_STEP:` marker, NOT an edit.** Per `next-step-capture.md`, emit marker same response; hook auto-captures; DO NOT implement.
+4. **Out-of-scope improvements → `NEXT_STEP:` marker, NOT an edit.** Per constitutional §24 (native `spawn_task`), surface out-of-scope work; DO NOT implement.
 
 ## In-Scope vs Out-of-Scope
 
@@ -50,4 +50,4 @@ Triggers: different top-level dir, layer (L0→L4), app (apps_qna→apps_rg), ta
 
 ## Enforcement
 
-`post_agent_grep_budget_audit.py` (text-search cap) · `post_agent_read_budget_audit.py` (file-read cap) · `post_agent_token_telemetry.py` (telemetry). `scope-containment` skill for detailed procedure. Constitutional §18, §28, §31. Siblings: `next-step-capture.md`, `deferred-scope-capture.md`, `global_rules.md`.
+`post_agent_grep_budget_audit.py` (text-search cap) · `post_agent_read_budget_audit.py` (file-read cap) · `post_agent_token_telemetry.py` (telemetry). `scope-containment` skill for detailed procedure. Constitutional §18, §28, §31. Sibling: constitutional §24 (native `spawn_task`).

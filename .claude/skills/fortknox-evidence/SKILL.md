@@ -14,7 +14,7 @@ In-house certification-evidence discipline. No upstream MCP surface — the inte
 **Dual-track SSOT:** `docs/architecture/adr/ADR-103-fortknox-runtime-dual-track.md` (certification vs runtime proof)
 **Runtime template:** `docs/reports/runtime_cert/README.md`
 **Constitutional tie-in:** §32
-**Author-Gate trigger:** `certification_claim` (author-gate-decision-points.md §1.11)
+**Author-Gate trigger:** `certification_claim` (native `AskUserQuestion`; CLAUDE.md §Author-Gate)
 
 ## When To Invoke
 
@@ -105,4 +105,4 @@ python -c "import json,pathlib; r=json.loads(pathlib.Path('artifacts/certificati
 - Mutation runner: `ops_scripts/ci/generate_mutation_rejection_report.py`
 - Positive-control template: `tools/cert/build_positive_control_fixture.py`
 - Rule: `.claude/rules/fortknox-certification-discipline.md`
-- Author-Gate trigger: `.claude/rules/author-gate-decision-points.md` §1.11
+- Author-Gate trigger: native `AskUserQuestion` (CLAUDE.md §Author-Gate)

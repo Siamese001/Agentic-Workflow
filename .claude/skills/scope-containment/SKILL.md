@@ -74,11 +74,11 @@ Chunks served their purpose (locating files); paths are the durable artifact.
 | Text-search cap | `post_agent_grep_budget_audit.py` → `artifacts/governance/grep_budget_violations.jsonl` |
 | File-read cap | `post_agent_read_budget_audit.py` → `artifacts/governance/read_budget_violations.jsonl` |
 | Token telemetry | `post_agent_token_telemetry.py` → `artifacts/governance/turn_budget.jsonl` |
-| Out-of-scope ideas | `NEXT_STEP:` marker (`next-step-capture.md`) |
+| Out-of-scope ideas | out-of-scope work → native `spawn_task` (constitutional §24) |
 | Topic transitions | `SCOPE_RESET:` marker |
 
 ## References
 
 - Rule: `.claude/rules/scope-containment.md` (invariants)
-- Sibling rules: `next-step-capture.md`, `deferred-scope-capture.md`
+- Sibling: constitutional §24 (native `spawn_task`)
 - Constitutional: §18 (no hidden scope expansion), §28 (ADG over grep), §31 (SSOT folder routing)

@@ -3,7 +3,7 @@
 
 # ADG Analysis Procedures
 
-> **Tier map (W2 dedupe):** Invariants → `adg-canonical-invariants.md`, `adg-graph-layer-enforcement.md`. On-demand procedures → **this rule** + `adg-p-band-burn-down-discipline.md` (globs). Tool routing → `adg-sqlite` + `graph-analysis` skills. Workflow aliases → `/adg-repair-loop`, `/adg-test-triage-gate` (no duplicate bodies). Legacy mirror → `.windsurf/rules/` (read-only).
+> **Tier map (W2 dedupe):** Invariants → `adg-canonical-invariants.md`. On-demand procedures → **this rule** + `adg-p-band-burn-down-discipline.md` (globs). Tool routing → `adg-sqlite` + `graph-analysis` skills. Workflow aliases → `/adg-repair-loop`, `/adg-test-triage-gate` (no duplicate bodies). Legacy mirror → `.windsurf/rules/` (read-only).
 
 > Procedural companion to `adg-canonical-invariants.md`.  
 > **ADG SQLite = canonical truth; Redis = hot projection; artifacts = pre-computed analyses.**

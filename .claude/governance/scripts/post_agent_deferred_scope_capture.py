@@ -7,7 +7,7 @@ priority band via tools.priority.deferred_scope_scorer, and either confirms
 a matching Notion writeback happened in the same response (via WRITEBACK:
 receipt) or auto-posts a Wave/Phase Convergence row.
 
-Policy SSOT: .claude/rules/deferred-scope-capture.md
+Policy SSOT: constitutional §24 (spawn_task)
 Scorer SSOT: tools/priority/deferred_scope_scorer.py
 Notion DB:   aa8d2507-101e-4384-81d9-60ea3fe33876 (Wave/Phase Convergence)
 

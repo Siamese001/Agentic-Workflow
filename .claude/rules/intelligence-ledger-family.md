@@ -124,7 +124,7 @@ deterministic ritual:
 normal stochastic drift; auto-tuning preserves momentum. Large miscalibrations
 or systemic miscalibrations (multiple bands in one ledger) reveal the scoring
 formula itself is wrong — that's an architectural decision, not a parameter
-tweak, and must be surfaced via Author-Gate per `author-gate-enforcement.md`.
+tweak, and must be surfaced via native `AskUserQuestion` (CLAUDE.md §Author-Gate).
 
 **Decision-type for the Author-Gate**: `architecture_choice` (re-scoring
 formula) — not `parameter_tune`. Surface the affected band, the empirical
