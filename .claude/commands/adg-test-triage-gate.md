@@ -10,7 +10,7 @@ description: Thin alias — ADG-backed test triage (/adg-test-triage-gate)
 
 | Layer | SSOT |
 |-------|------|
-| Test accelerator invariant | [adg-test-accelerator-enforcement.md](../rules/adg-test-accelerator-enforcement.md) |
+| Test accelerator invariant | [adg-analysis-procedures.md](../rules/adg-analysis-procedures.md) |
 | Analysis procedures | [adg-analysis-procedures.md](../rules/adg-analysis-procedures.md) |
 | ADG MCP | [adg-sqlite/SKILL.md](../skills/adg-sqlite/SKILL.md) |
 

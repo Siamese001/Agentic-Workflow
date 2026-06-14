@@ -14,7 +14,7 @@ In-house certification-evidence discipline. No upstream MCP surface — the inte
 **Dual-track SSOT:** `docs/architecture/adr/ADR-103-fortknox-runtime-dual-track.md` (certification vs runtime proof)
 **Runtime template:** `docs/reports/runtime_cert/README.md`
 **Constitutional tie-in:** §32
-**Author-Gate trigger:** `certification_claim` (author-gate-decision-points.md §1.11)
+**Author-Gate trigger:** `certification_claim` (native `AskUserQuestion`; CLAUDE.md §Author-Gate)
 
 ## When To Invoke
 
@@ -90,7 +90,7 @@ python -c "import json,pathlib; r=json.loads(pathlib.Path('artifacts/certificati
 | `ops_scripts/ci/check_fortknox_positive_control.py` | `RTC-REQ-001` remains `SIGNED_OFF` |
 | `.claude/governance/scripts/pre_write_fortknox_guard.py` | Blocks direct report edits (exit 2) |
 | `.claude/governance/scripts/post_agent_fortknox_integrity_audit.py` | Retroactive claim-without-compiler detection |
-| `.github/workflows/fortknox-nightly.yml` | Nightly regression scan + issue filing |
+| _(nightly workflow retired 2026-06-14, solo-workflow CI trim)_ | Run the three gates above on demand via `workflow_dispatch` or locally; no scheduled regression scan |
 
 ## Bypass
 
@@ -105,4 +105,4 @@ python -c "import json,pathlib; r=json.loads(pathlib.Path('artifacts/certificati
 - Mutation runner: `ops_scripts/ci/generate_mutation_rejection_report.py`
 - Positive-control template: `tools/cert/build_positive_control_fixture.py`
 - Rule: `.claude/rules/fortknox-certification-discipline.md`
-- Author-Gate trigger: `.claude/rules/author-gate-decision-points.md` §1.11
+- Author-Gate trigger: native `AskUserQuestion` (CLAUDE.md §Author-Gate)

@@ -541,9 +541,15 @@ def wire_spine_c0_fec_for_section(
     evidence_room_producer = bridge.bridge_doc.get("producer_stage") == "section_c0_evidence_room"
 
     if section_spine_c0_retrieve_required(front_spine):
+        # Defer grounding to the authoritative post-overlay/merge assert below: the spine
+        # retrieve is non-authoritative enrichment, and for evidence_room_producer sections
+        # the section's own FEC (overlaid next) is the grounding authority. The assert at
+        # the end of this block re-checks grounding on the merged/overlaid support, so the
+        # spine retrieve's WEAK must not prematurely STOP a section whose own FEC rated PASS.
         spine_res = invoke_section_spine_c0_retrieve(
             front_spine=front_spine,
             section_id=section_id,
+            assert_grounding=False,
         )
         write_spine_c0_retrieve_receipt(artifact_dir, spine_res.receipt)
         runtime_payload["spine_c0_retrieve_receipt"] = spine_res.receipt

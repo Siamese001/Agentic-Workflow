@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from ops_scripts.calibration.author_gate_calibrator import (
+from ops_scripts.calibration.decision_ledger_calibrator import (
     NOOP_DEGENERATE_LABELS,
     NOOP_STALE_SCHEMA,
     fit_class,

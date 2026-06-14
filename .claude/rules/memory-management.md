@@ -119,5 +119,5 @@ This ensures `mem_recall_session_start` has current data.
 ## Related
 
 - **ADG Redis refresh:** `.claude/commands/adg-redis-refresh.md`
-- **ADG repair discipline:** `.claude/rules/adg-repair-discipline.md`
+- **ADG repair discipline:** `.claude/rules/adg-analysis-procedures.md` §5
 - **Session start:** `mem_recall_session_start` loads protected types only

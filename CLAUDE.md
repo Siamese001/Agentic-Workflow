@@ -150,8 +150,7 @@ A **Skill** column entry means a richer procedural skill covers the same area �
 | `approval-exception-policy.md` | When approval/exceptions apply | — |
 | `deferred-scope-capture.md` | Capturing out-of-scope work | — |
 | `next-step-capture.md` | Recording the next step | — |
-| `refactor-decision-memory.md` | Pre-Author-Gate precedent check | [`refactor-decision-memory`](.claude/skills/refactor-decision-memory/SKILL.md) |
-| `author-gate-decision-points.md` / `author-gate-enforcement.md` / `author-gate-queue-drain.md` / `author-gate-svp-calibration.md` | Author-Gate doctrine, scoring, queue | [`author-gate-packet-builder`](.claude/skills/author-gate-packet-builder/SKILL.md) |
+| `author-gate-decision-points.md` / `author-gate-enforcement.md` / `author-gate-queue-drain.md` / `author-gate-svp-calibration.md` | Author-Gate (retired → native `AskUserQuestion`); rules are deprecation stubs | [`ask-user-question-recommendation`](.claude/skills/ask-user-question-recommendation/SKILL.md) |
 | `security-hardening.md` | Security hardening | — |
 | `python-dash-c-quote-hazard.md` | `python -c "..."` quote-hazard ban | — |
 | `query-progress-bar.md` | Progress bar for long operations | — |
@@ -203,7 +202,8 @@ A **Skill** column entry means a richer procedural skill covers the same area �
 | `apps-rg-interactive-discipline.md` | apps_rg interactive discipline |
 | `apps-rg-post-run-summary.md` | Mandatory inline post-run summary |
 
-> Deprecated rules (kept for reference, not active): `adg-graph-layer-enforcement`, `adg-hotspot-enforcement`,
-> `adg-p7-analyst-artifacts`, `adg-repair-discipline`, `adg-test-accelerator-enforcement`,
-> `anti-pattern-author-gate`, `notion-backlog-plan-linkage`, `notion-plan-identity-verification`,
-> `plan-registration-enforcement`, `wave-completion-discipline`.
+> Retired redirect rules (deleted W3, plan `enforcement-surface-consolidation-d8b3f6`): 18 pure-redirect
+> stubs (Author-Gate, ADG-consolidation, deferred-scope/next-step, notion/plan, mcp-serialization) were
+> removed. Their signal already lived at canonical targets (constitutional §-citations are number-based
+> and survive); the full redirect map is preserved in
+> [retired-rules-index.md](docs/reports/governance/retired-rules-index.md).

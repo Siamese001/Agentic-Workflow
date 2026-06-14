@@ -166,3 +166,68 @@ class TestFormatUuidEdgeCases:
     def test_round_trip_dashed_undashed(self) -> None:
         dashed = "35727693-f55c-8118-95a8-d62d11d50c25"
         assert format_uuid(dashed.replace("-", "")) == dashed
+
+
+# ---------------------------------------------------------------------------
+# SSOT derivation + fail-soft fallback (plan notion-id-ssot-consolidation)
+# ---------------------------------------------------------------------------
+
+import _notion_constants as _nc  # noqa: E402
+
+
+def _load_yaml_ssot() -> dict:
+    import yaml
+
+    path = _nc._find_ssot_yaml()
+    assert path is not None, "config/notion_databases.yaml must be discoverable"
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
+
+
+class TestSsotDerivation:
+    """Derived constants must equal the config/notion_databases.yaml SSOT."""
+
+    def test_api_surface_matches_yaml(self) -> None:
+        api = _load_yaml_ssot()["api"]
+        assert _nc.NOTION_API_VERSION == str(api["version"])
+        assert _nc.NOTION_BASE == str(api["base"])
+        assert _nc.NOTION_HTTP_TIMEOUT_S == float(api["http_timeout_s"])
+
+    def test_db_ids_match_yaml(self) -> None:
+        rows = {r["key"]: r for r in _load_yaml_ssot()["databases"]}
+        assert _nc.PLANS_DB_ID == rows["plans"]["database_id"]
+        assert _nc.PLANS_DATA_SOURCE_ID == rows["plans"]["id"]
+        assert _nc.BACKLOG_ITEMS_DB_ID == rows["backlog_items"]["database_id"]
+        assert _nc.BACKLOG_ITEMS_DATA_SOURCE_ID == rows["backlog_items"]["id"]
+        assert _nc.AP_BURNDOWN_DS_ID == rows["antipattern_burndown"]["id"]
+
+    def test_wave_phase_aliases_point_at_backlog_items(self) -> None:
+        assert _nc.WAVE_PHASE_DB_ID == _nc.BACKLOG_ITEMS_DB_ID
+        assert _nc.WAVE_PHASE_DATA_SOURCE_ID == _nc.BACKLOG_ITEMS_DATA_SOURCE_ID
+
+    def test_fallback_literals_match_yaml(self) -> None:
+        """The fail-soft fallback must mirror the SSOT (parity-gate invariant)."""
+        rows = {r["key"]: r for r in _load_yaml_ssot()["databases"]}
+        for key, (db_id, ds_id) in _nc._FALLBACK_DB.items():
+            assert (db_id, ds_id) == (rows[key]["database_id"], rows[key]["id"]), key
+
+
+class TestFailSoftFallback:
+    """_load_ssot() must never raise and must return literals when the YAML
+    SSOT is unreachable (the module is imported by ~76 governance hooks)."""
+
+    def test_missing_yaml_falls_back_to_literals(self, monkeypatch) -> None:
+        monkeypatch.setattr(_nc, "_find_ssot_yaml", lambda: None)
+        api, dbs = _nc._load_ssot()
+        assert dbs == _nc._FALLBACK_DB
+        assert api["version"] == _nc._FALLBACK_NOTION_API_VERSION
+        assert api["base"] == _nc._FALLBACK_NOTION_BASE
+        assert api["http_timeout_s"] == _nc._FALLBACK_NOTION_HTTP_TIMEOUT_S
+
+    def test_unreadable_yaml_falls_back_without_raising(self, monkeypatch, tmp_path) -> None:
+        bogus = tmp_path / "notion_databases.yaml"
+        bogus.write_text("{ this is : : not valid yaml", encoding="utf-8")
+        monkeypatch.setattr(_nc, "_find_ssot_yaml", lambda: bogus)
+        # Must not raise; returns the literal fallback.
+        api, dbs = _nc._load_ssot()
+        assert dbs == _nc._FALLBACK_DB
+        assert api["version"] == _nc._FALLBACK_NOTION_API_VERSION

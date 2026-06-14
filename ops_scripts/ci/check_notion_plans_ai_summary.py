@@ -23,7 +23,7 @@ Modes
 
 SSOT
 ----
-- Data source id: ``ac53d31b-3068-4039-9ebe-856c12caab32`` (Plans)
+- Data source id: ``PLANS_DATA_SOURCE_ID`` (Plans; SSOT: _notion_constants)
 - Property id: ``lNTq`` (``AI Summary ``)
 - Status enforced-set: ``{"In Progress", "Not Started", "Completed"}`` (5-status SSOT; terminal Retired/Archived exempt)
 
@@ -58,11 +58,14 @@ from _notion_plans_status_check import (  # noqa: E402
     PLANS_DATA_SOURCE_ID,
     PLANS_STATUSES_AI_SUMMARY_ENFORCED,
 )
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as _NOTION_VERSION,
+    NOTION_BASE as _NOTION_BASE,
+)
 
 _PLANS_DATA_SOURCE_ID = PLANS_DATA_SOURCE_ID
 _ENFORCED_STATUSES = PLANS_STATUSES_AI_SUMMARY_ENFORCED
-_NOTION_VERSION = "2025-09-03"
-_QUERY_URL = f"https://api.notion.com/v1/data_sources/{_PLANS_DATA_SOURCE_ID}/query"
+_QUERY_URL = f"{_NOTION_BASE}/data_sources/{_PLANS_DATA_SOURCE_ID}/query"
 
 # Format soft-cap: single sentence, ≤ 12 words target, ≤ 15 words hard advisory.
 _WORD_SOFT_CAP = 15

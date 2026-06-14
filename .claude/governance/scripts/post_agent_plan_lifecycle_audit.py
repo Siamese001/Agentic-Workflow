@@ -41,8 +41,16 @@ from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _post_agent_payload import extract_response_text  # noqa: E402
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as _NOTION_API_VERSION,
+    NOTION_BASE as _NOTION_BASE,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+from _notion_constants import PLANS_DATA_SOURCE_ID as _NOTION_PLANS_DS_ID  # noqa: E402
 
 # Violation log paths (preserved from original hooks)
 LOG_PATHS = {
@@ -54,9 +62,7 @@ LOG_PATHS = {
     "evidence": REPO_ROOT / "artifacts" / "governance" / "plan_evidence_violations.jsonl",
 }
 
-# Notion API constants (from creation audit)
-_NOTION_BASE = "https://api.notion.com/v1"
-_NOTION_API_VERSION = "2025-09-03"
+# Notion API base/version imported from the SSOT (above). Local timeout kept.
 _NOTION_TIMEOUT_S = 30
 
 # Valid statuses at creation time
@@ -287,7 +293,7 @@ def cmd_duplicate(args: argparse.Namespace) -> int:
     if post_page_match:
         parent_content = post_page_match.group(1)
         # Check if targeting Plans DB
-        if "database_id" in parent_content or "ac53d31b" in parent_content:
+        if "database_id" in parent_content or _NOTION_PLANS_DS_ID in parent_content:
             # Extract slug
             slug_match = re.search(r'"Slug"[^}]*"title"[^}]*"content"\s*:\s*"([^"]+)"', response_text, re.DOTALL)
             if slug_match:

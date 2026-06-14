@@ -34,8 +34,8 @@ Without a matching `compile_requirement_signoff.py` invocation in the same respo
 | Pre-write hook (exit 2) | `.claude/governance/scripts/pre_write_fortknox_guard.py` |
 | Post-response audit | `.claude/governance/scripts/post_agent_fortknox_integrity_audit.py` → `artifacts/governance/fortknox_integrity_violations.jsonl` |
 | CI gates | `ops_scripts/ci/check_fortknox_clean_bundle.py`, `check_fortknox_mutation_rejection.py`, `check_fortknox_positive_control.py` |
-| Nightly | `.github/workflows/fortknox-nightly.yml` |
-| Author-Gate trigger | `author-gate-decision-points.md` §1.11 (`certification_claim`) |
+| Nightly | _Retired 2026-06-14 (solo-workflow CI trim); run the CI gates on demand via `workflow_dispatch` / local `ops_scripts/ci/run_contract_gates.py`._ |
+| Author-Gate trigger | native `AskUserQuestion` (`certification_claim`; CLAUDE.md §Author-Gate) |
 | Bypass | `FORTKNOX_DISCIPLINE_BYPASS=1` |
 
 ## Constitutional cross-reference

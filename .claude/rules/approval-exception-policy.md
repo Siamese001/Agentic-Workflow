@@ -131,6 +131,4 @@ All approvals are logged in:
 ## References
 
 - Constitutional Section 6 (Author-Gate), Section 8 (Guardian), Section 3 (Agent deletion)
-- `.claude/rules/author-gate-enforcement.md` - Author-Gate protocol
-- `.claude/rules/anti-pattern-author-gate.md` - Anti-pattern approval flow
-- `.claude/rules/author-gate-svp-calibration.md` - When Author-Gate is required vs forbidden
+- Author-Gate protocol (anti-pattern flow, when required vs forbidden) → native `AskUserQuestion` (CLAUDE.md §Author-Gate); see `docs/reports/governance/retired-rules-index.md`.

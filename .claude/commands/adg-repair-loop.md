@@ -14,7 +14,7 @@ description: Thin alias — ADG-scoped repair loop (/adg-repair-loop)
 | Repair protocol (full steps) | [adg-analysis-procedures.md](../rules/adg-analysis-procedures.md) §5 |
 | P-band discipline | [adg-p-band-burn-down-discipline.md](../rules/adg-p-band-burn-down-discipline.md) |
 | Tool routing | [graph-analysis/SKILL.md](../skills/graph-analysis/SKILL.md), [adg-sqlite/SKILL.md](../skills/adg-sqlite/SKILL.md) |
-| P7 accelerator | [adg-p7-analyst-artifacts.md](../rules/adg-p7-analyst-artifacts.md) |
+| P7 accelerator | [adg-analysis-procedures.md](../rules/adg-analysis-procedures.md) |
 
 ## Invocation steps
 

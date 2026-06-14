@@ -19,9 +19,9 @@ convention. The companion deterministic check is
 confidence signal.
 
 > There is exactly **one** convention — this file. The legacy `author-gate-packet-builder`
-> and `author-gate-ui-renderer` skills are retired stubs; do not invoke them, do not emit
-> `AUTHOR_GATE_PACKET:` / `DECISION_CAPTURED:` markers, and do not build packet JSON or a
-> 6-line card. One `AskUserQuestion` call is the whole mechanism.
+> and `author-gate-ui-renderer` skills were retired and archived (ADR-093); do not invoke
+> them, do not emit `AUTHOR_GATE_PACKET:` / `DECISION_CAPTURED:` markers, and do not build
+> packet JSON or a 6-line card. One `AskUserQuestion` call is the whole mechanism.
 
 > RCA precedent (2026-06-08): two AskUserQuestion calls shipped with neither a
 > `(Recommended)` marker nor a confidence signal. This skill + gate close that gap.
@@ -113,5 +113,5 @@ with this confidence shape — never as a prose menu or a bare "I recommend X".
 - Prose-menu trigger auditor (Stop): `post_agent_recommendation_gate_audit.py`.
 - Violations log: `artifacts/cursor/ask_user_question_violations.jsonl`.
 - User directive: memory `no-prose-options-menus` (2026-06-13).
-- Retired predecessors (now stubs): `author-gate-ui-renderer`, `author-gate-packet-builder`
+- Retired predecessors (archived): `author-gate-ui-renderer`, `author-gate-packet-builder`
   (W1 supersession, ADR-093).

@@ -25,8 +25,10 @@ Outcome frame on EVERY turn (pass or fail) — "Did it run?" + verdict source + 
 What worked, Failure, Next. The frame proves the STATUS verdict (it does not re-vote pass/fail);
 its presence is keyed on the ``Verdict source:`` line. Its absence is ``missing_refactor_outcome``. A failure
 additionally requires the deep Layered RCA inside that frame — the failing layer isolated from
-the surfacing layer, a multi-level why-chain (dig until root, >= 2 levels), and a root cause
-distinct from the symptom. A symptom-only or single-hop RCA is ``shallow_rca``.
+the surfacing layer, a multi-level why-chain (dig until root, >= 2 levels), a root cause
+distinct from the symptom, a stated **confidence** in that root cause, and a **next step coupled
+to the diagnosis** (not a bare platitude like "fix the bug"). A symptom-only / single-hop RCA, a
+root cause asserted with no confidence, or a generic non-actionable next step is ``shallow_rca``.
 
 Violation kinds: missing_refactor_outcome, missing_rca, incomplete_rca,
 status_signal_mismatch, shallow_rca.
@@ -87,6 +89,22 @@ _RCA_SYMPTOM_RE = re.compile(r"(?im)^\s*(?:[-*]\s*)?(?:immediate\s+)?symptom\s*:
 _LAYERED_LAYER_RE = re.compile(r"(?im)^\s*(?:[-*]\s*)?failing\s+layer\s*:")
 _LAYERED_MECH_RE = re.compile(r"(?im)^\s*(?:[-*]\s*)?mechanism\s*:")
 _WHY_LEVEL_RE = re.compile(r"(?im)^\s*(?:└─\s*|[-*]\s*)?why\s*\d+\s*:")
+# High confidence in the root cause must be *stated*, not implied — the frame's
+# "Confidence / unknowns:" line. Its absence means the dig stopped without grading certainty.
+_LAYERED_CONFIDENCE_RE = re.compile(r"(?im)^\s*(?:[-*]\s*)?confidence\b")
+# A next step is "deep-reasoning-derived" only when it names a concrete action; a bare platitude
+# (the WHOLE next-step value matches one of these) is decoupled from the diagnosis above it.
+_GENERIC_NEXT_FULL_RE = re.compile(
+    r"^(?:"
+    r"fix(?:\s+(?:the|it|this))?(?:\s+(?:bug|code|issue|error|problem|tests?|it))?|"
+    r"debug(?:\s+(?:it|this|further))?|"
+    r"investigate(?:\s+(?:it|this|further|more))?|"
+    r"look\s+into\s+(?:it|this)|"
+    r"figure\s+(?:it|this)?\s*out|"
+    r"resolve\s+(?:the\s+)?(?:issue|problem|error|bug)|"
+    r"tbd|unclear|unknown|retry(?:\s+it)?"
+    r")\.?$"
+)
 
 # Refactoring-turn signals: code files changed or an edit tool was invoked.
 _FILES_CHANGED_RE = re.compile(r"(?im)^\s*FILES_CHANGED\s*:")
@@ -109,9 +127,10 @@ _REMEDY = (
 _SHALLOW_REMEDY = (
     "Refactoring turn: the 5-field RCA is not enough. Emit the Layered RCA — Immediate symptom "
     "-> Failing layer (isolate from the surfacing layer) -> Why-chain (dig until root, >=2 "
-    "levels) -> Root cause (distinct from the symptom) -> Evidence -> Confidence. Apply the "
-    "'but why?' test until you reach a cause you can act on. SSOT: 001 § Runtime failure ⇒ "
-    "RCA mandatory; constitutional §37."
+    "levels) -> Root cause (distinct from the symptom) -> Evidence -> Confidence/unknowns -> Next "
+    "(a concrete action coupled to the root cause, not 'fix the bug'). Apply the 'but why?' test "
+    "until you reach a cause you can act on, then state your confidence in it. SSOT: 001 § Runtime "
+    "failure ⇒ RCA mandatory; constitutional §37."
 )
 
 _MISSING_OUTCOME_REMEDY = (
@@ -253,7 +272,18 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
             symptom_txt == root_txt or symptom_txt in root_txt or root_txt in symptom_txt
         )
         missing_layer = not bool(_LAYERED_LAYER_RE.search(text))
-        if depth < 2 or symptom_equals_root or missing_layer:
+        # High confidence in the root cause must be stated, not implied.
+        missing_confidence = not bool(_LAYERED_CONFIDENCE_RE.search(text))
+        # The next step must derive from the diagnosis; a bare platitude does not.
+        next_txt = _line_value(text, _RCA_FIXNEXT_RE)
+        next_step_generic = bool(next_txt) and bool(_GENERIC_NEXT_FULL_RE.match(next_txt))
+        if (
+            depth < 2
+            or symptom_equals_root
+            or missing_layer
+            or missing_confidence
+            or next_step_generic
+        ):
             violations.append(
                 _record(
                     "shallow_rca",
@@ -262,6 +292,8 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
                         "descent_depth": depth,
                         "symptom_equals_root": symptom_equals_root,
                         "missing_failing_layer": missing_layer,
+                        "missing_confidence": missing_confidence,
+                        "next_step_generic": next_step_generic,
                         "remedy": _SHALLOW_REMEDY,
                     },
                 )

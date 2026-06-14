@@ -35,11 +35,14 @@ from typing import Any
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
-_NOTION_BASE = "https://api.notion.com/v1"
-_NOTION_API_VERSION = "2025-09-03"
-_NOTION_TIMEOUT_S = 30
+sys.path.insert(0, str(_REPO_ROOT / ".claude" / "governance" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as _NOTION_API_VERSION,
+    NOTION_BASE as _NOTION_BASE,
+    BACKLOG_ITEMS_DATA_SOURCE_ID as _BACKLOG_DATA_SOURCE_ID,
+)
 
-_BACKLOG_DATA_SOURCE_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+_NOTION_TIMEOUT_S = 30
 
 _REPORT_PATH = _REPO_ROOT / "artifacts" / "ci" / "np11_backlog_waiting_for_gate.json"
 

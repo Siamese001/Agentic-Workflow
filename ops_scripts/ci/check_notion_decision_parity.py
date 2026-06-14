@@ -41,7 +41,10 @@ NOTION_AUDIT_PATHS = (
 VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "ci" / "notion_decision_parity_violations.jsonl"
 BYPASS_LOG = REPO_ROOT / "artifacts" / "ci" / "notion_decision_parity_bypass.jsonl"
 
-AUTHOR_GATE_DB_ID = "18bb9145-1320-4191-8b14-6c309776bcf5"  # Archived ledger write-ID (reference only)
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    AUTHOR_GATE_LEDGER_DB_ID as AUTHOR_GATE_DB_ID,  # Archived ledger write-ID (reference only)
+)
 
 
 def _ledger_path() -> Path | None:

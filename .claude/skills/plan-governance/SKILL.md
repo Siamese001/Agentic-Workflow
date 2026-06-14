@@ -124,7 +124,7 @@ PLAN_COMPLETE: plan=<slug-6hex> note="<final outcome>"
 
 When targeting Notion plan pages, **query by slug before `API-patch-page`**. Re-query if page ID is from memory >5 min or another session.
 
-See `notion-plan-identity-verification.md` for the invariant; use `tools/notion/` helpers where available.
+See this skill (plan identity verification) and `plan-location.md`; use `tools/notion/` helpers where available.
 
 ---
 

@@ -37,12 +37,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-_NOTION_BASE = "https://api.notion.com/v1"
-_NOTION_API_VERSION = "2025-09-03"
-_NOTION_TIMEOUT_S = 30
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".claude" / "governance" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as _NOTION_API_VERSION,
+    NOTION_BASE as _NOTION_BASE,
+    PLANS_DATA_SOURCE_ID as _PLANS_DATA_SOURCE_ID,
+)
 
-# Plans DB data_source_id
-_PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
+_NOTION_TIMEOUT_S = 30
 
 # Valid statuses at creation time
 VALID_CREATION_STATUSES = frozenset({"Not Started", "Completed"})

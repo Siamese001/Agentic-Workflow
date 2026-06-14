@@ -36,9 +36,13 @@ from typing import Optional
 # Configuration
 # ---------------------------------------------------------------------------
 
-PLANS_DATA_SOURCE_ID: str = "ac53d31b-3068-4039-9ebe-856c12caab32"
-PLANS_DB_ID: str = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
-NOTION_API_BASE: str = "https://api.notion.com/v1"
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".claude" / "governance" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION,
+    NOTION_BASE as NOTION_API_BASE,
+    PLANS_DATA_SOURCE_ID,
+    PLANS_DB_ID,
+)
 
 # Anomaly detection thresholds
 LOOKBACK_DAYS: int = 30
@@ -90,7 +94,7 @@ def _query_plans_db() -> list[dict]:
         url = f"{NOTION_API_BASE}/databases/{PLANS_DATA_SOURCE_ID}/query"
         headers = {
             "Authorization": f"Bearer {token}",
-            "Notion-Version": "2025-09-03",
+            "Notion-Version": NOTION_API_VERSION,
             "Content-Type": "application/json",
         }
         

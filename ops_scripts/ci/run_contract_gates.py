@@ -327,7 +327,7 @@ def main():
     # packet freshness, AGP1 pipeline freshness, v2 completeness, anomaly detector,
     # bypass rollup) enforced a bespoke packet -> render -> marker -> queue -> SQLite-ledger
     # pipeline that emulated a structured-choice tool. Native AskUserQuestion supersedes
-    # it. Gate scripts under ops_scripts/ci/author_gate/ are dormant (uncalled); the
+    # it. Gate scripts under ops_scripts/ci/decision_ledger/ are dormant (uncalled); the
     # governance hook scripts + 2 skills are dormant in place. Invariant (stop & ask before
     # ambiguous edits) preserved in CLAUDE.md + constitutional s6.
     # ADR: docs/architecture/adr/ADR-093-author-gate-native-ask-user-question.md
@@ -695,6 +695,15 @@ def main():
         (
             "NP18 Notion Plans status canonical (advisory)",
             "ops_scripts/ci/check_notion_plans_status_canonical.py",
+        ),
+        # NP-IDSSOT — Notion-ID SSOT parity. Asserts config/notion_databases.yaml
+        # (SSOT) == _notion_constants derived constants == its _FALLBACK_* literals,
+        # so the fail-soft fallback can never silently drift from the SSOT.
+        # Fail-closed (exit 1 on mismatch). Bypass: NOTION_ID_SSOT_PARITY_BYPASS=1.
+        # Plan: notion-id-ssot-consolidation.
+        (
+            "NP-IDSSOT Notion-ID SSOT parity (enforced)",
+            "ops_scripts/ci/check_notion_id_ssot_parity.py",
         ),
         # NP-DONE -- Plans whose on-disk Wave Structure table shows all waves
         # ✅ DONE but Notion status ≠ "Completed". Belt-and-suspenders backstop

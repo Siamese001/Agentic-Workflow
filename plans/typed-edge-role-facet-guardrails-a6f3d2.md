@@ -55,7 +55,15 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 
 ### Current lane board (Stage B substrate — confirm with one ~12-min E2E on main)
 
-**7 of 11 pass · 4 blocked.**
+> ⛔ **GROUNDED CORRECTION 2026-06-14 (live single-lane run on fresh checkout @ origin/main `2c50a3225b`).** The board below is STALE — its "ibm_bullets blocks on held-metric" premise was from an old run. On a fresh checkout the lanes block on an **upstream prerequisite chain**, not the metric gate:
+> 1. **C0.2 `fact_vectors` collection ABSENT** → every lane `REQUIRED_PROOF_ABSENT` before generation. **FIXED this session:** `python -m apps_rg bootstrap fact-vectors --strict` built 26 proof-eligible atoms **+ the sparse/BM25 sidecar** (26 docs / 319 terms) in the canonical shared cache (`data/cache/chromadb` + `sparse`). Unblocks C0.2 for all lanes/sessions.
+> 2. **FEC grounding `support_status='WEAK'`** for ibm_bullets (next blocker; only **3** proof-eligible IBM facts) → `STOP_AS_EVIDENCE_GAP`, still upstream of the metric gate. The `build_ibm_phase2_graph_plan_fact` metric-gate fix is **moot until FEC grounding is satisfied** (evidence enrichment / eligibility).
+> The "7 pass / 4 block" board is **DISPROVEN**. **Full 11-lane baseline E2E 2026-06-14** (`artifacts/w2_base`, Anthropic, post-C0.2-fix): **0/11** — all bullet lanes `EXECUTED_X3_BLOCK` (`REQUIRED_PROOF_ABSENT: FEC support_status='WEAK'`); narratives `upstream_not_finalized` (cascade); headline/exec_summary not reached (fatal_lane_recipe_policy aborted).
+> **ROOT CAUSE — FOUND + FIXED (commit `76f2461bb2`).** It was a **false-block**, not a real evidence gap (both the "fact-scarcity" AND the "graph evidence rates WEAK" framings are DISPROVEN). The section's OWN C0 evidence room rates `support_status='PASS'` with rich graph role-episode bundles (ibm_bullets: 8 IBM bundles, `metric_outcome_ids`, bound skills HIGH/MEDIUM). The block came from a **second, non-authoritative** spine retrieve (`c0_retrieve_apps_rg` over the thin 26-atom fact_vectors) that rates `WEAK`: `invoke_section_spine_c0_retrieve` asserted grounding on *that* WEAK (`section_c0_retrieve.py:191`) **before** `apply_spine_c03_overlay_to_bridge_doc` applied the section's PASS — firing `STOP_AS_EVIDENCE_GAP`. **Fix:** `assert_grounding=False` at the spine-retrieve call in `c0_fec_compose.py`; the post-overlay assert (`:590`) now decides on the section's authoritative support. (Non-evidence-room/merge sections still gate; standalone callers keep default. Regression test added.)
+> **Validated:** single-lane ibm_bullets now **generates** (`RUNTIME_GENERATION_STATUS=REAL_LLM`, **25/26 X2 gates PASS**) vs prior `REQUIRED_PROOF_ABSENT` before generation. This is the systemic unblock for all 11 graph lanes.
+> **Next blocker (the real W2.2 content work):** ibm_bullets now stops at the legitimate downstream gates — **`x2_ibm_metric_anchor_bullet_ownership: FAIL`** (the one failing X2 of 26) + a **Gemini Pro X1D judge** `MODEL_BACKED_FAIL`. That's the genuine metric-anchoring/quality fix (re-run a full 11-lane baseline to get each lane's now-reachable X2/X1D board).
+
+**7 of 11 pass · 4 blocked** (STALE — see grounded correction above):
 
 | Status | Lanes |
 |---|---|

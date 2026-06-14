@@ -37,8 +37,8 @@ anchors:
   - pattern: "ops_scripts/ci/adg_gates/*.py"
     reason: "Per-gate scripts, CLI-invoked."
     issued: 2026-04-23
-  - pattern: "ops_scripts/ci/author_gate/*.py"
-    reason: "Author-Gate CLI scripts."
+  - pattern: "ops_scripts/ci/decision_ledger/*.py"
+    reason: "Decision-ledger CI scripts (formerly author_gate)."
     issued: 2026-04-23
 
   # ---------- Dev-tool entry points ----------

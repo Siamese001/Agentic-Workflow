@@ -7,9 +7,9 @@ priority band via tools.priority.deferred_scope_scorer, and either confirms
 a matching Notion writeback happened in the same response (via WRITEBACK:
 receipt) or auto-posts a Wave/Phase Convergence row.
 
-Policy SSOT: .claude/rules/deferred-scope-capture.md
+Policy SSOT: constitutional §24 (spawn_task)
 Scorer SSOT: tools/priority/deferred_scope_scorer.py
-Notion DB:   aa8d2507-101e-4384-81d9-60ea3fe33876 (Wave/Phase Convergence)
+Notion DB:   Backlog Items (data_source id via _notion_constants SSOT)
 
 Marker format (from rule):
     DEFERRED_SCOPE: plan=<slug> wave=<wave_id> phase=<phase_id>
@@ -53,6 +53,7 @@ from _notion_constants import (  # noqa: E402
     PLANS_DATA_SOURCE_ID,
     WAVE_PHASE_DATA_SOURCE_ID as WAVE_PHASE_DS_ID,
     WAVE_PHASE_DB_ID,
+    query_url,
 )
 
 
@@ -70,7 +71,7 @@ MEMORY_DB = REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
 # Wave/Phase Convergence data_source_id (reads). Distinct from database_id (writes).
 
-NOTION_QUERY_URL = f"https://api.notion.com/v1/data_sources/{WAVE_PHASE_DS_ID}/query"
+NOTION_QUERY_URL = query_url(WAVE_PHASE_DS_ID)
 
 # Dedup window: local log lookback widened from 60 min to 7 days (10080 min).
 # Notion pre-check catches older/cross-session duplicates authoritatively.

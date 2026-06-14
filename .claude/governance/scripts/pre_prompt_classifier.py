@@ -335,7 +335,7 @@ _sr_mandate = """
              If Redis or MCP disagrees with SQLite, SQLite wins.
      FORBIDDEN: refactoring plans citing only raw `edges`/`violations` counts
      or lacking archetype/surface classification.
-     Rules: adg-canonical-invariants.md, adg-hotspot-enforcement.md, adg-graph-layer-enforcement.md
+     Rules: adg-canonical-invariants.md, adg-analysis-procedures.md
      CI gate: ops_scripts/ci/check_graph_layer_evidence.py
   1. Call mem_recall_session_start (Memory MCP) — load persistent project context (ArchitectureLayer, ConstitutionalRule)
   2. Call create_task (task_manager MCP) to register this task with goal + definitions of done

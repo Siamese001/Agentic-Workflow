@@ -44,7 +44,7 @@ jobs:
       - uses: ./.github/actions/common-setup
 
       - name: Install pytest
-        run: pip install pytest
+        run: pip install pytest pytest-timeout
 
       - name: Sovereignty interface tests (apps_* direct L* import boundary)
         run: |

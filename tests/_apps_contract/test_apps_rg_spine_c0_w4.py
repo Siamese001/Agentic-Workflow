@@ -191,3 +191,49 @@ def test_merge_spine_fec_sets_canonical_flags(
     )
     assert merged["canonical_c0_5_claimed"] is True
     assert merged["fec_shape_only"] is False
+
+
+def test_invoke_spine_c0_assert_grounding_false_defers_weak_stop(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A WEAK spine-retrieve FEC must NOT STOP when ``assert_grounding=False``.
+
+    Regression for the systemic FEC false-block: for evidence_room_producer
+    (graph-authority) sections the section's OWN FEC (support_status=PASS) is the
+    grounding authority, asserted by the caller AFTER apply_spine_c03_overlay. The
+    non-authoritative spine retrieve's WEAK support must not prematurely STOP a section
+    whose own FEC rated PASS. The default (assert_grounding=True) stays grounding-safe
+    for standalone callers.
+    """
+    spine = build_section_front_spine_from_args(
+        section_id="executive_summary",
+        args=_args(),
+        repo_root=REPO,
+    )
+    weak = FinalEvidenceContract(
+        request_id="r",
+        run_id="run",
+        app_id="apps_rg",
+        trace_id="t",
+        l5_certification_ref="test:valid:w6",
+        support_status=SUPPORT_STATUS_WEAK,
+        support_target_met=False,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.spine.section_c0_retrieve.c0_retrieve_apps_rg",
+        lambda **_: weak,
+    )
+    # assert_grounding=False: caller re-asserts grounding on the overlaid authoritative
+    # support, so the spine retrieve's WEAK must NOT raise here.
+    result = invoke_section_spine_c0_retrieve(
+        front_spine=spine,
+        section_id="executive_summary",
+        assert_grounding=False,
+    )
+    assert result.fec.support_status == SUPPORT_STATUS_WEAK
+    # Default preserves standalone grounding safety (grounding_required defaults True).
+    with pytest.raises(StopAsEvidenceGapError, match=STOP_AS_EVIDENCE_GAP):
+        invoke_section_spine_c0_retrieve(
+            front_spine=spine,
+            section_id="executive_summary",
+        )

@@ -1872,7 +1872,8 @@ def _remove_inline_amit_signatures(text: str) -> str:
         flags=re.IGNORECASE,
     )
     body = re.sub(r"\s{2,}", " ", body).strip()
-    return f"{body}{signature or '\n\nAmit'}"
+    signature_block = signature or "\n\nAmit"
+    return f"{body}{signature_block}"
 
 
 def _dedupe_bridge_sentences(text: str) -> str:

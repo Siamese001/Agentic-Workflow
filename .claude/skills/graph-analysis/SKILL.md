@@ -100,7 +100,7 @@ re-exports, config files).
 2. **Graph wins disagreements.** If graph and text search conflict, graph wins unless extractor limitation is proven and recorded.
 3. **Fail-closed on parse failure.** No silent fallback to grep/regex (§2.3).
 4. **T3 evidence requires `## DEPENDENCY_GRAPH` section** with graph justification for each changed file.
-5. **P7 analyst artifacts are PRIMARY before live MCP.** Every ADG run now ships `adg_refactor_accelerator_<ts>.json` (ranked refactor candidates with impacted_tests), `adg_structural_outputs_<ts>.json` (burndown/blast-radius/seams/centrality), `adg_graphdb_queries_<ts>.json` (9 structural query families + hubs + layer subgraphs), and `adg_runtime_spine_<ts>.json` (handoff + cross-cutting witness tiers). Consult these JSON artifacts before issuing live MCP queries for the same question. See `rules/adg-p7-analyst-artifacts.md` for the routing table.
+5. **P7 analyst artifacts are PRIMARY before live MCP.** Every ADG run now ships `adg_refactor_accelerator_<ts>.json` (ranked refactor candidates with impacted_tests), `adg_structural_outputs_<ts>.json` (burndown/blast-radius/seams/centrality), `adg_graphdb_queries_<ts>.json` (9 structural query families + hubs + layer subgraphs), and `adg_runtime_spine_<ts>.json` (handoff + cross-cutting witness tiers). Consult these JSON artifacts before issuing live MCP queries for the same question. See `adg-analysis-procedures.md` §4 for the routing table.
 
 ## When to Use
 

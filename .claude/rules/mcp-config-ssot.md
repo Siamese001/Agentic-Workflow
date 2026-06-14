@@ -7,7 +7,6 @@
 .mcp.json                 ← EDIT HERE, project-scoped MCP config
 OS environment variables         ← secrets and credentials only
 .claude/skills/**/SKILL.md       ← MCP usage procedures
-.claude/rules/mcp-serialization.md  ← remote MCP serialization invariant (batching / ordering)
 .claude/rules/*.mdc              ← governance invariants
 .claude/hooks/**                 ← deterministic Claude Code hook checks
 ```
