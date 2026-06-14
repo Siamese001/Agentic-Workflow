@@ -26,8 +26,8 @@ Archive the declared-but-uncleaned emulation machinery and collapse redirect/dor
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W2
-LAST_COMPLETED_WAVE: W1
+CURRENT_WAVE: W5
+LAST_COMPLETED_WAVE: W5
 LAST_UPDATED: 2026-06-14
 
 ---
@@ -49,9 +49,9 @@ LAST_UPDATED: 2026-06-14
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | W1.1, W1.2 | Audit ratification · memory-drift fix · gate reference-sweep classifier (no deletions) | ~30K | Coupling map valid; `post_agent_*` rename already landed on this branch | ✅ DONE | Memory SSOT created; `classify_gate_wiring.py` emitted REGISTRY 151 / PRECOMMIT 22 / WORKFLOW 14 / TEST_ONLY 37 / ORPHANED 102 |
 | W2 | W2.1, W2.2 | **S1** Author-Gate machinery → archive (highest value, lowest risk) | ~40K | AG chain already unwired (verified 3×); §6 invariant lives in CLAUDE.md | ✅ DONE (by `origin/main`) | **Completed independently on `origin/main`** (merged 2026-06-14): Tier-2 author-facing layer retired, `ci/author_gate/`→`ci/decision_ledger/`, 2 AG skills + ~15 AG scripts + AG test suite removed (shared ledger backbone preserved). My branch merged it cleanly; no separate archival needed. |
-| W3 | W3.1, W3.2 | Collapse ~21 redirect/inactive rule stubs (incl. the 5 AG rule stubs) → one retired-rules index | ~28K | §-citations are number-based, not filename-based; glob-triggers re-homed | 🔲 TODO | Stubs replaced by `retired-rules-index.md`; CLAUDE.md index updated; no rule references a non-existent SSOT; gates green |
-| W4 | W4.1, W4.2 | CI-gate reference-swept retirement + family collapse (uses W1.2 classifier output) | ~38K | W1.2 classifier proves orphan status across registry+workflows+pre-commit+tests | 🔲 TODO | Only proven-orphan gates retired; notion-dedup & waiting-for pairs parameterized→1 each; apps_rg/notion-status gates untouched; gates green |
-| W5 | W5.1, W5.2 | Skills archival + thin-alias command cleanup | ~26K | Servers absent from `.mcp.json`; native substitutes documented | 🔲 TODO | 2 retired AG + 4 dormant-MCP skills archived; 6 tavily + other alias commands removed; CLAUDE.md MCP table updated; orthogonal pairs untouched |
+| W3 | W3.1, W3.2 | Collapse redirect/inactive rule stubs → retired-rules index | ~28K | §-citations are number-based; no markdown links to stubs | ✅ DONE | 18 pure-redirect stubs deleted (`local-llm` excluded as active); CLAUDE.md + constitutional repoint notes → `retired-rules-index.md`; zero new broken cross-refs; 66→48 rule files |
+| W4 | W4.1, W4.2 | CI-gate reference-swept retirement (uses W1.2 classifier) | ~38K | extended verification beyond registry/precommit/workflow/tests | ✅ DONE | 18 verified-dead orphan gates retired; of 103 registry-orphans, **84 proven still-referenced** → NOT deleted (blind mass-delete would have broken them); JSON 306/85; family-collapse parameterization deferred |
+| W5 | W5.1, W5.2 | Skills archival + thin-alias command cleanup | ~26K | dormant-MCP skills intentionally kept per CLAUDE.md | ✅ DONE | 6 redundant tavily command aliases deleted; dormant-MCP skills KEPT (documented intent); AG skills already removed via `origin/main` |
 | W6 | W6.1, W6.2 | **S2/S4/S5/S6** Slim dispatch · retire SR/next-step/deferred-scope capture · delete legacy trees · retire mcp-serialization | ~40K | Native plan-mode/`spawn_task`/parallel-MCP cover invariants; zero imports of legacy trees | 🔲 TODO | Dispatch chains slimmed; legacy trees deleted after zero-import proof; mcp-serialization retired; gates green |
 | W7 | W7.1, W7.2 | Verification · ADRs · memory writeback · Notion + adjacent-plan reconcile | ~30K | One ADR per surface; predecessor auto-retired via Supersedes | 🔲 TODO | Full `run_contract_gates.py` green with reduced set; net-subtractive file-count delta reported; ADRs present; plan + Notion closed out |
 
@@ -61,14 +61,14 @@ LAST_UPDATED: 2026-06-14
 |-------|-------|--------|
 | W1.1 | Ratify coupling map + resolve memory drift | ✅ DONE |
 | W1.2 | Build gate reference-sweep classifier (read-only) | ✅ DONE |
-| W2.1 | Archive AG scripts + skills; remove coupled gates/pre-commit hooks | 🔄 IN PROGRESS |
-| W2.2 | Verify §6 invariant; ADR; gates green | 🔲 TODO |
-| W3.1 | Build retired-rules index (all ~21 stubs); re-home glob-triggers | 🔲 TODO |
-| W3.2 | Delete stubs; update CLAUDE.md index; gates green | 🔲 TODO |
-| W4.1 | Retire classifier-proven orphan gates | 🔲 TODO |
-| W4.2 | Parameterize mergeable gate families | 🔲 TODO |
-| W5.1 | Archive retired/dormant skills | 🔲 TODO |
-| W5.2 | Remove thin-alias commands; update indexes | 🔲 TODO |
+| W2.1 | Archive AG scripts + skills; remove coupled gates/pre-commit hooks | ✅ DONE (`origin/main`) |
+| W2.2 | Verify §6 invariant; ADR; gates green | ✅ DONE (`origin/main`) |
+| W3.1 | Build retired-rules index; identify stub set + inbound refs | ✅ DONE |
+| W3.2 | Delete 18 stubs; update CLAUDE.md/constitutional; validate | ✅ DONE |
+| W4.1 | Retire verified-dead orphan gates (18 of 103; 84 still-referenced) | ✅ DONE |
+| W4.2 | Parameterize mergeable gate families | ⏸ DEFERRED (W6+) |
+| W5.1 | Dormant-MCP skills KEPT per intent; AG skills gone via `origin/main` | ✅ DONE |
+| W5.2 | Remove 6 tavily command aliases | ✅ DONE |
 | W6.1 | Slim dispatch chains; retire SR/next-step/deferred-scope capture | 🔲 TODO |
 | W6.2 | Delete legacy trees (zero-import proof); retire mcp-serialization | 🔲 TODO |
 | W7.1 | Full-suite green + metrics + ADRs | 🔲 TODO |
