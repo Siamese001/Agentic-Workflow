@@ -136,10 +136,15 @@ def test_extract_fec_and_resolver_ids() -> None:
 
 
 @pytest.mark.slow
-def test_d7_all_six_lanes_contract() -> None:
+def test_d7_all_lanes_contract() -> None:
+    # D7 canonical coverage expanded 6 -> 10 lanes (graph-skills enhancement W0-W10:
+    # added insurtech/ey bullets + all four narratives + executive_summary). The pin
+    # tracks len(D7_SET_EQUALITY_LANES) so a dropped lane still trips it; all 10 lanes
+    # report set_equal / d7_all_pass (verified — no FEC/resolver drift).
+    assert len(D7_SET_EQUALITY_LANES) == 10
     receipt = audit_all_d7_lanes(repo_root=REPO)
-    assert receipt["d7_target_count"] == 6
-    assert len(receipt["lanes"]) == 6
+    assert receipt["d7_target_count"] == 10
+    assert len(receipt["lanes"]) == 10
     assert receipt["d7_all_pass"] is True
     assert receipt["status"] == "PASS"
     for lane in D7_SET_EQUALITY_LANES:
