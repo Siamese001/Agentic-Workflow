@@ -74,15 +74,21 @@ waves:
     description: upstream proof-bearing sections (competencies + bullets), parallel-eligible
     lanes: [competencies, unify_bullets, ibm_bullets, insurtech_bullets, ey_bullets]
     max_parallel_env: APPS_RG_PHASE1_MAX_PARALLEL
-    default_max_parallel: 5
+    # 2026-06-14: re-pinned 5->1 (serial). Phase-1 lanes share non-thread-safe process
+    # globals (chromadb client, augmented_skills_graph cache); parallel wave-0 bullets race
+    # and crash mid-C0 (proven: full integrated run crashed unify_bullets+ibm_bullets after
+    # c02_atoms while each passes single-lane X3_ALLOW). Serial is the safe default until the
+    # lanes are made thread-safe; parallel is opt-in via APPS_RG_PHASE1_MAX_PARALLEL>1.
+    default_max_parallel: 1
   - id: 1
-    # 2026-06-13: unpinned from max_parallel:1 (stale vLLM-era serialization). The 4
-    # narratives are mutually independent (each depends only on its own bullets lane in
-    # wave 0), so they parallelize safely now that run_lane_in_context is lock-free
-    # (section_lane_executor.py). See memory apps-rg-parallel-orchestration-nonfunctional.
+    # 2026-06-14: re-pinned 4->1 (serial). The 2026-06-13 unpin assumed lock-free
+    # run_lane_in_context made parallel safe, but the race is on OTHER shared process globals
+    # (chromadb client / graph cache), not just the removed sections-root lock — proven by
+    # the full integrated run crashing lanes mid-C0 while each passes single-lane. Serial
+    # until lanes are thread-safe; parallel opt-in via APPS_RG_PHASE1_MAX_PARALLEL>1.
     description: downstream narratives (after finalized companion bullets)
     lanes: [unify_narrative, ibm_narrative, insurtech_narrative, ey_narrative]
-    max_parallel: 4
+    max_parallel: 1
   - id: 2
     description: heavy downstream synthesis (executive_summary) solo
     lanes: [executive_summary]

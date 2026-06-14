@@ -61,12 +61,13 @@ def test_section_dag_narrative_never_precedes_companion_bullets() -> None:
     assert "unify_narrative" not in wave0_lanes
 
 
-def test_build_phase1_waves_narratives_parallel_after_bullets() -> None:
-    # 2026-06-13: narratives unpinned from max_parallel:1 (stale vLLM-era serialization).
-    # The 4 narratives are mutually independent (each depends only on its own bullets
-    # lane in wave 0), so they parallelize now that run_lane_in_context is lock-free.
-    # Validated: 704s vs 1383s serial baseline. See memory
-    # apps-rg-parallel-orchestration-nonfunctional.
+def test_build_phase1_waves_narratives_serial_after_bullets() -> None:
+    # 2026-06-14: narratives RE-PINNED to max_parallel:1 (serial). The 2026-06-13 unpin to 4
+    # assumed lock-free run_lane_in_context made parallel safe, but the full integrated run
+    # crashed lanes mid-C0 — the race is on OTHER shared process globals (chromadb client /
+    # graph cache), not just the removed sections-root lock. Each lane passes single-lane
+    # X3_ALLOW; only concurrent execution crashes. Serial until lanes are thread-safe;
+    # parallel is opt-in via APPS_RG_PHASE1_MAX_PARALLEL>1.
     waves = build_phase1_waves()
     nar_wave = next(w for w in waves if "unify_narrative" in w.lanes)
     assert set(nar_wave.lanes) == {
@@ -75,8 +76,8 @@ def test_build_phase1_waves_narratives_parallel_after_bullets() -> None:
         "insurtech_narrative",
         "ey_narrative",
     }
-    # narratives are now parallel-eligible (>1); manifest pins wave 1 to 4 (one per lane)
-    assert nar_wave.max_parallel == 4
+    # narratives re-pinned to serial (1); parallel opt-in via APPS_RG_PHASE1_MAX_PARALLEL.
+    assert nar_wave.max_parallel == 1
 
 
 def test_dispatch_serial_mock() -> None:

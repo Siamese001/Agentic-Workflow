@@ -100,11 +100,16 @@ def _collect_change_log_bindings(
             continue
         bid = str(entry.get("bullet_id") or "")
         reb = str(entry.get("role_episode_bundle_id") or "").strip()
+        # A narrative synthesizes across several role episodes and binds them as a plural
+        # list (change_log entry ``bundle_ids: [...]``) rather than one singular id per
+        # bullet. Honor both so genuine narrative bundle bindings are not dropped.
+        reb_plural = [str(x).strip() for x in (entry.get("bundle_ids") or []) if str(x).strip()]
         sk = [str(x) for x in (entry.get("graph_skill_node_ids") or entry.get("skill_ids_used") or [])]
         srcs = _bullet_cited_facts(entry)
         mids = [str(x) for x in (entry.get("metric_outcome_ids") or [])]
         if reb:
             bundle_ids.append(reb)
+        bundle_ids.extend(reb_plural)
         skill_ids.extend(sk)
         fact_or_lineage.extend(srcs)
         metric_ids.extend(mids)
@@ -205,6 +210,22 @@ def _collect_change_log_bindings(
                 rmids = [str(x) for x in (rec.get("linked_metric_outcome_ids") or [])]
                 slot["metric_outcome_ids"].extend(rmids)
                 metric_ids.extend(rmids)
+
+    # Narrative change_log binds whole bundles (plural ``bundle_ids``) without per-bullet
+    # slot facts; resolve each bound bundle's graph_skill_node_ids + a lineage fact + metric
+    # outcomes from the bundle index so the narrative graph-lineage gates see the genuine
+    # bindings the model already emitted (a truly empty change_log still binds nothing).
+    if bundles:
+        _bundle_by_id = {str(r.get("role_episode_bundle_id")): r for r in bundles}
+        for rid in list(bundle_ids):
+            rec = _bundle_by_id.get(rid)
+            if not rec:
+                continue
+            skill_ids.extend(str(x) for x in (rec.get("graph_skill_node_ids") or []))
+            _lf = [str(f) for f in (rec.get("linked_source_fact_ids") or []) if str(f).strip()]
+            if _lf:
+                fact_or_lineage.append(_lf[0])
+            metric_ids.extend(str(x) for x in (rec.get("linked_metric_outcome_ids") or []))
 
     return {
         "bundle_ids": sorted(set(bundle_ids)),

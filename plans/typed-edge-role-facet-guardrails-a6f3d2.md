@@ -24,7 +24,7 @@ Make GraphDB the skills and metrics SSOT, remove legacy candidate-fact authority
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W2 (W2.2 — **ibm_bullets X3_ALLOW achieved 2026-06-14 [f678fb9103]** — FIRST fully-green generated lane (all 26 X2 + both X1D judges pass). 3 fixes: FEC false-block, held-metric anchor, slot↔bundle provenance binding. Fix likely systemic → re-baseline 11 lanes next)
+CURRENT_WAVE: W2 (W2.2 — re-baseline DONE 2026-06-14: **7/11 lanes X3_ALLOW** [competencies, unify_bullets, ibm_bullets, insurtech_bullets, ey_bullets, insurtech_narrative, ey_narrative]. 4 fixes shipped: FEC false-block, held-metric anchor, slot↔bundle provenance, **serial re-pin** (parallel lanes race on shared process globals → crash mid-C0; serial unblocks the full integrated run). 4 BLOCK remain: unify_narrative, ibm_narrative, executive_summary, headline [all EXECUTED_X3_BLOCK]. Delivered via PR-from-feat-worktree, branch feat/apps-rg-w2-lane-baseline-grounding)
 LAST_COMPLETED_WAVE: W1 (+ W2.0/W2.1 + W2.2 competencies + FEC grounding-gate fix [c245b7be97], all merged to main)
 LAST_UPDATED: 2026-06-14
 REBASELINE_2026_06_13: Full waterfall rebaselined against merged main (HEAD 1495ffb548) — see "## Rebaselined Waterfall — Current Main" (the status SSOT). Parallel executor merged (11.7 min/E2E, 1.96×); W1/W2.0/W2.1/W2.2-competencies + replay harness merged; lane board 7 ALLOW / 4 BLOCK (ibm_bullets, headline, exec_summary, +ibm_narrative cascade); P3/P7 DONE, P2 not-a-blocker, P4/P5 open; live-API floor ~4 E2Es (~50-70 min). Prior "~8 min / P3-pending / conditional-on-merge" framing was stale (relied on memory + session-PR-state, both wrong); corrected by reading code.
