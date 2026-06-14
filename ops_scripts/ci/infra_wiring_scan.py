@@ -158,6 +158,7 @@ SANCTIONED_ADAPTER_FILES = {
     "chroma_precomputed_collection.py",  # apps_rg Chroma collection boundary — precomputed BGE vectors only; blocks DefaultEmbeddingFunction
     "c02_product_hybrid_retrieval.py",  # apps_rg C0.2 product hybrid retrieval — chromadb query seam
     "augmented_skills_graph_sqlite.py",  # apps_rg fact_inventory — canonical C0.3 graph materialization adapter (sqlite3)
+    "metric_outcome_materializer.py",  # apps_rg fact_inventory — W2.0 metric_outcome node materializer; peer of augmented_skills_graph_sqlite.py (invoked from its materialize_* entrypoint); sqlite3 used only for `conn: sqlite3.Connection` typing (plan typed-edge-role-facet-guardrails-a6f3d2)
     # 2026-06-13 - apps_research provenance ledger persistence adapter
     "ledger.py",  # apps_research/provenance/ledger.py sanctioned provenance-ledger class; basename allowance also covers existing persistence ledger peers.
     # 2026-06-11 — apps_lic W7 X1D judge adapter
