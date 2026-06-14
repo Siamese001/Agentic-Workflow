@@ -1,0 +1,49 @@
+name: "Python Setup"
+description: "Set up Python and install repo dependencies without checking out code"
+
+inputs:
+  python-version:
+    description: "Python version passed to actions/setup-python"
+    required: false
+    default: "3.12"
+  install-mode:
+    description: "Dependency profile: none, minimal, editable, dev, or full-cert"
+    required: false
+    default: "minimal"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+
+    - name: Install Python dependencies
+      shell: bash
+      run: |
+        set -euo pipefail
+        python -m pip install --upgrade pip
+
+        case "${{ inputs.install-mode }}" in
+          none)
+            ;;
+          minimal)
+            python -m pip install pytest pytest-timeout pyyaml
+            ;;
+          editable)
+            python -m pip install -e .
+            python -m pip install pytest pytest-timeout pyyaml
+            ;;
+          dev)
+            python -m pip install -e ".[dev]"
+            ;;
+          full-cert)
+            python -m pip install -e ".[dev,infra]"
+            ;;
+          *)
+            echo "::error::Unsupported install-mode '${{ inputs.install-mode }}'. Expected one of: none, minimal, editable, dev, full-cert."
+            exit 2
+            ;;
+        esac

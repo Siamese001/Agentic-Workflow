@@ -10,7 +10,12 @@
 name: Graph Skills Authority Ratchet
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: "Base ref for agentic_core boundary comparison"
+        required: false
+        default: "origin/main"
 
 concurrency:
   group: graph-skills-authority-ratchet-${{ github.ref }}
@@ -30,17 +35,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup
-        uses: ./.github/actions/common-setup
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
 
       - name: agentic_core boundary (no diffs)
         env:
-          GRAPH_SKILLS_BASE_REF: ${{ github.event.pull_request.base.sha || 'origin/main' }}
+          GRAPH_SKILLS_BASE_REF: ${{ github.event.inputs.base_ref || 'origin/main' }}
         run: python ops_scripts/ci/check_graph_skills_agentic_core_boundary.py --base-ref "${GRAPH_SKILLS_BASE_REF}"
 
       - name: Graph-skills contract pytest suite
-        env:
-          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
         run: |
           python -m pytest \
             tests/unit/apps_rg/test_graph_skills_authority_separation.py \

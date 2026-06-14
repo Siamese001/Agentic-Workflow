@@ -1,14 +1,14 @@
-name: apps-e2e-harness-nightly
-# Nightly apps_* end-to-end auditability harness.
+name: apps-e2e-harness-manual
+# Manual apps_* end-to-end auditability harness.
 #
 # Historical plan: .claude/plans/_archive/2026-05/apps-e2e-auditability-harness-7c2a91.md
 #
 # Two jobs:
-#   1. harness-verifier (every PR + push)
+#   1. harness-verifier (manual)
 #      Runs the unit + runtime verifier tests against bundles ALREADY
 #      on disk. Cheap (~10 s). Catches harness regressions immediately.
 #
-#   2. nightly-emit (cron + workflow_dispatch)
+#   2. manual-emit (workflow_dispatch)
 #      Runs `python -m apps_*` for every runnable AppSpec, emits
 #      per-app proof bundles + the all-apps matrix, uploads as a
 #      GitHub artifact. Heavy (~20-30 min for the full sweep).
@@ -38,16 +38,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: ./.github/actions/python-setup
         with:
           python-version: "3.12"
-          cache: pip
-
-      - name: Install minimal deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install pyyaml pytest pytest-xdist
+          install-mode: dev
 
       - name: Run unit tests
         run: |
@@ -73,7 +67,7 @@ jobs:
       #   apps_rg, apps_exec, apps_lic, apps_eval, apps_research, apps_rfp
       # Waived (non-runtime or skeleton): apps_qna, apps_underwriting_ai.
       #
-      # This gate fails the nightly if any runtime app drifts out of
+      # This gate fails the manual run if any runtime app drifts out of
       # SPINE_COMPLETE_CERTIFIED or a new runtime app is added without
       # being wired through apps_shared.spine_emission.
       #
@@ -105,8 +99,7 @@ jobs:
           path: artifacts/certification/apps_e2e/apps_e2e_matrix.json
           retention-days: 14
 
-  nightly-emit:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+  manual-emit:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     needs: harness-verifier
@@ -114,19 +107,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: ./.github/actions/python-setup
         with:
           python-version: "3.12"
-          cache: pip
+          install-mode: dev
 
-      - name: Install full deps
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pyyaml pytest pytest-xdist
-
-      - name: Live nightly run (all runnable apps_*)
+      - name: Live manual run (all runnable apps_*)
         env:
           SKIP_APPS: ${{ github.event.inputs.skip_apps }}
         run: |

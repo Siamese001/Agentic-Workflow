@@ -25,8 +25,35 @@ artifact_retention: 30
 
 # Workflow triggers
 standard_triggers:
-  push:
-    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: ['**']
   workflow_dispatch:
+
+# Branch protection target after GitHub CI rationalization.
+# Apply these in GitHub branch protection; do not require conditional lanes or
+# manual/full-repo evidence workflows.
+branch_protection:
+  protected_branches:
+    - main
+  required_checks:
+    - ci-self-check / workflow-reference-check
+    - contract-gates / contract-summary
+    - runtime-smokes / smoke-summary
+  optional_checks:
+    - adg-pr-delta / adg-pr-summary
+  remove_required_checks:
+    - r1b-terminal-smoke
+    - runtime-spine-smoke
+    - uwg-block-smoke
+    - ADG CI Gates (Wave 0) / ADG CI Gates — Delta Enforcement (Wave 0)
+    - runtime-certification
+    - Eval Harness (capability + regression)
+    - Graph Skills Authority Ratchet
+    - apps-e2e-harness-nightly
+    - Calibration Drift Detector
+    - l3-otel-reconciliation
+    - Runtime HITL Integrity Gate
+    - underwriting-holdout-gate
+    - Guardian Tests (Mandatory)
+    - Author-Gate Harness HITL
+    - agentic-core-auditability

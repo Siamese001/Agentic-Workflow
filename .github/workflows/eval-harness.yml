@@ -1,61 +1,37 @@
-name: Eval Harness (capability + regression)
+name: Eval Harness (manual)
 
 on:
   workflow_dispatch:
 
-jobs:
-  capability:
-    name: Capability suite (hill-climb)
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-          pip install pyyaml
-      - name: Run capability eval
-        run: |
-          mkdir -p artifacts/eval
-          python tools/eval/run_capability_regression.py \
-            --rubrics config/judges/rubrics.yaml \
-            --suite capability \
-            --out artifacts/eval/capability_run.json
-      - name: Upload report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: capability-eval-report
-          path: artifacts/eval/capability_run.json
+permissions:
+  contents: read
 
-  regression:
-    name: Regression suite (fleet-protecting)
+jobs:
+  eval:
+    name: ${{ matrix.suite }} suite
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [capability, regression]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: ./.github/actions/python-setup
         with:
-          python-version: '3.11'
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-          pip install pyyaml
-      - name: Run regression eval
+          python-version: "3.12"
+          install-mode: minimal
+      - name: Run eval suite
         run: |
           mkdir -p artifacts/eval
           python tools/eval/run_capability_regression.py \
             --rubrics config/judges/rubrics.yaml \
-            --suite regression \
-            --out artifacts/eval/regression_run.json
+            --suite "${{ matrix.suite }}" \
+            --out "artifacts/eval/${{ matrix.suite }}_run.json"
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: regression-eval-report
-          path: artifacts/eval/regression_run.json
+          name: ${{ matrix.suite }}-eval-report
+          path: artifacts/eval/${{ matrix.suite }}_run.json
+          retention-days: 30

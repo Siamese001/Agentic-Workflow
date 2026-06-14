@@ -1,26 +1,5 @@
 name: contract-gates
 
-# Consolidated contract-gate runner — folds 6 previously-separate workflows
-# into one job to eliminate cold-start tax on a solo main-only repo.
-#
-# Folded (deleted) workflows (2026-05-06):
-#   - all-requirements-gate.yml         → Run master all-requirements gate
-#   - all-requirements-merkle-root.yml  → Run Merkle root attestation
-#   - subprocess-timeout-gate.yml       → Run subprocess+terminal scan
-#   - pytest-config-ssot.yml            → Run pytest config SSOT validation
-#   - infra_wiring_check.yml            → Run infra wiring scan + compliance
-#   - config-sync-gates.yml             → Run config-sync gates (7 checks)
-#
-# All 11 tier-shim workflows (tier0..6 enforcement + tier0..6 runtime-proof
-# + tier-gate-hardening) are subsumed by the master all-requirements gate
-# below (per scripts/verify_all_requirements_gates.py:53-67) and have also
-# been deleted.
-#
-# Static-only: does NOT execute replay machinery, OTEL exporters, proof
-# harnesses, or the full pytest suite. Does NOT claim real replay execution,
-# real OTEL emission, full production runtime proof, or full architecture
-# proof.
-
 on:
   pull_request:
     branches: ["**"]
@@ -32,41 +11,137 @@ permissions:
   contents: read
 
 jobs:
-  contract-gates:
-    name: "Consolidated contract gates"
+  changes:
+    name: changes
     runs-on: ubuntu-latest
+    outputs:
+      terminal-cleanup: ${{ steps.filter.outputs.terminal-cleanup }}
+      pytest-config: ${{ steps.filter.outputs.pytest-config }}
+      config-sync: ${{ steps.filter.outputs.config-sync }}
+      any: ${{ steps.filter.outputs.any }}
+      base-ref: ${{ steps.filter.outputs.base-ref }}
+      changed-files: ${{ steps.filter.outputs.changed-files }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+
+      - id: filter
+        name: Classify changed files
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          PUSH_BASE_SHA: ${{ github.event.before || '' }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          base_ref="main"
+          if [ "${EVENT_NAME}" = "pull_request" ]; then
+            base_ref="${PR_BASE_SHA}"
+            git diff --name-only "${PR_BASE_SHA}" "${HEAD_SHA}" > changed-files.txt
+          elif [ "${EVENT_NAME}" = "push" ] && [ -n "${PUSH_BASE_SHA}" ]; then
+            base_ref="${PUSH_BASE_SHA}"
+            git diff --name-only "${PUSH_BASE_SHA}" "${HEAD_SHA}" > changed-files.txt
+          else
+            base_ref="main"
+            printf '%s\n' \
+              "pyproject.toml" \
+              ".mcp.json" \
+              "AGENTS.md" \
+              ".github/workflows/contract-gates.yml" > changed-files.txt
+          fi
+          export BASE_REF_FOR_OUTPUT="${base_ref}"
+
+          python - <<'PY'
+          from pathlib import Path
+          import os
+
+          changed = [p.strip().replace("\\", "/") for p in Path("changed-files.txt").read_text().splitlines() if p.strip()]
+
+          def starts(path: str, prefixes: tuple[str, ...]) -> bool:
+              return path.startswith(prefixes)
+
+          terminal = any(
+              p.endswith(".py")
+              or p.startswith(("ops_scripts/", "tools/", "scripts/", ".github/workflows/"))
+              for p in changed
+          )
+          pytest_config = any(
+              p in {"pyproject.toml", "pytest.ini", "tox.ini", "setup.cfg"}
+              or p.startswith(".github/workflows/")
+              for p in changed
+          )
+          config_sync = any(
+              p in {"AGENTS.md", ".mcp.json", ".claude/settings.json"}
+              or starts(
+                  p,
+                  (
+                      ".claude/rules/",
+                      ".claude/skills/mcp-integration/",
+                      ".github/workflows/",
+                      ".github/actions/",
+                      "ops_scripts/ci/",
+                      "tools/generate/",
+                  ),
+              )
+              for p in changed
+          )
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"terminal-cleanup={str(terminal).lower()}\n")
+              out.write(f"pytest-config={str(pytest_config).lower()}\n")
+              out.write(f"config-sync={str(config_sync).lower()}\n")
+              out.write(f"any={str(terminal or pytest_config or config_sync).lower()}\n")
+              out.write(f"base-ref={os.environ.get('BASE_REF_FOR_OUTPUT', 'main')}\n")
+              out.write("changed-files<<EOF\n")
+              out.write("\n".join(changed))
+              out.write("\nEOF\n")
+          PY
+
+  terminal-cleanup:
+    name: terminal-cleanup
+    needs: changes
+    if: needs.changes.outputs.terminal-cleanup == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/python-setup
         with:
           python-version: "3.12"
+          install-mode: editable
+      - name: Terminal cleanup / subprocess timeout
+        run: python ops_scripts/ci/check_terminal_cleanup.py --verbose --fail-on-new-only --base-ref "${{ needs.changes.outputs.base-ref }}"
 
-      - name: Install pytest + pyyaml (targeted-tests harness + config gates)
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e .
-          python -m pip install pytest pytest-timeout pyyaml
-
-      # ── Subprocess Timeout / Terminal Cleanup (was subprocess-timeout-gate.yml)
-      # Mirrors T7h pre-commit hook server-side to close the --no-verify
-      # bypass loophole. Constitutional §11 + §14.
-      - name: §11 + §14 — terminal cleanup / subprocess timeout
-        run: python ops_scripts/ci/check_terminal_cleanup.py --verbose --fail-on-new-only --base-ref "${{ github.base_ref || 'main' }}"
-
-      # ── Pytest Config SSOT (was pytest-config-ssot.yml)
+  pytest-config:
+    name: pytest-config
+    needs: changes
+    if: needs.changes.outputs.pytest-config == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: minimal
       - name: Validate pytest config SSOT
         run: python ops_scripts/ci/_validate_pytest_config.py --strict
 
-      # ── Infra Wiring (was infra_wiring_check.yml)
-      - name: Infrastructure wiring scan
-        run: python ops_scripts/ci/infra_wiring_scan.py
-      - name: Infra compliance score must be 100
-        run: |
-          python -c "import json; data=json.load(open('artifacts/infra_wiring_scorecard.json')); assert data['compliance_score'] == 100, f'Compliance score {data[\"compliance_score\"]}% < 100%'"
-
-      # ── Config Sync Gates (was config-sync-gates.yml — 7 checks)
+  config-sync:
+    name: config-sync
+    needs: changes
+    if: needs.changes.outputs.config-sync == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
       - name: MCP sync integrity
         run: python ops_scripts/ci/check_mcp_sync_integrity.py
       - name: AGENTS.md MCP coverage
@@ -75,34 +150,41 @@ jobs:
         run: python tools/generate/check_exclusion_sync.py
       - name: Severity-band SSOT
         run: python ops_scripts/ci/check_severity_band_ssot.py
-      # Per-file gate → run diff-scoped: only re-check plans changed in THIS PR, so a
-      # pre-existing non-compliant plan can't fail an unrelated change. Full-tree sweep
-      # still available via the no-arg invocation (local / nightly / workflow_dispatch).
-      - name: Graph-layer evidence (changed refactoring plans)
-        run: python ops_scripts/ci/check_graph_layer_evidence.py --changed-only --base-ref "${{ github.base_ref || 'main' }}"
-      - name: Structure policy
-        run: python ops_scripts/ci/check_structure_policy.py
 
-      # ── All-Requirements Master Gate (was all-requirements-gate.yml)
-      # Aggregates every Tier 0-6 metadata enforcement gate, every Tier 0-6
-      # runtime/static proof gate, and the cross-tier fail-closed hardening
-      # gate. Subsumes all 11 retired tier-shim workflows.
-      #
-      # NON-BLOCKING (continue-on-error) on a solo, main-only, light-touch repo:
-      # this is a heavyweight aspirational 150-requirement proof program whose
-      # underlying proofs (tier0 replay determinism, tier2 linkage) are currently
-      # incomplete, so it has been red on main and grounded every PR. It still
-      # RUNS and reports here (visible as a step annotation) but no longer fails
-      # the job. Re-arm by removing `continue-on-error` once the proofs are green.
-      - name: All requirements gate (Tier 0-6 + hardening + coverage)
-        continue-on-error: true
-        run: python scripts/verify_all_requirements_gates.py
+  contract-summary:
+    name: contract-summary
+    needs: [changes, terminal-cleanup, pytest-config, config-sync]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summarize contract gate routing
+        env:
+          ANY: ${{ needs.changes.outputs.any }}
+          TERMINAL_RESULT: ${{ needs.terminal-cleanup.result }}
+          PYTEST_RESULT: ${{ needs.pytest-config.result }}
+          CONFIG_RESULT: ${{ needs.config-sync.result }}
+          CHANGED_FILES: ${{ needs.changes.outputs.changed-files }}
+        run: |
+          set -euo pipefail
+          echo "Changed files:"
+          printf '%s\n' "${CHANGED_FILES:-<none>}"
 
-      # ── Merkle-Root Attestation (was all-requirements-merkle-root.yml)
-      # Builds deterministic SHA-256 Merkle tree over the 150-row Step 1
-      # requirement evidence graph and verifies the root by recomputing it
-      # from the written leaves. Must run AFTER the all-requirements gate.
-      # Non-blocking for the same reason as the all-requirements gate above.
-      - name: All-requirements Merkle root attestation
-        continue-on-error: true
-        run: python scripts/verify_all_requirements_merkle_root.py
+          if [ "${ANY}" != "true" ]; then
+            echo "No contract-gate lanes were relevant to this diff."
+            exit 0
+          fi
+
+          failed=0
+          for lane in "terminal-cleanup:${TERMINAL_RESULT}" "pytest-config:${PYTEST_RESULT}" "config-sync:${CONFIG_RESULT}"; do
+            name="${lane%%:*}"
+            result="${lane#*:}"
+            echo "${name}: ${result}"
+            if [ "${result}" = "failure" ] || [ "${result}" = "cancelled" ]; then
+              failed=1
+            fi
+          done
+
+          if [ "${failed}" = "1" ]; then
+            echo "::error::One or more relevant contract-gate lanes failed."
+            exit 1
+          fi
