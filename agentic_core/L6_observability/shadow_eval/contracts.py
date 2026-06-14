@@ -122,6 +122,13 @@ EVAL_DIMENSION_RESULTS = frozenset({"PASS", "FAIL", "WARN", "UNKNOWN", "NOT_APPL
 
 GRADER_TYPES = frozenset({"code", "llm_judge", "hybrid", "human_calibrated_reference"})
 
+L6_GATE_PASS = "PASS"
+L6_GATE_FAIL = "FAIL"
+L6_GATE_UNKNOWN = "UNKNOWN"
+
+G28_AUDIT_COMPLETENESS = "G28_AUDIT_COMPLETENESS"
+G29_LEARNING_FIREWALL = "G29_LEARNING_FIREWALL"
+
 
 # ---------------------------------------------------------------------------
 # 06.1 — Ingest / Normalization contracts
@@ -282,6 +289,23 @@ class L6DeniedWriteAttemptRecord:
 
 
 @dataclass(slots=True)
+class L6GateReceipt:
+    gate_receipt_id: str
+    runtime_exhaust_bundle_id: str
+    gate_id: str
+    gate_name: str
+    verdict: str
+    required_refs: list[str] = field(default_factory=list)
+    present_refs: list[str] = field(default_factory=list)
+    missing_refs: list[str] = field(default_factory=list)
+    forbidden_attempts: list[str] = field(default_factory=list)
+    assertion_results: dict[str, bool | str] = field(default_factory=dict)
+    reason_codes: list[str] = field(default_factory=list)
+    notes: str = ""
+    deterministic_digest: str = ""
+
+
+@dataclass(slots=True)
 class SurfaceIsolationManifest:
     surface_isolation_manifest_id: str
     runtime_exhaust_bundle_id: str
@@ -295,6 +319,8 @@ class SurfaceIsolationManifest:
     current_run_mutation_attempted: bool = False
     l4_write_attempted: bool = False
     bus_u_publish_attempted: bool = False
+    current_run_x3_mutation_attempted: bool = False
+    direct_prompt_policy_patch_attempted: bool = False
     isolation_status: str = "CLEAN"  # CLEAN | VIOLATION | UNKNOWN
     deterministic_digest: str = ""
 
@@ -367,6 +393,11 @@ class EvalReadinessReceipt:
     )
     missing_evidence_map_ref: str | None = None
     excluded_from_learning_until: str | None = None
+    g28_audit_completeness_receipt_ref: str | None = None
+    g29_learning_firewall_receipt_ref: str | None = None
+    l5_certification_status: str = "UNKNOWN"
+    sealed_artifacts_status: str = "UNKNOWN"
+    source_lineage_or_records_status: str = "UNKNOWN"
     reason_codes: list[str] = field(default_factory=list)
     deterministic_digest: str = ""
 
@@ -909,7 +940,13 @@ __all__ = [
     "RuntimeExhaustBundle",
     "NormalizedEvidenceRecord",
     # 06.2
+    "L6_GATE_PASS",
+    "L6_GATE_FAIL",
+    "L6_GATE_UNKNOWN",
+    "G28_AUDIT_COMPLETENESS",
+    "G29_LEARNING_FIREWALL",
     "L6DeniedWriteAttemptRecord",
+    "L6GateReceipt",
     "SurfaceIsolationManifest",
     "StageBarrierReceipt",
     "ObserverComplianceReceipt",

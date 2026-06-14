@@ -246,6 +246,25 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
         }
     )
     Path(paths["eval_record"]).write_text(json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+    if request.emit_l6_handoff:
+        from apps_eval.l6_shadow_bridge import emit_completed_eval_l6_shadow_bridge
+
+        bridge_paths = emit_completed_eval_l6_shadow_bridge(
+            record,
+            run_dir,
+            eval_record_path=paths["eval_record"],
+            l6_handoff_path=paths.get("l6_handoff", ""),
+        )
+        paths.update(bridge_paths)
+        record = CompletedEvalRecord(
+            **{
+                **record.to_dict(),
+                "artifact_paths": paths,
+                "scorecard": scorecard,
+                "regression": regression,
+            }
+        )
+        Path(paths["eval_record"]).write_text(json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
     return record
 
 

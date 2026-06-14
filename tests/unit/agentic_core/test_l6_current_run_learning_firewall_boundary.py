@@ -11,6 +11,8 @@ from agentic_core.L5_safety.runtime_gates.contracts import Disposition
 from agentic_core.L5_safety.runtime_gates.g29_learning_firewall import LearningFirewallGate
 from agentic_core.L5_safety.runtime_gates.contracts import GateContext
 from agentic_core.runtime.contracts.future_run_promotion import FutureRunPromotionRequest
+from agentic_core.runtime.exhaust.runtime_exhaust_bundle import build_runtime_exhaust_bundle
+from agentic_core.runtime.l6.writeback_proposer import L6WritebackProposer
 from tests.fixtures.proof_evidence.runtime_artifact_validators import (
     assert_l6_eval_no_current_run_mutation,
 )
@@ -86,3 +88,33 @@ def test_l6_shadow_eval_module_documents_post_runtime_ingest() -> None:
     assert ingest.is_file()
     src = ingest.read_text(encoding="utf-8")
     assert "proposed_state_diff" in src or "shadow" in src.lower()
+
+
+def test_legacy_writeback_proposer_needs_eval_proof_refs_in_normal_mode() -> None:
+    bundle = build_runtime_exhaust_bundle(
+        request_id="req-fw",
+        run_id="run-fw",
+        trace_root="trace-fw",
+        route_contract_ref="route-fw",
+        sealed_result_ref="sealed-fw",
+        exit_disposition_ref="exit-fw",
+        learning_signals=("prompt_variant_performance",),
+    )
+    proposer = L6WritebackProposer(
+        app_id="apps_rg",
+        task_class="resume_generation",
+        policy_ref="policy-fw",
+    )
+
+    assert proposer.propose(bundle) == []
+
+    proposals = proposer.propose(
+        bundle,
+        completed_eval_record_ref="eval-fw",
+        rca_packet_ref="rca-fw",
+        audit_manifest_ref="audit-fw",
+        l6_gate_receipt_refs=("g28-fw", "g29-fw"),
+    )
+    assert proposals
+    assert proposals[0].completed_eval_record_ref == "eval-fw"
+    assert proposals[0].requires_uwg is True

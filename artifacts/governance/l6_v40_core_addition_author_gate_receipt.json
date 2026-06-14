@@ -1,0 +1,120 @@
+{
+  "receipt_type": "CoreAdditionAuthorGateReceipt",
+  "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+  "plan_type": "platform_core_change",
+  "changed_paths": [
+    "agentic_core/L6_observability/shadow_eval/__init__.py",
+    "agentic_core/L6_observability/shadow_eval/contracts.py",
+    "agentic_core/L6_observability/shadow_eval/ingest.py",
+    "agentic_core/L6_observability/shadow_eval/observer.py",
+    "agentic_core/L6_observability/shadow_eval/otel_spans.py",
+    "agentic_core/L6_observability/shadow_eval/pipeline.py",
+    "agentic_core/L6_observability/shadow_eval/adapters/__init__.py",
+    "agentic_core/L6_observability/shadow_eval/adapters/runtime_exhaust_v40.py",
+    "agentic_core/L6_observability/shadow_eval/span_export.py",
+    "agentic_core/runtime/contracts/future_run_promotion.py",
+    "agentic_core/runtime/l6/writeback_proposer.py"
+  ],
+  "decision": {
+    "verdict": "PASS",
+    "rationale": "User explicitly requested retaining the WIP via PR with Core-Addition Author-Gate and boundary audit. Local audit classifies the core delta as generic L6 observability and future-run-only writeback infrastructure, with app-specific meaning kept in apps_rg/apps_eval.",
+    "decided_at": "2026-06-14T18:27:44Z"
+  },
+  "tests": {
+    "spine_substrate_test": {
+      "result": "PASS",
+      "evidence": "Core additions are generic post-run L6 observability, readiness, span export, and future-run promotion guardrails."
+    },
+    "any_app_capability_test": {
+      "result": "PASS",
+      "evidence": "The core adapter consumes sealed runtime exhaust and generic refs; app bridges supply app-owned artifacts."
+    },
+    "app_owned_meaning_test": {
+      "result": "PASS",
+      "evidence": "apps_rg runner/handoff logic and apps_eval bridge/proof harness remain outside agentic_core."
+    },
+    "no_app_literal_test": {
+      "result": "PASS",
+      "evidence": "GOV-3 app-literal scan blocker was reduced to zero by removing app-specific comment wording in core."
+    },
+    "plugin_test": {
+      "result": "PASS",
+      "evidence": "apps_rg/apps_eval integration tests prove app-owned bridge registration without core app branching."
+    },
+    "negative_control_test": {
+      "result": "PASS",
+      "evidence": "python -m pytest tests/governance/test_core_addition_receipt_schema.py tests/governance/test_core_addition_negative_controls.py -q -> 43 passed."
+    },
+    "platform_approval_test": {
+      "result": "PASS",
+      "evidence": "Current user request explicitly approved the PR path and required Core-Addition Author-Gate handling."
+    },
+    "boundary_preservation_test": {
+      "result": "PASS",
+      "evidence": "Core scanner and boundary receipt classify changed core files as GENERIC_INFRASTRUCTURE."
+    },
+    "contract_compatibility_test": {
+      "result": "PASS",
+      "evidence": "python -m pytest targeted L6/apps_eval/apps_rg slice -> 16 passed."
+    },
+    "runtime_proof_compatibility_test": {
+      "result": "PASS",
+      "evidence": "run_l6_shadow_eval_proof.py and run_l6_apps_rg_apps_eval_e2e_proof.py both exited 0."
+    }
+  },
+  "artifacts": {
+    "no_app_literal_scan_ref": {
+      "path": "artifacts/governance/l6_v40_no_app_literal_scan.json",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "verdict": "PASS",
+      "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+      "freshness_ts": "2026-06-14T18:27:44Z",
+      "changed_paths_covered": true
+    },
+    "strict_scan_ref": {
+      "path": "artifacts/governance/l6_v40_strict_scan.json",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "verdict": "PASS",
+      "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+      "freshness_ts": "2026-06-14T18:27:44Z",
+      "changed_paths_covered": true
+    },
+    "negative_control_results_ref": {
+      "path": "artifacts/governance/l6_v40_negative_controls.json",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "verdict": "PASS",
+      "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+      "freshness_ts": "2026-06-14T18:27:44Z",
+      "changed_paths_covered": true
+    },
+    "plugin_proof_ref": {
+      "path": "artifacts/governance/l6_v40_plugin_proof.json",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "verdict": "PASS",
+      "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+      "freshness_ts": "2026-06-14T18:27:44Z",
+      "changed_paths_covered": true
+    },
+    "boundary_scan_ref": {
+      "path": "artifacts/governance/l6_v40_boundary_scan.json",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "verdict": "PASS",
+      "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+      "freshness_ts": "2026-06-14T18:27:44Z",
+      "changed_paths_covered": true
+    },
+    "contract_schema_scan_ref": {
+      "path": "artifacts/governance/l6_v40_contract_schema_scan.json",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "verdict": "PASS",
+      "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+      "freshness_ts": "2026-06-14T18:27:44Z",
+      "changed_paths_covered": true
+    }
+  },
+  "signature": {
+    "receipt_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "signed_by": "codex",
+    "signed_at": "2026-06-14T18:27:44Z"
+  }
+}

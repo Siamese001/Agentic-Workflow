@@ -1,0 +1,9 @@
+{
+  "artifact_type": "boundary_scan",
+  "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+  "freshness_ts": "2026-06-14T18:27:44Z",
+  "verdict": "PASS",
+  "changed_paths_covered": true,
+  "classification": "GENERIC_INFRASTRUCTURE",
+  "boundary_summary": "Core changes implement generic L6 observability, future-run proposal contracts, and UWG-only writeback guardrails. App-specific runtime meaning remains under apps_rg and apps_eval."
+}

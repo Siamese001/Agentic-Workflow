@@ -19,6 +19,8 @@ from apps_rg.runtime.section_spine_terminology import CANONICAL_SPINE_CHAIN
 RUNTIME_EXHAUST_BUNDLE_ARTIFACT = "runtime_exhaust_bundle.json"
 RUNTIME_EXHAUST_RECEIPT_ARTIFACT = "runtime_exhaust_receipt.json"
 L6_SHADOW_HANDOFF_RECEIPT_ARTIFACT = "l6_shadow_handoff_receipt.json"
+L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT = "l6_v40_shadow_eval_package.json"
+L6_V40_SHADOW_EVAL_SPANS_ARTIFACT = "l6_v40_shadow_eval_spans.json"
 
 OBSERVED_CHAIN_WITH_EXHAUST: tuple[str, ...] = (
     "CLI",
@@ -188,6 +190,8 @@ def build_runtime_exhaust_bundle_for_section(
         "x3_code": str(x3_from_exit.get("x3_code") or edr.get("x3_code") or "UNKNOWN"),
         "artifact_inventory": inventory,
         "artifact_inventory_count": len(inventory),
+        "l6_v40_shadow_eval_package_ref": L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT,
+        "l6_v40_shadow_eval_spans_ref": L6_V40_SHADOW_EVAL_SPANS_ARTIFACT,
         "trace_refs": trace_refs,
         "proof_refs": {
             "exit_spine_receipt": "exit_spine_receipt.json"
@@ -237,6 +241,10 @@ def build_runtime_exhaust_receipt(
         "runtime_exhaust_bundle_ref": RUNTIME_EXHAUST_BUNDLE_ARTIFACT,
         "exit_disposition_receipt_ref": EXIT_DISPOSITION_RECEIPT_ARTIFACT,
         "sealed_l2_artifact_ref": str(runtime_payload.get("sealed_l2_artifact_ref") or SEALED_L2_ARTIFACT),
+        "l6_v40_shadow_eval_package_ref": L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT,
+        "l6_v40_shadow_eval_spans_ref": L6_V40_SHADOW_EVAL_SPANS_ARTIFACT,
+        "l6_v40_shadow_eval_enabled": os.environ.get("APPS_RG_L6_V40_SHADOW_EVAL", "").strip()
+        in {"1", "true", "TRUE", "yes", "YES", "on", "ON"},
         "durable_commit_occurred": False,
         "product_certification": "NOT_CLAIMED",
         "runtime_exhaust_kill_switch_enabled": runtime_exhaust_kill_switch_enabled(),
@@ -262,6 +270,9 @@ def build_l6_shadow_handoff_receipt(
         "runtime_exhaust_bundle_ref": RUNTIME_EXHAUST_BUNDLE_ARTIFACT,
         "exit_disposition_receipt_ref": EXIT_DISPOSITION_RECEIPT_ARTIFACT,
         "l6_shadow_eval_package_ref": "l6_shadow_eval_package.json",
+        "l6_v40_shadow_eval_package_ref": L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT,
+        "l6_v40_shadow_eval_spans_ref": L6_V40_SHADOW_EVAL_SPANS_ARTIFACT,
+        "l6_v40_g28_g29_receipts_required": True,
         "handoff_phase": "post_runtime_exhaust_only",
         "consumed_after_exit_disposition": True,
         "consumed_after_runtime_exhaust_bundle": True,
@@ -375,6 +386,8 @@ def emit_section_runtime_exhaust_spine_artifacts(
 
 __all__ = [
     "L6_SHADOW_HANDOFF_RECEIPT_ARTIFACT",
+    "L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT",
+    "L6_V40_SHADOW_EVAL_SPANS_ARTIFACT",
     "RUNTIME_EXHAUST_BUNDLE_ARTIFACT",
     "RUNTIME_EXHAUST_RECEIPT_ARTIFACT",
     "SectionRuntimeExhaustPreconditionError",

@@ -10,6 +10,11 @@ scorecards, baseline comparison, sealed eval records, and optional L6 handoff
 files. It does not own runtime authority, product state, post-run learning,
 drift memory, calibration workflow, or release decisions.
 
+When `--emit-l6-handoff` is set, apps_eval also writes `l6_shadow_bridge.json`
+and span artifacts beside the eval record. The bridge is observer-only evidence
+for core L6 G28 audit-completeness and G29 learning-firewall checks; it cannot
+mutate current-run artifacts or perform durable writes.
+
 Default runs grade snapshots:
 
 ```bash

@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 
 
 # ---------------------------------------------------------------------------
-# Canonical promotion types for apps_rg
+# Canonical promotion types for future-run proposals
 # ---------------------------------------------------------------------------
 
 PROMOTION_TYPE_EXACT_CACHE_WRITEBACK = "exact_cache_writeback"
@@ -103,6 +103,10 @@ class FutureRunPromotionRequest:
     policy_ref: str = ""
     learning_profile_ref: str = ""
     meta_feedback_profile_ref: str = ""
+    completed_eval_record_ref: str = ""
+    rca_packet_ref: str = ""
+    audit_manifest_ref: str = ""
+    l6_gate_receipt_refs: tuple[str, ...] = field(default_factory=tuple)
 
     # Structural invariants — MUST NOT be changed
     current_run_mutation_allowed: bool = False   # always False
@@ -152,6 +156,10 @@ class FutureRunPromotionRequest:
             "policy_ref": self.policy_ref,
             "learning_profile_ref": self.learning_profile_ref,
             "meta_feedback_profile_ref": self.meta_feedback_profile_ref,
+            "completed_eval_record_ref": self.completed_eval_record_ref,
+            "rca_packet_ref": self.rca_packet_ref,
+            "audit_manifest_ref": self.audit_manifest_ref,
+            "l6_gate_receipt_refs": list(self.l6_gate_receipt_refs),
             "current_run_mutation_allowed": self.current_run_mutation_allowed,
             "requires_uwg": self.requires_uwg,
             "created_at": self.created_at,
@@ -176,8 +184,20 @@ def build_future_run_promotion_request(
     safety_class: str = SAFETY_CLASS_STANDARD,
     learning_profile_ref: str = "",
     meta_feedback_profile_ref: str = "",
+    completed_eval_record_ref: str = "",
+    rca_packet_ref: str = "",
+    audit_manifest_ref: str = "",
+    l6_gate_receipt_refs: tuple[str, ...] = (),
+    legacy_writeback_override: bool = False,
 ) -> FutureRunPromotionRequest:
     """Factory — builds an inert FutureRunPromotionRequest for UWG admission."""
+    if not legacy_writeback_override and not (
+        completed_eval_record_ref and rca_packet_ref and audit_manifest_ref
+    ):
+        raise ValueError(
+            "build_future_run_promotion_request requires completed_eval_record_ref, "
+            "rca_packet_ref, and audit_manifest_ref unless legacy_writeback_override=True"
+        )
     promotion_request_id = f"promo::{app_id}::{promotion_type}::{uuid.uuid4().hex[:8]}"
     created_at = _utcnow()
 
@@ -211,6 +231,10 @@ def build_future_run_promotion_request(
         policy_ref=policy_ref,
         learning_profile_ref=learning_profile_ref,
         meta_feedback_profile_ref=meta_feedback_profile_ref,
+        completed_eval_record_ref=completed_eval_record_ref,
+        rca_packet_ref=rca_packet_ref,
+        audit_manifest_ref=audit_manifest_ref,
+        l6_gate_receipt_refs=l6_gate_receipt_refs,
         current_run_mutation_allowed=False,
         requires_uwg=True,
         created_at=created_at,

@@ -25,9 +25,13 @@ from agentic_core.L6_observability.shadow_eval.contracts import (
     DraftProposalPacket,
     EvalRecordSealReceipt,
     EvalReadinessReceipt,
+    ExhaustGapReport,
+    ExhaustSourceManifest,
     FutureRunActivationReceipt,
     GauntletReceipt,
     GovernanceRegressionRecord,
+    ArtifactInventory,
+    L6GateReceipt,
     NormalizedEvidenceRecord,
     OutcomeEvalRecord,
     PatternSynthesisRecord,
@@ -35,6 +39,7 @@ from agentic_core.L6_observability.shadow_eval.contracts import (
     ProposalAdmissionReceipt,
     RCAPacket,
     RuntimeExhaustBundle,
+    StageMap,
     TrajectoryEvalRecord,
 )
 from agentic_core.L6_observability.shadow_eval.evaluation import (
@@ -55,6 +60,8 @@ from agentic_core.L6_observability.shadow_eval.ingest import (
     build_runtime_exhaust_bundle,
 )
 from agentic_core.L6_observability.shadow_eval.observer import (
+    build_g28_audit_completeness_receipt,
+    build_g29_learning_firewall_receipt,
     build_observer_compliance_receipt,
     build_surface_isolation_manifest,
     evaluate_readiness,
@@ -87,6 +94,10 @@ def _now_iso() -> str:
 class L6IngestResult:
     bundle: RuntimeExhaustBundle
     normalized: list[NormalizedEvidenceRecord]
+    manifests: list[ExhaustSourceManifest] = field(default_factory=list)
+    stage_map: StageMap | None = None
+    artifact_inventory: ArtifactInventory | None = None
+    gap_report: ExhaustGapReport | None = None
 
 
 @dataclass
@@ -125,6 +136,10 @@ class L6PromotionResult:
 class L6PipelineState:
     recorder: L6SpanRecorder = field(default_factory=L6SpanRecorder)
     ingest: L6IngestResult | None = None
+    observer_receipt: object | None = None
+    g28: L6GateReceipt | None = None
+    g29: L6GateReceipt | None = None
+    readiness: EvalReadinessReceipt | None = None
     eval: L6EvalResult | None = None
     rca: L6RcaResult | None = None
     proposal: L6ProposalResult | None = None
@@ -176,7 +191,7 @@ def _emit(
 
 def run_6a(state: L6PipelineState, raw_exhaust: Mapping[str, object]) -> L6IngestResult:
     _emit(state, "l6.ingest.bundle_receive")
-    bundle, normalized, _manifests, _stage_map, _inv, gap = build_runtime_exhaust_bundle(raw_exhaust)
+    bundle, normalized, manifests, stage_map, inv, gap = build_runtime_exhaust_bundle(raw_exhaust)
     _emit(state, "l6.ingest.source_collect", bundle=bundle)
     _emit(state, "l6.ingest.lineage_bind", bundle=bundle, reason_codes=gap.gap_codes)
     _emit(state, "l6.ingest.stage_map_build", bundle=bundle)
@@ -194,7 +209,14 @@ def run_6a(state: L6PipelineState, raw_exhaust: Mapping[str, object]) -> L6Inges
             reason_codes=list(gap.gap_codes),
             status="REPAIR_REQUIRED" if gap.repair_required else "GAP_DETECTED",
         )
-    state.ingest = L6IngestResult(bundle=bundle, normalized=normalized)
+    state.ingest = L6IngestResult(
+        bundle=bundle,
+        normalized=normalized,
+        manifests=manifests,
+        stage_map=stage_map,
+        artifact_inventory=inv,
+        gap_report=gap,
+    )
     return state.ingest
 
 
@@ -215,12 +237,31 @@ def run_observer(state: L6PipelineState) -> EvalReadinessReceipt:
     _emit(state, "l6.observer.surface_isolation_check", bundle=bundle, status=isolation.isolation_status)
     _emit(state, "l6.observer.stage_barrier_check", bundle=bundle, status=barrier.barrier_status)
     observer_receipt = build_observer_compliance_receipt(bundle, barrier=barrier, isolation=isolation)
+    g28 = build_g28_audit_completeness_receipt(
+        bundle,
+        state.ingest.normalized,
+        artifact_inventory=state.ingest.artifact_inventory,
+    )
+    _emit(state, "l6.g28.audit_completeness", bundle=bundle, status=g28.verdict, reason_codes=g28.reason_codes)
+    g29 = build_g29_learning_firewall_receipt(
+        bundle,
+        isolation=isolation,
+        observer_receipt=observer_receipt,
+    )
+    _emit(state, "l6.g29.learning_firewall", bundle=bundle, status=g29.verdict, reason_codes=g29.reason_codes)
     readiness, _missing, _non = evaluate_readiness(
         bundle,
         observer_receipt,
         state.ingest.normalized,
+        artifact_inventory=state.ingest.artifact_inventory,
+        g28_receipt=g28,
+        g29_receipt=g29,
     )
     _emit(state, "l6.readiness.evaluate", bundle=bundle, status=readiness.readiness_decision)
+    state.observer_receipt = observer_receipt
+    state.g28 = g28
+    state.g29 = g29
+    state.readiness = readiness
     return readiness
 
 

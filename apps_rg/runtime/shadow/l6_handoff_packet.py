@@ -288,6 +288,8 @@ def build_l6_shadow_handoff_dict(
         gen_meta["max_tokens"] = max_tokens
 
     l6_pkg_path = ad / "l6_shadow_eval_package.json"
+    l6_v40_path = ad / "l6_v40_shadow_eval_package.json"
+    l6_v40_spans_path = ad / "l6_v40_shadow_eval_spans.json"
     pkt: dict[str, Any] = {
         "packet_type": L6_PACKET_TYPE,
         "packet_version": L6_PACKET_VERSION,
@@ -298,6 +300,13 @@ def build_l6_shadow_handoff_dict(
         # Bidirectional navigation vs lane runtime_proof run_manifest / latest_* pointers.
         "runtime_proof_run_dir_repo_relative": repo_rel(rr, ad),
         "l6_shadow_eval_package_repo_relative": repo_rel(rr, l6_pkg_path),
+        "l6_v40_shadow_eval_package_ref": repo_rel(rr, l6_v40_path)
+        if l6_v40_path.is_file()
+        else "l6_v40_shadow_eval_package.json",
+        "l6_v40_shadow_eval_spans_ref": repo_rel(rr, l6_v40_spans_path)
+        if l6_v40_spans_path.is_file()
+        else None,
+        "l6_v40_g28_g29_receipts_required": True,
         "section_output_ref": repo_rel(rr, l2_path),
         "x1d_judge_outputs_ref": repo_rel(rr, x1_path),
         "x2_gate_outputs_ref": repo_rel(rr, x2_path),

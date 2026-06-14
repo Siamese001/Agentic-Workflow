@@ -31,6 +31,7 @@ from agentic_core.L6_observability.shadow_eval import (  # noqa: E402
     run_6d,
     run_observer,
     run_proposal,
+    write_span_artifacts,
 )
 
 
@@ -57,6 +58,7 @@ def _sealed_run() -> dict:
         "blueprint_hash": "blueprint-A",
         "replay_key": "replay-A",
         "route_contract_ref": "rc-PROOF",
+        "l5_certification_ref": "l5-cert-ref:PROOF",
         "l1_plan_ref": "plan-PROOF",
         "c0_evidence_contract_refs": ["ec-PROOF"],
         "prompt_envelope_refs": ["env-PROOF"],
@@ -191,7 +193,7 @@ def main() -> int:
     kpi_results = {k: evaluate_kpi(k, v) for k, v in kpi_samples.items()}
 
     proof = {
-        "schema_version": "v6",
+        "schema_version": "v40",
         "generated_at": _ts(),
         "trace_root": ingest.bundle.trace_root,
         "runtime_exhaust_bundle_id": ingest.bundle.runtime_exhaust_bundle_id,
@@ -200,6 +202,10 @@ def main() -> int:
         "normalized_record_digests": [r.deterministic_digest for r in ingest.normalized],
         "readiness_decision": readiness.readiness_decision,
         "readiness_digest": readiness.deterministic_digest,
+        "g28_verdict": state.g28.verdict if state.g28 else None,
+        "g28_digest": state.g28.deterministic_digest if state.g28 else None,
+        "g29_verdict": state.g29.verdict if state.g29 else None,
+        "g29_digest": state.g29.deterministic_digest if state.g29 else None,
         "outcome_eval_id": eval_res.outcome.outcome_eval_id,
         "outcome_digest": eval_res.outcome.deterministic_digest,
         "trajectory_eval_id": eval_res.trajectory.trajectory_eval_id,
@@ -259,7 +265,20 @@ def main() -> int:
 
     out_path = REPO_ROOT / "docs" / "reports" / "plans" / "l6_shadow_eval_runtime_proof.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(proof, indent=2, sort_keys=True), encoding="utf-8")
+    span_paths = write_span_artifacts(
+        state.recorder.records,
+        out_path.parent,
+        json_name="l6_shadow_eval_runtime_spans.json",
+        jsonl_name="l6_shadow_eval_runtime_spans.jsonl",
+        source="l6_shadow_eval_runtime_proof",
+    )
+    proof["span_export_ref"] = str(span_paths["span_export_json"])
+    proof["span_export_jsonl_ref"] = str(span_paths["span_export_jsonl"])
+    out_path.write_text(
+        json.dumps(proof, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     print(f"WROTE {out_path}")
     print(f"  bundle_digest={proof['bundle_digest'][:16]}...")
     print(f"  readiness={proof['readiness_decision']}")
