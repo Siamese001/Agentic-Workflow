@@ -51,22 +51,14 @@ LITERAL_PATTERNS = (
 SSOT_ALLOWLIST = (
     ".claude/governance/scripts/_notion_constants.py",
     "config/notion_databases.yaml",
-    # Sanctioned pure-logic mirrors — these modules carry documented
-    # "zero cross-imports / no I/O at import" contracts and intentionally embed
-    # the IDs to stay import-free for early-hook safety. Exempt by design.
-    ".claude/governance/scripts/_notion_plans_status_check.py",
-    ".claude/governance/scripts/_plans_dup_detector.py",
-    ".claude/governance/scripts/_notion_canonical.py",
     "apps_shared/config/environment_config.py",
     "agentic_core/L0_routing/config/path_constants.py",
     "agentic_core/L0_routing/config/external_apis_config.py",
     "ops_scripts/ci/check_external_service_literal_ssot.py",
-    # SSOT consumers with a defensive `try: from _notion_constants ... except: <literal>`
-    # import fallback — they already import from the SSOT; their literals are only a
-    # fail-soft fallback, sanctioned like the SSOT module itself.
-    "ops_scripts/ci/check_notion_backlog_no_duplicates.py",
-    "ops_scripts/ci/check_notion_backlog_plan_linkage.py",
-    "ops_scripts/ci/check_plan_done_notion_status.py",
+    # [notion-wave-enforcement-removal] Removed allowlist entries for now-deleted modules:
+    # _notion_plans_status_check / _plans_dup_detector / _notion_canonical (plan-status helpers)
+    # and check_notion_backlog_no_duplicates / check_notion_backlog_plan_linkage /
+    # check_plan_done_notion_status (deleted NP gates). _notion_constants + the YAML SSOT are KEPT.
 )
 
 # Path segments excluded from scanning (history / tests / generated / vendored).

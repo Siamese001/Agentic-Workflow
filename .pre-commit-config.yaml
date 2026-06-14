@@ -591,21 +591,8 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
-      # -- T7u: Plan–Notion Registration (Constitutional §36) ------------------------
-      # Blocks a commit that adds a new .claude/plans/<slug>-<6hex>.md file
-      # without a matching row in the Notion Plans DB. Advisory by default;
-      # flip fail-closed via PLAN_REGISTRATION_FAIL_CLOSED=1. Offline-safe:
-      # SKIPs when NOTION_API_KEY/NOTION_TOKEN is unset and no local cache
-      # exists. Refreshes the local cache at
-      # .claude/state/plan_registration_cache.json as a side effect.
-      # Bypass: PLAN_REGISTRATION_BYPASS=1.
-      # Rule SSOT: .claude/rules/plan-registration-enforcement.md
-      - id: plan-registration-freshness
-        name: "T7u: Plan–Notion Registration (§36)"
-        entry: py ops_scripts/ci/check_plan_registration_freshness.py
-        language: system
-        pass_filenames: false
-        files: ^(plans|\.claude/plans)/.*\.md$
+      # [notion-wave-enforcement-removal] T7u Plan–Notion Registration (§36) pre-commit hook
+      # REMOVED — the windsurf/cursor-era plan-registration / Notion-status enforcement is retired.
 
       # -- T7s: Fort Knox Certification Integrity (Constitutional §32) ---------------
       # Three gates wired independently (separation of duties):

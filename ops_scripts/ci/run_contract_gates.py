@@ -402,9 +402,7 @@ def main():
         ("W4d 10C proof-ledger validation", "tools/requirements/validate_10c_proof_ledger.py"),
         ("W4d-3 10C cross-file consistency", "ops_scripts/ci/check_10c_cross_file_consistency.py"),
         ("W4d-4 10C pilot proof-evidence", "ops_scripts/ci/check_10c_pilot_proof_evidence.py"),
-        # PLAN-SUPERSEDE: plans declaring '## Supersedes' must have terminal
-        # predecessors. Advisory; fail-closed via PLAN_SUPERSESSION_GATE_FAIL_CLOSED=1.
-        ("PLAN-SUPERSEDE plan supersession consistency", "ops_scripts/ci/check_plan_supersession_consistency.py"),
+        # [notion-wave-enforcement-removal] PLAN-SUPERSEDE (Notion predecessor-retire backstop) REMOVED.
         # Runtime-evidence stack (plan: runtime-evidence-foundation-54ad39).
         # All three close the static-only-proof gap that the OTEL emission RCA
         # surfaced. Pact-style contract verifier is the master gate; the orphan
@@ -517,77 +515,9 @@ def main():
             "AEH3 grounded RAG dim activation (advisory)",
             "ops_scripts/ci/check_grounded_rag_active.py",
         ),
-        # NP1 — Plans DB mandatory AI Summary gate. Advisory by default;
-        # flip fail-closed via NOTION_PLANS_AI_SUMMARY_FAIL_CLOSED=1.
-        # Skips when NOTION_API_KEY / NOTION_TOKEN is unset (offline CI).
-        # Rule: .claude/rules/notion-plans-taxonomy.md > Mandatory AI Summary.
-        (
-            "NP1 Notion Plans AI Summary (advisory)",
-            "ops_scripts/ci/check_notion_plans_ai_summary.py",
-        ),
-        # NP2 -- Plans DB Status must use canonical option strings.
-        # Advisory by default; fail-closed via NOTION_PLANS_STATUS_FAIL_CLOSED=1.
-        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .claude/rules/notion-plans-taxonomy.md > CANONICAL Status option strings.
-        (
-            "NP2 Notion Plans Status drift (advisory)",
-            "ops_scripts/ci/check_notion_plans_status_drift.py",
-        ),
-        # NP3 -- Backlog Items rows must have a Plan relation (true orphans ==0).
-        # Advisory by default; fail-closed via BACKLOG_PLAN_LINKAGE_FAIL_CLOSED=1.
-        # Orphan count confirmed 0 (2026-05-03, plan backlog-linkage-followup-c2e9f3).
-        # Ready to promote: set BACKLOG_PLAN_LINKAGE_FAIL_CLOSED=1 to enforce.
-        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .claude/rules/notion-backlog-plan-linkage.md
-        (
-            "NP3 Notion Backlog plan linkage (advisory)",
-            "ops_scripts/ci/check_notion_backlog_plan_linkage.py",
-        ),
-        # NP4 -- Plans DB freshness vs on-disk plan files. Backstop for the
-        # wave-lifecycle auto-sync chain (plan notion-wave-lifecycle-autosync-f4a2b8).
-        # Advisory by default; fail-closed via NOTION_PLANS_WAVE_FAIL_CLOSED=1.
-        # Bypass: NOTION_PLANS_WAVE_BYPASS=1.
-        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .claude/rules/notion-plan-wave-deferral.md (sanctioned non-MCP path).
-        (
-            "NP4 Notion Plans wave freshness (advisory)",
-            "ops_scripts/ci/check_plan_notion_wave_freshness.py",
-        ),
-        # NP5 -- Plans DB duplicate-slug dedup gate. Uses local cache snapshot
-        # (offline safe) or --live mode against the Notion API. Fails when any
-        # slug has ≥2 active rows. Advisory by default; fail-closed via
-        # NOTION_PLANS_DUP_BYPASS=1 to bypass.
-        # Plan: notion-plans-status-rca-followups-b8e3f2 (W1.P2d).
-        (
-            "NP5 Notion Plans no duplicate slugs (advisory)",
-            "ops_scripts/ci/check_notion_plans_no_duplicates.py",
-        ),
-        # NP6 -- Backlog Items DB duplicate-title dedup gate (DS-6).
-        # Advisory by default; fail-closed via BACKLOG_DUP_FAIL_CLOSED=1.
-        # Bypass: BACKLOG_DUP_BYPASS=1. Skips when token absent (offline CI).
-        # Plan: notion-plans-db-hygiene-deferred-scope-d4f7c1 DS-6.
-        (
-            "NP6 Notion Backlog no duplicate titles (advisory)",
-            "ops_scripts/ci/check_notion_backlog_no_duplicates.py",
-        ),
-        # NP7 -- Plans-DB write telemetry log size gate (DS-4).
-        # Fails when artifacts/governance/plans_db_writes.jsonl exceeds 10 MB
-        # without rotation. Advisory by default; fail-closed via
-        # NOTION_TELEMETRY_LOG_SIZE_FAIL_CLOSED=1.
-        # Plan: notion-plans-db-hygiene-deferred-scope-d4f7c1 DS-4.
-        (
-            "NP7 Notion telemetry log size (advisory)",
-            "ops_scripts/ci/check_notion_telemetry_log_size.py",
-        ),
-        # NP8 -- Plans DB status anomaly detection. Detects suspicious status
-        # changes (quick flips, identity mismatches, etc.). Advisory by default;
-        # fail-closed via NOTION_PLAN_STATUS_ANOMALIES_FAIL_CLOSED=1.
-        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .claude/rules/notion-plan-identity-verification.md
-        (
-            "NP8 Notion plan status anomalies (advisory)",
-            "ops_scripts/ci/check_notion_plan_status_anomalies.py",
-        ),
+        # [notion-wave-enforcement-removal] NP1–NP8 Notion Plans/Backlog status gates REMOVED
+        # (AI-summary, status-drift, backlog-linkage, wave-freshness, dedup x2, telemetry-size,
+        # status-anomalies). The windsurf/cursor-era Notion plan-status enforcement is retired.
         # RULE-XREF -- Rule cross-reference validation. Ensures all rule-to-rule
         # links are intact and targets exist. Advisory by default;
         # fail-closed via RULE_CROSS_REF_FAIL_CLOSED=1.
@@ -596,106 +526,10 @@ def main():
             "RULE-XREF Rule cross-references (advisory)",
             "ops_scripts/ci/check_rule_cross_references.py",
         ),
-        # NP9 -- New plans must use "Not Started" status, not "Lower Priority" or "Waiting".
-        # 24h detection window. Advisory by default; fail-closed via
-        # NOTION_PLANS_NEW_STATUS_FAIL_CLOSED=1. Bypass: NOTION_PLANS_NEW_STATUS_BYPASS=1.
-        # Plan: notion-plans-new-status-enforcement-c9f2a3.
-        (
-            "NP9 Notion Plans new-plan status (advisory)",
-            "ops_scripts/ci/check_notion_plans_new_status.py",
-        ),
-        # NP10 -- Waiting-status plans must have non-blank Waiting For.
-        # Queries Notion API for all Waiting-status rows and reports ERROR
-        # for any with empty Waiting For property. Advisory by default;
-        # fail-closed via NOTION_PLANS_WAITING_FOR_FAIL_CLOSED=1.
-        # Bypass: NOTION_PLANS_WAITING_FOR_BYPASS=1.
-        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .claude/rules/notion-plans-taxonomy.md > Field Requirements.
-        (
-            "NP10 Notion Plans Waiting-For completeness (advisory)",
-            "ops_scripts/ci/check_notion_plans_waiting_for.py",
-        ),
-        # NP11 -- Backlog Items DB Waiting-status rows must have non-blank
-        # Waiting For (DS-3 parity with NP10). Advisory by default;
-        # fail-closed via NOTION_BACKLOG_WAITING_FOR_FAIL_CLOSED=1.
-        # Bypass: NOTION_BACKLOG_WAITING_FOR_BYPASS=1.
-        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .claude/rules/notion-plans-taxonomy.md > Field Requirements.
-        (
-            "NP11 Notion Backlog Waiting-For completeness (advisory)",
-            "ops_scripts/ci/check_notion_backlog_waiting_for.py",
-        ),
-        # NP13 -- Plans DB rows stuck In Progress for >7d with no
-        # PLAN_COMPLETE marker in wave_lifecycle_capture.jsonl.
-        # Advisory by default; fail-closed via
-        # NOTION_PLAN_COMPLETE_FAIL_CLOSED=1.
-        # Bypass: NOTION_PLAN_COMPLETE_BYPASS=1.
-        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .claude/rules/notion-plan-wave-deferral.md.
-        # Plan: plan-complete-marker-enforcement-d2e9f1 W2.
-        (
-            "NP13 Notion Plans PLAN_COMPLETE marker freshness (advisory)",
-            "ops_scripts/ci/check_plan_complete_marker_freshness.py",
-        ),
-        # NP14 — Plans DB status at creation time. Detects plans created with
-        # wrong initial status (not "Not Started" or "Completed").
-        # Advisory by default; fail-closed via NOTION_PLAN_STATUS_INITIAL_FAIL_CLOSED=1.
-        # Bypass: NOTION_PLAN_STATUS_INITIAL_BYPASS=1.
-        # Skips when NOTION_API_KEY / NOTION_TOKEN unset (offline CI).
-        # Rule: .claude/rules/notion-plans-taxonomy.md > Status Creation Invariant.
-        # Plan: holistic-plan-status-discipline-d4e8a1 (W3).
-        (
-            "NP14 Notion Plans status initial (advisory)",
-            "ops_scripts/ci/check_notion_plan_status_initial.py",
-        ),
-        # NP12 — Schema preflight validation. Validates that Notion write
-        # operations target existing properties before API calls are made.
-        # Advisory by default; fail-closed via NOTION_SCHEMA_PREFLIGHT_FAIL_CLOSED=1.
-        # Bypass: NOTION_SCHEMA_PREFLIGHT_BYPASS=1.
-        # Rule: .claude/rules/notion-sync-enforcement.md > Schema Validation.
-        # Plan: notion-sync-enforcement-hardening-f5a2c1 W1.P2.
-        (
-            "NP12 Notion Schema Pre-flight (advisory)",
-            "ops_scripts/ci/check_notion_schema_preflight.py",
-        ),
-        # NP15 — Wave/Phase Convergence DB ↔ disk plan-file drift. Checks that
-        # open Backlog rows whose Plan File field is set resolve to an on-disk
-        # .claude/plans/ file. Orphan rows are reported.
-        # Advisory by default; fail-closed via STRICT_DRIFT=1.
-        # Bypass: PLAN_FILE_DRIFT_BYPASS=1.
-        # Plan: notion-integration-consistency-audit-b2c4d8 W3.
-        (
-            "NP15 Notion plan file drift (advisory)",
-            "ops_scripts/ci/check_notion_plan_file_drift.py",
-        ),
-        # NP16 — Author-Gate decision signals. SQLite ledger under
-        # ``.claude/state/refactor_decisions/`` is SSOT; Notion Author-Gate ledger
-        # archived 2026-05-02. Gate logs legacy Notion post traffic; fail-closed
-        # only when NOTION_DECISION_PARITY_FAIL_CLOSED=1 and legacy posts > 0.
-        # Bypass: NOTION_DECISION_PARITY_BYPASS=1.
-        # Plan: notion-enforcement-ssot-hardening-e4f8a2.
-        (
-            "NP16 Notion decision parity (advisory)",
-            "ops_scripts/ci/check_notion_decision_parity.py",
-        ),
-        # NP17 — Wave/Phase Convergence MECE v2 schema gate. Verifies that known
-        # Notion writer scripts do not write retired fields and do write Evidence.
-        # Fail policy: exit 1 on any violation (always enforced).
-        # Plan: notion-integration-consistency-audit-b2c4d8 W3.
-        (
-            "NP17 Notion Wave/Phase MECE v2 schema (enforced)",
-            "ops_scripts/ci/check_notion_schema_mece.py",
-        ),
-        # NP18 — Plans DB canonical status + discipline gate. Validates status
-        # option strings are canonical (not stale emoji variants) and flags
-        # In Progress plans with stale deferred items lacking Waiting For.
-        # Advisory by default; fail-closed via --fail-closed arg.
-        # Bypass: NOTION_PLANS_STATUS_CANONICAL_BYPASS=1 (env, advisory only).
-        # Plan: notion-integration-consistency-audit-b2c4d8 W3.
-        (
-            "NP18 Notion Plans status canonical (advisory)",
-            "ops_scripts/ci/check_notion_plans_status_canonical.py",
-        ),
+        # [notion-wave-enforcement-removal] NP9–NP18 Notion Plans/Backlog status gates REMOVED
+        # (new-plan-status, waiting-for x2, PLAN_COMPLETE-freshness, status-initial, schema-preflight,
+        # plan-file-drift, decision-parity, MECE-v2, status-canonical). Retired plan-status enforcement.
+        # NP-IDSSOT (Notion-ID literal SSOT parity) is KEPT below — it is ID-hygiene, not plan-status.
         # NP-IDSSOT — Notion-ID SSOT parity. Asserts config/notion_databases.yaml
         # (SSOT) == _notion_constants derived constants == its _FALLBACK_* literals,
         # so the fail-soft fallback can never silently drift from the SSOT.
@@ -705,29 +539,9 @@ def main():
             "NP-IDSSOT Notion-ID SSOT parity (enforced)",
             "ops_scripts/ci/check_notion_id_ssot_parity.py",
         ),
-        # NP-DONE -- Plans whose on-disk Wave Structure table shows all waves
-        # ✅ DONE but Notion status ≠ "Completed". Belt-and-suspenders backstop
-        # for the wave_execution_state.py + PLAN_COMPLETE: hook chain.
-        # Advisory by default; fail-closed via NP_PLAN_DONE_STATUS_FAIL_CLOSED=1.
-        # Bypass: NP_PLAN_DONE_STATUS_BYPASS=1.
-        # Skips when NOTION_TOKEN / NOTION_API_KEY unset (offline CI).
-        # RCA: plan apps-lic-quarantine-u0-coverage-review-d9f4a2 stayed Archived.
-        # Plan: plan-complete-notion-status-enforcement-a7e2d1 (W2.P1).
-        (
-            "NP-DONE Plans all-waves-done disk-vs-Notion (advisory)",
-            "ops_scripts/ci/check_plan_done_notion_status.py",
-        ),
-        # WAVE-MARKER — Plans with mixed wave state (some DONE, some TODO) but
-        # no WAVE_COMPLETE / PLAN_COMPLETE entry in wave_lifecycle_capture.jsonl.
-        # Detects the failure mode from RCA rca-wave-marker-emission-gap-c7d3f1
-        # where Cursor Agent executed waves without emitting required markers.
-        # Advisory by default; fail-closed via WAVE_MARKER_GATE_FAIL_CLOSED=1.
-        # Bypass: WAVE_MARKER_EMISSION_BYPASS=1.
-        # Report: artifacts/ci/wave_marker_emission_gate.json.
-        (
-            "WAVE-MARKER Wave marker emission completeness (advisory)",
-            "ops_scripts/ci/check_wave_marker_emission.py",
-        ),
+        # [notion-wave-enforcement-removal] NP-DONE (all-waves-done disk-vs-Notion) and
+        # WAVE-MARKER (WAVE_COMPLETE/PLAN_COMPLETE marker emission) gates REMOVED — retired
+        # Notion plan-status + wave-marker enforcement.
         # RG-W3 — Retired warm_r1b_cache shadow runner must stay absent.
         # Canonical cache proof is via python -m apps_rg + contract tests only.
         # Advisory by default; flip fail-closed via R1B_WARMUP_SMOKE_FAIL_CLOSED=1.
@@ -736,15 +550,8 @@ def main():
             "RG-W3 R1B warmup smoke (advisory)",
             "ops_scripts/ci/check_r1b_warmup_smoke.py",
         ),
-        # PR1 — Plan–Notion registration freshness (Constitutional §36).
-        # Advisory by default; flip fail-closed via
-        # PLAN_REGISTRATION_FAIL_CLOSED=1. Offline-safe: SKIPs when no
-        # token and no local cache. Rule:
-        # .claude/rules/plan-registration-enforcement.md.
-        (
-            "PR1 Plan–Notion Registration (advisory)",
-            "ops_scripts/ci/check_plan_registration_freshness.py",
-        ),
+        # [notion-wave-enforcement-removal] PR1 Plan–Notion registration freshness (§36) REMOVED —
+        # retired plan-registration enforcement.
         # L6-OBS — L6 observer-law (system_learning/ MUST NOT import writers
         # from L0..L5 runtime layers). Advisory; flip fail-closed via
         # L6_OBSERVER_LAW_FAIL_CLOSED=1 once baseline is clean.
@@ -1416,14 +1223,7 @@ def main():
         # RCA: 2026-05-10 notion-test-hardening-deferred-scope-a7b4c9.
         # Bypass: DEFERRED_PLAN_GUARD_BYPASS=1.
         ("AG-DEFER Deferred-scope plan guard marker parity (advisory)", "ops_scripts/ci/check_deferred_plan_guard_markers.py"),
-        # NP-GUARD — Notion plan lifecycle Completed guard presence check.
-        # Validates that wave_execution_state.py and _wave_lifecycle_helpers.py
-        # contain the belt-and-suspenders guards preventing a Completed plan from
-        # being flipped back to In Progress by a spurious wave_start marker.
-        # Advisory by default; fail-closed via NP_LIFECYCLE_GUARD_FAIL_CLOSED=1.
-        # Bypass: NP_LIFECYCLE_GUARD_BYPASS=1.
-        # Plan: notion-plan-status-hardening-e5f3a1 (W3.P1).
-        ("NP-GUARD Notion plan lifecycle Completed guard (advisory)", "ops_scripts/ci/check_notion_plan_lifecycle_guard.py"),
+        # [notion-wave-enforcement-removal] NP-GUARD (Notion plan-lifecycle Completed guard) REMOVED.
         # RG-JD0 — apps_rg JD resolution / default JD SSOT must not appear under agentic_core/.
         ("RG-JD0 agentic_core JD SSOT boundary", "ops_scripts/ci/check_agentic_core_no_apps_rg_jd_ssot.py"),
         # RG-RESUME0 — apps_rg resume resolution / default resume SSOT must not appear under agentic_core/.

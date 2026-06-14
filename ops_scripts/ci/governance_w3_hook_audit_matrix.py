@@ -24,8 +24,8 @@ HOOK_REQUIRED = {
     # enforcement-surface-consolidation-d8b3f6; §24/ADR-096) -> moved to OBSOLETE_CANDIDATE below.
     "post_agent_mcp_hygiene_audit.py",
     "post_agent_long_command_audit.py",
-    "post_agent_wave_lifecycle_capture.py",
-    "post_agent_writeback_audit.py",
+    # [notion-wave-enforcement-removal] post_agent_wave_lifecycle_capture +
+    # post_agent_writeback_audit DELETED (Notion plan-status/wave enforcement retired).
     "post_agent_scope_drift_detector.py",
 }
 
