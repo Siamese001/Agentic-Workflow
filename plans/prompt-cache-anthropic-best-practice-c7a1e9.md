@@ -31,8 +31,8 @@ Restructure the Anthropic prompt-cache helpers into stability-tier breakpoints t
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W3
-LAST_COMPLETED_WAVE: W2
+CURRENT_WAVE: W4
+LAST_COMPLETED_WAVE: W3
 LAST_UPDATED: 2026-06-14
 
 > **W1 delivered** (2026-06-14) — PR https://github.com/Siamese001/Agentic-Workflow/pull/351,
@@ -40,8 +40,13 @@ LAST_UPDATED: 2026-06-14
 > **W2 delivered** (2026-06-14) — PR https://github.com/Siamese001/Agentic-Workflow/pull/352,
 > branch `feat/prompt-cache-w2-model-floor`. Model-keyed token floor (Opus 4.8/Haiku 4.5=4096,
 > Fable 5/Sonnet 4.6=2048); +18 tests; 48 + 49 regression green; `model=None` preserves legacy.
-> Live-API `cache_read` confirmation remains the declared deferral (needs the tiered-prompt
-> gateway path from W3 + a live run) — see Verification vs Deferral.
+> **W3 delivered** (2026-06-14) — PR https://github.com/Siamese001/Agentic-Workflow/pull/355
+> (stacked on #352), branch `feat/prompt-cache-w3-multibreakpoint`. Multi-breakpoint renderer
+> (2 tiers: system + docs) + `CacheStrategy` workload gate + orchestrator wiring (cache_strategy +
+> model); +24 tests; 115 passed across W3 + retrieval regression. DEFERRED (user-authorized):
+> provider_gateway/ProviderRequest structured-input refactor + the 3rd pinned tier.
+> Live-API `cache_read` confirmation remains the declared deferral (needs a live run through the
+> now-tiered orchestrator path) — see Verification vs Deferral.
 
 ---
 
@@ -62,7 +67,7 @@ LAST_UPDATED: 2026-06-14
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | W1.1, W1.2 | P4 usage telemetry + P5 determinism guard — measure before changing | ~30K | gateway exposes `usage` on responses; Tier-1 block is hashable | ✅ DONE | per-call hit/miss telemetry emitted; determinism guard hashes Tier-1 and alarms on change (PR #351) |
 | W2 | W2.1 | P3 model-aware token-floor threshold | ~18K | per-model floors are known/derivable (Opus 4.8=4096, Sonnet 4.6/Fable 5=2048, Haiku=4096) | ✅ DONE | no `cache_control` marker emitted below its model's token floor (PR #352) |
-| W3 | W3.1, W3.2 | P1 multi-breakpoint renderer + P2 workload-aware caching strategy | ~40K | renderer/payload builders accept a list of boundary hints; ≤4 markers/request | 🔲 TODO | stable tiers cache independently; Tier-3 unmarked for one-shot RAG |
+| W3 | W3.1, W3.2 | P1 multi-breakpoint renderer + P2 workload-aware caching strategy | ~40K | renderer/payload builders accept a list of boundary hints; ≤4 markers/request | ✅ DONE | stable tiers cache independently; Tier-3 unmarked for one-shot RAG (PR #355; 2 tiers, gateway refactor deferred) |
 | W4 | W4.1 | P6 TTL strategy + pre-warming | ~22K | gateway can set `1h`/`5m` TTL and issue a `max_tokens:0` pre-warm | 🔲 TODO | Tier-1/2 hot on first real request where latency is user-visible |
 | W5 | W5.1, W5.2 | P7 multi-turn / agentic breakpoints + P8 concurrent fan-out timing | ~28K | agentic/parallel call paths exist to exercise | 🔲 TODO | 20-block lookback respected; fan-out reads first writer's cache |
 
@@ -73,8 +78,8 @@ LAST_UPDATED: 2026-06-14
 | W1.1 | P4 — Closed-loop usage telemetry (`cache_read`/`cache_creation`) + silent-invalidator alarm | ✅ DONE |
 | W1.2 | P5 — Determinism contract test + render-time Tier-1 hash guard | ✅ DONE |
 | W2.1 | P3 — Model-keyed token-floor threshold (replaces `_MIN_CACHEABLE_CHARS`) | ✅ DONE |
-| W3.1 | P1 — Multi-breakpoint renderer (list of boundary hints, cap 4) | 🔲 TODO |
-| W3.2 | P2 — Workload-aware Tier-3 caching decision (`cache_strategy` selector) | 🔲 TODO |
+| W3.1 | P1 — Multi-breakpoint renderer (list of boundary hints, cap 4) | ✅ DONE |
+| W3.2 | P2 — Workload-aware Tier-3 caching decision (`cache_strategy` selector) | ✅ DONE |
 | W4.1 | P6 — Tier-1/2 `1h` TTL + startup pre-warm; Tier-3 `5m` | 🔲 TODO |
 | W5.1 | P7 — Multi-turn / agentic breakpoints + `role:"system"` operator channel | 🔲 TODO |
 | W5.2 | P8 — Concurrent fan-out sequencing (send 1, await first token, fan out N-1) | 🔲 TODO |
@@ -169,19 +174,22 @@ CHECKPOINT: B
 ## Wave 3 — Multi-breakpoint + workload strategy (P1 + P2)
 
 WAVE_ID: W3
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: REQUIRED
 CHECKPOINT: C
 
 **Phases**:
-- **W3.1** — P1 multi-breakpoint renderer (list of `cache_boundary_hint`s, cap 4) | ~22K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W3.2** — P2 workload-aware `cache_strategy` selector at the gateway | ~18K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W3.1** — P1 multi-breakpoint renderer (list of `cache_boundary_hint`s, cap 4) | ~22K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W3.2** — P2 workload-aware `cache_strategy` selector (landed at the orchestrator, not the flat provider_gateway) | ~18K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - `render_anthropic_prompt` emits multiple boundary hints (system / pinned corpus / per-query docs); builders place one marker per tier, cap 4, dropping the lowest-value boundary if exceeded.
 - Tier 3 carries a marker **only when reuse is signaled**; default is conservative (no Tier-3 marker for distinct one-shot RAG).
-- Wires the gateway to pass the active `model` into the cache helpers (activates W2's model-aware floor in production).
+- Wires the **orchestrator** (`DualPassCitationOrchestrator`, the real structured-prompt consumer) to pass the active `model` + `cache_strategy` into the cache helpers — activates W2's model floor + per-tier caching on the RAG path. (The flat-text `provider_gateway` cannot apply tiers; its structured-input refactor is DEFERRED.)
+
+> **DELIVERED** (2026-06-14, PR https://github.com/Siamese001/Agentic-Workflow/pull/355, stacked on #352). Ships **2 tiers** (system + documents); the 3rd pinned-corpus tier needs a `PromptEnvelope` pinned flag (deferred). +24 tests; 115 passed across W3 + retrieval regression.
+> **DISCOVERED_SCOPE → DEFERRED** (user-authorized via AskUserQuestion): `provider_gateway`/`ProviderRequest` structured-input refactor; 3rd pinned-corpus tier.
 
 ---
 
@@ -294,7 +302,7 @@ DoD-4: Determinism guard works — determinism contract test green; the silent-i
 
 DoD-5: Smoke-run (executable surface) — the cache-control + renderer helpers import and exercise cleanly end-to-end.
 - Evidence: `python -c "import agentic_core.knowledge.retrieval.anthropic_cache_control, agentic_core.knowledge.retrieval.anthropic_prompt_renderer"` exits 0; gateway render path produces a valid multi-breakpoint payload (≤4 markers)
-- Status: 🔄 PARTIAL — import smoke exits 0 (changed modules import; `ProviderGateway._record_cache_usage` present; W2 helpers resolve). The multi-breakpoint payload portion is W3 (gateway still sends a flat prompt).
+- Status: ✅ DONE — import smoke exits 0; W3 `build_messages_payload` produces a valid multi-breakpoint payload with the 4-marker cap enforced (`test_marker_cap_drops_to_four`); orchestrator path proven (`test_orchestrator_*`).
 
 DoD-6: Tests + zero regressions — scoped suite passes with no regression vs baseline.
 - Evidence: `pytest tests/unit/agentic_core/knowledge/retrieval -q` shows N pass, 0 fail
