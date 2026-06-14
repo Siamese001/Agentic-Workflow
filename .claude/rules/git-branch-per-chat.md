@@ -33,14 +33,18 @@
 
 | Layer | Mechanism | File |
 |---|---|---|
-| Proactive (auto-worktree) | `SessionStart` hook | `.claude/hooks/session_start_branch_guard.py` |
+| Proactive (auto-worktree + runtime-link + divergence) | `SessionStart` hook | `.claude/hooks/session_start_branch_guard.py` |
 | Hard block (per-file edit gate) | `PreToolUse` Edit\|Write\|MultiEdit hook | `.claude/hooks/before_file_edit_branch_guard.py` |
 | Lifecycle cleanup (auto-reap merged) | `SessionStart` hook | `.claude/hooks/prune_merged_chat_worktrees.py` |
+| Runtime-cache linker (SSOT) | imported by the create hook + doctor | `tools/git/worktree_runtime_links.py` |
+| Doctor (classify / report / `--link`) | CLI | `tools/git/worktree_doctor.py` |
+| Deliver (rebase → retest → push/PR) | CLI | `tools/git/deliver_worktree.py` |
 | Registration | `.claude/settings.json` `hooks.SessionStart` + `hooks.PreToolUse` | — |
 
 Both hooks are **self-contained** (no `lib.claude_hook_common` dependency) and fail
 **soft** when git is unavailable / no branch resolves; the edit gate blocks **hard**
-only when the file's owning working tree is genuinely on a protected branch.
+only when the file's owning working tree is genuinely on a protected branch. The runtime
+linker / divergence notice are best-effort and never block session start.
 
 ## Configuration
 
@@ -51,8 +55,12 @@ only when the file's owning working tree is genuinely on a protected branch.
 | `CHAT_WORKTREE_ROOT=/abs/path` | Override the worktree root. Default: `<repo-parent>/.chat-worktrees`. |
 | `WORKTREE_MERGE_CLEANUP_BYPASS=1` | Disable only the auto-reap (keep the create/edit guards on). |
 | `WORKTREE_MERGE_CLEANUP_DRY_RUN=1` | Auto-reap reports which worktrees it *would* reap, deletes nothing. |
-| `WORKTREE_CLEANUP_MIN_AGE_MINUTES=N` | Grace window — never reap a chat worktree whose HEAD is newer than N minutes. Default `0`. |
-| `WORKTREE_CLEANUP_TRUNK_REF=origin/main` | The "merged into" trunk ref the reaper checks against. Default `origin/main`. |
+| `WORKTREE_CLEANUP_MIN_AGE_MINUTES=N` | Grace window — never reap a worktree newer than N minutes (recency = most recent of HEAD commit time **and** worktree creation mtime). **Default `30`** (item #1, raised from `0` to end the mid-session reap-race). |
+| `WORKTREE_REAP_BRANCH_PREFIXES=chat/,feat/` | csv of branch prefixes eligible for auto-reap. **Default `chat/`** (unchanged). Non-chat prefixes may live anywhere (sibling worktrees) — opt-in only (item #4). |
+| `.keep-worktree` (marker file, not env) | A `.keep-worktree` file in any worktree exempts it from auto-reap permanently (gitignored; item #4). |
+| `WORKTREE_LINK_DIRS=a/b,c/d` / `WORKTREE_LINK_DIRS_DISABLE=1` | Override / disable the runtime-cache dirs junctioned into a new worktree. Default: `data/cache/{chromadb,sparse,r1b}` (item #2). |
+| `WORKTREE_DIVERGENCE_NOTICE=0` / `WORKTREE_DIVERGENCE_FETCH=1` | Silence the trunk-divergence notice / fetch before counting (item #3). |
+| `WORKTREE_CLEANUP_TRUNK_REF=origin/main` | The "merged into" / divergence trunk ref. Default `origin/main`. |
 
 ## Naming
 
@@ -71,15 +79,68 @@ only when the file's owning working tree is genuinely on a protected branch.
 
 | Guard | A worktree is reaped only if… |
 |---|---|
-| Scope | it lives under the chat root (`.chat-worktrees/`) **and** its branch matches `chat/*`. Long-lived `feat/*` / `codex/*` / `fix/*` worktrees and the primary checkout are **never** eligible. |
+| Prefix | its branch matches an **enabled reap prefix** (`WORKTREE_REAP_BRANCH_PREFIXES`, default `chat/`). `chat/*` must also live under the chat root (`.chat-worktrees/`); opt-in non-chat prefixes may live anywhere. The primary checkout is **never** eligible. |
+| Keep marker | it does **not** carry a `.keep-worktree` file (universal opt-out — kept regardless of merge/clean state). |
 | Self | it is **not** the worktree the current session is running in. |
 | Merged | its branch is an **ancestor of `origin/main`** (`git merge-base --is-ancestor`). Unmerged work is never touched. |
 | Clean | its working tree is **clean** (`git status --porcelain` empty). Uncommitted work is never touched. |
-| Age | its HEAD is older than `WORKTREE_CLEANUP_MIN_AGE_MINUTES` (default `0`) — protects a worktree another live chat just created. |
+| Age | it is older than `WORKTREE_CLEANUP_MIN_AGE_MINUTES` (default **`30`**) — recency is the **most recent of HEAD commit time and worktree creation mtime**, so a freshly-created empty worktree (HEAD on an old trunk tip) is still protected. |
 
 It is **best-effort and fail-soft**: a fetch failure, a worktree-remove failure, or a non-git
 environment never blocks session start (always exits 0). Run it on demand in dry-run with
 `WORKTREE_MERGE_CLEANUP_DRY_RUN=1 python .claude/hooks/prune_merged_chat_worktrees.py`.
+
+## Runtime-data junctions (item #2)
+
+A fresh worktree checks out only **tracked** files, so the gitignored runtime caches
+(`data/cache/chromadb`, `data/cache/sparse`, `data/cache/r1b`) are **absent** — the
+documented cause of "C0.2 BM25 UNAVAILABLE on every lane" the first time apps_rg runs in a
+new worktree. On worktree create, `session_start_branch_guard.py` **junctions** those dirs
+back to the primary checkout (Windows `mklink /J`, POSIX symlink) via the SSOT
+`tools/git/worktree_runtime_links.py`. Repair an existing worktree with:
+
+```
+python tools/git/worktree_doctor.py --link            # all worktrees
+python tools/git/worktree_doctor.py --link <path>     # one worktree
+```
+
+The link is **never rebuilt** (linking, not copying); never deletes; idempotent.
+
+## Trunk-divergence pre-flight (item #3)
+
+When a worktree is cut from a **local** trunk that lags the remote, the new branch starts
+behind. On create, the hook reports how far `origin/main` is ahead and advises a
+`git rebase origin/main` before building. Silence with `WORKTREE_DIVERGENCE_NOTICE=0`;
+fetch first with `WORKTREE_DIVERGENCE_FETCH=1`.
+
+## Branch taxonomy (item #6)
+
+Two canonical prefixes — keep the taxonomy small so the worktree set stays legible:
+
+| Prefix | Meaning | Lifecycle |
+|---|---|---|
+| `chat/*` | ephemeral per-chat isolation (auto-created) | auto-reaped when merged+clean |
+| `feat/*` | long-lived / human-named feature work | kept; remove manually or set a reap prefix |
+
+`codex/*`, `fix/*`, and other prefixes are **non-canonical** — `worktree_doctor.py` flags
+them. Migrate to `feat/*` or mark with `.keep-worktree`. **One branch per deliverable** —
+do not reuse a single branch across many PRs (it defeats per-change review).
+
+## Delivering a worktree (item #5)
+
+Deliver a feature **from its own worktree**, never by merging in the primary checkout (the
+primary often carries concurrent uncommitted work and the trunk moves mid-task). The
+standard path — rebase on the trunk, retest, then push/PR — is codified in
+`tools/git/deliver_worktree.py`:
+
+```
+python tools/git/deliver_worktree.py --dry-run                          # show plan + divergence
+python tools/git/deliver_worktree.py --test "python -m pytest -q <scope>"   # PR mode (default)
+python tools/git/deliver_worktree.py --mode push --test "<retest cmd>"      # direct-to-trunk (opt-in)
+```
+
+It refuses to run in the primary / on a protected branch, requires a clean tree, aborts on
+rebase conflict, skips delivery if the retest fails, and never force-pushes.
 
 ## Notes
 

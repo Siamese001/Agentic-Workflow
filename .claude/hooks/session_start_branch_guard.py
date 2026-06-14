@@ -24,9 +24,19 @@ Behaviour:
 Self-contained: does not depend on ``lib.claude_hook_common`` (absent in some
 checkouts). Always exits 0 (proactive half; never blocks session start).
 
+On worktree create it ALSO (best-effort, fail-soft):
+  * item #2 — junctions the gitignored runtime caches (``data/cache/chromadb`` etc.) from
+    the primary into the new worktree, so the first apps_rg run is not broken by a missing
+    cache (see ``tools/git/worktree_runtime_links.py``);
+  * item #3 — reports how far ``origin/main`` is ahead of the new worktree's base, advising a
+    ``git rebase`` when the base was cut from a stale local trunk.
+
 Bypass: ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master,release`` (csv).
 Worktree root override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default ``<repo-parent>/.chat-worktrees``).
+Runtime links: ``WORKTREE_LINK_DIRS`` (csv) / ``WORKTREE_LINK_DIRS_DISABLE=1`` (item #2).
+Divergence notice: ``WORKTREE_DIVERGENCE_NOTICE=0`` to silence; ``WORKTREE_DIVERGENCE_FETCH=1``
+  to fetch before counting (item #3). Trunk ref: ``WORKTREE_CLEANUP_TRUNK_REF`` (default ``origin/main``).
 """
 
 from __future__ import annotations
@@ -55,6 +65,43 @@ def _git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
     except (OSError, subprocess.TimeoutExpired):
         return 1, ""
     return proc.returncode, (proc.stdout or "").strip()
+
+
+def _trunk_ref() -> str:
+    return os.environ.get("WORKTREE_CLEANUP_TRUNK_REF", "").strip() or "origin/main"
+
+
+def _link_runtime(wt_path: Path) -> str:
+    """Item #2: junction the gitignored runtime caches from the primary into ``wt_path``.
+
+    Best-effort and fail-soft — linking is advisory. Imports the SSOT linker from
+    ``tools/git`` with a try/except so the hook never breaks if the module is absent.
+    """
+    try:
+        if str(REPO_ROOT) not in sys.path:
+            sys.path.insert(0, str(REPO_ROOT))
+        from tools.git.worktree_runtime_links import link_runtime_dirs, summarize
+
+        return summarize(link_runtime_dirs(REPO_ROOT, wt_path))
+    except Exception as exc:  # guardian: allow-broad-except -- hook fail-soft: linking is advisory
+        return f"runtime-data links: skipped ({exc}); run `python tools/git/worktree_doctor.py --link`."
+
+
+def _divergence_note(wt_path: Path) -> str:
+    """Item #3: advise a rebase when ``origin/main`` is ahead of the new worktree's base."""
+    if os.environ.get("WORKTREE_DIVERGENCE_NOTICE") == "0":
+        return ""
+    trunk = _trunk_ref()
+    if os.environ.get("WORKTREE_DIVERGENCE_FETCH") == "1":
+        _git("fetch", "origin", "main", "--quiet", cwd=wt_path)  # best-effort
+    rc, count = _git("rev-list", "--count", f"HEAD..{trunk}", cwd=wt_path)
+    if rc != 0 or not count.isdigit() or int(count) <= 0:
+        return ""
+    return (
+        f"⚠️ {trunk} is {count} commit(s) ahead of this worktree's base — run "
+        f"`git rebase {trunk}` inside the worktree before building (the base was cut from a "
+        f"local trunk that may lag the remote)."
+    )
 
 
 def _protected() -> set[str]:
@@ -143,6 +190,10 @@ def main() -> int:
         _emit_context(msg)
         return 0
 
+    # Item #2/#3: link runtime caches into the fresh worktree + report trunk divergence.
+    link_summary = _link_runtime(wt_path)
+    divergence = _divergence_note(wt_path)
+
     msg = (
         f"worktree-per-chat: this chat was on protected branch '{branch}'. Created a git "
         f"worktree for the feature at:\n    {wt_path}\n"
@@ -152,6 +203,10 @@ def main() -> int:
         f"`cd {wt_path}` for shell commands, and target file edits at paths under {wt_path}. "
         f"Commit and push from the worktree; open the PR from branch '{new_branch}'."
     )
+    if link_summary:
+        msg += f"\n{link_summary}"
+    if divergence:
+        msg += f"\n{divergence}"
     sys.stderr.write("[HOOK] " + msg + "\n")
     _emit_context(msg)
     return 0

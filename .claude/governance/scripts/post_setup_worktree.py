@@ -47,6 +47,22 @@ def _copy_env(src_root: Path, worktree: Path) -> None:
         print(f"[worktree_bootstrap] WARNING: could not copy .env: {exc}", flush=True)
 
 
+def _link_runtime_caches(worktree: Path) -> None:
+    """Junction the gitignored runtime caches from repo root into the worktree (item #2).
+
+    Best-effort: a fresh worktree lacks ``data/cache/*`` (gitignored), which breaks the
+    first apps_rg run. Linking them back to the primary is the documented fix.
+    """
+    try:
+        if str(repo_root) not in sys.path:
+            sys.path.insert(0, str(repo_root))
+        from tools.git.worktree_runtime_links import link_runtime_dirs, summarize
+
+        print(f"[worktree_bootstrap] {summarize(link_runtime_dirs(repo_root, worktree))}", flush=True)
+    except Exception as exc:  # guardian: allow-broad-except -- bootstrap fail-soft: linking is advisory
+        print(f"[worktree_bootstrap] WARNING: runtime-cache link skipped: {exc}", flush=True)
+
+
 def _verify_core_imports() -> list[str]:
     """Verify critical packages are importable. Returns list of missing packages."""
     missing: list[str] = []
@@ -96,6 +112,7 @@ def main() -> int:
 
     if worktree and worktree.exists():
         _copy_env(repo_root, worktree)
+        _link_runtime_caches(worktree)
     else:
         print(
             "[worktree_bootstrap] No worktree path in payload or path does not exist — skipping .env copy.",
