@@ -350,6 +350,57 @@ ROOT_ALLOWED_PATTERNS: Final[tuple[str, ...]] = (
     r"^requirements.*\.txt$",  # Requirements files
 )
 
+ALLOW_ROOT_PY_TERRITORIES: Final[frozenset[str]] = frozenset()
+
+LAYER_PREFIX_EXEMPT_TERRITORIES: Final[frozenset[str]] = frozenset()
+
+FORBIDDEN_FOLDER_PATTERN: Final[Pattern[str]] = re.compile(r"^\d+_")
+
+FORBIDDEN_ROOT_FOLDERS: Final[frozenset[str]] = frozenset(
+    {"legacy_code", "legacy_engines", "legacy_resume_gen", "old_core"},
+)
+
+ALLOWED_DUPLICATE_FILENAMES: Final[frozenset[str]] = frozenset(
+    {
+        "__init__.py",
+        "__main__.py",
+        "conftest.py",
+        "context.py",
+        "config.py",
+        "constants.py",
+        "exceptions.py",
+        "types.py",
+        "models.py",
+        "base.py",
+        "utils.py",
+        "helpers.py",
+        "common.py",
+        "observability.py",
+        "metrics.py",
+        "logging.py",
+        "tracing.py",
+        "proactive.py",
+        "autonomous.py",
+        "self_healing.py",
+        "prompts.py",
+        "templates.py",
+    },
+)
+
+FLAT_DIRECTORIES: Final[frozenset[str]] = frozenset(
+    {
+        "cache",
+        "config",
+        "embeddings",
+        "gateway",
+        "interfaces",
+        "mixins",
+        "patterns",
+        "planning",
+        "base_agents",
+    },
+)
+
 SOVEREIGN_EXCLUDED_FOLDERS: Final[frozenset[str]] = frozenset(
     {
         "__pycache__",
@@ -578,4 +629,51 @@ APPS_RESEARCH_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
     "utils": [],
     "validators": [],
 }
+
+
+def validate_path_within_project(path: str | Path, project_root: str | Path | None = None) -> bool:
+    """Return true when ``path`` resolves inside the project root."""
+    if project_root is None:
+        project_root = get_validated_project_root()
+
+    try:
+        resolved_path = Path(path).resolve()
+        resolved_root = Path(project_root).resolve()
+        resolved_path.relative_to(resolved_root)
+        return True
+    except ValueError:
+        return False
+
+
+def safe_path_join(project_root: str | Path, *parts: str | Path) -> Path:
+    """Join path parts and fail if the resolved path escapes the project root."""
+    resolved_root = Path(project_root).resolve()
+    result = resolved_root.joinpath(*parts).resolve()
+
+    if not validate_path_within_project(result, resolved_root):
+        raise ValueError(f"SAFETY VIOLATION: Path '{result}' is outside project root '{resolved_root}'")
+
+    return result
+
+
+def validate_flat_directory(path_parts: Sequence[str]) -> dict[str, Any] | None:
+    """Return a violation when a flat directory contains a nested subdirectory."""
+    for index, part in enumerate(path_parts):
+        if part not in FLAT_DIRECTORIES:
+            continue
+        remaining = path_parts[index + 1 :]
+        if len(remaining) <= 1:
+            continue
+        illegal_child = remaining[0]
+        if illegal_child == "__pycache__":
+            return None
+        return {
+            "domain": part,
+            "illegal_child": illegal_child,
+            "message": (
+                f"FLAT VIOLATION: '{part}/' must not contain subdirectory "
+                f"'{illegal_child}/'. All files must live directly in '{part}/'."
+            ),
+        }
+    return None
 

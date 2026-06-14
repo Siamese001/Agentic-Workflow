@@ -1,9 +1,9 @@
 {
   "artifact_type": "strict_core_addition_scan",
   "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
-  "freshness_ts": "2026-06-14T18:27:44Z",
+  "freshness_ts": "2026-06-14T19:02:05Z",
   "verdict": "PASS",
   "changed_paths_covered": true,
   "expected_command": "CORE_ADDITION_CHANGED_PATHS=<all changed agentic_core paths> python ops_scripts/ci/check_agentic_core_addition.py",
-  "scope_note": "The override is required before staging because git diff does not include untracked core files."
+  "scope_note": "The override is required when validating the feature-owned core path set outside CI; it now includes the post-merge Guardian namespace registry, SSOT discovery, scanner signal, path-constant, and Guardian result-writer repair paths."
 }

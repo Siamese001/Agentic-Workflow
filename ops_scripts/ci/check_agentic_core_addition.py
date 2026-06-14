@@ -543,6 +543,16 @@ _GOV3_BASELINE: dict[str, dict] = {
         "rationale": "W9 managed-workflow E2E harness in core entry tree",
         "issue": "GOV-3-BASELINE-060",
     },
+    "agentic_core/L0_routing/config/path_constants.py": {
+        "expiry": "2027-12-31",
+        "classification": "GENERIC_INFRASTRUCTURE",
+        "migration_plan": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+        "rationale": (
+            "Canonical declarative package/path registry; apps_* literals are "
+            "structural path constants, not app behavior or branching."
+        ),
+        "issue": "GOV-3-BASELINE-061",
+    },
 }
 
 # Canonical GENERIC route enums — must NOT trigger false positives.

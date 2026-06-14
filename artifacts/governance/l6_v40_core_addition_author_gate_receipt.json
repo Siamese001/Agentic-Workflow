@@ -13,12 +13,18 @@
     "agentic_core/L6_observability/shadow_eval/adapters/runtime_exhaust_v40.py",
     "agentic_core/L6_observability/shadow_eval/span_export.py",
     "agentic_core/runtime/contracts/future_run_promotion.py",
-    "agentic_core/runtime/l6/writeback_proposer.py"
+    "agentic_core/runtime/l6/writeback_proposer.py",
+    "agentic_core/L0_routing/types/guardian_registry_types.py",
+    "agentic_core/L2_execution/enforcement/static_dispatch_registry.py",
+    "agentic_core/utils/runners/ssot_discovery_validator.py",
+    "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py",
+    "agentic_core/L0_routing/config/path_constants.py",
+    "agentic_core/L0_routing/types/guardian_contract_types.py"
   ],
   "decision": {
     "verdict": "PASS",
-    "rationale": "User explicitly requested retaining the WIP via PR with Core-Addition Author-Gate and boundary audit. Local audit classifies the core delta as generic L6 observability and future-run-only writeback infrastructure, with app-specific meaning kept in apps_rg/apps_eval.",
-    "decided_at": "2026-06-14T18:27:44Z"
+    "rationale": "User explicitly requested retaining the WIP via PR with Core-Addition Author-Gate and boundary audit. Local audit classifies the core delta as generic L6 observability and future-run-only writeback infrastructure, with app-specific meaning kept in apps_rg/apps_eval. Post-merge Guardian CI repair keeps guardian dispatch generic by repointing stale core registries to the maintained ops_scripts Guardian runners, restoring generic scanner/path-constant compatibility, and centralizing Guardian result signing/serialization compatibility.",
+    "decided_at": "2026-06-14T19:02:05Z"
   },
   "tests": {
     "spine_substrate_test": {
@@ -51,7 +57,7 @@
     },
     "boundary_preservation_test": {
       "result": "PASS",
-      "evidence": "Core scanner and boundary receipt classify changed core files as GENERIC_INFRASTRUCTURE."
+      "evidence": "Core scanner and boundary receipt classify changed core files as GENERIC_INFRASTRUCTURE, including post-merge Guardian namespace registry, SSOT discovery, scanner signal, path-constant, and Guardian result-writer compatibility repairs."
     },
     "contract_compatibility_test": {
       "result": "PASS",

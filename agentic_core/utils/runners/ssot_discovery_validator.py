@@ -75,4 +75,23 @@ def get_data_files(
     return result
 
 
-__all__ = ["SSOTDiscoveryValidator", "discover_ssot", "get_python_files", "get_data_files"]
+def get_agent_files(
+    directory: str | Path,
+    exclude_patterns: list[str] | None = None,
+) -> list[Path]:
+    """Get non-dunder Python files from an agent source tree."""
+    excludes = exclude_patterns or ["__pycache__", ".git", ".pytest_cache"]
+    return [
+        path
+        for path in get_python_files(directory, exclude_patterns=excludes)
+        if not path.name.startswith("__")
+    ]
+
+
+__all__ = [
+    "SSOTDiscoveryValidator",
+    "discover_ssot",
+    "get_python_files",
+    "get_data_files",
+    "get_agent_files",
+]

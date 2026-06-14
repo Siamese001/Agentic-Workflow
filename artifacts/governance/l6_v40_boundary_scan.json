@@ -1,9 +1,9 @@
 {
   "artifact_type": "boundary_scan",
   "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
-  "freshness_ts": "2026-06-14T18:27:44Z",
+  "freshness_ts": "2026-06-14T19:02:05Z",
   "verdict": "PASS",
   "changed_paths_covered": true,
   "classification": "GENERIC_INFRASTRUCTURE",
-  "boundary_summary": "Core changes implement generic L6 observability, future-run proposal contracts, and UWG-only writeback guardrails. App-specific runtime meaning remains under apps_rg and apps_eval."
+  "boundary_summary": "Core changes implement generic L6 observability, future-run proposal contracts, and UWG-only writeback guardrails. App-specific runtime meaning remains under apps_rg and apps_eval. Post-merge Guardian namespace repair only updates generic dispatch metadata to maintained Guardian runner modules. SSOT discovery compatibility repair restores a generic file-discovery helper used by Guardian architecture governance. Scanner signal compatibility repair restores a generic class-level vocabulary consumed by Guardian architecture governance. Path-constants compatibility repair restores generic structure-blueprint L0 exports, and Guardian result-writer compatibility centralizes generic signing/correlation serialization."
 }

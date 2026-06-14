@@ -235,7 +235,7 @@ def scan_missing_structure(repo_root: Path) -> list[dict]:
     Returns sorted list of violation dicts with keys:
     level, path, parent_layer (for L3 violations).
     """
-    from agentic_core.L0_routing.config import (
+    from agentic_core.L0_routing.config.path_constants import (
         AGENTIC_CORE_DIR,
         CORE_SUBFOLDER_MAP,
     )
@@ -284,10 +284,11 @@ def scan_subfolder_compliance(repo_root: Path) -> list[dict]:
     Returns sorted list of violation dicts with keys:
     path, parent_layer, folder_name.
     """
-    from agentic_core.L0_routing.config import (
+    from agentic_core.L0_routing.config.path_constants import (
+        AGENTIC_CORE_DIR,
+        CORE_SUBFOLDER_MAP,
         SOVEREIGN_EXCLUDED_FOLDERS,
     )
-    from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
 
     violations: list[dict] = []
 

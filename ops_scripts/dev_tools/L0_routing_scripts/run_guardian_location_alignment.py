@@ -26,6 +26,7 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
+    ROOT_WHITELIST,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L0_routing.types.guardian_contract_types import (
