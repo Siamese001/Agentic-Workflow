@@ -90,7 +90,7 @@ python -c "import json,pathlib; r=json.loads(pathlib.Path('artifacts/certificati
 | `ops_scripts/ci/check_fortknox_positive_control.py` | `RTC-REQ-001` remains `SIGNED_OFF` |
 | `.claude/governance/scripts/pre_write_fortknox_guard.py` | Blocks direct report edits (exit 2) |
 | `.claude/governance/scripts/post_agent_fortknox_integrity_audit.py` | Retroactive claim-without-compiler detection |
-| `.github/workflows/fortknox-nightly.yml` | Nightly regression scan + issue filing |
+| _(nightly workflow retired 2026-06-14, solo-workflow CI trim)_ | Run the three gates above on demand via `workflow_dispatch` or locally; no scheduled regression scan |
 
 ## Bypass
 
