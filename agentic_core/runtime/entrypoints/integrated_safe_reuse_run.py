@@ -628,6 +628,11 @@ def _terminal_cache_reuse_x3(
         user_safe_message="Cached answer was blocked by safety veto.",
         l6_failure_packet={"rationale": decision.rationale},
         trace_root=review.trace_root,
+        # Thread the L5 cert ref from the review (AG-W0-5 fail-closed) — the DENY
+        # path must carry it just like the ALLOW path (build_x3d_allow extracts it).
+        l5_certification_ref=(
+            review.l5_certification_refs[0] if review.l5_certification_refs else ""
+        ),
     )
     return V6Disposition.DENY, deny, [verdict], decision  # type: ignore[return-value]
 
