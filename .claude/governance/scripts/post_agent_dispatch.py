@@ -83,7 +83,7 @@ LEGACY_SCRIPTS: list[str] = [
     "post_agent_plan_wave_summary_audit.py",
     "post_agent_plan_registration_capture.py",
     "post_agent_plan_supersession_retire.py",
-    "post_agent_fortknox_integrity_audit.py",
+    # post_agent_fortknox_integrity_audit.py REMOVED 2026-06-14 — Fort Knox arm decommissioned (constitutional §32).
 ]
 
 

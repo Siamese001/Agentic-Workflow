@@ -148,12 +148,14 @@ def test_verdict_logic_fails_on_trust_below_signed(tmp_path):
     assert not ok and "trust" in failures
 
 
-# ----------------------------- gate registration -----------------------------
+# ----------------------- gate decommissioned (§32 retired) -----------------------
 
-def test_gate_is_registered_in_pre_commit_config():
-    """T7s.4 hook must be wired in .pre-commit-config.yaml."""
+def test_gate_decommissioned_from_pre_commit_config():
+    """T7s.4 hook was decommissioned 2026-06-14 (constitutional §32 retired).
+
+    The gate *script* is retained pending the deferred machinery teardown, but it
+    is no longer wired into .pre-commit-config.yaml.
+    """
     p = REPO_ROOT / ".pre-commit-config.yaml"
     txt = p.read_text(encoding="utf-8")
-    assert "apps-fortknox-signed-proof" in txt, "T7s.4 hook id missing"
-    assert "check_apps_fortknox_signed_proof.py" in txt, "T7s.4 entry missing"
-    assert "T7s.4" in txt, "T7s.4 tier marker missing"
+    assert "apps-fortknox-signed-proof" not in txt, "T7s.4 hook should be unwired after §32 decommission"
