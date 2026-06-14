@@ -29,12 +29,14 @@
   adds the CI-gate sweep, rule-stub collapse, skills archival, and this memory-drift fix.
 - **Author-Gate emulation (S1) is RETIRED at the doctrine/wiring level** —
   `after_agent_governance_dispatch.py` removed the AG chain; 5 AG rules DEPRECATED; constitutional
-  §30/§35 are RETIRED slots. W2 (2026-06-14) archived 3 proven-orphan gates to
-  `archives/enforcement_consolidation_2026-06-14/`. The 2 AG skills were archived then **REVERTED**
-  (CI/Codex on PR #336 caught live importers: `render_template.py`, `author_gate_prepare_ask.py`, the
-  packet-freshness gate, 2 tests). **KEPT, retire in one lockstep S1 pass:** the 2 skills,
-  `author_gate_ledger_integrity.py` (imported by active `refactor-decision-memory`), `tools/author_gate/*`.
-  **Lesson: a name appearing in a reference scan ≠ safe; confirm it is not a live import before any mv.**
+  §30/§35 are RETIRED slots. W2 (2026-06-14) = audit + `classify_gate_wiring.py` only; **no archival
+  landed** — an archive attempt was fully REVERTED. Two lessons (caught by CI/Codex on PR #336):
+  (1) the AG skills + `author_gate_ledger_integrity.py` are imported by **live** consumers
+  (`render_template.py`, `author_gate_prepare_ask.py`, packet-freshness gate, `refactor-decision-memory`,
+  2 tests) — a name in a reference scan ≠ safe; confirm it is not a live import before any mv;
+  (2) **a root `archives/` dir is FORBIDDEN** by `check_structure_policy.py` — retire via `git rm`
+  (history-preserved), not move-to-archives. Whole S1 retires in ONE lockstep pass.
+  Note: `memory/` is whitelisted in `config/structure_blueprint/structure_policy.yaml`.
 - "Uncalled by `run_contract_gates.py`" ≠ dead: pre-commit references 45 gates, workflows 33. Gate
   retirement (W4) is gated by `tools/governance/classify_gate_wiring.py`.
 
