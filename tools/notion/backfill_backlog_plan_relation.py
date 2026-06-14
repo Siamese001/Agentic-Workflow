@@ -6,7 +6,7 @@ Strategy:
   * Page through all Backlog rows.
   * Filter: `Plan.relation = []` AND `Plan File` non-empty.
   * For each: derive slug from `Plan File` (strip `.md`), resolve to a
-    Plans-DB page id via `_resolve_plan_page_id` (capture-hook sibling).
+    Plans-DB page id via the inlined `_resolve_plan_page_id` resolver.
   * On hit: PATCH with `Plan = {relation: [{id}]}` + `Last Updated = today`.
   * On miss: log to `artifacts/governance/backlog_plan_linkage_misses.jsonl`
     for W2 true-orphan triage.
@@ -38,9 +38,9 @@ sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
     NOTION_BASE,
+    PLANS_DATA_SOURCE_ID,
     WAVE_PHASE_DATA_SOURCE_ID,
 )
-from post_agent_deferred_scope_capture import _resolve_plan_page_id  # noqa: E402
 
 try:
     from tqdm import tqdm
@@ -134,6 +134,37 @@ def _slug_from_plan_file(plan_file: str) -> str:
     if "\\" in s:
         s = s.rsplit("\\", 1)[-1]
     return s
+
+
+def _resolve_plan_page_id(plan_slug: str, token: str) -> str | None:
+    """Resolve a plan slug to a Plans-DB page id (3 fail-open filters).
+
+    Inlined from the retired ``post_agent_deferred_scope_capture`` hook
+    (enforcement-surface-consolidation-d8b3f6 W7): this backfill is the sole
+    remaining consumer of that resolver. Tries Slug exact, Plan File Path
+    contains, then Title contains; returns None on any failure or miss.
+    """
+    plans_query_url = f"{NOTION_BASE}/data_sources/{PLANS_DATA_SOURCE_ID}/query"
+    for filt in (
+        {"property": "Slug", "rich_text": {"equals": plan_slug}},
+        {"property": "Plan File Path", "rich_text": {"contains": plan_slug}},
+        {"property": "Name", "title": {"contains": plan_slug}},
+    ):
+        try:
+            req = urllib.request.Request(
+                plans_query_url,
+                data=json.dumps({"filter": filt, "page_size": 1}).encode("utf-8"),
+                method="POST",
+                headers=_headers(token),
+            )
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            results = data.get("results") or []
+        except Exception:  # noqa: BLE001  # guardian: allow-broad-exception -- fail-open resolver
+            results = []
+        if results:
+            return results[0].get("id")
+    return None
 
 
 def main() -> int:

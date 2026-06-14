@@ -18,6 +18,11 @@ from pathlib import Path
 from typing import Any
 
 from tools.generate.core.helpers import _write_text_artifact
+from tools.reports.adg_decision_synthesis import (
+    after_green_plan,
+    artifact_consistency_status,
+    band_decision_summary,
+)
 from tools.reports.exhaustive_adg_ci_report import MV_DESCRIPTIONS
 from tools.reports.gate_signal_catalog import (
     display_verdict,
@@ -1493,6 +1498,22 @@ def build_review_template(
         graphdb_summary=graphdb_summary,
     )
 
+    artifacts = {
+        "gate_results": _artifact_ref("gate_results", gate_results_path, required=True),
+        "burndown": _artifact_ref("burndown", burndown_path, required=True),
+        "action_queue": _artifact_ref("action_queue", action_queue_path),
+        "generation_manifest": _artifact_ref("generation_manifest", generation_manifest_path),
+        "enforcement_report": _artifact_ref("enforcement_report", enforcement_report_path),
+        "markdown_burndown": _artifact_ref(
+            "markdown_burndown",
+            ARTIFACTS_ADG / "adg_burndown_report.md",
+        ),
+        "docs_markdown_burndown": _artifact_ref(
+            "docs_markdown_burndown",
+            DOCS_ADG / "adg_burndown_report.md",
+        ),
+    }
+
     return {
         "schema_version": "1.0",
         "artifact_kind": "adg_run_review_template",
@@ -1555,21 +1576,19 @@ def build_review_template(
             "graphdb_actions_present": any(row.get("lane") == "GRAPHDB" for row in action_rows),
             "testing_hotspots_promoted": bool(hotspot_overlay.get("rows")),
         },
-        "artifacts": {
-            "gate_results": _artifact_ref("gate_results", gate_results_path, required=True),
-            "burndown": _artifact_ref("burndown", burndown_path, required=True),
-            "action_queue": _artifact_ref("action_queue", action_queue_path),
-            "generation_manifest": _artifact_ref("generation_manifest", generation_manifest_path),
-            "enforcement_report": _artifact_ref("enforcement_report", enforcement_report_path),
-            "markdown_burndown": _artifact_ref(
-                "markdown_burndown",
-                ARTIFACTS_ADG / "adg_burndown_report.md",
+        "decision_synthesis": {
+            "band_counts": band_decision_summary(gates),
+            "after_green_plan": after_green_plan(band_rows),
+            "artifact_consistency": artifact_consistency_status(
+                required_artifacts=list(artifacts.values()),
+                fail_closed=True,
             ),
-            "docs_markdown_burndown": _artifact_ref(
-                "docs_markdown_burndown",
-                DOCS_ADG / "adg_burndown_report.md",
-            ),
+            "audit_notes": [
+                "FIX/TRACK/CLEAR routing is synthesized once and projected into JSON, YAML, and markdown.",
+                "Ratchet floor records and open non-ratchet records are intentionally separate work buckets.",
+            ],
         },
+        "artifacts": artifacts,
         "raw_rollups": {
             "gate_results_summary": gate_results.get("summary", {}),
             "burndown_flags": {
@@ -1600,6 +1619,7 @@ def validate_review_template(doc: dict[str, Any]) -> list[str]:
         "severity_inventory",
         "high_signal_review",
         "next_best_action",
+        "decision_synthesis",
         "artifacts",
     ):
         if key not in doc:
@@ -1637,6 +1657,12 @@ def validate_review_template(doc: dict[str, Any]) -> list[str]:
     attack_order = doc.get("adg_attack_order") or {}
     if not attack_order.get("rows"):
         errors.append("adg_attack_order.rows must not be empty")
+    synthesis = doc.get("decision_synthesis") or {}
+    if not synthesis.get("band_counts"):
+        errors.append("decision_synthesis.band_counts must not be empty")
+    artifact_status = synthesis.get("artifact_consistency") or {}
+    if artifact_status.get("status") not in {"ok", "fail_open", "fail_closed"}:
+        errors.append("decision_synthesis.artifact_consistency.status must be valid")
     return errors
 
 

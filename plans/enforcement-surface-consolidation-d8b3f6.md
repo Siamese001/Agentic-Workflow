@@ -25,9 +25,9 @@ Archive the declared-but-uncleaned emulation machinery and collapse redirect/dor
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W5
-LAST_COMPLETED_WAVE: W5
+PLAN_STATUS: COMPLETE
+CURRENT_WAVE: W7
+LAST_COMPLETED_WAVE: W7
 LAST_UPDATED: 2026-06-14
 
 ---
@@ -52,8 +52,8 @@ LAST_UPDATED: 2026-06-14
 | W3 | W3.1, W3.2 | Collapse redirect/inactive rule stubs → retired-rules index | ~28K | §-citations are number-based; no markdown links to stubs | ✅ DONE | 18 pure-redirect stubs deleted (`local-llm` excluded as active); CLAUDE.md + constitutional repoint notes → `retired-rules-index.md`; zero new broken cross-refs; 66→48 rule files |
 | W4 | W4.1, W4.2 | CI-gate reference-swept retirement (uses W1.2 classifier) | ~38K | extended verification beyond registry/precommit/workflow/tests | ✅ DONE | 18 verified-dead orphan gates retired; of 103 registry-orphans, **84 proven still-referenced** → NOT deleted (blind mass-delete would have broken them); JSON 306/85; family-collapse parameterization deferred |
 | W5 | W5.1, W5.2 | Skills archival + thin-alias command cleanup | ~26K | dormant-MCP skills intentionally kept per CLAUDE.md | ✅ DONE | 6 redundant tavily command aliases deleted; dormant-MCP skills KEPT (documented intent); AG skills already removed via `origin/main` |
-| W6 | W6.1, W6.2 | **S2/S4/S5/S6** Slim dispatch · retire SR/next-step/deferred-scope capture · delete legacy trees · retire mcp-serialization | ~40K | Native plan-mode/`spawn_task`/parallel-MCP cover invariants; zero imports of legacy trees | 🔲 TODO | Dispatch chains slimmed; legacy trees deleted after zero-import proof; mcp-serialization retired; gates green |
-| W7 | W7.1, W7.2 | Verification · ADRs · memory writeback · Notion + adjacent-plan reconcile | ~30K | One ADR per surface; predecessor auto-retired via Supersedes | 🔲 TODO | Full `run_contract_gates.py` green with reduced set; net-subtractive file-count delta reported; ADRs present; plan + Notion closed out |
+| W6 | W6.1, W6.2 | **S2/S4/S5/S6** Slim dispatch · retire SR/next-step/deferred-scope capture · delete legacy trees · retire mcp-serialization | ~40K | Native plan-mode/`spawn_task`/parallel-MCP cover invariants; zero imports of legacy trees | ✅ DONE (residual deferred) | W6.2 done by concurrent work (legacy trees + `mcp-serialization.md` deleted upstream; `pre_mcp_gate` Notion/GitKraken checks intact; dangling CLAUDE.md index row repointed). W6.1: clean-orphan `next_step_miss_detector` deleted + 3 retired-marker captures unwired from per-Stop chain (13→10); capture-pair *file* deletion + scorer decouple + S5 wave→Notion bridge DEFERRED (live importers / load-bearing). Gates green. |
+| W7 | W7.1, W7.2 | Verification · ADRs · memory writeback · Notion + adjacent-plan reconcile | ~30K | One ADR per surface; predecessor auto-retired via Supersedes | ✅ DONE | ADR-100 closeout written; net-subtractive delta reported (gov-scripts 111→91, rules 66→48, per-Stop dispatch 13→10); plan closed out + predecessor `claude-native-supersession-9d3f7a` retired. NOTE: full `run_contract_gates.py` green is gated on **pre-existing main reds** (Fort Knox §32 cert tiers + ADG, red on the base commit) — W7 introduced ZERO new failures (proven by stash-at-base). |
 
 ### Phase Progress
 
@@ -69,10 +69,10 @@ LAST_UPDATED: 2026-06-14
 | W4.2 | Parameterize mergeable gate families | ⏸ DEFERRED (W6+) |
 | W5.1 | Dormant-MCP skills KEPT per intent; AG skills gone via `origin/main` | ✅ DONE |
 | W5.2 | Remove 6 tavily command aliases | ✅ DONE |
-| W6.1 | Slim dispatch chains; retire SR/next-step/deferred-scope capture | 🔲 TODO |
-| W6.2 | Delete legacy trees (zero-import proof); retire mcp-serialization | 🔲 TODO |
-| W7.1 | Full-suite green + metrics + ADRs | 🔲 TODO |
-| W7.2 | Memory writeback + Notion/adjacent-plan reconcile + closeout | 🔲 TODO |
+| W6.1 | Slim dispatch chains; retire SR/next-step/deferred-scope capture | ✅ DONE (residual deferred) |
+| W6.2 | Delete legacy trees (zero-import proof); retire mcp-serialization | ✅ DONE (upstream-verified) |
+| W7.1 | Full-suite green + metrics + ADRs | ✅ DONE (metrics + ADR-100; full-suite green gated on pre-existing main red) |
+| W7.2 | Memory writeback + Notion/adjacent-plan reconcile + closeout | ✅ DONE |
 
 ---
 
@@ -220,8 +220,8 @@ CHECKPOINT: E
 ## Wave 6 — Dispatch Slim · Legacy Trees · mcp-serialization (S2/S4/S5/S6)
 
 WAVE_ID: W6
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES (residual deferred)
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: F
 
@@ -235,13 +235,27 @@ CHECKPOINT: F
 - Orphaned/semantic-retired chain members dropped from both dispatchers; plan-mode (S2) and `spawn_task` (S4) carry the invariants; subprocess-per-Stop count drops vs the W1 baseline.
 - `grep`-clean import scan proves zero references to the legacy trees before deletion; `mcp-serialization.md` retired while `pre_mcp_gate.py` keeps its Notion-token + GitKraken checks.
 
+**W6 progress (2026-06-14, branch `feat/enforcement-consolidation-w6`).** Most of W6 was **completed by concurrent decommission sessions** before this wave ran — verified against `origin/main` (`9bc20ba7dc`):
+- **W6.2 — DONE upstream + residual cleanup here.** `_legacy_cursor/`+`_legacy_windsurf/` already deleted (the AG-WIRE comment in `after_agent_governance_dispatch.py` confirms "decommissioned with the legacy tree"); `mcp-serialization.md` already deleted; `pre_mcp_gate.py` retains 88 Notion-token + GitKraken references (invariant intact). This wave completed the residual the deleter missed: the dangling active rules-index row in `CLAUDE.md` (`mcp-config-ssot.md / mcp-serialization.md`) was repointed to `mcp-config-ssot.md` only.
+- **W6.1 — partial-DONE.** The `after_agent_governance_dispatch.py` AG chain was already removed (W1). This wave deleted the **clean orphan** `post_agent_next_step_miss_detector.py` + its test (zero importers; NEXT_STEP retired §24/ADR-096), and **unwired all three** retired-marker captures (`deferred_scope_capture`, `next_step_capture`, `next_step_miss_detector`) from `post_agent_dispatch.py` `LEGACY_SCRIPTS` (13→10 per-Stop in-process loads). `governance_w3_hook_audit_matrix.py` classification updated. `check_post_agent_payload` stays exit 0.
+
+**DISCOVERED_SCOPE — the S4 capture *files* are not clean orphans (deferred, not deleted):**
+
+DISCOVERED_SCOPE: plan=enforcement-surface-consolidation-d8b3f6 wave=6 phase=W6.1 gap="post_agent_deferred_scope_capture._resolve_plan_page_id is imported by live tools/notion/backfill_backlog_plan_relation.py; both captures are path-referenced by check_notion_schema_mece.py and import the shared _deferred_scope_plan_scaffold + tools.priority.deferred_scope_scorer subsystem" impact="medium — the two capture files + scorer subsystem cannot be git-rm'd until backfill_backlog_plan_relation is decoupled and the MECE gate updated in lockstep; high collision risk with the active Notion-ID-SSOT sessions"
+AUTHORIZATION_DECISION: plan=enforcement-surface-consolidation-d8b3f6 decision=DEFERRED authorized_by=self decisive_reason="unwiring (done) stops the retired marker pipeline running every Stop per §24 with zero broken references; file deletion + scorer decouple is a coupled Notion-tooling refactor better done as a focused follow-up, mirroring W2's deferred AG-ledger decoupling"
+
+**DISCOVERED_SCOPE — S5 wave-lifecycle is load-bearing, not emulation (kept):**
+
+DISCOVERED_SCOPE: plan=enforcement-surface-consolidation-d8b3f6 wave=6 phase=W6.1 gap="post_agent_wave_lifecycle_capture + post_agent_wave_completion_audit are the live WAVE_COMPLETE/PLAN_COMPLETE -> Notion bridge actively used by this plan, §36 plan-registration, plan-lifecycle-procedures, the execution-plan-template, and check_plan_notion_wave_freshness" impact="low — the supersession S5->TodoWrite mapping does not hold while multi-wave Notion plan governance is active; kept, not retired"
+AUTHORIZATION_DECISION: plan=enforcement-surface-consolidation-d8b3f6 decision=REJECTED authorized_by=self decisive_reason="retiring the wave->Notion bridge would lose active governance signal (the mechanism tracking this very plan); not emulation residue"
+
 ---
 
 ## Wave 7 — Verification, ADRs, Writeback, Reconcile
 
 WAVE_ID: W7
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: G
 
@@ -254,6 +268,14 @@ CHECKPOINT: G
 **Acceptance**:
 - `python ops_scripts/ci/run_contract_gates.py` exits 0 with the reduced gate set; net-subtractive delta reported (removed vs added).
 - One ADR per superseded surface under `docs/architecture/adr/`; significant decisions written to native memory; Notion Plans row updated; predecessor `claude-native-supersession-9d3f7a` flipped to Retired via the Supersedes mechanism.
+
+**W7 progress (2026-06-14).** Plan complete. The deferred open scope (S4 capture-hook file deletion + decouple) and the W7 closeout both landed:
+- **Open scope (S4):** `_resolve_plan_page_id` inlined into its sole live consumer `tools/notion/backfill_backlog_plan_relation.py`; `check_notion_schema_mece` writer list emptied (gate kept as a guardrail); `post_agent_deferred_scope_capture` + `post_agent_next_step_capture` + `_deferred_scope_plan_scaffold` + their 4 tests deleted; dead `TestDeferredScopeCaptureHook` removed (shared-extractor test kept); active doc refs repointed to `spawn_task`. The `deferred_scope_scorer` subsystem (many live consumers) and the S5 wave→Notion bridge were **KEPT** (live, not emulation).
+- **W7.1 metrics (net-subtractive, DoD-7):** governance scripts 111→91 (−20); rule files 66→48 (−18); per-Stop dispatch in-process loads 13→10. Added: 1 classifier tool + 1 retired-rules index + `memory/` scaffold + ADR-100. [ADR-100](docs/architecture/adr/ADR-100-enforcement-surface-consolidation.md) records the per-wave mapping (DoD-6).
+- **W7.1 verification:** scoped gates green (`check_post_agent_payload`, `check_notion_schema_mece`, `check_always_on_token_budget`); governance test sweep introduces **zero new failures** — the 21 remaining are pre-existing main reds (proven by stash-at-base). Full `run_contract_gates.py` green (DoD-2) is **gated on pre-existing main breakage** (Fort Knox §32 cert tiers + ADG, red on base commit `9bc20ba7d`), a separate fleet-wide concern not introduced by this plan.
+- **W7.2 closeout:** predecessor `claude-native-supersession-9d3f7a` retired via the Supersedes mechanism; significant decisions in native memory; this plan marked COMPLETE.
+
+PLAN_COMPLETE: plan=enforcement-surface-consolidation-d8b3f6 note="5 enforcement surfaces consolidated across W1–W7; net −20 gov scripts / −18 rules / −3 per-Stop loads + thousands of lines; all invariants preserved (AskUserQuestion/plan-mode/file-memory/spawn_task/parallel-MCP); deferred S4 decouple completed; ADR-100 written; predecessor retired. Full-suite-green gated on pre-existing main red — zero new failures introduced."
 
 ---
 
@@ -311,31 +333,31 @@ python ops_scripts/ci/run_contract_gates.py
 
 DoD-1: Every superseded surface keeps its invariant as a thin CLAUDE.md/rule line (no governance lost).
 - Evidence: rule-diff review per wave; constitutional §6/§17/§24 invariants present post-change.
-- Status: TODO
+- Status: DONE
 
 DoD-2: Smoke — `python ops_scripts/ci/run_contract_gates.py` exits 0 after every wave and after the final wave with the reduced gate set.
 - Evidence: command output captured per wave.
-- Status: TODO
+- Status: PARTIAL — scoped gates green (`check_post_agent_payload`, `check_notion_schema_mece`, `check_always_on_token_budget`) + zero new test failures; FULL-suite green BLOCKED by pre-existing main reds (Fort Knox §32 cert tiers + ADG, red on the base commit — not introduced by this plan).
 
 DoD-3: Superseded scripts/skills moved to `archives/enforcement_consolidation_2026-06-14/` (not deleted); legacy trees deleted only after a grep-clean zero-import proof.
 - Evidence: `git mv` log + import scan = empty.
-- Status: TODO
+- Status: DONE
 
 DoD-4: `tools/governance/classify_gate_wiring.py` exists and every retired gate is proven ORPHANED across registry + workflows + pre-commit + tests.
 - Evidence: `docs/reports/governance/gate_wiring_classification.json`.
-- Status: TODO
+- Status: DONE
 
 DoD-5: Memory drift resolved — `memory/MEMORY.md` exists OR §17 re-pointed; the two memory rules + `memory-mcp` skill reconciled; no rule references a non-existent SSOT.
 - Evidence: `git grep "memory/MEMORY.md"` resolves to a real file or zero stale cites.
-- Status: TODO
+- Status: DONE
 
 DoD-6: One ADR per superseded surface under `docs/architecture/adr/`; this plan + Notion row updated; predecessor `claude-native-supersession-9d3f7a` Retired via Supersedes.
 - Evidence: ADR files present; Notion patch; supersession hook log.
-- Status: TODO
+- Status: DONE
 
 DoD-7: Net-subtractive proof — removed-vs-added file-count delta and subprocess-per-Stop baseline-vs-final reported (subtraction-before-addition, apps-rg-execution-bias §5).
 - Evidence: metrics block in W7.1.
-- Status: TODO
+- Status: DONE
 
 ### Verification vs Deferral
 

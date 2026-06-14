@@ -5,6 +5,8 @@
 
 > ⛔ After every Claude Code-orchestrated apps_rg run, Claude Code MUST invoke `tools/apps_rg/render_run_summary.py` and surface its markdown output inline in the same response (or the immediately-following response if length forces a split).
 
+> **Precedence (canonical SSOT — `001-runtime-seam-execution.md` § Canonical post-turn output):** this rendered table is an **additive *evidence* specialization** that layers on the response floor / §37 Outcome frame for apps_rg runs — the artifact-derived ground truth the frame's verdict is checked against. It never replaces the floor or the frame. (It is *not* a "simplify the prose" rule — that is its sibling `apps-rg-executive-summary-response.md`.)
+
 Sibling to `apps-rg-interactive-discipline.md`. This rule operationalizes the user's directive (2026-05-08): runtime evidence already exists in JSON form across `run_report.json`, `terminal_ret_packet.json`, `runtime_identity_envelope.json`, `agentic_core_l7_route_family_coverage.json`, etc., but the user can't see it without opening files manually. The renderer is the canonical surface.
 
 ## When this rule fires

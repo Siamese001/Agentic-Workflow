@@ -198,6 +198,18 @@ def build_ibm_phase2_graph_plan_fact(
     row = ledger_row or {}
     metrics = row.get("metric_values") or []
     metric_raw = str(metrics[0]).strip() if metrics else ""
+    # W2.2 held-metric selection correctness (operator decision 2026-06-14, plan
+    # typed-edge-role-facet-guardrails-a6f3d2): a raw ledger metric is claimable ONLY when an
+    # APPROVED metric_outcome is bound to it. This Phase-2 graph-expansion fallback mints no
+    # metric_outcome binding, so an unbound raw figure (e.g. fact_revenue_ops_001's held
+    # "$10M new ARR") is unapproved and MUST NOT set has_metric — otherwise
+    # x2_ibm_metric_anchor_bullet_ownership requires anchoring a figure the hold-metric gate
+    # forbids in output (the bul_ibm_005 contradiction). Approved metrics reach bullets via
+    # metric_outcome binding, not this fallback; metric_values is retained for lineage only.
+    approved_metric_outcome_ids = [
+        str(m).strip() for m in (row.get("metric_outcome_ids") or []) if str(m).strip()
+    ]
+    metric_is_claimable = bool(metric_raw) and bool(approved_metric_outcome_ids)
     return {
         "fact_id": fact_id,
         "candidate_fact_id": fact_id,
@@ -209,8 +221,9 @@ def build_ibm_phase2_graph_plan_fact(
         "skill_id": (hop_entry or {}).get("skill_id"),
         "graph_phase2_track_proof": True,
         "metric_values": list(metrics) if isinstance(metrics, list) else [],
-        "metric_raw": metric_raw,
-        "has_metric": bool(metric_raw),
+        "metric_raw": metric_raw if metric_is_claimable else "",
+        "has_metric": metric_is_claimable,
+        "metric_outcome_ids": approved_metric_outcome_ids,
         "technologies": list(row.get("technologies") or []) if isinstance(row.get("technologies"), list) else [],
         "domain": str(row.get("domain") or row.get("domain_family") or "").strip(),
         "source_employment": str(row.get("source_employment") or row.get("company_lane") or "").strip(),

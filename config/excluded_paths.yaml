@@ -237,3 +237,4 @@ file_patterns:
   - "repo_root.txt"  # Local diagnostic export; never commit
   - "*.db"  # Binary databases (L2 consolidation 2026-04-19; prior deliberately kept out, now unified)
   - "*.pb"  # Protobuf session blobs (L2 consolidation 2026-04-19; never committed)
+  - ".keep-worktree"  # Worktree-per-chat opt-out marker (per-worktree local; never committed)

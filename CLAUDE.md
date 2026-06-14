@@ -183,7 +183,7 @@ A **Skill** column entry means a richer procedural skill covers the same area �
 ### MCP / infra / runtime
 | Rule | Topic | Skill |
 |---|---|---|
-| `mcp-config-ssot.md` / `mcp-serialization.md` | MCP config SSOT + serialization | [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) |
+| `mcp-config-ssot.md` | MCP config SSOT | [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) |
 | `mcp-pytest-enforcement.md` | Prefer pytest MCP | [`pytest-mcp`](.claude/skills/pytest-mcp/SKILL.md), [`testing-framework`](.claude/skills/testing-framework/SKILL.md) |
 | `local-llm-wsl2-gpu.md` | Local LLM runtime (WSL2/Docker) | — |
 | `claude-config-lookup.md` | Where Claude Code config lives | — |

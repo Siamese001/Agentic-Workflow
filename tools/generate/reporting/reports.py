@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import subprocess as _sp
+import sys as _sys
 from collections import Counter
 from pathlib import Path
 from tqdm import tqdm
@@ -535,9 +537,6 @@ def _print_defect_table(
     # --- CI Gate rows (subprocess to avoid L_TOOLS → L_OPS layer violation) ---
     _ci_gate_results: list[tuple[str, str]] = []
     try:
-        import subprocess as _sp
-        import sys as _sys
-
         _gate_script = ROOT / "ops_scripts" / "ci" / "executor_theater_gate.py"
         if _gate_script.exists():
             _res = _sp.run(
@@ -561,7 +560,7 @@ def _print_defect_table(
                     _ci_gate_results.append((_glabel, _passed))
             except (json.JSONDecodeError, AttributeError):
                 pass
-    except (ImportError, OSError):
+    except (ImportError, OSError, _sp.TimeoutExpired):
         pass
 
     if _ci_gate_results:

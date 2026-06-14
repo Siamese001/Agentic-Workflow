@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import math
 from dataclasses import dataclass
 from typing import Any, Literal
 
@@ -426,9 +427,9 @@ _DEFAULT_S0_ROLE: str = (
 def _estimate_tokens(text: str, provider: str | None = None) -> int:
     """Provider-aware token estimator (G7 — PA.5 calibration improvement).
 
-    Replaces the char/4 heuristic with a provider-specific tokenizer when
-    available. Falls back to char/4 silently on import failure so callers
-    never crash on a missing optional dependency.
+    Replaces the char/4 heuristic with provider-specific local estimation
+    when available. Falls back silently so callers never crash on a missing
+    optional dependency.
 
     Args:
         text: Text to tokenize.
@@ -449,16 +450,8 @@ def _estimate_tokens(text: str, provider: str | None = None) -> int:
                 return len(enc.encode(text))
             except (ImportError, ModuleNotFoundError, KeyError, AttributeError):  # guardian: allow-silent-swallow -- tiktoken optional; falls back to char/4 estimate
                 pass
-        elif prov.startswith(("anthropic", "claude")):
-            try:
-                import anthropic  # type: ignore
-
-                if hasattr(anthropic, "Anthropic"):
-                    client = anthropic.Anthropic()
-                    if hasattr(client, "count_tokens"):
-                        return int(client.count_tokens(text))
-            except (ImportError, ModuleNotFoundError, AttributeError, TypeError):  # guardian: allow-silent-swallow -- anthropic SDK optional; falls back to char/4 estimate
-                pass
+        if prov.startswith(("anthropic", "claude")):
+            return max(0, math.ceil(len(text) / 3.5))
     return max(0, len(text) // 4)
 
 

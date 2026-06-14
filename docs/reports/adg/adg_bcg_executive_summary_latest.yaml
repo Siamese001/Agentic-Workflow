@@ -1,0 +1,1685 @@
+schema_version: '1.0'
+artifact_kind: adg_bcg_executive_summary
+run:
+  run_id: ts
+  generated_at_utc: '2026-06-14T15:53:07+00:00'
+  snapshot_ts: ts
+  commit_sha: f39695f77dd36b205f4824cb51efe4659f06ae2d
+  repo_state_hash: c1561683564543a5
+  decision_grade_status: PASS
+  degradation_reasons: []
+plain_english_context:
+  what_adg_is:
+    summary: ADG is the X-ray of the codebase. It maps code connections and lets the
+      system ask health-check questions automatically. It turns 'is this codebase
+      healthy?' from opinion into measured facts.
+    analogy: 'ADG is the codebase X-ray: it sees dependency skeletons, health gates,
+      and structural risk.'
+    measured_scope:
+      connections: null
+      gates: 0
+      files: null
+    caveats: []
+patient_size:
+  status: present
+  total_python_files: 12433
+  production_python_files: 7269
+  test_python_files: 5164
+  agentic_core:
+    file_count: 2899
+    largest_layers:
+    - layer: L5_safety
+      file_count: 533
+      executive_read: Large core layer; treat as control-plane blast-radius context.
+    - layer: L6_system_learning
+      file_count: 306
+      executive_read: Large core layer; treat as control-plane blast-radius context.
+    - layer: L2_execution
+      file_count: 285
+      executive_read: Large core layer; treat as control-plane blast-radius context.
+    - layer: runtime
+      file_count: 281
+      executive_read: Large core layer; treat as control-plane blast-radius context.
+    - layer: L3_orchestration
+      file_count: 224
+      executive_read: Large core layer; treat as control-plane blast-radius context.
+  apps:
+    total_files: 1500
+    app_breakdown:
+    - app: apps_rg
+      file_count: 561
+      executive_read: Product surface; prioritize when high blast radius and missing
+        e2e/regression tests overlap.
+    - app: apps_shared
+      file_count: 269
+      executive_read: Product surface; prioritize when high blast radius and missing
+        e2e/regression tests overlap.
+    - app: apps_lic
+      file_count: 250
+      executive_read: Product surface; prioritize when high blast radius and missing
+        e2e/regression tests overlap.
+    - app: apps_qna
+      file_count: 110
+      executive_read: Product surface; prioritize when high blast radius and missing
+        e2e/regression tests overlap.
+    - app: apps_research
+      file_count: 100
+      executive_read: Product surface; prioritize when high blast radius and missing
+        e2e/regression tests overlap.
+    - app: apps_underwriting_ai
+      file_count: 78
+      executive_read: Product surface; prioritize when high blast radius and missing
+        e2e/regression tests overlap.
+    - app: apps_eval_legacy
+      file_count: 76
+      executive_read: Product surface; prioritize when high blast radius and missing
+        e2e/regression tests overlap.
+    - app: apps_architect
+      file_count: 28
+      executive_read: Product surface; prioritize when high blast radius and missing
+        e2e/regression tests overlap.
+  tests:
+    total_files: 5164
+    folder_breakdown:
+    - folder: tests/unit
+      file_count: 3011
+    - folder: tests/e2e
+      file_count: 61
+    - folder: tests/regression
+      file_count: 0
+    - folder: tests/integration
+      file_count: 49
+    - folder: tests/smoke
+      file_count: 10
+    - folder: tests/golden
+      file_count: 2
+    - folder: tests/contract
+      file_count: 0
+    - folder: tests/fixtures
+      file_count: 9
+    - folder: tests/unknown
+      file_count: 2022
+  executive_read: Patient-size metrics show where ADG risk lands across core, apps,
+    and tests.
+  snapshot_ts: ts
+executive_decision:
+  verdict: TESTING_CONTROL_GAP
+  recommendation: Fund the smallest slice that clears current blockers and attaches
+    tests where hotspot evidence overlaps; keep ratchets after-green.
+  funding_posture: fund_now
+  why_now: Decision combines FIX status, regression/newness, GraphDB/MV linkage, testing
+    exposure, and artifact consistency.
+  risk_if_ignored: The organization may chase raw counts while missing the smaller
+    blocker or under-tested high-blast-radius surface.
+  what_not_to_do:
+  - Do not rank work by raw MV row count alone.
+  - Do not treat guardian inventory as an automatic product failure.
+  - Do not start a generic testing mega-project when mapped tests can follow the current
+    slice.
+  crisis_level: managed_debt
+  one_sentence_bottom_line: 'ADG is TESTING_CONTROL_GAP: act on decision-linked blockers/testing
+    gaps, defer diagnostic-only noise.'
+prioritization_model:
+  status: present
+  lenses:
+  - name: CI blocker / FIX status
+    weight: high
+    how_used: FIX rows define immediate blocker posture, but delta and evidence decide
+      investment size.
+  - name: Regression / newness
+    weight: high
+    how_used: Small regressions are nudges; broad new paths indicate structural risk.
+  - name: P0-P3 severity
+    weight: medium
+    how_used: Severity lens only; does not automatically dominate testing or GraphDB
+      risk.
+  - name: GraphDB centrality / blast radius
+    weight: high
+    how_used: Elevates high-blast-radius scopes when tied to tests, gates, or current
+      action.
+  - name: MV driver linkage
+    weight: high
+    how_used: Promotes only MVs that change action order or test placement.
+  - name: Testing exposure
+    weight: high
+    how_used: Can outrank after-green ratchet debt when risk surface lacks mapped
+      tests.
+  - name: Artifact consistency
+    weight: high
+    how_used: Missing required artifacts degrade decision grade.
+  - name: Accepted baseline debt
+    weight: medium
+    how_used: Tracked after FIX rows clear.
+  - name: Guardian / severity audit
+    weight: low_for_action_high_for_audit
+    how_used: Audit-only unless mapped to a failing gate.
+  rationale:
+  - Every promoted signal must explain its decision effect.
+  - Every suppressed signal records why it was suppressed.
+lens_1_health_gates:
+  status: present
+  summary:
+    total_gates: 0
+    clear_gates: 0
+    track_gates: 0
+    fix_gates: 0
+    overall_verdict: PASS
+    executive_read: FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR
+      needs no action.
+  buckets:
+  - bucket: CLEAR
+    count: 0
+    plain_meaning: No action now.
+  - bucket: TRACK
+    count: 0
+    plain_meaning: Known debt or advisory inventory; burn down after red gates.
+  - bucket: FIX
+    count: 0
+    plain_meaning: Current blocker or regression requiring action before decision-grade
+      green.
+  red_gates: []
+  managed_debt:
+    ratchet_floor_records: 0
+    open_non_ratchet_records: 0
+    top_ratchets: []
+  key_interpretation: A blocked ADG run is not automatically a platform crisis; regression
+    delta and graph/test linkage determine urgency.
+lens_2_runtime_proof_observability:
+  status: missing
+  executive_read: Runtime proof distinguishes observed failures from missing instrumentation.
+  measurement_gap_vs_quality_failure: Missing runtime proof is a measurement gap unless
+    an artifact shows runtime failure evidence.
+  runtime_proof_signals:
+  - signal: runtime_spine
+    status: missing
+    evidence_count: 0
+    executive_read: Measurement blind spot; not automatically a product failure.
+    action: Enable or repair artifact emission if the decision needs runtime proof.
+  - signal: graphdb_queries
+    status: missing
+    evidence_count: 0
+    executive_read: Measurement blind spot; not automatically a product failure.
+    action: Enable or repair artifact emission if the decision needs runtime proof.
+  - signal: structural_outputs
+    status: missing
+    evidence_count: 0
+    executive_read: Measurement blind spot; not automatically a product failure.
+    action: Enable or repair artifact emission if the decision needs runtime proof.
+  blind_spots:
+  - blind_spot: runtime proof artifacts
+    why_it_matters: Without runtime proof, ADG can flag structural risk but cannot
+      prove production behavior.
+    recommended_action: Generate or wire runtime spine/replay/OTel evidence for critical
+      paths.
+lens_3_product_app_risk:
+  status: present
+  executive_read: App/product risks were promoted only where hotspot or test evidence
+    changes funding posture.
+  app_risks:
+  - app_or_scope: apps_sales
+    risk: Under-tested product hotspot
+    evidence:
+    - signal_name: apps_sales/runtime/checkout.py
+      signal_type: hotspot
+      raw_count: 3
+      interpreted_meaning: This production scope has structural or coverage risk;
+        missing mapped tests make fixes harder to prove.
+    executive_read: App risk is promoted because product surface and missing test
+      scope overlap.
+    next_action: Add mapped tests/regression, tests/e2e or app-specific e2e coverage
+      for apps_sales.
+    priority_vs_gate_debt: Can outrank after-green ratchet burn-down when it overlaps
+      current work or high blast radius.
+  promoted_product_gaps:
+  - gap_id: product_gap_1
+    title: Under-tested product hotspot
+    app_or_scope: apps_sales
+    why_high_leverage: App risk is promoted because product surface and missing test
+      scope overlap.
+    action: Add mapped tests/regression, tests/e2e or app-specific e2e coverage for
+      apps_sales.
+    done_condition: Mapped app tests pass and ADG no longer reports the promoted gap.
+lens_4_testing_control_gaps:
+  status: present
+  executive_read: Testing is a control gap where apps_sales/runtime/checkout.py lacks
+    regression, e2e coverage; fund tests with the relevant fix slice, not as a generic
+    test campaign.
+  summary:
+    total_hotspots: 1
+    p1_urgent: 1
+    p2_gap: 0
+    critical_risk: 1
+    absent_coverage: 1
+    missing_unit_scope: 0
+    missing_regression_scope: 1
+    missing_e2e_scope: 1
+    mock_only_scope: 0
+  test_scope_inventory:
+    scanned_tests_root: tests
+    folders:
+    - folder: tests/unit
+      file_count: 3117
+      mapped_production_scopes:
+      - agentic_core
+      - agentic_core.py
+      - agentic_core/L0
+      - agentic_core/L0_routing
+      - agentic_core/L0_routing/_archive/v12/config
+      - agentic_core/L0_routing/_archive/v12/reasoning
+      - agentic_core/L0_routing/c0_retrieval
+      - agentic_core/L0_routing/c0_retrieval/c0_3_enhanced
+      - agentic_core/L0_routing/config
+      - agentic_core/L0_routing/doctrine
+      - agentic_core/L0_routing/enforcement
+      - agentic_core/L0_routing/engines
+      - agentic_core/L0_routing/intake
+      - agentic_core/L0_routing/reasoning
+      - agentic_core/L0_routing/sub
+      - agentic_core/L0_routing/sub/dir
+      - agentic_core/L0_routing/types
+      - agentic_core/L0_routing/utils
+      - agentic_core/L1
+      - agentic_core/L1_cognition
+      - agentic_core/L1_cognition/bridges
+      - agentic_core/L1_cognition/c0_context
+      - agentic_core/L1_cognition/config
+      - agentic_core/L1_cognition/enforcement
+      - agentic_core/L1_cognition/planning
+      - agentic_core/L1_cognition/reasoning
+      - agentic_core/L1_cognition/reasoning/ml_decision_support/features
+      - agentic_core/L1_cognition/types
+      - agentic_core/L2
+      - agentic_core/L2_execution
+      - agentic_core/L2_execution/audit
+      - agentic_core/L2_execution/capability
+      - agentic_core/L2_execution/determinism
+      - agentic_core/L2_execution/enforcement
+      - agentic_core/L2_execution/entry
+      - agentic_core/L2_execution/healers
+      - agentic_core/L2_execution/observability
+      - agentic_core/L2_execution/orchestration
+      - agentic_core/L2_execution/reasoning
+      - agentic_core/L2_execution/reasoning/examples
+      - agentic_core/L2_execution/regen
+      - agentic_core/L2_execution/services
+      - agentic_core/L2_execution/types
+      - agentic_core/L2_execution/utils
+      - agentic_core/L3
+      - agentic_core/L3_orchestration
+      - agentic_core/L3_orchestration/doctrine
+      - agentic_core/L3_orchestration/exit_control
+      - agentic_core/L3_orchestration/exit_eval
+      - agentic_core/L3_orchestration/exit_eval/v6
+      - agentic_core/L3_orchestration/inference
+      - agentic_core/L3_orchestration/inference/qwen_vllm
+      - agentic_core/L3_orchestration/inference/qwen_vllm/config
+      - agentic_core/L3_orchestration/inference/qwen_vllm/engines
+      - agentic_core/L3_orchestration/reasoning
+      - agentic_core/L3_orchestration/reasoning/engines
+      - agentic_core/L3_orchestration/reasoning/territory_healing
+      - agentic_core/L3_orchestration/types
+      - agentic_core/L4_state
+      - agentic_core/L4_state/audit
+      - agentic_core/L4_state/cache
+      - agentic_core/L4_state/contracts
+      - agentic_core/L4_state/enforcement
+      - agentic_core/L4_state/exemplars
+      - agentic_core/L4_state/fact_writeback
+      - agentic_core/L4_state/memory
+      - agentic_core/L4_state/otel
+      - agentic_core/L4_state/refresh
+      - agentic_core/L4_state/types
+      - agentic_core/L4_state/utils
+      - agentic_core/L4_state/utils/client
+      - agentic_core/L4_state/utils/commit
+      - agentic_core/L4_state/utils/context
+      - agentic_core/L4_state/utils/lifecycle
+      - agentic_core/L4_state/utils/memory
+      - agentic_core/L4_state/uwg
+      - agentic_core/L5_eval
+      - agentic_core/L5_safety
+      - agentic_core/L5_safety/adapters
+      - agentic_core/L5_safety/certification
+      - agentic_core/L5_safety/config
+      - agentic_core/L5_safety/contracts
+      - agentic_core/L5_safety/enforcement
+      - agentic_core/L5_safety/enforcement/escalation
+      - agentic_core/L5_safety/eval_spine
+      - agentic_core/L5_safety/exit_control
+      - agentic_core/L5_safety/identity
+      - agentic_core/L5_safety/permissions
+      - agentic_core/L5_safety/policy
+      - agentic_core/L5_safety/reasoning
+      - agentic_core/L5_safety/runtime_gates
+      - agentic_core/L5_safety/types
+      - agentic_core/L5_safety/utils
+      - agentic_core/L5_safety/v5
+      - agentic_core/L5_safety/validators
+      - agentic_core/L6_learning
+      - agentic_core/L6_observability
+      - agentic_core/L6_observability/enforcement
+      - agentic_core/L6_observability/evaluation
+      - agentic_core/L6_observability/runtime_trace
+      - agentic_core/L6_observability/semconv
+      - agentic_core/L6_observability/shadow_eval
+      - agentic_core/L6_observability/utils
+      - agentic_core/L6_observability/utils/dashboard
+      - agentic_core/L6_observability/utils/engines
+      - agentic_core/L6_observability/utils/evaluation
+      - agentic_core/L6_observability/utils/metrics
+      - agentic_core/L6_observability/utils/telemetry
+      - agentic_core/L6_observation
+      - agentic_core/L6_system_learning
+      - agentic_core/L6_system_learning/confidence
+      - agentic_core/L6_system_learning/engines
+      - agentic_core/L6_system_learning/runtime_adg
+      - agentic_core/L_CONTRACTS
+      - agentic_core/L_NONEXISTENT
+      - agentic_core/UWG
+      - agentic_core/adg
+      - agentic_core/adg/artifact
+      - agentic_core/adg/ci
+      - agentic_core/adg/contracts
+      - agentic_core/adg/extraction
+      - agentic_core/adg/extraction/visitors
+      - agentic_core/adg/processing
+      - agentic_core/adg/registry
+      - agentic_core/agents
+      - agentic_core/agents/types
+      - agentic_core/base_agents
+      - agentic_core/cache
+      - agentic_core/config
+      - agentic_core/dead_utils
+      - agentic_core/embeddings
+      - agentic_core/evaluation/judges
+      - agentic_core/interfaces
+      - agentic_core/knowledge
+      - agentic_core/knowledge/canonical
+      - agentic_core/knowledge/chunking
+      - agentic_core/knowledge/engine
+      - agentic_core/knowledge/gates
+      - agentic_core/knowledge/ingestion
+      - agentic_core/knowledge/retrieval
+      - agentic_core/mixins
+      - agentic_core/prompt_governance
+      - agentic_core/prompt_governance/contracts
+      - agentic_core/prompt_governance/core
+      - agentic_core/prompt_governance/prompt_assembly
+      - agentic_core/prompt_governance/scripts
+      - agentic_core/prompt_governance/security
+      - agentic_core/prompt_governance/security/detectors
+      - agentic_core/prompt_governance/security/utils
+      - agentic_core/prompt_governance/security/validators
+      - agentic_core/prompt_governance/validation
+      - agentic_core/runtime
+      - agentic_core/runtime/bindings
+      - agentic_core/runtime/c0
+      - agentic_core/runtime/config
+      - agentic_core/runtime/contracts
+      - agentic_core/runtime/entry
+      - agentic_core/runtime/entrypoints
+      - agentic_core/runtime/exceptions
+      - agentic_core/runtime/exit
+      - agentic_core/runtime/gates
+      - agentic_core/runtime/judges
+      - agentic_core/runtime/judges/panel
+      - agentic_core/runtime/profiles
+      - agentic_core/runtime/prove_requirements
+      - agentic_core/runtime/providers
+      - agentic_core/runtime/reasoning
+      - agentic_core/runtime/types
+      - agentic_core/runtime/utils
+      - agentic_core/runtime/uwg
+      - agentic_core/runtime_gates
+      - agentic_core/seams
+      - agentic_core/seams/contracts
+      - agentic_core/some
+      - agentic_core/some_path
+      - agentic_core/tests
+      - agentic_core/tracing
+      - agentic_core/utils
+      - agentic_core/utils/runners
+      - agentic_core/utils/schemas
+      - agentic_core/utils/workflow_engines
+      - apps_architect/L6_observability
+      - apps_compliant
+      - apps_compliant_two
+      - apps_contract
+      - apps_eval
+      - apps_eval/config
+      - apps_eval/contracts
+      - apps_eval/engines
+      - apps_eval/graders/deterministic
+      - apps_eval/integrations
+      - apps_eval/proof
+      - apps_eval/reasoning
+      - apps_eval/runner
+      - apps_eval/services
+      - apps_eval/tests
+      - apps_eval/types
+      - apps_eval/utils
+      - apps_eval/validators
+      - apps_exec
+      - apps_exec/config
+      - apps_exec/engines
+      - apps_exec/integrations
+      - apps_exec/outputs
+      - apps_exec/reasoning
+      - apps_exec/services
+      - apps_exec/types
+      - apps_exec/utils
+      - apps_foo
+      - apps_foo/integrations
+      - apps_foo/runtime
+      - apps_lic
+      - apps_lic/agents
+      - apps_lic/config
+      - apps_lic/engines
+      - apps_lic/integrations
+      - apps_lic/no/such
+      - apps_lic/observability
+      - apps_lic/persistence
+      - apps_lic/policy
+      - apps_lic/reasoning
+      - apps_lic/runtime
+      - apps_lic/runtime/bindings
+      - apps_lic/sequences
+      - apps_lic/signals
+      - apps_lic/types
+      - apps_lic/utils
+      - apps_lic/validators
+      - apps_qna
+      - apps_qna/adapters
+      - apps_qna/engines/dispatch
+      - apps_qna/integrations
+      - apps_qna/types
+      - apps_research
+      - apps_research/config
+      - apps_research/engines
+      - apps_research/outputs
+      - apps_research/prompt_assembly
+      - apps_research/reasoning
+      - apps_research/reports
+      - apps_research/scripts
+      - apps_research/services
+      - apps_research/types
+      - apps_rg
+      - apps_rg.py
+      - apps_rg/cache
+      - apps_rg/claim_ledger
+      - apps_rg/config
+      - apps_rg/enforcement
+      - apps_rg/engines
+      - apps_rg/fact_inventory
+      - apps_rg/integrations
+      - apps_rg/integrations/hops
+      - apps_rg/l2_recipe
+      - apps_rg/outputs
+      - apps_rg/prompt_assembly
+      - apps_rg/reasoning
+      - apps_rg/runtime
+      - apps_rg/runtime/aggregation
+      - apps_rg/runtime/assembly
+      - apps_rg/runtime/bindings
+      - apps_rg/runtime/c0
+      - apps_rg/runtime/claim_ledger
+      - apps_rg/runtime/contracts
+      - apps_rg/runtime/dispatch
+      - apps_rg/runtime/entry
+      - apps_rg/runtime/evidence
+      - apps_rg/runtime/exit
+      - apps_rg/runtime/graph
+      - apps_rg/runtime/ingress
+      - apps_rg/runtime/internal
+      - apps_rg/runtime/judges
+      - apps_rg/runtime/locked_copy
+      - apps_rg/runtime/orchestration
+      - apps_rg/runtime/package
+      - apps_rg/runtime/proof
+      - apps_rg/runtime/providers
+      - apps_rg/runtime/reasoning
+      - apps_rg/runtime/render
+      - apps_rg/runtime/rigor
+      - apps_rg/runtime/section_proof
+      - apps_rg/runtime/sections
+      - apps_rg/runtime/spine
+      - apps_rg/runtime/validators
+      - apps_rg/scripts
+      - apps_rg/section_rigor
+      - apps_rg/section_rigor/lanes
+      - apps_rg/tools
+      - apps_rg/types
+      - apps_rg/utils
+      - apps_rg/validators
+      - apps_sales/runtime
+      - apps_shared
+      - apps_shared.py
+      - apps_shared/_compat
+      - apps_shared/cert
+      - apps_shared/cli
+      - apps_shared/config
+      - apps_shared/contracts
+      - apps_shared/contracts/cross_app
+      - apps_shared/enforcement
+      - apps_shared/integrations
+      - apps_shared/mixins
+      - apps_shared/outputs
+      - apps_shared/proof
+      - apps_shared/reasoning
+      - apps_shared/spine_emission
+      - apps_shared/tests
+      - apps_shared/types
+      - apps_shared/utils
+      - apps_underwriting_ai
+      - apps_underwriting_ai.py
+      - apps_underwriting_ai/config
+      - apps_underwriting_ai/engines
+      - apps_underwriting_ai/engines/judges
+      - apps_underwriting_ai/integrations
+      - apps_underwriting_ai/runtime
+      - apps_underwriting_ai/services
+      - apps_underwriting_ai/types
+      - apps_underwriting_ai/validators
+      - apps_view
+      - apps_violator
+      - apps_watch
+      - ops_scripts
+      - ops_scripts/apps_rg
+      - ops_scripts/calibration
+      - ops_scripts/ci
+      - ops_scripts/ci/adg_gates
+      - ops_scripts/dev_tools/L0_routing_scripts
+      - ops_scripts/hooks/windsurf
+      - ops_scripts/maintenance
+      - ops_scripts/reports
+      - ops_scripts/verification
+      - tools
+      - tools/_oneoff
+      - tools/_oneshot
+      - tools/adg
+      - tools/adg/analysis
+      - tools/adg/cache
+      - tools/adg/core
+      - tools/adg/integration
+      - tools/adg/mcp
+      - tools/adg/prompt_assembly
+      - tools/adg/prompt_assembly/adapters
+      - tools/adg/prompt_assembly/budgeting
+      - tools/adg/prompt_assembly/packets
+      - tools/adg/prompt_assembly/shaping
+      - tools/adg/repair
+      - tools/adg/repair/rules
+      - tools/adg/shared_modules
+      - tools/analysis
+      - tools/apps_rg
+      - tools/archive
+      - tools/cache
+      - tools/calibration
+      - tools/cert
+      - tools/cert/apps_e2e
+      - tools/certification
+      - tools/certification/apps_e2e
+      - tools/cost_telemetry
+      - tools/crosswalk
+      - tools/cursor
+      - tools/debug
+      - tools/decisions
+      - tools/diag
+      - tools/embedders
+      - tools/eval
+      - tools/evil
+      - tools/foo
+      - tools/generate
+      - tools/generate/archiving
+      - tools/generate/core
+      - tools/generate/ingestion
+      - tools/generate/integration
+      - tools/generate/materialized_views
+      - tools/generate/reporting
+      - tools/generate/utils
+      - tools/generate/validation
+      - tools/governance
+      - tools/graphdb
+      - tools/graphdb/agent_integration
+      - tools/graphdb/queries
+      - tools/guardian
+      - tools/heal_classifier
+      - tools/ingestion
+      - tools/ingestion/adg_cards
+      - tools/ledgers
+      - tools/legacy
+      - tools/linters
+      - tools/mcp
+      - tools/mcp/http_mcp
+      - tools/memory
+      - tools/meta_learning
+      - tools/notion
+      - tools/otel
+      - tools/plan_lifecycle
+      - tools/policy
+      - tools/priority
+      - tools/prompt_assembly
+      - tools/proof
+      - tools/refactor_decisions
+      - tools/reports
+      - tools/requirements
+      - tools/retrieval
+      - tools/routing
+      - tools/runtime_adg
+      - tools/runtime_cert
+      - tools/runtime_cert/decisions
+      - tools/runtime_cert/extractors
+      - tools/runtime_cert/reports
+      - tools/runtime_cert/smoke
+      - tools/runtime_evidence
+      - tools/runtime_gates
+      - tools/shared
+      - tools/utils
+    - folder: tests/e2e
+      file_count: 89
+      mapped_production_scopes:
+      - agentic_core
+      - agentic_core.py
+      - agentic_core/L0_routing
+      - agentic_core/L0_routing/c0_retrieval
+      - agentic_core/L0_routing/reasoning
+      - agentic_core/L0_routing/types
+      - agentic_core/L1_cognition
+      - agentic_core/L1_cognition/reasoning
+      - agentic_core/L2_execution
+      - agentic_core/L2_execution/enforcement
+      - agentic_core/L2_execution/types
+      - agentic_core/L2_execution/utils
+      - agentic_core/L3_orchestration
+      - agentic_core/L3_orchestration/engines
+      - agentic_core/L3_orchestration/exit_control
+      - agentic_core/L3_orchestration/exit_eval/v6
+      - agentic_core/L3_orchestration/reasoning
+      - agentic_core/L3_orchestration/reasoning/engines
+      - agentic_core/L3_orchestration/reasoning/ptc
+      - agentic_core/L3_orchestration/types
+      - agentic_core/L4_state
+      - agentic_core/L4_state/contracts
+      - agentic_core/L4_state/reasoning
+      - agentic_core/L4_state/utils/memory
+      - agentic_core/L4_state/uwg
+      - agentic_core/L5_safety/adapters
+      - agentic_core/L5_safety/config/structure_blueprint
+      - agentic_core/L5_safety/enforcement
+      - agentic_core/L5_safety/enforcement/hitl
+      - agentic_core/L5_safety/evaluators
+      - agentic_core/L5_safety/exit_control
+      - agentic_core/L5_safety/policy
+      - agentic_core/L5_safety/types
+      - agentic_core/L6_observability/utils/engines
+      - agentic_core/L6_observability/utils/metrics
+      - agentic_core/L6_system_learning
+      - agentic_core/adg/runtime
+      - agentic_core/evaluation
+      - agentic_core/evaluation/golden
+      - agentic_core/evaluation/retrieval
+      - agentic_core/mixins
+      - agentic_core/prompt_governance
+      - agentic_core/prompt_governance/contracts
+      - agentic_core/runtime/bindings
+      - agentic_core/runtime/contracts
+      - agentic_core/runtime/engine
+      - agentic_core/runtime/exit
+      - apps_lic
+      - apps_lic/cert
+      - apps_lic/coordination
+      - apps_lic/engines
+      - apps_lic/identity
+      - apps_lic/integrations
+      - apps_lic/migrations
+      - apps_lic/policy
+      - apps_lic/runtime/dispatch
+      - apps_lic/sequences
+      - apps_lic/signals
+      - apps_lic/state
+      - apps_research/engines
+      - apps_rg/fact_inventory
+      - apps_rg/runtime
+      - apps_rg/runtime/bindings
+      - apps_rg/runtime/c0
+      - apps_rg/runtime/evidence
+      - apps_rg/runtime/exit
+      - apps_rg/runtime/internal
+      - apps_rg/runtime/locked_copy
+      - apps_rg/runtime/providers
+      - apps_rg/runtime/sections
+      - apps_rg/runtime/spine
+      - apps_rg/runtime/validators
+      - apps_shared
+      - apps_shared/utils
+      - apps_underwriting_ai/integrations
+      - ops_scripts/ci
+      - tools/certification/apps_e2e
+      - tools/retrieval
+    - folder: tests/regression
+      file_count: 4
+      mapped_production_scopes:
+      - agentic_core/L5_safety
+      - agentic_core/L5_safety/runtime_gates
+    - folder: tests/integration
+      file_count: 94
+      mapped_production_scopes:
+      - agentic_core
+      - agentic_core.py
+      - agentic_core/L0_routing
+      - agentic_core/L0_routing/cache
+      - agentic_core/L0_routing/config
+      - agentic_core/L0_routing/reasoning
+      - agentic_core/L0_routing/scripts
+      - agentic_core/L0_routing/utils
+      - agentic_core/L1_cognition/cache
+      - agentic_core/L1_cognition/embedding
+      - agentic_core/L2_execution
+      - agentic_core/L2_execution/enforcement
+      - agentic_core/L2_execution/retrieval
+      - agentic_core/L2_execution/types
+      - agentic_core/L2_execution/utils
+      - agentic_core/L3_orchestration/agent
+      - agentic_core/L3_orchestration/exit_control
+      - agentic_core/L3_orchestration/exit_eval
+      - agentic_core/L3_orchestration/healers
+      - agentic_core/L3_orchestration/langgraph
+      - agentic_core/L3_orchestration/reasoning/ptc
+      - agentic_core/L3_orchestration/tools
+      - agentic_core/L3_orchestration/types
+      - agentic_core/L4_state/llm
+      - agentic_core/L4_state/reasoning
+      - agentic_core/L4_state/types
+      - agentic_core/L4_state/utils/memory
+      - agentic_core/L5_safety/config
+      - agentic_core/L5_safety/enforcement
+      - agentic_core/L5_safety/enforcement/hitl
+      - agentic_core/L5_safety/exit_control
+      - agentic_core/L5_safety/utils
+      - agentic_core/L5_safety/validators
+      - agentic_core/L6_observability/utils/evaluation
+      - agentic_core/L6_system_learning
+      - agentic_core/adg/runtime
+      - agentic_core/embeddings
+      - agentic_core/prompt_governance/security/detectors
+      - agentic_core/runtime/contracts
+      - apps_eval
+      - apps_eval/config
+      - apps_exec
+      - apps_exec/config
+      - apps_lic
+      - apps_lic/engines
+      - apps_qna/builder
+      - apps_qna/config
+      - apps_qna/integrations
+      - apps_qna/types
+      - apps_research
+      - apps_research/config
+      - apps_research/integrations
+      - apps_rg
+      - apps_rg/exit
+      - apps_rg/integrations
+      - apps_rg/integrations/hops
+      - apps_rg/reasoning
+      - apps_rg/runtime
+      - apps_rg/runtime/bindings
+      - apps_rg/types
+      - apps_shared
+      - apps_shared/config
+      - apps_shared/reasoning
+      - apps_underwriting_ai/integrations
+      - apps_underwriting_ai/runtime/bindings
+      - apps_underwriting_ai/runtime/contracts
+      - ops_scripts/ci
+      - ops_scripts/dev_tools/L0_routing_scripts
+      - tools
+      - tools/adg/mcp
+      - tools/meta_learning
+    - folder: tests/smoke
+      file_count: 19
+      mapped_production_scopes:
+      - agentic_core.py
+      - agentic_core/L3_orchestration/exit_eval
+      - agentic_core/L5_safety
+      - agentic_core/L5_safety/validators
+      - agentic_core/prompt_governance
+      - apps_lic/runtime/dispatch
+      - apps_qna/builder
+      - apps_qna/config
+      - apps_qna/types
+      - apps_underwriting_ai
+      - apps_underwriting_ai/runtime/bindings
+      - apps_underwriting_ai/runtime/contracts
+      - ops_scripts/ci
+    - folder: tests/golden
+      file_count: 9
+      mapped_production_scopes:
+      - agentic_core.py
+      - agentic_core/L2_execution/reasoning
+      - agentic_core/L3_orchestration/exit_eval
+      - agentic_core/L3_orchestration/exit_eval/v6
+      - agentic_core/L4_state/cache
+      - agentic_core/runtime/contracts
+      - agentic_core/runtime/entry
+      - apps_lic/runtime/bindings
+      - apps_rg/runtime/bindings
+    - folder: tests/contract
+      file_count: 497
+      mapped_production_scopes:
+      - agentic_core
+      - agentic_core/C0_context
+      - agentic_core/L0_routing
+      - agentic_core/L0_routing/c0_retrieval
+      - agentic_core/L0_routing/c0_retrieval/c0_3_enhanced
+      - agentic_core/L0_routing/config
+      - agentic_core/L0_routing/enforcement
+      - agentic_core/L0_routing/intake
+      - agentic_core/L0_routing/reasoning
+      - agentic_core/L0_routing/types
+      - agentic_core/L1_cognition
+      - agentic_core/L1_cognition/bridges
+      - agentic_core/L1_cognition/types
+      - agentic_core/L2_execution
+      - agentic_core/L3_orchestration
+      - agentic_core/L3_orchestration/doctrine
+      - agentic_core/L3_orchestration/exit_control
+      - agentic_core/L3_orchestration/exit_eval/v6
+      - agentic_core/L3_orchestration/inference/qwen_vllm/reasoning
+      - agentic_core/L3_orchestration/reasoning/engines
+      - agentic_core/L4_state
+      - agentic_core/L4_state/contracts
+      - agentic_core/L4_state/research
+      - agentic_core/L4_state/uwg
+      - agentic_core/L5_safety
+      - agentic_core/L5_safety/adapters
+      - agentic_core/L5_safety/config
+      - agentic_core/L5_safety/config/structure_blueprint
+      - agentic_core/L5_safety/contracts
+      - agentic_core/L5_safety/enforcement
+      - agentic_core/L5_safety/enforcement/governance
+      - agentic_core/L5_safety/testing
+      - agentic_core/L6_learning
+      - agentic_core/L6_observability/runtime_trace
+      - agentic_core/L6_system_learning
+      - agentic_core/UWG
+      - agentic_core/evaluation/judges
+      - agentic_core/knowledge
+      - agentic_core/knowledge/retrieval
+      - agentic_core/prompt_governance
+      - agentic_core/prompt_governance/prompt_assembly
+      - agentic_core/runtime
+      - agentic_core/runtime/audit
+      - agentic_core/runtime/bindings
+      - agentic_core/runtime/c0
+      - agentic_core/runtime/config
+      - agentic_core/runtime/contracts
+      - agentic_core/runtime/delegation
+      - agentic_core/runtime/entry
+      - agentic_core/runtime/entrypoints
+      - agentic_core/runtime/exhaust
+      - agentic_core/runtime/exit
+      - agentic_core/runtime/gates
+      - agentic_core/runtime/judges
+      - agentic_core/runtime/providers
+      - agentic_core/runtime/u0
+      - agentic_core/utils/runners
+      - agentic_core/utils/workflow_engines
+      - apps_architect
+      - apps_architect/config
+      - apps_contract
+      - apps_eval
+      - apps_eval/cert
+      - apps_eval/contracts
+      - apps_eval/engines
+      - apps_eval/integrations
+      - apps_eval/types
+      - apps_exec
+      - apps_exec/cert
+      - apps_lic
+      - apps_lic/cert
+      - apps_lic/config
+      - apps_lic/contracts
+      - apps_lic/engines
+      - apps_lic/engines/judges
+      - apps_lic/evals/scripts
+      - apps_lic/integrations
+      - apps_lic/policy
+      - apps_lic/runtime
+      - apps_lic/runtime/bindings
+      - apps_lic/runtime/dispatch
+      - apps_lic/runtime/u0
+      - apps_lic/tools
+      - apps_lic/types
+      - apps_qna
+      - apps_qna.py
+      - apps_qna/airlocks
+      - apps_qna/card_context
+      - apps_qna/cert
+      - apps_qna/config
+      - apps_qna/engines
+      - apps_qna/engines/dispatch
+      - apps_qna/engines/judges
+      - apps_qna/integrations
+      - apps_qna/observability
+      - apps_qna/runtime
+      - apps_qna/runtime/bindings
+      - apps_qna/scripts
+      - apps_qna/types
+      - apps_research
+      - apps_research/cert
+      - apps_research/engines
+      - apps_research/engines/integration
+      - apps_research/engines/judges
+      - apps_research/integrations
+      - apps_research/runtime
+      - apps_research/types
+      - apps_rg
+      - apps_rg/cache
+      - apps_rg/cert
+      - apps_rg/chunking
+      - apps_rg/contracts
+      - apps_rg/enforcement
+      - apps_rg/engines
+      - apps_rg/engines/judges
+      - apps_rg/exit
+      - apps_rg/fact_inventory
+      - apps_rg/integrations
+      - apps_rg/integrations/gates
+      - apps_rg/integrations/hops
+      - apps_rg/l2_recipe
+      - apps_rg/prerequisites
+      - apps_rg/prompt_assembly
+      - apps_rg/runtime
+      - apps_rg/runtime/aggregation
+      - apps_rg/runtime/assembly
+      - apps_rg/runtime/bindings
+      - apps_rg/runtime/c0
+      - apps_rg/runtime/claim_ledger
+      - apps_rg/runtime/dispatch
+      - apps_rg/runtime/entry
+      - apps_rg/runtime/evidence
+      - apps_rg/runtime/exit
+      - apps_rg/runtime/graph
+      - apps_rg/runtime/internal
+      - apps_rg/runtime/judges
+      - apps_rg/runtime/locked_copy
+      - apps_rg/runtime/orchestration
+      - apps_rg/runtime/package
+      - apps_rg/runtime/profiles
+      - apps_rg/runtime/providers
+      - apps_rg/runtime/reasoning
+      - apps_rg/runtime/render
+      - apps_rg/runtime/review
+      - apps_rg/runtime/rigor
+      - apps_rg/runtime/schemas
+      - apps_rg/runtime/section_proof
+      - apps_rg/runtime/sections
+      - apps_rg/runtime/shadow
+      - apps_rg/runtime/spine
+      - apps_rg/runtime/u0
+      - apps_rg/runtime/validators
+      - apps_rg/tools
+      - apps_rg/validators/enforcement
+      - apps_shared
+      - apps_shared.py
+      - apps_shared/cert
+      - apps_shared/config
+      - apps_shared/contracts
+      - apps_shared/spine_emission
+      - apps_shared/types
+      - apps_underwriting_ai
+      - apps_underwriting_ai/cert
+      - apps_underwriting_ai/engines
+      - apps_underwriting_ai/types
+      - ops_scripts
+      - ops_scripts/apps_rg
+      - ops_scripts/calibration
+      - ops_scripts/ci
+      - ops_scripts/maintenance
+      - tools
+      - tools/apps_lic
+      - tools/apps_rg
+      - tools/cert
+      - tools/cert/apps_e2e
+      - tools/certification
+      - tools/ingestion
+      - tools/l5_contracts
+      - tools/ledgers
+      - tools/retrieval
+    - folder: tests/fixtures
+      file_count: 28
+      mapped_production_scopes:
+      - agentic_core
+      - agentic_core/L4_state
+      - agentic_core/base_agents
+      - agentic_core/runtime
+      - agentic_core/runtime/prove_requirements
+      - apps_lic/engines
+      - apps_rg/runtime
+      - ops_scripts/ci
+    - folder: tests/unknown
+      file_count: 1307
+      mapped_production_scopes:
+      - agentic_core
+      - agentic_core.py
+      - agentic_core/L0
+      - agentic_core/L0_routing
+      - agentic_core/L0_routing/_archive/v12/config
+      - agentic_core/L0_routing/_archive/v12/reasoning
+      - agentic_core/L0_routing/c0_retrieval
+      - agentic_core/L0_routing/c0_retrieval/c0_3_enhanced
+      - agentic_core/L0_routing/config
+      - agentic_core/L0_routing/doctrine
+      - agentic_core/L0_routing/enforcement
+      - agentic_core/L0_routing/enforcement/governance
+      - agentic_core/L0_routing/intake
+      - agentic_core/L0_routing/reasoning
+      - agentic_core/L0_routing/scripts
+      - agentic_core/L0_routing/types
+      - agentic_core/L1_cognition
+      - agentic_core/L1_cognition/c0_context
+      - agentic_core/L1_cognition/enforcement
+      - agentic_core/L1_cognition/reasoning
+      - agentic_core/L1_cognition/types
+      - agentic_core/L2_execution
+      - agentic_core/L2_execution/enforcement
+      - agentic_core/L2_execution/healers
+      - agentic_core/L2_execution/reasoning
+      - agentic_core/L2_execution/types
+      - agentic_core/L2_execution/utils
+      - agentic_core/L3_orchestration
+      - agentic_core/L3_orchestration/doctrine
+      - agentic_core/L3_orchestration/exit_control
+      - agentic_core/L3_orchestration/exit_eval
+      - agentic_core/L3_orchestration/exit_eval/graders
+      - agentic_core/L3_orchestration/exit_eval/judges
+      - agentic_core/L3_orchestration/exit_eval/v6
+      - agentic_core/L3_orchestration/inference/qwen_vllm
+      - agentic_core/L3_orchestration/reasoning
+      - agentic_core/L3_orchestration/reasoning/engines
+      - agentic_core/L3_orchestration/registry
+      - agentic_core/L4_state
+      - agentic_core/L4_state/audit
+      - agentic_core/L4_state/contracts
+      - agentic_core/L4_state/enforcement
+      - agentic_core/L4_state/otel
+      - agentic_core/L4_state/types
+      - agentic_core/L4_state/utils/client
+      - agentic_core/L4_state/utils/memory
+      - agentic_core/L4_state/uwg
+      - agentic_core/L5_safety
+      - agentic_core/L5_safety/adapters
+      - agentic_core/L5_safety/certification
+      - agentic_core/L5_safety/contracts
+      - agentic_core/L5_safety/enforcement
+      - agentic_core/L5_safety/enforcement/hitl
+      - agentic_core/L5_safety/exit_control
+      - agentic_core/L5_safety/identity
+      - agentic_core/L5_safety/runtime_gates
+      - agentic_core/L5_safety/types
+      - agentic_core/L5_safety/validators
+      - agentic_core/L6_learning
+      - agentic_core/L6_observability
+      - agentic_core/L6_observability/execution
+      - agentic_core/L6_observability/runtime_trace
+      - agentic_core/L6_observability/shadow_eval
+      - agentic_core/L6_system_learning
+      - agentic_core/__pycache__
+      - agentic_core/adg/_compat
+      - agentic_core/adg/extraction
+      - agentic_core/base_agents
+      - agentic_core/c0_retrieval
+      - agentic_core/embeddings
+      - agentic_core/interfaces
+      - agentic_core/knowledge/canonical
+      - agentic_core/knowledge/gates
+      - agentic_core/knowledge/ingestion
+      - agentic_core/prompt_governance
+      - agentic_core/prompt_governance/core
+      - agentic_core/prompt_governance/prompt_assembly
+      - agentic_core/prompt_governance/validation
+      - agentic_core/runtime
+      - agentic_core/runtime/artifacts
+      - agentic_core/runtime/c0
+      - agentic_core/runtime/contracts
+      - agentic_core/runtime/entry
+      - agentic_core/runtime/entrypoints
+      - agentic_core/runtime/exit
+      - agentic_core/runtime/judges
+      - agentic_core/runtime/prove_requirements
+      - agentic_core/runtime/prove_requirements/tier6_refs
+      - agentic_core/runtime/u0
+      - agentic_core/test_mod
+      - agentic_core/tests
+      - apps_eval
+      - apps_eval/engines
+      - apps_eval/integrations
+      - apps_eval/reasoning
+      - apps_eval/services
+      - apps_eval/types
+      - apps_exec
+      - apps_exec/engines
+      - apps_exec/integrations
+      - apps_lic
+      - apps_lic.py
+      - apps_lic/cert
+      - apps_lic/config
+      - apps_lic/coordination
+      - apps_lic/engines
+      - apps_lic/engines/judges
+      - apps_lic/integrations
+      - apps_lic/migrations
+      - apps_lic/observability
+      - apps_lic/persistence
+      - apps_lic/policy
+      - apps_lic/prompt_assembly
+      - apps_lic/reasoning
+      - apps_lic/runtime
+      - apps_lic/runtime/bindings
+      - apps_lic/runtime/dispatch
+      - apps_lic/runtime/u0
+      - apps_lic/scripts
+      - apps_lic/sequences
+      - apps_lic/signals
+      - apps_lic/state
+      - apps_lic/tools
+      - apps_lic/types
+      - apps_lic/utils
+      - apps_lic/validators
+      - apps_qna
+      - apps_qna.py
+      - apps_qna/builder
+      - apps_qna/cache
+      - apps_qna/config
+      - apps_qna/egress
+      - apps_qna/integrations
+      - apps_qna/l2
+      - apps_qna/router
+      - apps_qna/runtime
+      - apps_qna/runtime/bindings
+      - apps_qna/scripts
+      - apps_qna/types
+      - apps_qna/validators
+      - apps_research
+      - apps_research.py
+      - apps_research/cert
+      - apps_research/engines
+      - apps_research/integrations
+      - apps_research/outputs
+      - apps_research/prompt_assembly
+      - apps_research/reasoning
+      - apps_research/runtime
+      - apps_research/runtime/entry
+      - apps_research/runtime/u0
+      - apps_research/types
+      - apps_rg
+      - apps_rg/cache
+      - apps_rg/enforcement
+      - apps_rg/engines
+      - apps_rg/hitl
+      - apps_rg/integrations
+      - apps_rg/runtime
+      - apps_rg/runtime/bindings
+      - apps_rg/runtime/dispatch
+      - apps_rg/runtime/internal
+      - apps_rg/runtime/locked_copy
+      - apps_rg/runtime/orchestration
+      - apps_rg/runtime/package
+      - apps_rg/scripts
+      - apps_rg/types
+      - apps_shared/services
+      - apps_shared/spine
+      - apps_shared/spine_emission
+      - apps_shared/types
+      - apps_shared/validators
+      - apps_test
+      - apps_underwriting_ai
+      - apps_underwriting_ai/cert
+      - apps_underwriting_ai/engines
+      - apps_underwriting_ai/engines/judges
+      - apps_underwriting_ai/integrations
+      - apps_underwriting_ai/outputs
+      - apps_underwriting_ai/parsers
+      - apps_underwriting_ai/prompt_assembly
+      - apps_underwriting_ai/services
+      - apps_underwriting_ai/tools
+      - apps_underwriting_ai/types
+      - ops_scripts
+      - ops_scripts/archives
+      - ops_scripts/calibration
+      - ops_scripts/ci
+      - ops_scripts/ci/adg_gates
+      - tools
+      - tools/adg
+      - tools/analysis
+      - tools/archive
+      - tools/calibration
+      - tools/cert
+      - tools/certification
+      - tools/certification/agentic_core_e2e
+      - tools/certification/evidence
+      - tools/certification/safety
+      - tools/eval
+      - tools/exit_eval
+      - tools/governance
+      - tools/ledgers
+      - tools/mcp
+      - tools/otel
+      - tools/underwriting
+  investment_map:
+  - rank: 1
+    production_scope: apps_sales/runtime/checkout.py
+    layer: runtime
+    app_or_domain: apps_sales
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - regression
+    - e2e
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: unknown
+      fan_in: 12
+      fan_out: 9
+      criticality_score: 90.0
+      combined_risk_score: 95.0
+      violation_count: 3
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/regression, tests/e2e or app-specific
+      e2e coverage for apps_sales.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  testing_rules:
+  - If a fix touches a P1_URGENT / CRITICAL / ABSENT hotspot, the fix is not complete
+    without mapped tests or an explicit waiver.
+  - Do not create a generic testing mega-project unless systemic gaps affect multiple
+    high-blast-radius scopes.
+  - Attach tests to the current fix slice whenever overlap exists.
+lens_5_graphdb_mv_decision_impact:
+  status: present
+  executive_read: GraphDB/MV signals are used as decision drivers only when linked
+    to blockers, testing exposure, ratchets, artifact consistency, or planned slices;
+    raw counts alone stay diagnostic.
+  summary:
+    total_mvs: 4
+    decision_drivers: 0
+    testing_drivers: 1
+    ratchet_drivers: 1
+    audit_drivers: 1
+    diagnostic_only: 0
+    low_value_candidates: 0
+    deprecate_candidates: 1
+  decision_impact_rows:
+  - signal: mv_empty_noise
+    signal_type: materialized_view
+    row_count: 0
+    decision_role: deprecate_candidate
+    used_inline: false
+    why_or_why_not: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    action: Deprecate/delete candidate if still empty next runs.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_guardian_inventory
+    signal_type: materialized_view
+    row_count: 1
+    decision_role: audit_only
+    used_inline: false
+    why_or_why_not: Audit math unless mapped to a current failing gate.
+    action: Audit; do not treat as blocker by itself.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_hotspot_coverage_risk
+    signal_type: materialized_view
+    row_count: 1
+    decision_role: used_for_testing
+    used_inline: true
+    why_or_why_not: Translates structural risk into concrete test-placement decisions.
+    action: Attach mapped tests to high-risk scopes.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_p0_ratchet_inventory
+    signal_type: materialized_view
+    row_count: 2
+    decision_role: used_after_green
+    used_inline: false
+    why_or_why_not: Useful after CI is green to lower accepted ratchet debt.
+    action: Schedule after-green burn-down.
+    related_gates: []
+    related_scopes: []
+  top_graph_risks:
+  - rank: 3
+    scope: mv_hotspot_coverage_risk
+    graph_signal: used_for_testing
+    centrality: null
+    blast_radius: 1
+    reverse_dependency: null
+    dependency_cone: null
+    executive_read: Translates structural risk into concrete test-placement decisions.
+    action: Attach mapped tests to high-risk scopes.
+    testing_implication: Add or verify mapped tests if this signal overlaps a hotspot.
+canonical_next_best_actions:
+  status: present
+  rows:
+  - rank: 1
+    action_type: add_tests
+    action: Fund mapped tests for apps_sales/runtime/checkout.py
+    scope: apps_sales/runtime/checkout.py
+    why_now: Testing exposure in a high-risk surface can reduce more delivery risk
+      than blind ratchet burn-down.
+    evidence_used:
+    - signal_name: apps_sales/runtime/checkout.py
+      signal_type: testing_hotspot
+      decision_effect: Testing exposure in a high-risk surface can reduce more delivery
+        risk than blind ratchet burn-down.
+    testing_requirement: Add mapped tests/regression, tests/e2e or app-specific e2e
+      coverage for apps_sales.
+    done_condition: Rerun ADG and confirm the relevant gate/test/report status is
+      green or explicitly waived.
+    confidence: medium
+    timing: now
+  - rank: 2
+    action_type: refine
+    action: Refine/deprecate low-value ADG signal mv_empty_noise
+    scope: mv_empty_noise
+    why_now: Suppress or retire signals that do not affect decisions.
+    evidence_used:
+    - signal_name: mv_empty_noise
+      signal_type: mv
+      decision_effect: Suppress or retire signals that do not affect decisions.
+    testing_requirement: No test required unless generator logic changes.
+    done_condition: Rerun ADG and confirm the relevant gate/test/report status is
+      green or explicitly waived.
+    confidence: low
+    timing: deprecate
+after_green_plan:
+  status: present
+  executive_read: After-green work lowers accepted floors and closes broad testing
+    waves once blockers are gone.
+  rows: []
+artifact_usage_matrix:
+  status: present
+  rows:
+  - artifact_key: gate_results
+    path: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\gate.json
+    exists: true
+    stale: false
+    used_for:
+    - decision
+    decision_impact: Directly affects verdict and next-best-action ranking.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
+  - artifact_key: action_queue
+    path: ''
+    exists: false
+    stale: false
+    used_for:
+    - none
+    decision_impact: No current decision effect; suppress inline unless tied to a
+      future blocker or audit.
+    recommendation: refine
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+  - artifact_key: review_template
+    path: ''
+    exists: false
+    stale: false
+    used_for:
+    - none
+    decision_impact: No current decision effect; suppress inline unless tied to a
+      future blocker or audit.
+    recommendation: refine
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+  - artifact_key: burndown_table
+    path: ''
+    exists: false
+    stale: false
+    used_for:
+    - none
+    decision_impact: No current decision effect; suppress inline unless tied to a
+      future blocker or audit.
+    recommendation: refine
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+  - artifact_key: burndown_report
+    path: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\adg_burndown_report.md
+    exists: false
+    stale: false
+    used_for:
+    - none
+    decision_impact: No current decision effect; suppress inline unless tied to a
+      future blocker or audit.
+    recommendation: refine
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+  - artifact_key: sqlite_snapshot
+    path: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\x.sqlite
+    exists: true
+    stale: false
+    used_for:
+    - graphdb
+    decision_impact: Shapes blast-radius, MV, and structural interpretation.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
+  - artifact_key: generation_manifest
+    path: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\adg_generation_manifest_ts.json
+    exists: false
+    stale: false
+    used_for:
+    - consistency
+    decision_impact: Supports consistency/evidence trace.
+    recommendation: refine
+    rationale: Loaded and mapped to a decision lens.
+mv_usefulness_audit:
+  status: present
+  summary:
+    total_mvs: 4
+    decision_drivers: 0
+    testing_drivers: 1
+    ratchet_drivers: 1
+    audit_drivers: 1
+    diagnostic_only: 0
+    stale_or_empty: 1
+    duplicate_signals: 0
+    low_value_candidates: 0
+    deprecate_candidates: 1
+  rows:
+  - mv_name: mv_empty_noise
+    row_count: 0
+    category: stale_or_empty
+    decision_impact: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    recommendation: deprecate_candidate
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_guardian_inventory
+    row_count: 1
+    category: audit_driver
+    decision_impact: Audit math unless mapped to a current failing gate.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_hotspot_coverage_risk
+    row_count: 1
+    category: testing_driver
+    decision_impact: Translates structural risk into concrete test-placement decisions.
+    recommendation: keep
+    replacement_or_refinement: ''
+    why_not_used_if_suppressed: ''
+  - mv_name: mv_p0_ratchet_inventory
+    row_count: 2
+    category: ratchet_driver
+    decision_impact: Useful after CI is green to lower accepted ratchet debt.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+defer_delete_deprecate:
+  status: present
+  rows:
+  - item: mv_empty_noise
+    item_type: mv
+    current_value: 0 rows; stale_or_empty
+    recommendation: deprecate
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_guardian_inventory
+    item_type: mv
+    current_value: 1 rows; audit_driver
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_p0_ratchet_inventory
+    item_type: mv
+    current_value: 2 rows; ratchet_driver
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: action_queue
+    item_type: artifact
+    current_value: unused or missing
+    recommendation: hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+    revisit_condition: Use when it changes next action, audit, consistency, or test
+      placement.
+  - item: review_template
+    item_type: artifact
+    current_value: unused or missing
+    recommendation: hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+    revisit_condition: Use when it changes next action, audit, consistency, or test
+      placement.
+  - item: burndown_table
+    item_type: artifact
+    current_value: unused or missing
+    recommendation: hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+    revisit_condition: Use when it changes next action, audit, consistency, or test
+      placement.
+  - item: burndown_report
+    item_type: artifact
+    current_value: unused or missing
+    recommendation: hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+    revisit_condition: Use when it changes next action, audit, consistency, or test
+      placement.
+audit_notes:
+  status: present
+  guardian_summary:
+  - band: P0
+    gross: null
+    guardian: null
+    non_exempt: null
+    executive_read: Guardian exception math is audit context; map to a failing gate
+      before funding fixes.
+  - band: P1
+    gross: null
+    guardian: null
+    non_exempt: null
+    executive_read: Guardian exception math is audit context; map to a failing gate
+      before funding fixes.
+  - band: P2
+    gross: null
+    guardian: null
+    non_exempt: null
+    executive_read: Guardian exception math is audit context; map to a failing gate
+      before funding fixes.
+  - band: P3
+    gross: null
+    guardian: null
+    non_exempt: null
+    executive_read: Guardian exception math is audit context; map to a failing gate
+      before funding fixes.
+  severity_summary:
+    executive_read: Severity inventory is audit math unless tied to current FIX/action
+      rows.
+    rows: []
+  artifact_consistency:
+    status: PASS
+    errors: []
+  notes:
+  - Guardian exceptions are audit math only; they do not automatically explain away
+    real problems.
+  - Diagnostic-only MVs are not immediate work unless tied to a blocker, testing gap,
+    critical path, or planned slice.
+honest_bottom_line:
+  bullets:
+  - Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing
+    gaps; do not spend executive time there.
+  - 'Actually blocking now: 0 FIX gates; inspect regression delta before declaring
+    a platform crisis.'
+  - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it
+    after green unless it overlaps current work.
+  - Runtime proof gaps are measurement gaps unless runtime artifacts show observed
+    quality failure.
+  - Fund mapped tests for apps_sales/runtime/checkout.py
+  - Do not chase raw MV counts, guardian gross counts, or diagnostic reports without
+    a decision role.
+raw_inputs:
+  artifacts:
+    gate_results: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\gate.json
+    action_queue: ''
+    review_template: ''
+    burndown_table: ''
+    burndown_report: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\adg_burndown_report.md
+    sqlite_snapshot: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\x.sqlite
+    generation_manifest: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\adg_generation_manifest_ts.json
+  loaded_status:
+    missing:
+    - action_queue
+    - review_template
+    - burndown_table
+    - burndown_report
+    - generation_manifest
+    stale: []
+    degraded: []
+    used:
+    - gate_results
+    - generation_manifest
+evidence_trace:
+  used_signals:
+  - signal_name: mv_hotspot_coverage_risk
+    signal_type: materialized_view
+    used_for: used_for_testing
+    decision_effect: Translates structural risk into concrete test-placement decisions.
+  suppressed_signals:
+  - signal_name: mv_empty_noise
+    signal_type: materialized_view
+    suppression_reason: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    revisit_condition: Deprecate/delete candidate if still empty next runs.
+  - signal_name: mv_guardian_inventory
+    signal_type: materialized_view
+    suppression_reason: Audit math unless mapped to a current failing gate.
+    revisit_condition: Audit; do not treat as blocker by itself.
+  - signal_name: mv_p0_ratchet_inventory
+    signal_type: materialized_view
+    suppression_reason: Useful after CI is green to lower accepted ratchet debt.
+    revisit_condition: Schedule after-green burn-down.
+  missing_signals: []
+  stale_signals: []

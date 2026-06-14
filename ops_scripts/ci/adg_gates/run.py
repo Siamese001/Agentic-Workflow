@@ -16,8 +16,10 @@ Convergence DB 34b27693-f55c-8110-bdab-dd477efb17e4):
     - Emits ONE JSON artifact: artifacts/adg/adg_gate_results_<ts>.json
     - Appends to the existing JSONL sink for trend queries
     - No markdown generation — use `tools/adg/query.py` for trend views
-    - Emits DEFERRED_SCOPE: lines to stdout for CI regressions (consumed by
-      the post_agent_deferred_scope_capture hook per Constitutional §24)
+    - Emits DEFERRED_SCOPE: lines to stdout for CI regressions (advisory stdout
+      only — the post_agent_deferred_scope_capture consumer hook was retired in
+      enforcement-surface-consolidation-d8b3f6 W7; native spawn_task supersedes
+      the marker->hook->Notion pipeline per Constitutional §24 / ADR-096)
 
 Exit code:
     0  — all BLOCK gates pass AND all RATCHET gates at-or-below baseline

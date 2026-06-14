@@ -21,6 +21,7 @@ import json
 import os
 import re
 import subprocess as _subprocess
+import time
 from contextlib import contextmanager
 
 try:
@@ -1118,7 +1119,22 @@ def generate_full_adg(
     # failure to the skip ledger for forensics, then fail fast with a pointed
     # message instead of letting 12 gates error opaquely downstream.
     try:
-        _materialize_adg_views(paths.sqlite)
+        _mv_attempts = 4
+        for _mv_attempt in range(1, _mv_attempts + 1):
+            try:
+                _materialize_adg_views(paths.sqlite)
+                break
+            except _phase2_sqlite3.OperationalError as _mv_lock_exc:
+                if "database is locked" not in str(_mv_lock_exc).lower() or _mv_attempt == _mv_attempts:
+                    raise
+                _mv_sleep_s = min(30, 5 * _mv_attempt)
+                print(
+                    f"[ADG] MV materialize_all_views locked; retry "
+                    f"{_mv_attempt}/{_mv_attempts - 1} after {_mv_sleep_s}s",
+                    file=sys.stderr,
+                )
+                time.sleep(_mv_sleep_s)
+                _perform_wal_checkpoint(paths.sqlite)
     except (OSError, RuntimeError, ValueError, _phase2_sqlite3.Error) as _mv_exc:
         _record_pipeline_skip(
             adg_artifacts_dir, ts, layer="MV", name="materialize_all_views", exc=_mv_exc
@@ -1719,6 +1735,53 @@ def generate_full_adg(
             message="mandatory JSON/YAML review template",
         )
 
+    # --- Mandatory BCG executive synthesis (post review template; non-blocking) ---
+    bcg_summary_path: Path | None = None
+    try:
+        from tools.reports.adg_bcg_executive_synthesis import emit_bcg_executive_summary  # noqa: PLC0415
+
+        gate_results_path = Path(_dispatcher_json_path) if _dispatcher_json_path else None
+        _p7_paths = {
+            "structural_outputs": adg_artifacts_dir / f"adg_structural_outputs_{ts}.json",
+            "refactor_accelerator": adg_artifacts_dir / f"adg_refactor_accelerator_{ts}.json",
+            "graphdb_queries": adg_artifacts_dir / f"adg_graphdb_queries_{ts}.json",
+            "runtime_spine": adg_artifacts_dir / f"adg_runtime_spine_{ts}.json",
+            "graphdb_projection": adg_artifacts_dir / f"adg_graphdb_projection_{ts}.json",
+            "graphdb_metadata": adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json",
+            "graphdb_index": adg_artifacts_dir / f"adg_graphdb_index_{ts}.json",
+            "graph_watchlist": adg_artifacts_dir / f"adg_graph_watchlist_{ts}.json",
+            "p0_wave_plan": p0_wave_plan if isinstance(p0_wave_plan, Path) else adg_artifacts_dir / f"adg_p0_remediation_wave_plan_{ts}.json",
+        }
+        _bcg_rc, bcg_summary_path = emit_bcg_executive_summary(
+            adg_artifacts_dir=adg_artifacts_dir,
+            ts=ts,
+            sqlite_path=prod_sqlite_path,
+            gate_results_path=gate_results_path,
+            action_queue_path=action_queue_path,
+            review_template_path=review_template_path,
+            burndown_path=adg_artifacts_dir / "adg_burndown_table.json",
+            p7_paths=_p7_paths,
+            print_inline=True,
+            fail_closed=False,
+        )
+        if _bcg_rc != 0:
+            print(f"[ADG] WARNING: BCG executive synthesis returned {_bcg_rc}", file=sys.stderr)
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _bcg_exc:
+        print(f"[adg_bcg_executive_synthesis] SUMMARY_ERROR={_bcg_exc}", file=sys.stderr)
+
+    _rec_bcg = _current_recorder()
+    if _rec_bcg is not None:
+        _rec_bcg.record(
+            "adg_bcg_executive_summary",
+            phase="post-ADG",
+            kind="subprocess",
+            blocking_mode="warn",
+            status="pass" if bcg_summary_path is not None and bcg_summary_path.is_file() else "fail",
+            exit_code=0 if bcg_summary_path is not None and bcg_summary_path.is_file() else 1,
+            script_rel="tools/reports/adg_bcg_executive_synthesis.py",
+            message="mandatory JSON/YAML/Markdown BCG executive synthesis",
+        )
+
     # --- Create zip archive of consolidated artifacts + Wave 6 reports ---
     # Build artifact file list for zip (no JSON graphs - 100.75 MB savings)
     # NOTE: adg_graphsnap_*.json is an internal drift detection state file, not archived
@@ -1786,6 +1849,15 @@ def generate_full_adg(
         review_template_yaml_path = review_template_path.with_suffix(".yaml")
         if review_template_yaml_path.is_file():
             extra_files.append(review_template_yaml_path)
+    if bcg_summary_path is not None and bcg_summary_path.is_file():
+        extra_files.append(bcg_summary_path)
+        for _bcg_suffix in (".yaml", ".md"):
+            _bcg_peer = bcg_summary_path.with_suffix(_bcg_suffix)
+            if _bcg_peer.is_file():
+                extra_files.append(_bcg_peer)
+        for _bcg_latest in adg_artifacts_dir.glob("adg_bcg_executive_summary_latest.*"):
+            if _bcg_latest.is_file():
+                extra_files.append(_bcg_latest)
     if watchlist_path is not None and watchlist_path.exists():
         extra_files.append(watchlist_path)
     if graph_watchlist_path is not None and graph_watchlist_path.exists():
@@ -2332,6 +2404,34 @@ def main() -> None:
                 ts=ts,
                 action_queue=adg_artifacts_dir / f"adg_action_queue_{ts}.json",
                 generation_manifest=adg_artifacts_dir / f"adg_generation_manifest_{ts}.json",
+                print_inline=False,
+                fail_closed=False,
+            )
+        except ImportError:
+            pass
+        try:
+            from tools.reports.adg_bcg_executive_synthesis import emit_bcg_executive_summary  # noqa: PLC0415
+
+            _dispatcher_latest = _resolve_dispatcher_results_path("", adg_artifacts_dir)
+            emit_bcg_executive_summary(
+                adg_artifacts_dir=adg_artifacts_dir,
+                ts=ts,
+                sqlite_path=sqlite_candidate,
+                gate_results_path=Path(_dispatcher_latest) if _dispatcher_latest else None,
+                action_queue_path=adg_artifacts_dir / f"adg_action_queue_{ts}.json",
+                review_template_path=adg_artifacts_dir / f"adg_review_template_{ts}.json",
+                burndown_path=adg_artifacts_dir / "adg_burndown_table.json",
+                p7_paths={
+                    "structural_outputs": adg_artifacts_dir / f"adg_structural_outputs_{ts}.json",
+                    "refactor_accelerator": adg_artifacts_dir / f"adg_refactor_accelerator_{ts}.json",
+                    "graphdb_queries": adg_artifacts_dir / f"adg_graphdb_queries_{ts}.json",
+                    "runtime_spine": adg_artifacts_dir / f"adg_runtime_spine_{ts}.json",
+                    "graphdb_projection": adg_artifacts_dir / f"adg_graphdb_projection_{ts}.json",
+                    "graphdb_metadata": adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json",
+                    "graphdb_index": adg_artifacts_dir / f"adg_graphdb_index_{ts}.json",
+                    "graph_watchlist": adg_artifacts_dir / f"adg_graph_watchlist_{ts}.json",
+                    "p0_wave_plan": adg_artifacts_dir / f"adg_p0_remediation_wave_plan_{ts}.json",
+                },
                 print_inline=False,
                 fail_closed=False,
             )

@@ -32,10 +32,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Files that are KNOWN to target the Wave/Phase Convergence DB and must comply.
 # Listed explicitly to avoid false positives on unrelated scripts that happen
 # to mention Notion terminology.
-KNOWN_WRITERS = [
-    REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_deferred_scope_capture.py",
-    REPO_ROOT / ".claude" / "governance/scripts" / "post_agent_next_step_capture.py",
-]
+# The DEFERRED_SCOPE/NEXT_STEP auto-poster writers (post_agent_deferred_scope_capture.py,
+# post_agent_next_step_capture.py) were retired in enforcement-surface-consolidation-d8b3f6 W7
+# (native spawn_task supersedes the marker->hook->Notion pipeline; constitutional §24 / ADR-096).
+# No live `_build_notion_payload` writer to WAVE_PHASE_DB remains. This gate stays as a guardrail:
+# any future writer added here is re-checked against the MECE v2 schema.
+KNOWN_WRITERS: list[Path] = []
 
 RETIRED_FIELDS = {
     "Sub-Wave",

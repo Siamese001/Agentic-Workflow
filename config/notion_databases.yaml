@@ -33,7 +33,7 @@ databases:
     id: "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
     database_id: "aa8d2507-101e-4384-81d9-60ea3fe33876"
     read_trigger: '"plan status", "phase progress", "wave status", "what''s blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)**'
-    write_trigger: "On wave/phase completion or status change. Post-hook `post_agent_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band."
+    write_trigger: "On wave/phase completion or status change. The DEFERRED_SCOPE/NEXT_STEP auto-post hooks were retired (enforcement-surface-consolidation-d8b3f6 W7); out-of-scope work now surfaces via native spawn_task (constitutional §24 / ADR-096). The deferred_scope_scorer P-Band engine is retained for batch backlog scoring."
 
   - key: plans
     name: "Plans"

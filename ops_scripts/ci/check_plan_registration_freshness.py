@@ -34,6 +34,7 @@ Constitutional tie-in: §36.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -202,6 +203,67 @@ def _staged_new_plans() -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# Content-drift detection (W4)
+# ---------------------------------------------------------------------------
+
+
+def content_drift_report(pr: Any) -> list[dict[str, str]]:
+    """Return plans whose on-disk content digest differs from the digest recorded
+    in the registration queue (i.e. the plan file was edited after registration).
+
+    Each drift row: ``{slug, stored_digest, current_digest, path}``. Rows with a
+    null/missing stored digest (legacy marker capture), no ``path``, or no on-disk
+    file are skipped silently.
+    """
+    drift: list[dict[str, str]] = []
+    for row in pr._read_queue():
+        stored = row.get("content_digest")
+        path = row.get("path")
+        if not stored or not path:
+            continue
+        plan_file = REPO_ROOT / path
+        if not plan_file.is_file():
+            continue
+        current = hashlib.sha256(plan_file.read_text(encoding="utf-8").encode("utf-8")).hexdigest()
+        if current != stored:
+            drift.append(
+                {
+                    "slug": str(row.get("slug") or ""),
+                    "stored_digest": str(stored),
+                    "current_digest": current,
+                    "path": str(path),
+                }
+            )
+    return drift
+
+
+def _content_drift_fail_closed() -> bool:
+    return os.environ.get("PLAN_CONTENT_DRIFT_FAIL_CLOSED", "").strip().lower() in {"1", "true", "yes"}
+
+
+def _run_digest_drift() -> int:
+    """``--digest-drift`` mode: report content drift. Advisory (exit 0) by default;
+    fail-closed (exit 1) under ``PLAN_CONTENT_DRIFT_FAIL_CLOSED``."""
+    try:
+        helper = _load_helper()
+    except RuntimeError as exc:
+        print(f"[check_plan_registration_freshness] ERROR — {exc}", file=sys.stderr)
+        return 1 if _content_drift_fail_closed() else 0
+    drift = content_drift_report(helper)
+    if not drift:
+        print("[check_plan_registration_freshness] OK — no plan content drift.")
+        return 0
+    for row in drift:
+        print(
+            f"[check_plan_registration_freshness] CONTENT_DRIFT — {row['slug']} "
+            f"({row['path']}): stored={row['stored_digest'][:12]} "
+            f"current={row['current_digest'][:12]}",
+            file=sys.stderr,
+        )
+    return 1 if _content_drift_fail_closed() else 0
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -218,11 +280,16 @@ def main(argv: list[str] | None = None) -> int:
                         help="Force refresh of the local cache from Notion")
     parser.add_argument("--all", action="store_true",
                         help="Full-repo drift scan instead of staged-only")
+    parser.add_argument("--digest-drift", action="store_true",
+                        help="Report plans whose on-disk content digest drifted from the registered digest")
     args = parser.parse_args(argv)
 
     if os.environ.get("PLAN_REGISTRATION_BYPASS") == "1":
         print("[check_plan_registration_freshness] BYPASS active — skipping.", file=sys.stderr)
         return 0
+
+    if args.digest_drift:
+        return _run_digest_drift()
 
     try:
         helper = _load_helper()

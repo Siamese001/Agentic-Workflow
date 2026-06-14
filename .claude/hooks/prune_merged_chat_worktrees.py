@@ -7,8 +7,12 @@ other half of the lifecycle: once such a chat worktree's branch is fully merged 
 (``git worktree remove`` + ``git branch -d``). Merged + clean ⇒ zero data loss.
 
 Hard safety envelope — a worktree is reaped ONLY when ALL hold:
-  * it lives under the chat-worktree root (``.chat-worktrees/``) and its branch matches ``chat/*``
-    — long-lived feature/codex/fix worktrees and the primary checkout are NEVER eligible;
+  * its branch matches an ENABLED reap prefix. Default is ``chat/`` only, and ``chat/*``
+    worktrees must additionally live under the chat-worktree root (``.chat-worktrees/``)
+    — long-lived ``feat/``/``codex/``/``fix/`` worktrees and the primary checkout are NEVER
+    eligible by default. An operator can opt non-chat prefixes in via
+    ``WORKTREE_REAP_BRANCH_PREFIXES`` (item #4); those may live anywhere (sibling worktrees);
+  * it does NOT carry a ``.keep-worktree`` marker file (universal opt-out — kept regardless);
   * it is NOT the worktree this session is running in (never reap your own CWD);
   * its branch is an ANCESTOR of ``origin/main`` (fully merged — unmerged work is never touched);
   * its working tree is CLEAN (``git status --porcelain`` empty — uncommitted work is never touched);
@@ -18,7 +22,11 @@ Self-contained (no ``lib`` import). Best-effort, fail-soft, always exits 0 — n
 
 Bypass: ``WORKTREE_MERGE_CLEANUP_BYPASS=1`` (also honors ``WORKTREE_PER_CHAT_BYPASS=1``).
 Dry-run (report, don't delete): ``WORKTREE_MERGE_CLEANUP_DRY_RUN=1``.
-Grace window: ``WORKTREE_CLEANUP_MIN_AGE_MINUTES`` (default ``0`` — reap as soon as merged+clean).
+Grace window: ``WORKTREE_CLEANUP_MIN_AGE_MINUTES`` (default ``30`` — never reap a worktree whose
+  HEAD is newer than N minutes; item #1, raised from ``0`` to end the mid-session reap-race).
+Reap prefixes: ``WORKTREE_REAP_BRANCH_PREFIXES`` csv (default ``chat/``; opt non-chat prefixes
+  in to auto-clean merged sibling worktrees — item #4).
+Opt-out marker: a ``.keep-worktree`` file in any worktree exempts it permanently.
 Worktree root override: ``CHAT_WORKTREE_ROOT`` (default ``<repo-parent>/.chat-worktrees``).
 Trunk ref override: ``WORKTREE_CLEANUP_TRUNK_REF`` (default ``origin/main``).
 """
@@ -67,12 +75,69 @@ def _trunk_ref() -> str:
     return os.environ.get("WORKTREE_CLEANUP_TRUNK_REF", "").strip() or "origin/main"
 
 
+# Item #1: default grace window raised 0 -> 30 min to end the mid-session reap-race
+# (a sibling chat's just-merged worktree being deleted before its session finishes
+# writing into it). NOTE: this is the *env-reader* default used by main(); the
+# ``reap_merged_chat_worktrees`` signature default stays ``0`` so unit tests that
+# expect immediate reaping keep passing.
+_DEFAULT_MIN_AGE_MINUTES = 30
+
+
 def _min_age_seconds() -> int:
     raw = os.environ.get("WORKTREE_CLEANUP_MIN_AGE_MINUTES", "").strip()
+    if not raw:
+        return _DEFAULT_MIN_AGE_MINUTES * 60
     try:
-        return max(0, int(float(raw))) * 60 if raw else 0
+        return max(0, int(float(raw))) * 60
     except ValueError:
-        return 0
+        return _DEFAULT_MIN_AGE_MINUTES * 60
+
+
+# Item #4: which branch prefixes are eligible for auto-reap. Default ``chat/`` only
+# (unchanged behavior). An operator can add ``feat/``/``codex/``/``fix/`` to auto-clean
+# merged sibling worktrees; non-chat prefixes are allowed to live anywhere (not just
+# under the chat root). A ``.keep-worktree`` marker exempts any worktree regardless.
+_DEFAULT_REAP_PREFIXES: tuple[str, ...] = ("chat/",)
+
+
+def _reap_prefixes() -> tuple[str, ...]:
+    raw = (os.environ.get("WORKTREE_REAP_BRANCH_PREFIXES") or "").strip()
+    if not raw:
+        return _DEFAULT_REAP_PREFIXES
+    parsed = tuple(p.strip() for p in raw.split(",") if p.strip())
+    return parsed or _DEFAULT_REAP_PREFIXES
+
+
+def _matched_prefix(branch: str, prefixes: tuple[str, ...]) -> str | None:
+    for p in prefixes:
+        if p and branch.startswith(p):
+            return p
+    return None
+
+
+def _worktree_age_seconds(path: Path, now: float) -> float | None:
+    """Age (seconds) of a worktree by its MOST RECENT signal, or ``None`` if unknown.
+
+    Signals: (a) the HEAD commit time, and (b) the worktree's own creation mtime (the
+    per-worktree ``.git`` gitdir-link file is written at ``git worktree add`` time and is
+    not touched by content edits — a stable creation proxy). The smaller (more recent)
+    age wins so a freshly-created worktree is protected even when its HEAD points at an old
+    trunk tip (the empty-but-just-created reap-race; item #1).
+    """
+    ages: list[float] = []
+    rc_ts, ts = _git("show", "-s", "--format=%ct", "HEAD", cwd=path)
+    if rc_ts == 0:
+        try:
+            ages.append(now - float(ts))
+        except (ValueError, TypeError):
+            pass
+    for probe in (path / ".git", path):
+        try:
+            ages.append(now - probe.stat().st_mtime)
+            break
+        except OSError:
+            continue
+    return min(ages) if ages else None
 
 
 def _parse_worktrees(porcelain: str) -> list[dict[str, str]]:
@@ -106,8 +171,16 @@ def reap_merged_chat_worktrees(
     dry_run: bool = False,
     min_age_seconds: int = 0,
     do_fetch: bool = True,
+    reap_branch_prefixes: tuple[str, ...] = ("chat/",),
 ) -> dict:
-    """Reap fully-merged, clean chat worktrees. Returns a structured report (never raises)."""
+    """Reap fully-merged, clean chat worktrees. Returns a structured report (never raises).
+
+    ``reap_branch_prefixes`` (item #4) is the set of enabled branch prefixes. The default
+    ``("chat/",)`` preserves the original behavior: only ``chat/*`` worktrees *under the
+    chat root* are eligible. Adding non-chat prefixes (e.g. ``feat/``) lets the reaper also
+    auto-clean merged sibling worktrees living anywhere. A ``.keep-worktree`` marker file in
+    any worktree exempts it permanently.
+    """
     report: dict = {"scanned": 0, "reaped": [], "skipped": [], "dry_run": dry_run, "status": "ok"}
     repo_root = repo_root.resolve()
     cur = (current_worktree or repo_root).resolve()
@@ -130,18 +203,27 @@ def reap_merged_chat_worktrees(
         def skip(reason: str) -> None:
             report["skipped"].append({"path": str(path), "branch": branch, "reason": reason})
 
-        # Eligibility: only ephemeral chat worktrees under the chat root, on a chat/* branch.
+        # Eligibility (item #4): branch must match an enabled reap prefix. ``chat/*`` is
+        # ephemeral-by-construction and must live under the chat root; non-chat prefixes
+        # (opt-in) may live anywhere (sibling worktrees).
         try:
             under_chat_root = root == path or root in path.parents
         except (OSError, ValueError):
             under_chat_root = False
-        if not under_chat_root:
-            continue  # not a chat worktree — silently ignore (primary, feature, codex, ...)
-        if not branch or branch in PROTECTED or not branch.startswith("chat/"):
+        matched = _matched_prefix(branch, reap_branch_prefixes)
+        # ``chat/*`` and non-matching branches are only *considered* under the chat root;
+        # outside it they are silently ignored (preserves the "ignore manual worktrees" rule).
+        if (matched == "chat/" or matched is None) and not under_chat_root:
+            continue  # not an ephemeral chat worktree under the root — silently ignore
+        if matched is None or not branch or branch in PROTECTED:
             skip("not_chat_branch")
             continue
         if path == cur:
             skip("current_worktree")
+            continue
+        # Universal opt-out marker: a worktree carrying ``.keep-worktree`` is never reaped.
+        if (path / ".keep-worktree").exists():
+            skip("keep_marker")
             continue
 
         # Merged into trunk?
@@ -157,13 +239,14 @@ def reap_merged_chat_worktrees(
             continue
 
         # Grace window — protect a worktree another live chat just created+merged.
+        # Recency is the MOST RECENT of (a) the HEAD commit time and (b) the worktree's
+        # own creation time. (b) is essential (item #1): a freshly-created worktree cut
+        # from an OLD trunk tip has an old HEAD commit, so keying only on HEAD would not
+        # protect the empty-but-just-created window — the exact reap-race that orphans a
+        # sibling session's first write.
         if min_age_seconds > 0:
-            rc_ts, ts = _git("show", "-s", "--format=%ct", "HEAD", cwd=path)
-            try:
-                age = now - float(ts)
-            except (ValueError, TypeError):
-                age = min_age_seconds + 1  # unknown age → don't let it block reaping
-            if rc_ts == 0 and age < min_age_seconds:
+            recent_age = _worktree_age_seconds(path, now)
+            if recent_age is not None and recent_age < min_age_seconds:
                 skip("within_grace_window")
                 continue
 
@@ -210,6 +293,7 @@ def main() -> int:
         current_worktree=REPO_ROOT,
         dry_run=os.environ.get("WORKTREE_MERGE_CLEANUP_DRY_RUN") == "1",
         min_age_seconds=_min_age_seconds(),
+        reap_branch_prefixes=_reap_prefixes(),
     )
     reaped = report.get("reaped") or []
     if reaped:

@@ -377,8 +377,89 @@ def _graph_ranked_ibm_bullets_plan(
         "_graph_expansion_role_family_key": role_key,
     }
     plan, ordered, allowed = _stamp_unify_canonical_bullet_ids(plan)
+    _rebind_ibm_slot_claim_text_to_bundle(plan)
     clean = {k: v for k, v in plan.items() if not str(k).startswith("_")}
     return clean, ordered, allowed
+
+
+def _rebind_ibm_slot_claim_text_to_bundle(plan: dict[str, Any]) -> None:
+    """Align each ``bul_ibm_*`` slot's judge-facing ``claim_text`` with the role-episode
+    BUNDLE that actually generates its content.
+
+    The slot->candidate-fact selection (ranked, then stamped to canonical bullet ids by
+    order above) and the slot->bundle map used by GENERATION
+    (``IBM_BULLET_SLOT_BUNDLE_MAP`` -> the C0 evidence pack) are computed independently.
+    Without this rebind, the X1D grounding judge grades the bundle-generated bullet against
+    an UNRELATED ranked candidate fact's ``claim_text`` (e.g. the bul_ibm_005 IBM-AWS
+    alliance bullet vs a Salesforce "$10M ARR" fact) and fails ``factual_support`` /
+    ``fact_bullet_mismatch``. Rebinding ``claim_text`` to the bundle's own narrative +
+    approved metric-outcome labels makes ``allowed_fact_packet`` match what the bullet is
+    actually grounded in.
+
+    Generation is unaffected (it writes from the role-episode bundle pack, never from
+    ``claim_text`` — which is forbidden in the IBM prompt); ``candidate_fact_id`` lineage is
+    preserved. Only the bundle's PROSE story + approved metric labels are used (never the
+    bound-skill ``allowed_phrases``, which carry HOLD-forbidden $30M/$22M figures).
+    """
+    try:
+        from apps_rg.runtime.sections.ibm_graph_role_episode_registry import (
+            BUNDLES_PATH as _IBM_BUNDLES_PATH,
+            get_bundle_by_id,
+        )
+        from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+            IBM_BULLET_SLOT_BUNDLE_MAP,
+        )
+        from apps_rg.runtime.sections.role_episode_metric_registry import (
+            metric_outcome_nodes_from_path,
+        )
+    except Exception:  # guardian: allow-broad-except -- optional cross-section import boundary; fail-soft
+        return
+    try:
+        metric_nodes = metric_outcome_nodes_from_path(_IBM_BUNDLES_PATH)
+    except Exception:  # guardian: allow-broad-except -- metric registry load fail-soft
+        metric_nodes = {}
+    for fact in plan.get("facts") or []:
+        if not isinstance(fact, dict):
+            continue
+        slot = str(fact.get("fact_id") or "").strip()
+        bundle_id = IBM_BULLET_SLOT_BUNDLE_MAP.get(slot)
+        if not bundle_id:
+            continue
+        try:
+            bundle = get_bundle_by_id(bundle_id)
+        except Exception:  # guardian: allow-broad-except -- bundle lookup fail-soft; keep prior claim_text
+            continue
+        if not isinstance(bundle, dict):
+            continue
+        parts: list[str] = []
+        for key in ("claim_action", "claim_scope"):
+            val = str(bundle.get(key) or "").strip()
+            if val:
+                parts.append(val)
+        for sig_key in ("executive_scope_signals", "architecture_scope_signals"):
+            for sig in bundle.get(sig_key) or []:
+                txt = str(sig).strip()
+                if txt:
+                    parts.append(txt)
+        # Approved metric-outcome labels only (materialized = approved); these carry the
+        # bullet's claimable metric (e.g. "20% joint revenue growth") so the judge can
+        # verify it. Held/unapproved figures never reach this map.
+        for mid in bundle.get("linked_metric_outcome_ids") or []:
+            node = metric_nodes.get(str(mid).strip()) or {}
+            label = str(node.get("metric") or "").strip()
+            if label:
+                parts.append(label)
+        grounded = " ".join(p for p in parts if p).strip()
+        if grounded:
+            fact["claim_text"] = grounded
+            fact["role_episode_bundle_id"] = bundle_id
+            linked = [
+                str(x).strip()
+                for x in (bundle.get("linked_source_fact_ids") or [])
+                if str(x).strip()
+            ]
+            if linked:
+                fact["bundle_linked_source_fact_ids"] = linked
 
 
 def assert_graph_skills_section(section_id: str) -> None:

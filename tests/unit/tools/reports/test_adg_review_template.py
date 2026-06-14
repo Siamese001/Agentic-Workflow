@@ -13,6 +13,7 @@ from tools.reports.adg_review_template import (
     render_inline_review_template,
     validate_review_template,
 )
+from tools.reports.adg_decision_synthesis import artifact_consistency_status
 
 
 def _write_gate_results(path: Path) -> None:
@@ -238,6 +239,12 @@ def test_review_template_names_tracked_records_and_separates_guardian_math(tmp_p
     assert "testing_hotspot_overlay" not in doc
     assert doc["priority_execution_plan"]["title"] == "Priority Execution Plan"
     assert doc["priority_execution_plan"]["rows"]
+    synthesis = doc["decision_synthesis"]
+    assert synthesis["band_counts"]["P0"]["ratchet_floor_records"] == 4376
+    assert synthesis["band_counts"]["P0"]["open_non_ratchet_records"] == 848
+    assert synthesis["band_counts"]["P0"]["clear_gates"] == 1
+    assert synthesis["after_green_plan"]["rows"][0]["work"] == "burn_down_ratchet_floor"
+    assert synthesis["artifact_consistency"]["status"] == "ok"
     assert "Testing Gap Risk" in doc["priority_execution_plan"]["rows"][0]["testing_mv_action"]
     attack_rows = doc["adg_attack_order"]["rows"]
     assert [row["work_class"] for row in attack_rows[:4]] == [
@@ -265,6 +272,28 @@ def test_review_template_names_tracked_records_and_separates_guardian_math(tmp_p
     assert high_signal["p0_relationships"]["open_non_ratchet_work_records"] == 848
     assert "checklist" not in doc["review_template"]
     assert validate_review_template(doc) == []
+
+    broken = dict(doc)
+    broken.pop("decision_synthesis")
+    assert "missing top-level field: decision_synthesis" in validate_review_template(broken)
+
+
+def test_artifact_consistency_reports_fail_open_and_fail_closed() -> None:
+    refs = [
+        {"artifact_key": "gate_results", "required": True, "exists": False},
+        {"artifact_key": "burndown", "required": True, "exists": True},
+        {"artifact_key": "action_queue", "required": False, "exists": True},
+    ]
+
+    fail_closed = artifact_consistency_status(required_artifacts=refs, fail_closed=True)
+    fail_open = artifact_consistency_status(required_artifacts=refs, fail_closed=False)
+
+    assert fail_closed["status"] == "fail_closed"
+    assert fail_open["status"] == "fail_open"
+    assert fail_closed["missing_required"] == ["gate_results"]
+    assert fail_closed["required_count"] == 2
+    assert fail_closed["present_required_count"] == 1
+    assert fail_closed["optional_present_count"] == 1
 
 
 def test_review_template_renders_executive_graphdb_testing_gap_brief(tmp_path: Path) -> None:
@@ -303,6 +332,10 @@ def test_review_template_renders_executive_graphdb_testing_gap_brief(tmp_path: P
     assert testing["counts"]["p1_urgent"] == 1
     assert testing["counts"]["coverage_absent"] == 1
     assert testing["top_files"][0]["file"] == "apps_rg/runtime/sections/executive_summary_lane.py"
+    mv_inventory = doc["graphdb_mv_analyst_summary"]["mv_inventory"]
+    hotspot = next(row for row in mv_inventory if row["mv_name"] == "mv_hotspot_coverage_risk")
+    assert hotspot["routing_status"] == "action_driver"
+    assert hotspot["priority"] == "next"
     assert "### Executive Decision Brief" in inline
     assert "### Testing Gap Risk" in inline
     assert "Fund a narrow unblock-and-test slice now." in inline
