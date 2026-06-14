@@ -502,6 +502,100 @@ def build_prewarm_payload(
     return payload
 
 
+# 20-block lookback: each cache breakpoint walks back at most 20 content blocks
+# to find a prior entry. A long agentic turn (many tool_use/tool_result pairs)
+# can exceed 20 blocks and silently miss; place an intermediate breakpoint every
+# <= this many blocks (15 leaves headroom under 20).
+_LOOKBACK_STRIDE = 15
+
+
+def place_multiturn_breakpoints(
+    messages: list[dict[str, Any]],
+    *,
+    ttl: str = CACHE_TTL_5M,
+    stride: int = _LOOKBACK_STRIDE,
+    max_markers: int = _MAX_CACHE_MARKERS,
+) -> list[dict[str, Any]]:
+    """Place ``cache_control`` breakpoints across a multi-turn ``messages`` list (P7).
+
+    Marks the LAST content block of the most-recent turn (so each subsequent
+    request reuses the whole prior-conversation prefix) plus an intermediate
+    breakpoint every ``stride`` (<= 15) content blocks, so a long agentic turn
+    never exceeds Anthropic's 20-block lookback window and silently misses.
+    Keeps only the ``max_markers`` (4) most-recent breakpoints — the
+    highest-value reuse points. Returns a NEW list (inputs are not mutated); any
+    pre-existing ``cache_control`` markers are cleared and re-placed.
+    """
+    out: list[dict[str, Any]] = []
+    flat: list[tuple[int, int]] = []  # (out_msg_index, block_index) for every block, in order
+    for msg in messages:
+        new_msg = dict(msg)
+        content = msg.get("content")
+        if isinstance(content, str):
+            blocks: list[dict[str, Any]] = [{"type": "text", "text": content}]
+        elif isinstance(content, list):
+            blocks = [
+                {k: v for k, v in b.items() if k != "cache_control"}
+                if isinstance(b, dict)
+                else {"type": "text", "text": str(b)}
+                for b in content
+            ]
+        else:
+            blocks = []
+        new_msg["content"] = blocks
+        out.append(new_msg)
+        for bi in range(len(blocks)):
+            flat.append((len(out) - 1, bi))
+
+    n = len(flat)
+    if n == 0:
+        return out
+
+    # Breakpoint at the last block, then every `stride` blocks back; keep the
+    # most-recent `max_markers`.
+    positions = list(range(n - 1, -1, -max(stride, 1)))
+    positions = sorted(positions)[-max_markers:]
+    for pos in positions:
+        mi, bi = flat[pos]
+        out[mi]["content"][bi]["cache_control"] = _cache_control(ttl)
+    return out
+
+
+def append_operator_system_message(
+    messages: list[dict[str, Any]], instruction: str
+) -> list[dict[str, Any]]:
+    """Append an operator instruction as a ``role:"system"`` message (P7).
+
+    The mid-conversation system channel (beta header
+    ``mid-conversation-system-2026-04-07``) delivers operator instructions
+    WITHOUT editing the top-level system prompt — preserving the cached prefix —
+    and is the prompt-injection-safe operator channel (vs embedding the
+    instruction in user text). Must follow a user message; never ``messages[0]``.
+    Returns a NEW list (input not mutated). Empty ``instruction`` is a no-op copy.
+    """
+    if not instruction:
+        return list(messages)
+    return [*messages, {"role": "system", "content": instruction}]
+
+
+def split_for_cache_priming(
+    payloads: "Sequence[dict[str, Any]]",
+) -> "tuple[dict[str, Any] | None, list[dict[str, Any]]]":
+    """Split identical-prefix payloads into a ``(primer, rest)`` pair (P8).
+
+    Concurrent identical-prefix requests all pay full price — a cache entry is
+    readable only AFTER the first response begins streaming. So send the primer,
+    await its FIRST STREAMED TOKEN (not the full response), then fire the rest so
+    they read the cache the primer just wrote. This helper does the pure
+    sequencing; the await-first-token timing is the caller's async/streaming
+    concern. Returns ``(None, [])`` for empty input.
+    """
+    items = list(payloads)
+    if not items:
+        return None, []
+    return items[0], items[1:]
+
+
 def count_cache_markers(payload: dict[str, Any]) -> int:
     """Utility for tests/telemetry: count cache_control markers in a payload."""
     count = 0
@@ -520,6 +614,7 @@ __all__ = [
     "CACHE_TTL_1H",
     "CacheStrategy",
     "MODEL_CACHE_FLOOR_TOKENS",
+    "append_operator_system_message",
     "build_messages_payload",
     "build_prewarm_payload",
     "build_system_blocks",
@@ -527,7 +622,9 @@ __all__ = [
     "caches_query_tier",
     "count_cache_markers",
     "floor_tokens_for_model",
-    "needs_rewarm",
-    "ttl_seconds",
     "min_cacheable_chars",
+    "needs_rewarm",
+    "place_multiturn_breakpoints",
+    "split_for_cache_priming",
+    "ttl_seconds",
 ]
