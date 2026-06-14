@@ -14,7 +14,9 @@ No hardcoded providers. No app-specific code.
 
 from __future__ import annotations
 
+import copy
 import hashlib
+import json
 import logging
 import os
 import time
@@ -81,9 +83,18 @@ def _local_vllm_top_p(request: ProviderRequest, profile: ProviderProfile) -> flo
 
 class ProviderGateway:
     """Generic provider gateway for LLM generation.
-    
+
     Enforces activation profile restrictions, allowlists, and budgets.
     All external provider calls go through this gateway.
+
+    Anthropic calls are provider-native: set ``ProviderRequest.anthropic_payload`` to
+    send a structured Messages-API request (``system`` / ``messages`` / ``tools`` /
+    ``cache_control`` markers / citations / beta features) verbatim. ``prompt_text`` is
+    the legacy/back-compat path used when no structured payload is supplied. The gateway
+    always owns ``model`` / ``max_tokens`` / ``temperature`` (a payload that re-declares
+    them is rejected fail-closed). When Anthropic returns usage, actual token counts —
+    including prompt-cache read/write — are recorded on ``ProviderResponse.invocation_meta``
+    and on the receipt's ``token_usage``.
     """
     
     def __init__(
@@ -190,6 +201,7 @@ class ProviderGateway:
             output_text=response.text,
             error=response.error_message,
             model_used=response.model_used,
+            invocation_meta=getattr(response, "invocation_meta", None),
         )
         
         # Return response with receipt
@@ -416,7 +428,7 @@ class ProviderGateway:
 
         if vendor == "anthropic":
             return self._invoke_anthropic(
-                prompt=prompt,
+                request=request,
                 model_id=model_id,
                 api_key=api_key,
                 max_tokens=max_tokens,
@@ -465,14 +477,27 @@ class ProviderGateway:
     def _invoke_anthropic(
         self,
         *,
-        prompt: str,
+        request: ProviderRequest,
         model_id: str,
         api_key: str,
         max_tokens: int,
         temperature: float,
         profile: ProviderProfile,
     ) -> ProviderResponse:
-        """Call Anthropic messages API."""
+        """Call the Anthropic Messages API, provider-native.
+
+        ``request.anthropic_payload`` (when provided) is sent verbatim — preserving
+        ``system`` / ``messages`` / ``tools`` / ``cache_control`` markers / citations /
+        any other Messages-API field — instead of flattening ``prompt_text`` into a
+        single user message. ``model`` / ``max_tokens`` / ``temperature`` are always
+        supplied by the gateway from the profile/request and MUST NOT appear in the
+        payload (rejected fail-closed). When no structured payload is supplied the
+        legacy flat ``prompt_text`` shape is preserved.
+
+        Actual Anthropic usage (input / output / cache read+write tokens) is captured
+        into ``invocation_meta`` when the SDK returns it; usage/cache telemetry
+        extraction is fail-soft and never breaks the call.
+        """
         try:
             import anthropic as _anthropic  # type: ignore[import]
         except ImportError:
@@ -480,20 +505,43 @@ class ProviderGateway:
                 success=False, text="", receipt=None,
                 error_message="anthropic package not installed. Run: pip install anthropic",
             )
+
+        # Build + validate the payload and headers BEFORE the network call. These are
+        # config/billing hazards (e.g. a payload that re-declares max_tokens), so they
+        # fail closed with a clear message rather than silently proceeding.
+        try:
+            payload = self._anthropic_payload_from_request(request)
+            extra_headers = self._anthropic_extra_headers(request)
+        except ProviderGatewayError as exc:
+            _LOGGER.error("Anthropic payload/header rejected for %s: %s", profile.profile_id, exc)
+            return ProviderResponse(
+                success=False, text="", receipt=None,
+                error_message=f"Anthropic payload rejected: {exc}",
+            )
+
         try:
             client = _anthropic.Anthropic(api_key=api_key or None)
-            msg = client.messages.create(
-                model=model_id,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                messages=[{"role": "user", "content": prompt}],
+            create_kwargs: Dict[str, Any] = {
+                "model": model_id,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                **payload,
+            }
+            if extra_headers:
+                create_kwargs["extra_headers"] = extra_headers
+            msg = client.messages.create(**create_kwargs)
+            text = self._extract_anthropic_text(msg)
+            invocation_meta = self._anthropic_invocation_meta(
+                msg, payload=payload, request=request, profile=profile, model_id=model_id
             )
-            text = msg.content[0].text if msg.content else ""
             # P4 closed-loop cache telemetry (observability-only; never affects
             # generation). plan: prompt-cache-anthropic-best-practice-c7a1e9 (W1.1).
+            # Feeds the W1 cache-usage ledger; the richer structured fingerprint lives
+            # on invocation_meta. ``request.prompt_text`` is the legacy/flat fingerprint
+            # input (W1's own note: fingerprint the Tier-1 block once tiered prompts ship).
             self._record_cache_usage(
                 getattr(msg, "usage", None),
-                prompt=prompt,
+                prompt=request.prompt_text,
                 profile=profile,
                 model=getattr(msg, "model", model_id),
             )
@@ -501,7 +549,8 @@ class ProviderGateway:
                 success=True,
                 text=text,
                 receipt=None,
-                model_used=msg.model,
+                model_used=getattr(msg, "model", None) or model_id,
+                invocation_meta=invocation_meta,
             )
         except Exception as exc:  # guardian: allow-broad-exception -- P1 ADG burndown
             _LOGGER.error("Anthropic call failed for %s: %s", profile.profile_id, exc)
@@ -543,6 +592,181 @@ class ProviderGateway:
             )
         except Exception:  # guardian: allow-broad-exception -- cache telemetry is observability-only and must never affect generation
             _LOGGER.debug("cache-usage telemetry skipped", exc_info=True)
+
+    @staticmethod
+    def _anthropic_payload_from_request(request: ProviderRequest) -> Dict[str, Any]:
+        """Resolve the Messages-API payload for an Anthropic call.
+
+        Returns a defensive deep copy of ``request.anthropic_payload`` (validated), or
+        the legacy flat ``{"messages": [{"role": "user", "content": prompt_text}]}`` when
+        no structured payload was supplied. The caller's object is never mutated.
+        """
+        raw = request.anthropic_payload
+        if raw is None:
+            return {"messages": [{"role": "user", "content": request.prompt_text}]}
+        payload = copy.deepcopy(raw)
+        ProviderGateway._validate_anthropic_payload(payload)
+        return payload
+
+    @staticmethod
+    def _validate_anthropic_payload(payload: Any) -> None:
+        """Fail closed on a structurally invalid or gateway-owned-key Anthropic payload."""
+        if not isinstance(payload, dict):
+            raise ProviderGatewayError("anthropic_payload must be a dict")
+        gateway_owned = [k for k in ("model", "max_tokens", "temperature") if k in payload]
+        if gateway_owned:
+            raise ProviderGatewayError(
+                "anthropic_payload must not set gateway-owned keys "
+                f"{sorted(gateway_owned)} (model/max_tokens/temperature are supplied "
+                "by ProviderGateway from the profile/request)"
+            )
+        messages = payload.get("messages")
+        if not isinstance(messages, list) or not messages:
+            raise ProviderGatewayError(
+                "anthropic_payload must include a non-empty 'messages' list"
+            )
+
+    @staticmethod
+    def _anthropic_extra_headers(request: ProviderRequest) -> Dict[str, str]:
+        """Build per-request headers from beta + extra header fields (no beta by default)."""
+        beta = tuple(request.anthropic_beta_headers or ())
+        extra = dict(request.anthropic_extra_headers or {})
+        if beta and "anthropic-beta" in extra:
+            raise ProviderGatewayError(
+                "conflicting anthropic-beta header: set it via anthropic_beta_headers OR "
+                "anthropic_extra_headers, not both"
+            )
+        headers: Dict[str, str] = {}
+        if beta:
+            headers["anthropic-beta"] = ",".join(beta)
+        headers.update(extra)
+        return headers
+
+    @staticmethod
+    def _extract_anthropic_text(msg: Any) -> str:
+        """Return the first text block's text (skips thinking / tool_use blocks)."""
+        content = getattr(msg, "content", None) or []
+        for block in content:
+            if getattr(block, "type", None) == "text":
+                return getattr(block, "text", "") or ""
+        # Fallback: a legacy single-block shape without a typed ``.type``.
+        if content:
+            return getattr(content[0], "text", "") or ""
+        return ""
+
+    def _anthropic_invocation_meta(
+        self,
+        msg: Any,
+        *,
+        payload: Dict[str, Any],
+        request: ProviderRequest,
+        profile: ProviderProfile,
+        model_id: str,
+    ) -> Dict[str, Any]:
+        """Assemble invocation metadata: actual usage + cache fingerprint (fail-soft)."""
+        usage = self._extract_anthropic_usage_dict(msg)
+        return {
+            "provider_profile_id": str(profile.profile_id),
+            "model_id": str(model_id),
+            "anthropic_usage": usage,
+            "input_tokens": usage.get("input_tokens"),
+            "output_tokens": usage.get("output_tokens"),
+            "cache_creation_input_tokens": usage.get("cache_creation_input_tokens"),
+            "cache_read_input_tokens": usage.get("cache_read_input_tokens"),
+            "cache_hit_ratio": self._anthropic_cache_hit_ratio(usage),
+            "cache_fingerprint": self._anthropic_cache_fingerprint(payload, request.prompt_text),
+            "cache_marker_count": self._count_cache_markers(payload),
+        }
+
+    @staticmethod
+    def _extract_anthropic_usage_dict(msg: Any) -> Dict[str, Any]:
+        """Extract actual Anthropic usage. Fail-soft: returns {} on any shape mismatch."""
+        usage_obj = getattr(msg, "usage", None)
+        if usage_obj is None:
+            return {}
+        out: Dict[str, Any] = {}
+        for key in (
+            "input_tokens",
+            "output_tokens",
+            "cache_creation_input_tokens",
+            "cache_read_input_tokens",
+            "service_tier",
+        ):
+            val = getattr(usage_obj, key, None)
+            if val is not None:
+                out[key] = val
+        for key in ("cache_creation", "server_tool_use"):
+            val = getattr(usage_obj, key, None)
+            if val is not None:
+                out[key] = ProviderGateway._to_plain(val)
+        return out
+
+    @staticmethod
+    def _to_plain(obj: Any) -> Any:
+        """Best-effort convert an SDK usage sub-object to a plain JSON-able value."""
+        for attr in ("model_dump", "to_dict", "dict"):
+            method = getattr(obj, attr, None)
+            if callable(method):
+                try:
+                    return method()
+                except (TypeError, ValueError, AttributeError):
+                    continue
+        if obj is None or isinstance(obj, (str, int, float, bool, dict, list)):
+            return obj
+        return str(obj)
+
+    @staticmethod
+    def _anthropic_cache_hit_ratio(usage: Dict[str, Any]) -> Optional[float]:
+        """cache_read / total_input_tokens, or None when usage is absent."""
+        read = usage.get("cache_read_input_tokens") or 0
+        create = usage.get("cache_creation_input_tokens") or 0
+        fresh = usage.get("input_tokens") or 0
+        total = read + create + fresh
+        if total <= 0:
+            return None
+        return round(read / total, 4)
+
+    @staticmethod
+    def _count_cache_markers(payload: Dict[str, Any]) -> int:
+        """Count cache_control markers across system + message content blocks."""
+        count = 0
+        for block in payload.get("system", []) or []:
+            if isinstance(block, dict) and "cache_control" in block:
+                count += 1
+        for message in payload.get("messages", []) or []:
+            content = message.get("content") if isinstance(message, dict) else None
+            if isinstance(content, list):
+                for block in content:
+                    if isinstance(block, dict) and "cache_control" in block:
+                        count += 1
+        return count
+
+    @staticmethod
+    def _anthropic_cache_fingerprint(payload: Dict[str, Any], fallback_prompt: str) -> str:
+        """Fingerprint the stable cache prefix: tools > system > cached msg prefix > prompt.
+
+        Distinguishes which cacheable region changed across calls (tools / system /
+        cached message prefix) vs the volatile user suffix. Deterministic (sorted keys).
+        """
+        def _digest(obj: Any) -> str:
+            return hashlib.sha256(
+                json.dumps(obj, sort_keys=True, default=str).encode("utf-8")
+            ).hexdigest()[:32]
+
+        if isinstance(payload, dict):
+            tools = payload.get("tools")
+            if tools:
+                return "tools:" + _digest(tools)
+            system = payload.get("system")
+            if system:
+                return "system:" + _digest(system)
+            for message in payload.get("messages", []) or []:
+                content = message.get("content") if isinstance(message, dict) else None
+                if isinstance(content, list):
+                    cached = [b for b in content if isinstance(b, dict) and "cache_control" in b]
+                    if cached:
+                        return "msgprefix:" + _digest(cached)
+        return "prompt:" + _digest(fallback_prompt)
 
     def _invoke_openai_compat(
         self,
@@ -603,6 +827,39 @@ class ProviderGateway:
             model_used="deterministic",
         )
     
+    @staticmethod
+    def _token_usage_from_meta(
+        invocation_meta: Optional[Dict[str, Any]],
+        request: ProviderRequest,
+        output_text: str,
+    ) -> TokenUsage:
+        """Use actual provider usage when present; word-count heuristic otherwise.
+
+        For Anthropic, ``prompt_tokens`` reflects the *total* input processed —
+        fresh ``input_tokens`` plus cache-read and cache-write tokens — so the receipt
+        is honest about volume even when most of the prefix was served from cache.
+        """
+        if invocation_meta:
+            input_tokens = invocation_meta.get("input_tokens")
+            output_tokens = invocation_meta.get("output_tokens")
+            if input_tokens is not None or output_tokens is not None:
+                cache_read = invocation_meta.get("cache_read_input_tokens") or 0
+                cache_create = invocation_meta.get("cache_creation_input_tokens") or 0
+                prompt_tokens = int(input_tokens or 0) + int(cache_read) + int(cache_create)
+                completion_tokens = int(output_tokens or 0)
+                return TokenUsage(
+                    prompt_tokens=prompt_tokens,
+                    completion_tokens=completion_tokens,
+                    total_tokens=prompt_tokens + completion_tokens,
+                )
+        prompt_tokens = len(request.prompt_text.split()) * 2
+        completion_tokens = len(output_text.split()) * 2
+        return TokenUsage(
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            total_tokens=prompt_tokens + completion_tokens,
+        )
+
     def _build_receipt(
         self,
         *,
@@ -614,6 +871,7 @@ class ProviderGateway:
         output_text: str,
         error: Optional[str] = None,
         model_used: Optional[str] = None,
+        invocation_meta: Optional[Dict[str, Any]] = None,
     ) -> ProviderInvocationReceipt:
         """Build the invocation receipt."""
         # Compute digests
@@ -633,12 +891,9 @@ class ProviderGateway:
         )
         safety_status = SafetyStatus.SAFE  # Placeholder
         
-        # Estimate token usage (rough heuristic)
-        token_usage = TokenUsage(
-            prompt_tokens=len(request.prompt_text.split()) * 2,  # Rough estimate
-            completion_tokens=len(output_text.split()) * 2,
-            total_tokens=(len(request.prompt_text.split()) + len(output_text.split())) * 2,
-        )
+        # Prefer actual provider-reported usage (Anthropic surfaces it via invocation_meta);
+        # fall back to the word-count heuristic for stub / local / openai paths that do not.
+        token_usage = self._token_usage_from_meta(invocation_meta, request, output_text)
         
         # Build deterministic digest
         det_digest = hashlib.sha256(

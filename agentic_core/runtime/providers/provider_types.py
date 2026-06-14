@@ -160,6 +160,22 @@ class ProviderRequest:
     trace_root: str = ""
     node_id: str = ""
     prompt_artifact_ref: str = ""
+    # --- Anthropic provider-native fields (additive; only consulted when vendor == "anthropic") ---
+    # When set, the gateway sends this structured Messages-API payload (system / messages /
+    # tools / tool_choice / metadata / cache_control markers / thinking / citations / etc.)
+    # verbatim instead of flattening ``prompt_text`` into a single user message. It MUST NOT
+    # contain ``model`` / ``max_tokens`` / ``temperature`` — the gateway owns those (rejected
+    # fail-closed). ``prompt_text`` remains the legacy/back-compat path when this is None.
+    anthropic_payload: Optional[Dict[str, Any]] = None
+    # Beta features requiring an ``anthropic-beta`` header (e.g.
+    # ("mid-conversation-system-2026-04-07",)). No beta is enabled by default; the gateway
+    # only sends the header when this tuple is non-empty.
+    anthropic_beta_headers: tuple[str, ...] = ()
+    # Additional per-request headers, merged after beta headers. A conflicting ``anthropic-beta``
+    # key here when ``anthropic_beta_headers`` is also set fails closed.
+    anthropic_extra_headers: Optional[Dict[str, str]] = None
+    # Advisory streaming hint (reserved; the gateway does not yet stream).
+    stream: bool = False
 
 
 @dataclass(frozen=True)
