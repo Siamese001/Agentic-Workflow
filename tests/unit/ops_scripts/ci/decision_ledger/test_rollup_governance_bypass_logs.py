@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-MOD_PATH = REPO_ROOT / "ops_scripts" / "ci" / "author_gate" / "rollup_governance_bypass_logs.py"
+MOD_PATH = REPO_ROOT / "ops_scripts" / "ci" / "decision_ledger" / "rollup_governance_bypass_logs.py"
 
 
 def _load():

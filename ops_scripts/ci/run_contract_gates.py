@@ -327,7 +327,7 @@ def main():
     # packet freshness, AGP1 pipeline freshness, v2 completeness, anomaly detector,
     # bypass rollup) enforced a bespoke packet -> render -> marker -> queue -> SQLite-ledger
     # pipeline that emulated a structured-choice tool. Native AskUserQuestion supersedes
-    # it. Gate scripts under ops_scripts/ci/author_gate/ are dormant (uncalled); the
+    # it. Gate scripts under ops_scripts/ci/decision_ledger/ are dormant (uncalled); the
     # governance hook scripts + 2 skills are dormant in place. Invariant (stop & ask before
     # ambiguous edits) preserved in CLAUDE.md + constitutional s6.
     # ADR: docs/architecture/adr/ADR-093-author-gate-native-ask-user-question.md

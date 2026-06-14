@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-check_ledger_integrity.py — CI gate: Author-Gate ledger hash chain is unbroken.
+check_ledger_integrity.py — CI gate: decision-ledger hash chain is unbroken.
 
-Wraps author_gate_ledger_integrity.verify_chain and emits the canonical CI
+Wraps decision_ledger_integrity.verify_chain and emits the canonical CI
 format ( PASS / FAIL + forensic reason ).
 
 Exit codes:
@@ -25,7 +25,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance/scripts"))
 
 try:
-    from author_gate_ledger_integrity import DB_PATH, verify_chain
+    from decision_ledger_integrity import DB_PATH, verify_chain
 except ImportError as exc:
     print(f"[check_ledger_integrity] Integrity library import failed: {exc}", file=sys.stderr)
     sys.exit(2)
@@ -42,7 +42,7 @@ def main() -> int:
             print(
                 f"[check_ledger_integrity] PASS — {res.verified_rows}/{res.total_rows} sealed; "
                 f"{unsealed} unsealed row(s). Run: python .claude/governance/scripts/"
-                f"author_gate_ledger_integrity.py --backfill"
+                f"decision_ledger_integrity.py --backfill"
             )
         else:
             print(

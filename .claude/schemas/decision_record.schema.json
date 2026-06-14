@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cursor.agentic-workflow/decision_record.schema.json",
   "title": "Decision Record (Harness Author-Gate)",
-  "description": "Canonical shape of a single row across decisions + decision_scope + decision_outcomes. Used by post_cursor_agent_author_gate_capture.py emission and ops_scripts/ci/author_gate/check_ledger_schema.py validation.",
+  "description": "Canonical shape of a single row across decisions + decision_scope + decision_outcomes. Used by the decision-ledger capture emission and ops_scripts/ci/decision_ledger/check_ledger_schema.py validation.",
   "type": "object",
   "required": [
     "decision_id",

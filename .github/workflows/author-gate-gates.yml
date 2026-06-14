@@ -16,7 +16,7 @@ on:
       - '.claude/governance/scripts/apply_ledger_schema.py'
       - '.claude/governance/scripts/post_agent_author_gate_capture.py'
       - '.claude/governance/scripts/post_commit_outcome_binder.py'
-      - 'ops_scripts/ci/author_gate/**'
+      - 'ops_scripts/ci/decision_ledger/**'
       - '.claude/state/refactor_decisions/**'
   push:
     branches: [main]
@@ -26,7 +26,7 @@ on:
       - '.claude/governance/scripts/apply_ledger_schema.py'
       - '.claude/governance/scripts/post_agent_author_gate_capture.py'
       - '.claude/governance/scripts/post_commit_outcome_binder.py'
-      - 'ops_scripts/ci/author_gate/**'
+      - 'ops_scripts/ci/decision_ledger/**'
       - '.claude/state/refactor_decisions/**'
   workflow_dispatch: {}
   schedule:
@@ -56,13 +56,13 @@ jobs:
         uses: ./.github/actions/common-setup
 
       - name: Schema drift check
-        run: python ops_scripts/ci/author_gate/check_ledger_schema.py
+        run: python ops_scripts/ci/decision_ledger/check_ledger_schema.py
 
       - name: Outcome coverage check
-        run: python ops_scripts/ci/author_gate/check_outcome_coverage.py
+        run: python ops_scripts/ci/decision_ledger/check_outcome_coverage.py
 
       - name: Ledger integrity (hash-chain) check
-        run: python ops_scripts/ci/author_gate/check_ledger_integrity.py
+        run: python ops_scripts/ci/decision_ledger/check_ledger_integrity.py
 
       - name: Binder dry-run (diagnostic only, non-blocking)
         continue-on-error: true
