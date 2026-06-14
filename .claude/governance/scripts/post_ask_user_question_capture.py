@@ -149,6 +149,49 @@ def _collect_indices_by_question(tool_response: Any) -> dict[int, int]:
     return result
 
 
+def _answers_list(tool_response: Any) -> list | None:
+    """Return the positional per-question answer list if the payload exposes one, else None."""
+    if isinstance(tool_response, dict):
+        for key in ("answers", "responses", "results"):
+            v = tool_response.get(key)
+            if isinstance(v, list):
+                return v
+    if isinstance(tool_response, list):
+        return tool_response
+    return None
+
+
+def selected_strings_for_question(
+    tool_response: Any,
+    question_idx: int,
+    question: dict,
+    total_questions: int,
+) -> list[str]:
+    """Selected label/answer strings scoped to ONE question (avoids cross-question collisions).
+
+    Multi-question AskUserQuestion calls may reuse option labels (two yes/no prompts). A global
+    pool would let q0 match q1's choice, corrupting the acceptance/override signal. So scope by:
+    (1) positional answers list → entry at this question's index; (2) header/question-keyed map →
+    this question's key; (3) only when there is a single question, fall back to the whole response.
+    """
+    out: list[str] = []
+    answers = _answers_list(tool_response)
+    if answers is not None:
+        if 0 <= question_idx < len(answers):
+            _collect_selected_strings(answers[question_idx], out)
+        return out
+    if isinstance(tool_response, dict):
+        for key in (question.get("header"), question.get("question")):
+            if isinstance(key, str) and key in tool_response:
+                _collect_selected_strings(tool_response[key], out)
+        if out:
+            return out
+        if total_questions == 1:  # no sibling questions → no collision risk
+            _collect_selected_strings(tool_response, out)
+        return out
+    return out
+
+
 def selected_index_for_question(
     question_idx: int,
     options: list[dict],
@@ -176,8 +219,7 @@ def build_decision_rows(tool_input: dict, tool_response: Any) -> list[dict]:
     if not isinstance(questions, list) or not questions:
         return []
 
-    selected_strings: list[str] = []
-    _collect_selected_strings(tool_response, selected_strings)
+    total_questions = len(questions)
     indices_by_question = _collect_indices_by_question(tool_response)
 
     rows: list[dict] = []
@@ -192,7 +234,8 @@ def build_decision_rows(tool_input: dict, tool_response: Any) -> list[dict]:
         conf_score, conf_source = (None, "heuristic_default")
         if rec_idx is not None:
             conf_score, conf_source = parse_confidence(options[rec_idx].get("description", ""))
-        sel_idx = selected_index_for_question(q_idx, options, selected_strings, indices_by_question)
+        sel_strings = selected_strings_for_question(tool_response, q_idx, question, total_questions)
+        sel_idx = selected_index_for_question(q_idx, options, sel_strings, indices_by_question)
         question_text = str(question.get("question") or question.get("header") or "")
         packet: dict[str, Any] = {
             "packet_type": "ASK_USER_QUESTION_PACKET",

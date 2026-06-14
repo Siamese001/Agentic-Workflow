@@ -132,6 +132,53 @@ class TestBuildDecisionRows:
     def test_empty_when_no_questions(self):
         assert cap.build_decision_rows({}, {}) == []
 
+    def test_reused_labels_scoped_per_question_answers_list(self):
+        # Two questions reuse labels A/B. q0 -> B (idx 1), q1 -> A (idx 0).
+        # A global pool would mis-assign q0 to the first 'A' match — this asserts per-question scope.
+        ti = {
+            "questions": [
+                {"header": "Q0", "options": [{"label": "A", "description": "[confidence=0.6] a"}, {"label": "B (Recommended)", "description": "[confidence=0.8] b"}]},
+                {"header": "Q1", "options": [{"label": "A (Recommended)", "description": "[confidence=0.8] a"}, {"label": "B", "description": "[confidence=0.6] b"}]},
+            ]
+        }
+        rows = cap.build_decision_rows(ti, {"answers": [{"selected_label": "B"}, {"selected_label": "A"}]})
+        assert rows[0]["selected_index"] == 1  # q0 chose B
+        assert rows[1]["selected_index"] == 0  # q1 chose A
+
+    def test_reused_labels_scoped_per_question_header_map(self):
+        ti = {
+            "questions": [
+                {"header": "Q0", "options": [{"label": "A"}, {"label": "B"}]},
+                {"header": "Q1", "options": [{"label": "A"}, {"label": "B"}]},
+            ]
+        }
+        rows = cap.build_decision_rows(ti, {"Q0": "B", "Q1": "A"})
+        assert rows[0]["selected_index"] == 1
+        assert rows[1]["selected_index"] == 0
+
+
+class TestSelectedStringsScoping:
+    def test_positional_answers_isolates_question(self):
+        q = {"header": "Q1"}
+        out = cap.selected_strings_for_question({"answers": [{"selected_label": "X"}, {"selected_label": "Y"}]}, 1, q, 2)
+        assert out == ["Y"]
+
+    def test_header_keyed_isolates_question(self):
+        q = {"header": "Mode"}
+        out = cap.selected_strings_for_question({"Store": "Reuse", "Mode": "Advisory"}, 1, q, 2)
+        assert out == ["Advisory"]
+
+    def test_single_question_whole_response_fallback(self):
+        q = {"header": "unmatched-header"}
+        out = cap.selected_strings_for_question({"chosen": "OnlyAnswer"}, 0, q, 1)
+        assert "OnlyAnswer" in out
+
+    def test_multi_question_no_unscoped_fallback(self):
+        # With 2 questions and an unkeyed dict, do NOT leak the whole response into one question.
+        q = {"header": "unmatched-header"}
+        out = cap.selected_strings_for_question({"chosen": "Leak"}, 0, q, 2)
+        assert out == []
+
 
 # ----------------------------- end-to-end ----------------------------- #
 
