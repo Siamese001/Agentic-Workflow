@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-MOD_PATH = REPO_ROOT / "ops_scripts" / "calibration" / "author_gate_learning_join_report.py"
+MOD_PATH = REPO_ROOT / "ops_scripts" / "calibration" / "decision_ledger_learning_join_report.py"
 
 
 def _load():

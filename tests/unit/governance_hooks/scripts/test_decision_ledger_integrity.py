@@ -1,5 +1,5 @@
 # pylint: disable=protected-access
-"""Unit tests for .claude/governance/scripts/author_gate_ledger_integrity.py.
+"""Unit tests for .claude/governance/scripts/decision_ledger_integrity.py.
 
 Coverage:
     canonicalize_row    - excludes mutable + self-referential columns,
@@ -27,9 +27,9 @@ import pytest
 _SCRIPTS_DIR = Path(__file__).resolve().parents[4] / ".claude" / "governance/scripts"
 sys.path.insert(0, str(_SCRIPTS_DIR))
 
-import author_gate_ledger_integrity as _m  # noqa: E402
+import decision_ledger_integrity as _m  # noqa: E402
 
-from author_gate_ledger_integrity import (  # noqa: E402
+from decision_ledger_integrity import (  # noqa: E402
     GENESIS_PREV_HASH,
     SIG_ALG_HMAC,
     SIG_ALG_NONE,

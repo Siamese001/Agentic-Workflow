@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from tools.refactor_decisions.author_gate_w1_bind import merge_precedent_verdict, outcome_bind_tier
+from tools.refactor_decisions.decision_ledger_w1_bind import merge_precedent_verdict, outcome_bind_tier
 
 
 def test_merge_precedent_order():

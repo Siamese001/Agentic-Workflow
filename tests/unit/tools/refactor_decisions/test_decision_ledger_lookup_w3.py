@@ -2,7 +2,7 @@
 
 import pytest
 
-from tools.refactor_decisions.author_gate_lookup_w3 import (
+from tools.refactor_decisions.decision_ledger_lookup_w3 import (
     LOOKUP_W3_POLICY_VERSION,
     sort_reason_codes,
     validate_reason_codes,
