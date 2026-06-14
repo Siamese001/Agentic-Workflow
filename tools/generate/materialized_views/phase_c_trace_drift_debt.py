@@ -132,6 +132,7 @@ def materialize_phase_c(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           AND n.resolved_path NOT LIKE 'tests/%'
           AND n.resolved_path NOT LIKE 'tools/%'
           AND n.resolved_path NOT LIKE 'ops_scripts/%'
+          AND n.resolved_path NOT LIKE '.claude/%'
           AND n.resolved_path NOT LIKE 'docs/archive/windsurf/legacy-tree/governance_scripts/%'
           AND n.resolved_path NOT LIKE 'agentic_core/adg/%'
           AND n.resolved_path NOT LIKE 'infrastructure/%'
@@ -187,6 +188,7 @@ def materialize_phase_c(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
         WHERE n.entity_type = 'module'
           AND n.resolved_path NOT LIKE 'tests/%'
           AND n.resolved_path NOT LIKE 'tools/%'
+          AND n.resolved_path NOT LIKE '.claude/%'
         GROUP BY n.id
         HAVING mutation_count > 0
         ORDER BY gap_flag DESC, mutation_count DESC

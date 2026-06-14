@@ -8,6 +8,7 @@ import pytest
 
 from tools.reports.adg_burndown_report import (
     BURNDOWN_REPORT_OUTPUTS,
+    _ci_band_summary,
     emit_mandatory_adg_burndown_report,
     render,
 )
@@ -143,6 +144,9 @@ def test_render_track_inventory_vs_ratchet_floor(tmp_path: Path) -> None:
     md = render(gate, burndown)
     assert "| TRACK | inventory | 848 |" in md
     assert "| TRACK | floor | 2792 |" in md
+    assert "1 gate / 2,792 tracked records" not in md
+    assert "2 gates / 3,640 tracked records" not in md
+    assert "| P0 | PASS | 0 | 0 | 2,792 | 848 |" in md
     assert "| FIX |" not in md.split("3_write_sovereignty")[1][:80]
 
 
@@ -172,6 +176,40 @@ def test_render_fix_cluster_for_blocked_gate(tmp_path: Path) -> None:
     md = render(gate, burndown)
     assert "| FIX | block | 2 |" in md
     assert "### Fix now" in md
+
+
+def test_ci_band_summary_preserves_fix_substatus_counts() -> None:
+    rows = _ci_band_summary(
+        [
+            {
+                "gate_id": "blocked",
+                "band": "P0",
+                "enforcement": "block",
+                "classification": "blocked",
+                "violation_count": 2,
+            },
+            {
+                "gate_id": "regressed",
+                "band": "P0",
+                "enforcement": "ratchet",
+                "classification": "regressed",
+                "violation_count": 3,
+                "baseline_count": 1,
+            },
+            {
+                "gate_id": "seed",
+                "band": "P0",
+                "enforcement": "ratchet",
+                "classification": "seed_missing",
+                "violation_count": 0,
+            },
+        ]
+    )
+
+    assert rows["P0"]["fix"] == 3
+    assert rows["P0"]["block_fail"] == 1
+    assert rows["P0"]["ratchet_regressed"] == 1
+    assert rows["P0"]["seed_missing"] == 1
 
 
 def test_verdict_three_clusters_mece() -> None:
@@ -251,8 +289,8 @@ def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path)
 
     md = render(gate, burndown)
 
-    assert "Tracked records are gate-specific `violation_count` entries" in md
-    assert "They are backlog records, not guardian exemptions, test failures, or new failures." in md
+    assert "Records are gate-specific `violation_count` entries" in md
+    assert "FIX records are current red-gate work. Ratchet floor and open non-ratchet records are non-blocking backlog context." in md
     assert "## 1. ADG Heuristic Attack Order" in md
     assert "Rule: work class first" in md
     assert "| 1 | Burn down ratchets: `G_REACH` 2,792 | P0 | 2,792 |" in md
@@ -260,8 +298,8 @@ def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path)
     assert "## 2. P0 Action Plan" in md
     assert "| 1 | Burn down ratchet | `G_REACH` | 2,792 | Largest P0 ratchet floor" in md
     assert "Open non-ratchet work is still real work; it is second because it does not lower the P0 ratchet floor." in md
-    assert "| Band | Status | Fix now | Tracked gate records | Read it as | Next move |" in md
-    assert "| P0 | PASS | 0 | 1 gate / 2,792 tracked records | green; ratchet burn-down/open work remains | work ranked queue; ratchets first |" in md
+    assert "| Band | Status | Fix gates | Fix records | Ratchet floor | Open non-ratchet | Read it as | Next move |" in md
+    assert "| P0 | PASS | 0 | 0 | 2,792 | 0 | green; ratchet burn-down/open work remains | work ranked queue; ratchets first |" in md
     assert "Allowed Floor" in md
     assert "| Gate ID | CI Band | Enforcement | Action | Sub | Records | Allowed Floor | Signal | Next Best Action |" in md
     assert "| `G_REACH_l0_reachability` | P0 | ratchet | TRACK | floor | 2792 | 2792 |" in md

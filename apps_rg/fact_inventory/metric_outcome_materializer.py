@@ -30,7 +30,6 @@ MUST fail closed with ``MISSING_GRAPH_PATH`` or
 from __future__ import annotations
 
 import json
-import sqlite3
 from pathlib import Path
 from typing import Any
 
@@ -240,7 +239,7 @@ def metric_outcome_node_and_edge_rows(
 
 
 def resolve_metric_outcome_graph_node(
-    conn: sqlite3.Connection, metric_id: str
+    conn: Any, metric_id: str
 ) -> dict[str, Any] | None:
     """Look up a materialized metric_outcome graph_node row.
 

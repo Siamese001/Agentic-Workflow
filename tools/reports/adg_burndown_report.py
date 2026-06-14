@@ -45,6 +45,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tools.reports.adg_decision_synthesis import band_decision_summary
 from tools.reports.gate_signal_catalog import (
     VERDICT_CLUSTER_DEFINITIONS,
     display_verdict,
@@ -130,46 +131,28 @@ def _allowed_floor_display(gate: dict[str, Any]) -> str:
     return "0"
 
 
-def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
-    rows: dict[str, dict[str, int]] = {}
-    for band in ("P0", "P1", "P2", "P3"):
-        rows[band] = {
-            "total": 0,
-            "fix": 0,
-            "track": 0,
-            "clear": 0,
-            "block_fail": 0,
-            "ratchet_regressed": 0,
-            "seed_missing": 0,
-            "findings": 0,
-        }
-    for gate in gates:
-        band = str(gate.get("band", "P3"))
-        row = rows.setdefault(
-            band,
-            {
-                "total": 0,
-                "fix": 0,
-                "track": 0,
-                "clear": 0,
-                "block_fail": 0,
-                "ratchet_regressed": 0,
-                "seed_missing": 0,
-                "findings": 0,
-            },
+def _ci_band_summary(gates: list[dict[str, Any]]) -> dict[str, dict[str, int | str]]:
+    """Return canonical per-band FIX/floor/open/CLEAR counts.
+
+    Keep the legacy keys used by the markdown renderer while adding explicit
+    record buckets so future report projections cannot confuse ratchet-floor
+    records with open non-ratchet inventory or clear gates.
+    """
+    rows = band_decision_summary(gates)
+    for row in rows.values():
+        ratchet_floor_records = int(row.get("ratchet_floor_records", 0))
+        open_non_ratchet_records = int(row.get("open_non_ratchet_records", 0))
+        row["total"] = int(row.get("total_gates", 0))
+        row["fix"] = int(row.get("fix_gates", 0))
+        row["track"] = int(row.get("ratchet_floor_gates", 0)) + int(
+            row.get("open_non_ratchet_gates", 0)
         )
-        row["total"] += 1
-        row["findings"] += int(gate.get("violation_count") or 0)
-        cluster = display_verdict(gate).lower()
-        if cluster in ("fix", "track", "clear"):
-            row[cluster] += 1
-        sub = display_verdict_sub(gate)
-        if sub == "block":
-            row["block_fail"] += 1
-        elif sub == "regr":
-            row["ratchet_regressed"] += 1
-        elif sub == "seed":
-            row["seed_missing"] += 1
+        row["clear"] = int(row.get("clear_gates", 0))
+        row["block_fail"] = int(row.get("fix_block_gates", 0))
+        row["ratchet_regressed"] = int(row.get("fix_regressed_gates", 0))
+        row["seed_missing"] = int(row.get("fix_seed_missing_gates", 0))
+        row["track_records"] = ratchet_floor_records + open_non_ratchet_records
+        row["findings"] = row["track_records"]
     return rows
 
 
@@ -188,7 +171,7 @@ def _plural(value: int, singular: str, plural: str | None = None) -> str:
 
 def _band_records_cell(row: dict[str, int]) -> str:
     track = int(row.get("track", 0))
-    findings = int(row.get("findings", 0))
+    findings = int(row.get("track_records", 0))
     return f"{_plural(track, 'gate')} / {_plural(findings, 'tracked record')}"
 
 
@@ -199,7 +182,7 @@ def _band_status(row: dict[str, int]) -> str:
 def _band_plain_read(row: dict[str, int]) -> str:
     if int(row.get("fix", 0)):
         return "red gates present"
-    if int(row.get("track", 0)) or int(row.get("findings", 0)):
+    if int(row.get("track", 0)) or int(row.get("track_records", 0)):
         return "green; ratchet burn-down/open work remains"
     return "green; no backlog records"
 
@@ -207,7 +190,7 @@ def _band_plain_read(row: dict[str, int]) -> str:
 def _band_next_move(row: dict[str, int]) -> str:
     if int(row.get("fix", 0)):
         return "fix red gates first"
-    if int(row.get("track", 0)) or int(row.get("findings", 0)):
+    if int(row.get("track", 0)) or int(row.get("track_records", 0)):
         return "work ranked queue; ratchets first"
     return "no action"
 
@@ -625,20 +608,23 @@ def render(
     a("## 3. ADG Status By Band")
     a("")
     a("Operator summary from `adg_gate_results_*.json`.")
-    a("Tracked records are gate-specific `violation_count` entries: orphan modules, UWG bypass paths, write-inventory paths, etc.")
-    a("They are backlog records, not guardian exemptions, test failures, or new failures.")
+    a("Records are gate-specific `violation_count` entries: orphan modules, UWG bypass paths, write-inventory paths, etc.")
+    a("FIX records are current red-gate work. Ratchet floor and open non-ratchet records are non-blocking backlog context.")
     a("")
-    a("| Band | Status | Fix now | Tracked gate records | Read it as | Next move |")
-    a("|------|:------:|--------:|----------------------|------------|-----------|")
+    a("| Band | Status | Fix gates | Fix records | Ratchet floor | Open non-ratchet | Read it as | Next move |")
+    a("|------|:------:|----------:|------------:|--------------:|------------------:|------------|-----------|")
     band_rows = _ci_band_summary(gates)
     for band in ("P0", "P1", "P2", "P3"):
         row = band_rows.get(band, {})
         a(
             f"| {band} | {_band_status(row)} | {_fmt_int(row.get('fix', 0))} | "
-            f"{_band_records_cell(row)} | {_band_plain_read(row)} | {_band_next_move(row)} |"
+            f"{_fmt_int(row.get('fix_records', 0))} | "
+            f"{_fmt_int(row.get('ratchet_floor_records', 0))} | "
+            f"{_fmt_int(row.get('open_non_ratchet_records', 0))} | "
+            f"{_band_plain_read(row)} | {_band_next_move(row)} |"
         )
     a("")
-    a("`Fix now` counts red gates. `Tracked gate records` are non-blocking open work: burn down ratchet floors first, then close non-ratchet rows.")
+    a("`Fix gates` counts red gates. `Fix records` are current blockers/regressions. `Ratchet floor` is accepted baseline debt; `Open non-ratchet` is non-blocking work.")
     a("")
 
     # ---------------------------------------------------- §4 all gates

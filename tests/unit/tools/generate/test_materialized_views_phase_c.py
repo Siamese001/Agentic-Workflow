@@ -272,6 +272,33 @@ class TestTraceReplayEvalViews:
         assert row is not None
         assert row[0] == 0
 
+    def test_claude_hook_scripts_are_exempt_from_runtime_gap_views(self, tmp_path: Path) -> None:
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node2(
+            conn,
+            1,
+            "hook",
+            "L_UNKNOWN",
+            ".claude/governance/scripts/post_agent_recommendation_gate_audit.py",
+        )
+        _node2(conn, 2, "tgt", "L4", "agentic_core/L4_state/store.py")
+        _node2(conn, 3, "writer", "L2", "agentic_core/L2_execution/reasoning/writer.py")
+        _edge(conn, 1, 2, "writes_to")
+        _edge(conn, 3, 2, "writes_to")
+        conn.commit()
+        conn.close()
+        _setup_phases_ab(db)
+        materialize_phase_c(db)
+        conn = sqlite3.connect(str(db))
+        trace_hook = conn.execute("SELECT COUNT(*) FROM mv_trace_replay_eval_gaps WHERE node_id = 1").fetchone()
+        replay_hook = conn.execute("SELECT COUNT(*) FROM mv_replay_surface_gaps WHERE node_id = 1").fetchone()
+        runtime_writer = conn.execute("SELECT gap_flag FROM mv_replay_surface_gaps WHERE node_id = 3").fetchone()
+        conn.close()
+        assert trace_hook == (0,)
+        assert replay_hook == (0,)
+        assert runtime_writer == (1,)
+
 
 # ---------------------------------------------------------------------------
 # Family 8 (remaining) — Determinism / provenance drift
