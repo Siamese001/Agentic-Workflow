@@ -12,6 +12,37 @@ metadata:
 > **W4 indexed skill** — procedure bodies live under `sections/`; Tier-1 companion: [agents-tier1-companion.md](agents-tier1-companion.md); legacy overflow: [SUPPORTING.md](SUPPORTING.md).  
 > **Excluded:** `adg-sqlite` (critical infrastructure — separate skill).
 
+## Server Availability — read before routing (reconciled 2026-06-14)
+
+> ⚠️ Not every section below maps to an installed server. The routing tables describe the
+> **intended** surface; this block is the SSOT for what is actually callable. Cross-check
+> against `.mcp.json` and `CLAUDE.md` § "Not in `.mcp.json`".
+
+| Server | In `.mcp.json`? | Section | Use this instead when dormant |
+|---|---|---|---|
+| `adg_sqlite` | ✅ LIVE | (own skill) | — |
+| `GitKraken` | ✅ LIVE | §11 | — |
+| `context7` | ✅ LIVE | §4 | — |
+| `deepwiki` | ✅ LIVE | §3 | — |
+| `memory` | ✅ LIVE | §12 | — |
+| `notion` | ✅ LIVE | §7 | — |
+| `playwright` | ✅ LIVE | §5 | — |
+| `vector_db` | ✅ LIVE | §6 | — |
+| `filesystem` | ❌ DORMANT | §1 | native `read_file`/`write`/`list_dir` |
+| `redis` | ❌ DORMANT | §2 | `redis-cli` via `run_command` |
+| `tavily` | ❌ DORMANT* | §8 | native `WebSearch`/`WebFetch` |
+| `otel_mcp` | ❌ DORMANT | §9 | re-add on demand for runtime trace debugging |
+| `pytest_mcp` | ❌ DORMANT | §10 | `python -m pytest` via `run_command` |
+| `task_manager` | ❌ DORMANT | §13 | native file tools / `structured-reasoning` |
+
+\* `tavily` is not in `.mcp.json`, but a host-managed Tavily MCP may be **injected at session
+start** in some environments (its `tavily_*` tools then appear in the deferred-tool list). When
+present, prefer it for web search; when absent, fall back to native `WebSearch`/`WebFetch`. Either
+way `.mcp.json` is unchanged — do not claim a repo-configured Tavily server.
+
+The §1/§2/§8/§9/§10/§13 sections below remain as **dormant reference** so re-adding a server is a
+one-step restore (`.claude/mcp-notes.md`). They are NOT evidence the server is currently callable.
+
 ## Quick Reference
 
 | Need | Detail | MCP skill |
