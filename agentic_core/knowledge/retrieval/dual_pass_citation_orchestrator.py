@@ -50,6 +50,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Protocol
 
 from agentic_core.knowledge.retrieval.anthropic_cache_control import (
+    CACHE_TTL_1H,
     CACHE_TTL_5M,
     CacheStrategy,
     build_messages_payload,
@@ -223,7 +224,11 @@ class DualPassCitationOrchestrator:
         string and returns response text. When None, pass 2 is skipped even
         if json_schema is provided.
     cache_ttl:
-        TTL for cache_control markers on the pass-1 prefix. Default 5m.
+        TTL for the volatile per-query/documents cache tier. Default 5m.
+    stable_cache_ttl:
+        TTL for the stable tiers (system / pinned prefix) — these recur across
+        requests, so they default to ``1h`` (P6). Survives bursty-traffic gaps;
+        costs 2x write vs 5m, breaks even after ~3 reads.
     cache_strategy:
         Workload class gating the volatile per-query/documents cache tier (P2).
         Default ``ONE_SHOT`` — do not cache the docs tier (avoids write-waste on
@@ -239,12 +244,14 @@ class DualPassCitationOrchestrator:
         pass2_fn: _Pass2Fn | Callable[[str], str] | None = None,
         *,
         cache_ttl: str = CACHE_TTL_5M,
+        stable_cache_ttl: str = CACHE_TTL_1H,
         cache_strategy: CacheStrategy | str = CacheStrategy.ONE_SHOT,
         model: str | None = None,
     ) -> None:
         self._pass1_fn = pass1_fn
         self._pass2_fn = pass2_fn
         self._cache_ttl = cache_ttl
+        self._stable_cache_ttl = stable_cache_ttl
         self._cache_strategy = cache_strategy
         self._model = model
 
@@ -300,6 +307,7 @@ class DualPassCitationOrchestrator:
             cache_boundary_hints=rendered.cache_boundary_hints,
             cache_strategy=self._cache_strategy,
             ttl=self._cache_ttl,
+            stable_ttl=self._stable_cache_ttl,
             model=self._model,
         )
         # The caller's pass1_fn is responsible for flipping

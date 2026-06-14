@@ -230,6 +230,7 @@ def _build_tier_blocks(
     cache_prefix: bool,
     cache_query_tier: bool,
     ttl: str,
+    stable_ttl: str | None,
     model: str | None,
 ) -> list[dict[str, Any]]:
     """Split ``prompt`` into one block per stability tier + a volatile tail.
@@ -240,6 +241,10 @@ def _build_tier_blocks(
     per-query/documents tier — its marker is suppressed when
     ``cache_query_tier`` is False (the workload-aware gate, P2). A tier below
     its model floor is left unmarked.
+
+    TTL (P6): the stable tiers (all but the last cacheable tier) use
+    ``stable_ttl`` when set (e.g. ``1h``); the volatile per-query/documents tier
+    keeps ``ttl`` (e.g. ``5m``). ``stable_ttl=None`` uses ``ttl`` everywhere.
     """
     boundaries = [0, *hints, len(prompt)]
     n_tiers = len(hints)
@@ -255,7 +260,9 @@ def _build_tier_blocks(
             if i == n_tiers - 1 and not cache_query_tier:
                 should_mark = False  # workload-aware: leave the volatile tier unmarked
             if should_mark:
-                block["cache_control"] = _cache_control(ttl)
+                # Stable tiers (not the last) take stable_ttl; the volatile tier keeps ttl.
+                tier_ttl = stable_ttl if (stable_ttl and i < n_tiers - 1) else ttl
+                block["cache_control"] = _cache_control(tier_ttl)
         blocks.append(block)
     return blocks
 
@@ -268,6 +275,7 @@ def build_user_content(
     cache_prefix: bool = True,
     cache_query_tier: bool = True,
     ttl: str = CACHE_TTL_5M,
+    stable_ttl: str | None = None,
     model: str | None = None,
 ) -> list[dict[str, Any]]:
     """Split a user-turn prompt into cache-aware content blocks.
@@ -319,6 +327,7 @@ def build_user_content(
             cache_prefix=cache_prefix,
             cache_query_tier=cache_query_tier,
             ttl=ttl,
+            stable_ttl=stable_ttl,
             model=model,
         )
 
@@ -378,6 +387,7 @@ def build_messages_payload(
     cache_boundary_hint: int = -1,
     cache_boundary_hints: "Sequence[int] | None" = None,
     ttl: str = CACHE_TTL_5M,
+    stable_ttl: str | None = None,
     cache_system: bool = True,
     cache_prefix: bool = True,
     cache_strategy: "CacheStrategy | str" = CacheStrategy.ONE_SHOT,
@@ -401,8 +411,14 @@ def build_messages_payload(
     — default ``ONE_SHOT`` leaves it unmarked to avoid write-waste. At most 4
     ``cache_control`` markers are emitted (Anthropic's cap); the lowest-value
     (smallest) marked block is dropped if exceeded.
+
+    TTL (P6): ``stable_ttl`` (e.g. ``1h``) applies to the system block and the
+    stable user tiers; the volatile per-query/documents tier keeps ``ttl``
+    (e.g. ``5m``). ``stable_ttl=None`` uses ``ttl`` for everything (back-compat).
     """
-    system_blocks = build_system_blocks(system_prompt, cache=cache_system, ttl=ttl, model=model)
+    system_blocks = build_system_blocks(
+        system_prompt, cache=cache_system, ttl=(stable_ttl or ttl), model=model
+    )
     user_content = build_user_content(
         user_prompt,
         cache_boundary_hint=cache_boundary_hint,
@@ -410,6 +426,7 @@ def build_messages_payload(
         cache_prefix=cache_prefix,
         cache_query_tier=caches_query_tier(cache_strategy),
         ttl=ttl,
+        stable_ttl=stable_ttl,
         model=model,
     )
 
@@ -420,6 +437,68 @@ def build_messages_payload(
         payload["system"] = system_blocks
 
     _enforce_marker_cap(payload)
+    return payload
+
+
+_TTL_SECONDS: dict[str, int] = {CACHE_TTL_5M: 300, CACHE_TTL_1H: 3600}
+
+
+def ttl_seconds(ttl: str) -> int:
+    """Seconds a cache entry lives for the given TTL token (default 5m)."""
+    return _TTL_SECONDS.get(ttl, 300)
+
+
+def needs_rewarm(seconds_since_last_request: float, ttl: str = CACHE_TTL_1H) -> bool:
+    """True when the gap since the last request exceeds the TTL (cache evicted).
+
+    A pure predicate for scheduled re-warming (P6): only re-warm when traffic
+    gaps exceed the cache TTL — continuous traffic keeps the cache warm on its
+    own, so a separate warm call would just pay an extra write.
+    """
+    return seconds_since_last_request > ttl_seconds(ttl)
+
+
+def build_prewarm_payload(
+    *,
+    system_prompt: str = "",
+    stable_user_prefix: str = "",
+    ttl: str = CACHE_TTL_1H,
+    model: str | None = None,
+    placeholder: str = "warmup",
+) -> dict[str, Any]:
+    """Build a ``max_tokens=0`` prefill request that writes the cache for the
+    stable prefix so the FIRST real request is hot (P6 pre-warming).
+
+    The API runs prefill, writes the cache at the ``cache_control`` breakpoint,
+    and returns immediately with empty content (zero output tokens billed; the
+    normal cache-write charge applies). The marker goes on the last STABLE block
+    (system / pinned prefix) — NOT the placeholder user message, which is read
+    during prefill but never answered.
+
+    Returns a dict ready for ``client.messages.create(model=..., **payload)``.
+    The caller MUST NOT combine this with ``stream=True``, extended thinking,
+    ``output_config.format``, or ``tool_choice`` of ``tool``/``any`` — Anthropic
+    rejects ``max_tokens=0`` with those. Only pre-warm where first-request
+    latency is user-visible; for continuous traffic the first real request warms
+    the cache on its own (see ``needs_rewarm``).
+    """
+    system_blocks = build_system_blocks(system_prompt, ttl=ttl, model=model)
+
+    content: list[dict[str, Any]] = []
+    if (stable_user_prefix or "").strip():
+        prefix_block: dict[str, Any] = {"type": "text", "text": stable_user_prefix}
+        if _is_cacheable(stable_user_prefix, model):
+            prefix_block["cache_control"] = _cache_control(ttl)
+        content.append(prefix_block)
+    # Placeholder is read during prefill but never answered — never marked.
+    content.append({"type": "text", "text": placeholder or "warmup"})
+
+    payload: dict[str, Any] = {
+        "max_tokens": 0,
+        "messages": [{"role": "user", "content": content}],
+    }
+    if system_blocks:
+        payload["system"] = system_blocks
     return payload
 
 
@@ -442,10 +521,13 @@ __all__ = [
     "CacheStrategy",
     "MODEL_CACHE_FLOOR_TOKENS",
     "build_messages_payload",
+    "build_prewarm_payload",
     "build_system_blocks",
     "build_user_content",
     "caches_query_tier",
     "count_cache_markers",
     "floor_tokens_for_model",
+    "needs_rewarm",
+    "ttl_seconds",
     "min_cacheable_chars",
 ]
