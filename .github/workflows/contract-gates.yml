@@ -160,6 +160,7 @@ jobs:
       - name: Summarize contract gate routing
         env:
           ANY: ${{ needs.changes.outputs.any }}
+          CHANGES_RESULT: ${{ needs.changes.result }}
           TERMINAL_RESULT: ${{ needs.terminal-cleanup.result }}
           PYTEST_RESULT: ${{ needs.pytest-config.result }}
           CONFIG_RESULT: ${{ needs.config-sync.result }}
@@ -168,6 +169,11 @@ jobs:
           set -euo pipefail
           echo "Changed files:"
           printf '%s\n' "${CHANGED_FILES:-<none>}"
+
+          if [ "${CHANGES_RESULT}" != "success" ]; then
+            echo "::error::Contract-gate routing failed before lane selection."
+            exit 1
+          fi
 
           if [ "${ANY}" != "true" ]; then
             echo "No contract-gate lanes were relevant to this diff."

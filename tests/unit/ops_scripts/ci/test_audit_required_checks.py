@@ -12,7 +12,7 @@ def write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def test_active_check_contexts_use_workflow_and_job_display_names(tmp_path: Path) -> None:
+def test_active_check_contexts_use_job_display_names(tmp_path: Path) -> None:
     write(
         tmp_path / ".github/workflows/ci-self-check.yml",
         """
@@ -28,7 +28,7 @@ jobs:
 """,
     )
 
-    assert active_check_contexts(tmp_path) == {"ci-self-check / workflow-reference-check"}
+    assert active_check_contexts(tmp_path) == {"workflow-reference-check"}
 
 
 def test_audit_local_accepts_target_required_checks(tmp_path: Path) -> None:
@@ -46,7 +46,7 @@ jobs:
       - run: echo ok
 """,
     )
-    config = {"branch_protection": {"required_checks": ["runtime-smokes / smoke-summary"]}}
+    config = {"branch_protection": {"required_checks": ["smoke-summary"]}}
 
     assert audit_local(tmp_path, config) == 0
 
@@ -65,7 +65,7 @@ jobs:
       - run: echo ok
 """,
     )
-    config = {"branch_protection": {"required_checks": ["contract-gates / contract-summary"]}}
+    config = {"branch_protection": {"required_checks": ["contract-summary"]}}
 
     assert audit_local(tmp_path, config) == 1
 
