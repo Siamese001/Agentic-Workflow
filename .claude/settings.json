@@ -147,6 +147,15 @@
             "command": "python \"$CLAUDE_PROJECT_DIR/.claude/governance/scripts/post_write_plan_reconcile.py\""
           }
         ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/after_ask_user_question.py\""
+          }
+        ]
       }
     ],
     "Stop": [
