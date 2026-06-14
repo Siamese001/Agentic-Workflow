@@ -7,9 +7,6 @@ name: Calibration Drift Detector
 # `calibration_drift_policy` thresholds in apps_eval/config/eval_policies.yaml.
 
 on:
-  schedule:
-    # Nightly at 06:00 UTC (≈02:00 ET / 23:00 PT) — quiet hours.
-    - cron: "0 6 * * *"
   workflow_dispatch:
     inputs:
       window_days:
