@@ -1,0 +1,2294 @@
+{
+  "counts": {
+    "ORPHANED": 102,
+    "PRECOMMIT": 22,
+    "REGISTRY": 151,
+    "TEST_ONLY": 37,
+    "WORKFLOW": 14
+  },
+  "gates": {
+    "check_10c_cross_file_consistency.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_10c_ledger_consistency.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_10c_pilot_proof_evidence.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_adg_certified.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_adg_first_violations_freshness.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_adg_snapshot_signed.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_adg_view_rules.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_adg_violation_log_delta.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_ag5_exit_x1_evaluator_wiring.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_ag_queue_drain_freshness.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_ag_queue_seed_markers.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_agen_registry_schema.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_agent_sealed_return.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_agent_spec_completeness.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_agent_taxonomy_spine_invariants.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_agentic_core_addition.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_agentic_core_leakage.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_agentic_core_no_apps_rg_jd_ssot.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_agentic_core_no_apps_rg_resume_ssot.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_agentic_core_static_boundary.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_agents_mcp_coverage.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": true
+    },
+    "check_agents_md_sync.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_always_on_token_budget.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_app_domain_harness_parity.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_app_registry_conformance.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_dom_fixture_freshness.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_e2e_bundle_emission.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_e2e_harness.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_apps_e2e_spine_certification.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_eval_holdout_isolation.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_eval_no_agents.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_eval_no_runtime_authority.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_eval_scope_rg_lic_only.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_folder_taxonomy.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_fortknox_signed_proof.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_apps_hop_pipeline_location.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_lic_exit_x1_x3.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_lic_golden_path_runtime.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_lic_prompt_authority_coverage.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_lic_shared_x3_path.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_otel_coverage.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_qna_c0_index.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_qna_config_drift.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_qna_holdout_salt.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_qna_judge_spearman.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_research_dryrun.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_research_fec_v11.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_research_import.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_app_payload_consumption.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_c0_boundary.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_chroma_collection_ef.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_chroma_readiness.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_complexity_baseline.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_dryrun.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_e2e_smoke.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_exit_path_construction.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_fact_vectors_readiness.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_golden_path_runtime.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_import.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_l2_v4_envelope.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_l5_cert_refs.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_l6_profile_only.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_live_authority.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_pa_boundary.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_prompt_authority_coverage.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_registry_coverage.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_runtime_gate_hardening.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_runtime_path_inventory.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_rg_single_spine.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_smoke_bundle_indexes.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_spine_convergence_w8.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_spine_span_emit_sites.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_type_validation.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_rg_u0_reflection.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_runtime_package_contracts.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_runtime_proof.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_apps_shared_purity.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_spine_delegation.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_apps_test_surface_parity.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": true
+    },
+    "check_author_gate_pipeline_freshness.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_author_gate_v2_completeness.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_authority_boundary_breaches.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_baseline_staleness.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_c0_chroma_readonly_runtime.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_c0_policy_required.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_cache_prefix_stability.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_calibration_evidence_authenticity.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_call_multiplicity.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_canonical_pipeline_wiring.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_capture_queue_freshness.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_closure_lifecycle.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_config_references.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_consumer_mode_declared.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_cross_app_contract_schema.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_cross_app_envelope_loaders.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_cross_app_imports.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_cross_mainline_dispatcher.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_cyclomatic_ceiling.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_dangling_imports.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_dead_folder_detector.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_dead_methods_ratchet.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_dead_symbols_ratchet.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_decision_ledger_chain.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_decision_ledger_sqlite_freshness.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_decision_required.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_deferred_plan_guard_markers.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_deferred_scope_markers.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_edge_authority_well_formed.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_embedding_provenance_enforcement.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_enriched_choice_ui_invariants.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_enriched_choice_ui_invariants_ast.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_env_var_in_config_layer.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_eval_harness_promotion_evidence.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_eval_holdout_split.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_evidence_contract_carriers.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_exception_contract.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_exception_swallow_ratchet.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_exclusion_consistency.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_exec_summary_l2_x1d_manifest_drift.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_executive_summary_x2_x1d_drift.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_exemplar_coverage.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_exit_decision_schema.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_exit_eval_wiring.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_exit_x1_evaluator_wiring.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_expected_wiring.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_external_service_literal_ssot.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_fact_vectors_lane_parity.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_fact_vectors_schema_conformance.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_fortknox_clean_bundle.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_fortknox_mutation_rejection.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_fortknox_positive_control.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_g29_firewall.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_gap001_exit_no_direct_writes.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_generic_app_binding_consumer.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_global_state_mutation_ratchet.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_governance_receipts.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_governed_app_conformance.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_graph_island.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_graph_layer_evidence.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": true
+    },
+    "check_graph_reach.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_graph_reach_archival.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_graph_skills_agentic_core_boundary.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_graph_watchlist_delta.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_grounded_rag_active.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_hardcoded_exclusions.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_heal_routing_threshold_ssot.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_holdout_isolation.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_hook_consolidation.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_import_cycles.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_judge_calibration.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_judge_panel_harness_boundary.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_judge_spearman_gate.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_l0_app_agnostic.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_l0_parent_invariants.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_l0_v15_no_v12_hotpath.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_l1_plan_contract_fields.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_l3_runtime_reconciliation.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_l4_namespace_manifest_present.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_l5_cert_ref_on_emit_contracts.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_l5_hotspot_fanin_ratchet.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_l6_architectural_exceptions.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_l6_layer_tag_consistency.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_l6_observer_law.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_layer_doc_binding.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_layer_gravity.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_layer_skip.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_ledger_append_only.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_ledger_coverage.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_ledger_freshness.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_ledger_writer_contract.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_legacy_tree_config_schema.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_legacy_tree_deletion_readiness.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_legacy_yaml_no_silent_delete.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_lifecycle_pairs.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_lpg_drift_ratchet.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_major_checkpoint_core_boundary.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_marker_ledger_parity.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_mcp_adg_redis_consistency.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_mcp_config_schema.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_mcp_config_sovereignty.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_mcp_editor_parity.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_mcp_sync_integrity.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_memory_promotion_parity.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_memory_schema_sync.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_module_loc_ratchet.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_active_legacy_surface_changes.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_app_specific_literals_in_core.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_apps_rg_runtime_l6_engine.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_no_archives_imports.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_direct_filesystem_durable_writes.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_direct_l4_writer_imports.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_direct_semantic_cache_write.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_no_fake_l6_span_label.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_no_l6_current_run_mutation.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_l6_direct_l4_write.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_l6_x3_emit.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_legacy_ide_refs.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_no_shadow_spine.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_notion_backlog_no_duplicates.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_notion_backlog_plan_linkage.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_backlog_waiting_for.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_decision_parity.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_plan_file_drift.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": true
+    },
+    "check_notion_plan_lifecycle_guard.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_notion_plan_status_anomalies.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_plan_status_initial.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_plans_ai_summary.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_plans_new_status.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_notion_plans_no_duplicates.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_notion_plans_status_canonical.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_plans_status_drift.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_plans_waiting_for.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_schema_mece.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_schema_preflight.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_notion_telemetry_log_size.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_observability_on_high_fanin.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_orphan_module_ratchet.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_orphan_observability_nodes.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_otel_genai_semconv_coverage.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_overlay_ratchet.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_package_driven_l6_only.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_pii_in_telemetry.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_pipeline_skips.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_plan_complete_marker_freshness.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_plan_definition_of_done.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_plan_done_notion_status.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_plan_format_compliance.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_plan_freshness.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_plan_notion_wave_freshness.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_plan_registration_freshness.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_plan_supersession_consistency.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_plan_wave_summary_top.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_post_agent_alive.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_post_agent_payload.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_precedent_receipt.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_precedent_usage_rate.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_prediction_binding_sla.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_prompt_assembly_ssot.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_prompt_gate_numeric_parity.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_prompt_judge_executable_manifest.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_prompt_packet_contract.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_prompt_reception_v2.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_python_syntax.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_quarantine_ssot.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_query_progress_bar.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_r1b_warmup_smoke.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_rationale_judge_calibration.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_refactor_decision_ledger_ssot.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_reference_orphans.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_reference_pack_integrity.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_reference_test_contracts.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_registry_graph_integrity.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_replay_proof.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_req_coverage_contracts.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_req_evidence_matrix.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_required_spans_coverage.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_requirements_adg_crosswalk.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_requirements_universe_inventory.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_research_citation_density.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_role_dedup.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_router_calibration_evidence.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_rubric_diff_review.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_rule_cross_references.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_rule_frontmatter_schema.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_rules_filesystem_integrity.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_rules_index_freshness.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_runtime_adg_coverage.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_runtime_certification.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_runtime_hitl_ledger_integrity.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_runtime_proof_view_well_formed.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_runtime_trace_contract.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_runtime_trace_topology.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_same_authority_regen_boundary.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_schema_graduation_readiness.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_seam_test_export_coherence.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_section_x2_x1d_drift.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_severity_band_ssot.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": true
+    },
+    "check_shared_x3_cert_ref_threading.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_sidecar_freshness.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_signoff_freshness.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_signoff_git_clean.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_skill_description_quality.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_skill_frontmatter.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_snapshot_has_mvs.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_ssot_folder_routing.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_ssot_magic_constants.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_structure_policy.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": true,
+      "workflow": true
+    },
+    "check_synthetic_trace_flag.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_terminal_cleanup.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": false,
+      "workflow": true
+    },
+    "check_test_concentration_ratio.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_test_harness_coverage.py": {
+      "classification": "WORKFLOW",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_three_bucket_gap_thresholds.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_three_bucket_impossible_states.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_trace_stub_modules.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_underwriting_e2e_fixtures.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_underwriting_public_trust_receipt_schema.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_unresolved_edges_ratchet.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_unused_imports_ratchet.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_uwg_bypass_ratchet.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_violation_aging_sla.py": {
+      "classification": "PRECOMMIT",
+      "precommit": true,
+      "registry": false,
+      "tests": true,
+      "workflow": true
+    },
+    "check_w4_exit_disposition.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w4_guardrail_separation.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w4_l5_bypass.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w4_policy_without_audit.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w4_replay_surface_gaps.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w4_silent_writes.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w4_tool_call_parity.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w4_unresolved_callsites.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w4_uwg_bypass_pview.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w5_broken_contract.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w5_missing_adapter.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w5_structured_output.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w5_taint_actionable.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w5_untyped_seam.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w6_ap_velocity_kpi.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w6_churn_complexity_kpi.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w6_emit_contract_enrichment.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w6_fanin_collapse.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w6_mv_staleness.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_w6_new_orphans_delta.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_w6_trace_theater_kpi.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_waiver_expiry.py": {
+      "classification": "REGISTRY",
+      "precommit": true,
+      "registry": true,
+      "tests": false,
+      "workflow": false
+    },
+    "check_waiver_provenance.py": {
+      "classification": "TEST_ONLY",
+      "precommit": false,
+      "registry": false,
+      "tests": true,
+      "workflow": false
+    },
+    "check_wave_marker_emission.py": {
+      "classification": "REGISTRY",
+      "precommit": false,
+      "registry": true,
+      "tests": true,
+      "workflow": false
+    },
+    "check_weekly_calibration_freshness.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
+    "check_writer_allowlist.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    }
+  },
+  "total_gates": 326
+}
