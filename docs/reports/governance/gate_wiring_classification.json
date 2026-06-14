@@ -1,9 +1,9 @@
 {
   "counts": {
-    "ORPHANED": 102,
+    "ORPHANED": 103,
     "PRECOMMIT": 22,
-    "REGISTRY": 151,
-    "TEST_ONLY": 37,
+    "REGISTRY": 150,
+    "TEST_ONLY": 35,
     "WORKFLOW": 14
   },
   "gates": {
@@ -558,20 +558,6 @@
       "precommit": false,
       "registry": true,
       "tests": false,
-      "workflow": true
-    },
-    "check_author_gate_pipeline_freshness.py": {
-      "classification": "TEST_ONLY",
-      "precommit": false,
-      "registry": false,
-      "tests": true,
-      "workflow": false
-    },
-    "check_author_gate_v2_completeness.py": {
-      "classification": "TEST_ONLY",
-      "precommit": false,
-      "registry": false,
-      "tests": true,
       "workflow": false
     },
     "check_authority_boundary_breaches.py": {
@@ -735,6 +721,13 @@
       "tests": false,
       "workflow": false
     },
+    "check_decision_ledger_v2_completeness.py": {
+      "classification": "ORPHANED",
+      "precommit": false,
+      "registry": false,
+      "tests": false,
+      "workflow": false
+    },
     "check_decision_required.py": {
       "classification": "ORPHANED",
       "precommit": false,
@@ -768,13 +761,6 @@
       "precommit": false,
       "registry": true,
       "tests": false,
-      "workflow": false
-    },
-    "check_enriched_choice_ui_invariants.py": {
-      "classification": "REGISTRY",
-      "precommit": false,
-      "registry": true,
-      "tests": true,
       "workflow": false
     },
     "check_enriched_choice_ui_invariants_ast.py": {
@@ -922,7 +908,7 @@
       "precommit": true,
       "registry": false,
       "tests": false,
-      "workflow": true
+      "workflow": false
     },
     "check_g29_firewall.py": {
       "classification": "REGISTRY",
@@ -1426,7 +1412,7 @@
       "precommit": false,
       "registry": true,
       "tests": false,
-      "workflow": true
+      "workflow": false
     },
     "check_notion_plan_lifecycle_guard.py": {
       "classification": "REGISTRY",
@@ -2290,5 +2276,5 @@
       "workflow": false
     }
   },
-  "total_gates": 326
+  "total_gates": 324
 }

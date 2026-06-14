@@ -29,14 +29,16 @@
   adds the CI-gate sweep, rule-stub collapse, skills archival, and this memory-drift fix.
 - **Author-Gate emulation (S1) is RETIRED at the doctrine/wiring level** —
   `after_agent_governance_dispatch.py` removed the AG chain; 5 AG rules DEPRECATED; constitutional
-  §30/§35 are RETIRED slots. W2 (2026-06-14) = audit + `classify_gate_wiring.py` only; **no archival
-  landed** — an archive attempt was fully REVERTED. Two lessons (caught by CI/Codex on PR #336):
-  (1) the AG skills + `author_gate_ledger_integrity.py` are imported by **live** consumers
-  (`render_template.py`, `author_gate_prepare_ask.py`, packet-freshness gate, `refactor-decision-memory`,
-  2 tests) — a name in a reference scan ≠ safe; confirm it is not a live import before any mv;
-  (2) **a root `archives/` dir is FORBIDDEN** by `check_structure_policy.py` — retire via `git rm`
-  (history-preserved), not move-to-archives. Whole S1 retires in ONE lockstep pass.
-  Note: `memory/` is whitelisted in `config/structure_blueprint/structure_policy.yaml`.
+  §30/§35 are RETIRED slots. **S1 author-gate retirement was COMPLETED on `origin/main`** (merged into
+  this branch 2026-06-14): Tier-2 author-facing layer retired, `ci/author_gate/`→`ci/decision_ledger/`,
+  the 2 AG skills + ~15 AG scripts + the AG test suite removed (shared ledger backbone preserved).
+  Remaining consolidation = **W3** (19 redirect rule stubs), **W4** (103 orphan gates per refreshed
+  `classify_gate_wiring.py`), **W5** (dormant-MCP skills + thin-alias commands).
+  **CI lessons (PR #336):** root `archives/` is FORBIDDEN (`check_structure_policy`) — retire via `git rm`,
+  not move-to-archives; verify a name is not a *live import* before any mv; `memory/` is whitelisted in
+  `config/structure_blueprint/structure_policy.yaml`; rule files are validated by
+  `check_rule_frontmatter_schema`/`check_rules_index_freshness`/`check_rule_cross_references` (W3 must
+  repoint inbound refs + keep CLAUDE.md's index fresh in lockstep).
 - "Uncalled by `run_contract_gates.py`" ≠ dead: pre-commit references 45 gates, workflows 33. Gate
   retirement (W4) is gated by `tools/governance/classify_gate_wiring.py`.
 
