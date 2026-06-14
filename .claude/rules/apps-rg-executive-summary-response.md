@@ -1,6 +1,8 @@
 
 # Executive Summary — Default Response Shape
 
+> **Precedence (canonical SSOT — `001-runtime-seam-execution.md` § Canonical post-turn output):** this layman-lead shape is a **simplify / translate** standard for *how the §37 Outcome frame's RCA + next-step content reads* for this deliverable (plain English first, jargon later). It layers on the response floor / Outcome frame; it never replaces them. (For the artifact-derived evidence table, see the sibling `apps-rg-post-run-summary.md`.)
+
 After every `python -m apps_rg --section executive_summary` run (or when explaining one), use this order:
 
 ## 1. Layman lead (required — exactly 3 sentences)

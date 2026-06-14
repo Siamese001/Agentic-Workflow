@@ -30,7 +30,16 @@ distinct from the symptom, a stated **confidence** in that root cause, and a **n
 to the diagnosis** (not a bare platitude like "fix the bug"). A symptom-only / single-hop RCA, a
 root cause asserted with no confidence, or a generic non-actionable next step is ``shallow_rca``.
 
-Violation kinds: missing_refactor_outcome, missing_rca, incomplete_rca,
+It also flags a repo-work turn that dropped the response floor entirely: a final output carrying a
+floor signal (FILES_CHANGED / COMMANDS_RUN / TESTS_GATES / ARTIFACTS / REPORTS_GENERATED) or an
+edit-tool invocation but NO ``STATUS:`` line (rule 001 § Canonical post-turn output — one template).
+High-precision: the dispatcher feeds only the final assistant prose, so this catches malformed/partial
+floors, not every prose wrap-up after a code turn; pure prose with no floor signal stays clean.
+``generate_full_adg`` / ``run_full_adg_audit`` / ``adg_gates`` runs are EXEMPT from this entire audit —
+their BCG burndown + gates output supersedes both the floor and the Outcome frame and is owned by
+post_agent_adg_burndown_inline_audit.py.
+
+Violation kinds: missing_response_floor, missing_refactor_outcome, missing_rca, incomplete_rca,
 status_signal_mismatch, shallow_rca.
 
 This audit is advisory and fail-open: it always exits 0 and never blocks the response.
@@ -117,6 +126,32 @@ _EDIT_TOOL_RE = re.compile(r'<invoke\s+name="(?:Edit|Write|MultiEdit|NotebookEdi
 # presence keys on it, not on a duplicate pass/fail vote.
 _OUTCOME_FRAME_RE = re.compile(r"(?i)verdict\s+source\s*:")
 
+# Repo-work signals that should never appear WITHOUT a STATUS floor. A final message that
+# carries any of these but no STATUS: line is a dropped/partial response floor — the dominant
+# format-drift mode (rule 001 § Canonical post-turn output). High-precision by design: the
+# dispatcher feeds only the final assistant prose (no tool history), so this catches malformed/
+# partial floors, not every prose wrap-up after a code turn. Pure prose with no floor signal and
+# no STATUS line stays clean (a question / T0 lookup is not repo work).
+_REPO_WORK_SIGNALS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (_FILES_CHANGED_RE, "files_changed"),
+    (re.compile(r"(?im)^\s*COMMANDS_RUN\s*:"), "commands_run"),
+    (re.compile(r"(?im)^\s*TESTS_GATES\s*:"), "tests_gates"),
+    (re.compile(r"(?im)^\s*ARTIFACTS\s*:"), "artifacts"),
+    (re.compile(r"(?im)^\s*REPORTS_GENERATED\s*:"), "reports_generated"),
+    (_EDIT_TOOL_RE, "edit_tool_invoked"),
+)
+
+# ADG generate/audit runs have their OWN output contract — the BCG-grade burndown + gates table
+# (adg-post-run-burndown.md § Completion Gate, audited by post_agent_adg_burndown_inline_audit.py).
+# That output SUPERSEDES both the response floor AND the Outcome-frame requirement, so an ADG-run turn
+# is exempt from this entire audit. Signal mirrors that audit's _RUN_PATTERNS (rule 001 § Canonical
+# post-turn output, point 3).
+_ADG_RUN_RE: tuple[re.Pattern[str], ...] = (
+    re.compile(r"generate_full_adg\.py", re.IGNORECASE),
+    re.compile(r"run_full_adg_audit\.py", re.IGNORECASE),
+    re.compile(r"adg_gates[\\/]run\.py", re.IGNORECASE),
+)
+
 _REMEDY = (
     "Add an RCA: block to the response (symptom · root_cause[graded §20] · evidence · "
     "fix_or_next[§7] · recurrence_guard). Never stamp PASS/PARTIAL over a runtime-failure "
@@ -138,6 +173,14 @@ _MISSING_OUTCOME_REMEDY = (
     "provenance; What worked; Failure; Next) — the frame proves the STATUS verdict, it does not "
     "re-vote pass/fail — not the bare STATUS floor. On a failure the frame's Layered RCA is also "
     "required. SSOT: 001 § Runtime failure ⇒ RCA mandatory; constitutional §37."
+)
+
+_MISSING_FLOOR_REMEDY = (
+    "Repo-work turn with no response floor: this output changed files / ran commands / exercised "
+    "tests but carries no STATUS: line. End every repo-work turn with the rule-001 floor (STATUS · "
+    "FILES_CHANGED · COMMANDS_RUN · TESTS_GATES · ARTIFACTS · NOTES) — it is the base template, not "
+    "one option among several; domain/Outcome blocks layer on top, never replace it. SSOT: "
+    ".claude/rules/001-runtime-seam-execution.md § Canonical post-turn output; § Response floor."
 )
 
 
@@ -197,9 +240,35 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
 
     status None => not a repo-work receipt (no STATUS line) => caller no-ops.
     """
+    # generate_full_adg / run_full_adg_audit / adg_gates runs are governed SOLELY by the BCG burndown +
+    # gates contract (adg-post-run-burndown.md, audited by post_agent_adg_burndown_inline_audit.py).
+    # That output supersedes BOTH the response floor and the Outcome-frame requirement, so the
+    # runtime-rca audit defers entirely for ADG runs (rule 001 § Canonical post-turn output, point 3).
+    if any(rx.search(text) for rx in _ADG_RUN_RE):
+        return None, []
+
     status_match = _STATUS_RE.search(text)
     if not status_match:
-        return None, []
+        # No STATUS floor. If the turn still carries a repo-work signal (a secondary floor label or
+        # an edit-tool invocation) it is a dropped/partial response floor — flag missing_response_floor.
+        # Pure prose with no repo-work signal is a question / non-repo turn and stays clean.
+        repo_signals = [name for rx, name in _REPO_WORK_SIGNALS if rx.search(text)]
+        if not repo_signals:
+            return None, []
+        first_rx = next(rx for rx, _name in _REPO_WORK_SIGNALS if rx.search(text))
+        rec = {
+            "ts_utc": datetime.now(timezone.utc).isoformat(),
+            "kind": "missing_response_floor",
+            "status": "NONE",
+            "refactor_turn": _is_refactor_turn(text),
+            "has_outcome_frame": bool(_OUTCOME_FRAME_RE.search(text)),
+            "failure_signals": [],
+            "repo_work_signals": repo_signals,
+            "excerpt": _excerpt(text, first_rx),
+            "remedy": _MISSING_FLOOR_REMEDY,
+            "rule_ref": "constitutional §37 / 001 § Canonical post-turn output",
+        }
+        return None, [rec]
     status_value = status_match.group(1).upper()
 
     signals = [name for rx, name in _FAILURE_SIGNALS if rx.search(text)]
@@ -314,10 +383,15 @@ def main() -> int:
         _status, violations = detect(text)
         for record in violations:
             _append_violation(record)
+            signals = record.get("failure_signals") or record.get("repo_work_signals") or []
+            hint = (
+                "end the turn with the rule-001 STATUS floor"
+                if record["kind"] == "missing_response_floor"
+                else "add an RCA: block"
+            )
             print(
                 f"[runtime-rca] {record['kind']}: status={record['status']} "
-                f"signals={record['failure_signals']} — add an RCA: block "
-                "(rule 001 / constitutional §37).",
+                f"signals={signals} — {hint} (rule 001 / constitutional §37).",
                 file=sys.stderr,
             )
         return 0

@@ -58,6 +58,49 @@ NOTES:
 
 **Receipt hyperlinks (required):** In chat responses and companion `*_receipt.md` / manifest JSON, every repo path in `FILES_CHANGED`, `ARTIFACTS`, and `REPORTS_GENERATED` MUST be a markdown link `[label](path)` using forward slashes (e.g. `[human_benchmark_plan.md](artifacts/apps_rg/plans/human_benchmark_plan.md)`). JSON manifests SHOULD also include parallel `*_links` objects via `ops_scripts/apps_rg/l6_benchmarks/receipt_links.py` (`path` + `markdown` fields).
 
+## Canonical post-turn output — one template, with precedence
+
+> ⛔ There is **ONE** post-turn shape for repo work: the **Response floor**, expanded by the **§37
+> Outcome frame** on every refactoring turn (the frame is where the RCA + next step live). The apps_rg
+> "run-summary" / "layman-lead" guidance is about *simplifying* that RCA + next-step content — it is
+> **not** a separate post-turn template. The **sole exception** is a `generate_full_adg` run, where the
+> BCG-grade ADG burndown + gates template is enforced instead. Picking a different shape per turn — or
+> dropping the floor/frame for free-form prose — is the inconsistency this section exists to stop.
+
+**The base is non-optional.** Every repo-work turn ends with the **Response floor** above
+(`STATUS` … `NOTES`). It is the base template — not one option among several. A repo-work turn
+(files changed, commands run, tests/gates exercised) that wraps up in plain prose **with no
+`STATUS:` line** is non-compliant, even when the prose is correct.
+
+**Precedence — compose, don't choose:**
+
+1. **Floor (base, always).** Every repo-work turn starts from the `STATUS` … `NOTES` receipt.
+2. **§37 Outcome frame — MANDATORY on every refactoring (T2/T3 code-change) turn.** It is the floor's
+   runtime-evidence expansion and the home of the **RCA and the next step** (see "Runtime failure ⇒
+   RCA mandatory" below). It proves the `STATUS:` verdict; it does not re-vote it. Two apps_rg rules
+   layer on this frame for apps_rg runs and never replace it:
+   - `apps-rg-executive-summary-response.md` is a **simplify / layman-lead** standard — it shapes *how
+     the RCA + next-step content reads* (plain English first, jargon later).
+   - `apps-rg-post-run-summary.md` is an **additive evidence** specialization — the tool-rendered
+     `render_run_summary.py` provenance table (the artifact-derived ground truth the frame's verdict is
+     checked against), not a simplification.
+   Neither is a separate post-turn template.
+3. **Sole exception — `generate_full_adg` runs.** On a `generate_full_adg` / `run_full_adg_audit` /
+   `adg_gates/run.py` run, the BCG-grade ADG burndown + gates output (`adg-post-run-burndown.md`
+   § Completion Gate, its own non-bypassable gate + own audit `post_agent_adg_burndown_inline_audit.py`)
+   is enforced — **and only that.** It supersedes both the floor and the Outcome frame; do not stamp
+   either on top of it. The backstop below defers ADG runs to that gate entirely.
+
+A non-repo turn (a pure question, a T0 lookup, a chat that changed nothing) does not need the floor.
+
+**Backstop.** `post_agent_runtime_rca_audit.py` flags a repo-work turn that drops the floor
+(`missing_response_floor` — a floor signal `FILES_CHANGED:` / `COMMANDS_RUN:` / `TESTS_GATES:` /
+`ARTIFACTS:` / `REPORTS_GENERATED:` or an edit-tool invocation but **no `STATUS:` line**) or a
+refactoring turn missing the Outcome frame (`missing_refactor_outcome`), logged to
+`artifacts/governance/runtime_rca_violations.jsonl`. Advisory (never blocks). Bypass:
+`RUNTIME_RCA_AUDIT_BYPASS=1`. **`generate_full_adg` runs are fully exempt** — their output is governed
+by the BCG/ADG burndown completion gate (point 3), not by this floor or the Outcome-frame check.
+
 ## Runtime failure ⇒ RCA mandatory
 
 A response reports a **runtime failure** when it sets `STATUS: FAIL` **or** surfaces any
