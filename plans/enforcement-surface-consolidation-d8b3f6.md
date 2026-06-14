@@ -25,9 +25,9 @@ Archive the declared-but-uncleaned emulation machinery and collapse redirect/dor
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W1
-LAST_COMPLETED_WAVE: NONE
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W1
 LAST_UPDATED: 2026-06-14
 
 ---
@@ -47,8 +47,8 @@ LAST_UPDATED: 2026-06-14
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W1 | W1.1, W1.2 | Audit ratification · memory-drift fix · gate reference-sweep classifier (no deletions) | ~30K | Coupling map valid; `post_agent_*` rename already landed on this branch | 🔲 TODO | Memory contradiction resolved; `classify_gate_wiring.py` emits a per-gate wiring report; baseline metrics captured |
-| W2 | W2.1, W2.2 | **S1** Author-Gate machinery → archive (highest value, lowest risk) | ~40K | AG chain already unwired (verified 3×); §6 invariant lives in CLAUDE.md | 🔲 TODO | 16 scripts + 2 skills archived; ~10 coupled gates + 4 pre-commit hooks removed; `run_contract_gates.py` green |
+| W1 | W1.1, W1.2 | Audit ratification · memory-drift fix · gate reference-sweep classifier (no deletions) | ~30K | Coupling map valid; `post_agent_*` rename already landed on this branch | ✅ DONE | Memory SSOT created; `classify_gate_wiring.py` emitted REGISTRY 151 / PRECOMMIT 22 / WORKFLOW 14 / TEST_ONLY 37 / ORPHANED 102 |
+| W2 | W2.1, W2.2 | **S1** Author-Gate machinery → archive (highest value, lowest risk) | ~40K | AG chain already unwired (verified 3×); §6 invariant lives in CLAUDE.md | 🔄 IN PROGRESS | 2 skills + 3 proven-orphan gates archived; bulk script/gate/workflow archival DEFERRED on discovered coupling (kept `refactor-decision-memory` imports `author_gate_ledger_integrity`) |
 | W3 | W3.1, W3.2 | Collapse ~21 redirect/inactive rule stubs (incl. the 5 AG rule stubs) → one retired-rules index | ~28K | §-citations are number-based, not filename-based; glob-triggers re-homed | 🔲 TODO | Stubs replaced by `_retired-rules-index.md`; CLAUDE.md index updated; no rule references a non-existent SSOT; gates green |
 | W4 | W4.1, W4.2 | CI-gate reference-swept retirement + family collapse (uses W1.2 classifier output) | ~38K | W1.2 classifier proves orphan status across registry+workflows+pre-commit+tests | 🔲 TODO | Only proven-orphan gates retired; notion-dedup & waiting-for pairs parameterized→1 each; apps_rg/notion-status gates untouched; gates green |
 | W5 | W5.1, W5.2 | Skills archival + thin-alias command cleanup | ~26K | Servers absent from `.mcp.json`; native substitutes documented | 🔲 TODO | 2 retired AG + 4 dormant-MCP skills archived; 6 tavily + other alias commands removed; CLAUDE.md MCP table updated; orthogonal pairs untouched |
@@ -59,9 +59,9 @@ LAST_UPDATED: 2026-06-14
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| W1.1 | Ratify coupling map + resolve memory drift | 🔲 TODO |
-| W1.2 | Build gate reference-sweep classifier (read-only) | 🔲 TODO |
-| W2.1 | Archive AG scripts + skills; remove coupled gates/pre-commit hooks | 🔲 TODO |
+| W1.1 | Ratify coupling map + resolve memory drift | ✅ DONE |
+| W1.2 | Build gate reference-sweep classifier (read-only) | ✅ DONE |
+| W2.1 | Archive AG scripts + skills; remove coupled gates/pre-commit hooks | 🔄 IN PROGRESS |
 | W2.2 | Verify §6 invariant; ADR; gates green | 🔲 TODO |
 | W3.1 | Build retired-rules index (all ~21 stubs); re-home glob-triggers | 🔲 TODO |
 | W3.2 | Delete stubs; update CLAUDE.md index; gates green | 🔲 TODO |
@@ -147,6 +147,11 @@ CHECKPOINT: B
 - 16 `*author_gate*`/`*ag_queue*` governance scripts + 2 AG skills `git mv`'d to `archives/enforcement_consolidation_2026-06-14/`.
 - Coupled gates removed from `run_contract_gates.py` registry AND `.pre-commit-config.yaml` (T6d/T6d2/T7e/T7t) in the same commit — no orphan gate, no orphan producer.
 - `python ops_scripts/ci/run_contract_gates.py` exits 0; constitutional §6 still carries the "stop & ask via AskUserQuestion" invariant; one ADR written. (The 5 AG *rule* stubs are redirect-only and are collapsed with all other stubs in W3 — W2 leaves them untouched.)
+
+**W2 progress + DISCOVERED_SCOPE (2026-06-14).** Archived (`git mv` → `archives/enforcement_consolidation_2026-06-14/`): 2 AG skills (`author-gate-packet-builder`, `author-gate-ui-renderer`) + 3 classifier-proven-orphan gates (`check_ag_queue_drain_freshness`, `check_ag_queue_seed_markers`, `check_enriched_choice_ui_invariants_ast`). The active `check_enriched_choice_ui_invariants.py` stayed green (exit 0). **Discovered coupling — the bulk AG-script + gate + workflow archival is larger than W2 budgeted and is DEFERRED for an explicit decision:** (1) the **active, kept** `refactor-decision-memory` skill imports `author_gate_ledger_integrity.py` (`from author_gate_ledger_integrity import GENESIS_PREV_HASH`) → that helper is KEPT until the skill is decoupled to native file memory (plan P1.2); (2) `.github/workflows/author-gate-gates.yml` + the 2 TEST_ONLY gates (`check_author_gate_pipeline_freshness`, `check_author_gate_v2_completeness`) need lockstep removal with their tests; (3) `check_enriched_choice_ui_invariants.py` is still REGISTRY-wired (keep-vs-retire is an architecture call).
+
+DISCOVERED_SCOPE: plan=enforcement-surface-consolidation-d8b3f6 wave=2 phase=W2.1 gap="active refactor-decision-memory skill imports author_gate_ledger_integrity; AG workflow + REGISTRY gate need lockstep with consumers" impact="medium — blocks bulk AG-script archival until the kept skill is decoupled"
+AUTHORIZATION_DECISION: plan=enforcement-surface-consolidation-d8b3f6 decision=DEFERRED authorized_by=self decisive_reason="archive the zero-coupling subset now (2 skills + 3 orphan gates); decouple refactor-decision-memory before archiving author_gate_ledger_integrity and the lockstep gates/workflow"
 
 ---
 
