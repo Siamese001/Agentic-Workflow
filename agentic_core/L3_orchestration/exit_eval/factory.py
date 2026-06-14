@@ -55,7 +55,9 @@ from agentic_core.L3_orchestration.exit_eval.pipeline import (
     ConsistencyPolicy,
     EvaluationPipeline,
 )
+from agentic_core.L3_orchestration.exit_eval.otel_sdk_sink import build_span_sink
 from agentic_core.L3_orchestration.exit_eval.rubric import load_rubric
+from agentic_core.tracing.runtime_tracing import bootstrap_runtime_tracing
 
 DEFAULT_RUBRIC_DIR = Path(__file__).resolve().parents[3] / "config" / "exit_eval_rubrics"
 
@@ -340,4 +342,50 @@ def build_pipeline(
     return PipelineBundle(pipeline=pipeline, gates=gates, consistency_store=consistency_store)
 
 
-__all__ = ["PipelineBundle", "build_pipeline"]
+def build_evaluation_pipeline_with_tracing(
+    gates: list[Gate],
+    *,
+    bus_emitter: BusEmitter,
+    consistency_store: PassKStore | None = None,
+    consistency_policy: ConsistencyPolicy | None = None,
+    service_name: str = "exit_eval",
+) -> EvaluationPipeline:
+    """Runtime factory — build an ``EvaluationPipeline`` with a live span sink.
+
+    Constructing ``EvaluationPipeline`` directly defaults to a ``NoOpSpanSink``
+    (correct for unit/minimal contexts). This factory wires the Exit evaluation
+    plane for *production runtime* instead:
+
+    1. Calls :func:`bootstrap_runtime_tracing` **before** resolving a tracer, so
+       a recording OTEL provider is installed first when the operator opted in
+       (``OTEL_TRACES_EXPORTER`` set). External export stays env-gated / OFF by
+       default.
+    2. Injects ``build_span_sink(service_name=...)`` — a live OTel-SDK sink when
+       OTel is importable, else a graceful ``NoOpSpanSink``.
+
+    The pipeline stays fail-soft; nothing here raises on missing OTel. Direct
+    ``EvaluationPipeline(...)`` construction is intentionally left
+    no-op-by-default for tests and minimal environments.
+
+    Args:
+        gates: already-constructed gates (e.g. ``build_pipeline(...).gates``).
+        bus_emitter: BUS sink for P-rows.
+        consistency_store / consistency_policy: optional X1G commit-path wiring.
+        service_name: OTEL service / tracer name for the span sink.
+    """
+    bootstrap_runtime_tracing()
+    span_sink = build_span_sink(service_name=service_name)
+    return EvaluationPipeline(
+        gates,
+        bus_emitter=bus_emitter,
+        consistency_store=consistency_store,
+        consistency_policy=consistency_policy,
+        span_sink=span_sink,
+    )
+
+
+__all__ = [
+    "PipelineBundle",
+    "build_evaluation_pipeline_with_tracing",
+    "build_pipeline",
+]
