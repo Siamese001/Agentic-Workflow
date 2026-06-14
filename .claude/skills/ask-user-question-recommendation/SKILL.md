@@ -1,6 +1,6 @@
 ---
 name: ask-user-question-recommendation
-description: THE single SSOT for how to shape a native AskUserQuestion call on an Author-Gate-class decision (architecture choice, refactor scope, deletion, dependency add, error-handling strategy). Use before invoking AskUserQuestion so the recommended option is first, its label ends "(Recommended)", and every option description begins with a numeric [confidence=0.NN] prefix (the recommended one with [RECOMMENDED ⭐ confidence=0.NN]). Absorbs the role of the retired author-gate-packet-builder / author-gate-ui-renderer skills (W1, ADR-093).
+description: Single SSOT for shaping a native AskUserQuestion call on an Author-Gate-class decision (>=2 approaches, different blast radius). Use before invoking AskUserQuestion: recommended option first, its label ends (Recommended), every option description begins with numeric [confidence=0.NN], the recommended one with [RECOMMENDED ⭐ confidence=0.NN].
 trigger: model_decision
 ---
 
