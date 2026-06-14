@@ -229,6 +229,7 @@ def build_l3_runtime_orchestration_receipt(
     selected_node_ids: tuple[str, ...],
     step_contracts: tuple[L3StepContractRef, ...],
     static_dag_ref: str = "",
+    l5_certification_ref: str = "",
 ) -> L3RuntimeOrchestrationReceipt:
     digest_input: dict[str, Any] = {
         "schema_version": L3_RUNTIME_RECEIPT_SCHEMA_VERSION,
@@ -259,6 +260,7 @@ def build_l3_runtime_orchestration_receipt(
         step_contracts=tuple(step_contracts),
         static_dag_ref=static_dag_ref,
         deterministic_digest=digest,
+        l5_certification_ref=l5_certification_ref,
     )
 
 

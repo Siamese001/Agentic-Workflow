@@ -87,6 +87,9 @@ from agentic_core.runtime.contracts.c0_bypass_receipt import (
 from agentic_core.runtime.contracts.identity import (
     build_runtime_identity_envelope,
 )
+from agentic_core.runtime.bindings.native_contract_chain import (
+    NATIVE_PROOF_L5_CERT_REF,
+)
 from agentic_core.runtime.contracts.l3_runtime_orchestration_receipt import (
     L3StepContractRef,
     build_l3_runtime_orchestration_receipt,
@@ -230,6 +233,10 @@ def _build_exit_review_packet(
         replay_guard_violations=[],
         isolation_anomalies=[],
         drift_warnings=[],
+        # Structural-proof L5 cert ref (AG-8-FU1 hard law): the X3 disposition
+        # extracts the cert ref from the ExitReviewPacket, so it must be populated
+        # here for the fixture-mode MW chain (no live L5 certification step).
+        l5_certification_refs=(NATIVE_PROOF_L5_CERT_REF,),
     )
 
 
@@ -392,6 +399,11 @@ def run_integrated_managed_workflow(
         selected_node_ids=selected,
         step_contracts=step_contracts,
         static_dag_ref=artifact_hashes["static_dag_proof.json"],
+        # Structural-proof L5 cert ref (AG-W0-5 fail-closed): the MW demo runs in
+        # fixture mode with no live L5 certification step, so it carries the same
+        # structural-proof ref the native proof chain uses. Without this the L3
+        # receipt construction fails fail-closed on an empty ref.
+        l5_certification_ref=NATIVE_PROOF_L5_CERT_REF,
     )
     _emit("runtime_l3_orchestration_receipt.json", _l3_receipt.to_dict())
 
@@ -558,7 +570,7 @@ def run_integrated_managed_workflow(
         "provider_lane": review.provider_lane,
         "invocations": [],
     }
-    bundle = collector.collect([record])
+    bundle = collector.collect([record], l5_certification_ref=NATIVE_PROOF_L5_CERT_REF)
     _emit("runtime_exhaust_bundle.json", {
         "sealed_manifest": dataclasses.asdict(sealed_manifest)
         if dataclasses.is_dataclass(sealed_manifest) else sealed_manifest.__dict__,

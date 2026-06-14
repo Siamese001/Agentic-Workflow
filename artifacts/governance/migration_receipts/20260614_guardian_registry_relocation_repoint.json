@@ -1,0 +1,20 @@
+{
+  "receipt_version": "1.0",
+  "change_id": "guardian-registry-relocation-repoint-20260614",
+  "timestamp": "2026-06-14T21:40:00Z",
+  "agentic_core_files_changed": [
+    "agentic_core/L0_routing/types/guardian_registry_types.py",
+    "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py"
+  ],
+  "classification": "GENERIC_INFRASTRUCTURE",
+  "justification": "Bug-fix repoint of stale module references after the guardian runners were relocated. (1) guardian_registry_types.py: all 13 GuardianSpec.entrypoint_module values pointed at the deleted package agentic_core.L0_routing.scripts.* — repointed to the real location ops_scripts.dev_tools.L0_routing_scripts.* (verified each target module + entrypoint_fn exists). (2) ssot_scanner_enforcer.py: get_agent_files was imported from agentic_core.utils.runners.ssot_discovery_validator (which no longer exports it) — repointed to agentic_core.L5_safety.utils.location_utils_util where the symbol is defined. No new mechanism, no app-specific literals, no app_id branches added — pure relocation-decay cleanup applying to all apps_* equally. Allowed-with-receipt per .claude/rules/agentic-core-glob-lock.md ('Fixing bugs in generic enforcement').",
+  "app_specific_literals_added": [],
+  "tests_added_or_updated": [],
+  "boundary_audit_passed": true,
+  "migration_receipts_affected": [],
+  "known_gaps": [
+    "The aggregated guardian (run_all_guardians.py --strict) still does not exit 0: after these repoints it reaches a deeper implementation bug AttributeError: 'SSOTScanner' object has no attribute 'CANON_SIGNALS' in agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py. That is genuine subsystem rot (not a clean relocation) and is left for a dedicated guardian-subsystem repair pass. Until then the workflow step .github/workflows/guardian-tests.yml 'Run aggregated guardian (--strict)' remains continue-on-error (advisory). The blocking guardian gate is `pytest tests/guardian/` (19 passing)."
+  ],
+  "author_gate_approved": false,
+  "author_gate_note": "No Author-Gate required: change adds no mechanism/layer/contract/capability and no app-specific logic; it is a stale-reference bug fix (CoreAdditionAuthorGate applies only to additions)."
+}
