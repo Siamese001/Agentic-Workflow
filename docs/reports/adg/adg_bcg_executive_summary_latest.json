@@ -1,7 +1,68 @@
 {
   "after_green_plan": {
     "executive_read": "After-green work lowers accepted floors and closes broad testing waves once blockers are gone.",
-    "rows": [],
+    "rows": [
+      {
+        "done_condition": "Lower baseline and rerun ADG.",
+        "driver_signals": [
+          "gate_results"
+        ],
+        "next_action": "Burn down after FIX rows clear.",
+        "order": 1,
+        "records": 10897,
+        "scope": "S4_unused_imports_ratchet",
+        "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
+        "work_class": "ratchet_burndown"
+      },
+      {
+        "done_condition": "Lower baseline and rerun ADG.",
+        "driver_signals": [
+          "gate_results"
+        ],
+        "next_action": "Burn down after FIX rows clear.",
+        "order": 2,
+        "records": 2060,
+        "scope": "C3_silent_writes_ratchet",
+        "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
+        "work_class": "ratchet_burndown"
+      },
+      {
+        "done_condition": "Lower baseline and rerun ADG.",
+        "driver_signals": [
+          "gate_results"
+        ],
+        "next_action": "Burn down after FIX rows clear.",
+        "order": 3,
+        "records": 1562,
+        "scope": "S2_uwg_bypass_ratchet",
+        "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
+        "work_class": "ratchet_burndown"
+      },
+      {
+        "done_condition": "Lower baseline and rerun ADG.",
+        "driver_signals": [
+          "gate_results"
+        ],
+        "next_action": "Burn down after FIX rows clear.",
+        "order": 4,
+        "records": 1075,
+        "scope": "F1_untyped_seam_ratchet",
+        "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
+        "work_class": "ratchet_burndown"
+      },
+      {
+        "done_condition": "Lower baseline and rerun ADG.",
+        "driver_signals": [
+          "gate_results"
+        ],
+        "next_action": "Burn down after FIX rows clear.",
+        "order": 5,
+        "records": 1030,
+        "scope": "E1_trace_stub_module",
+        "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
+        "work_class": "ratchet_burndown"
+      }
+    ],
     "status": "present"
   },
   "artifact_kind": "adg_bcg_executive_summary",
@@ -11,7 +72,7 @@
         "artifact_key": "gate_results",
         "decision_impact": "Directly affects verdict and next-best-action ranking.",
         "exists": true,
-        "path": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-1356\\test_render_markdown_accepts_l0\\artifacts\\gate.json",
+        "path": "artifacts/adg/adg_gate_results_20260614_213159.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -21,47 +82,47 @@
       },
       {
         "artifact_key": "action_queue",
-        "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
-        "exists": false,
-        "path": "",
-        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
-        "recommendation": "refine",
+        "decision_impact": "Directly affects verdict and next-best-action ranking.",
+        "exists": true,
+        "path": "artifacts/adg/adg_action_queue_06142026_1721.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "keep",
         "stale": false,
         "used_for": [
-          "none"
+          "decision"
         ]
       },
       {
         "artifact_key": "review_template",
-        "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
-        "exists": false,
-        "path": "",
-        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
-        "recommendation": "refine",
+        "decision_impact": "Supports consistency/evidence trace.",
+        "exists": true,
+        "path": "artifacts/adg/adg_review_template_06142026_1721.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "keep",
         "stale": false,
         "used_for": [
-          "none"
+          "evidence_only"
         ]
       },
       {
         "artifact_key": "burndown_table",
-        "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
-        "exists": false,
-        "path": "",
-        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
-        "recommendation": "refine",
+        "decision_impact": "Provides audit/baseline context, not automatic fix priority.",
+        "exists": true,
+        "path": "artifacts/adg/adg_burndown_table.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "keep",
         "stale": false,
         "used_for": [
-          "none"
+          "audit"
         ]
       },
       {
         "artifact_key": "burndown_report",
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
-        "exists": false,
-        "path": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-1356\\test_render_markdown_accepts_l0\\artifacts\\adg_burndown_report.md",
+        "exists": true,
+        "path": "artifacts/adg/adg_burndown_report.md",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
-        "recommendation": "refine",
+        "recommendation": "keep_hide_inline",
         "stale": false,
         "used_for": [
           "none"
@@ -71,7 +132,7 @@
         "artifact_key": "sqlite_snapshot",
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
-        "path": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-1356\\test_render_markdown_accepts_l0\\artifacts\\x.sqlite",
+        "path": "artifacts/adg/adg_indexed_06142026_1721.sqlite",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -83,12 +144,120 @@
         "artifact_key": "generation_manifest",
         "decision_impact": "Supports consistency/evidence trace.",
         "exists": false,
-        "path": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-1356\\test_render_markdown_accepts_l0\\artifacts\\adg_generation_manifest_ts.json",
+        "path": "artifacts/adg/adg_generation_manifest_06142026_1721.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "refine",
         "stale": false,
         "used_for": [
           "consistency"
+        ]
+      },
+      {
+        "artifact_key": "structural_outputs",
+        "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
+        "exists": true,
+        "path": "artifacts/adg/adg_structural_outputs_06142026_1721.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "keep",
+        "stale": false,
+        "used_for": [
+          "graphdb"
+        ]
+      },
+      {
+        "artifact_key": "refactor_accelerator",
+        "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
+        "exists": true,
+        "path": "artifacts/adg/adg_refactor_accelerator_06142026_1721.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "keep",
+        "stale": false,
+        "used_for": [
+          "graphdb"
+        ]
+      },
+      {
+        "artifact_key": "graphdb_queries",
+        "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
+        "exists": true,
+        "path": "artifacts/adg/adg_graphdb_queries_06142026_1721.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "keep",
+        "stale": false,
+        "used_for": [
+          "graphdb"
+        ]
+      },
+      {
+        "artifact_key": "runtime_spine",
+        "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
+        "exists": true,
+        "path": "artifacts/adg/adg_runtime_spine_06142026_1721.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "keep",
+        "stale": false,
+        "used_for": [
+          "graphdb"
+        ]
+      },
+      {
+        "artifact_key": "graphdb_projection",
+        "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
+        "exists": true,
+        "path": "artifacts/adg/adg_graphdb_projection_06142026_1721.json",
+        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
+        "recommendation": "keep_hide_inline",
+        "stale": false,
+        "used_for": [
+          "none"
+        ]
+      },
+      {
+        "artifact_key": "graphdb_metadata",
+        "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
+        "exists": true,
+        "path": "artifacts/adg/adg_graphdb_metadata_06142026_1721.json",
+        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
+        "recommendation": "keep_hide_inline",
+        "stale": false,
+        "used_for": [
+          "none"
+        ]
+      },
+      {
+        "artifact_key": "graphdb_index",
+        "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
+        "exists": true,
+        "path": "artifacts/adg/adg_graphdb_index_06142026_1721.json",
+        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
+        "recommendation": "keep_hide_inline",
+        "stale": false,
+        "used_for": [
+          "none"
+        ]
+      },
+      {
+        "artifact_key": "graph_watchlist",
+        "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
+        "exists": false,
+        "path": "artifacts/adg/adg_graph_watchlist_06142026_1721.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "refine",
+        "stale": false,
+        "used_for": [
+          "graphdb"
+        ]
+      },
+      {
+        "artifact_key": "p0_wave_plan",
+        "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
+        "exists": false,
+        "path": "artifacts/adg/adg_p0_remediation_wave_plan_06142026_1721.json",
+        "rationale": "Loaded and mapped to a decision lens.",
+        "recommendation": "refine",
+        "stale": false,
+        "used_for": [
+          "graphdb"
         ]
       }
     ],
@@ -103,30 +272,30 @@
       {
         "band": "P0",
         "executive_read": "Guardian exception math is audit context; map to a failing gate before funding fixes.",
-        "gross": null,
-        "guardian": null,
-        "non_exempt": null
+        "gross": 46,
+        "guardian": 41,
+        "non_exempt": 5
       },
       {
         "band": "P1",
         "executive_read": "Guardian exception math is audit context; map to a failing gate before funding fixes.",
-        "gross": null,
-        "guardian": null,
-        "non_exempt": null
+        "gross": 1196,
+        "guardian": 1192,
+        "non_exempt": 4
       },
       {
         "band": "P2",
         "executive_read": "Guardian exception math is audit context; map to a failing gate before funding fixes.",
-        "gross": null,
-        "guardian": null,
-        "non_exempt": null
+        "gross": 753,
+        "guardian": 732,
+        "non_exempt": 21
       },
       {
         "band": "P3",
         "executive_read": "Guardian exception math is audit context; map to a failing gate before funding fixes.",
-        "gross": null,
-        "guardian": null,
-        "non_exempt": null
+        "gross": 20181,
+        "guardian": 92,
+        "non_exempt": 20089
       }
     ],
     "notes": [
@@ -142,37 +311,109 @@
   "canonical_next_best_actions": {
     "rows": [
       {
-        "action": "Fund mapped tests for apps_sales/runtime/checkout.py",
+        "action": "Clear red gate G_REACH_l0_reachability",
+        "action_type": "fix_blocker",
+        "confidence": "high",
+        "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
+        "evidence_used": [
+          {
+            "decision_effect": "Current FIX gates block decision-grade green; inspect delta before assuming structural crisis.",
+            "signal_name": "G_REACH_l0_reachability",
+            "signal_type": "gate"
+          }
+        ],
+        "rank": 1,
+        "scope": "G_REACH_l0_reachability",
+        "testing_requirement": "Add mapped tests when touched scope overlaps a hotspot.",
+        "timing": "now",
+        "why_now": "Current FIX gates block decision-grade green; inspect delta before assuming structural crisis."
+      },
+      {
+        "action": "Clear red gate M1_module_loc_ratchet",
+        "action_type": "fix_blocker",
+        "confidence": "high",
+        "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
+        "evidence_used": [
+          {
+            "decision_effect": "Current FIX gates block decision-grade green; inspect delta before assuming structural crisis.",
+            "signal_name": "M1_module_loc_ratchet",
+            "signal_type": "gate"
+          }
+        ],
+        "rank": 2,
+        "scope": "M1_module_loc_ratchet",
+        "testing_requirement": "Add mapped tests when touched scope overlaps a hotspot.",
+        "timing": "now",
+        "why_now": "Current FIX gates block decision-grade green; inspect delta before assuming structural crisis."
+      },
+      {
+        "action": "Clear red gate Q2_cyclomatic_complexity_ratchet",
+        "action_type": "fix_blocker",
+        "confidence": "high",
+        "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
+        "evidence_used": [
+          {
+            "decision_effect": "Current FIX gates block decision-grade green; inspect delta before assuming structural crisis.",
+            "signal_name": "Q2_cyclomatic_complexity_ratchet",
+            "signal_type": "gate"
+          }
+        ],
+        "rank": 3,
+        "scope": "Q2_cyclomatic_complexity_ratchet",
+        "testing_requirement": "Add mapped tests when touched scope overlaps a hotspot.",
+        "timing": "now",
+        "why_now": "Current FIX gates block decision-grade green; inspect delta before assuming structural crisis."
+      },
+      {
+        "action": "Fund mapped tests for unknown",
         "action_type": "add_tests",
         "confidence": "medium",
         "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
         "evidence_used": [
           {
             "decision_effect": "Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down.",
-            "signal_name": "apps_sales/runtime/checkout.py",
+            "signal_name": "unknown",
             "signal_type": "testing_hotspot"
           }
         ],
-        "rank": 1,
-        "scope": "apps_sales/runtime/checkout.py",
-        "testing_requirement": "Add mapped tests/regression, tests/e2e or app-specific e2e coverage for apps_sales.",
-        "timing": "now",
+        "rank": 4,
+        "scope": "unknown",
+        "testing_requirement": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "timing": "if_touched",
         "why_now": "Testing exposure in a high-risk surface can reduce more delivery risk than blind ratchet burn-down."
       },
       {
-        "action": "Refine/deprecate low-value ADG signal mv_empty_noise",
+        "action": "Burn down ratchet S4_unused_imports_ratchet",
+        "action_type": "burn_down_ratchet",
+        "confidence": "medium",
+        "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
+        "evidence_used": [
+          {
+            "decision_effect": "Accepted baseline debt should fall after red gates are clear.",
+            "signal_name": "S4_unused_imports_ratchet",
+            "signal_type": "gate"
+          }
+        ],
+        "rank": 5,
+        "scope": "S4_unused_imports_ratchet",
+        "testing_requirement": "Add tests only when touched scope overlaps hotspot.",
+        "timing": "after_green",
+        "why_now": "Accepted baseline debt should fall after red gates are clear."
+      },
+      {
+        "action": "Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps",
         "action_type": "refine",
         "confidence": "low",
         "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
         "evidence_used": [
           {
             "decision_effect": "Suppress or retire signals that do not affect decisions.",
-            "signal_name": "mv_empty_noise",
+            "signal_name": "mv_capability_and_egress_gaps",
             "signal_type": "mv"
           }
         ],
-        "rank": 2,
-        "scope": "mv_empty_noise",
+        "rank": 6,
+        "scope": "mv_capability_and_egress_gaps",
         "testing_requirement": "No test required unless generator logic changes.",
         "timing": "deprecate",
         "why_now": "Suppress or retire signals that do not affect decisions."
@@ -183,56 +424,160 @@
   "defer_delete_deprecate": {
     "rows": [
       {
+        "current_value": "814 rows; diagnostic_monitor",
+        "item": "mv_actionable_surface_without_schema",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
+        "current_value": "3085 rows; diagnostic_monitor",
+        "item": "mv_agent_specialization_overlap",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
+        "current_value": "15 rows; diagnostic_monitor",
+        "item": "mv_agent_tool_ratio",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
+        "current_value": "7 rows; diagnostic_monitor",
+        "item": "mv_authority_boundary_breaches",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
         "current_value": "0 rows; stale_or_empty",
-        "item": "mv_empty_noise",
+        "item": "mv_capability_and_egress_gaps",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
         "recommendation": "deprecate",
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "1 rows; audit_driver",
-        "item": "mv_guardian_inventory",
+        "current_value": "192 rows; diagnostic_monitor",
+        "item": "mv_critical_path_segments",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
         "recommendation": "keep_hide_inline",
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "2 rows; ratchet_driver",
-        "item": "mv_p0_ratchet_inventory",
+        "current_value": "56 rows; diagnostic_monitor",
+        "item": "mv_cross_cutting_witness_tiers",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
         "recommendation": "keep_hide_inline",
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "unused or missing",
-        "item": "action_queue",
-        "item_type": "artifact",
-        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
-        "recommendation": "hide_inline",
-        "revisit_condition": "Use when it changes next action, audit, consistency, or test placement."
+        "current_value": "11996 rows; diagnostic_monitor",
+        "item": "mv_dependency_cone_risk",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "unused or missing",
-        "item": "review_template",
-        "item_type": "artifact",
-        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
-        "recommendation": "hide_inline",
-        "revisit_condition": "Use when it changes next action, audit, consistency, or test placement."
+        "current_value": "6838 rows; diagnostic_monitor",
+        "item": "mv_determinism_provenance_drift",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "unused or missing",
-        "item": "burndown_table",
-        "item_type": "artifact",
-        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
-        "recommendation": "hide_inline",
-        "revisit_condition": "Use when it changes next action, audit, consistency, or test placement."
+        "current_value": "6 rows; diagnostic_monitor",
+        "item": "mv_digest_reconciliation",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
+        "current_value": "3467 rows; diagnostic_monitor",
+        "item": "mv_exemptions_near_critical_paths",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
+        "current_value": "0 rows; stale_or_empty",
+        "item": "mv_gateway_bypass_paths",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "deprecate",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
+        "current_value": "2091 rows; diagnostic_monitor",
+        "item": "mv_graph_chokepoint_bridges",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
+        "current_value": "128 rows; diagnostic_monitor",
+        "item": "mv_graph_critical_path_blast_radius",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
+        "current_value": "0 rows; stale_or_empty",
+        "item": "mv_graph_scc_clusters",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "deprecate",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
+      },
+      {
+        "current_value": "2 rows; diagnostic_monitor",
+        "item": "mv_graph_vs_report_mismatches",
+        "item_type": "mv",
+        "rationale": "Raw MV count alone is not a funding signal.",
+        "recommendation": "keep_hide_inline",
+        "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
         "current_value": "unused or missing",
         "item": "burndown_report",
+        "item_type": "artifact",
+        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
+        "recommendation": "hide_inline",
+        "revisit_condition": "Use when it changes next action, audit, consistency, or test placement."
+      },
+      {
+        "current_value": "unused or missing",
+        "item": "graphdb_projection",
+        "item_type": "artifact",
+        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
+        "recommendation": "hide_inline",
+        "revisit_condition": "Use when it changes next action, audit, consistency, or test placement."
+      },
+      {
+        "current_value": "unused or missing",
+        "item": "graphdb_metadata",
+        "item_type": "artifact",
+        "rationale": "Available only as diagnostic/evidence context or missing from this run.",
+        "recommendation": "hide_inline",
+        "revisit_condition": "Use when it changes next action, audit, consistency, or test placement."
+      },
+      {
+        "current_value": "unused or missing",
+        "item": "graphdb_index",
         "item_type": "artifact",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "hide_inline",
@@ -246,40 +591,370 @@
     "stale_signals": [],
     "suppressed_signals": [
       {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_actionable_surface_without_schema",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_agent_specialization_overlap",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_agent_tool_ratio",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_authority_boundary_breaches",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
         "revisit_condition": "Deprecate/delete candidate if still empty next runs.",
-        "signal_name": "mv_empty_noise",
+        "signal_name": "mv_capability_and_egress_gaps",
         "signal_type": "materialized_view",
         "suppression_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
       },
       {
-        "revisit_condition": "Audit; do not treat as blocker by itself.",
-        "signal_name": "mv_guardian_inventory",
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_critical_path_segments",
         "signal_type": "materialized_view",
-        "suppression_reason": "Audit math unless mapped to a current failing gate."
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
       },
       {
-        "revisit_condition": "Schedule after-green burn-down.",
-        "signal_name": "mv_p0_ratchet_inventory",
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_cross_cutting_witness_tiers",
         "signal_type": "materialized_view",
-        "suppression_reason": "Useful after CI is green to lower accepted ratchet debt."
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_dependency_cone_risk",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_determinism_provenance_drift",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_digest_reconciliation",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_exemptions_near_critical_paths",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Deprecate/delete candidate if still empty next runs.",
+        "signal_name": "mv_gateway_bypass_paths",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_graph_chokepoint_bridges",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_graph_critical_path_blast_radius",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Deprecate/delete candidate if still empty next runs.",
+        "signal_name": "mv_graph_scc_clusters",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_graph_vs_report_mismatches",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_handoff_witness_tiers",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_heal_retry_exit_gaps",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_high_fan_in_out_with_defects",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_hitl_reclearance_gaps",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Deprecate/delete candidate if still empty next runs.",
+        "signal_name": "mv_live_future_mutation_conflicts",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "revisit_condition": "Deprecate/delete candidate if still empty next runs.",
+        "signal_name": "mv_local_heal_first_breaches",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_manager_sprawl",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_modified_area_regressions",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_new_cross_layer_dependencies",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_new_provider_surfaces",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_new_write_bypass_paths",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_newly_introduced_critical_paths",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Deprecate/delete candidate if still empty next runs.",
+        "signal_name": "mv_observability_interference_breaches",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_path_criticality_rollup",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_prompt_assembly_wiring_gaps",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_provider_surface_sprawl",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_repeated_p3_near_critical_paths",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_replay_surface_gaps",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_runtime_spine_gaps",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_snapshot_baseline",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_snapshot_integrity_anomalies",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_snapshot_regression_summary",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_structured_output_gaps",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_task_contract_gaps",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Deprecate/delete candidate if still empty next runs.",
+        "signal_name": "mv_tool_surface_overlap",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_trace_replay_eval_gaps",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_unknown_taxonomy_and_orphans",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Deprecate/delete candidate if still empty next runs.",
+        "signal_name": "mv_untrusted_text_to_action_risk",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "revisit_condition": "Monitor and hide inline.",
+        "signal_name": "mv_write_sovereignty_paths",
+        "signal_type": "materialized_view",
+        "suppression_reason": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "revisit_condition": "Use as tie-breaker for blast radius and critical path planning.",
+        "signal_name": "structural_outputs",
+        "signal_type": "structural_report",
+        "suppression_reason": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "revisit_condition": "Use as tie-breaker for blast radius and critical path planning.",
+        "signal_name": "refactor_accelerator",
+        "signal_type": "structural_report",
+        "suppression_reason": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "revisit_condition": "Use as tie-breaker for blast radius and critical path planning.",
+        "signal_name": "graphdb_queries",
+        "signal_type": "graphdb_report",
+        "suppression_reason": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "revisit_condition": "Use as tie-breaker for blast radius and critical path planning.",
+        "signal_name": "runtime_spine",
+        "signal_type": "structural_report",
+        "suppression_reason": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "revisit_condition": "Use as tie-breaker for blast radius and critical path planning.",
+        "signal_name": "graphdb_projection",
+        "signal_type": "graphdb_report",
+        "suppression_reason": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "revisit_condition": "Use as tie-breaker for blast radius and critical path planning.",
+        "signal_name": "graphdb_metadata",
+        "signal_type": "graphdb_report",
+        "suppression_reason": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "revisit_condition": "Use as tie-breaker for blast radius and critical path planning.",
+        "signal_name": "graphdb_index",
+        "signal_type": "graphdb_report",
+        "suppression_reason": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
       }
     ],
     "used_signals": [
       {
         "decision_effect": "Translates structural risk into concrete test-placement decisions.",
+        "signal_name": "mv_debt_concentration_hotspots",
+        "signal_type": "materialized_view",
+        "used_for": "used_for_testing"
+      },
+      {
+        "decision_effect": "Translates structural risk into concrete test-placement decisions.",
+        "signal_name": "mv_eval_coverage_by_path",
+        "signal_type": "materialized_view",
+        "used_for": "used_for_testing"
+      },
+      {
+        "decision_effect": "Translates structural risk into concrete test-placement decisions.",
+        "signal_name": "mv_exit_disposition_coverage",
+        "signal_type": "materialized_view",
+        "used_for": "used_for_testing"
+      },
+      {
+        "decision_effect": "Translates structural risk into concrete test-placement decisions.",
+        "signal_name": "mv_graph_reverse_dependency_hotspots",
+        "signal_type": "materialized_view",
+        "used_for": "used_for_testing"
+      },
+      {
+        "decision_effect": "Translates structural risk into concrete test-placement decisions.",
+        "signal_name": "mv_hotspot_centrality",
+        "signal_type": "materialized_view",
+        "used_for": "used_for_testing"
+      },
+      {
+        "decision_effect": "Linked to a current FIX/action signal, so it changes immediate work order.",
         "signal_name": "mv_hotspot_coverage_risk",
+        "signal_type": "materialized_view",
+        "used_for": "used_now"
+      },
+      {
+        "decision_effect": "Translates structural risk into concrete test-placement decisions.",
+        "signal_name": "mv_l2_phase_coverage",
         "signal_type": "materialized_view",
         "used_for": "used_for_testing"
       }
     ]
   },
   "executive_decision": {
-    "crisis_level": "managed_debt",
-    "funding_posture": "fund_now",
-    "one_sentence_bottom_line": "ADG is TESTING_CONTROL_GAP: act on decision-linked blockers/testing gaps, defer diagnostic-only noise.",
+    "crisis_level": "routine_nudge",
+    "funding_posture": "narrow_slice",
+    "one_sentence_bottom_line": "ADG is BLOCKED: act on decision-linked blockers/testing gaps, defer diagnostic-only noise.",
     "recommendation": "Fund the smallest slice that clears current blockers and attaches tests where hotspot evidence overlaps; keep ratchets after-green.",
     "risk_if_ignored": "The organization may chase raw counts while missing the smaller blocker or under-tested high-blast-radius surface.",
-    "verdict": "TESTING_CONTROL_GAP",
+    "verdict": "BLOCKED",
     "what_not_to_do": [
       "Do not rank work by raw MV row count alone.",
       "Do not treat guardian inventory as an automatic product failure.",
@@ -290,10 +965,10 @@
   "honest_bottom_line": {
     "bullets": [
       "Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing gaps; do not spend executive time there.",
-      "Actually blocking now: 0 FIX gates; inspect regression delta before declaring a platform crisis.",
+      "Actually blocking now: 3 FIX gates; inspect regression delta before declaring a platform crisis.",
       "Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it after green unless it overlaps current work.",
       "Runtime proof gaps are measurement gaps unless runtime artifacts show observed quality failure.",
-      "Fund mapped tests for apps_sales/runtime/checkout.py",
+      "Clear red gate G_REACH_l0_reachability",
       "Do not chase raw MV counts, guardian gross counts, or diagnostic reports without a decision role."
     ]
   },
@@ -301,108 +976,145 @@
     "buckets": [
       {
         "bucket": "CLEAR",
-        "count": 0,
+        "count": 27,
         "plain_meaning": "No action now."
       },
       {
         "bucket": "TRACK",
-        "count": 0,
+        "count": 18,
         "plain_meaning": "Known debt or advisory inventory; burn down after red gates."
       },
       {
         "bucket": "FIX",
-        "count": 0,
+        "count": 3,
         "plain_meaning": "Current blocker or regression requiring action before decision-grade green."
       }
     ],
     "key_interpretation": "A blocked ADG run is not automatically a platform crisis; regression delta and graph/test linkage determine urgency.",
     "managed_debt": {
-      "open_non_ratchet_records": 0,
-      "ratchet_floor_records": 0,
-      "top_ratchets": []
+      "open_non_ratchet_records": 1023,
+      "ratchet_floor_records": 20483,
+      "top_ratchets": [
+        {
+          "after_green_action": "Burn down after FIX rows clear.",
+          "executive_read": "Accepted baseline debt, not current red.",
+          "gate_id": "S4_unused_imports_ratchet",
+          "records": 10897
+        },
+        {
+          "after_green_action": "Burn down after FIX rows clear.",
+          "executive_read": "Accepted baseline debt, not current red.",
+          "gate_id": "C3_silent_writes_ratchet",
+          "records": 2060
+        },
+        {
+          "after_green_action": "Burn down after FIX rows clear.",
+          "executive_read": "Accepted baseline debt, not current red.",
+          "gate_id": "S2_uwg_bypass_ratchet",
+          "records": 1562
+        },
+        {
+          "after_green_action": "Burn down after FIX rows clear.",
+          "executive_read": "Accepted baseline debt, not current red.",
+          "gate_id": "F1_untyped_seam_ratchet",
+          "records": 1075
+        },
+        {
+          "after_green_action": "Burn down after FIX rows clear.",
+          "executive_read": "Accepted baseline debt, not current red.",
+          "gate_id": "E1_trace_stub_module",
+          "records": 1030
+        }
+      ]
     },
-    "red_gates": [],
+    "red_gates": [
+      {
+        "band": "P3",
+        "baseline_records": 459,
+        "done_condition": "Gate returns CLEAR/TRACK with no current FIX verdict.",
+        "enforcement": "ratchet",
+        "executive_read": "Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure.",
+        "gate_id": "M1_module_loc_ratchet",
+        "next_action": "Regression +1 over baseline 459: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt.",
+        "record_type": "gate records",
+        "regression_delta": 0,
+        "total_records": 460
+      },
+      {
+        "band": "P3",
+        "baseline_records": 1083,
+        "done_condition": "Gate returns CLEAR/TRACK with no current FIX verdict.",
+        "enforcement": "ratchet",
+        "executive_read": "Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure.",
+        "gate_id": "Q2_cyclomatic_complexity_ratchet",
+        "next_action": "Regression +1 over baseline 1083: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt.",
+        "record_type": "gate records",
+        "regression_delta": 0,
+        "total_records": 1084
+      },
+      {
+        "band": "P0",
+        "baseline_records": 2843,
+        "done_condition": "Gate returns CLEAR/TRACK with no current FIX verdict.",
+        "enforcement": "ratchet",
+        "executive_read": "Current red gate. Treat as blocker, but inspect delta to distinguish tiny ratchet creep from structural failure.",
+        "gate_id": "G_REACH_l0_reachability",
+        "next_action": "Regression +2 over baseline 2843 (P0): investigate each NEW path; fix the regression \u2014 re-baseline only with explicit sign-off.",
+        "record_type": "gate records",
+        "regression_delta": 0,
+        "total_records": 2845
+      }
+    ],
     "status": "present",
     "summary": {
-      "clear_gates": 0,
+      "clear_gates": 27,
       "executive_read": "FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR needs no action.",
-      "fix_gates": 0,
-      "overall_verdict": "PASS",
-      "total_gates": 0,
-      "track_gates": 0
+      "fix_gates": 3,
+      "overall_verdict": "BLOCKED",
+      "total_gates": 48,
+      "track_gates": 18
     }
   },
   "lens_2_runtime_proof_observability": {
-    "blind_spots": [
-      {
-        "blind_spot": "runtime proof artifacts",
-        "recommended_action": "Generate or wire runtime spine/replay/OTel evidence for critical paths.",
-        "why_it_matters": "Without runtime proof, ADG can flag structural risk but cannot prove production behavior."
-      }
-    ],
+    "blind_spots": [],
     "executive_read": "Runtime proof distinguishes observed failures from missing instrumentation.",
     "measurement_gap_vs_quality_failure": "Missing runtime proof is a measurement gap unless an artifact shows runtime failure evidence.",
     "runtime_proof_signals": [
       {
-        "action": "Enable or repair artifact emission if the decision needs runtime proof.",
-        "evidence_count": 0,
-        "executive_read": "Measurement blind spot; not automatically a product failure.",
+        "action": "Use to confirm runtime path risk.",
+        "evidence_count": 25,
+        "executive_read": "Runtime/structural proof available for interpretation.",
         "signal": "runtime_spine",
-        "status": "missing"
+        "status": "present"
       },
       {
-        "action": "Enable or repair artifact emission if the decision needs runtime proof.",
-        "evidence_count": 0,
-        "executive_read": "Measurement blind spot; not automatically a product failure.",
+        "action": "Use to confirm runtime path risk.",
+        "evidence_count": 6,
+        "executive_read": "Runtime/structural proof available for interpretation.",
         "signal": "graphdb_queries",
-        "status": "missing"
+        "status": "present"
       },
       {
-        "action": "Enable or repair artifact emission if the decision needs runtime proof.",
-        "evidence_count": 0,
-        "executive_read": "Measurement blind spot; not automatically a product failure.",
+        "action": "Use to confirm runtime path risk.",
+        "evidence_count": 6,
+        "executive_read": "Runtime/structural proof available for interpretation.",
         "signal": "structural_outputs",
-        "status": "missing"
-      }
-    ],
-    "status": "missing"
-  },
-  "lens_3_product_app_risk": {
-    "app_risks": [
-      {
-        "app_or_scope": "apps_sales",
-        "evidence": [
-          {
-            "interpreted_meaning": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
-            "raw_count": 3,
-            "signal_name": "apps_sales/runtime/checkout.py",
-            "signal_type": "hotspot"
-          }
-        ],
-        "executive_read": "App risk is promoted because product surface and missing test scope overlap.",
-        "next_action": "Add mapped tests/regression, tests/e2e or app-specific e2e coverage for apps_sales.",
-        "priority_vs_gate_debt": "Can outrank after-green ratchet burn-down when it overlaps current work or high blast radius.",
-        "risk": "Under-tested product hotspot"
-      }
-    ],
-    "executive_read": "App/product risks were promoted only where hotspot or test evidence changes funding posture.",
-    "promoted_product_gaps": [
-      {
-        "action": "Add mapped tests/regression, tests/e2e or app-specific e2e coverage for apps_sales.",
-        "app_or_scope": "apps_sales",
-        "done_condition": "Mapped app tests pass and ADG no longer reports the promoted gap.",
-        "gap_id": "product_gap_1",
-        "title": "Under-tested product hotspot",
-        "why_high_leverage": "App risk is promoted because product surface and missing test scope overlap."
+        "status": "present"
       }
     ],
     "status": "present"
   },
+  "lens_3_product_app_risk": {
+    "app_risks": [],
+    "executive_read": "No app-specific product gap was promoted in this run; app risk remains diagnostic-only unless tied to a hotspot, gate, or action queue row.",
+    "promoted_product_gaps": [],
+    "status": "present"
+  },
   "lens_4_testing_control_gaps": {
-    "executive_read": "Testing is a control gap where apps_sales/runtime/checkout.py lacks regression, e2e coverage; fund tests with the relevant fix slice, not as a generic test campaign.",
+    "executive_read": "Testing is a control gap where unknown lacks unit, regression coverage; fund tests with the relevant fix slice, not as a generic test campaign.",
     "investment_map": [
       {
-        "app_or_domain": "apps_sales",
+        "app_or_domain": "unknown",
         "current_tests_found": {
           "contract": [],
           "e2e": [],
@@ -416,25 +1128,585 @@
           "unknown": []
         },
         "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
-        "layer": "runtime",
+        "layer": "unknown",
         "missing_test_scope": [
-          "regression",
-          "e2e"
+          "unit",
+          "regression"
         ],
-        "production_scope": "apps_sales/runtime/checkout.py",
+        "production_scope": "unknown",
         "rank": 1,
         "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
-        "recommended_test_investment": "Add mapped tests/regression, tests/e2e or app-specific e2e coverage for apps_sales.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
         "risk": {
-          "combined_risk_score": 95.0,
+          "combined_risk_score": 188.0,
           "coverage_band": "ABSENT",
-          "coverage_pct": "unknown",
-          "criticality_score": 90.0,
-          "fan_in": 12,
-          "fan_out": 9,
+          "coverage_pct": "-1.0",
+          "criticality_score": 116.0,
+          "fan_in": 0,
+          "fan_out": 20,
           "priority_band": "P1_URGENT",
           "risk_band": "CRITICAL",
-          "violation_count": 3
+          "violation_count": 32
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 2,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 448.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "-1.0",
+          "criticality_score": 333.0,
+          "fan_in": 0,
+          "fan_out": 228,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 35
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 3,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 263.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "unknown",
+          "criticality_score": 199.0,
+          "fan_in": 0,
+          "fan_out": 127,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 24
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 4,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 241.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "-1.0",
+          "criticality_score": 174.0,
+          "fan_in": 0,
+          "fan_out": 99,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 25
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 5,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 282.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "unknown",
+          "criticality_score": 217.0,
+          "fan_in": 0,
+          "fan_out": 157,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 20
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 6,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 265.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "-1.0",
+          "criticality_score": 183.0,
+          "fan_in": 0,
+          "fan_out": 87,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 32
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 7,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 279.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "-1.0",
+          "criticality_score": 180.0,
+          "fan_in": 0,
+          "fan_out": 87,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 31
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 8,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 236.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "unknown",
+          "criticality_score": 193.0,
+          "fan_in": 0,
+          "fan_out": 142,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 17
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 9,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 171.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "unknown",
+          "criticality_score": 144.0,
+          "fan_in": 0,
+          "fan_out": 108,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 12
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 10,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 364.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "unknown",
+          "criticality_score": 188.0,
+          "fan_in": 0,
+          "fan_out": 158,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 10
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 11,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 148.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "-1.0",
+          "criticality_score": 130.0,
+          "fan_in": 0,
+          "fan_out": 103,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 9
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 12,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 166.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "unknown",
+          "criticality_score": 140.0,
+          "fan_in": 0,
+          "fan_out": 116,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 8
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 13,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 153.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "-1.0",
+          "criticality_score": 139.0,
+          "fan_in": 0,
+          "fan_out": 118,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 7
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 14,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 153.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "-1.0",
+          "criticality_score": 139.0,
+          "fan_in": 0,
+          "fan_out": 118,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 7
+        },
+        "source_signals": [
+          "mv_hotspot_coverage_risk"
+        ],
+        "trigger": "hotspot coverage MV / test inventory"
+      },
+      {
+        "app_or_domain": "unknown",
+        "current_tests_found": {
+          "contract": [],
+          "e2e": [],
+          "fixture": [],
+          "golden": [],
+          "integration": [],
+          "mock_only": [],
+          "regression": [],
+          "smoke": [],
+          "unit": [],
+          "unknown": []
+        },
+        "done_condition": "Mapped tests exist in the missing scopes and pass with the ADG run.",
+        "layer": "unknown",
+        "missing_test_scope": [
+          "unit",
+          "regression"
+        ],
+        "production_scope": "unknown",
+        "rank": 15,
+        "reasoned_implication": "This production scope has structural or coverage risk; missing mapped tests make fixes harder to prove.",
+        "recommended_test_investment": "Add mapped tests/unit, tests/regression coverage for unknown.",
+        "risk": {
+          "combined_risk_score": 162.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "unknown",
+          "criticality_score": 141.0,
+          "fan_in": 0,
+          "fan_out": 126,
+          "priority_band": "P1_URGENT",
+          "risk_band": "CRITICAL",
+          "violation_count": 5
         },
         "source_signals": [
           "mv_hotspot_coverage_risk"
@@ -444,20 +1716,20 @@
     ],
     "status": "present",
     "summary": {
-      "absent_coverage": 1,
-      "critical_risk": 1,
-      "missing_e2e_scope": 1,
-      "missing_regression_scope": 1,
-      "missing_unit_scope": 0,
+      "absent_coverage": 15,
+      "critical_risk": 15,
+      "missing_e2e_scope": 0,
+      "missing_regression_scope": 15,
+      "missing_unit_scope": 15,
       "mock_only_scope": 0,
-      "p1_urgent": 1,
+      "p1_urgent": 15,
       "p2_gap": 0,
-      "total_hotspots": 1
+      "total_hotspots": 500
     },
     "test_scope_inventory": {
       "folders": [
         {
-          "file_count": 3117,
+          "file_count": 3113,
           "folder": "tests/unit",
           "mapped_production_scopes": [
             "agentic_core",
@@ -1281,7 +2553,7 @@
           ]
         },
         {
-          "file_count": 1307,
+          "file_count": 1306,
           "folder": "tests/unknown",
           "mapped_production_scopes": [
             "agentic_core",
@@ -1504,73 +2776,680 @@
   "lens_5_graphdb_mv_decision_impact": {
     "decision_impact_rows": [
       {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 814,
+        "signal": "mv_actionable_surface_without_schema",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 3085,
+        "signal": "mv_agent_specialization_overlap",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 15,
+        "signal": "mv_agent_tool_ratio",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 7,
+        "signal": "mv_authority_boundary_breaches",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
         "action": "Deprecate/delete candidate if still empty next runs.",
         "decision_role": "deprecate_candidate",
         "related_gates": [],
         "related_scopes": [],
         "row_count": 0,
-        "signal": "mv_empty_noise",
+        "signal": "mv_capability_and_egress_gaps",
         "signal_type": "materialized_view",
         "used_inline": false,
         "why_or_why_not": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
       },
       {
-        "action": "Audit; do not treat as blocker by itself.",
-        "decision_role": "audit_only",
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1,
-        "signal": "mv_guardian_inventory",
+        "row_count": 192,
+        "signal": "mv_critical_path_segments",
         "signal_type": "materialized_view",
         "used_inline": false,
-        "why_or_why_not": "Audit math unless mapped to a current failing gate."
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 56,
+        "signal": "mv_cross_cutting_witness_tiers",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
       },
       {
         "action": "Attach mapped tests to high-risk scopes.",
         "decision_role": "used_for_testing",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1,
-        "signal": "mv_hotspot_coverage_risk",
+        "row_count": 5050,
+        "signal": "mv_debt_concentration_hotspots",
         "signal_type": "materialized_view",
         "used_inline": true,
         "why_or_why_not": "Translates structural risk into concrete test-placement decisions."
       },
       {
-        "action": "Schedule after-green burn-down.",
-        "decision_role": "used_after_green",
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 11996,
+        "signal": "mv_dependency_cone_risk",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 6838,
+        "signal": "mv_determinism_provenance_drift",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 6,
+        "signal": "mv_digest_reconciliation",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Attach mapped tests to high-risk scopes.",
+        "decision_role": "used_for_testing",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 12,
+        "signal": "mv_eval_coverage_by_path",
+        "signal_type": "materialized_view",
+        "used_inline": true,
+        "why_or_why_not": "Translates structural risk into concrete test-placement decisions."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 3467,
+        "signal": "mv_exemptions_near_critical_paths",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Attach mapped tests to high-risk scopes.",
+        "decision_role": "used_for_testing",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 818,
+        "signal": "mv_exit_disposition_coverage",
+        "signal_type": "materialized_view",
+        "used_inline": true,
+        "why_or_why_not": "Translates structural risk into concrete test-placement decisions."
+      },
+      {
+        "action": "Deprecate/delete candidate if still empty next runs.",
+        "decision_role": "deprecate_candidate",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 0,
+        "signal": "mv_gateway_bypass_paths",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 2091,
+        "signal": "mv_graph_chokepoint_bridges",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 128,
+        "signal": "mv_graph_critical_path_blast_radius",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Attach mapped tests to high-risk scopes.",
+        "decision_role": "used_for_testing",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 96,
+        "signal": "mv_graph_reverse_dependency_hotspots",
+        "signal_type": "materialized_view",
+        "used_inline": true,
+        "why_or_why_not": "Translates structural risk into concrete test-placement decisions."
+      },
+      {
+        "action": "Deprecate/delete candidate if still empty next runs.",
+        "decision_role": "deprecate_candidate",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 0,
+        "signal": "mv_graph_scc_clusters",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
         "row_count": 2,
-        "signal": "mv_p0_ratchet_inventory",
+        "signal": "mv_graph_vs_report_mismatches",
         "signal_type": "materialized_view",
         "used_inline": false,
-        "why_or_why_not": "Useful after CI is green to lower accepted ratchet debt."
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 17,
+        "signal": "mv_handoff_witness_tiers",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 83,
+        "signal": "mv_heal_retry_exit_gaps",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 11075,
+        "signal": "mv_high_fan_in_out_with_defects",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 2000,
+        "signal": "mv_hitl_reclearance_gaps",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Attach mapped tests to high-risk scopes.",
+        "decision_role": "used_for_testing",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 11996,
+        "signal": "mv_hotspot_centrality",
+        "signal_type": "materialized_view",
+        "used_inline": true,
+        "why_or_why_not": "Translates structural risk into concrete test-placement decisions."
+      },
+      {
+        "action": "Use in current fix slice.",
+        "decision_role": "used_now",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 4515,
+        "signal": "mv_hotspot_coverage_risk",
+        "signal_type": "materialized_view",
+        "used_inline": true,
+        "why_or_why_not": "Linked to a current FIX/action signal, so it changes immediate work order."
+      },
+      {
+        "action": "Attach mapped tests to high-risk scopes.",
+        "decision_role": "used_for_testing",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 5,
+        "signal": "mv_l2_phase_coverage",
+        "signal_type": "materialized_view",
+        "used_inline": true,
+        "why_or_why_not": "Translates structural risk into concrete test-placement decisions."
+      },
+      {
+        "action": "Deprecate/delete candidate if still empty next runs.",
+        "decision_role": "deprecate_candidate",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 0,
+        "signal": "mv_live_future_mutation_conflicts",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "action": "Deprecate/delete candidate if still empty next runs.",
+        "decision_role": "deprecate_candidate",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 0,
+        "signal": "mv_local_heal_first_breaches",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 100,
+        "signal": "mv_manager_sprawl",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 5063,
+        "signal": "mv_modified_area_regressions",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 178,
+        "signal": "mv_new_cross_layer_dependencies",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 103,
+        "signal": "mv_new_provider_surfaces",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 917,
+        "signal": "mv_new_write_bypass_paths",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 8727,
+        "signal": "mv_newly_introduced_critical_paths",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Deprecate/delete candidate if still empty next runs.",
+        "decision_role": "deprecate_candidate",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 0,
+        "signal": "mv_observability_interference_breaches",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 11996,
+        "signal": "mv_path_criticality_rollup",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 17,
+        "signal": "mv_prompt_assembly_wiring_gaps",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 62,
+        "signal": "mv_provider_surface_sprawl",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 1598,
+        "signal": "mv_repeated_p3_near_critical_paths",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [
+          "I2_replay_surface_gaps_ratchet"
+        ],
+        "related_scopes": [],
+        "row_count": 1011,
+        "signal": "mv_replay_surface_gaps",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 7,
+        "signal": "mv_runtime_spine_gaps",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 1,
+        "signal": "mv_snapshot_baseline",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 403429,
+        "signal": "mv_snapshot_integrity_anomalies",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 1,
+        "signal": "mv_snapshot_regression_summary",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 1,
+        "signal": "mv_structured_output_gaps",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 1071,
+        "signal": "mv_task_contract_gaps",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Deprecate/delete candidate if still empty next runs.",
+        "decision_role": "deprecate_candidate",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 0,
+        "signal": "mv_tool_surface_overlap",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 476,
+        "signal": "mv_trace_replay_eval_gaps",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 6838,
+        "signal": "mv_unknown_taxonomy_and_orphans",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Deprecate/delete candidate if still empty next runs.",
+        "decision_role": "deprecate_candidate",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 0,
+        "signal": "mv_untrusted_text_to_action_risk",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Empty or stale-looking signal; keep out of inline output until it proves decision value."
+      },
+      {
+        "action": "Monitor and hide inline.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 1094,
+        "signal": "mv_write_sovereignty_paths",
+        "signal_type": "materialized_view",
+        "used_inline": false,
+        "why_or_why_not": "Useful context, but not enough by itself to fund work; raw count alone is suppressed."
+      },
+      {
+        "action": "Use as tie-breaker for blast radius and critical path planning.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 6,
+        "signal": "structural_outputs",
+        "signal_type": "structural_report",
+        "used_inline": false,
+        "why_or_why_not": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "action": "Use as tie-breaker for blast radius and critical path planning.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 20,
+        "signal": "refactor_accelerator",
+        "signal_type": "structural_report",
+        "used_inline": false,
+        "why_or_why_not": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "action": "Use as tie-breaker for blast radius and critical path planning.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 6,
+        "signal": "graphdb_queries",
+        "signal_type": "graphdb_report",
+        "used_inline": false,
+        "why_or_why_not": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "action": "Use as tie-breaker for blast radius and critical path planning.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 25,
+        "signal": "runtime_spine",
+        "signal_type": "structural_report",
+        "used_inline": false,
+        "why_or_why_not": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "action": "Use as tie-breaker for blast radius and critical path planning.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 633198,
+        "signal": "graphdb_projection",
+        "signal_type": "graphdb_report",
+        "used_inline": false,
+        "why_or_why_not": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "action": "Use as tie-breaker for blast radius and critical path planning.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 11,
+        "signal": "graphdb_metadata",
+        "signal_type": "graphdb_report",
+        "used_inline": false,
+        "why_or_why_not": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
+      },
+      {
+        "action": "Use as tie-breaker for blast radius and critical path planning.",
+        "decision_role": "diagnostic_monitor",
+        "related_gates": [],
+        "related_scopes": [],
+        "row_count": 1,
+        "signal": "graphdb_index",
+        "signal_type": "graphdb_report",
+        "used_inline": false,
+        "why_or_why_not": "P7 artifact contributes structural context; promoted only when tied to blockers, tests, or action queue."
       }
     ],
     "executive_read": "GraphDB/MV signals are used as decision drivers only when linked to blockers, testing exposure, ratchets, artifact consistency, or planned slices; raw counts alone stay diagnostic.",
     "status": "present",
     "summary": {
-      "audit_drivers": 1,
-      "decision_drivers": 0,
-      "deprecate_candidates": 1,
-      "diagnostic_only": 0,
+      "audit_drivers": 0,
+      "decision_drivers": 1,
+      "deprecate_candidates": 8,
+      "diagnostic_only": 44,
       "low_value_candidates": 0,
-      "ratchet_drivers": 1,
-      "testing_drivers": 1,
-      "total_mvs": 4
+      "ratchet_drivers": 0,
+      "testing_drivers": 6,
+      "total_mvs": 52
     },
     "top_graph_risks": [
       {
         "action": "Attach mapped tests to high-risk scopes.",
-        "blast_radius": 1,
+        "blast_radius": 5050,
         "centrality": null,
         "dependency_cone": null,
         "executive_read": "Translates structural risk into concrete test-placement decisions.",
         "graph_signal": "used_for_testing",
-        "rank": 3,
+        "rank": 8,
         "reverse_dependency": null,
-        "scope": "mv_hotspot_coverage_risk",
+        "scope": "mv_debt_concentration_hotspots",
         "testing_implication": "Add or verify mapped tests if this signal overlaps a hotspot."
       }
     ]
@@ -1578,59 +3457,491 @@
   "mv_usefulness_audit": {
     "rows": [
       {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_actionable_surface_without_schema",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 814,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_agent_specialization_overlap",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 3085,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_agent_tool_ratio",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 15,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_authority_boundary_breaches",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 7,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
         "category": "stale_or_empty",
         "decision_impact": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
-        "mv_name": "mv_empty_noise",
+        "mv_name": "mv_capability_and_egress_gaps",
         "recommendation": "deprecate_candidate",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
         "row_count": 0,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
-        "category": "audit_driver",
-        "decision_impact": "Audit math unless mapped to a current failing gate.",
-        "mv_name": "mv_guardian_inventory",
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_critical_path_segments",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 1,
+        "row_count": 192,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_cross_cutting_witness_tiers",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 56,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
         "category": "testing_driver",
         "decision_impact": "Translates structural risk into concrete test-placement decisions.",
-        "mv_name": "mv_hotspot_coverage_risk",
+        "mv_name": "mv_debt_concentration_hotspots",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 1,
+        "row_count": 5050,
         "why_not_used_if_suppressed": ""
       },
       {
-        "category": "ratchet_driver",
-        "decision_impact": "Useful after CI is green to lower accepted ratchet debt.",
-        "mv_name": "mv_p0_ratchet_inventory",
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_dependency_cone_risk",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 11996,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_determinism_provenance_drift",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 6838,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_digest_reconciliation",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 6,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "testing_driver",
+        "decision_impact": "Translates structural risk into concrete test-placement decisions.",
+        "mv_name": "mv_eval_coverage_by_path",
+        "recommendation": "keep",
+        "replacement_or_refinement": "",
+        "row_count": 12,
+        "why_not_used_if_suppressed": ""
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_exemptions_near_critical_paths",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 3467,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "testing_driver",
+        "decision_impact": "Translates structural risk into concrete test-placement decisions.",
+        "mv_name": "mv_exit_disposition_coverage",
+        "recommendation": "keep",
+        "replacement_or_refinement": "",
+        "row_count": 818,
+        "why_not_used_if_suppressed": ""
+      },
+      {
+        "category": "stale_or_empty",
+        "decision_impact": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
+        "mv_name": "mv_gateway_bypass_paths",
+        "recommendation": "deprecate_candidate",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 0,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_graph_chokepoint_bridges",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 2091,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_graph_critical_path_blast_radius",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 128,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "testing_driver",
+        "decision_impact": "Translates structural risk into concrete test-placement decisions.",
+        "mv_name": "mv_graph_reverse_dependency_hotspots",
+        "recommendation": "keep",
+        "replacement_or_refinement": "",
+        "row_count": 96,
+        "why_not_used_if_suppressed": ""
+      },
+      {
+        "category": "stale_or_empty",
+        "decision_impact": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
+        "mv_name": "mv_graph_scc_clusters",
+        "recommendation": "deprecate_candidate",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 0,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_graph_vs_report_mismatches",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
         "row_count": 2,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_handoff_witness_tiers",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 17,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_heal_retry_exit_gaps",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 83,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_high_fan_in_out_with_defects",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 11075,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_hitl_reclearance_gaps",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 2000,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "testing_driver",
+        "decision_impact": "Translates structural risk into concrete test-placement decisions.",
+        "mv_name": "mv_hotspot_centrality",
+        "recommendation": "keep",
+        "replacement_or_refinement": "",
+        "row_count": 11996,
+        "why_not_used_if_suppressed": ""
+      },
+      {
+        "category": "decision_driver",
+        "decision_impact": "Linked to a current FIX/action signal, so it changes immediate work order.",
+        "mv_name": "mv_hotspot_coverage_risk",
+        "recommendation": "keep",
+        "replacement_or_refinement": "",
+        "row_count": 4515,
+        "why_not_used_if_suppressed": ""
+      },
+      {
+        "category": "testing_driver",
+        "decision_impact": "Translates structural risk into concrete test-placement decisions.",
+        "mv_name": "mv_l2_phase_coverage",
+        "recommendation": "keep",
+        "replacement_or_refinement": "",
+        "row_count": 5,
+        "why_not_used_if_suppressed": ""
+      },
+      {
+        "category": "stale_or_empty",
+        "decision_impact": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
+        "mv_name": "mv_live_future_mutation_conflicts",
+        "recommendation": "deprecate_candidate",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 0,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "stale_or_empty",
+        "decision_impact": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
+        "mv_name": "mv_local_heal_first_breaches",
+        "recommendation": "deprecate_candidate",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 0,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_manager_sprawl",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 100,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_modified_area_regressions",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 5063,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_new_cross_layer_dependencies",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 178,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_new_provider_surfaces",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 103,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_new_write_bypass_paths",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 917,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_newly_introduced_critical_paths",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 8727,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "stale_or_empty",
+        "decision_impact": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
+        "mv_name": "mv_observability_interference_breaches",
+        "recommendation": "deprecate_candidate",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 0,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_path_criticality_rollup",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 11996,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_prompt_assembly_wiring_gaps",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 17,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_provider_surface_sprawl",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 62,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_repeated_p3_near_critical_paths",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 1598,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_replay_surface_gaps",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 1011,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_runtime_spine_gaps",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 7,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_snapshot_baseline",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 1,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_snapshot_integrity_anomalies",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 403429,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_snapshot_regression_summary",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 1,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_structured_output_gaps",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 1,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_task_contract_gaps",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 1071,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "stale_or_empty",
+        "decision_impact": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
+        "mv_name": "mv_tool_surface_overlap",
+        "recommendation": "deprecate_candidate",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 0,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_trace_replay_eval_gaps",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 476,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_unknown_taxonomy_and_orphans",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 6838,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "stale_or_empty",
+        "decision_impact": "Empty or stale-looking signal; keep out of inline output until it proves decision value.",
+        "mv_name": "mv_untrusted_text_to_action_risk",
+        "recommendation": "deprecate_candidate",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 0,
+        "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
+      },
+      {
+        "category": "diagnostic_monitor",
+        "decision_impact": "Useful context, but not enough by itself to fund work; raw count alone is suppressed.",
+        "mv_name": "mv_write_sovereignty_paths",
+        "recommendation": "keep_hide_inline",
+        "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
+        "row_count": 1094,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       }
     ],
     "status": "present",
     "summary": {
-      "audit_drivers": 1,
-      "decision_drivers": 0,
-      "deprecate_candidates": 1,
-      "diagnostic_only": 0,
+      "audit_drivers": 0,
+      "decision_drivers": 1,
+      "deprecate_candidates": 8,
+      "diagnostic_only": 37,
       "duplicate_signals": 0,
       "low_value_candidates": 0,
-      "ratchet_drivers": 1,
-      "stale_or_empty": 1,
-      "testing_drivers": 1,
-      "total_mvs": 4
+      "ratchet_drivers": 0,
+      "stale_or_empty": 8,
+      "testing_drivers": 6,
+      "total_mvs": 52
     }
   },
   "patient_size": {
     "agentic_core": {
-      "file_count": 2899,
+      "file_count": 2901,
       "largest_layers": [
         {
           "executive_read": "Large core layer; treat as control-plane blast-radius context.",
@@ -1639,7 +3950,7 @@
         },
         {
           "executive_read": "Large core layer; treat as control-plane blast-radius context.",
-          "file_count": 306,
+          "file_count": 308,
           "layer": "L6_system_learning"
         },
         {
@@ -1705,14 +4016,14 @@
       "total_files": 1500
     },
     "executive_read": "Patient-size metrics show where ADG risk lands across core, apps, and tests.",
-    "production_python_files": 7269,
-    "snapshot_ts": "ts",
+    "production_python_files": 7392,
+    "snapshot_ts": "2026-06-14T21:31:59.912843+00:00",
     "status": "present",
-    "test_python_files": 5164,
+    "test_python_files": 5159,
     "tests": {
       "folder_breakdown": [
         {
-          "file_count": 3011,
+          "file_count": 3007,
           "folder": "tests/unit"
         },
         {
@@ -1744,13 +4055,13 @@
           "folder": "tests/fixtures"
         },
         {
-          "file_count": 2022,
+          "file_count": 2021,
           "folder": "tests/unknown"
         }
       ],
-      "total_files": 5164
+      "total_files": 5159
     },
-    "total_python_files": 12433
+    "total_python_files": 12551
   },
   "plain_english_context": {
     "what_adg_is": {
@@ -1759,7 +4070,7 @@
       "measured_scope": {
         "connections": null,
         "files": null,
-        "gates": 0
+        "gates": 48
       },
       "summary": "ADG is the X-ray of the codebase. It maps code connections and lets the system ask health-check questions automatically. It turns 'is this codebase healthy?' from opinion into measured facts."
     }
@@ -1820,38 +4131,57 @@
   },
   "raw_inputs": {
     "artifacts": {
-      "action_queue": "",
-      "burndown_report": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-1356\\test_render_markdown_accepts_l0\\artifacts\\adg_burndown_report.md",
-      "burndown_table": "",
-      "gate_results": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-1356\\test_render_markdown_accepts_l0\\artifacts\\gate.json",
-      "generation_manifest": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-1356\\test_render_markdown_accepts_l0\\artifacts\\adg_generation_manifest_ts.json",
-      "review_template": "",
-      "sqlite_snapshot": "C:\\Users\\amita\\AppData\\Local\\Temp\\pytest-of-amita\\pytest-1356\\test_render_markdown_accepts_l0\\artifacts\\x.sqlite"
+      "action_queue": "artifacts/adg/adg_action_queue_06142026_1721.json",
+      "burndown_report": "artifacts/adg/adg_burndown_report.md",
+      "burndown_table": "artifacts/adg/adg_burndown_table.json",
+      "gate_results": "artifacts/adg/adg_gate_results_20260614_213159.json",
+      "generation_manifest": "artifacts/adg/adg_generation_manifest_06142026_1721.json",
+      "graph_watchlist": "artifacts/adg/adg_graph_watchlist_06142026_1721.json",
+      "graphdb_index": "artifacts/adg/adg_graphdb_index_06142026_1721.json",
+      "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_06142026_1721.json",
+      "graphdb_projection": "artifacts/adg/adg_graphdb_projection_06142026_1721.json",
+      "graphdb_queries": "artifacts/adg/adg_graphdb_queries_06142026_1721.json",
+      "p0_wave_plan": "artifacts/adg/adg_p0_remediation_wave_plan_06142026_1721.json",
+      "refactor_accelerator": "artifacts/adg/adg_refactor_accelerator_06142026_1721.json",
+      "review_template": "artifacts/adg/adg_review_template_06142026_1721.json",
+      "runtime_spine": "artifacts/adg/adg_runtime_spine_06142026_1721.json",
+      "sqlite_snapshot": "artifacts/adg/adg_indexed_06142026_1721.sqlite",
+      "structural_outputs": "artifacts/adg/adg_structural_outputs_06142026_1721.json"
     },
     "loaded_status": {
       "degraded": [],
       "missing": [
-        "action_queue",
-        "review_template",
-        "burndown_table",
-        "burndown_report",
-        "generation_manifest"
+        "generation_manifest",
+        "graph_watchlist",
+        "p0_wave_plan"
       ],
       "stale": [],
       "used": [
         "gate_results",
-        "generation_manifest"
+        "action_queue",
+        "review_template",
+        "burndown_table",
+        "generation_manifest",
+        "structural_outputs",
+        "refactor_accelerator",
+        "graphdb_queries",
+        "runtime_spine",
+        "graphdb_projection",
+        "graphdb_metadata",
+        "graphdb_index",
+        "graph_watchlist",
+        "p0_wave_plan"
       ]
     }
   },
   "run": {
-    "commit_sha": "f39695f77dd36b205f4824cb51efe4659f06ae2d",
+    "commit_sha": "d96ebb65bbcabed884938f51223053b26edeef04",
     "decision_grade_status": "PASS",
     "degradation_reasons": [],
-    "generated_at_utc": "2026-06-14T15:53:07+00:00",
-    "repo_state_hash": "c1561683564543a5",
-    "run_id": "ts",
-    "snapshot_ts": "ts"
+    "generated_at_utc": "2026-06-14T21:33:30+00:00",
+    "repo_state_hash": "5c2e5f3ed43c21f5",
+    "run_id": "06142026_1721",
+    "snapshot_ts": "2026-06-14T21:31:59.912843+00:00"
   },
   "schema_version": "1.0"
 }

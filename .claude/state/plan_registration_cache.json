@@ -1,7 +1,73 @@
 {
-  "fetched_at": "2026-06-12T23:46:46Z",
-  "fetched_at_epoch": 1781308006.4608476,
+  "fetched_at": "2026-06-14T22:19:21Z",
+  "fetched_at_epoch": 1781475561.72794,
   "plans": {
+    "github-actions-ci-rationalization-b8a4c2": {
+      "status": "Not Started",
+      "page_id": "37f27693-f55c-8174-8dbb-f2129d441fc5",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "askq-confidence-meta-learning-loop-c4e7a1": {
+      "status": "Completed",
+      "page_id": "37f27693-f55c-81fd-8c4f-c03ad0f4edc1",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "prompt-cache-anthropic-best-practice-c7a1e9": {
+      "status": "Completed",
+      "page_id": "37f27693-f55c-81f6-9216-df5e024596f6",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "rca-depth-enforcement-83e392": {
+      "status": "Completed",
+      "page_id": "37f27693-f55c-8160-9edc-cc53f805ce46",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-testing-hotspots-wave-plan-a7f3c1": {
+      "status": "Completed",
+      "page_id": "37f27693-f55c-8185-b609-dc3a08a8ed16",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "adg-decision-synthesis-9f3a2c": {
+      "status": "In Progress",
+      "page_id": "37f27693-f55c-81f4-a636-e5af28c013ae",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "l6-v40-shadow-observability-gap-closure-4f7c2a": {
+      "status": "Completed",
+      "page_id": "37e27693-f55c-813c-b44d-c25bba2231fe",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-rfp-deprecation-deletion-6f4a2b": {
+      "status": "Not Started",
+      "page_id": "37e27693-f55c-8187-b86a-e85f03e08b54",
+      "exists_on_disk": true,
+      "has_ai_summary": true
+    },
+    "apps-repo-brief-deprecation-deletion-b7c4e1": {
+      "status": "Completed",
+      "page_id": "37e27693-f55c-8179-be50-f0b88f6fa4e7",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps01-bank-grade-servicing-delete-a5c9e1": {
+      "status": "Completed",
+      "page_id": "37e27693-f55c-819a-935f-d1271b727b18",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
+    "apps-eval-rg-lic-hard-reset-b8e4c9": {
+      "status": "Completed",
+      "page_id": "37e27693-f55c-812f-a233-cf68bcff593c",
+      "exists_on_disk": true,
+      "has_ai_summary": false
+    },
     "shared-lane-skill-metric-skew-elimination-b4e8c1": {
       "status": "Not Started",
       "page_id": "37d27693-f55c-812d-be87-c941b2d140a0",
@@ -81,7 +147,7 @@
       "has_ai_summary": true
     },
     "eval-harness-adg-mcp-replan-a71c9e": {
-      "status": "Lower Priority",
+      "status": "Retired",
       "page_id": "37b27693-f55c-81ae-ae61-ceafec76009c",
       "exists_on_disk": true,
       "has_ai_summary": true
@@ -93,7 +159,7 @@
       "has_ai_summary": true
     },
     "eval-harness-spine-adg-closeout-6f2a9c": {
-      "status": "Lower Priority",
+      "status": "Retired",
       "page_id": "37b27693-f55c-812e-935d-c382192e8f86",
       "exists_on_disk": true,
       "has_ai_summary": true

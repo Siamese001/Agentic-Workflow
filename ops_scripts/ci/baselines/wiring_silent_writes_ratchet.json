@@ -1,11 +1,11 @@
 {
   "gate_id": "C3_silent_writes_ratchet",
-  "count": 2087,
+  "count": 2060,
   "seeded_at": "2026-06-13T14:17:48.833349+00:00",
-  "snapshot": "adg_indexed_06132026_1009.sqlite",
+  "snapshot": "adg_indexed_06142026_1721.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-13T20:55:15.934054+00:00",
-  "last_run_snapshot": "adg_indexed_06132026_1643.sqlite",
+  "last_run_at": "2026-06-14T21:31:44.381699+00:00",
+  "last_run_snapshot": "adg_indexed_06142026_1721.sqlite",
   "loosen_history": [
     {
       "at": "2026-06-13T19:57:35+00:00",
@@ -26,5 +26,14 @@
       "reason": "ADG rescan discovered existing tracked fanout gate test writer; accept current C3 floor while preserving future ratchet checks"
     }
   ],
-  "loosened_at": "2026-06-13T20:08:39+00:00"
+  "loosened_at": "2026-06-13T20:08:39+00:00",
+  "tightened_at": "2026-06-14T21:31:44.380699+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-06-14T21:31:44.380699+00:00",
+      "snapshot": "adg_indexed_06142026_1721.sqlite",
+      "from": 2087,
+      "to": 2060
+    }
+  ]
 }

@@ -1,11 +1,11 @@
 schema_version: '1.0'
 artifact_kind: adg_bcg_executive_summary
 run:
-  run_id: ts
-  generated_at_utc: '2026-06-14T15:53:07+00:00'
-  snapshot_ts: ts
-  commit_sha: f39695f77dd36b205f4824cb51efe4659f06ae2d
-  repo_state_hash: c1561683564543a5
+  run_id: '06142026_1721'
+  generated_at_utc: '2026-06-14T21:33:30+00:00'
+  snapshot_ts: '2026-06-14T21:31:59.912843+00:00'
+  commit_sha: d96ebb65bbcabed884938f51223053b26edeef04
+  repo_state_hash: 5c2e5f3ed43c21f5
   decision_grade_status: PASS
   degradation_reasons: []
 plain_english_context:
@@ -17,22 +17,22 @@ plain_english_context:
       and structural risk.'
     measured_scope:
       connections: null
-      gates: 0
+      gates: 48
       files: null
     caveats: []
 patient_size:
   status: present
-  total_python_files: 12433
-  production_python_files: 7269
-  test_python_files: 5164
+  total_python_files: 12551
+  production_python_files: 7392
+  test_python_files: 5159
   agentic_core:
-    file_count: 2899
+    file_count: 2901
     largest_layers:
     - layer: L5_safety
       file_count: 533
       executive_read: Large core layer; treat as control-plane blast-radius context.
     - layer: L6_system_learning
-      file_count: 306
+      file_count: 308
       executive_read: Large core layer; treat as control-plane blast-radius context.
     - layer: L2_execution
       file_count: 285
@@ -79,10 +79,10 @@ patient_size:
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
   tests:
-    total_files: 5164
+    total_files: 5159
     folder_breakdown:
     - folder: tests/unit
-      file_count: 3011
+      file_count: 3007
     - folder: tests/e2e
       file_count: 61
     - folder: tests/regression
@@ -98,15 +98,15 @@ patient_size:
     - folder: tests/fixtures
       file_count: 9
     - folder: tests/unknown
-      file_count: 2022
+      file_count: 2021
   executive_read: Patient-size metrics show where ADG risk lands across core, apps,
     and tests.
-  snapshot_ts: ts
+  snapshot_ts: '2026-06-14T21:31:59.912843+00:00'
 executive_decision:
-  verdict: TESTING_CONTROL_GAP
+  verdict: BLOCKED
   recommendation: Fund the smallest slice that clears current blockers and attaches
     tests where hotspot evidence overlaps; keep ratchets after-green.
-  funding_posture: fund_now
+  funding_posture: narrow_slice
   why_now: Decision combines FIX status, regression/newness, GraphDB/MV linkage, testing
     exposure, and artifact consistency.
   risk_if_ignored: The organization may chase raw counts while missing the smaller
@@ -116,8 +116,8 @@ executive_decision:
   - Do not treat guardian inventory as an automatic product failure.
   - Do not start a generic testing mega-project when mapped tests can follow the current
     slice.
-  crisis_level: managed_debt
-  one_sentence_bottom_line: 'ADG is TESTING_CONTROL_GAP: act on decision-linked blockers/testing
+  crisis_level: routine_nudge
+  one_sentence_bottom_line: 'ADG is BLOCKED: act on decision-linked blockers/testing
     gaps, defer diagnostic-only noise.'
 prioritization_model:
   status: present
@@ -159,106 +159,134 @@ prioritization_model:
 lens_1_health_gates:
   status: present
   summary:
-    total_gates: 0
-    clear_gates: 0
-    track_gates: 0
-    fix_gates: 0
-    overall_verdict: PASS
+    total_gates: 48
+    clear_gates: 27
+    track_gates: 18
+    fix_gates: 3
+    overall_verdict: BLOCKED
     executive_read: FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR
       needs no action.
   buckets:
   - bucket: CLEAR
-    count: 0
+    count: 27
     plain_meaning: No action now.
   - bucket: TRACK
-    count: 0
+    count: 18
     plain_meaning: Known debt or advisory inventory; burn down after red gates.
   - bucket: FIX
-    count: 0
+    count: 3
     plain_meaning: Current blocker or regression requiring action before decision-grade
       green.
-  red_gates: []
+  red_gates:
+  - gate_id: M1_module_loc_ratchet
+    band: P3
+    enforcement: ratchet
+    total_records: 460
+    baseline_records: 459
+    regression_delta: 0
+    record_type: gate records
+    executive_read: Current red gate. Treat as blocker, but inspect delta to distinguish
+      tiny ratchet creep from structural failure.
+    next_action: 'Regression +1 over baseline 459: fix the new findings, or re-baseline
+      via the gate''s `--regenerate-baseline` if intentional/approved debt.'
+    done_condition: Gate returns CLEAR/TRACK with no current FIX verdict.
+  - gate_id: Q2_cyclomatic_complexity_ratchet
+    band: P3
+    enforcement: ratchet
+    total_records: 1084
+    baseline_records: 1083
+    regression_delta: 0
+    record_type: gate records
+    executive_read: Current red gate. Treat as blocker, but inspect delta to distinguish
+      tiny ratchet creep from structural failure.
+    next_action: 'Regression +1 over baseline 1083: fix the new findings, or re-baseline
+      via the gate''s `--regenerate-baseline` if intentional/approved debt.'
+    done_condition: Gate returns CLEAR/TRACK with no current FIX verdict.
+  - gate_id: G_REACH_l0_reachability
+    band: P0
+    enforcement: ratchet
+    total_records: 2845
+    baseline_records: 2843
+    regression_delta: 0
+    record_type: gate records
+    executive_read: Current red gate. Treat as blocker, but inspect delta to distinguish
+      tiny ratchet creep from structural failure.
+    next_action: 'Regression +2 over baseline 2843 (P0): investigate each NEW path;
+      fix the regression — re-baseline only with explicit sign-off.'
+    done_condition: Gate returns CLEAR/TRACK with no current FIX verdict.
   managed_debt:
-    ratchet_floor_records: 0
-    open_non_ratchet_records: 0
-    top_ratchets: []
+    ratchet_floor_records: 20483
+    open_non_ratchet_records: 1023
+    top_ratchets:
+    - gate_id: S4_unused_imports_ratchet
+      records: 10897
+      executive_read: Accepted baseline debt, not current red.
+      after_green_action: Burn down after FIX rows clear.
+    - gate_id: C3_silent_writes_ratchet
+      records: 2060
+      executive_read: Accepted baseline debt, not current red.
+      after_green_action: Burn down after FIX rows clear.
+    - gate_id: S2_uwg_bypass_ratchet
+      records: 1562
+      executive_read: Accepted baseline debt, not current red.
+      after_green_action: Burn down after FIX rows clear.
+    - gate_id: F1_untyped_seam_ratchet
+      records: 1075
+      executive_read: Accepted baseline debt, not current red.
+      after_green_action: Burn down after FIX rows clear.
+    - gate_id: E1_trace_stub_module
+      records: 1030
+      executive_read: Accepted baseline debt, not current red.
+      after_green_action: Burn down after FIX rows clear.
   key_interpretation: A blocked ADG run is not automatically a platform crisis; regression
     delta and graph/test linkage determine urgency.
 lens_2_runtime_proof_observability:
-  status: missing
+  status: present
   executive_read: Runtime proof distinguishes observed failures from missing instrumentation.
   measurement_gap_vs_quality_failure: Missing runtime proof is a measurement gap unless
     an artifact shows runtime failure evidence.
   runtime_proof_signals:
   - signal: runtime_spine
-    status: missing
-    evidence_count: 0
-    executive_read: Measurement blind spot; not automatically a product failure.
-    action: Enable or repair artifact emission if the decision needs runtime proof.
+    status: present
+    evidence_count: 25
+    executive_read: Runtime/structural proof available for interpretation.
+    action: Use to confirm runtime path risk.
   - signal: graphdb_queries
-    status: missing
-    evidence_count: 0
-    executive_read: Measurement blind spot; not automatically a product failure.
-    action: Enable or repair artifact emission if the decision needs runtime proof.
+    status: present
+    evidence_count: 6
+    executive_read: Runtime/structural proof available for interpretation.
+    action: Use to confirm runtime path risk.
   - signal: structural_outputs
-    status: missing
-    evidence_count: 0
-    executive_read: Measurement blind spot; not automatically a product failure.
-    action: Enable or repair artifact emission if the decision needs runtime proof.
-  blind_spots:
-  - blind_spot: runtime proof artifacts
-    why_it_matters: Without runtime proof, ADG can flag structural risk but cannot
-      prove production behavior.
-    recommended_action: Generate or wire runtime spine/replay/OTel evidence for critical
-      paths.
+    status: present
+    evidence_count: 6
+    executive_read: Runtime/structural proof available for interpretation.
+    action: Use to confirm runtime path risk.
+  blind_spots: []
 lens_3_product_app_risk:
   status: present
-  executive_read: App/product risks were promoted only where hotspot or test evidence
-    changes funding posture.
-  app_risks:
-  - app_or_scope: apps_sales
-    risk: Under-tested product hotspot
-    evidence:
-    - signal_name: apps_sales/runtime/checkout.py
-      signal_type: hotspot
-      raw_count: 3
-      interpreted_meaning: This production scope has structural or coverage risk;
-        missing mapped tests make fixes harder to prove.
-    executive_read: App risk is promoted because product surface and missing test
-      scope overlap.
-    next_action: Add mapped tests/regression, tests/e2e or app-specific e2e coverage
-      for apps_sales.
-    priority_vs_gate_debt: Can outrank after-green ratchet burn-down when it overlaps
-      current work or high blast radius.
-  promoted_product_gaps:
-  - gap_id: product_gap_1
-    title: Under-tested product hotspot
-    app_or_scope: apps_sales
-    why_high_leverage: App risk is promoted because product surface and missing test
-      scope overlap.
-    action: Add mapped tests/regression, tests/e2e or app-specific e2e coverage for
-      apps_sales.
-    done_condition: Mapped app tests pass and ADG no longer reports the promoted gap.
+  executive_read: No app-specific product gap was promoted in this run; app risk remains
+    diagnostic-only unless tied to a hotspot, gate, or action queue row.
+  app_risks: []
+  promoted_product_gaps: []
 lens_4_testing_control_gaps:
   status: present
-  executive_read: Testing is a control gap where apps_sales/runtime/checkout.py lacks
-    regression, e2e coverage; fund tests with the relevant fix slice, not as a generic
-    test campaign.
+  executive_read: Testing is a control gap where unknown lacks unit, regression coverage;
+    fund tests with the relevant fix slice, not as a generic test campaign.
   summary:
-    total_hotspots: 1
-    p1_urgent: 1
+    total_hotspots: 500
+    p1_urgent: 15
     p2_gap: 0
-    critical_risk: 1
-    absent_coverage: 1
-    missing_unit_scope: 0
-    missing_regression_scope: 1
-    missing_e2e_scope: 1
+    critical_risk: 15
+    absent_coverage: 15
+    missing_unit_scope: 15
+    missing_regression_scope: 15
+    missing_e2e_scope: 0
     mock_only_scope: 0
   test_scope_inventory:
     scanned_tests_root: tests
     folders:
     - folder: tests/unit
-      file_count: 3117
+      file_count: 3113
       mapped_production_scopes:
       - agentic_core
       - agentic_core.py
@@ -1058,7 +1086,7 @@ lens_4_testing_control_gaps:
       - apps_rg/runtime
       - ops_scripts/ci
     - folder: tests/unknown
-      file_count: 1307
+      file_count: 1306
       mapped_production_scopes:
       - agentic_core
       - agentic_core.py
@@ -1268,9 +1296,9 @@ lens_4_testing_control_gaps:
       - tools/underwriting
   investment_map:
   - rank: 1
-    production_scope: apps_sales/runtime/checkout.py
-    layer: runtime
-    app_or_domain: apps_sales
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
     current_tests_found:
       unit: []
       e2e: []
@@ -1283,22 +1311,540 @@ lens_4_testing_control_gaps:
       mock_only: []
       unknown: []
     missing_test_scope:
+    - unit
     - regression
-    - e2e
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: '-1.0'
+      fan_in: 0
+      fan_out: 20
+      criticality_score: 116.0
+      combined_risk_score: 188.0
+      violation_count: 32
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 2
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: '-1.0'
+      fan_in: 0
+      fan_out: 228
+      criticality_score: 333.0
+      combined_risk_score: 448.0
+      violation_count: 35
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 3
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
     risk:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
       coverage_pct: unknown
-      fan_in: 12
-      fan_out: 9
-      criticality_score: 90.0
-      combined_risk_score: 95.0
-      violation_count: 3
+      fan_in: 0
+      fan_out: 127
+      criticality_score: 199.0
+      combined_risk_score: 263.0
+      violation_count: 24
     reasoned_implication: This production scope has structural or coverage risk; missing
       mapped tests make fixes harder to prove.
-    recommended_test_investment: Add mapped tests/regression, tests/e2e or app-specific
-      e2e coverage for apps_sales.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 4
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: '-1.0'
+      fan_in: 0
+      fan_out: 99
+      criticality_score: 174.0
+      combined_risk_score: 241.0
+      violation_count: 25
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 5
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: unknown
+      fan_in: 0
+      fan_out: 157
+      criticality_score: 217.0
+      combined_risk_score: 282.0
+      violation_count: 20
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 6
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: '-1.0'
+      fan_in: 0
+      fan_out: 87
+      criticality_score: 183.0
+      combined_risk_score: 265.0
+      violation_count: 32
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 7
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: '-1.0'
+      fan_in: 0
+      fan_out: 87
+      criticality_score: 180.0
+      combined_risk_score: 279.0
+      violation_count: 31
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 8
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: unknown
+      fan_in: 0
+      fan_out: 142
+      criticality_score: 193.0
+      combined_risk_score: 236.0
+      violation_count: 17
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 9
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: unknown
+      fan_in: 0
+      fan_out: 108
+      criticality_score: 144.0
+      combined_risk_score: 171.0
+      violation_count: 12
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 10
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: unknown
+      fan_in: 0
+      fan_out: 158
+      criticality_score: 188.0
+      combined_risk_score: 364.0
+      violation_count: 10
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 11
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: '-1.0'
+      fan_in: 0
+      fan_out: 103
+      criticality_score: 130.0
+      combined_risk_score: 148.0
+      violation_count: 9
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 12
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: unknown
+      fan_in: 0
+      fan_out: 116
+      criticality_score: 140.0
+      combined_risk_score: 166.0
+      violation_count: 8
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 13
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: '-1.0'
+      fan_in: 0
+      fan_out: 118
+      criticality_score: 139.0
+      combined_risk_score: 153.0
+      violation_count: 7
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 14
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: '-1.0'
+      fan_in: 0
+      fan_out: 118
+      criticality_score: 139.0
+      combined_risk_score: 153.0
+      violation_count: 7
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
+    trigger: hotspot coverage MV / test inventory
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 15
+    production_scope: unknown
+    layer: unknown
+    app_or_domain: unknown
+    current_tests_found:
+      unit: []
+      e2e: []
+      regression: []
+      integration: []
+      smoke: []
+      golden: []
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown: []
+    missing_test_scope:
+    - unit
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: unknown
+      fan_in: 0
+      fan_out: 126
+      criticality_score: 141.0
+      combined_risk_score: 162.0
+      violation_count: 5
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/unit, tests/regression coverage
+      for unknown.
     trigger: hotspot coverage MV / test inventory
     done_condition: Mapped tests exist in the missing scopes and pass with the ADG
       run.
@@ -1316,16 +1862,56 @@ lens_5_graphdb_mv_decision_impact:
     to blockers, testing exposure, ratchets, artifact consistency, or planned slices;
     raw counts alone stay diagnostic.
   summary:
-    total_mvs: 4
-    decision_drivers: 0
-    testing_drivers: 1
-    ratchet_drivers: 1
-    audit_drivers: 1
-    diagnostic_only: 0
+    total_mvs: 52
+    decision_drivers: 1
+    testing_drivers: 6
+    ratchet_drivers: 0
+    audit_drivers: 0
+    diagnostic_only: 44
     low_value_candidates: 0
-    deprecate_candidates: 1
+    deprecate_candidates: 8
   decision_impact_rows:
-  - signal: mv_empty_noise
+  - signal: mv_actionable_surface_without_schema
+    signal_type: materialized_view
+    row_count: 814
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_agent_specialization_overlap
+    signal_type: materialized_view
+    row_count: 3085
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_agent_tool_ratio
+    signal_type: materialized_view
+    row_count: 15
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_authority_boundary_breaches
+    signal_type: materialized_view
+    row_count: 7
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_capability_and_egress_gaps
     signal_type: materialized_view
     row_count: 0
     decision_role: deprecate_candidate
@@ -1335,39 +1921,547 @@ lens_5_graphdb_mv_decision_impact:
     action: Deprecate/delete candidate if still empty next runs.
     related_gates: []
     related_scopes: []
-  - signal: mv_guardian_inventory
+  - signal: mv_critical_path_segments
     signal_type: materialized_view
-    row_count: 1
-    decision_role: audit_only
+    row_count: 192
+    decision_role: diagnostic_monitor
     used_inline: false
-    why_or_why_not: Audit math unless mapped to a current failing gate.
-    action: Audit; do not treat as blocker by itself.
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
     related_gates: []
     related_scopes: []
-  - signal: mv_hotspot_coverage_risk
+  - signal: mv_cross_cutting_witness_tiers
     signal_type: materialized_view
-    row_count: 1
+    row_count: 56
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_debt_concentration_hotspots
+    signal_type: materialized_view
+    row_count: 5050
     decision_role: used_for_testing
     used_inline: true
     why_or_why_not: Translates structural risk into concrete test-placement decisions.
     action: Attach mapped tests to high-risk scopes.
     related_gates: []
     related_scopes: []
-  - signal: mv_p0_ratchet_inventory
+  - signal: mv_dependency_cone_risk
+    signal_type: materialized_view
+    row_count: 11996
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_determinism_provenance_drift
+    signal_type: materialized_view
+    row_count: 6838
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_digest_reconciliation
+    signal_type: materialized_view
+    row_count: 6
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_eval_coverage_by_path
+    signal_type: materialized_view
+    row_count: 12
+    decision_role: used_for_testing
+    used_inline: true
+    why_or_why_not: Translates structural risk into concrete test-placement decisions.
+    action: Attach mapped tests to high-risk scopes.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_exemptions_near_critical_paths
+    signal_type: materialized_view
+    row_count: 3467
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_exit_disposition_coverage
+    signal_type: materialized_view
+    row_count: 818
+    decision_role: used_for_testing
+    used_inline: true
+    why_or_why_not: Translates structural risk into concrete test-placement decisions.
+    action: Attach mapped tests to high-risk scopes.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_gateway_bypass_paths
+    signal_type: materialized_view
+    row_count: 0
+    decision_role: deprecate_candidate
+    used_inline: false
+    why_or_why_not: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    action: Deprecate/delete candidate if still empty next runs.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_graph_chokepoint_bridges
+    signal_type: materialized_view
+    row_count: 2091
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_graph_critical_path_blast_radius
+    signal_type: materialized_view
+    row_count: 128
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_graph_reverse_dependency_hotspots
+    signal_type: materialized_view
+    row_count: 96
+    decision_role: used_for_testing
+    used_inline: true
+    why_or_why_not: Translates structural risk into concrete test-placement decisions.
+    action: Attach mapped tests to high-risk scopes.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_graph_scc_clusters
+    signal_type: materialized_view
+    row_count: 0
+    decision_role: deprecate_candidate
+    used_inline: false
+    why_or_why_not: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    action: Deprecate/delete candidate if still empty next runs.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_graph_vs_report_mismatches
     signal_type: materialized_view
     row_count: 2
-    decision_role: used_after_green
+    decision_role: diagnostic_monitor
     used_inline: false
-    why_or_why_not: Useful after CI is green to lower accepted ratchet debt.
-    action: Schedule after-green burn-down.
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_handoff_witness_tiers
+    signal_type: materialized_view
+    row_count: 17
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_heal_retry_exit_gaps
+    signal_type: materialized_view
+    row_count: 83
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_high_fan_in_out_with_defects
+    signal_type: materialized_view
+    row_count: 11075
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_hitl_reclearance_gaps
+    signal_type: materialized_view
+    row_count: 2000
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_hotspot_centrality
+    signal_type: materialized_view
+    row_count: 11996
+    decision_role: used_for_testing
+    used_inline: true
+    why_or_why_not: Translates structural risk into concrete test-placement decisions.
+    action: Attach mapped tests to high-risk scopes.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_hotspot_coverage_risk
+    signal_type: materialized_view
+    row_count: 4515
+    decision_role: used_now
+    used_inline: true
+    why_or_why_not: Linked to a current FIX/action signal, so it changes immediate
+      work order.
+    action: Use in current fix slice.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_l2_phase_coverage
+    signal_type: materialized_view
+    row_count: 5
+    decision_role: used_for_testing
+    used_inline: true
+    why_or_why_not: Translates structural risk into concrete test-placement decisions.
+    action: Attach mapped tests to high-risk scopes.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_live_future_mutation_conflicts
+    signal_type: materialized_view
+    row_count: 0
+    decision_role: deprecate_candidate
+    used_inline: false
+    why_or_why_not: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    action: Deprecate/delete candidate if still empty next runs.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_local_heal_first_breaches
+    signal_type: materialized_view
+    row_count: 0
+    decision_role: deprecate_candidate
+    used_inline: false
+    why_or_why_not: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    action: Deprecate/delete candidate if still empty next runs.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_manager_sprawl
+    signal_type: materialized_view
+    row_count: 100
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_modified_area_regressions
+    signal_type: materialized_view
+    row_count: 5063
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_new_cross_layer_dependencies
+    signal_type: materialized_view
+    row_count: 178
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_new_provider_surfaces
+    signal_type: materialized_view
+    row_count: 103
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_new_write_bypass_paths
+    signal_type: materialized_view
+    row_count: 917
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_newly_introduced_critical_paths
+    signal_type: materialized_view
+    row_count: 8727
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_observability_interference_breaches
+    signal_type: materialized_view
+    row_count: 0
+    decision_role: deprecate_candidate
+    used_inline: false
+    why_or_why_not: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    action: Deprecate/delete candidate if still empty next runs.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_path_criticality_rollup
+    signal_type: materialized_view
+    row_count: 11996
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_prompt_assembly_wiring_gaps
+    signal_type: materialized_view
+    row_count: 17
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_provider_surface_sprawl
+    signal_type: materialized_view
+    row_count: 62
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_repeated_p3_near_critical_paths
+    signal_type: materialized_view
+    row_count: 1598
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_replay_surface_gaps
+    signal_type: materialized_view
+    row_count: 1011
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates:
+    - I2_replay_surface_gaps_ratchet
+    related_scopes: []
+  - signal: mv_runtime_spine_gaps
+    signal_type: materialized_view
+    row_count: 7
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_snapshot_baseline
+    signal_type: materialized_view
+    row_count: 1
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_snapshot_integrity_anomalies
+    signal_type: materialized_view
+    row_count: 403429
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_snapshot_regression_summary
+    signal_type: materialized_view
+    row_count: 1
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_structured_output_gaps
+    signal_type: materialized_view
+    row_count: 1
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_task_contract_gaps
+    signal_type: materialized_view
+    row_count: 1071
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_tool_surface_overlap
+    signal_type: materialized_view
+    row_count: 0
+    decision_role: deprecate_candidate
+    used_inline: false
+    why_or_why_not: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    action: Deprecate/delete candidate if still empty next runs.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_trace_replay_eval_gaps
+    signal_type: materialized_view
+    row_count: 476
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_unknown_taxonomy_and_orphans
+    signal_type: materialized_view
+    row_count: 6838
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_untrusted_text_to_action_risk
+    signal_type: materialized_view
+    row_count: 0
+    decision_role: deprecate_candidate
+    used_inline: false
+    why_or_why_not: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    action: Deprecate/delete candidate if still empty next runs.
+    related_gates: []
+    related_scopes: []
+  - signal: mv_write_sovereignty_paths
+    signal_type: materialized_view
+    row_count: 1094
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    action: Monitor and hide inline.
+    related_gates: []
+    related_scopes: []
+  - signal: structural_outputs
+    signal_type: structural_report
+    row_count: 6
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: P7 artifact contributes structural context; promoted only when
+      tied to blockers, tests, or action queue.
+    action: Use as tie-breaker for blast radius and critical path planning.
+    related_gates: []
+    related_scopes: []
+  - signal: refactor_accelerator
+    signal_type: structural_report
+    row_count: 20
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: P7 artifact contributes structural context; promoted only when
+      tied to blockers, tests, or action queue.
+    action: Use as tie-breaker for blast radius and critical path planning.
+    related_gates: []
+    related_scopes: []
+  - signal: graphdb_queries
+    signal_type: graphdb_report
+    row_count: 6
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: P7 artifact contributes structural context; promoted only when
+      tied to blockers, tests, or action queue.
+    action: Use as tie-breaker for blast radius and critical path planning.
+    related_gates: []
+    related_scopes: []
+  - signal: runtime_spine
+    signal_type: structural_report
+    row_count: 25
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: P7 artifact contributes structural context; promoted only when
+      tied to blockers, tests, or action queue.
+    action: Use as tie-breaker for blast radius and critical path planning.
+    related_gates: []
+    related_scopes: []
+  - signal: graphdb_projection
+    signal_type: graphdb_report
+    row_count: 633198
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: P7 artifact contributes structural context; promoted only when
+      tied to blockers, tests, or action queue.
+    action: Use as tie-breaker for blast radius and critical path planning.
+    related_gates: []
+    related_scopes: []
+  - signal: graphdb_metadata
+    signal_type: graphdb_report
+    row_count: 11
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: P7 artifact contributes structural context; promoted only when
+      tied to blockers, tests, or action queue.
+    action: Use as tie-breaker for blast radius and critical path planning.
+    related_gates: []
+    related_scopes: []
+  - signal: graphdb_index
+    signal_type: graphdb_report
+    row_count: 1
+    decision_role: diagnostic_monitor
+    used_inline: false
+    why_or_why_not: P7 artifact contributes structural context; promoted only when
+      tied to blockers, tests, or action queue.
+    action: Use as tie-breaker for blast radius and critical path planning.
     related_gates: []
     related_scopes: []
   top_graph_risks:
-  - rank: 3
-    scope: mv_hotspot_coverage_risk
+  - rank: 8
+    scope: mv_debt_concentration_hotspots
     graph_signal: used_for_testing
     centrality: null
-    blast_radius: 1
+    blast_radius: 5050
     reverse_dependency: null
     dependency_cone: null
     executive_read: Translates structural risk into concrete test-placement decisions.
@@ -1377,29 +2471,90 @@ canonical_next_best_actions:
   status: present
   rows:
   - rank: 1
+    action_type: fix_blocker
+    action: Clear red gate G_REACH_l0_reachability
+    scope: G_REACH_l0_reachability
+    why_now: Current FIX gates block decision-grade green; inspect delta before assuming
+      structural crisis.
+    evidence_used:
+    - signal_name: G_REACH_l0_reachability
+      signal_type: gate
+      decision_effect: Current FIX gates block decision-grade green; inspect delta
+        before assuming structural crisis.
+    testing_requirement: Add mapped tests when touched scope overlaps a hotspot.
+    done_condition: Rerun ADG and confirm the relevant gate/test/report status is
+      green or explicitly waived.
+    confidence: high
+    timing: now
+  - rank: 2
+    action_type: fix_blocker
+    action: Clear red gate M1_module_loc_ratchet
+    scope: M1_module_loc_ratchet
+    why_now: Current FIX gates block decision-grade green; inspect delta before assuming
+      structural crisis.
+    evidence_used:
+    - signal_name: M1_module_loc_ratchet
+      signal_type: gate
+      decision_effect: Current FIX gates block decision-grade green; inspect delta
+        before assuming structural crisis.
+    testing_requirement: Add mapped tests when touched scope overlaps a hotspot.
+    done_condition: Rerun ADG and confirm the relevant gate/test/report status is
+      green or explicitly waived.
+    confidence: high
+    timing: now
+  - rank: 3
+    action_type: fix_blocker
+    action: Clear red gate Q2_cyclomatic_complexity_ratchet
+    scope: Q2_cyclomatic_complexity_ratchet
+    why_now: Current FIX gates block decision-grade green; inspect delta before assuming
+      structural crisis.
+    evidence_used:
+    - signal_name: Q2_cyclomatic_complexity_ratchet
+      signal_type: gate
+      decision_effect: Current FIX gates block decision-grade green; inspect delta
+        before assuming structural crisis.
+    testing_requirement: Add mapped tests when touched scope overlaps a hotspot.
+    done_condition: Rerun ADG and confirm the relevant gate/test/report status is
+      green or explicitly waived.
+    confidence: high
+    timing: now
+  - rank: 4
     action_type: add_tests
-    action: Fund mapped tests for apps_sales/runtime/checkout.py
-    scope: apps_sales/runtime/checkout.py
+    action: Fund mapped tests for unknown
+    scope: unknown
     why_now: Testing exposure in a high-risk surface can reduce more delivery risk
       than blind ratchet burn-down.
     evidence_used:
-    - signal_name: apps_sales/runtime/checkout.py
+    - signal_name: unknown
       signal_type: testing_hotspot
       decision_effect: Testing exposure in a high-risk surface can reduce more delivery
         risk than blind ratchet burn-down.
-    testing_requirement: Add mapped tests/regression, tests/e2e or app-specific e2e
-      coverage for apps_sales.
+    testing_requirement: Add mapped tests/unit, tests/regression coverage for unknown.
     done_condition: Rerun ADG and confirm the relevant gate/test/report status is
       green or explicitly waived.
     confidence: medium
-    timing: now
-  - rank: 2
+    timing: if_touched
+  - rank: 5
+    action_type: burn_down_ratchet
+    action: Burn down ratchet S4_unused_imports_ratchet
+    scope: S4_unused_imports_ratchet
+    why_now: Accepted baseline debt should fall after red gates are clear.
+    evidence_used:
+    - signal_name: S4_unused_imports_ratchet
+      signal_type: gate
+      decision_effect: Accepted baseline debt should fall after red gates are clear.
+    testing_requirement: Add tests only when touched scope overlaps hotspot.
+    done_condition: Rerun ADG and confirm the relevant gate/test/report status is
+      green or explicitly waived.
+    confidence: medium
+    timing: after_green
+  - rank: 6
     action_type: refine
-    action: Refine/deprecate low-value ADG signal mv_empty_noise
-    scope: mv_empty_noise
+    action: Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps
+    scope: mv_capability_and_egress_gaps
     why_now: Suppress or retire signals that do not affect decisions.
     evidence_used:
-    - signal_name: mv_empty_noise
+    - signal_name: mv_capability_and_egress_gaps
       signal_type: mv
       decision_effect: Suppress or retire signals that do not affect decisions.
     testing_requirement: No test required unless generator logic changes.
@@ -1411,12 +2566,57 @@ after_green_plan:
   status: present
   executive_read: After-green work lowers accepted floors and closes broad testing
     waves once blockers are gone.
-  rows: []
+  rows:
+  - order: 1
+    work_class: ratchet_burndown
+    scope: S4_unused_imports_ratchet
+    records: 10897
+    driver_signals:
+    - gate_results
+    why_after_green: Ratchet floor work should not distract from current FIX rows.
+    next_action: Burn down after FIX rows clear.
+    done_condition: Lower baseline and rerun ADG.
+  - order: 2
+    work_class: ratchet_burndown
+    scope: C3_silent_writes_ratchet
+    records: 2060
+    driver_signals:
+    - gate_results
+    why_after_green: Ratchet floor work should not distract from current FIX rows.
+    next_action: Burn down after FIX rows clear.
+    done_condition: Lower baseline and rerun ADG.
+  - order: 3
+    work_class: ratchet_burndown
+    scope: S2_uwg_bypass_ratchet
+    records: 1562
+    driver_signals:
+    - gate_results
+    why_after_green: Ratchet floor work should not distract from current FIX rows.
+    next_action: Burn down after FIX rows clear.
+    done_condition: Lower baseline and rerun ADG.
+  - order: 4
+    work_class: ratchet_burndown
+    scope: F1_untyped_seam_ratchet
+    records: 1075
+    driver_signals:
+    - gate_results
+    why_after_green: Ratchet floor work should not distract from current FIX rows.
+    next_action: Burn down after FIX rows clear.
+    done_condition: Lower baseline and rerun ADG.
+  - order: 5
+    work_class: ratchet_burndown
+    scope: E1_trace_stub_module
+    records: 1030
+    driver_signals:
+    - gate_results
+    why_after_green: Ratchet floor work should not distract from current FIX rows.
+    next_action: Burn down after FIX rows clear.
+    done_condition: Lower baseline and rerun ADG.
 artifact_usage_matrix:
   status: present
   rows:
   - artifact_key: gate_results
-    path: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\gate.json
+    path: artifacts/adg/adg_gate_results_20260614_213159.json
     exists: true
     stale: false
     used_for:
@@ -1425,51 +2625,45 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: action_queue
-    path: ''
-    exists: false
+    path: artifacts/adg/adg_action_queue_06142026_1721.json
+    exists: true
     stale: false
     used_for:
-    - none
-    decision_impact: No current decision effect; suppress inline unless tied to a
-      future blocker or audit.
-    recommendation: refine
-    rationale: Available only as diagnostic/evidence context or missing from this
-      run.
+    - decision
+    decision_impact: Directly affects verdict and next-best-action ranking.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
   - artifact_key: review_template
-    path: ''
-    exists: false
+    path: artifacts/adg/adg_review_template_06142026_1721.json
+    exists: true
     stale: false
     used_for:
-    - none
-    decision_impact: No current decision effect; suppress inline unless tied to a
-      future blocker or audit.
-    recommendation: refine
-    rationale: Available only as diagnostic/evidence context or missing from this
-      run.
+    - evidence_only
+    decision_impact: Supports consistency/evidence trace.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
   - artifact_key: burndown_table
-    path: ''
-    exists: false
+    path: artifacts/adg/adg_burndown_table.json
+    exists: true
     stale: false
     used_for:
-    - none
-    decision_impact: No current decision effect; suppress inline unless tied to a
-      future blocker or audit.
-    recommendation: refine
-    rationale: Available only as diagnostic/evidence context or missing from this
-      run.
+    - audit
+    decision_impact: Provides audit/baseline context, not automatic fix priority.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
   - artifact_key: burndown_report
-    path: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\adg_burndown_report.md
-    exists: false
+    path: artifacts/adg/adg_burndown_report.md
+    exists: true
     stale: false
     used_for:
     - none
     decision_impact: No current decision effect; suppress inline unless tied to a
       future blocker or audit.
-    recommendation: refine
+    recommendation: keep_hide_inline
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: sqlite_snapshot
-    path: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\x.sqlite
+    path: artifacts/adg/adg_indexed_06142026_1721.sqlite
     exists: true
     stale: false
     used_for:
@@ -1478,7 +2672,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: generation_manifest
-    path: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\adg_generation_manifest_ts.json
+    path: artifacts/adg/adg_generation_manifest_06142026_1721.json
     exists: false
     stale: false
     used_for:
@@ -1486,21 +2680,144 @@ artifact_usage_matrix:
     decision_impact: Supports consistency/evidence trace.
     recommendation: refine
     rationale: Loaded and mapped to a decision lens.
+  - artifact_key: structural_outputs
+    path: artifacts/adg/adg_structural_outputs_06142026_1721.json
+    exists: true
+    stale: false
+    used_for:
+    - graphdb
+    decision_impact: Shapes blast-radius, MV, and structural interpretation.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
+  - artifact_key: refactor_accelerator
+    path: artifacts/adg/adg_refactor_accelerator_06142026_1721.json
+    exists: true
+    stale: false
+    used_for:
+    - graphdb
+    decision_impact: Shapes blast-radius, MV, and structural interpretation.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
+  - artifact_key: graphdb_queries
+    path: artifacts/adg/adg_graphdb_queries_06142026_1721.json
+    exists: true
+    stale: false
+    used_for:
+    - graphdb
+    decision_impact: Shapes blast-radius, MV, and structural interpretation.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
+  - artifact_key: runtime_spine
+    path: artifacts/adg/adg_runtime_spine_06142026_1721.json
+    exists: true
+    stale: false
+    used_for:
+    - graphdb
+    decision_impact: Shapes blast-radius, MV, and structural interpretation.
+    recommendation: keep
+    rationale: Loaded and mapped to a decision lens.
+  - artifact_key: graphdb_projection
+    path: artifacts/adg/adg_graphdb_projection_06142026_1721.json
+    exists: true
+    stale: false
+    used_for:
+    - none
+    decision_impact: No current decision effect; suppress inline unless tied to a
+      future blocker or audit.
+    recommendation: keep_hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+  - artifact_key: graphdb_metadata
+    path: artifacts/adg/adg_graphdb_metadata_06142026_1721.json
+    exists: true
+    stale: false
+    used_for:
+    - none
+    decision_impact: No current decision effect; suppress inline unless tied to a
+      future blocker or audit.
+    recommendation: keep_hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+  - artifact_key: graphdb_index
+    path: artifacts/adg/adg_graphdb_index_06142026_1721.json
+    exists: true
+    stale: false
+    used_for:
+    - none
+    decision_impact: No current decision effect; suppress inline unless tied to a
+      future blocker or audit.
+    recommendation: keep_hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+  - artifact_key: graph_watchlist
+    path: artifacts/adg/adg_graph_watchlist_06142026_1721.json
+    exists: false
+    stale: false
+    used_for:
+    - graphdb
+    decision_impact: Shapes blast-radius, MV, and structural interpretation.
+    recommendation: refine
+    rationale: Loaded and mapped to a decision lens.
+  - artifact_key: p0_wave_plan
+    path: artifacts/adg/adg_p0_remediation_wave_plan_06142026_1721.json
+    exists: false
+    stale: false
+    used_for:
+    - graphdb
+    decision_impact: Shapes blast-radius, MV, and structural interpretation.
+    recommendation: refine
+    rationale: Loaded and mapped to a decision lens.
 mv_usefulness_audit:
   status: present
   summary:
-    total_mvs: 4
-    decision_drivers: 0
-    testing_drivers: 1
-    ratchet_drivers: 1
-    audit_drivers: 1
-    diagnostic_only: 0
-    stale_or_empty: 1
+    total_mvs: 52
+    decision_drivers: 1
+    testing_drivers: 6
+    ratchet_drivers: 0
+    audit_drivers: 0
+    diagnostic_only: 37
+    stale_or_empty: 8
     duplicate_signals: 0
     low_value_candidates: 0
-    deprecate_candidates: 1
+    deprecate_candidates: 8
   rows:
-  - mv_name: mv_empty_noise
+  - mv_name: mv_actionable_surface_without_schema
+    row_count: 814
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_agent_specialization_overlap
+    row_count: 3085
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_agent_tool_ratio
+    row_count: 15
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_authority_boundary_breaches
+    row_count: 7
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_capability_and_egress_gaps
     row_count: 0
     category: stale_or_empty
     decision_impact: Empty or stale-looking signal; keep out of inline output until
@@ -1509,25 +2826,412 @@ mv_usefulness_audit:
     replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
-  - mv_name: mv_guardian_inventory
-    row_count: 1
-    category: audit_driver
-    decision_impact: Audit math unless mapped to a current failing gate.
+  - mv_name: mv_critical_path_segments
+    row_count: 192
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
     recommendation: keep_hide_inline
     replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
-  - mv_name: mv_hotspot_coverage_risk
-    row_count: 1
+  - mv_name: mv_cross_cutting_witness_tiers
+    row_count: 56
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_debt_concentration_hotspots
+    row_count: 5050
     category: testing_driver
     decision_impact: Translates structural risk into concrete test-placement decisions.
     recommendation: keep
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
-  - mv_name: mv_p0_ratchet_inventory
+  - mv_name: mv_dependency_cone_risk
+    row_count: 11996
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_determinism_provenance_drift
+    row_count: 6838
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_digest_reconciliation
+    row_count: 6
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_eval_coverage_by_path
+    row_count: 12
+    category: testing_driver
+    decision_impact: Translates structural risk into concrete test-placement decisions.
+    recommendation: keep
+    replacement_or_refinement: ''
+    why_not_used_if_suppressed: ''
+  - mv_name: mv_exemptions_near_critical_paths
+    row_count: 3467
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_exit_disposition_coverage
+    row_count: 818
+    category: testing_driver
+    decision_impact: Translates structural risk into concrete test-placement decisions.
+    recommendation: keep
+    replacement_or_refinement: ''
+    why_not_used_if_suppressed: ''
+  - mv_name: mv_gateway_bypass_paths
+    row_count: 0
+    category: stale_or_empty
+    decision_impact: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    recommendation: deprecate_candidate
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_graph_chokepoint_bridges
+    row_count: 2091
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_graph_critical_path_blast_radius
+    row_count: 128
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_graph_reverse_dependency_hotspots
+    row_count: 96
+    category: testing_driver
+    decision_impact: Translates structural risk into concrete test-placement decisions.
+    recommendation: keep
+    replacement_or_refinement: ''
+    why_not_used_if_suppressed: ''
+  - mv_name: mv_graph_scc_clusters
+    row_count: 0
+    category: stale_or_empty
+    decision_impact: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    recommendation: deprecate_candidate
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_graph_vs_report_mismatches
     row_count: 2
-    category: ratchet_driver
-    decision_impact: Useful after CI is green to lower accepted ratchet debt.
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_handoff_witness_tiers
+    row_count: 17
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_heal_retry_exit_gaps
+    row_count: 83
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_high_fan_in_out_with_defects
+    row_count: 11075
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_hitl_reclearance_gaps
+    row_count: 2000
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_hotspot_centrality
+    row_count: 11996
+    category: testing_driver
+    decision_impact: Translates structural risk into concrete test-placement decisions.
+    recommendation: keep
+    replacement_or_refinement: ''
+    why_not_used_if_suppressed: ''
+  - mv_name: mv_hotspot_coverage_risk
+    row_count: 4515
+    category: decision_driver
+    decision_impact: Linked to a current FIX/action signal, so it changes immediate
+      work order.
+    recommendation: keep
+    replacement_or_refinement: ''
+    why_not_used_if_suppressed: ''
+  - mv_name: mv_l2_phase_coverage
+    row_count: 5
+    category: testing_driver
+    decision_impact: Translates structural risk into concrete test-placement decisions.
+    recommendation: keep
+    replacement_or_refinement: ''
+    why_not_used_if_suppressed: ''
+  - mv_name: mv_live_future_mutation_conflicts
+    row_count: 0
+    category: stale_or_empty
+    decision_impact: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    recommendation: deprecate_candidate
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_local_heal_first_breaches
+    row_count: 0
+    category: stale_or_empty
+    decision_impact: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    recommendation: deprecate_candidate
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_manager_sprawl
+    row_count: 100
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_modified_area_regressions
+    row_count: 5063
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_new_cross_layer_dependencies
+    row_count: 178
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_new_provider_surfaces
+    row_count: 103
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_new_write_bypass_paths
+    row_count: 917
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_newly_introduced_critical_paths
+    row_count: 8727
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_observability_interference_breaches
+    row_count: 0
+    category: stale_or_empty
+    decision_impact: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    recommendation: deprecate_candidate
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_path_criticality_rollup
+    row_count: 11996
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_prompt_assembly_wiring_gaps
+    row_count: 17
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_provider_surface_sprawl
+    row_count: 62
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_repeated_p3_near_critical_paths
+    row_count: 1598
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_replay_surface_gaps
+    row_count: 1011
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_runtime_spine_gaps
+    row_count: 7
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_snapshot_baseline
+    row_count: 1
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_snapshot_integrity_anomalies
+    row_count: 403429
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_snapshot_regression_summary
+    row_count: 1
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_structured_output_gaps
+    row_count: 1
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_task_contract_gaps
+    row_count: 1071
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_tool_surface_overlap
+    row_count: 0
+    category: stale_or_empty
+    decision_impact: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    recommendation: deprecate_candidate
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_trace_replay_eval_gaps
+    row_count: 476
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_unknown_taxonomy_and_orphans
+    row_count: 6838
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
+    recommendation: keep_hide_inline
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_untrusted_text_to_action_risk
+    row_count: 0
+    category: stale_or_empty
+    decision_impact: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    recommendation: deprecate_candidate
+    replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
+      consistency rule.
+    why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
+  - mv_name: mv_write_sovereignty_paths
+    row_count: 1094
+    category: diagnostic_monitor
+    decision_impact: Useful context, but not enough by itself to fund work; raw count
+      alone is suppressed.
     recommendation: keep_hide_inline
     replacement_or_refinement: Tie to a gate, hotspot, action queue lane, or artifact
       consistency rule.
@@ -1535,52 +3239,143 @@ mv_usefulness_audit:
 defer_delete_deprecate:
   status: present
   rows:
-  - item: mv_empty_noise
+  - item: mv_actionable_surface_without_schema
+    item_type: mv
+    current_value: 814 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_agent_specialization_overlap
+    item_type: mv
+    current_value: 3085 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_agent_tool_ratio
+    item_type: mv
+    current_value: 15 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_authority_boundary_breaches
+    item_type: mv
+    current_value: 7 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_capability_and_egress_gaps
     item_type: mv
     current_value: 0 rows; stale_or_empty
     recommendation: deprecate
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
       or planned slice.
-  - item: mv_guardian_inventory
+  - item: mv_critical_path_segments
     item_type: mv
-    current_value: 1 rows; audit_driver
+    current_value: 192 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
       or planned slice.
-  - item: mv_p0_ratchet_inventory
+  - item: mv_cross_cutting_witness_tiers
     item_type: mv
-    current_value: 2 rows; ratchet_driver
+    current_value: 56 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
       or planned slice.
-  - item: action_queue
-    item_type: artifact
-    current_value: unused or missing
-    recommendation: hide_inline
-    rationale: Available only as diagnostic/evidence context or missing from this
-      run.
-    revisit_condition: Use when it changes next action, audit, consistency, or test
-      placement.
-  - item: review_template
-    item_type: artifact
-    current_value: unused or missing
-    recommendation: hide_inline
-    rationale: Available only as diagnostic/evidence context or missing from this
-      run.
-    revisit_condition: Use when it changes next action, audit, consistency, or test
-      placement.
-  - item: burndown_table
-    item_type: artifact
-    current_value: unused or missing
-    recommendation: hide_inline
-    rationale: Available only as diagnostic/evidence context or missing from this
-      run.
-    revisit_condition: Use when it changes next action, audit, consistency, or test
-      placement.
+  - item: mv_dependency_cone_risk
+    item_type: mv
+    current_value: 11996 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_determinism_provenance_drift
+    item_type: mv
+    current_value: 6838 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_digest_reconciliation
+    item_type: mv
+    current_value: 6 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_exemptions_near_critical_paths
+    item_type: mv
+    current_value: 3467 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_gateway_bypass_paths
+    item_type: mv
+    current_value: 0 rows; stale_or_empty
+    recommendation: deprecate
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_graph_chokepoint_bridges
+    item_type: mv
+    current_value: 2091 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_graph_critical_path_blast_radius
+    item_type: mv
+    current_value: 128 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_graph_scc_clusters
+    item_type: mv
+    current_value: 0 rows; stale_or_empty
+    recommendation: deprecate
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
+  - item: mv_graph_vs_report_mismatches
+    item_type: mv
+    current_value: 2 rows; diagnostic_monitor
+    recommendation: keep_hide_inline
+    rationale: Raw MV count alone is not a funding signal.
+    revisit_condition: Promote only when tied to blocker, test gap, critical path,
+      or planned slice.
   - item: burndown_report
+    item_type: artifact
+    current_value: unused or missing
+    recommendation: hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+    revisit_condition: Use when it changes next action, audit, consistency, or test
+      placement.
+  - item: graphdb_projection
+    item_type: artifact
+    current_value: unused or missing
+    recommendation: hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+    revisit_condition: Use when it changes next action, audit, consistency, or test
+      placement.
+  - item: graphdb_metadata
+    item_type: artifact
+    current_value: unused or missing
+    recommendation: hide_inline
+    rationale: Available only as diagnostic/evidence context or missing from this
+      run.
+    revisit_condition: Use when it changes next action, audit, consistency, or test
+      placement.
+  - item: graphdb_index
     item_type: artifact
     current_value: unused or missing
     recommendation: hide_inline
@@ -1592,27 +3387,27 @@ audit_notes:
   status: present
   guardian_summary:
   - band: P0
-    gross: null
-    guardian: null
-    non_exempt: null
+    gross: 46
+    guardian: 41
+    non_exempt: 5
     executive_read: Guardian exception math is audit context; map to a failing gate
       before funding fixes.
   - band: P1
-    gross: null
-    guardian: null
-    non_exempt: null
+    gross: 1196
+    guardian: 1192
+    non_exempt: 4
     executive_read: Guardian exception math is audit context; map to a failing gate
       before funding fixes.
   - band: P2
-    gross: null
-    guardian: null
-    non_exempt: null
+    gross: 753
+    guardian: 732
+    non_exempt: 21
     executive_read: Guardian exception math is audit context; map to a failing gate
       before funding fixes.
   - band: P3
-    gross: null
-    guardian: null
-    non_exempt: null
+    gross: 20181
+    guardian: 92
+    non_exempt: 20089
     executive_read: Guardian exception math is audit context; map to a failing gate
       before funding fixes.
   severity_summary:
@@ -1631,55 +3426,346 @@ honest_bottom_line:
   bullets:
   - Structurally healthy areas are those with CLEAR gates and no promoted GraphDB/testing
     gaps; do not spend executive time there.
-  - 'Actually blocking now: 0 FIX gates; inspect regression delta before declaring
+  - 'Actually blocking now: 3 FIX gates; inspect regression delta before declaring
     a platform crisis.'
   - Managed debt remains in TRACK ratchets and open non-ratchet rows; schedule it
     after green unless it overlaps current work.
   - Runtime proof gaps are measurement gaps unless runtime artifacts show observed
     quality failure.
-  - Fund mapped tests for apps_sales/runtime/checkout.py
+  - Clear red gate G_REACH_l0_reachability
   - Do not chase raw MV counts, guardian gross counts, or diagnostic reports without
     a decision role.
 raw_inputs:
   artifacts:
-    gate_results: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\gate.json
-    action_queue: ''
-    review_template: ''
-    burndown_table: ''
-    burndown_report: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\adg_burndown_report.md
-    sqlite_snapshot: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\x.sqlite
-    generation_manifest: C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-1356\test_render_markdown_accepts_l0\artifacts\adg_generation_manifest_ts.json
+    gate_results: artifacts/adg/adg_gate_results_20260614_213159.json
+    action_queue: artifacts/adg/adg_action_queue_06142026_1721.json
+    review_template: artifacts/adg/adg_review_template_06142026_1721.json
+    burndown_table: artifacts/adg/adg_burndown_table.json
+    burndown_report: artifacts/adg/adg_burndown_report.md
+    sqlite_snapshot: artifacts/adg/adg_indexed_06142026_1721.sqlite
+    generation_manifest: artifacts/adg/adg_generation_manifest_06142026_1721.json
+    structural_outputs: artifacts/adg/adg_structural_outputs_06142026_1721.json
+    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_06142026_1721.json
+    graphdb_queries: artifacts/adg/adg_graphdb_queries_06142026_1721.json
+    runtime_spine: artifacts/adg/adg_runtime_spine_06142026_1721.json
+    graphdb_projection: artifacts/adg/adg_graphdb_projection_06142026_1721.json
+    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_06142026_1721.json
+    graphdb_index: artifacts/adg/adg_graphdb_index_06142026_1721.json
+    graph_watchlist: artifacts/adg/adg_graph_watchlist_06142026_1721.json
+    p0_wave_plan: artifacts/adg/adg_p0_remediation_wave_plan_06142026_1721.json
   loaded_status:
     missing:
-    - action_queue
-    - review_template
-    - burndown_table
-    - burndown_report
     - generation_manifest
+    - graph_watchlist
+    - p0_wave_plan
     stale: []
     degraded: []
     used:
     - gate_results
+    - action_queue
+    - review_template
+    - burndown_table
     - generation_manifest
+    - structural_outputs
+    - refactor_accelerator
+    - graphdb_queries
+    - runtime_spine
+    - graphdb_projection
+    - graphdb_metadata
+    - graphdb_index
+    - graph_watchlist
+    - p0_wave_plan
 evidence_trace:
   used_signals:
+  - signal_name: mv_debt_concentration_hotspots
+    signal_type: materialized_view
+    used_for: used_for_testing
+    decision_effect: Translates structural risk into concrete test-placement decisions.
+  - signal_name: mv_eval_coverage_by_path
+    signal_type: materialized_view
+    used_for: used_for_testing
+    decision_effect: Translates structural risk into concrete test-placement decisions.
+  - signal_name: mv_exit_disposition_coverage
+    signal_type: materialized_view
+    used_for: used_for_testing
+    decision_effect: Translates structural risk into concrete test-placement decisions.
+  - signal_name: mv_graph_reverse_dependency_hotspots
+    signal_type: materialized_view
+    used_for: used_for_testing
+    decision_effect: Translates structural risk into concrete test-placement decisions.
+  - signal_name: mv_hotspot_centrality
+    signal_type: materialized_view
+    used_for: used_for_testing
+    decision_effect: Translates structural risk into concrete test-placement decisions.
   - signal_name: mv_hotspot_coverage_risk
+    signal_type: materialized_view
+    used_for: used_now
+    decision_effect: Linked to a current FIX/action signal, so it changes immediate
+      work order.
+  - signal_name: mv_l2_phase_coverage
     signal_type: materialized_view
     used_for: used_for_testing
     decision_effect: Translates structural risk into concrete test-placement decisions.
   suppressed_signals:
-  - signal_name: mv_empty_noise
+  - signal_name: mv_actionable_surface_without_schema
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_agent_specialization_overlap
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_agent_tool_ratio
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_authority_boundary_breaches
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_capability_and_egress_gaps
     signal_type: materialized_view
     suppression_reason: Empty or stale-looking signal; keep out of inline output until
       it proves decision value.
     revisit_condition: Deprecate/delete candidate if still empty next runs.
-  - signal_name: mv_guardian_inventory
+  - signal_name: mv_critical_path_segments
     signal_type: materialized_view
-    suppression_reason: Audit math unless mapped to a current failing gate.
-    revisit_condition: Audit; do not treat as blocker by itself.
-  - signal_name: mv_p0_ratchet_inventory
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_cross_cutting_witness_tiers
     signal_type: materialized_view
-    suppression_reason: Useful after CI is green to lower accepted ratchet debt.
-    revisit_condition: Schedule after-green burn-down.
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_dependency_cone_risk
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_determinism_provenance_drift
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_digest_reconciliation
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_exemptions_near_critical_paths
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_gateway_bypass_paths
+    signal_type: materialized_view
+    suppression_reason: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    revisit_condition: Deprecate/delete candidate if still empty next runs.
+  - signal_name: mv_graph_chokepoint_bridges
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_graph_critical_path_blast_radius
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_graph_scc_clusters
+    signal_type: materialized_view
+    suppression_reason: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    revisit_condition: Deprecate/delete candidate if still empty next runs.
+  - signal_name: mv_graph_vs_report_mismatches
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_handoff_witness_tiers
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_heal_retry_exit_gaps
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_high_fan_in_out_with_defects
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_hitl_reclearance_gaps
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_live_future_mutation_conflicts
+    signal_type: materialized_view
+    suppression_reason: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    revisit_condition: Deprecate/delete candidate if still empty next runs.
+  - signal_name: mv_local_heal_first_breaches
+    signal_type: materialized_view
+    suppression_reason: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    revisit_condition: Deprecate/delete candidate if still empty next runs.
+  - signal_name: mv_manager_sprawl
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_modified_area_regressions
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_new_cross_layer_dependencies
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_new_provider_surfaces
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_new_write_bypass_paths
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_newly_introduced_critical_paths
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_observability_interference_breaches
+    signal_type: materialized_view
+    suppression_reason: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    revisit_condition: Deprecate/delete candidate if still empty next runs.
+  - signal_name: mv_path_criticality_rollup
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_prompt_assembly_wiring_gaps
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_provider_surface_sprawl
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_repeated_p3_near_critical_paths
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_replay_surface_gaps
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_runtime_spine_gaps
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_snapshot_baseline
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_snapshot_integrity_anomalies
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_snapshot_regression_summary
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_structured_output_gaps
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_task_contract_gaps
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_tool_surface_overlap
+    signal_type: materialized_view
+    suppression_reason: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    revisit_condition: Deprecate/delete candidate if still empty next runs.
+  - signal_name: mv_trace_replay_eval_gaps
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_unknown_taxonomy_and_orphans
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: mv_untrusted_text_to_action_risk
+    signal_type: materialized_view
+    suppression_reason: Empty or stale-looking signal; keep out of inline output until
+      it proves decision value.
+    revisit_condition: Deprecate/delete candidate if still empty next runs.
+  - signal_name: mv_write_sovereignty_paths
+    signal_type: materialized_view
+    suppression_reason: Useful context, but not enough by itself to fund work; raw
+      count alone is suppressed.
+    revisit_condition: Monitor and hide inline.
+  - signal_name: structural_outputs
+    signal_type: structural_report
+    suppression_reason: P7 artifact contributes structural context; promoted only
+      when tied to blockers, tests, or action queue.
+    revisit_condition: Use as tie-breaker for blast radius and critical path planning.
+  - signal_name: refactor_accelerator
+    signal_type: structural_report
+    suppression_reason: P7 artifact contributes structural context; promoted only
+      when tied to blockers, tests, or action queue.
+    revisit_condition: Use as tie-breaker for blast radius and critical path planning.
+  - signal_name: graphdb_queries
+    signal_type: graphdb_report
+    suppression_reason: P7 artifact contributes structural context; promoted only
+      when tied to blockers, tests, or action queue.
+    revisit_condition: Use as tie-breaker for blast radius and critical path planning.
+  - signal_name: runtime_spine
+    signal_type: structural_report
+    suppression_reason: P7 artifact contributes structural context; promoted only
+      when tied to blockers, tests, or action queue.
+    revisit_condition: Use as tie-breaker for blast radius and critical path planning.
+  - signal_name: graphdb_projection
+    signal_type: graphdb_report
+    suppression_reason: P7 artifact contributes structural context; promoted only
+      when tied to blockers, tests, or action queue.
+    revisit_condition: Use as tie-breaker for blast radius and critical path planning.
+  - signal_name: graphdb_metadata
+    signal_type: graphdb_report
+    suppression_reason: P7 artifact contributes structural context; promoted only
+      when tied to blockers, tests, or action queue.
+    revisit_condition: Use as tie-breaker for blast radius and critical path planning.
+  - signal_name: graphdb_index
+    signal_type: graphdb_report
+    suppression_reason: P7 artifact contributes structural context; promoted only
+      when tied to blockers, tests, or action queue.
+    revisit_condition: Use as tie-breaker for blast radius and critical path planning.
   missing_signals: []
   stale_signals: []

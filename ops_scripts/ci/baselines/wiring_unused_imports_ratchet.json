@@ -1,11 +1,11 @@
 {
   "gate_id": "S4_unused_imports_ratchet",
-  "count": 10938,
+  "count": 10897,
   "seeded_at": "2026-06-13T14:17:35.330717+00:00",
-  "snapshot": "adg_indexed_06132026_1009.sqlite",
+  "snapshot": "adg_indexed_06142026_1721.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-06-13T20:55:01.802885+00:00",
-  "last_run_snapshot": "adg_indexed_06132026_1643.sqlite",
+  "last_run_at": "2026-06-14T21:31:31.738635+00:00",
+  "last_run_snapshot": "adg_indexed_06142026_1721.sqlite",
   "loosen_history": [
     {
       "at": "2026-06-13T19:57:35+00:00",
@@ -17,5 +17,14 @@
       "reason": "reporting review template JSON/YAML wiring and tests; accept current generated artifact floor while preserving future ratchet checks"
     }
   ],
-  "loosened_at": "2026-06-13T19:57:35+00:00"
+  "loosened_at": "2026-06-13T19:57:35+00:00",
+  "tightened_at": "2026-06-14T21:31:31.737635+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-06-14T21:31:31.737635+00:00",
+      "snapshot": "adg_indexed_06142026_1721.sqlite",
+      "from": 10938,
+      "to": 10897
+    }
+  ]
 }
