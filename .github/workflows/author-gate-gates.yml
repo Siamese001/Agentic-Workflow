@@ -29,9 +29,6 @@ on:
       - 'ops_scripts/ci/decision_ledger/**'
       - '.claude/state/refactor_decisions/**'
   workflow_dispatch: {}
-  schedule:
-    # Daily at 06:00 UTC — catches stale unbound decisions even without code changes
-    - cron: '0 6 * * *'
 
 concurrency:
   group: author-gate-${{ github.ref }}

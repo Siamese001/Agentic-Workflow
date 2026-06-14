@@ -40,9 +40,6 @@ on:
       - "tests/unit/apps_e2e/**"
       - ".claude/schemas/apps_e2e_*.schema.json"
       - ".windsurf/schemas/apps_e2e_*.schema.json"
-  schedule:
-    # 03:42 UTC nightly — offset from fortknox-nightly (02:17) to spread runner load.
-    - cron: "42 3 * * *"
   workflow_dispatch:
     inputs:
       skip_apps:
