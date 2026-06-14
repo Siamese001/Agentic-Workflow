@@ -10,22 +10,6 @@
 name: Graph Skills Authority Ratchet
 
 on:
-  pull_request:
-    paths:
-      - "apps_rg/**"
-      - "tests/**/test_graph_skills*.py"
-      - "tests/unit/apps_rg/fact_inventory/test_graph_skills*.py"
-      - "ops_scripts/apps_rg/emit_graph_skills_quality_w*.py"
-      - "ops_scripts/apps_rg/graph_skills*.py"
-      - "ops_scripts/ci/check_graph_skills_agentic_core_boundary.py"
-      - ".github/workflows/graph-skills-authority-ratchet.yml"
-  push:
-    branches: [main, master]
-    paths:
-      - "apps_rg/**"
-      - "tests/**/test_graph_skills*.py"
-      - "ops_scripts/ci/check_graph_skills_agentic_core_boundary.py"
-      - ".github/workflows/graph-skills-authority-ratchet.yml"
   workflow_dispatch: {}
 
 concurrency:

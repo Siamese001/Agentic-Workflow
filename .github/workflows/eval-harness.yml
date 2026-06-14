@@ -1,16 +1,6 @@
 name: Eval Harness (capability + regression)
 
 on:
-  pull_request:
-    paths:
-      - 'config/judges/**'
-      - 'data/eval/golden/**'
-      - 'agentic_core/evaluation/**'
-      - 'system_learning/**'
-      - 'tools/eval/**'
-      - '.github/workflows/eval-harness.yml'
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
