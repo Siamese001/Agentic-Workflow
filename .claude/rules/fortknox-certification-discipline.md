@@ -1,43 +1,36 @@
 
 <!-- Converted from `.claude/rules/fortknox-certification-discipline.md`. Original Cursor trigger: `model_decision`. -->
 
-# Fort Knox Certification — Invariant-Only Stub
+# DEPRECATED — Fort Knox certification arm decommissioned (2026-06-14)
 
-> ⛔ Runtime certification claims are admissible ONLY when produced by the canonical compiler from atomic, schema-validated, artifact-bound assertions. Hand-edited reports, XLSX-driven status, `all_pass` rollups, parent-walk req_id inference are FORBIDDEN.
+> ⛔ Retired with constitutional **§32**. The bottom-up requirements-certification methodology
+> (`RTC-REQ-*` evidence assertions → `compile_requirement_signoff.py` → Merkle/signature signoff,
+> hostile verifier, mutation-rejection, positive-control canary) was abandoned: the
+> `certification/evidence_assertions.jsonl` input no longer exists, the canonical contract-gate
+> runner never invoked it, and nothing has been produced since early May 2026.
 
-## The five hard invariants
+## What to do instead
 
-1. **Compiler is the only status authority.** `computed_status` for any RTC-REQ-* row is set exclusively by `scripts/compile_requirement_signoff.py` consuming `certification/evidence_assertions.jsonl`.
-2. **Atomic assertions only.** One row = one `req_id` + one `control` + one artifact-backed fact. Schema: `certification/schemas/evidence_assertion.schema.json`.
-3. **Hostile verifier invariant.** Compiler MUST NOT import XLSX, trust prior report state, walk pointer parents, or default-allow an artifact class. Each check re-derives from disk bytes.
-4. **Approved producer paths only.** Assertions MAY emerge ONLY from `tools/cert/*.py`, `scripts/verify_*_gate.py`, `scripts/verify_rtc_*.py`. Runtime code (`agentic_core/`, `apps_*/`, `system_learning/`) MUST NOT emit assertions.
-5. **Positive control canary.** `RTC-REQ-001` MUST remain `SIGNED_OFF` — regression blocks commit.
+The one durable principle — **certification/completion claims emerge only from a compiler or command,
+never from hand-edited prose; no green theater** — is enforced by constitutional **§37**
+(RCA-on-runtime-failure; no PASS over a failing body) and **`002-pass-blocked-proof-contract`**
+(PASS is expensive; a marker is not proof). Apply those.
 
-## Forbidden direct writes (pre_write_fortknox_guard blocks at exit 2)
+## Decommissioned with this rule (governance + enforcement arm)
 
-- `artifacts/certification/final_requirement_signoff_report.{json,sha256,merkle.json,signature.json}`
-- Any `certification/*.xlsx`
+- Constitutional §32 → RETIRED stub.
+- Pre-commit gates T7s.1–.4 (`check_fortknox_*`, `check_apps_fortknox_signed_proof`) — removed.
+- Hooks `pre_write_fortknox_guard.py` + `post_agent_fortknox_integrity_audit.py` — removed
+  (the latter unwired from `post_agent_dispatch.py`).
+- GitHub workflow `fortknox-nightly.yml` — already retired upstream (solo-workflow CI trim, 2026-06-14).
+- Skill `fortknox-evidence` — flagged RETIRED (kept for historical reference).
 
-## Forbidden prose claims (post_agent audit logs to violations file)
+## Deferred (separate teardown — NOT done here)
 
-Without a matching `compile_requirement_signoff.py` invocation in the same response: "rows are signed off", "trust level upgraded to X", "acceptance complete", "all requirements pass", "all_pass" or "linked_req_ids" outside a forbidden-pattern quote.
+The runtime *machinery* is left in place; removing `agentic_core/` runtime needs its own boundary
+audit and the apps_e2e tests are constitutionally protected:
 
-## Where the procedural detail lives
-
-| Concern | Location |
-|---|---|
-| Full assertion contract + forbidden-pattern table + producer allowlist | `.claude/skills/fortknox-evidence/SKILL.md` (canonical procedural SSOT) |
-| Schema | `certification/schemas/evidence_assertion.schema.json` |
-| Compiler | `scripts/compile_requirement_signoff.py` |
-| Bundle verifier | `scripts/verify_final_requirement_signoff_bundle.py` |
-| Mutation runner | `scripts/generate_mutation_rejection_report.py` |
-| Pre-write hook (exit 2) | `.claude/governance/scripts/pre_write_fortknox_guard.py` |
-| Post-response audit | `.claude/governance/scripts/post_agent_fortknox_integrity_audit.py` → `artifacts/governance/fortknox_integrity_violations.jsonl` |
-| CI gates | `ops_scripts/ci/check_fortknox_clean_bundle.py`, `check_fortknox_mutation_rejection.py`, `check_fortknox_positive_control.py` |
-| Nightly | _Retired 2026-06-14 (solo-workflow CI trim); run the CI gates on demand via `workflow_dispatch` / local `ops_scripts/ci/run_contract_gates.py`._ |
-| Author-Gate trigger | native `AskUserQuestion` (`certification_claim`; CLAUDE.md §Author-Gate) |
-| Bypass | `FORTKNOX_DISCIPLINE_BYPASS=1` |
-
-## Constitutional cross-reference
-
-§32 (Fort Knox certification integrity). Auto-retires when L3 in-toto attestation replaces the bespoke compiler — see ADR-091.
+- `agentic_core/L7_auditability/**`, `tools/cert/**`, `tools/certification/**`
+- `tests/unit/apps_e2e/**`, `ops_scripts/ci/check_fortknox_*.py`, `verify_final_requirement_signoff_bundle.py`
+- `.github/workflows/apps-fortknox-keyless-sign.yml` (W9 keyless signer — coupled to `test_w9_keyless_signature.py`)
+- `config/certification/schemas/**`, and the frozen `artifacts/certification/**` historical bundle.

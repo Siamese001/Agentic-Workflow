@@ -8,6 +8,11 @@ metadata:
 ---
 # Fort Knox Evidence Skill
 
+> ⛔ **RETIRED (2026-06-14).** The Fort Knox certification arm was decommissioned with constitutional
+> §32 — see [`.claude/rules/fortknox-certification-discipline.md`](../../rules/fortknox-certification-discipline.md).
+> This skill is dormant, kept for historical reference only. The integrity principle lives in
+> constitutional §37 + `002-pass-blocked-proof-contract`.
+
 In-house certification-evidence discipline. No upstream MCP surface — the integrity comes from deterministic scripts, schemas, and hashes.
 
 **Parent rule:** `.claude/rules/fortknox-certification-discipline.md`
