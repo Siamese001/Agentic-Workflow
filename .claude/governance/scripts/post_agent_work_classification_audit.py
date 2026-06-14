@@ -1,12 +1,16 @@
 """Post-agent work-classification audit (Stop chain, Operating Model 2026-06-10).
 
-Scans the agent response for plan-creation reflexes on sub-threshold work and
-logs violations to artifacts/governance/work_classification_violations.jsonl.
+Scans the agent response and logs violations to
+artifacts/governance/work_classification_violations.jsonl. Two complementary checks:
 
-A "reflex" is when the agent proposes or creates a plan artifact for work that
-should have been classified as BUG_IMMEDIATE, BUG_DEFERRED, FINDING_APPS_RG,
-PLAN_MICRO, or ENHANCEMENT_BACKLOG — all of which should never produce a new
-plans/*.md file or a Notion Plans DB row.
+  1. OVER-planning (``plan_creation_reflex``) — proposing/creating a plan artifact for
+     sub-threshold work (BUG_IMMEDIATE / BUG_DEFERRED / FINDING_APPS_RG / PLAN_MICRO /
+     ENHANCEMENT_BACKLOG), which should never produce a new plans/*.md file.
+
+  2. UNDER-persisting (``missing_plan_persistence``, plan-persistence-discipline 2026-06-14) —
+     genuinely multi-wave EXECUTION that left no minted plans/<slug>-<6hex>.md SSOT plan.
+     Per work-item-classification, ≥2 waves (or a large/cross-layer change) must mint a disk
+     plan at the start; native plan mode persists nothing durable (RCA: ADR-104).
 
 Fail-open: exit 0 always. Never blocks the response.
 
@@ -66,6 +70,35 @@ _SUPPRESSION_PATTERNS: list[re.Pattern] = [
 ]
 
 
+# ─── Unpersisted multi-wave detection (RCA fix #3, plan-persistence-discipline) ──
+# The INVERSE of the reflex check: flag genuinely multi-wave EXECUTION that left no
+# minted plans/<slug>-<6hex>.md SSOT record — the gap from ADR-104 (a 7-wave T3 change
+# ran entirely in native plan mode and persisted nothing to the repo SSOT). Advisory.
+_WAVE_MARKER_RE = re.compile(r"(?:\bW|\bWave\s+)([1-9][0-9]?)\b", re.IGNORECASE)
+_EXECUTION_EVIDENCE_RE = re.compile(
+    r"(?i)FILES_CHANGED|STATUS:\s*(?:PASS|PARTIAL|FAIL)|\bcommitt?ed\b|\bpushed\b|✅"
+)
+_MINTED_PLAN_RE = re.compile(r"plans/[a-z0-9][a-z0-9_-]*-[0-9a-f]{6}\.md", re.IGNORECASE)
+
+
+def _detect_unpersisted_multiwave(text: str) -> int | None:
+    """Count distinct waves when the response shows multi-wave EXECUTION but
+    references no minted SSOT plan; else None (no gap).
+
+    Suppressed when: a `plans/<slug>-<6hex>.md` is referenced (plan was persisted),
+    `PLAN_MINT_OK` appears (user authorized / minting in progress), or there is no
+    execution evidence (pure planning/discussion, not a completed multi-wave run).
+    """
+    if _MINTED_PLAN_RE.search(text):
+        return None
+    if "PLAN_MINT_OK" in text:
+        return None
+    if not _EXECUTION_EVIDENCE_RE.search(text):
+        return None
+    distinct = {int(m.group(1)) for m in _WAVE_MARKER_RE.finditer(text)}
+    return len(distinct) if len(distinct) >= 2 else None
+
+
 def _extract_response(data: dict) -> str:
     """Pull response text from various Stop-hook payload shapes."""
     text = (
@@ -102,7 +135,31 @@ def main() -> int:
         if not response_text.strip():
             return 0
 
-        # Check suppression first — any approved pattern ends the check.
+        # Check 1 (UNDER-persisting): genuinely multi-wave execution with no minted
+        # SSOT plan. Independent of the reflex suppression below — native plan mode is
+        # NOT a valid suppression here (it IS the gap). Advisory; never returns early.
+        wave_count = _detect_unpersisted_multiwave(response_text)
+        if wave_count is not None:
+            _append_violation({
+                "ts_utc": datetime.now(timezone.utc).isoformat(),
+                "kind": "missing_plan_persistence",
+                "distinct_waves": wave_count,
+                "remedy": (
+                    f"Response shows ~{wave_count}-wave execution but references no minted "
+                    "plans/<slug>-<6hex>.md SSOT plan. Per work-item-classification, ≥2 waves "
+                    "(or a large/cross-layer change) must mint a disk plan at the start — native "
+                    "plan mode persists nothing durable. Rule: .claude/rules/work-item-classification.md"
+                ),
+            })
+            print(
+                f"[work-classification] missing_plan_persistence: ~{wave_count}-wave execution "
+                "with no minted plans/<slug>-<6hex>.md — mint a disk SSOT plan for complex work. "
+                "See .claude/rules/work-item-classification.md",
+                file=sys.stderr,
+            )
+
+        # Check 2 (OVER-planning): plan-creation reflex on sub-threshold work.
+        # Suppression first — any approved pattern ends THIS check.
         if any(p.search(response_text) for p in _SUPPRESSION_PATTERNS):
             return 0
 
