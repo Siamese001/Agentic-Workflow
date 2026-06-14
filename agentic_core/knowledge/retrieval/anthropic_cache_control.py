@@ -45,7 +45,8 @@ on already-rendered strings so it composes with any prompt-assembly path
 from __future__ import annotations
 
 import logging
-from typing import Any, Literal
+from enum import Enum
+from typing import Any, Literal, Sequence
 
 Logger = logging.getLogger(__name__)
 
@@ -120,6 +121,34 @@ def min_cacheable_chars(model: str | None = None) -> int:
     return floor_tokens * _CHARS_PER_TOKEN
 
 
+# Anthropic allows at most 4 cache_control breakpoints per request.
+_MAX_CACHE_MARKERS = 4
+
+
+class CacheStrategy(str, Enum):
+    """Workload class gating whether the volatile per-query/documents tier is
+    worth a cache marker (P2 — workload-aware caching).
+
+    Stable tiers (system, pinned corpus) are always cached when above the model
+    floor; only the most volatile cacheable tier is gated:
+
+      - ``ONE_SHOT``   distinct one-shot RAG — do NOT mark the documents tier
+                       (every request differs, so a marker only pays the write
+                       surcharge for zero reads). Default — conservative.
+      - ``MULTI_TURN`` same documents reused across turns — mark the docs tier.
+      - ``HOT``        repeated/hot identical query — mark everything cacheable.
+    """
+
+    ONE_SHOT = "one_shot"
+    MULTI_TURN = "multi_turn"
+    HOT = "hot"
+
+
+def caches_query_tier(strategy: "CacheStrategy | str") -> bool:
+    """Whether ``strategy`` caches the volatile per-query/documents tier."""
+    return strategy in (CacheStrategy.MULTI_TURN, CacheStrategy.HOT, "multi_turn", "hot")
+
+
 def _cache_control(ttl: str) -> dict[str, str]:
     """Build a cache_control marker dict.
 
@@ -187,46 +216,121 @@ def build_system_blocks(
     return [block]
 
 
+def _valid_hints(hints: "Sequence[int] | None", prompt_len: int) -> list[int]:
+    """Sorted, de-duplicated boundary offsets strictly inside ``(0, prompt_len)``."""
+    if not hints:
+        return []
+    return sorted({h for h in hints if 0 < h < prompt_len})
+
+
+def _build_tier_blocks(
+    prompt: str,
+    hints: list[int],
+    *,
+    cache_prefix: bool,
+    cache_query_tier: bool,
+    ttl: str,
+    model: str | None,
+) -> list[dict[str, Any]]:
+    """Split ``prompt`` into one block per stability tier + a volatile tail.
+
+    ``hints`` are sorted, distinct, strictly-interior offsets. Produces up to
+    ``len(hints) + 1`` segments: the first ``len(hints)`` are cacheable tiers,
+    the last is the never-marked volatile tail. The LAST cacheable tier is the
+    per-query/documents tier — its marker is suppressed when
+    ``cache_query_tier`` is False (the workload-aware gate, P2). A tier below
+    its model floor is left unmarked.
+    """
+    boundaries = [0, *hints, len(prompt)]
+    n_tiers = len(hints)
+    blocks: list[dict[str, Any]] = []
+    for i in range(len(boundaries) - 1):
+        seg = prompt[boundaries[i] : boundaries[i + 1]]
+        if not seg:
+            continue
+        block: dict[str, Any] = {"type": "text", "text": seg}
+        is_tier = i < n_tiers
+        if cache_prefix and is_tier and seg.strip():
+            should_mark = _is_cacheable(seg, model)
+            if i == n_tiers - 1 and not cache_query_tier:
+                should_mark = False  # workload-aware: leave the volatile tier unmarked
+            if should_mark:
+                block["cache_control"] = _cache_control(ttl)
+        blocks.append(block)
+    return blocks
+
+
 def build_user_content(
     prompt: str,
     *,
     cache_boundary_hint: int = -1,
+    cache_boundary_hints: "Sequence[int] | None" = None,
     cache_prefix: bool = True,
+    cache_query_tier: bool = True,
     ttl: str = CACHE_TTL_5M,
     model: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Split a user-turn prompt at `cache_boundary_hint` with cache_control.
+    """Split a user-turn prompt into cache-aware content blocks.
+
+    Two modes:
+      - **Single boundary** (default / back-compat): split once at
+        ``cache_boundary_hint`` into prefix (cached when above the model floor)
+        + suffix (uncached).
+      - **Multi-breakpoint** (P1): when ``cache_boundary_hints`` carries >=2
+        valid offsets, split into one block per STABILITY TIER plus a volatile
+        tail. Each tier block gets its own ``cache_control`` marker (subject to
+        the model floor); the tail (``prompt[hints[-1]:]``) is never marked.
+        ``cache_query_tier=False`` additionally suppresses the marker on the
+        LAST (most volatile) cacheable tier — the workload-aware gate (P2).
 
     Parameters
     ----------
     prompt:
-        The full user-turn text. Typically the output of
-        `render_anthropic_prompt(...)`.
+        The full user-turn text. Typically ``render_anthropic_prompt(...).text``.
     cache_boundary_hint:
-        Byte offset at which to split. `-1` disables splitting (whole prompt
-        uncached). `0` or `>= len(prompt)` also disable splitting.
+        Single split offset. `-1` / `0` / `>= len(prompt)` disable splitting.
+    cache_boundary_hints:
+        Ordered cumulative tier offsets (e.g. ``RenderedPrompt.cache_boundary_hints``).
+        Activates multi-breakpoint mode when >=2 are valid; a lone valid hint
+        falls back to the single-boundary path.
     cache_prefix:
-        When True (default) and boundary is valid, applies cache_control to
-        the prefix block. When False, splits at the boundary but without any
-        cache markers (useful for measuring latency without cache).
+        When False, split but emit no markers.
+    cache_query_tier:
+        Multi-breakpoint only — when False, the last cacheable tier is left
+        unmarked (one-shot RAG).
     ttl:
         Either CACHE_TTL_5M or CACHE_TTL_1H.
+    model:
+        Target model id for per-model floor resolution (see ``MODEL_CACHE_FLOOR_TOKENS``).
 
     Returns
     -------
-    List of 1 or 2 content blocks:
-      - 1 block when boundary is invalid/absent (whole prompt, no cache).
-      - 2 blocks when boundary is valid (prefix + suffix).
+    List of content blocks. Single-boundary mode returns 1 or 2 blocks;
+    multi-breakpoint mode returns up to ``len(valid_hints) + 1`` blocks.
     """
     if not prompt:
         return []
 
+    valid = _valid_hints(cache_boundary_hints, len(prompt))
+    if len(valid) >= 2:
+        return _build_tier_blocks(
+            prompt,
+            valid,
+            cache_prefix=cache_prefix,
+            cache_query_tier=cache_query_tier,
+            ttl=ttl,
+            model=model,
+        )
+
+    # Single-boundary fallback (back-compat): prefer a lone valid hint, else the scalar.
+    boundary = valid[0] if valid else cache_boundary_hint
+
     # Invalid or no-op boundary: single uncached block
-    if cache_boundary_hint <= 0 or cache_boundary_hint >= len(prompt):
+    if boundary <= 0 or boundary >= len(prompt):
         return [{"type": "text", "text": prompt}]
 
-    prefix = prompt[:cache_boundary_hint]
-    suffix = prompt[cache_boundary_hint:]
+    prefix = prompt[:boundary]
+    suffix = prompt[boundary:]
 
     # Never produce empty suffix blocks (Anthropic rejects them)
     if not suffix.strip():
@@ -246,14 +350,37 @@ def build_user_content(
     return [prefix_block, {"type": "text", "text": suffix}]
 
 
+def _enforce_marker_cap(payload: dict[str, Any], *, max_markers: int = _MAX_CACHE_MARKERS) -> None:
+    """Keep at most ``max_markers`` ``cache_control`` markers in the request.
+
+    Anthropic allows 4 breakpoints/request. When more are present, drop the
+    lowest-value (smallest by char count) markers first — they save the least.
+    Mutates ``payload`` in place.
+    """
+    marked: list[dict[str, Any]] = []
+    for block in payload.get("system", []) or []:
+        if isinstance(block, dict) and "cache_control" in block:
+            marked.append(block)
+    for msg in payload.get("messages", []) or []:
+        for block in msg.get("content", []) or []:
+            if isinstance(block, dict) and "cache_control" in block:
+                marked.append(block)
+    while len(marked) > max_markers:
+        victim = min(marked, key=lambda b: len(b.get("text", "")))
+        del victim["cache_control"]
+        marked.remove(victim)
+
+
 def build_messages_payload(
     user_prompt: str,
     *,
     system_prompt: str = "",
     cache_boundary_hint: int = -1,
+    cache_boundary_hints: "Sequence[int] | None" = None,
     ttl: str = CACHE_TTL_5M,
     cache_system: bool = True,
     cache_prefix: bool = True,
+    cache_strategy: "CacheStrategy | str" = CacheStrategy.ONE_SHOT,
     model: str | None = None,
 ) -> dict[str, Any]:
     """Convenience composer: build the `system` + `messages` fields.
@@ -267,12 +394,21 @@ def build_messages_payload(
     caller owns those; this helper only handles cache-aware content shaping.
     The ``model`` arg is used ONLY to resolve the per-model cache floor (so
     below-floor blocks are not marked); it is NOT written into the payload.
+
+    Multi-breakpoint (P1): pass ``cache_boundary_hints`` (from
+    ``RenderedPrompt.cache_boundary_hints``) to mark each stability tier as its
+    own cached block. ``cache_strategy`` (P2) gates the volatile per-query tier
+    — default ``ONE_SHOT`` leaves it unmarked to avoid write-waste. At most 4
+    ``cache_control`` markers are emitted (Anthropic's cap); the lowest-value
+    (smallest) marked block is dropped if exceeded.
     """
     system_blocks = build_system_blocks(system_prompt, cache=cache_system, ttl=ttl, model=model)
     user_content = build_user_content(
         user_prompt,
         cache_boundary_hint=cache_boundary_hint,
+        cache_boundary_hints=cache_boundary_hints,
         cache_prefix=cache_prefix,
+        cache_query_tier=caches_query_tier(cache_strategy),
         ttl=ttl,
         model=model,
     )
@@ -282,6 +418,8 @@ def build_messages_payload(
     }
     if system_blocks:
         payload["system"] = system_blocks
+
+    _enforce_marker_cap(payload)
     return payload
 
 
@@ -301,10 +439,12 @@ def count_cache_markers(payload: dict[str, Any]) -> int:
 __all__ = [
     "CACHE_TTL_5M",
     "CACHE_TTL_1H",
+    "CacheStrategy",
     "MODEL_CACHE_FLOOR_TOKENS",
     "build_messages_payload",
     "build_system_blocks",
     "build_user_content",
+    "caches_query_tier",
     "count_cache_markers",
     "floor_tokens_for_model",
     "min_cacheable_chars",

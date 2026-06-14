@@ -51,6 +51,7 @@ from typing import Any, Callable, Protocol
 
 from agentic_core.knowledge.retrieval.anthropic_cache_control import (
     CACHE_TTL_5M,
+    CacheStrategy,
     build_messages_payload,
 )
 from agentic_core.knowledge.retrieval.anthropic_citation_adapter import (
@@ -223,6 +224,13 @@ class DualPassCitationOrchestrator:
         if json_schema is provided.
     cache_ttl:
         TTL for cache_control markers on the pass-1 prefix. Default 5m.
+    cache_strategy:
+        Workload class gating the volatile per-query/documents cache tier (P2).
+        Default ``ONE_SHOT`` — do not cache the docs tier (avoids write-waste on
+        distinct one-shot RAG). Use ``MULTI_TURN`` / ``HOT`` when docs recur.
+    model:
+        Target model id, used to resolve the per-model cache floor (W2) when
+        placing tier markers. ``None`` uses the conservative default floor.
     """
 
     def __init__(
@@ -231,10 +239,14 @@ class DualPassCitationOrchestrator:
         pass2_fn: _Pass2Fn | Callable[[str], str] | None = None,
         *,
         cache_ttl: str = CACHE_TTL_5M,
+        cache_strategy: CacheStrategy | str = CacheStrategy.ONE_SHOT,
+        model: str | None = None,
     ) -> None:
         self._pass1_fn = pass1_fn
         self._pass2_fn = pass2_fn
         self._cache_ttl = cache_ttl
+        self._cache_strategy = cache_strategy
+        self._model = model
 
     def execute(
         self,
@@ -285,7 +297,10 @@ class DualPassCitationOrchestrator:
             user_prompt=rendered.text,
             system_prompt=system_prompt,
             cache_boundary_hint=rendered.cache_boundary_hint,
+            cache_boundary_hints=rendered.cache_boundary_hints,
+            cache_strategy=self._cache_strategy,
             ttl=self._cache_ttl,
+            model=self._model,
         )
         # The caller's pass1_fn is responsible for flipping
         # citations.enabled=True on the actual API request.
