@@ -28,8 +28,9 @@ CURRENT_WAVE: W2 (W2.2 — 3 lanes left to the W2.3 11/11 exit gate = first fini
 LAST_COMPLETED_WAVE: W1 (+ W2.0/W2.1 + W2.2 competencies, all merged to main)
 LAST_UPDATED: 2026-06-13
 REBASELINE_2026_06_13: Full waterfall rebaselined against merged main (HEAD 1495ffb548) — see "## Rebaselined Waterfall — Current Main" (the status SSOT). Parallel executor merged (11.7 min/E2E, 1.96×); W1/W2.0/W2.1/W2.2-competencies + replay harness merged; lane board 7 ALLOW / 4 BLOCK (ibm_bullets, headline, exec_summary, +ibm_narrative cascade); P3/P7 DONE, P2 not-a-blocker, P4/P5 open; live-API floor ~4 E2Es (~50-70 min). Prior "~8 min / P3-pending / conditional-on-merge" framing was stale (relied on memory + session-PR-state, both wrong); corrected by reading code.
-E2E_GATE_POLICY: 1-resume successful E2E gates W1..W4 (single target); full 3-resume / 33-lane E2E required only at W5 sliding-scale
+E2E_GATE_POLICY: graph-% correctness proof rides the FREE selection diagnostic across 5 targets at stages A–D; LIVE E2E limited to 2 ship targets (Anthropic + Brown & Brown) — single-resume gates W1..W4 (default Anthropic), 2-resume live enforcement at W5. 2 of the 5 (Neo4j VP Product Management, Aveva Distinguished AI Tech Lead) are held-out, run cold on frozen config = generalization test. Supersedes the prior "3-resume / 33-lane at W5" model — see "### Graph-% + Waterfall Variance Evidence § Target roster".
 PLAN_AMENDMENTS_2026_06_13: (1) W2.1/W2.3 Execution Details scope corrected to single-resume; (2) W3/W4 cross-role smoke-run implementation locus named (`tools/apps_rg/selection_diagnostic.py`, built in W3.1); (3) W5.0 phase added — Truist + B&B threshold-table authoring before W5.1; (4) W2.1 output-hash made conditional on Deterministic/Replay Rule mode; (5) Stage A canonical artifact path = `artifacts/w1/`; (6) Stage A prior-stage variance carve-out; (7) W2.2 `candidate_fact_id` search removed (P0.1 owns it).
+PLAN_AMENDMENTS_2026_06_13B: TARGET-MODEL CHANGE (operator-approved). Graph-% correctness evidence widened 3→5 diagnostic targets (free, non-generation) for a stronger generalization proof; LIVE E2E narrowed 3→2 ship targets. Roster: tuned = Anthropic, Brown & Brown, Truist; **held-out** (frozen-config, run cold) = Neo4j VP Product Management (PM facet), Aveva Distinguished AI Tech Lead (distinguished-IC facet). 5-target diagnostic at stages A–D (target-agnostic mechanism stages); 2 live (Anthropic + Brown) end-to-end incl. W5 sliding-scale enforcement; Truist/Neo4j/Aveva are SELECTION-proven only (not generation-proven). **Wherever older text below says "3 targets / 3-resume / 33-lane", read per this model: 5 on the diagnostic, 2 live.** Defense + roster in "### Graph-% + Waterfall Variance Evidence".
 W1_RESET_NOTE: 2026-06-13 operator directive "assume nothing was done, start at beginning" — prior W1 blocking-baseline DONE markers retired; W1 re-passed under the amended current-substrate-passable bar with 6-lane W2 blocker ledger (see W1 Blocker Ledger below).
 W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (operator decision 2026-06-13). 5 lanes X3_ALLOW on existing graph substrate (unify_bullets, insurtech_bullets, ey_bullets, insurtech_narrative, ey_narrative). 6 lanes deferred to W2 — see W1 Blocker Ledger. Durable config landed: (a) `apps_rg/runtime/section_model_limits.py` `SECTION_MODEL_MAX_MODEL_LEN` default 24576 → 32768; (b) `apps_rg/runtime/sections/executive_summary_context_limits.py` `DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS` / `DEFAULT_REGEN_MAX_OUTPUT_TOKENS` 2048 → 4096, `HARD_CAP_SCRATCH_MAX_OUTPUT_TOKENS` 4096 → 8192, `_DEFAULT_CONTEXT_WINDOW` 24576 → 32768; (c) `resolve_provider_context_window` precedence flipped — app-local `APPS_RG_SECTION_MAX_MODEL_LEN` wins, legacy `VLLM_MAX_MODEL_LEN` kept as fallback only. Tests passing (13/13). MAX_PATH lesson: every W2–W5 run MUST use a short `--artifact-dir` (e.g. `artifacts/w2`, `artifacts/w3`).
 
@@ -67,58 +68,94 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 | Stage | Wave | Goal | Validation | Live E2E |
 |---|---|---|---|---|
 | **B** | W2.2 → **W2.3** | Fix the 4 blocked lanes → **11/11 X3_ALLOW → `final_resume.json` assembles → first finished Anthropic DOCX** | replay-offline per lane; 1 batched 11/11 confirm | **1 × ~12 min** |
-| **C** | W3 | Role-family / facet targeting over the now-passing pool | replay + 3-target diagnostic (non-gen, offline) | 1 × ~12 min |
-| **D** | W4 | Typed proof/traversal edges | replay + 3-target diagnostic (offline) | 1 × ~12 min |
-| **E0** | W5.0-W5.2 | Sliding-scale % **diagnostics** (Truist + B&B threshold tables; dry-run) | **replay of Stage D** (no-effect stage) | **0** |
-| **E1** | W5.3-W5.4 | Sliding-scale % **active enforcement** + full waterfall report | 33-lane (3 targets concurrent — needs the launcher, P4) | 1 × ~12-35 min |
+| **C** | W3 | Role-family / facet targeting over the now-passing pool | replay + **5-target** diagnostic (non-gen, offline; incl. 2 held-out run cold) | 1 × ~12 min |
+| **D** | W4 | Typed proof/traversal edges | replay + **5-target** diagnostic (offline) | 1 × ~12 min |
+| **E0** | W5.0-W5.2 | Sliding-scale % **diagnostics** (Anthropic + B&B threshold tables; dry-run) | **replay of Stage D** (no-effect stage) | **0** |
+| **E1** | W5.3-W5.4 | Sliding-scale % **active enforcement** + full waterfall report | **2 ship targets** (Anthropic + Brown) live under enforcement | 1 × ~12-24 min |
 
 **Live-API floor ≈ 4 sequential E2Es (~50-70 min total)** — measured, parallel; not the pre-parallel ~4 h. The first **finished Anthropic resume** lands at the END of Stage B (W2.3). C/D/E refine targeting + composition on an already-shipping pipeline.
 
 ### Graph-% + Waterfall Variance Evidence — REQUIRED (proves the graph is correct)
 
 > ⛔ **This is the original plan's whole reason for being and MUST NOT be dropped by the cost rebaseline.**
-> The proof that the graph is implemented correctly is the **graph-skill % breakout for all 3 targets
-> (Anthropic, Truist, Brown & Brown) × all 11 lanes**, plus the **stage-to-stage variance** showing each
-> waterfall step changed the selected-skill composition the way its one causal change predicts.
+> The proof that the graph is implemented correctly is the **graph-skill % breakout × all 11 lanes** for a
+> role-family-diverse target set, plus the **stage-to-stage variance** showing each waterfall step changed the
+> selected-skill composition the way its one causal change predicts. **Operator amendment 2026-06-13B:** the
+> correctness proof rides the FREE selection diagnostic across **5 targets** (stronger generalization), while
+> the expensive LIVE E2E is limited to **2 ship targets**. See § Target roster + § Cost allocation below.
+
+#### Target roster (5 diagnostic / 2 live) — all have a complete briefing + JD on disk (verified)
+
+| # | Target (role) | JD + briefing stem (`apps_rg/config/targeting/`) | Role-facet × domain corner | Tuned? | Role in test |
+|---|---|---|---|---|---|
+| 1 | **Anthropic** — Mgr Applied AI Architecture, Partnerships | `anthropic_manager_applied_ai_architecture_partnerships_*` | partnerships / GTM applied-AI × AI-native | tuned | **LIVE + ship** |
+| 2 | **Brown & Brown** — SVP IT Strategy & Innovation | `brown_brown_svp_it_strategy_innovation_*` | IT strategy / exec × insurance | tuned | **LIVE + ship** |
+| 3 | **Truist** — Head Agentic AI Engineering | `truist_head_agentic_ai_engineering_*` | agentic-eng leadership × banking | tuned | diagnostic-only |
+| 4 | **Neo4j** — VP Product Management, Agentic AI | `neo4j_vp_product_management_agentic_ai_*` | **product management** × AI-native | **HELD-OUT** | diagnostic-only (run cold) |
+| 5 | **Aveva** — Distinguished AI Tech Lead | `aveva_distinguished_ai_tech_lead_initiatives_*` | **distinguished IC / tech-lead** × industrial SW | **HELD-OUT** | diagnostic-only (run cold) |
+
+- **Why these 5:** they occupy five distinct (role-facet × domain) corners; #4 (PM) and #5 (distinguished-IC) hit role facets the W3 taxonomy was **not** tuned for. A graceful, role-appropriate result for them is a real **generalization** proof of the graph mechanisms *and* of W3 facet-taxonomy coverage; a generic fallback is a coverage gap to surface, not hide. (Runners-up with complete pairs — OpenAI Partner ADE, AIG VP Agentic AI, Citi Head of AI Strategy, Invesco Global Head Advanced Engineering — each overlap an existing corner; OpenAI is the best swap-in for a partnerships hold-out.)
+- **The 2 live (Anthropic + Brown & Brown)** are the widest role-family gap of the shippable set, so they double as the cross-family generation-safety extremes. **Swappable** by the operator (e.g. Brown↔Truist) via the runner's `--target-*` args — changing the 2-live choice changes which band tables W5.0 authors, not the proof structure.
+
+#### Hold-out discipline — what makes 5 worth more than 3 (mandatory for the generalization claim)
+
+> 5 targets is a *generalization* proof only if ≥2 were **not** used to tune the graph. So: **freeze** the
+> graph / facet / bundle config, then run #4 (Neo4j) + #5 (Aveva) **cold**. If their graph-% is role-appropriate
+> and the variance is explainable **without any tuning**, the "you just overfit to 3 hand-picked targets"
+> objection dies. If they need tuning to pass, **log it** — they become training points (not hold-outs) and the
+> generalization claim weakens until 2 fresh cold targets are found. This freeze-and-run-cold step is a hard
+> part of W3.1's spec (DoD-14).
+
+#### Cost allocation — why 5 diagnostic / 2 live (the defense)
+
+- The **selection diagnostic is ~free** (non-generation, seconds, zero LLM); a **live E2E is ~12 min + provider-rate-limited**. So the correctness proof rides the free surface at width 5; the expensive surface stays at width 2.
+- **Stages A–D test target-agnostic mechanisms** (baseline, materialization, SSOT, facet weighting, typed-edge eligibility) — same code, different inputs → **run all 5 on the diagnostic** here; this is where the 5-way proof lives. No per-target artifacts needed.
+- **Stages E0/E1 (sliding-scale) consume per-target hand-authored band tables + need generation** → only the **2 live** targets get band tables + live runs. The diagnostic carries band-table *selection correctness*; the live E2E proves *generation safety* — 2 (the extremes) cover it. (This **supersedes the earlier "3 live mandatory at sliding-scale"** — the free diagnostic now does the per-target band-correctness work for the targets that have tables.)
+- **Infra cost of 5-vs-3 = zero:** the W3.1 `selection_diagnostic.py` runner (built regardless) is parameterized by target list; `[3]→[5]` is a config line.
+- **Scoped claim (honest — do NOT overclaim the 3 diagnostic-only targets as "passing"):** *graph SELECTION correctness proven for 5 role families (2 held-out, run cold); 2 proven END-TO-END through generation + DOCX + sliding-scale enforcement.*
+- **Safety valve:** if any held-out (or Truist) shows a **material, target-specific** anomaly (|Δ|≥3pp on a cell the others don't exhibit), promote it to a live run at that stage rather than trusting the diagnostic.
 
 **Required at EVERY waterfall stage (A captured, B, C, D, E0, E1) — not deferred to W5:**
-1. **3 targets × 11 lanes × graph-skill %**, broken out by dimension: role family · role facet · pillar · source-fact-family · employer scope · metric type.
+1. **graph-skill % × 11 lanes**, broken out by dimension: role family · role facet · pillar · source-fact-family · employer scope · metric type — for **5 targets at A–D**, **2 live targets at E0/E1**.
 2. **Per-step variance**: each stage diffed against (a) the immediately-prior stage AND (b) immutable Stage A (`artifacts/w1/`), per target, per lane — top added / removed / promoted / demoted graph skills, each tagged expected/unexpected.
 
 **Two-tier production (code-grounded):**
-- **Authoritative (assembly-based):** `tools/apps_rg/graph_skill_utilization_report.py` — **requires `final_resume_assembly/final_resume.json` (verified: raises without it)**, so it yields a target's full graph-% only once that target reaches 11/11. Anthropic gets this at Stage B (W2.3); all 3 at Stage E1 (W5.4).
-- **Cheap every-stage (selection-based) — the lever that keeps this affordable for all 3 targets at every stage:** the **W3.1 `tools/apps_rg/selection_diagnostic.py` runner MUST emit the per-lane graph-skill % breakout (all 6 dimensions) for all 3 targets directly from selection/traversal artifacts (proof-pool / selected-graph-evidence), WITHOUT full generation or assembly.** This is non-generation (≈ seconds, zero LLM) so the 3-target × 11-lane × per-stage matrix + variance is produced at every stage without 3× full generation.
+- **Authoritative (assembly-based):** `tools/apps_rg/graph_skill_utilization_report.py` — **requires `final_resume_assembly/final_resume.json` (verified: raises without it)**, so it yields a target's full graph-% only once that target reaches 11/11. Anthropic gets this at Stage B (W2.3); both live targets at Stage E1 (W5.4).
+- **Cheap every-stage (selection-based) — the lever that keeps this affordable for 5 targets at every stage:** the **W3.1 `tools/apps_rg/selection_diagnostic.py` runner MUST emit the per-lane graph-skill % breakout (all 6 dimensions) for the in-scope targets directly from selection/traversal artifacts (proof-pool / selected-graph-evidence), WITHOUT full generation or assembly.** Non-generation (≈ seconds, zero LLM) → the matrix + variance is produced at every stage without N× full generation.
 
-**Consequence for the build order:** the selection-based graph-% diagnostic is a hard W3.1 deliverable (not optional), and it is what makes the 3-target evidence requirement compatible with the single-resume *live-gate* cost rebaseline. The single live E2E per stage confirms X3 gates for the chosen target; the **graph-% correctness evidence for all 3 targets comes from the cheap diagnostic at the same stage.** W5.4 then assembles the full A→E1 variance report across all targets/lanes.
+**Consequence for the build order:** the selection-based graph-% diagnostic is a hard W3.1 deliverable (not optional), and it is what makes the 5-target evidence requirement compatible with the 2-live cost rebaseline. The 2 live E2Es confirm X3 gates + DOCX for the ship targets; the **graph-% correctness evidence for all 5 targets comes from the cheap diagnostic at the same stage.** W5.4 then assembles the full A→E1 variance report.
 
 #### Calculation intervals — compute at EVERY stage boundary (7 capture points)
 
-Compute the matrix at **A, B0, B, C, D, E0, E1** — not a subset; the proof is the variance *pattern*, and two stages are **zero-variance controls** whose job is to show no movement. Skipping any stage breaks the causal chain.
+Compute the matrix at **A, B0, B, C, D, E0, E1** — not a subset; the proof is the variance *pattern*, and two stages are **zero-variance controls** whose job is to show no movement. Skipping any stage breaks the causal chain. **Target coverage:** 5 diagnostic targets at A–D (the target-agnostic mechanism stages — where the 5-way generalization proof lives); 2 live targets at E0/E1 (the per-target band-table stages). The diagnostic is non-generation so 5-wide costs ≈ seconds.
 
-| Stage (wave) | Causal change | Expected variance vs prior |
-|---|---|---|
-| **A** (W1) | baseline | — (reference; `artifacts/w1/`) |
-| **B0** (W2.0/1) | metric_outcome materialization | **~0 — CONTROL** (no-effect proof) |
-| **B** (W2.3) | GraphDB SSOT + 4 lane fixes | only on fixed/blocked lanes (ibm_bullets, headline, exec_summary); neutral elsewhere |
-| **C** (W3.2) | role-family / facet targeting | **deliberate per-target re-weighting** — the key positive signal |
-| **D** (W4.2) | typed proof/traversal edges | eligibility blocks/admits where typed edges bite |
-| **E0** (W5.2) | sliding-scale dry-run | **~0 — CONTROL** (diagnostics only) |
-| **E1** (W5.4) | sliding-scale active enforcement | rebalancing toward the per-target threshold bands |
+| Stage (wave) | Causal change | Diagnostic targets | Expected variance vs prior |
+|---|---|---|---|
+| **A** (W1) | baseline | 5 (back-filled) | — (reference; `artifacts/w1/`) |
+| **B0** (W2.0/1) | metric_outcome materialization | 5 | **~0 — CONTROL** (no-effect proof) |
+| **B** (W2.3) | GraphDB SSOT + 4 lane fixes | 5 | only on fixed/blocked lanes (ibm_bullets, headline, exec_summary); neutral elsewhere |
+| **C** (W3.2) | role-family / facet targeting | 5 (incl. 2 held-out, run cold) | **deliberate per-target re-weighting** — the key positive signal; held-outs prove generalization |
+| **D** (W4.2) | typed proof/traversal edges | 5 | eligibility blocks/admits where typed edges bite |
+| **E0** (W5.2) | sliding-scale dry-run | 2 live | **~0 — CONTROL** (diagnostics only) |
+| **E1** (W5.4) | sliding-scale active enforcement | 2 live | rebalancing toward the per-target threshold bands |
 
 #### Output format (canonical — emit per stage, markdown + JSON sidecar)
 
 **Cell metric** = lane graph-skill coverage % = `selected graph-skill terms ÷ total selected terms` for that lane×target (the "is the graph driving this lane" number; per memory, most lanes were historically fact-only ≈ low %). Optional cell suffix = dominant graph-skill family. The full **6-dimension** breakout (role family · role facet · pillar · source-fact-family · employer scope · metric type) lives in the JSON sidecar per cell. Lane column keys (fixed order): `comp` competencies · `u_bul` unify_bullets · `ibm_bul` ibm_bullets · `it_bul` insurtech_bullets · `ey_bul` ey_bullets · `u_nar` unify_narrative · `ibm_nar` ibm_narrative · `it_nar` insurtech_narrative · `ey_nar` ey_narrative · `exec` executive_summary · `head` headline.
 
-**(1) Per-stage matrix — 3 resume rows × 11 lane columns:**
+**(1) Per-stage matrix — 5 resume rows at A–D / 2 live rows at E0–E1 × 11 lane columns** (held-out rows flagged `†`):
 
 ```markdown
 Stage <X> (<wave>) — graph-skill coverage % by lane × target
 | Target | comp | u_bul | ibm_bul | it_bul | ey_bul | u_nar | ibm_nar | it_nar | ey_nar | exec | head |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Anthropic       |  |  |  |  |  |  |  |  |  |  |  |
-| Truist          |  |  |  |  |  |  |  |  |  |  |  |
-| Brown & Brown   |  |  |  |  |  |  |  |  |  |  |  |
+| Anthropic        |  |  |  |  |  |  |  |  |  |  |  |
+| Brown & Brown    |  |  |  |  |  |  |  |  |  |  |  |
+| Truist           |  |  |  |  |  |  |  |  |  |  |  |
+| Neo4j (PM) †     |  |  |  |  |  |  |  |  |  |  |  |
+| Aveva (dist-IC) †|  |  |  |  |  |  |  |  |  |  |  |
 ```
+At **E0/E1** this collapses to the **2 live rows** (Anthropic, Brown & Brown) only — the other 3 are diagnostic-only and stop at Stage D.
 
 **(2) Per-stage variance — Δ vs prior stage / Δ vs Stage A (percentage points), + expected verdict:**
 
@@ -126,13 +163,16 @@ Stage <X> (<wave>) — graph-skill coverage % by lane × target
 Variance Stage <X> vs <prior> (Δpp) / vs A (cum) — material = |Δ| ≥ 3pp
 | Target | comp | u_bul | ibm_bul | it_bul | ey_bul | u_nar | ibm_nar | it_nar | ey_nar | exec | head |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Anthropic       | Δ/cum | … |  |  |  |  |  |  |  |  |  |
-| Truist          |  |  |  |  |  |  |  |  |  |  |  |
-| Brown & Brown   |  |  |  |  |  |  |  |  |  |  |  |
-| **Expected?**   | ✓/✗ + one-line reason for each material (|Δ|≥3pp) cell, tied to this stage's single causal change | … |
+| Anthropic        | Δ/cum | … |  |  |  |  |  |  |  |  |  |
+| Brown & Brown    |  |  |  |  |  |  |  |  |  |  |  |
+| Truist           |  |  |  |  |  |  |  |  |  |  |  |
+| Neo4j (PM) †     |  |  |  |  |  |  |  |  |  |  |  |
+| Aveva (dist-IC) †|  |  |  |  |  |  |  |  |  |  |  |
+| **Expected?**    | ✓/✗ + one-line reason for each material (|Δ|≥3pp) cell, tied to this stage's single causal change | … |
 ```
+**Hold-out reading (C onward):** a held-out row (`†`) whose material deltas are role-appropriate and explainable *without tuning* = generalization confirmed; an unexplained held-out delta the tuned rows don't show = a graph defect the 3 tuned targets masked (high-value catch).
 
-**Rules:** every **material** cell (|Δ| ≥ 3pp) needs an explicit expected/unexpected verdict in the `Expected?` row tied to *this stage's one causal change*; an unexplained material delta is a **regression until explained or reverted** (waterfall atomicity). Control stages (B0, E0) must show **all cells ≤ |3pp|** — any material movement there is a no-effect-violation. The `Expected?` row is per-target where targets diverge (split into 3 sub-rows if needed).
+**Rules:** every **material** cell (|Δ| ≥ 3pp) needs an explicit expected/unexpected verdict in the `Expected?` row tied to *this stage's one causal change*; an unexplained material delta is a **regression until explained or reverted** (waterfall atomicity). Control stages (B0, E0) must show **all cells ≤ |3pp|** — any material movement there is a no-effect-violation. The `Expected?` row is per-target where targets diverge (split per-target — up to 5 sub-rows at A–D, 2 at E0/E1).
 
 **(3) Illustrative (Stage A, from the retired W1 3-target run — aggregate family mix, shown to anchor the shape, not lane-level):** Anthropic partnerships-ecosystem 27.9% / enterprise-tech-delivery 24.8% / agentic-AI-governance 18.5%; Truist agentic-AI-governance 37.0% / enterprise-tech-delivery 30.4%; Brown & Brown cloud-data-platform 28.1% / enterprise-tech-delivery 24.9%. The W3.1 diagnostic produces this **per lane** (11 cells/target), not just aggregate.
 
@@ -157,7 +197,7 @@ Variance Stage <X> vs <prior> (Δpp) / vs A (cum) — material = |Δ| ≥ 3pp
 - **Situation** - `apps_rg` already has an augmented skills graph with role-family inference, track weights, bridge edges, section projection, and senior-role fixtures. The Anthropic partner applied-AI fixture correctly identifies partner applied AI architecture, hyperscaler GTM, partnerships GTM, AI solutions architecture, and customer adoption signals.
 - **Complication** - If traversal sources only approved partner skills and partner metrics, the selected skill pool becomes ATS-heavy and overfit before generation. Final text anti-overfit checks are too late when graph traversal has already created an over-concentrated proof pool.
 - **Question** - How do we redesign traversal so role-family granularity improves targeting without replacing typed proof edges, without keeping `candidate_fact` or `fact_ledger` as competing skills or metrics authority, and without losing cross-role signal diversity?
-- **Answer** - First run a P0 pre-flight that removes or fences `candidate_fact` as a runtime authority while preserving compatibility aliases for historical lineage. Then run the controlled waterfall: certify finalized graphs without typed edges, materialize first-class `metric_outcome` nodes as a pre-B GraphDB authority gate, remove `fact_ledger` authority in favor of GraphDB SSOT, add role-family facets, add typed edges, then add sliding-scale percent composition. Every material change must have its own E2E run (single chosen resume x 11 generated lanes for W1–W4; full 3-resume / 33-lane matrix at W5), compare against immutable Stage A and the immediately prior stage, and explain whether variance is expected.
+- **Answer** - First run a P0 pre-flight that removes or fences `candidate_fact` as a runtime authority while preserving compatibility aliases for historical lineage. Then run the controlled waterfall: certify finalized graphs without typed edges, materialize first-class `metric_outcome` nodes as a pre-B GraphDB authority gate, remove `fact_ledger` authority in favor of GraphDB SSOT, add role-family facets, add typed edges, then add sliding-scale percent composition. Every material change must have its graph-% evidence (the free 5-target selection diagnostic, 2 of them held-out/run-cold, at stages A–D; the 2 live ship targets at E0/E1) plus a live E2E (single chosen resume x 11 generated lanes for W1–W4; the 2 live ship targets at W5), compare against immutable Stage A and the immediately prior stage, and explain whether variance is expected.
 
 ---
 
@@ -170,9 +210,9 @@ Variance Stage <X> vs <prior> (Δpp) / vs A (cum) — material = |Δ| ≥ 3pp
 | P0 | P0.1, P0.2, P0.3 | Candidate-fact deprecation and test gate | ~12K | GraphDB can expose equivalent fact/proof/source identifiers or fail closed where missing | DONE | `candidate_fact` authority is deprecated and tested before W1 starts |
 | W1 | W1.1, W1.2 | Finalized graph baseline without typed edges | ~14K | Current graph receipts, fixtures, and E2E command path are discoverable | DONE | Met current-substrate-passable bar 2026-06-13: 5 lanes X3_ALLOW (unify_bullets, insurtech_bullets, ey_bullets, insurtech_narrative, ey_narrative); 6 lanes deferred to W2 with blocker ledger; durable Claude-era ctx/output config landed in code defaults (32768 ctx / 4096 output / 8192 hard cap). Full 11/11 successful E2E is the W2 exit gate. |
 | W2 | W2.0, W2.1, W2.2, W2.3 | Pre-B metric-outcome materialization, GraphDB SSOT, graph-era runtime field migration, and `fact_ledger` reference removal | ~24K | GraphDB can expose all skills, metrics, and metric outcomes needed by generation before Stage B E2E | IN_PROGRESS | W2.0 ✅ (metric_outcome merged in main) · W2.1 ✅ (B0 E2E ran) · W2.2 🟡 (competencies lane ✅ X3_ALLOW merged; ibm_bullets/headline/exec_summary open) · W2.3 ⏳ (11/11 exit gate → first finished resume) |
-| W3 | W3.1, W3.2 | Role-family and role-facet targeting | ~18K | Role facets can be implemented as targeting weights over eligible graph paths | TODO | Three-target E2E shows role-family variance without partner-only overfit |
-| W4 | W4.1, W4.2 | Typed GraphDB proof/traversal edges | ~20K | Typed edges can be layered over the GraphDB SSOT without changing app/core boundaries | TODO | Three-target E2E shows typed edges explain eligibility and block unsupported paths |
-| W5 | W5.0, W5.1, W5.2, W5.3, W5.4 | Per-target threshold authoring, sliding-scale dry-run, active enforcement, anti-overfit guardrails, and waterfall closeout | ~31K | Composition metrics can be emitted before prompt assembly and enforcement can be toggled independently from diagnostics | TODO | All 3 target threshold tables exist before W5.1; dry-run and active-enforcement E2E each cover all 33 target-lane combinations and isolate sliding-scale behavior against W1 and prior stage |
+| W3 | W3.1, W3.2 | Role-family and role-facet targeting | ~18K | Role facets can be implemented as targeting weights over eligible graph paths | TODO | 5-target graph-% diagnostic (2 held-out, run cold) shows role-family variance without partner-only overfit; single-resume live E2E passes |
+| W4 | W4.1, W4.2 | Typed GraphDB proof/traversal edges | ~20K | Typed edges can be layered over the GraphDB SSOT without changing app/core boundaries | TODO | 5-target diagnostic shows typed edges explain eligibility and block unsupported paths; single-resume live E2E passes |
+| W5 | W5.0, W5.1, W5.2, W5.3, W5.4 | Per-target threshold authoring, sliding-scale dry-run, active enforcement, anti-overfit guardrails, and waterfall closeout | ~31K | Composition metrics can be emitted before prompt assembly and enforcement can be toggled independently from diagnostics | TODO | Both live-target threshold tables (Anthropic + Brown & Brown) exist before W5.1; dry-run and active-enforcement E2E each cover the 2 live targets × 11 lanes (22-lane) and isolate sliding-scale behavior against W1 and prior stage |
 
 ### Phase Progress
 
@@ -191,7 +231,7 @@ Variance Stage <X> vs <prior> (Δpp) / vs A (cum) — material = |Δ| ≥ 3pp
 | W3.2 | Run role-family E2E and explain variance from W2 | TODO |
 | W4.1 | Implement typed GraphDB edge contracts for proof, traversal, and targeting | TODO |
 | W4.2 | Run typed-edge E2E and explain variance from W3 | TODO |
-| W5.0 | Author per-target threshold tables for Truist and Brown & Brown | TODO |
+| W5.0 | Author the live-target threshold table for Brown & Brown (Anthropic exists; Truist deferred unless swapped into the 2-live set) | TODO |
 | W5.1 | Implement sliding-scale diagnostic calculations behind a dry-run flag | TODO |
 | W5.2 | Run sliding-scale dry-run E2E and explain variance from W4 and W1 | TODO |
 | W5.3 | Enable active sliding-scale enforcement and pre-prompt rebalancing | TODO |
@@ -211,10 +251,10 @@ Variance Stage <X> vs <prior> (Δpp) / vs A (cum) — material = |Δ| ≥ 3pp
 | Block | Offline (agent-parallel, ~0 API) | Live API | Est. wall-clock (live, MEASURED parallel) |
 |---|---|---|---|
 | Stage B / W2.3 | ibm_bullets metric_outcome wiring · headline lineage · exec_summary alias · `fact_ledger` fence (replay-validated) | 1 batched 11/11 E2E | **~12 min** (measured 11.7 min, parallel executor in main) |
-| Stage C / W3 | `role_facet_contract` · `selection_diagnostic` runner · neg-tests · 3-target smoke (non-gen) | 1 single-resume E2E | ~12 min |
-| Stage D / W4 | 7 typed-edge contracts · traversal packet · tests · 3-target smoke (non-gen) | 1 single-resume E2E | ~12 min |
-| Stage E0 / W5.2 | dry-run diagnostic engine · 2 threshold tables · **E0 = replay of Stage D** | 0 | replay |
-| Stage E1 / W5.4 | active-enforcement engine · waterfall report | 1 × 33-lane (3 targets) | ~12 min if P4 launcher (3 concurrent), else ~35 min (3 sequential) |
+| Stage C / W3 | `role_facet_contract` · `selection_diagnostic` runner · neg-tests · **5-target** smoke (non-gen, 2 held-out cold) | 1 single-resume E2E | ~12 min |
+| Stage D / W4 | 7 typed-edge contracts · traversal packet · tests · **5-target** smoke (non-gen) | 1 single-resume E2E | ~12 min |
+| Stage E0 / W5.2 | dry-run diagnostic engine · 2 threshold tables (Anthropic + Brown) · **E0 = replay of Stage D** | 0 | replay |
+| Stage E1 / W5.4 | active-enforcement engine · waterfall report | 1 × 22-lane (2 live targets) | ~12 min if P4 launcher (2 concurrent), else ~24 min (2 sequential) |
 
 **Live-API floor = 4 sequential E2Es (~50-70 min total, measured-parallel)** — not the estimated ~8-min figure (corrected upward by the measured 11.7 min) and not the pre-parallel ~4 h. The dominant remaining work is the **offline build**, parallelizable across agents on local compute. Net: roughly **1–2 focused sessions**, gated by the 4 serial live confirmations, not by the API loop. **First finished Anthropic resume lands at the end of Stage B (W2.3).**
 
@@ -293,7 +333,7 @@ Required atomic stages:
 - **E0** - sliding-scale diagnostics dry-run only.
 - **E1** - active sliding-scale enforcement and pre-prompt rebalancing.
 
-No stage may start until the previous stage has its accepted E2E artifact set — per the **E2E Resume-Count Gate Policy** (see "Mandatory E2E Matrix And Waterfall"): for stages A, B0, B, C, D this is ONE chosen resume completing a *successful* E2E (all 11 generated lanes `X3_ALLOW`, resume assembles); for stages E0 and E1 it is the full 3-resume x 11-lane matrix — or an explicit blocker ledger for every unrun lane. Materialization-only or diagnostics-only stages must prove selected skill IDs, selected metric IDs, ranking order, prompt-input hashes, lane status, and generated-output hashes are unchanged wherever generation occurs (generated-output-hash parity is required only under the **Deterministic / Replay Rule For No-Effect Stages** below; otherwise prompt-input + selected-evidence + ranking + lane-status parity is the no-effect proof). Any unexpected difference is a regression until explained or reverted.
+No stage may start until the previous stage has its accepted E2E artifact set — per the **E2E Resume-Count Gate Policy** (see "Mandatory E2E Matrix And Waterfall"): for stages A, B0, B, C, D this is ONE chosen resume completing a *successful* E2E (all 11 generated lanes `X3_ALLOW`, resume assembles) plus the non-generation 5-target graph-% diagnostic; for stages E0 and E1 it is the 2 live ship targets × 11 lanes (22-lane) — or an explicit blocker ledger for every unrun lane. Materialization-only or diagnostics-only stages must prove selected skill IDs, selected metric IDs, ranking order, prompt-input hashes, lane status, and generated-output hashes are unchanged wherever generation occurs (generated-output-hash parity is required only under the **Deterministic / Replay Rule For No-Effect Stages** below; otherwise prompt-input + selected-evidence + ranking + lane-status parity is the no-effect proof). Any unexpected difference is a regression until explained or reverted.
 
 Every stage artifact must include a change manifest naming the exact runtime/config/schema changes under test. If a change is not named in that manifest, it cannot be claimed as closure evidence for that stage.
 
@@ -434,20 +474,22 @@ During P0-W5, only read-only/offline exploratory artifacts are allowed. They may
 ## Mandatory E2E Matrix And Waterfall
 
 > **E2E Resume-Count Gate Policy (operator amendment, 2026-06-13 — governs this entire section).**
-> The full 3-target (3-resume) matrix is **required only at W5 (sliding-scale stages E0 and E1)**, where per-target slide behavior can only be validated across three role-family-diverse resumes. **For every wave before W5 — W1 (Stage A), W2 (B0/B), W3 (C), W4 (D) — the E2E gate requires exactly ONE resume (a single chosen target) to complete a *successful* E2E run.**
+> **(Amended 2026-06-13B → 5 diagnostic / 2 live.)** The graph-% correctness proof rides the **free 5-target selection diagnostic** at stages A–D; the **LIVE E2E is limited to 2 ship targets** (Anthropic + Brown & Brown), required end-to-end only at W5 (sliding-scale E0/E1), where per-target band-table generation safety needs live runs. **For every wave before W5 — W1 (Stage A), W2 (B0/B), W3 (C), W4 (D) — the LIVE E2E gate requires exactly ONE resume (a single chosen target) to complete a *successful* E2E run** (the 5-target graph-% evidence at that stage comes from the non-generation diagnostic).
 > - **"Successful E2E run"** = the integrated run assembles a complete resume for the chosen target with **all 11 generated lanes at `X3_ALLOW`** (no `X3_BLOCK`, no `PRE_RUN_BLOCKED` on a generated lane). A fail-closed *blocking* baseline does **not** satisfy this gate.
-> - **Per-wave progression gate:** a wave W1..W4 may not be marked complete, and the next wave may not start, until its single-resume successful E2E exists with artifacts. W5 may not be marked complete until all **3 resumes** pass their stage E2E.
+> - **Per-wave progression gate:** a wave W1..W4 may not be marked complete, and the next wave may not start, until its single-resume successful E2E exists with artifacts. W5 may not be marked complete until **both live resumes** (Anthropic + Brown & Brown) pass their stage E2E under enforcement.
 > - **Default pre-W5 target:** `anthropic_partner_applied_ai` (broadest executable pool / canonical partnerships case) unless the operator selects another.
 > - **W1 carve-out (operator decision, 2026-06-13).** At **W1 only**, "successful E2E" means **current-substrate-passable**: every lane that passes on the *existing* graph substrate reaches `X3_ALLOW` after the genuinely-W1 generation fixes (`executive_summary` schema/parse, narrative `forbidden_opener`). Lanes blocked **solely** on W2-scoped graph bindings (`bundle_id` / `graph_skill_node_ids` / `source_fact_or_graph_lineage`) or `metric_outcome` anchoring are **deferred to W2** with an explicit per-lane blocker ledger. The **full 11/11 all-lanes-`X3_ALLOW` successful E2E is the W2 / Stage B exit gate**, not W1. Rationale: 4 of 6 Anthropic W1 blockers (competencies-LLMOps, headline, unify-lineage, ibm_bullets metric-anchor) are exactly W2's graph-binding/`metric_outcome` work; requiring 11/11 at W1 would collapse W1↔W2 stage isolation. A fail-closed *blocking* baseline still does NOT satisfy W1.
-> - **Reading the rest of this section:** wherever text below says "3 targets x 11 lanes" or "all 33 target-lane combinations" for stages **A, B0, B, C, D**, read it as **the single chosen resume's 11 lanes (successful E2E)**. The 3-resume / 33-lane wording stays literal only for stages **E0 and E1**.
+> - **Reading the rest of this section:** wherever text below says "3 targets x 11 lanes" or "all 33 target-lane combinations" for stages **A, B0, B, C, D**, read it as **the single chosen resume's 11 lanes live (successful E2E) + the 5-target graph-% diagnostic (non-generation)**. For stages **E0 and E1**, read "3 targets / 33-lane" as **the 2 live ship targets × 11 lanes (22-lane)** — the 3-resume model is superseded by amendment 2026-06-13B.
 
-The full target matrix (required in full only at W5; pre-W5 gates run exactly ONE of these targets):
+The target roster (amended 2026-06-13B → **5 diagnostic / 2 live**; the cheap selection diagnostic runs all 5 at A–D, LIVE E2E runs only the 2 ship targets). Pre-W5 live gates run exactly ONE target (default Anthropic); W5 live = the 2 ship targets:
 
-| Target slug | Reader-facing target |
-|---|---|
-| `anthropic_partner_applied_ai` | Anthropic AI Partner |
-| `truist_head_of_agentic_engineering` | Truist Head of Agentic Engineering |
-| `brown_brown_svp_it_strategy_innovation` | Brown & Brown SVP IT Strategy & Innovation |
+| Reader-facing target | JD + briefing stem (`apps_rg/config/targeting/`) | Tuned? | Role in test |
+|---|---|---|---|
+| Anthropic — Mgr Applied AI Architecture, Partnerships | `anthropic_manager_applied_ai_architecture_partnerships_*` | tuned | **LIVE + ship** |
+| Brown & Brown — SVP IT Strategy & Innovation | `brown_brown_svp_it_strategy_innovation_*` | tuned | **LIVE + ship** |
+| Truist — Head Agentic AI Engineering | `truist_head_agentic_ai_engineering_*` | tuned | diagnostic-only |
+| Neo4j — VP Product Management, Agentic AI | `neo4j_vp_product_management_agentic_ai_*` | **held-out** | diagnostic-only (cold) |
+| Aveva — Distinguished AI Tech Lead | `aveva_distinguished_ai_tech_lead_initiatives_*` | **held-out** | diagnostic-only (cold) |
 
 Each target must run all 11 generated-content lanes from `apps_rg.runtime.section_execution_plan.GENERATED_CONTENT_LANES`:
 
@@ -476,12 +518,12 @@ The waterfall stages are (the **Validation Method** column is the 2026-06-13 reb
 | A | Post-P0 finalized graphs without typed edges | Run 1 chosen resume x 11 generated lanes (successful E2E — all lanes `X3_ALLOW`, resume assembles); typed edges disabled or absent; `candidate_fact` authority removed or fenced | ✅ DONE (live, `artifacts/w1/`) |
 | B0 | First-class `metric_outcome` materialization only | Run 1 chosen resume x 11 generated lanes; compare to A; prove metric IDs resolve through GraphDB rows and prove no selection, ranking, prompt-input, generated-output, or lane-status effect except explicit fail-closed unresolved-metric blockers | ✅ DONE (live, `artifacts/w2_b0/`); structural no-effect proof |
 | B | GraphDB SSOT with `fact_ledger` skills/metrics authority removed and graph-era runtime fields preferred | Run 1 chosen resume x 11 generated lanes; explain variance from B0 and A | **live-confirm ×1** — lane fixes replay-validated offline (`replay_section_gates.py`), then 1 batched 11/11 live E2E (lanes N-wide) |
-| C | Role family and role facets enabled | Run 1 chosen resume x 11 generated lanes; explain variance from B and A (plus W3 cross-role non-generation diagnostic smoke run for all 3 targets) | **live-confirm ×1** (single resume) + **offline-smoke** (3-target diagnostic is non-generation) |
-| D | Typed edges enabled | Run 1 chosen resume x 11 generated lanes; explain variance from C and A (plus W4 cross-role non-generation diagnostic smoke run for all 3 targets) | **live-confirm ×1** (single resume) + **offline-smoke** (3-target diagnostic is non-generation) |
-| E0 | Sliding-scale diagnostics dry-run enabled, enforcement disabled | Run 3 targets x 11 lanes (full 33-lane matrix); explain diagnostic-only variance from D and A; prove no pre-prompt blocking or ranking effect | **replay (Stage D)** — E0 is a declared no-effect stage; per the Deterministic/Replay Rule the 33-lane requirement is satisfied by replaying Stage D's frozen responses + computing diagnostics offline (input-parity proof). **0 live** |
-| E1 | Sliding-scale active enforcement and pre-prompt rebalancing enabled | Run 3 targets x 11 lanes (full 33-lane matrix); explain variance from E0, D, and A; prove concentration breaches produce `REBALANCE_REQUIRED` before prompt assembly | **live ×1** — the one genuinely-live 33-lane run; **3 targets concurrent** via the multi-target launcher (prereq P4) |
+| C | Role family and role facets enabled | Run 1 chosen resume x 11 generated lanes; explain variance from B and A (plus W3 cross-role non-generation diagnostic smoke run for all **5 targets**, incl. 2 held-out run cold) | **live-confirm ×1** (single resume) + **offline-smoke** (5-target diagnostic is non-generation) |
+| D | Typed edges enabled | Run 1 chosen resume x 11 generated lanes; explain variance from C and A (plus W4 cross-role non-generation diagnostic smoke run for all **5 targets**) | **live-confirm ×1** (single resume) + **offline-smoke** (5-target diagnostic is non-generation) |
+| E0 | Sliding-scale diagnostics dry-run enabled, enforcement disabled | Run the **2 live targets** x 11 lanes (22-lane); explain diagnostic-only variance from D and A; prove no pre-prompt blocking or ranking effect | **replay (Stage D)** — E0 is a declared no-effect stage; per the Deterministic/Replay Rule the 22-lane requirement is satisfied by replaying Stage D's frozen responses + computing diagnostics offline (input-parity proof). **0 live** |
+| E1 | Sliding-scale active enforcement and pre-prompt rebalancing enabled | Run the **2 live targets** (Anthropic + Brown & Brown) x 11 lanes (22-lane); explain variance from E0, D, and A; prove concentration breaches produce `REBALANCE_REQUIRED` before prompt assembly | **live ×1** — the one genuinely-live 22-lane run; **2 ship targets** (concurrent via the multi-target launcher, prereq P4 — or serial) |
 
-> **Rebaselined live-API floor = 4 sequential E2Es** (Stage B, C, D, E1). E0 is replay-validated; the W3/W4 3-target cross-role smokes are non-generation (offline); all post-generation lane fixes are validated offline via `tools/apps_rg/replay_section_gates.py` (zero API). Validation moving offline is a **cost reduction, not a rigor reduction** — the same X2 gates run, just without a live generation where the change is deterministic. The 4 live confirmations stay **serial** (waterfall atomicity: each compares against the prior stage).
+> **Rebaselined live-API floor = 4 sequential E2Es** (Stage B, C, D, E1). E0 is replay-validated; the W3/W4 5-target cross-role smokes are non-generation (offline); all post-generation lane fixes are validated offline via `tools/apps_rg/replay_section_gates.py` (zero API). Validation moving offline is a **cost reduction, not a rigor reduction** — the same X2 gates run, just without a live generation where the change is deterministic. The 4 live confirmations stay **serial** (waterfall atomicity: each compares against the prior stage).
 
 Every run artifact must include:
 - Target slug, briefing/resume input path, graph version, run id, stage id, lane id, and lane status.
@@ -495,7 +537,7 @@ Every run artifact must include:
 - A variance rationalization versus both Stage A and the prior waterfall stage, including top added, removed, promoted, and demoted graph skills. **Carve-out: Stage A has no prior stage; for the Stage A artifact, the prior-stage variance section is N/A and the Stage-A-vs-prior-stage comparison is omitted.** Stage A's only required comparison is against P0 outcomes, which is qualitative (baseline creation) rather than a percentage delta.
 - An expected/unexpected classification for each material variance.
 
-A stage is not complete unless every required lane — the single chosen resume's 11 generated lanes for stages A, B0, B, C, D; all 33 target-lane combinations for E0 and E1 — either passes or has an explicit blocker with blocker class, failed command, artifact path, and next action.
+A stage is not complete unless every required lane — the single chosen resume's 11 generated lanes (live) + the 5-target graph-% diagnostic for stages A, B0, B, C, D; the 2 live ship targets' 22 lanes for E0 and E1 — either passes or has an explicit blocker with blocker class, failed command, artifact path, and next action.
 
 ---
 
@@ -511,7 +553,7 @@ A stage is not complete unless every required lane — the single chosen resume'
 | **P1** | Replay harness for all 11 lanes (`tools/apps_rg/replay_section_gates.py`) | each lane's post-gen fix validates offline (zero API) instead of a live regen | orchestration | 🟡 **IN MAIN**, competencies-only (1/11); extend per-lane |
 | **P2** | Provider + judge concurrency + 429 backoff in `section_provider_call.py` / `section_judge_policy.py` | concurrent provider/judge calls | apps_rg runtime | ✅ **NOT an apps_rg blocker** — code-verified: the serializer was `_ENV_OVERLAY_LOCK` (now removed), provider ceilings are elevated (Claude 5000 RPM). Real scope = **agent fan-out (P5)** throttle only (6 concurrent agents were server-rate-limited) |
 | **P3** | Intra-run lane concurrency (lock-free executor + manifest caps) | makes one E2E fast | apps_rg runtime | ✅ **DONE-IN-MAIN** (PR #325 / commit `06502b57f8`; `_ENV_OVERLAY_LOCK` removed, `default_max_parallel: 5`, wave-1 `max_parallel: 4`) |
-| **P4** | Multi-target launcher (run 3 targets concurrently) | W5 E1 33-lane runs ~1× wall-clock instead of 3× | apps_rg runtime / ops | ❌ GAP (verified: no launcher in code) — ~20-min W5 optimization, not a blocker |
+| **P4** | Multi-target launcher (run the 2 live ship targets concurrently) | W5 E1 22-lane runs ~1× wall-clock instead of 2× | apps_rg runtime / ops | ❌ GAP (verified: no launcher in code) — ~20-min W5 optimization, not a blocker |
 | **P5** | Agent fan-out (Workflow over the offline build) | parallelize the 3 W2.2 lanes + W3/W4 contracts + W5 tables; **server-rate-limits concurrent agents — stagger ≤2-3** | orchestration | ❌ not started (first attempt server-rate-limited) |
 | **P6** | Worktree runtime junctions + `.env` (`data/cache/sparse` + `chromadb`) | any E2E fails closed without them | operator | ✅ done |
 | **P7** | Measured A/B lane-parallel speedup | replaces the estimated ~8-min figure with the real number | sibling chat | ✅ **DONE — 1.96× (704s vs 1383s); use 11.7 min/E2E** |
@@ -574,7 +616,7 @@ CHECKPOINT: A
 - W1 success = **current-substrate-passable** (operator decision 2026-06-13): every lane that passes on the existing graph substrate reaches `X3_ALLOW` after the genuinely-W1 generation fixes (`executive_summary` schema/parse + narrative `forbidden_opener`). Lanes blocked solely on W2-scoped graph bindings (`bundle_id` / `graph_skill_node_ids` / `source_fact_or_graph_lineage`) or `metric_outcome` anchoring are **deferred to W2** with a per-lane blocker ledger. The full 11/11 all-lanes-`X3_ALLOW` successful E2E is the **W2 / Stage B exit gate**, not W1. A fail-closed blocking baseline still does NOT satisfy W1.
 - Typed edges are disabled, absent, or explicitly no-op in the baseline configuration.
 - Artifacts show graph-skill percentage breakouts per lane for the chosen resume.
-- The 3-target (33-lane) matrix is NOT required at W1; it returns only at W5 (sliding-scale).
+- The multi-target *live* matrix is NOT required at W1; live runs only the single chosen resume pre-W5 and the 2 ship targets at W5 (sliding-scale). The 5-target graph-% evidence is the non-generation diagnostic.
 - (Reference only) The prior blocking-baseline run at `artifacts/apps_rg/waterfall/typed_edge_role_facet_guardrails/W1/` is retained as historical context, not as W1 completion evidence.
 
 **W1 baseline enablement rules** (what repairs are allowed before Stage A exists):
@@ -680,7 +722,7 @@ SCOPE_EXPANSION: plan=typed-edge-role-facet-guardrails-a6f3d2 reason="W2 now inc
 3. Emit evidence-strength and metric-strength only as report-only diagnostics where the existing data supports them. They may expose weak or missing paths, but they may not alter selection, ranking, prompt assembly, waterfall percentages, lane pass/fail, or generated text.
 
 **W2.1 - B0 metric-outcome E2E**:
-1. Run the single chosen resume's 11 generated lanes with only W2.0 changes active (3-target matrix returns at W5 per the E2E Resume-Count Gate Policy).
+1. Run the single chosen resume's 11 generated lanes with only W2.0 changes active (multi-target *live* matrix is the 2 ship targets at W5; the 5-target graph-% diagnostic is non-generation).
 2. Compare B0 to immutable Stage A and prove selected skill IDs, selected metric IDs, ranking order, prompt-input hashes, generated-output hashes, and lane status are unchanged wherever generation occurs.
 3. Classify any new blocker as unresolved metric-outcome materialization debt, not as ranking or targeting variance.
 4. B0 is not accepted until every `linked_metric_outcome_ids` / `metric_outcome_nodes` reference either resolves to a first-class GraphDB metric outcome row or fails closed with an explicit blocker artifact.
@@ -809,15 +851,16 @@ source_of_truth = graph_config | graph_row | static_taxonomy   # where facet ass
 - `jd_keyword_cannot_create_proof_or_provenance` passes.
 - `section_block_overrides_high_facet_weight` passes.
 - `facet_weight_changes_rank_only_within_graph_eligible_pool` passes (positive test: facet weights re-rank only inside the graph-eligible pool, never admit).
-- Role-family E2E covers the single chosen resume's 11 generated lanes; the cross-role diagnostic smoke run (below) covers all 3 targets without full generation.
-- Variance from W2 explains how Anthropic, Truist, and Brown & Brown move differently by role-family and lane.
+- Role-family E2E covers the single chosen resume's 11 generated lanes; the cross-role diagnostic smoke run (below) covers all **5 targets** without full generation.
+- Variance from W2 explains how the 5 targets move differently by role-family and lane — including the 2 held-outs (Neo4j PM, Aveva distinguished-IC) run cold.
 
 **Cross-role diagnostic smoke run (required, non-generation)**:
-- After the single-resume successful E2E, run a **non-generation selection/traversal diagnostic for all three targets** (Anthropic, Truist, Brown & Brown). Per target and lane it must emit the selected / demoted / blocked / missing rows and the role-family / facet / pillar breakouts **without full generated output or X3 disposition**.
-- Purpose: surface role-family regressions for Truist and Brown & Brown at W3, so they are not first observed at W5 where sliding-scale is also active and attribution is harder.
+- After the single-resume successful E2E, run a **non-generation selection/traversal diagnostic for all 5 targets** (Anthropic, Brown & Brown, Truist, Neo4j, Aveva — see "### Graph-% + Waterfall Variance Evidence § Target roster"). Per target and lane it must emit the selected / demoted / blocked / missing rows and the role-family / facet / pillar breakouts **without full generated output or X3 disposition**.
+- **Hold-out discipline (mandatory):** before running #4 Neo4j + #5 Aveva, **freeze** the graph / facet / bundle config and run them **cold**. Role-appropriate, tuning-free results = generalization proof; if they need tuning to pass, log it (they become training points, claim weakens). This is the step that makes 5 worth more than 3.
+- Purpose: surface role-family regressions for the non-live targets at W3, so they are not first observed at W5 where sliding-scale is also active and attribution is harder; and prove the graph generalizes to facets it was not tuned for.
 - Cheap (selection/traversal only) and a W3 completion requirement; it does NOT replace the single-resume successful-E2E gate.
-- **Implementation locus (built in W3.1, reused by W4):** `tools/apps_rg/selection_diagnostic.py` (or equivalent CLI mode such as `python -m apps_rg --selection-diagnostic --target-company ... --target-role ... --jd ...`) that drives the same selection/traversal path used by full generation but short-circuits before LLM dispatch and emits, **per target and per lane, to a JSON artifact**: (a) selected / demoted / blocked / missing rows, AND (b) **the graph-skill % breakout across all 6 dimensions — role family · role facet · pillar · source-fact-family · employer scope · metric type** (this is the every-stage, all-3-targets correctness evidence required by "### Graph-% + Waterfall Variance Evidence"). It must also emit a **per-step variance** block diffing the current stage's graph-% against the prior stage AND immutable Stage A (`artifacts/w1/`) per target/lane. This runner does NOT yet exist in `python -m apps_rg`; **W3.1 includes building it, and the graph-% + variance output is a hard part of its spec (not just selected/demoted rows).** W3.2 (and the W4 smoke run) invoke it; W3 cannot be marked complete without this runner existing and producing the graph-% + variance artifacts for all 3 targets × 11 lanes.
-- **Back-fill for already-passed stages:** because this runner is built at W3.1, run it retroactively against Stage A/B0/B selection artifacts (deterministic — they re-derive from the merged graph) so the A→B→C variance chain has the 3-target graph-% at every prior step, not just from C onward.
+- **Implementation locus (built in W3.1, reused by W4):** `tools/apps_rg/selection_diagnostic.py` (or equivalent CLI mode such as `python -m apps_rg --selection-diagnostic --target-company ... --target-role ... --jd ...`) that drives the same selection/traversal path used by full generation but short-circuits before LLM dispatch and emits, **per target and per lane, to a JSON artifact**: (a) selected / demoted / blocked / missing rows, AND (b) **the graph-skill % breakout across all 6 dimensions — role family · role facet · pillar · source-fact-family · employer scope · metric type** (this is the every-stage, all-5-targets correctness evidence required by "### Graph-% + Waterfall Variance Evidence"). It must accept a **target list** (default the 5-target roster at A–D; the 2 live targets at E0/E1) and a `--frozen-config` mode for the cold hold-out runs. It must also emit a **per-step variance** block diffing the current stage's graph-% against the prior stage AND immutable Stage A (`artifacts/w1/`) per target/lane. This runner does NOT yet exist in `python -m apps_rg`; **W3.1 includes building it, and the graph-% + variance output (plus the freeze-and-run-cold hold-out path) is a hard part of its spec (not just selected/demoted rows).** W3.2 (and the W4 smoke run) invoke it; W3 cannot be marked complete without this runner existing and producing the graph-% + variance artifacts for all 5 targets × 11 lanes.
+- **Back-fill for already-passed stages:** because this runner is built at W3.1, run it retroactively against Stage A/B0/B selection artifacts (deterministic — they re-derive from the merged graph) so the A→B→C variance chain has the 5-target graph-% at every prior step, not just from C onward.
 
 ---
 
@@ -869,12 +912,12 @@ CHECKPOINT: D
 - `missing_supporting_fact_blocks_claim_eligibility` passes.
 - `missing_employer_binding_blocks_employer_scoped_claim` passes.
 - `typed_edge_missing_path_blocks_selected_skill_after_W4` passes.
-- Typed-edge E2E covers the single chosen resume's 11 generated lanes; the cross-role diagnostic smoke run (below) covers all 3 targets without full generation.
+- Typed-edge E2E covers the single chosen resume's 11 generated lanes; the cross-role diagnostic smoke run (below) covers all **5 targets** without full generation.
 - Variance from W3 explains whether typed edges changed selection by proof, provenance, employer, or section eligibility.
 
 **Cross-role diagnostic smoke run (required, non-generation)**:
-- After the single-resume successful E2E, run the **non-generation typed-edge traversal diagnostic for all three targets**. Per target and lane it must emit the selected / demoted / blocked / missing rows plus the typed-edge category breakout (proof / provenance / employer / capability / section eligibility / targeting / facet) **without full generated output**.
-- Purpose: catch typed-edge eligibility regressions for Truist and Brown & Brown at W4, before W5 mixes in sliding-scale behavior.
+- After the single-resume successful E2E, run the **non-generation typed-edge traversal diagnostic for all 5 targets** (incl. the 2 held-out, Neo4j + Aveva). Per target and lane it must emit the selected / demoted / blocked / missing rows plus the typed-edge category breakout (proof / provenance / employer / capability / section eligibility / targeting / facet) **without full generated output**.
+- Purpose: catch typed-edge eligibility regressions for the non-live targets (Truist, Neo4j, Aveva) at W4, before W5 mixes in sliding-scale behavior — and confirm typed-edge eligibility generalizes to the held-out facets (PM, distinguished-IC).
 - Cheap selection/traversal only; a W4 completion requirement that does NOT replace the single-resume successful-E2E gate.
 - **Implementation locus:** reuse the `tools/apps_rg/selection_diagnostic.py` runner built in W3.1. W4.1 extends it to emit the typed-edge category breakout (proof / provenance / employer / capability / section eligibility / targeting / facet) per selected/demoted/blocked/missing row; no new runner is built at W4.
 
@@ -891,7 +934,7 @@ CHECKPOINT: E
 **Authorization**: REQUIRED - Sliding-scale thresholds and blocking behavior affect generation eligibility.
 
 **Phases**:
-- **W5.0** - Author per-target threshold tables for AGENTIC_ENGINEERING_LEADERSHIP (Truist) and IT_STRATEGY_AND_INNOVATION (Brown & Brown) matching the PARTNER_APPLIED_AI_ARCHITECTURE (Anthropic) structure; all three tables MUST exist before W5.1 starts | ~3K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W5.0** - Author the live-target threshold table IT_STRATEGY_AND_INNOVATION (Brown & Brown) matching the existing PARTNER_APPLIED_AI_ARCHITECTURE (Anthropic) structure; **both live-target tables (Anthropic + Brown & Brown) MUST exist before W5.1 starts.** Truist's AGENTIC_ENGINEERING_LEADERSHIP table is **deferred** (Truist is a diagnostic-only target, no band table needed at A–D) unless the operator swaps it into the 2-live ship set (amendment 2026-06-13B). | ~2K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W5.1** - Implement sliding-scale diagnostic calculations behind a dry-run flag | ~7K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W5.2** - Run sliding-scale dry-run E2E and explain variance from W4 and W1 | ~7K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W5.3** - Enable active sliding-scale enforcement and pre-prompt rebalancing | ~7K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
@@ -904,7 +947,7 @@ CHECKPOINT: E
 | E0 | Dry-run diagnostics only | Computes facet, source, metric, section, and repeated-concept mix for every target/lane; emits would-be `REBALANCE_REQUIRED` without changing ranking, selection order, prompt inputs, or lane pass/fail status |
 | E1 | Active enforcement | Applies caps, floors, penalties, and rebalancing before prompt assembly; concentration breaches block or rebalance with `REBALANCE_REQUIRED`; all variance is compared to E0, D, and A |
 
-> **Rebaselined validation (2026-06-13):** **E0 is replay-validated, 0 live calls** — it is a declared no-effect stage (diagnostics only), so the 33-lane requirement is met by replaying Stage D's frozen provider responses and computing the dry-run diagnostics offline, proving input-parity (selected evidence + ranking + lane status unchanged) per the Deterministic/Replay Rule. **E1 is the one genuinely-live 33-lane run** (active enforcement changes pre-prompt selection ⇒ generation changes ⇒ must run live), with the **3 targets run concurrently** via the multi-target launcher (prereq **P4**). So W5's live cost rebaselines from 2×33-lane to **1×33-lane (3 targets parallel)**.
+> **Rebaselined validation (2026-06-13, targets amended 2026-06-13B → 2 live):** **E0 is replay-validated, 0 live calls** — it is a declared no-effect stage (diagnostics only), so the 22-lane requirement is met by replaying Stage D's frozen provider responses and computing the dry-run diagnostics offline, proving input-parity (selected evidence + ranking + lane status unchanged) per the Deterministic/Replay Rule. **E1 is the one genuinely-live 22-lane run** (active enforcement changes pre-prompt selection ⇒ generation changes ⇒ must run live), with the **2 live ship targets** (Anthropic + Brown & Brown) run concurrently via the multi-target launcher (prereq **P4**) or serially. So W5's live cost rebaselines to **1×22-lane (2 live targets)**.
 - Use ranges, caps, floors, and penalties rather than fixed one-size percentages.
 - Compute percentages from eligible graph skills, not JD keyword counts.
 - Use section-specific thresholds so headline, executive summary, competencies, bullets, and narratives can differ.
@@ -936,7 +979,7 @@ metric_family_caps     # per metric-family max %
 core_candidate_preservation_floor   # reserved % for durable candidate strengths
 ```
 
-W5 is BLOCKED until Truist (`AGENTIC_ENGINEERING_LEADERSHIP`) and Brown & Brown (`IT_STRATEGY_AND_INNOVATION`) each have their own threshold table, not only Anthropic.
+W5 is BLOCKED until both **live** targets — Anthropic (`PARTNER_APPLIED_AI_ARCHITECTURE`) and Brown & Brown (`IT_STRATEGY_AND_INNOVATION`) — each have their own threshold table. Truist's (`AGENTIC_ENGINEERING_LEADERSHIP`) table is deferred unless it is swapped into the 2-live set (amendment 2026-06-13B).
 
 **Guardrails**:
 
@@ -983,8 +1026,8 @@ verdict: REBALANCE_REQUIRED
 - Include a compact summary table suitable for Notion closeout.
 
 **Acceptance**:
-- Sliding-scale dry-run E2E covers all 33 target-lane combinations and proves diagnostics do not alter ranking, selected evidence, prompt inputs, generated text, or lane pass/fail status.
-- Active sliding-scale E2E covers all 33 target-lane combinations after enforcement is enabled.
+- Sliding-scale dry-run E2E covers the 2 live targets × 11 lanes (22-lane) and proves diagnostics do not alter ranking, selected evidence, prompt inputs, generated text, or lane pass/fail status.
+- Active sliding-scale E2E covers the 2 live targets × 11 lanes (22-lane) after enforcement is enabled.
 - A full waterfall report exists for Stage A plus B0, B, C, D, E0, and E1.
 - Over-concentrated selected pools return `REBALANCE_REQUIRED` before prompt assembly.
 - `over_concentrated_pool_blocks_prompt_assembly_after_W5` passes.
@@ -1102,7 +1145,7 @@ rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bu
 >
 > **ibm_bullets block root cause (W2.2 target):** single failed gate `x2_ibm_metric_anchor_bullet_ownership`, observed `['bul_ibm_005_missing_metric_token']`. The gate's `IBM_METRIC_ANCHOR_RULES` hardcodes a stale fact-era requirement that `bul_ibm_005` carry the literal token "20%", but the graph-selected plan legitimately assigned that bullet `has_metric: None`. W2.2 fix = make metric ownership graph-determined (a bound `metric_outcome` row satisfies it) rather than literal-token-determined; the existing `_ibm_metric_anchors_on_assigned_bullets` no-metric escape is not firing for bul_ibm_005, indicating the runtime `selected_plan` shape differs from on-disk `selected_fact_plan.json` — needs a per-lane runtime trace.
 
-**Scope**: Run Stage B0 for the single chosen resume (default `anthropic_partner_applied_ai`) across all 11 generated lanes with only W2.0 changes active. The 3-target matrix returns at W5 per the E2E Resume-Count Gate Policy.
+**Scope**: Run Stage B0 for the single chosen resume (default `anthropic_partner_applied_ai`) across all 11 generated lanes with only W2.0 changes active. The multi-target *live* matrix is the 2 ship targets at W5 per the E2E Resume-Count Gate Policy (the 5-target graph-% diagnostic is non-generation).
 
 **Required evidence**:
 - The single chosen resume's 11 generated lanes with Stage B0 run ids, artifact paths, lane status, and blocker details where applicable.
@@ -1138,7 +1181,7 @@ rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bu
 
 ### W2.3 - GraphDB SSOT Stage B E2E
 
-**Scope**: Run Stage B for the single chosen resume (default `anthropic_partner_applied_ai`) across all 11 generated lanes after W2.2 and compare against both Stage B0 and immutable Stage A. The 3-target matrix returns at W5 per the E2E Resume-Count Gate Policy. **Stage B is the 11/11-all-lanes-`X3_ALLOW` exit gate** for the W1-deferred binding lanes (operator decision 2026-06-13).
+**Scope**: Run Stage B for the single chosen resume (default `anthropic_partner_applied_ai`) across all 11 generated lanes after W2.2 and compare against both Stage B0 and immutable Stage A. The multi-target *live* matrix is the 2 ship targets at W5 per the E2E Resume-Count Gate Policy (the 5-target graph-% diagnostic is non-generation). **Stage B is the 11/11-all-lanes-`X3_ALLOW` exit gate** for the W1-deferred binding lanes (operator decision 2026-06-13).
 
 **Required evidence**:
 - The single chosen resume's 11 generated lanes with Stage B run ids, artifact paths, lane status, and blocker details where applicable.
@@ -1171,7 +1214,7 @@ rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bu
 **Scope**: Run Stage E0 across the full target/lane matrix and compare dry-run diagnostics against Stage D and immutable Stage A.
 
 **Required evidence**:
-- 33 target-lane rows with sliding-scale diagnostic packets.
+- 22 target-lane rows (2 live targets × 11 lanes) with sliding-scale diagnostic packets.
 - Per-lane would-be cap/floor/rebalance verdicts.
 - Proof that dry-run diagnostics did not change selected skill IDs, selected metric IDs, ranking order, prompt inputs, generated text, or lane status.
 - Variance explanation versus Stage D and Stage A.
@@ -1231,7 +1274,7 @@ rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bu
 
 **GAP-5C: Strength scores can blur diagnostics with selection**
 - Impact: Evidence-strength or metric-strength multipliers may improve ranking quality, but adding them before Stage B closes would make the GraphDB SSOT delta impossible to attribute cleanly.
-- Closure: Emit strength fields as diagnostics only in W2; if ranking multipliers are later accepted, insert a separate post-B ranking gate with full 3-target x 11-lane E2E before role-family or typed-edge behavior is mixed in.
+- Closure: Emit strength fields as diagnostics only in W2; if ranking multipliers are later accepted, insert a separate post-B ranking gate with the full 5-target graph-% diagnostic + a single-resume live E2E before role-family or typed-edge behavior is mixed in.
 
 **GAP-5D: `proof_pool` wording creates a second-SSOT impression**
 - Impact: Reports, validators, or generation code can appear to treat the proof pool as claim truth instead of a selected-evidence transport surface derived from GraphDB.
@@ -1239,7 +1282,7 @@ rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bu
 
 **GAP-6: No waterfall means no causal attribution**
 - Impact: E2E differences cannot be attributed to SSOT migration, role family, typed edges, or sliding-scale policy.
-- Closure: Require the same three targets and 11 lanes at every stage with variance rationalization against both the prior stage and immutable Stage A.
+- Closure: Require the same target roster (5 diagnostic at A–D / 2 live at E0–E1) and 11 lanes at every stage with variance rationalization against both the prior stage and immutable Stage A.
 
 **GAP-6A: Sliding-scale behavior is under-proven if only final closeout runs it**
 - Impact: The key feature can be hidden inside final E2E variance, making it unclear whether diagnostics, enforcement, or unrelated generation changes caused the result.
@@ -1269,7 +1312,7 @@ rg -n "evidence_strength|metric_strength|capability_depth|ResumeBullet|resume_bu
 > is rebaselined per "### Rebaselined Effort Model" + the waterfall "Validation Method" column. Deterministic
 > evidence (DoD-2B/4/6/13 — gates, contracts, fences, hardening) is **replay/offline-validated** via
 > `tools/apps_rg/replay_section_gates.py` + unit tests (zero API). E2E DoDs (DoD-3/5/7/9/10/10A) take their
-> **one live-confirm** per stage (DoD-9/E0 by replay). The 3-target smokes (DoD-5/7) are non-generation/offline.
+> **one live-confirm** per stage (DoD-9/E0 by replay). The 5-target smokes (DoD-5/7) are non-generation/offline.
 > Replay reduces validation COST, not rigor — the same gates run.
 
 DoD-0: Candidate-fact authority is deprecated and tested before W1.
@@ -1277,7 +1320,7 @@ DoD-0: Candidate-fact authority is deprecated and tested before W1.
 - Status: DONE
 
 DoD-1: Finalized graph baseline without typed edges is captured via a single-resume successful E2E.
-- Evidence: Post-P0 W1 E2E run for ONE chosen target (default `anthropic_partner_applied_ai`) reaches **current-substrate-passable** (all lanes that pass on the existing graph substrate are `X3_ALLOW` after the W1 gen-fixes: exec_summary schema/parse + narrative `forbidden_opener`), with per-lane graph-skill percent breakouts and an explicit blocker ledger for lanes deferred to W2 (graph-binding / `metric_outcome` anchoring). The full 11/11 successful E2E is the W2 / Stage B gate; the 3-target matrix is deferred to W5 per the E2E Resume-Count Gate Policy.
+- Evidence: Post-P0 W1 E2E run for ONE chosen target (default `anthropic_partner_applied_ai`) reaches **current-substrate-passable** (all lanes that pass on the existing graph substrate are `X3_ALLOW` after the W1 gen-fixes: exec_summary schema/parse + narrative `forbidden_opener`), with per-lane graph-skill percent breakouts and an explicit blocker ledger for lanes deferred to W2 (graph-binding / `metric_outcome` anchoring). The full 11/11 successful E2E is the W2 / Stage B gate; the multi-target *live* matrix is the 2 ship targets at W5 (the 5-target graph-% diagnostic is non-generation) per the E2E Resume-Count Gate Policy.
 - Status: TODO
 
 DoD-2A: First-class metric-outcome materialization is complete before Stage B.
@@ -1297,7 +1340,7 @@ DoD-4: Role facets exist as reusable targeting weights, not direct skill selecto
 - Status: TODO
 
 DoD-5: Role-family E2E is complete.
-- Evidence: W3 E2E run covers the single chosen resume's 11 generated lanes with per-lane graph-skill percent breakouts and variance from W2; W3 cross-role diagnostic smoke run covers all 3 targets (non-generation).
+- Evidence: W3 E2E run covers the single chosen resume's 11 generated lanes with per-lane graph-skill percent breakouts and variance from W2; W3 cross-role diagnostic smoke run covers all 5 targets (non-generation), with the 2 held-out (Neo4j, Aveva) run cold on frozen config.
 - Status: TODO
 
 DoD-6: Typed edge hierarchy is documented and implemented without replacing proof edges with role-family buckets.
@@ -1305,7 +1348,7 @@ DoD-6: Typed edge hierarchy is documented and implemented without replacing proo
 - Status: TODO
 
 DoD-7: Typed-edge E2E is complete.
-- Evidence: W4 E2E run covers the single chosen resume's 11 generated lanes, explains variance from W3 by edge category (plus W4 cross-role diagnostic smoke run across all 3 targets, non-generation), and `missing_supporting_fact_blocks_claim_eligibility`, `missing_employer_binding_blocks_employer_scoped_claim`, and `typed_edge_missing_path_blocks_selected_skill_after_W4` pass.
+- Evidence: W4 E2E run covers the single chosen resume's 11 generated lanes, explains variance from W3 by edge category (plus W4 cross-role diagnostic smoke run across all 5 targets, non-generation), and `missing_supporting_fact_blocks_claim_eligibility`, `missing_employer_binding_blocks_employer_scoped_claim`, and `typed_edge_missing_path_blocks_selected_skill_after_W4` pass.
 - Status: TODO
 
 DoD-8: Sliding-scale percentage policy is reviewed and implemented.
@@ -1313,11 +1356,11 @@ DoD-8: Sliding-scale percentage policy is reviewed and implemented.
 - Status: TODO
 
 DoD-9: Sliding-scale dry-run E2E proves diagnostics without behavior change.
-- Evidence: E0 dry-run E2E covers all 33 target-lane combinations and proves sliding-scale diagnostics do not alter selected skill IDs, selected metric IDs, ranking order, prompt inputs, generated text, or lane status.
+- Evidence: E0 dry-run E2E covers the 2 live targets × 11 lanes (22-lane) and proves sliding-scale diagnostics do not alter selected skill IDs, selected metric IDs, ranking order, prompt inputs, generated text, or lane status.
 - Status: TODO
 
 DoD-10: Active anti-overfit enforcement runs before generation.
-- Evidence: E1 active E2E covers all 33 target-lane combinations; concentrated candidate pools return `REBALANCE_REQUIRED` before prompt assembly; `over_concentrated_pool_blocks_prompt_assembly_after_W5` and `repeated_metric_family_triggers_rebalance` pass.
+- Evidence: E1 active E2E covers the 2 live targets × 11 lanes (22-lane); concentrated candidate pools return `REBALANCE_REQUIRED` before prompt assembly; `over_concentrated_pool_blocks_prompt_assembly_after_W5` and `repeated_metric_family_triggers_rebalance` pass.
 - Status: TODO
 
 DoD-10A: Full waterfall is complete against one immutable baseline.
@@ -1336,8 +1379,8 @@ DoD-13: Hardening contract is enforced.
 - Evidence: The authority stack invariant, waterfall atomicity and E2E gate, no-silent-fallback rule, canonical traversal verdict enum, candidate-fact authority fence, diagnostic-only no-effect rule, and prompt-hack exclusion are covered by tests or runtime validators. Prompt-only changes are not accepted as closure evidence for W3, W4, or W5.
 - Status: TODO
 
-DoD-14: Graph correctness is proven by the 3-target × 11-lane graph-% breakout + per-step waterfall variance. **(The original plan's core proof — must not be dropped by the cost rebaseline; see "### Graph-% + Waterfall Variance Evidence".)**
-- Evidence: For all 3 targets (Anthropic, Truist, Brown & Brown) × all 11 generated lanes, the **graph-skill % breakout across 6 dimensions** (role family, role facet, pillar, source-fact-family, employer scope, metric type) is produced **at every waterfall stage** (A, B, C, D, E0, E1) — via `tools/apps_rg/selection_diagnostic.py` (selection-based, non-generation, cheap) for all 3 targets at every stage, and via `tools/apps_rg/graph_skill_utilization_report.py` (assembly-based, authoritative) for each target once it reaches 11/11. Each stage carries a **per-step variance** vs the immediately-prior stage AND immutable Stage A, per target/lane, with every material delta tagged expected/unexpected. The W5.4 waterfall report joins the full A→B0→B→C→D→E0→E1 chain across all targets/lanes (subsumes DoD-10A).
+DoD-14: Graph correctness is proven by the **5-target × 11-lane graph-% breakout (2 held-out, run cold) + per-step waterfall variance**, plus **2 targets proven end-to-end** (generation + DOCX + sliding-scale enforcement). **(The original plan's core proof — must not be dropped by the cost rebaseline; see "### Graph-% + Waterfall Variance Evidence".)**
+- Evidence: For the **5-target roster** (Anthropic, Brown & Brown, Truist tuned; Neo4j VP Product Management + Aveva Distinguished AI Tech Lead **held-out, frozen-config, run cold**) × all 11 generated lanes, the **graph-skill % breakout across 6 dimensions** (role family, role facet, pillar, source-fact-family, employer scope, metric type) is produced via `tools/apps_rg/selection_diagnostic.py` (selection-based, non-generation, cheap) at **every stage A–D for all 5 targets** and **E0/E1 for the 2 live targets**; and via `tools/apps_rg/graph_skill_utilization_report.py` (assembly-based, authoritative) for each **live** target once it reaches 11/11. Each stage carries a **per-step variance** vs the immediately-prior stage AND immutable Stage A, per target/lane, with every material (|Δ|≥3pp) delta tagged expected/unexpected; control stages (B0, E0) show all cells ≤|3pp|. The held-out rows pass **without tuning** (or are logged as training points if not). **Scoped claim:** selection correctness proven for 5 role families (2 cold); generation/DOCX/enforcement proven for 2. The W5.4 waterfall report joins the full A→B0→B→C→D→E0→E1 chain (5 targets A–D, 2 live E0/E1; subsumes DoD-10A).
 - Status: TODO
 
 ---
