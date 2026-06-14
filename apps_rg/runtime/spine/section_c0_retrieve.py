@@ -167,8 +167,19 @@ def invoke_section_spine_c0_retrieve(
     front_spine: SectionFrontSpineBridge,
     section_id: str,
     chromadb_path: str | None = None,
+    assert_grounding: bool = True,
 ) -> SectionSpineC0RetrieveResult:
-    """Run spine C0 retrieve for a section front-spine bundle."""
+    """Run spine C0 retrieve for a section front-spine bundle.
+
+    ``assert_grounding`` (default ``True``) controls whether the spine-retrieve FEC's
+    support is grounding-asserted *here*. For ``evidence_room_producer`` (graph-authority)
+    sections the section's OWN evidence-room FEC is the grounding authority and is asserted
+    by the caller AFTER ``apply_spine_c03_overlay_to_bridge_doc`` overlays it onto the
+    bridge; the spine retrieve is non-authoritative enrichment, so its ``WEAK`` support must
+    not prematurely STOP a section whose own FEC rated ``PASS``. Such callers pass
+    ``assert_grounding=False`` and re-assert on the merged/overlaid bridge. Direct callers
+    keep the default so standalone use stays grounding-safe.
+    """
     if front_spine.route is None or front_spine.validated_request is None:
         raise StopAsEvidenceGapError(
             f"{STOP_AS_EVIDENCE_GAP}: missing RouteContract or ValidatedRequest on front spine"
@@ -187,12 +198,12 @@ def invoke_section_spine_c0_retrieve(
     except C0EvidenceGapError as exc:
         raise StopAsEvidenceGapError(str(exc), reason_code=STOP_AS_EVIDENCE_GAP) from exc
 
-    grounding = grounding_required_for_section(front_spine)
-    assert_no_stop_as_evidence_gap(
-        grounding_required=grounding,
-        fec=fec,
-        section_id=section_id,
-    )
+    if assert_grounding:
+        assert_no_stop_as_evidence_gap(
+            grounding_required=grounding_required_for_section(front_spine),
+            fec=fec,
+            section_id=section_id,
+        )
 
     graph_ref = C0_GRAPH_LANE_NA_REF
     if fec.graph_expansion_refs:
