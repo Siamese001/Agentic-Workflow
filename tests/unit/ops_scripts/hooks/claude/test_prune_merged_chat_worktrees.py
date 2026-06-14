@@ -214,7 +214,7 @@ def test_min_age_seconds_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_reap_prefixes_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("WORKTREE_REAP_BRANCH_PREFIXES", raising=False)
-    assert reaper._reap_prefixes() == ("chat/",)
+    assert reaper._reap_prefixes() == ("chat/", "feat/")  # module default (worktree-deliver-reap)
     monkeypatch.setenv("WORKTREE_REAP_BRANCH_PREFIXES", "chat/, feat/ ,codex/")
     assert reaper._reap_prefixes() == ("chat/", "feat/", "codex/")
 
@@ -266,3 +266,138 @@ def test_grace_window_protects_fresh_worktree_with_old_head(repo: Path) -> None:
     report = _reap(repo, min_age_seconds=3600)
     assert report["reaped"] == []
     assert any(s["reason"] == "within_grace_window" for s in report["skipped"])
+
+
+# --- worktree-deliver-reap: no-unique-commits acceptance (stale-local-main pileup) --------------
+
+
+def test_has_no_unique_commits_helper(repo: Path) -> None:
+    # A fresh chat worktree shares main's tip → zero unique commits vs "main".
+    _add_chat_worktree(repo, "20260608-noop")
+    assert reaper._has_no_unique_commits("chat/20260608-noop", repo_root=repo, trunk_refs=("main",))
+    # A diverged worktree has its own commit → not delivered.
+    _add_chat_worktree(repo, "20260608-work", diverge=True)
+    assert not reaper._has_no_unique_commits(
+        "chat/20260608-work", repo_root=repo, trunk_refs=("main",)
+    )
+    # A trunk ref that does not exist never yields a false positive.
+    assert not reaper._has_no_unique_commits(
+        "chat/20260608-work", repo_root=repo, trunk_refs=("origin/does-not-exist",)
+    )
+
+
+def test_extra_trunk_refs_reaps_noop_worktree_not_ancestor_of_primary_trunk(repo: Path) -> None:
+    # Reproduce the real pileup: local ``main`` is STALE — it diverged from the configured (origin)
+    # trunk. The chat worktree sits at local main's tip, so its branch is NOT an ancestor of the
+    # origin trunk (it carries main's stale commit), yet it has ZERO unique commits vs local main.
+    # Build a divergent "otrunk" (stands in for origin/main):
+    _git(repo, "checkout", "-q", "-b", "otrunk")
+    (repo / "real.txt").write_text("real work on origin", encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-qm", "47 real commits on origin")
+    _git(repo, "checkout", "-q", "main")
+    (repo / "stale.txt").write_text("stale plan commit on local main", encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-qm", "stale local-main commit")
+    # Worktree branch == local main tip → diverged from otrunk, zero unique commits vs main.
+    wt = _add_chat_worktree(repo, "20260608-stale")
+
+    # Without extra_trunk_refs the worktree is NOT reaped vs the divergent origin trunk.
+    kept = reaper.reap_merged_chat_worktrees(
+        repo_root=repo, trunk_ref="otrunk", do_fetch=False
+    )
+    assert kept["reaped"] == []
+    assert any(s["reason"] == "not_merged_into_trunk" for s in kept["skipped"])
+    assert wt.exists()
+
+    # With extra_trunk_refs=("main",) the no-op worktree IS reaped (zero unique commits vs main).
+    got = reaper.reap_merged_chat_worktrees(
+        repo_root=repo, trunk_ref="otrunk", do_fetch=False, extra_trunk_refs=("main",)
+    )
+    assert [r["branch"] for r in got["reaped"]] == ["chat/20260608-stale"]
+    assert not wt.exists()
+
+
+# --- branch-prune: delete merged local branches that have no worktree ---------------------------
+
+
+def _prune(repo: Path, **kw):
+    kw.setdefault("trunk_refs", ("main",))
+    return reaper.prune_merged_branches(repo_root=repo, do_fetch=False, **kw)
+
+
+def _merged_branch_no_worktree(repo: Path, name: str) -> None:
+    """Create a chat/* branch at main's tip (delivered) with NO worktree."""
+    _git(repo, "branch", name, "main")
+
+
+def test_prune_deletes_merged_branch_without_worktree(repo: Path) -> None:
+    _merged_branch_no_worktree(repo, "chat/20260608-orphan")
+    report = _prune(repo)
+    assert [d["branch"] for d in report["deleted"]] == ["chat/20260608-orphan"]
+    assert _git(repo, "branch", "--list", "chat/20260608-orphan") == ""
+
+
+def test_prune_keeps_branch_with_unique_commits(repo: Path) -> None:
+    _git(repo, "branch", "chat/20260608-unmerged", "main")
+    # Give it a unique commit via a throwaway worktree, then remove the worktree (branch stays).
+    wt = repo.parent / ".tmpwt"
+    _git(repo, "worktree", "add", "-q", str(wt), "chat/20260608-unmerged")
+    (wt / "u.txt").write_text("u", encoding="utf-8")
+    _git(wt, "add", "-A")
+    _git(wt, "commit", "-qm", "unique work")
+    _git(repo, "worktree", "remove", "--force", str(wt))
+    report = _prune(repo)
+    assert report["deleted"] == []
+    assert any(s["reason"] == "not_merged_into_trunk" for s in report["skipped"])
+    assert _git(repo, "branch", "--list", "chat/20260608-unmerged") != ""
+
+
+def test_prune_skips_branch_that_has_a_worktree(repo: Path) -> None:
+    wt = _add_chat_worktree(repo, "20260608-haswt")  # merged + clean, but HAS a worktree
+    report = _prune(repo, branch_prefixes=("chat/",))
+    assert report["deleted"] == []
+    assert any(s["reason"] == "has_worktree" for s in report["skipped"])
+    assert wt.exists()  # worktree reaper owns it, branch-prune left it alone
+
+
+def test_prune_skips_current_branch(repo: Path) -> None:
+    _git(repo, "checkout", "-q", "-b", "chat/20260608-current")
+    report = _prune(repo)
+    assert report["deleted"] == []
+    assert any(s["reason"] == "current_branch" for s in report["skipped"])
+
+
+def test_prune_skips_protected_and_non_prefix_branches(repo: Path) -> None:
+    _git(repo, "branch", "random-branch", "main")  # non-prefix
+    report = _prune(repo)
+    assert report["deleted"] == []
+    assert any(
+        s["branch"] == "random-branch" and s["reason"] == "not_reap_prefix"
+        for s in report["skipped"]
+    )
+    # main itself is protected + non-prefix → skipped, never deleted.
+    assert _git(repo, "branch", "--list", "main") != ""
+
+
+def test_prune_dry_run_deletes_nothing(repo: Path) -> None:
+    _merged_branch_no_worktree(repo, "chat/20260608-dry")
+    report = _prune(repo, dry_run=True)
+    assert [d["branch"] for d in report["deleted"]] == ["chat/20260608-dry"]
+    assert all(d.get("dry_run") for d in report["deleted"])
+    assert _git(repo, "branch", "--list", "chat/20260608-dry") != ""  # still there
+
+
+def test_prune_feat_prefix_default(repo: Path) -> None:
+    _git(repo, "branch", "feat/delivered-thing", "main")
+    report = _prune(repo)  # default prefixes include feat/
+    assert "feat/delivered-thing" in [d["branch"] for d in report["deleted"]]
+
+
+def test_worktree_branches_helper() -> None:
+    sample = (
+        "worktree /a\nHEAD abc\nbranch refs/heads/main\n\n"
+        "worktree /b\nHEAD def\nbranch refs/heads/chat/x\n\n"
+        "worktree /c\nHEAD ghi\ndetached\n\n"
+    )
+    assert reaper._worktree_branches(sample) == {"main", "chat/x"}
