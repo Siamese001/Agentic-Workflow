@@ -28,7 +28,9 @@ BROWN_FIXTURE_PINS: dict[str, str] = {
         "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f"
     ),
     "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md": (
-        "9d0b63db755cce713bce35aa7c9089453a0e2ffb5060a3ed7bef8da483843e5d"
+        # Re-pinned after intentional briefing SSOT consolidation (ec93cdda7c) +
+        # targeting-brief hardening (ac0c64c9aa); JD digest unchanged.
+        "fe6f4a524fbcb58d2d4bd368f1d1bf3234db760fcb2a4236bf5d1dc5da32d4b0"
     ),
 }
 
