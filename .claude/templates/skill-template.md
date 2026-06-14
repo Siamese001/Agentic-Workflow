@@ -47,9 +47,9 @@ metadata:
 ## References
 
 - Upstream documentation: <url>
-- MCP server config: `.cursor/mcp.json` → `<server-id>`
-- Auth gate (if any): `.cursor/scripts/<gate>.py`
-- Intent detection: `.cursor/scripts/pre_prompt_classifier.py` (`_<SKILL>_SIGNALS`)
+- MCP server config: `.mcp.json` → `<server-id>`
+- Auth gate (if any): `.claude/governance/scripts/<gate>.py`
+- Intent detection: `.claude/governance/scripts/pre_prompt_classifier.py` (`_<SKILL>_SIGNALS`)
 - Authority registry: `docs/guides/MCP_Registry.md` → `<server-id>`
 - Sibling skill: `<sibling-name>`
-- Constitutional rules: `.cursor/rules/<rule>.md` §<N>
+- Constitutional rules: `.claude/rules/<rule>.md` §<N>
