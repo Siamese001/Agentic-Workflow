@@ -9,7 +9,7 @@ reported; missing Notion rows for on-disk plans are **not** flagged here
 (that's the inverse direction and a separate concern).
 
 Policy SSOT: ``.claude/rules/deferred-scope-capture.md`` §Auto-scaffold.
-Notion data source: ``fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7``.
+Notion data source: ``WAVE_PHASE_DATA_SOURCE_ID`` (SSOT: _notion_constants).
 
 Behavior:
 
@@ -53,13 +53,14 @@ import sys as _sys
 _sys.path.insert(0, str(CURSOR_SCRIPTS_DIR))
 from _notion_constants import (  # noqa: E402
     NOTION_API_VERSION,
+    NOTION_BASE,
     WAVE_PHASE_DATA_SOURCE_ID as WAVE_PHASE_DS_ID,
 )
 
 
 # Wave/Phase Convergence — read from data_source_id (not database_id).
 
-NOTION_QUERY_URL = f"https://api.notion.com/v1/data_sources/{WAVE_PHASE_DS_ID}/query"
+NOTION_QUERY_URL = f"{NOTION_BASE}/data_sources/{WAVE_PHASE_DS_ID}/query"
 
 NOTION_HTTP_TIMEOUT_S = 20.0
 NOTION_PAGE_SIZE = 100

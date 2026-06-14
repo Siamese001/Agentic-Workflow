@@ -22,7 +22,7 @@ Modes
 
 SSOT
 ----
-- Plans DB data source: ``ac53d31b-3068-4039-9ebe-856c12caab32``
+- Plans DB data source: ``PLANS_DATA_SOURCE_ID`` (SSOT: _notion_constants)
 - On-disk plans dir: ``.claude/plans/``
 - Active-statuses (filtered set): ``In Progress``, ``Not Started``
 

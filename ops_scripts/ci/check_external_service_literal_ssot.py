@@ -61,6 +61,12 @@ SSOT_ALLOWLIST = (
     "agentic_core/L0_routing/config/path_constants.py",
     "agentic_core/L0_routing/config/external_apis_config.py",
     "ops_scripts/ci/check_external_service_literal_ssot.py",
+    # SSOT consumers with a defensive `try: from _notion_constants ... except: <literal>`
+    # import fallback — they already import from the SSOT; their literals are only a
+    # fail-soft fallback, sanctioned like the SSOT module itself.
+    "ops_scripts/ci/check_notion_backlog_no_duplicates.py",
+    "ops_scripts/ci/check_notion_backlog_plan_linkage.py",
+    "ops_scripts/ci/check_plan_done_notion_status.py",
 )
 
 # Path segments excluded from scanning (history / tests / generated / vendored).

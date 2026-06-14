@@ -28,9 +28,12 @@ from _notion_plans_status_check import (  # noqa: E402
     PLANS_DATA_SOURCE_ID,
     STALE_EQUIVALENTS,
 )
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as _NOTION_VERSION,
+    NOTION_BASE as _NOTION_BASE,
+)
 
-_NOTION_VERSION = "2025-09-03"
-_QUERY_URL = f"https://api.notion.com/v1/data_sources/{PLANS_DATA_SOURCE_ID}/query"
+_QUERY_URL = f"{_NOTION_BASE}/data_sources/{PLANS_DATA_SOURCE_ID}/query"
 _DRIFT_ARTIFACT = _REPO_ROOT / "artifacts" / "notion" / "plans_status_drift.json"
 
 

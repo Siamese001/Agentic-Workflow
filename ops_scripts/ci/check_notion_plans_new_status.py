@@ -47,10 +47,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "ci"
 ARTIFACT_PATH = ARTIFACTS_DIR / "notion_plans_new_status.json"
 
-NOTION_BASE = "https://api.notion.com/v1"
-NOTION_API_VERSION = "2025-09-03"
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION,
+    NOTION_BASE,
+    PLANS_DATA_SOURCE_ID,
+)
+
 NOTION_HTTP_TIMEOUT_S = 30
-PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 # Detection window for "new" plans (hours)
 DETECTION_WINDOW_HOURS = 24

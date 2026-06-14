@@ -47,9 +47,14 @@ from typing import Any, Iterable
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HELPER_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_plan_registration.py"
 
-_PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-_NOTION_VERSION = "2025-09-03"
-_QUERY_URL = f"https://api.notion.com/v1/data_sources/{_PLANS_DATA_SOURCE_ID}/query"
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as _NOTION_VERSION,
+    NOTION_BASE as _NOTION_BASE,
+    PLANS_DATA_SOURCE_ID as _PLANS_DATA_SOURCE_ID,
+)
+
+_QUERY_URL = f"{_NOTION_BASE}/data_sources/{_PLANS_DATA_SOURCE_ID}/query"
 
 
 def _load_helper():

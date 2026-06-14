@@ -63,13 +63,15 @@ from _notion_plans_status_check import (  # noqa: E402
     PLANS_DATA_SOURCE_ID,
     STALE_EQUIVALENTS,
 )
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as _NOTION_API_VERSION,
+    NOTION_BASE as _NOTION_BASE,
+)
 
 # Deferred scope ledger path
 _DEFERRED_SCOPE_LEDGER = _REPO_ROOT / "artifacts" / "ledgers" / "deferred_scope_calibration.sqlite"
 
-# Notion constants (from _notion_constants.py pattern)
-_NOTION_BASE = "https://api.notion.com/v1"
-_NOTION_API_VERSION = "2025-09-03"
+# Notion constants (from _notion_constants.py SSOT)
 _NOTION_TIMEOUT_S = 30
 
 # Plans DB data_source_id (SSOT)

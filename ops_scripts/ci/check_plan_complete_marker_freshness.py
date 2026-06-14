@@ -29,10 +29,15 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
+sys.path.insert(0, str(REPO_ROOT / ".claude" / "governance" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_BASE as _NOTION_API_BASE,
+    PLANS_DATA_SOURCE_ID as _PLANS_DS_ID,
+)
+
 _STALE_DAYS: int = 7
 
-_PLANS_DS_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-_NOTION_API_BASE = "https://api.notion.com/v1"
+# Intentionally pinned to the legacy Notion API version (not the SSOT version).
 _NOTION_VERSION = "2022-06-28"
 
 _LIFECYCLE_LOG = REPO_ROOT / "artifacts" / "governance" / "wave_lifecycle_capture.jsonl"
