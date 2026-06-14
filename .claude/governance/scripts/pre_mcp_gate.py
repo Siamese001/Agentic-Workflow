@@ -285,6 +285,9 @@ _BUILTIN_MCP_SERVERS: frozenset[str] = frozenset(
         "scheduled-tasks",
         "mcp-registry",
         "computer-use",
+        # Remote-execution GitHub integration — environment-managed PR/issue/CI surface,
+        # not declared in repo .mcp.json. Same harness-provided category as the above.
+        "github",
     }
 )
 
