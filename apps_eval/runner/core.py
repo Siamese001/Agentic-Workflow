@@ -72,13 +72,21 @@ def _load_snapshot(fixture: EvalFixture) -> AppOutputSnapshot:
 
 def _run_live(fixture: EvalFixture, run_dir: Path) -> AppOutputSnapshot:
     payload = _load_json(Path(fixture.input_dir) / "request.json")
-    artifact_dir = run_dir / "live_adapter_artifacts" / fixture.scenario.scenario_id
-    artifact_dir.mkdir(parents=True, exist_ok=True)
+    scenario_key = hashlib.sha256(fixture.scenario.scenario_id.encode("utf-8")).hexdigest()[:8]
+    artifact_dir = run_dir / "la" / scenario_key
     if fixture.scenario.app_id == "apps_rg":
-        return run_apps_rg_live(fixture.scenario.scenario_id, payload, artifact_dir)
-    if fixture.scenario.app_id == "apps_lic":
-        return run_apps_lic_live(fixture.scenario.scenario_id, payload, artifact_dir)
-    raise ValueError(f"unsupported app: {fixture.scenario.app_id}")
+        snapshot = run_apps_rg_live(fixture.scenario.scenario_id, payload, artifact_dir)
+    elif fixture.scenario.app_id == "apps_lic":
+        snapshot = run_apps_lic_live(fixture.scenario.scenario_id, payload, artifact_dir)
+    else:
+        raise ValueError(f"unsupported app: {fixture.scenario.app_id}")
+    snapshot_dir = run_dir / "live_snapshots"
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
+    (snapshot_dir / f"{scenario_key}.json").write_text(
+        json.dumps(snapshot.to_dict(), indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+    return snapshot
 
 
 def _score(suite_id: str, app_id: str, scenario_count: int, findings: list[Any]) -> Scorecard:
@@ -151,6 +159,9 @@ def _emit_artifacts(record: CompletedEvalRecord, findings: list[Any], run_dir: P
         for finding in findings:
             handle.write(json.dumps(finding.to_dict(), sort_keys=True) + "\n")
     paths["regression"].write_text(json.dumps(record.regression.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+    live_snapshots = run_dir / "live_snapshots"
+    if live_snapshots.is_dir():
+        paths["live_snapshots"] = live_snapshots
     if emit_l6_handoff:
         handoff = L6EvalHandoff(
             record_id=record.record_id,
