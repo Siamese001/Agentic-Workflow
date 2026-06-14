@@ -29,7 +29,10 @@ import sys
 import time
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+# This script lives at ops_scripts/ci/ (2 levels deep): repo root is parents[2].
+# (Was parents[1] when it lived at repo-root scripts/; not updated on relocation,
+# which broke both the `tools.*` imports and the config/ data-file paths.)
+REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
