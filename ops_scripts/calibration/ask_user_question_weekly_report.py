@@ -23,6 +23,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from tools.calibration.loop_metrics import wilson_interval
 from tools.refactor_decisions.ledger_paths import REFACTOR_DECISION_LEDGER_DB
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -62,11 +63,35 @@ class ContextBreakdown:
     accepted: int = 0
     overridden: int = 0
     pending: int = 0
+    conf_sum: float = 0.0
+    conf_count: int = 0
 
     @property
     def acceptance_rate(self) -> float:
         resolved = self.accepted + self.overridden
         return self.accepted / resolved if resolved > 0 else 0.0
+
+    @property
+    def avg_confidence(self) -> float:
+        return self.conf_sum / self.conf_count if self.conf_count > 0 else 0.0
+
+    @property
+    def acceptance_ci(self) -> tuple[float, float, float]:
+        """(point, ci_low, ci_high) Wilson 95% over resolved (accepted+overridden) decisions."""
+        return wilson_interval(self.accepted, self.accepted + self.overridden)
+
+    @property
+    def calibrated(self) -> bool | None:
+        """True when the acceptance CI overlaps the avg stated confidence (calibrated).
+
+        None when there is no resolved sample or no confidence recorded — insufficient to judge.
+        A ⚠️ (False) means stated confidence is out of step with how often the recommendation
+        is actually accepted in this context.
+        """
+        if (self.accepted + self.overridden) == 0 or self.conf_count == 0:
+            return None
+        _point, low, high = self.acceptance_ci
+        return low <= self.avg_confidence <= high
 
 
 @dataclass
@@ -117,6 +142,10 @@ class WeeklyReport:
                     "overridden": c.overridden,
                     "pending": c.pending,
                     "acceptance_rate": round(c.acceptance_rate, 4),
+                    "avg_confidence": round(c.avg_confidence, 4),
+                    "acceptance_ci_low": round(c.acceptance_ci[1], 4),
+                    "acceptance_ci_high": round(c.acceptance_ci[2], 4),
+                    "calibrated": c.calibrated,
                 }
                 for c in self.context_breakdown
             ],
@@ -254,6 +283,10 @@ def generate_report(
             ctx_map[ctx] = ContextBreakdown(context=ctx)
         cb = ctx_map[ctx]
         cb.total += 1
+        score = row.get("confidence_score")
+        if score is not None:
+            cb.conf_sum += score
+            cb.conf_count += 1
         rec = row.get("recommended_index")
         sel = row.get("selected_index")
         if sel is None:
@@ -310,15 +343,28 @@ def render_markdown(report: WeeklyReport) -> str:
 
     if report.context_breakdown:
         lines.extend([
-            "## Per-Context Breakdown",
+            "## Per-Context Calibration Curve",
             "",
-            "| Context | Total | Accepted | Overridden | Pending | Acceptance Rate |",
-            "|---------|-------|----------|------------|---------|-----------------|",
+            "_Stated confidence vs empirical acceptance per context. `calibrated?` is ✅ when the "
+            "acceptance Wilson-95 CI overlaps the average stated confidence, ⚠️ when it does not "
+            "(confidence out of step with how often the recommendation is actually accepted), — "
+            "when the sample is insufficient._",
+            "",
+            "| Context | Total | Accepted | Overridden | Pending | Avg Confidence | Acceptance (Wilson 95% CI) | calibrated? |",
+            "|---------|-------|----------|------------|---------|----------------|----------------------------|:-----------:|",
         ])
         for c in report.context_breakdown:
+            _point, ci_low, ci_high = c.acceptance_ci
+            cal = c.calibrated
+            cal_cell = "—" if cal is None else ("✅" if cal else "⚠️")
+            resolved = c.accepted + c.overridden
+            acc_cell = (
+                f"{c.acceptance_rate:.0%} [{ci_low:.0%}, {ci_high:.0%}]" if resolved else "—"
+            )
+            conf_cell = f"{c.avg_confidence:.2f}" if c.conf_count else "—"
             lines.append(
                 f"| {c.context} | {c.total} | {c.accepted} | "
-                f"{c.overridden} | {c.pending} | {c.acceptance_rate:.1%} |"
+                f"{c.overridden} | {c.pending} | {conf_cell} | {acc_cell} | {cal_cell} |"
             )
         lines.append("")
 

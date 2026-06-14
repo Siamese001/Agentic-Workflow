@@ -68,6 +68,9 @@ _VIOLATIONS_LOG = _REPO_ROOT / "artifacts" / "cursor" / "ask_user_question_viola
 
 _BYPASS_ENV = "ASK_REC_GUARD_BYPASS"
 _STRICT_ENV = "ASK_REC_GUARD_STRICT"
+# Advisory-only precedent calibration (W2.2 of askq-confidence-meta-learning-loop). Default on;
+# set to 0 to silence. NEVER affects the allow/block decision.
+_CALIB_ADVISORY_ENV = "ASK_REC_CALIBRATION_ADVISORY"
 
 # A "(Recommended)" suffix on an option label (case-insensitive, trailing-space tolerant).
 _RECOMMENDED_RE = re.compile(r"\(\s*recommended\s*\)\s*$", re.IGNORECASE)
@@ -82,6 +85,57 @@ def _bypass() -> bool:
 
 def _strict() -> bool:
     return os.environ.get(_STRICT_ENV) == "1"
+
+
+_NUM_CONFIDENCE_RE = re.compile(r"confidence\s*=\s*([01](?:\.\d+)?)", re.IGNORECASE)
+
+
+def _context_slug(question: dict, idx: int) -> str:
+    """Mirror post_ask_user_question_capture._context_from_question so precedent lookups align."""
+    raw = str(question.get("header") or question.get("question") or f"q{idx}")
+    slug = re.sub(r"[^a-z0-9]+", "-", raw.strip().lower()).strip("-")
+    return (slug or f"q{idx}")[:64]
+
+
+def calibration_notes(payload: dict) -> list[str]:
+    """Best-effort ADVISORY notes when a stated confidence diverges from empirical acceptance.
+
+    Pure-read, fail-open: never raises, never affects the allow/block decision (W2.2 of
+    askq-confidence-meta-learning-loop). One note per question whose recommended-option
+    confidence diverges from captured precedent for its context.
+    """
+    if os.environ.get(_CALIB_ADVISORY_ENV, "1").strip().lower() in ("0", "false", "no"):
+        return []
+    try:
+        from tools.ledgers.ask_user_question_calibration import lookup_calibrated_confidence
+    except Exception:  # guardian: allow-broad-exception -- consult is optional; absence is fine
+        return []
+    tool_input = payload.get("tool_input")
+    questions = tool_input.get("questions") if isinstance(tool_input, dict) else None
+    if not isinstance(questions, list):
+        return []
+    notes: list[str] = []
+    for idx, question in enumerate(questions):
+        if not isinstance(question, dict):
+            continue
+        options = [o for o in (question.get("options") or []) if isinstance(o, dict)]
+        rec = next((o for o in options if _RECOMMENDED_RE.search(str(o.get("label", "")))), None)
+        if rec is None:
+            continue
+        m = _NUM_CONFIDENCE_RE.search(str(rec.get("description", "")))
+        if not m:
+            continue
+        try:
+            result = lookup_calibrated_confidence(_context_slug(question, idx), float(m.group(1)))
+        except Exception:  # guardian: allow-broad-exception -- best-effort consult
+            continue
+        if result.signal != "none" and result.diverged:
+            notes.append(
+                f"[{result.context}] stated {result.stated_confidence:.2f} vs empirical "
+                f"acceptance {result.empirical_acceptance:.0%} (n={result.n}, {result.signal}) "
+                f"-> consider ~{result.calibrated_confidence:.2f}"
+            )
+    return notes
 
 
 def question_findings(idx: int, question: dict) -> list[tuple[str, str]]:
@@ -190,6 +244,11 @@ def main() -> int:
     except Exception as exc:  # guardian: allow-broad-exception -- gate fail-open contract
         sys.stderr.write(f"pre_ask_user_question_recommendation_gate error (allowing): {exc}\n")
         return 0
+    try:
+        for note in calibration_notes(payload if isinstance(payload, dict) else {}):
+            sys.stderr.write("ADVISORY (askq-calibration): " + note + "\n")
+    except Exception:  # guardian: allow-broad-exception -- advisory must never affect the decision
+        pass
     if (code != 0) or reason.startswith("ADVISORY"):
         sys.stderr.write(reason + "\n")
     return code

@@ -82,6 +82,31 @@ condition** explicitly — it is the load-bearing half of a confidence signal
 > hard-blocks an older-style call, but the numeric `[confidence=0.NN]` prefix is the **only
 > canonical form** — author every option that way.
 
+## Consult precedent before stating confidence (meta-learning loop)
+
+Every AskUserQuestion is **captured** to the `ask_user_question_decisions` ledger
+(`.claude/hooks/after_ask_user_question.py` → `post_ask_user_question_capture.py`): the
+recommended option, the stated confidence, and the user's actual selection. That history is how
+the confidence you state should improve over time — consult it before finalizing a number:
+
+```bash
+python -m tools.ledgers.ask_user_question_calibration "<context-slug>" 0.NN
+```
+
+The `<context-slug>` is the question `header` lower-cased with non-alphanumerics collapsed to `-`
+(e.g. header `Next step` → `next-step`). It returns the empirical acceptance rate (how often
+users took the recommendation in that context, Wilson-95 lower bound) and a
+`calibrated_confidence` suggestion:
+
+- **signal `none`** (n < 5) — no precedent yet; use your own read.
+- **signal `suggestive` / `strong`** — bias the stated number toward `calibrated_confidence`; a
+  `diverged=true` means your instinct is materially out of step with what users actually choose
+  here (e.g. you keep stating 0.90 but the recommendation is overridden half the time).
+
+The PreToolUse gate also emits an `ADVISORY (askq-calibration): …` line on a divergence —
+informational only, never blocks (silence with `ASK_REC_CALIBRATION_ADVISORY=0`). The loop is
+self-correcting: **state → user selects → captured → calibrates the next state.**
+
 ## Applies to RCA fix steps too
 
 When an RCA's `Next` / fix step offers ≥2 real options, surface them via `AskUserQuestion`
@@ -110,6 +135,10 @@ with this confidence shape — never as a prose menu or a bare "I recommend X".
 - Invariant: `CLAUDE.md` § Author-Gate; `.claude/rules/constitutional.md` §6.
 - Gate: `.claude/governance/scripts/pre_ask_user_question_recommendation_gate.py`.
 - Hook: `.claude/hooks/before_ask_user_question.py` (PreToolUse `AskUserQuestion`).
+- Capture (PostToolUse `AskUserQuestion`): `.claude/hooks/after_ask_user_question.py` →
+  `.claude/governance/scripts/post_ask_user_question_capture.py` → `ask_user_question_decisions` ledger.
+- Calibration helper: `tools/ledgers/ask_user_question_calibration.py` (precedent → calibrated confidence).
+- Plan: `plans/askq-confidence-meta-learning-loop-c4e7a1.md` (the meta-learning loop).
 - Prose-menu trigger auditor (Stop): `post_agent_recommendation_gate_audit.py`.
 - Violations log: `artifacts/cursor/ask_user_question_violations.jsonl`.
 - User directive: memory `no-prose-options-menus` (2026-06-13).

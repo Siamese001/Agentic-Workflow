@@ -143,6 +143,15 @@
             "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/after_file_edit.py\""
           }
         ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/after_ask_user_question.py\""
+          }
+        ]
       }
     ],
     "Stop": [
