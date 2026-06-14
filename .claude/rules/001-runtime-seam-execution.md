@@ -36,8 +36,11 @@ Every repo-work response must **end with the receipt below, rendered as its own 
 block** — preceded by a `---` horizontal rule and a `### ⬛ Turn Receipt` heading. Do **not** wrap the
 receipt in a code fence: fenced content renders `[label](path)` as literal text, which would break the
 required clickable receipt hyperlinks (below). The `---` + heading is what gives the separation a fence
-would otherwise provide, while keeping links live. (The refactoring **Outcome frame** stays fenced —
-it is link-free — so a code turn reads as two distinct blocks: clickable receipt, then fenced frame.)
+would otherwise provide, while keeping links live. **Ordering on refactoring / code-change turns:** the
+required **Outcome frame** comes *first* (fenced — it is link-free), and the Turn Receipt is still the
+**last** block of the response. So a code turn reads as two distinct blocks in this order — fenced
+Outcome frame, then the clickable Turn Receipt last — which satisfies both "end with the receipt" and
+the mandatory Outcome frame without conflict.
 
 The template (shown fenced here for documentation only — emit it **unfenced**, after a `---` and the heading):
 
