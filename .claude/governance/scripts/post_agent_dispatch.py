@@ -71,9 +71,13 @@ LEGACY_SCRIPTS: list[str] = [
     # Author-Gate + ADG run in after_agent_governance_dispatch before dispatch; skip re-run here.
     "post_agent_scope_drift_detector.py",
     "post_agent_writeback_audit.py",
-    "post_agent_deferred_scope_capture.py",
-    "post_agent_next_step_capture.py",
-    "post_agent_next_step_miss_detector.py",
+    # [W6 enforcement-surface-consolidation-d8b3f6] S4 deferred-scope / next-step capture
+    # UNWIRED from the per-Stop chain — the DEFERRED_SCOPE: / NEXT_STEP: marker -> hook -> Notion
+    # pipeline is retired (constitutional §24, ADR-096; native spawn_task supersedes it), so these
+    # hooks have no live marker to capture. `post_agent_next_step_miss_detector.py` was a clean
+    # orphan (zero importers) and is deleted; the two capture scripts are retained on disk pending
+    # decoupling of their live importers (tools/notion/backfill_backlog_plan_relation imports
+    # _resolve_plan_page_id; check_notion_schema_mece path-refs them) — plan DISCOVERED_SCOPE W6.1.
     "post_agent_wave_lifecycle_capture.py",
     "post_agent_wave_completion_audit.py",
     "post_agent_mcp_preflight_audit.py",

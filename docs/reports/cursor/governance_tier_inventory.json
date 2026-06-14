@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-13T20:08:10.053349+00:00",
+  "generated_at": "2026-06-14T12:03:20.258327+00:00",
   "plan_id": "cursor-governance-two-tier-b4e8f2",
   "wave": "W0",
   "policy_option_selected": "A",
@@ -17,16 +17,16 @@
     "files": [
       {
         "path": "AGENTS.md",
-        "bytes": 11975
+        "bytes": 12605
       }
     ],
-    "total_bytes": 11975,
-    "approx_tokens": 2993,
+    "total_bytes": 12605,
+    "approx_tokens": 3151,
     "threshold_bytes": 51200,
     "status": "PASS",
-    "headroom_bytes": 39225
+    "headroom_bytes": 38595
   },
-  "agents_md_bytes": 11975,
+  "agents_md_bytes": 12605,
   "always_apply_mdc_count": 0,
   "always_apply_mdc_names": [],
   "option_a_alignment": {
