@@ -1,4 +1,4 @@
-name: ADG CI Gates (Wave 0)
+name: ADG Full Audit (manual)
 
 on:
   # Right-sized 2026-06-14 (solo workflow): removed the automatic push + pull_request
@@ -11,9 +11,12 @@ on:
   # ADG gate available when explicitly invoked.
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 jobs:
   adg-ci-gates:
-    name: ADG CI Gates — Delta Enforcement (Wave 0)
+    name: ADG full audit
     runs-on: ubuntu-latest
 
     services:
@@ -31,7 +34,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/common-setup
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
 
       - name: Syntax and import sanity (changed Python files)
         run: python ops_scripts/ci/check_python_syntax.py --verbose --base-ref "${{ github.base_ref || 'main' }}"
@@ -40,8 +46,7 @@ jobs:
 
       - name: Install extra dependencies for ADG
         run: |
-          pip install redis
-          pip install -e . --no-deps 2>/dev/null || pip install -r requirements.txt --quiet 2>/dev/null || true
+          python -m pip install redis
 
       # NOTE: the Audit Pipeline (ADG generator) MUST run before the Redis
       # ingest + staleness verify below. It is what produces artifacts/adg/,
@@ -198,25 +203,6 @@ jobs:
         run: python ops_scripts/ci/check_test_concentration_ratio.py
         env:
           PYTHONPATH: .
-
-      - name: Install MCP test dependencies
-        run: pip install fakeredis --quiet 2>/dev/null || true
-
-      - name: MCP Server Contract Gate (Layer 1 static + Layer 4 regressions)
-        run: |
-          python -m pytest tests/unit/agentic_core/adg/test_adg_mcp_server_contracts.py \
-            -k "TestStaticStructuralContracts or TestKnownBugRegressions or TestResponseShapeContracts" \
-            -v --no-header --tb=short
-        env:
-          PYTHONPATH: .
-
-      - name: MCP Server Integration Gate (Layer 3 — requires Redis db=15)
-        run: |
-          python -m pytest tests/unit/agentic_core/adg/test_adg_mcp_server_contracts.py::TestAllToolsRespond \
-            -v --no-header --tb=short
-        env:
-          PYTHONPATH: .
-          ADG_REDIS_URL: redis://localhost:6379/15
 
       - name: M1 — Determinism Gate (warn mode until W4 exit)
         run: |

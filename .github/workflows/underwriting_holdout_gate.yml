@@ -8,13 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: ./.github/actions/python-setup
         with:
-          python-version: '3.12'
-      - name: Install test dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install pytest pyyaml
+          python-version: "3.12"
+          install-mode: minimal
       - name: Validate W1 holdout schema
         run: |
           python ops_scripts/ci/validate_underwriting_holdout.py \
@@ -28,13 +25,10 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: ./.github/actions/python-setup
         with:
-          python-version: '3.12'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install pyyaml
+          python-version: "3.12"
+          install-mode: minimal
       - name: Require W1 provenance attestation
         run: |
           python ops_scripts/ci/validate_underwriting_holdout.py \

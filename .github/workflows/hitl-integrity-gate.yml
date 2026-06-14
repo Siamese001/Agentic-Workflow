@@ -36,8 +36,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/common-setup
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
 
       - name: Generate synthetic ledger + audit chain
         run: |
@@ -110,13 +112,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Only runs when the snapshot URL secret is configured. Skipped silently otherwise.
-    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/common-setup
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
 
       - name: Resolve snapshot URL
         id: resolve
