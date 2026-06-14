@@ -62,9 +62,9 @@ Chunks served their purpose (locating files); paths are the durable artifact.
 
 | Marker | Use When | Captured By |
 |--------|----------|-------------|
-| `NEXT_STEP:` | Optional follow-up ideas, out-of-scope improvements | `post_agent_next_step_capture.py` |
+| `NEXT_STEP:` | Optional follow-up ideas, out-of-scope improvements | native `spawn_task` (§24 / ADR-096; capture hook retired W7) |
 | `SCOPE_RESET:` | Cross-turn topic transitions | This rule |
-| `DEFERRED_SCOPE:` | Wave/phase descoping decisions | `post_agent_deferred_scope_capture.py` |
+| `DEFERRED_SCOPE:` | Wave/phase descoping decisions | native `spawn_task` (§24 / ADR-096; capture hook retired W7) |
 
 ## Enforcement Layer Mapping
 

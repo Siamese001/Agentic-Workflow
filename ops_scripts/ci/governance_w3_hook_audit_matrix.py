@@ -20,10 +20,10 @@ HOOK_REQUIRED = {
     # Author-Gate audits + AG-queue scripts retired + archived (teardown, ADR-093):
     # capture / miss_detector / ui_audit / schema_audit / ask_user_question_packet_audit /
     # pipeline_audit / ag_queue_drain / ag_queue_seed -> archives/claude_native_supersession_2026-06-07/.
+    # S4 deferred-scope/next-step capture unwired from the per-Stop chain (W6
+    # enforcement-surface-consolidation-d8b3f6; §24/ADR-096) -> moved to OBSOLETE_CANDIDATE below.
     "post_agent_mcp_hygiene_audit.py",
     "post_agent_long_command_audit.py",
-    "post_agent_deferred_scope_capture.py",
-    "post_agent_next_step_capture.py",
     "post_agent_wave_lifecycle_capture.py",
     "post_agent_writeback_audit.py",
     "post_agent_scope_drift_detector.py",
@@ -39,6 +39,7 @@ MANUAL_ONLY = {
 }
 
 OBSOLETE_CANDIDATE = {
+    # S4 deferred-scope/next-step capture hooks deleted in W7 (enforcement-surface-consolidation-d8b3f6).
     "post_agent_author_gate_audit.py": "superseded by capture + miss_detector + schema/ui audits",
     "post_agent_author_gate_suite.py": "orchestration duplicate of individual AG audits",
     "post_agent_adr_registry_capture.py": "Notion ADR registry archived 2026-05-02; capture optional",

@@ -71,9 +71,11 @@ LEGACY_SCRIPTS: list[str] = [
     # Author-Gate + ADG run in after_agent_governance_dispatch before dispatch; skip re-run here.
     "post_agent_scope_drift_detector.py",
     "post_agent_writeback_audit.py",
-    "post_agent_deferred_scope_capture.py",
-    "post_agent_next_step_capture.py",
-    "post_agent_next_step_miss_detector.py",
+    # [W6/W7 enforcement-surface-consolidation-d8b3f6] S4 deferred-scope / next-step capture
+    # RETIRED — the DEFERRED_SCOPE: / NEXT_STEP: marker -> hook -> Notion pipeline is superseded by
+    # native spawn_task (constitutional §24, ADR-096). The two capture hooks + next_step_miss_detector
+    # + _deferred_scope_plan_scaffold were deleted in W7; backfill_backlog_plan_relation now owns its
+    # own _resolve_plan_page_id resolver. The deferred_scope_scorer subsystem is KEPT (live consumers).
     "post_agent_wave_lifecycle_capture.py",
     "post_agent_wave_completion_audit.py",
     "post_agent_mcp_preflight_audit.py",

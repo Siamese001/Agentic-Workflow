@@ -1,11 +1,13 @@
 ---
 slug: claude-native-supersession-9d3f7a
-status: Not Started
+status: Retired
 plan_type: governance_refactor
 dod_exempt: false
 ---
 
 # Claude-Native Supersession — Retire Cursor/Windsurf Emulation Machinery
+
+> ⛔ **RETIRED 2026-06-14 — superseded by [`enforcement-surface-consolidation-d8b3f6`](enforcement-surface-consolidation-d8b3f6.md)**, which absorbed this plan's S1–S6 framework + W0 coupling map and executed the consolidation across all five enforcement surfaces (W1–W7). This plan was Not Started and was never registered in Notion (verified 2026-06-14: no Plans-DB row), so the supersession is recorded here on disk. See [ADR-100](../docs/architecture/adr/ADR-100-enforcement-surface-consolidation.md). Kept for historical reference.
 
 ## Context (SCQA)
 

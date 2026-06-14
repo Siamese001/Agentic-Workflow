@@ -73,36 +73,8 @@ class TestSharedExtractor:
         assert re.search(r"^DEFERRED_SCOPE:", extracted, re.MULTILINE) is not None
 
 
-class TestDeferredScopeCaptureHook:
-    """Integration: pipe the real payload shape into the hook and verify
-    markers land in the capture log."""
-
-    def test_windsurf_payload_captures_marker(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-        # Point the hook's capture log at a tmp file so we don't pollute the
-        # real jsonl, and disable Notion posting by clearing the token.
-        import subprocess
-
-        env = {
-            "NOTION_TOKEN": "",
-            "NOTION_API_KEY": "",
-            "PYTHONIOENCODING": "utf-8",
-            "PATH": __import__("os").environ.get("PATH", ""),
-            "SYSTEMROOT": __import__("os").environ.get("SYSTEMROOT", ""),
-        }
-        hook = SCRIPTS / "post_agent_deferred_scope_capture.py"
-        proc = subprocess.run(
-            [sys.executable, str(hook)],
-            input=json.dumps(WINDSURF_PAYLOAD),
-            text=True,
-            capture_output=True,
-            env=env,
-            cwd=str(REPO),
-            timeout=15,
-            check=False,
-        )
-        # The hook should have detected the marker. With no NOTION_TOKEN,
-        # the marker skips Notion post but still logs a record.
-        assert proc.returncode == 0
-        assert "markers=1" in (proc.stderr or ""), (
-            f"Expected 'markers=1' in stderr; got:\nSTDERR: {proc.stderr}\nSTDOUT: {proc.stdout}"
-        )
+# TestDeferredScopeCaptureHook removed in enforcement-surface-consolidation-d8b3f6 W7:
+# the post_agent_deferred_scope_capture hook was retired (native spawn_task supersedes the
+# DEFERRED_SCOPE marker -> hook -> Notion pipeline; constitutional §24 / ADR-096).
+# TestSharedExtractor above still guards the shared _post_agent_payload extractor that every
+# remaining post_agent hook uses (the original 2026-04-23 RCA regression target).
