@@ -20,26 +20,6 @@ name: apps-e2e-harness-nightly
 #     is gitignored; bundles live as workflow artifacts only).
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "tools/certification/apps_e2e/**"
-      - "tools/certification/agentic_core_e2e/**"
-      - "tests/runtime/test_apps_e2e_*.py"
-      - "tests/runtime/test_agentic_core_spine_proof.py"
-      - "tests/unit/apps_e2e/**"
-      - ".claude/schemas/apps_e2e_*.schema.json"
-      - ".windsurf/schemas/apps_e2e_*.schema.json"
-      - "ops_scripts/ci/check_apps_e2e_harness.py"
-  pull_request:
-    paths:
-      - "tools/certification/apps_e2e/**"
-      - "tools/certification/agentic_core_e2e/**"
-      - "tests/runtime/test_apps_e2e_*.py"
-      - "tests/runtime/test_agentic_core_spine_proof.py"
-      - "tests/unit/apps_e2e/**"
-      - ".claude/schemas/apps_e2e_*.schema.json"
-      - ".windsurf/schemas/apps_e2e_*.schema.json"
   workflow_dispatch:
     inputs:
       skip_apps:

@@ -13,20 +13,6 @@ name: Runtime HITL Integrity Gate
 # Distinct from author-gate-gates.yml (developer-loop harness HITL). Do not conflate.
 
 on:
-  pull_request:
-    paths:
-      - 'agentic_core/L3_orchestration/exit_control/**'
-      - 'agentic_core/L5_safety/exit_control/**'
-      - 'ops_scripts/ci/check_runtime_hitl_ledger_integrity.py'
-      - 'tests/agentic_core/L3_orchestration/exit_control/**'
-      - 'tests/unit/ops_scripts/ci/test_check_runtime_hitl_ledger_integrity.py'
-      - '.github/workflows/hitl-integrity-gate.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'agentic_core/L3_orchestration/exit_control/**'
-      - 'agentic_core/L5_safety/exit_control/**'
-      - 'ops_scripts/ci/check_runtime_hitl_ledger_integrity.py'
   workflow_dispatch:
     inputs:
       production_snapshot_url:

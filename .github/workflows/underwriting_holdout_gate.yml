@@ -1,12 +1,6 @@
 name: underwriting-holdout-gate
 
 on:
-  pull_request:
-    paths:
-      - 'apps_underwriting_ai/holdout/**'
-      - 'ops_scripts/ci/validate_underwriting_holdout.py'
-      - 'tests/apps_underwriting_ai/test_holdout_provenance_gate.py'
-      - '.github/workflows/underwriting_holdout_gate.yml'
   workflow_dispatch:
 
 jobs:

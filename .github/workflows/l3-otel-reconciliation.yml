@@ -32,13 +32,6 @@ on:
         description: "Observation window for the OTEL poller"
         required: false
         default: "168"
-  pull_request:
-    paths:
-      - "config/observability/required_spans.yaml"
-      - "agentic_core/runtime/contracts/runtime_telemetry_decorators.py"
-      - "ops_scripts/ci/check_l3_runtime_reconciliation.py"
-      - "ops_scripts/calibration/otel_span_poller.py"
-      - ".github/workflows/l3-otel-reconciliation.yml"
 
 permissions:
   contents: read

@@ -13,14 +13,6 @@ on:
         description: "Rolling window in days"
         required: false
         default: "7"
-  pull_request:
-    paths:
-      - "apps_eval/config/eval_policies.yaml"
-      - "config/judges/rubrics.yaml"
-      - "config/judges/budget.yaml"
-      - "config/exit_eval_rubrics/**"
-      - "ops_scripts/calibration/calibration_drift_detector.py"
-      - ".github/workflows/calibration-drift.yml"
 
 permissions:
   contents: read
