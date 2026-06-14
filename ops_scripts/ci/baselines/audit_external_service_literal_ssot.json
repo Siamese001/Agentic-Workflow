@@ -1,6 +1,6 @@
 {
   "gate_id": "AUDIT_3_external_service_literal_ssot",
-  "count": 557,
-  "seeded_at": "2026-06-14T07:48:56.198226+00:00",
+  "count": 560,
+  "seeded_at": "2026-06-14T08:03:31.926626+00:00",
   "mechanism": "source_scan"
 }

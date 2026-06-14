@@ -185,8 +185,17 @@ session_state = repo_root / "artifacts" / "governance" / f"session_state_{_sessi
 # Notion DB IDs for classification threshold gate (advisory — exit 0 always).
 # Imported from SSOT _notion_constants.py — never hardcode IDs here.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _notion_constants import PLANS_DB_ID as _NOTION_PLANS_DB_ID  # noqa: E402
-from _notion_constants import BACKLOG_ITEMS_DB_ID as _NOTION_BACKLOG_DB_ID  # noqa: E402
+from _notion_constants import (  # noqa: E402
+    PLANS_DATA_SOURCE_ID,
+    PLANS_DB_ID,
+    BACKLOG_ITEMS_DATA_SOURCE_ID,
+    BACKLOG_ITEMS_DB_ID,
+)
+
+# A write payload's parent.database_id may carry EITHER the canonical database id
+# or the data-source id (callers conflate the two) — match both, normalized.
+_NOTION_PLANS_IDS = {PLANS_DATA_SOURCE_ID.replace("-", ""), PLANS_DB_ID.replace("-", "")}
+_NOTION_BACKLOG_IDS = {BACKLOG_ITEMS_DATA_SOURCE_ID.replace("-", ""), BACKLOG_ITEMS_DB_ID.replace("-", "")}
 _NOTION_CLASSIFICATION_VIOLATIONS = (
     repo_root / "artifacts" / "governance" / "notion_classification_violations.jsonl"
 )
@@ -1335,17 +1344,15 @@ def check_notion_classification_gate(tool_name: str, payload: dict) -> int:
 
         # Normalize to bare hex so "ac53d31b-..." matches "ac53d31b..." etc.
         db_id_norm = db_id.replace("-", "")
-        plans_norm = _NOTION_PLANS_DB_ID.replace("-", "")
-        backlog_norm = _NOTION_BACKLOG_DB_ID.replace("-", "")
 
-        if db_id_norm == plans_norm:
+        if db_id_norm in _NOTION_PLANS_IDS:
             target_db = "Plans"
             threshold_msg = (
                 "Plans DB rows must be PLAN_MULTI_WAVE (≥2 waves, spans sessions). "
                 "Single-session planning uses native plan mode only — no disk file, no Notion. "
                 "Rule: .claude/rules/work-item-classification.md"
             )
-        elif db_id_norm == backlog_norm:
+        elif db_id_norm in _NOTION_BACKLOG_IDS:
             target_db = "BacklogItems"
             threshold_msg = (
                 "Backlog Items rows must be BUG_SYSTEMIC or ENHANCEMENT_ROADMAP. "
