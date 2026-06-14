@@ -32,9 +32,19 @@ For implementation or verification work, use this shape unless the user explicit
 
 ## Response floor for repo work
 
-Every repo-work response must include:
+Every repo-work response must **end with the receipt below, rendered as its own visually-separated
+block** — preceded by a `---` horizontal rule and a `### ⬛ Turn Receipt` heading. Do **not** wrap the
+receipt in a code fence: fenced content renders `[label](path)` as literal text, which would break the
+required clickable receipt hyperlinks (below). The `---` + heading is what gives the separation a fence
+would otherwise provide, while keeping links live. (The refactoring **Outcome frame** stays fenced —
+it is link-free — so a code turn reads as two distinct blocks: clickable receipt, then fenced frame.)
+
+The template (shown fenced here for documentation only — emit it **unfenced**, after a `---` and the heading):
 
 ```text
+---
+### ⬛ Turn Receipt
+
 STATUS: PASS | PARTIAL | FAIL | BLOCKED
 FILES_CHANGED:
 - [basename](repo/relative/path)

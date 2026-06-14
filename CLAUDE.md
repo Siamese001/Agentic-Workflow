@@ -56,6 +56,7 @@ Detail: `.claude/rules/002-pass-blocked-proof-contract.md`.
 - **BLOCKED** — cannot proceed (missing key/service/file, permission boundary, ambiguous destructive target).
 - Forbidden: PASS because a plan/marker was emitted; "should pass" language; burying failed gates as "pre-existing".
 - Receipts: list every repo path in `FILES_CHANGED`/`ARTIFACTS`/`REPORTS_GENERATED` as `[basename](forward/slash/path)`.
+- Receipt block: emit it as its own separated block — after a `---` rule + a `### ⬛ Turn Receipt` heading, **unfenced** (a code fence would kill the clickable links). SSOT: `.claude/rules/001-runtime-seam-execution.md` § Response floor.
 
 ## Author-Gate (HITL before edits)
 
