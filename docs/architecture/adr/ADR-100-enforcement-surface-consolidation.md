@@ -1,5 +1,10 @@
 # ADR-100 — Enforcement Surface Consolidation (closeout)
 
+> ⚠️ **Superseded in part by [ADR-104](ADR-104-notion-wave-plan-status-enforcement-removal.md)
+> (2026-06-14):** this ADR's decision to KEEP the Notion-status / wave-lifecycle / §36
+> plan-registration cluster as "load-bearing governance" was reversed — that enforcement never
+> functioned and was removed. ADR-100's other consolidations stand.
+
 - **Status:** Accepted
 - **Date:** 2026-06-14
 - **Plan:** [enforcement-surface-consolidation-d8b3f6.md](../../../plans/enforcement-surface-consolidation-d8b3f6.md)

@@ -1,8 +1,10 @@
-"""Unit tests for plan→SSOT path handling (plan plan-ssot-notion-pipeline-d2f7a1 W1).
+"""Unit tests for plan→SSOT path handling.
 
 Covers:
   - before_file_edit_branch_guard._is_plan_file (plans/** exempt from worktree isolation)
-  - _plan_registration.canonical_plans_dir (primary-checkout plans/ resolver)
+
+(The `_plan_registration.canonical_plans_dir` resolver tests were removed with the
+windsurf/cursor-era plan-registration pipeline — notion-wave-enforcement-removal.)
 """
 
 from __future__ import annotations
@@ -13,7 +15,6 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 GUARD_PATH = REPO_ROOT / ".claude" / "hooks" / "before_file_edit_branch_guard.py"
-REG_PATH = REPO_ROOT / ".claude" / "governance/scripts" / "_plan_registration.py"
 
 
 def _load(mod_name: str, path: Path):
@@ -51,19 +52,3 @@ class TestIsPlanFile:
         assert not self.guard._is_plan_file("docs/reports/plans/report-abc123.md")  # parent != 'plans'
         assert not self.guard._is_plan_file("plans/notes.txt")  # not .md
         assert not self.guard._is_plan_file("")
-
-
-class TestCanonicalPlansDir:
-    def setup_method(self):
-        self.reg = _load("_plan_registration_path_test", REG_PATH)
-
-    def test_default_is_repo_root_plans(self):
-        d = self.reg.canonical_plans_dir()
-        assert d.name == "plans"
-        assert d == self.reg.NEW_PLANS_DIR
-
-    def test_override_forces_primary_checkout(self):
-        d = self.reg.canonical_plans_dir("C:/Git/Agentic-Workflow-FRESH")
-        assert d == Path("C:/Git/Agentic-Workflow-FRESH") / "plans"
-        # A worktree base resolves to that base's plans/ (caller passes $CLAUDE_PROJECT_DIR = primary).
-        assert self.reg.canonical_plans_dir("/repo/primary").as_posix().endswith("/repo/primary/plans")
