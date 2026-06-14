@@ -30,10 +30,12 @@ Restructure the Anthropic prompt-cache helpers into stability-tier breakpoints t
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W5
-LAST_COMPLETED_WAVE: W4
+PLAN_STATUS: COMPLETED
+CURRENT_WAVE: DONE
+LAST_COMPLETED_WAVE: W5
 LAST_UPDATED: 2026-06-14
+
+PLAN_COMPLETE: plan=prompt-cache-anthropic-best-practice-c7a1e9 note="W1–W5 (P1–P8) shipped + merged to main f9dbee96eb; integration 181 passed; live-API confirmation + gateway/3rd-tier deferred"
 
 > **W1 delivered** (2026-06-14) — PR https://github.com/Siamese001/Agentic-Workflow/pull/351,
 > branch `feat/prompt-cache-w1-telemetry`. 23 new unit tests pass; 79-test regression green.
@@ -48,6 +50,13 @@ LAST_UPDATED: 2026-06-14
 > **W4 delivered** (2026-06-14) — PR https://github.com/Siamese001/Agentic-Workflow/pull/360
 > (stacked on #355), branch `feat/prompt-cache-w4-ttl-prewarm`. Per-tier TTL (stable 1h / docs 5m)
 > + `build_prewarm_payload` (max_tokens=0) + `ttl_seconds`/`needs_rewarm`; +10 tests; 125 passed, 0 failed.
+> **W5 delivered** (2026-06-14) — PR https://github.com/Siamese001/Agentic-Workflow/pull/361
+> (stacked on #360), branch `feat/prompt-cache-w5-multiturn-fanout`. Multi-turn breakpoints
+> (`place_multiturn_breakpoints`, 20-block lookback, cap 4) + `role:"system"` operator channel
+> + `split_for_cache_priming` (P8 fan-out); +13 tests; 138 passed, 0 failed.
+> **PLAN COMPLETE & MERGED TO MAIN** (2026-06-14) — all 5 PRs (#351/#352/#355/#360/#361) MERGED;
+> integration of W1 + W2–W5 onto origin/main tested green (**181 passed, 0 failed**) and pushed
+> (main → `f9dbee96eb`). All 8 best-practice deltas (P1–P8) shipped.
 > Live-API `cache_read` confirmation remains the declared deferral (needs a live run through the
 > now-tiered orchestrator path) — see Verification vs Deferral.
 
@@ -72,7 +81,7 @@ LAST_UPDATED: 2026-06-14
 | W2 | W2.1 | P3 model-aware token-floor threshold | ~18K | per-model floors are known/derivable (Opus 4.8=4096, Sonnet 4.6/Fable 5=2048, Haiku=4096) | ✅ DONE | no `cache_control` marker emitted below its model's token floor (PR #352) |
 | W3 | W3.1, W3.2 | P1 multi-breakpoint renderer + P2 workload-aware caching strategy | ~40K | renderer/payload builders accept a list of boundary hints; ≤4 markers/request | ✅ DONE | stable tiers cache independently; Tier-3 unmarked for one-shot RAG (PR #355; 2 tiers, gateway refactor deferred) |
 | W4 | W4.1 | P6 TTL strategy + pre-warming | ~22K | gateway can set `1h`/`5m` TTL and issue a `max_tokens:0` pre-warm | ✅ DONE | Tier-1/2 hot on first real request where latency is user-visible (PR #360) |
-| W5 | W5.1, W5.2 | P7 multi-turn / agentic breakpoints + P8 concurrent fan-out timing | ~28K | agentic/parallel call paths exist to exercise | 🔲 TODO | 20-block lookback respected; fan-out reads first writer's cache |
+| W5 | W5.1, W5.2 | P7 multi-turn / agentic breakpoints + P8 concurrent fan-out timing | ~28K | agentic/parallel call paths exist to exercise | ✅ DONE | 20-block lookback respected; fan-out reads first writer's cache (PR #361) |
 
 ### Phase Progress
 
@@ -84,8 +93,8 @@ LAST_UPDATED: 2026-06-14
 | W3.1 | P1 — Multi-breakpoint renderer (list of boundary hints, cap 4) | ✅ DONE |
 | W3.2 | P2 — Workload-aware Tier-3 caching decision (`cache_strategy` selector) | ✅ DONE |
 | W4.1 | P6 — Tier-1/2 `1h` TTL + startup pre-warm; Tier-3 `5m` | ✅ DONE |
-| W5.1 | P7 — Multi-turn / agentic breakpoints + `role:"system"` operator channel | 🔲 TODO |
-| W5.2 | P8 — Concurrent fan-out sequencing (send 1, await first token, fan out N-1) | 🔲 TODO |
+| W5.1 | P7 — Multi-turn / agentic breakpoints + `role:"system"` operator channel | ✅ DONE |
+| W5.2 | P8 — Concurrent fan-out sequencing (send 1, await first token, fan out N-1) | ✅ DONE |
 
 ---
 
@@ -218,14 +227,16 @@ CHECKPOINT: D
 ## Wave 5 — Multi-turn + concurrent fan-out (P7 + P8)
 
 WAVE_ID: W5
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: REQUIRED
 CHECKPOINT: E
 
 **Phases**:
-- **W5.1** — P7 multi-turn / agentic breakpoints + `role:"system"` operator channel | ~16K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W5.2** — P8 concurrent fan-out sequencing | ~12K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W5.1** — P7 multi-turn / agentic breakpoints + `role:"system"` operator channel | ~16K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W5.2** — P8 concurrent fan-out sequencing | ~12K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+
+> **DELIVERED** (2026-06-14, PR https://github.com/Siamese001/Agentic-Workflow/pull/361). Pure helpers `place_multiturn_breakpoints` (20-block lookback, cap 4) + `append_operator_system_message` (role:"system" channel) + `split_for_cache_priming` (P8). The live await-first-token fan-out timing is the caller's streaming concern (documented, not wired) — consistent with the W3 deferral of infra not present in this layer.
 
 **Acceptance**:
 - Breakpoint on the last block of the most-recent turn; an intermediate breakpoint every ≤15 content blocks to respect the 20-block lookback; tools never swapped mid-conversation (append via tool-search); operator instructions delivered as `role:"system"` messages, not by editing the system block.
@@ -281,9 +292,9 @@ CHECKPOINT: E
 
 **GAP-6: Unguarded frozen prefix** — upstream interpolation could poison the system prefix (delta #6). **Closed by W1.2.**
 
-**GAP-7: Single-turn-only shape** — long agentic turns miss the 20-block lookback; no operator channel (delta #7). Closed by W5.1.
+**GAP-7: Single-turn-only shape** — long agentic turns miss the 20-block lookback; no operator channel (delta #7). **Closed by W5.1** (PR #361: `place_multiturn_breakpoints` + `append_operator_system_message`).
 
-**GAP-8: Untimed concurrent fan-out** — parallel identical-prefix calls all pay full price (delta #8). Closed by W5.2.
+**GAP-8: Untimed concurrent fan-out** — parallel identical-prefix calls all pay full price (delta #8). **Closed by W5.2** (PR #361: `split_for_cache_priming`; live await-first-token timing is the caller's streaming concern).
 
 ---
 
@@ -319,7 +330,7 @@ DoD-7: Boundary discipline — a `CoreAdditionAuthorGateReceipt` (verdict=PASS) 
 
 DoD-8: Writeback — memory updated with the caching architecture decision; sibling docs (gateway docstrings) reflect the 3-tier model.
 - Evidence: `mem:` entity / file-memory note linked; gateway docstring updated
-- Status: 🔄 PARTIAL — file-memory note `prompt-cache-redesign-w1-telemetry` written (W1/W2 seam facts). The gateway 3-tier docstring update lands in W3.
+- Status: ✅ DONE — file-memory note `prompt-cache-redesign-w1-telemetry` updated through W5 (seam facts + per-wave deltas). The gateway 3-tier docstring is N/A — the flat `provider_gateway` was deferred (W3); the orchestrator + `anthropic_cache_control` docstrings carry the tier model.
 
 ### Verification vs Deferral
 
