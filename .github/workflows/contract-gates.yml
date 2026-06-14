@@ -47,7 +47,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e .
-          python -m pip install pytest pyyaml
+          python -m pip install pytest pytest-timeout pyyaml
 
       # ── Subprocess Timeout / Terminal Cleanup (was subprocess-timeout-gate.yml)
       # Mirrors T7h pre-commit hook server-side to close the --no-verify
