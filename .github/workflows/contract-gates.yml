@@ -75,8 +75,11 @@ jobs:
         run: python tools/generate/check_exclusion_sync.py
       - name: Severity-band SSOT
         run: python ops_scripts/ci/check_severity_band_ssot.py
-      - name: Graph-layer evidence (refactoring plans)
-        run: python ops_scripts/ci/check_graph_layer_evidence.py
+      # Per-file gate → run diff-scoped: only re-check plans changed in THIS PR, so a
+      # pre-existing non-compliant plan can't fail an unrelated change. Full-tree sweep
+      # still available via the no-arg invocation (local / nightly / workflow_dispatch).
+      - name: Graph-layer evidence (changed refactoring plans)
+        run: python ops_scripts/ci/check_graph_layer_evidence.py --changed-only --base-ref "${{ github.base_ref || 'main' }}"
       - name: Structure policy
         run: python ops_scripts/ci/check_structure_policy.py
 

@@ -30,9 +30,10 @@ Run manually:
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
-import subprocess  # noqa: F401  -- reserved for future git-blame lookup
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -375,34 +376,121 @@ def _validate_baseline_integrity(baseline: set[str]) -> list[str]:
     return issues
 
 
-def main() -> int:
+def _changed_plan_files(base_ref: str) -> list[str] | None:
+    """Repo-relative paths changed vs ``base_ref`` (three-dot merge-base diff).
+
+    Returns the changed-file list (possibly empty), or ``None`` when git cannot resolve any
+    candidate base ref — in which case the caller falls back to a full whole-repo scan
+    (fail-open to the legacy behaviour; a per-file gate must never go *looser* than today by
+    silently passing when it cannot tell what changed).
+    """
+    for ref in (f"origin/{base_ref}", base_ref, f"refs/remotes/origin/{base_ref}"):
+        try:
+            proc = subprocess.run(
+                ["git", "diff", "--name-only", f"{ref}...HEAD"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
+        except (OSError, subprocess.SubprocessError):
+            continue
+        if proc.returncode == 0:
+            return [ln.strip() for ln in proc.stdout.splitlines() if ln.strip()]
+    return None
+
+
+def _select_changed_plan_paths(changed_rel: list[str]) -> list[Path]:
+    """Filter changed repo-relative paths to evaluable top-level active plans.
+
+    Keeps only ``*.md`` files directly under ``.claude/plans/`` (matching the whole-repo glob),
+    excluding README/template, and only those that still exist on disk (a deleted plan needs no
+    evidence). This is what makes the gate *diff-scoped*: pre-existing plans nobody touched are
+    not re-checked on an unrelated PR.
+    """
+    selected: set[Path] = set()
+    for rel in changed_rel:
+        p = ROOT / rel.replace("\\", "/")
+        if (
+            p.parent == PLANS_DIR
+            and p.suffix == ".md"
+            and p.name not in _ACTIVE_PLAN_EXCLUDE_NAMES
+            and p.is_file()
+        ):
+            selected.add(p)
+    return sorted(selected, key=lambda x: str(x))
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Constitutional §22 graph-layer-evidence gate for refactoring plans."
+    )
+    parser.add_argument(
+        "--changed-only",
+        action="store_true",
+        help=(
+            "Only evaluate plan files changed vs --base-ref. This gate is a PER-FILE check, so "
+            "in CI it should run diff-scoped: pre-existing non-compliant plans must not fail an "
+            "unrelated PR. Falls back to a full scan if git cannot resolve the base ref."
+        ),
+    )
+    parser.add_argument(
+        "--base-ref",
+        default="main",
+        help="Base git ref to diff against in --changed-only mode (default: main).",
+    )
+    args = parser.parse_args(argv)
+
     if not PLANS_DIR.is_dir():
         print(f"[check_graph_layer_evidence] plans dir missing: {PLANS_DIR}")
         return 0  # Not blocking on missing dir — no plans to check
 
-    plans = sorted(
-        p
-        for p in PLANS_DIR.glob("*.md")
-        if p.is_file() and p.name not in _ACTIVE_PLAN_EXCLUDE_NAMES
-    )
-    if not plans:
-        print("[check_graph_layer_evidence] no plans found — OK")
-        return 0
+    changed_only = args.changed_only
+    if changed_only:
+        changed = _changed_plan_files(args.base_ref)
+        if changed is None:
+            print(
+                "[check_graph_layer_evidence] --changed-only: could not resolve base "
+                f"'{args.base_ref}' via git — falling back to full scan."
+            )
+            changed_only = False
+        else:
+            plans = _select_changed_plan_paths(changed)
+            if not plans:
+                print(
+                    "[check_graph_layer_evidence] --changed-only: no active plan files changed "
+                    f"vs '{args.base_ref}' — OK"
+                )
+                return 0
+
+    if not changed_only:
+        plans = sorted(
+            p
+            for p in PLANS_DIR.glob("*.md")
+            if p.is_file() and p.name not in _ACTIVE_PLAN_EXCLUDE_NAMES
+        )
+        if not plans:
+            print("[check_graph_layer_evidence] no plans found — OK")
+            return 0
 
     baseline = _load_baseline()
 
-    # Baseline integrity — orphaned and duplicate entries are silent bypasses.
-    integrity_issues = _validate_baseline_integrity(baseline)
-    if integrity_issues:
-        print(f"\n[check_graph_layer_evidence] FAIL — {len(integrity_issues)} baseline integrity issue(s):")
-        for issue in integrity_issues:
-            print(f"  - {issue}")
-        print(
-            "\nFix: remove stale entries from "
-            "ops_scripts/ci/baselines/graph_layer_evidence_baseline.json "
-            "or restore the missing plan file. Duplicate entries must be deduped."
-        )
-        return 1
+    # Baseline integrity (orphaned/duplicate entries) is a WHOLE-REPO invariant about the
+    # baseline file itself, not about any one PR's diff — only enforce it on a full scan so it
+    # can never fail an unrelated changed-only PR. The nightly/full run still catches it.
+    if not changed_only:
+        integrity_issues = _validate_baseline_integrity(baseline)
+        if integrity_issues:
+            print(f"\n[check_graph_layer_evidence] FAIL — {len(integrity_issues)} baseline integrity issue(s):")
+            for issue in integrity_issues:
+                print(f"  - {issue}")
+            print(
+                "\nFix: remove stale entries from "
+                "ops_scripts/ci/baselines/graph_layer_evidence_baseline.json "
+                "or restore the missing plan file. Duplicate entries must be deduped."
+            )
+            return 1
 
     violations: list[dict] = []
     skipped_grandfathered = 0
