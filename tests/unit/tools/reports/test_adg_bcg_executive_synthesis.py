@@ -127,6 +127,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     _write_json(review, {"artifact_kind": "adg_run_review_template"})
     _write_json(burndown, {"summary": {"P0": {"gross": 1, "guardian": 0, "net": 1}, "P1": {}, "P2": {}, "P3": {}}})
 
+    docs = tmp_path / "docs_mirror"
     rc, out = emit_bcg_executive_summary(
         artifacts,
         "run",
@@ -137,13 +138,14 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         burndown,
         {"structural_outputs": None, "refactor_accelerator": None, "graphdb_queries": None, "runtime_spine": None},
         print_inline=True,
+        docs_dir=docs,
     )
     assert rc == 0
     assert out == artifacts / "adg_bcg_executive_summary_run.json"
     for suffix in ("json", "yaml", "md"):
         assert (artifacts / f"adg_bcg_executive_summary_run.{suffix}").is_file()
         assert (artifacts / f"adg_bcg_executive_summary_latest.{suffix}").is_file()
-        assert (Path("docs/reports/adg") / f"adg_bcg_executive_summary_latest.{suffix}").is_file()
+        assert (docs / f"adg_bcg_executive_summary_latest.{suffix}").is_file()
     data = yaml.safe_load((artifacts / "adg_bcg_executive_summary_run.yaml").read_text(encoding="utf-8"))
     assert data["schema_version"] == "1.0"
     assert data["artifact_kind"] == "adg_bcg_executive_summary"
@@ -174,8 +176,139 @@ def test_render_markdown_accepts_locked_verdicts(tmp_path: Path) -> None:
     _sqlite(db)
     gate = artifacts / "gate.json"
     _write_json(gate, {"timestamp": "ts", "total_gates": 0, "overall_exit_code": 0, "gates": []})
-    rc, out = emit_bcg_executive_summary(artifacts, "ts", db, gate, None, None, None, {}, print_inline=False)
+    rc, out = emit_bcg_executive_summary(artifacts, "ts", db, gate, None, None, None, {}, print_inline=False, docs_dir=tmp_path / "docs_mirror")
     assert rc == 0
     doc = json.loads(out.read_text(encoding="utf-8"))
     assert doc["executive_decision"]["verdict"] in {"BLOCKED", "GREEN_WITH_DEBT", "REPORT_INCONSISTENT", "DEGRADED", "CLEAN", "NEEDS_RUNTIME_PROOF", "TESTING_CONTROL_GAP"}
     assert render_bcg_inline_markdown(doc).startswith("## ADG Executive Brief")
+
+
+# ---------------------------------------------------------------------------
+# Substance: the synthesis must actually STUDY the structural graph MVs.
+# ---------------------------------------------------------------------------
+
+_STRUCT_SCOPE = "agentic_core/L0_routing/router.py"
+
+
+def _sqlite_structural(path: Path) -> None:
+    """ADG snapshot with real structural-graph MVs (centrality / blast radius / reverse
+    deps / cones / chokepoints / SCC / newly-introduced) + a graph-vs-report mismatch."""
+    with sqlite3.connect(path) as conn:
+        conn.execute("create table mv_hotspot_coverage_risk(file text, priority_band text, risk_band text, coverage_band text, coverage_pct real, fan_in int, fan_out int, criticality_score real, combined_risk_score real, violation_count int)")
+        conn.execute("insert into mv_hotspot_coverage_risk values (?,?,?,?,?,?,?,?,?,?)", (_STRUCT_SCOPE, "P1_URGENT", "CRITICAL", "ABSENT", 0, 40, 30, 95, 99, 7))
+        conn.execute("create table mv_hotspot_centrality(node_id int, resolved_path text, layer text, fan_in int, fan_out int, degree int, betweenness_approx real, degree_centrality real)")
+        conn.execute("insert into mv_hotspot_centrality values (1, ?, 'L0', 40, 30, 70, 0.42, 0.31)", (_STRUCT_SCOPE,))
+        conn.execute("create table mv_graph_critical_path_blast_radius(node_id int, file_path text, layer text, direct_downstream int, hop2_downstream int, raw_blast_radius int, weighted_blast_radius real, critical_downstream_count int, blast_radius_type text)")
+        conn.execute("insert into mv_graph_critical_path_blast_radius values (1, ?, 'L0', 20, 50, 70, 612.5, 12, 'critical')", (_STRUCT_SCOPE,))
+        conn.execute("create table mv_graph_reverse_dependency_hotspots(node_id int, file_path text, layer text, direct_inbound int, hop2_inbound int, reverse_dependency_score real, layer_criticality_weight real)")
+        conn.execute("insert into mv_graph_reverse_dependency_hotspots values (1, ?, 'L0', 35, 80, 410.0, 2.0)", (_STRUCT_SCOPE,))
+        conn.execute("create table mv_dependency_cone_risk(node_id int, resolved_path text, layer text, direct_fan_in int, hop2_fan_in int, hop3_fan_in int, transitive_depth_approx int, cone_risk_score real)")
+        conn.execute("insert into mv_dependency_cone_risk values (1, ?, 'L0', 35, 60, 90, 5, 288.0)", (_STRUCT_SCOPE,))
+        conn.execute("create table mv_graph_chokepoint_bridges(node_id int, file_path text, layer text, fan_in int, fan_out int, bridge_score real, imbalance_ratio real, bridge_type text)")
+        conn.execute("insert into mv_graph_chokepoint_bridges values (1, ?, 'L0', 40, 30, 120.0, 1.3, 'articulation')", (_STRUCT_SCOPE,))
+        conn.execute("create table mv_graph_scc_clusters(node_id int, file_path text, layer text, cluster_size int, cluster_members text, scc_risk_score real, cluster_type text)")  # intentionally empty
+        conn.execute("create table mv_newly_introduced_critical_paths(node_id int, adg_name text, layer text, file text, criticality_score real, prev_score real, delta real, is_new int)")
+        conn.execute("insert into mv_newly_introduced_critical_paths values (1, 'ADG::Module::router', 'L0', ?, 99.0, 0.0, 99.0, 1)", (_STRUCT_SCOPE,))
+        conn.execute("create table mv_graph_vs_report_mismatches(snapshot_id text, mismatch_type text, ref_id text, file text, detail text, mismatch_delta int)")
+        conn.execute("insert into mv_graph_vs_report_mismatches values ('s', 'centrality_drift', 'n1', ?, 'report disagrees with graph', 3)", (_STRUCT_SCOPE,))
+
+
+def test_structural_graph_mvs_are_actually_queried(tmp_path: Path) -> None:
+    db = tmp_path / "adg.sqlite"
+    _sqlite_structural(db)
+    impact = synthesize_graphdb_decision_impact(db, {}, [_gate("c3_silent_writes", verdict="FIX")], {})
+    risks = impact["top_graph_risks"]
+    assert risks, "structural MVs must produce top_graph_risks"
+    top = risks[0]
+    assert top["scope"] == _STRUCT_SCOPE
+    # Real values from the MVs — NOT the old NULL placeholders.
+    assert top["centrality"] is not None
+    assert top["blast_radius"] is not None
+    assert top["reverse_dependency"] is not None
+    assert top["dependency_cone"] is not None
+    assert impact["summary"]["structural_mvs_queried"] >= 5
+    # Empty SCC MV is handled (available, queried, zero rows used) — not a crash.
+    assert impact["structural_mv_status"]["mv_graph_scc_clusters"]["available"] is True
+    assert impact["structural_mv_status"]["mv_graph_scc_clusters"]["rows_used"] == 0
+
+
+def test_high_blast_scope_overlapping_fix_emits_refactor_action(tmp_path: Path) -> None:
+    _repo_tests(tmp_path)
+    db = tmp_path / "adg.sqlite"
+    _sqlite_structural(db)
+    fix_gate = _gate(_STRUCT_SCOPE, verdict="FIX")  # gate id == scope → overlap
+    inv = build_test_scope_inventory(tmp_path)
+    testing = synthesize_testing_investment_map(db, tmp_path, inv, {})
+    graph = synthesize_graphdb_decision_impact(db, {}, [fix_gate], {})
+    artifacts = build_artifact_usage_matrix({"gate_results": tmp_path / "g.json", "sqlite_snapshot": db}, {}, {})
+    mv = build_mv_usefulness_audit(db, graph, [fix_gate])
+    actions = build_canonical_next_best_actions([fix_gate], graph, testing, artifacts, mv, {})
+    assert any(r["action_type"] == "refactor" for r in actions["rows"]), [r["action_type"] for r in actions["rows"]]
+
+
+def test_artifact_consistency_reflects_graph_vs_report_mismatches(tmp_path: Path) -> None:
+    from tools.reports.adg_bcg_executive_synthesis import _artifact_consistency, _audit_notes
+
+    db = tmp_path / "adg.sqlite"
+    _sqlite_structural(db)  # has one mismatch row
+    cons = _artifact_consistency(db)
+    assert cons["status"] == "FAIL"
+    assert cons["errors"]
+    notes = _audit_notes([], None, cons)
+    assert notes["artifact_consistency"]["status"] == "FAIL"
+
+
+def test_artifact_consistency_pass_when_no_mismatch_rows(tmp_path: Path) -> None:
+    from tools.reports.adg_bcg_executive_synthesis import _artifact_consistency
+
+    db = tmp_path / "adg.sqlite"
+    with sqlite3.connect(db) as conn:
+        conn.execute("create table mv_graph_vs_report_mismatches(mismatch_type text, ref_id text, file text, detail text, mismatch_delta int)")
+    assert _artifact_consistency(db)["status"] == "PASS"
+
+
+def test_runtime_proof_distinguishes_quality_failure_from_measurement_gap(tmp_path: Path) -> None:
+    from tools.reports.adg_bcg_executive_synthesis import _runtime_lens
+
+    db = tmp_path / "adg.sqlite"
+    _sqlite_structural(db)
+    failing = _runtime_lens({"runtime_spine": {"semantic_failures": [{"x": 1}, {"y": 2}]}}, db)
+    assert "FAILING" in failing["measurement_gap_vs_quality_failure"]
+    spine = next(s for s in failing["runtime_proof_signals"] if s["signal"] == "runtime_spine")
+    assert spine["status"] == "present_failing"
+    missing = _runtime_lens({}, db)
+    assert "measurement gap" in missing["measurement_gap_vs_quality_failure"].lower()
+
+
+def test_artifact_staleness_flagged_on_divergent_timestamp(tmp_path: Path) -> None:
+    current = tmp_path / "adg_structural_outputs_06132026_2227.json"
+    current.write_text("{}", encoding="utf-8")
+    old = tmp_path / "adg_structural_outputs_06012026_0900.json"
+    old.write_text("{}", encoding="utf-8")
+    m = build_artifact_usage_matrix({"current": current, "old": old}, {}, {"run_ts": "06132026_2227"})
+    by = {r["artifact_key"]: r for r in m["rows"]}
+    assert by["current"]["stale"] is False
+    assert by["old"]["stale"] is True
+
+
+def test_docs_dir_isolates_writes(tmp_path: Path) -> None:
+    _repo_tests(tmp_path)
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    db = artifacts / "adg_indexed_run.sqlite"
+    _sqlite_structural(db)
+    gate = artifacts / "adg_gate_results_run.json"
+    _write_json(gate, {"timestamp": "run", "total_gates": 1, "overall_exit_code": 1, "gates": [_gate("blk", records=1)]})
+    docs = tmp_path / "docs_mirror"
+    rc, _ = emit_bcg_executive_summary(artifacts, "run", db, gate, None, None, None, {}, print_inline=False, docs_dir=docs)
+    assert rc == 0
+    assert (docs / "adg_bcg_executive_summary_latest.md").is_file()
+    assert (artifacts / "adg_bcg_executive_summary_latest.md").is_file()
+
+
+def test_module_has_no_hardcoded_current_run_values() -> None:
+    import tools.reports.adg_bcg_executive_synthesis as module
+
+    src = Path(module.__file__).read_text(encoding="utf-8")
+    for forbidden in ("571000", "12341", "5047", "2843", "1583", "10940", "4533"):
+        assert forbidden not in src, f"forbidden current-run constant {forbidden} leaked into module"

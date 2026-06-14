@@ -85,7 +85,9 @@ LEGACY_SCRIPTS: list[str] = [
     "post_agent_mcp_preflight_audit.py",
     "post_agent_plan_evidence_gate.py",
     "post_agent_plan_wave_summary_audit.py",
-    "post_agent_fortknox_integrity_audit.py",
+    # [notion-wave-enforcement-removal] post_agent_plan_registration_capture +
+    # post_agent_plan_supersession_retire REMOVED (Notion plan-registration enforcement retired).
+    # [§32 2026-06-14] post_agent_fortknox_integrity_audit.py REMOVED — Fort Knox arm decommissioned.
 ]
 
 

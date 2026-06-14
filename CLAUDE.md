@@ -175,12 +175,11 @@ A **Skill** column entry means a richer procedural skill covers the same area �
 | `adg-analysis-procedures.md` / `adg-canonical-invariants.md` | ADG analysis + invariants | [`graph-analysis`](.claude/skills/graph-analysis/SKILL.md), [`adg-sqlite`](.claude/skills/adg-sqlite/SKILL.md) |
 | `adg-p-band-burn-down-discipline.md` / `adg-post-run-burndown.md` | P-Band burndown + post-run dispatch | — |
 
-### Eval / judges / fortknox
+### Eval / judges
 | Rule | Topic | Skill |
 |---|---|---|
 | `evaluation-promotion-gate.md` | Regression-pass required to promote | [`operational-gates`](.claude/skills/operational-gates/SKILL.md) |
 | `judge-calibration-cadence.md` | Judge calibration cadence | — |
-| `fortknox-certification-discipline.md` | Fort Knox certification | [`fortknox-evidence`](.claude/skills/fortknox-evidence/SKILL.md) |
 | `intelligence-ledger-family.md` | Ledger writer/consulter invariants | [`ledger-consulter`](.claude/skills/ledger-consulter/SKILL.md) |
 
 ### MCP / infra / runtime

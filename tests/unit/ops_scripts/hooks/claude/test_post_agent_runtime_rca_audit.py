@@ -330,6 +330,48 @@ class TestRuntimeRcaAudit:
         assert _run(rca_mod, text, monkeypatch) == 0
         assert _rows(rca_mod) == []
 
+    def test_missing_response_floor_flagged(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # A repo-work turn (files changed) that wrapped up in prose with NO STATUS floor — the
+        # dominant format-drift mode the rule-001 § Canonical post-turn output section exists to stop.
+        text = "Committed the fix and pushed.\nFILES_CHANGED:\n- [foo.py](foo.py)\n"
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        floor = [r for r in rows if r["kind"] == "missing_response_floor"]
+        assert floor, [r["kind"] for r in rows]
+        assert floor[0]["status"] == "NONE"
+        assert "files_changed" in floor[0]["repo_work_signals"]
+
+    def test_pure_prose_still_clean(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # No STATUS line AND no floor signal -> a question / non-repo turn stays clean (guards the
+        # missing_response_floor check against false positives on ordinary prose answers).
+        text = "Here's how the router works: it picks an arm, then logs the decision. No edits made."
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == []
+
+    def test_adg_run_exempt_from_missing_floor(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # An ADG generate/audit run carries its OWN burndown + gates output contract that supersedes
+        # the floor (rule 001 § Canonical post-turn output, point 4). Even with a floor signal and no
+        # STATUS line it must NOT be flagged missing_response_floor — the ADG burndown audit owns it.
+        text = (
+            "Ran `python tools/generate_full_adg.py`. ADG generated.\n"
+            "ARTIFACTS:\n- [adg_burndown_report.md](artifacts/adg/adg_burndown_report.md)\n"
+            "| Gate ID | Band | Verdict |\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == []
+
+    def test_adg_run_exempt_from_outcome_frame(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # generate_full_adg runs are governed ONLY by the BCG burndown contract — even a refactor-style
+        # ADG turn (code file changed + STATUS:PASS, no Outcome frame) must NOT be flagged
+        # missing_refactor_outcome. The whole runtime-rca audit defers to the ADG burndown gate.
+        text = (
+            "Regenerated the graph via `python tools/generate_full_adg.py`.\n"
+            "STATUS: PASS\nFILES_CHANGED:\n- [phase_c.py](tools/generate/phase_c.py)\n"
+            "COMMANDS_RUN:\n- python tools/generate_full_adg.py -> exit 0\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == []
+
 
 class TestAfterAgentChainRegistration:
     def test_runtime_rca_registered_in_chain(self) -> None:

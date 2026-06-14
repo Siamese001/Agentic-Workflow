@@ -1,3 +1,6 @@
+---
+plan_type: infra
+---
 # ADG Decision Synthesis
 
 - Status: Approved

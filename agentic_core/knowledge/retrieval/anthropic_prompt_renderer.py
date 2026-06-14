@@ -88,14 +88,22 @@ class RenderedPrompt:
     document_block_count:
         Number of <document> blocks rendered (0 when abstain_recommended).
     cache_boundary_hint:
-        Byte offset after which the gateway adapter may apply
-        ``cache_control=ephemeral`` on the static prefix. ``-1`` when
-        caching is not applicable (abstain path or empty envelope).
+        Byte offset after which a caller may apply ``cache_control=ephemeral``
+        on the static prefix. ``-1`` when caching is not applicable (abstain
+        path or empty envelope). Kept for back-compat — equals the LAST
+        (documents) boundary in ``cache_boundary_hints``.
+    cache_boundary_hints:
+        Ordered cumulative byte offsets marking each cacheable STABILITY TIER
+        within ``text``: ``(end_of_system_tier, end_of_documents_tier)``. A
+        multi-breakpoint caller marks each tier as its own cached block and
+        leaves the volatile tail (``text[hints[-1]:]`` — task/query/grounding)
+        unmarked. Empty when nothing is cacheable.
     """
 
     text: str
     document_block_count: int
     cache_boundary_hint: int
+    cache_boundary_hints: tuple[int, ...] = ()
 
 
 def _escape(value: Any) -> str:
@@ -192,11 +200,14 @@ def render_anthropic_prompt(
 
     lines: list[str] = []
 
-    # 1. System blocks (static — part of cacheable prefix)
+    # 1. System blocks (static — Tier 1, the most stable cacheable prefix)
     for block in envelope.system_blocks:
         if block.strip():
             lines.append(block.rstrip())
             lines.append("")  # blank separator
+
+    # Tier-1 boundary: end of the system section (0 when there are no system blocks).
+    system_boundary = len("\n".join(lines).rstrip())
 
     # 2. Document blocks in envelope order (must-use first is already the
     #    contract of PromptEnvelopeFactory.from_contract — we trust the
@@ -207,10 +218,19 @@ def render_anthropic_prompt(
         lines.append(_render_document(document_count, chunk))
         lines.append("")  # blank separator between documents
 
-    # Cache boundary: end of the last document (before <task>)
-    # If no documents, cache boundary is -1 (nothing static to cache)
+    # Tier-2 boundary: end of the last document (before <task>).
+    # If no documents, the documents boundary is -1 (nothing static to cache).
     prefix_text = "\n".join(lines).rstrip()
     cache_boundary = len(prefix_text) if document_count > 0 else -1
+
+    # Ordered cacheable-tier boundaries within the final text: system tier, then
+    # documents tier. Each becomes its own cached block; the volatile tail after
+    # the last hint (task/query/grounding) is never marked.
+    boundary_hints: list[int] = []
+    if system_boundary > 0:
+        boundary_hints.append(system_boundary)
+    if cache_boundary > 0 and cache_boundary not in boundary_hints:
+        boundary_hints.append(cache_boundary)
 
     # 3. Task spec (dynamic — per-call, outside cache)
     task_spec = envelope.task_spec.strip() if envelope.task_spec else ""
@@ -236,6 +256,7 @@ def render_anthropic_prompt(
         text=final_text,
         document_block_count=document_count,
         cache_boundary_hint=cache_boundary,
+        cache_boundary_hints=tuple(boundary_hints),
     )
 
 

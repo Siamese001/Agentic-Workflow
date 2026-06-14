@@ -1,4 +1,9 @@
 {
+  "env": {
+    "WORKTREE_AUTODELIVER": "1",
+    "WORKTREE_AUTODELIVER_TRUNK": "main",
+    "WORKTREE_REAP_BRANCH_PREFIXES": "chat/,feat/,fix/,codex/"
+  },
   "permissions": {
     "allow": [
       "Bash",
@@ -154,6 +159,10 @@
           {
             "type": "command",
             "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/after_agent_governance_dispatch.py\""
+          },
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/auto_deliver_on_scope_complete.py\""
           }
         ]
       }

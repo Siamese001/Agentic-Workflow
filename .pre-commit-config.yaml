@@ -594,37 +594,9 @@ repos:
       # [notion-wave-enforcement-removal] T7u Plan–Notion Registration (§36) pre-commit hook
       # REMOVED — the windsurf/cursor-era plan-registration / Notion-status enforcement is retired.
 
-      # -- T7s: Fort Knox Certification Integrity (Constitutional §32) ---------------
-      # Three gates wired independently (separation of duties):
-      #   * clean-bundle gate: compiler + bundle verifier agree, trust_level != FAILED
-      #   * mutation-rejection gate: every adversarial mutation is rejected
-      #   * positive-control gate: RTC-REQ-001 remains SIGNED_OFF (canary)
-      # Bypass: FORTKNOX_DISCIPLINE_BYPASS=1 (all three honor the same env var).
-      # Rule SSOT: .claude/rules/fortknox-certification-discipline.md
-      # Author-Gate trigger: .claude/rules/author-gate-decision-points.md §1.11
-      - id: fortknox-clean-bundle
-        name: "T7s.1: Fort Knox clean-bundle (§32)"
-        entry: py ops_scripts/ci/check_fortknox_clean_bundle.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      - id: fortknox-mutation-rejection
-        name: "T7s.2: Fort Knox mutation rejection (§32)"
-        entry: py ops_scripts/ci/check_fortknox_mutation_rejection.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      - id: fortknox-positive-control
-        name: "T7s.3: Fort Knox positive control (§32)"
-        entry: py ops_scripts/ci/check_fortknox_positive_control.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
+      # -- T7s.1–.3: Fort Knox Certification Integrity — REMOVED 2026-06-14 -----------
+      # Constitutional §32 decommissioned (dead input certification/evidence_assertions.jsonl).
+      # Rule: .claude/rules/fortknox-certification-discipline.md (DEPRECATED stub).
 
       # -- T8r: Runtime Certification Advisory Gate (Phase E.1) -----------------
       # Phase E.1 advisory gate per ADR-080 §11 — reads the per-app Phase D
@@ -652,21 +624,7 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- T7s.4: Apps_e2e Fort Knox SIGNED_PROOF (§32 apps arm) -----------------
-      # Re-runs the W6 consolidated proof generator (which orchestrates the W3
-      # compiler + W5 signature re-verify + W4 mutation report read) and asserts
-      # `all_gates_pass=true` on the resulting APPS_HUNDRED_PERCENT_RUNTIME_PROOF.
-      # Gates: canary PASS · trust ∈ SIGNED set · signature VERIFIED ·
-      #        mutation 0 accepts · 0 BLOCKED · 0 NOT_VERIFIED · live re-verify.
-      # Bypass: FORTKNOX_DISCIPLINE_BYPASS=1 (shared with T7s.1/2/3).
-      # Plan SSOT: .claude/plans/apps-fort-knox-parity-c5d9a3.md §13–§19.
-      - id: apps-fortknox-signed-proof
-        name: "T7s.4: Apps_e2e Fort Knox SIGNED_PROOF (§32)"
-        entry: py ops_scripts/ci/check_apps_fortknox_signed_proof.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
+      # -- T7s.4: Apps_e2e Fort Knox SIGNED_PROOF — REMOVED 2026-06-14 (constitutional §32 decommissioned)
 
       # -- T7r: apps_* spine delegation (ADR-078) ----------------------------------
       # Asserts every apps_*/ top-level package imports the agentic_core spine
