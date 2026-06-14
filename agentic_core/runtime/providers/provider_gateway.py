@@ -489,6 +489,14 @@ class ProviderGateway:
                 messages=[{"role": "user", "content": prompt}],
             )
             text = msg.content[0].text if msg.content else ""
+            # P4 closed-loop cache telemetry (observability-only; never affects
+            # generation). plan: prompt-cache-anthropic-best-practice-c7a1e9 (W1.1).
+            self._record_cache_usage(
+                getattr(msg, "usage", None),
+                prompt=prompt,
+                profile=profile,
+                model=getattr(msg, "model", model_id),
+            )
             return ProviderResponse(
                 success=True,
                 text=text,
@@ -501,6 +509,40 @@ class ProviderGateway:
                 success=False, text="", receipt=None,
                 error_message=f"Anthropic invocation error: {exc}",
             )
+
+    @staticmethod
+    def _record_cache_usage(
+        usage: Any,
+        *,
+        prompt: str,
+        profile: ProviderProfile,
+        model: Optional[str],
+    ) -> None:
+        """Record Anthropic prompt-cache usage (P4 — observability-only).
+
+        Reads ``usage.cache_read_input_tokens`` / ``cache_creation_input_tokens``
+        off the response and feeds the generic cache-usage ledger + silent-
+        invalidator alarm. Fail-soft: any error is swallowed at DEBUG so cache
+        telemetry can never change a generation outcome. The logical-prefix
+        fingerprint is taken over the whole prompt today; once the gateway sends
+        tiered prompts (W3) it should fingerprint the Tier-1 block specifically.
+
+        plan: prompt-cache-anthropic-best-practice-c7a1e9 (W1.1 / P4).
+        """
+        try:
+            from agentic_core.knowledge.retrieval.anthropic_cache_telemetry import (
+                prefix_fingerprint,
+                record_cache_usage,
+            )
+
+            record_cache_usage(
+                usage,
+                fingerprint=prefix_fingerprint(prompt),
+                label=str(profile.profile_id),
+                model=model,
+            )
+        except Exception:  # guardian: allow-broad-exception -- cache telemetry is observability-only and must never affect generation
+            _LOGGER.debug("cache-usage telemetry skipped", exc_info=True)
 
     def _invoke_openai_compat(
         self,
