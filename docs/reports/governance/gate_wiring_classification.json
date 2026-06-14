@@ -1,6 +1,6 @@
 {
   "counts": {
-    "ORPHANED": 103,
+    "ORPHANED": 85,
     "PRECOMMIT": 22,
     "REGISTRY": 150,
     "TEST_ONLY": 35,
@@ -259,13 +259,6 @@
       "tests": false,
       "workflow": false
     },
-    "check_apps_lic_exit_x1_x3.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
     "check_apps_lic_golden_path_runtime.py": {
       "classification": "REGISTRY",
       "precommit": false,
@@ -274,13 +267,6 @@
       "workflow": false
     },
     "check_apps_lic_prompt_authority_coverage.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_apps_lic_shared_x3_path.py": {
       "classification": "ORPHANED",
       "precommit": false,
       "registry": false,
@@ -302,13 +288,6 @@
       "workflow": false
     },
     "check_apps_qna_config_drift.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_apps_qna_holdout_salt.py": {
       "classification": "ORPHANED",
       "precommit": false,
       "registry": false,
@@ -707,21 +686,7 @@
       "tests": false,
       "workflow": false
     },
-    "check_decision_ledger_chain.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
     "check_decision_ledger_sqlite_freshness.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_decision_ledger_v2_completeness.py": {
       "classification": "ORPHANED",
       "precommit": false,
       "registry": false,
@@ -834,13 +799,6 @@
       "workflow": false
     },
     "check_exemplar_coverage.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_exit_decision_schema.py": {
       "classification": "ORPHANED",
       "precommit": false,
       "registry": false,
@@ -1155,21 +1113,7 @@
       "tests": false,
       "workflow": false
     },
-    "check_ledger_append_only.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
     "check_ledger_coverage.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_ledger_freshness.py": {
       "classification": "ORPHANED",
       "precommit": false,
       "registry": false,
@@ -1266,13 +1210,6 @@
       "registry": false,
       "tests": false,
       "workflow": true
-    },
-    "check_memory_promotion_parity.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
     },
     "check_memory_schema_sync.py": {
       "classification": "ORPHANED",
@@ -1617,35 +1554,7 @@
       "tests": false,
       "workflow": false
     },
-    "check_post_agent_alive.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
     "check_post_agent_payload.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_precedent_receipt.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_precedent_usage_rate.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_prediction_binding_sla.py": {
       "classification": "ORPHANED",
       "precommit": false,
       "registry": false,
@@ -1666,25 +1575,11 @@
       "tests": true,
       "workflow": false
     },
-    "check_prompt_judge_executable_manifest.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
     "check_prompt_packet_contract.py": {
       "classification": "TEST_ONLY",
       "precommit": false,
       "registry": false,
       "tests": true,
-      "workflow": false
-    },
-    "check_prompt_reception_v2.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
       "workflow": false
     },
     "check_python_syntax.py": {
@@ -1720,13 +1615,6 @@
       "precommit": false,
       "registry": true,
       "tests": true,
-      "workflow": false
-    },
-    "check_refactor_decision_ledger_ssot.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
       "workflow": false
     },
     "check_reference_orphans.py": {
@@ -1931,20 +1819,6 @@
       "registry": true,
       "tests": false,
       "workflow": true
-    },
-    "check_shared_x3_cert_ref_threading.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_sidecar_freshness.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
     },
     "check_signoff_freshness.py": {
       "classification": "WORKFLOW",
@@ -2276,5 +2150,5 @@
       "workflow": false
     }
   },
-  "total_gates": 324
+  "total_gates": 306
 }
