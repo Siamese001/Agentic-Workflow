@@ -14,6 +14,11 @@ Steps (in order; any failure stops before push):
   5. Optional ``--test "<cmd>"`` retest — push is skipped if it fails.
   6. Deliver: ``--mode pr`` (default; ``gh pr create``) or ``--mode push``
      (``git push origin HEAD:<trunk>`` — direct-to-trunk, opt-in).
+  7. Reap (``--mode push`` only; default on, ``--no-reap`` to skip): after a clean push the
+     branch == trunk tip (merged), so remove this worktree + delete the branch (local ``-d`` +
+     best-effort remote). Run from the primary checkout — never from inside the worktree being
+     removed. ``--mode pr`` does not reap (branch not merged yet — the SessionStart reaper
+     ``prune_merged_chat_worktrees.py`` cleans it after the PR merges).
 
 ``--dry-run`` prints the plan and the trunk-divergence count without mutating anything.
 Never force-pushes. Stdlib only; explicit subprocess timeouts.
@@ -84,6 +89,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--test", default=None, help="retest command run before delivery")
     ap.add_argument("--test-timeout", type=int, default=1800, help="retest timeout seconds")
     ap.add_argument("--dry-run", action="store_true", help="print plan + divergence; no mutation")
+    ap.add_argument(
+        "--reap", dest="reap", action="store_true", default=True,
+        help="after a clean --mode push, remove this worktree + delete the branch (default)",
+    )
+    ap.add_argument(
+        "--no-reap", dest="reap", action="store_false",
+        help="keep the worktree + branch after delivery",
+    )
     args = ap.parse_args(argv)
 
     start = Path(args.worktree).resolve() if args.worktree else Path.cwd()
@@ -120,7 +133,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print("  [dry-run] would: require-clean → rebase → "
               + (f"retest({args.test}) → " if args.test else "")
-              + ("open PR" if args.mode == "pr" else f"push HEAD:{trunk_branch}"))
+              + ("open PR (reap after merge by prune_merged_chat_worktrees.py)" if args.mode == "pr"
+                 else f"push HEAD:{trunk_branch}"
+                      + (" → reap worktree + delete branch" if args.reap else " (--no-reap: keep)")))
         return 0
 
     # 2. Clean tree.
@@ -166,6 +181,8 @@ def main(argv: list[str] | None = None) -> int:
         if rc != 0:
             return _fail(f"push to {trunk_branch} rejected: {err or out}\n  (try --mode pr instead.)")
         print(f"deliver-worktree: pushed '{branch}' → {trunk_branch}. ✓")
+        if args.reap:
+            _reap_after_push(top, branch, trunk_branch)
         return 0
 
     # PR mode.
@@ -196,6 +213,43 @@ def main(argv: list[str] | None = None) -> int:
         return _fail("gh pr create returned non-zero — open the PR manually.")
     print(f"deliver-worktree: PR opened for '{branch}' → {trunk_branch}. ✓")
     return 0
+
+
+def _reap_after_push(top: Path, branch: str, trunk_branch: str) -> None:
+    """After a clean ``HEAD:<trunk>`` push the branch == trunk tip (merged), so remove this
+    worktree and delete the branch. Runs from the PRIMARY checkout — never from inside ``top``
+    (you cannot ``git worktree remove`` the worktree you are standing in). Fail-soft."""
+    rc, common, _ = _git("rev-parse", "--git-common-dir", cwd=top)
+    if rc != 0 or not common:
+        print("  reap skipped: could not resolve git-common-dir.")
+        return
+    primary = Path(common).resolve().parent  # <primary>/.git → <primary>
+    # Step out of the worktree we are about to remove — on Windows ``git worktree remove``
+    # fails if a process cwd is inside it. Best-effort; the explicit cwd=primary calls below
+    # do not depend on it.
+    try:
+        os.chdir(primary)
+    except OSError:
+        pass
+    # Safety gate: the branch must be an ancestor of the just-pushed trunk.
+    _git("fetch", "origin", trunk_branch, "--quiet", cwd=primary)
+    rc, _, _ = _git("merge-base", "--is-ancestor", branch, f"origin/{trunk_branch}", cwd=primary)
+    if rc != 0:
+        print("  reap skipped: branch is not an ancestor of the trunk (delivered but not merged?).")
+        return
+    rc, _, err = _git("worktree", "remove", str(top), cwd=primary)
+    if rc != 0:
+        rc, _, err = _git("worktree", "remove", "--force", str(top), cwd=primary)
+    if rc != 0:
+        print(f"  reap: 'git worktree remove' failed ({err}); branch left intact — clean up manually.")
+        return
+    rc, _, _ = _git("branch", "-d", branch, cwd=primary)
+    if rc != 0:  # already proven ancestor-of-trunk above → safe to force.
+        _git("branch", "-D", branch, cwd=primary)
+    # Best-effort remote delete: push mode pushes HEAD:<trunk>, so an origin/<branch> ref may
+    # not exist (no-op then). Fail-soft — never blocks.
+    _git("push", "origin", "--delete", branch, cwd=primary)
+    print(f"deliver-worktree: reaped worktree {top} + branch '{branch}'. ✓")
 
 
 def _have_gh() -> bool:

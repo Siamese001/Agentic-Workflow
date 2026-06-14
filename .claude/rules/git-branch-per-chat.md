@@ -57,7 +57,7 @@ linker / divergence notice are best-effort and never block session start.
 | `WORKTREE_MERGE_CLEANUP_BYPASS=1` | Disable only the auto-reap (keep the create/edit guards on). |
 | `WORKTREE_MERGE_CLEANUP_DRY_RUN=1` | Auto-reap reports which worktrees it *would* reap, deletes nothing. |
 | `WORKTREE_CLEANUP_MIN_AGE_MINUTES=N` | Grace window — never reap a worktree newer than N minutes (recency = most recent of HEAD commit time **and** worktree creation mtime). **Default `30`** (item #1, raised from `0` to end the mid-session reap-race). |
-| `WORKTREE_REAP_BRANCH_PREFIXES=chat/,feat/` | csv of branch prefixes eligible for auto-reap. **Default `chat/`** (unchanged). Non-chat prefixes may live anywhere (sibling worktrees) — opt-in only (item #4). |
+| `WORKTREE_REAP_BRANCH_PREFIXES=chat/,feat/,fix/,codex/` | csv of branch prefixes eligible for auto-reap. **Default `chat/,feat/`** (worktree-deliver-reap-b3f7d1). `chat/*` must live under the chat root; non-chat prefixes may live anywhere (sibling worktrees). Only merged+clean worktrees are reaped. |
 | `.keep-worktree` (marker file, not env) | A `.keep-worktree` file in any worktree exempts it from auto-reap permanently (gitignored; item #4). |
 | `WORKTREE_LINK_DIRS=a/b,c/d` / `WORKTREE_LINK_DIRS_DISABLE=1` | Override / disable the runtime-cache dirs junctioned into a new worktree. Default: `data/cache/{chromadb,sparse,r1b}` (item #2). |
 | `WORKTREE_DIVERGENCE_NOTICE=0` / `WORKTREE_DIVERGENCE_FETCH=1` | Silence the trunk-divergence notice / fetch before counting (item #3). |
@@ -116,7 +116,7 @@ linker / divergence notice are best-effort and never block session start.
 
 | Guard | A worktree is reaped only if… |
 |---|---|
-| Prefix | its branch matches an **enabled reap prefix** (`WORKTREE_REAP_BRANCH_PREFIXES`, default `chat/`). `chat/*` must also live under the chat root (`.chat-worktrees/`); opt-in non-chat prefixes may live anywhere. The primary checkout is **never** eligible. |
+| Prefix | its branch matches an **enabled reap prefix** (`WORKTREE_REAP_BRANCH_PREFIXES`, default `chat/,feat/`). `chat/*` must also live under the chat root (`.chat-worktrees/`); non-chat prefixes may live anywhere. The primary checkout is **never** eligible. |
 | Keep marker | it does **not** carry a `.keep-worktree` file (universal opt-out — kept regardless of merge/clean state). |
 | Self | it is **not** the worktree the current session is running in. |
 | Merged | its branch is an **ancestor of `origin/main`** (`git merge-base --is-ancestor`). Unmerged work is never touched. |
@@ -157,7 +157,7 @@ Two canonical prefixes — keep the taxonomy small so the worktree set stays leg
 | Prefix | Meaning | Lifecycle |
 |---|---|---|
 | `chat/*` | ephemeral per-chat isolation (auto-created) | auto-reaped when merged+clean |
-| `feat/*` | long-lived / human-named feature work | kept; remove manually or set a reap prefix |
+| `feat/*` | feature / governance work (standard delivery vehicle) | **auto-reaped when merged+clean** — by `deliver_worktree.py --mode push` inline, or by the SessionStart reaper as a backstop (default prefix since worktree-deliver-reap-b3f7d1). An unmerged/in-progress `feat/*` is never reaped. |
 
 `codex/*`, `fix/*`, and other prefixes are **non-canonical** — `worktree_doctor.py` flags
 them. Migrate to `feat/*` or mark with `.keep-worktree`. **One branch per deliverable** —
@@ -174,10 +174,19 @@ standard path — rebase on the trunk, retest, then push/PR — is codified in
 python tools/git/deliver_worktree.py --dry-run                          # show plan + divergence
 python tools/git/deliver_worktree.py --test "python -m pytest -q <scope>"   # PR mode (default)
 python tools/git/deliver_worktree.py --mode push --test "<retest cmd>"      # direct-to-trunk (opt-in)
+python tools/git/deliver_worktree.py --mode push --no-reap                  # push but keep worktree+branch
 ```
 
 It refuses to run in the primary / on a protected branch, requires a clean tree, aborts on
 rebase conflict, skips delivery if the retest fails, and never force-pushes.
+
+**Atomic deliver-and-reap (worktree-deliver-reap-b3f7d1):** after a clean `--mode push`
+(`HEAD:<trunk>` — the branch is then the trunk tip, i.e. merged) the tool **reaps automatically**
+(default `--reap`): from the primary checkout it `git worktree remove`s this worktree and deletes the
+branch (local `-d` + best-effort remote). So one explicit `--mode push` does rebase → push → remove
+worktree → delete branch. `--no-reap` keeps them. `--mode pr` never reaps (branch unmerged) — the
+SessionStart reaper cleans the `feat/*` worktree after the PR merges. There is **no auto-push on a prose
+`STATUS: PASS`**: delivery stays an explicit trigger (operating contract "push only when asked").
 
 ## Notes
 

@@ -93,11 +93,14 @@ def _min_age_seconds() -> int:
         return _DEFAULT_MIN_AGE_MINUTES * 60
 
 
-# Item #4: which branch prefixes are eligible for auto-reap. Default ``chat/`` only
-# (unchanged behavior). An operator can add ``feat/``/``codex/``/``fix/`` to auto-clean
-# merged sibling worktrees; non-chat prefixes are allowed to live anywhere (not just
-# under the chat root). A ``.keep-worktree`` marker exempts any worktree regardless.
-_DEFAULT_REAP_PREFIXES: tuple[str, ...] = ("chat/",)
+# Which branch prefixes are eligible for auto-reap. Default ``chat/`` + ``feat/``
+# (worktree-deliver-reap-b3f7d1): a ``feat/*`` worktree is the standard delivery vehicle, so once
+# its branch is merged into the trunk and its tree is clean it is a *delivered leftover* and is
+# auto-cleaned — a backstop for PR-merged deliveries or ``deliver_worktree.py --no-reap``. The
+# merged-into-trunk + clean-tree + grace-window guards below protect any in-progress/unmerged work,
+# so a ``feat/*`` you are still using is NEVER reaped. ``codex/``/``fix/`` can be opted in via
+# ``WORKTREE_REAP_BRANCH_PREFIXES``; a ``.keep-worktree`` marker exempts any worktree regardless.
+_DEFAULT_REAP_PREFIXES: tuple[str, ...] = ("chat/", "feat/")
 
 
 def _reap_prefixes() -> tuple[str, ...]:
