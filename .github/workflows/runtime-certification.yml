@@ -533,69 +533,9 @@ jobs:
           retention-days: 90
 
   # ────────────────────────────────────────────────────────────────────
-  # W2 — L7 plane regen + trust-ladder promotion to SIGNED_PROOF
-  # Plan: .windsurf/plans/fortknox-100pct-static-runtime-gap-9a3d4f.md
+  # W2 L7-plane regen + trust-ladder (Fort Knox signoff) — REMOVED 2026-06-14
+  # Fort Knox certification arm decommissioned (constitutional §32). The
+  # signoff-compiler toolchain (tools/cert/**) it invoked is a separate,
+  # deferred teardown. The W0 / certification / live-provider jobs above are
+  # the broader runtime-cert system and are unaffected.
   # ────────────────────────────────────────────────────────────────────
-  l7-plane-regen-and-trust-ladder:
-    name: W2 L7-plane regen + freshness + trust-ladder (SIGNED_PROOF)
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install -e .
-          pip install jsonschema cryptography pytest pytest-timeout pyyaml
-
-      # Regen L7 plane evidence from existing chain bundles
-      - name: W2.0 Emit L7-plane evidence assertions
-        run: python tools/cert/emit_l7_plane_evidence.py
-
-      # Re-compile signoff against full universe (97+ rows including L7)
-      - name: W2.1 Compile requirement signoff
-        run: python tools/cert/compile_requirement_signoff.py
-
-      # Per-claim-type freshness gate (plan §GAP-4)
-      - name: W2.2 Freshness gate (per-claim-type stale evidence = FAIL)
-        run: python ops_scripts/ci/check_signoff_freshness.py --summary-only
-
-      # Git-clean gate (plan §GAP-4) — blocks SIGNED_PROOF when tree dirty
-      - name: W2.3a Git-clean gate
-        run: python ops_scripts/ci/check_signoff_git_clean.py
-
-      # Trust-ladder promotion: INTEGRITY_PROOF -> SIGNED_PROOF (plan §GAP-2)
-      - name: W2.3b Trust-ladder promotion (ed25519 signature)
-        run: python tools/cert/sign_with_ephemeral_key.py
-
-      # Widened bundle verification (XLSX + per-chain L7 artifacts monitored)
-      - name: W2.4 Widened bundle verification
-        run: python ops_scripts/ci/verify_final_requirement_signoff_bundle.py
-
-      # Production-artifact mutation rejection (uses widened monitored set)
-      - name: W2.5 Mutation rejection against widened clean-paths set
-        run: python ops_scripts/ci/generate_mutation_rejection_report.py
-
-      - name: Upload signoff bundle
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: fortknox-signoff-bundle-${{ github.run_id }}
-          path: |
-            artifacts/certification/final_requirement_signoff_report.json
-            artifacts/certification/final_requirement_signoff_report.sha256
-            artifacts/certification/final_requirement_signoff_report.merkle.json
-            artifacts/certification/final_requirement_signoff_report.signature.json
-            artifacts/certification/final_requirement_signoff_bundle_verification.json
-            artifacts/certification/fortknox_mutation_rejection_report.json
-          retention-days: 90
