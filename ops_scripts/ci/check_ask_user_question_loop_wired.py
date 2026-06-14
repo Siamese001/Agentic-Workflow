@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import json
 import os
-import sqlite3
 import sys
 from pathlib import Path
 
@@ -58,18 +57,20 @@ def _post_hook_registered() -> bool:
 
 
 def _ledger_writable() -> bool:
-    """True when the ask_user_question_decisions ledger can be created/opened + written."""
+    """True when the ask_user_question ledger's directory is writable.
+
+    Probes the parent directory with a temp file rather than opening the ledger itself — a
+    health check must not materialize the real ledger as a side effect (that would corrupt
+    tests/tools that assume an absent ledger).
+    """
     try:
         from tools.ledgers.ask_user_question_ledger import LEDGER_PATH
 
-        LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
-        conn = sqlite3.connect(str(LEDGER_PATH), timeout=5)
-        try:
-            conn.execute("CREATE TABLE IF NOT EXISTS _loop_wired_probe (x INTEGER)")
-            conn.execute("DROP TABLE IF EXISTS _loop_wired_probe")
-            conn.commit()
-        finally:
-            conn.close()
+        parent = LEDGER_PATH.parent
+        parent.mkdir(parents=True, exist_ok=True)
+        probe = parent / ".loop_wired_probe.tmp"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink()
         return True
     except Exception:  # guardian: allow-broad-exception -- any failure means "not writable"
         return False

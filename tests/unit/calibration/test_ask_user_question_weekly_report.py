@@ -239,7 +239,7 @@ class TestMarkdownRender:
         _insert(tmp_db, "d0", "ctx", rec=0, sel=0, conf=0.85, created_at=(now - timedelta(hours=1)).isoformat())
         r = generate_report(db_path=tmp_db, reference_date=now)
         md = render_markdown(r)
-        assert "Per-Context Breakdown" in md
+        assert "Per-Context Calibration Curve" in md
 
 
 # ---------------------------------------------------------------------------
