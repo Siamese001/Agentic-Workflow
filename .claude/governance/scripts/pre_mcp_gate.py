@@ -293,6 +293,9 @@ _BUILTIN_MCP_SERVERS: frozenset[str] = frozenset(
         "scheduled-tasks",
         "mcp-registry",
         "computer-use",
+        # Remote-execution GitHub integration — environment-managed PR/issue/CI surface,
+        # not declared in repo .mcp.json. Same harness-provided category as the above.
+        "github",
         # Render / browser / UI servers injected by the Claude Code harness at
         # runtime — never declared in repo .mcp.json.
         "visualize",        # mcp__visualize__show_widget / read_me

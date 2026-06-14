@@ -101,6 +101,30 @@ _SYMPTOM_EQ_ROOT_RCA = (
     "Confidence: high\n"
 )
 
+# A common reusable deep body: real descent, failing layer isolated, root != symptom.
+# Variants below add/remove the confidence line and the next-step line to isolate the two
+# new high-confidence / coupled-next-step triggers without tripping the depth or distinctness
+# checks.
+_DEEP_BODY = (
+    "**Layered RCA**\n"
+    "Immediate symptom: apps_eval exit 1, outputs missing\n"
+    "Failing layer: live apps_rg runtime, not the L6 observer that surfaced it\n"
+    "why1: competencies lane failed before resume sections materialized\n"
+    "why2: the LLMOps bundle binding was absent from the graph\n"
+    "Mechanism: competencies failed first -> PHASE1_PRIOR_LANE_FAILED\n"
+    "Root cause: preflight admitted an under-specified fixture into full lane execution\n"
+    "Evidence: artifacts/ae_rg_live/eval_record.json\n"
+)
+_CONFIDENCE_LINE = "Confidence / unknowns: failure location confirmed; final fix needs a rerun\n"
+_COUPLED_NEXT_LINE = "Next: add a fixture-completeness assertion in apps_rg preflight\n"
+
+# Deep descent but the root cause is asserted with NO stated confidence -> shallow_rca.
+_DEEP_NO_CONFIDENCE = _DEEP_BODY + _COUPLED_NEXT_LINE
+# Deep descent + confidence, but the next step is a bare platitude -> shallow_rca.
+_DEEP_GENERIC_NEXT = _DEEP_BODY + _CONFIDENCE_LINE + "Next: fix the bug\n"
+# Deep descent + confidence + a next step coupled to the diagnosis -> compliant.
+_DEEP_FULL_CLEAN = _DEEP_BODY + _CONFIDENCE_LINE + _COUPLED_NEXT_LINE
+
 
 class TestRuntimeRcaAudit:
     def test_not_applicable_no_status_line(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -178,6 +202,52 @@ class TestRuntimeRcaAudit:
         shallow = [r for r in rows if r["kind"] == "shallow_rca"]
         assert shallow, f"expected shallow_rca, got {[r['kind'] for r in rows]}"
         assert shallow[0]["symptom_equals_root"] is True
+
+    def test_refactor_root_cause_without_confidence_flagged(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Deep descent, failing layer isolated, root != symptom, coupled next step — but the
+        # root cause is asserted with NO stated confidence. "High confidence" must be claimed,
+        # not implied, so this is shallow_rca via the missing_confidence trigger alone.
+        text = _REFACTOR_HEADER + _DEEP_NO_CONFIDENCE
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        shallow = [r for r in rows if r["kind"] == "shallow_rca"]
+        assert shallow, f"expected shallow_rca, got {[r['kind'] for r in rows]}"
+        r = shallow[0]
+        assert r["missing_confidence"] is True
+        # isolation: the other triggers must NOT be what fired
+        assert r["descent_depth"] >= 2
+        assert r["symptom_equals_root"] is False
+        assert r["missing_failing_layer"] is False
+        assert r["next_step_generic"] is False
+
+    def test_refactor_generic_next_step_flagged(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Deep descent + stated confidence, but the next step is a bare platitude ("fix the
+        # bug") — decoupled from the diagnosis above it. shallow_rca via next_step_generic alone.
+        text = _REFACTOR_HEADER + _DEEP_GENERIC_NEXT
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        shallow = [r for r in rows if r["kind"] == "shallow_rca"]
+        assert shallow, f"expected shallow_rca, got {[r['kind'] for r in rows]}"
+        r = shallow[0]
+        assert r["next_step_generic"] is True
+        # isolation: depth/distinctness/confidence are all fine here
+        assert r["descent_depth"] >= 2
+        assert r["symptom_equals_root"] is False
+        assert r["missing_failing_layer"] is False
+        assert r["missing_confidence"] is False
+
+    def test_refactor_deep_confidence_coupled_next_clean(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # The full contract: deep why-chain, isolated failing layer, root != symptom, stated
+        # confidence, AND a next step coupled to the root cause -> no violation.
+        text = _REFACTOR_HEADER + _DEEP_FULL_CLEAN
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
 
     def test_non_refactor_shallow_rca_ok(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
         # Same shallow RCA but NOT a refactor turn (no code files changed) -> no shallow_rca.
