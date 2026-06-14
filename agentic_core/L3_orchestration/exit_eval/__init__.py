@@ -124,6 +124,7 @@ __all__ = [
     "SystemPromptLeakGrader",
     "TrialRecord",
     "RedisPassKStore",
+    "build_evaluation_pipeline_with_tracing",
     "build_span_sink",
     "build_standard_pipeline",
     "compose",
@@ -141,6 +142,12 @@ def __getattr__(name: str):
     if name == "RedisPassKStore":
         from agentic_core.L3_orchestration.exit_eval.consistency_redis import (
             RedisPassKStore as _impl,
+        )
+
+        return _impl
+    if name == "build_evaluation_pipeline_with_tracing":
+        from agentic_core.L3_orchestration.exit_eval.factory import (
+            build_evaluation_pipeline_with_tracing as _impl,
         )
 
         return _impl
