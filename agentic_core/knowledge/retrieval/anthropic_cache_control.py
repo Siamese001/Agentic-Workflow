@@ -25,11 +25,15 @@ Cache TTL:
 Design invariants:
   - Pure functions. No I/O, no gateway calls. Caller ships the dict to
     Anthropic Messages API.
-  - Minimum cacheable block: Anthropic requires ≥1024 tokens for Sonnet/Opus,
-    ≥2048 for Haiku. We cannot verify token counts here (no tokenizer), so we
-    apply a conservative character-count heuristic. Callers below the
-    threshold get a WARNING-level log and the cache marker is stripped to
-    avoid silent API errors.
+  - Minimum cacheable block is MODEL-SPECIFIC (Opus 4.x / Haiku 4.5 = 4096
+    tokens; Fable 5 / Sonnet 4.6 = 2048; Sonnet 4.5 and earlier = 1024). A
+    block below its model's floor is silently NOT cached by Anthropic
+    (cache_creation_input_tokens stays 0, no error). We cannot verify token
+    counts here (no tokenizer — this module is pure/no-I/O), so callers pass a
+    model id and we apply a per-model character heuristic (~4 chars/token);
+    below the floor the cache marker is stripped and a DEBUG log is emitted.
+    Pass no model to keep the legacy conservative default. See
+    ``min_cacheable_chars`` / ``MODEL_CACHE_FLOOR_TOKENS``.
   - cache_control markers use the `ephemeral` type. `persistent` caching is
     not yet supported by Anthropic for general-availability tenants.
 
@@ -52,11 +56,68 @@ Logger = logging.getLogger(__name__)
 CACHE_TTL_5M: Literal["5m"] = "5m"
 CACHE_TTL_1H: Literal["1h"] = "1h"
 
-# Conservative minimum-chars threshold. Anthropic requires ≥1024 tokens for
-# Sonnet/Opus. Using 4 chars/token rough ratio -> ~4096 chars. We pick 3500 as
-# a safety margin above the boundary so callers slightly over the threshold
-# still benefit.
-_MIN_CACHEABLE_CHARS = 3500
+# ---------------------------------------------------------------------------
+# Model-aware minimum cacheable size (P3 — plan prompt-cache-anthropic-best-practice-c7a1e9 W2)
+# ---------------------------------------------------------------------------
+#
+# Anthropic's minimum cacheable PREFIX is model-specific. A block shorter than
+# its model's floor is silently NOT cached (cache_creation_input_tokens == 0,
+# no error). Authoritative minimums (claude-api prompt-caching reference):
+#
+#   Opus 4.8 / 4.7 / 4.6 / 4.5, Haiku 4.5 ........ 4096 tokens
+#   Fable 5, Sonnet 4.6, Haiku 3.5 / 3 ........... 2048 tokens
+#   Sonnet 4.5 / 4.1 / 4 / 3.7 ................... 1024 tokens
+#
+# This module is pure (no tokenizer / no I/O by contract), so we convert the
+# token floor to characters at ~4 chars/token. Callers needing exactness can
+# pre-check with ``client.messages.count_tokens(...)`` and skip caching.
+_CHARS_PER_TOKEN = 4
+
+# Floor when the model is unknown (model=None). Preserves the pre-W2 behavior
+# (3500-char / ~875-token boundary) so existing callers are unaffected. NOTE:
+# 875 tokens is below EVERY current model's real floor — the model-aware path
+# (pass a model id) is what actually fixes the silent non-caching.
+_DEFAULT_MIN_CACHEABLE_CHARS = 3500
+
+# (model-id substring, min cacheable tokens), most-specific FIRST so e.g.
+# ``claude-haiku-4-5`` resolves to 4096 before the generic ``claude-haiku``
+# (2048), and ``claude-sonnet-4-6`` (2048) before ``claude-sonnet`` (1024).
+MODEL_CACHE_FLOOR_TOKENS: tuple[tuple[str, int], ...] = (
+    ("claude-haiku-4-5", 4096),
+    ("claude-opus", 4096),
+    ("claude-sonnet-4-6", 2048),
+    ("claude-fable", 2048),
+    ("claude-haiku", 2048),
+    ("claude-sonnet", 1024),
+)
+
+
+def floor_tokens_for_model(model: str | None) -> int | None:
+    """Anthropic minimum cacheable prefix (tokens) for a model id.
+
+    Substring match, most-specific-first. Returns None when ``model`` is None
+    or unrecognized (caller falls back to the legacy char default).
+    """
+    if not model:
+        return None
+    needle = model.lower()
+    for prefix, floor in MODEL_CACHE_FLOOR_TOKENS:
+        if prefix in needle:
+            return floor
+    return None
+
+
+def min_cacheable_chars(model: str | None = None) -> int:
+    """Minimum cacheable block size in CHARACTERS for ``model``.
+
+    Model-aware when ``model`` is a recognized Anthropic id (token floor x
+    ~4 chars/token); the legacy conservative default otherwise. Heuristic —
+    for exactness pre-check with ``messages.count_tokens``.
+    """
+    floor_tokens = floor_tokens_for_model(model)
+    if floor_tokens is None:
+        return _DEFAULT_MIN_CACHEABLE_CHARS
+    return floor_tokens * _CHARS_PER_TOKEN
 
 
 def _cache_control(ttl: str) -> dict[str, str]:
@@ -70,14 +131,15 @@ def _cache_control(ttl: str) -> dict[str, str]:
     return {"type": "ephemeral"}
 
 
-def _is_cacheable(text: str) -> bool:
-    """Heuristic: is the block long enough to benefit from caching?
+def _is_cacheable(text: str, model: str | None = None) -> bool:
+    """Heuristic: is the block long enough to cache under ``model``'s floor?
 
-    Anthropic rejects cache_control on blocks below the minimum-token
-    threshold with a 400 error. We skip the marker on small blocks rather
-    than risk an API failure.
+    A block below its model's minimum cacheable size is silently NOT cached by
+    Anthropic (no error, cache_creation stays 0), so we strip the marker rather
+    than emit one that never takes effect. ``model=None`` uses the legacy
+    conservative default.
     """
-    return len(text) >= _MIN_CACHEABLE_CHARS
+    return len(text) >= min_cacheable_chars(model)
 
 
 def build_system_blocks(
@@ -85,6 +147,7 @@ def build_system_blocks(
     *,
     cache: bool = True,
     ttl: str = CACHE_TTL_5M,
+    model: str | None = None,
 ) -> list[dict[str, Any]]:
     """Render a system prompt into Anthropic structured-content blocks.
 
@@ -97,6 +160,10 @@ def build_system_blocks(
         emits a plain text block (useful for testing / short prompts).
     ttl:
         Either CACHE_TTL_5M or CACHE_TTL_1H.
+    model:
+        Target model id. When given, the cache marker is stripped if the block
+        is below that model's token floor (see ``MODEL_CACHE_FLOOR_TOKENS``).
+        ``None`` uses the legacy conservative default.
 
     Returns
     -------
@@ -108,13 +175,14 @@ def build_system_blocks(
         return []
 
     block: dict[str, Any] = {"type": "text", "text": text}
-    if cache and _is_cacheable(text):
+    if cache and _is_cacheable(text, model):
         block["cache_control"] = _cache_control(ttl)
     elif cache:
         Logger.debug(
-            "System block (%d chars) below cacheable threshold %d; skipping cache_control",
+            "System block (%d chars) below cacheable threshold %d (model=%s); skipping cache_control",
             len(text),
-            _MIN_CACHEABLE_CHARS,
+            min_cacheable_chars(model),
+            model or "default",
         )
     return [block]
 
@@ -125,6 +193,7 @@ def build_user_content(
     cache_boundary_hint: int = -1,
     cache_prefix: bool = True,
     ttl: str = CACHE_TTL_5M,
+    model: str | None = None,
 ) -> list[dict[str, Any]]:
     """Split a user-turn prompt at `cache_boundary_hint` with cache_control.
 
@@ -164,13 +233,14 @@ def build_user_content(
         return [{"type": "text", "text": prompt}]
 
     prefix_block: dict[str, Any] = {"type": "text", "text": prefix}
-    if cache_prefix and _is_cacheable(prefix):
+    if cache_prefix and _is_cacheable(prefix, model):
         prefix_block["cache_control"] = _cache_control(ttl)
     elif cache_prefix:
         Logger.debug(
-            "Prefix block (%d chars) below cacheable threshold %d; skipping cache_control",
+            "Prefix block (%d chars) below cacheable threshold %d (model=%s); skipping cache_control",
             len(prefix),
-            _MIN_CACHEABLE_CHARS,
+            min_cacheable_chars(model),
+            model or "default",
         )
 
     return [prefix_block, {"type": "text", "text": suffix}]
@@ -184,6 +254,7 @@ def build_messages_payload(
     ttl: str = CACHE_TTL_5M,
     cache_system: bool = True,
     cache_prefix: bool = True,
+    model: str | None = None,
 ) -> dict[str, Any]:
     """Convenience composer: build the `system` + `messages` fields.
 
@@ -194,13 +265,16 @@ def build_messages_payload(
 
     The returned dict never contains a `model` or `max_tokens` key — the
     caller owns those; this helper only handles cache-aware content shaping.
+    The ``model`` arg is used ONLY to resolve the per-model cache floor (so
+    below-floor blocks are not marked); it is NOT written into the payload.
     """
-    system_blocks = build_system_blocks(system_prompt, cache=cache_system, ttl=ttl)
+    system_blocks = build_system_blocks(system_prompt, cache=cache_system, ttl=ttl, model=model)
     user_content = build_user_content(
         user_prompt,
         cache_boundary_hint=cache_boundary_hint,
         cache_prefix=cache_prefix,
         ttl=ttl,
+        model=model,
     )
 
     payload: dict[str, Any] = {
@@ -227,8 +301,11 @@ def count_cache_markers(payload: dict[str, Any]) -> int:
 __all__ = [
     "CACHE_TTL_5M",
     "CACHE_TTL_1H",
+    "MODEL_CACHE_FLOOR_TOKENS",
     "build_messages_payload",
     "build_system_blocks",
     "build_user_content",
     "count_cache_markers",
+    "floor_tokens_for_model",
+    "min_cacheable_chars",
 ]
