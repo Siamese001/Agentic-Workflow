@@ -41,6 +41,10 @@ from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _post_agent_payload import extract_response_text  # noqa: E402
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as _NOTION_API_VERSION,
+    NOTION_BASE as _NOTION_BASE,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 _SCRIPTS_DIR = str(Path(__file__).resolve().parent)
@@ -58,9 +62,7 @@ LOG_PATHS = {
     "evidence": REPO_ROOT / "artifacts" / "governance" / "plan_evidence_violations.jsonl",
 }
 
-# Notion API constants (from creation audit)
-_NOTION_BASE = "https://api.notion.com/v1"
-_NOTION_API_VERSION = "2025-09-03"
+# Notion API base/version imported from the SSOT (above). Local timeout kept.
 _NOTION_TIMEOUT_S = 30
 
 # Valid statuses at creation time

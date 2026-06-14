@@ -17,6 +17,14 @@ workspace:
   bot: "Agentic-Workflow"
   space: "Amit Ayer's Space"
 
+# Notion REST API surface — consumed by .claude/governance/scripts/_notion_constants.py
+# (NOTION_API_VERSION / NOTION_BASE / NOTION_HTTP_TIMEOUT_S). SSOT for these too as of
+# 2026-06-14 (notion-id-ssot-consolidation): scripts MUST NOT redefine these literals.
+api:
+  version: "2025-09-03"
+  base: "https://api.notion.com/v1"
+  http_timeout_s: 15.0
+
 databases:
   # Renamed 2026-04-23 W6: Wave/Phase Convergence -> Backlog Items.
   # Legacy `Priority` number property archived in same wave; P-Band is SSOT now.
@@ -32,7 +40,7 @@ databases:
     id: "ac53d31b-3068-4039-9ebe-856c12caab32"
     database_id: "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
     read_trigger: '"which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan'
-    write_trigger: "On new plan file creation under `.claude/plans/<slug>-<6hex>.md`. Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set."
+    write_trigger: "On new plan file creation under `plans/<slug>-<6hex>.md` (repo-root SSOT; legacy `.claude/plans/` still valid). Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set."
 
   - key: sc_ap_violation_backlog
     name: "SC/AP Violation Backlog"
@@ -82,5 +90,29 @@ databases:
     name: "Anti-Pattern Burndown"
     id: "4599fe37-8c24-4d89-96af-438b99a967c4"
     database_id: "80b30bc9-6622-4288-aa4c-6fc526b6a5c5"
-    read_trigger: '"anti-pattern counts", "burndown trend", "ratchet ceiling"'
-    write_trigger: "On burndown run or ratchet adjustment"
+    archived: true
+    archived_date: "2026-05-11"
+    read_trigger: "❌ **ARCHIVED 2026-05-11** (404 confirmed — DB not accessible to integration)"
+    write_trigger: "Filesystem SSOT: `artifacts/adg/` ratchet files are canonical. No Notion write. (See .claude/rules/notion-archived-databases.md.)"
+
+  # ADR Registry — ARCHIVED 2026-05-02 (commit b11200e833). On-disk markdown is the SSOT.
+  # Structured row retained so _notion_constants.py can map ADR_REGISTRY_DB_ID / ADR_REGISTRY_DS_ID.
+  - key: adr_registry
+    name: "ADR Registry"
+    id: "e59d7640-dc09-48f9-8bdc-b0c94bf98c2a"
+    database_id: "6ed25e12-bd92-4352-ac7a-3a971311f024"
+    archived: true
+    archived_date: "2026-05-02"
+    read_trigger: "❌ **ARCHIVED 2026-05-02**"
+    write_trigger: "Filesystem SSOT: `docs/architecture/adr/ADR-NNN-*.md`. No Notion write."
+
+  # Author-Gate Decision Ledger — ARCHIVED 2026-05-02 (SQLite SSOT, constitutional §30).
+  # Structured row retained so _notion_constants.py can map AUTHOR_GATE_LEDGER_DB_ID / _DS_ID.
+  - key: author_gate_ledger
+    name: "Author-Gate Decision Ledger"
+    id: "5b60fdde-7259-491e-9f2d-e088f1f741ef"
+    database_id: "18bb9145-1320-4191-8b14-6c309776bcf5"
+    archived: true
+    archived_date: "2026-05-02"
+    read_trigger: "❌ **ARCHIVED 2026-05-02**"
+    write_trigger: "Filesystem SSOT: `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite`. No Notion write."

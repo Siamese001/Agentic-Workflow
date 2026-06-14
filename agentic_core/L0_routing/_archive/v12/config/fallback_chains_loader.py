@@ -1,6 +1,6 @@
 """v12 Fallback-chains & SLO-defaults SSOT loader.
 
-Reads ``config/routing/fallback_chains.yaml`` and exposes:
+Reads ``config/routing/fallback_chains_v12.yaml`` and exposes:
 
 - ``get_fallback_chain(route_id)`` → ordered tuple of ``FallbackEntry``.
 - ``get_slo_default(route_id, cost_tier)`` → ``RouteSLO`` for the given cell.
@@ -34,10 +34,10 @@ from agentic_core.L0_routing.types.route_contract_v12_extensions import (
 _MAX_CHAIN_DEPTH = 8
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_YAML_PATH = _REPO_ROOT / "config" / "routing" / "fallback_chains.yaml"
+_YAML_PATH = _REPO_ROOT / "config" / "routing" / "fallback_chains_v12.yaml"
 
 
-# Hardcoded fallbacks — mirror fallback_chains.yaml. Used only when YAML is
+# Hardcoded fallbacks — mirror fallback_chains_v12.yaml. Used only when YAML is
 # missing or unparseable (e.g. during early bootstrap, in unit tests that
 # stub out the FS, or on install-from-sdist without the config tree).
 _HARDCODED_CHAINS: dict[str, list[dict[str, str]]] = {

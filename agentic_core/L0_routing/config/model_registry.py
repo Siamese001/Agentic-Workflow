@@ -1,11 +1,21 @@
 """
-L0 Model Registry — SSOT for all LLM model IDs used in routing decisions.
+L0 Model Registry — SSOT for the ROUTING / HEALING / CONSENSUS / EMBEDDING model IDs.
 
-This module is the ONLY source of truth for model identifiers across:
+This module is the source of truth for the model identifiers used by:
   - Healing tier routing  (L2 healers.healing_router)
-  - Consensus validation  (L1 cognition.consensus_validator)
-  - App Qwen inference    (L3 qwen_vllm.reasoning)
-  - Provider clients      (apps_shared, apps_lic, sovereign gateway)
+  - Consensus validation  (L1 cognition.consensus_validator) + W2b certification jury
+  - Local Qwen inference   (L3 qwen_vllm.reasoning) — scoped, see note below
+  - Provider clients       (apps_shared, apps_lic, sovereign gateway)
+
+Scope (this is NOT "the only model SSOT for every app"):
+  - This registry owns routing / healing-tier / consensus-juror / embedding model
+    IDs. It does NOT own per-app generation models.
+  - The apps_rg generation model is governed elsewhere: see
+    `apps_rg/config/provider_profiles.yaml` (external_claude_generator.default_model),
+    resolved via `apps_rg/runtime/section_model_limits.py`.
+  - The Qwen tier below is live for apps_lic + the agentic_core consensus jurors only;
+    apps_rg removed Qwen/vLLM (its generator is external Claude), so Qwen is not a
+    generic app-wide default.
 
 All model IDs are env-var overridable. Defaults match the current deployed
 configuration as of 2026-04-21. When the physical vLLM model changes,

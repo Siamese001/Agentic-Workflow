@@ -44,13 +44,19 @@ from tools.notion.plan_wave_summary import (
     build_plan_notion_summary,
 )
 
-# Notion API constants
-_NOTION_BASE = "https://api.notion.com/v1"
-_NOTION_API_VERSION = "2025-09-03"
-_NOTION_TIMEOUT_S = 30
+# Notion API constants + Plans DB ID — imported from the SSOT
+# (config/notion_databases.yaml via _notion_constants). Do NOT redefine these
+# literals here; the SSOT parity gate (check_notion_id_ssot_parity.py) owns them.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".claude" / "governance" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as _NOTION_API_VERSION,
+    NOTION_BASE as _NOTION_BASE,
+    PLANS_DATA_SOURCE_ID as _PLANS_DATA_SOURCE_ID,
+)
 
-# Plans DB data_source_id
-_PLANS_DATA_SOURCE_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
+# Plan creation deliberately uses a longer HTTP timeout than the SSOT read
+# default (writes can be slower than reads); kept local on purpose.
+_NOTION_TIMEOUT_S = 30
 
 # Slug pattern: kebab-case with 6-hex suffix
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*-[a-f0-9]{6}$")

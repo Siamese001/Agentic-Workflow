@@ -696,6 +696,15 @@ def main():
             "NP18 Notion Plans status canonical (advisory)",
             "ops_scripts/ci/check_notion_plans_status_canonical.py",
         ),
+        # NP-IDSSOT — Notion-ID SSOT parity. Asserts config/notion_databases.yaml
+        # (SSOT) == _notion_constants derived constants == its _FALLBACK_* literals,
+        # so the fail-soft fallback can never silently drift from the SSOT.
+        # Fail-closed (exit 1 on mismatch). Bypass: NOTION_ID_SSOT_PARITY_BYPASS=1.
+        # Plan: notion-id-ssot-consolidation.
+        (
+            "NP-IDSSOT Notion-ID SSOT parity (enforced)",
+            "ops_scripts/ci/check_notion_id_ssot_parity.py",
+        ),
         # NP-DONE -- Plans whose on-disk Wave Structure table shows all waves
         # ✅ DONE but Notion status ≠ "Completed". Belt-and-suspenders backstop
         # for the wave_execution_state.py + PLAN_COMPLETE: hook chain.

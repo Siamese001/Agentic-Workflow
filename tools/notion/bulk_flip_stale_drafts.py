@@ -35,9 +35,14 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
-NOTION_API = "https://api.notion.com/v1"
-NOTION_VERSION = "2025-09-03"
-BACKLOG_DS_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+# Notion API constants + Backlog Items DS — imported from the SSOT
+# (config/notion_databases.yaml via _notion_constants). Do NOT redefine literals.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".claude" / "governance" / "scripts"))
+from _notion_constants import (  # noqa: E402
+    NOTION_API_VERSION as NOTION_VERSION,
+    NOTION_BASE as NOTION_API,
+    BACKLOG_ITEMS_DATA_SOURCE_ID as BACKLOG_DS_ID,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLANS_DIR = REPO_ROOT / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"

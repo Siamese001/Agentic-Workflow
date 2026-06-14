@@ -1,9 +1,6 @@
 {
   "gate_id": "AUDIT_3_external_service_literal_ssot",
-  "count": 0,
-  "seeded_at": "2026-06-13T14:17:51.560395+00:00",
-  "snapshot": "adg_indexed_06132026_1009.sqlite",
-  "zero_run_streak": 2,
-  "last_run_at": "2026-06-13T18:51:06.832993+00:00",
-  "last_run_snapshot": "adg_indexed_06132026_1324.sqlite"
+  "count": 557,
+  "seeded_at": "2026-06-14T07:48:56.198226+00:00",
+  "mechanism": "source_scan"
 }

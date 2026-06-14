@@ -38,12 +38,11 @@ GATES = [
         "AUDIT_2_observability_on_high_fanin",
         "audit_observability_high_fanin.json",
     ),
-    (
-        "check_external_service_literal_ssot.py",
-        "ExternalServiceLiteralSsotGate",
-        "AUDIT_3_external_service_literal_ssot",
-        "audit_external_service_literal_ssot.json",
-    ),
+    # NOTE: AUDIT-3 (check_external_service_literal_ssot.py) is intentionally NOT
+    # in this shared list. As of 2026-06-14 (plan notion-id-ssot-consolidation W4)
+    # it is a self-contained SOURCE scanner, no longer an ADG-violations-query
+    # gate, so the shared empty-snapshot ADG fixtures below do not apply. It has
+    # dedicated tests further down (test_audit3_*).
     (
         "check_cross_mainline_dispatcher.py",
         "CrossMainlineDispatcherGate",
@@ -198,6 +197,24 @@ def test_audit3_uses_literal_value_patterns():
     assert "api.notion.com" in patterns
 
 
+def test_audit3_class_attrs():
+    """AUDIT-3 keeps its gate identity (gate_id / Tier R / baseline filename)."""
+    mod = _import_gate("check_external_service_literal_ssot.py")
+    cls = mod.ExternalServiceLiteralSsotGate
+    assert cls.gate_id == "AUDIT_3_external_service_literal_ssot"
+    assert cls.tier == "R"
+    assert cls.baseline_filename == "audit_external_service_literal_ssot.json"
+
+
+def test_audit3_notion_id_patterns_cover_plans_ids():
+    """Gap closure: the canonical Notion-ID set MUST include the most-copied
+    Plans data-source / database IDs that the old (inert) gate omitted."""
+    mod = _import_gate("check_external_service_literal_ssot.py")
+    ids = set(mod.notion_id_patterns())
+    assert "ac53d31b-3068-4039-9ebe-856c12caab32" in ids  # PLANS_DATA_SOURCE_ID
+    assert "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9" in ids  # PLANS_DB_ID
+
+
 def test_audit6_has_hard_block_rule():
     """AUDIT-6 must implement the Tier-B hard-block on HIGH/CRITICAL/P0 untriaged."""
     mod = _import_gate("check_violation_aging_sla.py")
@@ -232,34 +249,33 @@ def test_audit6_emits_tier_b_for_high_severity(tmp_path, monkeypatch):
     assert tier_b[0].severity == "fail"
 
 
-def test_audit3_excludes_ssot_allowlisted_files(tmp_path, monkeypatch):
-    """AUDIT-3 must NOT flag literals inside the SSOT allowlist."""
-    snap = tmp_path / "adg_indexed_test.sqlite"
-    conn = sqlite3.connect(snap)
-    _build_minimal_schema(conn)
-    # Insert a violation in the SSOT module itself — should be excluded
-    conn.execute(
-        "INSERT INTO violations (id, edge_id, category, evidence, file_path, line_no, disposition, severity) "
-        "VALUES (1, 1, 'antipattern', '2025-09-03', '.claude/governance/scripts/_notion_constants.py', 14, 'untriaged', 'LOW')"
-    )
-    # Insert one in a non-allowlisted file — should be flagged
-    conn.execute(
-        "INSERT INTO violations (id, edge_id, category, evidence, file_path, line_no, disposition, severity) "
-        "VALUES (2, 2, 'antipattern', 'foo 2025-09-03 bar', 'tools/some_script.py', 50, 'untriaged', 'LOW')"
-    )
-    conn.commit()
-    monkeypatch.setenv("ADG_SNAPSHOT", str(snap))
-
+def test_audit3_excludes_ssot_allowlisted_files(tmp_path):
+    """AUDIT-3 source scan must flag literals in non-allowlisted files only."""
     mod = _import_gate("check_external_service_literal_ssot.py")
-    gate = mod.ExternalServiceLiteralSsotGate()
-    conn2 = sqlite3.connect(snap)
-    try:
-        violations = gate.run(conn2)
-    finally:
-        conn2.close()
-    # Only the non-allowlisted file should be flagged
-    assert len(violations) == 1
-    assert "tools/some_script.py" in violations[0].subject
+    # Allowlisted SSOT module with a literal -> NOT flagged.
+    ssot = tmp_path / ".claude" / "governance" / "scripts"
+    ssot.mkdir(parents=True)
+    (ssot / "_notion_constants.py").write_text('x = "2025-09-03"\n', encoding="utf-8")
+    # Non-allowlisted file with the same literal -> flagged.
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "some_script.py").write_text('y = "2025-09-03"\n', encoding="utf-8")
+    hits = mod.find_literal_violations(tmp_path, ("2025-09-03",))
+    flagged = {h.file_path for h in hits}
+    assert "tools/some_script.py" in flagged
+    assert ".claude/governance/scripts/_notion_constants.py" not in flagged
+
+
+def test_audit3_excludes_test_and_archive_dirs(tmp_path):
+    """Source scan must skip tests/ and _archive/ trees."""
+    mod = _import_gate("check_external_service_literal_ssot.py")
+    for sub in ("tests", "_archive", "docs"):
+        d = tmp_path / sub
+        d.mkdir()
+        (d / "x.py").write_text('z = "2025-09-03"\n', encoding="utf-8")
+    (tmp_path / "live.py").write_text('z = "2025-09-03"\n', encoding="utf-8")
+    hits = mod.find_literal_violations(tmp_path, ("2025-09-03",))
+    flagged = {h.file_path for h in hits}
+    assert flagged == {"live.py"}
 
 
 def test_audit5_only_flags_outside_config(tmp_path, monkeypatch):

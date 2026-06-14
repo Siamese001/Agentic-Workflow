@@ -9,7 +9,7 @@ rows are visually distinct from scored DEFERRED rows.
 
 Policy SSOT: .claude/rules/next-step-capture.md
 Scaffolder:  .claude/governance/scripts/_deferred_scope_plan_scaffold.py (shared)
-Notion DB:   aa8d2507-101e-4384-81d9-60ea3fe33876 (Wave/Phase Convergence)
+Notion DB:   Backlog Items (data_source id via _notion_constants SSOT)
 
 Marker format:
     NEXT_STEP: plan=<slug-or-NEW:slug> title=<short> priority=<P2..P5>
