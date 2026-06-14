@@ -49,6 +49,9 @@ from _post_agent_payload import extract_response_text  # noqa: E402
 
 # Import the verification logic from the pre-write gate module
 REPO_ROOT = Path(__file__).parent.parent.parent
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
 sys.path.insert(0, str(REPO_ROOT))
 
 from pre_notion_plan_write_gate import (
@@ -57,6 +60,7 @@ from pre_notion_plan_write_gate import (
     PLANS_DATA_SOURCE_ID,
     _get_notion_token,
 )
+from _notion_constants import PLANS_DB_ID as _PLANS_DB_ID  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -79,8 +83,8 @@ def _is_plans_db_target(payload_str: str) -> bool:
     """Check if the payload targets the Plans DB."""
     # Look for Plans DB IDs in various forms
     plans_ids = {
-        "ac53d31b-3068-4039-9ebe-856c12caab32",  # data_source_id
-        "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9",  # database_id
+        PLANS_DATA_SOURCE_ID,  # data_source_id (from _notion_constants via pre_notion_plan_write_gate)
+        _PLANS_DB_ID,          # database_id (from _notion_constants)
     }
     # Also check un-dashed forms
     normalized = _normalize_id(payload_str)

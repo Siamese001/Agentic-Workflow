@@ -49,11 +49,11 @@ from pathlib import Path
 from typing import Optional
 
 # ---------------------------------------------------------------------------
-# SSOT — Plans DB identifiers
+# Plans DB identifiers — imported from _notion_constants SSOT.
 # ---------------------------------------------------------------------------
 
-PLANS_DATA_SOURCE_ID: str = "ac53d31b-3068-4039-9ebe-856c12caab32"
-NOTION_API_BASE: str = "https://api.notion.com/v1"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import PLANS_DATA_SOURCE_ID, NOTION_BASE as NOTION_API_BASE  # noqa: E402
 
 # Cache for slug → page_id lookups (session-level)
 _slug_page_cache: dict[str, Optional[str]] = {}
