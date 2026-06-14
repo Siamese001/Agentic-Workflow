@@ -49,7 +49,7 @@ LAST_UPDATED: 2026-06-14
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | W1.1, W1.2 | Audit ratification · memory-drift fix · gate reference-sweep classifier (no deletions) | ~30K | Coupling map valid; `post_agent_*` rename already landed on this branch | ✅ DONE | Memory SSOT created; `classify_gate_wiring.py` emitted REGISTRY 151 / PRECOMMIT 22 / WORKFLOW 14 / TEST_ONLY 37 / ORPHANED 102 |
 | W2 | W2.1, W2.2 | **S1** Author-Gate machinery → archive (highest value, lowest risk) | ~40K | AG chain already unwired (verified 3×); §6 invariant lives in CLAUDE.md | 🔄 IN PROGRESS | 3 proven-orphan gates archived; skills REVERTED (live AG-tooling/test importers, caught by CI/Codex on #336); bulk AG archival DEFERRED to a lockstep S1 pass |
-| W3 | W3.1, W3.2 | Collapse ~21 redirect/inactive rule stubs (incl. the 5 AG rule stubs) → one retired-rules index | ~28K | §-citations are number-based, not filename-based; glob-triggers re-homed | 🔲 TODO | Stubs replaced by `_retired-rules-index.md`; CLAUDE.md index updated; no rule references a non-existent SSOT; gates green |
+| W3 | W3.1, W3.2 | Collapse ~21 redirect/inactive rule stubs (incl. the 5 AG rule stubs) → one retired-rules index | ~28K | §-citations are number-based, not filename-based; glob-triggers re-homed | 🔲 TODO | Stubs replaced by `retired-rules-index.md`; CLAUDE.md index updated; no rule references a non-existent SSOT; gates green |
 | W4 | W4.1, W4.2 | CI-gate reference-swept retirement + family collapse (uses W1.2 classifier output) | ~38K | W1.2 classifier proves orphan status across registry+workflows+pre-commit+tests | 🔲 TODO | Only proven-orphan gates retired; notion-dedup & waiting-for pairs parameterized→1 each; apps_rg/notion-status gates untouched; gates green |
 | W5 | W5.1, W5.2 | Skills archival + thin-alias command cleanup | ~26K | Servers absent from `.mcp.json`; native substitutes documented | 🔲 TODO | 2 retired AG + 4 dormant-MCP skills archived; 6 tavily + other alias commands removed; CLAUDE.md MCP table updated; orthogonal pairs untouched |
 | W6 | W6.1, W6.2 | **S2/S4/S5/S6** Slim dispatch · retire SR/next-step/deferred-scope capture · delete legacy trees · retire mcp-serialization | ~40K | Native plan-mode/`spawn_task`/parallel-MCP cover invariants; zero imports of legacy trees | 🔲 TODO | Dispatch chains slimmed; legacy trees deleted after zero-import proof; mcp-serialization retired; gates green |
@@ -83,7 +83,7 @@ LAST_UPDATED: 2026-06-14
 | # | Opportunity | Artifacts eliminated | Invariant preserved (where it lives after) | Evidence | Safety |
 |---|---|---|---|---|---|
 | 1 | **Retire Author-Gate emulation (S1)** | 16 gov scripts · 2 skills (`author-gate-packet-builder`, `author-gate-ui-renderer`) · ~10 CI gates (4 top-level + `ci/author_gate/` subdir + `enriched_choice_ui_invariants_ast` + `decision_ledger_*`) · 4 pre-commit hooks · 5 DEPRECATED rules | "Stop & ask on ambiguity" → native `AskUserQuestion` (CLAUDE.md §Author-Gate + constitutional §6). Precedent → file memory, not SQLite ledger. | Dispatcher comment + coupling map S1 + 3 independent agent sweeps; not referenced in `run_contract_gates.py`, `.github/workflows/`, or `.pre-commit-config.yaml`; §30/§35 already RETIRED slots. | **Highest** |
-| 2 | **Collapse ~21 redirect/inactive rule stubs** | 19 `DEPRECATED` rules + `global_rules.md` (inactive) + `plan-lifecycle-procedures.md` (redirect); several redirect→redirect | Real content already at canonical targets; one `_retired-rules-index.md` preserves the redirect map. | All 67 rule bodies inspected; cross-refs use §-numbers not filenames; glob-trigger stubs (e.g. `adg-test-accelerator`) fold trigger into canonical frontmatter. | High |
+| 2 | **Collapse ~21 redirect/inactive rule stubs** | 19 `DEPRECATED` rules + `global_rules.md` (inactive) + `plan-lifecycle-procedures.md` (redirect); several redirect→redirect | Real content already at canonical targets; one `retired-rules-index.md` preserves the redirect map. | All 67 rule bodies inspected; cross-refs use §-numbers not filenames; glob-trigger stubs (e.g. `adg-test-accelerator`) fold trigger into canonical frontmatter. | High |
 | 3 | **Resolve memory-system drift (BLOCKING)** | 0 deletions — restores signal | "Recall at session start; write back significant decisions (15/3)" → native `memory/MEMORY.md` (created) **or** §17 re-pointed to the real mechanism. | `memory/` absent on disk vs §17 + `memory-management.md` + `memory-notion-writeback.md` + `memory-mcp` skill citing it as SSOT. Must precede MCP-script deletion (regret vector). | High (signal restoration) |
 | 4 | **CI-gate reference-swept retirement + family collapse** | Proven-orphan gates (subset of the 175 uncalled-by-registry) + 2 notion pairs→2 single parameterized gates | Each retired gate is proven dead across registry+workflows+pre-commit+tests by the W1.2 classifier first. | Registry refs 154, pre-commit 45, workflows 33 → "uncalled-by-registry" overcounts dead; **mass-deletion is forbidden** without the sweep. | Medium (sweep-gated) |
 | 5 | **Skills archival + alias cleanup** | 2 retired AG skills + 4 dormant-MCP skills (`redis-cache`, `pytest-mcp`, `otel-telemetry`, `tavily-research`) + 6 tavily command stubs (~600 lines) | MCP substitutes documented in `mcp-notes.md`; native `AskUserQuestion` covers AG. | `.mcp.json` lacks those servers; CLAUDE.md marks them dormant; agent-2 "DO NOT merge" verdict on orthogonal pairs honored. | High |
@@ -166,11 +166,11 @@ CHECKPOINT: C
 **Authorization**: NOT_REQUIRED — collapsing redirect-only rule files; signal already at canonical targets.
 
 **Phases**:
-- **W3.1** — Build `_retired-rules-index.md` covering all ~21 stubs; re-home glob-triggers into canonical files | ~14K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W3.1** — Build `retired-rules-index.md` covering all ~21 stubs; re-home glob-triggers into canonical files | ~14K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 - **W3.2** — Delete the ~21 stubs; update CLAUDE.md rules index; gates green | ~14K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
 
 **Acceptance**:
-- One `.claude/rules/_retired-rules-index.md` maps every retired stub (19 DEPRECATED incl. the 5 AG rule stubs + `global_rules.md` + `plan-lifecycle-procedures.md`) → its canonical target (zero-loss redirect preservation per constitutional §21).
+- One `docs/reports/governance/retired-rules-index.md` maps every retired stub (19 DEPRECATED incl. the 5 AG rule stubs + `global_rules.md` + `plan-lifecycle-procedures.md`) → its canonical target (zero-loss redirect preservation per constitutional §21).
 - Glob-trigger stubs' triggers folded into their canonical file's frontmatter before deletion.
 - CLAUDE.md "Specialized rules" index updated; `python ops_scripts/ci/run_contract_gates.py` green.
 
@@ -285,7 +285,7 @@ python ops_scripts/ci/run_contract_gates.py
 ```
 
 ### W3.1 — Build retired-rules index
-**Scope**: Create `.claude/rules/_retired-rules-index.md` listing every retired stub → canonical target; fold any glob-trigger frontmatter (e.g. `adg-test-accelerator-enforcement`) into the canonical file before deleting the stub.
+**Scope**: Create `docs/reports/governance/retired-rules-index.md` listing every retired stub → canonical target; fold any glob-trigger frontmatter (e.g. `adg-test-accelerator-enforcement`) into the canonical file before deleting the stub.
 
 ### W4.1 — Retire classifier-proven orphans
 **Scope**: Read `gate_wiring_classification.json` (the W1.2 output); retire ONLY gates classified ORPHANED; archive each gate's test alongside it.
