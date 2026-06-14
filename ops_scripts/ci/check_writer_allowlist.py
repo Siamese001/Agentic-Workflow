@@ -39,10 +39,9 @@ BYPASS_LOG = REPO_ROOT / "artifacts" / "governance" / "writer_allowlist_bypass.j
 
 ALLOWLIST = frozenset(
     {
-        "post_agent_author_gate_capture.py",
-        "capture_author_gate.py",
+        # post_agent_author_gate_capture / capture_author_gate / promote_author_gate_patterns
+        # retired + archived (Author-Gate teardown, ADR-093); removed as authorised writers.
         "backfill_cat4_decisions.py",
-        "promote_author_gate_patterns.py",
         "author_gate_ledger_integrity.py",
         # add new authorised writers here only
     }

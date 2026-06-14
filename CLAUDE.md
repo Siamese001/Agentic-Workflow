@@ -150,8 +150,7 @@ A **Skill** column entry means a richer procedural skill covers the same area �
 | `approval-exception-policy.md` | When approval/exceptions apply | — |
 | `deferred-scope-capture.md` | Capturing out-of-scope work | — |
 | `next-step-capture.md` | Recording the next step | — |
-| `refactor-decision-memory.md` | Pre-Author-Gate precedent check | [`refactor-decision-memory`](.claude/skills/refactor-decision-memory/SKILL.md) |
-| `author-gate-decision-points.md` / `author-gate-enforcement.md` / `author-gate-queue-drain.md` / `author-gate-svp-calibration.md` | Author-Gate doctrine, scoring, queue | [`author-gate-packet-builder`](.claude/skills/author-gate-packet-builder/SKILL.md) |
+| `author-gate-decision-points.md` / `author-gate-enforcement.md` / `author-gate-queue-drain.md` / `author-gate-svp-calibration.md` | Author-Gate (retired → native `AskUserQuestion`); rules are deprecation stubs | [`ask-user-question-recommendation`](.claude/skills/ask-user-question-recommendation/SKILL.md) |
 | `security-hardening.md` | Security hardening | — |
 | `python-dash-c-quote-hazard.md` | `python -c "..."` quote-hazard ban | — |
 | `query-progress-bar.md` | Progress bar for long operations | — |

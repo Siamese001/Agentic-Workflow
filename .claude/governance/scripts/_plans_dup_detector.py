@@ -13,15 +13,17 @@ Plan: notion-plans-status-rca-followups-b8e3f2 (W1.P2c/d).
 from __future__ import annotations
 
 import re
+import sys
 from dataclasses import dataclass
+from pathlib import Path
+
+# Import from SSOT (_notion_constants is pure constants, no I/O at import).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import PLANS_DB_ID, PLANS_DATA_SOURCE_ID  # noqa: E402
 
 # ---------------------------------------------------------------------------
-# Plans-DB id strings (mirror of _notion_plans_status_check.py — kept local
-# so this module has zero cross-imports).
+# Plans-DB id strings — imported from _notion_constants SSOT.
 # ---------------------------------------------------------------------------
-
-PLANS_DB_ID: str = "6aba34d9-4d0b-4f4c-b956-b2bdea541ca9"
-PLANS_DATA_SOURCE_ID: str = "ac53d31b-3068-4039-9ebe-856c12caab32"
 
 _PLANS_IDS: frozenset[str] = frozenset({
     PLANS_DB_ID.lower(),

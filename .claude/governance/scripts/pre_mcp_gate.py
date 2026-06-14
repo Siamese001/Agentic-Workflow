@@ -33,12 +33,19 @@ Zero hardcoded paths — repo_root resolved from __file__.
 import importlib.util
 import json
 import os
+import re as _re
 import sqlite3
 import subprocess
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+
+# UUID4 pattern — used to allow harness-injected servers whose names are raw UUIDs.
+_UUID4_RE = _re.compile(
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    _re.IGNORECASE,
+)
 
 fail_policy = "closed"
 adg_server_name = "adg_sqlite"
@@ -176,9 +183,10 @@ _session_id = os.environ.get("VSCODE_PID") or str(os.getppid())
 session_state = repo_root / "artifacts" / "governance" / f"session_state_{_session_id}.json"
 
 # Notion DB IDs for classification threshold gate (advisory — exit 0 always).
-# Source: .claude/rules/notion-archived-databases.md (active DBs section).
-_NOTION_PLANS_DB_ID = "ac53d31b-3068-4039-9ebe-856c12caab32"
-_NOTION_BACKLOG_DB_ID = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+# Imported from SSOT _notion_constants.py — never hardcode IDs here.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _notion_constants import PLANS_DB_ID as _NOTION_PLANS_DB_ID  # noqa: E402
+from _notion_constants import BACKLOG_ITEMS_DB_ID as _NOTION_BACKLOG_DB_ID  # noqa: E402
 _NOTION_CLASSIFICATION_VIOLATIONS = (
     repo_root / "artifacts" / "governance" / "notion_classification_violations.jsonl"
 )
@@ -288,6 +296,12 @@ _BUILTIN_MCP_SERVERS: frozenset[str] = frozenset(
         # Remote-execution GitHub integration — environment-managed PR/issue/CI surface,
         # not declared in repo .mcp.json. Same harness-provided category as the above.
         "github",
+        # Render / browser / UI servers injected by the Claude Code harness at
+        # runtime — never declared in repo .mcp.json.
+        "visualize",        # mcp__visualize__show_widget / read_me
+        "Claude_Preview",   # mcp__Claude_Preview__preview_*
+        "Claude_in_Chrome", # mcp__Claude_in_Chrome__*
+        "Figma",            # mcp__Figma__*
     }
 )
 
@@ -300,6 +314,11 @@ def check_mcp_whitelist(server_name: str, tool_name: str) -> int:
     Hard-block only on explicit violations.
     """
     if server_name in _BUILTIN_MCP_SERVERS or server_name.startswith("ccd_"):
+        return 0
+    # UUID4-named servers and plugin_* servers are harness-injected at runtime
+    # (e.g. mcp__1135e703-ede9-434f-b9dd-f8385c9146aa__notion-fetch,
+    #        mcp__plugin_data_bigquery__authenticate). Not repo-managed.
+    if bool(_UUID4_RE.match(server_name)) or server_name.startswith("plugin_"):
         return 0
     allowed = _load_mcp_whitelist()
     if not allowed:

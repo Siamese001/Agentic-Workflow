@@ -44,6 +44,31 @@ baseline names** — that is what this branch actually contains.
 | **Invariant preserved** | "Stop and ask via `AskUserQuestion` before edits when ≥2 plausible approaches with different blast radius and no unambiguous directive." (one CLAUDE.md line) |
 | **Reversibility** | High — scripts archived not deleted; gates removed from registries (re-addable). Ledger SQLite preserved read-only. |
 
+#### S1 execution status (2026-06-13, branch `feat/askq-authorgate-dedup`)
+
+The audit-time "verified-orphaned ~14 scripts" premise was **partly wrong** — re-verification
+against current `origin/main` split S1 into two tiers with very different blast radius:
+
+- **Tier 1 — UI pipeline (DONE, archived):** 8 governance scripts
+  (`post_agent_author_gate_{ui,pipeline,schema}_audit`, `post_agent_ask_user_question_packet_audit`,
+  `post_agent_author_gate_miss_detector`, `_author_gate_pipeline_check`, `pre_ask_user_question_gate`,
+  `pre_user_prompt_author_gate_reminder`) + 3 CI gates (`check_author_gate_pipeline_freshness`,
+  `author_gate/check_ask_user_question_packet_freshness`, `check_enriched_choice_ui_invariants`)
+  → `archives/claude_native_supersession_2026-06-07/`. No live importers (string-mentions only).
+  11 coupled tests removed; registry trims to `run_contract_gates.py` (EC-UI tuple),
+  `governance_w3_hook_audit_matrix.py`, `generate_rules_index.py`. Verified: no-archives-imports OK,
+  collect-only 0 errors, recommendation gate 15/15. The runtime SSOT half (collapse to the
+  `ask-user-question-recommendation` skill + stub the 2 emulation skills) shipped earlier on the
+  same branch.
+- **Tier 2 — decision-ledger (DEFERRED):** `author_gate_ledger_integrity` (hard-imported by the
+  live `check_decision_ledger_chain.py`), `post_agent_author_gate_capture`, `capture_author_gate`,
+  `pre_author_gate`, `promote_author_gate_patterns`, `author_gate_marker_validator`, the
+  `ops_scripts/ci/author_gate/` ledger gates (`check_ledger_schema/integrity/outcome_coverage`,
+  `detect_*`, `rollup_*`, `audit_promoted_patterns`, `check_ui_conformance`), and the dormant
+  `check_enriched_choice_ui_invariants_ast.py`. **Entangled with the preserve-me
+  `refactor-decision-memory` precedent store** — needs a plan + the §30/precedent decision before
+  archive, not a blind teardown.
+
 ### S2 · SR_* markers → native plan mode  (Wave W2, leverage ★★★★)
 
 | Coupling type | Artifacts |

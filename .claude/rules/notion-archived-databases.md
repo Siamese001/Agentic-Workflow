@@ -3,6 +3,9 @@
 
 # Notion Archived Databases — Do Not Write
 
+> **UUID SSOT:** All Notion DB/DS IDs are canonical in `.claude/governance/scripts/_notion_constants.py`.
+> Import from there; never hardcode raw UUIDs in scripts.
+
 > ⛔ The following Notion databases were **archived 2026-05-02** as part of the
 > Notion consolidation (plan `notion-integration-consistency-audit-b2c4d8`).
 > Filesystem is the sole SSOT. **No new Notion writes to these databases.**
@@ -30,8 +33,8 @@
 
 | Database | Data Source ID | Purpose |
 |---|---|---|
-| Plans DB | `ac53d31b-3068-4039-9ebe-856c12caab32` | Plan registration, wave lifecycle, status tracking |
-| Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | Deferred scope items, next-step capture |
+| Plans DB | `ac53d31b-3068-4039-9ebe-856c12caab32` → `PLANS_DATA_SOURCE_ID` in `_notion_constants.py` | Plan registration, wave lifecycle, status tracking |
+| Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` → `BACKLOG_ITEMS_DS_ID` in `_notion_constants.py` | Deferred scope items, next-step capture |
 | Wave/Phase Convergence | `WAVE_PHASE_DATA_SOURCE_ID` (in `_notion_constants.py`) | Phase evidence, P-band tracking |
 
 ## Hard Rules

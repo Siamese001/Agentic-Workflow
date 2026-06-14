@@ -13,6 +13,7 @@ from typing import Dict, List, Optional, Set
 
 from _notion_plans_status_check import (  # noqa: E402
     ACTIVE_STATUSES as _ACTIVE_STATUSES_FS,
+    BACKLOG_DATA_SOURCE_ID,
     CANONICAL_STATUSES as _CANONICAL_STATUSES_FS,
     FORBIDDEN_PLANS_STATUSES,
     PLANS_DATA_SOURCE_ID,
@@ -78,8 +79,8 @@ PLANS_DB_PROPERTIES: Dict[str, str] = {
 PLANS_DB_DATA_SOURCE_ID: str = PLANS_DATA_SOURCE_ID
 PLANS_DB_DATABASE_ID: str = PLANS_DB_ID
 
-# Backlog Items DB (reads)
-BACKLOG_DB_DATA_SOURCE_ID: str = "fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7"
+# Backlog Items DB (reads) — imported from _notion_constants via _notion_plans_status_check.
+BACKLOG_DB_DATA_SOURCE_ID: str = BACKLOG_DATA_SOURCE_ID
 
 
 # ============================================================================
