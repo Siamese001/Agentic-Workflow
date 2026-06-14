@@ -39,8 +39,7 @@ MANUAL_ONLY = {
 }
 
 OBSOLETE_CANDIDATE = {
-    "post_agent_deferred_scope_capture.py": "S4 DEFERRED_SCOPE marker pipeline retired §24/ADR-096; unwired from per-Stop chain (file kept: backfill_backlog_plan_relation + scorer importers)",
-    "post_agent_next_step_capture.py": "S4 NEXT_STEP marker pipeline retired §24/ADR-096; unwired from per-Stop chain (file kept: shared scaffold + MECE path-ref)",
+    # S4 deferred-scope/next-step capture hooks deleted in W7 (enforcement-surface-consolidation-d8b3f6).
     "post_agent_author_gate_audit.py": "superseded by capture + miss_detector + schema/ui audits",
     "post_agent_author_gate_suite.py": "orchestration duplicate of individual AG audits",
     "post_agent_adr_registry_capture.py": "Notion ADR registry archived 2026-05-02; capture optional",
