@@ -207,7 +207,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
         [
             GuardianSpec(
                 guardian_id="location_alignment",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_location_alignment",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_location_alignment",
                 entrypoint_fn="run_location_alignment_guardian",
                 check_ids=("misplaced_files", "missing_directories"),
                 tier="slow",
@@ -215,7 +215,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="hygiene",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_hygiene",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_hygiene",
                 entrypoint_fn="run_hygiene_guardian",
                 check_ids=("temp_artifacts", "empty_folders", "init_only_folders"),
                 tier="fast",
@@ -223,7 +223,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="manifest_integrity",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_manifest",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_manifest",
                 entrypoint_fn="run_manifest_guardian",
                 check_ids=("manifest_exists", "lock_exists", "checksum_match"),
                 tier="fast",
@@ -231,7 +231,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="drift_detection",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_drift_detection",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_drift_detection",
                 entrypoint_fn="run_drift_detection_guardian",
                 check_ids=("root_drift",),
                 tier="fast",
@@ -239,7 +239,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="architecture_governance",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_architecture_governance",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_architecture_governance",
                 entrypoint_fn="run_architecture_governance_guardian",
                 check_ids=("import_compliance", "layer_gravity"),
                 tier="slow",
@@ -247,7 +247,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="classification_compliance",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_classification_compliance",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_classification_compliance",
                 entrypoint_fn="run_classification_compliance_guardian",
                 check_ids=("naming_compliance", "territory_compliance"),
                 tier="slow",
@@ -255,7 +255,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="hierarchy_compliance",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_hierarchy_compliance",
                 entrypoint_fn="run_hierarchy_compliance_guardian",
                 check_ids=("missing_structure", "subfolder_compliance"),
                 tier="fast",
@@ -263,7 +263,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="c0_sovereignty_enforcement",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_c0_sovereignty",
                 entrypoint_fn="run_c0_sovereignty_guardian",
                 check_ids=(
                     "embedding_drives_routing",
@@ -275,7 +275,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="change_package_activation_guard",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_change_package_activation",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_change_package_activation",
                 entrypoint_fn="run_change_package_activation_guardian",
                 check_ids=(
                     "proposal_only_bypass",
@@ -287,7 +287,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="cross_layer_mutation_guard",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_cross_layer_mutation",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_cross_layer_mutation",
                 entrypoint_fn="run_cross_layer_mutation_guardian",
                 check_ids=(
                     "upward_layer_mutation",
@@ -300,7 +300,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="escalation_determinism",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_escalation_determinism",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_escalation_determinism",
                 entrypoint_fn="run_escalation_determinism_guardian",
                 check_ids=(
                     "failure_signal_built_from_raw_notes",
@@ -312,7 +312,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="gateway_bypass",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_gateway_bypass",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_gateway_bypass",
                 entrypoint_fn="run_gateway_bypass_guardian",
                 check_ids=(
                     "direct_model_call",
@@ -325,7 +325,7 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
             ),
             GuardianSpec(
                 guardian_id="contract_integrity",
-                entrypoint_module="agentic_core.L0_routing.scripts.run_guardian_contract_integrity",
+                entrypoint_module="ops_scripts.dev_tools.L0_routing_scripts.run_guardian_contract_integrity",
                 entrypoint_fn="run_contract_integrity_guardian",
                 check_ids=("scripts_found", "imports_contract", "imports_normalize", "returns_result"),
                 tier="fast",
