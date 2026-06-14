@@ -202,7 +202,8 @@ A **Skill** column entry means a richer procedural skill covers the same area โ€
 | `apps-rg-interactive-discipline.md` | apps_rg interactive discipline |
 | `apps-rg-post-run-summary.md` | Mandatory inline post-run summary |
 
-> Deprecated rules (kept for reference, not active): `adg-graph-layer-enforcement`, `adg-hotspot-enforcement`,
-> `adg-p7-analyst-artifacts`, `adg-repair-discipline`, `adg-test-accelerator-enforcement`,
-> `anti-pattern-author-gate`, `notion-backlog-plan-linkage`, `notion-plan-identity-verification`,
-> `plan-registration-enforcement`, `wave-completion-discipline`.
+> Retired redirect rules (deleted W3, plan `enforcement-surface-consolidation-d8b3f6`): 18 pure-redirect
+> stubs (Author-Gate, ADG-consolidation, deferred-scope/next-step, notion/plan, mcp-serialization) were
+> removed. Their signal already lived at canonical targets (constitutional ยง-citations are number-based
+> and survive); the full redirect map is preserved in
+> [retired-rules-index.md](docs/reports/governance/retired-rules-index.md).
