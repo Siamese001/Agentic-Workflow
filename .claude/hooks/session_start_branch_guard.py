@@ -71,6 +71,46 @@ def _trunk_ref() -> str:
     return os.environ.get("WORKTREE_CLEANUP_TRUNK_REF", "").strip() or "origin/main"
 
 
+def _trunk_branch() -> str:
+    return os.environ.get("WORKTREE_AUTODELIVER_TRUNK", "").strip() or "main"
+
+
+def _cut_base() -> str:
+    """Base ref a new worktree is cut from. Item #B: ``origin/<trunk>`` when resolvable, so
+    every lane starts CURRENT (kills the "local main 60 behind origin" drift). Best-effort
+    fetch first; empty string falls back to the current HEAD (offline / no remote).
+
+    Disable with ``WORKTREE_CUT_FROM_TRUNK=0``.
+    """
+    if os.environ.get("WORKTREE_CUT_FROM_TRUNK") == "0":
+        return ""
+    trunk = _trunk_ref()
+    _git("fetch", "origin", _trunk_branch(), "--quiet")  # best-effort; ignore failure
+    rc, _ = _git("rev-parse", "--verify", "--quiet", trunk)
+    return trunk if rc == 0 else ""
+
+
+def _sync_local_trunk(branch: str) -> str:
+    """Item #D: fast-forward the local trunk to ``origin/<trunk>`` when the primary checkout is
+    on the trunk AND clean, so "local main == GitHub main" holds. No-op (returns "") when the
+    primary is dirty (concurrent work) or not on the trunk. Best-effort; never raises.
+
+    Disable with ``WORKTREE_SYNC_LOCAL_TRUNK=0``.
+    """
+    if os.environ.get("WORKTREE_SYNC_LOCAL_TRUNK") == "0":
+        return ""
+    if branch != _trunk_branch():
+        return ""
+    rc_st, st = _git("status", "--porcelain")
+    if rc_st != 0 or st.strip():
+        return ""  # primary has concurrent work — leave it alone
+    rc, count = _git("rev-list", "--count", f"HEAD..{_trunk_ref()}")
+    if rc != 0 or not count.isdigit() or int(count) <= 0:
+        return ""  # already current
+    rc_ff, _ = _git("merge", "--ff-only", _trunk_ref())
+    return f"local '{branch}' fast-forwarded to {_trunk_ref()} (+{count})." if rc_ff == 0 else ""
+
+
 def _link_runtime(wt_path: Path) -> str:
     """Item #2: junction the gitignored runtime caches from the primary into ``wt_path``.
 
@@ -171,13 +211,24 @@ def main() -> int:
     except OSError:
         pass
 
-    # Create the worktree on a fresh chat branch cut from the current (protected) tip.
-    rc_wt, out_wt = _git("worktree", "add", str(wt_path), "-b", new_branch)
+    # Item #B: cut the worktree from origin/<trunk> so every lane starts current (the fetch
+    # inside _cut_base also freshens origin/main). Item #D: ff the local trunk when clean.
+    base = _cut_base()
+    sync_note = _sync_local_trunk(branch)
+
+    # Create the worktree on a fresh chat branch cut from origin/<trunk> (or current tip if base="").
+    def _add(wt: Path, br: str) -> tuple[int, str]:
+        args = ["worktree", "add", str(wt), "-b", br]
+        if base:
+            args.append(base)
+        return _git(*args)
+
+    rc_wt, out_wt = _add(wt_path, new_branch)
     if rc_wt != 0:
         # Retry once with a PID-uniquified branch/dir (collision), else fail-soft.
         new_branch = f"{new_branch}-{os.getpid()}"
         wt_path = _worktree_root() / f"{wt_dirname}-{os.getpid()}"
-        rc_wt, out_wt = _git("worktree", "add", str(wt_path), "-b", new_branch)
+        rc_wt, out_wt = _add(wt_path, new_branch)
     if rc_wt != 0:
         msg = (
             f"worktree-per-chat: still on protected branch '{branch}'. Auto-worktree "
@@ -193,16 +244,21 @@ def main() -> int:
     # Item #2/#3: link runtime caches into the fresh worktree + report trunk divergence.
     link_summary = _link_runtime(wt_path)
     divergence = _divergence_note(wt_path)
+    cut_from = base if base else branch
 
     msg = (
         f"worktree-per-chat: this chat was on protected branch '{branch}'. Created a git "
         f"worktree for the feature at:\n    {wt_path}\n"
-        f"on branch '{new_branch}' (cut from '{branch}').\n\n"
+        f"on branch '{new_branch}' (cut from '{cut_from}').\n\n"
         f"⚠️ ALL work for this chat must happen inside that worktree — the primary checkout "
         f"({REPO_ROOT}) stays on '{branch}' and edits to it are blocked. First action: "
         f"`cd {wt_path}` for shell commands, and target file edits at paths under {wt_path}. "
-        f"Commit and push from the worktree; open the PR from branch '{new_branch}'."
+        f"Commit and push from the worktree; open the PR from branch '{new_branch}'.\n"
+        f"When the scope is fully done and tests pass, emit "
+        f"`SCOPE_COMPLETE: branch={new_branch}` to auto-deliver (rebase → push to '{_trunk_branch()}')."
     )
+    if sync_note:
+        msg += f"\n{sync_note}"
     if link_summary:
         msg += f"\n{link_summary}"
     if divergence:

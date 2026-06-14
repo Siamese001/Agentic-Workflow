@@ -33,13 +33,14 @@
 
 | Layer | Mechanism | File |
 |---|---|---|
-| Proactive (auto-worktree + runtime-link + divergence) | `SessionStart` hook | `.claude/hooks/session_start_branch_guard.py` |
+| Proactive (auto-worktree, cut-from-`origin/main`, link, sync, divergence) | `SessionStart` hook | `.claude/hooks/session_start_branch_guard.py` |
 | Hard block (per-file edit gate) | `PreToolUse` Edit\|Write\|MultiEdit hook | `.claude/hooks/before_file_edit_branch_guard.py` |
 | Lifecycle cleanup (auto-reap merged) | `SessionStart` hook | `.claude/hooks/prune_merged_chat_worktrees.py` |
+| Auto-deliver on `SCOPE_COMPLETE` | `Stop` hook | `.claude/hooks/auto_deliver_on_scope_complete.py` |
 | Runtime-cache linker (SSOT) | imported by the create hook + doctor | `tools/git/worktree_runtime_links.py` |
 | Doctor (classify / report / `--link`) | CLI | `tools/git/worktree_doctor.py` |
 | Deliver (rebase → retest → push/PR) | CLI | `tools/git/deliver_worktree.py` |
-| Registration | `.claude/settings.json` `hooks.SessionStart` + `hooks.PreToolUse` | — |
+| Registration | `.claude/settings.json` `env` + `hooks.SessionStart` + `hooks.PreToolUse` + `hooks.Stop` | — |
 
 Both hooks are **self-contained** (no `lib.claude_hook_common` dependency) and fail
 **soft** when git is unavailable / no branch resolves; the edit gate blocks **hard**
@@ -61,6 +62,42 @@ linker / divergence notice are best-effort and never block session start.
 | `WORKTREE_LINK_DIRS=a/b,c/d` / `WORKTREE_LINK_DIRS_DISABLE=1` | Override / disable the runtime-cache dirs junctioned into a new worktree. Default: `data/cache/{chromadb,sparse,r1b}` (item #2). |
 | `WORKTREE_DIVERGENCE_NOTICE=0` / `WORKTREE_DIVERGENCE_FETCH=1` | Silence the trunk-divergence notice / fetch before counting (item #3). |
 | `WORKTREE_CLEANUP_TRUNK_REF=origin/main` | The "merged into" / divergence trunk ref. Default `origin/main`. |
+| `WORKTREE_AUTODELIVER=1\|pr\|dry\|0` | Auto-deliver mode for the `SCOPE_COMPLETE` Stop hook: `1`=push HEAD to trunk, `pr`=push+PR, `dry`=plan only, unset/`0`=disabled. |
+| `WORKTREE_AUTODELIVER_TRUNK=main` | Trunk branch the auto-deliver pushes to. Default `main`. |
+| `WORKTREE_AUTODELIVER_TIMEOUT=600` / `WORKTREE_AUTODELIVER_BYPASS=1` | Deliver subprocess timeout (s) / disable the Stop hook. |
+| `WORKTREE_CUT_FROM_TRUNK=0` | Disable cutting new worktrees from `origin/<trunk>` (item #B; default ON — lanes start current). |
+| `WORKTREE_SYNC_LOCAL_TRUNK=0` | Disable fast-forwarding local `main`→`origin/main` when the primary is clean (item #D; default ON). |
+
+## Operating model — parallel lanes, current base, auto-deliver
+
+> Adopted 2026-06-14 from the last-100-commit assessment (16-worktree pileup, local `main`
+> 60 commits behind `origin/main`, one branch reused across ~20 PRs). Optimized for
+> heavy-parallel work where many branches are in flight at once.
+
+1. **One worktree per chat/scope** = one parallel lane. Spin up as many concurrent chats as
+   you want; each is isolated and independently testable.
+2. **Every new worktree is cut from `origin/main`** (item #B), and local `main` is
+   fast-forwarded to `origin/main` when the primary is clean (item #D) — so lanes always
+   start current and the "60-behind" drift cannot accumulate.
+3. **Auto-deliver on scope completion (item #C):** when a scope is fully done **and tests
+   pass**, emit a line-anchored marker as the last line of the response:
+
+   ```
+   SCOPE_COMPLETE: branch=<branch> [tests=<pytest-target>]
+   ```
+
+   The `Stop` hook `auto_deliver_on_scope_complete.py` resolves that branch's worktree and
+   runs `deliver_worktree.py`: rebase on `origin/main` → optional `tests=` retest → **push
+   `HEAD:main` to GitHub** (when `WORKTREE_AUTODELIVER=1`). Safety-gated by the deliver tool
+   (refuses on a protected branch / dirty tree, aborts on rebase conflict, skips push on a
+   failing retest, never force-pushes). Idempotent per `(branch, HEAD-sha)`; logs to
+   `artifacts/governance/autodeliver/`. Emit the marker **only** when you have actually
+   verified the scope is complete and green — it triggers a real push to the shared trunk.
+4. **Aggressive auto-reap** (item #4 + config): `WORKTREE_REAP_BRANCH_PREFIXES=chat/,feat/,fix/,codex/`
+   removes any merged+clean worktree (no pileup); `.keep-worktree` opts out the rare long-lived one.
+5. **Conflict-tolerant:** with many lanes, rebase conflicts happen — they surface at deliver
+   time (abort + message), you resolve in the worktree and re-emit the marker. Keep lanes
+   small and orthogonal to make conflicts cheap.
 
 ## Naming
 
