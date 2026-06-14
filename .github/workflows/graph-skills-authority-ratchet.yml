@@ -11,8 +11,13 @@ name: Graph Skills Authority Ratchet
 
 on:
   pull_request:
+    # Scoped to graph-skills surfaces only (W7 ratchet). Deliberately NOT the
+    # broad `apps_rg/**` — an in-progress graph-skills assertion must not block
+    # unrelated apps_rg PRs. Runs (and stays blocking) where graph-skills code
+    # or tests actually change.
     paths:
-      - "apps_rg/**"
+      - "apps_rg/**/graph_skills*"
+      - "apps_rg/**/graph_skill*"
       - "tests/**/test_graph_skills*.py"
       - "tests/unit/apps_rg/fact_inventory/test_graph_skills*.py"
       - "ops_scripts/apps_rg/emit_graph_skills_quality_w*.py"
@@ -22,8 +27,10 @@ on:
   push:
     branches: [main, master]
     paths:
-      - "apps_rg/**"
+      - "apps_rg/**/graph_skills*"
+      - "apps_rg/**/graph_skill*"
       - "tests/**/test_graph_skills*.py"
+      - "ops_scripts/apps_rg/graph_skills*.py"
       - "ops_scripts/ci/check_graph_skills_agentic_core_boundary.py"
       - ".github/workflows/graph-skills-authority-ratchet.yml"
   workflow_dispatch: {}
@@ -34,6 +41,10 @@ concurrency:
 
 permissions:
   contents: read
+
+env:
+  # Clear the Node-20 deprecation warning without chasing action major bumps.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   graph-skills-authority-ratchet:

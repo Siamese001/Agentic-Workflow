@@ -29,6 +29,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # Clear the Node-20 deprecation warning without chasing action major bumps.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   # ────────────────────────────────────────────────────────────────────
   # R1B (terminal-shortcircuit) chain
@@ -37,6 +41,16 @@ jobs:
     name: R1B chain (16-verifier suite + L7 HOW trace + Fort Knox)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -114,6 +128,16 @@ jobs:
     name: MW chain (17-verifier suite + L7 HOW trace + Fort Knox)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -211,6 +235,16 @@ jobs:
     name: R1A_EXACT_CACHE chain (D1 exact-cache + L7 + Fort Knox)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     env:
       W2_ARTIFACT_DIR: artifacts/certification/integrated_runtime/r1a_latest
     steps:
@@ -262,6 +296,16 @@ jobs:
     name: R5_FALLBACK chain (safe-fallback + L7 + Fort Knox)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     env:
       W2_ARTIFACT_DIR: artifacts/certification/integrated_runtime/r5_latest
     steps:
@@ -313,6 +357,16 @@ jobs:
     name: UWG_BLOCK_PATH chain (integrated DurableWriteGateway block + L7 + Fort Knox)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     env:
       W2_ARTIFACT_DIR: artifacts/certification/integrated_runtime/uwg_block_latest
     steps:

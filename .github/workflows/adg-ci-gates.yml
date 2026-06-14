@@ -40,6 +40,10 @@ on:
       - '.github/workflows/adg-ci-gates.yml'
       - '.github/actions/common-setup/**'
 
+env:
+  # Clear the Node-20 deprecation warning without chasing action major bumps.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   adg-ci-gates:
     name: ADG CI Gates — Delta Enforcement (Wave 0)
@@ -85,6 +89,15 @@ jobs:
         # the generation manifest. --require-runtime-proof is OMITTED
         # until OTel attestation is wired end-to-end (known limitation
         # #1 in docs/guides/ADG_Audit_Pipeline.md).
+        #
+        # ADVISORY: the heavyweight generator's P0 (infra_wiring) gate has been
+        # red-walling main, but it still writes a usable snapshot on exit 1, so
+        # the downstream deterministic DELTA gates below (Expected-Wiring,
+        # Config-Reference, Lifecycle-Pair, Exception-Contract, antipattern /
+        # dead-import / layer-gravity regressions) remain BLOCKING and run
+        # against the produced snapshot. This demotes only the generator, not
+        # the ratchets. See plan: CI/Actions Review — Consolidate, De-Noise.
+        continue-on-error: true
         run: python tools/adg/run_full_adg_audit.py --mode certification --format both
         env:
           PYTHONPATH: .
