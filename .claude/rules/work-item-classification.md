@@ -15,27 +15,31 @@
 | `ENHANCEMENT_MINOR` | T0/T1 | In-scope, ≤20 lines | Fix if in scope; `spawn_task` if deferred | No |
 | `ENHANCEMENT_BACKLOG` | T2 | Out-of-scope improvement | `spawn_task` chip | No |
 | `ENHANCEMENT_ROADMAP` | T3 | Multi-session strategic | Backlog Item | Yes — Backlog Item |
-| `PLAN_MICRO` | T1/T2 | ≤1 session, <2 waves | Native plan mode only. No disk file. No Notion. | No |
-| `PLAN_MULTI_WAVE` | T2/T3 | ≥2 waves, spans sessions | `plans/<slug>-<6hex>.md` + Notion Plans DB (§36) | Yes — Plans DB |
+| `PLAN_MICRO` | T1/T2 | ≤1 session, <2 waves | Native plan mode only. No disk file. | No |
+| `PLAN_MULTI_WAVE` | T2/T3 | ≥2 waves, spans sessions | `plans/<slug>-<6hex>.md` (disk-only) | No |
 
 ## The Plan-Correction (most common mistake)
 
-> **NOT all plans go to Notion.** Only multi-wave, multi-session plans need §36 registration.
+> **Plans are disk-only.** The windsurf/cursor-era Notion plan-registration / status / wave-lifecycle
+> enforcement was removed (it never functioned). No plan goes to Notion. Escalate to a disk file ONLY
+> for genuinely multi-wave, multi-session work. (Notion remains an *optional manual* durable backlog
+> for Backlog Items per constitutional §24 — never enforced, never for plan status.)
 
-| Planning type | Disk file? | Notion? |
-|---|---|---|
-| Native plan mode (`EnterPlanMode`/`ExitPlanMode`, single session) | No | No |
-| Micro-plan (in-session decomposition, <2 waves, T1/T2) | No | No |
-| Multi-wave plan (≥2 waves, expected to span sessions) | Yes — `plans/<slug>.md` | Yes — Plans DB |
+| Planning type | Disk file? |
+|---|---|
+| Native plan mode (`EnterPlanMode`/`ExitPlanMode`, single session) | No |
+| Micro-plan (in-session decomposition, <2 waves, T1/T2) | No |
+| Multi-wave plan (≥2 waves, expected to span sessions) | Yes — `plans/<slug>.md` |
 
-The wrong default was: every plan → `plans/*.md` → Notion. The correct default is: every plan → native plan mode → only *escalate* to disk + Notion when the plan will span sessions and carry wave state.
+The wrong default was: every plan → `plans/*.md` (→ Notion). The correct default is: every plan → native
+plan mode → only *escalate* to a disk file when the plan will span sessions and carry wave state.
 
 ## The Four Anti-Reflex Rules
 
 1. **Found a bug → classify first.** T0/T1 → fix immediately, no planning. T2 deferred → `spawn_task`. T3 systemic → Backlog Item.
 2. **Found an apps_rg finding → append a row, never a plan.** The Master Gap Inventory (`plans/apps-rg-lane-aggregation-gap-closure-b8c3d1.md`) is the only output.
-3. **Need to plan → ask if it spans sessions.** Single session = native plan mode only. Multi-session = disk file + Notion.
-4. **Writing to Notion Plans DB → verify it is multi-wave.** Micro-plans do not belong in Notion; they inflate the "Completed" count with zero delivery.
+3. **Need to plan → ask if it spans sessions.** Single session = native plan mode only. Multi-session = disk file (disk-only).
+4. **Don't create a disk plan file for single-session work.** Micro-plans use native plan mode only; a disk `plans/*.md` is reserved for genuinely multi-wave, multi-session work. (Notion plan registration was removed.)
 
 ## Auto-Classification Signals
 
@@ -67,19 +71,19 @@ New finding?
   ├── T0/T1 bug, in scope? → fix directly. DONE.
   ├── T0/T1 bug, out of scope? → spawn_task. DONE.
   ├── T2 bug? → spawn_task (user decides if Backlog Item). DONE.
-  ├── T3 systemic bug? → Backlog Item in Notion. If ≥2 waves: also plan file + Notion Plans.
+  ├── T3 systemic bug? → Backlog Item (optional manual Notion backlog, §24). If ≥2 waves: also disk plan file.
   └── Enhancement? → same ladder (minor→fix, backlog→spawn_task, roadmap→Backlog Item).
 
 Plan needed?
   ├── Single session, <2 waves? → native plan mode only. No file. No Notion. DONE.
-  └── Multi-session, ≥2 waves? → plans/<slug>.md + Notion §36 + explicit user auth.
+  └── Multi-session, ≥2 waves? → plans/<slug>.md (disk-only) + explicit user auth.
 ```
 
 ## References
 
 - Operating model: `.claude/rules/apps-rg-execution-bias.md`
 - Master Gap Inventory: `plans/apps-rg-lane-aggregation-gap-closure-b8c3d1.md`
-- Plan registration: constitutional §36, `.claude/rules/plan-location.md`
+- Plan location: `.claude/rules/plan-location.md` (constitutional §36 retired — plans are disk-only)
 - Deferred scope: constitutional §24 (`spawn_task` — no `DEFERRED_SCOPE:` marker)
 - Classification auditor: `.claude/governance/scripts/post_agent_work_classification_audit.py`
 - Plan mint gate: `.claude/hooks/pre_write_plan_mint_gate.py`

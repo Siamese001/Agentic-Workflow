@@ -4,14 +4,17 @@ Notion holds searchable rows; disk holds full artifacts. **Upstream:** https://d
 
 ### When To Use
 
+The `notion` MCP is **manual page/DB read+write only** — the Notion plan-status / wave / registration
+enforcement was removed (`notion-wave-enforcement-removal`). Plans, ADRs, rules, and SC/AP defects are
+**filesystem SSOT**, never mirrored to Notion.
+
 | Intent | Use? | Alternative |
 |--------|------|-------------|
-| Query plan/wave/phase status | ✅ Yes | Backlog Snapshot page (preferred) |
-| Read ADR Registry | ✅ Yes | — |
-| Append SC/AP violation row | ✅ Yes | — |
-| Log Author-Gate decision | ✅ Yes | — |
+| Read/query an existing Notion page or DB the user points you at | ✅ Yes | — |
+| Append a Notion row by explicit user request (optional manual backlog, §24) | ✅ Yes | — |
+| Plan / wave / phase status | ❌ No | disk plan file (`plans/<slug>.md`) — no Notion |
 | Read source code | ❌ No | native `read_file` |
-| Persistent agent memory | ❌ No | `memory` MCP |
+| Persistent agent memory | ❌ No | file memory (`memory/`) |
 
 ### Read vs Write — Two Different IDs
 
@@ -38,7 +41,8 @@ Notion holds searchable rows; disk holds full artifacts. **Upstream:** https://d
 | List users | `API-get-users` |
 
 ### Hard Rules
-1. **Backlog Snapshot first** — for dashboard queries, fetch page `34b27693-f55c-81b4-93ba-efec5755a20e`
-2. **Stale-source sniff test** — verify plan status against git + filesystem before writeback
+1. **Filesystem is SSOT** — never mirror plans, ADRs, rules, or status into Notion; there is no
+   enforced Notion writeback. Notion rows are an optional manual durable backlog only (§24).
+2. **Read vs write IDs** — `data_source_id` to query, `database_id` to create (see above).
 
 ---

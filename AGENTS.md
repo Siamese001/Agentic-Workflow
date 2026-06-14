@@ -29,7 +29,7 @@ Root `AGENTS.md` is always-on. Push specialized guidance to subdirectory `AGENTS
 | `redis` | Redis cache health, keys, TTL, namespace stats | `redis_health, redis_keys, redis_hgetall, redis_namespace_stats` | Use for hot-cache inspection and invalidation. | [`redis-cache`](.claude/skills/redis-cache/SKILL.md) |
 | `pytest_mcp` | Test discovery, runs, and coverage | `discover_tests, run_tests, get_test_details, analyze_test_coverage` | Prefer over plain pytest CLI when possible. | [`pytest-mcp`](.claude/skills/pytest-mcp/SKILL.md) |
 | `playwright` | Browser automation, accessibility snapshots, end-to-end UI verification | `browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot` | Live UI/E2E; output in .playwright-mcp/ (gitignored). Close tabs after use. | [`playwright`](.claude/skills/playwright/SKILL.md) |
-| `notion` | Notion pages and project-management databases | `API-query-data-source, API-retrieve-a-page, API-patch-page` | Plans + Backlog only; five DBs archived → filesystem SSOT (see notion-archived-databases.mdc). | [`notion`](.claude/skills/notion/SKILL.md) |
+| `notion` | Notion pages and project-management databases | `API-query-data-source, API-retrieve-a-page, API-patch-page` | Manual page/DB read+write only; no plan-status enforcement (Notion plan/wave/status governance removed). | [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) |
 | `tavily` | AI-optimized web search, extraction, crawling, and site mapping | `tavily-search, tavily-extract, tavily-crawl, tavily-map` | Web search authority; requires TAVILY_API_KEY. | [`tavily-research`](.claude/skills/tavily-research/SKILL.md) |
 | `context7` | Up-to-date, versioned official documentation for external libraries | `resolve-library-id, get-library-docs` | External package docs; not this repo. CONTEXT7_API_KEY optional. | [`context7`](.claude/skills/context7/SKILL.md) |
 
@@ -50,7 +50,7 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 | SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
 | Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.claude/rules/*.mdc`. No Notion write. |
 | MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: root `.mcp.json` only. Deprecated Cursor/Windsurf compatibility copies are non-authoritative. |
-| Anti-Pattern Burndown | ~~`4599fe37-8c24-4d89-96af-438b99a967c4`~~ | ~~`80b30bc9-6622-4288-aa4c-6fc526b6a5c5`~~ | ❌ **ARCHIVED 2026-05-11** (404 confirmed — DB not accessible to integration) | Filesystem SSOT: `artifacts/adg/` ratchet files are canonical. No Notion write. (See .claude/rules/notion-archived-databases.md.) |
+| Anti-Pattern Burndown | ~~`4599fe37-8c24-4d89-96af-438b99a967c4`~~ | ~~`80b30bc9-6622-4288-aa4c-6fc526b6a5c5`~~ | ❌ **ARCHIVED 2026-05-11** (404 confirmed — DB not accessible to integration) | Filesystem SSOT: `artifacts/adg/` ratchet files are canonical. No Notion write. |
 | ADR Registry | ~~`e59d7640-dc09-48f9-8bdc-b0c94bf98c2a`~~ | ~~`6ed25e12-bd92-4352-ac7a-3a971311f024`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `docs/architecture/adr/ADR-NNN-*.md`. No Notion write. |
 | Author-Gate Decision Ledger | ~~`5b60fdde-7259-491e-9f2d-e088f1f741ef`~~ | ~~`18bb9145-1320-4191-8b14-6c309776bcf5`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `.claude/state/refactor_decisions/refactor_decision_ledger.sqlite`. No Notion write. |
 
@@ -59,7 +59,7 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 
 <!-- NOTION-MAP:END -->
 
-Procedural routing, auto-events, archived DB policy: [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md) · skill [`notion`](.claude/skills/notion/SKILL.md) · `.claude/rules/notion-archived-databases.mdc`.
+Procedural routing + manual-Notion-use note: [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md). (Notion plan-status / wave / registration enforcement removed — `notion-wave-enforcement-removal`.)
 
 ## Memory
 
@@ -88,7 +88,7 @@ Apps customize inputs; core enforces contracts. No app leakage in `agentic_core`
 
 ## Rules & Skills SSOT
 
-Procedural MCP / Notion / ledgers: [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) · [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md). Plan lifecycle: [`plan-governance`](.claude/skills/plan-governance/SKILL.md).
+Procedural MCP / Notion / ledgers: [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) · [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md). Plan location (disk-only): [`plan-location.md`](.claude/rules/plan-location.md).
 
 | Layer | Path | Notes |
 |-------|------|-------|

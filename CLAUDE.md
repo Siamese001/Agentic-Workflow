@@ -83,7 +83,7 @@ dominates, say so and proceed.
 | `adg_sqlite` | Dependency graph, blast radius, layer analysis | `adg_health`, `adg_edge_fanin`, `adg_nodes_by_file`, `adg_violations` | [`adg-sqlite`](.claude/skills/adg-sqlite/SKILL.md) |
 | `memory` | Cross-session knowledge graph | `mem_recall_session_start`, `create_entities`, `search_nodes` | [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md) |
 | `vector_db` | Semantic search / embeddings | `semantic_search`, `query_collection`, `vector_stats` | [`vector-db`](.claude/skills/vector-db/SKILL.md) |
-| `notion` | Plans + Backlog DBs only | `API-query-data-source`, `API-post-page`, `API-patch-page` | [`notion`](.claude/skills/notion/SKILL.md) |
+| `notion` | Manual page/DB read+write (no plan-status enforcement) | `API-query-data-source`, `API-post-page`, `API-patch-page` | [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) |
 | `deepwiki` | External GitHub repo docs Q&A | `read_wiki_contents`, `ask_question` | [`deepwiki`](.claude/skills/deepwiki/SKILL.md) |
 | `context7` | Versioned external library docs | `resolve-library-id`, `get-library-docs` | [`context7`](.claude/skills/context7/SKILL.md) |
 | `playwright` | Browser automation / E2E | `browser_navigate`, `browser_snapshot`, `browser_click` | [`playwright`](.claude/skills/playwright/SKILL.md) |
@@ -118,7 +118,10 @@ migration receipt. Detail: `.claude/rules/agentic-core-static.md`, `.claude/rule
 ## Plans & memory
 
 - Plans SSOT is `plans/<slug>-<6hex>.md` at repo root (relocated out of `.claude/` to escape the Claude Code edit-guard; legacy `.claude/plans/` still valid — forward-only). See
-  `.claude/rules/plan-location.md`, skill [`plan-governance`](.claude/skills/plan-governance/SKILL.md).
+  `.claude/rules/plan-location.md`. Plans are **disk-only** — no Notion registration (the
+  windsurf/cursor-era Notion plan-status / registration / wave-lifecycle enforcement was removed;
+  the disk-side plan-format lint stays). Multi-wave plan *format* is still validated by the disk
+  gates (`check_plan_format_compliance`, `check_plan_wave_summary_top`, `check_plan_definition_of_done`).
 - Memory: first tool call each session is `mem_recall_session_start`. Detail
   `.claude/rules/memory-management.md`, skill [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md).
 
@@ -131,7 +134,7 @@ migration receipt. Detail: `.claude/rules/agentic-core-static.md`, `.claude/rule
   user authorization in-turn (`PLAN_MINT_OK=1`) is the only mint path.
 - **Findings → rows** in the single backlog (`plans/apps-rg-lane-aggregation-gap-closure-b8c3d1.md`
   Master Gap Inventory), never new plan documents.
-- **WIP = 1 active plan, one owner session** — check Notion `In Progress` before apps_rg write-work.
+- **WIP = 1 active plan, one owner session** — one owner per active apps_rg write-work stream.
 - Discovery ≤20%, post-increment; subtraction before addition; weekly heartbeat E2E matrix is the
   only status artifact.
 
@@ -188,12 +191,14 @@ A **Skill** column entry means a richer procedural skill covers the same area �
 | `local-llm-wsl2-gpu.md` | Local LLM runtime (WSL2/Docker) | — |
 | `claude-config-lookup.md` | Where Claude Code config lives | — |
 
-### Plans / Notion
+### Plans / memory
 | Rule | Topic | Skill |
 |---|---|---|
-| `plan-location.md` / `plan-update-enforcement.md` / `plan-lifecycle-procedures.md` | Plan location, updates, lifecycle | [`plan-governance`](.claude/skills/plan-governance/SKILL.md) |
-| `notion-plans-taxonomy.md` / `notion-plan-wave-deferral.md` / `notion-archived-databases.md` | Notion status taxonomy, deferral, archived DBs | [`notion`](.claude/skills/notion/SKILL.md) |
-| `memory-management.md` / `memory-notion-writeback.md` | Memory lifecycle + writeback | [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md), [`writeback-discipline`](.claude/skills/writeback-discipline/SKILL.md) |
+| `plan-location.md` | Plan SSOT location + disk-side v2 format (no Notion) | — |
+| `memory-management.md` | Memory lifecycle (file memory) | [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md), [`writeback-discipline`](.claude/skills/writeback-discipline/SKILL.md) |
+
+> Notion plan-status / wave-deferral / plan-registration / plan-lifecycle enforcement rules were
+> **removed** (windsurf/cursor-era technical debt — never functioned). Plans are disk-only.
 
 ### apps_rg (also see `apps_rg/CLAUDE.md`, auto-loaded under that subtree)
 | Rule | Topic |

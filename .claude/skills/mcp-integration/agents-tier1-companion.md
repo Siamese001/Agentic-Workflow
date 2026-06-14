@@ -4,34 +4,25 @@
 > Tier-1 `AGENTS.md` keeps invariants + autogen tables; this file holds procedural detail.  
 > **Edit SSOT for rules:** `.claude/rules/*.mdc` only — Windsurf rules mirror is read-only (see repo `windsurf/rules/README.md`).
 
-## Notion — filesystem SSOT vs Notion rows
+## Notion — manual MCP use only (no plan-status enforcement)
 
-| Content | Canonical Path | Notion Mirror? |
-|---------|----------------|----------------|
-| Rules | `.claude/rules/*.mdc` | NO (archived 2026-05-02) |
+The windsurf/cursor-era Notion plan-status / registration / wave-lifecycle enforcement was
+**removed** (`notion-wave-enforcement-removal`): the auto-sync hooks, the NP-series CI gates, the
+`PLAN_CREATED`/`WAVE_COMPLETE`/`PHASE_COMPLETE`/`PLAN_COMPLETE` marker chain, and
+`tools/notion/` are all gone. The `notion` MCP remains for **manual page/DB read+write only**.
+
+Everything is filesystem SSOT — never mirrored to Notion:
+
+| Content | Canonical Path | Notion? |
+|---------|----------------|---------|
+| Rules | `.claude/rules/*.md` | NO |
 | ADRs | `docs/architecture/adr/*.md` | NO |
-| Plans | `.claude/plans/<slug>-<6hex>.md` | Plans DB row only |
+| Plans | `plans/<slug>-<6hex>.md` | NO (disk-only) |
 | Calibration | `docs/reports/calibration/<YYYY-Www>.md` | NO |
 
-Do not sync rules or ADRs to Notion. Archived DBs: MCP Registry, Constitutional Rules, SC/AP Violations, ADR Registry, Author-Gate Ledger, Anti-Pattern Burndown — see `.claude/rules/notion-archived-databases.md`.
-
-### Plans + Backlog taxonomy
-
-Five-status taxonomy, Plans invariants, Backlog Snapshot (`34b27693-f55c-81b4-93ba-efec5755a20e`, `python tools/notion/snapshot_renderer.py --regenerate`): **`.claude/rules/notion-plans-taxonomy.md`**.
-
-### Auto-routing (proactive)
-
-| Event | Filesystem | Notion |
-|-------|------------|--------|
-| New plan `.claude/plans/<slug>-<6hex>.md` | Plan markdown | Plans DB via `tools.notion.plan_creation_helper.create_plan_in_notion` — Status **Not Started** |
-| New ADR `docs/architecture/adr/` | Markdown SSOT | No write |
-| Edit `.mcp.json` | JSON SSOT | No write; run `python .claude/governance/scripts/sync_mcp_config.py` |
-| Author-Gate decision | `.claude/state/refactor_decisions/*.sqlite` | No write (ledger archived) |
-| ADG SC/AP defects | `artifacts/adg/*.sqlite` | No write |
-| Wave start | n/a | Emit `WAVE_START: plan=<slug-6hex> wave=<N>` + `python tools/plan_lifecycle/wave_execution_state.py start` / `wave-progress` |
-| Wave complete | Plan table (hook) | Emit `WAVE_COMPLETE: plan=<slug-6hex> wave=<N> note="..."` |
-
-Full wave lifecycle: `plan-governance` skill §3.
+The Notion Backlog Items DB is an *optional manual* durable backlog (constitutional §24) —
+never enforced, never for plan status. Editing `.mcp.json` still runs
+`python .claude/governance/scripts/sync_mcp_config.py` (no Notion write).
 
 ## MCP sync enforcement
 
@@ -58,7 +49,7 @@ Ten SQLite ledgers under `artifacts/ledgers/`. Consult via `LedgerConsulter("<na
 | deferred_scope_calibration | deferred_scope_poller | ledger-consulter-deferred-scope-calibration |
 | guardian_exemption | post_write_audit | ledger-consulter-guardian-exemption |
 | progress_eta | tools/progress_display | ledger-consulter-progress-eta |
-| memory_recall | post_agent_writeback_audit | ledger-consulter-memory-recall |
+| memory_recall | post_agent_writeback_audit (memory-only) | ledger-consulter-memory-recall |
 | test_selection | post_run_audit + binder | ledger-consulter-test-selection |
 
 Invariants: `tools/ledgers/hook_helpers.emit_ledger_event` only; fail-soft; idempotent. Rule: `.claude/rules/intelligence-ledger-family.md`. Weekly: `python ops_scripts/calibration/ledger_weekly_report.py`.

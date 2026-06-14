@@ -22,7 +22,7 @@ For lifecycle (when to read, write, maintain) and tool routing, see the **`memor
 ## Constitutional Lifecycle Invariants (merged from agents-memory-lifecycle.md)
 
 1. **Constitutional §17 — Session-start recall is mandatory.** The first tool call of every conversation MUST be `mem_recall_session_start`. Non-negotiable.
-2. **15/3 Rule.** If solving a problem took >15 minutes, spend up to 3 minutes writing the procedural pattern back to memory. Skipping this is a violation of `memory-notion-writeback.md`.
+2. **15/3 Rule.** If solving a problem took >15 minutes, spend up to 3 minutes writing the procedural pattern back to file memory (`memory/`). Constitutional §17.
 3. **Protected entity types only for durable persistence.** `ProceduralPattern`, `ProjectContext`, `ArchitecturalInvariant`, `ArchitectureLayer`, `ConstitutionalRule`, `ArchitecturalDecision`, `EpisodicEvent`. Any other type (especially `"general"`) is purged at the staleness threshold.
 4. **No direct SQLite edits to `artifacts/memory/knowledge_graph.sqlite`.** Use the MCP tools or `tools/memory/purge_sync.py`.
 

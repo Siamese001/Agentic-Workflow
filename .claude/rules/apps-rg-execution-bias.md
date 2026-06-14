@@ -17,8 +17,9 @@ single backlog at budgeted pace.
    `pre_write_plan_mint_gate.py` — set `PLAN_MINT_OK=1` only when the user authorized a plan).
 2. **Findings become rows, not plans.** Gaps/ideas append to the single backlog — the Master Gap
    Inventory in `plans/apps-rg-lane-aggregation-gap-closure-b8c3d1.md` — never to new documents.
-3. **WIP limit = 1 active plan, one owner session.** Check Notion `Status=In Progress` before
-   starting write-work on apps_rg; if another plan/session is active, queue — do not run beside it.
+3. **WIP limit = 1 active plan, one owner session.** Before starting apps_rg write-work, confirm no
+   other session is mid-stream on the same plan; if one is active, queue — do not run beside it.
+   (Plan status is disk-only now — the Notion plan-status enforcement was removed.)
 4. **Discovery budget ~20%, post-increment only.** No new analysis lenses until the active wave
    ships. Audits are time-boxed and emit inventory rows.
 5. **Subtraction before addition.** A change adding gates/receipts must consolidate at least as

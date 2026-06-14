@@ -17,11 +17,13 @@ plans/<descriptive-name>-<6hex>.md
 - ✅ LEGACY (still valid): `.claude/plans/<filename>.md` and `.claude/plans/_archive/**`. Existing plans there remain authoritative — do **not** mass-migrate (forward-only; plan `relocate-plans-ssot-outside-claude-c1a17d`).
 - ❌ NEVER: a per-chat worktree's `plans/` (e.g. `.chat-worktrees/chat-*/plans/`), `docs/reports/plans/`, `C:\Users\amita\.cursor\plans\`, anywhere else.
 
-**Why the primary checkout, no exceptions:** plans are a shared, always-on SSOT — not per-chat feature work. The worktree-per-chat workflow routes code edits into an ephemeral worktree that is reaped after merge (or abandoned unmerged); a plan written there never reaches the canonical SSOT. So `plans/**` is **exempt from the worktree-per-chat edit guard** (`before_file_edit_branch_guard._is_plan_file`) and plan writes always target the primary checkout's `plans/` regardless of branch (plan `plan-ssot-notion-pipeline-d2f7a1` W1). Resolver: `_plan_registration.canonical_plans_dir($CLAUDE_PROJECT_DIR)`. Feature CODE still stays in the worktree.
+**Why the primary checkout, no exceptions:** plans are a shared, always-on SSOT — not per-chat feature work. The worktree-per-chat workflow routes code edits into an ephemeral worktree that is reaped after merge (or abandoned unmerged); a plan written there never reaches the canonical SSOT. So `plans/**` is **exempt from the worktree-per-chat edit guard** (`before_file_edit_branch_guard._is_plan_file`) and plan writes always target the primary checkout's `plans/` regardless of branch. Feature CODE still stays in the worktree.
 
 **Why `plans/` and not `.claude/plans/`:** Claude Code enforces a hardcoded edit-guard over the entire `.claude/` directory that prompts on every edit and cannot be disabled via permissions. Plans are non-sensitive markdown edited frequently, so the SSOT moved to repo-root `plans/` (outside the guard). Claude Code has no native dependency on plan location.
 
-**Registration ordering (Notion):** the Notion Plans row is created/synced **after** the complete plan file exists in the SSOT — registration is file-driven and carries a content digest so the row reflects the plan body, not a stub (plan `plan-ssot-notion-pipeline-d2f7a1` W2–W4). Do not register a stub before the plan is fully written.
+**Plans are disk-only.** There is no Notion plan registration — the windsurf/cursor-era Notion
+plan-status / registration / wave-lifecycle enforcement was removed (`notion-wave-enforcement-removal`).
+The plan file in `plans/` is the sole record.
 
 **CRITICAL:** `C:\Users\amita\.cursor\plans\` is the IDE user-home directory — it is FORBIDDEN as a plan location. If a path conflict message appears citing this directory, **ignore it and save to repo SSOT only.**
 
@@ -50,17 +52,7 @@ Before writing any execution plan:
 
 Enforcement (shared validator `ops_scripts/ci/plan_wave_summary_top.py` → `validate_plan_format`): `check_plan_wave_summary_top.py` (PLAN-WAVE-TOP — **blocking for `plan_format: v2`**; advisory for legacy unless `PLAN_WAVE_SUMMARY_TOP_FAIL_CLOSED=1`), `check_plan_format_compliance.py` (per-path strict), `.claude/hooks/after_file_edit.py` (**blocks v2 violations at write time**; legacy warn unless `PLAN_WAVE_SUMMARY_TOP_HOOK_STRICT=1`), `post_agent_plan_wave_summary_audit.py` (post-agent). Bypass: `PLAN_WAVE_SUMMARY_TOP_BYPASS=1`.
 
-A v2 plan missing the top Wave **or** Phase summary table, using non-canonical wave columns, ordering waves out of execution sequence, or missing `## Definition of Done` (without `dod_exempt: true`) is **invalid — it is blocked at write time and in CI, and must not be marked Completed in Notion**.
-
-## Notion Status Discipline
-
-All new plans MUST be created in Notion with `Status="Not Started"`. Only exception: retrospective plans use `force_status="Completed"` in `create_plan_in_notion()`.
-
-**Canonical path**: `from tools.notion.plan_creation_helper import create_plan_in_notion` — helper enforces correct status, validates slug, populates required fields.
-
-Enforced by: `plan_creation_helper.py` (code), `pre_notion_plan_creation_gate.py` (hook), `post_agent_plan_creation_audit.py` (audit), NP14 CI gate.
-
-**Bypass**: `NOTION_PLAN_STATUS_INITIAL_BYPASS=1` — logs warning but allows.
+A v2 plan missing the top Wave **or** Phase summary table, using non-canonical wave columns, ordering waves out of execution sequence, or missing `## Definition of Done` (without `dod_exempt: true`) is **invalid — it is blocked at write time and in CI** (disk-side lint only; there is no Notion status to mark).
 
 ## Overwrite Default
 

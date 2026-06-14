@@ -79,7 +79,7 @@ This skill is the Claude Code-native adaptation of [Tavily's Agent Skills](https
 3. **Pick parameters** — use the topic/time-range/domain matrix; default to fast cost-conscious params unless the user asked for `advanced` or `pro`.
 4. **Invoke the Tavily tool** chosen for the task.
 5. **Cite sources** — every web-derived fact in Claude Code's response must include the source URL inline so the user can verify.
-6. **Capture findings to memory** if reusable — durable upstream-issue findings or domain research go into Memory MCP as a `ProceduralPattern` entity (see `memory-notion-writeback.md`).
+6. **Capture findings to memory** if reusable — durable upstream-issue findings or domain research go into file memory (`memory/`) as a procedural pattern (see `.claude/rules/memory-management.md`).
 
 ## Explicit Slash-Command UX (matches upstream Tavily Skills)
 

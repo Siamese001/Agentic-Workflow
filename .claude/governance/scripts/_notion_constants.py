@@ -181,7 +181,9 @@ PLANS_DATA_SOURCE_ID: Final[str] = _DB["plans"][1]
 
 # ============================================================================
 # Archived DBs — retained for reference only (filesystem/SQLite SSOT now).
-# Do NOT write to these; see .claude/rules/notion-archived-databases.md.
+# Do NOT write to these archived Notion DBs. (The notion-archived-databases rule was
+# removed along with the windsurf/cursor-era Notion plan-status enforcement; these IDs
+# stay here only so the AUDIT-3 literal-SSOT gate can recognize them.)
 # ============================================================================
 
 # ADR Registry — ARCHIVED 2026-05-02 (filesystem SSOT: docs/architecture/adr/).

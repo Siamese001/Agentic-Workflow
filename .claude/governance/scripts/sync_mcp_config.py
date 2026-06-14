@@ -117,8 +117,8 @@ server_rows = [
         "notion",
         "Notion pages and project-management databases",
         "API-query-data-source, API-retrieve-a-page, API-patch-page",
-        "Plans + Backlog only; five DBs archived → filesystem SSOT (see notion-archived-databases.mdc).",
-        "notion",
+        "Manual page/DB read+write only; no plan-status enforcement (Notion plan/wave/status governance removed).",
+        "mcp-integration",
     ),
     (
         "tavily",
