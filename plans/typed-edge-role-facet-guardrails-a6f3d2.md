@@ -55,7 +55,12 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 
 ### Current lane board (Stage B substrate — confirm with one ~12-min E2E on main)
 
-**7 of 11 pass · 4 blocked.**
+> ⛔ **GROUNDED CORRECTION 2026-06-14 (live single-lane run on fresh checkout @ origin/main `2c50a3225b`).** The board below is STALE — its "ibm_bullets blocks on held-metric" premise was from an old run. On a fresh checkout the lanes block on an **upstream prerequisite chain**, not the metric gate:
+> 1. **C0.2 `fact_vectors` collection ABSENT** → every lane `REQUIRED_PROOF_ABSENT` before generation. **FIXED this session:** `python -m apps_rg bootstrap fact-vectors --strict` built 26 proof-eligible atoms **+ the sparse/BM25 sidecar** (26 docs / 319 terms) in the canonical shared cache (`data/cache/chromadb` + `sparse`). Unblocks C0.2 for all lanes/sessions.
+> 2. **FEC grounding `support_status='WEAK'`** for ibm_bullets (next blocker; only **3** proof-eligible IBM facts) → `STOP_AS_EVIDENCE_GAP`, still upstream of the metric gate. The `build_ibm_phase2_graph_plan_fact` metric-gate fix is **moot until FEC grounding is satisfied** (evidence enrichment / eligibility).
+> The "7 pass / 4 block" board is **unverified on a fresh checkout** and needs a full re-baseline E2E after the FEC evidence gap is closed.
+
+**7 of 11 pass · 4 blocked** (STALE — see grounded correction above):
 
 | Status | Lanes |
 |---|---|
