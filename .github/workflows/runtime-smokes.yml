@@ -169,6 +169,7 @@ jobs:
       - name: Summarize runtime smoke routing
         env:
           ANY: ${{ needs.changes.outputs.any }}
+          CHANGES_RESULT: ${{ needs.changes.result }}
           R1B_RESULT: ${{ needs.r1b-terminal.result }}
           SPINE_RESULT: ${{ needs.runtime-spine.result }}
           UWG_RESULT: ${{ needs.uwg-block.result }}
@@ -177,6 +178,11 @@ jobs:
           set -euo pipefail
           echo "Changed files:"
           printf '%s\n' "${CHANGED_FILES:-<none>}"
+
+          if [ "${CHANGES_RESULT}" != "success" ]; then
+            echo "::error::Runtime-smoke routing failed before lane selection."
+            exit 1
+          fi
 
           if [ "${ANY}" != "true" ]; then
             echo "No runtime smoke lanes were relevant to this diff."

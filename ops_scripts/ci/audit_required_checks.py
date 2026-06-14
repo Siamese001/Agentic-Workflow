@@ -1,7 +1,7 @@
 """Audit the branch-protection required-check manifest.
 
 This is intentionally read-only. By default it validates the repo-local target
-manifest in ``.github/workflow-config.yaml`` against active workflow/job names.
+manifest in ``.github/workflow-config.yaml`` against active job check names.
 Use ``--live`` to compare the same target with GitHub branch protection via the
 ``gh`` CLI when authenticated.
 """
@@ -33,11 +33,6 @@ def _load_yaml(path: Path) -> dict:
     return data
 
 
-def _workflow_name(workflow: dict, fallback: str) -> str:
-    value = workflow.get("name")
-    return str(value) if value else fallback
-
-
 def _job_display_name(job_key: str, job: object) -> str:
     if isinstance(job, dict) and job.get("name"):
         return str(job["name"])
@@ -48,12 +43,11 @@ def active_check_contexts(root: Path) -> set[str]:
     contexts: set[str] = set()
     for workflow_path in sorted((root / ".github" / "workflows").glob("*.yml")):
         workflow = _load_yaml(workflow_path)
-        workflow_name = _workflow_name(workflow, workflow_path.stem)
         jobs = workflow.get("jobs", {})
         if not isinstance(jobs, dict):
             continue
         for job_key, job in jobs.items():
-            contexts.add(f"{workflow_name} / {_job_display_name(str(job_key), job)}")
+            contexts.add(_job_display_name(str(job_key), job))
     return contexts
 
 
