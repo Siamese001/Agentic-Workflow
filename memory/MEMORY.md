@@ -29,11 +29,12 @@
   adds the CI-gate sweep, rule-stub collapse, skills archival, and this memory-drift fix.
 - **Author-Gate emulation (S1) is RETIRED at the doctrine/wiring level** —
   `after_agent_governance_dispatch.py` removed the AG chain; 5 AG rules DEPRECATED; constitutional
-  §30/§35 are RETIRED slots. W2 (2026-06-14) archived the 2 AG skills + 3 proven-orphan gates to
-  `archives/enforcement_consolidation_2026-06-14/`. **KEPT:** `author_gate_ledger_integrity.py` — the
-  active `refactor-decision-memory` skill imports it (`lookup_refactor_decisions.py`), so decouple
-  that skill → native file memory BEFORE archiving the remaining ~15 AG scripts / ledger gates /
-  `author-gate-gates.yml` workflow. Lesson: AG machinery has live consumers; verify imports before mv.
+  §30/§35 are RETIRED slots. W2 (2026-06-14) archived 3 proven-orphan gates to
+  `archives/enforcement_consolidation_2026-06-14/`. The 2 AG skills were archived then **REVERTED**
+  (CI/Codex on PR #336 caught live importers: `render_template.py`, `author_gate_prepare_ask.py`, the
+  packet-freshness gate, 2 tests). **KEPT, retire in one lockstep S1 pass:** the 2 skills,
+  `author_gate_ledger_integrity.py` (imported by active `refactor-decision-memory`), `tools/author_gate/*`.
+  **Lesson: a name appearing in a reference scan ≠ safe; confirm it is not a live import before any mv.**
 - "Uncalled by `run_contract_gates.py`" ≠ dead: pre-commit references 45 gates, workflows 33. Gate
   retirement (W4) is gated by `tools/governance/classify_gate_wiring.py`.
 

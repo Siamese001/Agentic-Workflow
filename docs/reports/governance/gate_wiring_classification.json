@@ -1,6 +1,6 @@
 {
   "counts": {
-    "ORPHANED": 102,
+    "ORPHANED": 99,
     "PRECOMMIT": 22,
     "REGISTRY": 151,
     "TEST_ONLY": 37,
@@ -64,20 +64,6 @@
       "workflow": true
     },
     "check_ag5_exit_x1_evaluator_wiring.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_ag_queue_drain_freshness.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
-      "workflow": false
-    },
-    "check_ag_queue_seed_markers.py": {
       "classification": "ORPHANED",
       "precommit": false,
       "registry": false,
@@ -775,13 +761,6 @@
       "precommit": false,
       "registry": true,
       "tests": true,
-      "workflow": false
-    },
-    "check_enriched_choice_ui_invariants_ast.py": {
-      "classification": "ORPHANED",
-      "precommit": false,
-      "registry": false,
-      "tests": false,
       "workflow": false
     },
     "check_env_var_in_config_layer.py": {
@@ -2290,5 +2269,5 @@
       "workflow": false
     }
   },
-  "total_gates": 326
+  "total_gates": 323
 }

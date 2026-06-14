@@ -36,7 +36,7 @@ if str(REPO_ROOT) not in sys.path:
 
 try:
     from tools.progress_display import ProgressReporter
-except Exception:  # guardian: allow-broad-exception -- optional progress dep; degrade to no-op bar
+except ImportError:  # optional progress dep absent -> degrade to no-op bar (precise, no broad-except)
     ProgressReporter = None  # type: ignore[assignment]
 
 _GATE_RE = re.compile(r"check_[a-z0-9_]+\.py")
