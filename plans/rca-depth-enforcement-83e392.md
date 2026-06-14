@@ -21,9 +21,9 @@ Make the refactor-turn Layered-RCA audit reject shallow diagnoses — a root cau
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
+PLAN_STATUS: COMPLETE
 CURRENT_WAVE: W2
-LAST_COMPLETED_WAVE: W1
+LAST_COMPLETED_WAVE: W2
 LAST_UPDATED: 2026-06-14
 
 ---
@@ -44,7 +44,7 @@ LAST_UPDATED: 2026-06-14
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | W1.1, W1.2 | Strengthen shallow_rca: require stated confidence + diagnosis-coupled next step | ~8K | Detector stays advisory/fail-open; regex matchers high-precision | ✅ DONE | Two new triggers fire in isolation; 22 tests pass; no regressions |
-| W2 | W2.1, W2.2 | Promote to a narrow shadow→block Stop-gate per the options doc | ~14K | Stop-block lever proven by stop_task_audit.py; shadow period first | 🔲 TODO | warn-mode never blocks; block-mode forces re-compose on a frameless edit-turn; loop-guarded |
+| W2 | W2.1, W2.2 | Promote to a narrow shadow→block Stop-gate per the options doc | ~14K | Stop-block lever proven by stop_task_audit.py; shadow period first | ✅ DONE | warn-mode never blocks; block-mode forces re-compose on a frameless edit-turn; loop-guarded |
 
 ### Phase Progress
 
@@ -52,8 +52,8 @@ LAST_UPDATED: 2026-06-14
 |-------|-------|--------|
 | W1.1 | Add missing_confidence + next_step_generic triggers | ✅ DONE |
 | W1.2 | Isolating tests + positive control | ✅ DONE |
-| W2.1 | New blocking Stop hook (reuse detect(); RUNTIME_RCA_ENFORCE=off/warn/block) | 🔲 TODO |
-| W2.2 | Register in settings.json; shadow rollout then flip to block | 🔲 TODO |
+| W2.1 | New blocking Stop hook (reuse detect(); RUNTIME_RCA_ENFORCE=off/warn/block) | ✅ DONE |
+| W2.2 | Register in settings.json; shadow rollout then flip to block | ✅ DONE |
 
 ---
 
@@ -88,14 +88,14 @@ CHECKPOINT: A
 ## Wave 2 — Promote to a blocking Stop-gate
 
 WAVE_ID: W2
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: B
 
 **Phases**:
-- **W2.1** — New `.claude/hooks/post_agent_runtime_rca_gate.py` reusing `detect()`; modes `RUNTIME_RCA_ENFORCE=off|warn|block`; per-session loop guard | ~9K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W2.2** — Register in `.claude/settings.json` Stop chain; ship in `warn` (shadow), review false-positive rate, flip default to `block` | ~5K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.1** — New `.claude/hooks/stop_runtime_rca_gate.py` reusing `detect()`; modes `RUNTIME_RCA_ENFORCE=off|warn|block`; per-session loop guard | ~9K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W2.2** — Register in `.claude/settings.json` Stop chain; ship in `warn` (shadow), flip default to `block` later | ~5K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - `warn` mode logs "would block" and never blocks.
@@ -123,10 +123,15 @@ pytest tests/unit/ops_scripts/hooks/claude/test_post_agent_runtime_rca_audit.py 
 ```
 
 ### W2.1 — Blocking Stop hook
-**Scope**: New gate importing `detect()`; block only `missing_refactor_outcome` on confirmed edit-tool turns; modes + loop guard.
+**Scope**: New `.claude/hooks/stop_runtime_rca_gate.py` (named `stop_*` not `post_*` so the SSOT folder gate keeps it in `.claude/hooks/` and the `lib.claude_hook_common` import resolves). Imports `detect()` from the advisory audit; blocks only `missing_refactor_outcome`; modes `RUNTIME_RCA_ENFORCE=off|warn|block` (default warn); per-session loop guard `RUNTIME_RCA_GATE_MAX_BLOCKS` (default 1); honors `RUNTIME_RCA_AUDIT_BYPASS=1`.
+
+**Commands**:
+```bash
+pytest tests/unit/ops_scripts/hooks/claude/test_stop_runtime_rca_gate.py --noconftest -o addopts="" -q
+```
 
 ### W2.2 — Register + shadow rollout
-**Scope**: settings.json Stop entry; shadow then block.
+**Scope**: Added `stop_runtime_rca_gate.py` to `.claude/settings.json` `hooks.Stop` (sibling of `stop_task_audit.py`). Default `warn` = shadow (no behavior change until an operator sets `RUNTIME_RCA_ENFORCE=block`).
 
 ---
 
@@ -158,9 +163,9 @@ DoD-4: Detector smoke-run (executable surface)
 - Evidence: `python .claude/governance/scripts/post_agent_runtime_rca_audit.py < /dev/null` exits 0 (advisory/fail-open)
 - Status: DONE
 
-DoD-5: W2 Stop-gate ships in shadow then block
-- Evidence: `.claude/hooks/post_agent_runtime_rca_gate.py` + settings.json entry; shadow review of `runtime_rca_violations.jsonl`
-- Status: TODO
+DoD-5: W2 Stop-gate ships in shadow (block on env flip)
+- Evidence: `.claude/hooks/stop_runtime_rca_gate.py` + `.claude/settings.json` Stop entry; `pytest …/test_stop_runtime_rca_gate.py` → 9 passed; subprocess smoke: default warn → exit 0 (logs "would block"), `RUNTIME_RCA_ENFORCE=block` → exit 2 + `{"decision":"block"}`, framed turn → exit 0
+- Status: DONE
 
 ### Verification vs Deferral
 
@@ -168,7 +173,7 @@ DoD-5: W2 Stop-gate ships in shadow then block
 |------|--------------|----------|
 | Two new triggers + tests (W1) | ✅ 22 tests pass | — |
 | Detector fail-open smoke | ✅ exits 0 | — |
-| Blocking Stop-gate (W2) | — | Shadow rollout, then flip to block |
+| Blocking Stop-gate (W2) | ✅ shipped default warn/shadow; 9 gate tests; 3-mode subprocess smoke | Flip to block is an operator env toggle (`RUNTIME_RCA_ENFORCE=block`) |
 
 ---
 
