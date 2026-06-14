@@ -3,6 +3,129 @@
   "plan_id": "graph-skills-quality-enhancement-c4e8a1",
   "min_pass_threshold": 0.8,
   "lane_families": {
+    "competencies": {
+      "lane_family": "competencies",
+      "lanes": [
+        {
+          "lane_id": "competencies",
+          "module_path": "apps_rg.runtime.judges.competencies_x1d",
+          "rubric_version": "competencies_x1d_v2",
+          "default_threshold": 0.8,
+          "rubric_sha256": "cef191feff7ab995aa8ab218178c756acad148c0277c907fda57e34e7ab3a00c",
+          "dimension_count": 7,
+          "decisive_trigger_count": 3,
+          "required_markers_present": true,
+          "missing_markers": []
+        }
+      ],
+      "masking_relaxed": false
+    },
+    "bullets": {
+      "lane_family": "bullets",
+      "lanes": [
+        {
+          "lane_id": "unify_bullets",
+          "module_path": "apps_rg.runtime.judges.unify_bullets_x1d",
+          "rubric_version": "unify_bullets_x1d_v4",
+          "default_threshold": 0.8,
+          "rubric_sha256": "c6020c9b1265c92049407330d54265a968fe1735ce439bbe01c5cd922c9e605b",
+          "dimension_count": 9,
+          "decisive_trigger_count": 6,
+          "required_markers_present": true,
+          "missing_markers": []
+        },
+        {
+          "lane_id": "ibm_bullets",
+          "module_path": "apps_rg.runtime.judges.ibm_bullets_x1d",
+          "rubric_version": "ibm_bullets_x1d_v4",
+          "default_threshold": 0.8,
+          "rubric_sha256": "e1c7b3389b518e3a8a4ab4dfda87363013fe9947360a0c14c7c1eecb5fdd858d",
+          "dimension_count": 10,
+          "decisive_trigger_count": 5,
+          "required_markers_present": true,
+          "missing_markers": []
+        }
+      ],
+      "masking_relaxed": false
+    },
+    "role_episode": {
+      "lane_family": "role_episode",
+      "lanes": [
+        {
+          "lane_id": "insurtech_bullets",
+          "module_path": "apps_rg.runtime.judges.role_episode_x1d",
+          "rubric_version": "role_episode_x1d_v1",
+          "default_threshold": 0.8,
+          "rubric_sha256": "b4093a5af1f5cca2d2e46943238f0248f8b422363e956b6ea63d66733e337128",
+          "dimension_count": 4,
+          "decisive_trigger_count": 5,
+          "required_markers_present": true,
+          "missing_markers": []
+        },
+        {
+          "lane_id": "ey_bullets",
+          "module_path": "apps_rg.runtime.judges.role_episode_x1d",
+          "rubric_version": "role_episode_x1d_v1",
+          "default_threshold": 0.8,
+          "rubric_sha256": "b4093a5af1f5cca2d2e46943238f0248f8b422363e956b6ea63d66733e337128",
+          "dimension_count": 4,
+          "decisive_trigger_count": 5,
+          "required_markers_present": true,
+          "missing_markers": []
+        },
+        {
+          "lane_id": "insurtech_narrative",
+          "module_path": "apps_rg.runtime.judges.role_episode_x1d",
+          "rubric_version": "role_episode_x1d_v1",
+          "default_threshold": 0.8,
+          "rubric_sha256": "b4093a5af1f5cca2d2e46943238f0248f8b422363e956b6ea63d66733e337128",
+          "dimension_count": 4,
+          "decisive_trigger_count": 5,
+          "required_markers_present": true,
+          "missing_markers": []
+        },
+        {
+          "lane_id": "ey_narrative",
+          "module_path": "apps_rg.runtime.judges.role_episode_x1d",
+          "rubric_version": "role_episode_x1d_v1",
+          "default_threshold": 0.8,
+          "rubric_sha256": "b4093a5af1f5cca2d2e46943238f0248f8b422363e956b6ea63d66733e337128",
+          "dimension_count": 4,
+          "decisive_trigger_count": 5,
+          "required_markers_present": true,
+          "missing_markers": []
+        }
+      ],
+      "masking_relaxed": false
+    },
+    "narrative": {
+      "lane_family": "narrative",
+      "lanes": [
+        {
+          "lane_id": "unify_narrative",
+          "module_path": "apps_rg.runtime.judges.unify_narrative_x1d",
+          "rubric_version": "unify_narrative_x1d_v3",
+          "default_threshold": 0.8,
+          "rubric_sha256": "3e703a9f9197ad6c82c9c24ca45cf67fd8a12e8393386540bedc21b774b20aea",
+          "dimension_count": 11,
+          "decisive_trigger_count": 5,
+          "required_markers_present": true,
+          "missing_markers": []
+        },
+        {
+          "lane_id": "ibm_narrative",
+          "module_path": "apps_rg.runtime.judges.ibm_narrative_x1d",
+          "rubric_version": "ibm_narrative_x1d_v3",
+          "default_threshold": 0.8,
+          "rubric_sha256": "a665f093e0d07e31ba1ea1cbb096a436adb48e5b5636a1e253ba10ff9fc99387",
+          "dimension_count": 11,
+          "decisive_trigger_count": 5,
+          "required_markers_present": true,
+          "missing_markers": []
+        }
+      ],
+      "masking_relaxed": false
+    },
     "executive_summary": {
       "lane_family": "executive_summary",
       "lanes": [
@@ -11,14 +134,11 @@
           "module_path": "apps_rg.runtime.judges.executive_summary_x1d",
           "rubric_version": "executive_summary_x1d_v1",
           "default_threshold": 0.8,
-          "rubric_sha256": "144e22be33be994cb9d9f66b414f37bf3cc1e4bfda922ad117ef5e472f279c41",
-          "dimension_count": 6,
+          "rubric_sha256": "11aae11a67300525bc10237ff399aa7e2b263b548871b5eefa9bca5d2a9c5a9b",
+          "dimension_count": 8,
           "decisive_trigger_count": 7,
-          "required_markers_present": false,
-          "missing_markers": [
-            "claim_ledger",
-            "source_fact"
-          ]
+          "required_markers_present": true,
+          "missing_markers": []
         }
       ],
       "masking_relaxed": false
@@ -36,93 +156,6 @@
           "decisive_trigger_count": 8,
           "required_markers_present": true,
           "missing_markers": []
-        }
-      ],
-      "masking_relaxed": false
-    },
-    "narrative": {
-      "lane_family": "narrative",
-      "lanes": [
-        {
-          "lane_id": "unify_narrative",
-          "module_path": "apps_rg.runtime.judges.unify_narrative_x1d",
-          "rubric_version": "unify_narrative_x1d_v2",
-          "default_threshold": 0.8,
-          "rubric_sha256": "5b26b01c0d0b7a450aa38f505c79584952f85c81bb59d3e9af67e010a807094e",
-          "dimension_count": 10,
-          "decisive_trigger_count": 5,
-          "required_markers_present": false,
-          "missing_markers": [
-            "factual_support",
-            "keyword",
-            "stuffing",
-            "source_fact"
-          ]
-        },
-        {
-          "lane_id": "ibm_narrative",
-          "module_path": "apps_rg.runtime.judges.ibm_narrative_x1d",
-          "rubric_version": "ibm_narrative_x1d_v2",
-          "default_threshold": 0.8,
-          "rubric_sha256": "cf336922d81c4b4f2e2ed15c359d13b809a156d53bc8c78dabc34256ce996548",
-          "dimension_count": 10,
-          "decisive_trigger_count": 5,
-          "required_markers_present": false,
-          "missing_markers": [
-            "keyword",
-            "source_fact"
-          ]
-        }
-      ],
-      "masking_relaxed": false
-    },
-    "bullets": {
-      "lane_family": "bullets",
-      "lanes": [
-        {
-          "lane_id": "unify_bullets",
-          "module_path": "apps_rg.runtime.judges.unify_bullets_x1d",
-          "rubric_version": "unify_bullets_x1d_v2",
-          "default_threshold": 0.8,
-          "rubric_sha256": "bcf3b7c2b96cb58bbabed44bb0d7a520268442c1efc8e68989b0639b72f692e7",
-          "dimension_count": 10,
-          "decisive_trigger_count": 6,
-          "required_markers_present": false,
-          "missing_markers": [
-            "claim_ledger"
-          ]
-        },
-        {
-          "lane_id": "ibm_bullets",
-          "module_path": "apps_rg.runtime.judges.ibm_bullets_x1d",
-          "rubric_version": "ibm_bullets_x1d_v2",
-          "default_threshold": 0.8,
-          "rubric_sha256": "5c46ed4c64e00b65d3b5013740acec8e641ec7f8304a12978bc395777e2b20b1",
-          "dimension_count": 10,
-          "decisive_trigger_count": 5,
-          "required_markers_present": false,
-          "missing_markers": [
-            "claim_ledger"
-          ]
-        }
-      ],
-      "masking_relaxed": false
-    },
-    "competencies": {
-      "lane_family": "competencies",
-      "lanes": [
-        {
-          "lane_id": "competencies",
-          "module_path": "apps_rg.runtime.judges.competencies_x1d",
-          "rubric_version": "competencies_x1d_v1",
-          "default_threshold": 0.8,
-          "rubric_sha256": "1e37286e10ea9396a8ab467f12ef638497719d9a3ef1cc995f4aaf24e13357b7",
-          "dimension_count": 7,
-          "decisive_trigger_count": 3,
-          "required_markers_present": false,
-          "missing_markers": [
-            "source_fact"
-          ]
         }
       ],
       "masking_relaxed": false

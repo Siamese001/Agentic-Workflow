@@ -24,11 +24,17 @@ LANES: tuple[str, ...] = (
 )
 
 BROWN_FIXTURE_PINS: dict[str, str] = {
+    # Line-ending-NORMALIZED (LF) sha256 — see _sha256_text_normalized. A raw byte hash
+    # is platform-fragile (Windows CRLF worktree vs Linux CI LF blob), which is why these
+    # pins previously matched local Windows but failed in CI. These are the LF/blob digests
+    # so the gate is identical on every platform.
     "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt": (
-        "3701dd5b1d6e0c92db394d6bf1879574e4ad638094d9b453f6d35e264e8e573f"
+        "23b16bd0ae15188a4de4d533209e34ccff8fae6d12c96894a2dd90cc53bb4dfd"
     ),
     "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md": (
-        "9d0b63db755cce713bce35aa7c9089453a0e2ffb5060a3ed7bef8da483843e5d"
+        # Re-pinned after intentional briefing SSOT consolidation (ec93cdda7c) +
+        # targeting-brief hardening (ac0c64c9aa).
+        "b6e915e375587b42165b8036aaf8d36200ebc4e21eb6562fcc49d32f1235afe4"
     ),
 }
 
@@ -57,6 +63,18 @@ def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _sha256_text_normalized(path: Path) -> str:
+    """Line-ending-normalized sha256 (CRLF/CR -> LF) for text fixtures.
+
+    Byte-for-byte hashing is platform-fragile: with core.autocrlf=true the Windows
+    working tree is CRLF while the Linux CI checkout is the LF blob, so a raw digest
+    matches one platform and fails the other. Normalizing to LF makes the digest
+    content-based and identical everywhere, while still detecting real content edits.
+    """
+    raw = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(raw).hexdigest()
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     if not path.is_file():
         return {}
@@ -80,7 +98,7 @@ def brown_fixture_digests(repo_root: Path) -> dict[str, Any]:
             all_ok = False
             rows.append({"path": rel, "pinned_sha256": pinned, "actual_sha256": None, "pass": False})
             continue
-        actual = _sha256_file(path)
+        actual = _sha256_text_normalized(path)
         ok = actual == pinned
         all_ok = all_ok and ok
         rows.append(
