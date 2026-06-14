@@ -24,7 +24,7 @@ trigger: manual
 
 ## Purpose
 
-Surface precedent from a given intelligence ledger (`artifacts/ledgers/<name>.sqlite`) so the current decision is biased by prior outcomes. Analogous to `refactor-decision-memory` but parameterized over any of the ten ledgers.
+Surface precedent from a given intelligence ledger (`artifacts/ledgers/<name>.sqlite`) so the current decision is biased by prior outcomes. Analogous to `refactor-decision-memory` but parameterized over any of the nine ledgers.
 
 ## Contract
 
@@ -76,7 +76,6 @@ Every per-ledger consulting skill MUST:
 | `deferred_scope_calibration` | `ledger-consulter-deferred-scope-calibration` | DEFERRED_SCOPE marker emission |
 | `guardian_exemption` | `ledger-consulter-guardian-exemption` | Any `# guardian: allow-*` addition |
 | `progress_eta` | `ledger-consulter-progress-eta` | ProgressReporter init with new operation |
-| `memory_recall` | `ledger-consulter-memory-recall` | Session start (weighting recall list) |
 | `test_selection` | `ledger-consulter-test-selection` | `/adg-test-triage-gate` invocation |
 | `apps_qna_pack_lifecycle` | `ledger-consulter-apps-qna-pack-lifecycle` | apps_qna pack build / lint / route decisions |
 | `eval_harness_outcome` | `ledger-consulter-eval-harness-outcome` | AppSpecificEvaluator run completion |

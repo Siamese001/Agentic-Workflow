@@ -70,9 +70,9 @@ NATIVE_HANDLERS: list[tuple[str, Callable[[ParsedResponse, Path], None]]] = [
 LEGACY_SCRIPTS: list[str] = [
     # Author-Gate + ADG run in after_agent_governance_dispatch before dispatch; skip re-run here.
     "post_agent_scope_drift_detector.py",
-    # MEMORY-only writeback advisory (Notion half stripped, notion-wave-enforcement-removal) +
-    # memory_recall intelligence-ledger writer.
-    "post_agent_writeback_audit.py",
+    # [notion-wave-enforcement-removal] post_agent_writeback_audit REMOVED — the writeback-discipline
+    # advisory (memory + Notion) is retired; the memory_recall intelligence-ledger it wrote is removed
+    # from tools/ledgers/schema_registry with it.
     # [W6/W7 enforcement-surface-consolidation-d8b3f6] S4 deferred-scope / next-step capture
     # RETIRED — the DEFERRED_SCOPE: / NEXT_STEP: marker -> hook -> Notion pipeline is superseded by
     # native spawn_task (constitutional §24, ADR-096).

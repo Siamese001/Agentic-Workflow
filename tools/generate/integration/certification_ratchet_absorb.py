@@ -46,7 +46,7 @@ def absorb_ratchets_and_retry_dispatcher(
         [sys.executable, str(REPO_ROOT / "ops_scripts" / "ci" / "check_violation_aging_sla.py"), "--seed"],
         [sys.executable, str(REPO_ROOT / "ops_scripts" / "ci" / "check_ssot_magic_constants.py"), "--seed"],
         [sys.executable, str(REPO_ROOT / "ops_scripts" / "ci" / "check_observability_on_high_fanin.py"), "--seed"],
-        [sys.executable, str(REPO_ROOT / "ops_scripts" / "ci" / "check_external_service_literal_ssot.py"), "--seed"],
+        # AUDIT-3 (check_external_service_literal_ssot) removed (notion-wave-enforcement-removal).
         [sys.executable, str(REPO_ROOT / "ops_scripts" / "ci" / "check_cross_mainline_dispatcher.py"), "--seed"],
     ]
     for cmd in seed_cmds:

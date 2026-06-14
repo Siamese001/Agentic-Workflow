@@ -121,15 +121,9 @@ LEDGER_REGISTRY: tuple[LedgerSpec, ...] = (
         wave="W4.2",
         sunset_criterion="ETA overrun ratio within ±20% for 90 consecutive days",
     ),
-    LedgerSpec(
-        name="memory_recall",
-        purpose="Memory-MCP recalled entities vs session reference; shrinks context pollution.",
-        schema_file="memory_recall_ledger.schema.sql",
-        writer_hook=f"{CURSOR_SCRIPTS_DIR}/post_agent_writeback_audit.py",
-        consulting_skill=".claude/skills/ledger-consulter-memory-recall/SKILL.md",
-        wave="W4.3",
-        sunset_criterion="entity hit-rate ≥0.60 after 3 calibration rounds",
-    ),
+    # [notion-wave-enforcement-removal] memory_recall ledger REMOVED — its only writer was
+    # post_agent_writeback_audit.py (the retired writeback-discipline advisory). Schema file
+    # memory_recall_ledger.schema.sql deleted; ledger family is now nine.
     LedgerSpec(
         name="test_selection",
         purpose="ADG-driven test triage precision/recall; actual regression coverage per change-set.",

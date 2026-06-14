@@ -838,14 +838,8 @@ repos:
         require_serial: true
         stages: [manual]
 
-      - id: audit-external-literal-ssot
-        name: "CI: AUDIT-3 External Service Literal SSOT"
-        entry: py ops_scripts/ci/check_external_service_literal_ssot.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
+      # [notion-wave-enforcement-removal] AUDIT-3 (check_external_service_literal_ssot) hook REMOVED —
+      # the Notion-ID literal enforcement gate is retired.
 
       - id: audit-cross-mainline-dispatcher
         name: "CI: AUDIT-4 Cross-Mainline Dispatcher"

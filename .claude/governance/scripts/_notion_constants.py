@@ -11,18 +11,18 @@ used when the YAML SSOT is missing or unreadable so this module NEVER fails to
 import (it is imported by ~76 governance hooks + CI gates; an import-time raise
 would break the whole governance chain).
 
-The fallback literals are asserted equal to the YAML by
-``ops_scripts/ci/check_notion_id_ssot_parity.py`` so the mirror can never silently
-drift from the SSOT. To change an ID: edit ``config/notion_databases.yaml`` (and
-update the fallback to match — the parity gate enforces it), then regenerate the
-AGENTS.md NOTION-MAP via ``python .claude/governance/scripts/sync_mcp_config.py``.
+``config/notion_databases.yaml`` is the SSOT; the fallback literals below mirror it
+best-effort. (The check_notion_id_ssot_parity + check_external_service_literal_ssot
+gates that used to auto-enforce parity were removed in notion-wave-enforcement-removal.)
+To change an ID: edit ``config/notion_databases.yaml``, update the fallback to match,
+then regenerate the AGENTS.md NOTION-MAP via
+``python .claude/governance/scripts/sync_mcp_config.py``.
 
 TWO IDs PER DATABASE (Notion 2025-09-03 API):
   - data_source_id (YAML ``id``)  → ``*_DATA_SOURCE_ID`` / ``*_DS_ID`` (reads, API-query-data-source)
   - database_id    (YAML ``database_id``) → ``*_DB_ID`` (writes, API-post-page)
 
 Created: 2026-04-25 (audit-uncovered-gates plan, Wave 3).
-Allowlisted as SSOT in `ops_scripts/ci/check_external_service_literal_ssot.py`.
 """
 
 from __future__ import annotations
@@ -33,7 +33,8 @@ from typing import Final
 
 # ============================================================================
 # Fail-soft fallback literals — used ONLY when config/notion_databases.yaml is
-# unavailable. Kept in lockstep with the YAML by check_notion_id_ssot_parity.py.
+# unavailable. config/notion_databases.yaml is the SSOT; keep these in sync manually
+# (the parity gate was removed in notion-wave-enforcement-removal).
 # ============================================================================
 
 _FALLBACK_NOTION_API_VERSION: Final[str] = "2025-09-03"

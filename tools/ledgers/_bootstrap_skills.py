@@ -24,7 +24,6 @@ TRIGGER_HINTS = {
     "deferred_scope_calibration": "DEFERRED_SCOPE marker emission, P-band assignment, scorer tuning.",
     "guardian_exemption": "Any new '# guardian: allow-*' comment; before approving Author-Gate exemption.",
     "progress_eta": "ProgressReporter init for a named operation; subprocess timeout calibration.",
-    "memory_recall": "Session-start recall weighting; before requesting mem_recall_session_start.",
     "test_selection": "'/adg-test-triage-gate' invocation; selecting tests for a change-set.",
 }
 
@@ -37,7 +36,6 @@ FILTER_HINTS = {
     "deferred_scope_calibration": "deferred_scope_capture",
     "guardian_exemption": "exemption_created",
     "progress_eta": "eta_predicted",
-    "memory_recall": "entity_recalled",
     "test_selection": "triage_selection",
 }
 

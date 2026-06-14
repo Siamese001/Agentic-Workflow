@@ -3,7 +3,7 @@
 
 # Intelligence Ledger Family — Writer and Consulter Invariants
 
-> ⛔ **Scope**: the ten ledgers registered in `tools/ledgers/schema_registry.py`.
+> ⛔ **Scope**: the nine ledgers registered in `tools/ledgers/schema_registry.py` (memory_recall retired — notion-wave-enforcement-removal).
 > Non-negotiable rules for every hook, calibration job, or skill that touches
 > `artifacts/ledgers/<name>.sqlite`. See ADR-050 for rationale.
 

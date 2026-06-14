@@ -37,7 +37,7 @@ Regenerate: `python .claude/governance/scripts/sync_mcp_config.py` (refreshes AG
 
 ## Intelligence ledgers (ADR-050)
 
-Ten SQLite ledgers under `artifacts/ledgers/`. Consult via `LedgerConsulter("<name>").lookup(...)` before acting.
+Nine SQLite ledgers under `artifacts/ledgers/`. Consult via `LedgerConsulter("<name>").lookup(...)` before acting. (memory_recall retired — notion-wave-enforcement-removal.)
 
 | Ledger | Writer | Consulting skill |
 |--------|--------|------------------|
@@ -49,7 +49,6 @@ Ten SQLite ledgers under `artifacts/ledgers/`. Consult via `LedgerConsulter("<na
 | deferred_scope_calibration | deferred_scope_poller | ledger-consulter-deferred-scope-calibration |
 | guardian_exemption | post_write_audit | ledger-consulter-guardian-exemption |
 | progress_eta | tools/progress_display | ledger-consulter-progress-eta |
-| memory_recall | post_agent_writeback_audit (memory-only) | ledger-consulter-memory-recall |
 | test_selection | post_run_audit + binder | ledger-consulter-test-selection |
 
 Invariants: `tools/ledgers/hook_helpers.emit_ledger_event` only; fail-soft; idempotent. Rule: `.claude/rules/intelligence-ledger-family.md`. Weekly: `python ops_scripts/calibration/ledger_weekly_report.py`.

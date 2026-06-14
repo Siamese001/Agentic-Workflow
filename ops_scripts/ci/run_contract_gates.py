@@ -529,16 +529,10 @@ def main():
         # [notion-wave-enforcement-removal] NP9–NP18 Notion Plans/Backlog status gates REMOVED
         # (new-plan-status, waiting-for x2, PLAN_COMPLETE-freshness, status-initial, schema-preflight,
         # plan-file-drift, decision-parity, MECE-v2, status-canonical). Retired plan-status enforcement.
-        # NP-IDSSOT (Notion-ID literal SSOT parity) is KEPT below — it is ID-hygiene, not plan-status.
-        # NP-IDSSOT — Notion-ID SSOT parity. Asserts config/notion_databases.yaml
-        # (SSOT) == _notion_constants derived constants == its _FALLBACK_* literals,
-        # so the fail-soft fallback can never silently drift from the SSOT.
-        # Fail-closed (exit 1 on mismatch). Bypass: NOTION_ID_SSOT_PARITY_BYPASS=1.
-        # Plan: notion-id-ssot-consolidation.
-        (
-            "NP-IDSSOT Notion-ID SSOT parity (enforced)",
-            "ops_scripts/ci/check_notion_id_ssot_parity.py",
-        ),
+        # [notion-wave-enforcement-removal] NP-IDSSOT (check_notion_id_ssot_parity) + AUDIT-3
+        # (check_external_service_literal_ssot) Notion-ID enforcement gates REMOVED. _notion_constants
+        # + config/notion_databases.yaml are KEPT (load-bearing for sync_mcp_config / check_agents_md_sync
+        # / recover_deferred_scope_pendings / agentic_core notion_approval_adapter) but no longer policed.
         # [notion-wave-enforcement-removal] NP-DONE (all-waves-done disk-vs-Notion) and
         # WAVE-MARKER (WAVE_COMPLETE/PLAN_COMPLETE marker emission) gates REMOVED — retired
         # Notion plan-status + wave-marker enforcement.

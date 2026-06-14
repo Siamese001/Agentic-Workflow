@@ -200,7 +200,8 @@ jobs:
         run: |
           python ops_scripts/ci/check_ssot_magic_constants.py
           python ops_scripts/ci/check_observability_on_high_fanin.py
-          python ops_scripts/ci/check_external_service_literal_ssot.py
+          # AUDIT_3 (check_external_service_literal_ssot) removed (notion-wave-enforcement-removal):
+          # the Notion-ID literal enforcement gate is retired.
           python ops_scripts/ci/check_cross_mainline_dispatcher.py
           # AUDIT_5 removed (ADR-081): config-ref gate owns undeclared env flags.
           python ops_scripts/ci/check_violation_aging_sla.py
