@@ -17,9 +17,11 @@ confidence signal. A marked recommendation with NO confidence signal **blocks by
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -30,15 +32,45 @@ _GATE = (
     / "scripts"
     / "pre_ask_user_question_recommendation_gate.py"
 )
+# This hook is self-contained by design (no lib.claude_hook_common import — absent in some
+# checkouts), so it writes the fail-open ledger inline rather than via write_failopen_receipt.
+# Schema matches lib.claude_hook_common.write_failopen_receipt so the budget gate reads both.
+_FAILOPEN_RECEIPT_LOG = _REPO_ROOT / "artifacts" / "governance" / "hook_failopen_receipts.jsonl"
+
+
+def _failopen_receipt(raw: str, failure_class: str, reason: str) -> None:
+    """Best-effort fail-open ledger write; MUST NOT raise (would defeat fail-open)."""
+    try:
+        sid = ""
+        try:
+            parsed = json.loads(raw) if raw.strip() else {}
+            if isinstance(parsed, dict):
+                sid = str(parsed.get("session_id") or "")
+        except (json.JSONDecodeError, ValueError):
+            sid = ""
+        row = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "hook": "beforeAskUserQuestion",
+            "failure_class": failure_class,
+            "reason": str(reason)[:500],
+            "criticality": "CRITICAL_PRETOOL",
+            "session_id": sid,
+        }
+        _FAILOPEN_RECEIPT_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with _FAILOPEN_RECEIPT_LOG.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+    except Exception:  # guardian: allow-broad-exception -- receipt write must never wedge a fail-open hook
+        return
 
 
 def main() -> int:
     try:
         raw = sys.stdin.read()
     except OSError:
-        return 0  # fail-open
+        return 0  # fail-open (cannot even read stdin — nothing to record against)
 
     if not _GATE.is_file():
+        _failopen_receipt(raw, "ask_rec_gate_script_missing", "pre_ask_user_question_recommendation_gate.py absent")
         return 0  # gate missing — fail-open
 
     try:
@@ -54,6 +86,7 @@ def main() -> int:
         )
     except (subprocess.TimeoutExpired, OSError) as exc:
         sys.stderr.write(f"before_ask_user_question: gate unreachable ({exc}) — allowing\n")
+        _failopen_receipt(raw, "ask_rec_gate_unreachable", str(exc))
         return 0  # fail-open
 
     if proc.stderr:

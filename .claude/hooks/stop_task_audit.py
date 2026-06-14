@@ -1,7 +1,10 @@
-from lib.claude_hook_common import PROOF_WORDS, STATUS_WORDS, allow, block, read_payload, text_from_payload, warn, write_receipt
+from lib.claude_hook_common import PROOF_WORDS, STATUS_WORDS, allow, block, read_payload, resolve_response_text, warn, write_receipt
 
 payload = read_payload()
-text = text_from_payload(payload)
+# Real Claude `Stop` payloads carry no inline response — resolve via the shared SSOT
+# (inline -> cursor text keys -> transcript recovery) so the STATUS-floor / PASS-without-proof
+# blocks actually see the final assistant turn instead of silently no-opping.
+text = resolve_response_text(payload)
 if not text.strip():
     write_receipt("stop", payload, "allow", "empty stop payload accepted")
     raise SystemExit(allow("empty stop payload accepted"))

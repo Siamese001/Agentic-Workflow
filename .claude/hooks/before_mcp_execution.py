@@ -14,12 +14,14 @@ from pathlib import Path
 from typing import Any
 
 from lib.claude_hook_common import (
+    CRIT_PRETOOL,
     allow,
     block,
     block_exit_code,
     contains_legacy_execution_token,
     normalize_mcp_payload,
     text_from_payload,
+    write_failopen_receipt,
     write_receipt,
 )
 from lib.mcp_before_hygiene import run_mcp_before_hygiene_stage
@@ -41,6 +43,7 @@ def _parse_payload(raw: str) -> dict[str, Any]:
 def _run_pre_mcp_gate(payload: dict[str, Any]) -> int:
     if not PRE_MCP_GATE.is_file():
         write_receipt("beforeMCPExecution", payload, "allow", "pre_mcp_gate missing — fail-open")
+        write_failopen_receipt("beforeMCPExecution", payload, "pre_mcp_gate_script_missing", "pre_mcp_gate.py absent", CRIT_PRETOOL)
         return allow("pre_mcp_gate script not found")
 
     normalized = normalize_mcp_payload(payload)
@@ -60,6 +63,7 @@ def _run_pre_mcp_gate(payload: dict[str, Any]) -> int:
         )
     except (subprocess.TimeoutExpired, OSError) as exc:
         write_receipt("beforeMCPExecution", payload, "allow", f"pre_mcp_gate error: {exc}")
+        write_failopen_receipt("beforeMCPExecution", payload, "pre_mcp_gate_unreachable", str(exc), CRIT_PRETOOL)
         return allow(f"pre_mcp_gate unreachable: {exc}")
 
     if proc.stderr:

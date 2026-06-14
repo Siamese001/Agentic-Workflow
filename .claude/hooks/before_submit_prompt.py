@@ -9,11 +9,14 @@ from pathlib import Path
 from typing import Any
 
 from lib.claude_hook_common import (
+    ADVISORY_CAPTURE,
+    CRIT_PRETURN,
     allow,
     block,
     contains_legacy_execution_token,
     text_from_payload,
     warn,
+    write_failopen_receipt,
     write_receipt,
 )
 
@@ -32,8 +35,14 @@ def _parse_payload(raw: str) -> dict[str, Any]:
         return {"raw": raw}
 
 
-def _run_grep_for_deps_warning(raw_stdin: str) -> None:
-    if not GREP_WARNING.is_file() or not raw_stdin.strip():
+def _run_grep_for_deps_warning(raw_stdin: str, payload: dict[str, Any]) -> None:
+    if not raw_stdin.strip():
+        return
+    if not GREP_WARNING.is_file():
+        write_failopen_receipt(
+            "beforeSubmitPrompt", payload, "grep_warning_script_missing",
+            "pre_user_prompt_grep_for_deps_warning.py absent", ADVISORY_CAPTURE,
+        )
         return
     try:
         proc = subprocess.run(
@@ -53,18 +62,27 @@ def _run_grep_for_deps_warning(raw_stdin: str) -> None:
             sys.stderr.write(proc.stderr)
             if not proc.stderr.endswith("\n"):
                 sys.stderr.write("\n")
-    except (subprocess.TimeoutExpired, OSError):
-        pass
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        write_failopen_receipt(
+            "beforeSubmitPrompt", payload, "grep_warning_unreachable", str(exc), ADVISORY_CAPTURE,
+        )
 
 
-def _run_adg_ssot_gate(raw_stdin: str) -> int:
+def _run_adg_ssot_gate(raw_stdin: str, payload: dict[str, Any]) -> int:
     """Dispatch the ADG SQLite-SSOT green-light gate; return its exit code (0 or 2).
 
     Surfaces the gate's stderr. Exit 2 means a T2/T3 prompt must be blocked because
     the ADG SQLite SSOT snapshot is unavailable (constitutional §13). Fail-open: any
-    dispatch error returns 0 so a probe failure never blocks the prompt.
+    dispatch error returns 0 so a probe failure never blocks the prompt — but the fail-open
+    is now recorded to the fail-open ledger (CRITICAL_PRETURN) so it is not invisible.
     """
-    if not ADG_SSOT_GATE.is_file() or not raw_stdin.strip():
+    if not raw_stdin.strip():
+        return 0
+    if not ADG_SSOT_GATE.is_file():
+        write_failopen_receipt(
+            "beforeSubmitPrompt", payload, "adg_ssot_gate_script_missing",
+            "pre_user_prompt_adg_ssot_gate.py absent — T2/T3 ADG green-light not enforced", CRIT_PRETURN,
+        )
         return 0
     try:
         proc = subprocess.run(
@@ -77,7 +95,10 @@ def _run_adg_ssot_gate(raw_stdin: str) -> int:
             check=False,
             env={**dict(__import__("os").environ), "PYTHONPATH": str(REPO_ROOT)},
         )
-    except (subprocess.TimeoutExpired, OSError):
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        write_failopen_receipt(
+            "beforeSubmitPrompt", payload, "adg_ssot_gate_unreachable", str(exc), CRIT_PRETURN,
+        )
         return 0  # fail-open: do not block on dispatch failure
     if proc.stderr:
         sys.stderr.write(proc.stderr)
@@ -99,10 +120,10 @@ if legacy:
     raise SystemExit(warn(reason))
 
 if raw_stdin.strip():
-    _run_grep_for_deps_warning(raw_stdin)
+    _run_grep_for_deps_warning(raw_stdin, payload)
 
 # Constitutional §13 ADG SQLite-SSOT green-light (Redis is advisory hot cache only).
-if _run_adg_ssot_gate(raw_stdin) == 2:
+if _run_adg_ssot_gate(raw_stdin, payload) == 2:
     reason = "ADG SQLite SSOT unavailable for T2/T3 prompt — regenerate the ADG snapshot before proceeding (constitutional §13)."
     write_receipt("beforeSubmitPrompt", payload, "block", reason)
     raise SystemExit(block(reason))

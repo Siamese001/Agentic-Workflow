@@ -14,7 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from lib.claude_hook_common import allow, block, write_receipt
+from lib.claude_hook_common import CRIT_PRETOOL, allow, block, write_failopen_receipt, write_receipt
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GATE = REPO_ROOT / ".claude" / "governance" / "scripts" / "pre_grep_gate.py"
@@ -37,6 +37,7 @@ except json.JSONDecodeError:
 
 if not GATE.is_file():
     write_receipt("beforeGrep", payload, "allow", "pre_grep_gate missing — fail-open")
+    write_failopen_receipt("beforeGrep", payload, "pre_grep_gate_script_missing", "pre_grep_gate.py absent", CRIT_PRETOOL)
     raise SystemExit(allow("pre_grep_gate not found"))
 
 try:
@@ -52,6 +53,7 @@ try:
     )
 except (subprocess.TimeoutExpired, OSError) as exc:
     write_receipt("beforeGrep", payload, "allow", f"pre_grep_gate error: {exc}")
+    write_failopen_receipt("beforeGrep", payload, "pre_grep_gate_unreachable", str(exc), CRIT_PRETOOL)
     raise SystemExit(allow(f"pre_grep_gate unreachable: {exc}"))
 
 if proc.stderr:

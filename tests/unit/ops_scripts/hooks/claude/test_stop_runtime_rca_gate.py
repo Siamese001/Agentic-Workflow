@@ -116,6 +116,46 @@ class TestRuntimeRcaGate:
         assert _run(gate_mod, _FRAMELESS_REFACTOR, monkeypatch, session="reset") == 2  # blocks again
 
 
+def _run_transcript(mod, response_text: str, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, session: str = "t1") -> int:
+    """Feed a REAL Stop payload shape: {session_id, transcript_path} (no inline response)."""
+    tr = tmp_path / "transcript.jsonl"
+    tr.write_text(
+        json.dumps(
+            {"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": response_text}]}}
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    payload = json.dumps({"session_id": session, "transcript_path": str(tr)})
+    monkeypatch.setattr(sys, "stdin", StringIO(payload))
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
+    return mod.main()
+
+
+class TestRuntimeRcaGateTranscript:
+    """The gate must detect/block from a transcript-only Stop payload (the real shape)."""
+
+    def test_block_mode_blocks_frameless_refactor_from_transcript(self, gate_mod, monkeypatch, tmp_path, capsys) -> None:
+        monkeypatch.setenv("RUNTIME_RCA_ENFORCE", "block")
+        rc = _run_transcript(gate_mod, _FRAMELESS_REFACTOR, monkeypatch, tmp_path)
+        assert rc == 2
+        decision = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+        assert decision["decision"] == "block"
+
+    def test_block_mode_allows_framed_refactor_from_transcript(self, gate_mod, monkeypatch, tmp_path, capsys) -> None:
+        monkeypatch.setenv("RUNTIME_RCA_ENFORCE", "block")
+        assert _run_transcript(gate_mod, _FRAMED_REFACTOR, monkeypatch, tmp_path) == 0
+        assert "decision" not in capsys.readouterr().out
+
+    def test_missing_transcript_fails_open(self, gate_mod, monkeypatch, tmp_path, capsys) -> None:
+        monkeypatch.setenv("RUNTIME_RCA_ENFORCE", "block")
+        payload = json.dumps({"session_id": "m1", "transcript_path": str(tmp_path / "absent.jsonl")})
+        monkeypatch.setattr(sys, "stdin", StringIO(payload))
+        monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
+        assert gate_mod.main() == 0  # empty -> allow, no crash
+        assert "decision" not in capsys.readouterr().out
+
+
 class TestStopChainRegistration:
     def test_gate_registered_in_settings_stop(self) -> None:
         settings = json.loads((REPO_ROOT / ".claude" / "settings.json").read_text(encoding="utf-8"))

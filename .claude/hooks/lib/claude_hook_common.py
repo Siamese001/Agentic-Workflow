@@ -10,6 +10,7 @@ import json
 import os
 import re
 import sys
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -17,9 +18,19 @@ from typing import Any
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _REPO_ROOT_FOR_MCP = _REPO_ROOT
 _RECEIPT_LOG = _REPO_ROOT / "artifacts" / "governance" / "claude_hook_receipts.jsonl"
+_FAILOPEN_RECEIPT_LOG = _REPO_ROOT / "artifacts" / "governance" / "hook_failopen_receipts.jsonl"
 
 STATUS_WORDS: tuple[str, ...] = ("STATUS: PASS", "STATUS: PARTIAL", "STATUS: FAIL", "STATUS: BLOCKED")
 PROOF_WORDS: tuple[str, ...] = ("FILES_CHANGED", "COMMANDS_RUN", "TESTS_GATES", "ARTIFACTS")
+
+# Fail-open criticality tiers (W2 claude-enforcement-runtime-truth-hardening). A fail-open is
+# a hook that ALLOWED because enforcement degraded (backend missing / timed out / errored),
+# NOT because the action was clean. CRITICAL_* tiers are the ones the budget gate can ratchet.
+CRIT_PRETURN = "CRITICAL_PRETURN"  # UserPromptSubmit guards (e.g. ADG SSOT green-light)
+CRIT_PRETOOL = "CRITICAL_PRETOOL"  # PreToolUse guards (MCP / Grep / AskUserQuestion / edit gates)
+POSTTURN_AUDIT = "POSTTURN_AUDIT"  # Stop-chain audits (already receipted by the dispatch receipt)
+ADVISORY_CAPTURE = "ADVISORY_CAPTURE"  # best-effort advisory enrichment (warnings, captures)
+FAILOPEN_CRITICALITIES: tuple[str, ...] = (CRIT_PRETURN, CRIT_PRETOOL, POSTTURN_AUDIT, ADVISORY_CAPTURE)
 
 _TEXT_KEYS: tuple[str, ...] = (
     "prompt",
@@ -157,6 +168,41 @@ def write_receipt(hook: str, payload: dict[str, Any], decision: str, reason: str
         return
 
 
+def write_failopen_receipt(
+    hook: str,
+    payload: Any,
+    failure_class: str,
+    reason: str,
+    criticality: str,
+) -> None:
+    """Record a fail-open event to the dedicated fail-open ledger.
+
+    A fail-open is when a governance hook ALLOWS because its enforcement degraded
+    (delegated backend missing, subprocess timeout, import/probe error) rather than because
+    the action was clean. The generic ``write_receipt`` ``decision=allow`` stream mixes clean
+    allows with degraded allows; this dedicated stream tags ``failure_class`` + ``criticality``
+    so ``check_hook_failopen_budget.py`` can count and ratchet them.
+
+    Best-effort and MUST NOT raise — a receipt-write failure can never wedge a fail-open hook
+    (that would defeat the whole point of failing open).
+    """
+    try:
+        sid = str(payload.get("session_id") or "") if isinstance(payload, dict) else ""
+        row = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "hook": hook,
+            "failure_class": failure_class,
+            "reason": str(reason)[:500],
+            "criticality": criticality,
+            "session_id": sid,
+        }
+        _FAILOPEN_RECEIPT_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with _FAILOPEN_RECEIPT_LOG.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+    except Exception:  # guardian: allow-broad-exception -- receipt write must never wedge a fail-open hook
+        return
+
+
 def strip_mcp_tool_prefix(tool_name: str) -> str:
     raw = str(tool_name or "")
     if "_" not in raw:
@@ -252,3 +298,70 @@ def cursor_response_payload(payload: dict[str, Any]) -> str:
     if not text.strip():
         return ""
     return json.dumps({"agent_action_name": "post_agent_response", "tool_info": {"response": text}})
+
+
+def recover_response_from_transcript(transcript_path: str) -> str:
+    """Return the final assistant message text from a Claude ``Stop`` transcript JSONL.
+
+    The live Claude ``Stop`` payload carries NO inline response — only ``transcript_path``.
+    The transcript is JSONL; each line is one turn event. Assistant turns look like
+    ``{"type":"assistant","message":{"role":"assistant","content":[{"type":"text",
+    "text":...}, {"type":"tool_use", ...}]}}``. We concatenate the ``text`` blocks of the
+    LAST assistant message. Returns ``""`` on any failure (missing path, unreadable file,
+    malformed lines) — recovery must fail open.
+    """
+    if not transcript_path:
+        return ""
+    path = Path(transcript_path)
+    if not path.is_file():
+        return ""
+    last_text = ""
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            for line in fh:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                try:
+                    event = json.loads(stripped)
+                except json.JSONDecodeError:
+                    continue
+                if not isinstance(event, dict):
+                    continue
+                message = event.get("message")
+                role = str(message.get("role")) if isinstance(message, dict) else ""
+                if event.get("type") != "assistant" and role != "assistant":
+                    continue
+                content = message.get("content") if isinstance(message, dict) else None
+                parts: list[str] = []
+                if isinstance(content, str):
+                    parts.append(content)
+                elif isinstance(content, list):
+                    for block in content:
+                        if isinstance(block, dict) and block.get("type") == "text":
+                            text = block.get("text")
+                            if isinstance(text, str):
+                                parts.append(text)
+                joined = "\n".join(part for part in parts if part)
+                if joined.strip():
+                    last_text = joined
+    except OSError:
+        return ""
+    return last_text
+
+
+def resolve_response_text(payload: dict[str, Any]) -> str:
+    """Resolve the final assistant response from any supported Stop/response payload shape.
+
+    Precedence: inline ``response`` key (legacy/synthetic) -> cursor-shape text keys
+    (``text_from_payload``, also covers ``tool_info.response``) -> transcript recovery
+    (the real Claude ``Stop`` path). Returns ``""`` if none yield text. This is the SSOT
+    the three Stop hooks share so they all see the final assistant turn on real Stop events.
+    """
+    inline = str(payload.get("response") or "").strip()
+    if inline:
+        return inline
+    legacy = text_from_payload(payload).strip()
+    if legacy:
+        return legacy
+    return recover_response_from_transcript(str(payload.get("transcript_path") or "")).strip()

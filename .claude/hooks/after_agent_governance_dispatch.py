@@ -27,7 +27,7 @@ _HOOKS_DIR = Path(__file__).resolve().parent
 if str(_HOOKS_DIR) not in sys.path:
     sys.path.insert(0, str(_HOOKS_DIR))
 
-from lib.claude_hook_common import cursor_response_payload, read_payload
+from lib.claude_hook_common import cursor_response_payload, read_payload, resolve_response_text
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO_ROOT / ".claude" / "governance" / "scripts"
@@ -104,13 +104,15 @@ def _run_dispatch(parsed_raw: str) -> None:
 
 
 def main() -> int:
-    # Claude Code `Stop` payload carries no response text — recover the final assistant
-    # message from the transcript and re-shape it to the legacy afterAgentResponse payload
-    # the governance chain scripts parse. Fail-open: empty response => no-op.
+    # Claude Code `Stop` payload carries no inline response text — resolve the final
+    # assistant message via the shared SSOT (inline -> cursor text keys -> transcript
+    # recovery) and re-shape it to the legacy afterAgentResponse payload the governance
+    # chain scripts parse. Fail-open: empty response => no-op.
     payload = read_payload()
-    raw = cursor_response_payload(payload)
-    if not str(payload.get("response") or "").strip():
+    response_text = resolve_response_text(payload)
+    if not response_text:
         return 0
+    raw = cursor_response_payload({"response": response_text})
 
     env = {**os.environ, "PYTHONPATH": str(REPO_ROOT)}
 

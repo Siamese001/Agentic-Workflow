@@ -32,7 +32,7 @@ import json
 import os
 from pathlib import Path
 
-from lib.claude_hook_common import allow, block, read_payload, text_from_payload, warn, write_receipt
+from lib.claude_hook_common import allow, block, read_payload, resolve_response_text, warn, write_receipt
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]  # .claude/hooks/<this> -> repo root
 _AUDIT_PATH = _REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_runtime_rca_audit.py"
@@ -113,7 +113,10 @@ def main() -> int:
         return allow("runtime-rca gate off")
 
     payload = read_payload()
-    text = text_from_payload(payload)
+    # Real Claude `Stop` payloads carry no inline response — resolve via the shared SSOT
+    # (inline -> cursor text keys -> transcript recovery) so missing_refactor_outcome is
+    # detected on real Stop events instead of the gate silently no-opping.
+    text = resolve_response_text(payload)
     if not text.strip():
         return allow("empty stop payload")
 
