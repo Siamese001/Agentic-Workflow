@@ -249,5 +249,42 @@ class TestCaptureEndToEnd:
         assert row["selected_index"] == 1  # override captured
 
 
+class TestMainEntryPointClosure:
+    """Drive the real stdin -> main() -> write_decision path (loop closure proof)."""
+
+    def test_main_stdin_writes_row(self, temp_ledger, monkeypatch):
+        import io
+        import json as _json
+
+        payload = {
+            "tool_name": "AskUserQuestion",
+            "tool_input": {
+                "questions": [
+                    {
+                        "header": "Next step",
+                        "options": [
+                            {"label": "Ship it (Recommended)", "description": "[RECOMMENDED ⭐ confidence=0.80] go"},
+                            {"label": "Wait", "description": "[confidence=0.50] hold"},
+                        ],
+                    }
+                ]
+            },
+            "tool_response": {"answers": [{"selected_label": "Wait"}]},
+        }
+        monkeypatch.setattr("sys.stdin", io.StringIO(_json.dumps(payload)))
+        rc = cap.main()
+        assert rc == 0
+        rows = temp_ledger.list_recent_decisions(context="next-step")
+        assert len(rows) == 1
+        assert rows[0]["recommended_index"] == 0
+        assert rows[0]["selected_index"] == 1  # override captured through the real entry path
+
+    def test_main_empty_stdin_is_noop(self, temp_ledger, monkeypatch):
+        import io
+
+        monkeypatch.setattr("sys.stdin", io.StringIO(""))
+        assert cap.main() == 0
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
