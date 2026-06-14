@@ -31,8 +31,8 @@ Restructure the Anthropic prompt-cache helpers into stability-tier breakpoints t
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W4
-LAST_COMPLETED_WAVE: W3
+CURRENT_WAVE: W5
+LAST_COMPLETED_WAVE: W4
 LAST_UPDATED: 2026-06-14
 
 > **W1 delivered** (2026-06-14) — PR https://github.com/Siamese001/Agentic-Workflow/pull/351,
@@ -45,6 +45,9 @@ LAST_UPDATED: 2026-06-14
 > (2 tiers: system + docs) + `CacheStrategy` workload gate + orchestrator wiring (cache_strategy +
 > model); +24 tests; 115 passed across W3 + retrieval regression. DEFERRED (user-authorized):
 > provider_gateway/ProviderRequest structured-input refactor + the 3rd pinned tier.
+> **W4 delivered** (2026-06-14) — PR https://github.com/Siamese001/Agentic-Workflow/pull/360
+> (stacked on #355), branch `feat/prompt-cache-w4-ttl-prewarm`. Per-tier TTL (stable 1h / docs 5m)
+> + `build_prewarm_payload` (max_tokens=0) + `ttl_seconds`/`needs_rewarm`; +10 tests; 125 passed, 0 failed.
 > Live-API `cache_read` confirmation remains the declared deferral (needs a live run through the
 > now-tiered orchestrator path) — see Verification vs Deferral.
 
@@ -68,7 +71,7 @@ LAST_UPDATED: 2026-06-14
 | W1 | W1.1, W1.2 | P4 usage telemetry + P5 determinism guard — measure before changing | ~30K | gateway exposes `usage` on responses; Tier-1 block is hashable | ✅ DONE | per-call hit/miss telemetry emitted; determinism guard hashes Tier-1 and alarms on change (PR #351) |
 | W2 | W2.1 | P3 model-aware token-floor threshold | ~18K | per-model floors are known/derivable (Opus 4.8=4096, Sonnet 4.6/Fable 5=2048, Haiku=4096) | ✅ DONE | no `cache_control` marker emitted below its model's token floor (PR #352) |
 | W3 | W3.1, W3.2 | P1 multi-breakpoint renderer + P2 workload-aware caching strategy | ~40K | renderer/payload builders accept a list of boundary hints; ≤4 markers/request | ✅ DONE | stable tiers cache independently; Tier-3 unmarked for one-shot RAG (PR #355; 2 tiers, gateway refactor deferred) |
-| W4 | W4.1 | P6 TTL strategy + pre-warming | ~22K | gateway can set `1h`/`5m` TTL and issue a `max_tokens:0` pre-warm | 🔲 TODO | Tier-1/2 hot on first real request where latency is user-visible |
+| W4 | W4.1 | P6 TTL strategy + pre-warming | ~22K | gateway can set `1h`/`5m` TTL and issue a `max_tokens:0` pre-warm | ✅ DONE | Tier-1/2 hot on first real request where latency is user-visible (PR #360) |
 | W5 | W5.1, W5.2 | P7 multi-turn / agentic breakpoints + P8 concurrent fan-out timing | ~28K | agentic/parallel call paths exist to exercise | 🔲 TODO | 20-block lookback respected; fan-out reads first writer's cache |
 
 ### Phase Progress
@@ -80,7 +83,7 @@ LAST_UPDATED: 2026-06-14
 | W2.1 | P3 — Model-keyed token-floor threshold (replaces `_MIN_CACHEABLE_CHARS`) | ✅ DONE |
 | W3.1 | P1 — Multi-breakpoint renderer (list of boundary hints, cap 4) | ✅ DONE |
 | W3.2 | P2 — Workload-aware Tier-3 caching decision (`cache_strategy` selector) | ✅ DONE |
-| W4.1 | P6 — Tier-1/2 `1h` TTL + startup pre-warm; Tier-3 `5m` | 🔲 TODO |
+| W4.1 | P6 — Tier-1/2 `1h` TTL + startup pre-warm; Tier-3 `5m` | ✅ DONE |
 | W5.1 | P7 — Multi-turn / agentic breakpoints + `role:"system"` operator channel | 🔲 TODO |
 | W5.2 | P8 — Concurrent fan-out sequencing (send 1, await first token, fan out N-1) | 🔲 TODO |
 
@@ -196,17 +199,19 @@ CHECKPOINT: C
 ## Wave 4 — TTL + pre-warming (P6)
 
 WAVE_ID: W4
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: REQUIRED
 CHECKPOINT: D
 
 **Phases**:
-- **W4.1** — P6 Tier-1/2 `1h` TTL + startup `max_tokens:0` pre-warm; Tier-3 `5m` | ~22K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W4.1** — P6 Tier-1/2 `1h` TTL + startup `max_tokens:0` pre-warm; Tier-3 `5m` | ~22K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - Tier-1/2 use a `1h` TTL with a startup pre-warm so the first real request is hot (only where first-request latency is user-visible); Tier-3 uses `5m`.
 - Scheduled re-warm fires only when traffic gaps exceed the TTL.
+
+> **DELIVERED** (2026-06-14, PR https://github.com/Siamese001/Agentic-Workflow/pull/360, stacked on #355). Per-tier TTL routed via `stable_ttl` (orchestrator defaults stable→`1h`, docs→`5m`); `build_prewarm_payload` returns a `max_tokens=0` prefill marking the stable block (never the placeholder); `needs_rewarm`/`ttl_seconds` gate scheduled re-warm. Pre-warming is opt-in (caller sends it at startup where latency is user-visible); +10 tests, 125 passed.
 
 ---
 
@@ -272,7 +277,7 @@ CHECKPOINT: E
 
 **GAP-4: No runtime cache telemetry** — `count_cache_markers` is test-only; no hit/miss signal, no alarm (delta #4). **Closed by W1.1.**
 
-**GAP-5: Cold-start + bursty eviction** — hardcoded 5-min TTL, unused `1h` constant (delta #5). Closed by W4.1.
+**GAP-5: Cold-start + bursty eviction** — hardcoded 5-min TTL, unused `1h` constant (delta #5). **Closed by W4.1** (PR #360: stable tiers 1h + `max_tokens:0` pre-warm + `needs_rewarm`).
 
 **GAP-6: Unguarded frozen prefix** — upstream interpolation could poison the system prefix (delta #6). **Closed by W1.2.**
 
