@@ -8,6 +8,7 @@ from apps_rg.runtime.sections.executive_summary_composition import (
     build_executive_summary_composition_plan,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    brushstroke_required_groups_from_composition_plan,
     check_exec_summary_allowed_fact_utilization,
     default_allowed_fact_utilization_waivers,
     resolve_utilization_waived_fact_ids,
@@ -93,3 +94,52 @@ def test_composition_plan_brushstroke_skills_not_global_pool_dump() -> None:
     b3 = next(b for b in plan["brushstrokes"] if b["brushstroke_role"] == "B3_control_evidence_discipline")
     assert "skill_sr_basel_ccar" in str(b3.get("allowed_graph_skill_ids"))
     assert "skill_p2_gtm" not in str(b3.get("allowed_graph_skill_ids"))
+
+
+# --- Brushstroke COVERAGE mode (graph-era utilization scoping; W2.3->W3 bridge) ---
+
+_PLAN = {
+    "brushstrokes": [
+        {"brushstroke_role": "B1", "required_fact_ids": ["reb_a", "reb_b"]},
+        {"brushstroke_role": "B2", "required_fact_ids": ["reb_c", "reb_d", "reb_e"]},
+        {"brushstroke_role": "B3", "required_fact_ids": ["reb_f"]},
+        {"brushstroke_role": "B4_business_role_fit", "required_fact_ids": []},
+    ]
+}
+
+
+def test_brushstroke_groups_extractor_drops_empty() -> None:
+    groups = brushstroke_required_groups_from_composition_plan(_PLAN)
+    # B4 (empty) is dropped; B1/B2/B3 kept
+    assert sorted(len(g) for g in groups) == [1, 2, 3]
+
+
+def test_coverage_passes_when_each_brushstroke_represented() -> None:
+    groups = brushstroke_required_groups_from_composition_plan(_PLAN)
+    # one fact cited per brushstroke (not all facts) — a summary-satisfiable bar
+    ledger = [
+        {"claim_text": "s1", "source_fact_ids": ["reb_a"]},
+        {"claim_text": "s2", "source_fact_ids": ["reb_c"]},
+        {"claim_text": "s3", "source_fact_ids": ["reb_f"]},
+    ]
+    ok, reason, receipt = check_exec_summary_allowed_fact_utilization(
+        ledger, set(), required_brushstroke_groups=groups
+    )
+    assert ok is True
+    assert receipt["policy"] == "brushstroke_coverage"
+    assert receipt["uncovered_brushstroke_groups"] == []
+
+
+def test_coverage_fails_when_a_brushstroke_is_uncovered() -> None:
+    groups = brushstroke_required_groups_from_composition_plan(_PLAN)
+    # B2 (reb_c/d/e) entirely uncited -> must FAIL (meaningful bar preserved)
+    ledger = [
+        {"claim_text": "s1", "source_fact_ids": ["reb_a"]},
+        {"claim_text": "s3", "source_fact_ids": ["reb_f"]},
+    ]
+    ok, reason, receipt = check_exec_summary_allowed_fact_utilization(
+        ledger, set(), required_brushstroke_groups=groups
+    )
+    assert ok is False
+    assert reason is not None and "uncovered_required_brushstrokes" in reason
+    assert ["reb_c", "reb_d", "reb_e"] in receipt["uncovered_brushstroke_groups"]

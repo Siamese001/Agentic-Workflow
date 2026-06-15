@@ -17,15 +17,17 @@ examples:
       Engineering executive building production-grade AI platforms and the runtime architecture that makes autonomous systems usable in regulated enterprise environments.
       Designs and operates governed AI systems that combine deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, replayable traces, evaluation discipline, and human escalation controls to improve reliability, auditability, and deployment speed.
       Leads the full platform lifecycle across architecture, operating model, engineering scale-out, and commercialization, converting bespoke delivery into reusable platform services adopted across enterprise programs.
-      Generated $22M in productized AI revenue, expanded gross margins by 20%, and reclaimed $14M in operating capacity across enterprise programs.
+      Generated $[X]M in productized AI revenue, expanded margins by [Y]%, and reclaimed $[Z]M in operating capacity across enterprise programs.
       Reduced deployment cycles by turning complex AI capabilities into repeatable, production-ready infrastructure grounded in quantitative actuarial depth.
       Distributed systems and regulated-risk analytics experience inform governance and commercialization balance when selected facts support those themes.
     claim_ledger_grounded: false
     annotation: >
       VIOLATION: contains SRFS_FORBIDDEN_PHRASES — "engineering scale-out", "reusable platform services
       adopted across enterprise programs", "converting bespoke delivery", "commercialization" (standalone).
-      Also contains mechanism-inventory S2 (comma-chain architecture list) and uses same real metrics as C0
-      facts ($22M, 20%), creating a template-following anchor risk.
+      Also contains mechanism-inventory S2 (comma-chain architecture list). Metric values are placeholders
+      ([X]/[Y]/[Z]) — never copy them; retrieve real values from C0 ALLOWED_SOURCE_FACT_IDS. (Literal "$22M / 20%
+      / gross margins" figures were de-anchored 2026-06-15 — they were echoed unsupported into non-strategy lanes,
+      tripping X2 north_star_style_echo.)
       Previously category=positive_gold but excluded from compile; converted to negative 2026-05-27 to prevent
       accidental re-inclusion via code change.
 
@@ -37,7 +39,7 @@ examples:
     xml_wrapped: true
     before: null
     after: |
-      Generated $[X]M in productized platform revenue and expanded gross margins by [Y]% by turning complex capabilities into repeatable, production-ready platform services adopted across programs.
+      Generated $[X]M in productized platform revenue and expanded margins by [Y]% by turning complex capabilities into repeatable, production-ready platform services adopted across programs.
       Engineering executive building production-grade governed platforms and runtime architecture for regulated enterprise environments.
       Designs and operates systems that combine orchestration, policy enforcement, and traceability to improve reliability, auditability, and deployment speed.
       Leads full platform lifecycle work across architecture, operating model, and commercial adoption.

@@ -83,9 +83,10 @@ slot_bodies:
     sentence in plain prose (not a metric list), weighted to S3-S5; never park metrics only in claim_ledger.
     **Allowed-fact utilization (X2):** surface the metric VALUES present in THIS run's ALLOWED_SOURCE_FACT_IDS —
     do not skip a required allowed metric for an abstract phrase.
-    **Hardcoded-figure ban (X2 north_star_style_echo):** NEVER emit a $/percent/headcount that is not in a cited
-    allowed fact for THIS run — in particular do not echo a number from an E0 style example (e.g. "$22M", "20%").
-    On SVP IT strategy lanes frame revenue/margin outcomes as "IP-led revenue growth / gross-margin expansion /
+    **Hardcoded-figure ban (X2 north_star_style_echo):** NEVER emit a $/percent/headcount unless it appears in a
+    cited allowed fact for THIS run — never copy a figure or its outcome phrase from an E0 style example (examples
+    are domain-transposed and non-literal; retrieve real values from ALLOWED_SOURCE_FACT_IDS).
+    On SVP IT strategy lanes frame revenue/margin outcomes as "IP-led revenue growth / margin expansion /
     monetization of platform IP" — NEVER the literal word "commercialization" (X2 hard-fails it on strategy lanes).
     </display_metric_weave_contract>
 

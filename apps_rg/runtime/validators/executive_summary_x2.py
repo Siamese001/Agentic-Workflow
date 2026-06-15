@@ -1754,33 +1754,159 @@ def collect_unused_allowed_fact_ids(
     return unused
 
 
+def brushstroke_required_fact_ids_from_composition_plan(
+    composition_plan: dict[str, Any] | None,
+) -> set[str]:
+    """Union of facts the composition's B1..B4 brushstrokes require the summary to weave.
+
+    Sourced from ``brushstrokes[*].required_fact_ids`` plus ``brushstroke_fact_bindings[*].fact_id``.
+    This is the curated, form-satisfiable required set for utilization scoping (vs the full pool).
+    """
+    out: set[str] = set()
+    if not isinstance(composition_plan, dict):
+        return out
+    for b in composition_plan.get("brushstrokes") or []:
+        if isinstance(b, dict):
+            for fid in b.get("required_fact_ids") or []:
+                if str(fid).strip():
+                    out.add(str(fid).strip())
+    for row in composition_plan.get("brushstroke_fact_bindings") or []:
+        if isinstance(row, dict):
+            fid = row.get("fact_id") or row.get("source_fact_id")
+            if fid and str(fid).strip():
+                out.add(str(fid).strip())
+    return out
+
+
+def brushstroke_required_groups_from_composition_plan(
+    composition_plan: dict[str, Any] | None,
+) -> list[list[str]]:
+    """Per-brushstroke required fact-id lists (B1..B4) from the composition plan.
+
+    Each inner list is one brushstroke's ``required_fact_ids``; empty brushstrokes (e.g. a
+    business-role-fit brushstroke with no bound facts) are dropped. Used to grade exec_summary
+    utilization as brushstroke COVERAGE (>=1 fact cited per required brushstroke) — matching the
+    composition's own ``brushstroke_covered_ids`` / ``brushstroke_missing_ids`` notion, which a
+    six-sentence summary can satisfy (vs citing every fact in the full promoted pool).
+    """
+    groups: list[list[str]] = []
+    if not isinstance(composition_plan, dict):
+        return groups
+    brushstrokes = composition_plan.get("brushstrokes")
+    if isinstance(brushstrokes, list) and brushstrokes:
+        for b in brushstrokes:
+            if isinstance(b, dict):
+                ids = [str(x).strip() for x in (b.get("required_fact_ids") or []) if str(x).strip()]
+                if ids:
+                    groups.append(ids)
+        if groups:
+            return groups
+    bindings = composition_plan.get("brushstroke_fact_bindings")
+    if isinstance(bindings, list):
+        by_role: dict[str, list[str]] = {}
+        for row in bindings:
+            if isinstance(row, dict):
+                fid = row.get("fact_id") or row.get("source_fact_id")
+                role = str(row.get("brushstroke_role") or row.get("brushstroke_id") or "")
+                if fid and str(fid).strip():
+                    by_role.setdefault(role, []).append(str(fid).strip())
+        groups = [v for v in by_role.values() if v]
+    return groups
+
+
+def _brushstroke_required_groups_for_gates(
+    parsed_output: dict[str, Any] | None,
+    artifacts_dir: Path | None,
+) -> list[list[str]]:
+    """Resolve per-brushstroke required fact groups from parsed_output or the composition-plan artifact."""
+    if isinstance(parsed_output, dict):
+        g = brushstroke_required_groups_from_composition_plan(parsed_output)
+        if g:
+            return g
+        cp = parsed_output.get("composition_plan")
+        if isinstance(cp, dict):
+            g = brushstroke_required_groups_from_composition_plan(cp)
+            if g:
+                return g
+    if artifacts_dir is not None:
+        try:
+            p = Path(artifacts_dir) / "executive_summary_composition_plan.json"
+            if p.is_file():
+                return brushstroke_required_groups_from_composition_plan(
+                    json.loads(p.read_text(encoding="utf-8"))
+                )
+        except (OSError, ValueError):
+            return []
+    return []
+
+
 def check_exec_summary_allowed_fact_utilization(
     claim_ledger: list[dict[str, Any]],
     allowed_fact_ids: set[str],
     *,
     text_claim_coverage: dict[str, Any] | None = None,
     waived_fact_ids: set[str] | None = None,
+    required_scope_fact_ids: set[str] | None = None,
+    required_brushstroke_groups: list[list[str]] | None = None,
 ) -> tuple[bool, str | None, dict[str, Any]]:
-    """Every non-waived allowed fact must appear in claim_ledger or text_claim_coverage."""
+    """Each required brushstroke must be represented in claim_ledger / text_claim_coverage.
+
+    Post graph-era migration the ALLOWED_SOURCE_FACT_IDS pool is the union of every lane's promoted
+    facts (~50+), which a six-sentence / 140-word summary cannot all cite — grading utilization as
+    "cite every allowed fact" is unsatisfiable by construction. When the composition's brushstroke
+    groups are supplied (``required_brushstroke_groups`` = the per-B1..B4 ``required_fact_ids``),
+    utilization is graded as COVERAGE: every non-empty required brushstroke must have >=1 of its
+    bound facts cited — the same "covered vs missing" notion the composition itself computes. A
+    required brushstroke with zero cited facts still fails the gate, so no required theme can be
+    silently dropped. Falls back to the legacy "all non-cert allowed facts" rule (optionally scoped
+    by ``required_scope_fact_ids``) when no brushstroke groups are supplied (legacy callers / unit
+    tests), preserving prior behavior.
+    """
     allowed = {str(x).strip() for x in allowed_fact_ids if str(x).strip()}
     waived = (
         {str(x).strip() for x in waived_fact_ids if str(x).strip()}
         if waived_fact_ids is not None
         else resolve_utilization_waived_fact_ids(allowed)
     )
-    required = allowed - waived
     cited = collect_cited_source_fact_ids(claim_ledger, text_claim_coverage)
-    missing: list[str] = []
-    for fid in sorted(required):
-        base = _fact_id_base_for_utilization(fid)
-        if fid not in cited and base not in cited:
-            missing.append(fid)
+
+    def _is_cited(fid: str) -> bool:
+        return fid in cited or _fact_id_base_for_utilization(fid) in cited
+
+    # Brushstroke COVERAGE mode (preferred): each non-empty required brushstroke must be represented.
+    groups: list[list[str]] = []
+    for grp in required_brushstroke_groups or []:
+        g = [str(x).strip() for x in (grp or []) if str(x).strip() and str(x).strip() not in waived]
+        if g:
+            groups.append(g)
+    if groups:
+        uncovered = [g for g in groups if not any(_is_cited(fid) for fid in g)]
+        receipt = {
+            "waived_fact_ids": sorted(waived),
+            "required_brushstroke_group_count": len(groups),
+            "cited_fact_ids": sorted(cited),
+            "uncovered_brushstroke_groups": uncovered,
+            "policy": "brushstroke_coverage",
+            "brushstroke_scoped": True,
+        }
+        if uncovered:
+            reps = [g[0] for g in uncovered]
+            return False, f"uncovered_required_brushstrokes={reps}", receipt
+        return True, "ok", receipt
+
+    # Legacy / flat fallback: every non-waived (optionally scoped) allowed fact must be cited.
+    scope: set[str] | None = None
+    if required_scope_fact_ids:
+        scope = {str(x).strip() for x in required_scope_fact_ids if str(x).strip()} & allowed
+    base_required = (scope if scope else allowed) - waived
+    missing = [fid for fid in sorted(base_required) if not _is_cited(fid)]
     receipt = {
         "waived_fact_ids": sorted(waived),
-        "required_utilization_fact_ids": sorted(required),
+        "required_utilization_fact_ids": sorted(base_required),
         "cited_fact_ids": sorted(cited),
         "unused_required_fact_ids": missing,
-        "policy": "cert_facts_waived_by_default",
+        "policy": "brushstroke_required_scope" if scope else "cert_facts_waived_by_default",
+        "brushstroke_scoped": bool(scope),
     }
     if missing:
         return False, f"unused_required_allowed_facts={missing}", receipt
@@ -2372,10 +2498,12 @@ def run_x2_gates(
         "pool_wins_allowlist",
         allowlist_reason,
     )
+    _brushstroke_groups = _brushstroke_required_groups_for_gates(parsed_output, artifacts_dir)
     util_pool_ok, util_pool_reason, util_pool_receipt = check_exec_summary_allowed_fact_utilization(
         claim_ledger,
         allowed_fact_ids,
         text_claim_coverage=text_claim_coverage,
+        required_brushstroke_groups=_brushstroke_groups or None,
     )
     add(
         "x2_exec_summary_allowed_fact_utilization",
