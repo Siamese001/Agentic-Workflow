@@ -37,10 +37,11 @@ _BYPASS_ENV = "NORTH_STAR_GATE_BYPASS"
 _MODE_ENV = "NORTH_STAR_GATE_ENFORCE"  # ask (default) | warn | off
 _STATE_REL = "config/north_star_state.json"
 
-# Edits that ADVANCE the north star — always allowed.
+# Edits that ADVANCE the north star — always allowed (apps_rg + apps_lic + apps_eval; see config/north_star_state.json goals[]).
 _NORTH_PREFIXES = (
-    "apps_rg/", "apps_eval/",
+    "apps_rg/", "apps_lic/", "apps_eval/",
     "tests/unit/apps_rg", "tests/apps_rg",
+    "tests/unit/apps_lic", "tests/apps_lic",
     "tests/unit/apps_eval", "tests/apps_eval",
 )
 # KNOWN displacement surfaces — intercept while lanes are unfinished. Deliberately conservative:
