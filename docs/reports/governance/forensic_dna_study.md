@@ -61,10 +61,13 @@ These are organizational / cognitive-style patterns, not attention-regulation. T
 persist even if the ADHD were fully treated, and several *amplify* the ADHD ones.
 
 - **P1 · No-checkpoint solo operation (F1, F10) — the master amplifier.** 0/317 PRs reviewed;
-  PRs self-merged in minutes. There is no friction, no second opinion, no "is this the north
-  star?" gate that the operator cannot unilaterally wave through. Every other pattern below
-  runs unchecked *because* this one removes the brake. This is a **process/structure** defect,
-  not a neurological one.
+  PRs self-merged in minutes. P1 has **two dimensions, and they are now in different states**
+  (see §6): (a) the **correctness** checkpoint — *restored*: CI was 100% failing and bypassed
+  (red theater = no checkpoint), and the right-sizing refactor took it to lean **green-and-passing**;
+  (b) the **judgment** checkpoint — *still open*: no "is this the north star?" gate that the
+  operator cannot unilaterally wave through. CI passing proves the code is correct; it never asks
+  whether the code *should exist*. The remaining hole is judgment, not correctness. This is a
+  **process/structure** defect, not a neurological one.
 - **P2 · Build-then-demolish / sunk-cost over-engineering (F9).** Notion enforcement, Fort Knox
   certification, dozens of "orphan" gates were built, then mass-deleted (−463k, −296k, −124k
   in single commits). Energy spent erecting machinery that was later torn out = pure waste,
@@ -142,7 +145,47 @@ is itself pattern P3.** I recommend against it, and defend that below.
 
 ---
 
-## 5. Definition of done for *this* recommendation
+## 5. Operator context incorporated (2026-06-15 corrections)
+
+Two operator corrections were received and verified against history; both are upheld.
+
+### 6a. CI was right-sized, not just churned — and it now *works*
+
+| Snapshot | Workflows | YAML lines |
+|---|---|---|
+| 2026-05-10 (peak) | 24 | 3,721 |
+| 2026-06-13 (pre-trim) | 21 | 3,241 |
+| **HEAD (now)** | **12** | **1,947** |
+
+GitHub CI surface roughly **halved** (−43% workflows / −40% lines vs pre-trim; −50% / −48% vs
+peak). The shift-left philosophy is sound for a solo dev: heavy, repeatedly-redundant checks
+(R1B semantic-cache re-reads, repeat full-ADG re-runs) were moved out of per-push CI to local
+**preemptive** runs. Corroborated by `485fddc5` (ADG-Delta → workflow_dispatch-only, "solo
+workflow"), `fb13b27b` (right-size on-PR surface), `9afd1448` (rationalize Actions baseline).
+
+### 6b. The prior CI was red theater; the refactor *restored* the checkpoint
+
+History shows pre-refactor CI was **100% failing and routinely bypassed** (`6adee442`
+"Unblock pre-existing CI failures", `50a0a4f4` "make contract-gates pass on PRs",
+`eb5b209a` "fail closed summary routing"). A CI that always fails and is always bypassed is
+**not** an external checkpoint — it is noise that trains the operator to ignore red. Taking it
+to **lean green-and-passing** (verified on PRs #378, #379) is a genuine *restoration* of the
+correctness brake, not a removal.
+
+### 6c. What this changes in the analysis
+
+- **Retracted:** the earlier claim that shift-left "deepens the P1 hole." It does the opposite
+  for the *correctness* dimension — it replaced a non-functioning gate with a working one.
+- **Reclassified:** the CI right-sizing commits are **legitimate debt paydown**, aligned with
+  Recommendation #4 (subtraction), not displacement. The headline displacement % is modestly
+  overstated by the keyword classifier for this reason.
+- **Sharpened (unchanged in spirit):** the open hole is now precisely the **judgment**
+  checkpoint (§3c P1a vs P1b). Do **not** re-add CI to fix it — CI already works and is rightly
+  lean. The single missing brake is a cheap *"does this advance 11/11 lanes?"* gate the operator
+  cannot self-approve (Recommendation #1). Keep heavy ADG shifted-left and local; keep CI lean and
+  green; add exactly one judgment gate. Three different concerns — do not conflate them.
+
+## 6. Definition of done for *this* recommendation
 
 This report succeeds only if it results in **subtraction and one external checkpoint**, not a
 44th rule. If the next action taken is "write a new gate to enforce the above," the analysis was
