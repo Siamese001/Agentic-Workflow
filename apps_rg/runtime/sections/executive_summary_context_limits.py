@@ -66,8 +66,9 @@ CHARS_PER_TOKEN_ESTIMATE: int = 3
 ESTIMATE_SAFETY_MULTIPLIER: float = 1.12
 
 # --- Context-window budget parameters (must stay in sync with token_budget.py) ---
-# Default raised 24576 → 32768 (2026-06-13) — see section_model_limits.SECTION_MODEL_MAX_MODEL_LEN.
-_DEFAULT_CONTEXT_WINDOW: int = 32_768
+# Default raised 24576 → 32768 (2026-06-13) → 131072 (2026-06-15, Claude-era; kill Qwen token cap)
+# — keep in sync with section_model_limits.SECTION_MODEL_MAX_MODEL_LEN (external Claude ~200k ctx).
+_DEFAULT_CONTEXT_WINDOW: int = 131_072
 _DEFAULT_OUTPUT_TOKENS: int = DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS
 _DEFAULT_RESERVED_TOKENS: int = RESERVED_SYSTEM_SCHEMA_TOKENS
 

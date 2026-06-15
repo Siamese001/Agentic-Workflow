@@ -13,14 +13,17 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Final
 
-# Tuned prompt-truncation budget — Claude era (post-Qwen-removal 2026-06-13).
-# Default raised 24576 → 32768 after W1 exec_summary parse-truncation analysis:
-# at 24576 ctx + 2048 output, briefing+JD+bullet-selector inputs exceed the
-# available_input cap on exec_summary and trigger TRUNCATED_JSON. The external
-# Claude generator has ~200k provider ctx, so 32768 is well within bounds.
-# The legacy Qwen container --max-model-len is 24576 — that's the SSOT for
-# apps_lic and agentic_core healers (VLLM_MAX_MODEL_LEN), NOT this constant.
-SECTION_MODEL_MAX_MODEL_LEN: Final[int] = int(os.getenv("APPS_RG_SECTION_MAX_MODEL_LEN", "32768"))
+# Section input-context budget — Claude era (post-Qwen-removal 2026-06-13; raised 2026-06-15).
+# The apps_rg generator is external Claude Sonnet 4.6 (~200k provider context). The old caps
+# (24576 Qwen container, then 32768) were Qwen-vLLM leftovers that repeatedly token-BLOCKED
+# executive_summary (its prompt + briefing + JD + C0 ~= 20k tokens hit the 95% cap at 24576/32768
+# → L2_BLOCK, no generation). Default raised 32768 → 131072 (128k): generous Claude-era headroom
+# (~6x exec_summary's need) with safe margin below Sonnet's 200k hard ceiling, so token caps no
+# longer block any section AND the briefing/JD are no longer truncated by a tiny budget.
+# Raising the CAP does not increase billed input — actual input is fixed by content; the cap only
+# stops the legacy budget from rejecting it. The legacy Qwen container --max-model-len (24576) is
+# the SSOT for apps_lic + agentic_core healers (VLLM_MAX_MODEL_LEN), NOT this constant.
+SECTION_MODEL_MAX_MODEL_LEN: Final[int] = int(os.getenv("APPS_RG_SECTION_MAX_MODEL_LEN", "131072"))
 
 # Fail-soft fallback ONLY. The SSOT for the apps_rg generation model is
 # apps_rg/config/provider_profiles.yaml (profiles.external_claude_generator.default_model);
