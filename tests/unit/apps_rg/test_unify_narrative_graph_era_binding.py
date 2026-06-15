@@ -14,10 +14,47 @@ from __future__ import annotations
 
 from typing import Any
 
+from apps_rg.runtime.validators.unify_narrative_x2 import run_unify_narrative_x2_gates
 from apps_rg.runtime.validators.unify_role_episode_x2 import (
     _collect_change_log_bindings,
     run_unify_narrative_role_episode_x2_gates,
 )
+
+
+def _scope_verdict(claim_ledger: list[dict]) -> bool:
+    """Run the unify_narrative X2 gates and return the unify_only_fact_scope pass/fail."""
+    gates = run_unify_narrative_x2_gates(
+        narrative_sentence="Stewarded an end-to-end agentic AI mandate at Unify Consulting.",
+        parsed_output={"claim_ledger": claim_ledger},
+        claim_ledger=claim_ledger,
+        jd_text="",
+        runtime_generation_status="REAL_LLM",
+        companion_bullet_texts="",
+        companion_bullets_status="ACCEPTED_FINALIZED",
+    )
+    by_id = {g.gate_id: g.pass_ for g in gates}
+    return bool(by_id.get("x2_unify_narrative_unify_only_fact_scope"))
+
+
+def test_scope_accepts_graph_era_unify_ids() -> None:
+    # Graph-era Unify lineage: bundle ids, metric_outcome ids, and shared skill nodes.
+    cl = [
+        {
+            "claim_text": "Owned platform roadmap and agentic AI mandate.",
+            "source_fact_ids": [
+                "reb_unify_platform_commercialization_leadership",
+                "metric_unify_22m_ip_led_revenue",
+                "skill_ai_platform_commercialization",
+            ],
+        }
+    ]
+    assert _scope_verdict(cl) is True, "graph-era reb_/metric_/skill_ unify ids are valid scope"
+
+
+def test_scope_rejects_foreign_lane_ids() -> None:
+    # A foreign lane's bullet/metric ids must still fail Unify scope (leakage guard).
+    cl = [{"claim_text": "x", "source_fact_ids": ["bul_ibm_005", "metric_ibm_20pct_joint_revenue_growth"]}]
+    assert _scope_verdict(cl) is False, "foreign-lane ids must fail unify_only_fact_scope"
 
 _BINDING_GATES = {
     "x2_unify_narrative_role_episode_bundle_id_required",

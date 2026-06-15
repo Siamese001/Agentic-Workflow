@@ -328,20 +328,31 @@ def run_unify_narrative_x2_gates(
             scope_fail += f" forbidden={forbidden_hits} out_of_pool={not_in_pool}"
     else:
         # Graph-era scope (typed-edge role-facet guardrails): a graph-sourced Unify narrative
-        # cites its own ``reb_unify_*`` role-episode bundle ids + shared ``skill_*`` graph nodes
-        # rather than the legacy ``bul_unify_*`` slot ids. Both are valid Unify scope: ``reb_unify_``
-        # is unambiguously Unify-prefixed, and ``skill_*`` graph nodes are not lane-scoped. The
-        # cross-lane leakage guard below still blocks any other lane's bullet facts (incl. their
-        # ``reb_ibm_*``/``reb_insurtech_*``/``reb_ey_*`` bundles, which match no allowed prefix).
+        # binds its proof from the full graph-era id space rather than the legacy ``bul_unify_*``
+        # slot ids — and which of these the model surfaces in claim_ledger.source_fact_ids varies
+        # run-to-run (observed: ``reb_unify_*`` bundles + ``skill_*`` nodes one run,
+        # ``metric_unify_*`` outcome ids the next). All are valid Unify scope: ``reb_unify_`` /
+        # ``metric_unify_`` are unambiguously Unify-prefixed, and ``skill_*`` graph nodes are not
+        # lane-scoped. The cross-lane leakage guard below still blocks any other lane's bullet
+        # facts (incl. their ``reb_ibm_*`` / ``metric_ibm_*`` ids, which match no allowed prefix).
         scope_ok = (
             all(
                 str(s).startswith(
-                    ("bul_unify_", "unify_narrative_base_", "exp_unify_", "reb_unify_", "skill_")
+                    (
+                        "bul_unify_",
+                        "unify_narrative_base_",
+                        "exp_unify_",
+                        "reb_unify_",
+                        "metric_unify_",
+                        "skill_",
+                    )
                 )
                 for s in scope_ids
             )
         ) and not any(p in serialized for p in ("bul_ibm_", "bul_insurtech_", "bul_ey_"))
-        scope_threshold = "bul_unify_*|unify_narrative_base_*|exp_unify_*|reb_unify_*|skill_*"
+        scope_threshold = (
+            "bul_unify_*|unify_narrative_base_*|exp_unify_*|reb_unify_*|metric_unify_*|skill_*"
+        )
         scope_fail = "Non-Unify fact scope."
     add(
         "x2_unify_narrative_unify_only_fact_scope",
