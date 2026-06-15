@@ -1,12 +1,14 @@
 # ADR-PROMPT-ASSEMBLY-001 — Provider-aware structured prompt rendering
 
-- **Status**: Proposed
+- **Status**: Accepted (implemented; superseded in part by later prompt-assembly slot contract)
 - **Decision Date**: 2026-04-23
 - **Deciders**: Author-Gate Q1-Q4 resolved 2026-04-23 (user + Cursor Agent). Confidence band 0.88-0.93.
 - **Impact Layers**: L0, L2, L4, L5, L_SHARED, L_TOOLS
-- **Plan**: `.windsurf/plans/prompt-assembly-reception-hardening-9c4e2b.md`
-- **Notion Registry**: `https://www.notion.so/Provider-aware-structured-prompt-rendering-34b27693f55c8136b834c1ce1908c144`
+- **Plan**: [`prompt-assembly-reception-hardening-9c4e2b.md`](../../../plans/archived-claude-archive__2026-05__prompt-assembly-reception-hardening-9c4e2b.md)
+- **Historical Notion Registry**: `https://www.notion.so/Provider-aware-structured-prompt-rendering-34b27693f55c8136b834c1ce1908c144`
 - **HITL Ledger rows**: Q1/Q2/Q3/Q4 Prompt Assembly decisions posted 2026-04-23.
+
+Current-state note (2026-06-15): provider-aware adapter rendering and slot contracts are implemented in the prompt assembly/provider adapter path. The original 8-slot order has since been superseded in part by the later 10-slot prompt assembly contract (`S0-D0-M0-I0-E0-C0-Y0-U0-H0-R0`).
 
 ## Context
 
@@ -132,7 +134,7 @@ hybrid AgentSpec-default-with-caller-override (0.55) creates dual SSOT drift.
 ## Execution
 
 Executed in 5 waves per
-`@c:/Git/Agentic-Workflow/.windsurf/plans/prompt-assembly-reception-hardening-9c4e2b.md`:
+`plans/archived-claude-archive__2026-05__prompt-assembly-reception-hardening-9c4e2b.md`:
 
 1. **W1** — Reception audit + gateway/assembler instrumentation.
 2. **W2** — Structured `CompiledPromptArtifact`; Anthropic + OpenAI adapters.

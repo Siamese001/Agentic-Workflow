@@ -6,6 +6,8 @@
 **Created**: 2026-05-01T18:04:12.067466Z  
 **Generator**: `ops_scripts/ci/generate_threshold_adr.py`
 
+**Current-state note (2026-06-15):** This remains intentionally not applied. The sweep found no safe threshold, and the pending approval state is part of the enforcement contract that prevents silent threshold lowering.
+
 ## Context
 
 The semantic cache currently uses a dense-cosine similarity threshold of

@@ -1,10 +1,12 @@
 # ADR-047 — Context Platform: Unified Assembly for Docs, Memory, and Tools
 
-**Status**: Proposed
+**Status**: Accepted (implemented)
 **Date**: 2026-04-23
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/knowledge/engine` (new), `agentic_core/knowledge/retrieval`, `agentic_core/L4_state/memory`, MCP Registry, `apps_research` (pilot), `apps_shared`
 **Plan**: `.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md` (W4, W5)
+
+**Current-state note (2026-06-15):** Implemented by `agentic_core/knowledge/engine/context_platform.py` and the `context_assembly_manifest.schema.json` path, with `tests/unit/agentic_core/knowledge/engine/test_context_platform.py`.
 
 ---
 

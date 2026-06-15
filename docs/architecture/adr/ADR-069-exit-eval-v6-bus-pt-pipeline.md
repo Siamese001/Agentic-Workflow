@@ -1,9 +1,11 @@
 # ADR-069 — Exit-Eval v6 BUS P/T → regression dataset pipeline runtime types (Wave 4)
 
-**Status**: Accepted (partial — anonymization implementation, SME curation UI, golden-set storage backend, consumption runners deferred)
+**Status**: Accepted (scoped runtime types complete)
 **Date**: 2026-04-26
 **Wave**: exit-eval-v6 deferred-scope Wave 4 (final wave)
 **Promotes**: 32 design rows → OK + 3 ADR-069 acceptance rows
+
+**Current-state note (2026-06-15):** This ADR intentionally covers BUS P/T pipeline runtime data shapes, constants, and invariant guards. Anonymization, curation UI, storage backend, and scheduled runners are separate subsystem work, not incomplete ADR-069 scope.
 
 ---
 

@@ -1,5 +1,7 @@
 # ADR-093 — Fort Knox Wave 1 (STATIC_ENFORCEMENT extension): zero honest yield
 
+**Status**: Accepted
+
 | Field | Value |
 |---|---|
 | Status | Accepted |

@@ -16,7 +16,11 @@ Design:
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+import json
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
 
 log = logging.getLogger(__name__)
 
@@ -92,6 +96,19 @@ class DriftReport:
     avg_position_shift: float = 0.0
     max_position_shift: float = 0.0
     queries_with_high_drift: list[str] = field(default_factory=list)
+
+
+@dataclass
+class DriftAlert:
+    """Operator-facing drift alert summary for JSON artifacts."""
+
+    run_id: str
+    generated_at: str
+    status: str
+    threshold: float
+    avg_jaccard: float
+    high_drift_queries: list[str] = field(default_factory=list)
+    message: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -244,3 +261,69 @@ class RetrievalDriftAnalyzer:
         if total == 0:
             return 1.0
         return (concordant - discordant) / total
+
+
+def build_drift_alert(
+    report: DriftReport,
+    *,
+    threshold: float = 0.7,
+    run_id: str = "manual",
+) -> DriftAlert:
+    """Build an advisory alert from an aggregate drift report.
+
+    ``threshold`` is the minimum acceptable average Jaccard similarity. The
+    per-query high-drift list still comes from ``RetrievalDriftAnalyzer`` so
+    callers can tune query-level and aggregate thresholds separately.
+    """
+
+    if not 0.0 <= threshold <= 1.0:
+        raise ValueError(f"threshold must be in [0, 1], got {threshold}")
+
+    high_drift_queries = sorted(report.queries_with_high_drift)
+    status = (
+        "alert"
+        if high_drift_queries or (report.total_queries > 0 and report.avg_jaccard < threshold)
+        else "pass"
+    )
+    prefix = "[DRIFT-ALERT]" if status == "alert" else "[DRIFT-CLEAR]"
+    message = (
+        f"{prefix} {len(high_drift_queries)} high-drift queries; "
+        f"avg_jaccard={report.avg_jaccard:.4f}; threshold={threshold:.4f}"
+    )
+    return DriftAlert(
+        run_id=run_id,
+        generated_at=datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+        status=status,
+        threshold=threshold,
+        avg_jaccard=report.avg_jaccard,
+        high_drift_queries=high_drift_queries,
+        message=message,
+    )
+
+
+def write_drift_report(
+    report: DriftReport,
+    path: Path,
+    *,
+    alert: DriftAlert | None = None,
+) -> dict[str, Any]:
+    """Write a drift report artifact and return the serialized payload."""
+
+    alert = alert or build_drift_alert(report)
+    payload = {
+        "report": asdict(report),
+        "alert": asdict(alert),
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return payload
+
+
+__all__ = [
+    "DriftAlert",
+    "DriftReport",
+    "DriftResult",
+    "RetrievalDriftAnalyzer",
+    "build_drift_alert",
+    "write_drift_report",
+]

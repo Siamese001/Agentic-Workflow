@@ -1,10 +1,12 @@
 # ADR-075 — Split Runtime Telemetry from Static ADG Edge Declarations
 
-**Status:** Proposed (skeleton landed; rollout deferred to dedicated plan)
+**Status:** Accepted (skeleton implemented; migration tracked separately)
 **Date:** 2026-04-30
 **Deciders:** apps_* owners, ADG layer owner
 **Source plan:** `.windsurf/plans/apps-svp-plus-hardening-7c4e3a.md` (W4.2)
 **Related:** ADR-050 (intelligence ledger family), constitutional §22 (graph-layer primary driver)
+
+**Current-state note (2026-06-15):** Runtime trace, RAG semconv, ADG ingest primitives, `runtime_telemetry_decorators.py`, and the decorator unit tests exist. The broad `_emit_*` call-site migration is successor-plan scope outside this skeleton ADR.
 
 ---
 
@@ -119,10 +121,12 @@ needed for static-edge production.
 - **Performance.** Decorator overhead is one function-call per decorated call.
   Negligible vs. an OTEL span.
 
-## Migration Plan (deferred — own its own plan)
+## Migration Plan (successor scope)
 
 This ADR ships the **decorator + tests + AST-walker contract spec**. The
-mechanical migration of all 2,482 sites is a separate plan.
+mechanical migration of all 2,482 sites is intentionally owned by a separate
+successor plan so it can get its own Author-Gate decision and per-app rollout
+evidence.
 
 Phases for the migration (to be tracked in
 `apps-telemetry-adg-split-rollout-<6hex>` plan when authored):

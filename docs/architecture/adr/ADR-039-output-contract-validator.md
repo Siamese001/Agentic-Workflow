@@ -1,10 +1,15 @@
 # ADR-039 — Output-Contract Validator at §5
 
-- **Status:** Proposed
+- **Status:** Accepted (validator implemented)
 - **Date:** 2026-04-23
+- **Accepted:** 2026-06-15 status reconciliation
 - **Deciders:** Safety Officer (L5), Architecture, Eval Lab
 - **Impact Layers:** Ingress (E3), L5, §5 exit
 - **Relates to:** ADR-036 (trace-grader), ADR-038 (budget envelope)
+
+> **Implementation evidence (2026-06-15):** `agentic_core/L5_safety/eval_spine/output_contract_validator.py`
+> and `tests/agentic_core/L5_safety/eval_spine/test_output_contract_validator.py`
+> exist.
 
 ## 1. Context
 

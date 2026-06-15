@@ -1,5 +1,7 @@
 # ADR-048 — Apply-Patch Multi-File Envelope Format
 
+**Status**: Accepted
+
 | Field | Value |
 |---|---|
 | **Status** | Accepted |

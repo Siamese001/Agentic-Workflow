@@ -1,6 +1,6 @@
 # ADR-024: Cross-Band Re-Severity for Write-Plane & Safety-Surface Antipatterns
 
-**Status**: ACCEPTED (Part A executing; Part B deferred until post-W5 per Author-Gate decision 2026-04-21)
+**Status**: ACCEPTED (Part A complete; Part B requires fresh post-W5 rescope before execution)
 **Date**: 2026-04-21
 **Phase**: P2 Burndown Wave — `p2-burndown-wave-9e4c17`
 **Deciders**: SVP Engineering (Cursor Agent) + User (Human Approver)
@@ -220,6 +220,8 @@ must be recomputed against a post-W5 snapshot before Part B executes. Specifical
 re-queried via `tools/debug/_adg_part_a_final_scope.py`.
 
 Scoping diagnostics: `tools/debug/_adg_part_a_final_scope.py` (retained for Part B re-scope).
+
+**Current-state note (2026-06-15):** This ADR is terminal for Part A. Part B's original `~83 items moved up` estimate is documented as stale above; any severity-band manifest change requires a fresh ADG-backed rescope and should be owned by a new execution plan, not by reopening this ADR.
 
 ---
 

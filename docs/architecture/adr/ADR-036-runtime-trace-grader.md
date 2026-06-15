@@ -1,10 +1,15 @@
 # ADR-036 — Runtime Trace-Grader at §5 Exit Eval
 
-- **Status:** Proposed
+- **Status:** Accepted (primitive implemented; integration hardening ongoing)
 - **Date:** 2026-04-23
+- **Accepted:** 2026-06-15 status reconciliation
 - **Deciders:** Safety Officer (L5), Eval Lab (apps_eval), Architecture
 - **Impact Layers:** L5, L6, apps_eval, v33 §5
 - **Supersedes / Relates to:** ADR-023 (runtime HITL), ADR-026 (consensus validator), ADR-032 (LLM-judge hardening)
+
+> **Implementation evidence (2026-06-15):** `agentic_core/L5_safety/eval_spine/trace_grader.py`
+> and `config/judges/trace_rubric.yaml` exist. The open items below are
+> residual wiring and calibration work, not blockers to accepting the ADR.
 
 ## 1. Context
 

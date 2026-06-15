@@ -1,10 +1,16 @@
 # ADR-038 — Per-Request Budget Envelope
 
-- **Status:** Proposed
+- **Status:** Accepted (BudgetEnvelope implemented)
 - **Date:** 2026-04-23
+- **Accepted:** 2026-06-15 status reconciliation
 - **Deciders:** Safety Officer (L5), Architecture, Eval Lab
 - **Impact Layers:** Ingress (E3), L5, §5 exit, L6, UWG
 - **Relates to:** ADR-036 (trace-grader), ADR-037 (trajectory), ADR-027 (OTel alignment)
+
+> **Implementation evidence (2026-06-15):** `agentic_core/L5_safety/eval_spine/budget_envelope.py`
+> and `tests/agentic_core/L5_safety/eval_spine/test_budget_envelope.py`
+> exist. Note that another active file also uses ADR-038; see
+> `docs/architecture/adr/README.md` for namespace cleanup status.
 
 ## 1. Context
 

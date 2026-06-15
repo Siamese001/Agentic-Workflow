@@ -1,10 +1,12 @@
 # ADR-040 — Eval Flywheel: Trace → Dataset Promotion
 
-- **Status:** Proposed
+- **Status:** Accepted (implemented)
 - **Date:** 2026-04-23
 - **Deciders:** Eval Lab, Safety Officer (L5), Architecture
 - **Impact Layers:** L6 shadow, apps_eval, v33 §6
 - **Relates to:** ADR-028 (eval SL publisher), ADR-036 (trace-grader), ADR-037 (trajectory)
+
+Current-state note (2026-06-15): implemented by `agentic_core/L6_observability/flywheel_promoter.py` and the `flywheel.promote_candidate` eval event schema path, with runtime/unit test coverage.
 
 ## 1. Context
 

@@ -1,5 +1,7 @@
 # ADR-092 — Fort Knox runtime verifier scope mismatch (NO_BYPASS_RUNTIME rows)
 
+**Status**: Accepted
+
 | Field | Value |
 |---|---|
 | Status | Accepted |

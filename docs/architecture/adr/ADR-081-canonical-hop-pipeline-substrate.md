@@ -1,5 +1,7 @@
 # ADR-081: Canonical HOP Pipeline Substrate for apps_* Inner DAGs
 
+**Status**: Accepted
+
 | Field | Value |
 |---|---|
 | Status | Accepted |

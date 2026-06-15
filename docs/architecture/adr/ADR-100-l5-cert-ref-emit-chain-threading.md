@@ -1,5 +1,7 @@
 # ADR-100 — L5 Certification Reference Threading Through the Full Emit Chain
 
+**Status**: Accepted
+
 | Field | Value |
 |---|---|
 | **ADR ID** | ADR-100 |

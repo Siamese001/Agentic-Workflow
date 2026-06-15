@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from tools.eval.retrieval_drift import (
     DriftReport,
     DriftResult,
     RetrievalDriftAnalyzer,
+    build_drift_alert,
+    write_drift_report,
 )
 
 
@@ -130,3 +134,30 @@ class TestComputeReport:
         ]
         report = self.analyzer.compute_report(results)
         assert report.queries_with_high_drift == []
+
+
+class TestDriftAlertArtifacts:
+
+    def test_build_drift_alert_flags_high_drift(self) -> None:
+        report = DriftReport(
+            total_queries=2,
+            avg_jaccard=0.4,
+            queries_with_high_drift=["q2"],
+        )
+
+        alert = build_drift_alert(report, threshold=0.7, run_id="run-1")
+
+        assert alert.status == "alert"
+        assert alert.high_drift_queries == ["q2"]
+        assert "[DRIFT-ALERT]" in alert.message
+
+    def test_write_drift_report_serializes_payload(self, tmp_path) -> None:
+        report = DriftReport(total_queries=1, avg_jaccard=1.0)
+        path = tmp_path / "drift.json"
+
+        payload = write_drift_report(report, path)
+
+        assert path.exists()
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+        assert loaded == payload
+        assert loaded["alert"]["status"] == "pass"

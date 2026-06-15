@@ -28,8 +28,9 @@ Per ADR-061. One JSONL file per corpus, one row per query. Schema:
 
 Curation is owned by the W5.1 implementation plan
 (`adr-061-golden-set-curation`) per the parent plan's NEXT_STEP markers.
-This directory ships a seed so the harness can exercise its plumbing
-against real shape immediately.
+The scheduled wrapper in `tools/eval/cron_retrieval_eval.py` scores JSONL
+rows that include `retrieved_chunks` and counts rows without retrieved
+results as unscored inputs.
 
 ## Refresh cadence
 

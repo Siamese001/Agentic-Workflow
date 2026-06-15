@@ -1,11 +1,13 @@
 # ADR-060 — Corrective-RAG / Self-RAG Reflective Retrieval Loop
 
-**Status**: Proposed
+**Status**: Accepted (implemented)
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/L1_cognition/reasoning/`, `agentic_core/L3_orchestration/reasoning/engines/reflexion_engine.py`, `agentic_core/knowledge/retrieval/`, `agentic_core/knowledge/engine/rag_orchestrator.py`
 **Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W4.1
 **Relates-to**: ADR-045 (contextual retrieval), ADR-046 (rerank), ADR-056 (multi-head), ADR-058 (query transforms), ADR-023 (runtime HITL — distinct from this dev-loop pattern)
+
+**Current-state note (2026-06-15):** Implemented by `agentic_core/L1_cognition/reasoning/retrieval_reflexion.py`, `retrieval_grader.py`, and shared reflection types, with retrieval reflexion and router tests.
 
 ---
 

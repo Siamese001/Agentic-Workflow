@@ -1,9 +1,11 @@
 # ADR-068 — Exit-Eval v6 grader composition runtime types (Wave 3)
 
-**Status**: Accepted (partial — §5.2-5.4 calibration cadence + §6 bypass-resistance harness deferred)
+**Status**: Accepted (scoped runtime types complete)
 **Date**: 2026-04-26
 **Wave**: exit-eval-v6 deferred-scope Wave 3
 **Promotes**: 30 design rows → OK (§1, §2, §3, §3-table, §4, §5.1, §7) + 2 ADR-068 acceptance rows
+
+**Current-state note (2026-06-15):** This ADR intentionally covers grader composition runtime types and BUS-P row shape. Calibration cadence, multi-judge consensus, and bypass-resistance harnesses remain separate subsystem work, not incomplete ADR-068 scope.
 
 ---
 

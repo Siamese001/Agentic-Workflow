@@ -1,5 +1,7 @@
 # ADR-NNN — apps_rfp Multi-Agent Justification
 
+**Status**: Accepted
+
 > **Status**: **Accepted** (2026-05-01)
 > **Date**: 2026-04-29 (Proposed) → 2026-05-01 (Accepted)
 > **Plan**: `.windsurf/plans/apps-rfp-first-principles-refactor-9c8d3f.md` (W0/W1.1 evidence) + `.windsurf/plans/apps-portfolio-integrated-evaluation-7d3a91.md` (W0.1 verification, W2 acceptance)

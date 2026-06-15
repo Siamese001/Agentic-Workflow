@@ -1,10 +1,12 @@
 # ADR-041 — Split Hallucination from Groundedness
 
-- **Status:** Proposed
+- **Status:** Accepted (implemented)
 - **Date:** 2026-04-23
 - **Deciders:** Eval Lab, Architecture
 - **Impact Layers:** apps_eval, config/judges, L5, v33 §5
 - **Relates to:** ADR-026 (consensus validator), ADR-032 (LLM-judge hardening)
+
+Current-state note (2026-06-15): implemented in `config/schemas/exit_decision.schema.json`, `agentic_core/L5_safety/eval_spine/claim_extractor.py`, and the exit-eval final-response path that separates groundedness from hallucination.
 
 ## 1. Context
 
