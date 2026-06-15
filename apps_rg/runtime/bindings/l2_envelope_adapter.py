@@ -31,6 +31,9 @@ from agentic_core.runtime.providers.provider_types import ProviderModeBlockedErr
 
 from apps_rg.l2_recipe.raw_text_json_unwrap import try_unwrap_raw_text_to_resume
 from apps_rg.l2_recipe.prompt_budget import PromptBudgetError, prepare_prompt_for_local_vllm
+from apps_rg.runtime.sections.executive_summary_context_limits import (
+    DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS,
+)
 from apps_rg.l2_recipe.provider_run_diagnostics import write_provider_generation_diagnostics
 from apps_rg.l2_recipe.resume_output_shape import (
     BLOCKED_PROVIDER_LANE,
@@ -196,7 +199,7 @@ def _build_work_order_inputs(
     tool_spec = CapabilitySpec(name=str(tools[0]), version="v1") if tools else None
     tm = str(getattr(prompt_artifact, "target_model", "") or "").strip() or "unknown"
     model_spec = CapabilitySpec(name=tm, version="v1")
-    max_tokens = int(getattr(prompt_artifact, "max_tokens", 4096) or 4096)
+    max_tokens = int(getattr(prompt_artifact, "max_tokens", DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS) or DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS)
     return WorkOrderInputs(
         execution_form=ExecutionForm.SINGLE_STEP,
         task_spec=task,
@@ -211,7 +214,7 @@ def _build_work_order_inputs(
 
 def _build_budget_snapshot(prompt_artifact: Any) -> dict[str, Any]:
     return {
-        "max_tokens": int(getattr(prompt_artifact, "max_tokens", 4096) or 4096),
+        "max_tokens": int(getattr(prompt_artifact, "max_tokens", DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS) or DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS),
         "temperature": float(getattr(prompt_artifact, "temperature", 0.0) or 0.0),
         "model_ref": str(getattr(prompt_artifact, "target_model", "") or ""),
     }
@@ -648,7 +651,7 @@ def _execute_approved_work_order(
         )
 
     prompt_text = _cpa_prompt_text(cpa)
-    max_req_tok = int(getattr(cpa, "max_tokens", 4096) or 4096)
+    max_req_tok = int(getattr(cpa, "max_tokens", DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS) or DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS)
     temp_val = float(getattr(cpa, "temperature", 0.1))
     top_p_val = float(getattr(cpa, "top_p", 0.8))
     json_object_response_format = None

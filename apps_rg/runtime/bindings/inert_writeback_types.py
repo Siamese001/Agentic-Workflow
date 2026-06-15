@@ -14,6 +14,11 @@ __all__ = [
     "WritebackCommitStatus",
 ]
 
+# Inert-writeback TokenBudget defaults (this subsystem's own budget — NOT the section
+# context window). Named so the dataclass field defaults reference one place, not magic ints.
+INERT_WRITEBACK_INPUT_LIMIT: int = 8192
+INERT_WRITEBACK_OUTPUT_LIMIT: int = 4096
+
 L6_FIREWALL_INVARIANTS: dict[str, bool] = {
     "l6_cannot_mutate_current_run": True,
     "l6_cannot_rescue_current_run": True,
@@ -84,8 +89,8 @@ class TokenBudget:
     output_tokens: int
     total_tokens: int
     estimated_cost_usd: float
-    _input_limit: int = field(default=8192, repr=False, compare=False)
-    _output_limit: int = field(default=4096, repr=False, compare=False)
+    _input_limit: int = field(default=INERT_WRITEBACK_INPUT_LIMIT, repr=False, compare=False)
+    _output_limit: int = field(default=INERT_WRITEBACK_OUTPUT_LIMIT, repr=False, compare=False)
     _cost_limit_usd: float = field(default=0.50, repr=False, compare=False)
 
     @property

@@ -33,12 +33,12 @@ Measured Qwen 2.5 tokenizer ratio (English prose, 2026-05-27):
 ESTIMATE_SAFETY_MULTIPLIER = 1.12 (applied in token-estimation path, not here).
 
 Briefing share (BRIEFING_INPUT_SHARE_FRACTION = 0.15 of available input):
-  At ctx=32768, out=4096, reserved=512 → available=28160 → 28160*0.15*3 = 12672 chars
-  At ctx=24576, out=2048, reserved=512 → available=22016 → 22016*0.15*3 = 9906 chars
+  At ctx=131072 (Claude-era default), out=4096, reserved=512 → available=126464 → 126464*0.15*3 = 56907 chars
+  (legacy ctx=32768 → available=28160 → 28160*0.15*3 = 12672 chars)
 
 Bullet-selector sub-prompt share (BULLET_SELECTOR_INPUT_SHARE_FRACTION = 0.09):
-  At ctx=32768, out=4096, reserved=512 → 28160 * 0.09 * 3 = 7603 chars
-  At ctx=24576, out=2048, reserved=512 → 22016 * 0.09 * 3 = 5946 chars
+  At ctx=131072 (Claude-era default), out=4096, reserved=512 → 126464 * 0.09 * 3 = 34143 chars
+  (legacy ctx=32768 → 28160 * 0.09 * 3 = 7603 chars)
 
 These fractions are tunable constants. The token budget gate is always the final
 authority — these caps are a pre-filter for ranked selection only.
@@ -49,6 +49,8 @@ The ``resolve_*`` functions re-derive at call time so caps auto-scale when
 from __future__ import annotations
 
 import os
+
+from apps_rg.runtime.section_model_limits import SECTION_MODEL_MAX_MODEL_LEN
 
 # No preventive char cap when the compiled prompt already fits (token budget is authority).
 TARGETING_NO_GAP_MAX_CHARS: int = 10_000_000
@@ -65,10 +67,11 @@ DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX: float = 0.95
 CHARS_PER_TOKEN_ESTIMATE: int = 3
 ESTIMATE_SAFETY_MULTIPLIER: float = 1.12
 
-# --- Context-window budget parameters (must stay in sync with token_budget.py) ---
-# Default raised 24576 → 32768 (2026-06-13) → 131072 (2026-06-15, Claude-era; kill Qwen token cap)
-# — keep in sync with section_model_limits.SECTION_MODEL_MAX_MODEL_LEN (external Claude ~200k ctx).
-_DEFAULT_CONTEXT_WINDOW: int = 131_072
+# --- Context-window budget parameters ---
+# DERIVED from the single section context-window SSOT (section_model_limits.SECTION_MODEL_MAX_MODEL_LEN,
+# env: APPS_RG_SECTION_MAX_MODEL_LEN; Claude-era default 131072). This is NOT an independent literal —
+# it tracks the SSOT so there is exactly one place to change the section context window.
+_DEFAULT_CONTEXT_WINDOW: int = int(SECTION_MODEL_MAX_MODEL_LEN)
 _DEFAULT_OUTPUT_TOKENS: int = DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS
 _DEFAULT_RESERVED_TOKENS: int = RESERVED_SYSTEM_SCHEMA_TOKENS
 

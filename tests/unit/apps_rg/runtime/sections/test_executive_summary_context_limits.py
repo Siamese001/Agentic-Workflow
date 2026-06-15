@@ -15,6 +15,7 @@ import pytest
 from apps_rg.runtime.sections import executive_summary_context_limits as limits
 from apps_rg.runtime.sections.executive_summary_briefing import prepare_briefing_for_executive_summary
 from apps_rg.runtime.sections.executive_summary_context_limits import (
+    _DEFAULT_CONTEXT_WINDOW,
     BRIEFING_RANKED_SELECTION_MAX_CHARS,
     DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS,
     DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS,
@@ -30,6 +31,13 @@ from apps_rg.runtime.sections.executive_summary_context_limits import (
     resolve_scratch_max_output_tokens,
 )
 
+# The expected available-input budget, derived from the SAME SSOT the source derives from
+# (section context window − output − reserved). No hardcoded ctx literal — if the SSOT
+# (SECTION_MODEL_MAX_MODEL_LEN) changes, these tests track it automatically.
+_EXPECTED_AVAILABLE_INPUT = (
+    _DEFAULT_CONTEXT_WINDOW - DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS - RESERVED_SYSTEM_SCHEMA_TOKENS
+)
+
 
 def test_targeting_no_gap_max_chars_is_large() -> None:
     assert TARGETING_NO_GAP_MAX_CHARS >= 1_000_000
@@ -40,8 +48,8 @@ def test_bullet_selector_char_defaults() -> None:
         BULLET_SELECTOR_INPUT_SHARE_FRACTION,
         CHARS_PER_TOKEN_ESTIMATE,
     )
-    # Claude-era defaults: ctx=131072 (raised 2026-06-15, kill Qwen cap), output=4096, reserved=512.
-    available = 131_072 - 4_096 - 512
+    # Derived from the section-ctx SSOT (not a hardcoded ctx literal): available = ctx − out − reserved.
+    available = _EXPECTED_AVAILABLE_INPUT
     expected = int(available * BULLET_SELECTOR_INPUT_SHARE_FRACTION) * CHARS_PER_TOKEN_ESTIMATE
     assert DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS == expected
     assert DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS == expected
@@ -52,7 +60,7 @@ def test_briefing_ranked_selection_uses_dedicated_cap() -> None:
         BRIEFING_INPUT_SHARE_FRACTION,
         CHARS_PER_TOKEN_ESTIMATE,
     )
-    available = 131_072 - 4_096 - 512
+    available = _EXPECTED_AVAILABLE_INPUT
     expected = int(available * BRIEFING_INPUT_SHARE_FRACTION) * CHARS_PER_TOKEN_ESTIMATE
     assert BRIEFING_RANKED_SELECTION_MAX_CHARS == expected
     # Brief must exceed the (now Claude-era 128k-derived) ranked-selection cap to trigger truncation.
@@ -74,10 +82,14 @@ def test_claude_era_token_defaults() -> None:
 
 
 def test_available_input_tokens_formula() -> None:
-    # Claude-era defaults: ctx=32768, output=4096, reserved=512 → available=28160.
+    # Pure-formula checks with EXPLICIT inputs (not the SSOT default): available = ctx − out − reserved.
     assert available_input_tokens(32768, 4096) == 28160
-    # Legacy formula still computable for back-compat (Qwen-era values).
     assert available_input_tokens(24576, 2048) == 22016
+    # And the formula applied to the actual section-ctx SSOT matches the derived budget.
+    assert (
+        available_input_tokens(_DEFAULT_CONTEXT_WINDOW, DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS)
+        == _EXPECTED_AVAILABLE_INPUT
+    )
 
 
 def test_resolve_provider_context_window_uses_app_local_ssot(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -16,6 +16,9 @@ from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     PromptBlock,
 )
 from apps_rg.runtime.section_model_limits import SECTION_MODEL_ID
+from apps_rg.runtime.sections.executive_summary_context_limits import (
+    DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS,
+)
 
 
 def adapt_apps_rg_cpa_for_l2_envelope(
@@ -52,9 +55,9 @@ def adapt_apps_rg_cpa_for_l2_envelope(
         target_model = SECTION_MODEL_ID
     else:
         target_model = raw_model
-    max_tok = int(prov.get("max_tokens") or 4096)
+    max_tok = int(prov.get("max_tokens") or DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS)
     if max_tok <= 0:
-        max_tok = 4096
+        max_tok = DEFAULT_SCRATCH_MAX_OUTPUT_TOKENS
     if prov.get("top_p") is not None:
         top_p = float(prov.get("top_p"))
     else:

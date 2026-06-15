@@ -35,35 +35,47 @@ def test_regen_max_output_defaults_and_cap(monkeypatch) -> None:
 
 def test_regen_dispatch_blocks_when_thread_exceeds_window(monkeypatch) -> None:
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "1")
-    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "4096")
+    # Force a small window via the explicit override. (Post-2026-06-15 VLLM_MAX_MODEL_LEN can no
+    # longer LOWER the section ctx, so the test passes the small window directly — the SSOT way.)
     huge = "word " * 20000
     messages = [{"role": "system", "content": huge}, {"role": "user", "content": huge}]
     est = estimate_regen_thread_tokens(messages)
-    check = regen_dispatch_allowed(messages, max_output_tokens=1024)
+    check = regen_dispatch_allowed(messages, max_output_tokens=1024, provider_context_window=4096)
     assert est > check.available_input_tokens
     assert check.dispatch_allowed is False
     assert check.block_reason == "regen_input_exceeds_available_context_window"
 
 
 def test_budgeted_regen_fail_closed_before_transport(monkeypatch, tmp_path: Path) -> None:
+    import importlib
+
+    from apps_rg.runtime import section_model_limits
+
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_REGEN_CAPS", "1")
-    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "4096")
-    clear_regen_budget_ledger(tmp_path)
-    messages = [{"role": "user", "content": "x " * 50000}]
-    outcome = budgeted_regen_call(
-        {"model": "test-model"},
-        messages=messages,
-        phase="judge_regen",
-        call_site="test_over_budget",
-        artifact_dir=tmp_path,
-    )
-    assert outcome.dispatch_allowed is False
-    assert outcome.result is None
-    assert outcome.block_reason == "regen_input_exceeds_available_context_window"
-    ledger = regen_budget_ledger(tmp_path)
-    assert len(ledger.calls) == 1
-    assert ledger.calls[0]["transport_dispatched"] is False
-    assert ledger.calls[0]["accepted"] is False
+    # Shrink the section context window via the SSOT (APPS_RG_SECTION_MAX_MODEL_LEN) so the oversized
+    # regen thread fails closed. VLLM_MAX_MODEL_LEN can no longer lower the section ctx (2026-06-15).
+    monkeypatch.setenv("APPS_RG_SECTION_MAX_MODEL_LEN", "4096")
+    importlib.reload(section_model_limits)
+    try:
+        clear_regen_budget_ledger(tmp_path)
+        messages = [{"role": "user", "content": "x " * 50000}]
+        outcome = budgeted_regen_call(
+            {"model": "test-model"},
+            messages=messages,
+            phase="judge_regen",
+            call_site="test_over_budget",
+            artifact_dir=tmp_path,
+        )
+        assert outcome.dispatch_allowed is False
+        assert outcome.result is None
+        assert outcome.block_reason == "regen_input_exceeds_available_context_window"
+        ledger = regen_budget_ledger(tmp_path)
+        assert len(ledger.calls) == 1
+        assert ledger.calls[0]["transport_dispatched"] is False
+        assert ledger.calls[0]["accepted"] is False
+    finally:
+        monkeypatch.delenv("APPS_RG_SECTION_MAX_MODEL_LEN", raising=False)
+        importlib.reload(section_model_limits)
 
 
 def test_budgeted_regen_requires_provider_response_for_accepted_parse(

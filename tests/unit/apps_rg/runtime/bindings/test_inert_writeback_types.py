@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 import pytest
 
 from apps_rg.runtime.bindings.inert_writeback_types import (
+    INERT_WRITEBACK_INPUT_LIMIT,
     L6_FIREWALL_INVARIANTS,
     AppsRgInertWritebackCandidate,
     CallerSessionBinding,
@@ -112,7 +113,7 @@ class TestTokenBudget:
             estimated_cost_usd=0.10,
         )
         assert b.within_budget is False
-        assert b.overage["input_tokens"] == 9000 - 8192
+        assert b.overage["input_tokens"] == 9000 - INERT_WRITEBACK_INPUT_LIMIT
 
     def test_over_cost_limit(self) -> None:
         b = TokenBudget(
