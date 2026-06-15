@@ -94,9 +94,17 @@ persist even if the ADHD were fully treated, and several *amplify* the ADHD ones
   to go *faster at the north star* but to *avoid choosing* between it and orthogonal ideas — "I'll
   run all of them on their own branch and merge/rebase later." It is P-core (fear of loss) with a
   *rational-sounding hardware alibi*, which makes it more insidious than ordinary procrastination.
-  Measured cost (after-pivot window, 4.8 days): **46 live branches**; rebase/sync-merge tax
-  **0.32→2.50/day (~8×)**; **19 distinct lanes merged**; **17 collision-class commits**
-  (revert/restore/re-pin/reconcile/post-rebase) — the "later" in "merge later" *is* those 17.
+  Measured cost (after-pivot window, 4.8 days) — **using merge/commit *activity*, not branch
+  existence**: rebase/sync-merge tax **0.32→2.50/day (~8×)**; **19 distinct lanes merged**;
+  **17 collision-class commits** (revert/restore/re-pin/reconcile/post-rebase) — the "later" in
+  "merge later" *is* those 17.
+  *Correction (operator-surfaced 2026-06-15):* an earlier draft cited "46 live branches" as a
+  WIP-graveyard signal — **retracted**. Branch *existence* is a poor WIP proxy here: of 45 remote
+  branches, **19 are merged-into-main but deliberately retained** (a benign hygiene habit, zero
+  velocity cost), **~9 are automated bot branches** (`cursor/missing-test-coverage-*` spawned daily,
+  not operator choice), and "unmerged" itself overcounts because **squash/rebase merges show as
+  unmerged** (SHA not an ancestor of `main`). The P9 conclusion does **not** depend on branch count —
+  the merge/commit-activity metrics above are unaffected by retention or bots and carry the finding.
   **Why it's a false economy for THIS goal:** 11/11 lanes is not embarrassingly-parallel — the plan's
   own "FEC grounding is the SYSTEMIC W2 blocker" is a *shared* dependency. By **Amdahl** you cannot
   parallelize past the serial bottleneck (parallel lanes in front of an unfixed root pile up as WIP
