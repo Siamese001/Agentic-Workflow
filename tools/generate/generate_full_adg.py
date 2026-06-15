@@ -1750,7 +1750,7 @@ def generate_full_adg(
             "graphdb_metadata": adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json",
             "graphdb_index": adg_artifacts_dir / f"adg_graphdb_index_{ts}.json",
             "graph_watchlist": adg_artifacts_dir / f"adg_graph_watchlist_{ts}.json",
-            "p0_wave_plan": p0_wave_plan if isinstance(p0_wave_plan, Path) else adg_artifacts_dir / f"adg_p0_remediation_wave_plan_{ts}.json",
+            "p0_wave_plan": p0_wave_plan.get("json_path") if isinstance(p0_wave_plan, dict) else None,
         }
         _bcg_rc, bcg_summary_path = emit_bcg_executive_summary(
             adg_artifacts_dir=adg_artifacts_dir,
@@ -2430,7 +2430,7 @@ def main() -> None:
                     "graphdb_metadata": adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json",
                     "graphdb_index": adg_artifacts_dir / f"adg_graphdb_index_{ts}.json",
                     "graph_watchlist": adg_artifacts_dir / f"adg_graph_watchlist_{ts}.json",
-                    "p0_wave_plan": adg_artifacts_dir / f"adg_p0_remediation_wave_plan_{ts}.json",
+                    "p0_wave_plan": p0_wave_plan.get("json_path") if isinstance(p0_wave_plan, dict) else None,
                 },
                 print_inline=False,
                 fail_closed=False,

@@ -29,7 +29,7 @@ ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 DOCS_ADG = REPO_ROOT / "docs" / "reports" / "adg"
 TEST_FOLDERS = ("unit", "e2e", "regression", "integration", "smoke", "golden", "contract", "fixtures", "unknown")
 TEST_TYPE_BY_FOLDER = {"fixtures": "fixture"}
-VERDICTS = {"BLOCKED", "GREEN_WITH_DEBT", "REPORT_INCONSISTENT", "DEGRADED", "CLEAN", "NEEDS_RUNTIME_PROOF", "TESTING_CONTROL_GAP"}
+VERDICTS = {"BLOCKED", "GREEN_WITH_DEBT", "REPORT_INCONSISTENT", "DEGRADED", "CLEAN", "NEEDS_RUNTIME_PROOF", "TESTING_CONTROL_GAP", "RUNTIME_PROOF_FAILING"}
 
 
 def _repo_rel(path: Path | None) -> str:
@@ -320,6 +320,130 @@ def _artifact_consistency(sqlite_path: Path) -> dict[str, Any]:
     return {"status": "FAIL", "errors": errors}
 
 
+def _empty_current_tests() -> dict[str, list[str]]:
+    return {k: [] for k in ("unit", "e2e", "regression", "integration", "smoke", "golden", "contract", "fixture", "mock_only", "unknown")}
+
+
+def _test_paths_for_scope(prod: str, test_scope_inventory: dict[str, Any]) -> dict[str, list[str]]:
+    """Return concrete test files that appear to exercise a production scope."""
+    found = _empty_current_tests()
+    prod_norm = prod[:-3] if prod.endswith(".py") else prod
+    parent_scope = prod_norm.rsplit("/", 1)[0] if "/" in prod_norm else prod_norm
+    domain = _domain_for_path(prod)
+    for test in test_scope_inventory.get("files", []) or []:
+        test_path = str(test.get("path") or "")
+        test_type = str(test.get("test_type") or "unknown")
+        if test_type not in found:
+            test_type = "unknown"
+        likely = [str(v) for v in test.get("likely_target_paths", []) or []]
+        likely_norm = [v[:-3] if v.endswith(".py") else v for v in likely]
+        mapped = False
+        for target in likely_norm:
+            if not target:
+                continue
+            if target == prod_norm or prod_norm.startswith(target + "/") or target.startswith(parent_scope + "/") or target == parent_scope:
+                mapped = True
+                break
+        if not mapped and domain != "unknown" and str(test.get("app_or_domain") or "") == domain and parent_scope in " ".join(likely_norm + [test_path]):
+            mapped = True
+        if mapped and test_path and test_path not in found[test_type]:
+            found[test_type].append(test_path)
+    return {k: sorted(v) for k, v in found.items()}
+
+
+def _action_impact(rows: list[dict[str, Any]] | None, default_action: str) -> list[dict[str, Any]]:
+    if rows:
+        return rows
+    return [{"signal": "none", "impact": "No immediate action impact.", "recommended_action": default_action}]
+
+
+def _p0_recommended_action(issue: dict[str, Any]) -> str:
+    issue_type = str(issue.get("issue_type") or "")
+    if issue_type == "dynamic_exec":
+        return "Stop and remove or isolate dynamic execution before trusting dependency evidence."
+    if issue_type == "circular_import":
+        return "Break the import cycle so module load order is stable."
+    if issue.get("protected_surface"):
+        return "Fix this protected-plane boundary first; it sits in routing, execution, orchestration, or safety."
+    return "Route the dependency through an approved public surface or move the responsibility to the owning layer."
+
+
+def _p0_landmine_name(issue: dict[str, Any]) -> str:
+    issue_type = str(issue.get("issue_type") or "")
+    return {
+        "layer_violation": "Wrong-way layer import",
+        "circular_import": "Circular import",
+        "dynamic_exec": "Dynamic execution",
+    }.get(issue_type, issue_type or "P0 issue")
+
+
+def _p0_landmine_lens(p0_doc: dict[str, Any] | None) -> dict[str, Any]:
+    if not p0_doc:
+        return {
+            "status": "missing",
+            "why_it_matters": "P0 landmines are foundation cracks: if this artifact is missing, leaders cannot see whether the graph itself is structurally trustworthy.",
+            "executive_read": "P0 wave-plan JSON was not loaded; do not claim there are no foundation cracks.",
+            "summary": {
+                "total_p0_issues": 0,
+                "layer_violations": 0,
+                "circular_imports": 0,
+                "dynamic_exec": 0,
+                "wrong_way_imports": 0,
+                "protected_surfaces": 0,
+            },
+            "landmines": [],
+            "action_impact_rows": _action_impact(None, "Load the emitted P0 wave-plan JSON before trusting this lens."),
+        }
+
+    rows: list[dict[str, Any]] = []
+    for wave in p0_doc.get("waves", []) or []:
+        for issue in wave.get("items", []) or []:
+            if not isinstance(issue, dict):
+                continue
+            from_layer = str(issue.get("from_layer") or "")
+            to_layer = str(issue.get("to_layer") or "")
+            wrong_way = bool(issue.get("issue_type") == "layer_violation" and from_layer and to_layer)
+            rows.append(
+                {
+                    "landmine": _p0_landmine_name(issue),
+                    "issue_type": str(issue.get("issue_type") or ""),
+                    "source_file": str(issue.get("source_file") or ""),
+                    "line_no": int(issue.get("line_no") or 0),
+                    "wrong_way_import": wrong_way,
+                    "layer_path": f"{from_layer} -> {to_layer}" if from_layer or to_layer else "",
+                    "protected_surface": bool(issue.get("protected_surface")),
+                    "direct_fan_in": int(issue.get("direct_fan_in") or 0),
+                    "recommended_action": _p0_recommended_action(issue),
+                    "action_impact": "Fixing this improves trust in ADG ordering before ordinary gate cleanup.",
+                }
+            )
+    rows.sort(key=lambda r: (-int(r["protected_surface"]), -int(r["direct_fan_in"]), r["source_file"], r["line_no"]))
+    summary = dict(p0_doc.get("summary") or {})
+    summary.setdefault("total_p0_issues", len(rows))
+    summary["wrong_way_imports"] = sum(1 for r in rows if r["wrong_way_import"])
+    summary["protected_surfaces"] = sum(1 for r in rows if r["protected_surface"])
+    summary["max_direct_fan_in"] = max((int(r["direct_fan_in"]) for r in rows), default=0)
+    return {
+        "status": "present",
+        "why_it_matters": "P0 landmines are foundation cracks: they can make the graph incomplete, unstable, or misleading before ordinary gate counts are even interpreted.",
+        "executive_read": "Clear dynamic execution, circular imports, protected-surface boundary breaks, and high fan-in wrong-way imports before treating lower-priority cleanup as reliable.",
+        "summary": summary,
+        "landmines": rows[:25],
+        "top_files": p0_doc.get("top_files", []),
+        "action_impact_rows": _action_impact(
+            [
+                {
+                    "signal": r["landmine"],
+                    "impact": r["action_impact"],
+                    "recommended_action": r["recommended_action"],
+                }
+                for r in rows[:5]
+            ],
+            "No P0 landmine action required.",
+        ),
+    }
+
+
 def _score_hotspot(row: dict[str, Any], mapped_tests: set[str], action_overlap: bool) -> float:
     score = 0.0
     text = " ".join(str(row.get(k, "")) for k in row)
@@ -357,7 +481,8 @@ def synthesize_testing_investment_map(sqlite_path: Path, repo_root: Path, test_s
         prod = str(row.get("file") or row.get("path") or row.get("file_path") or row.get("module_path") or row.get("scope") or row.get("production_scope") or "unknown")
         scope = prod[:-3] if prod.endswith(".py") else prod
         parent_scope = scope.rsplit("/", 1)[0]
-        mapped = set(scope_map.get(scope, set())) | set(scope_map.get(parent_scope, set()))
+        current_tests = _test_paths_for_scope(prod, test_scope_inventory)
+        mapped = set(scope_map.get(scope, set())) | set(scope_map.get(parent_scope, set())) | {k for k, v in current_tests.items() if v and k != "mock_only"}
         missing = [kind for kind in ("unit", "regression") if kind not in mapped]
         domain = _domain_for_path(prod)
         if domain.startswith("apps_") and "e2e" not in mapped:
@@ -372,7 +497,7 @@ def synthesize_testing_investment_map(sqlite_path: Path, repo_root: Path, test_s
             "production_scope": prod,
             "layer": prod.split("/", 2)[1] if "/" in prod else "unknown",
             "app_or_domain": domain,
-            "current_tests_found": {k: [] for k in ("unit", "e2e", "regression", "integration", "smoke", "golden", "contract", "fixture", "mock_only", "unknown")},
+            "current_tests_found": current_tests,
             "missing_test_scope": missing or ["mapped_tests_present"],
             "risk": {
                 "priority_band": str(row.get("priority_band") or row.get("priority") or "unknown"),
@@ -405,7 +530,26 @@ def synthesize_testing_investment_map(sqlite_path: Path, repo_root: Path, test_s
         "missing_e2e_scope": sum("e2e" in r.get("missing_test_scope", []) for r in rows),
         "mock_only_scope": sum("non_mock_assertion" in r.get("missing_test_scope", []) for r in rows),
     }
-    return {"status": "present", "executive_read": _testing_read(rows), "summary": summary, "test_scope_inventory": {"scanned_tests_root": "tests", "folders": test_scope_inventory.get("folders", [])}, "investment_map": rows, "testing_rules": ["If a fix touches a P1_URGENT / CRITICAL / ABSENT hotspot, the fix is not complete without mapped tests or an explicit waiver.", "Do not create a generic testing mega-project unless systemic gaps affect multiple high-blast-radius scopes.", "Attach tests to the current fix slice whenever overlap exists."]}
+    return {
+        "status": "present",
+        "why_it_matters": "Tests are the control that prove a risky fix actually works; missing mapped tests turn every red-gate fix into a repeat-risk.",
+        "executive_read": _testing_read(rows),
+        "summary": summary,
+        "test_scope_inventory": {"scanned_tests_root": "tests", "folders": test_scope_inventory.get("folders", [])},
+        "investment_map": rows,
+        "action_impact_rows": _action_impact(
+            [
+                {
+                    "signal": r["production_scope"],
+                    "impact": "Fix confidence improves when this scope has mapped tests.",
+                    "recommended_action": r.get("recommended_test_investment", "Add mapped tests."),
+                }
+                for r in rows[:5]
+            ],
+            "No test investment promoted.",
+        ),
+        "testing_rules": ["If a fix touches a P1_URGENT / CRITICAL / ABSENT hotspot, the fix is not complete without mapped tests or an explicit waiver.", "Do not create a generic testing mega-project unless systemic gaps affect multiple high-blast-radius scopes.", "Attach tests to the current fix slice whenever overlap exists."],
+    }
 
 
 def _recommended_tests(domain: str, missing: list[str]) -> str:
@@ -548,11 +692,24 @@ def synthesize_graphdb_decision_impact(sqlite_path: Path, p7_artifacts: dict[str
     summary["structural_scopes_ranked"] = len(ranked_scopes)
     return {
         "status": "present",
+        "why_it_matters": "Graph signals show where a change can ripple through the codebase; they should change priorities only when tied to a blocker, hotspot, or planned slice.",
         "executive_read": "GraphDB/MV signals drive decisions only when the studied structural risk (centrality, blast radius, reverse deps, cones, chokepoints, SCC, newly-introduced paths) overlaps a blocker, testing exposure, ratchet, or planned slice; raw counts alone stay diagnostic.",
         "summary": summary,
         "decision_impact_rows": rows,
         "top_graph_risks": top_graph[:5],
         "structural_mv_status": mv_status,
+        "action_impact_rows": _action_impact(
+            [
+                {
+                    "signal": r["signal"],
+                    "impact": r["why_or_why_not"],
+                    "recommended_action": r["action"],
+                }
+                for r in rows
+                if r.get("used_inline")
+            ][:5],
+            "Keep graph signals diagnostic until they overlap a blocker, hotspot, or planned slice.",
+        ),
     }
 
 
@@ -626,10 +783,10 @@ def build_artifact_usage_matrix(artifacts: dict[str, Path | None], loaded_docs: 
     run_ts = str(decision_inputs.get("run_ts") or "")
     for key, path in artifacts.items():
         exists = bool(path and path.is_file())
-        loaded = key in loaded_docs and loaded_docs.get(key) is not None
+        loaded = bool(exists and key in loaded_docs and loaded_docs.get(key) is not None)
         stale = _artifact_stale(path, loaded_docs.get(key), run_ts)
         used_for = []
-        if key in used_keys or loaded:
+        if exists and (key in used_keys or loaded):
             if key in {"gate_results", "action_queue"}:
                 used_for.append("decision")
             elif key in {"sqlite_snapshot", "graphdb_queries", "structural_outputs", "refactor_accelerator", "runtime_spine", "graph_watchlist", "p0_wave_plan"}:
@@ -643,10 +800,12 @@ def build_artifact_usage_matrix(artifacts: dict[str, Path | None], loaded_docs: 
         if not used_for:
             used_for = ["none"]
         recommendation = "keep" if exists and used_for != ["none"] else ("keep_hide_inline" if exists else "refine")
-        rationale = "Loaded and mapped to a decision lens." if used_for != ["none"] else "Available only as diagnostic/evidence context or missing from this run."
+        rationale = "Loaded and mapped to a decision lens." if loaded and used_for != ["none"] else "Available only as diagnostic/evidence context or missing from this run."
+        if exists and used_for != ["none"] and not loaded:
+            rationale = "Existing non-JSON artifact or SQLite snapshot mapped to a decision lens."
         if stale:
             rationale = "Artifact timestamp diverges from this run; may reflect a different run — verify before trusting. " + rationale
-        rows.append({"artifact_key": key, "path": _repo_rel(path), "exists": exists, "stale": stale, "used_for": used_for, "decision_impact": _artifact_impact(key, used_for), "recommendation": recommendation, "rationale": rationale})
+        rows.append({"artifact_key": key, "path": _repo_rel(path), "exists": exists, "loaded": loaded, "stale": stale, "used_for": used_for, "decision_impact": _artifact_impact(key, used_for), "recommendation": recommendation, "rationale": rationale})
     return {"status": "present", "rows": rows}
 
 
@@ -766,7 +925,26 @@ def _health_lens(gates: list[dict[str, Any]]) -> dict[str, Any]:
     track = [g for g in gates if display_verdict(g) == "TRACK"]
     ratchets = [g for g in track if display_verdict_sub(g) == "floor"]
     open_non = [g for g in track if display_verdict_sub(g) != "floor"]
-    return {"status": "present", "summary": {"total_gates": len(gates), "clear_gates": buckets.get("CLEAR", 0), "track_gates": buckets.get("TRACK", 0), "fix_gates": buckets.get("FIX", 0), "overall_verdict": "BLOCKED" if buckets.get("FIX") else "PASS", "executive_read": "FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR needs no action."}, "buckets": [{"bucket": k, "count": buckets.get(k, 0), "plain_meaning": {"CLEAR": "No action now.", "TRACK": "Known debt or advisory inventory; burn down after red gates.", "FIX": "Current blocker or regression requiring action before decision-grade green."}[k]} for k in ("CLEAR", "TRACK", "FIX")], "red_gates": red, "managed_debt": {"ratchet_floor_records": sum(int(g.get("violation_count") or 0) for g in ratchets), "open_non_ratchet_records": sum(int(g.get("violation_count") or 0) for g in open_non), "top_ratchets": [{"gate_id": str(g.get("gate_id", "")), "records": int(g.get("violation_count") or 0), "executive_read": "Accepted baseline debt, not current red.", "after_green_action": "Burn down after FIX rows clear."} for g in sorted(ratchets, key=lambda x: -int(x.get("violation_count") or 0))[:5]]}, "key_interpretation": "A blocked ADG run is not automatically a platform crisis; regression delta and graph/test linkage determine urgency."}
+    return {
+        "status": "present",
+        "why_it_matters": "Health gates tell leaders whether the run is green, blocked, or carrying accepted debt; they should not hide report inconsistency or runtime failures.",
+        "summary": {"total_gates": len(gates), "clear_gates": buckets.get("CLEAR", 0), "track_gates": buckets.get("TRACK", 0), "fix_gates": buckets.get("FIX", 0), "overall_verdict": "BLOCKED" if buckets.get("FIX") else "PASS", "executive_read": "FIX blocks green; TRACK is accepted backlog/ratchet work; CLEAR needs no action."},
+        "buckets": [{"bucket": k, "count": buckets.get(k, 0), "plain_meaning": {"CLEAR": "No action now.", "TRACK": "Known debt or advisory inventory; burn down after red gates.", "FIX": "Current blocker or regression requiring action before decision-grade green."}[k]} for k in ("CLEAR", "TRACK", "FIX")],
+        "red_gates": red,
+        "managed_debt": {"ratchet_floor_records": sum(int(g.get("violation_count") or 0) for g in ratchets), "open_non_ratchet_records": sum(int(g.get("violation_count") or 0) for g in open_non), "top_ratchets": [{"gate_id": str(g.get("gate_id", "")), "records": int(g.get("violation_count") or 0), "executive_read": "Accepted baseline debt, not current red.", "after_green_action": "Burn down after FIX rows clear."} for g in sorted(ratchets, key=lambda x: -int(x.get("violation_count") or 0))[:5]]},
+        "key_interpretation": "A blocked ADG run is not automatically a platform crisis; regression delta and graph/test linkage determine urgency.",
+        "action_impact_rows": _action_impact(
+            [
+                {
+                    "signal": r["gate_id"],
+                    "impact": r["executive_read"],
+                    "recommended_action": r["next_action"],
+                }
+                for r in red[:5]
+            ],
+            "No red-gate action required.",
+        ),
+    }
 
 
 def _runtime_lens(p7: dict[str, Any], sqlite_path: Path) -> dict[str, Any]:
@@ -797,7 +975,25 @@ def _runtime_lens(p7: dict[str, Any], sqlite_path: Path) -> dict[str, Any]:
             signals.append({"signal": mv, "status": "present" if cnt else "missing", "evidence_count": cnt, "executive_read": (f"{label} MV present with {cnt} rows; gaps here are replay/eval blind spots, not proven failures." if cnt else f"{label} MV empty — replay/eval measurement gap."), "action": ("Close replay/eval gaps for critical paths." if cnt else "Wire replay/eval evidence before trusting replay coverage.")})
     present = any(s["status"].startswith("present") for s in signals)
     mg = "Runtime proof is present and FAILING — treat as a quality failure to fix." if quality_failure else "Missing or empty runtime proof is a measurement gap (blind spot), not automatically a product failure, unless an artifact shows runtime failure evidence."
-    return {"status": "present" if present else "missing", "executive_read": "Runtime proof distinguishes observed quality failures from missing instrumentation.", "measurement_gap_vs_quality_failure": mg, "runtime_proof_signals": signals, "blind_spots": [] if present else [{"blind_spot": "runtime proof artifacts", "why_it_matters": "Without runtime proof, ADG can flag structural risk but cannot prove production behavior.", "recommended_action": "Generate or wire runtime spine/replay/OTel evidence for critical paths."}]}
+    return {
+        "status": "present_failing" if quality_failure else ("present" if present else "missing"),
+        "why_it_matters": "Runtime proof separates a real observed failure from a blind spot; leaders should not treat missing traces as proof of health.",
+        "executive_read": "Runtime proof distinguishes observed quality failures from missing instrumentation.",
+        "measurement_gap_vs_quality_failure": mg,
+        "runtime_proof_signals": signals,
+        "action_impact_rows": _action_impact(
+            [
+                {
+                    "signal": s["signal"],
+                    "impact": s["executive_read"],
+                    "recommended_action": s["action"],
+                }
+                for s in signals
+            ],
+            "No runtime action promoted.",
+        ),
+        "blind_spots": [] if present else [{"blind_spot": "runtime proof artifacts", "why_it_matters": "Without runtime proof, ADG can flag structural risk but cannot prove production behavior.", "recommended_action": "Generate or wire runtime spine/replay/OTel evidence for critical paths."}],
+    }
 
 
 def _product_lens(testing: dict[str, Any], graph: dict[str, Any]) -> dict[str, Any]:
@@ -805,7 +1001,24 @@ def _product_lens(testing: dict[str, Any], graph: dict[str, Any]) -> dict[str, A
     for row in testing.get("investment_map", []):
         if str(row.get("app_or_domain", "")).startswith("apps_"):
             risks.append({"app_or_scope": row["app_or_domain"], "risk": "Under-tested product hotspot", "evidence": [{"signal_name": row["production_scope"], "signal_type": "hotspot", "raw_count": row.get("risk", {}).get("violation_count"), "interpreted_meaning": row.get("reasoned_implication", "")}], "executive_read": "App risk is promoted because product surface and missing test scope overlap.", "next_action": row.get("recommended_test_investment", "Add mapped tests."), "priority_vs_gate_debt": "Can outrank after-green ratchet burn-down when it overlaps current work or high blast radius."})
-    return {"status": "present", "executive_read": "No app-specific product gap was promoted in this run; app risk remains diagnostic-only unless tied to a hotspot, gate, or action queue row." if not risks else "App/product risks were promoted only where hotspot or test evidence changes funding posture.", "app_risks": risks[:8], "promoted_product_gaps": [{"gap_id": f"product_gap_{i}", "title": r["risk"], "app_or_scope": r["app_or_scope"], "why_high_leverage": r["executive_read"], "action": r["next_action"], "done_condition": "Mapped app tests pass and ADG no longer reports the promoted gap."} for i, r in enumerate(risks[:5], 1)]}
+    return {
+        "status": "present",
+        "why_it_matters": "Product risk shows whether a structural issue touches user-facing app behavior, not just internal cleanup.",
+        "executive_read": "No app-specific product gap was promoted in this run; app risk remains diagnostic-only unless tied to a hotspot, gate, or action queue row." if not risks else "App/product risks were promoted only where hotspot or test evidence changes funding posture.",
+        "app_risks": risks[:8],
+        "promoted_product_gaps": [{"gap_id": f"product_gap_{i}", "title": r["risk"], "app_or_scope": r["app_or_scope"], "why_high_leverage": r["executive_read"], "action": r["next_action"], "done_condition": "Mapped app tests pass and ADG no longer reports the promoted gap."} for i, r in enumerate(risks[:5], 1)],
+        "action_impact_rows": _action_impact(
+            [
+                {
+                    "signal": r["app_or_scope"],
+                    "impact": r["executive_read"],
+                    "recommended_action": r["next_action"],
+                }
+                for r in risks[:5]
+            ],
+            "No product-scope action promoted.",
+        ),
+    }
 
 
 def _verdict(health: dict[str, Any], runtime: dict[str, Any], testing: dict[str, Any], artifacts: dict[str, Any], consistency: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -815,14 +1028,18 @@ def _verdict(health: dict[str, Any], runtime: dict[str, Any], testing: dict[str,
         verdict = "DEGRADED"
         crisis = "measurement_gap"
         posture = "repair_reporting"
-    elif int(health["summary"].get("fix_gates") or 0):
-        verdict = "BLOCKED"
-        crisis = "routine_nudge" if all(int(r.get("regression_delta") or 0) <= 1 for r in health.get("red_gates", []) or [{"regression_delta": 2}]) else "material_risk"
-        posture = "narrow_slice"
     elif consistency.get("status") == "FAIL":
         verdict = "REPORT_INCONSISTENT"
         crisis = "material_risk"
         posture = "repair_reporting"
+    elif runtime.get("status") == "present_failing":
+        verdict = "RUNTIME_PROOF_FAILING"
+        crisis = "material_risk"
+        posture = "repair_runtime"
+    elif int(health["summary"].get("fix_gates") or 0):
+        verdict = "BLOCKED"
+        crisis = "routine_nudge" if all(int(r.get("regression_delta") or 0) <= 1 for r in health.get("red_gates", []) or [{"regression_delta": 2}]) else "material_risk"
+        posture = "narrow_slice"
     elif int((testing.get("summary") or {}).get("missing_unit_scope") or 0) or int((testing.get("summary") or {}).get("missing_regression_scope") or 0):
         verdict = "TESTING_CONTROL_GAP"
         crisis = "managed_debt"
@@ -839,7 +1056,14 @@ def _verdict(health: dict[str, Any], runtime: dict[str, Any], testing: dict[str,
         verdict = "CLEAN"
         crisis = "routine_nudge"
         posture = "monitor"
-    return {"verdict": verdict, "recommendation": "Fund the smallest slice that clears current blockers and attaches tests where hotspot evidence overlaps; keep ratchets after-green.", "funding_posture": posture, "why_now": "Decision combines FIX status, regression/newness, GraphDB/MV linkage, testing exposure, and artifact consistency.", "risk_if_ignored": "The organization may chase raw counts while missing the smaller blocker or under-tested high-blast-radius surface.", "what_not_to_do": ["Do not rank work by raw MV row count alone.", "Do not treat guardian inventory as an automatic product failure.", "Do not start a generic testing mega-project when mapped tests can follow the current slice."], "crisis_level": crisis, "one_sentence_bottom_line": f"ADG is {verdict}: act on decision-linked blockers/testing gaps, defer diagnostic-only noise."}
+    recommendation = "Fund the smallest slice that clears current blockers and attaches tests where hotspot evidence overlaps; keep ratchets after-green."
+    if verdict == "REPORT_INCONSISTENT":
+        recommendation = "Repair report consistency first; the executive order of work is not trustworthy until graph and report agree."
+    elif verdict == "RUNTIME_PROOF_FAILING":
+        recommendation = "Fix the failing runtime-proof path before treating ordinary gate cleanup as the highest-confidence next action."
+    elif verdict == "DEGRADED":
+        recommendation = "Repair missing decision-grade artifacts before relying on this summary."
+    return {"verdict": verdict, "recommendation": recommendation, "funding_posture": posture, "why_now": "Decision combines artifact consistency, runtime proof, FIX status, regression/newness, GraphDB/MV linkage, and testing exposure.", "risk_if_ignored": "The organization may chase raw counts while missing a broken report, failing runtime proof, smaller blocker, or under-tested high-blast-radius surface.", "what_not_to_do": ["Do not rank work by raw MV row count alone.", "Do not let ordinary FIX gates hide report inconsistency or runtime failure.", "Do not start a generic testing mega-project when mapped tests can follow the current slice."], "crisis_level": crisis, "one_sentence_bottom_line": f"ADG is {verdict}: act on decision-linked blockers/testing gaps, defer diagnostic-only noise."}
 
 
 def _base_doc(ts: str, sqlite_path: Path, gate_doc: dict[str, Any] | None, degraded: list[str]) -> dict[str, Any]:
@@ -848,7 +1072,11 @@ def _base_doc(ts: str, sqlite_path: Path, gate_doc: dict[str, Any] | None, degra
 
 def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: Path, gate_results_path: Path | None, action_queue_path: Path | None, review_template_path: Path | None, burndown_path: Path | None, p7_paths: dict[str, Path | None]) -> dict[str, Any]:
     artifacts = {"gate_results": gate_results_path, "action_queue": action_queue_path, "review_template": review_template_path, "burndown_table": burndown_path, "burndown_report": adg_artifacts_dir / "adg_burndown_report.md", "sqlite_snapshot": sqlite_path, "generation_manifest": adg_artifacts_dir / f"adg_generation_manifest_{ts}.json", **p7_paths}
-    loaded = {k: _read_json(v) for k, v in artifacts.items() if v and v.suffix == ".json"}
+    loaded = {
+        k: doc
+        for k, v in artifacts.items()
+        if v and v.suffix == ".json" and (doc := _read_json(v)) is not None
+    }
     gate_doc = loaded.get("gate_results")
     action_queue = loaded.get("action_queue") or {}
     p7_docs = {k: loaded.get(k) for k in p7_paths}
@@ -865,14 +1093,18 @@ def build_bcg_executive_summary(adg_artifacts_dir: Path, ts: str, sqlite_path: P
     graph = synthesize_graphdb_decision_impact(sqlite_path, p7_docs, gates, action_queue)
     _snap_tokens = re.findall(r"(?<!\d)\d+_\d+(?!\d)", sqlite_path.name)
     run_ts = _snap_tokens[0] if _snap_tokens else str(ts)
-    artifact_matrix = build_artifact_usage_matrix(artifacts, loaded, {"used_artifact_keys": list(loaded.keys()) + ["sqlite_snapshot"], "run_ts": run_ts})
+    used_artifact_keys = list(loaded.keys())
+    if sqlite_path.is_file():
+        used_artifact_keys.append("sqlite_snapshot")
+    artifact_matrix = build_artifact_usage_matrix(artifacts, loaded, {"used_artifact_keys": used_artifact_keys, "run_ts": run_ts})
     mv_audit = build_mv_usefulness_audit(sqlite_path, graph, gates)
     consistency = _artifact_consistency(sqlite_path)
     health = _health_lens(gates)
     runtime = _runtime_lens(p7_docs, sqlite_path)
+    p0_landmines = _p0_landmine_lens(p7_docs.get("p0_wave_plan"))
     product = _product_lens(testing, graph)
     actions = build_canonical_next_best_actions(gates, graph, testing, artifact_matrix, mv_audit, action_queue)
-    doc.update({"executive_decision": _verdict(health, runtime, testing, artifact_matrix, consistency), "prioritization_model": _prioritization_model(), "lens_1_health_gates": health, "lens_2_runtime_proof_observability": runtime, "lens_3_product_app_risk": product, "lens_4_testing_control_gaps": testing, "lens_5_graphdb_mv_decision_impact": graph, "canonical_next_best_actions": actions, "after_green_plan": _after_green(health, graph, testing), "artifact_usage_matrix": artifact_matrix, "mv_usefulness_audit": mv_audit, "defer_delete_deprecate": _defer_delete(mv_audit, artifact_matrix), "audit_notes": _audit_notes(gates, loaded.get("burndown_table"), consistency), "honest_bottom_line": _bottom_line(health, runtime, testing, actions), "raw_inputs": _raw_inputs(artifacts, loaded), "evidence_trace": _evidence_trace(graph, artifact_matrix, degraded)})
+    doc.update({"executive_decision": _verdict(health, runtime, testing, artifact_matrix, consistency), "prioritization_model": _prioritization_model(), "lens_0_p0_landmines": p0_landmines, "lens_1_health_gates": health, "lens_2_runtime_proof_observability": runtime, "lens_3_product_app_risk": product, "lens_4_testing_control_gaps": testing, "lens_5_graphdb_mv_decision_impact": graph, "canonical_next_best_actions": actions, "after_green_plan": _after_green(health, graph, testing), "artifact_usage_matrix": artifact_matrix, "mv_usefulness_audit": mv_audit, "defer_delete_deprecate": _defer_delete(mv_audit, artifact_matrix), "audit_notes": _audit_notes(gates, loaded.get("burndown_table"), consistency), "honest_bottom_line": _bottom_line(health, runtime, testing, actions), "raw_inputs": _raw_inputs(artifacts, loaded), "evidence_trace": _evidence_trace(graph, artifact_matrix, degraded)})
     doc["run"]["repo_state_hash"] = _hash_repo_state([p for p in artifacts.values() if p])
     if degraded:
         doc["executive_decision"]["verdict"] = "DEGRADED"
@@ -938,6 +1170,22 @@ def _table(headers: list[str], rows: list[list[Any]]) -> str:
     return "\n".join(out)
 
 
+def _action_impact_markdown(lens: dict[str, Any]) -> str:
+    rows = lens.get("action_impact_rows") or []
+    return _table(
+        ["Signal", "Action impact", "Recommended action"],
+        [[r.get("signal", ""), r.get("impact", ""), r.get("recommended_action", "")] for r in rows],
+    )
+
+
+def _format_current_tests(current_tests: dict[str, Any]) -> str:
+    paths = []
+    for kind, values in (current_tests or {}).items():
+        for value in values or []:
+            paths.append(f"{kind}: {value}")
+    return "; ".join(paths[:6]) or "none mapped"
+
+
 def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     """Render the locked executive inline markdown structure exactly."""
     h = doc["lens_1_health_gates"]
@@ -962,7 +1210,29 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     d = doc["executive_decision"]
     a(f"ADG is {d['verdict']}: {d['recommendation']} This is a {d['crisis_level']}; do not chase {', '.join(d.get('what_not_to_do', [])[:2])}.")
     a("")
-    a("### 4. Gap Analysis — Lens 1: Health Gates")
+    p0 = doc.get("lens_0_p0_landmines", {})
+    a("### 4. Lens 0 — P0 Landmines / Foundation Cracks")
+    a("")
+    a(p0.get("why_it_matters", "P0 landmine context was unavailable."))
+    a("")
+    p0_summary = p0.get("summary", {})
+    a(_table(["P0 signal", "Count", "Plain-English meaning"], [
+        ["Layer violations", p0_summary.get("layer_violations", 0), "Wrong-way dependencies across protected architecture layers."],
+        ["Circular imports", p0_summary.get("circular_imports", 0), "Modules depend on each other in a loop, making load order brittle."],
+        ["Dynamic execution", p0_summary.get("dynamic_exec", 0), "Code is executed dynamically, which can make graph evidence incomplete."],
+        ["Protected surfaces", p0_summary.get("protected_surfaces", 0), "Cracks in routing, execution, orchestration, or safety surfaces."],
+    ]))
+    a("")
+    landmines = p0.get("landmines") or [{"landmine": "None", "source_file": "", "line_no": 0, "layer_path": "", "wrong_way_import": False, "protected_surface": False, "direct_fan_in": 0, "recommended_action": "No P0 landmine action required."}]
+    a(_table(["Landmine", "File", "Line", "Layer path", "Wrong-way?", "Protected?", "Fan-in", "Recommended action"], [[r.get("landmine"), r.get("source_file"), r.get("line_no"), r.get("layer_path"), r.get("wrong_way_import"), r.get("protected_surface"), r.get("direct_fan_in"), r.get("recommended_action")] for r in landmines[:8]]))
+    a("")
+    a("Action impact:")
+    a("")
+    a(_action_impact_markdown(p0))
+    a("")
+    a("### 5. Gap Analysis — Lens 1: Health Gates")
+    a("")
+    a(h.get("why_it_matters", "Health gates show whether the run is blocked or green."))
     a("")
     a(h["summary"]["executive_read"] + " " + h.get("key_interpretation", ""))
     a("")
@@ -971,36 +1241,64 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     red_rows = h.get("red_gates") or [{"gate_id": "None", "total_records": 0, "regression_delta": 0, "executive_read": "No red gates.", "next_action": "No blocker action."}]
     a(_table(["Red gate", "Total records", "Regression / new delta", "Executive read", "Next action"], [[r["gate_id"], r["total_records"], r.get("regression_delta"), r["executive_read"], r["next_action"]] for r in red_rows[:8]]))
     a("")
-    a("### 5. Gap Analysis — Lens 2: Runtime Proof / Observability")
+    a("Action impact:")
+    a("")
+    a(_action_impact_markdown(h))
+    a("")
+    a("### 6. Gap Analysis — Lens 2: Runtime Proof / Observability")
     a("")
     rt = doc["lens_2_runtime_proof_observability"]
+    a(rt.get("why_it_matters", "Runtime proof distinguishes observed failures from blind spots."))
+    a("")
     a(rt["measurement_gap_vs_quality_failure"])
     a("")
     a(_table(["Runtime proof signal", "Status", "Executive read", "Action"], [[r["signal"], r["status"], r["executive_read"], r["action"]] for r in rt.get("runtime_proof_signals", [])]))
     a("")
-    a("### 6. Gap Analysis — Lens 3: Product / App Risk")
+    a("Action impact:")
+    a("")
+    a(_action_impact_markdown(rt))
+    a("")
+    a("### 7. Gap Analysis — Lens 3: Product / App Risk")
     a("")
     pr = doc["lens_3_product_app_risk"]
+    a(pr.get("why_it_matters", "Product risk ties structural findings to user-facing behavior."))
+    a("")
     a(pr["executive_read"])
     a("")
     app_rows = pr.get("app_risks") or [{"app_or_scope": "None", "risk": "No app-specific product gap was promoted in this run", "evidence": [], "executive_read": "App risk remains diagnostic-only unless tied to a hotspot, gate, or action queue row.", "next_action": "Monitor."}]
     a(_table(["App / product scope", "Risk", "Evidence", "Executive read", "Next action"], [[r["app_or_scope"], r["risk"], "; ".join(e.get("signal_name", "") for e in r.get("evidence", [])), r["executive_read"], r["next_action"]] for r in app_rows[:8]]))
     a("")
-    a("### 7. Gap Analysis — Lens 4: Testing Control Gaps")
+    a("Action impact:")
+    a("")
+    a(_action_impact_markdown(pr))
+    a("")
+    a("### 8. Gap Analysis — Lens 4: Testing Control Gaps")
     a("")
     tg = doc["lens_4_testing_control_gaps"]
+    a(tg.get("why_it_matters", "Testing gaps reduce confidence in fixes."))
+    a("")
     a(tg["executive_read"])
     a("")
     test_rows = tg.get("investment_map") or [{"rank": 0, "production_scope": "None", "current_tests_found": {}, "missing_test_scope": ["No mapped hotspot rows"], "risk": {}, "recommended_test_investment": "No test investment promoted.", "trigger": "No hotspot evidence"}]
-    a(_table(["Rank", "Production scope", "Current tests found", "Missing test scope", "Risk", "Recommended investment", "Trigger"], [[r["rank"], r["production_scope"], ", ".join(k for k, v in r.get("current_tests_found", {}).items() if v) or "none mapped", ", ".join(r.get("missing_test_scope", [])), r.get("risk", {}).get("risk_band", "unknown"), r.get("recommended_test_investment"), r.get("trigger")] for r in test_rows[:10]]))
+    a(_table(["Rank", "Production scope", "Current tests found", "Missing test scope", "Risk", "Recommended investment", "Trigger"], [[r["rank"], r["production_scope"], _format_current_tests(r.get("current_tests_found", {})), ", ".join(r.get("missing_test_scope", [])), r.get("risk", {}).get("risk_band", "unknown"), r.get("recommended_test_investment"), r.get("trigger")] for r in test_rows[:10]]))
     a("")
-    a("### 8. Gap Analysis — Lens 5: GraphDB / MV Decision Impact")
+    a("Action impact:")
+    a("")
+    a(_action_impact_markdown(tg))
+    a("")
+    a("### 9. Gap Analysis — Lens 5: GraphDB / MV Decision Impact")
     a("")
     gr = doc["lens_5_graphdb_mv_decision_impact"]
+    a(gr.get("why_it_matters", "Graph signals show blast radius and dependency risk."))
+    a("")
     a(gr["executive_read"])
     a("")
     impact = sorted(gr.get("decision_impact_rows", []), key=lambda r: (not r.get("used_inline"), r.get("decision_role", "")))[:12]
     a(_table(["Signal", "Decision role", "Used now?", "Why / why not", "Action"], [[r["signal"], r["decision_role"], r["used_inline"], r["why_or_why_not"], r["action"]] for r in impact]))
+    a("")
+    a("Action impact:")
+    a("")
+    a(_action_impact_markdown(gr))
     a("")
     graph_risks = gr.get("top_graph_risks", [])
     if graph_risks:
@@ -1008,16 +1306,16 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
         a("")
         a(_table(["Rank", "Scope", "Graph signal", "Centrality", "Blast radius", "Reverse dep", "Executive read"], [[r.get("rank"), r.get("scope"), r.get("graph_signal"), r.get("centrality"), r.get("blast_radius"), r.get("reverse_dependency"), r.get("executive_read")] for r in graph_risks]))
         a("")
-    a("### 9. Next Best Actions")
+    a("### 10. Next Best Actions")
     a("")
     a(_table(["Rank", "Action", "Scope", "Why now", "Evidence used", "Testing requirement", "Done condition"], [[r["rank"], r["action"], r["scope"], r["why_now"], "; ".join(e["signal_type"] for e in r.get("evidence_used", [])), r["testing_requirement"], r["done_condition"]] for r in doc["canonical_next_best_actions"].get("rows", [])]))
     a("")
-    a("### 10. Defer / Delete / Deprecate")
+    a("### 11. Defer / Delete / Deprecate")
     a("")
     dep = doc["defer_delete_deprecate"].get("rows", [])[:12] or [{"item": "None", "current_value": "No low-value signal promoted", "recommendation": "keep", "rationale": "No action."}]
     a(_table(["Item", "Current value", "Recommendation", "Rationale"], [[r["item"], r["current_value"], r["recommendation"], r["rationale"]] for r in dep]))
     a("")
-    a("### 11. Honest Bottom Line")
+    a("### 12. Honest Bottom Line")
     a("")
     for bullet in doc["honest_bottom_line"].get("bullets", [])[:6]:
         a(f"- {bullet}")

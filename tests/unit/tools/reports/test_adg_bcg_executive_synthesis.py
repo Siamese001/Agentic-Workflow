@@ -23,6 +23,72 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data), encoding="utf-8")
 
 
+def _p0_plan(path: Path) -> None:
+    _write_json(
+        path,
+        {
+            "schema_version": "1.0",
+            "plan_required": True,
+            "summary": {
+                "total_p0_issues": 3,
+                "layer_violations": 1,
+                "circular_imports": 1,
+                "dynamic_exec": 1,
+                "protected_layer_violations": 1,
+            },
+            "waves": [
+                {
+                    "wave_id": "wave_0_stop_the_line",
+                    "items": [
+                        {
+                            "issue_type": "dynamic_exec",
+                            "source_file": "agentic_core/L0_routing/router.py",
+                            "line_no": 10,
+                            "from_layer": "L0",
+                            "to_layer": "",
+                            "direct_fan_in": 20,
+                            "protected_surface": True,
+                        },
+                        {
+                            "issue_type": "circular_import",
+                            "source_file": "agentic_core/L2_execution/loop.py",
+                            "line_no": 20,
+                            "from_layer": "L2",
+                            "to_layer": "L3",
+                            "direct_fan_in": 7,
+                            "protected_surface": True,
+                        },
+                    ],
+                },
+                {
+                    "wave_id": "wave_1_protected_planes",
+                    "items": [
+                        {
+                            "issue_type": "layer_violation",
+                            "source_file": "agentic_core/L5_safety/guard.py",
+                            "line_no": 30,
+                            "from_layer": "L5",
+                            "to_layer": "L0",
+                            "direct_fan_in": 11,
+                            "protected_surface": True,
+                        }
+                    ],
+                },
+            ],
+            "top_files": [
+                {
+                    "source_file": "agentic_core/L0_routing/router.py",
+                    "issue_count": 1,
+                    "direct_fan_in_max": 20,
+                    "protected_surface": True,
+                    "issue_kinds": ["dynamic_exec"],
+                    "priority_score": 1020,
+                }
+            ],
+        },
+    )
+
+
 def _gate(gate_id: str, *, verdict: str = "FIX", band: str = "P0", records: int = 1, baseline: int = 0) -> dict:
     classification = "blocked" if verdict == "FIX" else "pass"
     enforcement = "block" if verdict == "FIX" else "ratchet"
@@ -91,6 +157,7 @@ def test_testing_map_can_prioritize_apps_testing_over_p0_ratchet(tmp_path: Path)
     inv = build_test_scope_inventory(tmp_path)
     action_queue = {"actions": [{"scope": "apps_sales/runtime/checkout.py", "why": "coverage"}]}
     testing = synthesize_testing_investment_map(db, tmp_path, inv, action_queue)
+    assert "tests/e2e/test_app.py" in testing["investment_map"][0]["current_tests_found"]["e2e"]
     graph = synthesize_graphdb_decision_impact(db, {}, [_gate("p0_ratchet", verdict="TRACK", records=99)], action_queue)
     artifacts = build_artifact_usage_matrix({"gate_results": tmp_path / "gate.json", "sqlite_snapshot": db}, {}, {"used_artifact_keys": ["sqlite_snapshot"]})
     mv = build_mv_usefulness_audit(db, graph, [])
@@ -126,6 +193,8 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     _write_json(queue, {"actions": [{"scope": "apps_sales/runtime/checkout.py"}]})
     _write_json(review, {"artifact_kind": "adg_run_review_template"})
     _write_json(burndown, {"summary": {"P0": {"gross": 1, "guardian": 0, "net": 1}, "P1": {}, "P2": {}, "P3": {}}})
+    p0_plan = artifacts / "issues" / "p0_remediation_wave_plan_run.json"
+    _p0_plan(p0_plan)
 
     docs = tmp_path / "docs_mirror"
     rc, out = emit_bcg_executive_summary(
@@ -136,7 +205,7 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         queue,
         review,
         burndown,
-        {"structural_outputs": None, "refactor_accelerator": None, "graphdb_queries": None, "runtime_spine": None},
+        {"structural_outputs": None, "refactor_accelerator": None, "graphdb_queries": None, "runtime_spine": None, "p0_wave_plan": p0_plan},
         print_inline=True,
         docs_dir=docs,
     )
@@ -149,21 +218,35 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     data = yaml.safe_load((artifacts / "adg_bcg_executive_summary_run.yaml").read_text(encoding="utf-8"))
     assert data["schema_version"] == "1.0"
     assert data["artifact_kind"] == "adg_bcg_executive_summary"
+    assert data["lens_0_p0_landmines"]["summary"]["wrong_way_imports"] == 1
+    assert data["lens_0_p0_landmines"]["landmines"][0]["protected_surface"] is True
     assert "lens_4_testing_control_gaps" in data
+    for key in [
+        "lens_0_p0_landmines",
+        "lens_1_health_gates",
+        "lens_2_runtime_proof_observability",
+        "lens_3_product_app_risk",
+        "lens_4_testing_control_gaps",
+        "lens_5_graphdb_mv_decision_impact",
+    ]:
+        assert data[key]["why_it_matters"]
+        assert data[key]["action_impact_rows"]
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
     for section in [
         "## ADG Executive Brief",
         "### 1. What ADG Is",
         "### 2. Patient Size",
         "### 3. Executive Decision",
-        "### 4. Gap Analysis — Lens 1: Health Gates",
-        "### 5. Gap Analysis — Lens 2: Runtime Proof / Observability",
-        "### 6. Gap Analysis — Lens 3: Product / App Risk",
-        "### 7. Gap Analysis — Lens 4: Testing Control Gaps",
-        "### 8. Gap Analysis — Lens 5: GraphDB / MV Decision Impact",
-        "### 9. Next Best Actions",
-        "### 10. Defer / Delete / Deprecate",
-        "### 11. Honest Bottom Line",
+        "### 4. Lens 0 — P0 Landmines / Foundation Cracks",
+        "### 5. Gap Analysis — Lens 1: Health Gates",
+        "### 6. Gap Analysis — Lens 2: Runtime Proof / Observability",
+        "### 7. Gap Analysis — Lens 3: Product / App Risk",
+        "### 8. Gap Analysis — Lens 4: Testing Control Gaps",
+        "### 9. Gap Analysis — Lens 5: GraphDB / MV Decision Impact",
+        "### 10. Next Best Actions",
+        "### 11. Defer / Delete / Deprecate",
+        "### 12. Honest Bottom Line",
+        "Action impact:",
     ]:
         assert section in md
     assert "## ADG Executive Brief" in capsys.readouterr().out
@@ -179,7 +262,7 @@ def test_render_markdown_accepts_locked_verdicts(tmp_path: Path) -> None:
     rc, out = emit_bcg_executive_summary(artifacts, "ts", db, gate, None, None, None, {}, print_inline=False, docs_dir=tmp_path / "docs_mirror")
     assert rc == 0
     doc = json.loads(out.read_text(encoding="utf-8"))
-    assert doc["executive_decision"]["verdict"] in {"BLOCKED", "GREEN_WITH_DEBT", "REPORT_INCONSISTENT", "DEGRADED", "CLEAN", "NEEDS_RUNTIME_PROOF", "TESTING_CONTROL_GAP"}
+    assert doc["executive_decision"]["verdict"] in {"BLOCKED", "GREEN_WITH_DEBT", "REPORT_INCONSISTENT", "DEGRADED", "CLEAN", "NEEDS_RUNTIME_PROOF", "TESTING_CONTROL_GAP", "RUNTIME_PROOF_FAILING"}
     assert render_bcg_inline_markdown(doc).startswith("## ADG Executive Brief")
 
 
@@ -289,6 +372,72 @@ def test_artifact_staleness_flagged_on_divergent_timestamp(tmp_path: Path) -> No
     by = {r["artifact_key"]: r for r in m["rows"]}
     assert by["current"]["stale"] is False
     assert by["old"]["stale"] is True
+
+
+def test_missing_artifact_is_not_loaded_or_used_even_if_requested(tmp_path: Path) -> None:
+    missing = tmp_path / "missing_p0.json"
+    matrix = build_artifact_usage_matrix(
+        {"p0_wave_plan": missing},
+        {},
+        {"used_artifact_keys": ["p0_wave_plan"], "run_ts": "06152026_1200"},
+    )
+    row = matrix["rows"][0]
+    assert row["exists"] is False
+    assert row["loaded"] is False
+    assert row["used_for"] == ["none"]
+
+
+def test_p0_wave_plan_json_drives_lens_zero(tmp_path: Path) -> None:
+    _repo_tests(tmp_path)
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    db = artifacts / "adg_indexed_run.sqlite"
+    _sqlite(db)
+    gate = artifacts / "adg_gate_results_run.json"
+    _write_json(gate, {"timestamp": "run", "total_gates": 1, "overall_exit_code": 1, "gates": [_gate("blocker", records=1)]})
+    p0_json = artifacts / "issues" / "p0_remediation_wave_plan_run.json"
+    _p0_plan(p0_json)
+
+    rc, out = emit_bcg_executive_summary(
+        artifacts,
+        "run",
+        db,
+        gate,
+        None,
+        None,
+        None,
+        {"p0_wave_plan": p0_json},
+        print_inline=False,
+        docs_dir=tmp_path / "docs_mirror",
+    )
+    assert rc == 0
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    lens = doc["lens_0_p0_landmines"]
+    assert lens["status"] == "present"
+    assert lens["summary"]["dynamic_exec"] == 1
+    assert lens["summary"]["circular_imports"] == 1
+    assert lens["summary"]["wrong_way_imports"] == 1
+    assert any(r["landmine"] == "Wrong-way layer import" for r in lens["landmines"])
+    assert any(r["direct_fan_in"] == 20 for r in lens["landmines"])
+
+
+def test_report_inconsistency_and_runtime_failure_precede_fix_gates() -> None:
+    from tools.reports.adg_bcg_executive_synthesis import _verdict
+
+    health = {
+        "summary": {"fix_gates": 3, "track_gates": 0},
+        "red_gates": [{"regression_delta": 99}],
+    }
+    testing = {"summary": {}}
+    artifacts = {"rows": [{"artifact_key": "gate_results", "exists": True}]}
+    assert _verdict(health, {"status": "present"}, testing, artifacts, {"status": "FAIL"})["verdict"] == "REPORT_INCONSISTENT"
+    assert _verdict(health, {"status": "present_failing"}, testing, artifacts, {"status": "PASS"})["verdict"] == "RUNTIME_PROOF_FAILING"
+
+
+def test_generator_uses_emitted_p0_wave_plan_json_path() -> None:
+    src = Path("tools/generate/generate_full_adg.py").read_text(encoding="utf-8")
+    assert "p0_wave_plan.get(\"json_path\")" in src
+    assert "adg_p0_remediation_wave_plan_" not in src
 
 
 def test_docs_dir_isolates_writes(tmp_path: Path) -> None:
