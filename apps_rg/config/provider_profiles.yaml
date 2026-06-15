@@ -48,6 +48,15 @@ profiles:
       ibm_narrative: claude-haiku-4-5
       insurtech_narrative: claude-haiku-4-5
       ey_narrative: claude-haiku-4-5
+    # Per-lane generation reasoning intensity (plan apps-rg-config-ssot-consolidation W2).
+    # Resolver: section_model_limits.resolve_section_reasoning_intensity(section_id).
+    # NOT yet threaded into the live generation request (W3 wires it after the modular-lane
+    # generation seam is located); until then this is inert SSOT (tests only). Per-lane values
+    # are placeholders to be reconciled with the live seam's current params before W3 threading.
+    reasoning_by_section:
+      default: { temperature: 0.2, max_output_tokens: 4096 }
+      executive_summary: { temperature: 0.1, max_output_tokens: 4096 }
+      headline: { temperature: 0.3, max_output_tokens: 1024 }
     model_env_var: APPS_RG_EXTERNAL_CLAUDE_MODEL
     endpoint_env_var: APPS_RG_EXTERNAL_CLAUDE_BASE_URL
     api_key_env_var: ANTHROPIC_API_KEY

@@ -110,6 +110,54 @@ def external_claude_generation_model(environ: Mapping[str, str] | None = None) -
     return resolve_section_generation_model(None, environ)
 
 
+# Fail-soft default generation reasoning intensity (used when the YAML is unreadable). The live
+# per-lane values are the SSOT at provider_profiles.yaml -> external_claude_generator.reasoning_by_section.
+DEFAULT_SECTION_REASONING: Final[dict[str, object]] = {"temperature": 0.2, "max_output_tokens": 4096}
+
+
+def _ssot_reasoning_by_section() -> dict[str, dict]:
+    """Per-section reasoning intensity from the provider-profiles SSOT
+    (``external_claude_generator.reasoning_by_section``). Fail-soft — ``{}`` when unavailable."""
+    try:
+        import yaml  # noqa: PLC0415 — optional dep; absence yields {} (default reasoning)
+
+        data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
+        profiles = (data or {}).get("profiles") or {}
+        raw = (profiles.get("external_claude_generator") or {}).get("reasoning_by_section") or {}
+        if not isinstance(raw, dict):
+            return {}
+        return {
+            str(k).strip().lower(): v
+            for k, v in raw.items()
+            if str(k).strip() and isinstance(v, dict)
+        }
+    except Exception:  # guardian: allow-broad-exception -- SSOT read is fail-soft; foundational module must never fail to import
+        return {}
+
+
+def resolve_section_reasoning_intensity(section_id: str | None) -> dict[str, object]:
+    """Resolve per-section generation reasoning intensity (``temperature`` + ``max_output_tokens``).
+
+    SSOT-backed; returns a NEW dict (caller-safe to mutate). Precedence:
+      1. ``provider_profiles.yaml`` ``reasoning_by_section[section]``
+      2. ``provider_profiles.yaml`` ``reasoning_by_section['default']``
+      3. :data:`DEFAULT_SECTION_REASONING` literal fallback (YAML unreadable)
+
+    NOTE: not yet threaded into the live generation request (plan
+    apps-rg-config-ssot-consolidation W3 wires it once the modular-lane generation seam is
+    located); until then this is inert SSOT consumed only by tests.
+    """
+    by_section = _ssot_reasoning_by_section()
+    resolved: dict[str, object] = dict(DEFAULT_SECTION_REASONING)
+    default_override = by_section.get("default")
+    if isinstance(default_override, dict):
+        resolved.update(default_override)
+    sid = str(section_id or "").strip().lower()
+    if sid and sid in by_section and sid != "default":
+        resolved.update(by_section[sid])
+    return resolved
+
+
 # Canonical generation model identity for apps_rg sections — resolved from the external
 # Claude generation profile (``provider_profiles.yaml`` -> external_claude_generator) so the
 # X2 ``x2_model_name_allowed`` proof and prompt-render manifests reference the real provider model.
@@ -117,8 +165,10 @@ SECTION_MODEL_ID: Final[str] = external_claude_generation_model()
 
 __all__ = [
     "DEFAULT_EXTERNAL_CLAUDE_MODEL",
+    "DEFAULT_SECTION_REASONING",
     "SECTION_MODEL_ID",
     "SECTION_MODEL_MAX_MODEL_LEN",
     "external_claude_generation_model",
     "resolve_section_generation_model",
+    "resolve_section_reasoning_intensity",
 ]
