@@ -1,22 +1,26 @@
 <!-- Trigger: model_decision (load when about to orchestrate sub-agents / workflows).
      The invariant is mirrored always-on in CLAUDE.md § Agent fan-out restraint. -->
 
-# Agent / Workflow Fan-Out Restraint — Spawn Agents Only When Needed
+# Agent / Workflow Fan-Out Restraint — Don't Re-Discover What the Plan Provides
 
-> ⛔ Sub-agents (Workflow fan-out, `Agent`, `Task`) cost large token volumes — often
-> **millions of tokens** per run. Spawning them is justified by the **work's need**, never by
-> the effort tier. `max`, `ultracode`, and `/code-review … ultra` raise **depth and rigor**;
-> they do **not** mandate spinning up numerous agents. When a detailed implementation plan or
-> prior results already establish the facts, **execute and produce outputs** — do not re-run
-> inventory/discovery through agents.
+> ✅ **Multiple workflows / agents are welcome.** Parallel fan-out is a tool, and effort tier
+> (`max`, `ultracode`, `/code-review … ultra`) raises **depth and rigor**, not a ceiling on
+> agent **count**. Spin up as many as the work genuinely benefits from.
+>
+> ⛔ The **one** restraint: don't spend that fan-out **re-running discovery a plan (or prior
+> results) already provides**. When the facts are already established — by a detailed plan or
+> earlier results — **execute and produce the outputs**, don't re-inventory the codebase
+> through agents. (Sub-agent fan-out can cost large token volumes, so redundant rediscovery is
+> the expensive mistake; legitimate parallel work is not.)
 
 ## When this fires
 
-Any time you are about to call `Workflow`, `Agent`, or `Task` — **especially under `ultracode`**
-(which otherwise defaults to "author and run a workflow for every substantive task") or a high
-`/code-review` effort tier, where unneeded fan-out concentrates.
+Any time you are about to call `Workflow`, `Agent`, or `Task` **and the fan-out's work would be
+discovery / inventory a plan or prior results already cover** — that is the one shape to avoid.
+Fanning out many agents for *independent* work (under `ultracode`, a high `/code-review` tier,
+or any effort) is fine; rediscovery is the thing to catch, at any agent count.
 
-## Fan out ONLY when the work genuinely needs it
+## Good reasons to fan out (use freely)
 
 | Justified | Why |
 |---|---|
@@ -37,23 +41,24 @@ Any time you are about to call `Workflow`, `Agent`, or `Task` — **especially u
 
 ## Effort tiers ≠ agent count
 
-`max` / `ultracode` / `ultra` change **how well**, not **how many**. Scale agent count to the
-task, not to the budget — prefer the **fewest agents that cover the work**. A detailed plan in
-hand means discovery is already done: spend the budget on **execution + verification of the
-outputs**, not on rediscovery. The Workflow contract says the same — "ONLY call when explicitly
-opted in" and "**Scale to what the user asked for**."
+`max` / `ultracode` / `ultra` change **how well**, not a ceiling on **how many**. Use as many
+agents as the task genuinely benefits from — count is not the thing to minimise. What a detailed
+plan in hand *does* change: discovery is already done, so spend the fan-out on **execution +
+verification of the outputs**, not on rediscovery. The Workflow contract frames it the same —
+"**Scale to what the user asked for**."
 
 ## Enforcement
 
 - **Doctrine (primary lever):** this rule + the always-on summary in `CLAUDE.md` shape the
   decision at the point of orchestration. This is what actually governs the choice.
 - **Deterministic backstop:** `.claude/hooks/pre_workflow_fanout_gate.py` (PreToolUse on
-  `Workflow`) inspects the inline script; when it reads as **high-scale AND
-  discovery/inventory-dominant** (the costly rediscovery anti-pattern) it surfaces a confirm so
-  an unneeded mass fan-out does not run silently. **Conservative by design** — verification,
-  migration, parallel-implementation, and judge-panel workflows carry justification signals and
-  pass untouched; single agents, small fan-outs, and `scriptPath`/named re-runs are never
-  flagged. Logs to `artifacts/governance/agent_fanout_restraint.jsonl`.
+  `Workflow`) inspects the inline script and surfaces a confirm **only on the pure-rediscovery
+  shape** — discovery/inventory-dominant **AND no plan-execution or output intent**. **Decoupled
+  from agent count by design**: a large parallel fan-out never fires on scale alone, and a
+  discovery-shaped fan-out that *also* executes a plan / produces outputs passes untouched (the
+  execution-intent escape valve). Verification, migration, parallel-implementation, judge-panel,
+  and `scriptPath`/named re-runs are never flagged. Logs to
+  `artifacts/governance/agent_fanout_restraint.jsonl`.
 - **Modes:** `FANOUT_RESTRAINT_ENFORCE=ask|warn|block` (default `ask`). **Bypass:**
   `FANOUT_RESTRAINT_BYPASS=1` (scripted/batch runs, or a fan-out you have already justified).
 - `Agent` / `Task` restraint is **doctrine-enforced** (model-read); `Workflow` (the mass-fan-out

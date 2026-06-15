@@ -4,16 +4,19 @@ User directive (2026-06-13): "ensure there are not agents spun up taking million
 tokens only when they need to — this goes for all efforts, especially ultracode, where I
 see most of the agents spun up."
 
-Sub-agent fan-out (a Workflow that calls many ``agent()``/``parallel()``/``pipeline()``)
-costs large token volumes. Effort tier (max / ultracode / ultra) raises rigor, not agent
-count. This hook inspects an INLINE Workflow script and, when it reads as HIGH-SCALE *and*
-discovery/inventory-dominant (the costly "re-run discovery through agents" anti-pattern),
-surfaces a confirmation so an unneeded mass fan-out does not run silently.
+Multiple workflows / agents are welcome — parallel fan-out is a tool, not a cost to
+minimise, and agent COUNT is NOT what this hook gates. The single anti-pattern it guards is
+**re-running discovery a plan (or prior results) already provides**: a fan-out whose work is
+purely discovery/inventory with no plan-execution or output intent. This hook inspects an
+INLINE Workflow script and, when it reads as that pure-rediscovery shape (discovery-dominant
+AND zero execution/output intent — at ANY agent count), surfaces a confirmation so redundant
+re-discovery does not run silently.
 
-Conservative by design — these pass untouched:
+Decoupled from count by design — these pass untouched at any scale:
   * verification / adversarial / judge-panel / regression workflows (justification signals)
   * migration / per-item / worktree / implement workflows
-  * single agents and small fan-outs
+  * plan-execution / output-producing fan-out (execution signals) — even if it also discovers
+  * large parallel-implementation fan-out (many agents, no discovery dominance)
   * named-workflow calls and ``scriptPath`` re-runs (no inline script to assess)
 
 House hook contract:
@@ -65,6 +68,17 @@ _JUSTIFICATION_TOKENS = (
     "per-item", "worktree", "implement", "patch each", "fix each", "synthesize",
     "synthesis", "tournament", "dimension", "regression",
 )
+# ── Execution / plan-output intent (the fan-out EXECUTES, it does not re-discover) ──
+# ANY of these present means the work is not pure re-discovery, so the gate never fires —
+# however many agents the script spins up. This is the escape valve that keeps multiple
+# workflows/agents friction-free while still catching discovery a plan already provides.
+_EXECUTION_TOKENS = (
+    "the plan", "per the plan", "from the plan", "follow the plan",
+    "plan provides", "plan already", "already mapped", "already know",
+    "already understood", "produce", "generate", "output", "deliver",
+    "emit", "render", "assemble", "write the", "apply the", "build the",
+    "implement", "patch each", "fix each", "refactor",
+)
 
 
 def _distinct_hits(text_lc: str, tokens: tuple[str, ...]) -> list[str]:
@@ -74,9 +88,12 @@ def _distinct_hits(text_lc: str, tokens: tuple[str, ...]) -> list[str]:
 def assess_fanout(script: str) -> dict:
     """Pure, testable assessment of a Workflow script's fan-out shape.
 
-    Returns counts, the matched signals, and the trigger decision. The trigger is
-    deliberately conservative: it requires real fan-out scale AND at least two
-    discovery signals AND discovery outweighing justification signals.
+    The trigger is **decoupled from agent COUNT** — multiple workflows/agents never fire on
+    scale alone. It fires only on the **pure-rediscovery** shape: discovery/inventory
+    dominates (≥2 distinct discovery signals, outweighing justification) AND there is *no*
+    plan-execution or output intent in the script. That is precisely the work a plan (or
+    prior results) should already provide. ``high_scale`` is still computed for
+    telemetry/context, but it is NOT a trigger condition.
     """
     s = script or ""
     s_lc = s.lower()
@@ -86,6 +103,7 @@ def assess_fanout(script: str) -> dict:
     has_pipeline = bool(_PIPELINE_RE.search(s))
     has_fleet_loop = bool(_FLEET_LOOP_RE.search(s))
 
+    # Informational only — high agent count never triggers the gate by itself.
     high_scale = (
         agent_calls >= 4
         or has_fleet_loop
@@ -94,8 +112,16 @@ def assess_fanout(script: str) -> dict:
 
     discovery = _distinct_hits(s_lc, _DISCOVERY_TOKENS)
     justification = _distinct_hits(s_lc, _JUSTIFICATION_TOKENS)
+    execution = _distinct_hits(s_lc, _EXECUTION_TOKENS)
 
-    triggered = high_scale and len(discovery) >= 2 and len(discovery) > len(justification)
+    # Pure re-discovery: discovery dominates AND nothing in the script says it will execute a
+    # plan or produce an output. A fan-out that also executes/produces — at ANY agent count —
+    # is real work, not rediscovery, and passes untouched.
+    triggered = (
+        len(discovery) >= 2
+        and len(discovery) > len(justification)
+        and len(execution) == 0
+    )
 
     return {
         "agent_calls": agent_calls,
@@ -105,26 +131,22 @@ def assess_fanout(script: str) -> dict:
         "high_scale": high_scale,
         "discovery_signals": discovery,
         "justification_signals": justification,
+        "execution_signals": execution,
         "triggered": triggered,
     }
 
 
 def build_reason(assessment: dict, workflow_name: str) -> str:
     disc = ", ".join(assessment["discovery_signals"][:6]) or "—"
-    scale = (
-        "budget/fleet-scaled"
-        if assessment["has_fleet_loop"]
-        else f"~{assessment['agent_calls']} agent call(s)"
-    )
     name = f" '{workflow_name}'" if workflow_name else ""
     return (
-        f"[fanout-restraint] Workflow{name} reads as high-scale ({scale}) AND "
-        f"discovery/inventory-dominant (signals: {disc}). Sub-agent fan-out costs large "
-        "token volumes — spin up agents only when the work genuinely needs it (independent "
-        "parallel subtasks, scale beyond one context, or adversarial verification), NOT to "
-        "re-run discovery an existing plan / prior results already provide. Effort tier "
-        "(max/ultracode/ultra) raises rigor, not agent count. If this fan-out is needed, "
-        "confirm/proceed; otherwise execute inline or from the existing plan. "
+        f"[fanout-restraint] Workflow{name} reads as pure re-discovery — discovery/inventory "
+        f"dominant (signals: {disc}) with no plan-execution or output intent in the script. "
+        "Multiple workflows/agents are fine and agent count is not gated here; the only "
+        "restraint is not re-running discovery a plan (or prior results) already provides. If a "
+        "plan already covers this, execute it and produce the outputs instead of re-mapping. If "
+        "this is genuine first-time discovery no plan covers, confirm/proceed. Effort tier "
+        "(max/ultracode/ultra) raises rigor, not agent count. "
         "Doctrine: .claude/rules/agent-fanout-restraint.md  ·  Bypass: FANOUT_RESTRAINT_BYPASS=1."
     )
 
@@ -142,6 +164,7 @@ def _log(assessment: dict, mode: str, workflow_name: str) -> None:
             "has_fleet_loop": assessment["has_fleet_loop"],
             "discovery_signals": assessment["discovery_signals"],
             "justification_signals": assessment["justification_signals"],
+            "execution_signals": assessment["execution_signals"],
         }
         with LOG_FILE.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(entry, ensure_ascii=False) + "\n")

@@ -1,8 +1,10 @@
 """Tests for the agent/workflow fan-out restraint gate (.claude/hooks/pre_workflow_fanout_gate.py).
 
-Verifies the conservative trigger — high-scale AND discovery-dominant Workflow scripts are
-flagged, while verification / migration / small / non-Workflow calls pass untouched — plus
-mode dispatch (ask / warn / block) and the bypass env, exercised end-to-end via subprocess.
+Verifies the count-decoupled trigger — only the pure-rediscovery shape (discovery-dominant
+AND no plan-execution/output intent, at ANY agent count) is flagged, while verification /
+migration / plan-execution / large parallel-implementation / non-Workflow calls pass
+untouched — plus mode dispatch (ask / warn / block) and the bypass env, exercised end-to-end
+via subprocess.
 """
 from __future__ import annotations
 
@@ -49,6 +51,31 @@ const results = await pipeline(DIMENSIONS,
 )
 """
 
+# ── plan-execution fan-out that ALSO discovers (should NOT trigger — execution intent) ──
+# Discovery dominates the wording, but every lane also executes the plan / produces an
+# output, so it is real work, not rediscovery — the count-decoupled escape valve.
+_PLAN_EXECUTION_WORKFLOW = """
+export const meta = { name: 'execute-plan', description: 'execute the plan and produce outputs' }
+const out = await parallel([
+  () => agent('Inventory the modules the plan provides, then implement the fix and produce outputs'),
+  () => agent('Survey the sections from the plan and generate each deliverable'),
+  () => agent('Map the routes per the plan and build the output'),
+  () => agent('Catalog the gates the plan already mapped and emit the report'),
+])
+"""
+
+# ── large parallel implementation, no discovery (should NOT trigger — count is not gated) ──
+_PARALLEL_IMPLEMENT_WORKFLOW = """
+export const meta = { name: 'implement-sections', description: 'build each section' }
+const out = await parallel([
+  () => agent('Implement feature A and write the code'),
+  () => agent('Implement feature B and write the tests'),
+  () => agent('Implement feature C and produce the output'),
+  () => agent('Implement feature D and generate the artifact'),
+  () => agent('Implement feature E and emit the result'),
+])
+"""
+
 
 def test_discovery_mass_fanout_triggers():
     a = gate.assess_fanout(_DISCOVERY_WORKFLOW)
@@ -64,9 +91,27 @@ def test_verification_fanout_does_not_trigger():
     assert a["triggered"] is False
 
 
-def test_small_fanout_does_not_trigger():
+def test_pure_rediscovery_triggers_at_any_count():
+    # count is NOT gated: even a single-agent pure-rediscovery still trips the shape check
     a = gate.assess_fanout("const x = await agent('discover and inventory the repo')")
-    assert a["high_scale"] is False
+    assert a["high_scale"] is False           # one agent — not high scale…
+    assert len(a["execution_signals"]) == 0   # …and no plan-execution / output intent
+    assert a["triggered"] is True
+
+
+def test_plan_execution_fanout_does_not_trigger():
+    # discovery dominates the wording, but execution intent is present → not rediscovery
+    a = gate.assess_fanout(_PLAN_EXECUTION_WORKFLOW)
+    assert len(a["discovery_signals"]) >= 2
+    assert len(a["execution_signals"]) >= 1
+    assert a["triggered"] is False
+
+
+def test_large_parallel_implementation_does_not_trigger():
+    # many agents (high scale) but no discovery dominance → agent count alone never triggers
+    a = gate.assess_fanout(_PARALLEL_IMPLEMENT_WORKFLOW)
+    assert a["high_scale"] is True
+    assert len(a["discovery_signals"]) == 0
     assert a["triggered"] is False
 
 
@@ -128,6 +173,20 @@ def test_main_bypass():
 
 def test_main_verification_passes_silently():
     r = _run({"tool_name": "Workflow", "tool_input": {"script": _VERIFY_WORKFLOW}})
+    assert r.returncode == 0
+    assert r.stdout.strip() == ""
+
+
+def test_main_plan_execution_passes_silently():
+    # a discovery-shaped fan-out that also executes the plan / produces outputs is not gated
+    r = _run({"tool_name": "Workflow", "tool_input": {"script": _PLAN_EXECUTION_WORKFLOW}})
+    assert r.returncode == 0
+    assert r.stdout.strip() == ""
+
+
+def test_main_large_parallel_implementation_passes_silently():
+    # many agents, no discovery dominance — count alone never prompts
+    r = _run({"tool_name": "Workflow", "tool_input": {"script": _PARALLEL_IMPLEMENT_WORKFLOW}})
     assert r.returncode == 0
     assert r.stdout.strip() == ""
 

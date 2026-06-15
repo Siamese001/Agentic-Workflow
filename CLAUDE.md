@@ -19,17 +19,21 @@
 
 ## Agent fan-out restraint (always-on)
 
-> ⛔ Sub-agents (Workflow fan-out, `Agent`, `Task`) cost **millions of tokens** — spin them up only
-> when the work genuinely needs it, never because the effort tier is high. `max` / `ultracode` /
-> `ultra` raise **rigor, not agent count**.
+> ✅ **Multiple workflows / agents are welcome.** Parallel fan-out is a tool; effort tier
+> (`max` / `ultracode` / `ultra`) raises **rigor, not a ceiling on agent count** — spin up as many
+> as the work genuinely benefits from. ⛔ The **one** restraint: don't spend that fan-out
+> **re-running discovery a plan (or prior results) already provides**.
 
-- **Default to inline.** Fan out only for: independent parallelizable subtasks · scale beyond one
-  context · adversarial/independent verification · breadth sweeps where you only need the conclusion.
-- **Do NOT** spawn agents to re-run discovery/inventory a **detailed plan or prior results already
-  provide** — execute the plan and produce outputs; don't re-map a codebase you already understand.
-- **`ultracode` is opt-in to quality, not to agent count** — scale to the task, not the budget; prefer
-  the fewest agents that cover the work. Detail: [`agent-fanout-restraint.md`](.claude/rules/agent-fanout-restraint.md).
-  Backstop: `.claude/hooks/pre_workflow_fanout_gate.py` (PreToolUse on `Workflow`). Bypass: `FANOUT_RESTRAINT_BYPASS=1`.
+- **Fan out freely for** independent parallelizable subtasks · scale beyond one context ·
+  adversarial/independent verification · breadth sweeps where you only need the conclusion.
+- **The one thing to avoid:** spawning agents to re-run discovery/inventory a **detailed plan or
+  prior results already provide** — execute the plan and produce outputs; don't re-map a codebase
+  you already understand. (Agent count itself is never the problem; redundant rediscovery is.)
+- **`ultracode` is opt-in to quality, not a quota of agents** — use as many as the task benefits
+  from; with a plan in hand, spend them on execution + verification, not rediscovery.
+  Detail: [`agent-fanout-restraint.md`](.claude/rules/agent-fanout-restraint.md).
+  Backstop: `.claude/hooks/pre_workflow_fanout_gate.py` (PreToolUse on `Workflow`) — confirms only
+  on the pure-rediscovery shape, decoupled from count. Bypass: `FANOUT_RESTRAINT_BYPASS=1`.
 
 
 ## Constitutional floor (always-on)
@@ -165,7 +169,7 @@ A **Skill** column entry means a richer procedural skill covers the same area �
 | Rule | Topic | Skill |
 |---|---|---|
 | `scope-containment.md` | No gold-plating; one task at a time | [`scope-containment`](.claude/skills/scope-containment/SKILL.md) |
-| `agent-fanout-restraint.md` | Spawn agents only when needed; effort tier ≠ agent count | — |
+| `agent-fanout-restraint.md` | Multiple agents welcome; only restraint = don't re-discover what the plan provides | — |
 | `approval-exception-policy.md` | When approval/exceptions apply | — |
 | `deferred-scope-capture.md` | Capturing out-of-scope work | — |
 | `next-step-capture.md` | Recording the next step | — |
