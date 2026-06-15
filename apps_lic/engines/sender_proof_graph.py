@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping
 
 from apps_lic.engines.governed_opportunity_ingestion import (
@@ -42,6 +42,7 @@ from apps_lic.engines.standing_sender_knowledge import (
     load_standing_sender_corpus,
     check_standing_sender_corpus_readiness,
 )
+from apps_lic.integrations.apps_rg_proof_bridge import proof_provenance_for
 
 
 STATUS_PROOF_GRAPH_READY = "SENDER_PROOF_GRAPH_READY"
@@ -166,6 +167,8 @@ class SenderProofGraphPacket:
     corpus_hash: str
     source_snapshot_ids: tuple[str, ...]
     reason_codes: tuple[str, ...]
+    # W2: apps_rg shared-SSOT provenance per proof_id (lineage + approval).
+    apps_rg_provenance: Mapping[str, Mapping[str, Any]] = field(default_factory=dict)
 
     @property
     def proof_ids(self) -> tuple[str, ...]:
@@ -202,6 +205,10 @@ class SenderProofGraphPacket:
             "corpus_hash": self.corpus_hash,
             "source_snapshot_ids": list(self.source_snapshot_ids),
             "reason_codes": list(self.reason_codes),
+            "apps_rg_provenance": {
+                proof_id: dict(prov)
+                for proof_id, prov in self.apps_rg_provenance.items()
+            },
         }
 
     def to_pa_envelope(self) -> dict[str, Any]:
@@ -213,6 +220,7 @@ class SenderProofGraphPacket:
             "approved_sender_proof_points": payload["approved_sender_proof_points"],
             "source_lineage": payload["source_lineage"],
             "graph_links": payload["graph_links"],
+            "apps_rg_provenance": payload["apps_rg_provenance"],
             "claim_permission_map_hash": self.claim_permission_map_hash,
             "omitted_claims": payload["omitted_claims"],
             "blocked_claims": payload["blocked_claims"],
@@ -601,6 +609,14 @@ def build_sender_proof_graph_packet(
         point.proof_id: tuple(point.graph_links)
         for point in chosen
     }
+    apps_rg_provenance = {
+        point.proof_id: proof_provenance_for(
+            source_ids=point.source_ids,
+            skill_tags=point.skill_tags,
+            apps_rg_skill_ids=getattr(point, "apps_rg_skill_ids", ()),
+        )
+        for point in chosen
+    }
     packet_seed = {
         "recipient_class": recipient_class,
         "message_type": message_type,
@@ -632,6 +648,7 @@ def build_sender_proof_graph_packet(
             "message_requirements_passed",
             "recipient_class_derived",
         ),
+        apps_rg_provenance=apps_rg_provenance,
     )
 
 

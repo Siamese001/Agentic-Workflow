@@ -81,6 +81,9 @@ class ApprovedSenderProofPoint:
     skill_tags: tuple[str, ...]
     graph_links: tuple[Mapping[str, str], ...]
     permission: str = PERMISSION_ALLOW
+    # W2: explicit apps_rg shared-SSOT skill-ID linkage (resume<->outreach
+    # cannot drift). Resolved through the apps_rg_proof_bridge for provenance.
+    apps_rg_skill_ids: tuple[str, ...] = ()
 
     def is_scope_allowed(self, *, recipient_class: str, message_type: str) -> bool:
         if (
@@ -106,6 +109,7 @@ class ApprovedSenderProofPoint:
             "skill_tags": list(self.skill_tags),
             "graph_links": [dict(link) for link in self.graph_links],
             "permission": self.permission,
+            "apps_rg_skill_ids": list(self.apps_rg_skill_ids),
         }
 
 
@@ -232,6 +236,9 @@ def load_standing_sender_corpus(
                 skill_tags=tuple(str(item) for item in raw.get("skill_tags") or []),
                 graph_links=graph_links.get(proof_id, ()),
                 permission=permission,
+                apps_rg_skill_ids=tuple(
+                    str(item) for item in raw.get("apps_rg_skill_ids") or []
+                ),
             )
         )
 

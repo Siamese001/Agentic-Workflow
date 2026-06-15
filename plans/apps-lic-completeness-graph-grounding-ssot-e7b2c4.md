@@ -22,8 +22,8 @@ First-principles review of apps_lic measured against apps_rg's (assumed-complete
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W2
-LAST_COMPLETED_WAVE: W1
+CURRENT_WAVE: W3
+LAST_COMPLETED_WAVE: W2
 LAST_UPDATED: 2026-06-15
 
 ---
@@ -44,7 +44,7 @@ LAST_UPDATED: 2026-06-15
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | W1 | W1.1, W1.2 | Model/reasoning SSOT reconciliation (apps_rg-lessons wave) | ~25K | no agentic_core edit | DONE | one X1D model SSOT; YAML generator SSOT; X2/X1D reclassified; C-level 2-pass wired |
-| W2 | W2.1, W2.2 | C0.3 proof graph -> apps_rg-shared candidate SSOT (graph-skills infusion) | ~40K | agentic_core graph-traverse wiring (receipt) | TODO | LicGraphAdapter live; approved proof IDs+lineage into HOP3/HOP5; provenance in envelope |
+| W2 | W2.1, W2.2 | C0.3 proof graph -> apps_rg-shared candidate SSOT (graph-skills infusion) | ~40K | none — core registry already generic (no edit) | DONE | LicGraphAdapter live; approved proof IDs+lineage into HOP3/HOP5; provenance in envelope |
 | W3 | W3.1 | Recipient-fit weighting over the graph | ~20K | W2 done | TODO | proof re-weighted per recipient_class x message_type x trigger; flat candidate_skills removed |
 | W4 | W4.1, W4.2 | Eval lane matrix (5x4) + batch aggregation | ~30K | judges from W1 | TODO | 20-cell matrix pass/fail report; per-recipient batch (no all-or-nothing) |
 | W5 | W5.1 | C0 recipient-evidence readiness (chroma/ingestion/JD gate) | ~25K | chroma_delegate present | TODO | C0 owns vector readiness (missing/stale/blocked/ready); JD gate enforced |
@@ -56,8 +56,8 @@ LAST_UPDATED: 2026-06-15
 |-------|-------|--------|
 | W1.1 | X1D provider single-source + YAML generator SSOT | DONE |
 | W1.2 | X2/X1D reclassification + C-level 2-pass + candidate-count sync | DONE |
-| W2.1 | Wire LicGraphAdapter to augmented_skills_graph + fact ledger | TODO |
-| W2.2 | Approved-proof selection into HOP3/HOP5 + provenance into envelope | TODO |
+| W2.1 | Wire LicGraphAdapter to augmented_skills_graph + fact ledger | DONE |
+| W2.2 | Approved-proof selection into HOP3/HOP5 + provenance into envelope | DONE |
 | W3.1 | Recipient-fit weighting | TODO |
 | W4.1 | 5x4 eval lane matrix | TODO |
 | W4.2 | Batch aggregation (per-recipient, no all-or-nothing) | TODO |
@@ -130,16 +130,16 @@ CHECKPOINT: A
 ## Wave 2 — C0.3 Proof Graph -> apps_rg-Shared Candidate SSOT
 
 WAVE_ID: W2
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
-AUTHORIZATION_STATUS: REQUIRED
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
+AUTHORIZATION_STATUS: NOT_REQUIRED (discovery: core C0.3 registry already generic; zero agentic_core edits)
 CHECKPOINT: B
 
-**Authorization**: REQUIRED — minimal agentic_core C0.3 graph-traverse wiring (migration receipt) to satisfy `GRAPH_TRAVERSE_POLICY_AGENTIC_CORE_REQUIRED`.
+**Authorization**: NOT_REQUIRED (superseded by discovery) — the core C0.3 adapter registry (`resolve_graph_adapter`) is a generic dotted-path resolver; apps_lic wires via its own `graph_adapter_ref` with ZERO agentic_core edits, so no migration receipt is needed.
 
 **Phases**:
-- **W2.1** — Wire LicGraphAdapter to apps_rg `augmented_skills_graph` + candidate fact ledger | ~20K | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W2.2** — Approved-proof selection into HOP3/HOP5 + provenance into OutboundEnvelope | ~20K | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.1** — Wire LicGraphAdapter to apps_rg `augmented_skills_graph` + candidate fact ledger | ~20K | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W2.2** — Approved-proof selection into HOP3/HOP5 + provenance into OutboundEnvelope | ~20K | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - `c0_graph_adapter.LicGraphAdapter` returns real approved proof-points (IDs + source lineage + permission), not empty neighbors.
@@ -223,7 +223,7 @@ DoD-1: Single model SSOT — generator + X1D judge each resolve from one YAML so
 
 DoD-2: Grounded proof — LicGraphAdapter returns real approved proof-points; every outbound claim has provenance.
 - Evidence: an E2E run emits an OutboundEnvelope with proof IDs + lineage; evidence-support gate passes on a grounded lane.
-- Status: TODO
+- Status: DONE (W2; apps_rg_proof_bridge SSOT projection; LicGraphAdapter live over apps_rg graph; per-proof apps_rg_provenance grounded in packet + PA envelope; gate passes on grounded lane; test_w2_apps_rg_proof_bridge.py). NOTE: HOP5 prompt-level provenance weave is light — envelope carries it; deeper weave is W3.
 
 DoD-3: 5x4 eval matrix green — all 20 message-type x recipient-class cells pass at target quality.
 - Evidence: matrix report artifact under `artifacts/apps_lic/`; per-recipient batch ships partial on mixed verdicts.

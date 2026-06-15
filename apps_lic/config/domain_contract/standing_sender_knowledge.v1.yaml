@@ -146,6 +146,9 @@ approved_sender_proof_points:
       - governance
       - regulated
       - graphrag
+    apps_rg_skill_ids:
+      - skill_governed_agentic_systems_architecture
+      - skill_reusable_agentic_platform_architecture
     source_ids:
       - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[0]
   - proof_id: sp_runtime_reliability
@@ -170,6 +173,10 @@ approved_sender_proof_points:
       - evaluation-gates
       - telemetry
       - ai-cicd
+    apps_rg_skill_ids:
+      - skill_runtime_resilience_controls
+      - skill_layered_runtime_spine_design
+      - skill_dense_sparse_exact_retrieval_design
     source_ids:
       - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[2]
   - proof_id: sp_platform_commercialization
@@ -192,6 +199,9 @@ approved_sender_proof_points:
       - productization
       - leadership
       - platform-economics
+    apps_rg_skill_ids:
+      - skill_partner_gtm_enablement
+      - skill_revops_multi_channel_gtm_alignment
     source_ids:
       - apps_shared/data/master_resume.json:professional_experience[0].bullet_pool[5]
   - proof_id: sp_cloud_ai_transformation
@@ -214,6 +224,9 @@ approved_sender_proof_points:
       - decision-systems
       - regulated
       - data-platform
+    apps_rg_skill_ids:
+      - skill_partner_cloud_partner_ecosystem
+      - skill_partner_ai_architecture_advisory
     source_ids:
       - apps_shared/data/master_resume.json:professional_experience[1].bullet_pool[0]
   - proof_id: sp_quant_governance_foundation
@@ -235,6 +248,10 @@ approved_sender_proof_points:
       - quantitative-governance
       - statistics
       - risk
+    apps_rg_skill_ids:
+      - skill_capital_capital_modeling
+      - skill_risk_greek_stress_testing
+      - skill_actuarial_fsa_fellowship
     source_ids:
       - apps_shared/data/master_resume.json:executive_summary
   - proof_id: sp_unapproved_placeholder
