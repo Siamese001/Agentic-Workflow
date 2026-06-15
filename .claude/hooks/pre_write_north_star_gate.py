@@ -37,12 +37,13 @@ _BYPASS_ENV = "NORTH_STAR_GATE_BYPASS"
 _MODE_ENV = "NORTH_STAR_GATE_ENFORCE"  # ask (default) | warn | off
 _STATE_REL = "config/north_star_state.json"
 
-# Edits that ADVANCE the north star — always allowed (apps_rg + apps_lic + apps_eval; see config/north_star_state.json goals[]).
+# Edits that ADVANCE the north star — always allowed (apps_rg + apps_lic + apps_eval + apps_underwriting_ai; see config/north_star_state.json goals[]).
 _NORTH_PREFIXES = (
-    "apps_rg/", "apps_lic/", "apps_eval/",
+    "apps_rg/", "apps_lic/", "apps_eval/", "apps_underwriting_ai/",
     "tests/unit/apps_rg", "tests/apps_rg",
     "tests/unit/apps_lic", "tests/apps_lic",
     "tests/unit/apps_eval", "tests/apps_eval",
+    "tests/unit/apps_underwriting_ai", "tests/apps_underwriting_ai",
 )
 # KNOWN displacement surfaces — intercept while lanes are unfinished. Deliberately conservative:
 # core/spine work, app config, READMEs, and neutral paths are NOT intercepted (avoid over-blocking).
@@ -66,7 +67,7 @@ def _repo_rel(file_path: str) -> str:
         if p.startswith(root):
             p = p[len(root):]
     # strip any leading absolute prefix up to a known repo segment
-    for seg in ("apps_rg/", "apps_eval/", "tests/", ".claude/", "plans/", "ops_scripts/", "docs/", ".github/", "config/"):
+    for seg in ("apps_rg/", "apps_eval/", "apps_underwriting_ai/", "tests/", ".claude/", "plans/", "ops_scripts/", "docs/", ".github/", "config/"):
         i = p.find(seg)
         if i > 0:
             p = p[i:]

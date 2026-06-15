@@ -1,6 +1,6 @@
 {
   "_doc": "North-star state consumed by .claude/hooks/pre_write_north_star_gate.py. The gate stays armed while enabled=true and lanes_passing < lanes_total; update lanes_passing as apps_rg E2E lanes go X3_ALLOW. recent_north_star_pct seeds the EARNED confidence in the AskUserQuestion (lower north-star % => higher 'park it' confidence). goals[] is the human-readable, time-boxed program; gate logic reads only lanes_passing/lanes_total/enabled/recent_north_star_pct.",
-  "north_star": "Multi-app delivery program (2026-06-15). Ship apps_rg + apps_lic on deadline, then apps_eval + L6 shadow observability. See goals[].",
+  "north_star": "Multi-app delivery program (2026-06-15). Ship apps_rg + apps_lic on deadline, then apps_eval + L6 shadow observability (apps_eval feeds eval signals into ALL apps_*), then apps_underwriting_ai as the next major app. See goals[].",
   "goals": [
     {
       "id": "rg_resumes",
@@ -24,7 +24,7 @@
       "target": "establish which evals actually work; codify how they incorporate into L6 shadow observability (spearman)",
       "deadline": "after rg_resumes + lic_send",
       "status": "next",
-      "note": "Operator's weakest area. Learn from apps_rg + apps_lic eval signals first, then generalize."
+      "note": "Operator's weakest area. apps_eval is cross-cutting: it feeds eval signals into ALL apps_* (every app, including apps_underwriting_ai), not just apps_rg/apps_lic. Learn from apps_rg + apps_lic eval signals first, then generalize."
     },
     {
       "id": "l6_shadow_rg_lic",
@@ -33,6 +33,14 @@
       "deadline": "with eval_focus",
       "status": "open",
       "note": "Currently OPEN for both apps_rg and apps_lic."
+    },
+    {
+      "id": "underwriting_ai_next",
+      "app": "apps_underwriting_ai",
+      "target": "stand up apps_underwriting_ai end-to-end — the next major app after apps_rg + apps_lic ship and apps_eval generalizes",
+      "deadline": "after eval_focus",
+      "status": "next",
+      "note": "Next priority after apps_lic + apps_eval. Benefits directly from apps_eval, which feeds eval signals into all apps_* (this app included). Reference: docs/reference/_primers/AgentSpec/apps_underwriting_ai_reference_implementation.md."
     }
   ],
   "lanes_passing": 1,
