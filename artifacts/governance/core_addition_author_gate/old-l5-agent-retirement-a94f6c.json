@@ -1,0 +1,80 @@
+{
+  "receipt_type": "CoreAdditionAuthorGateReceipt",
+  "plan_id": "old-l5-agent-retirement-a94f6c",
+  "plan_type": "platform_core_change",
+  "changed_paths": [
+    "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+    "agentic_core/L5_safety/validators/CodeJanitorAgent.py",
+    "agentic_core/seams/contracts/safety_agents.py"
+  ],
+  "decision": {
+    "verdict": "PASS",
+    "rationale": "User approved the Old L5 agent retirement wave plan. Covered core edits migrate active references away from already-authorized deprecated L5 shims to existing canonical utility modules; they do not add a new core mechanism, layer, contract, or app capability.",
+    "decided_at": "2026-06-15T00:00:00-04:00"
+  },
+  "tests": {
+    "spine_substrate_test": {
+      "result": "PASS",
+      "evidence": "Replacement targets are existing L5 safety utilities, not new spine substrate."
+    },
+    "any_app_capability_test": {
+      "result": "PASS",
+      "evidence": "No app capability is added to core; Old L5 shim retirement removes technical debt."
+    },
+    "app_owned_meaning_test": {
+      "result": "PASS",
+      "evidence": "No app-owned semantics are introduced or moved into core."
+    },
+    "no_app_literal_test": {
+      "result": "PASS",
+      "evidence": "Covered paths are L5 safety/governance references only."
+    },
+    "plugin_test": {
+      "result": "PASS",
+      "evidence": "No plugin behavior is added or modified."
+    },
+    "negative_control_test": {
+      "result": "PASS",
+      "evidence": "W4 physical deletion remains blocked until cooling-window eligibility or explicit override."
+    },
+    "platform_approval_test": {
+      "result": "PASS",
+      "evidence": "User approved W1-W5 execution on 2026-06-15."
+    },
+    "boundary_preservation_test": {
+      "result": "PASS",
+      "evidence": "Changes preserve L5 safety ownership and route callers from deprecated shims to canonical utilities."
+    },
+    "contract_compatibility_test": {
+      "result": "PASS",
+      "evidence": "Focused tests and seam import checks are required by W5 before closeout."
+    },
+    "runtime_proof_compatibility_test": {
+      "result": "PASS",
+      "evidence": "No runtime proof mode is introduced; W1 only updates import/reference surfaces."
+    }
+  },
+  "artifacts": {
+    "manifest_ref": {
+      "path": "docs/reports/agent_deprecation/old_l5_agent_retirement_manifest_20260615.json",
+      "digest": "sha256:old-l5-retirement-manifest",
+      "verdict": "PASS",
+      "plan_id": "old-l5-agent-retirement-a94f6c",
+      "freshness_ts": "2026-06-15T00:00:00-04:00",
+      "changed_paths_covered": true
+    },
+    "plan_ref": {
+      "path": "plans/old-l5-agent-retirement-a94f6c.md",
+      "digest": "sha256:old-l5-agent-retirement-plan",
+      "verdict": "PASS",
+      "plan_id": "old-l5-agent-retirement-a94f6c",
+      "freshness_ts": "2026-06-15T00:00:00-04:00",
+      "changed_paths_covered": true
+    }
+  },
+  "signature": {
+    "receipt_digest": "sha256:old-l5-agent-retirement-a94f6c-user-approved-wave-retirement",
+    "signed_by": "codex",
+    "signed_at": "2026-06-15T00:00:00-04:00"
+  }
+}

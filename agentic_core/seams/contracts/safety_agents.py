@@ -170,7 +170,7 @@ _AGENT_IMPORTS: dict[str, tuple[str, str]] = {
         "NamingAgent",
     ),
     "LocationAgent": (
-        "agentic_core.L5_safety.reasoning.LocationHealerAgent",
+        "agentic_core.L5_safety.utils.location_healer_util",
         "LocationHealerAgent",
     ),
     "StructureEnforcerAgent": (

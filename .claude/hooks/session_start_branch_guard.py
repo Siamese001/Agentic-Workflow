@@ -8,7 +8,7 @@ one timestamped worktree per chat. If a session starts on a protected branch
 (``main``/``master`` by default), this hook emits guidance for choosing or creating a
 named sibling worktree such as:
 
-    git worktree add ../Agentic-Workflow-FRESH-apps-rg -b work/apps-rg origin/main
+    git worktree add ../Agentic-Workflow-FRESH-claude-apps-rg -b claude/apps-rg origin/main
 
 The hard enforcement remains in ``before_file_edit_branch_guard.py``: edits to a
 protected checkout are blocked, while edits inside any non-protected branch worktree
@@ -18,7 +18,8 @@ Bypass: ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master,release`` (csv).
 Worktree parent override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default ``<repo-parent>``).
 Worktree directory prefix: ``WORKTREE_DIR_PREFIX=Agentic-Workflow-FRESH``.
-Branch prefix override: ``WORKTREE_BRANCH_PREFIX=work/``.
+IDE owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
+Branch prefix override: ``WORKTREE_BRANCH_PREFIX=codex/|claude/``.
 """
 
 from __future__ import annotations
@@ -32,6 +33,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PROTECTED = ("main", "master")
 DEFAULT_TOPIC = "apps-rg"
+DEFAULT_IDE_OWNER = "claude"
 
 
 def _git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
@@ -53,8 +55,17 @@ def _trunk_ref() -> str:
     return os.environ.get("WORKTREE_CLEANUP_TRUNK_REF", "").strip() or "origin/main"
 
 
+def _ide_owner() -> str:
+    raw = os.environ.get("WORKTREE_IDE_OWNER", "").strip().lower()
+    if raw in {"codex", "claude"}:
+        return raw
+    # This is a Claude hook, so Claude is the safe default. Codex callers can set
+    # WORKTREE_IDE_OWNER=codex when reusing the helper logic outside Claude Code.
+    return DEFAULT_IDE_OWNER
+
+
 def _branch_prefix() -> str:
-    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip() or "work/"
+    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip() or f"{_ide_owner()}/"
     return raw if raw.endswith("/") else f"{raw}/"
 
 
@@ -63,17 +74,38 @@ def _worktree_parent() -> Path:
     return Path(override) if override else REPO_ROOT.parent
 
 
+def _primary_checkout_name() -> str:
+    rc, common = _git("rev-parse", "--git-common-dir", cwd=REPO_ROOT)
+    if rc != 0 or not common:
+        return REPO_ROOT.name
+    common_path = Path(common)
+    if not common_path.is_absolute():
+        common_path = (REPO_ROOT / common_path).resolve()
+    if common_path.name == ".git":
+        return common_path.parent.name
+    return REPO_ROOT.name
+
+
 def _worktree_dir_prefix() -> str:
     raw = os.environ.get("WORKTREE_DIR_PREFIX", "").strip().strip("/\\")
-    return raw or REPO_ROOT.name
+    return raw or _primary_checkout_name()
 
 
 def _branch_name(topic: str = DEFAULT_TOPIC) -> str:
     return f"{_branch_prefix()}{topic}"
 
 
+def _worktree_dir_name(topic: str = DEFAULT_TOPIC) -> str:
+    prefix = _worktree_dir_prefix()
+    owner = _ide_owner()
+    owner_suffix = f"-{owner}"
+    if prefix == owner or prefix.endswith(owner_suffix):
+        return f"{prefix}-{topic}"
+    return f"{prefix}-{owner}-{topic}"
+
+
 def _worktree_path(topic: str = DEFAULT_TOPIC) -> Path:
-    return _worktree_parent() / f"{_worktree_dir_prefix()}-{topic}"
+    return _worktree_parent() / _worktree_dir_name(topic)
 
 
 def _protected() -> set[str]:
@@ -159,9 +191,11 @@ def _guidance(branch: str) -> str:
         "(replace `apps-rg` with the durable topic name):\n"
         f"    git worktree add {wt_path} -b {new_branch} {trunk}\n"
         f"    cd {wt_path}\n\n"
-        "Use durable topic names such as `apps-rg`, `governance`, or `ci`; avoid "
-        "`chat/<timestamp>` branches. Edits to protected checkouts are still blocked by "
-        "the PreToolUse edit guard.\n\n"
+        "Use IDE-owned durable branches (`codex/<topic>` from Codex, "
+        "`claude/<topic>` from Claude Code) and matching C:/Git worktree directory "
+        "names such as `Agentic-Workflow-FRESH-codex-apps-rg` or "
+        "`Agentic-Workflow-FRESH-claude-apps-rg`. Avoid `chat/<timestamp>` branches. "
+        "Edits to protected checkouts are still blocked by the PreToolUse edit guard.\n\n"
         f"{_worktree_summary()}\n\n"
         "Cleanup is explicit: run "
         "`python .claude/hooks/prune_merged_chat_worktrees.py --dry-run` to inspect, "
