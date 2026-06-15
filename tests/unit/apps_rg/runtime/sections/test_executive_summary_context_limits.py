@@ -1,8 +1,9 @@
 """SSOT defaults and resolvers for executive_summary Claude-era context limits.
 
 Defaults raised 2026-06-13 post-Qwen-removal: ctx 24576→32768, output 2048→4096,
-hard cap 4096→8192. The legacy 24576/2048 numbers belonged to Qwen 32B-AWQ; the
-section now generates on external Claude (~200k provider ctx).
+hard cap 4096→8192; ctx raised again 2026-06-15 32768→131072 (kill the Qwen token-cap
+class — VLLM_MAX_MODEL_LEN must not lower the section ctx). The legacy 24576/2048 numbers
+belonged to Qwen 32B-AWQ; the section now generates on external Claude (~200k provider ctx).
 """
 
 from __future__ import annotations
@@ -39,8 +40,8 @@ def test_bullet_selector_char_defaults() -> None:
         BULLET_SELECTOR_INPUT_SHARE_FRACTION,
         CHARS_PER_TOKEN_ESTIMATE,
     )
-    # Claude-era defaults: ctx=32768, output=4096, reserved=512.
-    available = 32_768 - 4_096 - 512
+    # Claude-era defaults: ctx=131072 (raised 2026-06-15, kill Qwen cap), output=4096, reserved=512.
+    available = 131_072 - 4_096 - 512
     expected = int(available * BULLET_SELECTOR_INPUT_SHARE_FRACTION) * CHARS_PER_TOKEN_ESTIMATE
     assert DEFAULT_BULLET_SELECTOR_BRIEFING_MAX_CHARS == expected
     assert DEFAULT_BULLET_SELECTOR_JD_MAX_CHARS == expected
@@ -51,11 +52,13 @@ def test_briefing_ranked_selection_uses_dedicated_cap() -> None:
         BRIEFING_INPUT_SHARE_FRACTION,
         CHARS_PER_TOKEN_ESTIMATE,
     )
-    available = 32_768 - 4_096 - 512
+    available = 131_072 - 4_096 - 512
     expected = int(available * BRIEFING_INPUT_SHARE_FRACTION) * CHARS_PER_TOKEN_ESTIMATE
     assert BRIEFING_RANKED_SELECTION_MAX_CHARS == expected
-    long_brief = "## Target priorities\n" + ("regulated modernization emphasis. " * 400)
-    long_brief += "\n## Secondary notes\n" + ("additional context tail. " * 400)
+    # Brief must exceed the (now Claude-era 128k-derived) ranked-selection cap to trigger truncation.
+    reps = (expected // 30) + 2000  # comfortably over BRIEFING_RANKED_SELECTION_MAX_CHARS
+    long_brief = "## Target priorities\n" + ("regulated modernization emphasis. " * reps)
+    long_brief += "\n## Secondary notes\n" + ("additional context tail. " * reps)
     _, receipt = prepare_briefing_for_executive_summary(long_brief)
     assert receipt["briefing_original_chars"] > receipt["briefing_included_chars"]
     assert receipt["truncation_or_selection_reason"] == "ranked_section_selection"

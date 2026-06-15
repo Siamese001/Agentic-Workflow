@@ -209,14 +209,32 @@ def test_apply_policy_writes_pass_receipt_when_optional_trim_fits(tmp_path: Path
     assert out.artifact.messages[0]["content"]
 
 
-def test_context_window_provenance_defaults_to_env_unverified(monkeypatch) -> None:
+def test_context_window_provenance_floors_legacy_vllm_to_section_default(monkeypatch) -> None:
+    """Post-Qwen (2026-06-15): VLLM_MAX_MODEL_LEN can only RAISE the section ctx, never lower it.
+
+    A legacy Qwen-era VLLM value (e.g. 16384/24576) below the Claude-era section default must NOT
+    cap the section budget — that silent cap was the executive_summary token-block class. When
+    APPS_RG_SECTION_MAX_MODEL_LEN is absent, the section default applies and the lower VLLM value is
+    floored away; provenance still reports env-sourced / server-unverified.
+    """
+    import importlib
+
+    from apps_rg.runtime import section_model_limits
+
+    monkeypatch.delenv("APPS_RG_SECTION_MAX_MODEL_LEN", raising=False)
     monkeypatch.delenv("APPS_RG_EXEC_SUMMARY_VERIFY_VLLM_CONTEXT_WINDOW", raising=False)
-    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "16384")
-    prov = resolve_context_window_provenance()
-    assert prov.provider_context_window == 16384
-    assert prov.provider_context_window_source == "ENV_VLLM_MAX_MODEL_LEN"
-    assert prov.server_context_window_verified is False
-    assert prov.server_context_window_warning
+    monkeypatch.setenv("VLLM_MAX_MODEL_LEN", "16384")  # legacy Qwen value, below the Claude default
+    importlib.reload(section_model_limits)
+    try:
+        prov = resolve_context_window_provenance()
+        # 16384 < section default (131072) → floored to the default, never lowered to the Qwen value.
+        assert prov.provider_context_window == section_model_limits.SECTION_MODEL_MAX_MODEL_LEN
+        assert prov.provider_context_window == 131072
+        assert prov.provider_context_window_source == "ENV_VLLM_MAX_MODEL_LEN"
+        assert prov.server_context_window_verified is False
+        assert prov.server_context_window_warning
+    finally:
+        importlib.reload(section_model_limits)
 
 
 def test_first_pass_95pct_policy_blocks_between_cap_and_100_percent() -> None:
