@@ -1,11 +1,12 @@
 """SessionStart — worktree-per-chat guard.
 
-Intent (per user directive 2026-06-08): every chat/feature gets its own **git
-worktree** cut from the default branch, rather than just a new branch in the
-primary checkout. When HEAD is on a protected branch (``main``/``master``), this
-hook creates a fresh ``chat/<stamp>-<hex>`` branch in a sibling worktree under
-``<repo-parent>/.chat-worktrees/`` and instructs the assistant to perform all
-work for the chat inside that worktree.
+Intent (per user directive 2026-06-08): every chat/feature gets its own
+**registered git worktree** cut from the default branch, rather than just a new
+branch in the primary checkout. When HEAD is on a protected branch
+(``main``/``master``), this hook creates a fresh ``feat/chat-<stamp>-<hex>``
+branch in a sibling worktree such as ``C:/Git/Agentic-Workflow-FRESH-chat-*``
+and instructs the assistant to perform all work for the chat inside that
+worktree.
 
 KNOWN CONSTRAINT (documented, accepted): a SessionStart hook is a subprocess and
 **cannot relocate the already-running session's working directory** into the new
@@ -33,7 +34,9 @@ On worktree create it ALSO (best-effort, fail-soft):
 
 Bypass: ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master,release`` (csv).
-Worktree root override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default ``<repo-parent>/.chat-worktrees``).
+Worktree parent override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default ``<repo-parent>``).
+Worktree directory prefix: ``WORKTREE_DIR_PREFIX=Agentic-Workflow-FRESH``.
+Branch prefix override: ``WORKTREE_BRANCH_PREFIX=feat/``.
 Runtime links: ``WORKTREE_LINK_DIRS`` (csv) / ``WORKTREE_LINK_DIRS_DISABLE=1`` (item #2).
 Divergence notice: ``WORKTREE_DIVERGENCE_NOTICE=0`` to silence; ``WORKTREE_DIVERGENCE_FETCH=1``
   to fetch before counting (item #3). Trunk ref: ``WORKTREE_CLEANUP_TRUNK_REF`` (default ``origin/main``).
@@ -44,6 +47,7 @@ from __future__ import annotations
 import datetime as _dt
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -158,11 +162,94 @@ def _bypass() -> bool:
     )
 
 
-def _worktree_root() -> Path:
+def _branch_prefix() -> str:
+    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip() or "feat/"
+    return raw if raw.endswith("/") else f"{raw}/"
+
+
+def _worktree_parent() -> Path:
     override = os.environ.get("CHAT_WORKTREE_ROOT", "").strip()
     if override:
         return Path(override)
-    return REPO_ROOT.parent / ".chat-worktrees"
+    return REPO_ROOT.parent
+
+
+def _worktree_dir_prefix() -> str:
+    raw = os.environ.get("WORKTREE_DIR_PREFIX", "").strip().strip("/\\")
+    return raw or REPO_ROOT.name
+
+
+def _worktree_slug(stamp: str, hexpart: str) -> str:
+    return f"chat-{stamp}-{hexpart}"
+
+
+def _branch_name(slug: str) -> str:
+    return f"{_branch_prefix()}{slug}"
+
+
+def _worktree_path(slug: str) -> Path:
+    return _worktree_parent() / f"{_worktree_dir_prefix()}-{slug}"
+
+
+def _path_key(path: Path) -> str:
+    return os.path.normcase(os.path.normpath(str(path.resolve())))
+
+
+def _registered_worktree_paths() -> set[str]:
+    rc, porcelain = _git("worktree", "list", "--porcelain")
+    if rc != 0:
+        return set()
+    paths: set[str] = set()
+    for line in porcelain.splitlines():
+        if line.startswith("worktree "):
+            raw = line[len("worktree ") :].strip()
+            if raw:
+                paths.add(_path_key(Path(raw)))
+    return paths
+
+
+def _is_registered_worktree(path: Path) -> bool:
+    return _path_key(path) in _registered_worktree_paths()
+
+
+def _safe_to_remove_unregistered_path(path: Path) -> bool:
+    """Only cleanup an auto-created, non-git directory that cannot hold user work."""
+    try:
+        resolved = path.resolve()
+    except OSError:
+        return False
+    expected = f"{_worktree_dir_prefix()}-chat-"
+    try:
+        expected_parent = _worktree_parent().resolve()
+    except OSError:
+        return False
+    if resolved.parent != expected_parent:
+        return False
+    if not resolved.name.startswith(expected):
+        return False
+    if not resolved.exists() or not resolved.is_dir():
+        return False
+    if (resolved / ".git").exists():
+        return False
+    return True
+
+
+def _remove_unregistered_path(path: Path) -> None:
+    if _safe_to_remove_unregistered_path(path):
+        shutil.rmtree(path, ignore_errors=True)
+
+
+def _add_registered(wt: Path, br: str, base: str) -> tuple[int, str]:
+    args = ["worktree", "add", str(wt), "-b", br]
+    if base:
+        args.append(base)
+    rc, out = _git(*args)
+    if rc != 0:
+        return rc, out
+    if _is_registered_worktree(wt):
+        return 0, out
+    _remove_unregistered_path(wt)
+    return 1, "git worktree add completed but the path was not registered in git worktree list"
 
 
 def _read_payload() -> dict:
@@ -202,12 +289,12 @@ def main() -> int:
     session_id = str(payload.get("session_id") or payload.get("sessionId") or "")
     hexpart = (session_id.replace("-", "")[:8]) or "00000000"
     stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%d-%H%M%S")
-    new_branch = f"chat/{stamp}-{hexpart}"
-    wt_dirname = f"chat-{stamp}-{hexpart}"
-    wt_path = _worktree_root() / wt_dirname
+    slug = _worktree_slug(stamp, hexpart)
+    new_branch = _branch_name(slug)
+    wt_path = _worktree_path(slug)
 
     try:
-        _worktree_root().mkdir(parents=True, exist_ok=True)
+        _worktree_parent().mkdir(parents=True, exist_ok=True)
     except OSError:
         pass
 
@@ -216,24 +303,21 @@ def main() -> int:
     base = _cut_base()
     sync_note = _sync_local_trunk(branch)
 
-    # Create the worktree on a fresh chat branch cut from origin/<trunk> (or current tip if base="").
-    def _add(wt: Path, br: str) -> tuple[int, str]:
-        args = ["worktree", "add", str(wt), "-b", br]
-        if base:
-            args.append(base)
-        return _git(*args)
-
-    rc_wt, out_wt = _add(wt_path, new_branch)
+    # Create and verify a registered worktree on a fresh branch cut from origin/<trunk>
+    # (or current tip if base="").
+    rc_wt, out_wt = _add_registered(wt_path, new_branch, base)
     if rc_wt != 0:
         # Retry once with a PID-uniquified branch/dir (collision), else fail-soft.
-        new_branch = f"{new_branch}-{os.getpid()}"
-        wt_path = _worktree_root() / f"{wt_dirname}-{os.getpid()}"
-        rc_wt, out_wt = _add(wt_path, new_branch)
+        retry_slug = f"{slug}-{os.getpid()}"
+        new_branch = _branch_name(retry_slug)
+        wt_path = _worktree_path(retry_slug)
+        rc_wt, out_wt = _add_registered(wt_path, new_branch, base)
     if rc_wt != 0:
+        manual_base = f" {base}" if base else ""
         msg = (
             f"worktree-per-chat: still on protected branch '{branch}'. Auto-worktree "
             f"failed ({out_wt or 'unknown error'}). Create one manually before editing:\n"
-            f"    git worktree add {_worktree_root() / wt_dirname} -b {new_branch}\n"
+            f"    git worktree add {wt_path} -b {new_branch}{manual_base}\n"
             f"then `cd` into it. (Set WORKTREE_PER_CHAT_BYPASS=1 for an intentional "
             f"on-primary change.)"
         )
@@ -247,7 +331,7 @@ def main() -> int:
     cut_from = base if base else branch
 
     msg = (
-        f"worktree-per-chat: this chat was on protected branch '{branch}'. Created a git "
+        f"worktree-per-chat: this chat was on protected branch '{branch}'. Created a registered git "
         f"worktree for the feature at:\n    {wt_path}\n"
         f"on branch '{new_branch}' (cut from '{cut_from}').\n\n"
         f"⚠️ ALL work for this chat must happen inside that worktree — the primary checkout "

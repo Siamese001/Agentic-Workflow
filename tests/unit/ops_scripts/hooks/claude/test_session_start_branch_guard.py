@@ -23,6 +23,68 @@ def _load():
 guard = _load()
 
 
+def test_default_worktree_path_is_registered_sibling_style(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    repo = tmp_path / "Agentic-Workflow-FRESH"
+    monkeypatch.setattr(guard, "REPO_ROOT", repo)
+    monkeypatch.delenv("CHAT_WORKTREE_ROOT", raising=False)
+    monkeypatch.delenv("WORKTREE_DIR_PREFIX", raising=False)
+    monkeypatch.delenv("WORKTREE_BRANCH_PREFIX", raising=False)
+
+    slug = guard._worktree_slug("20260615-120000", "abcdef12")
+
+    assert guard._branch_name(slug) == "feat/chat-20260615-120000-abcdef12"
+    assert guard._worktree_path(slug) == tmp_path / "Agentic-Workflow-FRESH-chat-20260615-120000-abcdef12"
+
+
+def test_worktree_branch_prefix_override_normalizes_slash(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("WORKTREE_BRANCH_PREFIX", "codex")
+
+    assert guard._branch_name("chat-demo") == "codex/chat-demo"
+
+
+def test_is_registered_worktree_normalizes_porcelain_path(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    target = tmp_path / "Agentic-Workflow-FRESH-chat-demo"
+
+    def fake_git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
+        assert args == ("worktree", "list", "--porcelain")
+        return 0, f"worktree {target}\nHEAD abc\nbranch refs/heads/feat/chat-demo\n"
+
+    monkeypatch.setattr(guard, "_git", fake_git)
+
+    assert guard._is_registered_worktree(target)
+    assert not guard._is_registered_worktree(tmp_path / "Agentic-Workflow-FRESH-chat-other")
+
+
+def test_add_registered_removes_unregistered_directory(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    repo = tmp_path / "Agentic-Workflow-FRESH"
+    repo.mkdir()
+    target = tmp_path / "Agentic-Workflow-FRESH-chat-demo"
+    monkeypatch.setattr(guard, "REPO_ROOT", repo)
+    monkeypatch.delenv("WORKTREE_DIR_PREFIX", raising=False)
+
+    def fake_git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
+        if args[:2] == ("worktree", "add"):
+            target.mkdir()
+            return 0, "added"
+        if args == ("worktree", "list", "--porcelain"):
+            return 0, f"worktree {repo}\nHEAD abc\nbranch refs/heads/main\n"
+        raise AssertionError(args)
+
+    monkeypatch.setattr(guard, "_git", fake_git)
+
+    rc, message = guard._add_registered(target, "feat/chat-demo", "origin/main")
+
+    assert rc == 1
+    assert "not registered" in message
+    assert not target.exists()
+
+
 def test_trunk_branch_default_and_override(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("WORKTREE_AUTODELIVER_TRUNK", raising=False)
     assert guard._trunk_branch() == "main"
