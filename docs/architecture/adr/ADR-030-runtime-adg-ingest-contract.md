@@ -84,5 +84,5 @@ The integration test `@c:/Git/Agentic-Workflow/tests/integration/otel/test_runti
 - [x] `system_learning._tracing.sl_span_with_ingest` forwards to helper (best-effort)
 - [x] Roundtrip integration test under 1s
 - [x] Coverage gate present; audit mode; threshold 20%
-- [ ] Notion ADR Registry row posted (this ADR)
+- [x] Filesystem ADR retained as source of truth; Notion ADR Registry mirroring is retired
 - [ ] Gate flipped to enforce (future wave, after producer set stabilizes)

@@ -1,11 +1,13 @@
 # ADR-045 — Contextual Retrieval Gateway Wiring
 
-**Status**: Proposed (rescoped 2026-04-23; amended 2026-04-24 for local-LLM default)
+**Status**: Accepted (implemented; rescoped 2026-04-23; amended 2026-04-24 for local-LLM default)
 **Date**: 2026-04-23 (amended 2026-04-24)
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `tools/ingestion/contextual_chunk_builder.py` (existing), `tools/ingestion/qwen_context_gateway.py` (new default), `tools/ingestion/anthropic_context_gateway.py` (opt-in), `tools/ingestion/ingest_code.py`, `tools/ingestion/ingest_docs.py`, `agentic_core/knowledge/canonical/chunk_manifest.py`.
 **Plan**: `.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md` §2a (G1 residual)
 **Supersedes / Relates-to**: `.windsurf/plans/anthropic-rag-gaps-7f3c2a.md` P1.1 (preprocessor landed; gateway wiring owned here)
+
+**Current-state note (2026-06-15):** Implemented by the contextual chunk builder plus Qwen/Anthropic context gateways and chunk-manifest contextual fields; covered by ingestion gateway and contextual chunk builder tests.
 
 ---
 

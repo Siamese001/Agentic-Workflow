@@ -1,11 +1,13 @@
 # ADR-057 — Matryoshka / Adaptive-Dimension Embeddings
 
-**Status**: Proposed
+**Status**: Superseded by ADR-055/ADR-056 dense 1024-d BGE enforcement
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/embeddings/bge_runtime.py`, `agentic_core/embeddings/embedding_factory.py`, `agentic_core/L4_state/utils/client/chroma_client.py`, `config/retrieval/retrieval_plan.py`
 **Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W2.2
 **Relates-to**: ADR-018, ADR-055 (model enforcement), ADR-056 (multi-head), sibling plan `e9aa09`
+
+**Current-state note (2026-06-15):** Dense 1024-d BGE enforcement exists under ADR-055/056 and is the canonical retrieval posture. The multi-tier Matryoshka topology in this ADR is no longer an active commitment; any renewed tiered-dimension rollout needs a fresh ADG-backed ADR and execution plan.
 
 ---
 

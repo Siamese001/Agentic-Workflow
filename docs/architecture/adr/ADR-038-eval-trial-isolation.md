@@ -1,10 +1,12 @@
 # ADR-038 — Eval Trial Isolation Contract
 
-- Status: Proposed
+- Status: Accepted (implemented)
 - Date: 2026-04-23
 - Deciders: cascade (author), humans-in-loop pending
 - Related: ADR-028 (eval/SL publisher boundary), ADR-032 (LLM-judge hardening), ADR-036 (runtime trace grader), ADR-037 (trajectory metrics)
 - Impact Layers: L6 (Observer), L5 (Safety plane), system_learning pipeline
+
+Current-state note (2026-06-15): implemented via isolated eval fixtures in `tests/eval/conftest.py`, the eval harness workflow, and per-trial workdir/cache/network controls.
 
 ## Context
 

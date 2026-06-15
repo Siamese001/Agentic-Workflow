@@ -1,11 +1,13 @@
 # ADR-064 — Agentic Retrieval Router: Intent-Driven Strategy Selection
 
-**Status**: Proposed
+**Status**: Accepted (implemented)
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/L0_routing/`, `agentic_core/L1_cognition/reasoning/`, `agentic_core/knowledge/engine/rag_orchestrator.py`, `config/retrieval/`
 **Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W6.2
 **Relates-to**: ADR-046, ADR-055, ADR-056, ADR-057, ADR-058, ADR-060, ADR-061, ADR-062, ADR-063 — this is the **integration ADR** that ties them together at query time.
+
+**Current-state note (2026-06-15):** Implemented by `agentic_core/L1_cognition/reasoning/retrieval_router.py`, including intent classes, strategy plans, query-transform/reranker/reflective/dim-tier/hydration routing, override hints, and closed-loop tests.
 
 ---
 

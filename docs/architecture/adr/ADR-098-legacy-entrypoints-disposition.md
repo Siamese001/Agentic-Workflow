@@ -1,10 +1,16 @@
 # ADR-098: Legacy Entrypoints Disposition (R1A, R5, MW-Real, R4, UWG-Block, UWG-Commit)
 
-**Status**: PROPOSED
+**Status**: Superseded by compatibility-retention disposition
 **Date**: 2026-05-06
 **Phase**: W4 of apps-l7-deferred-scope-followup-a1d9e3
 **Deciders**: Cursor Agent
 **ADG Snapshot**: `artifacts/adg/adg_indexed_20260506T200000.sqlite`
+
+> **Current-state note (2026-06-15):** the six entrypoint files listed below
+> still exist under `agentic_core/runtime/entrypoints/` because local evidence
+> shows live certification and governance callers. The original archive-first
+> retirement choice is superseded; compatibility retention is now the terminal
+> disposition until those callers migrate under a dedicated runtime plan.
 
 ---
 
@@ -16,13 +22,14 @@
 
 - **Question** — Should we invest ~12k tokens to retrofit full L7 compliance, or retire/archive these entrypoints and redirect traffic to L7-compliant successors?
 
-- **Answer** — Retire all six legacy entrypoints with a 90-day deprecation window; redirect callers to L7-compliant successors; archive entrypoints to `archives/entrypoints/` with preservation stubs.
+- **Answer** — Retain all six entrypoints as compatibility surfaces while documenting successor routes. Archive only after the live certification scripts, coverage registry, and governance sentinels migrate under a dedicated runtime plan.
 
 ---
 
 ## Decision
 
-Retire the following six legacy entrypoints effective 90 days from ADR acceptance:
+Supersede the original retirement decision. The following six entrypoints remain
+compatibility surfaces with documented successor routes:
 
 1. `integrated_exact_cache_run.py` → Successor: `integrated_r3_grounded_read_run.py` (L7-compliant)
 2. `integrated_fallback_run.py` → Successor: `integrated_safe_reuse_run.py` (L7-compliant)
@@ -36,20 +43,17 @@ Retire the following six legacy entrypoints effective 90 days from ADR acceptanc
 ## Consequences
 
 ### Positive
-- Eliminates ~12k token technical debt without implementation
-- Consolidates runtime surface to 8 L7-compliant entrypoints (down from 14)
-- Reduces CI matrix complexity (6 fewer test suites)
-- Aligns with constitutional L7_AUDITABILITY mandate without retrofit cost
-- Archives preserve git history for audit/rollback needs
+- Avoids breaking live certification scripts and governance sentinels
+- Keeps successor routes explicit for a later, safer migration
+- Prevents a documentation cleanup from becoming an unreviewed runtime API removal
 
 ### Negative
-- Callers of legacy entrypoints must migrate (90-day notice required)
-- Historical references in documentation need updates
-- CI gates that test legacy routes must be removed
+- Runtime surface remains larger than the retirement proposal intended
+- L7 retrofit/retirement still needs a dedicated runtime plan if owners want consolidation
 
 ### Neutral
-- 90-day deprecation preserves operational continuity
-- Archive stubs maintain import paths (fail-closed with DeprecationWarning)
+- Compatibility retention preserves operational continuity
+- Git history remains the rollback path
 
 ---
 
@@ -66,30 +70,30 @@ Retire the following six legacy entrypoints effective 90 days from ADR acceptanc
 
 ## Implementation Notes
 
-### Files/modules touched
-1. `agentic_core/runtime/entrypoints/integrated_exact_cache_run.py` → archive
-2. `agentic_core/runtime/entrypoints/integrated_fallback_run.py` → archive  
-3. `agentic_core/runtime/entrypoints/integrated_managed_workflow_real_run.py` → archive
-4. `agentic_core/runtime/entrypoints/integrated_single_action_run.py` → archive
-5. `agentic_core/runtime/entrypoints/integrated_uwg_block_run.py` → archive
-6. `agentic_core/runtime/entrypoints/integrated_uwg_commit_run.py` → archive
-7. `archives/entrypoints/` (new) — preservation stubs
-8. `.github/workflows/` — remove legacy test jobs
-9. `docs/architecture/adr/` — this ADR
+### Live caller evidence
+1. `tools/certification/regen_r1a_latest.py` imports `integrated_exact_cache_run.py`.
+2. `tools/certification/regen_r5_latest.py` imports `integrated_fallback_run.py`.
+3. `tools/certification/regen_mw_real_latest.py` imports `integrated_managed_workflow_real_run.py`.
+4. `tools/certification/regen_r4_latest.py` and `tests/governance/test_integrated_single_action_run_identity.py` import `integrated_single_action_run.py`.
+5. `tools/certification/regen_uwg_block_latest.py` imports `integrated_uwg_block_run.py`.
+6. `tools/certification/regen_uwg_commit_latest.py` imports `integrated_uwg_commit_run.py`.
+7. `agentic_core/L7_auditability/coverage/route_family_l7_coverage.py` still records these route families.
 
-### Migration order
-1. Create archive stubs with `DeprecationWarning` (fail-closed on invocation)
-2. Update CI to remove legacy test jobs
-3. Notify known callers (search ADG for imports)
-4. 90-day countdown
-5. Remove from main, preserve in archives/
+### Migration order if consolidation is reopened
+1. Migrate certification scripts to successor routes.
+2. Update L7 coverage registry expectations.
+3. Replace or retire governance sentinels that assert current public identity.
+4. Add fail-closed archive stubs only after the caller scan is clean.
+5. Remove the compatibility entrypoints in a runtime-scoped PR.
 
 ### Rollback path
-Git history preserved; archive stubs can be restored if business need emerges. Restore requires re-opening this ADR with new justification.
+Current rollback path is no-op: keep compatibility entrypoints in place. If a
+future consolidation PR removes them, rollback restores the files from git
+history and re-enables the existing certification callers.
 
 ### CI gates added/changed
-- Remove: `test_exact_cache_l7`, `test_fallback_l7`, `test_mw_real_l7`, `test_single_action_l7`, `test_uwg_block_l7`, `test_uwg_commit_l7`
-- Add: Archive validation gate (ensures stubs fail-closed)
+- None in this closeout.
+- Future consolidation must update certification regeneration scripts, route-family L7 coverage, and `tests/governance/test_integrated_single_action_run_identity.py` in the same PR.
 
 ---
 

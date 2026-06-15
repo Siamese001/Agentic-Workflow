@@ -3,7 +3,7 @@
 **Status**: PROPOSED | ACCEPTED | REJECTED | SUPERSEDED-BY-ADR-NNN
 **Date**: YYYY-MM-DD
 **Phase**: [Wave/Phase ID or `n/a` for cross-cutting]
-**Deciders**: [Cursor Agent + user Author-Gate, or named reviewers]
+**Deciders**: [Claude Code/Codex + user, native AskUserQuestion decision, or named reviewers]
 **ADG Snapshot**: `artifacts/adg/adg_indexed_<ts>.sqlite` (if structural)
 
 ---
@@ -61,6 +61,12 @@
 ## References
 
 - Related ADRs: ADR-NNN, ADR-MMM
-- Related plans: `.windsurf/plans/<slug>-<6hex>.md`
-- Related rules/skills: `.windsurf/rules/<rule>.md`, `.windsurf/skills/<skill>/SKILL.md`
+- Related plans: `plans/<slug>-<6hex>.md`
+- Related rules/skills: `.claude/rules/<rule>.md`, `.claude/skills/<skill>/SKILL.md`
 - External: [paper / RFC / issue if relevant]
+
+## Current Governance Notes
+
+- ADR files under `docs/architecture/adr/` are the filesystem source of truth.
+- Do not create or update Notion ADR Registry rows; that registry is archived.
+- Historical `.windsurf/` and `.cursor/` references are acceptable only when describing old evidence or old plans.

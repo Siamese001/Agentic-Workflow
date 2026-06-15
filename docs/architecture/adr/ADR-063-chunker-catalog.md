@@ -1,11 +1,13 @@
 # ADR-063 — Chunker Catalog: Per-Source Strategies + Parent-Document Lineage
 
-**Status**: Proposed
+**Status**: Accepted (implemented; catalog seed landed)
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `tools/ingestion/`, `tools/generate/ingestion/`, `agentic_core/knowledge/canonical/chunk_manifest.py`, `agentic_core/knowledge/retrieval/parent_child_hydrator.py`
 **Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W6.1
 **Relates-to**: ADR-045 (contextual retrieval), ADR-055 (provenance), ADR-056 (multi-head), ADR-059 (embedding-cosine semantic chunking)
+
+**Current-state note (2026-06-15):** `tools/ingestion/chunker_catalog.py` now provides the source-kind registry, markdown header lineage, Python thin-symbol recovery, pytest-node extraction, and trace causal-window grouping seed. Existing manifest lineage and parent-child hydration primitives remain compatible with the catalog metadata.
 
 ---
 

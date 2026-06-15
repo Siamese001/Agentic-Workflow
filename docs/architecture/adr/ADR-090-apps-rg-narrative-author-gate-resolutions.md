@@ -1,5 +1,7 @@
 # ADR-090 — apps_rg Narrative Pipeline Author-Gate Resolutions
 
+**Status**: Accepted
+
 | Field | Value |
 |---|---|
 | **ADR ID** | ADR-090 |

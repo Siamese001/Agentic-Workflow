@@ -1,9 +1,16 @@
 # ADR-094 — MCP Serialization Sentinel (Layer 1) — Existence and Retirement Procedure
 
-- **Status**: Active (sunset clause defined)
+- **Status**: Retired (superseded by ADR-097 cleanup)
 - **Date**: 2026-05-02
+- **Retired**: 2026-06-15 status reconciliation
 - **Supersedes**: prior MCP Registry row `_serialization_sentinel (Layer 1 — MCP serialization enforcement)` (archived with the MCP Registry DB on 2026-05-02 — see consolidation note in `AGENTS.md` Notion Workspace Map history)
-- **Related**: constitutional `§25` (MCP serialization), `.windsurf/rules/mcp-serialization.md`, upstream `anthropics/claude-agent-sdk-typescript#41`
+- **Superseded by**: ADR-097 (`mcp-serialization.md` retired; W5 cleanup scope)
+- **Related**: historical constitutional `§25` (MCP serialization), historical `.windsurf/rules/mcp-serialization.md`, upstream `anthropics/claude-agent-sdk-typescript#41`
+
+> **Current-state note (2026-06-15):** this ADR is retained as the retirement
+> runbook and historical rationale. Active MCP routing is governed by
+> `.mcp.json`, `.claude/mcp-notes.md`, and `.claude/skills/mcp-integration/`.
+> Do not re-enable the sentinel from this file.
 
 ## Context
 
@@ -16,7 +23,7 @@ The original constitutional `§25` "one remote MCP per response" rule (now scope
 
 Layer 1 was added 2026-04-25 after Cursor Agent batched `todo_list + mcp1_adg_health` in one `<function_calls>` block and the turn hung on the MCP call until the user cancelled. Layer 0 logged the violation post-hoc but could not prevent the hang.
 
-## Decision
+## Historical Decision
 
 Layer 1 stays in effect until the upstream Anthropic SDK race is fixed and verified. The retirement procedure is one-shot (no rolling deprecation) and is encoded here so the runbook survives the MCP Registry DB archival.
 

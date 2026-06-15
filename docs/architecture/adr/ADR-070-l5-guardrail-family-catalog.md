@@ -1,11 +1,13 @@
 # ADR-070: L5 Guardrail Family Catalog (G01–G29 Taxonomy)
 
-**Status**: Proposed
+**Status**: Accepted (catalog implemented)
 **Date**: 2026-04-29
 **Deciders**: Architecture leads + L5 owners
 **Plan**: `.windsurf/plans/w4-p8-guardrail-family-e93f8a.md` (Wave 1, Phase P8.01)
 **Source**: 14 P1 Notion rows in W4 P8.x decomposition
 **ADG snapshot**: `artifacts/adg/adg_indexed_04282026_2152.sqlite`
+
+**Current-state note (2026-06-15):** The catalog and guardrail-family skeletons landed; subsequent net-new guardrail families remain tracked as separate phases, not open status for this catalog ADR.
 
 ## Context
 

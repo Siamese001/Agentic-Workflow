@@ -1,10 +1,16 @@
 # ADR-042 — L5 Exit Kill-Switch Primitive
 
-- **Status:** Proposed
+- **Status:** Accepted (primitive implemented; runtime integration remains policy-owned)
 - **Date:** 2026-04-23
+- **Accepted:** 2026-06-15 status reconciliation
 - **Deciders:** Safety Officer (L5), Architecture
 - **Impact Layers:** L5, §5 exit, UWG, L6 audit
 - **Relates to:** ADR-023 (runtime HITL), ADR-038 (budget envelope), ADR-036 (trace-grader)
+
+> **Implementation evidence (2026-06-15):** `agentic_core/L5_safety/eval_spine/kill_switch.py`,
+> `agentic_core/L2_execution/enforcement/kill_switch.py`, and
+> `config/schemas/kill_switch_audit.schema.json` exist. Operational policy
+> rollout is tracked separately from accepting this primitive.
 
 ## 1. Context
 

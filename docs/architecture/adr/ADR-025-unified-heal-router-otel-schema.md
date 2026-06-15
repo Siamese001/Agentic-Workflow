@@ -1,11 +1,17 @@
 # ADR-025 — Unified `heal_router.v1` OTEL Schema
 
-**Status:** PROPOSED
+**Status:** ACCEPTED (implemented; residual projection work may remain)
 **Date:** 2026-04-21
+**Accepted:** 2026-06-15 status reconciliation
 **Deciders:** Routing-unification plan owner; apps_* orchestrator owners
 **Impact layers:** L2 (healers), L3 (qwen_vllm), L4 (state), L6 (observability)
 **Supersedes:** N/A — additive
 **Relates to:** ADR-019 (ADG materialized views); Wave F2 of `routing-followups-7a2c91.md`
+
+> **Implementation evidence (2026-06-15):** `agentic_core/L6_observability/heal_router_otel.py`,
+> `agentic_core/L6_observability/runtime_trace/heal_router_otel.py`, and the
+> `test_heal_router_otel*` unit tests exist. This ADR is no longer merely
+> proposed; any remaining work should be tracked as implementation follow-up.
 
 ---
 

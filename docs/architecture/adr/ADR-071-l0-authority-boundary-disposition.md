@@ -1,11 +1,13 @@
 # ADR-071: L0 Authority Boundary Disposition (17 L_APP→core breaches)
 
-**Status**: Proposed
+**Status**: Accepted (implemented; stale Notion actions retired)
 **Date**: 2026-04-29
 **Deciders**: L0 routing owners + Apps team
 **Plan**: `.windsurf/plans/l0-authority-burndown-3a7b21.md` (Wave 1, Phase W1.1)
 **Source**: 3 P1 Notion rows (#2 impact 676.6, #19 impact 416.5, #20 impact 416.1)
 **ADG snapshot**: `artifacts/adg/adg_indexed_04282026_2152.sqlite`
+
+**Current-state note (2026-06-15):** The guardian exemption header exists in `apps_shared/proof/scenario_base.py`, the authority-boundary gate exists at `ops_scripts/ci/check_authority_boundary_breaches.py`, and stale Notion row actions are superseded by this filesystem ADR record.
 
 ## Context
 
@@ -47,11 +49,11 @@ The full 17-breach catalog (`docs/reports/maintenance/l0_authority_breaches_cata
 
 ## Decision
 
-### 1. Archive Notion row #19 (`v_p0_l0_raw_execution`)
+### 1. Record stale row #19 (`v_p0_l0_raw_execution`) as closed
 
-The defect is closed in the current ADG snapshot. The Notion row reflects stale data. Action: flip Status=Done, link this ADR.
+The defect is closed in the current ADG snapshot. The historical Notion row reflects stale data; no Notion write is required because filesystem ADR files are the source of truth.
 
-### 2. Re-scope Notion row #20 (PathRouter dispatch)
+### 2. Re-scope row #20 (PathRouter dispatch)
 
 PathRouter dispatch is a routing-feature concern, not an authority-boundary concern. Detach from this wave; it lives in the W5 routing-unification plan separately.
 
@@ -93,10 +95,10 @@ The exemption is a comment + ADR. Reversible by removing the comment and re-open
 ## Acceptance
 
 - [x] 17-breach catalog written: `docs/reports/maintenance/l0_authority_breaches_catalog.csv`
-- [ ] Guardian exemption header added to `apps_shared/proof/scenario_base.py`
-- [ ] Notion row #19 (`v_p0_l0_raw_execution`) status → Done with ADR link
-- [ ] Notion row #20 (PathRouter) detached from this wave; tagged W5 routing-unification
-- [ ] CI gate `check_authority_boundary_breaches.py` created (optional but recommended)
+- [x] Guardian exemption header added to `apps_shared/proof/scenario_base.py`
+- [x] Historical row #19 (`v_p0_l0_raw_execution`) recorded here as closed/stale; no Notion write required
+- [x] Historical row #20 (PathRouter) recorded here as detached from this wave and scoped to W5 routing-unification
+- [x] CI gate `ops_scripts/ci/check_authority_boundary_breaches.py` created
 
 ## References
 

@@ -1,5 +1,6 @@
 # AG-PURITY Gate Promotion Criteria: Advisory to Strict
 
+**Status**: Accepted promotion criteria; gate remains advisory
 **Gate ID**: AG-PURITY  
 **Current Mode**: Advisory (warn, exit 0)  
 **Target Mode**: Strict (fail, exit non-zero)  

@@ -1,10 +1,12 @@
 # ADR-046 — Rerank Revival: Cross-Encoder on C0.4
 
-**Status**: Proposed (amended 2026-04-24 — §2a/2b/2c factory + scorer + late-interaction backend)
+**Status**: Accepted (implemented; amended 2026-04-24 - factory + scorer + late-interaction backend slot)
 **Date**: 2026-04-23 (amended 2026-04-24)
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/knowledge/retrieval/senior_librarian_reranker.py`, `agentic_core/knowledge/retrieval/hybrid_recall_stage.py`, `agentic_core/knowledge/retrieval/evidence_contract_builder.py`, new `agentic_core/knowledge/retrieval/cross_encoder_reranker.py`
 **Plan**: `.windsurf/plans/c0-context-assembly-best-practices-b7c3a1.md` (W2)
+
+**Current-state note (2026-06-15):** Implemented by `agentic_core/knowledge/retrieval/reranker_factory.py`, `senior_librarian_reranker.py`, `cross_encoder_reranker.py`, and `bge_reranker_adapter.py`, with reranker factory/cross-encoder tests.
 
 ---
 

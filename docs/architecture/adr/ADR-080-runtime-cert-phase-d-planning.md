@@ -1,10 +1,12 @@
 # ADR-080 — Runtime Certification Phase D Decision Ledger and Promotion Design
 
-**Status**: Proposed
+**Status**: Accepted (Phase D delivered; no runtime certification promotion)
 **Date**: 2026-05-01
 **Plan**: handoff input is the Phase C closeout artifact at `tools/runtime_cert/reports/phase_c_closeout.py`
 **Pairs with**: ADR-074 (Runtime Bucket as OTel View), ADR-079 (L2 Agent ↔ ADG Graph-Layer Contract)
 **Predecessors**: Phase A (binding matrix), Phase B (formal exception evidence helpers), Phase C.1–C.8 (runtime-cert evidence pipeline)
+
+**Current-state note (2026-06-15):** Phase D.1-D.5 have been implemented and documented as non-promoting artifacts. `runtime_certification_status` remains `NOT_CERTIFIED`; later promotion/strict-enforcement work stays governed by its own phase records.
 
 > ⛔ **This ADR designs Phase D only. It does not certify any app, change scanner `runtime_mode`, add CI gates, or modify runtime behavior.** Implementation is gated on the Author-Gate decisions captured immediately below.
 
@@ -25,9 +27,10 @@
 Local verification on 2026-05-01: directory scan of `docs/architecture/adr/`
 matched exactly one file with the `ADR-080` prefix (this file). 68 total
 ADRs on disk; the prior maximum was `ADR-079`. No registry conflict found
-through local inspection. External systems (Notion ADR Registry) were not
-queried in this capture pass — if a downstream conflict surfaces, this ADR
-will be renumbered and cross-references in
+through local inspection. External registry systems were not authoritative for
+this capture pass; the Notion ADR Registry is now archived and filesystem ADRs
+are the source of truth. If a downstream conflict surfaces, this ADR will be
+renumbered and cross-references in
 `closed-loop-router-enforcement.md`, `intelligence-ledger-family.md`,
 `docs/reports/runtime_cert/phase_c_closeout/*`, and any future Phase D
 modules will be updated in lockstep.
@@ -252,7 +255,7 @@ The split exists so that the decision ledger can accumulate weeks of records, un
 - Any change to `runtime_certification_status` written by the scanner
 - Any new CI gate
 - Any change to emitters, scanners, classifiers, or app behavior
-- Any promotion workflow that updates the `MCP Registry` Notion DB or the scorecard
+- Any promotion workflow that updates registry/status mirrors or the scorecard
 - Any modification of `passed_trace_observed` / `passed_formal_exception_observed` semantics
 
 ---
@@ -439,9 +442,9 @@ If C.5 reports `missing_controls = (CC-EVAL-01,)` for `apps_eval`, Phase D MUST 
 | Phase | What it does | Status |
 |---|---|---|
 | **A / B / C** | Evidence pipeline (binding matrix → formal-exception helpers → trace extractors → closeout) | Complete |
-| **D** | Decision records + per-app cert ledger + promotion gate math | **This ADR** — design only |
+| **D** | Decision records + per-app cert ledger + promotion gate math | Accepted design; D.1-D.5 delivered as non-promoting artifacts |
 | **E** | Fail-closed CI gate (`ops_scripts/ci/check_runtime_certification.py`) running Phase D math against the most recent N closeouts; refuses to merge changes that flip a previously-certifiable app to `reject` or `hold` | **E.1 Delivered 2026-05-02.** Advisory gate module implemented at commit `d59ce88ba9` (37 unit tests pass); CLI UX `sys.path` fix applied; pre-commit hook `runtime-certification` (tier T8r) + `run_contract_gates.py` dispatch entry wired 2026-05-02. Currently advisory (exit 0 + warnings); fail-closed flip requires `--strict` invocation AND a non-advisory baseline entry — deferred until Wilson/z/uplift thresholds calibrate on real data. Plan family: `runtime-cert-e1-*.md`. |
-| **F** | Scanner extension recognizing `RUNTIME_CERTIFIED` / `FORMAL_EXCEPTION_VERIFIED` runtime-mode buckets, plus a promotion workflow that updates Notion (MCP Registry, ADR Registry) and memory MCP from the cert ledger | Pending — blocked on Phase E |
+| **F** | Scanner extension recognizing `RUNTIME_CERTIFIED` / `FORMAL_EXCEPTION_VERIFIED` runtime-mode buckets, plus a promotion workflow that updates filesystem-backed runtime-cert status artifacts from the cert ledger | Pending — blocked on Phase E |
 
 ### Strict invariants for Phase D implementation
 
@@ -483,7 +486,7 @@ Future sub-phases land one-by-one through the standard Author-Gate cadence. **No
 | **D.4** ✅ | Phase D smoke harness (`tools/runtime_cert/smoke/cert_decision_smoke.py`) — non-promoting end-to-end wiring per approved plan `.windsurf/plans/runtime-cert-d4-cert-decision-smoke-7acad5.md`. `run_cert_decision_smoke(report, *, repo_root, history=(), fail_soft=True) -> CertDecisionSmokeReport` calls `evaluate_phase_c_closeout` (D.2), then `write_cert_decision_record` (D.3) per record, then `read_cert_decision_records` (D.3) per distinct app in first-seen order, then assembles a frozen `CertDecisionSmokeReport`. `write_cert_decision_smoke_report(report, output_path) -> Path` serializes to JSON with top-level `disclaimer` + `runtime_certification_status=NOT_CERTIFIED` + `schema_version="d4-smoke-v1"` fields. Closed 6-reason failure ontology (`WRITE_COUNT_MISMATCH`, `LEDGER_WRITE_SKIPPED`, `MISSING_READBACK`, `STATUS_NOT_NOT_CERTIFIED`, `DECISION_COUNT_DOES_NOT_MATCH_INPUT`, `READBACK_DECISION_ID_MISMATCH`) — diagnostics only, harness never raises on partial failure. `CertDecisionSmokeReport.__post_init__` enforces `runtime_certification_status == NOT_CERTIFIED`, `schema_version == "d4-smoke-v1"`, disclaimer contains `"no runtime certification performed"`, tuple-length parallelism across `decision_ids`/`verdicts`/`ledger_paths`/`write_results`, `written+already_exists+skipped == decision_count`, read-back ceiling `read_back_count <= written+already_exists`, every `write_results[i].ledger_path` non-empty, every read-back record carries `NOT_CERTIFIED` on both status columns, failure_reasons drawn from `SMOKE_FAILURE_REASONS`. `to_dict`/`to_json` JSON-safe (Path→str, dataclasses→nested dicts). **Implemented 2026-05-01** with 27 unit tests in `tests/unit/tools/runtime_cert/smoke/test_cert_decision_smoke.py`. **All tests use `tmp_path` for `repo_root`; no real `artifacts/ledgers/` writes from the test suite** (verified by `test_smoke_does_not_write_to_real_artifacts_ledgers`). No scanner/CI/emitter/app-behavior changes. Non-promotion triple-checked at five layers: C.8 input + D.1 `__post_init__` + D.3 SQL `CHECK` + D.3 read-back re-validation + this report's `__post_init__`. A `verdict == "certify"` row is **not** a certification. | No real apps certified; smoke-only |
 | **D.5** ✅ | Phase D closeout report (`docs/reports/runtime_cert/phase_d_closeout/2026-W18.md`) per approved plan `.windsurf/plans/runtime-cert-d5-phase-d-closeout-5e9d2a.md`. **Delivered 2026-05-01.** Markdown-only per AG-2; no JSON writer, no Python code, no ledger writes, no scanner/CI/emitter/app-behavior changes. Contains all 13 required sections: front matter, Phase D scope and non-goals, quintuple non-promotion guarantee, D.1/D.2/D.3/D.4 summaries, test-count table (D.1 54 + D.2 50 + D.3 35 + D.4 27 = 166 Phase D subtotal; 191 combined with pre-existing C.6 live_trace_smoke; 139 D.3 decisions-suite), no-certification disclaimer verbatim, 6-layer status invariant table (C.8 input + D.1 `__post_init__` + D.2 inheritance + D.3 SQL `CHECK` + D.3 read-back + D.4 smoke `__post_init__`), negative-evidence table (scanner/CI/emitter/app/LEDGER_REGISTRY/real-ledgers/forbidden-imports/runtime_mode/promotion-workflow all unchanged), 7 known limitations including the attribution anomaly on the D.5 plan commit (`e9a594c3756a7eab68ee9ac109bb8f11650f4d8a` — subject `docs(rtc-w2b): P9` but plan content is byte-identical at that SHA), explicit Phase E / Phase F boundary (Phase E owns CI gate, Phase F owns scanner `runtime_mode` and promotion), and next-step recommendation deferring Phase E to its own Author-Gate. `runtime_certification_status` remains `NOT_CERTIFIED` throughout. A `verdict == "certify"` row is explicitly documented as a **non-promoting decision record**, not a certification. References ADR-080 (primary) and ADR-050 (intelligence-ledger family cross-reference) per AG-3. | Documentation only |
 
-Each sub-phase requires its own Author-Gate decision per §29 closed-loop router enforcement and §28 SQLite-direct fallback. Phase D as a whole is not "approved" by this ADR — only the *design* is approved (or Proposed).
+Each sub-phase required its own Author-Gate decision per §29 closed-loop router enforcement and §28 SQLite-direct fallback. Phase D design is accepted and D.1-D.5 are delivered; no runtime certification, scanner promotion, or strict CI enforcement is implied by this ADR.
 
 ---
 
@@ -505,7 +508,7 @@ Each sub-phase requires its own Author-Gate decision per §29 closed-loop router
 
 ### Original question rationale (for historical reference)
 
-1. **Exact ADR number.** Currently provisionally `ADR-080`. Verify no conflicting allocation has happened; if the next ADR has been claimed by another stream, renumber and update cross-references in `closed-loop-router-enforcement.md`, `intelligence-ledger-family.md`, and the C.8 doc. *(Resolution: scan `docs/architecture/adr/` directory and the Notion ADR Registry; pick the next free number.)*
+1. **Exact ADR number.** Currently provisionally `ADR-080`. Verify no conflicting allocation has happened; if the next ADR has been claimed by another stream, renumber and update cross-references in `closed-loop-router-enforcement.md`, `intelligence-ledger-family.md`, and the C.8 doc. *(Resolution: scan the filesystem ADR directories and the ADR index; pick the next free number. The Notion ADR Registry is archived and not authoritative.)*
 2. **Are Wilson thresholds route-specific?** The §7 defaults (`n≥30`, `wilson_lower≥0.60`) treat R3 / BTC / formal-exception apps identically. Formal-exception apps may legitimately have smaller sample sizes (low-traffic evaluators) and may need lower `n` thresholds. Counter-argument: lower `n` undermines the Wilson floor's whole point. *(Resolution: carry both default and per-route columns in the ledger; let Phase D.5 calibration data answer empirically.)*
 3. **What is the uplift baseline?** Two candidates:
    - **(a)** Static evidence — the `passed_static_evidence` floor implied by `manifest_hash`. Stable, but the comparison is between runtime evidence and a static assertion which is an apples-to-oranges check.

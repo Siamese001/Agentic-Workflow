@@ -1,8 +1,10 @@
 # ADR: apps_rg Spine-Only Runtime (No Second Pipeline)
 
-**Status:** Proposed  
+**Status:** Accepted (implemented)
 **Date:** 2026-05-23  
-**Plan:** [apps-rg-spine-only-unification-d8f4a2.md](../.cursor/plans/apps-rg-spine-only-unification-d8f4a2.md)
+**Plan:** [apps-rg-spine-only-unification-d8f4a2.md](../../plans/archived-claude-archive__2026-05__apps-rg-spine-only-unification-d8f4a2.md)
+
+**Current-state note (2026-06-15):** Implemented by `apps_rg/runtime/spine/apps_rg_spine_run.py` and delegated from `apps_rg/runtime/orchestration/canonical_dispatch.py`; contract coverage includes `tests/_apps_contract/test_apps_rg_no_second_pipeline.py`.
 
 ## Context
 
@@ -11,7 +13,7 @@
 1. **Governed spine** — `c0_binding` / `pa_binding` / `l2_binding` / `ExitEvalPipeline` (integrated R4).
 2. **Section lane pipeline** — proof pool, section graph binding, FEC bridges, lane PA/L2, lane X3.
 
-The bridge-based [one-canonical-spine-e8b4a1](../.cursor/plans/one-canonical-spine-e8b4a1.md) added contracts around (2) without eliminating it.
+The bridge-based [one-canonical-spine-e8b4a1](../../plans/archived-claude-archive__2026-05__one-canonical-spine-e8b4a1.md) added contracts around (2) without eliminating it.
 
 ## Decision
 

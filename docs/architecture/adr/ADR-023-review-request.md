@@ -1,14 +1,16 @@
 # ADR-023 Review Request
 
+**Status:** Closed (historical tracker)
+
 > **Companion tracker** to `ADR-023-runtime-hitl-exit-control.md`. This file
-> records reviewer sign-off. When all three reviewers check off, flip the
-> ADR status from `PROPOSED — AWAITING REVIEW` → `ACCEPTED` and unblock
-> `runtime-hitl-exit-control-c4e7b3.md` W1+.
+> records the historical reviewer sign-off request. Current status:
+> **closed 2026-06-15**; ADR-023 is accepted in the filesystem ADR record.
 
 ## Review window
 
 - **Opened:** 2026-04-21
 - **Target close:** 2026-04-28 (one-week SLA)
+- **Closed:** 2026-06-15 status reconciliation
 - **Escalation if no response by close:** owner of
   `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md` proceeds with a
   documented interim decision; final reviewer sign-off still required before
@@ -74,20 +76,12 @@ reproducibility for SOC2 CC8.1 / CC8.2.
 
 ## After acceptance
 
-Once all three sign-offs complete:
+Closed actions:
 
-1. Edit `ADR-023-runtime-hitl-exit-control.md` status → `ACCEPTED`
-2. Write a Notion ADR Registry row: `API-post-page` into database_id
-   `6ed25e12-bd92-4352-ac7a-3a971311f024` with:
-   - ADR ID: `ADR-023`
-   - Status: `Accepted`
-   - Decision Date: `YYYY-MM-DD`
-   - Impact Layers: `L3, L5, L6, apps`
-   - Summary: (one-line from ADR Section 1)
-   - Filename: `ADR-023-runtime-hitl-exit-control.md`
-3. Unblock `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md` W1 (policy
-   classifier) and W2 (exit_controller) — they may execute in parallel.
-4. Leave this tracker file in place as a historical record (do not delete).
+1. `ADR-023-runtime-hitl-exit-control.md` status is `ACCEPTED`.
+2. No Notion ADR Registry row is created. The ADR Registry database is archived;
+   filesystem ADR files are the source of truth.
+3. This tracker remains in place as a historical record.
 
 ## Reference
 

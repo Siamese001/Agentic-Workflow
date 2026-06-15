@@ -1,11 +1,13 @@
 # ADR-061 — Retrieval Golden Set + RAGAS Evaluation Harness
 
-**Status**: Proposed
+**Status**: Accepted (implemented; scheduled harness available)
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `tools/eval/`, `data/eval/golden/`, `config/retrieval/calibration_manifest.yaml` (new), `agentic_core/L6_observability/utils/evaluation/`
 **Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W5.1
 **Relates-to**: ADR-045 (acceptance gate referenced), ADR-046, ADR-055, ADR-056, ADR-057, ADR-058, ADR-060
+
+**Current-state note (2026-06-15):** `tools/eval/retrieval_ragas.py` and `tools/eval/cron_retrieval_eval.py` provide deterministic metrics, JSON artifact output, JSONL history append, and advisory gate checks. Rows without retrieved results are counted as unscored inputs so curation gaps are visible rather than converted into synthetic passes.
 
 ---
 

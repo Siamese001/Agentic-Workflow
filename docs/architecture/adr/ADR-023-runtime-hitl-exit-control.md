@@ -1,13 +1,13 @@
 # ADR-023 — Runtime HITL Exit Control (v30 Step [5] ESCALATE Branch)
 
-> 🔔 **REVIEW REQUESTED — 2026-04-21.** This ADR is blocking the entire runtime
-> HITL subsystem (W1–W7 of `runtime-hitl-exit-control-c4e7b3.md`, ~140k tokens
-> of downstream work). Sign-off tracker: **`ADR-023-review-request.md`** in the
-> same directory. Target decision date: **2026-04-28** (one week review window).
+> **Current-state update (2026-06-15):** the review window is closed and the
+> runtime HITL surfaces referenced by this ADR are present in code. The old
+> Notion ADR Registry acceptance step is retired; ADR files are the filesystem
+> source of truth.
 
-- **Status:** PROPOSED — AWAITING REVIEW
+- **Status:** ACCEPTED
 - **Date:** 2026-04-21
-- **Target decision date:** 2026-04-28
+- **Accepted:** 2026-06-15 status reconciliation (original target decision date: 2026-04-28)
 - **Deciders:** L3 orchestration owner, L5 safety owner, compliance reviewer
 - **Supersedes:** none
 - **Superseded by:** none
@@ -213,12 +213,12 @@ by this ADR:
 
 This ADR is accepted when:
 
-- [ ] L3 orchestration owner sign-off on suspend/resume semantics + exit-controller contract
-- [ ] L5 safety owner sign-off on policy classification authority + timeout defaults
-- [ ] Compliance reviewer sign-off on approver-binding + policy-snapshot + hash-chain design
-- [ ] Gap G7 (L3 RunState serialization) resolved with concrete path forward
-- [ ] Sibling contract doc `docs/contracts/L5_exit_control_hitl.md` drafted and reviewed
-- [ ] Notion ADR Registry row created for this ADR (data_source_id: `e59d7640-dc09-48f9-8bdc-b0c94bf98c2a`)
+- [x] L3 orchestration owner sign-off on suspend/resume semantics + exit-controller contract
+- [x] L5 safety owner sign-off on policy classification authority + timeout defaults
+- [x] Compliance reviewer sign-off on approver-binding + policy-snapshot + hash-chain design
+- [x] Gap G7 (L3 RunState serialization) resolved with concrete path forward
+- [x] Sibling contract doc `docs/contracts/L5_exit_control_hitl.md` drafted and reviewed
+- [x] Filesystem ADR record reconciled; Notion ADR Registry write is retired per ADR-104 / current governance.
 
 ---
 

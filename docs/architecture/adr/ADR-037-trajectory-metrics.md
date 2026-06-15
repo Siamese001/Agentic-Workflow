@@ -1,10 +1,15 @@
 # ADR-037 — Trajectory Metric Suite
 
-- **Status:** Proposed
+- **Status:** Accepted (metric module implemented)
 - **Date:** 2026-04-23
+- **Accepted:** 2026-06-15 status reconciliation
 - **Deciders:** Eval Lab, Safety Officer (L5), Architecture
 - **Impact Layers:** L5, L6, apps_eval, L2 (trace emission), v33 §5, §6B
 - **Relates to:** ADR-036 (runtime trace-grader), ADR-030 (runtime ADG ingest), ADR-028 (eval SL publisher)
+
+> **Implementation evidence (2026-06-15):** `agentic_core/L5_safety/eval_spine/trajectory_metrics.py`
+> and `tests/agentic_core/L5_safety/eval_spine/test_trajectory_metrics.py`
+> exist. The open items below describe follow-up coverage and seed data.
 
 ## 1. Context
 

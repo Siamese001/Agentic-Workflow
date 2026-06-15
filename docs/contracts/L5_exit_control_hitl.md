@@ -1,8 +1,9 @@
 # L5 ⇄ L3 Contract — Runtime HITL Exit Control
 
 - **Contract ID:** `L5_exit_control_hitl`
-- **Status:** DRAFT
+- **Status:** Accepted
 - **Date:** 2026-04-21
+- **Accepted:** 2026-06-15 status reconciliation with ADR-023
 - **Peers:** L3 orchestration, L5 safety (cross-cutting policy plane)
 - **ADR:** `docs/architecture/adr/ADR-023-runtime-hitl-exit-control.md`
 - **Plan:** `.windsurf/plans/runtime-hitl-exit-control-c4e7b3.md`
@@ -218,7 +219,7 @@ This contract is versioned. Breaking changes require:
 Non-breaking additions (new span attributes, new escalation classes, new adapters) do not
 require a new ADR; they require updating this file and the sibling plan.
 
-**Version:** `1.0.0-draft`
+**Version:** `1.0.0`
 
 ---
 
@@ -226,8 +227,8 @@ require a new ADR; they require updating this file and the sibling plan.
 
 Contract is accepted when:
 
-- [ ] L3 orchestration owner reviews §3 call shapes + §6 failure modes
-- [ ] L5 safety owner reviews §2 invariants + §4.1 policy snapshot semantics
-- [ ] Compliance reviewer reviews §4.1 integrity block + §5 non-overlap
-- [ ] Paired ADR-023 accepted
-- [ ] Contract reflected in Notion ADR Registry row (link back to this file)
+- [x] L3 orchestration owner reviews §3 call shapes + §6 failure modes
+- [x] L5 safety owner reviews §2 invariants + §4.1 policy snapshot semantics
+- [x] Compliance reviewer reviews §4.1 integrity block + §5 non-overlap
+- [x] Paired ADR-023 accepted
+- [x] Filesystem contract retained; Notion ADR Registry mirroring is retired.

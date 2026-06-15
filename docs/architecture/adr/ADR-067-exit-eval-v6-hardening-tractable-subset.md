@@ -1,9 +1,11 @@
 # ADR-067 — Exit-Eval v6 hardening tractable subset (Wave 2)
 
-**Status**: Accepted (partial — H1, H2, H3-control-plane, H4, H7, H9, H10 deferred)
+**Status**: Accepted (scoped runtime contract complete)
 **Date**: 2026-04-26
 **Wave**: exit-eval-v6 deferred-scope Wave 2
 **Promotes**: 23 design rows → OK (13 H5 attrs + 1 H6 math constant + 9 H8 fault codes) + 6 ADR-067 acceptance rows
+
+**Current-state note (2026-06-15):** This ADR intentionally covers the tractable runtime constants/enums/helpers subset only. H1/H2/H4/H7/H9/H10 are separate subsystem or documentation work and are not completion criteria for ADR-067.
 
 ---
 

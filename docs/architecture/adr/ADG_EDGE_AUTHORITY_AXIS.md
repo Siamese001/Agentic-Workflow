@@ -1,5 +1,8 @@
 # ADG Edge Authority Axis (2026-04-28)
 
+**Status:** Accepted
+**Date:** 2026-04-28
+
 ## Problem
 
 The ADG generator was emitting **unqualified edges** — every import edge had

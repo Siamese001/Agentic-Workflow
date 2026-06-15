@@ -1,11 +1,13 @@
 # ADR-055 — Embedding Model Enforcement at Collection Boundary
 
-**Status**: Proposed
+**Status**: Accepted (implemented)
 **Date**: 2026-04-24
 **Deciders**: Agentic-Workflow maintainers
 **Impact Layers**: `agentic_core/L4_state/utils/client/chroma_client.py`, `tools/generate/ingestion/validate_collection.py`, `agentic_core/embeddings/embedding_factory.py`, all `tools/ingestion/ingest_*.py`
 **Plan**: `.windsurf/plans/chromadb-best-in-class-agentic-embeddings-c4a1f8.md` W1.3
 **Relates-to**: ADR-018 (ChromaDB canonical), ADR-046 (Rerank revival), sibling plan `chromadb-bge-retrieval-hardening-e9aa09`
+
+**Current-state note (2026-06-15):** Implemented by Chroma collection metadata checks in `agentic_core/L4_state/utils/client/chroma_client.py` and the BGE runtime path, with Chroma behavior, BGE runtime, and vector DB routing tests.
 
 ---
 
