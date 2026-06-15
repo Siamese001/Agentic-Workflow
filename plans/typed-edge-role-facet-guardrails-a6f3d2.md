@@ -24,9 +24,9 @@ Make GraphDB the skills and metrics SSOT, remove legacy candidate-fact authority
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W2 (W2.2 — re-baseline DONE 2026-06-14: **7/11 lanes X3_ALLOW** [competencies, unify_bullets, ibm_bullets, insurtech_bullets, ey_bullets, insurtech_narrative, ey_narrative]. 4 fixes shipped: FEC false-block, held-metric anchor, slot↔bundle provenance, **serial re-pin** (parallel lanes race on shared process globals → crash mid-C0; serial unblocks the full integrated run). 4 BLOCK remain: unify_narrative, ibm_narrative, executive_summary, headline [all EXECUTED_X3_BLOCK]. Delivered via PR-from-feat-worktree, branch feat/apps-rg-w2-lane-baseline-grounding)
-LAST_COMPLETED_WAVE: W1 (+ W2.0/W2.1 + W2.2 competencies + FEC grounding-gate fix [c245b7be97], all merged to main)
-LAST_UPDATED: 2026-06-14
+CURRENT_WAVE: W2 (W2.3 — 2026-06-15: **8/11 lanes X3_ALLOW** [competencies, unify_bullets, ibm_bullets, insurtech_bullets, ey_bullets, insurtech_narrative, ey_narrative, **unify_narrative**]. 3 fixes delivered to main this session: (1) **parallel manifest RESTORED** `cab5caf0fa` (serial re-pin was a regression — wave-0 max_parallel:5, wave-1:4, PR#325 values; 1.96×); (2) **unify_narrative graph-era binding** `386179710b` (validators recognize `reb_unify_*`/`skill_*` bundle+skill ids, not just legacy `bul_unify_*` slot ids; offline-proven, FAIL→PASS); (3) **ibm_bullets KEYSTONE** `ffdf540f3b` (Gemini X1D `unsupported_metric` cleared by surfacing the approved+promotable "20%" metric_outcome into the judge `allowed_fact_packet` — `metric_cap=0` from missing `_CAPS_BY_BAND` entry had stripped it from judge evidence; live-validated factual_support 1.0→5.0, X3_ALLOW; **NO selection change** so W2/W3 diagnostics untouched). **ibm_narrative now UNBLOCKED** (was upstream cascade). 2 BLOCK remain: **executive_summary** (6 generation-quality issues: claims lacking source_fact_ids, "$22m" style-echo, JD-phrase copy, 148>140 words) + **headline** (3 graph-era binding gates [same family] + `xyz_literal_grounding` + `openai_chatgpt` X1D — two-front). ibm_narrative likely needs the same graph-era scope/binding fix as unify_narrative (`ibm_narrative_x2.py` is bul_ibm_*-only).)
+LAST_COMPLETED_WAVE: W2.2 (competencies + ibm_bullets fixes; W1 + W2.0/W2.1 + FEC grounding-gate fix [c245b7be97] all merged)
+LAST_UPDATED: 2026-06-15
 REBASELINE_2026_06_13: Full waterfall rebaselined against merged main (HEAD 1495ffb548) — see "## Rebaselined Waterfall — Current Main" (the status SSOT). Parallel executor merged (11.7 min/E2E, 1.96×); W1/W2.0/W2.1/W2.2-competencies + replay harness merged; lane board 7 ALLOW / 4 BLOCK (ibm_bullets, headline, exec_summary, +ibm_narrative cascade); P3/P7 DONE, P2 not-a-blocker, P4/P5 open; live-API floor ~4 E2Es (~50-70 min). Prior "~8 min / P3-pending / conditional-on-merge" framing was stale (relied on memory + session-PR-state, both wrong); corrected by reading code.
 E2E_GATE_POLICY: graph-% correctness proof rides the FREE selection diagnostic across 5 targets at stages A–D; LIVE E2E limited to 2 ship targets (Anthropic + Brown & Brown) — single-resume gates W1..W4 (default Anthropic), 2-resume live enforcement at W5. 2 of the 5 (Neo4j VP Product Management, Aveva Distinguished AI Tech Lead) are held-out, run cold on frozen config = generalization test. Supersedes the prior "3-resume / 33-lane at W5" model — see "### Graph-% + Waterfall Variance Evidence § Target roster".
 PLAN_AMENDMENTS_2026_06_13: (1) W2.1/W2.3 Execution Details scope corrected to single-resume; (2) W3/W4 cross-role smoke-run implementation locus named (`tools/apps_rg/selection_diagnostic.py`, built in W3.1); (3) W5.0 phase added — Truist + B&B threshold-table authoring before W5.1; (4) W2.1 output-hash made conditional on Deterministic/Replay Rule mode; (5) Stage A canonical artifact path = `artifacts/w1/`; (6) Stage A prior-stage variance carve-out; (7) W2.2 `candidate_fact_id` search removed (P0.1 owns it).
@@ -54,23 +54,45 @@ W1_CLOSE_OUT_2026_06_13: W1 marked DONE on the current-substrate-passable bar (o
 | **competencies lane fix** | required-family pack retention + bundle enrichment + prompt align + graph-bundle backfill | **competencies → X3_ALLOW** |
 | **Offline gate-replay harness** | `tools/apps_rg/replay_section_gates.py` | post-gen fixes validate in ~11s, **zero API** |
 
-### Current lane board (Stage B substrate — confirm with one ~12-min E2E on main)
+### Current lane board — 10/11 X3_ALLOW (validated 2026-06-15, serial E2E; on `origin/main`)
 
-> ⛔ **GROUNDED CORRECTION 2026-06-14 (live single-lane run on fresh checkout @ origin/main `2c50a3225b`).** The board below is STALE — its "ibm_bullets blocks on held-metric" premise was from an old run. On a fresh checkout the lanes block on an **upstream prerequisite chain**, not the metric gate:
-> 1. **C0.2 `fact_vectors` collection ABSENT** → every lane `REQUIRED_PROOF_ABSENT` before generation. **FIXED this session:** `python -m apps_rg bootstrap fact-vectors --strict` built 26 proof-eligible atoms **+ the sparse/BM25 sidecar** (26 docs / 319 terms) in the canonical shared cache (`data/cache/chromadb` + `sparse`). Unblocks C0.2 for all lanes/sessions.
-> 2. **FEC grounding `support_status='WEAK'`** for ibm_bullets (next blocker; only **3** proof-eligible IBM facts) → `STOP_AS_EVIDENCE_GAP`, still upstream of the metric gate. The `build_ibm_phase2_graph_plan_fact` metric-gate fix is **moot until FEC grounding is satisfied** (evidence enrichment / eligibility).
-> The "7 pass / 4 block" board is **DISPROVEN**. **Full 11-lane baseline E2E 2026-06-14** (`artifacts/w2_base`, Anthropic, post-C0.2-fix): **0/11** — all bullet lanes `EXECUTED_X3_BLOCK` (`REQUIRED_PROOF_ABSENT: FEC support_status='WEAK'`); narratives `upstream_not_finalized` (cascade); headline/exec_summary not reached (fatal_lane_recipe_policy aborted).
-> **ROOT CAUSE — FOUND + FIXED (commit `76f2461bb2`).** It was a **false-block**, not a real evidence gap (both the "fact-scarcity" AND the "graph evidence rates WEAK" framings are DISPROVEN). The section's OWN C0 evidence room rates `support_status='PASS'` with rich graph role-episode bundles (ibm_bullets: 8 IBM bundles, `metric_outcome_ids`, bound skills HIGH/MEDIUM). The block came from a **second, non-authoritative** spine retrieve (`c0_retrieve_apps_rg` over the thin 26-atom fact_vectors) that rates `WEAK`: `invoke_section_spine_c0_retrieve` asserted grounding on *that* WEAK (`section_c0_retrieve.py:191`) **before** `apply_spine_c03_overlay_to_bridge_doc` applied the section's PASS — firing `STOP_AS_EVIDENCE_GAP`. **Fix:** `assert_grounding=False` at the spine-retrieve call in `c0_fec_compose.py`; the post-overlay assert (`:590`) now decides on the section's authoritative support. (Non-evidence-room/merge sections still gate; standalone callers keep default. Regression test added.)
-> **Validated:** single-lane ibm_bullets now **generates** (`RUNTIME_GENERATION_STATUS=REAL_LLM`, **25/26 X2 gates PASS**) vs prior `REQUIRED_PROOF_ABSENT` before generation. This is the systemic unblock for all 11 graph lanes.
-> **Next blocker (the real W2.2 content work):** ibm_bullets now stops at the legitimate downstream gates — **`x2_ibm_metric_anchor_bullet_ownership: FAIL`** (the one failing X2 of 26) + a **Gemini Pro X1D judge** `MODEL_BACKED_FAIL`. That's the genuine metric-anchoring/quality fix (re-run a full 11-lane baseline to get each lane's now-reachable X2/X1D board).
-
-**7 of 11 pass · 4 blocked** (STALE — see grounded correction above):
+> SSOT for Stage B status. 10 lanes validated via serial E2E (`artifacts/m2s` 9/11 + `artifacts/m4`
+> headline ALLOW). Session fixes on `origin/main`: `cab5caf0fa` parallel · `386179710b` unify_narrative
+> binding · `ffdf540f3b` ibm_bullets keystone · `a15cd3997d` unify_narrative scope · `6071614cc5` narrative
+> opener · `7c93de856e` lane progress bar · `ccd8128363` ibm_narrative (slot→bundle + mechanism) ·
+> `afed4e146e`+`48a153bd13` headline (binding + grounding skill-text + plan↔ledger subset).
+> Validate serial — parallel is flaky (C0 race, backlog G58); the X1D failures seen on parallel runs
+> were evidence contamination, disproven under serial.
 
 | Status | Lanes |
 |---|---|
-| ✅ X3_ALLOW | competencies, unify_bullets, unify_narrative, insurtech_bullets, insurtech_narrative, ey_bullets, ey_narrative |
-| ❌ X3_BLOCK | **ibm_bullets** (claims held "$10M"; should surface approved "20%" metric_outcome — fix at `section_graph_skills_proof_pool.py:355`) · **headline** (needs positioning bundle + graph lineage) · **executive_summary** (claim grounding via `graph_evidence_ids` + no unsupported sentences) |
-| ⛔ cascade | **ibm_narrative** (unblocks when ibm_bullets passes) |
+| ✅ X3_ALLOW (10) | competencies, unify_bullets, **ibm_bullets**, insurtech_bullets, ey_bullets, **unify_narrative**, **ibm_narrative**, insurtech_narrative, ey_narrative, **headline** |
+| ❌ X3_BLOCK (1) | **executive_summary** — last lane (see ledger; X2-only, 4 gates) |
+
+> **executive_summary token-budget note (2026-06-15):** the migration commit `b5563e8d1c` (+9 lines)
+> tipped the 211-line exec_summary prompt over the 95% input-token cap (`L2_BLOCK`, ~776 over) → no
+> generation; reverted (`e2c930aaff`). The fix MUST be **net-negative** on tokens: trim the legacy
+> hardcoded fact ids (`fact_engineering_platform_006`/`fact_governance_003`/`fact_quant_hpc_*`) + literal
+> `$22M/20%/8→28` (repeat ~8× across lines 84-103) + condense the verbose S1-S6 rules to create headroom,
+> THEN fold the 4 fixes (hardcoded-figure ban · allowlist-generic metric sourcing · JD-verbatim-copy ban ·
+> S1 mechanism-list ban) in tersely. Budget-aware refactor + live serial validation = the genuine finish.
+
+#### Remaining-lane blocker ledger (W2.3 — finish these 3 → 11/11 → first Anthropic DOCX)
+
+> Plain-English cause first; the precise gate/term follows. These are the in-scope finish-line items
+> for this wave — worked in sequence under one owner, validated by one batched E2E (not separate chips).
+
+| Lane | What's wrong (plain) | Precise cause | Fix | Validation |
+|---|---|---|---|---|
+| **ibm_narrative** | The IBM paragraph is rejected on a bookkeeping mismatch, not its content: it credits facts with the *old* reference numbers while the approved-evidence list now uses the *new* ones — same facts, no translation step. Also reads too generic. | Cites `bul_ibm_*` slot ids; FEC holds graph-era `reb_ibm_*` bundle ids → `x2_claim_ledger_source_fact_ids_subset_of_fec` (no slot→bundle resolution at the shared gate). Plus `x2_narrative_technical_specificity_floor` (no named mechanism). | Resolve slot→bundle (`IBM_BULLET_SLOT_BUNDLE_MAP` exists) so a cited slot counts as its FEC bundle; require a mechanism token in the prompt. | one batched E2E |
+| **executive_summary** | Written, but fails six writing-quality checks: some claims aren't tied to a verified fact, it repeats a "$22M" figure copied from a style example, it lifts a phrase from the job posting, and it runs 8 words over the 140-word cap. | 6 X2 gates: unsupported/orphan claims, `north_star_style_echo` ($22m), `jd_phrase_copy`, `paragraph_max_words` 148>140, allowed-fact utilization, mechanism-inventory. | Prompt-harden: ground every claim to a source fact, drop style-echo numbers, stay in budget. | one batched E2E |
+| **headline** | The hardest — fails three ways at once: same old-vs-new reference-number mismatch as IBM; its phrases use words absent from the facts they cite; and one of two AI graders (OpenAI) rejects it. | Graph-era binding gates (`*_bundle_id_required` etc.) + `xyz_literal_grounding` (segment nouns ungrounded; `skill_*` claim_text unresolved) + decisive `openai_chatgpt` X1D. | Same binding-recognition fix as the narratives; ground segment nouns to bound facts; re-check X1D. | one batched E2E |
+
+> Tracking decision (2026-06-15): these stay **rows in this plan**, not `spawn_task` chips — they are the
+> Stage-B finish line (north star), share one validation run (narratives need their companions in the same
+> build), and would collide on provider rate limits + overlapping checker/prompt files if split across
+> sessions. WIP=1, one owner. No full rebaseline — the B→C→D→E waterfall structure is unchanged; only the
+> Stage-B scoreboard advanced 7→8/11.
 
 ### The remaining waterfall (each stage = one ~12-min live E2E, run serial; offline build in between)
 
