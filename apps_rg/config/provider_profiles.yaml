@@ -105,3 +105,18 @@ profiles:
     endpoint_env_var: null
     api_key_env_var: null
     default: false
+
+# Per-tier x provider proof-judge models (config-ssot plan W2). SSOT-of-record for the apps_rg
+# judge model per tier. section_judge_profile.py profile_defaults[0] are kept EQUAL to these by
+# tests/unit/apps_rg/test_judge_models_ssot.py (same pattern as section_model_limits DEFAULT_*).
+# W4 repoints the resolver to read these (fail-soft to the code tuple) + removes the
+# APPS_RG_*_JUDGE_MODEL_* env overrides. Values == current profile_defaults[0] -> behavior-neutral.
+judge_models:
+  enhanced:
+    gemini_pro: gemini-3.1-pro-preview
+    openai_chatgpt: gpt-5.5
+    anthropic_claude: claude-opus-4-6
+  standard:
+    gemini_pro: gemini-2.5-pro
+    openai_chatgpt: gpt-5.5
+    anthropic_claude: claude-sonnet-4-6
