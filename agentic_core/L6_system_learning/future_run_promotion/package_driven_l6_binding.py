@@ -10,7 +10,7 @@ Boundary Rules:
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
-from agentic_core.L6_learning import (
+from agentic_core.L6_system_learning.future_run_promotion import (
     CompletedEvalRecord,
     RCAPacket,
     ProposalPacket,
@@ -18,16 +18,16 @@ from agentic_core.L6_learning import (
     L6GauntletResult,
     ObserverLawReceipt,
 )
-from agentic_core.L6_learning.completed_run_evaluator import (
+from agentic_core.L6_system_learning.future_run_promotion.completed_run_evaluator import (
     CompletedRunEvaluator,
     RuntimeExhaustBundle,
 )
-from agentic_core.L6_learning.rca_synthesizer import RCASynthesizer, RCAInput
-from agentic_core.L6_learning.future_run_proposal_builder import (
+from agentic_core.L6_system_learning.future_run_promotion.rca_synthesizer import RCASynthesizer, RCAInput
+from agentic_core.L6_system_learning.future_run_promotion.future_run_proposal_builder import (
     FutureRunProposalBuilder,
     ProposalConfig,
 )
-from agentic_core.L6_learning.promotion_gauntlet import (
+from agentic_core.L6_system_learning.future_run_promotion.promotion_gauntlet import (
     PromotionGauntlet,
     ObserverLawValidator,
 )

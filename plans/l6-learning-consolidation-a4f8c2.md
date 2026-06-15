@@ -46,7 +46,7 @@ migration_receipt_required: true
 |---|---|---|---|---|---|---|
 | W1 | P1 | Canonicity ADR + scope freeze | ~40k | L6_system_learning is canonical target | DONE | ✅ ADR-105 authored; merge direction + target chapters fixed |
 | W2 | P2 | Map 6 modules → 06.x chapters; reconcile RCA + gauntlet dupes | ~80k | Overlap is reconcilable, not divergent | DONE | ✅ Resolved: "dupes" are distinct lineages → cohesive relocate to `future_run_promotion/`, keep both |
-| W3 | P3 | Physical move + compat shim + migration receipt | ~70k | Forward-alias shim pattern (W5 precedent) works | TODO | Files under L6_system_learning; shim+`DeprecationWarning` at old path; receipt written |
+| W3 | P3 | Physical move + compat shim + migration receipt | ~70k | Forward-alias shim pattern (W5 precedent) works | DONE | ✅ 7 modules → future_run_promotion/; shim+`DeprecationWarning`; receipt written; import smoke PASS |
 | W4 | P4 | Re-point consumers + gates (imports + string refs) | ~60k | Consumer set is small (ADG-confirmed) | TODO | All importers + firewall/string-ref gates updated; no stale `L6_learning` import |
 | W5 | P5 | Verify (G29 + L6 tests + smoke) + schedule shim sunset | ~50k | G29/observer-law tests are the proof surface | TODO | G29 firewall + L6 promotion/observer-law tests green; import smoke exits 0 |
 
@@ -56,7 +56,7 @@ migration_receipt_required: true
 |---|---|---|---|
 | P1 | Canonicity ADR | Decide + record merge direction (ADR-105) | DONE |
 | P2 | Overlap reconciliation | RCA + gauntlet de-dup design | DONE |
-| P3 | Move + shim | git mv + compat alias + receipt | TODO |
+| P3 | Move + shim | git mv + compat alias + receipt | DONE |
 | P4 | Rewire consumers | imports + CI string refs | TODO |
 | P5 | Verify + sunset | gates/tests + shim TTL | TODO |
 
