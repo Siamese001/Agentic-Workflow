@@ -21,10 +21,17 @@ from pathlib import Path
 from governance_tier_measurement import (
     THRESHOLD_BYTES,
     build_inventory,
+    claude_always_on_total,
     scan_windsurf_always_on_md,
     tier1_cursor_total,
     write_inventory,
 )
+
+# Re-baselined always-on budget for the real Claude Code surface (root CLAUDE.md + every
+# .claude/rules/*.md, which the native loader injects each session). The legacy
+# THRESHOLD_BYTES (51,200) was set for the retired 4-file .mdc design and is blind to the
+# real bundle; this is the enforced ceiling per plan always-on-rule-surface-cut-c7f3a1. 84 KiB.
+REAL_SURFACE_THRESHOLD = 86_016
 
 
 def main() -> int:
@@ -79,6 +86,45 @@ def main() -> int:
             f"{windsurf_total:,} bytes (mirror; W1 will demote per Option A)",
             file=sys.stderr,
         )
+
+    # --- Real Claude Code always-on surface (plan always-on-rule-surface-cut-c7f3a1) -------
+    # The native loader globs CLAUDE.md + EVERY .claude/rules/*.md into the per-session
+    # bundle. The legacy Tier-1 measurement above is blind to it (no .mdc files;
+    # no .md carries `trigger: always_on`). Measure + report the honest surface here.
+    # ADVISORY by default to honour the coupling (an honest+enforcing gate on an
+    # untrimmed 189 KB surface would self-inflict a red gate). Flip to enforcing with
+    # ALWAYS_ON_CLAUDE_RULES_ENFORCE=1 once the trim brings it under threshold (W5).
+    real_total, real_rows = claude_always_on_total()
+    print(
+        "\nclaude_code_always_on_surface (CLAUDE.md + ALL .claude/rules/*.md — the real injected bundle):"
+    )
+    print(f"  files: {len(real_rows)}")
+    print(
+        f"  CLAUDE_RULES_REAL_TOTAL: {real_total:,} bytes (~{real_total // 4:,} tokens)"
+    )
+    print(
+        f"  Re-baselined threshold: {REAL_SURFACE_THRESHOLD:,} bytes "
+        f"(~{REAL_SURFACE_THRESHOLD // 4:,} tokens)"
+    )
+    if real_total > REAL_SURFACE_THRESHOLD:
+        delta = real_total - REAL_SURFACE_THRESHOLD
+        pct = delta / REAL_SURFACE_THRESHOLD * 100
+        print(
+            f"\n[always-on-budget] FAIL: real always-on surface {delta:,} bytes over "
+            f"the re-baselined ceiling ({pct:.1f}% over)",
+            file=sys.stderr,
+        )
+        print(
+            "Demote .claude/rules/*.md reference rules to pointer stubs (detail lives in "
+            "skills; enforcement in hooks/CI); compress the floor.",
+            file=sys.stderr,
+        )
+        print("Bypass: ALWAYS_ON_BUDGET_BYPASS=1", file=sys.stderr)
+        return 1
+    print(
+        f"\n[always-on-budget] PASS real surface "
+        f"({REAL_SURFACE_THRESHOLD - real_total:,} bytes headroom under the re-baselined ceiling)"
+    )
     return 0
 
 

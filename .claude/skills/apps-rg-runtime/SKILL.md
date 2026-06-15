@@ -1,6 +1,6 @@
 ---
 name: apps-rg-runtime
-description: Procedure for running the apps_rg resume-generation pipeline and reporting its results — interactive-input discipline, mandatory post-run evidence rendering, and the layman-first executive-summary response shape. Invoke when the user asks to run apps_rg, `python -m apps_rg`, generate a resume, explain an apps_rg run, or show a run summary. Distinguishes apps_rg orchestration (this skill) from generic plan governance (plan-governance) and from agentic_core spine work (boundary-enforcement).
+description: Procedure for running the apps_rg resume-generation pipeline and reporting results — interactive-input discipline, mandatory post-run evidence rendering, and the layman-first executive-summary response shape. Invoke when the user asks to run apps_rg, `python -m apps_rg`, generate a resume, explain an apps_rg run, or show a run summary.
 metadata:
   enforcement_layer: behavioural
   enforcement_timing: during_work

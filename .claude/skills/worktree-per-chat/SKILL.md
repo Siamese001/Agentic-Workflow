@@ -1,6 +1,6 @@
 ---
 name: worktree-per-chat
-description: Procedure for the worktree-per-chat isolation workflow — every chat works in its own git worktree on a `chat/*` branch cut from main, never editing the primary checkout on a protected branch. Invoke when a session starts on main/master, when an edit is blocked by the branch guard, when reconciling where work should land, or when cleaning up merged chat worktrees. Distinguishes local chat isolation (this skill) from plan/commit policy (plan-governance) and PR creation (gitkraken).
+description: Procedure for the worktree-per-chat isolation workflow — every chat works in its own git worktree on a `chat/*` branch cut from main, never editing the primary checkout on a protected branch. Invoke when a session starts on main/master, when an edit is blocked by the branch guard, when reconciling where work should land, or when cleaning up merged chat worktrees.
 metadata:
   enforcement_layer: deterministic
   enforcement_timing: before_work

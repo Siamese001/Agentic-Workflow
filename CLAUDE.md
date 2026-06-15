@@ -160,74 +160,21 @@ migration receipt. Detail: `.claude/rules/agentic-core-static.md`, `.claude/rule
 
 ---
 
-## Specialized rules — load when relevant
+## Specialized rules — load on demand
 
-On-demand reference docs (the Cursor "agent-requested" layer). Read the file when a task matches.
-A **Skill** column entry means a richer procedural skill covers the same area — prefer it.
+Most `.claude/rules/*.md` are now **thin pointer stubs** (plan `always-on-rule-surface-cut-c7f3a1`):
+each names its invariant + the skill/hook that enforces it. Open the rule for the pointer, or jump
+straight to the skill. Topic → primary skill:
 
-### Governance / process
-| Rule | Topic | Skill |
+| Area | Rules (stubs unless noted) | Primary skill(s) |
 |---|---|---|
-| `scope-containment.md` | No gold-plating; one task at a time | [`scope-containment`](.claude/skills/scope-containment/SKILL.md) |
-| `agent-fanout-restraint.md` | Multiple agents welcome; only restraint = don't re-discover what the plan provides | — |
-| `approval-exception-policy.md` | When approval/exceptions apply | — |
-| `deferred-scope-capture.md` | Capturing out-of-scope work | — |
-| `next-step-capture.md` | Recording the next step | — |
-| `author-gate-decision-points.md` / `author-gate-enforcement.md` / `author-gate-queue-drain.md` / `author-gate-svp-calibration.md` | Author-Gate (retired → native `AskUserQuestion`); rules are deprecation stubs | [`ask-user-question-recommendation`](.claude/skills/ask-user-question-recommendation/SKILL.md) |
-| `security-hardening.md` | Security hardening | — |
-| `python-dash-c-quote-hazard.md` | `python -c "..."` quote-hazard ban | — |
-| `query-progress-bar.md` | Progress bar for long operations | — |
+| Scope / process | `scope-containment`*, `agent-fanout-restraint`*, `approval-exception-policy`, `query-progress-bar`, `python-dash-c-quote-hazard`, `security-hardening` (*=still full) | [`scope-containment`](.claude/skills/scope-containment/SKILL.md), [`security-hardening`](.claude/skills/security-hardening/SKILL.md), [`progress-display-enforcement`](.claude/skills/progress-display-enforcement/SKILL.md) |
+| Core / apps boundary | `agentic-core-static`, `agentic-core-glob-lock`, `boundary-audit-required`, `apps-customization`, `apps-folder-taxonomy`, `apps-test-surface-taxonomy`, `agent-taxonomy-spine-truth`, `ssot-folder-enforcement`, `artifact-provenance-discipline` | [`boundary-enforcement`](.claude/skills/boundary-enforcement/SKILL.md), [`core-boundary-audit`](.claude/skills/core-boundary-audit/SKILL.md), [`u0-app-customization`](.claude/skills/u0-app-customization/SKILL.md) |
+| ADG / graph | `adg-analysis-procedures`, `adg-canonical-invariants`*, `adg-p-band-burn-down-discipline`, `adg-post-run-burndown`, `closed-loop-router-enforcement` | [`graph-analysis`](.claude/skills/graph-analysis/SKILL.md), [`adg-sqlite`](.claude/skills/adg-sqlite/SKILL.md) |
+| Eval / judges / ledgers | `evaluation-promotion-gate`, `judge-calibration-cadence`, `intelligence-ledger-family` | [`operational-gates`](.claude/skills/operational-gates/SKILL.md), [`ledger-consulter`](.claude/skills/ledger-consulter/SKILL.md) |
+| MCP / infra / runtime | `mcp-config-ssot`, `mcp-pytest-enforcement`, `local-llm-wsl2-gpu`, `claude-config-lookup` | [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md), [`pytest-mcp`](.claude/skills/pytest-mcp/SKILL.md) |
+| Plans / memory | `plan-location`, `memory-management` | [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md), [`writeback-discipline`](.claude/skills/writeback-discipline/SKILL.md) |
+| Chat isolation | `git-branch-per-chat` | [`worktree-per-chat`](.claude/skills/worktree-per-chat/SKILL.md) |
+| apps_rg (also `apps_rg/CLAUDE.md`) | `apps-rg-execution-bias`, `apps-rg-executive-summary-response`, `apps-rg-interactive-discipline`, `apps-rg-post-run-summary` | [`apps-rg-runtime`](.claude/skills/apps-rg-runtime/SKILL.md) |
 
-### Architecture / boundaries
-| Rule | Topic | Skill |
-|---|---|---|
-| `agentic-core-static.md` / `agentic-core-glob-lock.md` | Core static law + editing guard | [`boundary-enforcement`](.claude/skills/boundary-enforcement/SKILL.md) |
-| `boundary-audit-required.md` | When a boundary audit is required | [`core-boundary-audit`](.claude/skills/core-boundary-audit/SKILL.md) |
-| `apps-customization.md` / `apps-folder-taxonomy.md` / `apps-test-surface-taxonomy.md` | Apps overlay rules & taxonomy | [`u0-app-customization`](.claude/skills/u0-app-customization/SKILL.md) |
-| `agent-taxonomy-spine-truth.md` | Agent taxonomy / product spine | — |
-| `ssot-folder-enforcement.md` | New files land in canonical folders | [`artifact-management`](.claude/skills/artifact-management/SKILL.md) |
-| `artifact-provenance-discipline.md` | Never present a wrong-run artifact | [`artifact-management`](.claude/skills/artifact-management/SKILL.md) |
-| `closed-loop-router-enforcement.md` | Closed-loop router invariants | — |
-
-### ADG / graph
-| Rule | Topic | Skill |
-|---|---|---|
-| `adg-analysis-procedures.md` / `adg-canonical-invariants.md` | ADG analysis + invariants | [`graph-analysis`](.claude/skills/graph-analysis/SKILL.md), [`adg-sqlite`](.claude/skills/adg-sqlite/SKILL.md) |
-| `adg-p-band-burn-down-discipline.md` / `adg-post-run-burndown.md` | P-Band burndown + post-run dispatch | — |
-
-### Eval / judges
-| Rule | Topic | Skill |
-|---|---|---|
-| `evaluation-promotion-gate.md` | Regression-pass required to promote | [`operational-gates`](.claude/skills/operational-gates/SKILL.md) |
-| `judge-calibration-cadence.md` | Judge calibration cadence | — |
-| `intelligence-ledger-family.md` | Ledger writer/consulter invariants | [`ledger-consulter`](.claude/skills/ledger-consulter/SKILL.md) |
-
-### MCP / infra / runtime
-| Rule | Topic | Skill |
-|---|---|---|
-| `mcp-config-ssot.md` | MCP config SSOT | [`mcp-integration`](.claude/skills/mcp-integration/SKILL.md) |
-| `mcp-pytest-enforcement.md` | Prefer pytest MCP | [`pytest-mcp`](.claude/skills/pytest-mcp/SKILL.md), [`testing-framework`](.claude/skills/testing-framework/SKILL.md) |
-| `local-llm-wsl2-gpu.md` | Local LLM runtime (WSL2/Docker) | — |
-| `claude-config-lookup.md` | Where Claude Code config lives | — |
-
-### Plans / memory
-| Rule | Topic | Skill |
-|---|---|---|
-| `plan-location.md` | Plan SSOT location + disk-side v2 format (no Notion) | — |
-| `memory-management.md` | Memory lifecycle (file memory) | [`memory-mcp`](.claude/skills/memory-mcp/SKILL.md), [`writeback-discipline`](.claude/skills/writeback-discipline/SKILL.md) |
-
-> Notion plan-status / wave-deferral / plan-registration / plan-lifecycle enforcement rules were
-> **removed** (windsurf/cursor-era technical debt — never functioned). Plans are disk-only.
-
-### apps_rg (also see `apps_rg/CLAUDE.md`, auto-loaded under that subtree)
-| Rule | Topic |
-|---|---|
-| `apps-rg-executive-summary-response.md` | Executive-summary default response shape |
-| `apps-rg-interactive-discipline.md` | apps_rg interactive discipline |
-| `apps-rg-post-run-summary.md` | Mandatory inline post-run summary |
-
-> Retired redirect rules (deleted W3, plan `enforcement-surface-consolidation-d8b3f6`): 18 pure-redirect
-> stubs (Author-Gate, ADG-consolidation, deferred-scope/next-step, notion/plan, mcp-serialization) were
-> removed. Their signal already lived at canonical targets (constitutional §-citations are number-based
-> and survive); the full redirect map is preserved in
-> [retired-rules-index.md](docs/reports/governance/retired-rules-index.md).
+> Author-Gate is retired → native `AskUserQuestion` ([`ask-user-question-recommendation`](.claude/skills/ask-user-question-recommendation/SKILL.md)); deferred scope → `spawn_task` (§24). Notion plan enforcement removed (plans disk-only). Full retired-rule map: [retired-rules-index.md](docs/reports/governance/retired-rules-index.md).

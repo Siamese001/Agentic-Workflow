@@ -9,13 +9,13 @@ metadata:
 # Fort Knox Evidence Skill
 
 > ⛔ **RETIRED (2026-06-14).** The Fort Knox certification arm was decommissioned with constitutional
-> §32 — see [`.claude/rules/fortknox-certification-discipline.md`](../../rules/fortknox-certification-discipline.md).
-> This skill is dormant, kept for historical reference only. The integrity principle lives in
-> constitutional §37 + `002-pass-blocked-proof-contract`.
+> §32. The rule file was deleted (plan `always-on-rule-surface-cut-c7f3a1`); its retirement note now
+> lives in [`constitutional.md`](../../rules/constitutional.md) §32. This skill is dormant, kept for
+> historical reference only. The integrity principle lives in constitutional §37 + `002-pass-blocked-proof-contract`.
 
 In-house certification-evidence discipline. No upstream MCP surface — the integrity comes from deterministic scripts, schemas, and hashes.
 
-**Parent rule:** `.claude/rules/fortknox-certification-discipline.md`
+**Parent rule:** constitutional §32 (RETIRED — rule file deleted)
 **Dual-track SSOT:** `docs/architecture/adr/ADR-103-fortknox-runtime-dual-track.md` (certification vs runtime proof)
 **Runtime template:** `docs/reports/runtime_cert/README.md`
 **Constitutional tie-in:** §32
@@ -109,5 +109,5 @@ python -c "import json,pathlib; r=json.loads(pathlib.Path('artifacts/certificati
 - Bundle verifier: `ops_scripts/ci/verify_final_requirement_signoff_bundle.py`
 - Mutation runner: `ops_scripts/ci/generate_mutation_rejection_report.py`
 - Positive-control template: `tools/cert/build_positive_control_fixture.py`
-- Rule: `.claude/rules/fortknox-certification-discipline.md`
+- Rule: constitutional §32 (RETIRED — rule file deleted)
 - Author-Gate trigger: native `AskUserQuestion` (CLAUDE.md §Author-Gate)

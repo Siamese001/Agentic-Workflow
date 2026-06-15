@@ -18,6 +18,7 @@ CURSOR_RULES_DIR = REPO_ROOT / ".claude" / "rules"
 AGENTS_MD = REPO_ROOT / "AGENTS.md"
 WINDSURF_RULES_DIR = REPO_ROOT / ".claude" / "rules"
 INVENTORY_PATH = REPO_ROOT / "docs" / "reports" / "cursor" / "governance_tier_inventory.json"
+CLAUDE_MD = REPO_ROOT / "CLAUDE.md"
 
 ALWAYS_APPLY_RE = re.compile(r"alwaysApply:\s*true", re.IGNORECASE)
 TRIGGER_RE = re.compile(r"^trigger:\s*(\w+)", re.MULTILINE)
@@ -81,6 +82,35 @@ def scan_windsurf_always_on_md() -> list[FileBytes]:
             rel = str(path.relative_to(REPO_ROOT)).replace("\\", "/")
             rows.append(FileBytes(rel_path=rel, bytes=_file_bytes(path)))
     return rows
+
+
+def scan_claude_rules_all_md() -> list[FileBytes]:
+    """Real Claude Code always-on surface: EVERY ``.claude/rules/*.md``.
+
+    The native Claude Code / Agent SDK context loader globs the whole
+    ``.claude/rules/`` directory into the per-session "project instructions"
+    bundle — regardless of any ``trigger:``/``alwaysApply:`` frontmatter. So the
+    honest always-on byte count is every ``.md`` here (plus root ``CLAUDE.md``),
+    NOT just the legacy ``trigger: always_on`` subset (which is empty post-migration).
+    """
+    rows: list[FileBytes] = []
+    if not CURSOR_RULES_DIR.is_dir():
+        return rows
+    for path in sorted(CURSOR_RULES_DIR.glob("*.md")):
+        rel = str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+        rows.append(FileBytes(rel_path=rel, bytes=_file_bytes(path)))
+    return rows
+
+
+def claude_always_on_total() -> tuple[int, list[FileBytes]]:
+    """Total injected always-on bytes: root ``CLAUDE.md`` + all ``.claude/rules/*.md``."""
+    rows = scan_claude_rules_all_md()
+    total = sum(r.bytes for r in rows)
+    if CLAUDE_MD.is_file():
+        claude_md = FileBytes(rel_path="CLAUDE.md", bytes=_file_bytes(CLAUDE_MD))
+        rows = [claude_md, *rows]
+        total += claude_md.bytes
+    return total, rows
 
 
 def tier1_cursor_total() -> tuple[int, list[FileBytes]]:

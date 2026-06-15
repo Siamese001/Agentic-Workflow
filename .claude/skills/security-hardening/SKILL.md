@@ -1,6 +1,6 @@
 ---
 name: security-hardening
-description: Procedure for passing security validation before commit — no hardcoded secrets, no sensitive data in logs, vetted dependencies, and authorization checks on sensitive operations. Invoke when changing production code (agentic_core/, apps_*/, system_learning/), adding or updating a dependency, modifying logging, touching auth/authorization logic, or before committing any security-sensitive change. Distinguishes security validation (this skill) from boundary/layer hygiene (boundary-enforcement) and proof discipline (fortknox-evidence).
+description: Procedure for passing security validation before commit — no hardcoded secrets, no sensitive data in logs, vetted dependencies, and authorization checks on sensitive operations. Invoke when changing production code (agentic_core/, apps_*/, system_learning/), adding or updating a dependency, modifying logging, touching auth/authorization logic, or before committing any security-sensitive change.
 metadata:
   enforcement_layer: deterministic
   enforcement_timing: before_work

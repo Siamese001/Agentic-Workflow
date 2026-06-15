@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T12:03:20.258327+00:00",
+  "generated_at": "2026-06-15T10:07:51.622511+00:00",
   "plan_id": "cursor-governance-two-tier-b4e8f2",
   "wave": "W0",
   "policy_option_selected": "A",
@@ -17,16 +17,16 @@
     "files": [
       {
         "path": "AGENTS.md",
-        "bytes": 12605
+        "bytes": 12577
       }
     ],
-    "total_bytes": 12605,
-    "approx_tokens": 3151,
+    "total_bytes": 12577,
+    "approx_tokens": 3144,
     "threshold_bytes": 51200,
     "status": "PASS",
-    "headroom_bytes": 38595
+    "headroom_bytes": 38623
   },
-  "agents_md_bytes": 12605,
+  "agents_md_bytes": 12577,
   "always_apply_mdc_count": 0,
   "always_apply_mdc_names": [],
   "option_a_alignment": {
@@ -48,7 +48,7 @@
     "file_count": 0,
     "files": []
   },
-  "active_plans_top_level_count": 63,
+  "active_plans_top_level_count": 65,
   "explicit_non_claims": [
     "W1-W5 not executed",
     "no semantic rule consolidation performed",

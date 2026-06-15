@@ -1,0 +1,126 @@
+
+<!-- Converted from `.claude/rules/local-llm-wsl2-gpu.md`. Original Cursor trigger: `model_decision`. -->
+
+# Local LLM Runtime — WSL2/Docker, not Windows
+
+> ⛔ When reasoning about VRAM budgets or model-size feasibility for the local
+> Qwen vLLM stack, frame the runtime as **WSL2 + Docker with CUDA passthrough**.
+> Do NOT reason from a "Windows desktop overhead" baseline.
+
+## Hardware (this workstation)
+
+| Item | Value |
+|------|-------|
+| GPU | NVIDIA RTX 5090 (Blackwell, SM_120) |
+| Total VRAM | 32,607 MiB |
+| Driver path | Windows WDDM → WSL2 CUDA passthrough → Docker `--gpus all` → vLLM container |
+| Windows desktop compositor overhead | ~1–2 GB (small, varies with foreground apps) |
+| Practical usable VRAM for vLLM | ~29–30 GB |
+
+## Model VRAM footprint (AWQ 4-bit — sizing table uses 8K KV for comparison only)
+
+> **Production compose** serves **32B-AWQ @ `max-model-len=24576`** (24k), not 8k. The 8K KV column estimates relative footprint when choosing model size.
+
+| Model | Weights | KV cache (8K sizing) | Framework | Total @ 8K | Verdict on this rig |
+|-------|---------|----------------------|-----------|------------|---------------------|
+| Qwen2.5-7B-AWQ | ~5 GB | ~1.5 GB | ~2 GB | ~8.5 GB | ✅ comfortable |
+| Qwen2.5-14B-AWQ | ~10 GB | ~3 GB | ~2 GB | ~15 GB | ✅ comfortable |
+| **Qwen2.5-32B-AWQ** | ~20 GB | ~5 GB (scales ↑ @ 24k) | ~2 GB | **~27 GB** @ 8K table | ✅ **production** @ `max_model_len=24576`, `gpu_memory_utilization=0.88` |
+| Qwen2.5-72B-AWQ | ~42 GB | — | — | ≥42 GB | ❌ won't fit |
+
+## Forbidden framings
+
+- ❌ "32B will OOM because of Windows overhead" — wrong: WSL2 has near-direct CUDA access; Windows process tree is **not** the container's allocator.
+- ❌ Citing "~3.4 GB Windows desktop overhead" as a reason to downsize.
+- ❌ Treating the host Windows process state as a constraint on the WSL2 Docker container's CUDA memory.
+
+## Required framings
+
+- ✅ Quote VRAM math from the **container CUDA allocator** vantage point.
+- ✅ When `nvidia-smi` (run from WSL or Windows) shows X MiB used, treat that as the floor; remainder is available to vLLM.
+- ✅ For model-size selection on this rig: 32B is the **canonical production choice** (fits at `gpu_memory_utilization=0.92`, `max_model_len=24576`), 72B is out.
+
+## Stack location (canonical — Stack B, Docker container, since 2026-05-06)
+
+The canonical runtime for `Agentic-Workflow-FRESH` is the **Docker Desktop
+container `local-qwen-vllm`** (see `docker-compose.qwen.yml`), not a WSL2
+native systemd-user service. WSL2 still hosts the CUDA passthrough layer that
+Docker uses for `--gpus all`; the framing in §"Memory framing rules" above
+remains correct — only the "where does the vLLM process physically run"
+question flipped.
+
+| Field | Value |
+|---|---|
+| Container | `local-qwen-vllm` |
+| Compose SSOT | `docker-compose.qwen.yml` |
+| Image | `vllm/vllm-openai:latest` (compose default on this workstation; pin tag+digest for proof runs only) |
+| Weights | WSL bind: `~/models/Qwen2.5-32B-Instruct-AWQ` → `/models/qwen` (see boot runbook) |
+| Endpoint | `http://localhost:8000/v1` (matches `VLLM_BASE_URL`) |
+| Container args | `--model /models/qwen --served-model-name Qwen/Qwen2.5-32B-Instruct-AWQ --quantization awq_marlin --attention-backend TRITON_ATTN --max-model-len 24576 --gpu-memory-utilization 0.88 --max-num-seqs 8` |
+| Lifecycle | `docker start local-qwen-vllm` / `docker stop local-qwen-vllm` |
+| Health | `curl http://localhost:8000/v1/models` (empty reply = still loading, not necessarily down) |
+
+### Boot steps (operator)
+
+Briefing: [`docs/cursor/briefing_local_qwen_docker_boot_20260526.md`](../../docs/cursor/briefing_local_qwen_docker_boot_20260526.md) · Full runbook: [`docs/cursor/local_qwen_docker_boot.md`](../../docs/cursor/local_qwen_docker_boot.md).
+
+1. **Compose from WSL** (bind mount must resolve on WSL ext4, not empty from PowerShell-only compose):
+   `wsl -e bash -lc 'cd /mnt/c/Git/Agentic-Workflow-FRESH && docker compose -f docker-compose.qwen.yml up -d qwen-vllm'`
+2. **Verify mount:** `docker exec local-qwen-vllm test -f /models/qwen/config.json`
+3. **Verify API:** `curl -fsS http://localhost:8000/v1/models` (wait 2–4 min cold load)
+4. **Helper:** `wsl bash /mnt/c/Git/Agentic-Workflow-FRESH/ops_scripts/apps_rg/boot_local_qwen_vllm.sh`
+5. **Apps fix script:** `.\ops_scripts\apps_rg\Fix-AppsRgWslRuntime.ps1`
+
+⛔ Do not boot without the WSL weights mount — container will re-download ~20 GB from Hugging Face Hub.
+
+Strict-mode preflight: `agentic_core/L2_execution/healers/qwen_strict_diagnostic.py`
+emits `docker_desktop_down` / `docker_cli_missing` / `vllm_container_down` /
+`qwen_model_not_loaded` / `ok`. Engines that synthesize via Qwen honour
+`APPS_RESEARCH_REQUIRE_QWEN=1` and raise `QwenUnavailableError` with
+`action_hint` instead of falling through to stub.
+
+Topology doc: `docs/architecture/qwen-vllm-topology.md` §0.
+
+## Stack A — DEPRECATED (WSL2 native systemd-user, 2026-04-24 → 2026-05-06)
+
+A prior topology ran vLLM natively in WSL2 Ubuntu-24.04 under a systemd-user
+service. **DEPRECATED 2026-05-06.** Do NOT start the unit — port 8000 is owned
+by Docker; the WSL service will restart-loop with port-bind failures.
+
+What was preserved (cheap-to-keep fallback):
+- `~/models/Qwen2.5-32B-Instruct-AWQ/` (~20 GB, 5 safetensors shards on WSL2 ext4)
+
+What was removed 2026-05-06 (per Author-Gate B medium-wipe decision):
+- `~/.vllm_env/` (~9.7 GB — recreate with `pip install vllm`)
+- `/home/amita/.config/systemd/user/vllm.service`
+
+What was archived (repo-side):
+- `tools/vllm/start_vllm_server_32b.sh` → `archives/wsl2_vllm_legacy_2026-05-06/`
+- `tools/vllm/check_vllm.sh` → same archive
+- `tools/vllm/vllm.service` → same archive
+
+> **VHDX placement framing still applies**: bind-mount weights from WSL2 ext4
+> (`~/models/Qwen2.5-32B-Instruct-AWQ` → `/models/qwen`), not from `/mnt/c/...`
+> (NTFS via 9P is ~10× slower). Boot compose **from WSL** so the mount is not empty.
+
+## Retired stack (deleted 2026-04-24)
+
+`~/llm-stack/` — earlier Docker compose attempt with `vllm/vllm-openai:v0.11.0`,
+separate hf-cache. Retired in favor of Stack A in April 2026. Stack A was
+itself superseded by the current Docker container Stack B in May 2026. Do not
+resurrect either retired stack without first retiring Stack B.
+
+## Known operational quirks (don't re-discover these)
+
+1. **vLLM `latest` (v0.15.x) has a pydantic JSON-parse bug** in `VllmConfig` validator on Blackwell. Pin `v0.11.0`.
+2. **vLLM v0.11 requires V1 engine** — `assert envs.VLLM_USE_V1` fires on V0. Always set `VLLM_USE_V1=1`.
+3. **vLLM v0.11 positional `model_tag` ≠ `--model`** — the positional arg is decorative; you MUST pass `--model` explicitly or it loads `Qwen3-0.6B` (the default).
+4. **Memory profiling can race during init** — "Initial free memory > current free memory" assertion. Workaround: just retry; succeeds on second attempt.
+5. **HF Hub free-tier rate limits per token** — large multi-shard downloads (>10 GB / 8h window) get throttled to ~100 KB/s. Use community GGUF mirrors as a fallback CDN path when needed.
+6. **WSL2 bind-mount + hf_transfer mmap is broken** — hf_transfer pre-allocates a sparse file and then buffers writes in memory rather than landing on the bind-mounted disk. Symptom: `du -h` stays at 4.2 MB while `NetIO` shows GB-scale throughput. Workaround: use plain `requests` with explicit per-chunk `flush()`+`fsync()`, OR download to container overlay-fs first then `cp` to bind-mount.
+
+## References
+
+- Research report: `docs/reports/retrieval_baseline/rtx5090_vllm_qwen_optimization_research_20260424.md`
+- AWQ resume notes: `docs/reports/retrieval_baseline/c0_w3_2_vllm_awq_resume_notes_20260424.md`
+- ADR-045 (contextualization backend): `docs/architecture/adr/ADR-045-contextual-retrieval.md`
