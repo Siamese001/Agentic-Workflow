@@ -18,7 +18,11 @@ from apps_rg.runtime.section_model_limits import (
 
 class TestConstants:
     def test_default_model_identity(self) -> None:
-        assert DEFAULT_EXTERNAL_CLAUDE_MODEL == "claude-haiku-4-5"
+        # SSOT-derived: the literal fallback equals the YAML-resolved default (parity guarded by
+        # test_section_model_limits_ssot.py). Default tier is sonnet, NOT haiku — haiku is applied
+        # per-section via provider_profiles.yaml model_by_section, never as the default.
+        assert DEFAULT_EXTERNAL_CLAUDE_MODEL == external_claude_generation_model({})
+        assert "haiku" not in DEFAULT_EXTERNAL_CLAUDE_MODEL
 
     def test_max_model_len_is_positive_int(self) -> None:
         assert isinstance(SECTION_MODEL_MAX_MODEL_LEN, int)
@@ -30,6 +34,7 @@ class TestConstants:
             "SECTION_MODEL_ID",
             "SECTION_MODEL_MAX_MODEL_LEN",
             "external_claude_generation_model",
+            "resolve_section_generation_model",
         }
 
 

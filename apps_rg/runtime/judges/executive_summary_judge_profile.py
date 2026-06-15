@@ -10,35 +10,10 @@ from apps_rg.runtime.judges.section_judge_profile import (
     resolve_section_proof_judge_model,
 )
 
-EXECUTIVE_SUMMARY_ENHANCED_MODEL_PROFILE = {
-    "gemini_pro": {
-        "env_primary": (
-            "APPS_RG_GOOGLE_JUDGE_MODEL_ENHANCED",
-            "APPS_RG_GOOGLE_JUDGE_MODEL",
-            "APPS_RG_GEMINI_JUDGE_MODEL",
-        ),
-        "env_tier": (),
-        "profile_defaults": ("gemini-3.1-pro-preview", "gemini-2.5-pro"),
-    },
-    "openai_chatgpt": {
-        "env_primary": (
-            "APPS_RG_OPENAI_JUDGE_MODEL_ENHANCED",
-            "APPS_RG_OPENAI_JUDGE_MODEL",
-        ),
-        "env_tier": (),
-        "profile_defaults": ("gpt-5.5-pro", "gpt-5.5", "gpt-5.4"),
-        "reasoning_effort_env": "APPS_RG_OPENAI_JUDGE_REASONING_EFFORT",
-        "default_reasoning_effort": "high",
-    },
-    "anthropic_claude": {
-        "env_primary": (
-            "APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED",
-            "APPS_RG_ANTHROPIC_JUDGE_MODEL",
-        ),
-        "env_tier": (),
-        "profile_defaults": ("claude-opus-4-6", "claude-opus-4-5", "claude-sonnet-4-6"),
-    },
-}
+# NOTE: the enhanced judge-model profile for executive_summary is NOT redefined here. The single
+# SSOT is provider_profiles.yaml judge_models + section_judge_profile._ENHANCED_PROFILE, resolved by
+# resolve_section_proof_judge_model below. A previously-duplicated EXECUTIVE_SUMMARY_ENHANCED_MODEL_PROFILE
+# dict (zero consumers, drifted from the SSOT) was removed to keep one source of truth.
 
 
 @dataclass(frozen=True)
@@ -71,7 +46,6 @@ def resolve_executive_summary_proof_judge_model(
 
 
 __all__ = [
-    "EXECUTIVE_SUMMARY_ENHANCED_MODEL_PROFILE",
     "ExecutiveSummaryJudgeModelResolution",
     "is_forbidden_proof_judge_model",
     "resolve_executive_summary_proof_judge_model",

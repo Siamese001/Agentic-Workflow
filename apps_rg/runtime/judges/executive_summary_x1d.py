@@ -262,20 +262,25 @@ PROVIDERS = {
         "model_env_aliases": ("APPS_RG_GEMINI_JUDGE_MODEL",),
         "fallback_env": "GOOGLE_AI_PRO_MODEL",
         "fallback_env_aliases": ("GEMINI_PRO_MODEL", "GOOGLE_AI_MODEL", "GEMINI_MODEL"),
-        "default_model": "gemini-2.0-flash",
+        # Fail-soft last-resort fallback only. The judge-model SSOT is provider_profiles.yaml
+        # judge_models, resolved by section_judge_profile.resolve_section_proof_judge_model. Kept
+        # aligned to the YAML standard tier; gemini-2.0-flash was a forbidden flash-tier proof model.
+        "default_model": "gemini-2.5-pro",
     },
     "openai_chatgpt": {
         "provider_name": "OpenAI ChatGPT",
         "env": "OPENAI_API_KEY",
         "model_env": "OPENAI_MODEL",
-        "default_model": "gpt-4o",
+        # Fail-soft fallback only — SSOT is provider_profiles.yaml judge_models (standard: gpt-5.5).
+        "default_model": "gpt-5.5",
     },
     "anthropic_claude": {
         "provider_name": "Anthropic Claude",
         "env": "ANTHROPIC_API_KEY",
         "model_env": "APPS_RG_ANTHROPIC_JUDGE_MODEL",  # Specific judge model env
         "fallback_env": "ANTHROPIC_MODEL",  # Fallback to general model
-        "default_model": "claude-3-5-sonnet-20241022",
+        # Fail-soft fallback only — SSOT is provider_profiles.yaml judge_models (standard: sonnet-4-6).
+        "default_model": "claude-sonnet-4-6",
     },
 }
 

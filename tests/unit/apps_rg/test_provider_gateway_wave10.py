@@ -43,12 +43,14 @@ def test_provider_profiles_config_uses_external_claude_default() -> None:
     assert "local_qwen_generator" not in profiles
 
 
-def test_external_claude_default_model_is_haiku() -> None:
-    assert DEFAULT_EXTERNAL_CLAUDE_MODEL == "claude-haiku-4-5"
-    assert external_claude_generation_model({}) == "claude-haiku-4-5"
+def test_external_claude_default_model_is_sonnet() -> None:
+    # Default tier is sonnet (high-signal). Haiku is applied per-section via provider_profiles.yaml
+    # model_by_section (competencies + 4 narratives), NEVER as the section-agnostic default.
+    assert external_claude_generation_model({}) == DEFAULT_EXTERNAL_CLAUDE_MODEL
+    assert "haiku" not in DEFAULT_EXTERNAL_CLAUDE_MODEL
 
 
-def test_competencies_section_request_defaults_to_external_claude_haiku() -> None:
+def test_section_request_uses_external_claude_default_model() -> None:
     request, payload = build_section_request(
         messages=[{"role": "user", "content": "Return competencies JSON."}],
         prompt_hash="prompt-hash",
