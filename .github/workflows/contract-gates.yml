@@ -146,10 +146,9 @@ jobs:
         run: python ops_scripts/ci/check_mcp_sync_integrity.py
       - name: AGENTS.md MCP coverage
         run: python ops_scripts/ci/check_agents_mcp_coverage.py
-      - name: ADG exclusion sync
-        run: python tools/generate/check_exclusion_sync.py
-      - name: Severity-band SSOT
-        run: python ops_scripts/ci/check_severity_band_ssot.py
+      # [contract-gates-deband 2026-06-15 W2] removed steps "ADG exclusion sync" +
+      # "Severity-band SSOT" (legacy-era ADG-pipeline band-aids; also cut from the runner
+      # in W1 and pre-commit in W2).
 
   contract-summary:
     name: contract-summary

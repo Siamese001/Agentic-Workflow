@@ -402,19 +402,8 @@ repos:
       # validator script + tests/governance/test_hitl_validators.py remain on disk pending a
       # separate retire-or-rewrite decision.
 
-      # -- T7f: Severity<->Band SSOT (Constitutional §22/§23) --------------------------
-      # Forbids local severity<->band mapping dicts outside the canonical SSOT modules
-      # (agentic_core/adg/severity_bands.py, agentic_core/L5_safety/config/severity.py).
-      # Triggers on any Python file change in agentic_core/, tools/, ops_scripts/,
-      # system_learning/, or the SSOT modules themselves.
-      - id: severity-band-ssot
-        name: "T7f: Severity<->Band SSOT"
-        entry: py ops_scripts/ci/check_severity_band_ssot.py
-        language: system
-        pass_filenames: false
-        files: ^(agentic_core/.*\.py|tools/.*\.py|ops_scripts/.*\.py|system_learning/.*\.py)$
-        always_run: false
-        require_serial: true
+      # [contract-gates-deband 2026-06-15 W2] T7f severity-band-ssot hook removed
+      # (legacy-era ADG-pipeline band-aid; also cut from the runner in W1).
 
       # -- T7g: ADG Graph-Layer Evidence (Constitutional §22) --------------------------
       # Validates that T2/T3 refactoring plans in .claude/plans/ include the
@@ -492,44 +481,9 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T7j: Snapshot Graph-Layer Completeness (Constitutional §22 — artifact side) --
-      # Symmetric enforcement for T7g. T7g enforces that PLANS cite mv_*/v_p*
-      # primitives; T7j enforces that ADG SNAPSHOTS actually ship them. Fails
-      # if the latest artifacts/adg/adg_indexed_*.sqlite has <30 mv_* tables,
-      # <3 v_p* views, or <1 infra wiring view. Gate triggers on pipeline edits
-      # or on any new adg_indexed_*.sqlite appearing in a staged set.
-      # Prevents silent regression of plan adg-pipeline-e2e-5287a1 W1 fix
-      # (commit 9fb93f698c — enrichment-before-gates ordering).
-      # TWO-LANE COVERAGE (intentional): pre-commit = changed-file protection
-      # (pipeline edit triggers); CI = authoritative full-repo sweep in
-      # run_contract_gates.py assurance plane. Do not remove either lane.
-      - id: snapshot-has-mvs
-        name: "T7j: Snapshot MV Completeness (§22 artifact side)"
-        entry: py ops_scripts/ci/check_snapshot_has_mvs.py
-        language: system
-        pass_filenames: false
-        files: ^(tools/generate/generate_full_adg\.py|tools/generate/materialized_views/.*\.py|tools/generate/infra_wiring_views\.py|ops_scripts/ci/check_snapshot_has_mvs\.py)$
-        always_run: false
-        require_serial: true
-
-      # -- T7k: ADG Pipeline Skip Ledger (Constitutional §22 — observability) --------
-      # Symmetric to T7j (snapshot artifact side) but for the non-blocking
-      # intelligence-layer artifacts (P4/P5/P6/P6b/P7). Fails when the most-recent
-      # adg_pipeline_skips_<ts>.jsonl has any non-allow-listed entry (non-ImportError
-      # by default). Captures schema drift, helper bugs, missing optional data in
-      # stages that were previously silent.
-      # Ledger emitted by tools/generate/generate_full_adg.py::_record_pipeline_skip
-      # per plan adg-pipeline-e2e-5287a1 W4a.
-      # TWO-LANE COVERAGE (intentional): pre-commit = pipeline-edit trigger;
-      # CI = full-repo sweep in run_contract_gates.py. Do not remove either lane.
-      - id: pipeline-skips
-        name: "T7k: Pipeline Skip Ledger (§22 observability)"
-        entry: py ops_scripts/ci/check_pipeline_skips.py
-        language: system
-        pass_filenames: false
-        files: ^(tools/generate/generate_full_adg\.py|ops_scripts/ci/check_pipeline_skips\.py)$
-        always_run: false
-        require_serial: true
+      # [contract-gates-deband 2026-06-15 W2] T7j snapshot-has-mvs + T7k pipeline-skips hooks
+      # removed (legacy-era ADG-pipeline band-aids; also cut from the runner in W1). The full
+      # ADG audit (adg-ci-gates workflow / generate_full_adg) remains the authoritative surface.
       # -- T7l: Wiring-CI Waiver Expiry (fast, file-scoped) ---------------------------
       # Runs the W5 waiver-expiry gate only when the waiver file, the gate itself,
       # or the harness changes. Fast — no ADG read. Blocks the commit that
@@ -765,17 +719,10 @@ repos:
         always_run: true
         require_serial: true
 
-      # Raw infra import hygiene — run on demand until 5 direct-import sites
-      # (google, chromadb, sqlite3) are remediated through sanctioned adapters.
-      # Invoke: pre-commit run infra-wiring --hook-stage manual --all-files
-      - id: infra-wiring
-        name: "CI: Infrastructure Wiring Scan"
-        entry: py ops_scripts/ci/infra_wiring_scan.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
+      # [contract-gates-deband 2026-06-15 W2] infra-wiring (manual-stage) hook removed —
+      # ADG P0 views (v_p0_apps_direct_infra / v_p0_l1_direct_infra / v_p0_provider_bypass)
+      # are the canonical structural check; the string-scan band-aid is retired.
+      # (infra_wiring_scan.py itself is KEPT — imported by adg_gates/gate_infra_wiring.py.)
 
       # -- ADG Gate Fleet (manual, on-demand) ----------------------------------------
       # H3 (2026-04-23): single dispatcher replaces the 15-gate fan-out in
