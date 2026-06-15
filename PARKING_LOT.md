@@ -34,6 +34,8 @@ Is this literally one of the 11 lanes / a graph-skill / the DOCX?
 ## Inbox (append-only — never delete, only move to "Resolved" at weekly review)
 
 <!-- add new lines at the TOP. one line each. -->
+- [P] 2026-06-15 Gate cleanup: delete verified-dead orphan CI contract gates (ops_scripts/ci only; NOT runtime/workflows/ADG-truth). Orphan-scan method proven this session (/tmp/orphan_verify.py). Execute AFTER 11/11 lanes green.
+- [P] 2026-06-15 Build behavior hooks H1 (parking-lot weekly nudge) + H2 (north-star scoreboard) + H7 (WIP=1 gate). H1 is the only one arguably justified pre-green; rest parked.
 
 
 ## Resolved / promoted (weekly-review outcomes only)
