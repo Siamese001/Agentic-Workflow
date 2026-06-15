@@ -70,6 +70,50 @@ FORBIDDEN_METRIC_SUBSTRINGS: tuple[str, ...] = (
     "50%",
 )
 
+
+def approved_promotable_metric_evidence(section_id: str) -> list[dict[str, Any]]:
+    """X1D judge evidence for approved, promotable, section-eligible metric_outcomes.
+
+    Typed-edge role-facet guardrails: per-bundle metric selection is capped for section
+    DISPLAY budgeting (``graph_role_episode_selector`` ``metric_cap``), which can drop an
+    approved metric from a low-weight bundle's contribution to the proof pool. But an
+    approved, promotable, section-eligible metric_outcome that a bullet legitimately
+    surfaces must remain SUPPORTABLE by the X1D grader — otherwise a graph-approved figure
+    (e.g. the IBM-AWS alliance "20% joint revenue growth", capped out of ``bul_ibm_005``'s
+    bundle contribution when that bundle lands in a low-weight band) reads as
+    ``unsupported_metric`` to the judge even though X2 accepts it. This surfaces those nodes
+    as allowed-evidence facts (``claim_text`` carries the figure) for the X1D judge ONLY —
+    it does not change selection, display, the X2 allowed-fact scope, or generation.
+    """
+    nodes = _ibm_metric_outcome_nodes()
+    out: list[dict[str, Any]] = []
+    for mid in PROMOTABLE_METRIC_OUTCOME_IDS:
+        node = nodes.get(mid) or {}
+        if section_id not in (node.get("section_eligibility") or []):
+            continue
+        metric_text = str(node.get("metric") or "").strip()
+        low = metric_text.lower()
+        if any(f in low for f in FORBIDDEN_METRIC_SUBSTRINGS):
+            continue
+        claim = str(node.get("claim_text") or metric_text).strip()
+        if not claim:
+            continue
+        out.append(
+            {
+                "fact_id": mid,
+                "kind": "approved_metric_outcome",
+                "claim_text": claim,
+                "metric_raw": metric_text,
+                "has_metric": True,
+                "metric_outcome_ids": [mid],
+                "metric_outcome_id": mid,
+                "surface_tokens": list(node.get("surface_tokens") or []),
+                "approval_status": str(node.get("approval_status") or "APPROVED_GRAPH_SSOT"),
+                "bundle_bindings": list(node.get("bundle_bindings") or []),
+            }
+        )
+    return out
+
 IBM_FORBIDDEN_C0_PROMPT_SUBSTRINGS: tuple[str, ...] = (
     "CANONICAL IBM FACTS",
     "REWRITE_FROM_FACT_POOL",

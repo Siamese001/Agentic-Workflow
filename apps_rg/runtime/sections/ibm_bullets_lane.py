@@ -812,10 +812,21 @@ def build_ibm_bullets_allowed_fact_packet(
     ibm_header: dict[str, Any],
     proof_pool_ref: str,
     proof_pool_digest: str,
+    approved_metric_evidence: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Primary evidence slice for X1D judges (fixes null allowed_fact_packet on base-resume pool)."""
+    """Primary evidence slice for X1D judges (fixes null allowed_fact_packet on base-resume pool).
+
+    ``approved_metric_evidence`` surfaces approved, promotable, section-eligible
+    metric_outcome nodes so the X1D grader can support a bullet's graph-approved metric
+    claim (e.g. the alliance "20% joint revenue growth") even when the per-bundle metric
+    was capped out of the proof-pool contribution by section display budgeting — without
+    changing selection, the X2 allowed-fact scope, or generation.
+    """
     packet: list[dict[str, Any]] = []
     for row in ibm_facts:
+        if isinstance(row, dict):
+            packet.append(dict(row))
+    for row in approved_metric_evidence or []:
         if isinstance(row, dict):
             packet.append(dict(row))
     if isinstance(ibm_header, dict) and ibm_header:
@@ -1192,11 +1203,16 @@ def run_ibm_bullets_execution(
 
     judge_keys = [j.strip() for j in str(getattr(args, "x1d_judges", "") or "").split(",") if j.strip()]
     judge_mode = "mocked" if getattr(args, "mock_judges", False) else "blocked_if_unavailable"
+    from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+        approved_promotable_metric_evidence,
+    )
+
     allowed_fact_packet = build_ibm_bullets_allowed_fact_packet(
         ibm_facts=ibm_facts,
         ibm_header=ibm_header,
         proof_pool_ref=str(pool.proof_pool_ref or ""),
         proof_pool_digest=str(pool.proof_pool_digest or ""),
+        approved_metric_evidence=approved_promotable_metric_evidence("ibm_bullets"),
     )
     # Variance-class alignment (2026-06): on the employment-pool path the Claude pool
     # SELECTOR has already model-scored every slot. Reuse that selection as the single
