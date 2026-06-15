@@ -43,6 +43,8 @@ COMMANDS_RUN:
 - command -> runtime outcome (real result, not just exit code / label)
 TESTS_GATES:
 - command -> pass/fail with counts
+PLAN_WAVES: (when a multi-wave disk plan is active — active wave only; omit on single-seam T0/T1 work)
+- Wave N <title>: PASS | FAIL | IN_PROGRESS
 RCA: (REQUIRED when STATUS: FAIL, or any runtime-failure signal appears above)
 - symptom: <exact failing command/lane + observed error>
 - root_cause: <actual cause> [DIRECTLY OBSERVED | DERIVED | UNRESOLVED]

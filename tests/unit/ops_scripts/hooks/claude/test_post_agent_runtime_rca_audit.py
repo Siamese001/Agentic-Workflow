@@ -132,7 +132,13 @@ class TestRuntimeRcaAudit:
         assert _rows(rca_mod) == []
 
     def test_clean_pass_no_signal(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
-        text = "STATUS: PASS\nCOMMANDS_RUN:\n- pytest x -> 5 passed\n"
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- NONE\n"
+            "COMMANDS_RUN:\n- pytest x -> 5 passed\n"
+            "TESTS_GATES:\n- pytest x -> 5 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
         assert _run(rca_mod, text, monkeypatch) == 0
         assert _rows(rca_mod) == []
 
@@ -257,19 +263,30 @@ class TestRuntimeRcaAudit:
 
     def test_refactor_pass_missing_outcome_flagged(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
         # A PASSING refactor turn reported with the bare STATUS floor (no Outcome frame).
-        text = "STATUS: PASS\nFILES_CHANGED:\n- [foo.py](foo.py)\nCOMMANDS_RUN:\n- pytest -> 5 passed\n"
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- pytest -> 5 passed\n"
+            "TESTS_GATES:\n- pytest -> 5 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
         assert _run(rca_mod, text, monkeypatch) == 0
         rows = _rows(rca_mod)
-        assert any(r["kind"] == "missing_refactor_outcome" for r in rows), [r["kind"] for r in rows]
-        assert rows[0]["refactor_turn"] is True
-        assert rows[0]["has_outcome_frame"] is False
+        miss = next((r for r in rows if r["kind"] == "missing_refactor_outcome"), None)
+        assert miss is not None, [r["kind"] for r in rows]
+        assert miss["refactor_turn"] is True
+        assert miss["has_outcome_frame"] is False
 
     def test_refactor_pass_with_outcome_clean(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
         # A PASSING refactor turn that DOES carry the Outcome frame -> compliant.
         text = (
             "**Outcome**\nDid it run? Yes.\n"
             "Verdict source: pytest -> 5 passed\n"
-            "STATUS: PASS\nFILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- pytest -> 5 passed\n"
+            "TESTS_GATES:\n- pytest -> 5 passed\n"
+            "ARTIFACTS:\n- NONE\n"
         )
         assert _run(rca_mod, text, monkeypatch) == 0
         assert _rows(rca_mod) == []
@@ -283,7 +300,11 @@ class TestRuntimeRcaAudit:
         text = (
             "**Outcome**\nDid it run? Yes.\n"
             "Verdict source: python -m pytest foo -> exit 0, 5 passed\n"
-            "STATUS: PASS\nFILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- python -m pytest foo -> exit 0\n"
+            "TESTS_GATES:\n- python -m pytest foo -> 5 passed\n"
+            "ARTIFACTS:\n- NONE\n"
         )
         assert "Did it pass" not in text  # the re-vote is gone
         assert _run(rca_mod, text, monkeypatch) == 0
@@ -371,6 +392,285 @@ class TestRuntimeRcaAudit:
         )
         assert _run(rca_mod, text, monkeypatch) == 0
         assert _rows(rca_mod) == []
+
+
+
+
+class TestStatusMatrix:
+    """Full status×refactor matrix — verifies that every valid combination is clean
+    and that the two new kinds fire only on the right shapes."""
+
+    # ── REFACTOR TURNS (FILES_CHANGED has a .py, or edit tool present) ────────
+
+    def test_refactor_pass_with_outcome_and_all_proof_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        text = (
+            "**Outcome**\nDid it run? Yes.\n"
+            "Verdict source: pytest -> 7 passed\n"
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- pytest -> 7 passed\n"
+            "TESTS_GATES:\n- pytest -> 7 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    def test_refactor_partial_with_outcome_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        text = (
+            "**Outcome**\nDid it run? Yes.\n"
+            "Verdict source: pytest -> 3 passed, 2 deferred\n"
+            "STATUS: PARTIAL\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- pytest -> 3 passed\n"
+            "TESTS_GATES:\n- pytest -> 3 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    def test_refactor_fail_with_deep_rca_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        # Full contract: Outcome frame + deep why-chain + isolated layer + confidence + coupled next.
+        text = (
+            "**Outcome**\nDid it run? Yes.\n"
+            "Verdict source: python -m pytest -> exit 1, 2 failed\n"
+            "STATUS: FAIL\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- python -m pytest -> exit 1\n"
+            "TESTS_GATES:\n- python -m pytest -> 2 failed\n"
+            "ARTIFACTS:\n- NONE\n"
+            "**Layered RCA**\n"
+            "Immediate symptom: lane ibm_bullets X3_BLOCK on metric anchor\n"
+            "Failing layer: ibm_bullets_generator.py literal match, not the ibm_narrative that surfaced it\n"
+            "why1: the anchor token was a stale literal, not a graph-sourced fact ID\n"
+            "why2: ibm_bullets_graph_evidence.py was not updated when fact IDs were renamed\n"
+            "Mechanism: stale literal match -> X3_BLOCK -> PHASE1 cascade\n"
+            "Root cause: ibm_bullets_graph_evidence.py retained the old fact-ID literals after rename\n"
+            "Evidence: artifacts/w2_b0/terminal_ret_packet.json shows bul_ibm_003 not in graph\n"
+            "Confidence / unknowns: root cause DIRECTLY OBSERVED; fix path clear\n"
+            "Next: rename fact IDs in ibm_bullets_graph_evidence.py to match current graph snapshot\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    def test_refactor_blocked_no_edit_tool_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        # BLOCKED: no files changed, no edit tool → not a refactor turn; no Outcome frame needed.
+        text = (
+            "STATUS: BLOCKED\n"
+            "COMMANDS_RUN:\n- N/A — missing ANTHROPIC_API_KEY\n"
+            "TESTS_GATES:\n- N/A\n"
+            "ARTIFACTS:\n- NONE\n"
+            "NOTES:\n- Cannot proceed until provider key is set.\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    # ── NON-REFACTOR TURNS (no code files, no edit tool) ─────────────────────
+
+    def test_non_refactor_pass_all_proof_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- NONE\n"
+            "COMMANDS_RUN:\n- pytest -> 10 passed\n"
+            "TESTS_GATES:\n- pytest -> 10 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    def test_non_refactor_partial_no_signals_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        text = (
+            "STATUS: PARTIAL\n"
+            "COMMANDS_RUN:\n- pytest -> 3 passed, 2 deferred\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    def test_non_refactor_fail_with_rca_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        text = (
+            "STATUS: FAIL\n"
+            "COMMANDS_RUN:\n- run -> X3_BLOCK\n"
+            "RCA:\n"
+            "- symptom: lane ibm_bullets X3_BLOCK\n"
+            "- root_cause: stale literal anchor [DIRECTLY OBSERVED]\n"
+            "- evidence: artifacts/terminal_ret_packet.json\n"
+            "- fix_or_next: update anchor in ibm_bullets_graph_evidence.py\n"
+            "- recurrence_guard: test_ibm_bullets_anchor.py\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    def test_non_refactor_blocked_no_signals_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        text = (
+            "STATUS: BLOCKED\n"
+            "COMMANDS_RUN:\n- N/A\n"
+            "ARTIFACTS:\n- NONE\n"
+            "NOTES:\n- Missing provider key; cannot run E2E.\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    # ── VIOLATION PATHS ────────────────────────────────────────────────────────
+
+    def test_refactor_pass_no_outcome_frame_flags(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        # PASS refactor without Outcome frame → missing_refactor_outcome.
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- [bar.py](bar.py)\n"
+            "COMMANDS_RUN:\n- pytest -> 5 passed\n"
+            "TESTS_GATES:\n- pytest -> 5 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        kinds = {r["kind"] for r in _rows(rca_mod)}
+        assert "missing_refactor_outcome" in kinds, kinds
+
+    def test_pass_missing_files_changed_flags(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        # PASS with FILES_CHANGED absent → pass_without_proof.
+        text = (
+            "STATUS: PASS\n"
+            "COMMANDS_RUN:\n- pytest -> 5 passed\n"
+            "TESTS_GATES:\n- pytest -> 5 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        hit = next((r for r in rows if r["kind"] == "pass_without_proof"), None)
+        assert hit is not None, [r["kind"] for r in rows]
+        assert "FILES_CHANGED" in hit["missing_proof"]
+        assert "COMMANDS_RUN" not in hit["missing_proof"]
+
+    def test_refactor_fail_shallow_rca_flags(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        # Refactor FAIL: 5-field RCA only (no Layered depth) → shallow_rca.
+        text = (
+            "**Outcome**\nDid it run? Yes.\n"
+            "Verdict source: pytest -> exit 1\n"
+            "STATUS: FAIL\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- pytest -> exit 1\n"
+            "RCA:\n"
+            "- symptom: the tests fail\n"
+            "- root_cause: there is a bug in the code\n"
+            "- evidence: artifacts/log.txt\n"
+            "- fix_or_next: fix the bug\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        kinds = {r["kind"] for r in _rows(rca_mod)}
+        assert "shallow_rca" in kinds, kinds
+        assert "missing_rca" not in kinds
+        assert "missing_refactor_outcome" not in kinds
+
+    def test_refactor_fail_missing_confidence_flags(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        # Deep descent, isolated layer, distinct root, coupled next — but NO stated confidence.
+        text = (
+            "**Outcome**\nDid it run? Yes.\n"
+            "Verdict source: pytest -> exit 1\n"
+            "STATUS: FAIL\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- pytest -> exit 1\n"
+        ) + _DEEP_NO_CONFIDENCE
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        shallow = [r for r in rows if r["kind"] == "shallow_rca"]
+        assert shallow, [r["kind"] for r in rows]
+        assert shallow[0]["missing_confidence"] is True
+        assert shallow[0]["descent_depth"] >= 2
+
+    def test_refactor_fail_generic_next_step_flags(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        # Deep descent + confidence, but next = "fix the bug" → shallow_rca.
+        text = (
+            "**Outcome**\nDid it run? Yes.\n"
+            "Verdict source: pytest -> exit 1\n"
+            "STATUS: FAIL\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- pytest -> exit 1\n"
+        ) + _DEEP_GENERIC_NEXT
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        shallow = [r for r in rows if r["kind"] == "shallow_rca"]
+        assert shallow, [r["kind"] for r in rows]
+        assert shallow[0]["next_step_generic"] is True
+
+    def test_refactor_fail_full_rca_all_dimensions_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        # All 5 shallow_rca triggers absent: ≥2 why levels, isolated layer,
+        # root ≠ symptom, stated confidence, coupled next step → no violations.
+        text = (
+            "**Outcome**\nDid it run? Yes.\n"
+            "Verdict source: pytest -> exit 1\n"
+            "STATUS: FAIL\n"
+            "FILES_CHANGED:\n- [foo.py](foo.py)\n"
+            "COMMANDS_RUN:\n- pytest -> exit 1\n"
+        ) + _DEEP_FULL_CLEAN
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+
+class TestProofContractKinds:
+    def test_pass_missing_proof_section_flagged(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # STATUS:PASS without all four proof sections -> pass_without_proof.
+        text = "STATUS: PASS\nCOMMANDS_RUN:\n- pytest -> 5 passed\n"  # missing FILES/TESTS/ARTIFACTS
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        hit = next((r for r in rows if r["kind"] == "pass_without_proof"), None)
+        assert hit is not None, [r["kind"] for r in rows]
+        assert "FILES_CHANGED" in hit["missing_proof"]
+        assert "TESTS_GATES" in hit["missing_proof"]
+        assert "ARTIFACTS" in hit["missing_proof"]
+        assert "COMMANDS_RUN" not in hit["missing_proof"]  # COMMANDS_RUN IS present
+
+    def test_pass_all_proof_sections_clean(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # STATUS:PASS with all four sections present -> no violation.
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- NONE\n"
+            "COMMANDS_RUN:\n- pytest -> 5 passed\n"
+            "TESTS_GATES:\n- pytest -> 5 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert not any(r["kind"] == "pass_without_proof" for r in _rows(rca_mod))
+
+    def test_speculative_should_pass_flagged(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # "should pass" language on a repo-work turn -> speculative_pass.
+        text = "STATUS: PARTIAL\nCOMMANDS_RUN:\n- run -> in progress\nThese tests should pass now.\n"
+        assert _run(rca_mod, text, monkeypatch) == 0
+        kinds = {r["kind"] for r in _rows(rca_mod)}
+        assert "speculative_pass" in kinds, kinds
+
+    def test_speculative_likely_pass_flagged(self, rca_mod, monkeypatch: pytest.MonkeyPatch) -> None:
+        # "likely pass" language on a repo-work turn -> speculative_pass.
+        text = "STATUS: PARTIAL\nCOMMANDS_RUN:\n- run -> in progress\nThis will likely pass on next run.\n"
+        assert _run(rca_mod, text, monkeypatch) == 0
+        kinds = {r["kind"] for r in _rows(rca_mod)}
+        assert "speculative_pass" in kinds, kinds
 
 
 class TestAfterAgentChainRegistration:

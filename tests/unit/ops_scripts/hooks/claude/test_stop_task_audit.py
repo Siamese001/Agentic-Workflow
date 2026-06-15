@@ -101,3 +101,83 @@ class TestStopTaskAuditBackwardCompat:
         proc = _run({"session_id": "s5", "tool_info": {"response": _REPO_WORK_NO_STATUS}})
         assert proc.returncode == 2
         assert _block_decision(proc)["decision"] == "block"
+
+
+class TestStopTaskAuditFalseBlockFix:
+    """Regression tests: the old 'GATE in prose' / 'CREATED in prose' false-blocks
+    are gone. The thin detect()-layer only blocks on actual floor / proof violations."""
+
+    def test_prose_with_gate_word_and_no_floor_signals_allows(self, tmp_path) -> None:
+        # Old code: "GATE" in repo_work_cues -> repo_work_present=True, no STATUS -> block.
+        # New code: detect() sees no STATUS and no floor signals -> (None, []) -> allow.
+        text = (
+            "This design covers the north-star gate and its role in the enforcement surface. "
+            "No code was changed or committed in this turn."
+        )
+        tr = _write_transcript(tmp_path, text)
+        proc = _run({"session_id": "fb1", "transcript_path": str(tr)})
+        assert proc.returncode == 0, proc.stdout + proc.stderr
+
+    def test_prose_with_created_word_and_no_floor_signals_allows(self, tmp_path) -> None:
+        # Old code: "CREATED" in repo_work_cues -> repo_work_present=True, no STATUS -> block.
+        # New code: detect() sees no STATUS and no floor signals -> (None, []) -> allow.
+        text = "I created a design document and outlined the approach. No edits made."
+        tr = _write_transcript(tmp_path, text)
+        proc = _run({"session_id": "fb2", "transcript_path": str(tr)})
+        assert proc.returncode == 0, proc.stdout + proc.stderr
+
+    def test_prose_with_implemented_word_and_no_floor_signals_allows(self, tmp_path) -> None:
+        # Old code: "IMPLEMENTED" in repo_work_cues -> would block with no STATUS.
+        text = "Discussed how the feature could be implemented. Analysis only, no edits."
+        tr = _write_transcript(tmp_path, text)
+        proc = _run({"session_id": "fb3", "transcript_path": str(tr)})
+        assert proc.returncode == 0, proc.stdout + proc.stderr
+
+    def test_speculative_should_pass_blocks(self, tmp_path) -> None:
+        # "should pass" on a repo-work turn -> speculative_pass -> block.
+        text = (
+            "STATUS: PARTIAL\n"
+            "COMMANDS_RUN:\n- run -> in progress\n"
+            "ARTIFACTS:\n- NONE\n"
+            "These tests should pass on the next run."
+        )
+        tr = _write_transcript(tmp_path, text)
+        proc = _run({"session_id": "fb4", "transcript_path": str(tr)})
+        assert proc.returncode == 2, proc.stdout + proc.stderr
+        reason = _block_decision(proc)["reason"]
+        assert "speculative" in reason.lower() or "should pass" in reason.lower(), reason
+
+    def test_speculative_likely_pass_blocks(self, tmp_path) -> None:
+        # "likely pass" on a repo-work turn -> speculative_pass -> block.
+        text = (
+            "STATUS: PARTIAL\n"
+            "COMMANDS_RUN:\n- run -> in progress\n"
+            "ARTIFACTS:\n- NONE\n"
+            "This will likely pass once the fixture is fixed."
+        )
+        tr = _write_transcript(tmp_path, text)
+        proc = _run({"session_id": "fb5", "transcript_path": str(tr)})
+        assert proc.returncode == 2, proc.stdout + proc.stderr
+        reason = _block_decision(proc)["reason"]
+        assert "speculative" in reason.lower() or "likely pass" in reason.lower(), reason
+
+    def test_full_receipt_all_statuses_allow(self, tmp_path) -> None:
+        # PARTIAL + FAIL + BLOCKED with correct receipts all allow.
+        partial_text = (
+            "STATUS: PARTIAL\nCOMMANDS_RUN:\n- pytest -> 3 passed, 2 pending\n"
+            "TESTS_GATES:\n- pytest -> 3 passed\nARTIFACTS:\n- NONE\n"
+        )
+        blocked_text = (
+            "STATUS: BLOCKED\nCOMMANDS_RUN:\n- N/A\n"
+            "TESTS_GATES:\n- N/A\nARTIFACTS:\n- NONE\n"
+        )
+        fail_text = (
+            "STATUS: FAIL\nCOMMANDS_RUN:\n- run -> X3_BLOCK\n"
+            "TESTS_GATES:\n- N/A\nARTIFACTS:\n- NONE\n"
+        )
+        for session, text in [("fb6", partial_text), ("fb7", blocked_text), ("fb8", fail_text)]:
+            subdir = tmp_path / session
+            subdir.mkdir(exist_ok=True)
+            tr = _write_transcript(subdir, text)
+            proc = _run({"session_id": session, "transcript_path": str(tr)})
+            assert proc.returncode == 0, f"{session}: " + proc.stdout + proc.stderr

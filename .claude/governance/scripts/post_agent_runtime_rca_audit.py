@@ -40,7 +40,7 @@ their BCG burndown + gates output supersedes both the floor and the Outcome fram
 post_agent_adg_burndown_inline_audit.py.
 
 Violation kinds: missing_response_floor, missing_refactor_outcome, missing_rca, incomplete_rca,
-status_signal_mismatch, shallow_rca.
+status_signal_mismatch, shallow_rca, pass_without_proof, speculative_pass.
 
 This audit is advisory and fail-open: it always exits 0 and never blocks the response.
 Some matches are necessarily heuristic (a PASS summary that merely *discusses* a failure
@@ -184,6 +184,20 @@ _MISSING_FLOOR_REMEDY = (
 )
 
 
+_PROOF_SECTIONS: tuple[str, ...] = ("FILES_CHANGED", "COMMANDS_RUN", "TESTS_GATES", "ARTIFACTS")
+_SPECULATIVE_RE = re.compile(r"(?i)\bshould\s+pass\b|\blikely\s+pass\b")
+_PASS_PROOF_REMEDY = (
+    "STATUS: PASS is expensive — it requires every proof section (FILES_CHANGED · COMMANDS_RUN · "
+    "TESTS_GATES · ARTIFACTS; use 'NONE' where empty). A PASS missing one is unproven. SSOT: "
+    ".claude/rules/002-pass-blocked-proof-contract.md § PASS is expensive."
+)
+_SPECULATIVE_REMEDY = (
+    "Speculative pass language ('should pass' / 'likely pass') is forbidden — either it passed, "
+    "failed, is partial, or is blocked, with evidence. Emit STATUS: PASS|PARTIAL|FAIL|BLOCKED. "
+    "SSOT: .claude/rules/002-pass-blocked-proof-contract.md § Forbidden status behavior."
+)
+
+
 def _bypass_active() -> bool:
     return os.environ.get("RUNTIME_RCA_AUDIT_BYPASS", "").strip().lower() in ("1", "true", "yes")
 
@@ -303,6 +317,30 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
             rec.update(extra)
         return rec
 
+    # speculative_pass: 'should pass' / 'likely pass' language is forbidden on any repo-work turn.
+    if _SPECULATIVE_RE.search(text):
+        violations.append({
+            "ts_utc": ts,
+            "kind": "speculative_pass",
+            "status": status_value,
+            "refactor_turn": refactor_turn,
+            "has_outcome_frame": has_outcome,
+            "failure_signals": [],
+            "remedy": _SPECULATIVE_REMEDY,
+            "rule_ref": "constitutional §37 / 002 § Forbidden status behavior",
+        })
+
+    # pass_without_proof: STATUS:PASS is expensive — requires all four proof sections.
+    if status_value == "PASS":
+        _missing_proof = [
+            s for s in _PROOF_SECTIONS
+            if not re.search(rf"(?im)^\s*{s}\s*:", text)
+        ]
+        if _missing_proof:
+            violations.append(
+                _record("pass_without_proof", [], extra={"missing_proof": _missing_proof, "remedy": _PASS_PROOF_REMEDY})
+            )
+
     # Green-theater: an optimistic status over a body failure signal (excludes the
     # status_fail signal itself, which is not "green").
     body_signals = [s for s in signals if s != "status_fail"]
@@ -384,11 +422,11 @@ def main() -> int:
         for record in violations:
             _append_violation(record)
             signals = record.get("failure_signals") or record.get("repo_work_signals") or []
-            hint = (
-                "end the turn with the rule-001 STATUS floor"
-                if record["kind"] == "missing_response_floor"
-                else "add an RCA: block"
-            )
+            hint = {
+                "missing_response_floor": "end the turn with the rule-001 STATUS floor",
+                "pass_without_proof": "add all proof sections (FILES_CHANGED · COMMANDS_RUN · TESTS_GATES · ARTIFACTS; 'NONE' where empty)",
+                "speculative_pass": "replace speculative language with STATUS: PASS|PARTIAL|FAIL|BLOCKED + evidence",
+            }.get(record["kind"], "add an RCA: block")
             print(
                 f"[runtime-rca] {record['kind']}: status={record['status']} "
                 f"signals={signals} — {hint} (rule 001 / constitutional §37).",
