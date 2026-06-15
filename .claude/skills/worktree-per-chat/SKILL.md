@@ -14,9 +14,9 @@ worktree + `chat/*` branch so its work is reviewable as a single PR and never co
 primary checkout on `main`. The edit gate blocks Edit/Write to the primary checkout while it is on a
 protected branch; this skill explains how to satisfy it instead of fighting it.
 
-**Sibling skills:** Use `plan-governance` for plan-file placement (plans always land in the *primary*
-checkout's `plans/`, exempt from this guard), `gitkraken` for PR creation, `scope-containment` for
-what belongs in the active scope. This skill is specifically about *where the working tree lives*.
+**Sibling skills:** See the `plan-location.md` rule for plan-file placement (plans always land in the
+*primary* checkout's `plans/`, exempt from this guard); `gitkraken` for PR creation, `scope-containment`
+for what belongs in the active scope. This skill is specifically about *where the working tree lives*.
 
 ## When to Invoke
 
@@ -56,5 +56,5 @@ what belongs in the active scope. This skill is specifically about *where the wo
 - Rule: `.claude/rules/git-branch-per-chat.md`
 - Hooks: `.claude/hooks/session_start_branch_guard.py`, `before_file_edit_branch_guard.py`, `prune_merged_chat_worktrees.py`
 - Config envs: `BRANCH_PER_CHAT_BYPASS`, `BRANCH_PER_CHAT_PROTECTED`, `CHAT_WORKTREE_ROOT`, `WORKTREE_MERGE_CLEANUP_DRY_RUN`
-- Sibling skills: `plan-governance`, `gitkraken`, `scope-containment`
+- Sibling skills: `gitkraken`, `scope-containment` · plan placement → `plan-location.md` rule
 - Plan-location exemption: `.claude/rules/plan-location.md`

@@ -14,7 +14,7 @@ apps_rg run produces rich JSON evidence the user cannot see without rendering it
 wizard — not Claude Code — owns the run inputs. Skipping the renderer or pre-filling inputs are the
 two most common, most damaging mistakes; this skill prevents both.
 
-**Sibling skills:** Use `plan-governance` for plan/wave lifecycle, `boundary-enforcement` for
+**Sibling skills:** See the `plan-location.md` rule for plan-file placement; `boundary-enforcement` for
 core/app separation, `artifact-management` for generic evidence capture. This skill is specifically
 the apps_rg *run + report* loop.
 
@@ -65,5 +65,5 @@ the apps_rg *run + report* loop.
 - Rules: `.claude/rules/apps-rg-post-run-summary.md`, `apps-rg-interactive-discipline.md`, `apps-rg-executive-summary-response.md`, `apps-rg-execution-bias.md`
 - Operator guide: `docs/apps_rg/executive_summary_operator_guide.md`
 - Single backlog: `plans/apps-rg-lane-aggregation-gap-closure-b8c3d1.md` (Master Gap Inventory)
-- Sibling skills: `plan-governance`, `boundary-enforcement`, `artifact-management`
+- Sibling skills: `boundary-enforcement`, `artifact-management` · plan placement → `plan-location.md` rule
 - Constitutional rules: §6, §18 (interactive discipline)
