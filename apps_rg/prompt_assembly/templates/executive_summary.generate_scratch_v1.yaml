@@ -81,20 +81,29 @@ slot_bodies:
     **CRITICAL (X1D executive_signal):** Judges read `resume_display_text`, not claim_ledger alone.
     When a claim_ledger row's claim_text includes dollar or percent outcomes from allowed facts, the matching
     display sentence must include at least one of those outcomes in plain executive prose (not a metric list).
-    S3: include the IP-led revenue + margin metrics from fact_engineering_platform_006 when present ($22M
-    IP-led revenue, 20% margin expansion, team 8→28). On SVP IT strategy lanes, frame as "IP-led revenue
-    growth and gross-margin expansion" or "monetization of platform IP" — NEVER use the literal word
-    "commercialization" (X2 hard-fails it on strategy lanes; use innovation/monetization/IP-revenue framing). S4: include the governance outcome metric from fact_governance_003 when present.
-    S5: when fact_quant_hpc_003 (FSA/quant foundation) and fact_quant_hpc_001 are both cited, include the
-    allowed stress-testing or HPC outcome metric from fact_quant_hpc_001 in display (paired with FSA foundation).
-    Do not park proof metrics only in claim_text while display stays abstract.
+    S3: surface the IP-led-revenue / gross-margin / team-scale metric VALUES from the ALLOWED facts when
+    the allowlist (ALLOWED_SOURCE_FACT_IDS) contains such a metric_outcome fact — use ONLY figures that
+    appear in the cited allowed facts. **Hardcoded-figure ban (X2 north_star_style_echo):** NEVER emit a
+    dollar/percent/headcount figure that is not present in the selected allowed facts — in particular do
+    NOT echo a number from an E0 style example (e.g. "$22M", "20%", "8→28") unless that exact figure is in
+    a cited allowed fact for THIS run. On SVP IT strategy lanes, frame as "IP-led revenue growth and
+    gross-margin expansion" or "monetization of platform IP" — NEVER use the literal word
+    "commercialization" (X2 hard-fails it on strategy lanes; use innovation/monetization/IP-revenue framing).
+    S4: surface the governance/lineage outcome metric VALUE from the allowed facts when the allowlist
+    contains such a metric_outcome fact.
+    S5: surface a quantitative-rigor / stress-testing / HPC outcome metric VALUE from the allowed facts when
+    the allowlist contains such a metric_outcome fact (paired with the quant foundation).
+    **Allowed-fact utilization (X2):** surface the run's REQUIRED allowed metric_outcome facts (from
+    ALLOWED_SOURCE_FACT_IDS) in display — do not skip a required allowed metric in favor of an abstract
+    phrase. Do not park proof metrics only in claim_text while display stays abstract.
     </display_metric_weave_contract>
 
     <judge_alignment_contract>
     **Synthesis target (X1D):** one SVP IT strategy arc - not six bullets. JD/briefing = targeting vocabulary only; no JD-as-proof; no TARGET_COMPANY employment.
+    **JD verbatim-copy ban (X2 jd_phrase_copy_violation):** NEVER lift a phrase from the JD/job-posting verbatim (no run of ≥3 consecutive content words from the JD, e.g. "with gsi and cloud partner") — the JD tunes emphasis only; express every theme in the candidate's own words grounded in allowed facts.
     **Keyword discipline:** ATS and JD keywords may tune wording only; no keyword stuffing, laundry-list targeting, or keyword-only fit claims.
     **Workflow:** (1) Read C0 + allowlist; JD/briefing for emphasis only. (2) Write `executive_strategy_thesis` (one sentence, allowed facts). (3) Write six-sentence `resume_display_text` advancing that thesis; S1 paraphrases thesis (never verbatim copy).
-    **S1:** Sharp SVP IT strategy register (EA governance, innovation programs) - not generic "regulated enterprise scale." S1 paraphrases `executive_strategy_thesis` — NEVER include a thesis thread (e.g. "commercialization") unless at least one S2–S6 body sentence substantiates that thread with an allowed source_fact_id; an undelivered S1 promise is a `thesis_body_gap` that soft-fails Claude-class judges.
+    **S1:** Sharp SVP IT strategy register (EA governance, innovation programs) - not generic "regulated enterprise scale." S1 paraphrases `executive_strategy_thesis` — NEVER include a thesis thread (e.g. "commercialization") unless at least one S2–S6 body sentence substantiates that thread with an allowed source_fact_id; an undelivered S1 promise is a `thesis_body_gap` that soft-fails Claude-class judges. **No mechanism inventory in S1 (X2 no_mechanism_inventory):** S1 MUST be a strategic-register sentence, NOT a comma-chain of architecture mechanisms (e.g. "deterministic routing, multi-agent orchestration, graph-aware retrieval, sandboxed execution, policy enforcement, ...") — list at most one mechanism in S1, woven into the strategy framing, never a 3+ mechanism comma-stack.
     **S2-S3:** Platform/operating-model substance; connective causal thread when honest; S3 must surface the allowed IP-led revenue + gross-margin + team-scale metrics in display when fact_engineering_platform_006 is cited. On SVP IT strategy lanes, AVOID the literal word "commercialization" (use "IP-led revenue growth", "monetization of platform IP", or "gross-margin expansion" instead — the strategy gate hard-fails the word).
     **S4:** Governance/lineage as parallel beat with allowed outcome metrics in display when fact_governance_003 is cited; no forced "extended to" bridges across unrelated facts. On SVP strategy lanes with ≥3 brushstrokes, use a non-stock opener here (e.g. `In parallel,` / `That operating foundation also,`) — both stock-bridge slots are expected to be consumed in S2–S3.
     **S4 sentence completeness (X2 hard-fail):** S4 MUST be a grammatically complete sentence with a finite main verb. FORBIDDEN: noun-phrase fragments like "Quantitative rigor established through..." or "FSA-chartered quantitative foundation, built through..." — these have no main verb and fail `x2_exec_summary_no_sentence_fragment`. REQUIRED: use the DISPLAY_OVERRIDE text for fact_quant_hpc_003 verbatim if provided.
