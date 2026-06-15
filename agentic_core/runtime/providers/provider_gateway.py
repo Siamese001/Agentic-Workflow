@@ -581,10 +581,10 @@ class ProviderGateway:
         try:
             # observability-only, fail-soft cache telemetry; never affects generation
             # (plan prompt-cache-anthropic-best-practice-c7a1e9 W1.1/P4).
-            from agentic_core.knowledge.retrieval.anthropic_cache_telemetry import (
+            from agentic_core.knowledge.retrieval import (
                 prefix_fingerprint,
                 record_cache_usage,
-            )  # guardian: allow-layer-violation -- observability-only fail-soft cache telemetry; never affects generation
+            )  # guardian: allow-layer-violation -- public L_PG cache telemetry surface; observability-only and fail-soft
 
             record_cache_usage(
                 usage,

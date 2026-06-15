@@ -16,6 +16,7 @@ A fake ``anthropic`` module is injected via sys.modules so the gateway's in-meth
 from __future__ import annotations
 
 import copy as _copy
+import inspect
 import sys
 import types
 from types import SimpleNamespace
@@ -86,6 +87,12 @@ def anthropic_env(monkeypatch):
 
 
 # --------------------------------------------------------------------------- tests
+
+
+def test_cache_usage_telemetry_uses_retrieval_public_surface():
+    source = inspect.getsource(ProviderGateway._record_cache_usage)
+    assert "agentic_core.knowledge.retrieval.anthropic_cache_telemetry" not in source
+    assert "from agentic_core.knowledge.retrieval import" in source
 
 
 def test_anthropic_prompt_text_backcompat(anthropic_env):

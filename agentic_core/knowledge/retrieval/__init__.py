@@ -3,6 +3,7 @@
 Pipeline C Phase C5: Hybrid retrieval with reranking and evidence contracts.
 """
 
+from .anthropic_cache_telemetry import prefix_fingerprint, record_cache_usage
 from .c0_sparse_exact_seam import (
     SparseLexicalLaneStatus,
     SparseLexicalQuerySpec,
@@ -50,6 +51,9 @@ __all__ = [
     "filter_candidates_exact_subphrase",
     "merge_dense_sparse_rrf",
     "query_sparse_lexical_lane",
+    # Anthropic prompt-cache telemetry surface (provider gateway)
+    "prefix_fingerprint",
+    "record_cache_usage",
     # Recall stage
     "HybridRecallStage",
     "RecallResult",

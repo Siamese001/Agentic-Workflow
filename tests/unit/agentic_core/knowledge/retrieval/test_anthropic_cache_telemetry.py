@@ -11,6 +11,10 @@ from __future__ import annotations
 
 import logging
 
+from agentic_core.knowledge.retrieval import (
+    prefix_fingerprint as public_prefix_fingerprint,
+    record_cache_usage as public_record_cache_usage,
+)
 from agentic_core.knowledge.retrieval.anthropic_cache_telemetry import (
     CacheUsage,
     CacheUsageLedger,
@@ -20,6 +24,11 @@ from agentic_core.knowledge.retrieval.anthropic_cache_telemetry import (
     reset_default_cache_ledger,
     get_default_cache_ledger,
 )
+
+
+def test_public_retrieval_surface_exports_gateway_cache_helpers():
+    assert public_prefix_fingerprint is prefix_fingerprint
+    assert public_record_cache_usage is record_cache_usage
 
 
 class _FakeUsage:
