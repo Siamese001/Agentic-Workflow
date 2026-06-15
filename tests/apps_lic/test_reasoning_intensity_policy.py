@@ -9,7 +9,9 @@ from apps_lic.engines.governed_opportunity_ingestion import NAMESPACE_CONTACT
 from apps_lic.engines.message_type_requirement_gate import MESSAGE_GENERAL_INTRO
 from apps_lic.engines.qa_report_engine import QaReportEngine
 from apps_lic.engines.validation_engine import ValidationEngine
+from apps_lic.config.model_profiles import CLAUDE_X1D_PROVIDER_PROFILE
 from apps_lic.policy.reasoning_intensity import (
+    JUDGE_CANDIDATE_SELECTION,
     JUDGE_EVIDENCE_SUPPORT,
     JUDGE_LINKEDIN_TONE,
     JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
@@ -51,13 +53,17 @@ def test_default_policy_is_sc1_r1_with_x2_gates_and_x1d_judge() -> None:
         JUDGE_LINKEDIN_TONE,
         JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     ]
+    # W1.2: only the deterministic schema/policy/no-send check is an X2 gate;
+    # tone is a semantic LLM judgement and now lives on the X1D axis.
     assert policy["x2_deterministic_gates"] == [
         JUDGE_SCHEMA_POLICY_NO_SEND,
-        JUDGE_LINKEDIN_TONE,
     ]
     assert policy["x1d_llm_judges"] == [
+        JUDGE_LINKEDIN_TONE,
         JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     ]
+    # W1.1: X1D provider is the independent Claude judge, never qwen_vllm_x1d.
+    assert policy["x1d_provider_profile"] == CLAUDE_X1D_PROVIDER_PROFILE
     assert policy["x1d_runs_after_x2"] is True
     assert policy["max_candidates"] == 1
     assert policy["validation_repair_passes"] == 1
@@ -120,20 +126,29 @@ def test_executive_or_high_stakes_policy_escalates_to_sc3() -> None:
     assert policy["judge_profile"] == "high_risk_strict"
     assert policy["max_candidates"] == 3
     assert policy["validation_repair_passes"] == 2
+    # W1.2 reclassification: X2 = deterministic schema + candidate-selection;
+    # evidence/tone/safety/originality are all semantic X1D judgements.
     assert policy["judges"] == [
+        JUDGE_SCHEMA_POLICY_NO_SEND,
+        JUDGE_CANDIDATE_SELECTION,
         JUDGE_EVIDENCE_SUPPORT,
         JUDGE_LINKEDIN_TONE,
         JUDGE_SAFETY_NO_FABRICATION,
         JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     ]
     assert policy["x2_deterministic_gates"] == [
+        JUDGE_SCHEMA_POLICY_NO_SEND,
+        JUDGE_CANDIDATE_SELECTION,
+    ]
+    assert policy["x1d_llm_judges"] == [
         JUDGE_EVIDENCE_SUPPORT,
         JUDGE_LINKEDIN_TONE,
         JUDGE_SAFETY_NO_FABRICATION,
-    ]
-    assert policy["x1d_llm_judges"] == [
         JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     ]
+    # W1.2: executive / C-level gets 2 independent X1D judge passes.
+    assert policy["x1d_max_attempts"] == 2
+    assert policy["x1d_llm_judge_depth"] == 2
     assert "executive_or_high_stakes" in policy["escalation_triggers"]
 
 
@@ -151,11 +166,13 @@ def test_weak_evidence_fails_closed_and_does_not_authorize_sc_compensation() -> 
                     JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
                 ],
                 "x2_deterministic_gates": [
+                    JUDGE_SCHEMA_POLICY_NO_SEND,
+                    JUDGE_CANDIDATE_SELECTION,
+                ],
+                "x1d_llm_judges": [
                     JUDGE_EVIDENCE_SUPPORT,
                     JUDGE_LINKEDIN_TONE,
                     JUDGE_SAFETY_NO_FABRICATION,
-                ],
-                "x1d_llm_judges": [
                     JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
                 ],
                 "max_candidates": 3,
@@ -183,8 +200,7 @@ def test_weak_evidence_fails_closed_and_does_not_authorize_sc_compensation() -> 
     assert "sc_escalation_forbidden_on_weak_evidence" in report["issues"]
 
 
-def test_qa_default_and_strict_profiles_use_x2_x1d_hybrid_counts(monkeypatch) -> None:
-    monkeypatch.setenv("APPS_LIC_TEST_X1D_JUDGE_STUB", "1")
+def test_qa_default_and_strict_profiles_use_x2_x1d_hybrid_counts() -> None:
     draft = {
         "message_text": (
             "Hi Scott, AIG's Agentic AI role reads like an operating-model "
@@ -216,9 +232,13 @@ def test_qa_default_and_strict_profiles_use_x2_x1d_hybrid_counts(monkeypatch) ->
         JUDGE_LINKEDIN_TONE,
         JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     ]
-    assert default_qa["x2_deterministic_gate_count"] == 2
-    assert default_qa["x1d_llm_judge_count"] == 1
+    assert default_qa["x2_deterministic_gate_count"] == 1
+    assert default_qa["x1d_llm_judge_count"] == 2
     assert default_qa["x2_gates_passed"] is True
+    # X1D semantic judging is owned by the canonical Claude Exit path; the HOP8
+    # scorecard never calls an LLM judge.
+    assert default_qa["x1d_llm_judge_outputs"] == {}
+    assert default_qa["x1d_model_backed_pass"] is False
 
     strict_policy = {
         **default_qa["reasoning_policy"],
@@ -232,11 +252,13 @@ def test_qa_default_and_strict_profiles_use_x2_x1d_hybrid_counts(monkeypatch) ->
             JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
         ],
         "x2_deterministic_gates": [
+            JUDGE_SCHEMA_POLICY_NO_SEND,
+            JUDGE_CANDIDATE_SELECTION,
+        ],
+        "x1d_llm_judges": [
             JUDGE_EVIDENCE_SUPPORT,
             JUDGE_LINKEDIN_TONE,
             JUDGE_SAFETY_NO_FABRICATION,
-        ],
-        "x1d_llm_judges": [
             JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
         ],
         "max_candidates": 3,
@@ -251,20 +273,19 @@ def test_qa_default_and_strict_profiles_use_x2_x1d_hybrid_counts(monkeypatch) ->
     )["qa_report"]
     assert strict_qa["sc_level"] == SC_3
     assert strict_qa["reasoning_intensity"] == R3_STRICT
-    assert strict_qa["judge_count"] == 4
-    assert strict_qa["x2_deterministic_gate_count"] == 3
-    assert strict_qa["x1d_llm_judge_count"] == 1
+    assert strict_qa["judge_count"] == 6
+    assert strict_qa["x2_deterministic_gate_count"] == 2
+    assert strict_qa["x1d_llm_judge_count"] == 4
     assert strict_qa["quality_contract"]["self_consistency_samples"] == 3
     assert strict_qa["quality_contract"]["x1_x2_x3_exit_retries"] == 0
-    assert (
-        strict_qa["x1d_llm_judge_outputs"][
-            JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D
-        ]["provider_status"]
-        == "TEST_STUB_PASS"
-    )
+    # No in-scorecard LLM judging; X1D is owned by the canonical Claude Exit path.
+    assert strict_qa["x1d_llm_judge_outputs"] == {}
+    assert strict_qa["x1d_model_backed_pass"] is False
 
 
-def test_x1d_judge_skips_when_x2_gates_fail() -> None:
+def test_qa_scorecard_runs_no_llm_judge_when_x2_gates_fail() -> None:
+    # The HOP8 scorecard reports deterministic gate state only; X1D LLM judging
+    # (including skip-on-X2-fail) is owned by the canonical Claude Exit path.
     qa = QaReportEngine().execute(
         {
             "draft_message": {
@@ -283,15 +304,13 @@ def test_x1d_judge_skips_when_x2_gates_fail() -> None:
     )["qa_report"]
 
     assert qa["x2_gates_passed"] is False
-    assert (
-        qa["x1d_llm_judge_outputs"][
-            JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D
-        ]["provider_status"]
-        == "SKIPPED_X2_FAILED"
-    )
+    assert qa["x1d_llm_judge_outputs"] == {}
+    assert qa["x1d_model_backed_pass"] is False
 
 
-def test_x1d_judge_cannot_compensate_for_weak_c0_evidence() -> None:
+def test_qa_scorecard_runs_no_llm_judge_on_weak_c0_evidence() -> None:
+    # Weak-C0 fail-closed is enforced by the validation engine / Exit path, not
+    # by an LLM judge inside the scorecard.
     qa = QaReportEngine().execute(
         {
             "draft_message": {
@@ -311,13 +330,8 @@ def test_x1d_judge_cannot_compensate_for_weak_c0_evidence() -> None:
         }
     )["qa_report"]
 
-    assert qa["x2_gates_passed"] is True
-    assert (
-        qa["x1d_llm_judge_outputs"][
-            JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D
-        ]["provider_status"]
-        == "SKIPPED_C0_EVIDENCE_WEAK"
-    )
+    assert qa["x1d_llm_judge_outputs"] == {}
+    assert qa["x1d_model_backed_pass"] is False
 
 
 def test_default_reasoning_policy_e2e_manifest(tmp_path: Path, monkeypatch) -> None:
@@ -340,8 +354,8 @@ def test_default_reasoning_policy_e2e_manifest(tmp_path: Path, monkeypatch) -> N
     assert manifest["sc_level"] == SC_1
     assert manifest["reasoning_intensity"] == R1_STANDARD
     assert manifest["judge_count"] == 3
-    assert manifest["x2_deterministic_gate_count"] == 2
-    assert manifest["x1d_llm_judge_count"] == 1
+    assert manifest["x2_deterministic_gate_count"] == 1
+    assert manifest["x1d_llm_judge_count"] == 2
     assert manifest["max_candidates"] == 1
     assert manifest["evidence_support_status"] == "PASS"
     assert draft["sc_level"] == SC_1
@@ -387,9 +401,9 @@ def test_strict_reasoning_policy_e2e_manifest_for_executive(
     assert result.terminal_r5 is False
     assert manifest["sc_level"] == SC_3
     assert manifest["reasoning_intensity"] == R3_STRICT
-    assert manifest["judge_count"] == 4
-    assert manifest["x2_deterministic_gate_count"] == 3
-    assert manifest["x1d_llm_judge_count"] == 1
+    assert manifest["judge_count"] == 6
+    assert manifest["x2_deterministic_gate_count"] == 2
+    assert manifest["x1d_llm_judge_count"] == 4
     assert manifest["max_candidates"] == 3
     assert manifest["evidence_support_status"] == "PASS"
     assert draft["sc_level"] == SC_3

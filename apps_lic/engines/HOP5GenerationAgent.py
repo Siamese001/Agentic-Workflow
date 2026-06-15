@@ -20,6 +20,7 @@ from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 # MessagePlanner.temperature_adjustments through to the LLM call sites
 # in K.3 and K.5A. See apps_lic/engines/section_temperature_resolver.py.
 from apps_lic.engines.section_temperature_resolver import resolve_section_temperature
+from apps_lic.policy.reasoning_intensity import default_reasoning_policy
 
 
 @dataclass
@@ -38,9 +39,17 @@ class HOP5GenerationAgent(LICAgentBase, SubatomicTestingMixin):
     - Output: 'hop5_generation'
     """
 
-    # Sovereign Configuration
+    # Sovereign Configuration.
+    # The live candidate count is driven by the reasoning policy (max_candidates
+    # 1/2/3 by tier) and the archetype envelope (C_LEVEL -> c_level_n_candidates,
+    # else 1), NOT this field. It is synced to the policy default (R1
+    # max_candidates) so it no longer implies a fixed 3-candidate fan-out.
     generation_params: dict[str, Any] = field(
-        default_factory=lambda: {"temperature": 0.7, "n_candidates": 3, "max_tokens": 500}
+        default_factory=lambda: {
+            "temperature": 0.7,
+            "n_candidates": default_reasoning_policy()["max_candidates"],
+            "max_tokens": 500,
+        }
     )
     # Optional injected dependencies (test fixtures + production wiring).
     # ``llm_client`` is the canonical kwarg name; ``llm`` is a back-compat

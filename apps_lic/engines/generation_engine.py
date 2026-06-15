@@ -21,6 +21,10 @@ from apps_lic.engines.generation_subject_policy import (
     channel_from_length_budget,
     subject_required,
 )
+from apps_lic.config.model_profiles import (
+    resolve_generator_base_url,
+    resolve_generator_model,
+)
 from apps_lic.policy.reasoning_intensity import compact_policy, default_reasoning_policy
 from apps_lic.types.linkedin_route_envelope import (
     INMAIL_BODY_CHAR_CAP,
@@ -433,17 +437,11 @@ def generate_judge_feedback_repair_draft(
 
 
 def _resolve_provider_settings() -> ProviderSettings:
-    base_url = (
-        os.environ.get("APPS_LIC_VLLM_BASE_URL")
-        or os.environ.get("VLLM_BASE_URL")
-        or DEFAULT_BASE_URL
-    )
-    model = (
-        os.environ.get("APPS_LIC_QWEN_MODEL")
-        or os.environ.get("APPS_LIC_TARGET_MODEL")
-        or os.environ.get("QWEN_VLLM_MODEL")
-        or DEFAULT_MODEL
-    )
+    # Model + base URL resolve from the model-profile SSOT
+    # (config/domain_contract/model_profiles.yaml). Env vars are documented
+    # overrides declared in that file, not the source of truth.
+    base_url = resolve_generator_base_url() or DEFAULT_BASE_URL
+    model = resolve_generator_model() or DEFAULT_MODEL
     target_provider = (
         os.environ.get("APPS_LIC_TARGET_PROVIDER")
         or os.environ.get("APPS_LIC_PROVIDER_PROFILE")

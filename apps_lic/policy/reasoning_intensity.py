@@ -11,6 +11,8 @@ import re
 from copy import deepcopy
 from typing import Any, Mapping
 
+from apps_lic.config.model_profiles import CLAUDE_X1D_PROVIDER_PROFILE
+
 
 POLICY_REF = "apps_lic.policy.reasoning_intensity.v1"
 
@@ -33,28 +35,57 @@ JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D = (
     "linkedin_originality_thoughtfulness_x1d_llm_judge"
 )
 
-NORMAL_DEFAULT_X2_GATES = (
-    JUDGE_SCHEMA_POLICY_NO_SEND,
-    JUDGE_LINKEDIN_TONE,
-)
+# X2/X1D reclassification (W1.2): X2 holds only deterministic checks
+# (schema/policy/no-send and the candidate-count selection gate). Every semantic
+# judgement — tone, evidence-support, safety/no-fabrication, originality — is an
+# LLM judgement owned by the independent Claude X1D path, never an X2 gate.
+NORMAL_DEFAULT_X2_GATES = (JUDGE_SCHEMA_POLICY_NO_SEND,)
 
 DELIBERATE_X2_GATES = (
     JUDGE_SCHEMA_POLICY_NO_SEND,
-    JUDGE_LINKEDIN_TONE,
     JUDGE_CANDIDATE_SELECTION,
 )
 
 STRICT_X2_GATES = (
+    JUDGE_SCHEMA_POLICY_NO_SEND,
+    JUDGE_CANDIDATE_SELECTION,
+)
+
+# The universal X1D quality judge (applies whenever X1D is enabled).
+DEFAULT_X1D_LLM_JUDGES = (JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,)
+
+# Canonical set of semantic (LLM) judge names — anything in here is an X1D
+# judgement, never a deterministic X2 gate. Used to split legacy ``judges`` lists.
+X1D_LLM_JUDGE_NAMES = frozenset(
+    {
+        JUDGE_LINKEDIN_TONE,
+        JUDGE_EVIDENCE_SUPPORT,
+        JUDGE_SAFETY_NO_FABRICATION,
+        JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
+    }
+)
+
+NORMAL_DEFAULT_X1D_JUDGES = (
+    JUDGE_LINKEDIN_TONE,
+    JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
+)
+
+DELIBERATE_X1D_JUDGES = (
+    JUDGE_LINKEDIN_TONE,
+    JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
+)
+
+# Strict (executive / C-level) requires >= 2 independent X1D judge passes.
+STRICT_X1D_JUDGES = (
     JUDGE_EVIDENCE_SUPPORT,
     JUDGE_LINKEDIN_TONE,
     JUDGE_SAFETY_NO_FABRICATION,
+    JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
 )
 
-DEFAULT_X1D_LLM_JUDGES = (JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,)
-
-NORMAL_DEFAULT_JUDGES = (*NORMAL_DEFAULT_X2_GATES, *DEFAULT_X1D_LLM_JUDGES)
-DELIBERATE_JUDGES = (*DELIBERATE_X2_GATES, *DEFAULT_X1D_LLM_JUDGES)
-STRICT_JUDGES = (*STRICT_X2_GATES, *DEFAULT_X1D_LLM_JUDGES)
+NORMAL_DEFAULT_JUDGES = (*NORMAL_DEFAULT_X2_GATES, *NORMAL_DEFAULT_X1D_JUDGES)
+DELIBERATE_JUDGES = (*DELIBERATE_X2_GATES, *DELIBERATE_X1D_JUDGES)
+STRICT_JUDGES = (*STRICT_X2_GATES, *STRICT_X1D_JUDGES)
 
 _GENERIC_NAMES = {"", "recruiter", "unknown", "unknown recipient"}
 _GENERIC_COMPANIES = {"", "unknown", "n/a", "na"}
@@ -115,13 +146,14 @@ def default_reasoning_policy() -> dict[str, Any]:
         "judge_profile": "normal_default",
         "judges": list(NORMAL_DEFAULT_JUDGES),
         "x2_deterministic_gates": list(NORMAL_DEFAULT_X2_GATES),
-        "x1d_llm_judges": list(DEFAULT_X1D_LLM_JUDGES),
+        "x1d_llm_judges": list(NORMAL_DEFAULT_X1D_JUDGES),
         "x1d_enabled": True,
         "x1d_runs_after_x2": True,
         "x1d_max_attempts": 1,
+        "x1d_llm_judge_depth": 1,
         "x1d_temperature": 0.1,
         "x1d_failure_policy": "quality_block_not_exit_override",
-        "x1d_provider_profile": "qwen_vllm_x1d",
+        "x1d_provider_profile": CLAUDE_X1D_PROVIDER_PROFILE,
         "max_candidates": 1,
         "validation_repair_passes": 1,
         "fail_closed_on_empty_evidence": True,
@@ -192,7 +224,11 @@ def select_reasoning_policy(app_payload: Mapping[str, Any]) -> dict[str, Any]:
                 "judge_profile": "high_risk_strict",
                 "judges": list(STRICT_JUDGES),
                 "x2_deterministic_gates": list(STRICT_X2_GATES),
-                "x1d_llm_judges": list(DEFAULT_X1D_LLM_JUDGES),
+                "x1d_llm_judges": list(STRICT_X1D_JUDGES),
+                # Executive / C-level: 2 independent X1D judge passes (frozen W0
+                # rule), consistent with the canonical CEO 2-judge depth.
+                "x1d_max_attempts": 2,
+                "x1d_llm_judge_depth": 2,
                 "max_candidates": 3,
                 "validation_repair_passes": 2,
             }
@@ -205,7 +241,7 @@ def select_reasoning_policy(app_payload: Mapping[str, Any]) -> dict[str, Any]:
                 "judge_profile": "deliberate_selection",
                 "judges": list(DELIBERATE_JUDGES),
                 "x2_deterministic_gates": list(DELIBERATE_X2_GATES),
-                "x1d_llm_judges": list(DEFAULT_X1D_LLM_JUDGES),
+                "x1d_llm_judges": list(DELIBERATE_X1D_JUDGES),
                 "max_candidates": 2,
             }
         )
@@ -260,12 +296,13 @@ def compact_policy(policy: Mapping[str, Any]) -> dict[str, Any]:
     data["x1d_enabled"] = bool(data.get("x1d_enabled", True))
     data["x1d_runs_after_x2"] = bool(data.get("x1d_runs_after_x2", True))
     data["x1d_max_attempts"] = int(data.get("x1d_max_attempts") or 1)
+    data["x1d_llm_judge_depth"] = int(data.get("x1d_llm_judge_depth") or 1)
     data["x1d_temperature"] = float(data.get("x1d_temperature") or 0.1)
     data["x1d_failure_policy"] = str(
         data.get("x1d_failure_policy") or "quality_block_not_exit_override"
     )
     data["x1d_provider_profile"] = str(
-        data.get("x1d_provider_profile") or "qwen_vllm_x1d"
+        data.get("x1d_provider_profile") or CLAUDE_X1D_PROVIDER_PROFILE
     )
     data = _sync_judge_axes(data)
     data["max_candidates"] = int(data.get("max_candidates") or 1)
@@ -306,12 +343,14 @@ def policy_from_reason_codes(reason_codes: tuple[str, ...] | list[str]) -> dict[
     if policy["reasoning_intensity"] == R3_STRICT:
         policy["judges"] = list(STRICT_JUDGES)
         policy["x2_deterministic_gates"] = list(STRICT_X2_GATES)
-        policy["x1d_llm_judges"] = list(DEFAULT_X1D_LLM_JUDGES)
+        policy["x1d_llm_judges"] = list(STRICT_X1D_JUDGES)
+        policy["x1d_max_attempts"] = 2
+        policy["x1d_llm_judge_depth"] = 2
         policy["judge_profile"] = "high_risk_strict"
     elif policy["reasoning_intensity"] == R2_DELIBERATE:
         policy["judges"] = list(DELIBERATE_JUDGES)
         policy["x2_deterministic_gates"] = list(DELIBERATE_X2_GATES)
-        policy["x1d_llm_judges"] = list(DEFAULT_X1D_LLM_JUDGES)
+        policy["x1d_llm_judges"] = list(DELIBERATE_X1D_JUDGES)
         policy["judge_profile"] = "deliberate_selection"
     elif policy["reasoning_intensity"] == R0_MINIMAL:
         policy["judges"] = [JUDGE_SCHEMA_POLICY_NO_SEND]
@@ -336,11 +375,13 @@ def _sync_judge_axes(data: dict[str, Any]) -> dict[str, Any]:
         if str(v).strip()
     ]
     if not explicit_x2:
-        explicit_x2 = [j for j in raw_judges if j != JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D]
+        explicit_x2 = [j for j in raw_judges if j not in X1D_LLM_JUDGE_NAMES]
     if not data.get("x1d_enabled", True):
         explicit_x1d = []
     elif not explicit_x1d and data.get("reasoning_intensity") != R0_MINIMAL:
-        explicit_x1d = list(DEFAULT_X1D_LLM_JUDGES)
+        explicit_x1d = [j for j in raw_judges if j in X1D_LLM_JUDGE_NAMES] or list(
+            DEFAULT_X1D_LLM_JUDGES
+        )
     combined: list[str] = []
     for name in (*explicit_x2, *explicit_x1d):
         if name not in combined:
@@ -388,6 +429,12 @@ def _is_executive_contact(lead: Mapping[str, Any]) -> bool:
 
 
 __all__ = [
+    "CLAUDE_X1D_PROVIDER_PROFILE",
+    "DEFAULT_X1D_LLM_JUDGES",
+    "DELIBERATE_X1D_JUDGES",
+    "NORMAL_DEFAULT_X1D_JUDGES",
+    "STRICT_X1D_JUDGES",
+    "X1D_LLM_JUDGE_NAMES",
     "JUDGE_CANDIDATE_SELECTION",
     "JUDGE_EVIDENCE_SUPPORT",
     "JUDGE_LINKEDIN_TONE",

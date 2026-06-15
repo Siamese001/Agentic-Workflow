@@ -11,7 +11,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from apps_lic.engines.judges.lic_x1d_llm_judge import run_lic_x1d_llm_judge
 from apps_lic.policy.reasoning_intensity import (
     JUDGE_CANDIDATE_SELECTION,
     JUDGE_EVIDENCE_SUPPORT,
@@ -143,21 +142,13 @@ def _run_targeted_judges(
     scores: dict[str, float] = {}
     refs: dict[str, list[str]] = {}
     x2_gate_summary: dict[str, dict[str, Any]] = {}
+    # X1D semantic judging is owned by the independent Claude Exit path
+    # (validation_exit + x1d_claude_judge_adapter). The HOP8 scorecard never
+    # calls an LLM judge; the retired Qwen X1D judge is removed.
     x1d_outputs: dict[str, dict[str, Any]] = {}
 
     for judge_name in policy.get("x2_deterministic_gates", ()):
-        if judge_name == JUDGE_SCHEMA_POLICY_NO_SEND:
-            score, evidence_refs = _judge_schema_policy_no_send(draft, report, policy)
-        elif judge_name == JUDGE_LINKEDIN_TONE:
-            score, evidence_refs = _judge_linkedin_tone(draft)
-        elif judge_name == JUDGE_EVIDENCE_SUPPORT:
-            score, evidence_refs = _judge_evidence_support(draft, evidence)
-        elif judge_name == JUDGE_SAFETY_NO_FABRICATION:
-            score, evidence_refs = _judge_safety_no_fabrication(draft, report, policy)
-        elif judge_name == JUDGE_CANDIDATE_SELECTION:
-            score, evidence_refs = _judge_candidate_selection(draft, policy)
-        else:
-            score, evidence_refs = 0.0, [f"unknown_judge:{judge_name}"]
+        score, evidence_refs = _score_dimension(judge_name, draft, report, evidence, policy)
         scores[str(judge_name)] = round(float(score), 3)
         refs[str(judge_name)] = list(evidence_refs)
         threshold = _x2_gate_threshold(str(judge_name))
@@ -169,27 +160,37 @@ def _run_targeted_judges(
             "authority": "x2_deterministic_gate",
         }
 
-    x2_passed = _x2_gates_passed(report, x2_gate_summary)
     if bool(policy.get("x1d_enabled", True)):
         for judge_name in policy.get("x1d_llm_judges", ()):
-            if judge_name != JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D:
-                scores[str(judge_name)] = 0.0
-                refs[str(judge_name)] = [f"unknown_x1d_judge:{judge_name}"]
+            # Originality is graded only by the live Claude X1D judge at Exit,
+            # not in this deterministic scorecard.
+            if judge_name == JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D:
                 continue
-            output = run_lic_x1d_llm_judge(
-                draft=draft,
-                report=report,
-                evidence=evidence,
-                policy=policy,
-                x2_gate_summary=x2_gate_summary,
-                x2_gates_passed=x2_passed,
-            )
-            output_dict = output.to_dict()
-            score = output.normalized_score if output.normalized_score is not None else 0.0
+            score, evidence_refs = _score_dimension(judge_name, draft, report, evidence, policy)
             scores[str(judge_name)] = round(float(score), 3)
-            refs[str(judge_name)] = list(output.findings or output.quality_flags or [])
-            x1d_outputs[str(judge_name)] = output_dict
+            refs[str(judge_name)] = list(evidence_refs)
     return scores, refs, x2_gate_summary, x1d_outputs
+
+
+def _score_dimension(
+    judge_name: str,
+    draft: dict[str, Any],
+    report: dict[str, Any],
+    evidence: dict[str, Any],
+    policy: dict[str, Any],
+) -> tuple[float, list[str]]:
+    """Deterministic proxy score for one quality dimension."""
+    if judge_name == JUDGE_SCHEMA_POLICY_NO_SEND:
+        return _judge_schema_policy_no_send(draft, report, policy)
+    if judge_name == JUDGE_LINKEDIN_TONE:
+        return _judge_linkedin_tone(draft)
+    if judge_name == JUDGE_EVIDENCE_SUPPORT:
+        return _judge_evidence_support(draft, evidence)
+    if judge_name == JUDGE_SAFETY_NO_FABRICATION:
+        return _judge_safety_no_fabrication(draft, report, policy)
+    if judge_name == JUDGE_CANDIDATE_SELECTION:
+        return _judge_candidate_selection(draft, policy)
+    return 0.0, [f"unknown_judge:{judge_name}"]
 
 
 def _judge_schema_policy_no_send(

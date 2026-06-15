@@ -21,9 +21,9 @@ First-principles review of apps_lic measured against apps_rg's (assumed-complete
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: TODO
-CURRENT_WAVE: W1
-LAST_COMPLETED_WAVE: NONE
+PLAN_STATUS: IN_PROGRESS
+CURRENT_WAVE: W2
+LAST_COMPLETED_WAVE: W1
 LAST_UPDATED: 2026-06-15
 
 ---
@@ -43,7 +43,7 @@ LAST_UPDATED: 2026-06-15
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W1 | W1.1, W1.2 | Model/reasoning SSOT reconciliation (apps_rg-lessons wave) | ~25K | no agentic_core edit | TODO | one X1D model SSOT; YAML generator SSOT; X2/X1D reclassified; C-level 2-pass wired |
+| W1 | W1.1, W1.2 | Model/reasoning SSOT reconciliation (apps_rg-lessons wave) | ~25K | no agentic_core edit | DONE | one X1D model SSOT; YAML generator SSOT; X2/X1D reclassified; C-level 2-pass wired |
 | W2 | W2.1, W2.2 | C0.3 proof graph -> apps_rg-shared candidate SSOT (graph-skills infusion) | ~40K | agentic_core graph-traverse wiring (receipt) | TODO | LicGraphAdapter live; approved proof IDs+lineage into HOP3/HOP5; provenance in envelope |
 | W3 | W3.1 | Recipient-fit weighting over the graph | ~20K | W2 done | TODO | proof re-weighted per recipient_class x message_type x trigger; flat candidate_skills removed |
 | W4 | W4.1, W4.2 | Eval lane matrix (5x4) + batch aggregation | ~30K | judges from W1 | TODO | 20-cell matrix pass/fail report; per-recipient batch (no all-or-nothing) |
@@ -54,8 +54,8 @@ LAST_UPDATED: 2026-06-15
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| W1.1 | X1D provider single-source + YAML generator SSOT | TODO |
-| W1.2 | X2/X1D reclassification + C-level 2-pass + candidate-count sync | TODO |
+| W1.1 | X1D provider single-source + YAML generator SSOT | DONE |
+| W1.2 | X2/X1D reclassification + C-level 2-pass + candidate-count sync | DONE |
 | W2.1 | Wire LicGraphAdapter to augmented_skills_graph + fact ledger | TODO |
 | W2.2 | Approved-proof selection into HOP3/HOP5 + provenance into envelope | TODO |
 | W3.1 | Recipient-fit weighting | TODO |
@@ -110,14 +110,14 @@ Provider per call (audited): generation = **Qwen vLLM**; X1D = **CONTRADICTORY**
 ## Wave 1 — Model/Reasoning SSOT Reconciliation
 
 WAVE_ID: W1
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: A
 
 **Phases**:
-- **W1.1** — X1D provider single-source + YAML generator SSOT | ~12K | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W1.2** — X2/X1D reclassification + C-level 2-pass + candidate-count sync | ~13K | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W1.1** — X1D provider single-source + YAML generator SSOT | ~12K | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W1.2** — X2/X1D reclassification + C-level 2-pass + candidate-count sync | ~13K | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - Decide X1D model (recommend Claude Sonnet 4.6 per the frozen W0 contract = independent judge != generator); make `reasoning_intensity.x1d_provider_profile`, the judge adapter, and `lic_x1d_llm_judge` consistent; delete/deprecate the superseded impl.
@@ -219,7 +219,7 @@ CHECKPOINT: F
 
 DoD-1: Single model SSOT — generator + X1D judge each resolve from one YAML source; X1D provider contradiction gone.
 - Evidence: `grep qwen_vllm_x1d apps_lic` shows no live contradiction; model_profiles.yaml is the source; tests pin resolution.
-- Status: TODO
+- Status: DONE (W1.1; model_profiles.yaml + resolver; reasoning_intensity x1d_provider_profile=claude_sonnet_4_6_x1d; test_model_profiles_ssot.py)
 
 DoD-2: Grounded proof — LicGraphAdapter returns real approved proof-points; every outbound claim has provenance.
 - Evidence: an E2E run emits an OutboundEnvelope with proof IDs + lineage; evidence-support gate passes on a grounded lane.
@@ -231,7 +231,7 @@ DoD-3: 5x4 eval matrix green — all 20 message-type x recipient-class cells pas
 
 DoD-4: apps_rg-issue checklist closed — X2/X1D reclassified, C-level 2-pass wired, candidate-count synced, env-pin audited, no all-or-nothing.
 - Evidence: the checklist table above all resolved; targeted tests.
-- Status: TODO
+- Status: DONE (W1.2; X2/X1D reclassified, C-level x1d_max_attempts=2, candidate-count synced, Qwen X1D judge deleted, env-pin documented as override; test_reasoning_intensity_policy.py + test_aig_target_category_e2e.py)
 
 DoD-5: Briefing reuse + ops — apps_lic runs from apps_rg's briefing.txt via `--manual-brief`; runbook documents the Qwen-up dependency.
 - Evidence: a real run with the shared briefing path; RUNBOOK updated.

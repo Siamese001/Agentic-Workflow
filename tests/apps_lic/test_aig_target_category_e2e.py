@@ -11,10 +11,12 @@ from apps_lic.engines.qa_report_engine import QaReportEngine
 from apps_lic.engines.profile_analysis_engine import classify_recipient_profile
 from apps_lic.engines.validation_engine import ValidationEngine
 from apps_lic.policy.reasoning_intensity import (
+    JUDGE_CANDIDATE_SELECTION,
     JUDGE_EVIDENCE_SUPPORT,
     JUDGE_LINKEDIN_TONE,
     JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
     JUDGE_SAFETY_NO_FABRICATION,
+    JUDGE_SCHEMA_POLICY_NO_SEND,
     R3_STRICT,
     SC_3,
 )
@@ -182,10 +184,7 @@ def test_validation_blocks_generic_bs_message() -> None:
     assert "antipattern:GENERIC_SYNERGY_ASK" in report["issues"]
 
 
-def test_qa_report_exposes_x2_x1d_judges_and_one_shot_quality_contract(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("APPS_LIC_TEST_X1D_JUDGE_STUB", "1")
+def test_qa_report_exposes_x2_x1d_judges_and_one_shot_quality_contract() -> None:
     draft = {
         "message_text": (
             "Hi Scott, AIG's Agentic AI role reads like an operating-model "
@@ -194,6 +193,7 @@ def test_qa_report_exposes_x2_x1d_judges_and_one_shot_quality_contract(
             "call on proof I could bring to the rollout?"
         ),
         "body": "",
+        "channel": "linkedin",
         "recipient_category": "EXECUTIVE",
         "recipient_class": "executive",
         "generation_temperature": 0.82,
@@ -213,11 +213,13 @@ def test_qa_report_exposes_x2_x1d_judges_and_one_shot_quality_contract(
                 JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
             ],
             "x2_deterministic_gates": [
+                JUDGE_SCHEMA_POLICY_NO_SEND,
+                JUDGE_CANDIDATE_SELECTION,
+            ],
+            "x1d_llm_judges": [
                 JUDGE_EVIDENCE_SUPPORT,
                 JUDGE_LINKEDIN_TONE,
                 JUDGE_SAFETY_NO_FABRICATION,
-            ],
-            "x1d_llm_judges": [
                 JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
             ],
             "max_candidates": 3,
@@ -234,8 +236,10 @@ def test_qa_report_exposes_x2_x1d_judges_and_one_shot_quality_contract(
     })["qa_report"]
 
     assert qa["composite_score"] >= 0.8
-    assert qa["judge_count"] == 4
+    assert qa["judge_count"] == 6
     assert qa["active_judges"] == [
+        JUDGE_SCHEMA_POLICY_NO_SEND,
+        JUDGE_CANDIDATE_SELECTION,
         JUDGE_EVIDENCE_SUPPORT,
         JUDGE_LINKEDIN_TONE,
         JUDGE_SAFETY_NO_FABRICATION,
@@ -243,16 +247,14 @@ def test_qa_report_exposes_x2_x1d_judges_and_one_shot_quality_contract(
     ]
     assert qa["judge_scores"][JUDGE_EVIDENCE_SUPPORT] >= 0.5
     assert qa["judge_scores"][JUDGE_LINKEDIN_TONE] >= 0.5
-    assert qa["judge_scores"][JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D] >= 0.8
-    assert qa["x2_deterministic_gate_count"] == 3
-    assert qa["x1d_llm_judge_count"] == 1
+    # Originality is graded only by the live Claude X1D judge at Exit, so it is
+    # not scored in the deterministic HOP8 scorecard.
+    assert JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D not in qa["judge_scores"]
+    assert qa["x2_deterministic_gate_count"] == 2
+    assert qa["x1d_llm_judge_count"] == 4
     assert qa["x2_gates_passed"] is True
-    assert (
-        qa["x1d_llm_judge_outputs"][
-            JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D
-        ]["provider_status"]
-        == "TEST_STUB_PASS"
-    )
+    assert qa["x1d_llm_judge_outputs"] == {}
+    assert qa["x1d_model_backed_pass"] is False
     assert qa["quality_contract"] == {
         "generation_temperature": 0.82,
         "top_p": 0.92,
@@ -261,23 +263,27 @@ def test_qa_report_exposes_x2_x1d_judges_and_one_shot_quality_contract(
         "reasoning_intensity": R3_STRICT,
         "judge_profile": "high_risk_strict",
         "active_judges": [
+            JUDGE_SCHEMA_POLICY_NO_SEND,
+            JUDGE_CANDIDATE_SELECTION,
             JUDGE_EVIDENCE_SUPPORT,
             JUDGE_LINKEDIN_TONE,
             JUDGE_SAFETY_NO_FABRICATION,
             JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
         ],
-        "judge_count": 4,
+        "judge_count": 6,
         "x2_deterministic_gates": [
-            JUDGE_EVIDENCE_SUPPORT,
-            JUDGE_LINKEDIN_TONE,
-            JUDGE_SAFETY_NO_FABRICATION,
+            JUDGE_SCHEMA_POLICY_NO_SEND,
+            JUDGE_CANDIDATE_SELECTION,
         ],
-        "x2_deterministic_gate_count": 3,
+        "x2_deterministic_gate_count": 2,
         "x2_gates_passed": True,
         "x1d_llm_judges": [
+            JUDGE_EVIDENCE_SUPPORT,
+            JUDGE_LINKEDIN_TONE,
+            JUDGE_SAFETY_NO_FABRICATION,
             JUDGE_LINKEDIN_ORIGINALITY_THOUGHTFULNESS_X1D,
         ],
-        "x1d_llm_judge_count": 1,
+        "x1d_llm_judge_count": 4,
         "x1d_runs_after_x2": True,
         "x1d_max_attempts": 1,
         "x1d_failure_policy": "quality_block_not_exit_override",
