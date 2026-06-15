@@ -53,13 +53,13 @@ class ProofType(Enum):
 @dataclass(frozen=True)
 class CompletedEvalRecord:
     """Immutable record of completed run evaluation.
-    
+
     Emitted after runtime boundary. Cannot modify current run.
     """
     run_id: str
     trace_root: str
     evaluated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    
+
     # Inputs consumed (read-only references)
     runtime_exhaust_bundle_ref: str = ""
     exit_disposition_receipt_ref: str = ""
@@ -69,7 +69,7 @@ class CompletedEvalRecord:
     sealed_l2_artifact_ref: str = ""
     final_evidence_contract_ref: str = ""
     judge_evidence_refs: Tuple[str, ...] = ()
-    
+
     # Learning observations (inert, no current-run mutation)
     entity_alias_observations: Dict[str, Any] = field(default_factory=dict)
     source_reliability_signals: Dict[str, Any] = field(default_factory=dict)
@@ -80,10 +80,10 @@ class CompletedEvalRecord:
     judge_calibration_signals: Dict[str, Any] = field(default_factory=dict)
     prompt_rubric_candidates: Dict[str, Any] = field(default_factory=dict)
     downstream_usefulness_signals: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Evidence digest
     evidence_digest: str = ""
-    
+
     def __post_init__(self) -> None:
         """Verify immutability constraints."""
         # Ensure no current-run mutation paths
@@ -93,23 +93,23 @@ class CompletedEvalRecord:
 @dataclass(frozen=True)
 class RCAPacket:
     """Root Cause Analysis packet for completed run.
-    
+
     Inert analysis. No current-run repair.
     """
     run_id: str
     rca_id: str
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    
+
     # Analysis (observational only)
     gate_failure_patterns: List[Dict[str, Any]] = field(default_factory=list)
     judge_disagreement_patterns: List[Dict[str, Any]] = field(default_factory=list)
     cache_hit_anomaly_patterns: List[Dict[str, Any]] = field(default_factory=list)
     source_quality_deficits: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     # Root cause hypotheses (not repairs)
     root_cause_hypotheses: List[str] = field(default_factory=list)
     contributing_factors: List[str] = field(default_factory=list)
-    
+
     # Evidence refs (read-only)
     evidence_refs: Tuple[str, ...] = ()
 
@@ -117,31 +117,31 @@ class RCAPacket:
 @dataclass(frozen=True)
 class ProposalPacket:
     """Inert future-run proposal packet.
-    
+
     Requires UWG review before activation.
     """
     proposal_id: str
     run_id: str
     proposal_type: ProposalType
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    
+
     # Proposal content (inert until UWG)
     target_dimension: str = ""
     proposed_change: Dict[str, Any] = field(default_factory=dict)
     rationale: str = ""
     confidence: float = 0.0
-    
+
     # Required proofs (must be provided before promotion)
     required_proofs: Tuple[ProofType, ...] = ()
     proof_refs: Dict[str, str] = field(default_factory=dict)
-    
+
     # Safety constraints
     rollback_plan_ref: str = ""  # Required for activation
     safety_review_status: str = "PENDING_UWG"
-    
+
     # Future-run only
     activation_trigger: str = "FUTURE_RUN_START"  # Never current run
-    
+
     def is_inert(self) -> bool:
         """Check if proposal is still inert (not activated)."""
         return self.safety_review_status != "ACTIVATED"
@@ -150,16 +150,16 @@ class ProposalPacket:
 @dataclass(frozen=True)
 class FutureRunPromotionRequest:
     """Request for promoting learning to future runs.
-    
+
     Inert until all proofs provided and UWG approves.
     """
     request_id: str
     run_id: str
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    
+
     # Proposals bundled
     proposal_packets: Tuple[ProposalPacket, ...] = ()
-    
+
     # Proof requirements
     replay_proof_ref: str = ""  # Demonstrates fix works
     regression_proof_ref: str = ""  # Demonstrates no regression
@@ -173,11 +173,11 @@ class FutureRunPromotionRequest:
 
     # Rollback plan (required)
     rollback_plan_ref: str = ""
-    
+
     # Activation constraints
     target_future_run_window: str = "NEXT_RUN"  # Or specific date range
     auto_activate: bool = False  # Never auto-activate without UWG
-    
+
     # UWG review status
     uwg_review_status: str = "PENDING"
     uwg_approval_ref: str = ""
@@ -203,13 +203,13 @@ class L6GauntletResult:
 @dataclass(frozen=True)
 class ObserverLawReceipt:
     """Receipt confirming L6 observer law compliance.
-    
+
     Certifies L6 did not violate current-run boundary.
     """
     run_id: str
     l6_session_id: str
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    
+
     # Compliance assertions
     no_current_run_mutation: bool = True
     no_x3_emission: bool = True
@@ -218,7 +218,7 @@ class ObserverLawReceipt:
     no_l4_write: bool = True
     no_reroute_attempt: bool = True
     no_reexecute_attempt: bool = True
-    
+
     # Evidence
     compliance_digest: str = ""
     evidence_refs: Tuple[str, ...] = ()
@@ -227,7 +227,7 @@ class ObserverLawReceipt:
 # Re-export for convenience
 __all__ = [
     "ProposalType",
-    "ProofType", 
+    "ProofType",
     "CompletedEvalRecord",
     "RCAPacket",
     "ProposalPacket",
