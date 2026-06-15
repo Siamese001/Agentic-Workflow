@@ -21,6 +21,7 @@ Allow conditions (fail-soft / non-blocking):
 
 Self-contained: no dependency on ``lib.claude_hook_common`` (absent in some
 checkouts). Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master`` (csv).
+IDE owner override: ``WORKTREE_IDE_OWNER=codex|claude`` (default ``claude`` here).
 """
 
 from __future__ import annotations
@@ -33,6 +34,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PROTECTED = ("main", "master")
+DEFAULT_TOPIC = "apps-rg"
+DEFAULT_IDE_OWNER = "claude"
 
 
 def _read_payload() -> dict:
@@ -131,6 +134,75 @@ def _bypass() -> bool:
     )
 
 
+def _ide_owner() -> str:
+    raw = os.environ.get("WORKTREE_IDE_OWNER", "").strip().lower()
+    if raw in {"codex", "claude"}:
+        return raw
+    return DEFAULT_IDE_OWNER
+
+
+def _branch_prefix() -> str:
+    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip() or f"{_ide_owner()}/"
+    return raw if raw.endswith("/") else f"{raw}/"
+
+
+def _primary_checkout_name() -> str:
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return REPO_ROOT.name
+    common = (proc.stdout or "").strip()
+    if proc.returncode != 0 or not common:
+        return REPO_ROOT.name
+    common_path = Path(common)
+    if not common_path.is_absolute():
+        common_path = (REPO_ROOT / common_path).resolve()
+    if common_path.name == ".git":
+        return common_path.parent.name
+    return REPO_ROOT.name
+
+
+def _worktree_dir_prefix() -> str:
+    raw = os.environ.get("WORKTREE_DIR_PREFIX", "").strip().strip("/\\")
+    return raw or _primary_checkout_name()
+
+
+def _worktree_parent() -> Path:
+    override = os.environ.get("CHAT_WORKTREE_ROOT", "").strip()
+    return Path(override) if override else REPO_ROOT.parent
+
+
+def _branch_name(topic: str = DEFAULT_TOPIC) -> str:
+    return f"{_branch_prefix()}{topic}"
+
+
+def _worktree_dir_name(topic: str = DEFAULT_TOPIC) -> str:
+    prefix = _worktree_dir_prefix()
+    owner = _ide_owner()
+    owner_suffix = f"-{owner}"
+    if prefix == owner or prefix.endswith(owner_suffix):
+        return f"{prefix}-{topic}"
+    return f"{prefix}-{owner}-{topic}"
+
+
+def _worktree_path(topic: str = DEFAULT_TOPIC) -> Path:
+    return _worktree_parent() / _worktree_dir_name(topic)
+
+
+def _remediation_example(topic: str = DEFAULT_TOPIC) -> str:
+    return (
+        f"    git worktree add {_worktree_path(topic)} -b {_branch_name(topic)} origin/main\n"
+        f"    cd {_worktree_path(topic)}"
+    )
+
+
 def main() -> int:
     if _bypass():
         return 0
@@ -153,10 +225,14 @@ def main() -> int:
 
     reason = (
         f"worktree-isolation: editing a protected checkout on branch '{branch}' is blocked. "
-        f"Use or create a named sibling worktree for the durable workstream, e.g.:\n"
-        f"    git worktree add ../Agentic-Workflow-FRESH-apps-rg -b work/apps-rg origin/main\n"
-        f"`cd` into that worktree and edit there. Avoid timestamped `chat/*` branches for new "
-        f"work. (Set WORKTREE_PER_CHAT_BYPASS=1 only for an intentional on-primary change.)"
+        "Use or create a named sibling worktree for the durable workstream, with an "
+        "IDE-owned branch prefix and matching C:/Git directory name, e.g.:\n"
+        f"{_remediation_example()}\n"
+        "Codex work should use `codex/<topic>` plus a `...-codex-<topic>` worktree "
+        "directory; Claude Code work should use `claude/<topic>` plus a "
+        "`...-claude-<topic>` worktree directory. Avoid timestamped `chat/*` "
+        "branches for new work. (Set WORKTREE_PER_CHAT_BYPASS=1 only for an "
+        "intentional on-primary change.)"
     )
     sys.stderr.write(reason + "\n")
     return 2  # block

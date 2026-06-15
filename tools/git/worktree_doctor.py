@@ -1,13 +1,15 @@
 """worktree-doctor — classify every git worktree and repair runtime links.
 
 The current model is explicit named sibling worktrees. Preferred durable lanes use
-``work/*`` branches; ``feat/*`` is accepted legacy durable work; ``chat/*`` is legacy
-ephemeral work that should not be used for new work. This tool gives the visibility
-that prevents pileup without auto-deleting human-named branches:
+IDE-owned ``codex/*`` or ``claude/*`` branches; ``work/*`` and ``feat/*`` are accepted
+legacy durable work; ``chat/*`` is legacy ephemeral work that should not be used for
+new work. This tool gives the visibility that prevents pileup without auto-deleting
+human-named branches:
 
   * ``report`` (default) — list every worktree, classify it (protected / ephemeral
-    ``chat/`` / durable ``work/`` or ``feat/`` / non-canonical / detached), and
-    recommend an action (stale-merged -> remove explicitly / active).
+    ``chat/`` / durable ``codex/``, ``claude/``, ``work/`` or ``feat/`` /
+    non-canonical / detached), and recommend an action (stale-merged -> remove
+    explicitly / active).
   * ``--link [<worktree>]`` — (re)create the gitignored runtime-cache junctions for a
     worktree that is missing them (the C0.2-on-fresh-worktree fix). Item #2 repair path.
   * ``--json`` — machine-readable classification.
@@ -43,9 +45,10 @@ except ImportError:  # pragma: no cover - fallback when package layout differs
     summarize = None  # type: ignore[assignment]
 
 PROTECTED = ("main", "master", "release")
-CANONICAL_PREFIXES = ("work/", "feat/", "chat/")
+IDE_OWNER_PREFIXES = {"codex/": "codex", "claude/": "claude"}
+CANONICAL_PREFIXES = ("codex/", "claude/", "work/", "feat/", "chat/")
 EPHEMERAL_PREFIX = "chat/"
-DURABLE_PREFIXES = ("work/", "feat/")
+DURABLE_PREFIXES = ("codex/", "claude/", "work/", "feat/")
 
 
 def _git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
@@ -90,6 +93,13 @@ def _trunk_ref() -> str:
     return os.environ.get("WORKTREE_CLEANUP_TRUNK_REF", "").strip() or "origin/main"
 
 
+def _branch_owner(branch: str) -> str:
+    for prefix, owner in IDE_OWNER_PREFIXES.items():
+        if branch.startswith(prefix):
+            return owner
+    return "legacy" if branch.startswith(("work/", "feat/", "chat/")) else ""
+
+
 def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = False) -> dict:
     """Classify every worktree. Returns {trunk, primary, worktrees:[...]}. Never raises."""
     if do_fetch:
@@ -104,6 +114,7 @@ def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = F
         branch = wt.get("branch", "")
         detached = wt.get("detached") == "1" or not branch
         keep = (path / ".keep-worktree").exists()
+        owner = _branch_owner(branch)
 
         if detached:
             kind = "detached"
@@ -147,6 +158,7 @@ def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = F
                 "path": str(path),
                 "branch": branch or "(detached)",
                 "kind": kind,
+                "owner": owner,
                 "merged": merged,
                 "clean": clean,
                 "keep_marker": keep,
@@ -176,7 +188,8 @@ def _render_table(result: dict) -> str:
         if not r["canonical"]:
             flags.append("non-canonical-prefix")
         flag_s = f" [{', '.join(flags)}]" if flags else ""
-        lines.append(f"  • {r['branch']}  ({r['kind']}){flag_s}")
+        owner = f"/{r['owner']}" if r.get("owner") in ("codex", "claude") else ""
+        lines.append(f"  • {r['branch']}  ({r['kind']}{owner}){flag_s}")
         lines.append(f"      {r['path']}")
         lines.append(f"      → {r['action']}")
     # Advisory summary.
@@ -190,9 +203,9 @@ def _render_table(result: dict) -> str:
     if noncanon:
         lines.append("")
         lines.append(
-            f"{len(noncanon)} non-canonical branch prefix(es) — preferred taxonomy is work/* "
-            "(durable), feat/* (legacy durable), and chat/* (legacy ephemeral); migrate or set "
-            ".keep-worktree."
+            f"{len(noncanon)} non-canonical branch prefix(es) — preferred taxonomy is "
+            "codex/* or claude/* (IDE-owned durable), work/* or feat/* (legacy durable), "
+            "and chat/* (legacy ephemeral); migrate or set .keep-worktree."
         )
     return "\n".join(lines)
 
