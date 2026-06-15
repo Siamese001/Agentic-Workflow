@@ -104,7 +104,13 @@ class EnvironmentConfig(BaseModel):
     PYTHONUNBUFFERED: str = Field(default="1", description="Python unbuffered output")
 
     # Hive Mind Configuration
-    HIVE_MIND_STRICT_MODE: bool = Field(default=False, description="Strict mode for Hive Mind")
+    # Canonical default is STRICT (True): matches the live runtime read in
+    # agentic_core/L4_state/utils/memory/semantic_cache_manager.py (reads os.environ
+    # HIVE_MIND_STRICT_MODE directly, default "true" = fail-fast on infra failure). This pydantic
+    # field is currently UNREAD (the live consumer uses the env var, not this model), so the prior
+    # default=False merely contradicted the real default; aligned False->True. Operators degrade
+    # gracefully by setting HIVE_MIND_STRICT_MODE=false in the environment.
+    HIVE_MIND_STRICT_MODE: bool = Field(default=True, description="Strict mode for Hive Mind (fail-fast; env=false degrades gracefully)")
     HIVE_MIND_MIN_CONFIDENCE: float = Field(default=0.98, ge=0.0, le=1.0)
     HIVE_MIND_TRACE_SAMPLING_RATE: float = Field(default=1.0, ge=0.0, le=1.0)
     HIVE_MIND_PROMOTION_THRESHOLD: float = Field(default=0.8, ge=0.0, le=1.0)
