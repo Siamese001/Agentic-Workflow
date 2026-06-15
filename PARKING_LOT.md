@@ -34,6 +34,7 @@ Is this literally one of the 11 lanes / a graph-skill / the DOCX?
 ## Inbox (append-only — never delete, only move to "Resolved" at weekly review)
 
 <!-- add new lines at the TOP. one line each. -->
+- [P] 2026-06-15 H3 auto-park gate (the missing relevance primitive — RCA'd this session): PreToolUse on Write/Edit to off-north-star paths (.claude/**, plans/**, ops_scripts/ci/**) while lanes<11/11 → fire AskUserQuestion; "Park it" = option1 [RECOMMENDED ⭐ confidence≈0.82, justified by last-100 base-rate 18% north-star]; on Park, auto-append here. Gate auto-disables at 11/11. Build AFTER green (building it now IS the drift).
 - [P] 2026-06-15 Gate cleanup: delete verified-dead orphan CI contract gates (ops_scripts/ci only; NOT runtime/workflows/ADG-truth). Orphan-scan method proven this session (/tmp/orphan_verify.py). Execute AFTER 11/11 lanes green.
 - [P] 2026-06-15 Build behavior hooks H1 (parking-lot weekly nudge) + H2 (north-star scoreboard) + H7 (WIP=1 gate). H1 is the only one arguably justified pre-green; rest parked.
 
