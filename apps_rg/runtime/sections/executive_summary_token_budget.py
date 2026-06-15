@@ -19,7 +19,6 @@ from apps_rg.runtime.bindings.section_prompt_adapter import SectionCompiledPromp
 from apps_rg.runtime.sections.executive_summary_context_limits import (
     CHARS_PER_TOKEN_ESTIMATE,
     DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX,
-    ENV_VERIFY_CONTEXT_WINDOW,
     ESTIMATE_SAFETY_MULTIPLIER,
     RESERVED_SYSTEM_SCHEMA_TOKENS,
     resolve_first_pass_input_utilization_max,
@@ -36,7 +35,6 @@ FIRST_PASS_INPUT_UTILIZATION_MAX = DEFAULT_FIRST_PASS_INPUT_UTILIZATION_MAX
 _CONTEXT_SOURCE_ENV = "ENV_VLLM_MAX_MODEL_LEN"
 _CONTEXT_SOURCE_SERVER = "SERVER_MODELS_METADATA"
 _CONTEXT_SOURCE_UNKNOWN = "UNKNOWN"
-_ENV_VERIFY_CONTEXT_WINDOW = ENV_VERIFY_CONTEXT_WINDOW
 TRIM_STRATEGY = "executive_summary_optional_trim_only_v2"
 ESTIMATE_METHOD = "approximate_chars_div_3_with_safety_margin"
 
