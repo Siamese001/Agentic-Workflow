@@ -193,9 +193,66 @@ not absorbed — that outcome would itself be a data point confirming P3.
 
 ---
 
+## 7. Before/After the pivot (`2f83d4bb` · 2026-06-10 17:10 UTC) — did it work?
+
+Cohorts: **BEFORE** = 500 commits / 31.6 days (2026-05-09 → 06-10); **AFTER** = 284 commits /
+4.8 days (06-10 → 06-15). Normalized per-day. Figure: [pivot_before_after.png](pivot_before_after.png).
+
+| KPI | Before | After | Δ | Read |
+|---|---|---|---|---|
+| North-star **code** commits / day | 3.4 | **12.0** | **+253%** | ✅ real product output tripled |
+| North-star code % of commits | 22% | **30%** | **+8pp** | ✅ composition improved |
+| PRs merged / day | 0.28 | 4.58 | +1536% | ✅ discrete deliverable cadence |
+| North-star % (subject) | 37% | 41% | +4pp | ✅ modest |
+| Governance % of commits | 24% | 24% | **0pp** | ⚠️ meta-work did **not** shrink |
+| Plan-touching commits / day | 2.2 | 10.0 | +355% | ⚠️ (partly bulk moves; still up) |
+| Thrash/undo % | 10% | 11% | +1pp | ⚠️ flat |
+| Commits / day | 15.8 | 39.5 | +150% | ⚠️ velocity binge (unsustainable) |
+
+**Milestone:** the **first green generated lane** — ibm_bullets `X3_ALLOW` (`f678fb91`, 2026-06-14) —
+landed **after** the pivot. Before the pivot there were zero green lanes; the realignment preceded
+the first real product win.
+
+**Verdict — DERIVED:** the pivot succeeded on its primary job (north-star *code* now ships, and a
+lane went green), and composition moved the right way (+8pp). It did **not** shrink the meta-work —
+governance held at 24% and plan/thrash were flat; they were *swamped* by a +150% velocity binge
+rather than reduced. So the fear-driven orthogonal capture is **still present in absolute terms**;
+it now runs *alongside* more real work instead of *instead of* it. Next gain = cut the flat 24%, not
+add more output on top.
+
+## 8. Beating the fear + the ADHD loop — the minimal enforcement set
+
+> The request: "what hooks/rules help me get away from my irrational fears and ADHD?" The honest
+> answer is **a small set of constraint/capture hooks, each paid for by deleting old gates** — net
+> enforcement surface must **shrink**. Adding 44 more rules *is* the disease (P3). The fear is
+> *loss of an orthogonal idea*; the cure is **trusted capture + guaranteed resurfacing**, not acting
+> on the idea. These hooks make capture frictionless and resurfacing certain — that is what dissolves
+> the fear.
+
+| # | Hook / rule | Type | Attacks | Add or flip |
+|---|---|---|---|---|
+| H1 | **Parking-lot weekly-review nudge** (SessionStart): if `PARKING_LOT.md` has lines unreviewed >7 days, surface them | capture-support | **the fear directly** — makes "you WILL see this again" true; without it the lot is a black hole and the build-now reflex returns | ADD |
+| H2 | **North-star scoreboard** (SessionStart banner): lanes `n/11` + 7-day north-star % | mirror | target visibility; replaces reading 43 rules at startup | ADD |
+| H3 | **Judgment brake** (PreToolUse on Write to `.claude/rules\|hooks\|governance\|plans/`): one prompt — "not north-star code; 1-line: why now, or park it?" — answer logged | external friction (the one missing brake, §3c P1b) | the displacement *act*, at the moment it happens; the only gate that asks *should this exist* | ADD (replaces ~230 others) |
+| H4 | **Plan-mint default-DENY** (`pre_write_plan_mint_gate.py`) | constraint | plan-as-displacement (P4); flip warn→block | FLIP |
+| H5 | **Subtraction quota** (PreToolUse): an additive governance commit blocks unless it removes ≥ as much (the repo's dormant rule, wired) | constraint | build-then-demolish + sprawl (P2/P3) | WIRE |
+| H6 | **Time-edge nudge** (Stop/SessionStart): flag round-the-clock / no-recovery-day cadence | gentle | the binge + time-blindness (V1/V2) | ADD (optional) |
+
+**The binding rule for all of the above:** *every hook added must be paid for by deleting old gates.*
+Recommended net move: **+4 constraint/capture hooks, −230 correctness gates** (282 → ~50). If the
+surface grows, the recommendation has been inverted into the very pattern it diagnoses.
+
+**Why this beats the fear specifically:** H1+H2 make it *safe* to park an orthogonal idea (it is
+captured, it will resurface, and the target stays visible), so the brain no longer needs to build it
+*now* to feel safe. H3+H4+H5 add friction to the *act* of building it now. Capture removes the
+motive; friction removes the means. Neither alone works — together they let you stay on the lane
+while *trusting* that nothing is lost.
+
 ## Appendix — reproduction
 
 - `git log --merges -341 --pretty='%H|%ai|%s'` → merge cadence
 - `git log --no-merges -2000 --pretty='C|%H|%ai|%s' --shortstat` → churn/timing/classification (`/tmp/dna.py`)
 - `search_pull_requests: repo:… is:pr is:merged` (317) vs `… review:none` (317) → F1
 - Figure generator: `/tmp/dnaviz.py` → [forensic_dna_study.png](forensic_dna_study.png)
+- Pivot anchor: `git log --diff-filter=A -- apps-rg-execution-bias.md` → `2f83d4bb` @ 2026-06-10 17:10 UTC
+- Before/after: `git log --no-merges -500 2f83d4bb~1` vs `git log --no-merges 2f83d4bb..HEAD` (`/tmp/ba.py`) → [pivot_before_after.png](pivot_before_after.png)
