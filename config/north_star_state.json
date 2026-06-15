@@ -1,0 +1,9 @@
+{
+  "_doc": "North-star state consumed by .claude/hooks/pre_write_north_star_gate.py. Update lanes_passing as apps_rg E2E lanes go X3_ALLOW; the gate auto-disables when lanes_passing >= lanes_total. recent_north_star_pct seeds the EARNED confidence shown in the AskUserQuestion (lower north-star % => higher 'park it' confidence).",
+  "north_star": "apps_rg E2E, 11/11 lanes X3_ALLOW, sliding-scale graph skills, assembled DOCX",
+  "lanes_passing": 1,
+  "lanes_total": 11,
+  "recent_north_star_pct": 18,
+  "enabled": true,
+  "updated": "2026-06-15"
+}
