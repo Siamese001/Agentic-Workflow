@@ -345,7 +345,7 @@
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
       "function_name": "_get_UnifiedAgent_mapping",
       "imported_modules": [
-        "agentic_core.L5_safety.reasoning.CodeEnforcerAgent"
+        "agentic_core.L5_safety.utils.code_enforcer_util"
       ],
       "imported_symbols": [],
       "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
@@ -375,7 +375,7 @@
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
       "function_name": "_get_phase3_manager_enforcer_mapping",
       "imported_modules": [
-        "agentic_core.L5_safety.reasoning.CodeEnforcerAgent"
+        "agentic_core.L5_safety.utils.code_enforcer_util"
       ],
       "imported_symbols": [],
       "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
@@ -415,7 +415,7 @@
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
       "function_name": "_get_phase4_detector_healer_router_executor_mapping",
       "imported_modules": [
-        "agentic_core.L5_safety.reasoning.CodeDetectorAgent"
+        "agentic_core.L5_safety.utils.code_detector_util"
       ],
       "imported_symbols": [],
       "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
@@ -495,7 +495,7 @@
       "file_path": "agentic_core\\L3_orchestration\\engines\\AgentFactory.py",
       "function_name": "_get_CodeEnforcerAgent",
       "imported_modules": [
-        "agentic_core.L5_safety.reasoning.CodeEnforcerAgent"
+        "agentic_core.L5_safety.utils.code_enforcer_util"
       ],
       "imported_symbols": [],
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
@@ -582,7 +582,7 @@
       "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
-      "file_path": "agentic_core\\L4_state\types\detection_signal_store_types.py",
+      "file_path": "agentic_core\\L4_state\\types\\detection_signal_store_types.py",
       "function_name": "_get_detection_signal_class",
       "imported_modules": [
         "agentic_core.L6_observability.types.detection_signal_types"

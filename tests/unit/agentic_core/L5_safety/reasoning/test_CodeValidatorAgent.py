@@ -1,6 +1,7 @@
-"""Surface coverage for `agentic_core.L5_safety.reasoning.CodeValidatorAgent`.
+"""Surface coverage for `agentic_core.L5_safety.utils.code_validator_util`.
 
-Wave 9 of `docs/archive/windsurf/legacy-tree/plans/test-coverage-waves-f8f5a7.md` (Top-15 v3).
+Retirement coverage for the canonical utility that replaced the deprecated
+`CodeValidatorAgent` shim.
 """
 
 from __future__ import annotations
@@ -11,7 +12,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-MODULE = "agentic_core.L5_safety.reasoning.CodeValidatorAgent"
+MODULE = "agentic_core.L5_safety.utils.code_validator_util"
 
 
 @pytest.fixture(scope="module")
@@ -24,9 +25,14 @@ def test_module_imports_cleanly(mod):
 
 
 def test_class_present(mod):
-    assert hasattr(mod, "CodeValidatorAgent")
-    assert inspect.isclass(mod.CodeValidatorAgent)
+    assert hasattr(mod, "CodeValidator")
+    assert inspect.isclass(mod.CodeValidator)
 
 
-def test_class_name_ends_with_agent(mod):
-    assert mod.CodeValidatorAgent.__name__.endswith("Agent")
+def test_ruleset_and_report_types_present(mod):
+    assert inspect.isclass(mod.RuleSet)
+    assert inspect.isclass(mod.ValidationReport)
+
+
+def test_validator_exposes_repository_api(mod):
+    assert callable(getattr(mod.CodeValidator, "validate_repository", None))

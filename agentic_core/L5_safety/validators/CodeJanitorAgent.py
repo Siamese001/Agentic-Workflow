@@ -2,11 +2,10 @@
 validators/CodeJanitorAgent.py — backward-compat re-export shim.
 
 Canonical implementation has moved to:
-    agentic_core.L5_safety.reasoning.CodeJanitorAgent
+    agentic_core.L5_safety.utils.code_janitor_util
 
 This file is a pure re-export stub with NO mutation logic of its own.
-All filesystem writes (_write_file_content, _smart_fix, heal_repository) are in
-reasoning/CodeJanitorAgent.py (L5 healer territory).
+Janitor validation logic lives in code_janitor_util.py.
 
 ADG fix: A-04 (CodeJanitorAgent split — healer logic moved to reasoning/).
 
@@ -17,7 +16,7 @@ Consumers at authorization: 0 (verified via live-code grep of
 `L5_safety.validators.CodeJanitorAgent` \u2014 4 previously-reported consumers
 in tools/archive/orphan_hooks_w5.3/import_dep_baseline.txt have all been
 refactored away; current grep returns zero hits).
-Unique logic: none (pure re-export of agentic_core.L5_safety.reasoning.CodeJanitorAgent).
+Unique logic: none (pure re-export of agentic_core.L5_safety.utils.code_janitor_util).
 Target archive path on or after eligibility date:
   archives/agents/2026-07-23/L5_safety__validators__CodeJanitorAgent.py
 Cooling-timer artifact: artifacts/agent_deprecation/validators__CodeJanitorAgent.json
@@ -26,8 +25,8 @@ ADG violation resolved on archive: v_p2_duplicated_adapters (1 of 3 in W2).
 
 from __future__ import annotations
 
-from agentic_core.L5_safety.reasoning.CodeJanitorAgent import (
-    CodeJanitorAgent,
+from agentic_core.L5_safety.utils.code_janitor_util import (
+    CodeJanitor as CodeJanitorAgent,
     JanitorViolation,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

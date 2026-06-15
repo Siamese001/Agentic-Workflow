@@ -12,5 +12,5 @@ agentic_core.L3_orchestration.reasoning.DomainPlannerAgent
 agentic_core.L3_orchestration.reasoning.NervousSystemAgent
 agentic_core.L3_orchestration.reasoning.SemanticGatekeeperAgent
 agentic_core.L5_safety.reasoning.HygieneGuardianAgent
-agentic_core.L5_safety.reasoning.LocationHealerAgent
+agentic_core.L5_safety.utils.location_healer_util
 agentic_core.L5_safety.reasoning.StructureHealerAgent
