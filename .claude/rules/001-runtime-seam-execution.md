@@ -36,6 +36,7 @@ The template (shown fenced for docs only — emit it **unfenced**, after a `---`
 ### ⬛ Turn Receipt
 
 STATUS: PASS | PARTIAL | FAIL | BLOCKED
+BRANCH: <current local git branch (the chat/* or feat/* worktree branch this work is on)>
 FILES_CHANGED:
 - [basename](repo/relative/path)
 COMMANDS_RUN:
