@@ -154,12 +154,29 @@ def _tokenize_for_grounding(text: str) -> set[str]:
     return {tok for tok in raw if tok not in _HEADLINE_GENERIC_NOUN_STOPLIST}
 
 
+_SKILL_ID_PREFIX_RE = re.compile(r"^skill_(?:sr_)?(?:w\d+_)?")
+
+
+def _skill_id_to_grounding_text(skill_id: str) -> str:
+    """Derive a skill's content nouns from its graph-node id for headline grounding.
+
+    Graph skill nodes (skill_*) encode the real skill content the candidate holds, but
+    selected_skills carries no display claim_text — so a headline segment citing a skill (e.g.
+    "Lakehouse" -> skill_sr_w12_databricks_lakehouse_fundamentals) had no text to ground against
+    (fact_text_known=False) and x2_headline_xyz_literal_grounding failed. Strip the skill_/
+    seniority/window qualifiers and underscore-join so the segment can ground against the skill it
+    cites (-> "databricks lakehouse fundamentals").
+    """
+    return _SKILL_ID_PREFIX_RE.sub("", str(skill_id or "")).replace("_", " ").strip()
+
+
 def _extract_plan_fact_text_map(
     parsed_output: dict[str, Any] | None,
     fallback_facts: list[dict[str, Any]] | None = None,
 ) -> dict[str, str]:
     out: dict[str, str] = {}
     facts: list[dict[str, Any]] = []
+    sfp: dict[str, Any] | None = None
     if isinstance(parsed_output, dict):
         sfp = parsed_output.get("selected_fact_plan")
         if isinstance(sfp, dict):
@@ -178,6 +195,22 @@ def _extract_plan_fact_text_map(
             base = fid.split("_metric_")[0]
             if base != fid and base not in out:
                 out[base] = text
+    # Graph-era skill grounding (typed-edge guardrails): selected_fact_plan.facts carries
+    # claim_text only for role-episode bundles (reb_*); skill_* graph nodes live in
+    # selected_skills / selected_skill_ids with no display text. Derive their content nouns from
+    # the id so a headline segment can ground against the graph skill it cites.
+    if isinstance(sfp, dict):
+        skill_sources: list[str] = []
+        for sk in sfp.get("selected_skills") or []:
+            sid = str(sk.get("skill_id") if isinstance(sk, dict) else sk or "").strip()
+            if sid:
+                skill_sources.append(sid)
+        skill_sources.extend(str(s).strip() for s in (sfp.get("selected_skill_ids") or []))
+        for sid in skill_sources:
+            if sid.startswith("skill_") and sid not in out:
+                txt = _skill_id_to_grounding_text(sid)
+                if txt:
+                    out[sid] = txt
     return out
 
 
@@ -981,13 +1014,29 @@ def run_headline_x2_gates(
 
     sfp = parsed_output.get("selected_fact_plan") if isinstance(parsed_output, dict) else None
     req_ids = set(sfp.get("required_fact_ids") or []) if isinstance(sfp, dict) else set()
-    plan_matches = req_ids == ledger_ids and bool(req_ids)
+    # Graph-era headline coherence (typed-edge guardrails): required_fact_ids is the deterministic
+    # graph SELECTION (top-N role-episode bundles + skill nodes), but a headline is ONE LINE with
+    # ~4 segments and structurally cannot cite all N selected facts — it cites a prioritized subset.
+    # So the integrity invariant is ledger ⊆ selection (every cited fact was selected — no
+    # fabrication), NOT exact equality (which falsely failed good, prioritized headlines). Exact
+    # equality additionally demanded "every selected fact is cited", impossible for the one-line
+    # form; the subset check still blocks any cited-but-unselected (fabricated) fact.
+    extra_cited = ledger_ids - req_ids
+    plan_matches = bool(ledger_ids) and bool(req_ids) and not extra_cited
     add(
         "x2_headline_selected_fact_plan_matches_ledger",
         plan_matches,
-        {"required_fact_ids": sorted(req_ids), "ledger_union": sorted(ledger_ids)},
-        "exact set equality",
-        None if plan_matches else "selected_fact_plan.required_fact_ids must equal claim_ledger union.",
+        {
+            "required_fact_ids": sorted(req_ids),
+            "ledger_union": sorted(ledger_ids),
+            "cited_but_not_selected": sorted(extra_cited),
+        },
+        "claim_ledger union is a non-empty subset of selected required_fact_ids (no fabricated citation)",
+        None
+        if plan_matches
+        else f"claim_ledger cites fact(s) not in selected_fact_plan.required_fact_ids: {sorted(extra_cited)}"
+        if extra_cited
+        else "claim_ledger union empty or selected_fact_plan.required_fact_ids empty.",
     )
 
     json_ok, json_reason = check_json_parse_valid(parsed_output, raw_output)
