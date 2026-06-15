@@ -115,15 +115,22 @@ def resolve_provider_context_window() -> int:
     #       with pre-2026-06-13 deployments and tests that constrain ctx via this var;
     #       does NOT shadow (1) if (1) is set.
     #   (3) default_provider_context_window() — section_model_limits default (32768 Claude era).
+    section_default = default_provider_context_window()
     if os.environ.get("APPS_RG_SECTION_MAX_MODEL_LEN"):
-        return default_provider_context_window()
+        return section_default
     raw = os.environ.get("VLLM_MAX_MODEL_LEN", "").strip()
     if raw:
         try:
-            return max(4096, int(raw))
+            # VLLM_MAX_MODEL_LEN is the legacy Qwen-container ctx SSOT (apps_lic + agentic_core
+            # healers). apps_rg sections run on external Claude (~200k ctx); the Qwen value must
+            # NEVER LOWER an apps_rg section below the Claude-era default — only a HIGHER value is
+            # honored as a fallback. (The 24576 Qwen ctx was silently capping the budget and
+            # token-blocking executive_summary from generating when APPS_RG_SECTION_MAX_MODEL_LEN
+            # was absent from the runtime env — e.g. fresh worktrees whose .env autoload differs.)
+            return max(int(raw), section_default)
         except ValueError:  # guardian: allow-silent-swallow -- legacy env compat fail-soft
             pass
-    return default_provider_context_window()
+    return section_default
 
 
 def resolve_scratch_max_output_tokens() -> int:
