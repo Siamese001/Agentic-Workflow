@@ -1,6 +1,6 @@
 {
   "schema": "competencies_graph_proof_pool_p2_w1_receipt_v1",
-  "generated_at": "2026-06-09T08:11:22Z",
+  "generated_at": "2026-06-15T21:31:37Z",
   "proof_pool_type": "augmented_skills_graph",
   "section_id": "competencies",
   "graph_source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
@@ -17,18 +17,79 @@
     "track_genai_agentic": 12
   },
   "selected_fact_count_by_track": {
-    "track_actuarial_risk_derivatives": 3,
-    "track_data_tech_cloud_ml": 5,
-    "track_genai_agentic": 8
+    "track_actuarial_risk_derivatives": 4,
+    "track_data_tech_cloud_ml": 3,
+    "track_genai_agentic": 6
   },
   "selected_skill_rows_sample": [
+    {
+      "skill_id": "skill_finra_sec_regulatory_compliance",
+      "label": "FINRA",
+      "career_track": "track_actuarial_risk_derivatives",
+      "pillar": "pillar_regulatory_governance",
+      "fact_id_links": [
+        "fact_consulting_001"
+      ],
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_actuarial_risk_derivatives",
+          "to": "pillar_regulatory_governance",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_regulatory_governance",
+          "to": "skill_finra_sec_regulatory_compliance",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_row_fact_id_links",
+          "from": "skill_finra_sec_regulatory_compliance",
+          "to": "fact_consulting_001",
+          "note": "fact_id_links on skill_row (no separate fact node)"
+        }
+      ],
+      "graph_support_ref": "augmented_skills_graph"
+    },
+    {
+      "skill_id": "skill_actuarial_actuarial_software",
+      "label": "actuarial software",
+      "career_track": "track_actuarial_risk_derivatives",
+      "pillar": "pillar_actuarial_foundation",
+      "fact_id_links": [
+        "fact_insurance_software_001"
+      ],
+      "graph_hop_path": [
+        {
+          "edge_type": "career_track_contains_pillar",
+          "from": "track_actuarial_risk_derivatives",
+          "to": "pillar_actuarial_foundation",
+          "note": "track-weighted pillar scope"
+        },
+        {
+          "edge_type": "skill_row_pillar_projection",
+          "from": "pillar_actuarial_foundation",
+          "to": "skill_actuarial_actuarial_software",
+          "note": "ACTIVE skill_row pillar match (not causal)"
+        },
+        {
+          "edge_type": "skill_row_fact_id_links",
+          "from": "skill_actuarial_actuarial_software",
+          "to": "fact_insurance_software_001",
+          "note": "fact_id_links on skill_row (no separate fact node)"
+        }
+      ],
+      "graph_support_ref": "augmented_skills_graph"
+    },
     {
       "skill_id": "skill_actuarial_fsa_fellowship",
       "label": "FSA",
       "career_track": "track_actuarial_risk_derivatives",
       "pillar": "pillar_actuarial_foundation",
       "fact_id_links": [
-        "fact_certs_001"
+        "fact_certs_001",
+        "fact_quant_act_001"
       ],
       "graph_hop_path": [
         {
@@ -53,120 +114,60 @@
       "graph_support_ref": "augmented_skills_graph"
     },
     {
-      "skill_id": "skill_capital_capital_modeling",
-      "label": "capital modeling",
-      "career_track": "track_actuarial_risk_derivatives",
-      "pillar": "pillar_capital_modeling",
-      "fact_id_links": [
-        "fact_quant_hpc_003"
-      ],
-      "graph_hop_path": [
-        {
-          "edge_type": "career_track_contains_pillar",
-          "from": "track_actuarial_risk_derivatives",
-          "to": "pillar_capital_modeling",
-          "note": "track-weighted pillar scope"
-        },
-        {
-          "edge_type": "skill_row_pillar_projection",
-          "from": "pillar_capital_modeling",
-          "to": "skill_capital_capital_modeling",
-          "note": "ACTIVE skill_row pillar match (not causal)"
-        },
-        {
-          "edge_type": "skill_supported_by_fact",
-          "from": "skill_capital_capital_modeling",
-          "to": "fact_quant_hpc_003",
-          "note": "graph edge skill_supported_by_fact"
-        }
-      ],
-      "graph_support_ref": "augmented_skills_graph"
-    },
-    {
-      "skill_id": "skill_capital_regulatory_capital",
-      "label": "regulatory capital",
-      "career_track": "track_actuarial_risk_derivatives",
-      "pillar": "pillar_capital_modeling",
-      "fact_id_links": [
-        "fact_governance_003"
-      ],
-      "graph_hop_path": [
-        {
-          "edge_type": "career_track_contains_pillar",
-          "from": "track_actuarial_risk_derivatives",
-          "to": "pillar_capital_modeling",
-          "note": "track-weighted pillar scope"
-        },
-        {
-          "edge_type": "skill_row_pillar_projection",
-          "from": "pillar_capital_modeling",
-          "to": "skill_capital_regulatory_capital",
-          "note": "ACTIVE skill_row pillar match (not causal)"
-        },
-        {
-          "edge_type": "skill_supported_by_fact",
-          "from": "skill_capital_regulatory_capital",
-          "to": "fact_governance_003",
-          "note": "graph edge skill_supported_by_fact"
-        }
-      ],
-      "graph_support_ref": "augmented_skills_graph"
-    },
-    {
-      "skill_id": "skill_commercial_board_level_stakeholder_alignment",
-      "label": "board level priorities",
+      "skill_id": "skill_partner_aws_ecosystem",
+      "label": "AWS Partner",
       "career_track": "track_data_tech_cloud_ml",
-      "pillar": "pillar_executive_leadership",
+      "pillar": "pillar_cloud_data_aws",
       "fact_id_links": [
-        "fact_exec_001"
+        "fact_partnerships_gtm_002"
       ],
       "graph_hop_path": [
         {
           "edge_type": "career_track_contains_pillar",
           "from": "track_data_tech_cloud_ml",
-          "to": "pillar_executive_leadership",
+          "to": "pillar_cloud_data_aws",
           "note": "track-weighted pillar scope"
         },
         {
           "edge_type": "skill_row_pillar_projection",
-          "from": "pillar_executive_leadership",
-          "to": "skill_commercial_board_level_stakeholder_alignment",
+          "from": "pillar_cloud_data_aws",
+          "to": "skill_partner_aws_ecosystem",
           "note": "ACTIVE skill_row pillar match (not causal)"
         },
         {
           "edge_type": "skill_supported_by_fact",
-          "from": "skill_commercial_board_level_stakeholder_alignment",
-          "to": "fact_exec_001",
+          "from": "skill_partner_aws_ecosystem",
+          "to": "fact_partnerships_gtm_002",
           "note": "graph edge skill_supported_by_fact"
         }
       ],
       "graph_support_ref": "augmented_skills_graph"
     },
     {
-      "skill_id": "skill_commercial_gtm_investment_pipeline",
-      "label": "go-to-market investment decisions",
+      "skill_id": "skill_partner_cloud_partner_ecosystem",
+      "label": "IBM\u2013AWS alliance",
       "career_track": "track_data_tech_cloud_ml",
-      "pillar": "pillar_revenue_operations",
+      "pillar": "pillar_cloud_data_aws",
       "fact_id_links": [
-        "fact_revenue_ops_001"
+        "fact_partnerships_gtm_002"
       ],
       "graph_hop_path": [
         {
           "edge_type": "career_track_contains_pillar",
           "from": "track_data_tech_cloud_ml",
-          "to": "pillar_revenue_operations",
+          "to": "pillar_cloud_data_aws",
           "note": "track-weighted pillar scope"
         },
         {
           "edge_type": "skill_row_pillar_projection",
-          "from": "pillar_revenue_operations",
-          "to": "skill_commercial_gtm_investment_pipeline",
+          "from": "pillar_cloud_data_aws",
+          "to": "skill_partner_cloud_partner_ecosystem",
           "note": "ACTIVE skill_row pillar match (not causal)"
         },
         {
           "edge_type": "skill_supported_by_fact",
-          "from": "skill_commercial_gtm_investment_pipeline",
-          "to": "fact_revenue_ops_001",
+          "from": "skill_partner_cloud_partner_ecosystem",
+          "to": "fact_partnerships_gtm_002",
           "note": "graph edge skill_supported_by_fact"
         }
       ],
@@ -174,6 +175,46 @@
     }
   ],
   "graph_hop_paths_sample": [
+    [
+      {
+        "edge_type": "career_track_contains_pillar",
+        "from": "track_actuarial_risk_derivatives",
+        "to": "pillar_regulatory_governance",
+        "note": "track-weighted pillar scope"
+      },
+      {
+        "edge_type": "skill_row_pillar_projection",
+        "from": "pillar_regulatory_governance",
+        "to": "skill_finra_sec_regulatory_compliance",
+        "note": "ACTIVE skill_row pillar match (not causal)"
+      },
+      {
+        "edge_type": "skill_row_fact_id_links",
+        "from": "skill_finra_sec_regulatory_compliance",
+        "to": "fact_consulting_001",
+        "note": "fact_id_links on skill_row (no separate fact node)"
+      }
+    ],
+    [
+      {
+        "edge_type": "career_track_contains_pillar",
+        "from": "track_actuarial_risk_derivatives",
+        "to": "pillar_actuarial_foundation",
+        "note": "track-weighted pillar scope"
+      },
+      {
+        "edge_type": "skill_row_pillar_projection",
+        "from": "pillar_actuarial_foundation",
+        "to": "skill_actuarial_actuarial_software",
+        "note": "ACTIVE skill_row pillar match (not causal)"
+      },
+      {
+        "edge_type": "skill_row_fact_id_links",
+        "from": "skill_actuarial_actuarial_software",
+        "to": "fact_insurance_software_001",
+        "note": "fact_id_links on skill_row (no separate fact node)"
+      }
+    ],
     [
       {
         "edge_type": "career_track_contains_pillar",
@@ -197,40 +238,20 @@
     [
       {
         "edge_type": "career_track_contains_pillar",
-        "from": "track_actuarial_risk_derivatives",
-        "to": "pillar_capital_modeling",
+        "from": "track_data_tech_cloud_ml",
+        "to": "pillar_cloud_data_aws",
         "note": "track-weighted pillar scope"
       },
       {
         "edge_type": "skill_row_pillar_projection",
-        "from": "pillar_capital_modeling",
-        "to": "skill_capital_capital_modeling",
+        "from": "pillar_cloud_data_aws",
+        "to": "skill_partner_aws_ecosystem",
         "note": "ACTIVE skill_row pillar match (not causal)"
       },
       {
         "edge_type": "skill_supported_by_fact",
-        "from": "skill_capital_capital_modeling",
-        "to": "fact_quant_hpc_003",
-        "note": "graph edge skill_supported_by_fact"
-      }
-    ],
-    [
-      {
-        "edge_type": "career_track_contains_pillar",
-        "from": "track_actuarial_risk_derivatives",
-        "to": "pillar_capital_modeling",
-        "note": "track-weighted pillar scope"
-      },
-      {
-        "edge_type": "skill_row_pillar_projection",
-        "from": "pillar_capital_modeling",
-        "to": "skill_capital_regulatory_capital",
-        "note": "ACTIVE skill_row pillar match (not causal)"
-      },
-      {
-        "edge_type": "skill_supported_by_fact",
-        "from": "skill_capital_regulatory_capital",
-        "to": "fact_governance_003",
+        "from": "skill_partner_aws_ecosystem",
+        "to": "fact_partnerships_gtm_002",
         "note": "graph edge skill_supported_by_fact"
       }
     ],
@@ -238,39 +259,19 @@
       {
         "edge_type": "career_track_contains_pillar",
         "from": "track_data_tech_cloud_ml",
-        "to": "pillar_executive_leadership",
+        "to": "pillar_cloud_data_aws",
         "note": "track-weighted pillar scope"
       },
       {
         "edge_type": "skill_row_pillar_projection",
-        "from": "pillar_executive_leadership",
-        "to": "skill_commercial_board_level_stakeholder_alignment",
+        "from": "pillar_cloud_data_aws",
+        "to": "skill_partner_cloud_partner_ecosystem",
         "note": "ACTIVE skill_row pillar match (not causal)"
       },
       {
         "edge_type": "skill_supported_by_fact",
-        "from": "skill_commercial_board_level_stakeholder_alignment",
-        "to": "fact_exec_001",
-        "note": "graph edge skill_supported_by_fact"
-      }
-    ],
-    [
-      {
-        "edge_type": "career_track_contains_pillar",
-        "from": "track_data_tech_cloud_ml",
-        "to": "pillar_revenue_operations",
-        "note": "track-weighted pillar scope"
-      },
-      {
-        "edge_type": "skill_row_pillar_projection",
-        "from": "pillar_revenue_operations",
-        "to": "skill_commercial_gtm_investment_pipeline",
-        "note": "ACTIVE skill_row pillar match (not causal)"
-      },
-      {
-        "edge_type": "skill_supported_by_fact",
-        "from": "skill_commercial_gtm_investment_pipeline",
-        "to": "fact_revenue_ops_001",
+        "from": "skill_partner_cloud_partner_ecosystem",
+        "to": "fact_partnerships_gtm_002",
         "note": "graph edge skill_supported_by_fact"
       }
     ]

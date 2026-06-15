@@ -121,13 +121,31 @@ def is_valid_depth(value: str | None) -> bool:
     return parse_depth(value) != UNKNOWN_DEPTH_INDEX
 
 
+PROOF_DEPTH_ORDER: Final[tuple[str, ...]] = DEPTHS
+"""Backwards-compatible public name for the canonical proof-depth order."""
+
+
+def rank_proof_depth(value: str | None) -> int | None:
+    """Return a canonical proof-depth rank, or ``None`` for invalid values."""
+    rank = parse_depth(value)
+    return None if rank == UNKNOWN_DEPTH_INDEX else rank
+
+
+def is_valid_proof_depth(value: str | None) -> bool:
+    """Backwards-compatible alias for ``is_valid_depth``."""
+    return is_valid_depth(value)
+
+
 __all__ = [
     "DEPTHS",
+    "PROOF_DEPTH_ORDER",
     "DEPTH_TO_INDEX",
     "INDEX_TO_DEPTH",
     "COMPOSITION_NON_PROMOTABLE_TARGETS",
     "UNKNOWN_DEPTH_INDEX",
     "parse_depth",
+    "rank_proof_depth",
     "can_satisfy",
     "is_valid_depth",
+    "is_valid_proof_depth",
 ]

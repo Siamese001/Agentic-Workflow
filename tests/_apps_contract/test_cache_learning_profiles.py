@@ -28,6 +28,26 @@ ALL_APPS = [
 APPS_WITH_CACHE_ENABLED = sorted(["apps_qna", "apps_research", "apps_exec"])
 
 
+def _apps_with_llm_judges() -> list[str]:
+    out: list[str] = []
+    for app_id in ALL_APPS:
+        rubric_path = REPO_ROOT / app_id / "config" / "domain_contract" / "eval_rubrics.yaml"
+        if not rubric_path.is_file():
+            continue
+        docs = yaml.safe_load(rubric_path.read_text(encoding="utf-8"))
+        if not isinstance(docs, list):
+            continue
+        for doc in docs:
+            dims = doc.get("score_dimensions", []) if isinstance(doc, dict) else []
+            if any(dim.get("grader_type") == "llm_as_judge" for dim in dims if isinstance(dim, dict)):
+                out.append(app_id)
+                break
+    return sorted(out)
+
+
+APPS_WITH_HOLDOUT_REQUIRED = _apps_with_llm_judges()
+
+
 # ── helpers ──────────────────────────────────────────────────────────────────
 
 

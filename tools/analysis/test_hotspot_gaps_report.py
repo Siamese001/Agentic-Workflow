@@ -26,6 +26,7 @@ CORE = REPO / "agentic_core"
 TESTS = REPO / "tests"
 ADG_DIR = REPO / "artifacts" / "adg"
 REPORTS = REPO / "docs" / "reports"
+APP_PREFIX = "apps_"
 
 _BANDS = (
     ("P1_critical_fanin_ge_10", 10, None, "Test next — central dependency"),
@@ -103,6 +104,153 @@ def _fan_in_by_path(con: sqlite3.Connection) -> dict[str, int]:
     return {str(r[0]): int(r[1]) for r in rows}
 
 
+def _app_from_path(path: str) -> str | None:
+    first = str(path or "").split("/", 1)[0]
+    return first if first.startswith(APP_PREFIX) else None
+
+
+def _rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(REPO.resolve()))
+    except ValueError:
+        return str(path)
+
+
+def _apps_adg_test_reachability(con: sqlite3.Connection) -> list[dict[str, Any]]:
+    """ADG-backed apps_* test reachability from ``covers`` edges.
+
+    ``coverage_by_path`` is coverage.py line/branch ingestion. It can be empty
+    for an app even when ADG has app nodes, hotspot MVs, and test ``covers``
+    edges. This table exposes the apps signal directly so the markdown report
+    does not imply that coverage_by_path is the only indicator.
+    """
+    apps: dict[str, dict[str, Any]] = {}
+
+    def bucket(app: str) -> dict[str, Any]:
+        return apps.setdefault(
+            app,
+            {
+                "app": app,
+                "adg_source_paths": set(),
+                "hotspot_paths": set(),
+                "coverage_by_path_rows": set(),
+                "covered_paths": set(),
+                "covering_tests": set(),
+                "covers_edges": 0,
+            },
+        )
+
+    for (path,) in con.execute(
+        """
+        SELECT DISTINCT resolved_path
+        FROM nodes
+        WHERE resolved_path LIKE 'apps_%/%.py'
+        """
+    ):
+        app = _app_from_path(str(path))
+        if app:
+            bucket(app)["adg_source_paths"].add(str(path))
+
+    for (path,) in con.execute(
+        """
+        SELECT DISTINCT resolved_path
+        FROM mv_hotspot_centrality
+        WHERE resolved_path LIKE 'apps_%/%.py'
+        """
+    ):
+        app = _app_from_path(str(path))
+        if app:
+            bucket(app)["hotspot_paths"].add(str(path))
+
+    for (path,) in con.execute(
+        """
+        SELECT DISTINCT resolved_path
+        FROM coverage_by_path
+        WHERE resolved_path LIKE 'apps_%/%.py'
+        """
+    ):
+        app = _app_from_path(str(path))
+        if app:
+            bucket(app)["coverage_by_path_rows"].add(str(path))
+
+    for source_file, dst_path, edge_count in con.execute(
+        """
+        SELECT e.source_file, dst.resolved_path, COUNT(*) AS edge_count
+        FROM edges e
+        JOIN nodes dst ON dst.id = e.dst_id
+        WHERE e.relation_type = 'covers'
+          AND e.source_file LIKE 'tests/%'
+          AND dst.resolved_path LIKE 'apps_%/%.py'
+        GROUP BY e.source_file, dst.resolved_path
+        """
+    ):
+        app = _app_from_path(str(dst_path))
+        if not app:
+            continue
+        row = bucket(app)
+        row["covered_paths"].add(str(dst_path))
+        row["covering_tests"].add(str(source_file))
+        row["covers_edges"] += int(edge_count)
+
+    out: list[dict[str, Any]] = []
+    for app, row in sorted(apps.items()):
+        hotspot_paths = set(row["hotspot_paths"])
+        covered_paths = set(row["covered_paths"])
+        out.append(
+            {
+                "app": app,
+                "adg_source_paths": len(row["adg_source_paths"]),
+                "hotspot_paths": len(hotspot_paths),
+                "covered_paths": len(covered_paths),
+                "covering_tests": len(row["covering_tests"]),
+                "coverage_by_path_rows": len(row["coverage_by_path_rows"]),
+                "covers_edges": int(row["covers_edges"]),
+                "hotspot_paths_without_covers": len(hotspot_paths - covered_paths),
+            }
+        )
+    return out
+
+
+def _top_uncovered_app_hotspots(
+    con: sqlite3.Connection,
+    *,
+    limit: int = 50,
+) -> list[dict[str, Any]]:
+    rows = con.execute(
+        """
+        WITH covered AS (
+            SELECT DISTINCT dst.resolved_path AS path
+            FROM edges e
+            JOIN nodes dst ON dst.id = e.dst_id
+            WHERE e.relation_type = 'covers'
+              AND e.source_file LIKE 'tests/%'
+              AND dst.resolved_path LIKE 'apps_%/%.py'
+        )
+        SELECT h.resolved_path, h.fan_in, h.fan_out, h.degree, h.degree_centrality
+        FROM mv_hotspot_centrality h
+        LEFT JOIN covered c ON c.path = h.resolved_path
+        WHERE h.resolved_path LIKE 'apps_%/%.py'
+          AND c.path IS NULL
+        ORDER BY h.degree_centrality DESC, h.degree DESC, h.resolved_path ASC
+        LIMIT ?
+        """,
+        (int(limit),),
+    ).fetchall()
+    out: list[dict[str, Any]] = []
+    for path, fan_in, fan_out, degree, centrality in rows:
+        out.append(
+            {
+                "app": _app_from_path(str(path)) or "",
+                "path": str(path),
+                "fan_in": int(fan_in or 0),
+                "fan_out": int(fan_out or 0),
+                "degree": int(degree or 0),
+                "degree_centrality": float(centrality or 0.0),
+            }
+        )
+    return out
+
+
 def _band(fan_in: int) -> str:
     for band_id, lo, hi, _ in _BANDS:
         if hi is None and fan_in >= lo:
@@ -128,6 +276,8 @@ def render(snapshot: Path) -> str:
     con = sqlite3.connect(f"file:{snapshot}?mode=ro", uri=True)
     try:
         fan_in = _fan_in_by_path(con)
+        apps_reachability = _apps_adg_test_reachability(con)
+        uncovered_app_hotspots = _top_uncovered_app_hotspots(con)
         commit = con.execute(
             "SELECT value FROM meta WHERE key='commit_sha' LIMIT 1"
         ).fetchone()
@@ -171,9 +321,53 @@ def render(snapshot: Path) -> str:
     a(f"- **Modules with matching test_<name>.py:** {covered} ({100 * covered // total if total else 0}%)")
     a(f"- **Remaining gaps:** {len(gaps)}")
     a("")
+    if apps_reachability:
+        apps_with_hotspots = sum(1 for r in apps_reachability if r["hotspot_paths"])
+        apps_hotspots = sum(int(r["hotspot_paths"]) for r in apps_reachability)
+        apps_covered_paths = sum(int(r["covered_paths"]) for r in apps_reachability)
+        apps_covering_tests = sum(int(r["covering_tests"]) for r in apps_reachability)
+        a(f"- **apps_* packages with ADG hotspot paths:** {apps_with_hotspots}")
+        a(f"- **apps_* ADG hotspot paths:** {apps_hotspots}")
+        a(f"- **apps_* paths reached by test `covers` edges:** {apps_covered_paths}")
+        a(f"- **apps_* distinct covering tests (`covers` source_file):** {apps_covering_tests}")
+        a("")
     a("> **W2 note:** P3 modules may have behavioral coverage in")
     a("> `tests/agentic_core/test_p3_w2_hotspot_behavior.py` without a basename match.")
     a("> See `artifacts/test_inventory/w2_basename_collision_audit.md`.")
+    a("")
+    a("## apps_* ADG Test-Reachability Indicator")
+    a("")
+    a(
+        "This table is ADG-backed. `coverage_by_path` is coverage.py line/branch ingestion; "
+        "`covers` edges are the ADG test-reachability indicator from `tests/%` to app paths. "
+        "A zero `coverage_by_path` row count does not mean the app is absent from ADG."
+    )
+    a("")
+    a(
+        "| App | ADG source paths | Hotspot paths | Paths reached by `covers` | "
+        "Distinct covering tests | `covers` edges | `coverage_by_path` rows | Hotspot paths without `covers` |"
+    )
+    a("|---|---:|---:|---:|---:|---:|---:|---:|")
+    for row in apps_reachability:
+        a(
+            f"| `{row['app']}` | {row['adg_source_paths']} | {row['hotspot_paths']} | "
+            f"{row['covered_paths']} | {row['covering_tests']} | {row['covers_edges']} | "
+            f"{row['coverage_by_path_rows']} | {row['hotspot_paths_without_covers']} |"
+        )
+    if not apps_reachability:
+        a("| _(none)_ | 0 | 0 | 0 | 0 | 0 | 0 | 0 |")
+    a("")
+    a("## Top Uncovered apps_* Hotspots by ADG Centrality")
+    a("")
+    a("| App | Fan-in | Fan-out | Degree | Centrality | Path |")
+    a("|---|---:|---:|---:|---:|---|")
+    for row in uncovered_app_hotspots:
+        a(
+            f"| `{row['app']}` | {row['fan_in']} | {row['fan_out']} | {row['degree']} | "
+            f"{row['degree_centrality']:.6f} | `{row['path']}` |"
+        )
+    if not uncovered_app_hotspots:
+        a("| _(none)_ | 0 | 0 | 0 | 0.000000 | _(none)_ |")
     a("")
     a("## Gaps by Priority Band (fan-in)")
     a("")
@@ -256,7 +450,7 @@ def main(argv: list[str] | None = None) -> int:
     md = render(snapshot)
     out.write_text(md, encoding="utf-8")
     print(f"[test_hotspot_gaps_report] snapshot={snapshot.name}")
-    print(f"[test_hotspot_gaps_report] wrote {out.relative_to(REPO.resolve())}")
+    print(f"[test_hotspot_gaps_report] wrote {_rel(out)}")
     return 0
 
 

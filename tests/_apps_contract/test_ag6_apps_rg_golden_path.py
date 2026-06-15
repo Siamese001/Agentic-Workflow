@@ -53,7 +53,6 @@ try:
         CompiledPromptArtifact,
     )
     from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
-    from agentic_core.runtime.contracts.x3_disposition import X3Disposition
     from agentic_core.runtime.contracts.x1_checkout_result import (
         X1CheckoutResult,
         X1Item,
@@ -65,7 +64,7 @@ try:
     from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg
     from apps_rg.runtime.bindings.pa_binding import pa_compose_apps_rg
     from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
-    from apps_rg.runtime.bindings.exit_binding import exit_finalize_apps_rg
+    from apps_rg.runtime.bindings.exit_binding import ExitResult, exit_finalize_apps_rg
     from agentic_core.L3_orchestration.exit_eval.v6.x1_checkout_adapter import (
         build_x1_checkout_result,
     )
@@ -99,7 +98,7 @@ class TestAG6GoldenPathContractChain(unittest.TestCase):
     Expected chain:
     ValidatedRequest → L1PlanContract → RouteContract → FinalEvidenceContract
     → CompiledPromptArtifact → SealedL2Artifact → ExitReviewPacket
-    → X1CheckoutResult → X3Disposition
+    → X1CheckoutResult → ExitResult
     """
 
     @classmethod
@@ -110,6 +109,16 @@ class TestAG6GoldenPathContractChain(unittest.TestCase):
         
         cls.fixture = cls._create_golden_fixture()
         cls.repo_root = cls._resolve_repo_root()
+
+    def _c0_retrieve_fixture(self, route: RouteContract, validated: ValidatedRequest) -> FinalEvidenceContract:
+        fixture_env = {
+            "APPS_RG_TEST_HARNESS": "1",
+            "APPS_RG_C0_DENSE_SPARSE_MANDATORY": "0",
+            "APPS_RG_C0_SPARSE_ENABLED": "0",
+            "CHROMA_PERSIST_DIR": "",
+        }
+        with patch.dict(os.environ, fixture_env):
+            return c0_retrieve_apps_rg(route, validated, chromadb_path=None)
 
     @classmethod
     def _resolve_repo_root(cls) -> Path:
@@ -219,6 +228,11 @@ BS Computer Science, UC Berkeley (2018)
                 "fact_check_required": fixture["fact_check_required"],
                 "provenance_required": fixture["provenance_required"],
                 "citation_required": fixture["citation_required"],
+                "briefing_text": (
+                    "TechCorp AI is hiring for AI infrastructure with emphasis "
+                    "on production model serving, observability, and cloud-scale "
+                    "distributed systems."
+                ),
             },
             "output_preferences": fixture["output_requirements"],
             "idempotency_key": fixture["replay_key"],
@@ -309,7 +323,7 @@ BS Computer Science, UC Berkeley (2018)
         l1_plan = l1_plan_apps_rg(validated)
         route = l0_route_apps_rg(l1_plan)
         
-        fec = c0_retrieve_apps_rg(route, validated)
+        fec = self._c0_retrieve_fixture(route, validated)
         
         self.assertIsInstance(fec, FinalEvidenceContract)
         self.assertEqual(fec.request_id, self.fixture["request_id"])
@@ -362,7 +376,7 @@ BS Computer Science, UC Berkeley (2018)
         validated = u0_validate_apps_rg(envelope)
         l1_plan = l1_plan_apps_rg(validated)
         route = l0_route_apps_rg(l1_plan)
-        fec = c0_retrieve_apps_rg(route, validated)
+        fec = self._c0_retrieve_fixture(route, validated)
         
         prompt = pa_compose_apps_rg(route, l1_plan, fec, validated)
         
@@ -395,7 +409,7 @@ BS Computer Science, UC Berkeley (2018)
         validated = u0_validate_apps_rg(envelope)
         l1_plan = l1_plan_apps_rg(validated)
         route = l0_route_apps_rg(l1_plan)
-        fec = c0_retrieve_apps_rg(route, validated)
+        fec = self._c0_retrieve_fixture(route, validated)
         prompt = pa_compose_apps_rg(route, l1_plan, fec, validated)
         
         sealed = l2_execute_apps_rg(prompt)
@@ -414,8 +428,8 @@ BS Computer Science, UC Berkeley (2018)
         self.assertTrue(sealed.l5_certification_ref, "l5_certification_ref must be present")
 
     @patch.dict(os.environ, {"APPS_RG_L2_FORCE_STUB": "1"})
-    def test_w7_exit_produces_x3_with_x1_checkout(self):
-        """W7: Exit produces X3Disposition consuming X1CheckoutResult."""
+    def test_w7_exit_produces_exit_result_with_fec(self):
+        """W7: Exit produces ExitResult while consuming the FEC."""
         payload = self._build_ingress_payload(self.fixture)
         envelope = RequestEnvelope(
             payload=AppsRgIngressPayload(**payload),
@@ -427,24 +441,30 @@ BS Computer Science, UC Berkeley (2018)
         validated = u0_validate_apps_rg(envelope)
         l1_plan = l1_plan_apps_rg(validated)
         route = l0_route_apps_rg(l1_plan)
-        fec = c0_retrieve_apps_rg(route, validated)
+        fec = self._c0_retrieve_fixture(route, validated)
         prompt = pa_compose_apps_rg(route, l1_plan, fec, validated)
         sealed = l2_execute_apps_rg(prompt)
         
-        disposition = exit_finalize_apps_rg(sealed, prompt)
+        exit_result = exit_finalize_apps_rg(
+            sealed,
+            prompt,
+            fec=fec,
+            target_company=self.fixture["target_company"],
+            target_role=self.fixture["target_role"],
+        )
         
-        self.assertIsInstance(disposition, X3Disposition)
-        self.assertEqual(disposition.request_id, self.fixture["request_id"])
+        self.assertIsInstance(exit_result, ExitResult)
+        disposition = exit_result.disposition
         
-        # X3 must have exit_status
-        self.assertIn(disposition.exit_status, ["success", "failure", "abstain"])
+        # ExitResult carries apps_rg-local authorization and inert proposals.
+        self.assertTrue(disposition.outcome_authorized)
+        self.assertFalse(disposition.c0_blocking)
         
-        # If success, must have artifact path
-        if disposition.exit_status == "success":
-            self.assertTrue(
-                disposition.output_artifact_path or disposition.final_output,
-                "Success disposition must have output"
-            )
+        self.assertTrue(disposition.final_output, "Authorized disposition must have output")
+        self.assertTrue(
+            exit_result.artifact_commit_candidates,
+            "ExitResult must carry inert artifact commit candidates",
+        )
 
     def test_w8_no_chromadb_imports_in_golden_path(self):
         """W8: No ChromaDB imports in any golden-path module."""

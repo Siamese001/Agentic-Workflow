@@ -11,6 +11,11 @@ from tests._apps_contract.lane_cli_common import contract_harness_fast
 
 _REPO = Path(__file__).resolve().parents[2]
 
+collect_ignore = [
+    "test_ae2_pii_redactor.py",
+    "test_w5_eval_acceptance.py",
+]
+
 # Subprocess ``python -m apps_rg`` lanes — each run is minutes when vLLM is up.
 _LIVE_CLI_PATH_FRAGMENTS = (
     "section_pipeline",

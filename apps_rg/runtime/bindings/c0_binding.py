@@ -73,6 +73,14 @@ C0_QUERY_VEC_REF_BGE = "c0:bge-m3:query_embedding_bundle:v1"
 _logger = logging.getLogger(__name__)
 
 
+def _persistent_chroma_client(path: str) -> Any:
+    from agentic_core.L4_state.utils.client.chroma_client import (
+        chromadb_module as _chroma_module,
+    )
+
+    return _chroma_module.PersistentClient(path=path)
+
+
 def _resolve_spine_graph_expansion_refs(
     route: Any,
     merged_items: list[Any],
@@ -435,30 +443,61 @@ def c0_retrieve_apps_rg(
             assert_base_resume_identity_only,
         )
 
+        def _inline_context_evidence(
+            *,
+            source: str,
+            content: str,
+            source_ref: str,
+            source_owner_or_authority: str,
+        ) -> EvidenceItem:
+            chunk_digest = hashlib.sha256(content.encode("utf-8")).hexdigest()
+            evidence_digest = hashlib.sha256(
+                f"{source}:{source_ref}:{chunk_digest}".encode("utf-8")
+            ).hexdigest()
+            return EvidenceItem(
+                source=source,
+                content=content,
+                source_type="app_payload_inline",
+                retrieval_timestamp=ts,
+                evidence_id=f"inline:{source}:{chunk_digest[:16]}",
+                source_id=source,
+                source_version="validated_request.v1",
+                source_uri_or_ref=source_ref,
+                source_owner_or_authority=source_owner_or_authority,
+                retrieved_span="full",
+                citation_anchor=f"apps_rg:inline:{source}",
+                chunk_digest=chunk_digest,
+                allowed_prompt_slot=ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
+                authority_class=AUTHORITY_CLASS_NON_PROOF_CONTEXT,
+                retrieval_method="inline",
+                retrieval_run_ref=f"run:{getattr(validated_request, 'run_id', '')}",
+                evidence_digest=evidence_digest,
+                freshness_status=STATUS_NOT_APPLICABLE,
+                acl_status=STATUS_NOT_APPLICABLE,
+                contradiction_status=STATUS_NOT_APPLICABLE,
+                not_applicable_reason=(
+                    "inline app payload context is not external retrieval proof"
+                ),
+            )
+
         app_payload = getattr(validated_request, "app_payload", None) or {}
         jd_payload = app_payload.get("jd_payload", {})
         if jd_payload and "jd_text" in jd_payload:
             merged_items.append(
-                EvidenceItem(
+                _inline_context_evidence(
                     source="jd_payload",
                     content=jd_payload["jd_text"],
-                    source_type="app_payload_inline",
-                    retrieval_timestamp=ts,
-                    allowed_prompt_slot=ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
-                    authority_class=AUTHORITY_CLASS_NON_PROOF_CONTEXT,
+                    source_ref="app_payload.jd_payload.jd_text",
                     source_owner_or_authority="jd_targeting_non_authoritative",
                 )
             )
         resume_payload = app_payload.get("resume_payload", {})
         if resume_payload and "resume_text" in resume_payload:
             merged_items.append(
-                EvidenceItem(
+                _inline_context_evidence(
                     source="resume_payload",
                     content=resume_payload["resume_text"],
-                    source_type="app_payload_inline",
-                    retrieval_timestamp=ts,
-                    allowed_prompt_slot=ALLOWED_PROMPT_SLOT_C0_EVIDENCE_DATA_ONLY,
-                    authority_class=AUTHORITY_CLASS_NON_PROOF_CONTEXT,
+                    source_ref="app_payload.resume_payload.resume_text",
                     source_owner_or_authority="base_resume_identity_non_authoritative",
                 )  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             )
@@ -478,9 +517,7 @@ def c0_retrieve_apps_rg(
 
     if effective_chroma:
         try:
-            import chromadb
-
-            client = chromadb.PersistentClient(path=effective_chroma)
+            client = _persistent_chroma_client(effective_chroma)
             from apps_rg.runtime.chroma_precomputed_collection import (
                 get_precomputed_embeddings_collection_for_query,
             )
@@ -622,7 +659,7 @@ def c0_retrieve_apps_rg(
     source_lineage_map: list[tuple[str, str]] = []
     freshness_receipts: list[str] = []
     source_version_map: list[tuple[str, str]] = []
-    for it in chroma_lane_items:
+    for it in merged_items:
         eid = getattr(it, "evidence_id", "") or it.source
         anchor = getattr(it, "citation_anchor", "") or ""
         if anchor:
@@ -736,6 +773,7 @@ def c0_retrieve_apps_rg(
         evidence_strata=evidence_strata,
         excluded_evidence_refs=tuple(excluded_evidence_refs),
         gate_verdict_refs=tuple(f"gate:{v.gate_id}:{v.result}" for v in gate_verdicts),
+        compilation_hash=digest,
         final_evidence_digest=digest,
         evidence_collection_timestamp=ts,
         otel_span_refs=otel_span_refs,
@@ -1269,9 +1307,7 @@ def _perform_bounded_section_retrieval(
     # not EMPTY (bounded-section contract tests + operator clarity).
     if chroma_collection is None and chromadb_path:
         try:
-            import chromadb
-
-            _probe_client = chromadb.PersistentClient(path=chromadb_path)
+            _probe_client = _persistent_chroma_client(chromadb_path)
             _probe_client.get_collection(profile.collection_name)
         except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
             verdict = GateVerdict(
@@ -1332,9 +1368,7 @@ def _perform_bounded_section_retrieval(
             if chroma_collection is not None:
                 collection = chroma_collection
             else:
-                import chromadb
-
-                client = chromadb.PersistentClient(path=chromadb_path or "")
+                client = _persistent_chroma_client(chromadb_path or "")
                 collection = client.get_collection(profile.collection_name)
 
             allow = section.get("source_class_allowlist") or [

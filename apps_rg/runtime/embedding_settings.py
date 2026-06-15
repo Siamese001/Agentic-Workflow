@@ -264,7 +264,9 @@ def resolve_apps_rg_embedding_settings(
                 route_result="FAIL_CLOSED",
                 decisive_reason=(
                     "CHROMA_PERSIST_DIR configured but EMBEDDING_ENABLED is false; "
-                    "dense retrieval and Chroma query embeddings are forbidden"
+                    "dense retrieval and Chroma query embeddings are forbidden. "
+                    "Set EMBEDDING_ENABLED=true and APPS_RG_EMBEDDING_MODEL_PATH "
+                    "to a local BGE directory for dense retrieval."
                 ),
                 chroma_persist_dir=chroma_dir,
             )

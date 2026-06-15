@@ -48,7 +48,7 @@ from agentic_core.L3_orchestration.exit_control.runtime_hitl_ledger import (
     LedgerEntry,
     LedgerState,
 )
-from apps_eval.engines.hitl_decision_quality_engine import (
+from agentic_core.L6_system_learning.hitl_decision_quality import (
     HitlQualityBucket,
     HitlQualityReport,
 )
@@ -181,6 +181,10 @@ class RuntimeHitlConsumer:
     Usage::
 
         consumer = RuntimeHitlConsumer(sink=FileDraftSink())
+        from agentic_core.L6_system_learning.hitl_decision_quality import (
+            HitlDecisionQualityEngine,
+        )
+
         report = HitlDecisionQualityEngine().score_entries(all_entries)
         drafts = consumer.consume(report, all_entries)
 

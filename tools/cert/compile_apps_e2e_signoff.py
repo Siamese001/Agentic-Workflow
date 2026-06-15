@@ -76,15 +76,26 @@ except ImportError:  # pragma: no cover
     print("FATAL: jsonschema is required (pip install jsonschema)", file=sys.stderr)
     sys.exit(2)
 
-from cert_paths import (
-    APPS_ASSERTION_SCHEMA,
-    APPS_ASSERTIONS_PATH,
-    APPS_REPORT_SCHEMA,
-    APPS_REQS_PATH,
-    APPS_REQS_SCHEMA,
-    CERT_ARTIFACTS_DIR,
-    REPO_ROOT,
-)
+try:
+    from .cert_paths import (
+        APPS_ASSERTION_SCHEMA,
+        APPS_ASSERTIONS_PATH,
+        APPS_REPORT_SCHEMA,
+        APPS_REQS_PATH,
+        APPS_REQS_SCHEMA,
+        CERT_ARTIFACTS_DIR,
+        REPO_ROOT,
+    )
+except ImportError:  # pragma: no cover - direct script execution
+    from cert_paths import (
+        APPS_ASSERTION_SCHEMA,
+        APPS_ASSERTIONS_PATH,
+        APPS_REPORT_SCHEMA,
+        APPS_REQS_PATH,
+        APPS_REQS_SCHEMA,
+        CERT_ARTIFACTS_DIR,
+        REPO_ROOT,
+    )
 
 COMPILER_VERSION = "apps_e2e_fortknox-v1.0"
 SCHEMA_VERSION = "apps_e2e_fortknox-v1"

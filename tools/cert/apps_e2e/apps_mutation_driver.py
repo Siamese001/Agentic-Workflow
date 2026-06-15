@@ -54,8 +54,7 @@ DRIVER_VERSION = "apps_mutation_driver-v1.0"
 # Import the W3 compiler's validator so we use the EXACT same logic the
 # real signoff path uses. No reimplementation here \u2014 that would be a
 # trust-bypass.
-sys.path.insert(0, str(REPO_ROOT / "scripts"))
-import compile_apps_e2e_signoff as compiler_mod  # type: ignore  # noqa: E402
+from tools.cert import compile_apps_e2e_signoff as compiler_mod  # noqa: E402
 
 
 # =============================================================================

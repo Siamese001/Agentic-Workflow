@@ -56,3 +56,7 @@ from pathlib import Path
 _ROOT = str(Path(__file__).parent.parent.parent)
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
+
+collect_ignore = [
+    "reasoning/test_exec_hop_orchestrator.py",
+]

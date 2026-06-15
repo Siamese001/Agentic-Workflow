@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-12T11:34:15Z",
+  "generated_at": "2026-06-15T21:31:38Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4",
   "closeout_wave": "P1-W4-CLOSEOUT",
@@ -32,7 +32,7 @@
     },
     "selected_fact_count_by_track": {
       "track_actuarial_risk_derivatives": 4,
-      "track_data_tech_cloud_ml": 4,
+      "track_data_tech_cloud_ml": 3,
       "track_genai_agentic": 6
     },
     "tracks_with_facts": [
@@ -224,53 +224,53 @@
         ]
       },
       {
-        "skill_id": "skill_finance_cost_optimization_dashboards",
+        "skill_id": "skill_agile_delivery_for_regulated_insurers",
         "career_track": "track_data_tech_cloud_ml",
-        "pillar": "pillar_strategic_finance_saas",
+        "pillar": "pillar_insurance_carrier_transformation",
         "weight": 0.2609,
         "graph_hop_path": [
           {
             "edge_type": "career_track_contains_pillar",
             "from": "track_data_tech_cloud_ml",
-            "to": "pillar_strategic_finance_saas",
+            "to": "pillar_insurance_carrier_transformation",
             "note": "track-weighted pillar scope"
           },
           {
             "edge_type": "skill_row_pillar_projection",
-            "from": "pillar_strategic_finance_saas",
-            "to": "skill_finance_cost_optimization_dashboards",
+            "from": "pillar_insurance_carrier_transformation",
+            "to": "skill_agile_delivery_for_regulated_insurers",
             "note": "ACTIVE skill_row pillar match (not causal)"
           },
           {
             "edge_type": "skill_supported_by_fact",
-            "from": "skill_finance_cost_optimization_dashboards",
-            "to": "fact_revenue_ops_004",
+            "from": "skill_agile_delivery_for_regulated_insurers",
+            "to": "bul_insurtech_001",
             "note": "graph edge skill_supported_by_fact"
           }
         ]
       },
       {
-        "skill_id": "skill_finance_ma_synergy_due_diligence",
+        "skill_id": "skill_application_dependency_mapping",
         "career_track": "track_data_tech_cloud_ml",
-        "pillar": "pillar_strategic_finance_saas",
+        "pillar": "pillar_insurance_carrier_transformation",
         "weight": 0.2609,
         "graph_hop_path": [
           {
             "edge_type": "career_track_contains_pillar",
             "from": "track_data_tech_cloud_ml",
-            "to": "pillar_strategic_finance_saas",
+            "to": "pillar_insurance_carrier_transformation",
             "note": "track-weighted pillar scope"
           },
           {
             "edge_type": "skill_row_pillar_projection",
-            "from": "pillar_strategic_finance_saas",
-            "to": "skill_finance_ma_synergy_due_diligence",
+            "from": "pillar_insurance_carrier_transformation",
+            "to": "skill_application_dependency_mapping",
             "note": "ACTIVE skill_row pillar match (not causal)"
           },
           {
             "edge_type": "skill_supported_by_fact",
-            "from": "skill_finance_ma_synergy_due_diligence",
-            "to": "fact_revenue_ops_005",
+            "from": "skill_application_dependency_mapping",
+            "to": "bul_insurtech_001",
             "note": "graph edge skill_supported_by_fact"
           }
         ]
@@ -791,51 +791,51 @@
         ]
       },
       {
-        "fact_id": "fact_revenue_ops_004",
+        "fact_id": "bul_insurtech_001",
         "career_track": "track_data_tech_cloud_ml",
-        "skill_id": "skill_finance_cost_optimization_dashboards",
+        "skill_id": "skill_agile_delivery_for_regulated_insurers",
         "graph_hop_path": [
           {
             "edge_type": "career_track_contains_pillar",
             "from": "track_data_tech_cloud_ml",
-            "to": "pillar_strategic_finance_saas",
+            "to": "pillar_insurance_carrier_transformation",
             "note": "track-weighted pillar scope"
           },
           {
             "edge_type": "skill_row_pillar_projection",
-            "from": "pillar_strategic_finance_saas",
-            "to": "skill_finance_cost_optimization_dashboards",
+            "from": "pillar_insurance_carrier_transformation",
+            "to": "skill_agile_delivery_for_regulated_insurers",
             "note": "ACTIVE skill_row pillar match (not causal)"
           },
           {
             "edge_type": "skill_supported_by_fact",
-            "from": "skill_finance_cost_optimization_dashboards",
-            "to": "fact_revenue_ops_004",
+            "from": "skill_agile_delivery_for_regulated_insurers",
+            "to": "bul_insurtech_001",
             "note": "graph edge skill_supported_by_fact"
           }
         ]
       },
       {
-        "fact_id": "fact_revenue_ops_005",
+        "fact_id": "bul_insurtech_001",
         "career_track": "track_data_tech_cloud_ml",
-        "skill_id": "skill_finance_ma_synergy_due_diligence",
+        "skill_id": "skill_application_dependency_mapping",
         "graph_hop_path": [
           {
             "edge_type": "career_track_contains_pillar",
             "from": "track_data_tech_cloud_ml",
-            "to": "pillar_strategic_finance_saas",
+            "to": "pillar_insurance_carrier_transformation",
             "note": "track-weighted pillar scope"
           },
           {
             "edge_type": "skill_row_pillar_projection",
-            "from": "pillar_strategic_finance_saas",
-            "to": "skill_finance_ma_synergy_due_diligence",
+            "from": "pillar_insurance_carrier_transformation",
+            "to": "skill_application_dependency_mapping",
             "note": "ACTIVE skill_row pillar match (not causal)"
           },
           {
             "edge_type": "skill_supported_by_fact",
-            "from": "skill_finance_ma_synergy_due_diligence",
-            "to": "fact_revenue_ops_005",
+            "from": "skill_application_dependency_mapping",
+            "to": "bul_insurtech_001",
             "note": "graph edge skill_supported_by_fact"
           }
         ]
@@ -1232,6 +1232,102 @@
         "reason": "not_active:DRAFT"
       },
       {
+        "id": "skill_aws_config_change_auditability",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_modernization_pipeline_generation",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_shared_responsibility_model_framing",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_claimcenter_billingcenter_integration",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cloudwatch_operational_monitoring",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cost_explorer_budget_forecasting",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_customer_vs_aws_security_raci",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_database_migration_dms_sct",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_early_adopter_insurer_customer_development",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_founder_led_insurtech_sales",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_founder_market_thesis_development",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_guidewire_datahub_infocenter_bi",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_guidewire_insurancesuite_modernization",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_commissioner_exam_readiness",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_regulator_cloud_adoption_engagement",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurer_executive_buyer_discovery",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_naic_data_security_model_law_readiness",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_nydfs_23nycrr500_cloud_control_alignment",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_policycenter_workflow_mapping",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_pricing_loss_ratio_reporting",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_private_cloud_complexity_objection_handling",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_proposal_sow_development_for_insurers",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_public_vs_private_cloud_tco_framing",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_reserved_instance_rightsizing_strategy",
+        "reason": "not_active:DRAFT"
+      },
+      {
         "id": "skill_derivatives_structured_derivatives",
         "reason": "not_active:DRAFT"
       },
@@ -1296,6 +1392,102 @@
         "reason": "not_active:DRAFT"
       },
       {
+        "id": "skill_aws_config_change_auditability",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_modernization_pipeline_generation",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_shared_responsibility_model_framing",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_claimcenter_billingcenter_integration",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cloudwatch_operational_monitoring",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cost_explorer_budget_forecasting",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_customer_vs_aws_security_raci",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_database_migration_dms_sct",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_early_adopter_insurer_customer_development",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_founder_led_insurtech_sales",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_founder_market_thesis_development",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_guidewire_datahub_infocenter_bi",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_guidewire_insurancesuite_modernization",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_commissioner_exam_readiness",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_regulator_cloud_adoption_engagement",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurer_executive_buyer_discovery",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_naic_data_security_model_law_readiness",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_nydfs_23nycrr500_cloud_control_alignment",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_policycenter_workflow_mapping",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_pricing_loss_ratio_reporting",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_private_cloud_complexity_objection_handling",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_proposal_sow_development_for_insurers",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_public_vs_private_cloud_tco_framing",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_reserved_instance_rightsizing_strategy",
+        "reason": "not_active:DRAFT"
+      },
+      {
         "id": "skill_derivatives_structured_derivatives",
         "reason": "not_active:DRAFT"
       },
@@ -1357,6 +1549,102 @@
       },
       {
         "id": "skill_nps_customer_health_scoring",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_config_change_auditability",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_modernization_pipeline_generation",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_shared_responsibility_model_framing",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_claimcenter_billingcenter_integration",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cloudwatch_operational_monitoring",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cost_explorer_budget_forecasting",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_customer_vs_aws_security_raci",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_database_migration_dms_sct",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_early_adopter_insurer_customer_development",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_founder_led_insurtech_sales",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_founder_market_thesis_development",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_guidewire_datahub_infocenter_bi",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_guidewire_insurancesuite_modernization",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_commissioner_exam_readiness",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_regulator_cloud_adoption_engagement",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurer_executive_buyer_discovery",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_naic_data_security_model_law_readiness",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_nydfs_23nycrr500_cloud_control_alignment",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_policycenter_workflow_mapping",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_pricing_loss_ratio_reporting",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_private_cloud_complexity_objection_handling",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_proposal_sow_development_for_insurers",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_public_vs_private_cloud_tco_framing",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_reserved_instance_rightsizing_strategy",
         "reason": "not_active:DRAFT"
       }
     ],
@@ -1476,7 +1764,7 @@
     },
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:57237b432afebaea",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:71434de8331de06e",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -1484,6 +1772,7 @@
       "track_genai_agentic"
     ],
     "c03_selected_fact_ids": [
+      "bul_insurtech_001",
       "fact_certs_001",
       "fact_consulting_001",
       "fact_engineering_platform_001",
@@ -1495,15 +1784,15 @@
       "fact_insurance_software_001",
       "fact_partnerships_gtm_002",
       "fact_quant_act_001",
-      "fact_rag_insurance_001",
-      "fact_revenue_ops_004",
-      "fact_revenue_ops_005"
+      "fact_rag_insurance_001"
     ],
     "c03_selected_skill_ids": [
       "skill_actuarial_actuarial_software",
       "skill_actuarial_fsa_fellowship",
       "skill_agentic_control_plane_design",
+      "skill_agile_delivery_for_regulated_insurers",
       "skill_app_overlay_runtime_binding",
+      "skill_application_dependency_mapping",
       "skill_authority_ordered_prompt_packaging",
       "skill_bounded_agent_execution",
       "skill_bounded_fanout_and_retry_design",
@@ -1515,8 +1804,6 @@
       "skill_dependency_and_join_control",
       "skill_deterministic_route_selection",
       "skill_evidence_contract_design",
-      "skill_finance_cost_optimization_dashboards",
-      "skill_finance_ma_synergy_due_diligence",
       "skill_finra_sec_regulatory_compliance",
       "skill_partner_aws_ecosystem",
       "skill_partner_cloud_partner_ecosystem"
@@ -1532,7 +1819,7 @@
     "c03_graphrag_bound_document": {
       "schema_version": "c03_graphrag_bound_v1",
       "section_id": "executive_summary",
-      "generated_at_utc": "2026-06-12T11:34:15.410530+00:00",
+      "generated_at_utc": "2026-06-15T21:31:37.925881+00:00",
       "c03_graphrag_bound_status": "BOUND",
       "source_authority": "augmented_skills_graph",
       "graph_expansion_allowed": true,
@@ -1540,10 +1827,9 @@
         "ref:graph:edge:edge_skill_fact_skill_actuarial_fsa_fellowship_fact_certs_001",
         "ref:graph:edge:edge_skill_fact_skill_risk_enterprise_risk_controls_fact_governance_001",
         "ref:graph:edge:edge_skill_fact_skill_partner_ibm_aws_alliance_joint_revenue_fact_partnerships_gtm_002",
-        "ref:graph:edge:edge_skill_fact_skill_finance_cost_optimization_dashboards_fact_revenue_ops_004",
-        "ref:graph:edge:edge_skill_fact_skill_finance_ma_synergy_due_diligence_fact_revenue_ops_005",
         "ref:graph:edge:edge_skill_fact_skill_p2_tech_aws_modernization_patterns_fact_partnerships_gtm_002",
         "ref:graph:edge:edge_skill_fact_skill_p2_tech_devops_pipeline_blueprint_fact_engineering_platform_003",
+        "ref:graph:edge:edge_skill_fact_skill_sr_insurtech_legacy_cloud_modernization_bul_insurtech_001",
         "ref:graph:edge:edge_skill_fact_skill_sr_cloud_data_platform_engineering_fact_engineering_platform_001",
         "ref:graph:edge:edge_skill_fact_skill_sr_banking_ai_governance_controls_fact_governance_001",
         "ref:graph:edge:edge_skill_fact_skill_sr_microservices_integration_platform_fact_engineering_platform_002",
@@ -1598,12 +1884,16 @@
         "ref:graph:edge:edge_skill_fact_skill_commercial_board_level_stakeholder_alignment_fact_exec_001",
         "ref:graph:edge:edge_skill_fact_skill_p2_gtm_commercial_validation_pilots_fact_consulting_001",
         "ref:graph:edge:edge_skill_fact_skill_svp_it_strategy_innovation_fact_exec_001",
-        "ref:graph:edge:edge_skill_fact_skill_svp_it_strategy_innovation_fact_consulting_001"
+        "ref:graph:edge:edge_skill_fact_skill_svp_it_strategy_innovation_fact_consulting_001",
+        "ref:graph:edge:edge_skill_fact_skill_agile_delivery_for_regulated_insurers_bul_insurtech_001",
+        "ref:graph:edge:edge_skill_fact_skill_application_dependency_mapping_bul_insurtech_001",
+        "ref:graph:edge:edge_skill_fact_skill_aws_migration_readiness_assessment_bul_insurtech_001"
       ],
       "graph_lineage_refs": [
         "ref:graph:version:master_skills_arsenal_graph_v1",
-        "ref:graph:node_count:240",
-        "ref:graph:edge_count:1441",
+        "ref:graph:node_count:293",
+        "ref:graph:edge_count:1659",
+        "ref:graph:fact_lineage:bul_insurtech_001",
         "ref:graph:fact_lineage:fact_certs_001",
         "ref:graph:fact_lineage:fact_consulting_001",
         "ref:graph:fact_lineage:fact_engineering_platform_001",
@@ -1615,15 +1905,13 @@
         "ref:graph:fact_lineage:fact_insurance_software_001",
         "ref:graph:fact_lineage:fact_partnerships_gtm_002",
         "ref:graph:fact_lineage:fact_quant_act_001",
-        "ref:graph:fact_lineage:fact_rag_insurance_001",
-        "ref:graph:fact_lineage:fact_revenue_ops_004",
-        "ref:graph:fact_lineage:fact_revenue_ops_005"
+        "ref:graph:fact_lineage:fact_rag_insurance_001"
       ],
-      "graph_sig": "2aeaeca0d4fa7c8c3abd33a490f87c1e",
+      "graph_sig": "12d3523812b075341f2d421cacc9ca5c",
       "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-      "graph_digest": "57237b432afebaea738d6d045008cb425efb40e4ce5568c0f8740c8ab6ab81fa",
+      "graph_digest": "71434de8331de06e171a6cb5a8d52f6f13c01407868eb96392846524a2f310ea",
       "graph_version": "master_skills_arsenal_graph_v1",
-      "evidence_items_count": 14,
+      "evidence_items_count": 13,
       "final_evidence_contract_snapshot": {
         "schema_version": "final_evidence_contract_snapshot_v1",
         "app_id": "apps_rg",
@@ -1637,10 +1925,9 @@
           "ref:graph:edge:edge_skill_fact_skill_actuarial_fsa_fellowship_fact_certs_001",
           "ref:graph:edge:edge_skill_fact_skill_risk_enterprise_risk_controls_fact_governance_001",
           "ref:graph:edge:edge_skill_fact_skill_partner_ibm_aws_alliance_joint_revenue_fact_partnerships_gtm_002",
-          "ref:graph:edge:edge_skill_fact_skill_finance_cost_optimization_dashboards_fact_revenue_ops_004",
-          "ref:graph:edge:edge_skill_fact_skill_finance_ma_synergy_due_diligence_fact_revenue_ops_005",
           "ref:graph:edge:edge_skill_fact_skill_p2_tech_aws_modernization_patterns_fact_partnerships_gtm_002",
           "ref:graph:edge:edge_skill_fact_skill_p2_tech_devops_pipeline_blueprint_fact_engineering_platform_003",
+          "ref:graph:edge:edge_skill_fact_skill_sr_insurtech_legacy_cloud_modernization_bul_insurtech_001",
           "ref:graph:edge:edge_skill_fact_skill_sr_cloud_data_platform_engineering_fact_engineering_platform_001",
           "ref:graph:edge:edge_skill_fact_skill_sr_banking_ai_governance_controls_fact_governance_001",
           "ref:graph:edge:edge_skill_fact_skill_sr_microservices_integration_platform_fact_engineering_platform_002",
@@ -1695,12 +1982,16 @@
           "ref:graph:edge:edge_skill_fact_skill_commercial_board_level_stakeholder_alignment_fact_exec_001",
           "ref:graph:edge:edge_skill_fact_skill_p2_gtm_commercial_validation_pilots_fact_consulting_001",
           "ref:graph:edge:edge_skill_fact_skill_svp_it_strategy_innovation_fact_exec_001",
-          "ref:graph:edge:edge_skill_fact_skill_svp_it_strategy_innovation_fact_consulting_001"
+          "ref:graph:edge:edge_skill_fact_skill_svp_it_strategy_innovation_fact_consulting_001",
+          "ref:graph:edge:edge_skill_fact_skill_agile_delivery_for_regulated_insurers_bul_insurtech_001",
+          "ref:graph:edge:edge_skill_fact_skill_application_dependency_mapping_bul_insurtech_001",
+          "ref:graph:edge:edge_skill_fact_skill_aws_migration_readiness_assessment_bul_insurtech_001"
         ],
         "graph_lineage_refs": [
           "ref:graph:version:master_skills_arsenal_graph_v1",
-          "ref:graph:node_count:240",
-          "ref:graph:edge_count:1441",
+          "ref:graph:node_count:293",
+          "ref:graph:edge_count:1659",
+          "ref:graph:fact_lineage:bul_insurtech_001",
           "ref:graph:fact_lineage:fact_certs_001",
           "ref:graph:fact_lineage:fact_consulting_001",
           "ref:graph:fact_lineage:fact_engineering_platform_001",
@@ -1712,15 +2003,22 @@
           "ref:graph:fact_lineage:fact_insurance_software_001",
           "ref:graph:fact_lineage:fact_partnerships_gtm_002",
           "ref:graph:fact_lineage:fact_quant_act_001",
-          "ref:graph:fact_lineage:fact_rag_insurance_001",
-          "ref:graph:fact_lineage:fact_revenue_ops_004",
-          "ref:graph:fact_lineage:fact_revenue_ops_005"
+          "ref:graph:fact_lineage:fact_rag_insurance_001"
         ],
-        "graph_sig": "2aeaeca0d4fa7c8c3abd33a490f87c1e",
+        "graph_sig": "12d3523812b075341f2d421cacc9ca5c",
         "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-        "graph_digest": "57237b432afebaea738d6d045008cb425efb40e4ce5568c0f8740c8ab6ab81fa",
+        "graph_digest": "71434de8331de06e171a6cb5a8d52f6f13c01407868eb96392846524a2f310ea",
         "graph_version": "master_skills_arsenal_graph_v1",
         "evidence_items": [
+          {
+            "evidence_id": "evidence:track_weighted:bul_insurtech_001",
+            "source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
+            "source_class": "augmented_skills_graph",
+            "graph_node_ref": "node_fact:bul_insurtech_001",
+            "authority": "augmented_skills_graph",
+            "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
+            "career_track": "track_data_tech_cloud_ml"
+          },
           {
             "evidence_id": "evidence:track_weighted:fact_certs_001",
             "source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
@@ -1828,27 +2126,9 @@
             "authority": "augmented_skills_graph",
             "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
             "career_track": "track_genai_agentic"
-          },
-          {
-            "evidence_id": "evidence:track_weighted:fact_revenue_ops_004",
-            "source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-            "source_class": "augmented_skills_graph",
-            "graph_node_ref": "node_fact:fact_revenue_ops_004",
-            "authority": "augmented_skills_graph",
-            "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
-            "career_track": "track_data_tech_cloud_ml"
-          },
-          {
-            "evidence_id": "evidence:track_weighted:fact_revenue_ops_005",
-            "source": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-            "source_class": "augmented_skills_graph",
-            "graph_node_ref": "node_fact:fact_revenue_ops_005",
-            "authority": "augmented_skills_graph",
-            "binding_mode": "TRACK_WEIGHTED_MULTI_HOP",
-            "career_track": "track_data_tech_cloud_ml"
           }
         ],
-        "evidence_collection_timestamp": "2026-06-12T11:34:15.410530+00:00",
+        "evidence_collection_timestamp": "2026-06-15T21:31:37.925881+00:00",
         "fec_shape_only": true,
         "canonical_final_evidence_contract_emitted": false,
         "recommended_artifact_name": "section_graph_binding_fec_snapshot.json"
@@ -1906,13 +2186,13 @@
       "graph_hop_bounds_policy_note": "graph_hop_bounds in native_c03_final_evidence.json is ACL policy max depth; exec-summary c03_graphrag_bound materializes TRACK_WEIGHTED_MULTI_HOP paths when pool resolves"
     },
     "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-    "graph_digest": "57237b432afebaea738d6d045008cb425efb40e4ce5568c0f8740c8ab6ab81fa",
+    "graph_digest": "71434de8331de06e171a6cb5a8d52f6f13c01407868eb96392846524a2f310ea",
     "graph_version": "master_skills_arsenal_graph_v1"
   },
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:57237b432afebaea",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:71434de8331de06e",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -1930,9 +2210,93 @@
     ]
   },
   "agentic_core_isolation": {
-    "git_diff_name_only_agentic_core": [],
-    "git_status_short_agentic_core": [],
-    "dirty_files": [],
+    "git_diff_name_only_agentic_core": [
+      "agentic_core/L0_routing/logs/guardian_report.json",
+      "agentic_core/L1_cognition/c0_context/preflight.py",
+      "agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
+      "agentic_core/L6_system_learning/runtime_adg/manifest_hash.py",
+      "agentic_core/L6_system_learning/runtime_hitl_consumer.py",
+      "agentic_core/L6_system_learning/snapshot/__init__.py",
+      "agentic_core/L6_system_learning/span_contracts.py",
+      "agentic_core/runtime/prove_requirements/acceptance_validator.py",
+      "agentic_core/runtime/prove_requirements/artifact_payload_hasher.py",
+      "agentic_core/runtime/prove_requirements/proof_depth_ladder.py"
+    ],
+    "git_status_short_agentic_core": [
+      "M agentic_core/L0_routing/logs/guardian_report.json",
+      "M agentic_core/L1_cognition/c0_context/preflight.py",
+      "M agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
+      "M agentic_core/L6_system_learning/runtime_adg/manifest_hash.py",
+      "M agentic_core/L6_system_learning/runtime_hitl_consumer.py",
+      "M agentic_core/L6_system_learning/snapshot/__init__.py",
+      "M agentic_core/L6_system_learning/span_contracts.py",
+      "M agentic_core/runtime/prove_requirements/acceptance_validator.py",
+      "M agentic_core/runtime/prove_requirements/artifact_payload_hasher.py",
+      "M agentic_core/runtime/prove_requirements/proof_depth_ladder.py",
+      "?? agentic_core/L6_system_learning/app_route_contracts.py",
+      "?? agentic_core/L6_system_learning/approval_gauntlet_engine.py",
+      "?? agentic_core/L6_system_learning/auto_persistence.py",
+      "?? agentic_core/L6_system_learning/bus_u_publisher.py",
+      "?? agentic_core/L6_system_learning/capability_token.py",
+      "?? agentic_core/L6_system_learning/deterministic_replay_engine.py",
+      "?? agentic_core/L6_system_learning/egress_inspector.py",
+      "?? agentic_core/L6_system_learning/embedding_service_factory.py",
+      "?? agentic_core/L6_system_learning/eval_freshness_gate.py",
+      "?? agentic_core/L6_system_learning/eval_gated_l4_writer.py",
+      "?? agentic_core/L6_system_learning/eval_readiness_classifier.py",
+      "?? agentic_core/L6_system_learning/eval_record_signer.py",
+      "?? agentic_core/L6_system_learning/exemplar_consult_adapter.py",
+      "?? agentic_core/L6_system_learning/exemplar_seeder.py",
+      "?? agentic_core/L6_system_learning/exit_v6_engines.py",
+      "?? agentic_core/L6_system_learning/feature_flags.py",
+      "?? agentic_core/L6_system_learning/formal_exception_evidence.py",
+      "?? agentic_core/L6_system_learning/governance_regression_checker.py",
+      "?? agentic_core/L6_system_learning/hitl_decision_logger.py",
+      "?? agentic_core/L6_system_learning/hitl_decision_quality.py",
+      "?? agentic_core/L6_system_learning/human_calibration_engine.py",
+      "?? agentic_core/L6_system_learning/identity_propagator.py",
+      "?? agentic_core/L6_system_learning/incident_rca_engine.py",
+      "?? agentic_core/L6_system_learning/manifest_hash.py",
+      "?? agentic_core/L6_system_learning/materializer.py",
+      "?? agentic_core/L6_system_learning/mcp_connector_registry.py",
+      "?? agentic_core/L6_system_learning/observer_compliance_recorder.py",
+      "?? agentic_core/L6_system_learning/outcome_evaluation_engine.py",
+      "?? agentic_core/L6_system_learning/pattern_synthesizer.py",
+      "?? agentic_core/L6_system_learning/proposal_admission_gate.py",
+      "?? agentic_core/L6_system_learning/rca_lead_time_tracker.py",
+      "?? agentic_core/L6_system_learning/replay_envelope_writer.py",
+      "?? agentic_core/L6_system_learning/risk_tier_classifier.py",
+      "?? agentic_core/L6_system_learning/rlhf_optimizer_impl.py",
+      "?? agentic_core/L6_system_learning/rollout_receipt_generator.py",
+      "?? agentic_core/L6_system_learning/runtime_exhaust_collector.py",
+      "?? agentic_core/L6_system_learning/runtime_span_emitter.py",
+      "?? agentic_core/L6_system_learning/schema_normalizer.py",
+      "?? agentic_core/L6_system_learning/signal_fusion_engine.py",
+      "?? agentic_core/L6_system_learning/store.py",
+      "?? agentic_core/L6_system_learning/system_learning_memory_bridge.py",
+      "?? agentic_core/L6_system_learning/trajectory_divergence_scorer.py",
+      "?? agentic_core/L6_system_learning/trajectory_evaluator.py",
+      "?? agentic_core/L6_system_learning/trajectory_exemplar_store.py",
+      "?? agentic_core/L6_system_learning/uwg_ink_path_monitor.py",
+      "?? agentic_core/L6_system_learning/v6_kpi_board.py",
+      "?? agentic_core/L6_system_learning/v6_kpi_producers.py",
+      "?? agentic_core/L6_system_learning/v7_kpi_board.py",
+      "?? agentic_core/L6_system_learning/v7_kpi_producers.py",
+      "?? agentic_core/L6_system_learning/v7_promotion_schemas.py",
+      "?? agentic_core/L6_system_learning/v7_rule_drafter.py"
+    ],
+    "dirty_files": [
+      "agentic_core/L0_routing/logs/guardian_report.json",
+      "agentic_core/L1_cognition/c0_context/preflight.py",
+      "agentic_core/L4_state/memory/runtime_adg/_trace_index.json",
+      "agentic_core/L6_system_learning/runtime_adg/manifest_hash.py",
+      "agentic_core/L6_system_learning/runtime_hitl_consumer.py",
+      "agentic_core/L6_system_learning/snapshot/__init__.py",
+      "agentic_core/L6_system_learning/span_contracts.py",
+      "agentic_core/runtime/prove_requirements/acceptance_validator.py",
+      "agentic_core/runtime/prove_requirements/artifact_payload_hasher.py",
+      "agentic_core/runtime/prove_requirements/proof_depth_ladder.py"
+    ],
     "touched_by_this_wave": false,
     "p1_w4_changed_file_prefixes": [
       "apps_rg/fact_inventory/track_weighted_graph_expansion.py",
@@ -1944,8 +2308,8 @@
       "docs/reports/apps_rg/fixtures/p1_w4",
       ".claude/plans/graph-skills-hardening-f3a8c1.md"
     ],
-    "workspace_guard_clean": true,
-    "isolation_verdict": "CLEAN",
+    "workspace_guard_clean": false,
+    "isolation_verdict": "ISOLATED_PREEXISTING_CHURN",
     "evidence": "P1-W4 closeout changed only apps_rg/fact_inventory, apps_rg/runtime/proof_pool_resolver.py, tests, docs/reports/apps_rg, and plan markdown \u2014 no agentic_core paths in scope."
   }
 }

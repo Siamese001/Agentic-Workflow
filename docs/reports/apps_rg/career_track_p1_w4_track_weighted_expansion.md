@@ -1,6 +1,6 @@
 # P1-W4 — Track-weighted graph expansion
 
-**Generated:** 2026-06-12T11:34:15Z  
+**Generated:** 2026-06-15T21:31:38Z  
 **Plan:** graph-skills-hardening-f3a8c1  
 **Role family:** SVP_ENGINEERING_AI_PLATFORM
 
@@ -13,7 +13,7 @@
 ## Selected facts by track
 
 - `track_actuarial_risk_derivatives`: 4 facts
-- `track_data_tech_cloud_ml`: 4 facts
+- `track_data_tech_cloud_ml`: 3 facts
 - `track_genai_agentic`: 6 facts
 
 ## Graph hop sample (first skill)
@@ -45,7 +45,7 @@
 
 - c03_graph_bound_status: **BOUND**
 - c03_binding_surface: `apps_rg/fact_inventory/track_weighted_graph_expansion`
-- c03_graph_expansion_ref: `ref:graph:track_weighted_expansion:57237b432afebaea`
+- c03_graph_expansion_ref: `ref:graph:track_weighted_expansion:71434de8331de06e`
 - c03_graph_hop_paths_count: **22**
 - c03_selected_tracks: ['track_actuarial_risk_derivatives', 'track_data_tech_cloud_ml', 'track_genai_agentic']
 - non_graph_evidence_items_count: **0**
@@ -59,6 +59,6 @@
 
 ## agentic_core isolation
 
-- isolation_verdict: **CLEAN**
+- isolation_verdict: **ISOLATED_PREEXISTING_CHURN**
 - touched_by_this_wave: **False**
-- dirty_files: `[]`
+- dirty_files: `['agentic_core/L0_routing/logs/guardian_report.json', 'agentic_core/L1_cognition/c0_context/preflight.py', 'agentic_core/L4_state/memory/runtime_adg/_trace_index.json', 'agentic_core/L6_system_learning/runtime_adg/manifest_hash.py', 'agentic_core/L6_system_learning/runtime_hitl_consumer.py', 'agentic_core/L6_system_learning/snapshot/__init__.py', 'agentic_core/L6_system_learning/span_contracts.py', 'agentic_core/runtime/prove_requirements/acceptance_validator.py', 'agentic_core/runtime/prove_requirements/artifact_payload_hasher.py', 'agentic_core/runtime/prove_requirements/proof_depth_ladder.py']`
