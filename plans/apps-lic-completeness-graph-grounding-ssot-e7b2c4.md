@@ -22,8 +22,8 @@ First-principles review of apps_lic measured against apps_rg's (assumed-complete
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: W4
-LAST_COMPLETED_WAVE: W3
+CURRENT_WAVE: W5
+LAST_COMPLETED_WAVE: W4
 LAST_UPDATED: 2026-06-15
 
 ---
@@ -46,7 +46,7 @@ LAST_UPDATED: 2026-06-15
 | W1 | W1.1, W1.2 | Model/reasoning SSOT reconciliation (apps_rg-lessons wave) | ~25K | no agentic_core edit | DONE | one X1D model SSOT; YAML generator SSOT; X2/X1D reclassified; C-level 2-pass wired |
 | W2 | W2.1, W2.2 | C0.3 proof graph -> apps_rg-shared candidate SSOT (graph-skills infusion) | ~40K | none — core registry already generic (no edit) | DONE | LicGraphAdapter live; approved proof IDs+lineage into HOP3/HOP5; provenance in envelope |
 | W3 | W3.1 | Recipient-fit weighting over the graph | ~20K | W2 done | DONE | proof re-weighted per recipient_class x message_type x trigger; flat candidate_skills removed |
-| W4 | W4.1, W4.2 | Eval lane matrix (5x4) + batch aggregation | ~30K | judges from W1 | TODO | 20-cell matrix pass/fail report; per-recipient batch (no all-or-nothing) |
+| W4 | W4.1, W4.2 | Eval lane matrix (5x4) + batch aggregation | ~30K | judges from W1 | DONE | 20-cell matrix pass/fail report; per-recipient batch (no all-or-nothing) |
 | W5 | W5.1 | C0 recipient-evidence readiness (chroma/ingestion/JD gate) | ~25K | chroma_delegate present | TODO | C0 owns vector readiness (missing/stale/blocked/ready); JD gate enforced |
 | W6 | W6.1 | Pipeline SSOT + briefing reuse + ops hardening | ~15K | W2 done | TODO | shared apps_rg<->apps_lic proof SSOT; briefing.txt reuse verified; disposition/label accuracy |
 
@@ -59,8 +59,8 @@ LAST_UPDATED: 2026-06-15
 | W2.1 | Wire LicGraphAdapter to augmented_skills_graph + fact ledger | DONE |
 | W2.2 | Approved-proof selection into HOP3/HOP5 + provenance into envelope | DONE |
 | W3.1 | Recipient-fit weighting | DONE |
-| W4.1 | 5x4 eval lane matrix | TODO |
-| W4.2 | Batch aggregation (per-recipient, no all-or-nothing) | TODO |
+| W4.1 | 5x4 eval lane matrix | DONE |
+| W4.2 | Batch aggregation (per-recipient, no all-or-nothing) | DONE |
 | W5.1 | C0 recipient-evidence readiness | TODO |
 | W6.1 | Pipeline SSOT + briefing + ops | TODO |
 
@@ -167,14 +167,14 @@ CHECKPOINT: C
 ## Wave 4 — Eval Lane Matrix (5x4) + Batch Aggregation
 
 WAVE_ID: W4
-WAVE_STATUS: TODO
-WAVE_COMPLETE: NO
+WAVE_STATUS: DONE
+WAVE_COMPLETE: YES
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: D
 
 **Phases**:
-- **W4.1** — 5x4 message-type x recipient-class eval matrix (the apps_rg "11/11" analog) | ~18K | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W4.2** — Per-recipient batch aggregation (no all-or-nothing) | ~12K | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W4.1** — 5x4 message-type x recipient-class eval matrix (the apps_rg "11/11" analog) | ~18K | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W4.2** — Per-recipient batch aggregation (no all-or-nothing) | ~12K | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 
 **Acceptance**:
 - A single matrix report shows each of the 20 cells pass/fail at target quality (response-rate proxy + judge verdicts); single gap-backlog discipline (no scattered plans).
@@ -228,7 +228,7 @@ DoD-2: Grounded proof — LicGraphAdapter returns real approved proof-points; ev
 
 DoD-3: 5x4 eval matrix green — all 20 message-type x recipient-class cells pass at target quality.
 - Evidence: matrix report artifact under `artifacts/apps_lic/`; per-recipient batch ships partial on mixed verdicts.
-- Status: TODO
+- Status: PARTIAL (W4; tools/apps_lic/eval_lane_matrix.py renders the 5x4 matrix + JSON; 12/20 lanes READY at target quality with grounded apps_rg provenance; the 8 referral_ask/follow_up lanes are INPUT-gated (need per-campaign referral/prior-thread context), NOT quality-gated; per-cell independence proven — no all-or-nothing; test_w4_eval_lane_matrix.py. REMAINING for full 20/20: provide referral/prior-thread context + live X1D judge-verdict augmentation (offline harness uses proof/gate quality proxy)).
 
 DoD-4: apps_rg-issue checklist closed — X2/X1D reclassified, C-level 2-pass wired, candidate-count synced, env-pin audited, no all-or-nothing.
 - Evidence: the checklist table above all resolved; targeted tests.
