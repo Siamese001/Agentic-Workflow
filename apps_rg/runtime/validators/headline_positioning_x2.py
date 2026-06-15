@@ -164,6 +164,22 @@ def _collect_bindings(
                     _extend(skill_ids, rec.get("graph_skill_node_ids"))
                     fact_or_lineage.extend(sorted(matched))
 
+    # Graph-era headline binding (typed-edge guardrails): the headline's top-line positioning
+    # synthesizes graph evidence across ALL employers, so the model cites role-episode bundle
+    # ids (reb_*) + graph skill nodes (skill_*) directly in claim_ledger.source_fact_ids — not
+    # the hpb_* positioning-family ids the explicit-field / linked-fact paths above resolve.
+    # Those cited graph ids ARE the headline's bound positioning lineage; recognize them so the
+    # graph-lineage gates see the binding the headline already carries. (The headline is the
+    # cross-employer top-line, so a cited reb_*/skill_* from any lane is in scope here — unlike
+    # the lane-scoped narratives.)
+    for cid in _cited_source_fact_ids(parsed_output):
+        if cid.startswith("reb_"):
+            bundle_ids.append(cid)
+            fact_or_lineage.append(cid)
+        elif cid.startswith("skill_"):
+            skill_ids.append(cid)
+            fact_or_lineage.append(cid)
+
     return {
         "bundle_ids": sorted(set(bundle_ids)),
         "skill_ids": sorted(set(skill_ids)),
