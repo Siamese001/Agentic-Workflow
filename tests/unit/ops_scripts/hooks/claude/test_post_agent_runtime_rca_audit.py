@@ -572,6 +572,56 @@ class TestStatusMatrix:
         assert _run(rca_mod, text, monkeypatch) == 0
         assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
 
+    def test_refactor_fail_consolidated_rca_pointer_receipt_clean(
+        self, rca_mod, monkeypatch
+    ) -> None:
+        # Consolidated failure shape: the full diagnosis appears once in the Outcome frame.
+        # The Turn Receipt RCA keeps the required labels but points back to the Layered RCA
+        # instead of duplicating the narrative.
+        text = (
+            "**Outcome**\n"
+            "Did it run? Yes.\n"
+            "Verdict source: python -m pytest tests/unit/foo/test_bar.py -q -> exit 1, 2 failed\n"
+            "Runtime provenance: live pytest against local repo files; no mocks\n"
+            "\n"
+            "**What worked**\n"
+            "Pytest collected the target module and 18 tests passed.\n"
+            "\n"
+            "**Failure**\n"
+            "Expected all targeted tests to pass; got 2 fixture-load failures.\n"
+            "\n"
+            "**Layered RCA**\n"
+            "Immediate symptom: pytest exited 1 with 2 fixture-load failures\n"
+            "Failing layer: test fixture setup, not production runtime code\n"
+            "why1: the fixture loader tried to open tests/fixtures/old_case.json\n"
+            "why2: the fixture file was renamed but the fixture registry was not updated\n"
+            "Mechanism: stale fixture registry path -> file open failure -> fixture construction aborts\n"
+            "Root cause: tests/fixtures/registry.py still points to the pre-rename fixture path\n"
+            "Evidence: pytest traceback shows FileNotFoundError: tests/fixtures/old_case.json\n"
+            "Confidence / unknowns: root cause DIRECTLY OBSERVED; broader registry drift unknown\n"
+            "\n"
+            "**Next**\n"
+            "Update tests/fixtures/registry.py and rerun python -m pytest tests/unit/foo/test_bar.py -q\n"
+            "\n"
+            "---\n"
+            "### ⬛ Turn Receipt\n"
+            "\n"
+            "STATUS: FAIL\n"
+            "FILES_CHANGED:\n- [registry.py](tests/fixtures/registry.py)\n"
+            "COMMANDS_RUN:\n- python -m pytest tests/unit/foo/test_bar.py -q -> exit 1, 2 failed\n"
+            "TESTS_GATES:\n- python -m pytest tests/unit/foo/test_bar.py -q -> FAIL, 18 passed / 2 failed\n"
+            "RCA:\n"
+            "- symptom: see Outcome / Layered RCA: Immediate symptom\n"
+            "- root_cause: see Outcome / Layered RCA: Root cause [DIRECTLY OBSERVED]\n"
+            "- evidence: pytest traceback FileNotFoundError: tests/fixtures/old_case.json; see Outcome / Layered RCA: Evidence\n"
+            "- fix_or_next: see Outcome / Next\n"
+            "- recurrence_guard: rerun python -m pytest tests/unit/foo/test_bar.py -q\n"
+            "ARTIFACTS:\n- NONE\n"
+            "NOTES:\n- Consolidated RCA pointer receipt.\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
     def test_refactor_blocked_no_edit_tool_clean(
         self, rca_mod, monkeypatch
     ) -> None:

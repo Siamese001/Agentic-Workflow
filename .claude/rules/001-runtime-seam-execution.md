@@ -83,6 +83,12 @@ A non-repo turn (pure question / T0 lookup / nothing changed) doesn't need the f
 
 A response reports a **runtime failure** when it sets `STATUS: FAIL` OR surfaces any failure signal (`X3_BLOCK`, traceback, non-zero exit, pytest `N failed`, `PRE_RUN_BLOCKED`, `BLOCKED_*`/`MISSING_GRAPH_PATH`). A green status over a body failure-signal is **forbidden** (green theater). Minimum: the floor's `RCA:` block, all five fields — `root_cause` graded per §20 (never present UNRESOLVED as fact), `fix_or_next` per §7; an exit code / `X3_*` label alone is not a runtime outcome.
 
+For refactoring failures, do **not** duplicate the full diagnosis in two places: the **Layered RCA**
+inside the Outcome frame is the narrative SSOT. The Turn Receipt `RCA:` remains mandatory, but may be a
+compact pointer/index to the corresponding Layered RCA fields, as long as all five labels are present,
+the root-cause confidence grade is visible, evidence is concrete, and `recurrence_guard` names the test
+or gate that catches the failure next time.
+
 **Refactoring turns (T2/T3 code changes) ⇒ the Outcome frame is mandatory on EVERY turn (pass or fail)**, emitted fenced; the **Layered RCA** sub-block is required when `STATUS: FAIL`:
 
 ```text
