@@ -14,8 +14,7 @@ validation before commit, with no bypass exceptions. The four checks below are e
 pre-commit hooks and CI gates; this skill is the human-readable procedure for satisfying them and
 for knowing when an Author-Gate is required.
 
-**Sibling skills:** Use `boundary-enforcement` for layer/import hygiene, `fortknox-evidence` for
-certification proof discipline, `ask-user-question-recommendation` for the Author-Gate prompt shape.
+**Sibling skills:** Use `boundary-enforcement` for layer/import hygiene, `ask-user-question-recommendation` for the Author-Gate prompt shape.
 This skill is specifically about *secrets, logs, dependencies, and authorization*.
 
 ## When to Invoke
@@ -58,5 +57,5 @@ This skill is specifically about *secrets, logs, dependencies, and authorization
 - Rule: `.claude/rules/security-hardening.md`
 - Policy: `.claude/rules/approval-exception-policy.md` (Category A/B/C)
 - Gates: `ops_scripts/ci/check_secrets_scan.py`, `check_sensitive_logs.py`, `dependency_security_scan.py`, `check_authorization.py`, `run_contract_gates.py`
-- Sibling skills: `boundary-enforcement`, `fortknox-evidence`, `ask-user-question-recommendation`
+- Sibling skills: `boundary-enforcement`, `ask-user-question-recommendation`
 - Author-Gate prompt: native `AskUserQuestion` (CLAUDE.md § Author-Gate)
