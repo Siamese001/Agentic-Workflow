@@ -110,6 +110,11 @@ def _theme_budget_block() -> str:
         "successfully/also/built/delivered/designed/implemented/architected/scaled/productized; "
         "prefer Drove, Owned, Championed, Operationalized, Established, Anchored, Stewarded. "
         "Keep the employer anchor 'IBM' mid-sentence, never as the opener.",
+        "- MECHANISM LAW (deterministic gate x2_narrative_technical_specificity_floor): the "
+        "sentence MUST name at least one concrete mechanism/technology token. For IBM's "
+        "enterprise-modernization scope use one of: observability, telemetry, microservices, "
+        "pipeline, runtime, HPC, lakehouse, API (all IBM-truthful). Generic words alone — cloud, "
+        "data, platform, modernization, lineage — do NOT satisfy this gate.",
         "Theme families (trigger vocabulary classes):",
     ]
     for fid, phrases in IBM_NARRATIVE_THEME_TRIGGERS:

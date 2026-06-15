@@ -42,12 +42,25 @@ def append_canonical_evidence_invariant_x2_gates(
 
     # ibm_narrative: prompt SSOT (ibm_position_narrative_v1.yaml) explicitly authorizes
     # bul_ibm_001..005 as the proof tokens for claim_ledger.source_fact_ids, but the FEC is
-    # built from underlying fact_* IDs. Auto-alias the IBM bullet surface to the first
-    # fact_* in the FEC so the namespace-subset gates accept what the prompt requires.
+    # built from underlying graph ids. Auto-alias the IBM bullet surface to the FEC id it
+    # stands for so the namespace-subset gates accept what the prompt requires.
+    #
+    # Typed-edge migration (W2.3): the FEC is now composed of graph-era role-episode BUNDLE ids
+    # (reb_ibm_*), not legacy fact_* ids — so the prior "first fact_* anchor" yielded None and the
+    # alias never built, failing x2_claim_ledger_source_fact_ids_subset_of_fec on every bul_ibm_*.
+    # Alias each bullet slot to ITS canonical bundle (IBM_BULLET_SLOT_BUNDLE_MAP) when that bundle
+    # is in the FEC — a precise per-slot resolution, not a single shared anchor. Keep the legacy
+    # fact_* fallback for any FEC still composed of fact_* ids.
     section_id = str(canon_doc.get("section_id") or runtime_payload.get("section_id") or "")
     if section_id == "ibm_narrative":
+        from apps_rg.runtime.sections.ibm_role_episode_evidence import (
+            IBM_BULLET_SLOT_BUNDLE_MAP,
+        )
         from apps_rg.runtime.validators.ibm_bullets_x2 import IBM_BULLET_IDS
 
+        for bid, bundle_id in IBM_BULLET_SLOT_BUNDLE_MAP.items():
+            if bundle_id in fec_ids:
+                alias_map.setdefault(bid, bundle_id)
         fact_anchor = next(
             (fid for fid in sorted(fec_ids) if fid.startswith("fact_") and "_metric_" not in fid),
             None,
