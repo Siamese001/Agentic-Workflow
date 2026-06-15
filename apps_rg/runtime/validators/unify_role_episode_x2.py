@@ -146,6 +146,26 @@ def _collect_change_log_bindings(
     # Derive bindings from attached bundles via cited-fact intersection.
     bundles = _bundle_index_by_fact(meta)
 
+    # Graph-era narrative binding (typed-edge role-facet guardrails): the narrative emits its
+    # bundle selection under ``selected_fact_plan.primary_bundles`` and cites bundle ids
+    # (``reb_unify_*``) + graph skill node ids (``skill_*``) directly in
+    # ``claim_ledger.source_fact_ids`` — not the legacy ``bul_unify_*`` slot ids the maps below
+    # resolve. Recognize those graph-era ids as first-class bindings so the graph-lineage gates
+    # see the bindings the narrative already carries; the bundle-resolution block further down
+    # then fills each bound bundle's graph_skill_node_ids + a lineage fact + metric outcomes.
+    _known_bundle_ids = {str(r.get("role_episode_bundle_id")) for r in bundles}
+    _sfp = po.get("selected_fact_plan")
+    _cited_graph_ids: list[str] = list(claim_ledger_facts)
+    if isinstance(_sfp, dict) and isinstance(_sfp.get("primary_bundles"), list):
+        _cited_graph_ids.extend(str(x) for x in _sfp["primary_bundles"])
+    for _gid in _cited_graph_ids:
+        _gid = _gid.strip()
+        if _gid in _known_bundle_ids:
+            bundle_ids.append(_gid)
+        elif _gid.startswith("skill_"):
+            skill_ids.append(_gid)
+            fact_or_lineage.append(_gid)
+
     # Narrative path: cited finalized bullet-slot ids (bul_unify_*) carry graph lineage to bundles
     # via the slot->bundle map; resolve bundle_id + skills + lineage from them.
     if claim_ledger_facts:
