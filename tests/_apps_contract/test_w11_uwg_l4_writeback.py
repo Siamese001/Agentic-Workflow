@@ -37,7 +37,7 @@ from agentic_core.L4_state.package_driven_state_store import (
     L4WriteGate,
     DirectWriteAttemptError,
 )
-from agentic_core.L6_learning import FutureRunPromotionRequest, ProposalPacket, ProposalType
+from agentic_core.L6_system_learning.future_run_promotion import FutureRunPromotionRequest, ProposalPacket, ProposalType
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -336,7 +336,7 @@ class TestW11L4WriteGate:
         gate = L4WriteGate()
         
         assert not gate.check_write_permission("L6")
-        assert not gate.check_write_permission("agentic_core.L6_learning")
+        assert not gate.check_write_permission("agentic_core.L6_system_learning.future_run_promotion")
         
         blocked = gate.block_direct_write("L6", "write_attempt")
         assert BlockReason.DIRECT_WRITE_ATTEMPT_BLOCKED in blocked.block_reasons

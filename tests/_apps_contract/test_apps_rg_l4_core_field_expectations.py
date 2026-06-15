@@ -14,7 +14,7 @@ import unittest
 
 def _try_import_promotion_gauntlet():
     try:
-        from agentic_core.L6_learning import PromotionGauntlet  # type: ignore[import]
+        from agentic_core.L6_system_learning.future_run_promotion import PromotionGauntlet  # type: ignore[import]
         return PromotionGauntlet
     except ImportError:
         return None
@@ -22,7 +22,7 @@ def _try_import_promotion_gauntlet():
 
 def _try_import_l6_gauntlet_result():
     try:
-        from agentic_core.L6_learning.types import L6GauntletResult  # type: ignore[import]
+        from agentic_core.L6_system_learning.future_run_promotion.types import L6GauntletResult  # type: ignore[import]
         return L6GauntletResult
     except ImportError:
         return None
@@ -30,7 +30,7 @@ def _try_import_l6_gauntlet_result():
 
 def _try_import_future_run_promotion_request():
     try:
-        from agentic_core.L6_learning.types import FutureRunPromotionRequest  # type: ignore[import]
+        from agentic_core.L6_system_learning.future_run_promotion.types import FutureRunPromotionRequest  # type: ignore[import]
         return FutureRunPromotionRequest
     except ImportError:
         return None

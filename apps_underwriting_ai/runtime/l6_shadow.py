@@ -78,10 +78,10 @@ def run_l6_shadow(
     run_id = getattr(dispatch_result, "request_id", f"uw-{int(time.time())}")
 
     try:
-        from agentic_core.L6_learning.package_driven_l6_binding import (  # noqa: PLC0415
+        from agentic_core.L6_system_learning.future_run_promotion.package_driven_l6_binding import (  # noqa: PLC0415
             PackageDrivenL6Binding,
         )
-        from agentic_core.L6_learning.completed_run_evaluator import (  # noqa: PLC0415
+        from agentic_core.L6_system_learning.future_run_promotion.completed_run_evaluator import (  # noqa: PLC0415
             RuntimeExhaustBundle as L6ExhaustBundle,
         )
     except ImportError as exc:

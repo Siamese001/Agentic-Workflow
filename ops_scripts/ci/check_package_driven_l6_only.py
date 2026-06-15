@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-L6_DIR = REPO_ROOT / "agentic_core" / "L6_learning"
+L6_DIR = REPO_ROOT / "agentic_core" / "L6_system_learning" / "future_run_promotion"
 
 
 def run() -> int:
@@ -46,7 +46,7 @@ def run() -> int:
 
     if ("package_driven_l6_binding.py", "PackageDrivenL6Binding") not in seen:
         print(
-            "[L6-W2b] FAIL — PackageDrivenL6Binding missing from agentic_core/L6_learning",
+            "[L6-W2b] FAIL — PackageDrivenL6Binding missing from agentic_core/L6_system_learning/future_run_promotion",
             flush=True,
         )
         return 1

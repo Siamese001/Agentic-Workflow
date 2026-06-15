@@ -50,7 +50,7 @@ HARD_FAIL_FILES = [
 
 # Pre-existing agentic_core diff allowlist (not from W8)
 AGENTIC_CORE_ALLOWLIST = {
-    "agentic_core/L6_learning/future_run_proposal_builder.py": "Pre-existing file, not touched by W8"
+    "agentic_core/L6_system_learning/future_run_promotion/future_run_proposal_builder.py": "Pre-existing file, not touched by W8"
 }
 
 

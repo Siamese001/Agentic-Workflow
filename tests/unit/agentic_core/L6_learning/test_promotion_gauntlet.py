@@ -10,14 +10,14 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L6_learning import (
+from agentic_core.L6_system_learning.future_run_promotion import (
     FutureRunPromotionRequest,
     L6GauntletResult,
     ProposalPacket,
     ProposalType,
     ProofType,
 )
-from agentic_core.L6_learning.promotion_gauntlet import PromotionGauntlet
+from agentic_core.L6_system_learning.future_run_promotion.promotion_gauntlet import PromotionGauntlet
 
 
 # ---------------------------------------------------------------------------
