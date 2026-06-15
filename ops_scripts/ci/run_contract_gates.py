@@ -586,6 +586,12 @@ def main():
             "APPS-RG-SPINE-CONVERGENCE apps_rg spine convergence W8 (fail-closed)",
             "ops_scripts/ci/check_apps_rg_spine_convergence_w8.py",
         ),
+        # APPS-RG-MODEL-SSOT - generator model IDs resolve through provider_profiles.yaml.
+        # Fail-closed by default. Bypass: APPS_RG_MODEL_SSOT_GATE_BYPASS=1.
+        (
+            "APPS-RG-MODEL-SSOT apps_rg generator model SSOT (fail-closed)",
+            "ops_scripts/ci/check_apps_rg_model_ssot.py",
+        ),
         (
             "APPS-DRYRUN apps_rg --dry-run smoke (advisory)",
             "ops_scripts/ci/check_apps_rg_dryrun.py",
