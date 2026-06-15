@@ -168,6 +168,19 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T6b1: Codex Backup Adapter Drift --------------------------------------------
+      # Keeps the Codex-facing adapter aligned with Claude Code governance. CI runs the
+      # same repo-only verifier in contract-gates.yml; local full verification may also
+      # check personal Codex skills under ~/.codex/skills.
+      - id: codex-adapter-drift
+        name: "T6b1: Codex Backup Adapter Drift"
+        entry: py scripts/governance/verify_codex_backup.py --repo-only
+        language: system
+        pass_filenames: false
+        files: ^(AGENTS\.md|CLAUDE\.md|\.mcp\.json|\.claude/mcp-notes\.md|\.claude/settings\.json|docs/codex-backup-adapter\.md|scripts/governance/verify_codex_backup\.py|\.github/workflows/contract-gates\.yml|\.claude/hooks/.*|\.claude/rules/.*|\.claude/skills/structured-reasoning/.*|\.claude/skills/mcp-integration/.*)$
+        always_run: false
+        require_serial: true
+
       # -- T6b2: Cross-App Contract Schema (Phase A) -----------------------------------
       # Validates AgentSpec, EvidencePacket, EvaluationRubric, OverfitReport,
       # and ReleaseRecommendation instances against their cross-app contracts.

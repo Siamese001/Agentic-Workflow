@@ -2,7 +2,7 @@
 
 ## Plan First. Execute Second.
 
-Root `AGENTS.md` is always-on. Push specialized guidance to subdirectory `AGENTS.md` files or `.claude/rules/` / skills.
+Root `AGENTS.md` is the Codex-facing adapter. Claude Code's canonical operating contract is `CLAUDE.md`; Codex should mirror it through this file plus `.claude/rules/`, `.claude/skills/`, `.claude/settings.json`, and root `.mcp.json`.
 
 **T2/T3** (2+ files, cross-layer, architecture, multi-file debug): enter native plan mode and present the plan for approval before any edit. Use the `structured-reasoning` skill only as decomposition / retrieval guidance inside that plan-mode workflow. See `.claude/rules/plan-first-enforcement.md`.
 
@@ -45,10 +45,10 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 
 | Database | Data Source ID (reads) | Database ID (writes) | Read Trigger | Write Trigger (auto-route) |
 |----------|-----------------------|----------------------|--------------|----------------------------|
-| Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. Post-hook `post_agent_deferred_scope_capture.py` auto-posts from DEFERRED_SCOPE markers with scorer-assigned P-Band. |
-| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan file creation under `plans/<slug>-<6hex>.md` (repo-root SSOT; legacy `.claude/plans/` still valid). Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set. |
+| Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | Manual backlog reads such as "what's blocked" or "top backlog items". | Manual writes only when explicitly requested. No automatic plan/wave/status enforcement. |
+| Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | Manual historical plan lookup only; disk is the plan SSOT. | No automatic writes. New plans stay disk-only under `plans/<slug>-<6hex>.md`. |
 | SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
-| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.claude/rules/*.mdc`. No Notion write. |
+| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.claude/rules/*.md`. No Notion write. |
 | MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: root `.mcp.json` only. Deprecated Cursor/Windsurf compatibility copies are non-authoritative. |
 | Anti-Pattern Burndown | ~~`4599fe37-8c24-4d89-96af-438b99a967c4`~~ | ~~`80b30bc9-6622-4288-aa4c-6fc526b6a5c5`~~ | ❌ **ARCHIVED 2026-05-11** (404 confirmed — DB not accessible to integration) | Filesystem SSOT: `artifacts/adg/` ratchet files are canonical. No Notion write. |
 | ADR Registry | ~~`e59d7640-dc09-48f9-8bdc-b0c94bf98c2a`~~ | ~~`6ed25e12-bd92-4352-ac7a-3a971311f024`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `docs/architecture/adr/ADR-NNN-*.md`. No Notion write. |
@@ -63,20 +63,20 @@ Procedural routing + manual-Notion-use note: [agents-tier1-companion.md](.claude
 
 ## Memory
 
-First tool call each session: `mem_recall_session_start` (§17). Writeback major decisions via Memory MCP. Detail: `.claude/rules/memory-management.mdc`, skill `memory-mcp`.
+First tool call each Codex session in this repo: call Memory MCP `mem_recall_session_start` when available. Claude's current rule treats native file memory under `memory/` as canonical and the knowledge-graph MCP as optional. Detail: `.claude/rules/memory-management.md`, skill `memory-mcp`.
 
 ## Constitutional floor
 
-- No PowerShell — `subprocess.run(argv, shell=False, timeout=30)`
+- Subprocess timeout always required — `subprocess.run(argv, shell=False, timeout=30)`. PowerShell is allowed as the primary Windows shell when commands remain bounded.
 - No `pytest.mark.skip` without `strict=True`
 - No bare `except Exception` without guardian
 - No edits during planning phase
 - ADG before grep for structure (§28); grep for literals/TODOs only
 - Full rules: `.claude/rules/` · expanded lists: [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md)
 
-## Cursor config & plans
+## Claude config & plans
 
-Lookup: `.claude/rules/cursor-config-lookup.mdc` · docs mirror `docs/cursor/`. Plans SSOT: `.claude/plans/<name>-<6hex>.md` only.
+Lookup: `.claude/rules/claude-config-lookup.md` and `.claude/rules/plan-location.md`. New plans are disk-only under `plans/<name>-<6hex>.md`; legacy `.claude/plans/` paths are historical compatibility only.
 
 ## Pytest
 
@@ -84,7 +84,7 @@ Pytest runs with plugin **autoload ON** (CI default); `addopts` carries `--timeo
 
 ## Core vs apps (summary)
 
-Apps customize inputs; core enforces contracts. No app leakage in `agentic_core` without migration receipt. **Multi-provider X1D proof panels:** `agentic_core/runtime/judges/panel/` (`JudgePanelRunner`, transport preflight); `apps_rg` wires adapters via `x1d_panel_bridge` (see plan [core-judge-panel-harness-f3c8d1](.claude/plans/core-judge-panel-harness-f3c8d1.md)). Detail: [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md) · [`agentic_core/AGENTS.md`](agentic_core/AGENTS.md) · `.claude/rules/agentic-core-static.mdc`.
+Apps customize inputs; core enforces contracts. No app leakage in `agentic_core` without migration receipt. **Multi-provider X1D proof panels:** `agentic_core/runtime/judges/panel/` (`JudgePanelRunner`, transport preflight); `apps_rg` wires adapters via `x1d_panel_bridge` (see plan [core-judge-panel-harness-f3c8d1](plans/core-judge-panel-harness-f3c8d1.md)). Detail: [agents-tier1-companion.md](.claude/skills/mcp-integration/agents-tier1-companion.md) · [`agentic_core/AGENTS.md`](agentic_core/AGENTS.md) · `.claude/rules/agentic-core-static.md`.
 
 ## Rules & Skills SSOT
 
@@ -92,26 +92,26 @@ Procedural MCP / Notion / ledgers: [`mcp-integration`](.claude/skills/mcp-integr
 
 | Layer | Path | Notes |
 |-------|------|-------|
-| Always-on rules (Option A) | `.claude/rules/000–003*.mdc` | Four `alwaysApply: true` |
-| On-demand rules | `.claude/rules/*.mdc` | `alwaysApply: false` + globs |
+| Always-on rules | `CLAUDE.md` + `.claude/rules/000-002*.md` | Claude Code contract plus compact always-on rule floor |
+| On-demand rules | `.claude/rules/*.md` | Load by task surface and file scope |
 | Skills | `.claude/skills/*/SKILL.md` | Progressive disclosure; per-server stubs redirect to `mcp-integration` §1–§13 |
 | Hooks | `.claude/settings.json` + `.claude/hooks/**` | Post-agent SSOT: `after_agent_governance_dispatch.py` |
 | Index | `.claude/rules/` + historical `.cursor/RULES_INDEX.md` references | Generated rule index references remain historical only |
 | Deprecated Cursor/Windsurf legacy | docs/archive and `_legacy_*` shims | Non-authoritative compatibility/archive only; edit `.claude/**` SSOT files |
 
-**Dedup:** Do not restate always-on invariants in skills or hook reminders. MCP procedure → `mcp-integration` sections, not redirect stub bodies. Author-Gate steps → `003-cursor-author-gate-hitl.mdc` only.
+**Dedup:** Do not restate always-on invariants in skills or hook reminders. MCP procedure → `mcp-integration` sections, not redirect stub bodies. Retired rule and skill names remain historical only.
 
-Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/governance_tier_inventory.json) · dedup audit: [`governance_dedup_audit_20260526.md`](docs/reports/cursor/governance_dedup_audit_20260526.md) · closeout plan: [`governance-dedup-closeout-e8a4c2.md`](.claude/plans/governance-dedup-closeout-e8a4c2.md).
+Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/governance_tier_inventory.json) · dedup audit: [`governance_dedup_audit_20260526.md`](docs/reports/cursor/governance_dedup_audit_20260526.md) · closeout plan: [`governance-dedup-closeout-e8a4c2.md`](plans/governance-dedup-closeout-e8a4c2.md).
 
 ## Codex backup adapter
 
 Codex is a backup execution surface, not a second governance SSOT. When using Codex in this repo:
 
 - Load the personal Codex skill `agentic-workflow-governance` before T2/T3 work.
-- Use `.claude/**`, root `.mcp.json`, and `.claude/settings.json` as the authoritative Claude Code governance sources.
+- Use `CLAUDE.md`, `.claude/**`, root `.mcp.json`, and `.claude/settings.json` as the authoritative Claude Code governance sources.
 - Do not copy `.cursor` rule bodies into Codex skills; Codex skills should route to the SSOT and summarize only adapter behavior.
 - Carry the execution-output contract: repo-work run summaries use the `.claude/rules/001-runtime-seam-execution.md` response floor, and **runtime failures require an `RCA:` block** (symptom · root_cause · evidence · fix_or_next · recurrence_guard) per constitutional §37. Defer to the SSOT; do not restate the rule body.
-- If a Cursor/Claude MCP is unavailable in Codex, use the closest repo script fallback and report the unavailable MCP clearly.
+- If a Claude MCP is unavailable in Codex, use the closest repo script fallback and report the unavailable MCP clearly.
 - Validate the adapter with `python scripts/governance/verify_codex_backup.py` after changing Codex backup docs or skills.
 
 Details: [`docs/codex-backup-adapter.md`](docs/codex-backup-adapter.md).

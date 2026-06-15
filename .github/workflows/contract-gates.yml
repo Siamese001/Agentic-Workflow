@@ -18,6 +18,7 @@ jobs:
       terminal-cleanup: ${{ steps.filter.outputs.terminal-cleanup }}
       pytest-config: ${{ steps.filter.outputs.pytest-config }}
       config-sync: ${{ steps.filter.outputs.config-sync }}
+      codex-adapter: ${{ steps.filter.outputs.codex-adapter }}
       any: ${{ steps.filter.outputs.any }}
       base-ref: ${{ steps.filter.outputs.base-ref }}
       changed-files: ${{ steps.filter.outputs.changed-files }}
@@ -86,12 +87,35 @@ jobs:
               )
               for p in changed
           )
+          codex_adapter = any(
+              p in {
+                  "AGENTS.md",
+                  "CLAUDE.md",
+                  ".mcp.json",
+                  ".claude/mcp-notes.md",
+                  ".claude/settings.json",
+                  "docs/codex-backup-adapter.md",
+                  "scripts/governance/verify_codex_backup.py",
+                  ".github/workflows/contract-gates.yml",
+              }
+              or starts(
+                  p,
+                  (
+                      ".claude/hooks/",
+                      ".claude/rules/",
+                      ".claude/skills/structured-reasoning/",
+                      ".claude/skills/mcp-integration/",
+                  ),
+              )
+              for p in changed
+          )
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
               out.write(f"terminal-cleanup={str(terminal).lower()}\n")
               out.write(f"pytest-config={str(pytest_config).lower()}\n")
               out.write(f"config-sync={str(config_sync).lower()}\n")
-              out.write(f"any={str(terminal or pytest_config or config_sync).lower()}\n")
+              out.write(f"codex-adapter={str(codex_adapter).lower()}\n")
+              out.write(f"any={str(terminal or pytest_config or config_sync or codex_adapter).lower()}\n")
               out.write(f"base-ref={os.environ.get('BASE_REF_FOR_OUTPUT', 'main')}\n")
               out.write("changed-files<<EOF\n")
               out.write("\n".join(changed))
@@ -150,9 +174,24 @@ jobs:
       # "Severity-band SSOT" (legacy-era ADG-pipeline band-aids; also cut from the runner
       # in W1 and pre-commit in W2).
 
+  codex-adapter:
+    name: codex-adapter
+    needs: changes
+    if: needs.changes.outputs.codex-adapter == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: minimal
+      - name: Verify Codex backup adapter
+        run: python scripts/governance/verify_codex_backup.py --repo-only
+
   contract-summary:
     name: contract-summary
-    needs: [changes, terminal-cleanup, pytest-config, config-sync]
+    needs: [changes, terminal-cleanup, pytest-config, config-sync, codex-adapter]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -163,6 +202,7 @@ jobs:
           TERMINAL_RESULT: ${{ needs.terminal-cleanup.result }}
           PYTEST_RESULT: ${{ needs.pytest-config.result }}
           CONFIG_RESULT: ${{ needs.config-sync.result }}
+          CODEX_ADAPTER_RESULT: ${{ needs.codex-adapter.result }}
           CHANGED_FILES: ${{ needs.changes.outputs.changed-files }}
         run: |
           set -euo pipefail
@@ -180,7 +220,7 @@ jobs:
           fi
 
           failed=0
-          for lane in "terminal-cleanup:${TERMINAL_RESULT}" "pytest-config:${PYTEST_RESULT}" "config-sync:${CONFIG_RESULT}"; do
+          for lane in "terminal-cleanup:${TERMINAL_RESULT}" "pytest-config:${PYTEST_RESULT}" "config-sync:${CONFIG_RESULT}" "codex-adapter:${CODEX_ADAPTER_RESULT}"; do
             name="${lane%%:*}"
             result="${lane#*:}"
             echo "${name}: ${result}"

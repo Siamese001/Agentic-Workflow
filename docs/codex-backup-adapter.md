@@ -14,7 +14,7 @@ Use these repo files as authoritative:
 | MCP live routing | `.mcp.json` and `.claude/skills/mcp-integration/SKILL.md` |
 | MCP dormant/re-add routing | `.claude/mcp-notes.md` and `.claude/skills/mcp-integration/sections/*.md` |
 | Hook behavior | `.claude/settings.json` and `.claude/hooks/*.py` |
-| Plan lifecycle | `.claude/skills/plan-governance/SKILL.md` and the active repo plan SSOT folder |
+| Plan lifecycle | `.claude/rules/plan-first-enforcement.md`, `.claude/rules/plan-location.md`, `.claude/templates/execution-plan-template.md`, and disk-only `plans/<slug>-<6hex>.md` |
 | Windows artifact path budget | `.claude/rules/windows-path-budget.md` and `scripts/governance/check_windows_path_budget.py` |
 
 ## Codex-specific layer
@@ -48,7 +48,7 @@ These files are evidence snapshots. For live routing decisions, read `.mcp.json`
 
 ## Operating rules for Codex
 
-1. For T0/T1 tasks, answer or edit directly while honoring `CLAUDE.md` and the Codex-facing `AGENTS.md` adapter.
+1. For T0/T1 tasks, answer or edit directly while honoring `CLAUDE.md` through the Codex-facing `AGENTS.md` adapter.
 2. For T2/T3 tasks, enter the repo's native plan-mode workflow: present a structured plan for approval before edits, using `structured-reasoning` only as decomposition / retrieval guidance.
 3. Do not edit during the planning phase.
 4. Prefer repo scripts and `.claude` guidance over ad hoc shell logic.
@@ -66,6 +66,11 @@ python scripts/governance/verify_codex_backup.py
 ```
 
 The script fails if a required SSOT file or Codex skill is missing, or if adapter files stop referencing the expected governance anchors.
+In CI, use the repo-only mode because personal Codex skills under `~/.codex/skills` are not present:
+
+```bash
+python scripts/governance/verify_codex_backup.py --repo-only
+```
 
 For Windows artifact path-budget preflight, run:
 
