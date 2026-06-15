@@ -1,6 +1,40 @@
 {
-  "_doc": "North-star state consumed by .claude/hooks/pre_write_north_star_gate.py. Update lanes_passing as apps_rg E2E lanes go X3_ALLOW; the gate auto-disables when lanes_passing >= lanes_total. recent_north_star_pct seeds the EARNED confidence shown in the AskUserQuestion (lower north-star % => higher 'park it' confidence).",
-  "north_star": "apps_rg E2E, 11/11 lanes X3_ALLOW, sliding-scale graph skills, assembled DOCX",
+  "_doc": "North-star state consumed by .claude/hooks/pre_write_north_star_gate.py. The gate stays armed while enabled=true and lanes_passing < lanes_total; update lanes_passing as apps_rg E2E lanes go X3_ALLOW. recent_north_star_pct seeds the EARNED confidence in the AskUserQuestion (lower north-star % => higher 'park it' confidence). goals[] is the human-readable, time-boxed program; gate logic reads only lanes_passing/lanes_total/enabled/recent_north_star_pct.",
+  "north_star": "Multi-app delivery program (2026-06-15). Ship apps_rg + apps_lic on deadline, then apps_eval + L6 shadow observability. See goals[].",
+  "goals": [
+    {
+      "id": "rg_resumes",
+      "app": "apps_rg",
+      "target": "5 end-to-end resumes generated (assembled DOCX in hand)",
+      "deadline": "2026-06-15",
+      "status": "in_progress",
+      "note": "Technical enabler: 11/11 lanes X3_ALLOW + sliding-scale graph skills. lanes_passing/lanes_total track this dimension."
+    },
+    {
+      "id": "lic_send",
+      "app": "apps_lic",
+      "target": "outputs sent to 20 people",
+      "deadline": "2026-06-16",
+      "status": "open",
+      "note": "Due tomorrow."
+    },
+    {
+      "id": "eval_focus",
+      "app": "apps_eval",
+      "target": "establish which evals actually work; codify how they incorporate into L6 shadow observability (spearman)",
+      "deadline": "after rg_resumes + lic_send",
+      "status": "next",
+      "note": "Operator's weakest area. Learn from apps_rg + apps_lic eval signals first, then generalize."
+    },
+    {
+      "id": "l6_shadow_rg_lic",
+      "app": "agentic_core/L6 + apps_rg + apps_lic",
+      "target": "L6 shadow observability (spearman) wired and OPEN-resolved for apps_rg AND apps_lic",
+      "deadline": "with eval_focus",
+      "status": "open",
+      "note": "Currently OPEN for both apps_rg and apps_lic."
+    }
+  ],
   "lanes_passing": 1,
   "lanes_total": 11,
   "recent_north_star_pct": 18,

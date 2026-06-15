@@ -50,6 +50,17 @@ def test_north_star_test_path_allowed():
     assert code == 0
 
 
+def test_apps_lic_is_north_star_allowed():
+    # apps_lic joined the north star (2026-06-15 multi-app program) — must NOT be intercepted
+    code, _ = gate.evaluate(_edit("apps_lic/engines/send.py"), state=_STATE, env=_NO_BYPASS)
+    assert code == 0
+
+
+def test_apps_eval_is_north_star_allowed():
+    code, _ = gate.evaluate(_edit("apps_eval/adapters/rg_live.py"), state=_STATE, env=_NO_BYPASS)
+    assert code == 0
+
+
 def test_neutral_core_path_allowed():
     # agentic_core spine work is NOT intercepted (conservative — avoid over-blocking)
     code, _ = gate.evaluate(_edit("agentic_core/L2_execution/foo.py"), state=_STATE, env=_NO_BYPASS)
