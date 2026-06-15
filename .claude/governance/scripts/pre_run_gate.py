@@ -221,6 +221,36 @@ def check_command(command_line: str) -> int:
     return 0
 
 
+def shell_command_block_reason(command_line: str) -> str | None:
+    """Reason a live Bash hook should BLOCK this command (turn-hanging guards only), else None.
+
+    Wired into ``.claude/hooks/before_shell_execution.py`` so the ``python -c`` quote-hazard
+    ban and the interactive/pager ban (constitutional §26) are ENFORCED at exec time — not just
+    documented. Covers the two turn-hanging classes; the situational pytest-scope / ADG-repair
+    checks stay in ``check_command`` (standalone path) and are intentionally not hook-enforced.
+    """
+    if not isinstance(command_line, str) or not command_line:
+        return None
+    quote_hazard = _check_python_dash_c_quote_hazard(command_line)
+    if quote_hazard is not None:
+        return (
+            f"python -c quote hazard: {quote_hazard}. On pwsh the outer double-quoted body is "
+            "parsed by the shell before Python sees it; escaped/triple quotes leave the string "
+            "unterminated and the command hangs forever. Recovery: write a temp .py file, use "
+            "grep_search/read_file for searches, or base64-encode the body. "
+            "See python-dash-c-quote-hazard.md."
+        )
+    interactive_kind = _check_interactive(command_line)
+    if interactive_kind is not None:
+        return (
+            f"interactive / stdin-blocking command ({interactive_kind}) — the agent terminal "
+            "cannot send keystrokes, so it hangs the turn forever. Recovery: redirect to a file "
+            "(`> out.txt`) and read_file, use `head -n N` for long output, or set Blocking=false "
+            "+ WaitMsBeforeAsync. Constitutional §26."
+        )
+    return None
+
+
 def main() -> int:
     # Standalone-invocation guard: avoid indefinite hang when invoked via
     # `run_command` / pwsh (inherited stdin never receives EOF). Hook path
