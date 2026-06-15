@@ -27,7 +27,7 @@ SECTION_MODEL_MAX_MODEL_LEN: Final[int] = int(os.getenv("APPS_RG_SECTION_MAX_MOD
 # this literal is used only when that YAML is unreadable so this foundational module
 # (imported by ~15 section lanes + the X2 validator) never fails to import. Kept equal
 # to the YAML value by tests/unit/apps_rg/test_section_model_limits_ssot.py.
-DEFAULT_EXTERNAL_CLAUDE_MODEL: Final[str] = "claude-haiku-4-5"
+DEFAULT_EXTERNAL_CLAUDE_MODEL: Final[str] = "claude-sonnet-4-6"
 
 # Provider-profile SSOT path (apps_rg/config/provider_profiles.yaml). This module
 # lives at apps_rg/runtime/, so parents[1] == apps_rg.
@@ -52,19 +52,62 @@ def _ssot_default_model() -> str | None:
         return None
 
 
-def external_claude_generation_model(environ: Mapping[str, str] | None = None) -> str:
-    """Cost-optimized Claude generation model for apps_rg sections.
+def _ssot_model_by_section() -> dict[str, str]:
+    """Per-section model overrides from the provider-profiles SSOT
+    (``external_claude_generator.model_by_section``). Fail-soft — ``{}`` when unavailable."""
+    try:
+        import yaml  # noqa: PLC0415 — optional dep; absence yields {} (default model)
+
+        data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
+        profiles = (data or {}).get("profiles") or {}
+        raw = (profiles.get("external_claude_generator") or {}).get("model_by_section") or {}
+        if not isinstance(raw, dict):
+            return {}
+        return {
+            str(k).strip().lower(): str(v).strip()
+            for k, v in raw.items()
+            if str(k).strip() and str(v).strip()
+        }
+    except Exception:  # guardian: allow-broad-exception -- SSOT read is fail-soft; foundational module must never fail to import
+        return {}
+
+
+def resolve_section_generation_model(
+    section_id: str | None,
+    environ: Mapping[str, str] | None = None,
+) -> str:
+    """THE single resolver for the apps_rg per-section generator model (SSOT-backed).
+
+    Every apps_rg generation dispatch MUST route the model through this function so the
+    provider request carries the per-section model and no other source (agentic_core
+    ``reasoning_types`` default, ``.env``, or a hardcoded literal) can win.
 
     Precedence:
-      1. ``APPS_RG_EXTERNAL_CLAUDE_MODEL`` env override (operator pin)
-      2. ``provider_profiles.yaml`` SSOT (external_claude_generator.default_model)
-      3. ``DEFAULT_EXTERNAL_CLAUDE_MODEL`` literal fallback (YAML unreadable)
+      1. ``APPS_RG_EXTERNAL_CLAUDE_MODEL`` env pin (operator override — ALL sections)
+      2. ``provider_profiles.yaml`` ``external_claude_generator.model_by_section[section]``
+      3. ``provider_profiles.yaml`` ``external_claude_generator.default_model``
+      4. ``DEFAULT_EXTERNAL_CLAUDE_MODEL`` literal fallback (YAML unreadable)
     """
     env = os.environ if environ is None else environ
-    configured = str(env.get("APPS_RG_EXTERNAL_CLAUDE_MODEL") or "").strip()
-    if configured:
-        return configured
+    pin = str(env.get("APPS_RG_EXTERNAL_CLAUDE_MODEL") or "").strip()
+    if pin:
+        return pin
+    sid = str(section_id or "").strip().lower()
+    if sid:
+        by_section = _ssot_model_by_section()
+        if sid in by_section:
+            return by_section[sid]
     return _ssot_default_model() or DEFAULT_EXTERNAL_CLAUDE_MODEL
+
+
+def external_claude_generation_model(environ: Mapping[str, str] | None = None) -> str:
+    """Section-agnostic default generator model (no per-section override).
+
+    Equivalent to ``resolve_section_generation_model(None)`` — returns the operator pin or
+    the SSOT ``default_model``. Callers that know their section MUST prefer
+    :func:`resolve_section_generation_model` so the per-section tier applies.
+    """
+    return resolve_section_generation_model(None, environ)
 
 
 # Canonical generation model identity for apps_rg sections — resolved from the external
@@ -77,4 +120,5 @@ __all__ = [
     "SECTION_MODEL_ID",
     "SECTION_MODEL_MAX_MODEL_LEN",
     "external_claude_generation_model",
+    "resolve_section_generation_model",
 ]

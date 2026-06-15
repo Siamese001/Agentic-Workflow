@@ -36,7 +36,18 @@ profiles:
     profile_id: apps_rg::provider::external_claude_generator::v1
     provider_profile: external_claude
     provider_class: external_api
-    default_model: claude-haiku-4-5
+    # SINGLE SSOT for the apps_rg section generator model (no other file/env may define it).
+    # default_model = high-signal default (all bullets + executive_summary + headline).
+    # model_by_section = per-lane cost-tier overrides (competencies + all narratives -> Haiku).
+    # Resolver: section_model_limits.resolve_section_generation_model(section_id).
+    # Operator pin APPS_RG_EXTERNAL_CLAUDE_MODEL (model_env_var) overrides ALL sections when set.
+    default_model: claude-sonnet-4-6
+    model_by_section:
+      competencies: claude-haiku-4-5
+      unify_narrative: claude-haiku-4-5
+      ibm_narrative: claude-haiku-4-5
+      insurtech_narrative: claude-haiku-4-5
+      ey_narrative: claude-haiku-4-5
     model_env_var: APPS_RG_EXTERNAL_CLAUDE_MODEL
     endpoint_env_var: APPS_RG_EXTERNAL_CLAUDE_BASE_URL
     api_key_env_var: ANTHROPIC_API_KEY
