@@ -1,0 +1,3346 @@
+{
+  "candidates": [
+    {
+      "adg": {
+        "fan_in": 14,
+        "fan_out": 126,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 178,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 87.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 87.0,
+        "cross_layer_edges": 87,
+        "fan_in": 0,
+        "fan_out": 87,
+        "file": "agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 368,
+      "module": "agentic_core.L5_safety.reasoning.AdversarialProbeAgent",
+      "name": "AdversarialProbeAgent",
+      "path": "agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_AdversarialProbeAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 57,
+        "fan_out": 141,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 317,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 89.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 89.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 89,
+        "file": "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 666,
+      "module": "agentic_core.L5_safety.reasoning.AdversarialRedTeamerAgent",
+      "name": "AdversarialRedTeamerAgent",
+      "path": "agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/runtime/prove_requirements/tier1_step1_metadata.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_AdversarialRedTeamerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 139,
+        "fan_out": 287,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 4
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "LARGE_FACADE_RETIREMENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 779,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 166.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 140.0,
+        "cross_layer_edges": 105,
+        "fan_in": 0,
+        "fan_out": 116,
+        "file": "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 8
+      },
+      "loc": 1433,
+      "module": "agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent",
+      "name": "ArchitectureGovernorAgent",
+      "path": "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+      "raw_live_reference_count": 15,
+      "raw_live_reference_sample": [
+        "agentic_core/L0_routing/config/structure_blueprint_data.py",
+        "agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L3_orchestration/enforcement/mission_runner.py",
+        "agentic_core/L5_safety/utils/architecture_governor_validator_util.py",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "agentic_core/L5_safety/utils/runners/agent_roster_runner.py",
+        "agentic_core/L5_safety/utils/runners/arch_governor_runner.py",
+        "agentic_core/L5_safety/utils/runners/orchestrator_runner.py",
+        "ops_scripts/maintenance/execute_tiered_purge.py",
+        "ops_scripts/root_scripts/_ssot_dry_run_isolated.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 6,
+        "fan_out": 27,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 27,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/ArchitectureGovernorValidatorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 7.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 7.0,
+        "cross_layer_edges": 4,
+        "fan_in": 0,
+        "fan_out": 7,
+        "file": "agentic_core/L5_safety/reasoning/ArchitectureGovernorValidatorAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 56,
+      "module": "agentic_core.L5_safety.reasoning.ArchitectureGovernorValidatorAgent",
+      "name": "ArchitectureGovernorValidatorAgent",
+      "path": "agentic_core/L5_safety/reasoning/ArchitectureGovernorValidatorAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_ArchitectureGovernorValidatorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 31,
+        "fan_out": 133,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 194,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 94.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 92.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 89,
+        "file": "agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 329,
+      "module": "agentic_core.L5_safety.reasoning.AutonomousThreatEvolutionAgent",
+      "name": "AutonomousThreatEvolutionAgent",
+      "path": "agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_AutonomousThreatEvolutionAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 41,
+        "fan_out": 169,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 291,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 125.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 115.0,
+        "cross_layer_edges": 100,
+        "fan_in": 0,
+        "fan_out": 100,
+        "file": "agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 5
+      },
+      "loc": 521,
+      "module": "agentic_core.L5_safety.reasoning.AutonomyGuardianAgent",
+      "name": "AutonomyGuardianAgent",
+      "path": "agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py",
+      "raw_live_reference_count": 5,
+      "raw_live_reference_sample": [
+        "agentic_core/L0_routing/config/structure_blueprint_data.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_AutonomyGuardianAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 4,
+        "fan_out": 17,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 27,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/BenchmarkingAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 7.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 7.0,
+        "cross_layer_edges": 4,
+        "fan_in": 0,
+        "fan_out": 7,
+        "file": "agentic_core/L5_safety/reasoning/BenchmarkingAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 61,
+      "module": "agentic_core.L5_safety.reasoning.BenchmarkingAgent",
+      "name": "BenchmarkingAgent",
+      "path": "agentic_core/L5_safety/reasoning/BenchmarkingAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_BenchmarkingAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 5,
+        "fan_out": 26,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 34,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/BootstrapAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 8.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 8.0,
+        "cross_layer_edges": 5,
+        "fan_in": 0,
+        "fan_out": 8,
+        "file": "agentic_core/L5_safety/reasoning/BootstrapAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 74,
+      "module": "agentic_core.L5_safety.reasoning.BootstrapAgent",
+      "name": "BootstrapAgent",
+      "path": "agentic_core/L5_safety/reasoning/BootstrapAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_BootstrapAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 17,
+        "fan_out": 133,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 186,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 88.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 88.0,
+        "cross_layer_edges": 88,
+        "fan_in": 0,
+        "fan_out": 88,
+        "file": "agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 391,
+      "module": "agentic_core.L5_safety.reasoning.BoundaryTestingAgent",
+      "name": "BoundaryTestingAgent",
+      "path": "agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_BoundaryTestingAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 21,
+        "fan_out": 128,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 179,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/ChaosEngineeringAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 89.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 89.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 89,
+        "file": "agentic_core/L5_safety/reasoning/ChaosEngineeringAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 362,
+      "module": "agentic_core.L5_safety.reasoning.ChaosEngineeringAgent",
+      "name": "ChaosEngineeringAgent",
+      "path": "agentic_core/L5_safety/reasoning/ChaosEngineeringAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_ChaosEngineeringAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 4,
+        "fan_out": 40,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 59,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 11.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 11.0,
+        "cross_layer_edges": 5,
+        "fan_in": 0,
+        "fan_out": 11,
+        "file": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 106,
+      "module": "agentic_core.L5_safety.reasoning.CodeDeduplicationAgent",
+      "name": "CodeDeduplicationAgent",
+      "path": "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_CodeDeduplicationAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 6,
+        "fan_out": 22,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "agentic_core.L5_safety.utils.code_detector_util",
+      "category": "deprecated-delegating-shim",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 26,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CodeDetectorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 7.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 7.0,
+        "cross_layer_edges": 5,
+        "fan_in": 0,
+        "fan_out": 7,
+        "file": "agentic_core/L5_safety/reasoning/CodeDetectorAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 63,
+      "module": "agentic_core.L5_safety.reasoning.CodeDetectorAgent",
+      "name": "CodeDetectorAgent",
+      "path": "agentic_core/L5_safety/reasoning/CodeDetectorAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 4,
+        "fan_out": 20,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "agentic_core.L5_safety.utils.code_enforcer_util",
+      "category": "deprecated-delegating-shim",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 20,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 6.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 6.0,
+        "cross_layer_edges": 5,
+        "fan_in": 0,
+        "fan_out": 6,
+        "file": "agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 55,
+      "module": "agentic_core.L5_safety.reasoning.CodeEnforcerAgent",
+      "name": "CodeEnforcerAgent",
+      "path": "agentic_core/L5_safety/reasoning/CodeEnforcerAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 2,
+        "fan_out": 22,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 22,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CodeFormatterAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 8.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 8.0,
+        "cross_layer_edges": 4,
+        "fan_in": 0,
+        "fan_out": 8,
+        "file": "agentic_core/L5_safety/reasoning/CodeFormatterAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 53,
+      "module": "agentic_core.L5_safety.reasoning.CodeFormatterAgent",
+      "name": "CodeFormatterAgent",
+      "path": "agentic_core/L5_safety/reasoning/CodeFormatterAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_CodeFormatterAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 84,
+        "fan_out": 221,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 8
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "LARGE_FACADE_RETIREMENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 430,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CodeHealerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 127.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 112.0,
+        "cross_layer_edges": 105,
+        "fan_in": 0,
+        "fan_out": 109,
+        "file": "agentic_core/L5_safety/reasoning/CodeHealerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 808,
+      "module": "agentic_core.L5_safety.reasoning.CodeHealerAgent",
+      "name": "CodeHealerAgent",
+      "path": "agentic_core/L5_safety/reasoning/CodeHealerAgent.py",
+      "raw_live_reference_count": 15,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
+        "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py",
+        "agentic_core/L5_safety/utils/location_healer_util.py",
+        "agentic_core/L5_safety/validators/mission_preflight_validator.py",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "agentic_core/seams/contracts/safety_agents.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "tools/analysis/_audit_finalize_validation.py",
+        "tests/agentic_core/L5_safety/reasoning/test_CodeHealerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 5,
+        "fan_out": 25,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 3
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "agentic_core.L5_safety.utils.code_janitor_util",
+      "category": "deprecated-delegating-shim",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 25,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CodeJanitorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 10.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 8.0,
+        "cross_layer_edges": 4,
+        "fan_in": 0,
+        "fan_out": 8,
+        "file": "agentic_core/L5_safety/reasoning/CodeJanitorAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 64,
+      "module": "agentic_core.L5_safety.reasoning.CodeJanitorAgent",
+      "name": "CodeJanitorAgent",
+      "path": "agentic_core/L5_safety/reasoning/CodeJanitorAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 8,
+        "fan_out": 40,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "agentic_core.L5_safety.utils.code_validator_util",
+      "category": "deprecated-delegating-shim",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 36,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CodeValidatorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 8.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 8.0,
+        "cross_layer_edges": 5,
+        "fan_in": 0,
+        "fan_out": 8,
+        "file": "agentic_core/L5_safety/reasoning/CodeValidatorAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 73,
+      "module": "agentic_core.L5_safety.reasoning.CodeValidatorAgent",
+      "name": "CodeValidatorAgent",
+      "path": "agentic_core/L5_safety/reasoning/CodeValidatorAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 28,
+        "fan_out": 122,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 5
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 201,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 102.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 93.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 90,
+        "file": "agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 384,
+      "module": "agentic_core.L5_safety.reasoning.CognitiveDispositionAgent",
+      "name": "CognitiveDispositionAgent",
+      "path": "agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py",
+      "raw_live_reference_count": 10,
+      "raw_live_reference_sample": [
+        "agentic_core/L0_routing/enforcement/safety_reasoning_seam.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "agentic_core/L5_safety/utils/runners/agent_roster_runner.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/maintenance/execute_tiered_purge.py",
+        "tests/agentic_core/L5_safety/reasoning/test_CognitiveDispositionAgent.py",
+        "tests/unit/agentic_core/L0_routing/enforcement/test_safety_reasoning_seam_behavior.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_cognitive_and_location_validator_behavior.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 8,
+        "fan_out": 37,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 37,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 10.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 10.0,
+        "cross_layer_edges": 6,
+        "fan_in": 0,
+        "fan_out": 10,
+        "file": "agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 72,
+      "module": "agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent",
+      "name": "ComplexityAnalyzerAgent",
+      "path": "agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_ComplexityAnalyzerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 21,
+        "fan_out": 104,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 158,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 85.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 84.0,
+        "cross_layer_edges": 84,
+        "fan_in": 0,
+        "fan_out": 84,
+        "file": "agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 298,
+      "module": "agentic_core.L5_safety.reasoning.ConstitutionalReviewerAgent",
+      "name": "ConstitutionalReviewerAgent",
+      "path": "agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py",
+      "raw_live_reference_count": 6,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/llm_validator_allowlist.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_ConstitutionalReviewerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 5,
+        "fan_out": 18,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 21,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CostGovernorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 4.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 4.0,
+        "cross_layer_edges": 3,
+        "fan_in": 0,
+        "fan_out": 4,
+        "file": "agentic_core/L5_safety/reasoning/CostGovernorAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 44,
+      "module": "agentic_core.L5_safety.reasoning.CostGovernorAgent",
+      "name": "CostGovernorAgent",
+      "path": "agentic_core/L5_safety/reasoning/CostGovernorAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_CostGovernorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 8,
+        "fan_out": 48,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 53,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/CredentialScannerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 10.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 10.0,
+        "cross_layer_edges": 5,
+        "fan_in": 0,
+        "fan_out": 10,
+        "file": "agentic_core/L5_safety/reasoning/CredentialScannerAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 110,
+      "module": "agentic_core.L5_safety.reasoning.CredentialScannerAgent",
+      "name": "CredentialScannerAgent",
+      "path": "agentic_core/L5_safety/reasoning/CredentialScannerAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_CredentialScannerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 35,
+        "fan_out": 167,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 263,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 104.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 101.0,
+        "cross_layer_edges": 96,
+        "fan_in": 0,
+        "fan_out": 98,
+        "file": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 590,
+      "module": "agentic_core.L5_safety.reasoning.DDDAlignmentAgent",
+      "name": "DDDAlignmentAgent",
+      "path": "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py",
+      "raw_live_reference_count": 5,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/check_hardcoded_exclusions.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_DDDAlignmentAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 6,
+        "fan_out": 37,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 38,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/DependencyPruningAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 8.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 8.0,
+        "cross_layer_edges": 5,
+        "fan_in": 0,
+        "fan_out": 8,
+        "file": "agentic_core/L5_safety/reasoning/DependencyPruningAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 74,
+      "module": "agentic_core.L5_safety.reasoning.DependencyPruningAgent",
+      "name": "DependencyPruningAgent",
+      "path": "agentic_core/L5_safety/reasoning/DependencyPruningAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_DependencyPruningAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 24,
+        "fan_out": 132,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 176,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/DocstringComplianceAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 88.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 88.0,
+        "cross_layer_edges": 88,
+        "fan_in": 0,
+        "fan_out": 88,
+        "file": "agentic_core/L5_safety/reasoning/DocstringComplianceAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 324,
+      "module": "agentic_core.L5_safety.reasoning.DocstringComplianceAgent",
+      "name": "DocstringComplianceAgent",
+      "path": "agentic_core/L5_safety/reasoning/DocstringComplianceAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_DocstringComplianceAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 15,
+        "fan_out": 107,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 129,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/DocumentationAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 82.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 81.0,
+        "cross_layer_edges": 81,
+        "fan_in": 0,
+        "fan_out": 81,
+        "file": "agentic_core/L5_safety/reasoning/DocumentationAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 280,
+      "module": "agentic_core.L5_safety.reasoning.DocumentationAgent",
+      "name": "DocumentationAgent",
+      "path": "agentic_core/L5_safety/reasoning/DocumentationAgent.py",
+      "raw_live_reference_count": 5,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_DocumentationAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 58,
+        "fan_out": 178,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 339,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 109.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 107.0,
+        "cross_layer_edges": 104,
+        "fan_in": 0,
+        "fan_out": 104,
+        "file": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 597,
+      "module": "agentic_core.L5_safety.reasoning.DuplicateCodeDetectorAgent",
+      "name": "DuplicateCodeDetectorAgent",
+      "path": "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_DuplicateCodeDetectorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 53,
+        "fan_out": 127,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 238,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/DynamicSealAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 85.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 84.0,
+        "cross_layer_edges": 84,
+        "fan_in": 0,
+        "fan_out": 84,
+        "file": "agentic_core/L5_safety/reasoning/DynamicSealAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 413,
+      "module": "agentic_core.L5_safety.reasoning.DynamicSealAgent",
+      "name": "DynamicSealAgent",
+      "path": "agentic_core/L5_safety/reasoning/DynamicSealAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_DynamicSealAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 404,
+        "fan_out": 548,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 8
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "LARGE_FACADE_RETIREMENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 2421,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 282.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 217.0,
+        "cross_layer_edges": 122,
+        "fan_in": 0,
+        "fan_out": 157,
+        "file": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 20
+      },
+      "loc": 4939,
+      "module": "agentic_core.L5_safety.reasoning.FileClassificationAgent",
+      "name": "FileClassificationAgent",
+      "path": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
+      "raw_live_reference_count": 23,
+      "raw_live_reference_sample": [
+        "agentic_core/adg/runtime/behavioral_index.py",
+        "agentic_core/L0_routing/enforcement/safety_reasoning_seam.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/enforcement/ssot_guardrail.py",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/reasoning/file_classification_validator.py",
+        "agentic_core/L5_safety/reasoning/hierarchy_healer.py",
+        "agentic_core/L5_safety/reasoning/location_validator.py",
+        "agentic_core/L5_safety/reasoning/root_hygiene_healer.py",
+        "agentic_core/L5_safety/utils/location_healer_util.py",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "agentic_core/L5_safety/reasoning/file_classification/classification_core.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 33,
+        "fan_out": 158,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 217,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 110.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 110.0,
+        "cross_layer_edges": 95,
+        "fan_in": 0,
+        "fan_out": 110,
+        "file": "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 360,
+      "module": "agentic_core.L5_safety.reasoning.GenerativeGuardAgent",
+      "name": "GenerativeGuardAgent",
+      "path": "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_GenerativeGuardAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 33,
+        "fan_out": 125,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 230,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/GitHygieneAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 91.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 90.0,
+        "cross_layer_edges": 90,
+        "fan_in": 0,
+        "fan_out": 90,
+        "file": "agentic_core/L5_safety/reasoning/GitHygieneAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 418,
+      "module": "agentic_core.L5_safety.reasoning.GitHygieneAgent",
+      "name": "GitHygieneAgent",
+      "path": "agentic_core/L5_safety/reasoning/GitHygieneAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_GitHygieneAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 18,
+        "fan_out": 114,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 160,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/GospelSyncAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 89.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 86.0,
+        "cross_layer_edges": 83,
+        "fan_in": 0,
+        "fan_out": 83,
+        "file": "agentic_core/L5_safety/reasoning/GospelSyncAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 296,
+      "module": "agentic_core.L5_safety.reasoning.GospelSyncAgent",
+      "name": "GospelSyncAgent",
+      "path": "agentic_core/L5_safety/reasoning/GospelSyncAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_GospelSyncAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 129,
+        "fan_out": 334,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 4
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "direct call paths - agent emits DeprecationWarning at runtime",
+      "category": "deprecated-via-warn",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 675,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/GovernanceAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 137.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 124.0,
+        "cross_layer_edges": 100,
+        "fan_in": 0,
+        "fan_out": 109,
+        "file": "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 5
+      },
+      "loc": 1178,
+      "module": "agentic_core.L5_safety.reasoning.GovernanceAgent",
+      "name": "GovernanceAgent",
+      "path": "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
+      "raw_live_reference_count": 6,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/validators/GovernanceAgent.py",
+        "agentic_core/seams/contracts/safety_agents.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_GovernanceAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 1,
+        "fan_out": 65,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 82,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/GravityLeakHealerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 64.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 63.0,
+        "cross_layer_edges": 62,
+        "fan_in": 0,
+        "fan_out": 63,
+        "file": "agentic_core/L5_safety/reasoning/GravityLeakHealerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 147,
+      "module": "agentic_core.L5_safety.reasoning.GravityLeakHealerAgent",
+      "name": "GravityLeakHealerAgent",
+      "path": "agentic_core/L5_safety/reasoning/GravityLeakHealerAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tools/generate/territory_healer_adapters.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_GravityLeakHealerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 92,
+        "fan_out": 195,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 5
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "LARGE_FACADE_RETIREMENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 490,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 122.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 108.0,
+        "cross_layer_edges": 95,
+        "fan_in": 0,
+        "fan_out": 99,
+        "file": "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 3
+      },
+      "loc": 923,
+      "module": "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent",
+      "name": "GravityLeakRepairAgent",
+      "path": "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py",
+      "raw_live_reference_count": 11,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/reasoning/GravityLeakHealerAgent.py",
+        "agentic_core/L5_safety/validators/gravity_leak_validator.py",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "agentic_core/L5_safety/utils/runners/agent_roster_runner.py",
+        "agentic_core/L5_safety/utils/runners/orchestrator_runner.py",
+        "tools/analysis/_audit_finalize_validation.py",
+        "tests/agentic_core/L5_safety/reasoning/test_GravityLeakRepairAgent.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_gravity_and_ssot_reconciler_behavior.py",
+        "tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 57,
+        "fan_out": 155,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 302,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 107.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 101.0,
+        "cross_layer_edges": 91,
+        "fan_in": 0,
+        "fan_out": 92,
+        "file": "agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 3
+      },
+      "loc": 605,
+      "module": "agentic_core.L5_safety.reasoning.HygieneGuardianAgent",
+      "name": "HygieneGuardianAgent",
+      "path": "agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py",
+      "raw_live_reference_count": 5,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/integration/critical_modules.txt",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_HygieneGuardianAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 44,
+        "fan_out": 188,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 324,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 145.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 123.0,
+        "cross_layer_edges": 90,
+        "fan_in": 0,
+        "fan_out": 90,
+        "file": "agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 11
+      },
+      "loc": 726,
+      "module": "agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent",
+      "name": "IntegrityGateExecutorAgent",
+      "path": "agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_IntegrityGateExecutorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 20,
+        "fan_out": 116,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 155,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 92.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 89.0,
+        "cross_layer_edges": 86,
+        "fan_in": 0,
+        "fan_out": 86,
+        "file": "agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 303,
+      "module": "agentic_core.L5_safety.reasoning.InterfaceBoundaryAgent",
+      "name": "InterfaceBoundaryAgent",
+      "path": "agentic_core/L5_safety/reasoning/InterfaceBoundaryAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_InterfaceBoundaryAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 20,
+        "fan_out": 145,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 241,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 103.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 100.0,
+        "cross_layer_edges": 91,
+        "fan_in": 0,
+        "fan_out": 97,
+        "file": "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 395,
+      "module": "agentic_core.L5_safety.reasoning.L5SafetyExerciserAgent",
+      "name": "L5SafetyExerciserAgent",
+      "path": "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_L5SafetyExerciserAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 0,
+        "fan_out": 6,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "agentic_core.L5_safety.utils.location_healer_util",
+      "category": "facade-reexport-shim",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 6,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/LocationHealerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 3.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 3.0,
+        "cross_layer_edges": 2,
+        "fan_in": 0,
+        "fan_out": 3,
+        "file": "agentic_core/L5_safety/reasoning/LocationHealerAgent.py",
+        "priority_band": "P5_NOOP",
+        "violation_count": 0
+      },
+      "loc": 38,
+      "module": "agentic_core.L5_safety.reasoning.LocationHealerAgent",
+      "name": "LocationHealerAgent",
+      "path": "agentic_core/L5_safety/reasoning/LocationHealerAgent.py",
+      "raw_live_reference_count": 1,
+      "raw_live_reference_sample": [
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 9,
+        "fan_out": 123,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 4
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 153,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/NamingAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 88.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 84.0,
+        "cross_layer_edges": 83,
+        "fan_in": 0,
+        "fan_out": 84,
+        "file": "agentic_core/L5_safety/reasoning/NamingAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 282,
+      "module": "agentic_core.L5_safety.reasoning.NamingAgent",
+      "name": "NamingAgent",
+      "path": "agentic_core/L5_safety/reasoning/NamingAgent.py",
+      "raw_live_reference_count": 9,
+      "raw_live_reference_sample": [
+        "agentic_core/L0_routing/enforcement/safety_reasoning_seam.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py",
+        "agentic_core/L5_safety/utils/location_healer_util.py",
+        "agentic_core/seams/contracts/safety_agents.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L0_routing/enforcement/test_safety_reasoning_seam_behavior.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_NamingAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 7,
+        "fan_out": 97,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 104,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/NeuralAutoImmuneAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 84.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 83.0,
+        "cross_layer_edges": 83,
+        "fan_in": 0,
+        "fan_out": 83,
+        "file": "agentic_core/L5_safety/reasoning/NeuralAutoImmuneAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 210,
+      "module": "agentic_core.L5_safety.reasoning.NeuralAutoImmuneAgent",
+      "name": "NeuralAutoImmuneAgent",
+      "path": "agentic_core/L5_safety/reasoning/NeuralAutoImmuneAgent.py",
+      "raw_live_reference_count": 5,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py",
+        "ops_scripts/maintenance/execute_final_consolidation.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_NeuralAutoImmuneAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 146,
+        "fan_out": 155,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 5
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "LARGE_FACADE_RETIREMENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 502,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 111.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 104.0,
+        "cross_layer_edges": 101,
+        "fan_in": 0,
+        "fan_out": 101,
+        "file": "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 779,
+      "module": "agentic_core.L5_safety.reasoning.PascalSovereigntyAgent",
+      "name": "PascalSovereigntyAgent",
+      "path": "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py",
+      "raw_live_reference_count": 7,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/validators/PascalSovereigntyAgent.py",
+        "ops_scripts/ci/check_hardcoded_exclusions.py",
+        "ops_scripts/general/run_sovereignty_agents.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_PascalSovereigntyAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 10,
+        "fan_out": 108,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 127,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 88.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 87.0,
+        "cross_layer_edges": 86,
+        "fan_in": 0,
+        "fan_out": 87,
+        "file": "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 254,
+      "module": "agentic_core.L5_safety.reasoning.PolicyNeuralAutoImmuneAgent",
+      "name": "PolicyNeuralAutoImmuneAgent",
+      "path": "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_PolicyNeuralAutoImmuneAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 85,
+        "fan_out": 156,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 288,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 94.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 93.0,
+        "cross_layer_edges": 93,
+        "fan_in": 0,
+        "fan_out": 93,
+        "file": "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 474,
+      "module": "agentic_core.L5_safety.reasoning.PreCommitSovereignAgent",
+      "name": "PreCommitSovereignAgent",
+      "path": "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py",
+      "raw_live_reference_count": 7,
+      "raw_live_reference_sample": [
+        "agentic_core/L0_routing/config/structure_blueprint_data.py",
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_PreCommitSovereignAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 38,
+        "fan_out": 188,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 329,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 91.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 90.0,
+        "cross_layer_edges": 90,
+        "fan_in": 0,
+        "fan_out": 90,
+        "file": "agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 569,
+      "module": "agentic_core.L5_safety.reasoning.PredictiveCostAuditorAgent",
+      "name": "PredictiveCostAuditorAgent",
+      "path": "agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_PredictiveCostAuditorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 35,
+        "fan_out": 143,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 240,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/RedSentinelAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 93.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 93.0,
+        "cross_layer_edges": 93,
+        "fan_in": 0,
+        "fan_out": 93,
+        "file": "agentic_core/L5_safety/reasoning/RedSentinelAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 496,
+      "module": "agentic_core.L5_safety.reasoning.RedSentinelAgent",
+      "name": "RedSentinelAgent",
+      "path": "agentic_core/L5_safety/reasoning/RedSentinelAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_RedSentinelAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 39,
+        "fan_out": 124,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 205,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/RedTeamAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 89.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 88.0,
+        "cross_layer_edges": 88,
+        "fan_in": 0,
+        "fan_out": 88,
+        "file": "agentic_core/L5_safety/reasoning/RedTeamAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 472,
+      "module": "agentic_core.L5_safety.reasoning.RedTeamAgent",
+      "name": "RedTeamAgent",
+      "path": "agentic_core/L5_safety/reasoning/RedTeamAgent.py",
+      "raw_live_reference_count": 7,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/agent_taxonomy_registry.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/runtime/prove_requirements/tier1_step1_metadata.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_RedTeamAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 33,
+        "fan_out": 151,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 261,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/RegressionOracleAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 100.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 95.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 89,
+        "file": "agentic_core/L5_safety/reasoning/RegressionOracleAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 2
+      },
+      "loc": 544,
+      "module": "agentic_core.L5_safety.reasoning.RegressionOracleAgent",
+      "name": "RegressionOracleAgent",
+      "path": "agentic_core/L5_safety/reasoning/RegressionOracleAgent.py",
+      "raw_live_reference_count": 5,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/llm_validator_allowlist.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_RegressionOracleAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 27,
+        "fan_out": 157,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 221,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/ReportLocationAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 106.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 101.0,
+        "cross_layer_edges": 93,
+        "fan_in": 0,
+        "fan_out": 95,
+        "file": "agentic_core/L5_safety/reasoning/ReportLocationAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 2
+      },
+      "loc": 437,
+      "module": "agentic_core.L5_safety.reasoning.ReportLocationAgent",
+      "name": "ReportLocationAgent",
+      "path": "agentic_core/L5_safety/reasoning/ReportLocationAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_ReportLocationAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 13,
+        "fan_out": 191,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 3
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 251,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/ResourceManagerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 91.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 89.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 89,
+        "file": "agentic_core/L5_safety/reasoning/ResourceManagerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 456,
+      "module": "agentic_core.L5_safety.reasoning.ResourceManagerAgent",
+      "name": "ResourceManagerAgent",
+      "path": "agentic_core/L5_safety/reasoning/ResourceManagerAgent.py",
+      "raw_live_reference_count": 7,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L3_orchestration/reasoning/engines/autonomous_execution_engine.py",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_ResourceManagerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 28,
+        "fan_out": 157,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 221,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 90.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 89.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 89,
+        "file": "agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 393,
+      "module": "agentic_core.L5_safety.reasoning.SafetyDetectorAgent",
+      "name": "SafetyDetectorAgent",
+      "path": "agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py",
+      "raw_live_reference_count": 6,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_SafetyDetectorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 22,
+        "fan_out": 172,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 250,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 91.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 90.0,
+        "cross_layer_edges": 90,
+        "fan_in": 0,
+        "fan_out": 90,
+        "file": "agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 444,
+      "module": "agentic_core.L5_safety.reasoning.SafetyExecutorAgent",
+      "name": "SafetyExecutorAgent",
+      "path": "agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py",
+      "raw_live_reference_count": 6,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_SafetyExecutorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 53,
+        "fan_out": 145,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 332,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 98.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 96.0,
+        "cross_layer_edges": 93,
+        "fan_in": 0,
+        "fan_out": 93,
+        "file": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 634,
+      "module": "agentic_core.L5_safety.reasoning.SafetyInspectorAgent",
+      "name": "SafetyInspectorAgent",
+      "path": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/llm_validator_allowlist.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_SafetyInspectorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 31,
+        "fan_out": 201,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 268,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/SecurityManagerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 91.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 90.0,
+        "cross_layer_edges": 90,
+        "fan_in": 0,
+        "fan_out": 90,
+        "file": "agentic_core/L5_safety/reasoning/SecurityManagerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 490,
+      "module": "agentic_core.L5_safety.reasoning.SecurityManagerAgent",
+      "name": "SecurityManagerAgent",
+      "path": "agentic_core/L5_safety/reasoning/SecurityManagerAgent.py",
+      "raw_live_reference_count": 6,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_SecurityManagerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 46,
+        "fan_out": 236,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 344,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 95.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 95.0,
+        "cross_layer_edges": 95,
+        "fan_in": 0,
+        "fan_out": 95,
+        "file": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 636,
+      "module": "agentic_core.L5_safety.reasoning.SelfUpdatingSafetyEngineAgent",
+      "name": "SelfUpdatingSafetyEngineAgent",
+      "path": "agentic_core/L5_safety/reasoning/SelfUpdatingSafetyEngineAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_SelfUpdatingSafetyEngineAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 80,
+        "fan_out": 182,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 370,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 110.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 109.0,
+        "cross_layer_edges": 108,
+        "fan_in": 0,
+        "fan_out": 109,
+        "file": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 695,
+      "module": "agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent",
+      "name": "SovereignActionPlaneAgent",
+      "path": "agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py",
+      "raw_live_reference_count": 6,
+      "raw_live_reference_sample": [
+        "agentic_core/L0_routing/config/structure_blueprint_data.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/config/structure_blueprint/ssot.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_SovereignActionPlaneAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 25,
+        "fan_out": 121,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 156,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 96.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 93.0,
+        "cross_layer_edges": 90,
+        "fan_in": 0,
+        "fan_out": 90,
+        "file": "agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 304,
+      "module": "agentic_core.L5_safety.reasoning.SprawlInspectorAgent",
+      "name": "SprawlInspectorAgent",
+      "path": "agentic_core/L5_safety/reasoning/SprawlInspectorAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_SprawlInspectorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 60,
+        "fan_out": 155,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 245,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 93.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 92.0,
+        "cross_layer_edges": 92,
+        "fan_in": 0,
+        "fan_out": 92,
+        "file": "agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 430,
+      "module": "agentic_core.L5_safety.reasoning.StructuralEngineerAgent",
+      "name": "StructuralEngineerAgent",
+      "path": "agentic_core/L5_safety/reasoning/StructuralEngineerAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_StructuralEngineerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 38,
+        "fan_out": 172,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 3
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 249,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 100.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 94.0,
+        "cross_layer_edges": 94,
+        "fan_in": 0,
+        "fan_out": 94,
+        "file": "agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 422,
+      "module": "agentic_core.L5_safety.reasoning.StructuralValidatorAgent",
+      "name": "StructuralValidatorAgent",
+      "path": "agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py",
+      "raw_live_reference_count": 7,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py",
+        "agentic_core/L5_safety/reasoning/gravity_validator.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_StructuralValidatorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 45,
+        "fan_out": 182,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 3
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 310,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 97.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 92.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 89,
+        "file": "agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 559,
+      "module": "agentic_core.L5_safety.reasoning.StructureEnforcerAgent",
+      "name": "StructureEnforcerAgent",
+      "path": "agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py",
+      "raw_live_reference_count": 10,
+      "raw_live_reference_sample": [
+        "agentic_core/L0_routing/enforcement/safety_reasoning_seam.py",
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "agentic_core/seams/contracts/safety_agents.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "tests/unit/agentic_core/L0_routing/enforcement/test_safety_reasoning_seam_behavior.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_StructureEnforcerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 51,
+        "fan_out": 173,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 345,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/StructureHealerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 98.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 96.0,
+        "cross_layer_edges": 93,
+        "fan_in": 0,
+        "fan_out": 93,
+        "file": "agentic_core/L5_safety/reasoning/StructureHealerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 600,
+      "module": "agentic_core.L5_safety.reasoning.StructureHealerAgent",
+      "name": "StructureHealerAgent",
+      "path": "agentic_core/L5_safety/reasoning/StructureHealerAgent.py",
+      "raw_live_reference_count": 7,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "tests/integration/critical_modules.txt",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_StructureHealerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 99,
+        "fan_out": 188,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 412,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/SystemArchitectAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 117.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 111.0,
+        "cross_layer_edges": 100,
+        "fan_in": 0,
+        "fan_out": 105,
+        "file": "agentic_core/L5_safety/reasoning/SystemArchitectAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 2
+      },
+      "loc": 696,
+      "module": "agentic_core.L5_safety.reasoning.SystemArchitectAgent",
+      "name": "SystemArchitectAgent",
+      "path": "agentic_core/L5_safety/reasoning/SystemArchitectAgent.py",
+      "raw_live_reference_count": 8,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "agentic_core/L5_safety/utils/runners/agent_roster_runner.py",
+        "ops_scripts/root_scripts/_ssot_dry_run_isolated.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tools/analysis/_audit_finalize_validation.py",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_SystemArchitectAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 27,
+        "fan_out": 123,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 187,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 90.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 89.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 89,
+        "file": "agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 308,
+      "module": "agentic_core.L5_safety.reasoning.TerritoryChangeHandlerAgent",
+      "name": "TerritoryChangeHandlerAgent",
+      "path": "agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_TerritoryChangeHandlerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 48,
+        "fan_out": 158,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 242,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/TestGeneratorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 97.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 94.0,
+        "cross_layer_edges": 89,
+        "fan_in": 0,
+        "fan_out": 91,
+        "file": "agentic_core/L5_safety/reasoning/TestGeneratorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 1
+      },
+      "loc": 425,
+      "module": "agentic_core.L5_safety.reasoning.TestGeneratorAgent",
+      "name": "TestGeneratorAgent",
+      "path": "agentic_core/L5_safety/reasoning/TestGeneratorAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_TestGeneratorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 13,
+        "fan_out": 101,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 130,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 84.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 83.0,
+        "cross_layer_edges": 83,
+        "fan_in": 0,
+        "fan_out": 83,
+        "file": "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 228,
+      "module": "agentic_core.L5_safety.reasoning.TypeHintFixerAgent",
+      "name": "TypeHintFixerAgent",
+      "path": "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py",
+      "raw_live_reference_count": 4,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_TypeHintFixerAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 40,
+        "fan_out": 134,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 2
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 196,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/TypeMechanicAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 81.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 80.0,
+        "cross_layer_edges": 80,
+        "fan_in": 0,
+        "fan_out": 80,
+        "file": "agentic_core/L5_safety/reasoning/TypeMechanicAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 354,
+      "module": "agentic_core.L5_safety.reasoning.TypeMechanicAgent",
+      "name": "TypeMechanicAgent",
+      "path": "agentic_core/L5_safety/reasoning/TypeMechanicAgent.py",
+      "raw_live_reference_count": 5,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py",
+        "agentic_core/_compat/core/l5_safety_aliases.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_TypeMechanicAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 4,
+        "fan_out": 98,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "UNCLASSIFIED_OLD_L5_AGENT",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 111,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 84.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 84.0,
+        "cross_layer_edges": 83,
+        "fan_in": 0,
+        "fan_out": 84,
+        "file": "agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 223,
+      "module": "agentic_core.L5_safety.reasoning.UnusedCleanupAgent",
+      "name": "UnusedCleanupAgent",
+      "path": "agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L2_execution/types/data/agentic_core_w1_spine_axes.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/reasoning/test_UnusedCleanupAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 0,
+        "fan_out": 69,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 83,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/validators/CodeJanitorAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 65.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 65.0,
+        "cross_layer_edges": 63,
+        "fan_in": 0,
+        "fan_out": 65,
+        "file": "agentic_core/L5_safety/validators/CodeJanitorAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 168,
+      "module": "agentic_core.L5_safety.validators.CodeJanitorAgent",
+      "name": "CodeJanitorAgent",
+      "path": "agentic_core/L5_safety/validators/CodeJanitorAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/L5_safety/reasoning/CodeJanitorAgent.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/validators/test_CodeJanitorAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 0,
+        "fan_out": 71,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 83,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/validators/GovernanceAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 66.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 66.0,
+        "cross_layer_edges": 63,
+        "fan_in": 0,
+        "fan_out": 66,
+        "file": "agentic_core/L5_safety/validators/GovernanceAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 171,
+      "module": "agentic_core.L5_safety.validators.GovernanceAgent",
+      "name": "GovernanceAgent",
+      "path": "agentic_core/L5_safety/validators/GovernanceAgent.py",
+      "raw_live_reference_count": 6,
+      "raw_live_reference_sample": [
+        "agentic_core/config/golden_baseline.json",
+        "agentic_core/L4_state/utils/layer_gravity_util.py",
+        "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
+        "agentic_core/L5_safety/enforcement/governance/lazy_seam_allowlist.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/validators/test_GovernanceAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 59,
+        "fan_out": 157,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 3
+      },
+      "archive_eligible": "",
+      "authorization_date": "",
+      "authorized": false,
+      "bucket": "VALIDATOR_DUPLICATE_OR_SHIM",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 302,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/validators/HygieneGuardianAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 111.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 103.0,
+        "cross_layer_edges": 94,
+        "fan_in": 0,
+        "fan_out": 94,
+        "file": "agentic_core/L5_safety/validators/HygieneGuardianAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 3
+      },
+      "loc": 659,
+      "module": "agentic_core.L5_safety.validators.HygieneGuardianAgent",
+      "name": "HygieneGuardianAgent",
+      "path": "agentic_core/L5_safety/validators/HygieneGuardianAgent.py",
+      "raw_live_reference_count": 8,
+      "raw_live_reference_sample": [
+        "agentic_core/config/golden_baseline.json",
+        "agentic_core/L0_routing/enforcement/safety_validators_seam.py",
+        "agentic_core/L5_safety/enforcement/HealingStrategy.py",
+        "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+        "agentic_core/seams/contracts/safety_agents.py",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L0_routing/enforcement/test_safety_validators_seam_behavior.py",
+        "tests/unit/agentic_core/L5_safety/validators/test_HygieneGuardianAgent.py"
+      ]
+    },
+    {
+      "adg": {
+        "fan_in": 0,
+        "fan_out": 73,
+        "layers": [
+          "L5"
+        ],
+        "node_count": 1
+      },
+      "archive_eligible": "2026-07-23",
+      "authorization_date": "2026-04-24",
+      "authorized": true,
+      "bucket": "COOLING_WINDOW_AUTHORIZED",
+      "canonical_replacement": "",
+      "category": "",
+      "coverage": {
+        "coverage_pct": 0.0,
+        "lines_hit": 0,
+        "lines_total": 83,
+        "mode": "arcs",
+        "resolved_path": "agentic_core/L5_safety/validators/PascalSovereigntyAgent.py"
+      },
+      "hotspot": {
+        "combined_risk_score": 67.0,
+        "coverage_band": "ABSENT",
+        "criticality_score": 67.0,
+        "cross_layer_edges": 63,
+        "fan_in": 0,
+        "fan_out": 67,
+        "file": "agentic_core/L5_safety/validators/PascalSovereigntyAgent.py",
+        "priority_band": "P1_URGENT",
+        "violation_count": 0
+      },
+      "loc": 171,
+      "module": "agentic_core.L5_safety.validators.PascalSovereigntyAgent",
+      "name": "PascalSovereigntyAgent",
+      "path": "agentic_core/L5_safety/validators/PascalSovereigntyAgent.py",
+      "raw_live_reference_count": 3,
+      "raw_live_reference_sample": [
+        "agentic_core/config/golden_baseline.json",
+        "ops_scripts/ci/baselines/test_harness_coverage_baseline.json",
+        "tests/unit/agentic_core/L5_safety/validators/test_PascalSovereigntyAgent.py"
+      ]
+    }
+  ],
+  "generated_at": "2026-06-15T21:29:24+00:00",
+  "manifest_version": "1.0",
+  "plan_id": "old-l5-agent-retirement-a94f6c",
+  "source": {
+    "adg_backend": "sqlite_direct_fallback",
+    "adg_fallback_reason": "adg_sqlite MCP unavailable in Codex session; existing SQLite snapshot read only",
+    "adg_snapshot": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_06152026_1043.sqlite",
+    "current_date": "2026-06-15",
+    "repo": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-old-l5-agent-retirement",
+    "scope": [
+      "agentic_core/L5_safety/reasoning/*Agent.py",
+      "agentic_core/L5_safety/validators/*Agent.py"
+    ]
+  },
+  "summary": {
+    "adg_snapshot_candidates_with_zero_import_fan_in": 4,
+    "authorized_count": 21,
+    "bucket_counts": {
+      "COOLING_WINDOW_AUTHORIZED": 21,
+      "LARGE_FACADE_RETIREMENT": 5,
+      "UNCLASSIFIED_OLD_L5_AGENT": 45,
+      "VALIDATOR_DUPLICATE_OR_SHIM": 1
+    },
+    "candidate_count": 72,
+    "cooling_window_authorized_count": 21,
+    "eligible_for_physical_archive_as_of_2026_06_15": 0,
+    "total_nonblank_loc": 32980
+  },
+  "waves": {
+    "W0": "Manifest and authorization control plane; no agent deletion.",
+    "W1": "Migrate runtime/test references off already-authorized shims with canonical replacements; no physical archive before 2026-07-23.",
+    "W2": "Classify and authorize remaining old L5 cohort.",
+    "W3": "Retire large facades after replacement surfaces are proven.",
+    "W4": "Physical archive/delete after eligibility and zero-live-consumer proof.",
+    "W5": "Verification and ADG closeout."
+  }
+}

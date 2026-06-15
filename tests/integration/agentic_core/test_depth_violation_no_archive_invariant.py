@@ -128,7 +128,7 @@ def test_identity_path_guard_returns_skipped(healer):
     # Patch SOVEREIGN_REGISTRY to return depth=2 (matching the file's actual depth=2)
     mock_registry = {APPS_LIC_DIR: {"depth": 2, "subfolders": ["engines", "reasoning"]}}
     with patch(
-        "agentic_core.L5_safety.reasoning.LocationHealerAgent.SOVEREIGN_REGISTRY",
+        "agentic_core.L5_safety.utils.location_healer_util.SOVEREIGN_REGISTRY",
         mock_registry,
     ):
         result = agent._heal_depth_violation(
