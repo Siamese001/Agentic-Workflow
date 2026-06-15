@@ -119,7 +119,7 @@ def build_modular_lane_argv(*, provider: str, targeting: ModularLaneTargeting | 
     pv = str(provider or "").strip().lower()
     if pv and pv not in {"external_claude"}:
         raise ValueError(
-            f"Unsupported modular lane provider {provider!r} (expected qwen_vllm or external_claude)."
+            f"Unsupported modular lane provider {provider!r} (expected external_claude)."
         )
     argv: list[str] = ["--provider", pv or "external_claude", "--allow-non-allow-exit-zero"]
     if targeting is None:

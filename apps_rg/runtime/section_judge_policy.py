@@ -8,7 +8,9 @@ from typing import Any, FrozenSet
 
 
 class GeneratorModelClass(str, Enum):
-    QWEN = "QWEN"
+    # The apps_rg generator is external Claude (Qwen/vLLM removed PR#256). Was QWEN — renamed to
+    # reflect the real generator so the serialized policy snapshot is accurate, not misleading.
+    EXTERNAL_CLAUDE = "EXTERNAL_CLAUDE"
     AGGREGATOR = "AGGREGATOR"
 
 
@@ -68,7 +70,7 @@ def _standard_providers() -> tuple[str, ...]:
 _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     "executive_summary": SectionJudgePolicy(
         section_name="executive_summary",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.ENHANCED_REASONING,
         required_judge_providers=_enhanced_providers(),
@@ -80,7 +82,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "headline": SectionJudgePolicy(
         section_name="headline",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.STANDARD_REASONING,
         required_judge_providers=_DUAL_JUDGE_PANEL,
@@ -92,7 +94,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "unify_bullets": SectionJudgePolicy(
         section_name="unify_bullets",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.BULLET_REWRITE_QUALITY,
         required_judge_providers=_standard_providers(),
@@ -104,7 +106,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "ibm_bullets": SectionJudgePolicy(
         section_name="ibm_bullets",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.BULLET_REWRITE_QUALITY,
         required_judge_providers=_standard_providers(),
@@ -116,7 +118,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "insurtech_bullets": SectionJudgePolicy(
         section_name="insurtech_bullets",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.BULLET_REWRITE_QUALITY,
         required_judge_providers=_standard_providers(),
@@ -128,7 +130,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "ey_bullets": SectionJudgePolicy(
         section_name="ey_bullets",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.BULLET_REWRITE_QUALITY,
         required_judge_providers=_standard_providers(),
@@ -140,7 +142,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "unify_narrative": SectionJudgePolicy(
         section_name="unify_narrative",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.STANDARD_REASONING,
         required_judge_providers=_standard_providers(),
@@ -152,7 +154,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "ibm_narrative": SectionJudgePolicy(
         section_name="ibm_narrative",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.STANDARD_REASONING,
         required_judge_providers=_standard_providers(),
@@ -164,7 +166,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "insurtech_narrative": SectionJudgePolicy(
         section_name="insurtech_narrative",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.STANDARD_REASONING,
         required_judge_providers=_standard_providers(),
@@ -176,7 +178,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "ey_narrative": SectionJudgePolicy(
         section_name="ey_narrative",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=True,
         judge_tier=JudgeTier.STANDARD_REASONING,
         required_judge_providers=_standard_providers(),
@@ -188,7 +190,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "competencies": SectionJudgePolicy(
         section_name="competencies",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=False,
         judge_tier=JudgeTier.OPTIONAL_ADVISORY_TAXONOMY_ONLY,
         required_judge_providers=(),
@@ -200,7 +202,7 @@ _SECTION_POLICIES: dict[str, SectionJudgePolicy] = {
     ),
     "professional_competencies": SectionJudgePolicy(
         section_name="professional_competencies",
-        generator_model_class=GeneratorModelClass.QWEN,
+        generator_model_class=GeneratorModelClass.EXTERNAL_CLAUDE,
         judge_required_for_proof=False,
         judge_tier=JudgeTier.OPTIONAL_ADVISORY_TAXONOMY_ONLY,
         required_judge_providers=(),
