@@ -46,6 +46,11 @@ class ApprovedSkillProof:
     confidence_grade: str
     external_claim_policy: str
     permission: str
+    # W3 recipient-fit weighting (graph-derived): apps_rg per-skill role-family
+    # weights + taxonomy placement.
+    role_family_weights: Mapping[str, float] = field(default_factory=dict)
+    pillar: str = ""
+    domain: str = ""
 
     def to_packet(self) -> dict[str, Any]:
         return {
@@ -58,6 +63,9 @@ class ApprovedSkillProof:
             "confidence_grade": self.confidence_grade,
             "external_claim_policy": self.external_claim_policy,
             "permission": self.permission,
+            "role_family_weights": dict(self.role_family_weights),
+            "pillar": self.pillar,
+            "domain": self.domain,
         }
 
 
@@ -79,6 +87,37 @@ class AppsRgProofIndex:
     @property
     def snapshot_pointer(self) -> str:
         return f"apps_rg::augmented_skills_graph::{self.graph_digest or 'unavailable'}"
+
+
+# W3 — recipient_class -> apps_rg role families it screens for. Technical
+# evaluators (recruiter/TA/hiring-owner/eng-leaders) weight role/req-fit proof;
+# executives weight business-outcome / GTM / revenue proof.
+_TECHNICAL_FAMILIES = (
+    "ENGINEERING_PLATFORM",
+    "AI_SOLUTIONS_ARCHITECTURE",
+    "AI_GOVERNANCE_RISK",
+    "QUANT_TRADING_HPC",
+)
+_BUSINESS_FAMILIES = (
+    "EXECUTIVE_LEADERSHIP",
+    "PARTNERSHIPS_GTM",
+    "REVENUE_OPERATIONS",
+    "STRATEGIC_FINANCE",
+)
+RECIPIENT_ROLE_FAMILIES: Mapping[str, tuple[str, ...]] = {
+    "RECRUITER": _TECHNICAL_FAMILIES,
+    "SENIOR_TA": _TECHNICAL_FAMILIES,
+    "HIRING_MANAGER": _TECHNICAL_FAMILIES,
+    "VP_ENG": _TECHNICAL_FAMILIES,
+    "CTO": (*_TECHNICAL_FAMILIES, *_BUSINESS_FAMILIES),
+    "EXECUTIVE": _BUSINESS_FAMILIES,
+    "C_LEVEL": _BUSINESS_FAMILIES,
+    "CEO": _BUSINESS_FAMILIES,
+}
+
+
+def _is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
 def _sha16(text: str) -> str:
@@ -142,6 +181,12 @@ def load_apps_rg_proof_index() -> AppsRgProofIndex:
             adjacency.setdefault(fid, []).append((sid, "SUPPORTS", f"{fid}->{sid}", "in"))
         activation = str(row.get("activation_status") or "")
         external_policy = str(row.get("external_claim_policy") or "")
+        raw_weights = row.get("role_family_weights")
+        role_weights = (
+            {str(k): float(v) for k, v in raw_weights.items() if _is_number(v)}
+            if isinstance(raw_weights, Mapping)
+            else {}
+        )
         skills_by_id[sid] = ApprovedSkillProof(
             skill_id=sid,
             node_id=sid,
@@ -154,6 +199,9 @@ def load_apps_rg_proof_index() -> AppsRgProofIndex:
             ),
             external_claim_policy=external_policy,
             permission=_permission_for(activation, external_policy),
+            role_family_weights=role_weights,
+            pillar=str(row.get("pillar") or ""),
+            domain=str(row.get("domain") or ""),
         )
 
     digest = _sha16(json.dumps(graph.get("graph_metadata") or {}, sort_keys=True, default=str))
@@ -243,12 +291,77 @@ def proof_provenance_for(
     }
 
 
+def recipient_fit_weight(
+    *,
+    apps_rg_skill_ids: tuple[str, ...] | list[str],
+    recipient_class: str,
+) -> dict[str, Any]:
+    """Graph-derived recipient fit for a proof point (W3).
+
+    Maps the recipient class to the apps_rg role families it screens for, then
+    returns the best ``role_family_weights`` value across the proof point's
+    linked apps_rg skills for those families. ``weight`` is 0.0 when the SSOT is
+    unavailable, the recipient class is unknown, or no skill weights match.
+    """
+    idx = load_apps_rg_proof_index()
+    families = RECIPIENT_ROLE_FAMILIES.get(str(recipient_class or "").strip().upper(), ())
+    if not idx.available or not families:
+        return {"weight": 0.0, "families": list(families), "matched_family": "", "matched_skill": ""}
+    best = 0.0
+    best_family = ""
+    best_skill = ""
+    for sid in apps_rg_skill_ids:
+        proof = idx.skills_by_id.get(str(sid).strip())
+        if proof is None:
+            continue
+        for family in families:
+            weight = float(proof.role_family_weights.get(family, 0.0))
+            if weight > best:
+                best, best_family, best_skill = weight, family, proof.skill_id
+    return {
+        "weight": round(best, 4),
+        "families": list(families),
+        "matched_family": best_family,
+        "matched_skill": best_skill,
+    }
+
+
+def graph_weighted_skill_ids(
+    *,
+    recipient_class: str,
+    top_n: int = 8,
+    min_weight: float = 0.6,
+) -> tuple[str, ...]:
+    """Top apps_rg skill ids by recipient role-family fit (W3).
+
+    Replaces flat hand-authored ``candidate_skills`` lists with a graph-weighted
+    selection. Returns approved (allow-permission) apps_rg skill ids ranked by
+    their best role-family weight for the recipient class.
+    """
+    idx = load_apps_rg_proof_index()
+    families = RECIPIENT_ROLE_FAMILIES.get(str(recipient_class or "").strip().upper(), ())
+    if not idx.available or not families:
+        return ()
+    scored: list[tuple[float, str]] = []
+    for sid, proof in idx.skills_by_id.items():
+        if proof.permission != PERMISSION_ALLOW:
+            continue
+        best = max((float(proof.role_family_weights.get(f, 0.0)) for f in families), default=0.0)
+        if best >= min_weight:
+            scored.append((best, sid))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    return tuple(sid for _weight, sid in scored[: max(0, top_n)])
+
+
 __all__ = [
     "APPS_RG_GRAPH_SOURCE",
     "PERMISSION_ALLOW",
     "PERMISSION_BLOCKED",
+    "RECIPIENT_ROLE_FAMILIES",
     "ApprovedSkillProof",
     "AppsRgProofIndex",
+    "graph_weighted_skill_ids",
     "load_apps_rg_proof_index",
     "proof_provenance_for",
+    "recipient_fit_weight",
 ]

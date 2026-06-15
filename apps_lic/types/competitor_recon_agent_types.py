@@ -337,18 +337,21 @@ class CompetitorReconAgent:
         self,
         target_company: str,
         industry: str,
-        candidate_skills: list[str],
+        candidate_skills: list[str] | None = None,
     ) -> StrategicHook | None:
         """Generate FOMO hook based on competitive intelligence.
 
         Args:
             target_company: Target company name
             industry: Industry sector
-            candidate_skills: List of candidate's skills
+            candidate_skills: Candidate's skills; when omitted, derived from the
+                apps_rg shared graph (graph-weighted selection, W3).
 
         Returns:
             Strategic hook or None if no competitive advantage found
         """
+        if candidate_skills is None:
+            candidate_skills = graph_weighted_candidate_skills()
         try:
             competitors = self._identify_competitors(target_company, industry)
             if not competitors:
@@ -378,7 +381,7 @@ class CompetitorReconAgent:
             logger.error(f"Error generating FOMO hook: {str(e)}")
             return None
 
-    def get_strategic_ps(self, target_company: str, industry: str, candidate_skills: list[str]) -> str | None:
+    def get_strategic_ps(self, target_company: str, industry: str, candidate_skills: list[str] | None = None) -> str | None:
         """Get strategic P.S. line for emails.
 
         Args:
@@ -573,17 +576,50 @@ def create_competitor_recon_agent(intel_provider: IntelProvider | None = None) -
     return CompetitorReconAgent(intel_provider)
 
 
-def generate_competitive_hook(target_company: str, industry: str, candidate_skills: list[str]) -> str | None:
+def graph_weighted_candidate_skills(
+    *,
+    recipient_class: str = "HIRING_MANAGER",
+    top_n: int = 8,
+) -> list[str]:
+    """W3: derive candidate skills from the apps_rg shared graph, weighted by
+    recipient role-family fit — replaces flat hand-authored ``candidate_skills``.
+
+    Returns human-readable skill domains for the top graph-weighted approved
+    apps_rg skills; empty when the shared SSOT is unavailable.
+    """
+    from apps_lic.integrations.apps_rg_proof_bridge import (  # noqa: PLC0415
+        graph_weighted_skill_ids,
+        load_apps_rg_proof_index,
+    )
+
+    index = load_apps_rg_proof_index()
+    labels: list[str] = []
+    for skill_id in graph_weighted_skill_ids(recipient_class=recipient_class, top_n=top_n):
+        proof = index.skills_by_id.get(skill_id)
+        label = (proof.domain or proof.capability) if proof is not None else ""
+        if label and label not in labels:
+            labels.append(label)
+    return labels
+
+
+def generate_competitive_hook(
+    target_company: str,
+    industry: str,
+    candidate_skills: list[str] | None = None,
+) -> str | None:
     """Quickly generate a competitive hook.
 
     Args:
         target_company: Target company name
         industry: Industry sector
-        candidate_skills: List of candidate skills
+        candidate_skills: Candidate skills; when omitted, derived from the
+            apps_rg shared graph via :func:`graph_weighted_candidate_skills`.
 
     Returns:
         Hook text or None
     """
+    if candidate_skills is None:
+        candidate_skills = graph_weighted_candidate_skills()
     agent = create_competitor_recon_agent()
     hook = agent.generate_fomo_hook(target_company, industry, candidate_skills)
     return hook.hook_text if hook else None

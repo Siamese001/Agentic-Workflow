@@ -42,7 +42,10 @@ from apps_lic.engines.standing_sender_knowledge import (
     load_standing_sender_corpus,
     check_standing_sender_corpus_readiness,
 )
-from apps_lic.integrations.apps_rg_proof_bridge import proof_provenance_for
+from apps_lic.integrations.apps_rg_proof_bridge import (
+    proof_provenance_for,
+    recipient_fit_weight,
+)
 
 
 STATUS_PROOF_GRAPH_READY = "SENDER_PROOF_GRAPH_READY"
@@ -414,6 +417,26 @@ def _score_proof(
                         matched_value=tag,
                     )
                 )
+
+    # W3: graph-derived recipient-fit. The apps_rg role_family_weights for the
+    # proof point's linked skills weight role/req-fit proof for technical
+    # evaluators and business-outcome proof for executives, replacing reliance on
+    # hand-authored literal tag sets above.
+    fit = recipient_fit_weight(
+        apps_rg_skill_ids=getattr(point, "apps_rg_skill_ids", ()),
+        recipient_class=recipient_class,
+    )
+    if fit["weight"] > 0.0:
+        graph_weight = round(0.6 * float(fit["weight"]), 4)
+        score += graph_weight
+        signals.append(
+            ProofRelevanceSignal(
+                reason_code=f"graph_recipient_fit:{fit['matched_family']}",
+                source="apps_rg.role_family_weights",
+                weight=graph_weight,
+                matched_value=fit["matched_skill"],
+            )
+        )
 
     return round(score, 4), tuple(signals)
 
