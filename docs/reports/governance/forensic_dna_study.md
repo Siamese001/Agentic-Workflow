@@ -89,6 +89,22 @@ persist even if the ADHD were fully treated, and several *amplify* the ADHD ones
   needs maintenance — and a new place for displacement energy to hide.
 - **P8 · Low-deliberation throughput (F6).** Burst-committing pairs with P1: nothing forces a
   pause to ask "should this exist?" The result is high motion, modest north-star displacement.
+- **P9 · Parallelism-as-permission-to-never-choose (operator-surfaced 2026-06-15) — the alibi'd
+  variant of the fear.** High AI-desktop capacity (multi-agent / multi-worktree) is recruited not
+  to go *faster at the north star* but to *avoid choosing* between it and orthogonal ideas — "I'll
+  run all of them on their own branch and merge/rebase later." It is P-core (fear of loss) with a
+  *rational-sounding hardware alibi*, which makes it more insidious than ordinary procrastination.
+  Measured cost (after-pivot window, 4.8 days): **46 live branches**; rebase/sync-merge tax
+  **0.32→2.50/day (~8×)**; **19 distinct lanes merged**; **17 collision-class commits**
+  (revert/restore/re-pin/reconcile/post-rebase) — the "later" in "merge later" *is* those 17.
+  **Why it's a false economy for THIS goal:** 11/11 lanes is not embarrassingly-parallel — the plan's
+  own "FEC grounding is the SYSTEMIC W2 blocker" is a *shared* dependency. By **Amdahl** you cannot
+  parallelize past the serial bottleneck (parallel lanes in front of an unfixed root pile up as WIP
+  or need redoing); by **Little's Law** a solo operator's per-lane cycle time *rises* with WIP — four
+  lanes at once finish *later*, not sooner, plus the rebase/collision tax. One shipped lane > four
+  70%-done lanes (inventory that decays and conflicts as `main` moves). Legitimate parallelism (per
+  `agent-fanout-restraint`): independent subtasks / conclusion-only sweeps / adversarial verification
+  — **after** the shared blocker is fixed, not before.
 
 ---
 
@@ -237,10 +253,15 @@ add more output on top.
 | H4 | **Plan-mint default-DENY** (`pre_write_plan_mint_gate.py`) | constraint | plan-as-displacement (P4); flip warn→block | FLIP |
 | H5 | **Subtraction quota** (PreToolUse): an additive governance commit blocks unless it removes ≥ as much (the repo's dormant rule, wired) | constraint | build-then-demolish + sprawl (P2/P3) | WIRE |
 | H6 | **Time-edge nudge** (Stop/SessionStart): flag round-the-clock / no-recovery-day cadence | gentle | the binge + time-blindness (V1/V2) | ADD (optional) |
+| H7 | **WIP=1 gate for north-star lanes** (SessionStart/PreToolUse): block creating a new north-star worktree/branch while another north-star lane is unmerged; the worktree machinery already tracks lanes — flip it to enforce the *existing* `apps-rg-execution-bias` "WIP=1" rule. Pair with a **rebase-tax meter** that surfaces sync-merge + collision counts so the parallelism cost is visible | constraint (the hardware-can't-rationalize-it brake) | **P9** — parallelism-as-permission; the merge/rebase-later tax | WIRE (rule already exists) |
 
 **The binding rule for all of the above:** *every hook added must be paid for by deleting old gates.*
-Recommended net move: **+4 constraint/capture hooks, −230 correctness gates** (282 → ~50). If the
-surface grows, the recommendation has been inverted into the very pattern it diagnoses.
+Recommended net move: **+3–4 new constraint/capture hooks (H1, H2, H3, opt. H6), 3 flips/wires of
+*existing* rules (H4, H5, H7 — no new surface), and −230 correctness gates** (282 → ~50). If the
+surface grows, the recommendation has been inverted into the very pattern it diagnoses. Note H7 (WIP=1)
+and H5 (subtraction quota) wire rules that **already exist and are simply unenforced** — the cheapest
+wins, since the parallelism tax (P9) and build-then-demolish (P2) are both governed by doctrine the
+repo already wrote and then rationalized away.
 
 **Why this beats the fear specifically:** H1+H2 make it *safe* to park an orthogonal idea (it is
 captured, it will resurface, and the target stays visible), so the brain no longer needs to build it
