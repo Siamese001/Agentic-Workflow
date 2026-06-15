@@ -59,6 +59,12 @@ def _make_vr(jd_text: str = "Software Engineer role", resume_text: str = "my res
     return vr
 
 
+def _enable_c0_fallback_harness(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("APPS_RG_TEST_HARNESS", "1")
+    monkeypatch.setenv("APPS_RG_C0_DENSE_SPARSE_MANDATORY", "0")
+    monkeypatch.setenv("APPS_RG_C0_SPARSE_ENABLED", "0")
+
+
 def _make_chunk(
     chunk_id: str = "abc123",
     source_class: str = "candidate_profile",
@@ -92,12 +98,14 @@ class TestFileOnlyPath:
     def test_file_only_returns_fec(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
+        _enable_c0_fallback_harness(monkeypatch)
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr())
         assert isinstance(fec, FinalEvidenceContract)
 
     def test_file_only_has_jd_and_resume_evidence(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
+        _enable_c0_fallback_harness(monkeypatch)
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr())
         sources = [item.source for item in fec.evidence_items]
         assert any("jd_payload" in s for s in sources)
@@ -106,20 +114,24 @@ class TestFileOnlyPath:
     def test_file_only_support_target_met(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
+        _enable_c0_fallback_harness(monkeypatch)
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr())
         assert fec.support_target_met is True
 
-    def test_file_only_citation_map_empty(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """File-only path: no Chroma → citation_map stays empty tuple."""
+    def test_file_only_citation_map_tracks_inline_context(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """File-only path still carries inline context citation anchors."""
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
+        _enable_c0_fallback_harness(monkeypatch)
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr())
-        assert fec.citation_map == ()
+        assert any(anchor == "apps_rg:inline:jd_payload" for _, anchor in fec.citation_map)
+        assert any(anchor == "apps_rg:inline:resume_payload" for _, anchor in fec.citation_map)
 
     def test_file_only_support_status_not_unknown(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """File-only path: dense lane NA — contract support_status NOT_APPLICABLE with reason."""
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
+        _enable_c0_fallback_harness(monkeypatch)
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr())
         assert fec.support_status == STATUS_NOT_APPLICABLE
         assert fec.not_applicable_reason
@@ -127,6 +139,7 @@ class TestFileOnlyPath:
     def test_file_only_l5_cert_ref_correct(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
+        _enable_c0_fallback_harness(monkeypatch)
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr())
         assert fec.l5_certification_ref == APPS_RG_C0_CERT_REF
 
@@ -134,6 +147,7 @@ class TestFileOnlyPath:
         """W4.3: EMBEDDING_ENABLED not set must NOT raise when no Chroma path."""
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
+        _enable_c0_fallback_harness(monkeypatch)
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr())
         assert isinstance(fec, FinalEvidenceContract)
 
@@ -141,6 +155,7 @@ class TestFileOnlyPath:
         """chromadb_path=None with env unset → file-only, no guard fires."""
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.setenv("EMBEDDING_ENABLED", "false")
+        _enable_c0_fallback_harness(monkeypatch)
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path=None)
         assert isinstance(fec, FinalEvidenceContract)
 
@@ -154,24 +169,28 @@ class TestEmbeddingEnabledGuard:
     def test_guard_fires_with_env_path_and_disabled(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("CHROMA_PERSIST_DIR", "data/cache/chromadb")
         monkeypatch.setenv("EMBEDDING_ENABLED", "false")
+        monkeypatch.setenv("APPS_RG_EMBEDDING_ENABLED", "false")
         with pytest.raises(C0EvidenceGapError):
             c0_retrieve_apps_rg(_make_route(), _make_vr())
 
     def test_guard_fires_with_param_path_and_disabled(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.setenv("EMBEDDING_ENABLED", "false")
+        monkeypatch.setenv("APPS_RG_EMBEDDING_ENABLED", "false")
         with pytest.raises(C0EvidenceGapError):
             c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path="data/cache/chromadb")
 
     def test_guard_fires_when_embedding_enabled_missing(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("CHROMA_PERSIST_DIR", "data/cache/chromadb")
         monkeypatch.delenv("EMBEDDING_ENABLED", raising=False)
+        monkeypatch.delenv("APPS_RG_EMBEDDING_ENABLED", raising=False)
         with pytest.raises(C0EvidenceGapError):
             c0_retrieve_apps_rg(_make_route(), _make_vr())
 
     def test_guard_contains_action_hint(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("CHROMA_PERSIST_DIR", "data/cache/chromadb")
         monkeypatch.setenv("EMBEDDING_ENABLED", "false")
+        monkeypatch.setenv("APPS_RG_EMBEDDING_ENABLED", "false")
         with pytest.raises(C0EvidenceGapError) as exc_info:
             c0_retrieve_apps_rg(_make_route(), _make_vr())
         assert "EMBEDDING_ENABLED=true" in str(exc_info.value)
@@ -180,6 +199,8 @@ class TestEmbeddingEnabledGuard:
         """When EMBEDDING_ENABLED=true and path set, guard does not raise (Chroma fallback OK)."""
         monkeypatch.setenv("CHROMA_PERSIST_DIR", "data/cache/chromadb")
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
+        monkeypatch.setenv("APPS_RG_EMBEDDING_ENABLED", "true")
+        _enable_c0_fallback_harness(monkeypatch)
         # Chroma will fail to connect to path (test path doesn't exist in process)
         # but guard must NOT raise; instead Chroma unavailable → fallback
         fec = c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path="/nonexistent/path")
@@ -313,6 +334,7 @@ class TestChromaRetrievalPath:
     def test_chroma_path_populates_citation_map(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
+        _enable_c0_fallback_harness(monkeypatch)
 
         valid_chunk = _make_chunk(
             chunk_id="cid-100",
@@ -324,7 +346,7 @@ class TestChromaRetrievalPath:
         mock_client.get_collection.return_value = mock_col
 
         with patch("apps_rg.runtime.bindings.c0_binding._get_embedding_model") as mock_model, \
-             patch("chromadb.PersistentClient", return_value=mock_client):
+             patch("apps_rg.runtime.bindings.c0_binding._persistent_chroma_client", return_value=mock_client):
             mock_model.return_value.encode.return_value = MagicMock(tolist=lambda: [0.0] * 1024)
             fec = c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path="data/cache/chromadb")
 
@@ -334,6 +356,7 @@ class TestChromaRetrievalPath:
     def test_chroma_path_populates_source_lineage_map(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
+        _enable_c0_fallback_harness(monkeypatch)
 
         valid_chunk = _make_chunk(chunk_id="cid-200", source_id="src-200", citation_anchor="anchor-200")
         mock_col = self._make_mock_collection([valid_chunk])
@@ -341,7 +364,7 @@ class TestChromaRetrievalPath:
         mock_client.get_collection.return_value = mock_col
 
         with patch("apps_rg.runtime.bindings.c0_binding._get_embedding_model") as mock_model, \
-             patch("chromadb.PersistentClient", return_value=mock_client):
+             patch("apps_rg.runtime.bindings.c0_binding._persistent_chroma_client", return_value=mock_client):
             mock_model.return_value.encode.return_value = MagicMock(tolist=lambda: [0.0] * 1024)
             fec = c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path="data/cache/chromadb")
 
@@ -350,6 +373,7 @@ class TestChromaRetrievalPath:
     def test_chroma_path_populates_freshness_receipts(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
+        _enable_c0_fallback_harness(monkeypatch)
 
         valid_chunk = _make_chunk(chunk_id="cid-300", source_id="src-300",
                                   citation_anchor="a-300", freshness="FRESH")
@@ -358,7 +382,7 @@ class TestChromaRetrievalPath:
         mock_client.get_collection.return_value = mock_col
 
         with patch("apps_rg.runtime.bindings.c0_binding._get_embedding_model") as mock_model, \
-             patch("chromadb.PersistentClient", return_value=mock_client):
+             patch("apps_rg.runtime.bindings.c0_binding._persistent_chroma_client", return_value=mock_client):
             mock_model.return_value.encode.return_value = MagicMock(tolist=lambda: [0.0] * 1024)
             fec = c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path="data/cache/chromadb")
 
@@ -367,8 +391,9 @@ class TestChromaRetrievalPath:
     def test_chroma_unavailable_falls_back_to_file(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
+        _enable_c0_fallback_harness(monkeypatch)
 
-        with patch("chromadb.PersistentClient", side_effect=RuntimeError("Chroma down")):
+        with patch("apps_rg.runtime.bindings.c0_binding._persistent_chroma_client", side_effect=RuntimeError("Chroma down")):
             fec = c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path="data/cache/chromadb")
 
         assert isinstance(fec, FinalEvidenceContract)
@@ -379,6 +404,7 @@ class TestChromaRetrievalPath:
     def test_l5_cert_ref_correct_with_chroma(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
         monkeypatch.setenv("EMBEDDING_ENABLED", "true")
+        _enable_c0_fallback_harness(monkeypatch)
 
         valid_chunk = _make_chunk(chunk_id="cid-cert", citation_anchor="a-cert")
         mock_col = self._make_mock_collection([valid_chunk])
@@ -386,7 +412,7 @@ class TestChromaRetrievalPath:
         mock_client.get_collection.return_value = mock_col
 
         with patch("apps_rg.runtime.bindings.c0_binding._get_embedding_model") as mock_model, \
-             patch("chromadb.PersistentClient", return_value=mock_client):
+             patch("apps_rg.runtime.bindings.c0_binding._persistent_chroma_client", return_value=mock_client):
             mock_model.return_value.encode.return_value = MagicMock(tolist=lambda: [0.0] * 1024)
             fec = c0_retrieve_apps_rg(_make_route(), _make_vr(), chromadb_path="data/cache/chromadb")
 

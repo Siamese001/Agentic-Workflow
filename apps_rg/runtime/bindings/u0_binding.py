@@ -274,6 +274,18 @@ def u0_validate_apps_rg(
         "target_level": target_level,
         "resume_hash": resume_hash,
         "jd_hash": jd_hash,
+        "jd_payload": {
+            "jd_text": jd_text,
+            "text": jd_text,
+            "hash": jd_hash,
+            "ref": jd_ref,
+            "targeting_mode": jd_targeting_mode,
+        },
+        "resume_payload": {
+            "resume_text": source_resume_text,
+            "hash": resume_hash,
+            "ref": app_payload.get("source_resume_ref"),
+        },
         "task_class": APPS_RG_TASK_CLASS,
         "cert_ref": APPS_RG_U0_CERT_REF,
         "profile_manifest": profile_manifest,
@@ -335,6 +347,22 @@ def u0_validate_apps_rg(
         ),
         validation_passed=True,
     )
+    from agentic_core.runtime.u0.reflection_receipt import AppsRgU0ReflectionReceipt
+
+    reflection_receipt = AppsRgU0ReflectionReceipt(
+        contract_version="apps_rg_ingress_payload.v1",
+        schema_version="apps_rg_ingress_payload.v1",
+        field_map_version="u0_validate_apps_rg.synthetic.v1",
+        input_payload_digest=payload_digest,
+        validated_request_digest=payload_digest,
+        pointers_total=len(app_payload),
+        pointers_mapped=len(app_payload),
+        pointers_derived=0,
+        pointers_rejected=0,
+        pointers_deferred=0,
+        pass_status=True,
+        timestamp_iso=receipt.validation_timestamp,
+    )
 
     return ValidatedRequest(
         request_id=request_id,
@@ -352,6 +380,7 @@ def u0_validate_apps_rg(
         session_id=session_id,
         trace_root=trace_root,
         caller_scope_baseline=caller_scope_baseline,
+        reflection_receipt=reflection_receipt,
     )
 
 

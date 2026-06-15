@@ -179,14 +179,14 @@ class TestInv2FECNonPassDispositions:
         fec = FinalEvidenceContract(**fec_kwargs, support_status=SUPPORT_STATUS_PASS)
         assert fec.support_status_is_passing()
 
-    def test_partial_is_pass(self, fec_kwargs: dict) -> None:
+    def test_partial_is_not_pass(self, fec_kwargs: dict) -> None:
         fec = FinalEvidenceContract(**fec_kwargs, support_status=SUPPORT_STATUS_PARTIAL)
-        assert fec.support_status_is_passing()
+        assert not fec.support_status_is_passing()
 
     def test_passing_set_excludes_dangerous_sentinels(self) -> None:
         banned = {
             STATUS_UNKNOWN, STATUS_NOT_APPLICABLE, SUPPORT_STATUS_BLOCKED,
-            SUPPORT_STATUS_CONFLICTED, SUPPORT_STATUS_EMPTY,
+            SUPPORT_STATUS_CONFLICTED, SUPPORT_STATUS_EMPTY, SUPPORT_STATUS_PARTIAL,
             SUPPORT_STATUS_WEAK,
         }
         assert not (banned & SUPPORT_STATUS_PASSING_VALUES), (

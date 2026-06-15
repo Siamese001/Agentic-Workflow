@@ -1,22 +1,34 @@
 {
   "schema": "all_sections_c03_graph_binding_p2_w2_v1",
-  "generated_at": "2026-05-27T19:18:09Z",
+  "generated_at": "2026-06-15T21:31:33Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W2",
   "sections": {
-    "headline": {
+    "competencies": {
       "c03_graph_bound_status": "BOUND",
-      "graph_hop_paths_count": 20,
-      "non_graph_evidence_items_count": 0,
-      "broad_skills_ledger_used_as_authority": false
-    },
-    "executive_summary": {
-      "c03_graph_bound_status": "BOUND",
-      "graph_hop_paths_count": 5,
+      "graph_hop_paths_count": 21,
       "non_graph_evidence_items_count": 0,
       "broad_skills_ledger_used_as_authority": false
     },
     "unify_bullets": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "ibm_bullets": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 21,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "insurtech_bullets": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "ey_bullets": {
       "c03_graph_bound_status": "BOUND",
       "graph_hop_paths_count": 1,
       "non_graph_evidence_items_count": 0,
@@ -28,21 +40,33 @@
       "non_graph_evidence_items_count": 0,
       "broad_skills_ledger_used_as_authority": false
     },
-    "ibm_bullets": {
-      "c03_graph_bound_status": "BOUND",
-      "graph_hop_paths_count": 4,
-      "non_graph_evidence_items_count": 0,
-      "broad_skills_ledger_used_as_authority": false
-    },
     "ibm_narrative": {
       "c03_graph_bound_status": "BOUND",
-      "graph_hop_paths_count": 18,
+      "graph_hop_paths_count": 1,
       "non_graph_evidence_items_count": 0,
       "broad_skills_ledger_used_as_authority": false
     },
-    "competencies": {
+    "insurtech_narrative": {
       "c03_graph_bound_status": "BOUND",
-      "graph_hop_paths_count": 22,
+      "graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "ey_narrative": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "executive_summary": {
+      "c03_graph_bound_status": "NOT_BOUND",
+      "graph_hop_paths_count": 0,
+      "non_graph_evidence_items_count": 0,
+      "broad_skills_ledger_used_as_authority": false
+    },
+    "headline": {
+      "c03_graph_bound_status": "BOUND",
+      "graph_hop_paths_count": 1,
       "non_graph_evidence_items_count": 0,
       "broad_skills_ledger_used_as_authority": false
     }

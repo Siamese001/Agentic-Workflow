@@ -47,16 +47,11 @@ __adg_consumer_mode__ = "runtime_cert_read"
 import json
 import logging
 import os
+from importlib import import_module
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-from agentic_core.L6_system_learning.app_route_contracts import (
-    build_r3_grounded_read_contract,
-)
-from agentic_core.L6_system_learning.manifest_hash import (
-    compute_manifest_hash_for_app,
-)
 from tools.runtime_cert.extractors.r3_evidence import (
     R3EvidenceReport,
     extract_r3_evidence,
@@ -94,6 +89,20 @@ REPORT_DISCLAIMER: Final[str] = (
     "no runtime certification performed — this is Phase C.6 non-promoting "
     "evidence only"
 )
+
+
+def _compute_manifest_hash_for_app(app_name: str, repo_root: str | Path | None) -> str:
+    helper = import_module(
+        "agentic_core.L6_system_learning.manifest_hash"
+    ).compute_manifest_hash_for_app
+    return helper(app_name, repo_root=repo_root)
+
+
+def _build_r3_grounded_read_contract(**kwargs: Any) -> Any:
+    helper = import_module(
+        "agentic_core.L6_system_learning.app_route_contracts"
+    ).build_r3_grounded_read_contract
+    return helper(**kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -234,12 +243,12 @@ def run_apps_research_live_trace_smoke(
         )
 
     # ---- Manifest hash (real file on disk) -------------------------------
-    manifest_hash = compute_manifest_hash_for_app(
+    manifest_hash = _compute_manifest_hash_for_app(
         SMOKE_APP_NAME, repo_root=repo_root
     )
 
     # ---- Canonical R3 contract ------------------------------------------
-    contract = build_r3_grounded_read_contract(
+    contract = _build_r3_grounded_read_contract(
         app_name=SMOKE_APP_NAME,
         manifest_path=f"{SMOKE_APP_NAME}/{_MANIFEST_SUBPATH}",
         manifest_hash=manifest_hash,

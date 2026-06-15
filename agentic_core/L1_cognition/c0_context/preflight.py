@@ -27,6 +27,13 @@ from agentic_core.L1_cognition.c0_context.types import (
 # Minimum tokens required to run at least one bounded retrieval pass.
 MIN_BUDGET_FLOOR_TOKENS: int = 512
 
+_HIGH_STAKES_TARGETS: frozenset[SupportTarget] = frozenset({
+    SupportTarget.POLICY_CLAUSE,
+    SupportTarget.INCIDENT_EVIDENCE,
+    SupportTarget.ROOT_CAUSE_RANKING,
+    SupportTarget.CODE_LOCATION,
+})
+
 
 def analyze_grounding_advisory(
     task_spec: str,
@@ -107,6 +114,71 @@ def analyze_grounding_advisory(
     )
 
 
+def preflight(route: RouteContractView) -> C0PreflightStatus:
+    """Compatibility eligibility check for callers that still need C0.0 status.
+
+    L0 remains the authority for runtime C0 policy. This helper only derives the
+    bounded retrieval status expected by older C0 tests and plan builders.
+    """
+    if not route.grounding_required:
+        return C0PreflightStatus(
+            eligible=False,
+            blocked_reason="grounding_not_required",
+            allowed_source_classes=frozenset(),
+            evidence_standard="none",
+            budget_floor_tokens=0,
+        )
+
+    if not route.route_id.startswith("R3"):
+        return C0PreflightStatus(
+            eligible=False,
+            blocked_reason=f"route_id {route.route_id} does not allow C0 retrieval",
+            allowed_source_classes=frozenset(),
+            evidence_standard="none",
+            budget_floor_tokens=0,
+        )
+
+    allowed = (route.allowed_sources & SOURCE_CLASSES) - route.disallowed_sources
+    if not allowed:
+        return C0PreflightStatus(
+            eligible=False,
+            blocked_reason="no allowed source class remains after disallowed sources",
+            allowed_source_classes=frozenset(),
+            evidence_standard="none",
+            budget_floor_tokens=0,
+        )
+
+    if route.data_class in {"blocked", "restricted"}:
+        return C0PreflightStatus(
+            eligible=False,
+            blocked_reason=f"data_class {route.data_class} is not eligible for C0 retrieval",
+            allowed_source_classes=frozenset(),
+            evidence_standard="none",
+            budget_floor_tokens=0,
+        )
+
+    if route.token_budget < MIN_BUDGET_FLOOR_TOKENS:
+        return C0PreflightStatus(
+            eligible=False,
+            blocked_reason=(
+                f"token_budget {route.token_budget} below C0 floor "
+                f"{MIN_BUDGET_FLOOR_TOKENS}"
+            ),
+            allowed_source_classes=frozenset(),
+            evidence_standard="none",
+            budget_floor_tokens=0,
+        )
+
+    evidence_standard = "strict" if route.support_target in _HIGH_STAKES_TARGETS else "default"
+    return C0PreflightStatus(
+        eligible=True,
+        blocked_reason="",
+        allowed_source_classes=frozenset(allowed),
+        evidence_standard=evidence_standard,
+        budget_floor_tokens=MIN_BUDGET_FLOOR_TOKENS,
+    )
+
+
 def build_retrieval_plan(
     route: RouteContractView,
     preflight_status: C0PreflightStatus,
@@ -172,6 +244,6 @@ def build_retrieval_plan(
 __all__ = [
     "MIN_BUDGET_FLOOR_TOKENS",
     "analyze_grounding_advisory",  # W2: L1 advisory-only (replaces deprecated preflight)
+    "preflight",
     "build_retrieval_plan",
-    # W2: "preflight" removed - use analyze_grounding_advisory instead
 ]

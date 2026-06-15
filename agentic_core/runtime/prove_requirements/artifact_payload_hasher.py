@@ -29,7 +29,20 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Final, Iterable, Mapping
+
+
+SUPPORTED_HASH_ALGORITHMS: Final[frozenset[str]] = frozenset({"sha256"})
+
+
+def hash_artifact_payload(payload: bytes, algorithm: str = "sha256") -> str:
+    """Hash raw artifact payload bytes with a supported algorithm."""
+    alg = algorithm.lower().strip()
+    if alg not in SUPPORTED_HASH_ALGORITHMS:
+        raise ValueError(f"unsupported hash algorithm: {algorithm}")
+    if not isinstance(payload, bytes):
+        raise TypeError("payload must be bytes")
+    return hashlib.new(alg, payload).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -265,6 +278,8 @@ def load_manifest_json(path: Path) -> dict[str, Any]:
 __all__ = [
     "ArtifactPayloadCheck",
     "ManifestPayloadResult",
+    "SUPPORTED_HASH_ALGORITHMS",
+    "hash_artifact_payload",
     "hash_payload_file",
     "recompute_payload_hashes",
     "load_manifest_json",

@@ -108,11 +108,15 @@ def _infer_repo_root() -> Path:
     """Infer the repo root from this module's path.
 
     ``manifest_hash.py`` lives at
-    ``<repo_root>/system_learning/runtime_adg/manifest_hash.py`` so
-    ``parents[2]`` is the repo root. This is robust to the workspace
-    being cloned to any absolute path.
+    ``<repo_root>/agentic_core/L6_system_learning/runtime_adg/manifest_hash.py``.
+    Walk upward instead of relying on a fixed depth so compatibility shims and
+    future package moves keep resolving app manifests from the checkout root.
     """
-    return Path(__file__).resolve().parents[2]
+    current = Path(__file__).resolve()
+    for parent in current.parents:
+        if (parent / "agentic_core").is_dir() and (parent / "apps_rg").is_dir():
+            return parent
+    return current.parents[3]
 
 
 def compute_manifest_hash_for_app(

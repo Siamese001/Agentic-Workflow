@@ -1,6 +1,6 @@
 {
   "schema": "cross_section_graph_authority_audit_p2_w10_v1",
-  "generated_at": "2026-05-27T19:18:10Z",
+  "generated_at": "2026-06-15T21:31:37Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W10",
   "all_sections_trace_to_augmented_skills_graph": true,
@@ -8,29 +8,17 @@
   "unsupported_or_blocked_sections": [],
   "package_audit_status": "PASS",
   "sections": {
-    "headline": {
-      "section": "headline",
+    "competencies": {
+      "section": "competencies",
       "proof_source": "augmented_skills_graph",
       "c03_graph_bound_status": "BOUND",
       "broad_skills_ledger_used_as_authority": false,
-      "selection_method": "augmented_skills_graph_headline",
+      "selection_method": "augmented_skills_graph_track_weighted_competencies",
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 20,
+      "c03_graph_hop_paths_count": 21,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
-      "allowed_fact_count": 7
-    },
-    "executive_summary": {
-      "section": "executive_summary",
-      "proof_source": "augmented_skills_graph",
-      "c03_graph_bound_status": "BOUND",
-      "broad_skills_ledger_used_as_authority": false,
-      "selection_method": null,
-      "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 5,
-      "non_graph_evidence_items_count": 0,
-      "silent_fallback_possible": false,
-      "allowed_fact_count": 7
+      "allowed_fact_count": 11
     },
     "unify_bullets": {
       "section": "unify_bullets",
@@ -38,18 +26,6 @@
       "c03_graph_bound_status": "BOUND",
       "broad_skills_ledger_used_as_authority": false,
       "selection_method": "augmented_skills_graph_unify_bullets_track_ranked",
-      "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 1,
-      "non_graph_evidence_items_count": 0,
-      "silent_fallback_possible": false,
-      "allowed_fact_count": 9
-    },
-    "unify_narrative": {
-      "section": "unify_narrative",
-      "proof_source": "augmented_skills_graph",
-      "c03_graph_bound_status": "BOUND",
-      "broad_skills_ledger_used_as_authority": false,
-      "selection_method": "augmented_skills_graph_unify_narrative_company_hint",
       "proof_pool_type": "augmented_skills_graph",
       "c03_graph_hop_paths_count": 1,
       "non_graph_evidence_items_count": 0,
@@ -63,34 +39,106 @@
       "broad_skills_ledger_used_as_authority": false,
       "selection_method": "augmented_skills_graph_ibm_bullets_phase2_track_ranked",
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 4,
+      "c03_graph_hop_paths_count": 21,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
-      "allowed_fact_count": 9
+      "allowed_fact_count": 6
+    },
+    "insurtech_bullets": {
+      "section": "insurtech_bullets",
+      "proof_source": "augmented_skills_graph",
+      "c03_graph_bound_status": "BOUND",
+      "broad_skills_ledger_used_as_authority": false,
+      "selection_method": "augmented_skills_graph_insurtech_bullets_role_episode_bundle",
+      "proof_pool_type": "augmented_skills_graph",
+      "c03_graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "silent_fallback_possible": false,
+      "allowed_fact_count": 12
+    },
+    "ey_bullets": {
+      "section": "ey_bullets",
+      "proof_source": "augmented_skills_graph",
+      "c03_graph_bound_status": "BOUND",
+      "broad_skills_ledger_used_as_authority": false,
+      "selection_method": "augmented_skills_graph_ey_bullets_role_episode_bundle",
+      "proof_pool_type": "augmented_skills_graph",
+      "c03_graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "silent_fallback_possible": false,
+      "allowed_fact_count": 5
+    },
+    "unify_narrative": {
+      "section": "unify_narrative",
+      "proof_source": "augmented_skills_graph",
+      "c03_graph_bound_status": "BOUND",
+      "broad_skills_ledger_used_as_authority": false,
+      "selection_method": "selected_graph_evidence_plan_unify_narrative",
+      "proof_pool_type": "augmented_skills_graph",
+      "c03_graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "silent_fallback_possible": false,
+      "allowed_fact_count": 35
     },
     "ibm_narrative": {
       "section": "ibm_narrative",
       "proof_source": "augmented_skills_graph",
       "c03_graph_bound_status": "BOUND",
       "broad_skills_ledger_used_as_authority": false,
-      "selection_method": "augmented_skills_graph_ibm_narrative_company_hint",
+      "selection_method": "selected_graph_evidence_plan_ibm_narrative",
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 18,
+      "c03_graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "silent_fallback_possible": false,
+      "allowed_fact_count": 34
+    },
+    "insurtech_narrative": {
+      "section": "insurtech_narrative",
+      "proof_source": "augmented_skills_graph",
+      "c03_graph_bound_status": "BOUND",
+      "broad_skills_ledger_used_as_authority": false,
+      "selection_method": "augmented_skills_graph_insurtech_narrative_role_episode_bundle",
+      "proof_pool_type": "augmented_skills_graph",
+      "c03_graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "silent_fallback_possible": false,
+      "allowed_fact_count": 12
+    },
+    "ey_narrative": {
+      "section": "ey_narrative",
+      "proof_source": "augmented_skills_graph",
+      "c03_graph_bound_status": "BOUND",
+      "broad_skills_ledger_used_as_authority": false,
+      "selection_method": "augmented_skills_graph_ey_narrative_role_episode_bundle",
+      "proof_pool_type": "augmented_skills_graph",
+      "c03_graph_hop_paths_count": 1,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
       "allowed_fact_count": 5
     },
-    "competencies": {
-      "section": "competencies",
+    "executive_summary": {
+      "section": "executive_summary",
       "proof_source": "augmented_skills_graph",
       "c03_graph_bound_status": "BOUND",
       "broad_skills_ledger_used_as_authority": false,
-      "selection_method": "augmented_skills_graph_track_weighted_competencies",
+      "selection_method": null,
       "proof_pool_type": "augmented_skills_graph",
-      "c03_graph_hop_paths_count": 22,
+      "c03_graph_hop_paths_count": 0,
       "non_graph_evidence_items_count": 0,
       "silent_fallback_possible": false,
-      "allowed_fact_count": 15
+      "allowed_fact_count": 55
+    },
+    "headline": {
+      "section": "headline",
+      "proof_source": "augmented_skills_graph",
+      "c03_graph_bound_status": "BOUND",
+      "broad_skills_ledger_used_as_authority": false,
+      "selection_method": "selected_graph_evidence_plan_headline",
+      "proof_pool_type": "augmented_skills_graph",
+      "c03_graph_hop_paths_count": 1,
+      "non_graph_evidence_items_count": 0,
+      "silent_fallback_possible": false,
+      "allowed_fact_count": 17
     }
   }
 }

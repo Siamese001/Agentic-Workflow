@@ -14,7 +14,7 @@ from agentic_core.L3_orchestration.exit_control.runtime_hitl_ledger import (
     LedgerState,
 )
 from agentic_core.L5_safety.exit_control.hitl_classes import HitlClass
-from apps_eval.engines.hitl_decision_quality_engine import (
+from agentic_core.L6_system_learning.hitl_decision_quality import (
     HitlDecisionQualityEngine,
 )
 from agentic_core.L6_system_learning.runtime_hitl_consumer import (

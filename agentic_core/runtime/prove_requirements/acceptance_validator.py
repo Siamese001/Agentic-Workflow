@@ -56,6 +56,63 @@ ALLOWED_FINAL_STATUSES: Final[frozenset[str]] = frozenset({
 
 
 @dataclass(frozen=True)
+class AcceptanceValidationResult:
+    """Lightweight W0 criteria-validation result retained for older tests."""
+
+    is_legal: bool
+    violations: list[str]
+
+
+def _criteria_is_mapping(criteria: Any) -> bool:
+    return isinstance(criteria, dict)
+
+
+def _criteria_has_acceptance(criteria: Any) -> bool:
+    return isinstance(criteria, dict) and bool(str(criteria.get("acceptance", "")).strip())
+
+
+def _criteria_has_no_placeholder(criteria: Any) -> bool:
+    if not isinstance(criteria, dict):
+        return False
+    acceptance = str(criteria.get("acceptance", "")).lower()
+    return not any(token in acceptance for token in ("tbd", "todo", "later", "placeholder"))
+
+
+LEGALITY_RULES: Final[dict[str, dict[str, Any]]] = {
+    "criteria_mapping": {
+        "description": "Acceptance criteria must be supplied as a mapping.",
+        "check": _criteria_is_mapping,
+    },
+    "acceptance_present": {
+        "description": "Acceptance criteria must include non-empty acceptance text.",
+        "check": _criteria_has_acceptance,
+    },
+    "no_placeholder_text": {
+        "description": "Acceptance criteria must not contain placeholder text.",
+        "check": _criteria_has_no_placeholder,
+    },
+}
+
+
+def validate_acceptance_criteria(criteria: dict[str, Any]) -> AcceptanceValidationResult:
+    """Validate simple acceptance-criteria text for legacy W0 callers."""
+    violations: list[str] = []
+    for rule_id, rule in LEGALITY_RULES.items():
+        check = rule["check"]
+        if check(criteria):
+            continue
+        if rule_id == "criteria_mapping":
+            violations.append("criteria must be a mapping")
+        elif rule_id == "acceptance_present":
+            violations.append("acceptance text is empty or missing")
+        elif rule_id == "no_placeholder_text":
+            violations.append("acceptance text contains placeholder content")
+        else:
+            violations.append(f"{rule_id} failed")
+    return AcceptanceValidationResult(is_legal=not violations, violations=violations)
+
+
+@dataclass(frozen=True)
 class AcceptanceVerdict:
     """Outcome of running ``validate_acceptance`` on one row."""
 
@@ -276,8 +333,11 @@ def apply_to_matrix(
 
 
 __all__ = [
+    "AcceptanceValidationResult",
     "AcceptanceVerdict",
     "ALLOWED_FINAL_STATUSES",
+    "LEGALITY_RULES",
+    "validate_acceptance_criteria",
     "validate_acceptance",
     "apply_to_matrix",
 ]

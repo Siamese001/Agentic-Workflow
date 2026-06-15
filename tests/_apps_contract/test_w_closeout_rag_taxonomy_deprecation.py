@@ -29,6 +29,7 @@ from apps_shared.config.legacy_yaml_deprecation import (
     emit_deprecation,
     reset_warning_registry,
 )
+from ops_scripts.ci.check_grounded_rag_active import _GROUNDED_APPS
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -40,6 +41,8 @@ OPENAI_BASELINES = {
     "context_precision": 0.70,
     "answer_relevancy": 0.80,
 }
+
+GROUNDED_APPS = sorted(_GROUNDED_APPS)
 
 
 class TestRagDimsPresent:

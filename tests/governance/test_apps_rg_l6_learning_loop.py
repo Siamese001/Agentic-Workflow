@@ -106,7 +106,7 @@ def test_evaluate_hitl_called_after_governed_run_context() -> None:
 def test_runtime_hitl_consumer_consume_returns_list() -> None:
     """RuntimeHitlConsumer.consume() must return a list (may be empty for sparse data)."""
     from agentic_core.L6_system_learning.runtime_hitl_consumer import RuntimeHitlConsumer
-    from apps_eval.engines.hitl_decision_quality_engine import (
+    from agentic_core.L6_system_learning.hitl_decision_quality import (
         HitlQualityReport,
         HitlQualityBucket,
     )
@@ -127,7 +127,7 @@ def test_runtime_hitl_consumer_consume_returns_list() -> None:
 def test_runtime_hitl_consumer_consume_and_submit_requires_sink() -> None:
     """consume_and_submit() must raise RuntimeError when no DraftSink configured."""
     from agentic_core.L6_system_learning.runtime_hitl_consumer import RuntimeHitlConsumer
-    from apps_eval.engines.hitl_decision_quality_engine import HitlQualityReport
+    from agentic_core.L6_system_learning.hitl_decision_quality import HitlQualityReport
 
     report = HitlQualityReport(buckets=[], overall_score=1.0, total_entries=0, resolved_entries=0, pending_entries=0)
     consumer = RuntimeHitlConsumer()  # no sink

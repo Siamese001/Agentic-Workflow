@@ -1,6 +1,6 @@
 {
   "schema": "competencies_graph_proof_pool_p2_w1a_default_graph_authority_receipt_v1",
-  "generated_at": "2026-06-09T08:11:22Z",
+  "generated_at": "2026-06-15T21:31:37Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W1A",
   "default_proof_pool_type": "augmented_skills_graph",
@@ -30,9 +30,9 @@
     "track_genai_agentic": 12
   },
   "selected_fact_count_by_track": {
-    "track_actuarial_risk_derivatives": 3,
-    "track_data_tech_cloud_ml": 5,
-    "track_genai_agentic": 8
+    "track_actuarial_risk_derivatives": 4,
+    "track_data_tech_cloud_ml": 3,
+    "track_genai_agentic": 6
   },
   "every_skill_has_fact_id_links": true,
   "every_skill_has_graph_support": true,
