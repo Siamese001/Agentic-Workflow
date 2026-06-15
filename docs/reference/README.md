@@ -21,7 +21,7 @@ expected fail reason, replay check, and release-gate status are enforced.
 | `00C_Runtime_Gates_Current_Run_Mesh/` | `REQ-GATE-G01-*` … `REQ-GATE-G29-*` | `00C_Runtime_Gates_Current_Run_Mesh.md` |
 | `01_Request_Intake/` | `REQ-U0-*` | `01_request_intake.md` |
 | `02_L1_Reasoning_Plan/` | `REQ-L1-*` | `02_L1_Reasoning_Plan_Generation.md` |
-| `03_L0_Route_Decision_and_L3_Orchestration/` | `REQ-L0-*`, `REQ-L3-*` | `03_L0_Route_Decision_Switching_L3.md` |
+| `03_L0_Route_Decision/` | `REQ-L0-*`, `REQ-L3-*` | `03_L0_Route_Decision_Switching_L3.md` |
 | `03A_C0_Context_Engine/` | `REQ-C0-*` | `C0_Context_Engine.md` |
 | `03B_PA_Prompt_Assembly/` | `REQ-PA-*` | `PA_Prompt_Assembly.md` |
 | `04_L2_Execute/` | `REQ-L2-*` | `04_L2_Execute.md` |
@@ -83,7 +83,7 @@ The pack explicitly forbids these failure modes (see `00X §11`):
 - `00C_Runtime_Gates_Current_Run_Mesh/` — G01–G29 (9 children)
 - `01_Request_Intake/` — U0 (6 canonical children + dedup'd duplicates)
 - `02_L1_Reasoning_Plan/` — L1 (6 children)
-- `03_L0_Route_Decision_and_L3_Orchestration/` — L0 + L3 (9 children)
+- `03_L0_Route_Decision/` — L0 + L3 (9 children)
 - `03A_C0_Context_Engine/` — C0 (8 children + supporting docs)
 - `03B_PA_Prompt_Assembly/` — PA (9 children)
 - `04_L2_Execute/` — L2 (12 children)

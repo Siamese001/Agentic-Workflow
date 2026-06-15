@@ -12,6 +12,8 @@ timeout) so the test suite is self-bootstrapping.
 from __future__ import annotations
 
 import os
+import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -21,6 +23,8 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+
+from agentic_core.runtime.prove_requirements.constants import SOURCE_FOLDERS
 
 
 @pytest.fixture(scope="session")
@@ -33,6 +37,40 @@ def export_dir(repo_root: Path) -> Path:
     return repo_root / "artifacts" / "runtime" / "requirements_proof"
 
 
+def _artifact_manifest_is_current(repo_root: Path, manifest_path: Path) -> bool:
+    """Return True when cached proof artifacts match current source folders."""
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+
+    expected = set(SOURCE_FOLDERS)
+    files = manifest.get("files", [])
+    found: set[str] = set()
+    for entry in files:
+        rel = str(entry.get("relative_path", "")).replace("\\", "/")
+        parts = rel.split("/")
+        if len(parts) >= 3:
+            found.add("/".join(parts[:3]))
+        path = Path(str(entry.get("path", "")))
+        if path and not path.exists():
+            return False
+        rel_path = entry.get("relative_path")
+        if rel_path and not (repo_root / str(rel_path)).exists():
+            return False
+    return expected.issubset(found)
+
+
+def _clear_stale_export_dir(repo_root: Path, export_dir: Path) -> None:
+    """Remove the generated proof bundle before rebuilding stale artifacts."""
+    expected = (repo_root / "artifacts" / "runtime" / "requirements_proof").resolve()
+    resolved = export_dir.resolve()
+    if resolved != expected:
+        raise RuntimeError(f"refusing to clear unexpected proof export dir: {resolved}")
+    if resolved.exists():
+        shutil.rmtree(resolved)
+
+
 @pytest.fixture(scope="session")
 def proof_artifacts(repo_root: Path, export_dir: Path) -> Path:
     """
@@ -43,8 +81,9 @@ def proof_artifacts(repo_root: Path, export_dir: Path) -> Path:
     """
     manifest = export_dir / "source_manifest.json"
     index = export_dir / "requirements_index.json"
-    if manifest.exists() and index.exists():
+    if manifest.exists() and index.exists() and _artifact_manifest_is_current(repo_root, manifest):
         return export_dir
+    _clear_stale_export_dir(repo_root, export_dir)
 
     env = os.environ.copy()
     env.setdefault("PYTHONIOENCODING", "utf-8")

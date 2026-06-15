@@ -95,8 +95,8 @@ REQ-<NAMESPACE>-<SEMANTIC-NAME>-<3-DIGIT-SEQ>
 **Parent-pack gap matrix (2026-05-23):** [l5-l4-00c-parent-gap-matrix-b8e4f2.json](../reports/plans/l5-l4-00c-parent-gap-matrix-b8e4f2.json) — plan [l5-l4-00c-parent-gap-b8e4f2.md](../../.cursor/plans/l5-l4-00c-parent-gap-b8e4f2.md); 00C schema SSOT: [ADR-00C-7-gate-verdict-ssot-b8e4f2.md](../adr/ADR-00C-7-gate-verdict-ssot-b8e4f2.md).
 | `REQ-U0-*` | `01_Request_Intake/` | `01_request_intake.md` | Request envelope, identity, schema, idempotency |
 | `REQ-L1-*` | `02_L1_Reasoning_Plan/` | `02_L1_Reasoning_Plan_Generation.md` | Plan, route hints, support expectation |
-| `REQ-L0-*` | `03_L0_Route_Decision_and_L3_Orchestration/` | `03_L0_Route_Decision_Switching_L3.md` | Deterministic RouteContract |
-| `REQ-L3-*` | `03_L0_Route_Decision_and_L3_Orchestration/` | `03_L0_Route_Decision_Switching_L3.md` | Managed-workflow shaping |
+| `REQ-L0-*` | `03_L0_Route_Decision/` | `03_L0_Route_Decision_Switching_L3.md` | Deterministic RouteContract |
+| `REQ-L3-*` | `03_L0_Route_Decision/` | `03_L0_Route_Decision_Switching_L3.md` | Managed-workflow shaping |
 | `REQ-C0-*` | `03A_C0_Context_Engine/` | `C0_Context_Engine.md` | Retrieval, evidence shaping, FinalEvidenceContract |
 | `REQ-PA-*` | `03B_PA_Prompt_Assembly/` | `PA_Prompt_Assembly.md` | Authority-tiered PromptEnvelope |
 | `REQ-L2-*` | `04_L2_Execute/` | `04_L2_Execute.md` | Bounded execution, E1..E5, PTC, sealed_l2_artifact, proposed_state_diff |
@@ -231,7 +231,7 @@ A release MAY pass only when **every** row is `PASS` or `NOT_APPLICABLE` with ex
 - `00C_Runtime_Gates_Current_Run_Mesh` owns G01–G29 GateVerdict law.
 - `01_Request_Intake` owns request envelope validation and identity baseline.
 - `02_L1_Reasoning_Plan` owns intent, plan, route hints, support expectation.
-- `03_L0_Route_Decision_and_L3_Orchestration` owns the deterministic RouteContract and managed workflow shaping.
+- `03_L0_Route_Decision` owns the deterministic RouteContract and managed workflow shaping.
 - `03A_C0_Context_Engine` owns retrieval and evidence shaping.
 - `03B_PA_Prompt_Assembly` owns prompt construction.
 - `04_L2_Execute` owns bounded execution and sealed artifacts.

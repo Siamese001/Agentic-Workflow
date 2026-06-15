@@ -32,7 +32,7 @@ EXPECTED_FOLDERS = frozenset(
         "docs/reference/00C_Runtime_Gates_Current_Run_Mesh",
         "docs/reference/01_Request_Intake",
         "docs/reference/02_L1_Reasoning_Plan",
-        "docs/reference/03_L0_Route_Decision_and_L3_Orchestration",
+        "docs/reference/03_L0_Route_Decision",
         "docs/reference/03A_C0_Context_Engine",
         "docs/reference/03B_PA_Prompt_Assembly",
         "docs/reference/04_L2_Execute",

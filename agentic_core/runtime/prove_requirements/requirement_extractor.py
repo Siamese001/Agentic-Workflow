@@ -68,7 +68,7 @@ def _classify_owning_layer(rel_path: str) -> str:
             if fname.startswith(sub + "_") or fname.startswith(sub + "."):
                 return sub
         return "C0"
-    if folder_name == "03_L0_Route_Decision_and_L3_Orchestration":
+    if folder_name == "03_L0_Route_Decision":
         for prefix in L3_FILENAME_PREFIXES:
             if fname.startswith(prefix):
                 return "L3"
