@@ -7,6 +7,7 @@ from apps_rg.runtime.reasoning.bullet_lane_self_consistency import SelfConsisten
 from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_FINAL_CATEGORY_COUNT,
     COMPETENCIES_SC_PATH_COUNT,
+    DEFAULT_COMPETENCIES_MIN_SELECTION_SCORE,
     merge_competencies_graph_pool_top_six,
 )
 from apps_rg.runtime.reasoning.employment_bullet_pool import COMPETENCIES_SC_PATH_COUNT as POOL_SC
@@ -100,7 +101,7 @@ def test_merge_competencies_graph_pool_top_six_from_selections() -> None:
         paths,
         selections,
         allowed_fact_ids={"bul_001"},
-        min_score_threshold=0.72,
+        min_score_threshold=DEFAULT_COMPETENCIES_MIN_SELECTION_SCORE,
     )
     comps = merged.get("competencies") or []
     assert len(comps) == COMPETENCIES_FINAL_CATEGORY_COUNT

@@ -61,7 +61,9 @@ def test_narrative_lanes_declare_single_path_sc() -> None:
 
 def test_temperature_ladder_respects_bounds() -> None:
     n_paths = SC_PATH_COUNT_BY_LANE["unify_bullets"]
-    ladder = temperature_ladder(0.38, n_paths, bounds=(0.35, 0.55))
+    # Base temp sourced from the reasoning SSOT (section_reasoning_intensity), not a hardcoded 0.38.
+    base_temp = section_reasoning_profile("unify_bullets").temperature
+    ladder = temperature_ladder(base_temp, n_paths, bounds=(0.35, 0.55))
     # Variance-class alignment (2026-06): ladder length tracks the (reduced) SC path count.
     assert len(ladder) == n_paths
     assert all(0.35 <= t <= 0.55 for t in ladder)

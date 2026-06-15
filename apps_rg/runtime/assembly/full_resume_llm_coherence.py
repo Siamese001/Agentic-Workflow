@@ -22,14 +22,16 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _resolve_gemini_model,
     resolve_x1d_provider_credentials,
 )
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.sections.competencies_certification_contract import (
     check_competencies_no_reserved_certification_category,
 )
 
 FULL_RESUME_COHERENCE_RUBRIC_VERSION = "full_resume_llm_coherence_v1"
-# Claude-base recalibration (plan x2-gate-slimdown / judge recalibration): drop anthropic_claude
-# as a self-judge (Claude is the generator). Cross-provider panel of 2; quorum 2 => both must pass.
-DEFAULT_JUDGE_ROSTER: tuple[str, ...] = ("gemini_pro", "openai_chatgpt")
+# Judge panel SSOT = section_judge_policy.REQUIRED_JUDGE_PROVIDER_KEYS (the recalibrated cross-provider
+# dual panel gemini_pro + openai_chatgpt; anthropic_claude dropped as a self-judge since Claude is the
+# generator). Sourced from the SSOT — NOT a separate hardcoded roster that can silently diverge.
+DEFAULT_JUDGE_ROSTER: tuple[str, ...] = REQUIRED_JUDGE_PROVIDER_KEYS
 DEFAULT_QUORUM = 2
 DEFAULT_PASS_THRESHOLD = DEFAULT_THRESHOLD
 

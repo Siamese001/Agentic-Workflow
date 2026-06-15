@@ -30,6 +30,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
+
 # Default confidence band: scores within this fraction (relative to the threshold) on either side
 # of the pass threshold are "borderline". E.g. threshold 4.0 on a 0-5 scale with band 0.10 ->
 # borderline window [3.6, 4.4] (normalized). Tunable per call site.
@@ -40,12 +42,10 @@ TRIGGER_JUDGE_CONFIDENCE_LOW = "JUDGE_CONFIDENCE_LOW"
 TRIGGER_X2_PASS_JUDGE_RISK = "X2_PASS_JUDGE_RISK"
 TRIGGER_METRIC_BULLET_BORDERLINE = "METRIC_BULLET_BORDERLINE"
 
-# The optional adjudicator panel. Reached ONLY when a trigger fires. Claude-base recalibration:
-# drop anthropic_claude (Claude is the generator → self-judge); cross-provider escalation panel of 2.
-ADJUDICATOR_PANEL_PROVIDER_KEYS: tuple[str, ...] = (
-    "gemini_pro",
-    "openai_chatgpt",
-)
+# The optional adjudicator panel. Reached ONLY when a trigger fires. Judge panel SSOT =
+# section_judge_policy.REQUIRED_JUDGE_PROVIDER_KEYS (cross-provider gemini_pro + openai_chatgpt;
+# anthropic_claude dropped as a self-judge since Claude is the generator). Sourced from the SSOT.
+ADJUDICATOR_PANEL_PROVIDER_KEYS: tuple[str, ...] = REQUIRED_JUDGE_PROVIDER_KEYS
 
 
 @dataclass(frozen=True)
