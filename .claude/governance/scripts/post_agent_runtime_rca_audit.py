@@ -191,6 +191,7 @@ _PLAN_WAVES_RE = re.compile(r"(?im)^\s*PLAN_WAVES\s*:")
 _PLAN_MARKER_RE = re.compile(
     r"(?im)^\s*(?:WAVE_START|WAVE_COMPLETE|PHASE_COMPLETE|PLAN_COMPLETE)\s*:"
 )
+_PLAN_COMPLETE_RE = re.compile(r"(?im)^\s*PLAN_COMPLETE\s*:")
 _PLAN_STATE_RE = re.compile(r"(?im)^\s*(?:CURRENT_WAVE|LAST_COMPLETED_WAVE)\s*:")
 _PLAN_FILE_RE = re.compile(
     r"(?im)^\s*-\s*(?:\[[^\]]+\]\()?\.?(?:plans|\.claude/plans)/[^)\s]+\.md\)?"
@@ -365,6 +366,22 @@ def _plan_waves_issue(text: str) -> tuple[str, dict] | None:
     has_complete = any(_state_family(row["state"]) == "complete" for row in rows)
     open_row_count = sum(1 for row in rows if _state_family(row["state"]) == "open")
     blank_summaries = [row["wave"] for row in rows if not _summary_present(row["summary"])]
+    plan_complete = bool(_PLAN_COMPLETE_RE.search(text))
+    if plan_complete:
+        all_rows_complete = all(_state_family(row["state"]) == "complete" for row in rows)
+        if not has_complete or not all_rows_complete or blank_summaries:
+            return (
+                "malformed_plan_waves",
+                {
+                    "plan_wave_signals": signals,
+                    "plan_waves_reason": "PLAN_COMPLETE PLAN_WAVES must list completed rows only, each with a summary",
+                    "has_completed_row": has_complete,
+                    "all_rows_complete": all_rows_complete,
+                    "open_row_count": open_row_count,
+                    "rows_missing_summary": blank_summaries,
+                },
+            )
+        return None
     if not has_complete or open_row_count != 1 or blank_summaries:
         return (
             "malformed_plan_waves",

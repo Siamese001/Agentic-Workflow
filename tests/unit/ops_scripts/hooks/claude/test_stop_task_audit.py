@@ -82,6 +82,19 @@ _PASS_PLAN_FILE_MALFORMED_WAVES = (
     "PLAN_WAVES:\n- Wave W1: IN_PROGRESS\n"
     "ARTIFACTS:\n- NONE\n"
 )
+_PASS_PLAN_COMPLETE_ALL_COMPLETE = (
+    "STATUS: PASS\n"
+    "FILES_CHANGED:\n- [plan.md](plans/post-turn-mini-table-a1b2c3.md)\n"
+    "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+    "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+    "PLAN_COMPLETE: plan=post-turn-mini-table-a1b2c3 note=\"done\"\n"
+    "PLAN_WAVES:\n"
+    "| Wave | State | Summary |\n"
+    "|---|---|---|\n"
+    "| W1 | COMPLETE | Contract documentation landed |\n"
+    "| W2 | COMPLETE | Detector enforcement landed |\n"
+    "ARTIFACTS:\n- NONE\n"
+)
 
 
 class TestStopTaskAuditTranscript:
@@ -121,6 +134,12 @@ class TestStopTaskAuditTranscript:
     def test_active_plan_with_plan_waves_allows(self, tmp_path) -> None:
         tr = _write_transcript(tmp_path, _PASS_PLAN_FILE_WITH_WAVES)
         proc = _run({"session_id": "s_plan_ok", "transcript_path": str(tr)})
+        assert proc.returncode == 0, proc.stdout + proc.stderr
+        assert "decision" not in proc.stdout
+
+    def test_plan_complete_all_complete_waves_allows(self, tmp_path) -> None:
+        tr = _write_transcript(tmp_path, _PASS_PLAN_COMPLETE_ALL_COMPLETE)
+        proc = _run({"session_id": "s_plan_complete_ok", "transcript_path": str(tr)})
         assert proc.returncode == 0, proc.stdout + proc.stderr
         assert "decision" not in proc.stdout
 
