@@ -53,6 +53,12 @@
   sanctioned PR/Notion tools are `GitKraken`/lowercase-`notion` (may be disconnected in remote envs).
 - v2 plans: `## Status Tables` (Wave Progress canonical columns + Phase Progress) before the first
   `## Wave N`; waves ascending; `## Definition of Done` ≥5 rows + smoke run.
+- **PR merge method (operator directive 2026-06-15):** merge PRs with **`merge` or `rebase`, NEVER
+  `squash`**. Squash collapses the branch into a new commit, so the branch is not an ancestor of `main`
+  (`rev-list trunk..branch ≠ 0`) and the worktree auto-reaper (`prune_merged_chat_worktrees.py`) reads it
+  as *unmerged* and SKIPS cleanup. `merge`/`rebase` keep the branch a true ancestor → its worktree +
+  local branch are auto-deleted cleanly, which is the desired lifecycle (deleting the merged worktree +
+  local branch IS the correct behavior).
 
 ## Project context
 
