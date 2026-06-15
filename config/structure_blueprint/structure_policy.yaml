@@ -76,35 +76,30 @@ root_file_patterns:
   - ".*"            # dotfiles (.gitignore, .env, etc.)
 
 # --- Layer structure ---
-# agentic_core must contain these L0-L6 layer roots.
-# Each layer root must have the listed LCD subfolders.
-layer_roots:
-  - L0_routing
-  - L1_cognition
-  - L2_execution
-  - L3_orchestration
-  - L4_state
-  - L5_safety
-  - L6_observability
-  - L7_auditability
+# [deband 2026-06-15] Removed `layer_roots`: the check only asserted these dirs EXIST in
+# agentic_core — a tautology. They are permanent committed roots; deleting/renaming one would
+# break pytest collection + ADG generation with far louder, earlier signals than this gate. The
+# check was also one-directional (`missing = layer_roots - present`, never flags extras), so it
+# never caught the real drift — agentic_core has THREE L6 roots (L6_learning, L6_observability,
+# L6_system_learning) this list never modelled. Zero marginal signal → removed.
+# _check_layer_structure is now a no-op (candidate for gate-code removal in a future pass).
+# Runtime LAYER_ROOTS lives in path_constants, not this YAML.
 
-lcd_subfolders:
-  - config
-  - types
-  - reasoning
-  - enforcement
-  - validators
-  - utils
+# [deband 2026-06-15] Removed `lcd_subfolders`: the gate's _check_layer_structure reads only
+# `layer_roots` (presence) — it never consumed lcd_subfolders, so it was dead config here. The
+# LCD-subfolder convention is enforced via REQUIRED_LCD_SUBFOLDERS (path_constants/ssot), not this YAML.
 
 # --- Flat directories ---
 # These directories must NOT contain subdirectories (only files).
+# [deband 2026-06-15] Removed `patterns` — no directory named `patterns` exists anywhere in the
+# repo (verified by tree walk), so the rule was a stale no-op. The remaining 5 are LIVE: each
+# exists and is currently flat; the rule actively prevents nesting them.
 flat_directories:
   - base_agents
   - embeddings
   - gateway
   - interfaces
   - mixins
-  - patterns
 
 # --- Excluded from scanning ---
 # Directories that are skipped entirely during validation.
@@ -123,7 +118,10 @@ excluded_directories:
   - build
   - .egg-info
   - agentic_workflow.egg-info  # setuptools build artifact (regenerated on `pip install -e .`)
-  - archives
+  # [deband 2026-06-15] `archives` removed from excluded — it is FORBIDDEN at the repo root
+  # (see forbidden_root_directories below), and the canonical artifacts/archives/ is already
+  # skipped via the `artifacts` exclusion. Listing it as both "exclude" and "forbid" was
+  # contradictory (root_dirs skipped it, forbidden flagged it). Now solely forbidden.
   - logs
   - artifacts
   - .gravity_state

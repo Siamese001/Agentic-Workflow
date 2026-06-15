@@ -75,42 +75,6 @@ def _pfc1_gate_cmd() -> list[str]:
     ]
 
 
-# PRE-WRITE HOOKS INTEGRATION
-def validate_pre_write_hooks():
-    """Validate all pre-write hook skills."""
-    skills_dir = ROOT / ".claude" / "skills"
-    failed_skills: list[str] = []
-    if not skills_dir.is_dir():
-        print(f"❌ Skills directory missing: {skills_dir}")
-        return False
-
-    skill_dirs = sorted((d for d in skills_dir.iterdir() if d.is_dir()), key=lambda p: p.name)
-    for idx, skill_dir in enumerate(skill_dirs, 1):  # progress_bar: skill health checks
-        print(f"  [{idx}/{len(skill_dirs)}] checking skill: {skill_dir.name}")
-        main_script = skill_dir / "main.py"
-        if main_script.exists():
-            try:
-                result = subprocess.run(
-                    [sys.executable, str(main_script), "--health-check"],
-                    capture_output=True,
-                    text=True,
-                    timeout=10,
-                    check=False,
-                    cwd=ROOT,
-                )
-                if result.returncode != 0:
-                    failed_skills.append(f"{skill_dir.name} (rc={result.returncode})")
-            except (subprocess.TimeoutExpired, OSError) as exc:
-                failed_skills.append(f"{skill_dir.name} ({type(exc).__name__})")
-
-    if failed_skills:
-        print(f"❌ Failed skills: {', '.join(failed_skills)}")
-        return False
-
-    print("✅ All pre-write hooks validated")
-    return True
-
-
 # MCP HEALTH CHECKS
 def validate_mcp_health():
     """Validate MCP server health."""
@@ -181,32 +145,9 @@ def main():
     if not validate_mcp_health():
         sys.exit(1)
 
-    # Validate pre-write hooks
-    if not validate_pre_write_hooks():
-        sys.exit(1)
-
-    # Gate: Infrastructure wiring scan (Rule: no raw infra in forbidden layers)
-    print("🔍 Running infrastructure wiring scan...")
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/infra_wiring_scan.py"))], cwd=ROOT
-    )
-    if returncode != 0:
-        print(stdout)
-        print(stderr)
-        sys.exit(1)
-    print("✅ Infrastructure wiring scan passed")
-
-    # Gate: Executor theater (no fake parallelism in production code)
-    print("🔍 Running executor theater gate...")
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/executor_theater_gate.py"))], cwd=ROOT
-    )
-    if returncode != 0:
-        print(stdout)
-        print(stderr)
-        sys.exit(1)
-    print("✅ Executor theater gate passed")
-
+    # [contract-gates-deband 2026-06-15] Removed Windsurf-era band-aids from the runner:
+    # 0b skill-health loop, 1.1 infra_wiring_scan (ADG v_p0_* views are the canonical
+    # structural check), 1.2 executor_theater. (memory: contract-gates-debanding-triage)
     # Gate: ADG graph-layer evidence in refactoring plans (Constitutional §22)
     print("🔍 Running graph-layer evidence gate (refactoring plans)...")
     returncode, stdout, stderr = run_cmd(
@@ -219,60 +160,9 @@ def main():
         sys.exit(1)
     print("✅ Graph-layer evidence gate passed")
 
-    # Gate: ADG snapshot graph-layer completeness (Constitutional §22 — artifact side)
-    # Symmetric to check_graph_layer_evidence.py (plan side). Protects the
-    # adg-pipeline-e2e-5287a1 W1 ordering fix from silent regression.
-    print("🔍 Running snapshot graph-layer completeness gate (artifact side)...")
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_snapshot_has_mvs.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print(stdout)
-        print(stderr)
-        sys.exit(1)
-    print("✅ Snapshot graph-layer completeness gate passed")
-
-    # Gate: ADG pipeline skip ledger (Constitutional §22 — observability)
-    # Symmetric to the snapshot gate. Plan adg-pipeline-e2e-5287a1 W4.
-    print("🔍 Running pipeline skip ledger gate (observability)...")
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_pipeline_skips.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print(stdout)
-        print(stderr)
-        sys.exit(1)
-    print("✅ Pipeline skip ledger gate passed")
-
-    # Gate: Severity<->Band SSOT (Constitutional §22/§23 — no hardcoded mappings)
-    print("🔍 Running severity<->band SSOT gate...")
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_severity_band_ssot.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print(stdout)
-        print(stderr)
-        sys.exit(1)
-    print("✅ Severity<->band SSOT gate passed")
-
-    # Gate: ADG exclusion-list sync (was config-sync-gates.yml — folded 2026-05-06)
-    # Verifies tools/generate/check_exclusion_sync.py — ensures ADG exclusion
-    # lists stay in sync across config sources. Sole unique check from the
-    # retired config-sync-gates.yml workflow.
-    print("🔍 Running ADG exclusion-sync gate...")
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("tools/generate/check_exclusion_sync.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print(stdout)
-        print(stderr)
-        sys.exit(1)
-    print("✅ ADG exclusion-sync gate passed")
-
+    # [contract-gates-deband 2026-06-15] Removed Windsurf-era ADG-pipeline band-aids from the
+    # runner: 1.4 snapshot_has_mvs, 1.5 pipeline_skips, 1.6 severity_band_ssot, 1.7 exclusion_sync.
+    # (memory: contract-gates-debanding-triage)
     # Gate: Repository structure policy (config/structure_blueprint/structure_policy.yaml)
     print("🔍 Running structure policy gate...")
     returncode, stdout, stderr = run_cmd(
@@ -285,43 +175,8 @@ def main():
         sys.exit(1)
     print("✅ Structure policy gate passed")
 
-    # Gate: Reference doctrine orphans (prevent '*.pre-reqid-rewrite.bak' and
-    # '* exec.md' predecessors from leaking back into docs/reference/ outside
-    # docs/reference/_archive/). RCA 2026-04-27: external bundler + bulk-WIP
-    # sync commits re-add orphans silently; this gate is the durable defense.
-    print("🔍 Running reference doctrine orphans gate...")
-    returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(_script("ops_scripts/ci/check_reference_orphans.py"))],
-        cwd=ROOT,
-    )
-    if returncode != 0:
-        print(stdout)
-        print(stderr)
-        sys.exit(1)
-    print("✅ Reference doctrine orphans gate passed")
-
-    # Gate: LLM-as-Judge calibration (LJH4.3) — non-blocking while gold set
-    # is bootstrapping. Gate exits 2 when gold set is too small to enforce
-    # kappa and we treat that as a warning so plain-main CI stays green.
-    print("\n[LLM-AS-JUDGE CALIBRATION]")
-    returncode, stdout, stderr = run_cmd(
-        [
-            sys.executable,
-            str(_script("ops_scripts/ci/check_judge_calibration.py")),
-            "--allow-empty",
-            "--allow-missing-judge-outputs",
-        ],
-        cwd=ROOT,
-    )
-    if returncode == 1:
-        print("❌ Judge calibration gate failed (kappa < threshold)")
-        print(stdout or stderr)
-        sys.exit(1)
-    if returncode == 2:
-        print("⚠️  Judge calibration gate SKIPPED (gold set below min_items)")
-    else:
-        print("✅ Judge calibration gate passed")
-
+    # [contract-gates-deband 2026-06-15] Removed from the runner: 1.9 reference_orphans,
+    # 1.10 judge_calibration (Windsurf-era). (memory: contract-gates-debanding-triage)
     # [W1 claude-native-supersession-9d3f7a] Author-Gate harness-HITL CI gates RETIRED.
     # The 9 gates here (ledger schema/SSOT/outcome-coverage/integrity, ask_user_question
     # packet freshness, AGP1 pipeline freshness, v2 completeness, anomaly detector,

@@ -17,6 +17,16 @@ RerankerFn = Callable[[list["HybridSearchResult"], str], list["HybridSearchResul
 _RERANKER_LOG = logging.getLogger(__name__)
 
 
+# Canonical ChromaDB persist path. The factory functions below previously called
+# ``chromadb.PersistentClient()`` with NO path, which defaults to ``./chroma`` relative to the
+# CWD — so running from the repo root silently recreated a stray root-level ``chroma/`` store.
+# Pinning the path makes this engine use the same canonical store as L1 semantic_retriever
+# (``data/cache/chromadb``). NOTE: this mirrors ``semantic_retriever._CANONICAL_CHROMA_PATH``;
+# a shared L0 path constant would be the cleaner SSOT, but path_constants exposes none today and
+# this avoids a new cross-layer dependency. parents[4] == repo root from this L3 module.
+_CANONICAL_CHROMA_PATH = str(Path(__file__).resolve().parents[4] / "data" / "cache" / "chromadb")
+
+
 @dataclass
 class HybridSearchResult:
     chunk_id: str
@@ -1129,7 +1139,7 @@ def get_hybrid_search_engine(
     try:
         import chromadb
 
-        client = chromadb.PersistentClient()
+        client = chromadb.PersistentClient(path=_CANONICAL_CHROMA_PATH)
     except (ImportError, RuntimeError, ValueError, TypeError, OSError):
         client = None
     engine = HybridSearchEngine(chroma_client=client, top_k=key[1])
@@ -1143,7 +1153,7 @@ def get_global_hybrid_engine() -> HybridSearchEngine:
         try:
             import chromadb
 
-            client = chromadb.PersistentClient()
+            client = chromadb.PersistentClient(path=_CANONICAL_CHROMA_PATH)
         except (ImportError, RuntimeError, ValueError, TypeError, OSError):
             client = None
         _global_hybrid_engine = HybridSearchEngine(chroma_client=client)

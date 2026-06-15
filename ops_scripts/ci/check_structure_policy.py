@@ -15,6 +15,7 @@ Usage:
 from __future__ import annotations
 
 import fnmatch
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -89,29 +90,34 @@ def _check_root_files(policy: dict[str, Any], verbose: bool = False) -> list[str
 
 
 def _check_flat_dirs(policy: dict[str, Any], verbose: bool = False) -> list[str]:
-    """Validate that flat directories contain no subdirectories."""
+    """Validate that flat directories contain no subdirectories.
+
+    Uses os.walk with in-place pruning of excluded directories, so the traversal
+    never descends into (or stats the contents of) excluded trees such as .venv.
+    Prevents crashing on broken symlinks / reparse points inside them — e.g. a
+    broken .venv/bin/python on Windows raised OSError WinError 1920 when the old
+    rglob("*") walk stat'd it before the exclusion check could apply.
+    """
     flat_names = set(policy.get("flat_directories", []))
     excluded = set(policy.get("excluded_directories", []))
     violations: list[str] = []
 
-    for flat_dir in tqdm(sorted(_ROOT.rglob("*")), desc="Processing", unit="item"):
-        if not flat_dir.is_dir():
+    # onerror=ignore: a permission/stat error on one entry must not abort the walk.
+    for dirpath, dirnames, _filenames in os.walk(_ROOT, onerror=lambda _e: None):
+        # Prune excluded dirs in place — os.walk will not descend into them.
+        dirnames[:] = [d for d in dirnames if d not in excluded]
+        current = Path(dirpath)
+        if current.name not in flat_names:
             continue
-        if flat_dir.name not in flat_names:
-            continue
-        # Check if any of its ancestors are excluded
-        if any(p.name in excluded for p in flat_dir.parents):
-            continue
-        has_violation = False
-        for child in flat_dir.iterdir():
-            if child.is_dir() and child.name not in excluded:
-                has_violation = True
+        # Surviving dirnames are real (non-excluded) subdirectories → violations.
+        if dirnames:
+            for child_name in sorted(dirnames):
                 violations.append(
-                    f"FLAT violation: {child.relative_to(_ROOT)}/ "
-                    f"(subdirectory inside flat dir '{flat_dir.name}/')"
+                    f"FLAT violation: {(current / child_name).relative_to(_ROOT)}/ "
+                    f"(subdirectory inside flat dir '{current.name}/')"
                 )
-        if verbose and not has_violation:
-            print(f"  OK  {flat_dir.relative_to(_ROOT)}/ (flat)")
+        elif verbose:
+            print(f"  OK  {current.relative_to(_ROOT)}/ (flat)")
 
     return violations
 
