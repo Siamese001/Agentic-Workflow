@@ -1,11 +1,11 @@
-"""agentic_core.L6_learning.types — re-export alias for L6 learning types.
+"""agentic_core.L6_system_learning.future_run_promotion.types — re-export alias for L6 learning types.
 
 W1 delivery gap fix: downstream consumers (e.g. Phase 12 cross-plan tests)
-import types from `agentic_core.L6_learning.types`. All types are defined in
-`agentic_core.L6_learning.__init__`. This module is a pure re-export alias —
+import types from `agentic_core.L6_system_learning.future_run_promotion.types`. All types are defined in
+`agentic_core.L6_system_learning.future_run_promotion.__init__`. This module is a pure re-export alias —
 no new logic, no new types.
 """
-from agentic_core.L6_learning import (  # noqa: F401
+from agentic_core.L6_system_learning.future_run_promotion import (  # noqa: F401
     CompletedEvalRecord,
     FutureRunPromotionRequest,
     L6GauntletResult,
@@ -15,7 +15,7 @@ from agentic_core.L6_learning import (  # noqa: F401
     ProposalType,
     RCAPacket,
 )
-from agentic_core.L6_learning.promotion_gauntlet import (  # noqa: F401
+from agentic_core.L6_system_learning.future_run_promotion.promotion_gauntlet import (  # noqa: F401
     PromotionGauntlet,
 )
 

@@ -1,0 +1,39 @@
+{
+  "receipt_version": "1.0",
+  "change_id": "l6-learning-consolidation-a4f8c2-w3",
+  "timestamp": "2026-06-15T11:55:09Z",
+  "adr": "ADR-105",
+  "plan": "plans/l6-learning-consolidation-a4f8c2.md",
+  "operation": "relocation",
+  "agentic_core_files_changed": [
+    "agentic_core/L6_system_learning/future_run_promotion/__init__.py",
+    "agentic_core/L6_system_learning/future_run_promotion/types.py",
+    "agentic_core/L6_system_learning/future_run_promotion/completed_run_evaluator.py",
+    "agentic_core/L6_system_learning/future_run_promotion/rca_synthesizer.py",
+    "agentic_core/L6_system_learning/future_run_promotion/future_run_proposal_builder.py",
+    "agentic_core/L6_system_learning/future_run_promotion/promotion_gauntlet.py",
+    "agentic_core/L6_system_learning/future_run_promotion/package_driven_l6_binding.py",
+    "agentic_core/L6_learning/__init__.py"
+  ],
+  "classification": "GENERIC_INFRASTRUCTURE",
+  "justification": "Relocation of the orphan pre-W5 L6_learning package (W10 package-driven completed-run evaluation + future-run promotion) into the canonical active-L6 surface agentic_core/L6_system_learning/future_run_promotion/ (chapter 06.7), per ADR-105. Pure code-move + intra-package import rewrite; the legacy agentic_core/L6_learning/ path becomes a sys.modules forward-alias compat shim with a DeprecationWarning. No app-specific literals; applies to all apps_* via the generic L6 spine. The G29 PromotionGauntlet, ObserverLawValidator, and the L6GauntletResult/ObserverLawReceipt type contracts are preserved verbatim.",
+  "app_specific_literals_added": [],
+  "behavior_changed": false,
+  "g29_contract_preserved": true,
+  "tests_added_or_updated": [],
+  "boundary_audit_passed": true,
+  "migration_receipts_affected": [],
+  "compat_shim": {
+    "old_path": "agentic_core/L6_learning",
+    "new_path": "agentic_core/L6_system_learning/future_run_promotion",
+    "mechanism": "sys.modules forward-alias + DeprecationWarning",
+    "sunset_date": "2026-06-29"
+  },
+  "known_gaps": [
+    "W4 pending: re-point the 2 production importers (apps_underwriting_ai/runtime/l6_shadow.py, ops_scripts/ci/check_g29_firewall.py) + 7 tests + firewall/string-ref gates to the new path.",
+    "W5 pending: run G29 firewall gate + L6 observer-law/promotion tests as the proof surface.",
+    "Deferred (separate plan): deep type-unification of the two RCA/gauntlet lineages (RCAPacket vs RCAReport, PromotionGauntlet/G29 vs C6 GauntletGate)."
+  ],
+  "author_gate_approved": true,
+  "smoke_verification": "python import smoke PASSED — new path imports, legacy shim emits DeprecationWarning, legacy submodule dotted paths resolve to identical class objects, PromotionGauntlet.GATE_ID == 'G29', __l6_chapter__ == '06.7'."
+}

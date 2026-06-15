@@ -1,6 +1,6 @@
 """CI gate L6-W4b: L6_learning must not reference X3Disposition (mutation vector).
 
-Static scan of ``agentic_core/L6_learning/**/*.py`` for ``X3Disposition`` token
+Static scan of ``agentic_core/L6_system_learning/future_run_promotion/**/*.py`` for ``X3Disposition`` token
 outside comments (line-based heuristic).
 
 Bypass: L6_MUTATION_FAIL_CLOSED=1 is advisory mirror; bypass: L6_MUTATION_BYPASS=1
@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-L6_DIR = REPO_ROOT / "agentic_core" / "L6_learning"
+L6_DIR = REPO_ROOT / "agentic_core" / "L6_system_learning" / "future_run_promotion"
 TOKEN = "X3Disposition"
 
 

@@ -146,14 +146,14 @@ def test_l6_status_is_ok_in_harness(
 
 
 def test_g29_gate_id_is_canonical() -> None:
-    from agentic_core.L6_learning.promotion_gauntlet import PromotionGauntlet
+    from agentic_core.L6_system_learning.future_run_promotion.promotion_gauntlet import PromotionGauntlet
 
     assert PromotionGauntlet.GATE_ID == "G29"
 
 
 def test_g29_result_carries_gate_id_on_gauntlet_pass() -> None:
-    from agentic_core.L6_learning import FutureRunPromotionRequest, ProposalPacket, ProposalType, ProofType
-    from agentic_core.L6_learning.promotion_gauntlet import PromotionGauntlet
+    from agentic_core.L6_system_learning.future_run_promotion import FutureRunPromotionRequest, ProposalPacket, ProposalType, ProofType
+    from agentic_core.L6_system_learning.future_run_promotion.promotion_gauntlet import PromotionGauntlet
 
     pkt = ProposalPacket(
         proposal_id="p-g29",

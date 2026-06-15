@@ -29,7 +29,7 @@ def run() -> int:
     if str(REPO_ROOT) not in sys.path:
         sys.path.insert(0, str(REPO_ROOT))
 
-    from agentic_core.L6_learning.promotion_gauntlet import PromotionGauntlet
+    from agentic_core.L6_system_learning.future_run_promotion.promotion_gauntlet import PromotionGauntlet
 
     if PromotionGauntlet.GATE_ID != "G29":
         print(

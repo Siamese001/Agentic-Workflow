@@ -14,7 +14,7 @@ from typing import Any, Dict, List
 from pathlib import Path
 
 # Core L6 infrastructure
-from agentic_core.L6_learning import (
+from agentic_core.L6_system_learning.future_run_promotion import (
     CompletedEvalRecord,
     RCAPacket,
     ProposalPacket,
@@ -24,20 +24,20 @@ from agentic_core.L6_learning import (
     ProposalType,
     ProofType,
 )
-from agentic_core.L6_learning.package_driven_l6_binding import (
+from agentic_core.L6_system_learning.future_run_promotion.package_driven_l6_binding import (
     PackageDrivenL6Binding,
     L6ProcessingResult,
 )
-from agentic_core.L6_learning.completed_run_evaluator import (
+from agentic_core.L6_system_learning.future_run_promotion.completed_run_evaluator import (
     CompletedRunEvaluator,
     RuntimeExhaustBundle,
 )
-from agentic_core.L6_learning.rca_synthesizer import RCASynthesizer, RCAInput
-from agentic_core.L6_learning.future_run_proposal_builder import (
+from agentic_core.L6_system_learning.future_run_promotion.rca_synthesizer import RCASynthesizer, RCAInput
+from agentic_core.L6_system_learning.future_run_promotion.future_run_proposal_builder import (
     FutureRunProposalBuilder,
     ProposalConfig,
 )
-from agentic_core.L6_learning.promotion_gauntlet import (
+from agentic_core.L6_system_learning.future_run_promotion.promotion_gauntlet import (
     PromotionGauntlet,
     ObserverLawValidator,
 )

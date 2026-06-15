@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from agentic_core.L6_learning import (
+from agentic_core.L6_system_learning.future_run_promotion import (
     ProposalPacket,
     FutureRunPromotionRequest,
     ProposalType,

@@ -1,6 +1,6 @@
 """CI gate L6-W4c: L6_learning must not call X3 emit helpers.
 
-Scans ``agentic_core/L6_learning/**/*.py`` for ``emit_x3`` or ``X3Disposition(``.
+Scans ``agentic_core/L6_system_learning/future_run_promotion/**/*.py`` for ``emit_x3`` or ``X3Disposition(``.
 
 Bypass: L6_X3_EMIT_BYPASS=1
 """
@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-L6_DIR = REPO_ROOT / "agentic_core" / "L6_learning"
+L6_DIR = REPO_ROOT / "agentic_core" / "L6_system_learning" / "future_run_promotion"
 TOKENS = ("emit_x3", "X3Disposition(")
 
 

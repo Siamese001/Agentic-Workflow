@@ -6,8 +6,8 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L6_learning import ObserverLawReceipt
-from agentic_core.L6_learning.promotion_gauntlet import ObserverLawValidator
+from agentic_core.L6_system_learning.future_run_promotion import ObserverLawReceipt
+from agentic_core.L6_system_learning.future_run_promotion.promotion_gauntlet import ObserverLawValidator
 
 PROHIBITIONS = [
     ("x3_emitted", "no_x3_emission"),

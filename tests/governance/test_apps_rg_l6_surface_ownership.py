@@ -22,7 +22,7 @@ def test_l6_shadow_learning_not_importable_from_runtime() -> None:
 
 
 def test_package_driven_l6_binding_is_canonical_engine() -> None:
-    from agentic_core.L6_learning.package_driven_l6_binding import PackageDrivenL6Binding
+    from agentic_core.L6_system_learning.future_run_promotion.package_driven_l6_binding import PackageDrivenL6Binding
 
     assert hasattr(PackageDrivenL6Binding, "process_completed_run")
 

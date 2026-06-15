@@ -506,7 +506,7 @@ _GOV3_BASELINE: dict[str, dict] = {
         "rationale": "Retrieval layer helpers; GOV-3 literal scan clean on current diff",
         "issue": "GOV-3-BASELINE-055",
     },
-    "agentic_core/L6_learning/future_run_proposal_builder.py": {
+    "agentic_core/L6_system_learning/future_run_promotion/future_run_proposal_builder.py": {
         "expiry": "2027-12-31",
         "classification": "GENERIC_INFRASTRUCTURE",
         "migration_plan": "apps-rg-l6-future-run-proposal-refs-7e4c2f",

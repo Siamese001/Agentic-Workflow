@@ -23,7 +23,7 @@ from agentic_core.UWG import (
     WriteStatus,
     BlockReason,
 )
-from agentic_core.L6_learning import FutureRunPromotionRequest
+from agentic_core.L6_system_learning.future_run_promotion import FutureRunPromotionRequest
 
 
 # ─────────────────────────────────────────────────────────────────────────────

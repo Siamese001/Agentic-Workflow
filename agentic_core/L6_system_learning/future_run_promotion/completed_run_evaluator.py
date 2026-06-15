@@ -15,7 +15,7 @@ Hard Rules:
 from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 
-from agentic_core.L6_learning import (
+from agentic_core.L6_system_learning.future_run_promotion import (
     CompletedEvalRecord,
     ProposalPacket,
     ProposalType,

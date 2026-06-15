@@ -1,6 +1,6 @@
 """CI gate L6-W2c: apps_rg must not import core L6 engine classes directly.
 
-AST-scan ``apps_rg/**/*.py`` for ``from agentic_core.L6_learning import`` that
+AST-scan ``apps_rg/**/*.py`` for ``from agentic_core.L6_system_learning.future_run_promotion import`` that
 names engine-tier symbols (CompletedRunEvaluator, RCASynthesizer,
 FutureRunProposalBuilder, PromotionGauntlet).
 
@@ -34,7 +34,7 @@ def _check_file(path: Path) -> list[str]:
     for node in ast.walk(tree):
         if not isinstance(node, ast.ImportFrom):
             continue
-        if node.module != "agentic_core.L6_learning":
+        if node.module != "agentic_core.L6_system_learning.future_run_promotion":
             continue
         for alias in node.names:
             if alias.name in _FORBIDDEN_NAMES:

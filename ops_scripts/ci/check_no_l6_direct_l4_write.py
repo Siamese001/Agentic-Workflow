@@ -1,7 +1,7 @@
 """CI gate L6-W4d: L6_learning must not import UWG / L4 writer modules.
 
 Flags ``from agentic_core.runtime.uwg`` / ``import`` lines and ``l4_writer`` /
-``L4Writer`` tokens in ``agentic_core/L6_learning/**/*.py`` (excluding comments).
+``L4Writer`` tokens in ``agentic_core/L6_system_learning/future_run_promotion/**/*.py`` (excluding comments).
 
 Bypass: L6_L4_WRITE_BYPASS=1
 """
@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-L6_DIR = REPO_ROOT / "agentic_core" / "L6_learning"
+L6_DIR = REPO_ROOT / "agentic_core" / "L6_system_learning" / "future_run_promotion"
 _BAD_FRAGMENTS = (
     "from agentic_core.runtime.uwg",
     "import agentic_core.runtime.uwg",
