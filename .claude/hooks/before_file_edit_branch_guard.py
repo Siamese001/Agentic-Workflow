@@ -1,15 +1,14 @@
-"""PreToolUse (Edit|Write|MultiEdit) — worktree-per-chat edit gate.
+"""PreToolUse (Edit|Write|MultiEdit) — named worktree edit gate.
 
-Hard enforcement for worktree-per-chat. The branch is resolved from the
+Hard enforcement for named worktree isolation. The branch is resolved from the
 **working tree that owns the file being edited** (git is run with ``cwd`` set to
 the target file's directory), so:
 
-* Edits inside a registered feature worktree (on a ``feat/*`` / any non-protected branch)
+* Edits inside a registered named workstream worktree (on any non-protected branch)
   -> ALLOW.
 * Edits to the primary checkout while it is on a protected branch
   (``main``/``master``) -> BLOCK (exit 2) with a remediation pointing at the
-  worktree. This nudges all mutation into the per-chat worktree created by
-  ``session_start_branch_guard.py``.
+  worktree. This nudges all mutation into an explicit named sibling worktree.
 
 Resolving the branch per-file (rather than from a fixed repo root) is what makes
 the gate worktree-aware: a sibling worktree has its own HEAD/branch, which git
@@ -61,10 +60,10 @@ def _target_path(payload: dict) -> str:
 def _is_plan_file(file_path: str) -> bool:
     """True for a plan SSOT markdown file (parent dir == ``plans``, not under an ``_archive/`` tree).
 
-    Plans are a shared, always-on SSOT — not per-chat feature work — so they are EXEMPT from
-    worktree-per-chat isolation and must land in the primary checkout's ``plans/`` folder
-    (``C:\\Git\\Agentic-Workflow-FRESH\\plans``). Without this exemption a plan written during a chat
-    is trapped in an ephemeral worktree and never reaches the canonical SSOT
+    Plans are a shared, always-on SSOT — not feature-branch work — so they are EXEMPT from
+    named-worktree isolation and must land in the primary checkout's ``plans/`` folder
+    (``C:\\Git\\Agentic-Workflow-FRESH\\plans``). Without this exemption a plan written during an
+    isolated session is trapped in a non-primary worktree and never reaches the canonical SSOT
     (plan ``plan-ssot-notion-pipeline-d2f7a1`` W1). Matches repo-root ``plans/`` and legacy
     ``.claude/plans/`` (both have parent dir ``plans``).
     """
@@ -153,12 +152,11 @@ def main() -> int:
         return 0  # owning worktree is isolated — allow
 
     reason = (
-        f"worktree-per-chat: editing the primary checkout on protected branch '{branch}' "
-        f"is blocked. Work in this chat's worktree instead (see the SessionStart message for "
-        f"its registered sibling path), e.g. create one with:\n"
-        f"    git worktree add ../Agentic-Workflow-FRESH-<topic> -b feat/<topic> origin/main\n"
-        f"`cd` into it and edit there. (Set WORKTREE_PER_CHAT_BYPASS=1 only for an intentional "
-        f"on-primary change.)"
+        f"worktree-isolation: editing a protected checkout on branch '{branch}' is blocked. "
+        f"Use or create a named sibling worktree for the durable workstream, e.g.:\n"
+        f"    git worktree add ../Agentic-Workflow-FRESH-apps-rg -b work/apps-rg origin/main\n"
+        f"`cd` into that worktree and edit there. Avoid timestamped `chat/*` branches for new "
+        f"work. (Set WORKTREE_PER_CHAT_BYPASS=1 only for an intentional on-primary change.)"
     )
     sys.stderr.write(reason + "\n")
     return 2  # block

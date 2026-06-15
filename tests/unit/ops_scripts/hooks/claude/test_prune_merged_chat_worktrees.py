@@ -7,8 +7,10 @@ worktree get reaped; unmerged, dirty, non-chat, and current worktrees are never 
 from __future__ import annotations
 
 import importlib.util
+import io
 import os
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -401,3 +403,56 @@ def test_worktree_branches_helper() -> None:
         "worktree /c\nHEAD ghi\ndetached\n\n"
     )
     assert reaper._worktree_branches(sample) == {"main", "chat/x"}
+
+
+# --- CLI safety defaults -------------------------------------------------------------------
+
+
+def test_session_start_invocation_is_noop(monkeypatch: pytest.MonkeyPatch) -> None:
+    called = False
+
+    def fail_if_called(**kwargs):
+        nonlocal called
+        called = True
+        return {}
+
+    monkeypatch.setattr(reaper, "reap_merged_chat_worktrees", fail_if_called)
+    monkeypatch.setattr(sys, "stdin", io.StringIO("{}"))
+    monkeypatch.setattr(sys, "argv", ["prune_merged_chat_worktrees.py"])
+
+    assert reaper.main(None) == 0
+    assert called is False
+
+
+def test_cli_defaults_to_dry_run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    seen: dict[str, bool] = {}
+
+    monkeypatch.setattr(reaper, "_primary_worktree", lambda start: tmp_path)
+    monkeypatch.setattr(reaper, "_cwd_toplevel", lambda start: tmp_path)
+
+    def fake_reap(**kwargs):
+        seen["dry_run"] = kwargs["dry_run"]
+        return {"reaped": [], "skipped": [], "dry_run": kwargs["dry_run"], "status": "ok"}
+
+    monkeypatch.setattr(reaper, "reap_merged_chat_worktrees", fake_reap)
+    monkeypatch.setattr(reaper, "prune_merged_branches", lambda **kwargs: {"deleted": []})
+
+    assert reaper.main(["--no-branches"]) == 0
+    assert seen["dry_run"] is True
+
+
+def test_cli_delete_merged_is_explicit(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    seen: dict[str, bool] = {}
+
+    monkeypatch.setattr(reaper, "_primary_worktree", lambda start: tmp_path)
+    monkeypatch.setattr(reaper, "_cwd_toplevel", lambda start: tmp_path)
+
+    def fake_reap(**kwargs):
+        seen["dry_run"] = kwargs["dry_run"]
+        return {"reaped": [], "skipped": [], "dry_run": kwargs["dry_run"], "status": "ok"}
+
+    monkeypatch.setattr(reaper, "reap_merged_chat_worktrees", fake_reap)
+    monkeypatch.setattr(reaper, "prune_merged_branches", lambda **kwargs: {"deleted": []})
+
+    assert reaper.main(["--delete-merged", "--no-branches"]) == 0
+    assert seen["dry_run"] is False

@@ -1,6 +1,6 @@
-"""Tests for tools/git/worktree_doctor.py (items #4/#6 classification + #2 --link repair).
+"""Tests for tools/git/worktree_doctor.py classification + runtime-link repair.
 
-Builds a real temp git repo with chat/feat/codex worktrees and verifies the doctor's
+Builds a real temp git repo with chat/work/feat/codex worktrees and verifies the doctor's
 classification, recommended actions, the .keep-worktree opt-out, and the --link path.
 """
 from __future__ import annotations
@@ -53,31 +53,33 @@ def _by_branch(result: dict) -> dict[str, dict]:
 
 def test_classifies_kinds(repo: Path) -> None:
     _add_wt(repo, "chat-a", "chat/a")
-    _add_wt(repo, "feat-b", "feat/b")
+    _add_wt(repo, "work-b", "work/b")
+    _add_wt(repo, "feat-legacy", "feat/legacy")
     _add_wt(repo, "codex-c", "codex/c")
     result = doctor.classify(repo, trunk_ref="main", do_fetch=False)
     rows = _by_branch(result)
     assert rows["main"]["kind"] == "protected"
     assert rows["chat/a"]["kind"] == "ephemeral"
-    assert rows["feat/b"]["kind"] == "long-lived"
+    assert rows["work/b"]["kind"] == "durable"
+    assert rows["feat/legacy"]["kind"] == "durable"
     assert rows["codex/c"]["kind"] == "non-canonical"
     assert rows["codex/c"]["canonical"] is False
-    assert rows["feat/b"]["canonical"] is True
+    assert rows["work/b"]["canonical"] is True
 
 
-def test_merged_clean_ephemeral_is_reapable(repo: Path) -> None:
+def test_merged_clean_ephemeral_is_stale_explicit_cleanup(repo: Path) -> None:
     _add_wt(repo, "chat-a", "chat/a")
     result = doctor.classify(repo, trunk_ref="main", do_fetch=False)
     row = _by_branch(result)["chat/a"]
     assert row["merged"] is True
     assert row["clean"] is True
-    assert row["action"].startswith("REAPABLE")
+    assert row["action"].startswith("stale-merged")
 
 
-def test_merged_clean_feat_is_stale_manual(repo: Path) -> None:
-    _add_wt(repo, "feat-b", "feat/b")
+def test_merged_clean_work_is_stale_manual(repo: Path) -> None:
+    _add_wt(repo, "work-b", "work/b")
     result = doctor.classify(repo, trunk_ref="main", do_fetch=False)
-    row = _by_branch(result)["feat/b"]
+    row = _by_branch(result)["work/b"]
     assert row["action"].startswith("stale-merged")
 
 
@@ -105,6 +107,7 @@ def test_render_table_runs(repo: Path) -> None:
     text = doctor._render_table(result)
     assert "worktree-doctor" in text
     assert "non-canonical" in text
+    assert "work/*" in text
 
 
 def test_do_link_into_worktree(repo: Path, capsys: pytest.CaptureFixture) -> None:

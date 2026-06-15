@@ -1,27 +1,26 @@
-"""SessionStart — reap merged chat worktrees (complement to worktree-per-chat).
+"""Manual worktree cleanup — report or delete delivered local worktrees/branches.
 
-The worktree-per-chat guard (``session_start_branch_guard.py``) CREATES a registered sibling git
-worktree per chat at ``<repo-parent>/<repo-name>-chat-<stamp>-<hex>`` on a
-``feat/chat-<stamp>-<hex>`` branch. This hook is the other half of the lifecycle: once such a chat
-worktree's branch is fully merged into ``origin/main`` and its tree is clean, the worktree has
-served its purpose and is removed (``git worktree remove`` + ``git branch -d``). Merged + clean ⇒
-zero data loss.
+SessionStart is intentionally non-mutating: if Claude invokes this file as a hook, it drains stdin
+and exits without deleting anything. Cleanup is an explicit operator action:
 
-Hard safety envelope — a worktree is reaped ONLY when ALL hold:
+    python .claude/hooks/prune_merged_chat_worktrees.py --dry-run
+    python .claude/hooks/prune_merged_chat_worktrees.py --delete-merged
+
+Hard safety envelope — a worktree is deleted ONLY when ALL hold:
   * its branch matches an ENABLED reap prefix. Default is ``chat/`` + ``feat/``. ``chat/*``
     worktrees must additionally live under the legacy chat-worktree root (``.chat-worktrees/``);
     ``feat/*`` worktrees may live as registered siblings. Long-lived ``codex/``/``fix/`` worktrees
     and the primary checkout are NEVER eligible by default. An operator can opt other prefixes in
-    via ``WORKTREE_REAP_BRANCH_PREFIXES`` (item #4); those may live anywhere (sibling worktrees);
+    via ``WORKTREE_REAP_BRANCH_PREFIXES``; those may live anywhere (sibling worktrees);
   * it does NOT carry a ``.keep-worktree`` marker file (universal opt-out — kept regardless);
   * it is NOT the worktree this session is running in (never reap your own CWD);
   * its branch is an ANCESTOR of ``origin/main`` (fully merged — unmerged work is never touched);
   * its working tree is CLEAN (``git status --porcelain`` empty — uncommitted work is never touched);
   * its HEAD commit is older than the grace window (protects a worktree another live chat just made).
 
-Branch-prune half (the "delete local branches on Git" enforcement): the worktree reaper only
-deletes a branch when it removes *that branch's worktree*. Merged branches whose worktree was
-already removed (or which never had one) accumulate forever. ``prune_merged_branches`` is the
+Branch-prune half (the local branch cleanup): the worktree deletion path only deletes a branch
+when it removes *that branch's worktree*. Merged branches whose worktree was already removed
+(or which never had one) accumulate forever. ``prune_merged_branches`` is the
 complement — after a merge+push, every local ``chat/``/``feat/`` branch that is (a) fully delivered
 into the trunk and (b) has NO checked-out worktree is deleted. Same zero-loss guarantee: a branch is
 only deleted when it carries no commits the trunk lacks.
@@ -32,14 +31,15 @@ common pileup where chat worktrees were cut from a *locally-stale* ``main`` (the
 ``main`` tip, zero own commits) and therefore are not ancestors of ``origin/main`` yet carry nothing
 to lose. Both ``origin/main`` and local ``main`` are accepted trunks (item: worktree-deliver-reap).
 
-Self-contained (no ``lib`` import). Best-effort, fail-soft, always exits 0 — never blocks a session.
+Self-contained (no ``lib`` import). Best-effort, fail-soft, always exits 0 in hook mode — never
+blocks a session.
 
 Bypass: ``WORKTREE_MERGE_CLEANUP_BYPASS=1`` (also honors ``WORKTREE_PER_CHAT_BYPASS=1``).
-Dry-run (report, don't delete): ``WORKTREE_MERGE_CLEANUP_DRY_RUN=1``.
+Dry-run (report, don't delete): default for CLI unless ``--delete-merged`` is passed.
 Grace window: ``WORKTREE_CLEANUP_MIN_AGE_MINUTES`` (default ``30`` — never reap a worktree whose
   HEAD is newer than N minutes; item #1, raised from ``0`` to end the mid-session reap-race).
-Reap prefixes: ``WORKTREE_REAP_BRANCH_PREFIXES`` csv (default ``chat/``,``feat/``; opt non-chat
-  prefixes in to auto-clean merged sibling worktrees — item #4).
+Reap prefixes: ``WORKTREE_REAP_BRANCH_PREFIXES`` csv (default ``chat/``,``feat/``; opt other
+  prefixes in only for explicit manual cleanup).
 Branch-prune toggle: ``WORKTREE_PRUNE_MERGED_BRANCHES`` (default ``1`` — set ``0`` to disable the
   standalone merged-branch sweep and only reap worktrees).
 Branch-prune prefixes: ``WORKTREE_PRUNE_BRANCH_PREFIXES`` csv (default ``chat/``,``feat/``).
@@ -50,7 +50,7 @@ Legacy chat root override: ``CHAT_WORKTREE_ROOT`` (default ``<repo-parent>/.chat
 Trunk ref override: ``WORKTREE_CLEANUP_TRUNK_REF`` (default ``origin/main``).
 
 CLI (manual sweep): ``python .claude/hooks/prune_merged_chat_worktrees.py [--dry-run]
-  [--no-branches] [--min-age-minutes N]`` — runs the same sweep outside a SessionStart payload.
+  [--delete-merged] [--no-branches] [--min-age-minutes N]``.
 """
 
 from __future__ import annotations
@@ -139,12 +139,11 @@ def _min_age_seconds() -> int:
         return _DEFAULT_MIN_AGE_MINUTES * 60
 
 
-# Which branch prefixes are eligible for auto-reap. Default ``chat/`` + ``feat/``
-# (worktree-deliver-reap-b3f7d1): a ``feat/*`` worktree is the standard delivery vehicle, so once
-# its branch is merged into the trunk and its tree is clean it is a *delivered leftover* and is
-# auto-cleaned — a backstop for PR-merged deliveries or ``deliver_worktree.py --no-reap``. The
+# Which branch prefixes are eligible for explicit cleanup. Default ``chat/`` + ``feat/``:
+# a ``feat/*`` worktree is a legacy delivery vehicle, so once its branch is merged into the
+# trunk and its tree is clean it is a *delivered leftover*. The
 # merged-into-trunk + clean-tree + grace-window guards below protect any in-progress/unmerged work,
-# so a ``feat/*`` you are still using is NEVER reaped. ``codex/``/``fix/`` can be opted in via
+# so a ``feat/*`` you are still using is NEVER deleted. ``codex/``/``fix/`` can be opted in via
 # ``WORKTREE_REAP_BRANCH_PREFIXES``; a ``.keep-worktree`` marker exempts any worktree regardless.
 _DEFAULT_REAP_PREFIXES: tuple[str, ...] = ("chat/", "feat/")
 
@@ -203,8 +202,11 @@ def _has_no_unique_commits(ref: str, *, repo_root: Path, trunk_refs: tuple[str, 
 
 
 def _worktree_branches(porcelain: str) -> set[str]:
-    """Branches that currently have a checked-out worktree (the worktree reaper owns those —
-    it deletes the branch when it removes the worktree, so branch-prune must skip them)."""
+    """Branches that currently have a checked-out worktree.
+
+    Branch-only cleanup must skip these; the worktree cleanup path handles branch deletion after
+    removing the checked-out worktree.
+    """
     return {wt["branch"] for wt in _parse_worktrees(porcelain) if wt.get("branch")}
 
 
@@ -267,12 +269,12 @@ def reap_merged_chat_worktrees(
     reap_branch_prefixes: tuple[str, ...] = ("chat/",),
     extra_trunk_refs: tuple[str, ...] = (),
 ) -> dict:
-    """Reap fully-merged, clean chat worktrees. Returns a structured report (never raises).
+    """Report or delete fully delivered, clean worktrees. Returns a structured report.
 
-    ``reap_branch_prefixes`` (item #4) is the set of enabled branch prefixes. The default
+    ``reap_branch_prefixes`` is the set of enabled branch prefixes. The default
     ``("chat/",)`` preserves the original behavior: only ``chat/*`` worktrees *under the
-    chat root* are eligible. Adding non-chat prefixes (e.g. ``feat/``) lets the reaper also
-    auto-clean merged sibling worktrees living anywhere. A ``.keep-worktree`` marker file in
+    chat root* are eligible. Adding non-chat prefixes (e.g. ``feat/``) lets the explicit cleanup
+    command also remove merged sibling worktrees living anywhere. A ``.keep-worktree`` marker file in
     any worktree exempts it permanently.
     """
     report: dict = {"scanned": 0, "reaped": [], "skipped": [], "dry_run": dry_run, "status": "ok"}
@@ -297,8 +299,8 @@ def reap_merged_chat_worktrees(
         def skip(reason: str) -> None:
             report["skipped"].append({"path": str(path), "branch": branch, "reason": reason})
 
-        # Eligibility (item #4): branch must match an enabled reap prefix. ``chat/*`` is
-        # ephemeral-by-construction and must live under the chat root; non-chat prefixes
+        # Eligibility: branch must match an enabled reap prefix. Legacy ``chat/*`` worktrees
+        # must live under the chat root; non-chat prefixes
         # (opt-in) may live anywhere (sibling worktrees).
         try:
             under_chat_root = root == path or root in path.parents
@@ -381,14 +383,14 @@ def prune_merged_branches(
 ) -> dict:
     """Delete local branches fully delivered into the trunk that have NO checked-out worktree.
 
-    The worktree reaper deletes a branch only as a side effect of removing its worktree; merged
+    The worktree cleanup path deletes a branch only as a side effect of removing its worktree; merged
     branches whose worktree was already removed (the common case after a PR merge or
     ``deliver_worktree.py``) never get cleaned. This is that missing sweep.
 
     Hard safety envelope — a branch is deleted ONLY when ALL hold:
       * it matches an enabled prefix (default ``chat/``, ``feat/``);
       * it is NOT protected (``main``/``master``/``release``) and NOT the current branch;
-      * it has NO checked-out worktree (those are the worktree reaper's job — skipped here);
+      * it has NO checked-out worktree (checked-out branches are handled by worktree cleanup);
       * it has no commits absent from at least one trunk ref (delivered → zero committed work lost).
     Never deletes anything unmerged. Fail-soft, never raises; returns a structured report.
     """
@@ -423,7 +425,7 @@ def prune_merged_branches(
             skip("current_branch")
             continue
         if branch in worktree_branches:
-            skip("has_worktree")  # owned by the worktree reaper
+            skip("has_worktree")  # owned by worktree cleanup
             continue
         if not _has_no_unique_commits(branch, repo_root=repo_root, trunk_refs=trunk_refs):
             skip("not_merged_into_trunk")
@@ -453,33 +455,39 @@ def _emit_context(message: str) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    # A SessionStart invocation has no argv flags and pipes a JSON payload on stdin; a manual CLI
-    # invocation passes flags. Detect the CLI case before draining stdin (which would block a TTY).
+    # A SessionStart invocation has no argv flags and pipes a JSON payload on stdin. Hook mode is
+    # intentionally non-mutating: cleanup belongs to explicit CLI runs.
     cli = bool(argv) or len(sys.argv) > 1
     if not cli:
-        # Drain stdin (SessionStart payload) so the pipe never blocks; contents unused.
         try:
             sys.stdin.read()
         except OSError:
             pass
+        return 0
 
-    dry_run = os.environ.get("WORKTREE_MERGE_CLEANUP_DRY_RUN") == "1"
+    dry_run = True
     min_age_seconds = _min_age_seconds()
     prune_branches = _prune_branches_enabled()
-    if cli:
-        ap = argparse.ArgumentParser(
-            description="Reap merged chat/feat worktrees + prune merged local branches."
-        )
-        ap.add_argument("--dry-run", action="store_true", help="report, delete nothing")
-        ap.add_argument("--no-branches", action="store_true", help="skip the standalone branch sweep")
-        ap.add_argument("--min-age-minutes", type=int, default=None, help="grace window override")
-        args = ap.parse_args(argv)
-        if args.dry_run:
-            dry_run = True
-        if args.no_branches:
-            prune_branches = False
-        if args.min_age_minutes is not None:
-            min_age_seconds = max(0, args.min_age_minutes) * 60
+    ap = argparse.ArgumentParser(
+        description="Report or delete delivered local chat/feat worktrees + local branches."
+    )
+    ap.add_argument("--dry-run", action="store_true", help="report, delete nothing (default)")
+    ap.add_argument(
+        "--delete-merged",
+        action="store_true",
+        help="delete delivered+clean local worktrees/branches after safety checks",
+    )
+    ap.add_argument("--no-branches", action="store_true", help="skip the standalone branch sweep")
+    ap.add_argument("--min-age-minutes", type=int, default=None, help="grace window override")
+    args = ap.parse_args(argv)
+    if args.delete_merged:
+        dry_run = False
+    if args.dry_run:
+        dry_run = True
+    if args.no_branches:
+        prune_branches = False
+    if args.min_age_minutes is not None:
+        min_age_seconds = max(0, args.min_age_minutes) * 60
 
     if _bypass():
         return 0
@@ -534,7 +542,8 @@ def main(argv: list[str] | None = None) -> int:
         else:
             _emit_context(msg)
     elif cli:
-        sys.stdout.write("worktree cleanup: nothing to reap or prune.\n")
+        mode = "dry-run" if dry_run else "delete"
+        sys.stdout.write(f"worktree cleanup ({mode}): nothing to reap or prune.\n")
     return 0
 
 
