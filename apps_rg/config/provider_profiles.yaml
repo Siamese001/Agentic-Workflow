@@ -106,7 +106,9 @@ judge_models:
   enhanced:
     gemini_pro: gemini-3.1-pro-preview
     openai_chatgpt: gpt-5.5
-    anthropic_claude: claude-opus-4-6
+    # W4: migrated from APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED (.env) — sonnet is the actual prior
+    # runtime value (cost tier); SSOT made honest. The .env override is removed.
+    anthropic_claude: claude-sonnet-4-6
   standard:
     gemini_pro: gemini-2.5-pro
     openai_chatgpt: gpt-5.5

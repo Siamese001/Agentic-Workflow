@@ -76,7 +76,9 @@ _ENHANCED_PROFILE: dict[str, dict[str, Any]] = {
             "APPS_RG_ANTHROPIC_JUDGE_MODEL",
         ),
         "env_tier": (),
-        "profile_defaults": ("claude-opus-4-6", "claude-opus-4-5", "claude-sonnet-4-6"),
+        # W4: sonnet first — the actual runtime value (was pinned via APPS_RG_ANTHROPIC_JUDGE_MODEL_ENHANCED
+        # in .env, now the SSOT). opus kept as further fail-soft fallbacks. Parity: [0] == YAML judge_models.
+        "profile_defaults": ("claude-sonnet-4-6", "claude-opus-4-6", "claude-opus-4-5"),
     },
 }
 
