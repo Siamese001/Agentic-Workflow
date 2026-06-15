@@ -256,4 +256,5 @@ PLAN_COMPLETE: plan=<plan_id> note="<final outcome>"
 > deliberately with evidence when editing the plan; no live hook auto-updates them.
 >
 > **Post-turn summary**: for active multi-wave work, summarize completed waves plus the open wave in
-> the Turn Receipt's `PLAN_WAVES` mini table. Do not treat this plan table as the post-turn output.
+> the Turn Receipt's `PLAN_WAVES` mini table; on `PLAN_COMPLETE:` closeout, summarize completed waves
+> only. Do not treat this plan table as the post-turn output.

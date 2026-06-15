@@ -507,6 +507,48 @@ class TestRuntimeRcaAudit:
         assert hit is not None, [r["kind"] for r in rows]
         assert hit["open_row_count"] == 2
 
+    def test_plan_complete_all_complete_rows_clean(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- [plan.md](plans/post-turn-mini-table-a1b2c3.md)\n"
+            "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "PLAN_COMPLETE: plan=post-turn-mini-table-a1b2c3 note=\"done\"\n"
+            "PLAN_WAVES:\n"
+            "| Wave | State | Summary |\n"
+            "|---|---|---|\n"
+            "| W1 | COMPLETE | Contract documentation landed |\n"
+            "| W2 | COMPLETE | Detector enforcement landed |\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    def test_plan_complete_with_open_row_flags_malformed(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- [plan.md](plans/post-turn-mini-table-a1b2c3.md)\n"
+            "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "PLAN_COMPLETE: plan=post-turn-mini-table-a1b2c3 note=\"done\"\n"
+            "PLAN_WAVES:\n"
+            "| Wave | State | Summary |\n"
+            "|---|---|---|\n"
+            "| W1 | COMPLETE | Contract documentation landed |\n"
+            "| W2 | OPEN | Detector enforcement still running |\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        hit = next((r for r in rows if r["kind"] == "malformed_plan_waves"), None)
+        assert hit is not None, [r["kind"] for r in rows]
+        assert hit["open_row_count"] == 1
+        assert hit["all_rows_complete"] is False
+
 
 
 

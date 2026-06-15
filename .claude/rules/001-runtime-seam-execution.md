@@ -71,7 +71,8 @@ There is ONE post-turn shape for repo work: the **Response floor**, expanded by 
 1. **Floor (always).** Every repo-work turn ends with the `STATUS`…`NOTES` receipt. A repo-work turn with no `STATUS:` line is non-compliant.
    When a multi-wave disk plan is active, `PLAN_WAVES` is a compact post-turn mini table, not the
    plan file's status table: it lists completed waves (or `NONE` when there are none) plus exactly
-   the current open wave with a short description.
+   the current open wave with a short description. On `PLAN_COMPLETE:` closeout, all listed rows are
+   complete and no open row is required.
 2. **§37 Outcome frame — MANDATORY on every refactoring (T2/T3) turn.** It proves the `STATUS:` verdict, doesn't re-vote it. The two apps_rg rules layer on it, never replace it: `apps-rg-executive-summary-response` (simplify / layman-lead — how the RCA + next-step content reads) and `apps-rg-post-run-summary` (additive `render_run_summary.py` evidence table — the artifact ground truth the verdict is checked against).
 3. **Sole exception — `generate_full_adg` runs:** the ADG burndown + gates output (`adg-post-run-burndown` § Completion Gate, its own non-bypassable gate) supersedes both floor and frame; don't stamp either on top.
 
