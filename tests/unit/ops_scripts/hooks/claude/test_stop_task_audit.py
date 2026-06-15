@@ -55,6 +55,33 @@ _PASS_FULL_PROOF = (
     "ARTIFACTS:\n- out.json\n"
 )
 _PASS_MISSING_PROOF = "STATUS: PASS\nFILES_CHANGED:\n- foo.py\n"
+_PASS_PLAN_FILE_MISSING_WAVES = (
+    "STATUS: PASS\n"
+    "FILES_CHANGED:\n- [plan.md](plans/post-turn-mini-table-a1b2c3.md)\n"
+    "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+    "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+    "ARTIFACTS:\n- NONE\n"
+)
+_PASS_PLAN_FILE_WITH_WAVES = (
+    "STATUS: PASS\n"
+    "FILES_CHANGED:\n- [plan.md](plans/post-turn-mini-table-a1b2c3.md)\n"
+    "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+    "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+    "PLAN_WAVES:\n"
+    "| Wave | State | Summary |\n"
+    "|---|---|---|\n"
+    "| NONE | COMPLETE | No completed waves yet |\n"
+    "| W1 | OPEN | Wire the post-turn mini table contract |\n"
+    "ARTIFACTS:\n- NONE\n"
+)
+_PASS_PLAN_FILE_MALFORMED_WAVES = (
+    "STATUS: PASS\n"
+    "FILES_CHANGED:\n- [plan.md](plans/post-turn-mini-table-a1b2c3.md)\n"
+    "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+    "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+    "PLAN_WAVES:\n- Wave W1: IN_PROGRESS\n"
+    "ARTIFACTS:\n- NONE\n"
+)
 
 
 class TestStopTaskAuditTranscript:
@@ -76,6 +103,26 @@ class TestStopTaskAuditTranscript:
         proc = _run({"session_id": "s3", "transcript_path": str(tr)})
         assert proc.returncode == 2, proc.stdout + proc.stderr
         assert "proof" in _block_decision(proc)["reason"].lower()
+
+    def test_active_plan_missing_plan_waves_blocks(self, tmp_path) -> None:
+        tr = _write_transcript(tmp_path, _PASS_PLAN_FILE_MISSING_WAVES)
+        proc = _run({"session_id": "s_plan_missing", "transcript_path": str(tr)})
+        assert proc.returncode == 2, proc.stdout + proc.stderr
+        reason = _block_decision(proc)["reason"].lower()
+        assert "plan_waves" in reason or "mini table" in reason
+
+    def test_active_plan_malformed_plan_waves_blocks(self, tmp_path) -> None:
+        tr = _write_transcript(tmp_path, _PASS_PLAN_FILE_MALFORMED_WAVES)
+        proc = _run({"session_id": "s_plan_malformed", "transcript_path": str(tr)})
+        assert proc.returncode == 2, proc.stdout + proc.stderr
+        reason = _block_decision(proc)["reason"].lower()
+        assert "plan_waves" in reason or "wave | state | summary" in reason
+
+    def test_active_plan_with_plan_waves_allows(self, tmp_path) -> None:
+        tr = _write_transcript(tmp_path, _PASS_PLAN_FILE_WITH_WAVES)
+        proc = _run({"session_id": "s_plan_ok", "transcript_path": str(tr)})
+        assert proc.returncode == 0, proc.stdout + proc.stderr
+        assert "decision" not in proc.stdout
 
 
 class TestStopTaskAuditFailOpen:

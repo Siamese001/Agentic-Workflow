@@ -51,11 +51,12 @@ LAST_UPDATED: 2026-01-01
 > `plan_format: v2` plans (blocking); legacy plans without the marker stay advisory.
 > Canonical wave columns: Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 
-> These tables are auto-updated by `post_agent_wave_lifecycle_capture.py` when
-> `WAVE_COMPLETE:` / `PHASE_COMPLETE:` / `PLAN_COMPLETE:` markers are emitted.
+> These tables are plan-file structure, not the post-turn receipt. They are validated by disk-side
+> plan lint (`check_plan_wave_summary_top`) and are updated deliberately when the plan file changes;
+> the retired Notion/wave lifecycle hooks no longer auto-update them.
 > Status tokens: `✅ DONE` · `🔄 IN PROGRESS` · `🔲 TODO` · `❌ BLOCKED`
-> Test/scope columns are populated from the `note=` field on `WAVE_COMPLETE:` markers
-> (e.g. `note="+8 tests, 3 files, scope=exit-binding"`).
+> The post-turn completed/open wave mini table belongs in the `PLAN_WAVES` field of the Turn Receipt,
+> not in this plan-file status table.
 
 ### Wave Progress
 
@@ -250,11 +251,9 @@ PHASE_COMPLETE: plan=<plan_id> phase=<W1.1>
 PLAN_COMPLETE: plan=<plan_id> note="<final outcome>"
 ```
 
-> **Auto-maintained**: `WAVE_STATUS`, `WAVE_COMPLETE`, `PHASE_STATUS`, `PHASE_COMPLETE`,
-> wave table ✅/🔲/🔄 status cells, and DoD `- Status:` fields are updated automatically
-> by `post_agent_wave_lifecycle_capture.py`. Manual edits only needed if hook was
-> bypassed (`WAVE_TABLE_UPDATE_BYPASS=1`).
+> **Manual maintenance**: `WAVE_STATUS`, `WAVE_COMPLETE`, `PHASE_STATUS`, `PHASE_COMPLETE`,
+> wave table ✅/🔲/🔄 status cells, and DoD `- Status:` fields are plan-file state. Update them
+> deliberately with evidence when editing the plan; no live hook auto-updates them.
 >
-> **note= format for auto-capture**: `note="+N tests, N files, scope=<one-word>"` — the
-> hook parses `+N tests` and `N files` and writes them to the wave table's Tests Added
-> and Files Changed columns.
+> **Post-turn summary**: for active multi-wave work, summarize completed waves plus the open wave in
+> the Turn Receipt's `PLAN_WAVES` mini table. Do not treat this plan table as the post-turn output.

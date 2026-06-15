@@ -1,6 +1,7 @@
 ﻿"""STATUS-floor Stop audit — thin blocking layer over the SSOT runtime-RCA detector.
 
-Blocks on: missing_response_floor, pass_without_proof, speculative_pass.
+Blocks on: missing_response_floor, pass_without_proof, speculative_pass, missing_plan_waves,
+malformed_plan_waves.
 RCA-depth kinds (missing_refactor_outcome, missing_rca, incomplete_rca, shallow_rca)
 are owned by stop_runtime_rca_gate.py.
 """
@@ -13,7 +14,13 @@ from lib.claude_hook_common import allow, block, read_payload, resolve_response_
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _AUDIT_PATH = _REPO_ROOT / ".claude" / "governance" / "scripts" / "post_agent_runtime_rca_audit.py"
-_BLOCK_KINDS = ("missing_response_floor", "pass_without_proof", "speculative_pass")
+_BLOCK_KINDS = (
+    "missing_response_floor",
+    "pass_without_proof",
+    "speculative_pass",
+    "missing_plan_waves",
+    "malformed_plan_waves",
+)
 
 
 def _load_detect():
@@ -35,6 +42,10 @@ def _reason(kind: str, violation: dict) -> str:
         return "STATUS: PASS response missing proof sections: " + tail
     if kind == "speculative_pass":
         return "Speculative pass language detected; use STATUS: PASS | PARTIAL | FAIL | BLOCKED with evidence."
+    if kind == "missing_plan_waves":
+        return "Active multi-wave response missing PLAN_WAVES completed/open mini table."
+    if kind == "malformed_plan_waves":
+        return "PLAN_WAVES must be a Wave | State | Summary mini table with completed and open rows."
     return "Repo-work final response missing STATUS: PASS | PARTIAL | FAIL | BLOCKED."
 
 

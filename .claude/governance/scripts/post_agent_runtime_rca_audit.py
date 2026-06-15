@@ -39,8 +39,9 @@ floors, not every prose wrap-up after a code turn; pure prose with no floor sign
 their BCG burndown + gates output supersedes both the floor and the Outcome frame and is owned by
 post_agent_adg_burndown_inline_audit.py.
 
-Violation kinds: missing_response_floor, missing_refactor_outcome, missing_rca, incomplete_rca,
-status_signal_mismatch, shallow_rca, pass_without_proof, speculative_pass.
+Violation kinds: missing_response_floor, missing_refactor_outcome, missing_plan_waves,
+malformed_plan_waves, missing_rca, incomplete_rca, status_signal_mismatch, shallow_rca,
+pass_without_proof, speculative_pass.
 
 This audit is advisory and fail-open: it always exits 0 and never blocks the response.
 Some matches are necessarily heuristic (a PASS summary that merely *discusses* a failure
@@ -136,6 +137,7 @@ _REPO_WORK_SIGNALS: tuple[tuple[re.Pattern[str], str], ...] = (
     (_FILES_CHANGED_RE, "files_changed"),
     (re.compile(r"(?im)^\s*COMMANDS_RUN\s*:"), "commands_run"),
     (re.compile(r"(?im)^\s*TESTS_GATES\s*:"), "tests_gates"),
+    (re.compile(r"(?im)^\s*PLAN_WAVES\s*:"), "plan_waves"),
     (re.compile(r"(?im)^\s*ARTIFACTS\s*:"), "artifacts"),
     (re.compile(r"(?im)^\s*REPORTS_GENERATED\s*:"), "reports_generated"),
     (_EDIT_TOOL_RE, "edit_tool_invoked"),
@@ -185,6 +187,18 @@ _MISSING_FLOOR_REMEDY = (
 
 
 _PROOF_SECTIONS: tuple[str, ...] = ("FILES_CHANGED", "COMMANDS_RUN", "TESTS_GATES", "ARTIFACTS")
+_PLAN_WAVES_RE = re.compile(r"(?im)^\s*PLAN_WAVES\s*:")
+_PLAN_MARKER_RE = re.compile(
+    r"(?im)^\s*(?:WAVE_START|WAVE_COMPLETE|PHASE_COMPLETE|PLAN_COMPLETE)\s*:"
+)
+_PLAN_STATE_RE = re.compile(r"(?im)^\s*(?:CURRENT_WAVE|LAST_COMPLETED_WAVE)\s*:")
+_PLAN_FILE_RE = re.compile(
+    r"(?im)^\s*-\s*(?:\[[^\]]+\]\()?\.?(?:plans|\.claude/plans)/[^)\s]+\.md\)?"
+)
+_RECEIPT_SECTION_RE = re.compile(
+    r"(?im)^\s*(?:STATUS|BRANCH|FILES_CHANGED|COMMANDS_RUN|TESTS_GATES|RCA|ARTIFACTS|"
+    r"REPORTS_GENERATED|NOTES)\s*:"
+)
 _SPECULATIVE_RE = re.compile(r"(?i)\bshould\s+pass\b|\blikely\s+pass\b")
 _PASS_PROOF_REMEDY = (
     "STATUS: PASS is expensive — it requires every proof section (FILES_CHANGED · COMMANDS_RUN · "
@@ -195,6 +209,12 @@ _SPECULATIVE_REMEDY = (
     "Speculative pass language ('should pass' / 'likely pass') is forbidden — either it passed, "
     "failed, is partial, or is blocked, with evidence. Emit STATUS: PASS|PARTIAL|FAIL|BLOCKED. "
     "SSOT: .claude/rules/002-pass-blocked-proof-contract.md § Forbidden status behavior."
+)
+_PLAN_WAVES_REMEDY = (
+    "Active multi-wave work must include the Turn Receipt PLAN_WAVES mini table with columns "
+    "Wave | State | Summary. Include completed waves (or NONE / COMPLETE / No completed waves yet) "
+    "and the current OPEN wave with a brief description. This is post-turn output, not the plan "
+    "file's disk-side status table. SSOT: .claude/rules/001-runtime-seam-execution.md § Response floor."
 )
 
 
@@ -235,6 +255,129 @@ def _line_value(text: str, pattern: re.Pattern[str]) -> str:
     nl = text.find("\n", m.end())
     seg = text[m.end(): nl if nl != -1 else len(text)]
     return re.sub(r"\s+", " ", seg).strip().lower()
+
+
+def _plan_activity_signals(text: str) -> list[str]:
+    signals: list[str] = []
+    if _PLAN_WAVES_RE.search(text):
+        signals.append("plan_waves")
+    if _PLAN_MARKER_RE.search(text):
+        signals.append("wave_marker")
+    if _PLAN_STATE_RE.search(text):
+        signals.append("plan_state_marker")
+    if _PLAN_FILE_RE.search(text):
+        signals.append("plan_file_changed")
+    return signals
+
+
+def _extract_plan_waves_block(text: str) -> str:
+    match = _PLAN_WAVES_RE.search(text)
+    if not match:
+        return ""
+    lines: list[str] = []
+    for line in text[match.end():].splitlines():
+        if _RECEIPT_SECTION_RE.match(line):
+            break
+        lines.append(line)
+    return "\n".join(lines).strip()
+
+
+def _state_family(cell: str) -> str:
+    raw = cell.strip().lower().replace("-", "_")
+    if any(token in raw for token in ("complete", "done", "pass")):
+        return "complete"
+    if any(token in raw for token in ("open", "current", "active", "in_progress", "in progress")):
+        return "open"
+    return ""
+
+
+def _summary_present(cell: str) -> bool:
+    raw = re.sub(r"\s+", " ", cell).strip()
+    return len(raw) >= 8 and raw.lower() not in {"n/a", "na", "none", "-", "tbd"}
+
+
+def _parse_plan_waves_rows(block: str) -> tuple[list[dict[str, str]], str]:
+    wave_idx = state_idx = summary_idx = -1
+    rows: list[dict[str, str]] = []
+    for line in block.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|") or not stripped.endswith("|"):
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if cells and all(re.fullmatch(r":?-{3,}:?", cell) for cell in cells):
+            continue
+        lower = [cell.lower() for cell in cells]
+        if wave_idx == -1:
+            if "wave" in lower and "state" in lower and "summary" in lower:
+                wave_idx = lower.index("wave")
+                state_idx = lower.index("state")
+                summary_idx = lower.index("summary")
+            continue
+        if len(cells) <= max(wave_idx, state_idx, summary_idx):
+            continue
+        rows.append(
+            {
+                "wave": cells[wave_idx],
+                "state": cells[state_idx],
+                "summary": cells[summary_idx],
+            }
+        )
+    if wave_idx == -1:
+        return [], "missing markdown table header: | Wave | State | Summary |"
+    return rows, ""
+
+
+def _plan_waves_issue(text: str) -> tuple[str, dict] | None:
+    signals = _plan_activity_signals(text)
+    if not signals:
+        return None
+    if not _PLAN_WAVES_RE.search(text):
+        return (
+            "missing_plan_waves",
+            {
+                "plan_wave_signals": signals,
+                "plan_waves_reason": "multi-wave activity signal present but PLAN_WAVES is absent",
+            },
+        )
+    block = _extract_plan_waves_block(text)
+    if not block:
+        return (
+            "malformed_plan_waves",
+            {
+                "plan_wave_signals": signals,
+                "plan_waves_reason": "PLAN_WAVES has no table body",
+            },
+        )
+    rows, row_error = _parse_plan_waves_rows(block)
+    if row_error:
+        return (
+            "malformed_plan_waves",
+            {"plan_wave_signals": signals, "plan_waves_reason": row_error},
+        )
+    if not rows:
+        return (
+            "malformed_plan_waves",
+            {
+                "plan_wave_signals": signals,
+                "plan_waves_reason": "PLAN_WAVES table has no data rows",
+            },
+        )
+    has_complete = any(_state_family(row["state"]) == "complete" for row in rows)
+    open_row_count = sum(1 for row in rows if _state_family(row["state"]) == "open")
+    blank_summaries = [row["wave"] for row in rows if not _summary_present(row["summary"])]
+    if not has_complete or open_row_count != 1 or blank_summaries:
+        return (
+            "malformed_plan_waves",
+            {
+                "plan_wave_signals": signals,
+                "plan_waves_reason": "PLAN_WAVES must include completed rows and exactly one open row with summaries",
+                "has_completed_row": has_complete,
+                "has_open_row": open_row_count == 1,
+                "open_row_count": open_row_count,
+                "rows_missing_summary": blank_summaries,
+            },
+        )
+    return None
 
 
 def _rca_descent_depth(text: str) -> int:
@@ -341,6 +484,13 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
                 _record("pass_without_proof", [], extra={"missing_proof": _missing_proof, "remedy": _PASS_PROOF_REMEDY})
             )
 
+    plan_waves_issue = _plan_waves_issue(text)
+    if plan_waves_issue:
+        kind, extra = plan_waves_issue
+        extra.setdefault("remedy", _PLAN_WAVES_REMEDY)
+        extra.setdefault("rule_ref", "001 § Response floor / PLAN_WAVES")
+        violations.append(_record(kind, [], extra=extra))
+
     # Green-theater: an optimistic status over a body failure signal (excludes the
     # status_fail signal itself, which is not "green").
     body_signals = [s for s in signals if s != "status_fail"]
@@ -426,6 +576,8 @@ def main() -> int:
                 "missing_response_floor": "end the turn with the rule-001 STATUS floor",
                 "pass_without_proof": "add all proof sections (FILES_CHANGED · COMMANDS_RUN · TESTS_GATES · ARTIFACTS; 'NONE' where empty)",
                 "speculative_pass": "replace speculative language with STATUS: PASS|PARTIAL|FAIL|BLOCKED + evidence",
+                "missing_plan_waves": "add the PLAN_WAVES completed/open mini table",
+                "malformed_plan_waves": "fix PLAN_WAVES to a Wave | State | Summary table with completed and open rows",
             }.get(record["kind"], "add an RCA: block")
             print(
                 f"[runtime-rca] {record['kind']}: status={record['status']} "

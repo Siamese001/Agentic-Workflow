@@ -55,6 +55,14 @@ _FULL_RCA = (
     "- recurrence_guard: test_ibm_bullets.py::test_held_metric_not_anchored\n"
 )
 
+_PLAN_WAVES_TABLE = (
+    "PLAN_WAVES:\n"
+    "| Wave | State | Summary |\n"
+    "|---|---|---|\n"
+    "| NONE | COMPLETE | No completed waves yet |\n"
+    "| W1 | OPEN | Wire the post-turn mini table contract |\n"
+)
+
 # A refactoring turn = code files changed (or an edit tool invoked). Per the contract it
 # must carry the Outcome frame (keyed on "Verdict source:") on every turn, so the
 # failing-refactor fixtures below include it and exercise the Layered-RCA depth checks.
@@ -392,6 +400,112 @@ class TestRuntimeRcaAudit:
         )
         assert _run(rca_mod, text, monkeypatch) == 0
         assert _rows(rca_mod) == []
+
+    def test_plan_waves_mini_table_clean_for_active_plan(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- [plan.md](plans/post-turn-mini-table-a1b2c3.md)\n"
+            "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            + _PLAN_WAVES_TABLE
+            + "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        assert _rows(rca_mod) == [], [r["kind"] for r in _rows(rca_mod)]
+
+    def test_plan_file_changed_without_plan_waves_flags_missing(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- [plan.md](plans/post-turn-mini-table-a1b2c3.md)\n"
+            "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        hit = next((r for r in rows if r["kind"] == "missing_plan_waves"), None)
+        assert hit is not None, [r["kind"] for r in rows]
+        assert "plan_file_changed" in hit["plan_wave_signals"]
+
+    def test_wave_marker_without_plan_waves_flags_missing(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        text = (
+            "STATUS: PARTIAL\n"
+            "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "ARTIFACTS:\n- NONE\n"
+            "WAVE_COMPLETE: plan=post-turn-mini-table-a1b2c3 wave=W1 note=\"done\"\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        hit = next((r for r in rows if r["kind"] == "missing_plan_waves"), None)
+        assert hit is not None, [r["kind"] for r in rows]
+        assert "wave_marker" in hit["plan_wave_signals"]
+
+    def test_plan_waves_without_open_row_flags_malformed(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- NONE\n"
+            "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "PLAN_WAVES:\n"
+            "| Wave | State | Summary |\n"
+            "|---|---|---|\n"
+            "| W1 | COMPLETE | Contract documentation landed |\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        hit = next((r for r in rows if r["kind"] == "malformed_plan_waves"), None)
+        assert hit is not None, [r["kind"] for r in rows]
+        assert hit["has_completed_row"] is True
+        assert hit["has_open_row"] is False
+
+    def test_plan_waves_legacy_bullet_flags_malformed(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        text = (
+            "STATUS: PARTIAL\n"
+            "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "PLAN_WAVES:\n"
+            "- Wave W1: IN_PROGRESS\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        hit = next((r for r in rows if r["kind"] == "malformed_plan_waves"), None)
+        assert hit is not None, [r["kind"] for r in rows]
+        assert "header" in hit["plan_waves_reason"]
+
+    def test_plan_waves_multiple_open_rows_flags_malformed(
+        self, rca_mod, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        text = (
+            "STATUS: PASS\n"
+            "FILES_CHANGED:\n- NONE\n"
+            "COMMANDS_RUN:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "TESTS_GATES:\n- pytest tests/unit/ops_scripts/hooks/claude -> 3 passed\n"
+            "PLAN_WAVES:\n"
+            "| Wave | State | Summary |\n"
+            "|---|---|---|\n"
+            "| W1 | COMPLETE | Contract documentation landed |\n"
+            "| W2 | OPEN | Wire detector enforcement |\n"
+            "| W3 | OPEN | Add stop hook coverage |\n"
+            "ARTIFACTS:\n- NONE\n"
+        )
+        assert _run(rca_mod, text, monkeypatch) == 0
+        rows = _rows(rca_mod)
+        hit = next((r for r in rows if r["kind"] == "malformed_plan_waves"), None)
+        assert hit is not None, [r["kind"] for r in rows]
+        assert hit["open_row_count"] == 2
 
 
 

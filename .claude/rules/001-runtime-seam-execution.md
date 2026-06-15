@@ -43,8 +43,11 @@ COMMANDS_RUN:
 - command -> runtime outcome (real result, not just exit code / label)
 TESTS_GATES:
 - command -> pass/fail with counts
-PLAN_WAVES: (when a multi-wave disk plan is active — active wave only; omit on single-seam T0/T1 work)
-- Wave N <title>: PASS | FAIL | IN_PROGRESS
+PLAN_WAVES: (when a multi-wave disk plan is active; omit on single-seam T0/T1 work)
+| Wave | State | Summary |
+|---|---|---|
+| W1 | COMPLETE | <brief completed outcome; use NONE / COMPLETE / No completed waves yet if none> |
+| W2 | OPEN | <brief current scope or next action> |
 RCA: (REQUIRED when STATUS: FAIL, or any runtime-failure signal appears above)
 - symptom: <exact failing command/lane + observed error>
 - root_cause: <actual cause> [DIRECTLY OBSERVED | DERIVED | UNRESOLVED]
@@ -66,6 +69,9 @@ NOTES:
 There is ONE post-turn shape for repo work: the **Response floor**, expanded by the **§37 Outcome frame** on every refactoring turn (where the RCA + next step live). Compose, don't choose:
 
 1. **Floor (always).** Every repo-work turn ends with the `STATUS`…`NOTES` receipt. A repo-work turn with no `STATUS:` line is non-compliant.
+   When a multi-wave disk plan is active, `PLAN_WAVES` is a compact post-turn mini table, not the
+   plan file's status table: it lists completed waves (or `NONE` when there are none) plus exactly
+   the current open wave with a short description.
 2. **§37 Outcome frame — MANDATORY on every refactoring (T2/T3) turn.** It proves the `STATUS:` verdict, doesn't re-vote it. The two apps_rg rules layer on it, never replace it: `apps-rg-executive-summary-response` (simplify / layman-lead — how the RCA + next-step content reads) and `apps-rg-post-run-summary` (additive `render_run_summary.py` evidence table — the artifact ground truth the verdict is checked against).
 3. **Sole exception — `generate_full_adg` runs:** the ADG burndown + gates output (`adg-post-run-burndown` § Completion Gate, its own non-bypassable gate) supersedes both floor and frame; don't stamp either on top.
 
