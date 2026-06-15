@@ -58,6 +58,21 @@ Detail: `.claude/rules/002-pass-blocked-proof-contract.md`.
 - Receipts: list every repo path in `FILES_CHANGED`/`ARTIFACTS`/`REPORTS_GENERATED` as `[basename](forward/slash/path)`.
 - Receipt block: emit it as its own separated block — after a `---` rule + a `### ⬛ Turn Receipt` heading, **unfenced** (a code fence would kill the clickable links). SSOT: `.claude/rules/001-runtime-seam-execution.md` § Response floor.
 
+## Explanation style — business-first, technical kept (always-on)
+
+Every explanation / summary / RCA / status *narrative* leads with the **outcome and what's at
+stake in plain business English**, then the technical detail. Keep precise terms — but **each
+jargon term, acronym, or internal code-name earns a short plain-language gloss on first use**, and
+the **opening line carries no undefined acronym or code-name**. This is the general form of the
+apps_rg "layman-lead" standard ([`apps-rg-executive-summary-response.md`](.claude/rules/apps-rg-executive-summary-response.md),
+the stricter 3-sentence instance) — it now applies to **all** explanatory prose, not just apps_rg.
+
+**Carve-out:** the post-turn **`STATUS` floor / `### ⬛ Turn Receipt`** and the proof-contract
+structured fields stay in their exact contract shape — they are evidence, never business-simplified.
+This is the "how the prose reads" layer on the floor, not a replacement (precedence:
+`001-runtime-seam-execution.md` § Canonical post-turn output). No new template or hook — this is
+doctrine, model-applied.
+
 ## Author-Gate (HITL before edits)
 
 Stop and ask via the native **`AskUserQuestion`** tool before edits when the decision is

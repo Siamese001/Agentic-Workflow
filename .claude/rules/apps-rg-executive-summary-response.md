@@ -1,6 +1,8 @@
 
 # Executive Summary — Default Response Shape
 
+> **General principle (always-on):** the business-first/technical-kept standard — lead with the outcome in plain English, keep precise terms but gloss each on first use — applies to **all** explanatory prose now, not just apps_rg (SSOT: `CLAUDE.md` § Explanation style). The **post-turn `STATUS` floor / `### ⬛ Turn Receipt`** is the sole carve-out (evidence, never simplified). This file is the **stricter apps_rg instance** of that principle for the `executive_summary` deliverable (the exact-3-sentence / ~12-year-old shape below).
+
 > **Precedence (canonical SSOT — `001-runtime-seam-execution.md` § Canonical post-turn output):** this layman-lead shape is a **simplify / translate** standard for *how the §37 Outcome frame's RCA + next-step content reads* for this deliverable (plain English first, jargon later). It layers on the response floor / Outcome frame; it never replaces them. (For the artifact-derived evidence table, see the sibling `apps-rg-post-run-summary.md`.)
 
 After every `python -m apps_rg --section executive_summary` run (or when explaining one), use this order:
