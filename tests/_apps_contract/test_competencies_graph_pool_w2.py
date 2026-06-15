@@ -1,4 +1,4 @@
-"""W2/W3 — competencies graph pool (10 paths → top 6 merge) + gemini_pro pool judge row."""
+"""W2/W3 — competencies graph pool (paths → top 8 merge) + gemini_pro pool judge row."""
 from __future__ import annotations
 
 import json
@@ -8,7 +8,7 @@ from apps_rg.runtime.reasoning.competencies_graph_pool import (
     COMPETENCIES_FINAL_CATEGORY_COUNT,
     COMPETENCIES_SC_PATH_COUNT,
     DEFAULT_COMPETENCIES_MIN_SELECTION_SCORE,
-    merge_competencies_graph_pool_top_six,
+    merge_competencies_graph_pool_top_eight,
 )
 from apps_rg.runtime.reasoning.employment_bullet_pool import COMPETENCIES_SC_PATH_COUNT as POOL_SC
 from apps_rg.runtime.reasoning.section_reasoning_intensity import section_reasoning_profile
@@ -66,7 +66,7 @@ def test_competencies_pool_x1d_judge_rows_gemini_pro_single_row(tmp_path) -> Non
     assert rows[0]["judge_role"] == "competencies_graph_pool_selector"
 
 
-def test_merge_competencies_graph_pool_top_six_from_selections() -> None:
+def test_merge_competencies_graph_pool_top_eight_from_selections() -> None:
     paths = [
         SelfConsistencyPath(
             path_index=0,
@@ -81,6 +81,8 @@ def test_merge_competencies_graph_pool_top_six_from_selections() -> None:
                     _cat("AI", ["e"]),
                     _cat("Product", ["f"]),
                     _cat("Security", ["g"]),
+                    _cat("Platform", ["i"]),
+                    _cat("Governance", ["j"]),
                     _cat("Extra", ["h"]),
                 ]
             },
@@ -95,15 +97,19 @@ def test_merge_competencies_graph_pool_top_six_from_selections() -> None:
         {"category_label": "AI", "path_index": 0, "score": 0.87, "passes": True},
         {"category_label": "Product", "path_index": 0, "score": 0.86, "passes": True},
         {"category_label": "Security", "path_index": 0, "score": 0.85, "passes": True},
+        {"category_label": "Platform", "path_index": 0, "score": 0.84, "passes": True},
+        {"category_label": "Governance", "path_index": 0, "score": 0.83, "passes": True},
         {"category_label": "Extra", "path_index": 0, "score": 0.50, "passes": True},
     ]
-    merged, _src = merge_competencies_graph_pool_top_six(
+    merged, _src = merge_competencies_graph_pool_top_eight(
         paths,
         selections,
         allowed_fact_ids={"bul_001"},
         min_score_threshold=DEFAULT_COMPETENCIES_MIN_SELECTION_SCORE,
     )
     comps = merged.get("competencies") or []
+    # Final count is the SSOT COMPETENCIES_FINAL_CATEGORY_COUNT (8); the lowest-scoring
+    # "Extra" (0.50 < 0.72 threshold) is dropped, the eight passing categories kept.
     assert len(comps) == COMPETENCIES_FINAL_CATEGORY_COUNT
     labels = {str(c.get("category_label")) for c in comps}
     assert "Extra" not in labels

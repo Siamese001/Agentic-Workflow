@@ -24,9 +24,12 @@ def test_resolve_modular_lane_provider_default_external_claude(monkeypatch: pyte
     assert resolve_apps_rg_modular_lane_provider() == "external_claude"
 
 
-def test_resolve_modular_lane_provider_qwen(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_resolve_modular_lane_provider_qwen_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Post-Qwen-removal: qwen_vllm is a deprecated provider and is now rejected — the only
+    # accepted modular lane provider is external_claude (see _MODULAR_LANE_PROVIDER_ALLOWED).
     monkeypatch.setenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "qwen_vllm")
-    assert resolve_apps_rg_modular_lane_provider() == "qwen_vllm"
+    with pytest.raises(RuntimeError, match="INVALID_APPS_RG_MODULAR_LANE_PROVIDER"):
+        resolve_apps_rg_modular_lane_provider()
 
 
 def test_resolve_modular_lane_provider_invalid(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -47,7 +50,7 @@ def test_generate_resume_step_passes_lane_provider_from_env(
     from apps_rg.l2_recipe.modular_r4_generation_result import ModularR4GenerationResult
 
     monkeypatch.setenv(ENV_APPS_RG_R4_GENERATION_MODE, MODE_MODULAR_SECTION_LANES)
-    monkeypatch.setenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "qwen_vllm")
+    monkeypatch.setenv(ENV_APPS_RG_MODULAR_LANE_PROVIDER, "external_claude")
     repo = find_repo_root()
     gr = json.loads(
         (repo / "tests" / "_fixtures" / "rg_output_phase0_min_valid.json").read_text(encoding="utf-8"),
@@ -100,7 +103,7 @@ def test_generate_resume_step_passes_lane_provider_from_env(
     GenerateResumeStep()(ctx)
     assert mock_modular.call_count == 1
     _inp, _art, _tok, prof = mock_modular.call_args[0]
-    assert prof.phase1_lane_provider == "qwen_vllm"
+    assert prof.phase1_lane_provider == "external_claude"
 
 
 def test_collect_lane_mocked_not_latest_successful_real(tmp_path: Path) -> None:
@@ -158,7 +161,7 @@ def test_collect_lane_real_llm_with_pointer_matches_gate(tmp_path: Path) -> None
         ("l6_shadow_eval_package.json", {"offline_only": True}),
         (
             "provider_request.json",
-            {"provider_requested": "qwen_vllm", "provider_attempted": True},
+            {"provider_requested": "external_claude", "provider_attempted": True},
         ),
     ]:
         (base / name).write_text(json.dumps(blob), encoding="utf-8")

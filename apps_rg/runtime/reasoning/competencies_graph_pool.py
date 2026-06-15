@@ -311,28 +311,6 @@ def merge_competencies_graph_pool_top_eight(
     return merged, source_map
 
 
-def merge_competencies_graph_pool_top_six(
-    paths: list[Any],
-    selections: list[dict[str, Any]],
-    *,
-    base_parsed: dict[str, Any] | None = None,
-    min_score_threshold: float | None = None,
-    allowed_fact_ids: set[str] | None = None,
-    allowed_skill_ids: set[str] | None = None,
-    resume_support_blob_lower: str = "",
-) -> tuple[dict[str, Any], dict[str, int]]:
-    """Compatibility alias for older callers; active contract is graph_8x8/top_eight."""
-    return merge_competencies_graph_pool_top_eight(
-        paths,
-        selections,
-        base_parsed=base_parsed,
-        min_score_threshold=min_score_threshold,
-        allowed_fact_ids=allowed_fact_ids,
-        allowed_skill_ids=allowed_skill_ids,
-        resume_support_blob_lower=resume_support_blob_lower,
-    )
-
-
 def evaluate_competencies_selection_quality(
     *,
     selections: list[dict[str, Any]],
@@ -413,7 +391,6 @@ __all__ = [
     "is_competencies_pool_generation",
     "max_competencies_regen_rounds",
     "merge_competencies_graph_pool_top_eight",
-    "merge_competencies_graph_pool_top_six",
     "min_competencies_selection_score",
     "write_competencies_regen_artifact",
 ]
