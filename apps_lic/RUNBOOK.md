@@ -40,8 +40,10 @@ The composer is the most common stall location.
 
 **Triage:**
 1. Check which hop is stuck: `python -m apps_lic --inspect --run-id=<id>` shows current hop + elapsed.
-2. If the composer is stuck, check Qwen health (see apps_eval RUNBOOK §1).
+2. If the composer is stuck, check Qwen health (see apps_eval RUNBOOK §1). **Generation is Qwen-vLLM-primary and fail-closed**: with `APPS_LIC_REQUIRE_QWEN_VLLM=1` the composer raises when vLLM is down rather than emitting an ungrounded draft — bring Qwen up (the model SSOT is `apps_lic/config/domain_contract/model_profiles.yaml`; generator = Qwen, X1D judge = Claude Sonnet 4.6) before retrying. A "blocked" disposition here reflects a real Qwen-down verdict, not a stale default.
 3. If a deterministic hop is stuck >2× ceiling, that's a code bug — capture state and bisect.
+
+> **Send prerequisites (W6):** a send requires (a) Qwen vLLM up (fail-closed, above); (b) C0 evidence readiness — apps_lic C0 is governed-ingestion/payload-only **by design** (no ChromaDB/dense retrieval), with explicit readiness states `READY` / ingestion-required / `STALE` / `CONFLICTED` / `BLOCKED` (`apps_lic/runtime/bindings/c0_binding.py`); (c) the C0.3 sender-proof packet ready, grounded against the shared apps_rg proof SSOT (`apps_lic/integrations/apps_rg_proof_bridge.py` — same `augmented_skills_graph` version apps_rg uses, so resume and outreach proof cannot drift). Dispositions on the Exit bundle reflect real X2/X1D verdicts; a `BLOCKED` is always backed by a reason code, never a stale default.
 
 **Mitigation:**
 - Cancel the run via the control plane: `python -m apps_lic.engines.control_plane --cancel --run-id=<id>`.

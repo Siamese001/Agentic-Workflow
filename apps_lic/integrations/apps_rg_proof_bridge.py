@@ -291,6 +291,42 @@ def proof_provenance_for(
     }
 
 
+def shared_proof_ssot_stamp() -> dict[str, Any]:
+    """Versioned identity of the shared candidate-proof SSOT (W6).
+
+    apps_rg (resume) and apps_lic (outreach) both source proof from the same
+    ``augmented_skills_graph``; this stamp is the version/digest both surfaces
+    compare so resume and outreach proof cannot silently drift.
+    """
+    idx = load_apps_rg_proof_index()
+    return {
+        "ssot_source": idx.graph_source,
+        "graph_version": idx.graph_version,
+        "graph_digest": idx.graph_digest,
+        "available": idx.available,
+        "snapshot_pointer": idx.snapshot_pointer,
+    }
+
+
+def shared_proof_ssot_matches(apps_rg_graph: Mapping[str, Any]) -> bool:
+    """True when an apps_rg-loaded graph payload is the SAME shared SSOT version
+    apps_lic reads (no resume<->outreach drift). False if either is unavailable
+    or the versions diverge.
+    """
+    idx = load_apps_rg_proof_index()
+    if not idx.available:
+        return False
+    try:
+        from apps_rg.fact_inventory.augmented_skills_graph import (  # noqa: PLC0415
+            graph_version_from_payload,
+        )
+
+        rg_version = graph_version_from_payload(dict(apps_rg_graph))
+    except Exception:  # guardian: allow-broad-exception -- drift check is best-effort; any failure means we cannot assert a match
+        return False
+    return bool(rg_version) and rg_version == idx.graph_version
+
+
 def recipient_fit_weight(
     *,
     apps_rg_skill_ids: tuple[str, ...] | list[str],
@@ -364,4 +400,6 @@ __all__ = [
     "load_apps_rg_proof_index",
     "proof_provenance_for",
     "recipient_fit_weight",
+    "shared_proof_ssot_matches",
+    "shared_proof_ssot_stamp",
 ]
