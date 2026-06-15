@@ -1,59 +1,37 @@
-"""SessionStart — worktree-per-chat guard.
+"""SessionStart — named worktree advisor.
 
-Intent (per user directive 2026-06-08): every chat/feature gets its own
-**registered git worktree** cut from the default branch, rather than just a new
-branch in the primary checkout. When HEAD is on a protected branch
-(``main``/``master``), this hook creates a fresh ``feat/chat-<stamp>-<hex>``
-branch in a sibling worktree such as ``C:/Git/Agentic-Workflow-FRESH-chat-*``
-and instructs the assistant to perform all work for the chat inside that
-worktree.
+This hook is intentionally non-mutating. It does not create branches, add worktrees,
+fast-forward trunks, link runtime caches, or clean up old worktrees.
 
-KNOWN CONSTRAINT (documented, accepted): a SessionStart hook is a subprocess and
-**cannot relocate the already-running session's working directory** into the new
-worktree. It therefore creates the worktree and emits ``additionalContext`` telling
-the assistant to ``cd`` into the worktree path and target files there. The hard
-teeth live in ``before_file_edit_branch_guard.py``, which is worktree-aware: it
-allows edits whose owning working tree is on a non-protected branch (i.e. inside
-the chat worktree) and blocks edits to the primary checkout while it is on a
-protected branch — nudging all mutation into the worktree.
+The sustainable model is one registered sibling worktree per durable workstream, not
+one timestamped worktree per chat. If a session starts on a protected branch
+(``main``/``master`` by default), this hook emits guidance for choosing or creating a
+named sibling worktree such as:
 
-Behaviour:
-* HEAD on a protected branch -> create worktree + chat branch; emit context.
-* HEAD already on a non-protected branch -> no-op (already isolated).
-* Worktree/branch already exists, git unavailable, not a repo -> fail-soft (allow).
+    git worktree add ../Agentic-Workflow-FRESH-apps-rg -b work/apps-rg origin/main
 
-Self-contained: does not depend on ``lib.claude_hook_common`` (absent in some
-checkouts). Always exits 0 (proactive half; never blocks session start).
-
-On worktree create it ALSO (best-effort, fail-soft):
-  * item #2 — junctions the gitignored runtime caches (``data/cache/chromadb`` etc.) from
-    the primary into the new worktree, so the first apps_rg run is not broken by a missing
-    cache (see ``tools/git/worktree_runtime_links.py``);
-  * item #3 — reports how far ``origin/main`` is ahead of the new worktree's base, advising a
-    ``git rebase`` when the base was cut from a stale local trunk.
+The hard enforcement remains in ``before_file_edit_branch_guard.py``: edits to a
+protected checkout are blocked, while edits inside any non-protected branch worktree
+are allowed.
 
 Bypass: ``BRANCH_PER_CHAT_BYPASS=1`` or ``WORKTREE_PER_CHAT_BYPASS=1``.
 Protected set override: ``BRANCH_PER_CHAT_PROTECTED=main,master,release`` (csv).
 Worktree parent override: ``CHAT_WORKTREE_ROOT=/abs/path`` (default ``<repo-parent>``).
 Worktree directory prefix: ``WORKTREE_DIR_PREFIX=Agentic-Workflow-FRESH``.
-Branch prefix override: ``WORKTREE_BRANCH_PREFIX=feat/``.
-Runtime links: ``WORKTREE_LINK_DIRS`` (csv) / ``WORKTREE_LINK_DIRS_DISABLE=1`` (item #2).
-Divergence notice: ``WORKTREE_DIVERGENCE_NOTICE=0`` to silence; ``WORKTREE_DIVERGENCE_FETCH=1``
-  to fetch before counting (item #3). Trunk ref: ``WORKTREE_CLEANUP_TRUNK_REF`` (default ``origin/main``).
+Branch prefix override: ``WORKTREE_BRANCH_PREFIX=work/``.
 """
 
 from __future__ import annotations
 
-import datetime as _dt
 import json
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PROTECTED = ("main", "master")
+DEFAULT_TOPIC = "apps-rg"
 
 
 def _git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
@@ -75,77 +53,27 @@ def _trunk_ref() -> str:
     return os.environ.get("WORKTREE_CLEANUP_TRUNK_REF", "").strip() or "origin/main"
 
 
-def _trunk_branch() -> str:
-    return os.environ.get("WORKTREE_AUTODELIVER_TRUNK", "").strip() or "main"
+def _branch_prefix() -> str:
+    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip() or "work/"
+    return raw if raw.endswith("/") else f"{raw}/"
 
 
-def _cut_base() -> str:
-    """Base ref a new worktree is cut from. Item #B: ``origin/<trunk>`` when resolvable, so
-    every lane starts CURRENT (kills the "local main 60 behind origin" drift). Best-effort
-    fetch first; empty string falls back to the current HEAD (offline / no remote).
-
-    Disable with ``WORKTREE_CUT_FROM_TRUNK=0``.
-    """
-    if os.environ.get("WORKTREE_CUT_FROM_TRUNK") == "0":
-        return ""
-    trunk = _trunk_ref()
-    _git("fetch", "origin", _trunk_branch(), "--quiet")  # best-effort; ignore failure
-    rc, _ = _git("rev-parse", "--verify", "--quiet", trunk)
-    return trunk if rc == 0 else ""
+def _worktree_parent() -> Path:
+    override = os.environ.get("CHAT_WORKTREE_ROOT", "").strip()
+    return Path(override) if override else REPO_ROOT.parent
 
 
-def _sync_local_trunk(branch: str) -> str:
-    """Item #D: fast-forward the local trunk to ``origin/<trunk>`` when the primary checkout is
-    on the trunk AND clean, so "local main == GitHub main" holds. No-op (returns "") when the
-    primary is dirty (concurrent work) or not on the trunk. Best-effort; never raises.
-
-    Disable with ``WORKTREE_SYNC_LOCAL_TRUNK=0``.
-    """
-    if os.environ.get("WORKTREE_SYNC_LOCAL_TRUNK") == "0":
-        return ""
-    if branch != _trunk_branch():
-        return ""
-    rc_st, st = _git("status", "--porcelain")
-    if rc_st != 0 or st.strip():
-        return ""  # primary has concurrent work — leave it alone
-    rc, count = _git("rev-list", "--count", f"HEAD..{_trunk_ref()}")
-    if rc != 0 or not count.isdigit() or int(count) <= 0:
-        return ""  # already current
-    rc_ff, _ = _git("merge", "--ff-only", _trunk_ref())
-    return f"local '{branch}' fast-forwarded to {_trunk_ref()} (+{count})." if rc_ff == 0 else ""
+def _worktree_dir_prefix() -> str:
+    raw = os.environ.get("WORKTREE_DIR_PREFIX", "").strip().strip("/\\")
+    return raw or REPO_ROOT.name
 
 
-def _link_runtime(wt_path: Path) -> str:
-    """Item #2: junction the gitignored runtime caches from the primary into ``wt_path``.
-
-    Best-effort and fail-soft — linking is advisory. Imports the SSOT linker from
-    ``tools/git`` with a try/except so the hook never breaks if the module is absent.
-    """
-    try:
-        if str(REPO_ROOT) not in sys.path:
-            sys.path.insert(0, str(REPO_ROOT))
-        from tools.git.worktree_runtime_links import link_runtime_dirs, summarize
-
-        return summarize(link_runtime_dirs(REPO_ROOT, wt_path))
-    except Exception as exc:  # guardian: allow-broad-except -- hook fail-soft: linking is advisory
-        return f"runtime-data links: skipped ({exc}); run `python tools/git/worktree_doctor.py --link`."
+def _branch_name(topic: str = DEFAULT_TOPIC) -> str:
+    return f"{_branch_prefix()}{topic}"
 
 
-def _divergence_note(wt_path: Path) -> str:
-    """Item #3: advise a rebase when ``origin/main`` is ahead of the new worktree's base."""
-    if os.environ.get("WORKTREE_DIVERGENCE_NOTICE") == "0":
-        return ""
-    trunk = _trunk_ref()
-    if os.environ.get("WORKTREE_DIVERGENCE_FETCH") == "1":
-        _git("fetch", "origin", "main", "--quiet", cwd=wt_path)  # best-effort
-    rc, count = _git("rev-list", "--count", f"HEAD..{trunk}", cwd=wt_path)
-    if rc != 0 or not count.isdigit() or int(count) <= 0:
-        return ""
-    return (
-        f"⚠️ {trunk} is {count} commit(s) ahead of this worktree's base — run "
-        f"`git rebase {trunk}` inside the worktree before building (the base was cut from a "
-        f"local trunk that may lag the remote)."
-    )
+def _worktree_path(topic: str = DEFAULT_TOPIC) -> Path:
+    return _worktree_parent() / f"{_worktree_dir_prefix()}-{topic}"
 
 
 def _protected() -> set[str]:
@@ -162,96 +90,6 @@ def _bypass() -> bool:
     )
 
 
-def _branch_prefix() -> str:
-    raw = os.environ.get("WORKTREE_BRANCH_PREFIX", "").strip() or "feat/"
-    return raw if raw.endswith("/") else f"{raw}/"
-
-
-def _worktree_parent() -> Path:
-    override = os.environ.get("CHAT_WORKTREE_ROOT", "").strip()
-    if override:
-        return Path(override)
-    return REPO_ROOT.parent
-
-
-def _worktree_dir_prefix() -> str:
-    raw = os.environ.get("WORKTREE_DIR_PREFIX", "").strip().strip("/\\")
-    return raw or REPO_ROOT.name
-
-
-def _worktree_slug(stamp: str, hexpart: str) -> str:
-    return f"chat-{stamp}-{hexpart}"
-
-
-def _branch_name(slug: str) -> str:
-    return f"{_branch_prefix()}{slug}"
-
-
-def _worktree_path(slug: str) -> Path:
-    return _worktree_parent() / f"{_worktree_dir_prefix()}-{slug}"
-
-
-def _path_key(path: Path) -> str:
-    return os.path.normcase(os.path.normpath(str(path.resolve())))
-
-
-def _registered_worktree_paths() -> set[str]:
-    rc, porcelain = _git("worktree", "list", "--porcelain")
-    if rc != 0:
-        return set()
-    paths: set[str] = set()
-    for line in porcelain.splitlines():
-        if line.startswith("worktree "):
-            raw = line[len("worktree ") :].strip()
-            if raw:
-                paths.add(_path_key(Path(raw)))
-    return paths
-
-
-def _is_registered_worktree(path: Path) -> bool:
-    return _path_key(path) in _registered_worktree_paths()
-
-
-def _safe_to_remove_unregistered_path(path: Path) -> bool:
-    """Only cleanup an auto-created, non-git directory that cannot hold user work."""
-    try:
-        resolved = path.resolve()
-    except OSError:
-        return False
-    expected = f"{_worktree_dir_prefix()}-chat-"
-    try:
-        expected_parent = _worktree_parent().resolve()
-    except OSError:
-        return False
-    if resolved.parent != expected_parent:
-        return False
-    if not resolved.name.startswith(expected):
-        return False
-    if not resolved.exists() or not resolved.is_dir():
-        return False
-    if (resolved / ".git").exists():
-        return False
-    return True
-
-
-def _remove_unregistered_path(path: Path) -> None:
-    if _safe_to_remove_unregistered_path(path):
-        shutil.rmtree(path, ignore_errors=True)
-
-
-def _add_registered(wt: Path, br: str, base: str) -> tuple[int, str]:
-    args = ["worktree", "add", str(wt), "-b", br]
-    if base:
-        args.append(base)
-    rc, out = _git(*args)
-    if rc != 0:
-        return rc, out
-    if _is_registered_worktree(wt):
-        return 0, out
-    _remove_unregistered_path(wt)
-    return 1, "git worktree add completed but the path was not registered in git worktree list"
-
-
 def _read_payload() -> dict:
     try:
         raw = sys.stdin.read()
@@ -264,6 +102,42 @@ def _read_payload() -> dict:
         return {}
 
 
+def _parse_worktrees(porcelain: str) -> list[dict[str, str]]:
+    out: list[dict[str, str]] = []
+    cur: dict[str, str] = {}
+    for line in porcelain.splitlines():
+        if not line.strip():
+            if cur:
+                out.append(cur)
+                cur = {}
+            continue
+        if line.startswith("worktree "):
+            cur = {"path": line[len("worktree ") :].strip()}
+        elif line.startswith("branch "):
+            ref = line[len("branch ") :].strip()
+            cur["branch"] = ref[len("refs/heads/") :] if ref.startswith("refs/heads/") else ref
+    if cur:
+        out.append(cur)
+    return out
+
+
+def _worktree_summary(limit: int = 8) -> str:
+    rc, porcelain = _git("worktree", "list", "--porcelain")
+    if rc != 0:
+        return "Existing worktrees: unavailable (`git worktree list` failed)."
+    rows = _parse_worktrees(porcelain)
+    if not rows:
+        return "Existing worktrees: none registered."
+    rendered = [
+        f"  - {row.get('branch', '(detached)')}  {row.get('path', '')}".rstrip()
+        for row in rows[:limit]
+    ]
+    extra = len(rows) - len(rendered)
+    if extra > 0:
+        rendered.append(f"  - ... {extra} more")
+    return "Existing worktrees:\n" + "\n".join(rendered)
+
+
 def _emit_context(message: str) -> None:
     out = {
         "hookSpecificOutput": {
@@ -274,8 +148,30 @@ def _emit_context(message: str) -> None:
     sys.stdout.write(json.dumps(out))
 
 
+def _guidance(branch: str) -> str:
+    wt_path = _worktree_path()
+    new_branch = _branch_name()
+    trunk = _trunk_ref()
+    return (
+        f"worktree-isolation: this session is on protected branch '{branch}'. "
+        "Claude no longer auto-creates timestamped chat worktrees. Choose an existing "
+        "named workstream worktree, or create one explicitly before editing "
+        "(replace `apps-rg` with the durable topic name):\n"
+        f"    git worktree add {wt_path} -b {new_branch} {trunk}\n"
+        f"    cd {wt_path}\n\n"
+        "Use durable topic names such as `apps-rg`, `governance`, or `ci`; avoid "
+        "`chat/<timestamp>` branches. Edits to protected checkouts are still blocked by "
+        "the PreToolUse edit guard.\n\n"
+        f"{_worktree_summary()}\n\n"
+        "Cleanup is explicit: run "
+        "`python .claude/hooks/prune_merged_chat_worktrees.py --dry-run` to inspect, "
+        "then `--delete-merged` when you intentionally want to remove delivered local "
+        "worktrees/branches."
+    )
+
+
 def main() -> int:
-    payload = _read_payload()
+    _read_payload()  # drain SessionStart stdin; contents are not needed.
 
     if _bypass():
         return 0
@@ -284,69 +180,9 @@ def main() -> int:
     if rc != 0 or not branch:
         return 0  # not a git repo / git unavailable — fail-soft
     if branch not in _protected():
-        return 0  # already on an isolated branch — nothing to do
+        return 0  # already isolated
 
-    session_id = str(payload.get("session_id") or payload.get("sessionId") or "")
-    hexpart = (session_id.replace("-", "")[:8]) or "00000000"
-    stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%d-%H%M%S")
-    slug = _worktree_slug(stamp, hexpart)
-    new_branch = _branch_name(slug)
-    wt_path = _worktree_path(slug)
-
-    try:
-        _worktree_parent().mkdir(parents=True, exist_ok=True)
-    except OSError:
-        pass
-
-    # Item #B: cut the worktree from origin/<trunk> so every lane starts current (the fetch
-    # inside _cut_base also freshens origin/main). Item #D: ff the local trunk when clean.
-    base = _cut_base()
-    sync_note = _sync_local_trunk(branch)
-
-    # Create and verify a registered worktree on a fresh branch cut from origin/<trunk>
-    # (or current tip if base="").
-    rc_wt, out_wt = _add_registered(wt_path, new_branch, base)
-    if rc_wt != 0:
-        # Retry once with a PID-uniquified branch/dir (collision), else fail-soft.
-        retry_slug = f"{slug}-{os.getpid()}"
-        new_branch = _branch_name(retry_slug)
-        wt_path = _worktree_path(retry_slug)
-        rc_wt, out_wt = _add_registered(wt_path, new_branch, base)
-    if rc_wt != 0:
-        manual_base = f" {base}" if base else ""
-        msg = (
-            f"worktree-per-chat: still on protected branch '{branch}'. Auto-worktree "
-            f"failed ({out_wt or 'unknown error'}). Create one manually before editing:\n"
-            f"    git worktree add {wt_path} -b {new_branch}{manual_base}\n"
-            f"then `cd` into it. (Set WORKTREE_PER_CHAT_BYPASS=1 for an intentional "
-            f"on-primary change.)"
-        )
-        sys.stderr.write("[HOOK WARN] " + msg + "\n")
-        _emit_context(msg)
-        return 0
-
-    # Item #2/#3: link runtime caches into the fresh worktree + report trunk divergence.
-    link_summary = _link_runtime(wt_path)
-    divergence = _divergence_note(wt_path)
-    cut_from = base if base else branch
-
-    msg = (
-        f"worktree-per-chat: this chat was on protected branch '{branch}'. Created a registered git "
-        f"worktree for the feature at:\n    {wt_path}\n"
-        f"on branch '{new_branch}' (cut from '{cut_from}').\n\n"
-        f"⚠️ ALL work for this chat must happen inside that worktree — the primary checkout "
-        f"({REPO_ROOT}) stays on '{branch}' and edits to it are blocked. First action: "
-        f"`cd {wt_path}` for shell commands, and target file edits at paths under {wt_path}. "
-        f"Commit and push from the worktree; open the PR from branch '{new_branch}'.\n"
-        f"When the scope is fully done and tests pass, emit "
-        f"`SCOPE_COMPLETE: branch={new_branch}` to auto-deliver (rebase → push to '{_trunk_branch()}')."
-    )
-    if sync_note:
-        msg += f"\n{sync_note}"
-    if link_summary:
-        msg += f"\n{link_summary}"
-    if divergence:
-        msg += f"\n{divergence}"
+    msg = _guidance(branch)
     sys.stderr.write("[HOOK] " + msg + "\n")
     _emit_context(msg)
     return 0

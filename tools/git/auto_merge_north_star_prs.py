@@ -1,11 +1,12 @@
 """Auto-merge green, north-star-relevant PRs via the GitHub REST API.
 
-This is the CLOUD-FLOW complement to the LOCAL worktree auto-deliver enforcement
+This is the CLOUD-FLOW complement to the optional LOCAL worktree delivery hook
 (``.claude/hooks/auto_deliver_on_scope_complete.py`` → ``tools/git/deliver_worktree.py``).
-Where the local hook pushes a *completed worktree* to the trunk when the assistant
-declares ``SCOPE_COMPLETE``, this tool closes the loop on the GitHub side: it scans the
+Where the local hook can push a *completed worktree* to a PR when the assistant declares
+``SCOPE_COMPLETE`` and the hook is explicitly enabled, this tool closes the loop on the GitHub
+side: it scans the
 *open PRs already on GitHub* and merges the ones that are both GREEN and ON the north star,
-so relevance-gated delivery is enforced on the cloud flow too — not just locally.
+so relevance-gated delivery is enforced on the cloud flow too.
 
 How it plugs into the relevance-gated delivery policy
 -----------------------------------------------------
@@ -21,9 +22,10 @@ Why squash is FORBIDDEN
 -----------------------
 Operator directive (``memory/MEMORY.md``): merge PRs with ``merge`` or ``rebase``, NEVER
 ``squash``. A squash-merge rewrites the commits, so the PR branch tip is no longer an
-ancestor of ``main``. The worktree auto-reaper
-(``.claude/hooks/prune_merged_chat_worktrees.py``) decides "merged?" by ancestry; a squash
-defeats it, leaving orphaned ``chat/*`` worktrees forever. This tool DEFAULTS to ``merge``,
+ancestor of ``main``. The manual cleanup script
+(``.claude/hooks/prune_merged_chat_worktrees.py``) uses ancestry/no-unique-commits checks to
+identify delivered local branches; a squash defeats that proof and leaves stale local worktrees
+and branches. This tool DEFAULTS to ``merge``,
 accepts ``rebase``, and HARD-REFUSES ``squash`` (usage error → exit 2).
 
 Fail-soft contract (mirrors the local auto-deliver hook)
@@ -345,7 +347,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="merge",
         choices=("merge", "rebase", "squash"),
         help="Merge method (default 'merge'; 'rebase' allowed; 'squash' is REJECTED — it breaks "
-        "the worktree auto-reaper's ancestry check).",
+        "the local cleanup ancestry proof).",
     )
     p.add_argument("--trunk", default="main", help="Trunk/base branch (default 'main')")
     p.add_argument("--dry-run", action="store_true", help="Report what WOULD merge; merge nothing.")
@@ -359,7 +361,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.method == _FORBIDDEN_METHOD:
         print(
             "ERROR: --method squash is FORBIDDEN. A squash-merge rewrites commits so the PR "
-            "branch is no longer an ancestor of the trunk, defeating the worktree auto-reaper. "
+            "branch is no longer an ancestor of the trunk, defeating local cleanup ancestry proof. "
             "Use 'merge' (default) or 'rebase'.",
             file=sys.stderr,
         )

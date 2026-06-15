@@ -1,13 +1,13 @@
 """worktree-doctor — classify every git worktree and repair runtime links.
 
-The worktree-per-chat system auto-creates ``chat/*`` worktrees and auto-reaps them
-once merged+clean, but **sibling** ``feat/*`` / ``codex/*`` / ``fix/*`` worktrees
-accumulate (they are never auto-deleted — archival over deletion). This tool gives
-the visibility that prevents the pileup without auto-deleting human-named branches:
+The current model is explicit named sibling worktrees. Preferred durable lanes use
+``work/*`` branches; ``feat/*`` is accepted legacy durable work; ``chat/*`` is legacy
+ephemeral work that should not be used for new work. This tool gives the visibility
+that prevents pileup without auto-deleting human-named branches:
 
   * ``report`` (default) — list every worktree, classify it (protected / ephemeral
-    ``chat/`` / long-lived ``feat/`` / non-canonical / detached), and recommend an
-    action (REAPABLE / stale-merged → remove manually / active). Items #4 + #6.
+    ``chat/`` / durable ``work/`` or ``feat/`` / non-canonical / detached), and
+    recommend an action (stale-merged -> remove explicitly / active).
   * ``--link [<worktree>]`` — (re)create the gitignored runtime-cache junctions for a
     worktree that is missing them (the C0.2-on-fresh-worktree fix). Item #2 repair path.
   * ``--json`` — machine-readable classification.
@@ -43,8 +43,9 @@ except ImportError:  # pragma: no cover - fallback when package layout differs
     summarize = None  # type: ignore[assignment]
 
 PROTECTED = ("main", "master", "release")
-CANONICAL_PREFIXES = ("chat/", "feat/")  # item #6: two-prefix taxonomy
+CANONICAL_PREFIXES = ("work/", "feat/", "chat/")
 EPHEMERAL_PREFIX = "chat/"
+DURABLE_PREFIXES = ("work/", "feat/")
 
 
 def _git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
@@ -110,8 +111,8 @@ def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = F
             kind = "protected"
         elif branch.startswith(EPHEMERAL_PREFIX):
             kind = "ephemeral"
-        elif branch.startswith("feat/"):
-            kind = "long-lived"
+        elif branch.startswith(DURABLE_PREFIXES):
+            kind = "durable"
         else:
             kind = "non-canonical"
 
@@ -136,9 +137,9 @@ def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = F
         elif not clean:
             action = "active — uncommitted changes (keep)"
         elif kind == "ephemeral":
-            action = "REAPABLE — auto-removed at next SessionStart"
+            action = "stale-merged legacy chat worktree — remove explicitly"
         else:
-            action = "stale-merged — remove manually: git worktree remove <path>"
+            action = "stale-merged — remove explicitly: git worktree remove <path>"
 
         rows.append(
             {
@@ -149,7 +150,7 @@ def classify(repo_root: Path, trunk_ref: str = "origin/main", do_fetch: bool = F
                 "merged": merged,
                 "clean": clean,
                 "keep_marker": keep,
-                "canonical": kind in ("protected", "ephemeral", "long-lived"),
+                "canonical": kind in ("protected", "ephemeral", "durable"),
                 "action": action,
             }
         )
@@ -189,8 +190,9 @@ def _render_table(result: dict) -> str:
     if noncanon:
         lines.append("")
         lines.append(
-            f"{len(noncanon)} non-canonical branch prefix(es) — taxonomy is chat/* (ephemeral) "
-            "+ feat/* (long-lived); migrate or set .keep-worktree."
+            f"{len(noncanon)} non-canonical branch prefix(es) — preferred taxonomy is work/* "
+            "(durable), feat/* (legacy durable), and chat/* (legacy ephemeral); migrate or set "
+            ".keep-worktree."
         )
     return "\n".join(lines)
 

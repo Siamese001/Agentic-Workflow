@@ -1,4 +1,4 @@
-"""Stop — auto-deliver a worktree when the assistant signals SCOPE_COMPLETE.
+"""Stop — optional PR delivery when the assistant signals SCOPE_COMPLETE.
 
 Item #C of the worktree-lifecycle streamline (operating model: "Parallel lanes, current
 base, auto-deliver"). When the assistant declares a scope fully done by emitting a
@@ -7,10 +7,8 @@ line-anchored marker in its FINAL message:
     SCOPE_COMPLETE: branch=<branch> [tests=<pytest-target>]
 
 …and ``WORKTREE_AUTODELIVER`` is enabled, this hook runs ``tools/git/deliver_worktree.py``
-for that branch's worktree: rebase on ``origin/<trunk>`` → optional retest → push ``HEAD``
-to the trunk on GitHub. Delivery is safety-gated by the deliver tool itself (refuses on a
-protected branch / dirty tree, aborts on rebase conflict, skips push on a failing retest,
-never force-pushes).
+for that branch's worktree: rebase on ``origin/<trunk>`` → optional retest → push a branch
+and open a PR by default. Direct trunk push is deliberately opt-in.
 
 Why a marker + Stop hook (not "push on every Stop"): the Stop payload carries no response
 text, so the hook recovers the assistant's LAST message from ``transcript_path`` and only
@@ -19,9 +17,9 @@ declares the scope complete this turn. A per-(branch, HEAD-sha) state file makes
 idempotent so a lingering marker in history never re-delivers.
 
 Modes (``WORKTREE_AUTODELIVER``):
-  * ``1``   → deliver via ``--mode push`` (push HEAD to the trunk on GitHub).
-  * ``pr``  → deliver via ``--mode pr`` (push branch + open a PR).
-  * ``dry`` → run the deliver tool with ``--dry-run`` (plan only; nothing pushed).
+  * ``1`` / ``pr`` → deliver via ``--mode pr`` (push branch + open a PR).
+  * ``dry``        → run PR delivery with ``--dry-run`` (plan only; nothing pushed).
+  * ``push``       → explicit direct ``HEAD:<trunk>`` push; not used by default settings.
   * unset / ``0`` → disabled (hook no-ops).
 
 Trunk: ``WORKTREE_AUTODELIVER_TRUNK`` (default ``main``). Timeout:
@@ -210,12 +208,12 @@ def build_deliver_argv(
 def _resolve_mode() -> tuple[str | None, bool]:
     """(deliver --mode, dry) from WORKTREE_AUTODELIVER, or (None, _) when disabled."""
     val = (os.environ.get("WORKTREE_AUTODELIVER") or "").strip().lower()
-    if val == "1":
-        return "push", False
-    if val == "pr":
+    if val in {"1", "pr"}:
         return "pr", False
     if val == "dry":
-        return "push", True
+        return "pr", True
+    if val == "push":
+        return "push", False
     return None, False
 
 

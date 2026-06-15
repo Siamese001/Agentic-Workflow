@@ -143,11 +143,13 @@ def test_build_deliver_argv_skip_tests_and_dry() -> None:
 
 def test_resolve_mode(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("WORKTREE_AUTODELIVER", "1")
-    assert hook._resolve_mode() == ("push", False)
+    assert hook._resolve_mode() == ("pr", False)
     monkeypatch.setenv("WORKTREE_AUTODELIVER", "pr")
     assert hook._resolve_mode() == ("pr", False)
     monkeypatch.setenv("WORKTREE_AUTODELIVER", "dry")
-    assert hook._resolve_mode() == ("push", True)
+    assert hook._resolve_mode() == ("pr", True)
+    monkeypatch.setenv("WORKTREE_AUTODELIVER", "push")
+    assert hook._resolve_mode() == ("push", False)
     monkeypatch.delenv("WORKTREE_AUTODELIVER", raising=False)
     assert hook._resolve_mode() == (None, False)
 

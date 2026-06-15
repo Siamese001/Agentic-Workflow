@@ -17,8 +17,9 @@ Steps (in order; any failure stops before push):
   7. Reap (``--mode push`` only; default on, ``--no-reap`` to skip): after a clean push the
      branch == trunk tip (merged), so remove this worktree + delete the branch (local ``-d`` +
      best-effort remote). Run from the primary checkout — never from inside the worktree being
-     removed. ``--mode pr`` does not reap (branch not merged yet — the SessionStart reaper
-     ``prune_merged_chat_worktrees.py`` cleans it after the PR merges).
+     removed. ``--mode pr`` does not reap because the branch is not merged yet; after the PR
+     merges, run ``prune_merged_chat_worktrees.py --dry-run`` and then ``--delete-merged`` if the
+     report is correct.
 
 ``--dry-run`` prints the plan and the trunk-divergence count without mutating anything.
 Never force-pushes. Stdlib only; explicit subprocess timeouts.
@@ -133,7 +134,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print("  [dry-run] would: require-clean → rebase → "
               + (f"retest({args.test}) → " if args.test else "")
-              + ("open PR (reap after merge by prune_merged_chat_worktrees.py)" if args.mode == "pr"
+              + ("open PR (explicit cleanup after merge via prune_merged_chat_worktrees.py)" if args.mode == "pr"
                  else f"push HEAD:{trunk_branch}"
                       + (" → reap worktree + delete branch" if args.reap else " (--no-reap: keep)")))
         return 0

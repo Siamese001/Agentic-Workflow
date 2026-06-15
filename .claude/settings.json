@@ -1,8 +1,6 @@
 {
   "env": {
-    "WORKTREE_AUTODELIVER": "1",
-    "WORKTREE_AUTODELIVER_TRUNK": "main",
-    "WORKTREE_REAP_BRANCH_PREFIXES": "chat/,feat/,fix/,codex/"
+    "WORKTREE_AUTODELIVER": "0"
   },
   "permissions": {
     "allow": [
@@ -34,10 +32,6 @@
           {
             "type": "command",
             "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_start_branch_guard.py\""
-          },
-          {
-            "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/prune_merged_chat_worktrees.py\""
           }
         ]
       },
@@ -177,10 +171,6 @@
           {
             "type": "command",
             "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/after_agent_governance_dispatch.py\""
-          },
-          {
-            "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/auto_deliver_on_scope_complete.py\""
           }
         ]
       }
