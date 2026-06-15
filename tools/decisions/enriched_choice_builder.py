@@ -1,9 +1,11 @@
-"""Enriched choice builder for standard ask_user_question decisions.
+"""Enriched choice builder for standard AskUserQuestion decisions.
 
-Lightweight wrapper that adds UI invariants to ask_user_question options:
-- [confidence=X.XX] prefix on all options
-- ⭐ star indicator on recommended option (exactly one when recommendation exists)
-- · trade-off: segment in every option
+Lightweight wrapper that adds UI invariants to AskUserQuestion options:
+- Recommended option label ends with ``(Recommended)`` and is first when present
+- Numeric confidence prefix on every option description
+- ``[RECOMMENDED ⭐ confidence=X.XX]`` prefix on the recommended description
+- Pros and Cons segments in every option
+- Flip condition on the recommended option
 - ASK_USER_QUESTION_PACKET telemetry (returned, caller must emit)
 
 Per hardened plan ui-choice-consistency-zero-loss-hardened-d9f3a1:
@@ -38,20 +40,44 @@ class EnrichedOption:
     label: str
     description: str
     tradeoff: str
+    pros: str
+    cons: str
     confidence: float
     confidence_source: ConfidenceSource
+    flip_condition: str = "new evidence changes the risk or blast radius"
     is_recommended: bool = False
 
+    @staticmethod
+    def _clip(text: str, limit: int) -> str:
+        text = " ".join(str(text or "").split())
+        if len(text) <= limit:
+            return text
+        return text[: max(0, limit - 1)].rstrip(" .,;:") + "…"
+
     def format_label(self) -> str:
-        """Format label with optional star and confidence."""
+        """Format label with optional recommended suffix."""
+        base = f"{self.id}. {self.label}"
         if self.is_recommended:
-            return f"⭐ {self.id} [confidence={self.confidence:.2f}] {self.label}"
-        return f"{self.id} [confidence={self.confidence:.2f}] {self.label}"
+            return f"{base} (Recommended)"
+        return base
 
     def format_description(self) -> str:
-        """Format description with confidence prefix and trade-off segment."""
-        prefix = f"[confidence={self.confidence:.2f}]"
-        return f"{prefix} · trade-off: {self.tradeoff} · {self.description}"
+        """Format description with canonical confidence, pros, cons, and trade-off text."""
+        if self.is_recommended:
+            prefix = f"[RECOMMENDED ⭐ confidence={self.confidence:.2f}]"
+            flip = f" Flips if {self._clip(self.flip_condition, 54)}."
+        else:
+            prefix = f"[confidence={self.confidence:.2f}]"
+            flip = ""
+        essential = (
+            f"{prefix} Pros: {self._clip(self.pros, 54)}. "
+            f"Cons: {self._clip(self.cons, 54)}.{flip}"
+        )
+        optional = (
+            f" Trade-off: {self._clip(self.tradeoff, 44)}. "
+            f"{self._clip(self.description, 44)}."
+        )
+        return essential + optional
 
     def to_ask_user_question_dict(self) -> dict[str, str]:
         """Convert to ask_user_question-compatible dict."""
@@ -71,10 +97,14 @@ class TelemetryPacket:
     option_count: int = 0
     recommended_index: int | None = None
     confidence_source: ConfidenceSource = "heuristic_default"
+    question: str = ""
+    confidence_score: float | None = None
+    options: list[dict[str, Any]] = field(default_factory=list)
     invariants: list[str] = field(default_factory=lambda: [
         "confidence_prefix",
-        "tradeoff_segment",
+        "pros_cons_segment",
         "star_marker",
+        "recommended_label",
     ])
 
     def to_dict(self) -> dict[str, Any]:
@@ -85,6 +115,9 @@ class TelemetryPacket:
             "option_count": self.option_count,
             "recommended_index": self.recommended_index,
             "confidence_source": self.confidence_source,
+            "question": self.question,
+            "confidence_score": self.confidence_score,
+            "options": self.options,
             "invariants": self.invariants,
         }
 
@@ -125,6 +158,25 @@ def _validate_options(
             raise ValueError(f"Option {opt.get('id')!r} must have 'tradeoff' field")
 
 
+def _derive_pros_cons(description: str, tradeoff: str, opt: dict[str, Any]) -> tuple[str, str]:
+    """Return visible Pros/Cons text, deriving from legacy tradeoff inputs when needed."""
+    pros = str(opt.get("pros") or "").strip()
+    cons = str(opt.get("cons") or "").strip()
+    if pros and cons:
+        return pros, cons
+
+    text = str(tradeoff or "").strip()
+    lowered = text.lower()
+    for marker in (" but ", " although ", " though ", " while "):
+        idx = lowered.find(marker)
+        if idx > 0:
+            left = text[:idx].strip(" .;")
+            right = text[idx + len(marker):].strip(" .;")
+            return pros or left or str(description), cons or right or text
+
+    return pros or str(description), cons or text
+
+
 def _enrich_options(
     options: list[dict[str, Any]],
     recommended_id: str | None,
@@ -137,6 +189,7 @@ def _enrich_options(
         label = opt["label"]
         description = opt["description"]
         tradeoff = opt["tradeoff"]
+        pros, cons = _derive_pros_cons(description, tradeoff, opt)
 
         # Confidence handling per hardened review #5
         explicit_confidence = opt.get("confidence")
@@ -152,18 +205,28 @@ def _enrich_options(
 
         # Determine if recommended
         is_recommended = recommended_id is not None and opt_id == recommended_id
+        flip_condition = str(
+            opt.get("flip_condition")
+            or opt.get("flips_if")
+            or "new evidence changes the risk or blast radius"
+        ).strip()
 
         enriched.append(EnrichedOption(
             id=opt_id,
             label=label,
             description=description,
             tradeoff=tradeoff,
+            pros=pros,
+            cons=cons,
             confidence=confidence,
             confidence_source=confidence_source,
+            flip_condition=flip_condition,
             is_recommended=is_recommended,
         ))
 
-    return enriched
+    if recommended_id is None:
+        return enriched
+    return sorted(enriched, key=lambda opt: 0 if opt.is_recommended else 1)
 
 
 def _validate_star_invariant(enriched: list[EnrichedOption]) -> None:
@@ -192,6 +255,9 @@ def build_enriched_choice_question(
             - label: str (short title)
             - description: str (what it does)
             - tradeoff: str (required - trade-off/consequence)
+            - pros: str (optional; derived from description/tradeoff if missing)
+            - cons: str (optional; derived from tradeoff if missing)
+            - flip_condition: str (optional; recommended option only)
             - confidence: float (optional, uses DEFAULT_HEURISTIC_CONFIDENCE if missing)
         recommended_id: ID of recommended option, or None for no recommendation.
         telemetry_context: Optional context string for telemetry.
@@ -213,14 +279,19 @@ def build_enriched_choice_question(
         ...             "id": "A",
         ...             "label": "Fast approach",
         ...             "description": "Quick implementation",
-        ...             "tradeoff": "Higher risk of edge-case misses",
+        ...             "pros": "Fastest path to a working fix",
+        ...             "cons": "Higher risk of edge-case misses",
+        ...             "tradeoff": "Fastest path but higher risk of edge-case misses",
         ...             "confidence": 0.74,
         ...         },
         ...         {
         ...             "id": "B",
         ...             "label": "Safe approach",
         ...             "description": "Conservative implementation",
+        ...             "pros": "Validates assumptions before editing",
+        ...             "cons": "Slower than the direct patch",
         ...             "tradeoff": "Slower but validates all assumptions",
+        ...             "flip_condition": "the bug is isolated to one obvious line",
         ...             "confidence": 0.88,
         ...         },
         ...     ],
@@ -243,11 +314,13 @@ def build_enriched_choice_question(
     # Validate star invariant
     _validate_star_invariant(enriched)
 
-    # Find recommended index for telemetry
+    # Find recommended index for telemetry after ordering.
     recommended_index = None
+    recommended_confidence = None
     for i, opt in enumerate(enriched):
         if opt.is_recommended:
             recommended_index = i
+            recommended_confidence = opt.confidence
             break
 
     # Determine confidence source for telemetry
@@ -263,13 +336,16 @@ def build_enriched_choice_question(
     # Build telemetry packet (per hardened review #7: concrete, returned, caller emits)
     telemetry = TelemetryPacket(
         context=telemetry_context or "enriched_choice",
+        question=question,
         option_count=len(enriched),
         recommended_index=recommended_index,
+        confidence_score=recommended_confidence,
         confidence_source=telemetry_confidence_source,
     )
 
     # Convert to ask_user_question format
     ask_user_question_options = [opt.to_ask_user_question_dict() for opt in enriched]
+    telemetry.options = ask_user_question_options
 
     return {
         "question": question,

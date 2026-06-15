@@ -11,7 +11,11 @@
 --     "recommended_index": int | null,
 --     "confidence_source": "explicit" | "heuristic_default",
 --     "confidence_score": float,
---     "invariants": ["confidence_prefix", "tradeoff_segment", "star_marker"],
+--     "invariants": ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"],
+--     "options": [{"label": str, "description": str}],
+--     "recommended_label": str | null,
+--     "selected_label": str | null,
+--     "matched_recommendation": bool | null,
 --     "telemetry_context": str
 --   }
 --

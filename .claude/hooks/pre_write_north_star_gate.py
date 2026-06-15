@@ -17,9 +17,10 @@ Why a block-and-instruct (not a direct tool call): a PreToolUse hook returns an 
 cannot itself render ``AskUserQuestion``. So it blocks and hands the model the exact option shape.
 
 Choices the operator gets (rendered by the model per .claude/skills/ask-user-question-recommendation):
-  1. "Park it (Recommended)"  [RECOMMENDED ⭐ confidence=<earned>]  -> append to PARKING_LOT.md, abandon edit
-  2. "Do it now"              [confidence=<inverse>] dopamine-seeking -> retry with NORTH_STAR_GATE_BYPASS=1
-  3. "Park + promote at review"[confidence≈0.5]                     -> park, decide at weekly review
+  1. "Park it (Recommended)" desc begins [RECOMMENDED ⭐ confidence=<earned>]
+  2. "Do it now" desc begins [confidence=<inverse>]
+  3. "Park + promote at review" desc begins [confidence=0.50]
+Each description includes Pros: and Cons:, and the recommended one includes Flips if.
 
 Auto-disables when lanes_passing >= lanes_total (after ship; no nagging). Always-exempt: PARKING_LOT.md
 (capture must never be blocked), the gate's own state, and the harness's ~/.claude scratch.
@@ -120,13 +121,15 @@ def _instruction(rel: str, state: dict) -> str:
         "operator now via the native AskUserQuestion tool, recommended option FIRST, using exactly "
         "this shape (per .claude/skills/ask-user-question-recommendation):\n\n"
         "  Q: \"This write is off the 11/11 apps_rg E2E north star. Park it or do it now?\"\n"
-        f"  1. \"Park it (Recommended)\"  desc: \"[RECOMMENDED ⭐ confidence={park}] Anti-dopamine: "
-        f"capture to PARKING_LOT.md and stay on the lanes. Earned from your base-rate — only {pct}% of "
-        f"recent commits were north-star, so ~{int(park*100)}% of off-target work historically did not "
+        f"  1. \"Park it (Recommended)\"  desc: \"[RECOMMENDED ⭐ confidence={park:.2f}] "
+        "Pros: captures the idea without derailing lane work. Cons: delays this governance edit. "
+        f"Flips if the edit directly unblocks the failing lane today. Earned from your base-rate: only {pct}% "
+        f"of recent commits were north-star, so ~{int(park*100)}% of off-target work historically did not "
         "advance the goal.\"\n"
-        f"  2. \"Do it now\"  desc: \"[confidence={dop}] Dopamine-seeking: off-north-star meta-work while "
-        "lanes are incomplete. Overrides the recommendation.\"\n"
-        f"  3. \"Park + promote at weekly review\"  desc: \"[confidence=0.5] Capture now, decide later.\"\n\n"
+        f"  2. \"Do it now\"  desc: \"[confidence={dop:.2f}] Pros: handles the meta-work immediately. "
+        "Cons: continues off-north-star work while lanes are incomplete.\"\n"
+        "  3. \"Park + promote at weekly review\"  desc: \"[confidence=0.50] Pros: preserves the idea "
+        "and creates a review point. Cons: adds a later triage step.\"\n\n"
         "On choice 1 or 3: append a one-line `[P]` entry to PARKING_LOT.md and ABANDON this edit.\n"
         f"On choice 2: retry the edit with {_BYPASS_ENV}=1 in the environment.\n"
         f"(Gate auto-disables at {total}/{total}. Suppress: {_MODE_ENV}=warn|off or {_BYPASS_ENV}=1.)"

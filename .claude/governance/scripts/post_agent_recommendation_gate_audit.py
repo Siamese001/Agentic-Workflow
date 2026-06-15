@@ -57,8 +57,10 @@ _PROSE_DECISION_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
 
 _REMEDY = (
     "A decision was surfaced in prose without AskUserQuestion. Fire AskUserQuestion with "
-    "[confidence=0.NN] options (⭐ on the recommended one), or decide-and-proceed — never a "
-    "prose options menu. SSOT: no-prose-options-menus memory; CLAUDE.md Author-Gate."
+    "the recommended option first and labeled '(Recommended)'; descriptions must begin with "
+    "[RECOMMENDED ⭐ confidence=0.NN] for the recommendation and [confidence=0.NN] for every "
+    "other option, with Pros: and Cons: text. Or decide-and-proceed — never a prose options menu. "
+    "SSOT: no-prose-options-menus memory; CLAUDE.md Author-Gate."
 )
 
 

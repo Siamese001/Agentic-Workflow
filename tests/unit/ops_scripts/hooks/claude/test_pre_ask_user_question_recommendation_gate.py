@@ -80,21 +80,25 @@ def test_bypass_allows(_clean_env):
 
 def test_compliant_recommended_first_with_confidence():
     payload = _auq(
-        _opt("Do it inline (Recommended)", "high confidence; flips if blast radius grows"),
-        _opt("Refactor first", "lower-risk but slower"),
+        _opt(
+            "Do it inline (Recommended)",
+            "[RECOMMENDED ⭐ confidence=0.82] Pros: fastest fix. Cons: more local coupling. Flips if blast radius grows.",
+        ),
+        _opt("Refactor first", "[confidence=0.61] Pros: cleaner shape. Cons: slower delivery."),
     )
     code, reason = gate.evaluate(payload)
     assert code == 0
     assert reason.startswith("ok:")
 
 
-def test_confidence_keyword_satisfies():
+def test_confidence_keyword_without_numeric_prefix_blocks():
     payload = _auq(
-        _opt("Merge as-is (Recommended)", "Confidence: medium — flips on new failures"),
-        _opt("Hold", "wait for review"),
+        _opt("Merge as-is (Recommended)", "Confidence: medium. Pros: quick. Cons: risky. Flips if tests fail."),
+        _opt("Hold", "[confidence=0.40] Pros: safer. Cons: slower."),
     )
-    code, _ = gate.evaluate(payload)
-    assert code == 0
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "must begin" in reason
 
 
 # --------------------------------------------------------------------------------------
@@ -119,7 +123,7 @@ def test_recommended_without_confidence_blocks_by_default():
     code, reason = gate.evaluate(payload)
     assert code == 2
     assert "contract" in reason
-    assert "confidence signal" in reason
+    assert "confidence" in reason
 
 
 def test_recommended_without_confidence_bypass_allows(_clean_env):
@@ -145,11 +149,14 @@ def test_symmetric_question_not_blocked_by_default():
 
 def test_recommended_not_first_is_flagged():
     payload = _auq(
-        _opt("Other", "x"),
-        _opt("Pick this (Recommended)", "high confidence"),
+        _opt("Other", "[confidence=0.40] Pros: low churn. Cons: weaker outcome."),
+        _opt(
+            "Pick this (Recommended)",
+            "[RECOMMENDED ⭐ confidence=0.80] Pros: better outcome. Cons: higher churn. Flips if scope expands.",
+        ),
     )
     code, reason = gate.evaluate(payload)
-    assert code == 0
+    assert code == 2
     assert "not placed first" in reason
 
 
@@ -175,11 +182,40 @@ def test_strict_blocks_missing_recommended(_clean_env):
 def test_strict_allows_compliant(_clean_env):
     _clean_env.setenv(gate._STRICT_ENV, "1")
     payload = _auq(
-        _opt("Go (Recommended)", "high confidence"),
-        _opt("Stop", "x"),
+        _opt(
+            "Go (Recommended)",
+            "[RECOMMENDED ⭐ confidence=0.80] Pros: completes the work. Cons: touches more code. Flips if tests fail.",
+        ),
+        _opt("Stop", "[confidence=0.35] Pros: avoids churn. Cons: leaves issue open."),
     )
     code, _ = gate.evaluate(payload)
     assert code == 0
+
+
+def test_all_options_require_pros_and_cons():
+    payload = _auq(
+        _opt(
+            "Go (Recommended)",
+            "[RECOMMENDED ⭐ confidence=0.80] Pros: completes the work. Flips if tests fail.",
+        ),
+        _opt("Stop", "[confidence=0.35] Pros: avoids churn. Cons: leaves issue open."),
+    )
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "Pros: and Cons:" in reason
+
+
+def test_recommended_requires_flip_condition():
+    payload = _auq(
+        _opt(
+            "Go (Recommended)",
+            "[RECOMMENDED ⭐ confidence=0.80] Pros: completes the work. Cons: touches more code.",
+        ),
+        _opt("Stop", "[confidence=0.35] Pros: avoids churn. Cons: leaves issue open."),
+    )
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "Flips if" in reason
 
 
 # --------------------------------------------------------------------------------------

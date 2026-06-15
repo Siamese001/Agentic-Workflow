@@ -23,6 +23,7 @@ import json
 import sqlite3
 import sys
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -46,6 +47,10 @@ from tools.ledgers.telemetry_dashboard import (
     check_vacuum_closure,
     TelemetryMetrics,
 )
+
+
+def _now_ts() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
 @pytest.fixture
@@ -113,11 +118,11 @@ class TestBuildWriteDashboardLoop:
             packet = {
                 "packet_type": "ASK_USER_QUESTION_PACKET",
                 "context": ctx,
-                "timestamp": "2026-05-10T12:00:00+00:00",
+                "timestamp": _now_ts(),
                 "option_count": 2,
                 "confidence_source": "explicit",
                 "confidence_score": 0.80,
-                "invariants": ["confidence_prefix", "tradeoff_segment", "star_marker"],
+                "invariants": ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"],
             }
             write_decision(packet, selected_index=0)
 
@@ -136,9 +141,9 @@ class TestVacuumClosureHealth:
             packet = {
                 "packet_type": "ASK_USER_QUESTION_PACKET",
                 "context": f"healthy-{i}",
-                "timestamp": "2026-05-10T12:00:00+00:00",
+                "timestamp": _now_ts(),
                 "option_count": 2,
-                "invariants": ["confidence_prefix", "tradeoff_segment", "star_marker"],
+                "invariants": ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"],
             }
             write_decision(packet)
 
@@ -186,7 +191,7 @@ class TestPrecedentQueryFromLedger:
             packet = {
                 "packet_type": "ASK_USER_QUESTION_PACKET",
                 "context": ctx,
-                "timestamp": "2026-05-10T12:00:00+00:00",
+                "timestamp": _now_ts(),
                 "option_count": 2,
             }
             write_decision(packet)
@@ -210,12 +215,12 @@ class TestPrecedentQueryFromLedger:
             telemetry_context="approach-choice",
         )
 
-        # User chose A (index 0) despite B being recommended (index 1)
-        write_decision(payload["telemetry_packet"], selected_index=0)
+        # User chose A (index 1 after the recommended B is moved first).
+        write_decision(payload["telemetry_packet"], selected_index=1)
 
         decisions = list_recent_decisions(context="approach-choice")
-        assert decisions[0]["recommended_index"] == 1  # B was recommended
-        assert decisions[0]["selected_index"] == 0  # User chose A
+        assert decisions[0]["recommended_index"] == 0  # B was recommended and moved first
+        assert decisions[0]["selected_index"] == 1  # User chose A
         # This mismatch is the key learning signal: recommendation != selection
 
     def test_confidence_score_retrievable_for_calibration(self, temp_ledger):
@@ -225,7 +230,7 @@ class TestPrecedentQueryFromLedger:
             packet = {
                 "packet_type": "ASK_USER_QUESTION_PACKET",
                 "context": "calibration-test",
-                "timestamp": f"2026-05-10T10:0{i}:00+00:00",
+                "timestamp": _now_ts(),
                 "option_count": 2,
                 "confidence_source": "explicit",
                 "confidence_score": score,
@@ -313,7 +318,7 @@ class TestFullShadowLearningCycle:
             telemetry_context="import-cycle",
         )
 
-        write_decision(payload_r2["telemetry_packet"], selected_index=1)
+        write_decision(payload_r2["telemetry_packet"], selected_index=0)
 
         # Verify the learning cycle is captured
         all_decisions = list_recent_decisions(context="import-cycle", limit=10)
@@ -321,8 +326,8 @@ class TestFullShadowLearningCycle:
 
         # Most recent first
         latest = all_decisions[0]
-        assert latest["recommended_index"] == 1  # B now recommended
-        assert latest["selected_index"] == 1  # User agreed this time
+        assert latest["recommended_index"] == 0  # B now recommended and moved first
+        assert latest["selected_index"] == 0  # User agreed this time
 
     def test_telemetry_dashboard_reflects_shadow_cycle(self, temp_ledger):
         """Dashboard metrics show the full shadow cycle health."""

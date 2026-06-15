@@ -136,7 +136,7 @@ def write_decision(
         ...     "option_count": 2,
         ...     "recommended_index": 0,
         ...     "confidence_source": "heuristic_default",
-        ...     "invariants": ["confidence_prefix", "tradeoff_segment", "star_marker"],
+        ...     "invariants": ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"],
         ... }
         >>> decision_id = write_decision(packet, selected_index=0)
     """
@@ -147,6 +147,7 @@ def write_decision(
         created_at=packet.get("timestamp") or datetime.now(timezone.utc).isoformat(),
         decision_type=packet.get("decision_type", "enriched_choice"),
         context=packet.get("context", ""),
+        question=packet.get("question", ""),
         option_count=packet.get("option_count", 0),
         recommended_index=packet.get("recommended_index"),
         selected_index=selected_index,
@@ -266,7 +267,7 @@ def main() -> int:
             "recommended_index": 0,
             "confidence_source": "heuristic_default",
             "confidence_score": 0.74,
-            "invariants": ["confidence_prefix", "tradeoff_segment", "star_marker"],
+            "invariants": ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"],
         }
         decision_id = write_decision(test_packet, selected_index=0)
         print(f"Wrote test decision: {decision_id}")

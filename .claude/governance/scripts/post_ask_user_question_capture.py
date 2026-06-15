@@ -246,13 +246,20 @@ def build_decision_rows(tool_input: dict, tool_response: Any) -> list[dict]:
             "option_count": len(options),
             "recommended_index": rec_idx,
             "confidence_source": conf_source,
-            "invariants": ["confidence_prefix", "tradeoff_segment", "star_marker"],
+            "invariants": ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"],
             "options": [
                 {"label": str(o.get("label", "")), "description": str(o.get("description", ""))}
                 for o in options
             ],
+            "recommended_label": (
+                str(options[rec_idx].get("label", "")) if rec_idx is not None else None
+            ),
             "selected_label": (
                 str(options[sel_idx].get("label", "")) if sel_idx is not None else None
+            ),
+            "selected_index": sel_idx,
+            "matched_recommendation": (
+                bool(sel_idx == rec_idx) if sel_idx is not None and rec_idx is not None else None
             ),
         }
         if conf_score is not None:

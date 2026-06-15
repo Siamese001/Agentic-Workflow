@@ -1,6 +1,6 @@
 ---
 name: ask-user-question-recommendation
-description: Single SSOT for shaping a native AskUserQuestion call on an Author-Gate-class decision (>=2 approaches, different blast radius). Use before invoking AskUserQuestion: recommended option first, its label ends (Recommended), every option description begins with numeric [confidence=0.NN], the recommended one with [RECOMMENDED ⭐ confidence=0.NN].
+description: Single SSOT for shaping a native AskUserQuestion call on an Author-Gate-class decision (>=2 approaches, different blast radius). Use before invoking AskUserQuestion: recommended option first, its label ends (Recommended), every option description begins with numeric [confidence=0.NN], the recommended one with [RECOMMENDED ⭐ confidence=0.NN], and every option includes Pros: and Cons:.
 trigger: model_decision
 ---
 
@@ -15,8 +15,8 @@ recommendation marker and a confidence band. The native tool gives a clickable o
 the recommendation + confidence now live **in the option text**, produced by hand to this
 convention. The companion deterministic check is
 `.claude/governance/scripts/pre_ask_user_question_recommendation_gate.py` (PreToolUse hook
-`before_ask_user_question.py`), which blocks a marked recommendation that carries no
-confidence signal.
+`before_ask_user_question.py`), which blocks a marked recommendation that lacks confidence,
+pros/cons, or flip criteria.
 
 > There is exactly **one** convention — this file. The legacy `author-gate-packet-builder`
 > and `author-gate-ui-renderer` skills were retired and archived (ADR-093); do not invoke
@@ -37,18 +37,18 @@ The two legal moves at a decision point are: **fire `AskUserQuestion`** (this co
 **decide-and-proceed** when one option dominates. A prose "do you want X or Y?" menu is the
 forbidden third move (see memory `no-prose-options-menus`).
 
-## The required shape (canonical — user directive 2026-06-13)
+## The required shape (canonical — user directives 2026-06-13 and 2026-06-15)
 
 1. **Recommended option goes first**, and its `label` ends with `(Recommended)`.
 2. **Every option's `description` begins with a numeric `[confidence=0.NN]` prefix.**
 3. The **recommended option's `description` begins with `[RECOMMENDED ⭐ confidence=0.NN]`** —
    the `⭐` appears exactly once, on the recommended option only.
-4. After the prefix, each description carries a one-line trade-off; the recommended one
-   names the single fact that would **flip** the recommendation.
+4. After the prefix, each description carries `Pros:` and `Cons:` in one line; the recommended
+   one also names the single fact that would **flip** the recommendation.
 
-This single shape satisfies all three live constraints at once: the native-tool convention
+This single shape satisfies all live constraints at once: the native-tool convention
 (`(Recommended)` label), the gate (`(Recommended)` + a confidence token, recommended first),
-and the numeric `[confidence=0.NN]` user directive.
+the numeric `[confidence=0.NN]` user directive, and the explicit pros/cons criterion.
 
 ### Template
 
@@ -59,9 +59,9 @@ AskUserQuestion(questions=[{
   "multiSelect": False,
   "options": [
     {"label": "<preferred> (Recommended)",
-     "description": "[RECOMMENDED ⭐ confidence=0.NN] <one-line trade-off>. Flips if <condition>."},
-    {"label": "<alt 1>", "description": "[confidence=0.NN] <one-line trade-off>"},
-    {"label": "<alt 2>", "description": "[confidence=0.NN] <one-line trade-off>"},
+     "description": "[RECOMMENDED ⭐ confidence=0.NN] Pros: <benefit>. Cons: <cost>. Flips if <condition>."},
+    {"label": "<alt 1>", "description": "[confidence=0.NN] Pros: <benefit>. Cons: <cost>."},
+    {"label": "<alt 2>", "description": "[confidence=0.NN] Pros: <benefit>. Cons: <cost>."},
   ],
 }])
 ```
@@ -78,9 +78,8 @@ Always emit the **number** (`[confidence=0.72]`), not the band word. State the *
 condition** explicitly — it is the load-bearing half of a confidence signal
 ("`[RECOMMENDED ⭐ confidence=0.72]` … flips if CI red turns out to be caused by our diff").
 
-> The live gate tolerates a bare `high`/`medium`/`low` word as a legacy fallback so it never
-> hard-blocks an older-style call, but the numeric `[confidence=0.NN]` prefix is the **only
-> canonical form** — author every option that way.
+> The numeric `[confidence=0.NN]` prefix is the **only canonical form**. Word-band confidence
+> (`high`/`medium`/`low`) is useful prose context, but it does not satisfy the output contract.
 
 ## Consult precedent before stating confidence (meta-learning loop)
 
@@ -115,7 +114,7 @@ with this confidence shape — never as a prose menu or a bare "I recommend X".
 ## Forbidden
 
 - ❌ A neutral menu with no `(Recommended)` option on an Author-Gate-class decision.
-- ❌ A recommended option with no `[confidence=0.NN]` prefix / flip condition.
+- ❌ A recommended option with no `[confidence=0.NN]` prefix / Pros/Cons / flip condition.
 - ❌ Placing the recommended option anywhere but first; more than one `⭐`.
 - ❌ Emitting `AUTHOR_GATE_PACKET:` / `DECISION_CAPTURED:` or invoking the retired
   packet-builder / ui-renderer skills — the pipeline is gone (ADR-093).
@@ -123,8 +122,8 @@ with this confidence shape — never as a prose menu or a bare "I recommend X".
 
 ## Bypass / strict
 
-- A marked recommendation with **no confidence signal blocks by default** (the core §6 /
-  user-directive violation).
+- A marked recommendation with **missing confidence, Pros/Cons, or flip criteria blocks by default**
+  (the core §6 / user-directive violation).
 - A missing/last `(Recommended)` is **advisory** (exit 0) by default — it may be a legitimate
   symmetric question.
 - `ASK_REC_GUARD_STRICT=1` — gate also blocks the advisory cases (exit 2).

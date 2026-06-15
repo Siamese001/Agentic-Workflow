@@ -94,7 +94,7 @@ class TestWriteDecision:
             "recommended_index": 0,
             "confidence_source": "heuristic_default",
             "confidence_score": 0.74,
-            "invariants": ["confidence_prefix", "tradeoff_segment"],
+            "invariants": ["confidence_prefix", "pros_cons_segment"],
         }
         
         decision_id = write_decision(packet, selected_index=0)
@@ -110,7 +110,7 @@ class TestWriteDecision:
             "recommended_index": 1,
             "confidence_source": "explicit",
             "confidence_score": 0.88,
-            "invariants": ["confidence_prefix", "tradeoff_segment", "star_marker"],
+            "invariants": ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"],
         }
         
         decision_id = write_decision(packet)
@@ -252,7 +252,7 @@ class TestSQLiteRoundTripIntegrity:
             "recommended_index": 1,
             "confidence_source": "explicit",
             "confidence_score": 0.88,
-            "invariants": ["confidence_prefix", "tradeoff_segment", "star_marker"],
+            "invariants": ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"],
             "decision_type": "enriched_choice",
         }
         
@@ -276,7 +276,7 @@ class TestSQLiteRoundTripIntegrity:
 
     def test_invariants_json_survives_round_trip(self, temp_ledger):
         """Invariants list is serialized/deserialized correctly."""
-        invariants = ["confidence_prefix", "tradeoff_segment", "star_marker"]
+        invariants = ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"]
         packet = {
             "packet_type": "ASK_USER_QUESTION_PACKET",
             "context": "invariant-test",
@@ -373,7 +373,7 @@ class TestSQLiteRoundTripIntegrity:
             "recommended_index": 2,
             "confidence_source": "explicit",
             "confidence_score": 0.91,
-            "invariants": ["confidence_prefix", "tradeoff_segment", "star_marker"],
+            "invariants": ["confidence_prefix", "pros_cons_segment", "star_marker", "recommended_label"],
             "custom_field": "should_survive",
         }
         

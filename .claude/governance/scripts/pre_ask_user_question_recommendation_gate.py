@@ -21,18 +21,18 @@ post-supersession successor to the retired legacy AskUserQuestion routing gate. 
 the proposed ``AskUserQuestion`` options and flags when:
 
 * no option label ends with ``(Recommended)`` — the §6 marker is absent (Finding 1);
-* the recommended option's description carries no confidence signal — the retired
-  renderer's confidence band is missing (Finding 2);
-* the recommended option is not placed first (native-tool authoring convention).
+* the recommended option's description does not begin with the canonical confidence prefix;
+* any option description lacks a numeric confidence prefix or Pros/Cons text;
+* the recommended option is not placed first (native-tool authoring convention);
+* the recommended option lacks the required ``Flips if`` calibration condition.
 
 Canonical option shape (SSOT)
 -----------------------------
 Authoring-convention SSOT: the ``ask-user-question-recommendation`` skill. Recommended option
 first; its ``label`` ends ``(Recommended)``; **every** option ``description`` begins with a
 numeric ``[confidence=0.NN]`` prefix, and the recommended one with
-``[RECOMMENDED ⭐ confidence=0.NN]`` (one star). The confidence check below stays tolerant of a
-bare ``high``/``medium``/``low`` word as a *legacy fallback* so an older-style call never
-hard-blocks — but the numeric ``[confidence=0.NN]`` prefix is the only canonical form.
+``[RECOMMENDED ⭐ confidence=0.NN]`` (one star). Every option also carries ``Pros:`` and
+``Cons:`` text; the recommended option names the fact that would flip the recommendation.
 
 Decision contract (``evaluate``)
 --------------------------------
@@ -40,18 +40,18 @@ Returns ``(0, reason)`` to allow or ``(2, reason)`` to block.
 
 * Not an ``AskUserQuestion`` call ............ allow
 * ``ASK_REC_GUARD_BYPASS=1`` ................. allow (logged)
-* Every question has a marked + confident recommendation ... allow
-* A marked ``(Recommended)`` option with **no confidence signal** ... **BLOCK (exit 2) by
-  default** — the exact §6 / user-directive violation (a recommendation must carry a
-  confidence level). Override only with ``ASK_REC_GUARD_BYPASS=1``.
+* Every question has a marked + canonical recommendation ... allow
+* A marked ``(Recommended)`` option with a non-canonical shape ... **BLOCK (exit 2) by
+  default** — the exact §6 / user-directive violation (a recommendation must carry
+  confidence, pros/cons, and flip criteria). Override only with ``ASK_REC_GUARD_BYPASS=1``.
 * **No** option marked ``(Recommended)`` at all, or recommended-not-first ... **ADVISORY
   (exit 0)** by default; **BLOCK** only when ``ASK_REC_GUARD_STRICT=1``.
 
-Default-to-enforcement (user directive 2026-06-13): the core case — *a recommendation was
-made but carries no confidence* — blocks by default. The soft case stays advisory because a
-missing recommendation may be a legitimate symmetric preference question, not a miss. Fail
-policy: OPEN — any unexpected error → allow (exit 0). A governance gate must never be the
-reason a turn hangs or dies.
+Default-to-enforcement (user directive 2026-06-13, reinforced 2026-06-15): the core case —
+*a recommendation was made but does not carry the full output criteria* — blocks by default.
+The soft case stays advisory because a missing recommendation may be a legitimate symmetric
+preference question, not a miss. Fail policy: OPEN — any unexpected error → allow (exit 0).
+A governance gate must never be the reason a turn hangs or dies.
 """
 
 from __future__ import annotations
@@ -74,9 +74,15 @@ _CALIB_ADVISORY_ENV = "ASK_REC_CALIBRATION_ADVISORY"
 
 # A "(Recommended)" suffix on an option label (case-insensitive, trailing-space tolerant).
 _RECOMMENDED_RE = re.compile(r"\(\s*recommended\s*\)\s*$", re.IGNORECASE)
-# A confidence signal in the recommended option's description: the word "confidence" or an
-# explicit band token. Loose on purpose — this is an advisory presence check, not a parser.
-_CONFIDENCE_RE = re.compile(r"confiden|\b(?:high|medium|low)\b", re.IGNORECASE)
+# Canonical visible option description prefixes.
+_NUMERIC_PREFIX_RE = re.compile(r"^\[confidence=([01]\.\d{2})\]\s*", re.IGNORECASE)
+_RECOMMENDED_PREFIX_RE = re.compile(
+    r"^\[RECOMMENDED\s+⭐\s+confidence=([01]\.\d{2})\]\s*",
+    re.IGNORECASE,
+)
+_PROS_RE = re.compile(r"\bPros:\s*\S", re.IGNORECASE)
+_CONS_RE = re.compile(r"\bCons:\s*\S", re.IGNORECASE)
+_FLIPS_RE = re.compile(r"\bFlips?\s+if\b", re.IGNORECASE)
 
 
 def _bypass() -> bool:
@@ -141,9 +147,9 @@ def calibration_notes(payload: dict) -> list[str]:
 def question_findings(idx: int, question: dict) -> list[tuple[str, str]]:
     """Return ``(severity, message)`` findings for one question (empty == compliant).
 
-    severity is ``"block"`` (a marked recommendation with NO confidence — the core
-    violation, blocks by default) or ``"advisory"`` (no recommendation marked at all, or
-    recommended-not-first — soft, advisory unless ``ASK_REC_GUARD_STRICT=1``).
+    severity is ``"block"`` (a marked recommendation with non-canonical output criteria —
+    the core violation, blocks by default) or ``"advisory"`` (no recommendation marked at
+    all — soft, advisory unless ``ASK_REC_GUARD_STRICT=1``).
     """
     if not isinstance(question, dict):
         return []
@@ -162,15 +168,44 @@ def question_findings(idx: int, question: dict) -> list[tuple[str, str]]:
             f"[{header}] no option marked '(Recommended)' (§6 marker absent, or a symmetric question)",
         )]
     findings: list[tuple[str, str]] = []
-    rec_descs = [str(opt_dicts[i].get("description", "")) for i in rec_positions]
-    if not any(_CONFIDENCE_RE.search(d) for d in rec_descs):
+    if len(rec_positions) > 1:
         findings.append((
             "block",
-            f"[{header}] recommended option carries no confidence signal "
-            "(e.g. 'confidence=0.NN' or high/medium/low)",
+            f"[{header}] more than one option is marked '(Recommended)'",
         ))
-    if 0 not in rec_positions:
-        findings.append(("advisory", f"[{header}] recommended option is not placed first"))
+    rec_idx = rec_positions[0]
+    rec_desc = str(opt_dicts[rec_idx].get("description", ""))
+    if rec_idx != 0:
+        findings.append(("block", f"[{header}] recommended option is not placed first"))
+    if not _RECOMMENDED_PREFIX_RE.search(rec_desc):
+        findings.append((
+            "block",
+            f"[{header}] recommended description must begin "
+            "'[RECOMMENDED ⭐ confidence=0.NN]'",
+        ))
+    if rec_desc.count("⭐") != 1:
+        findings.append(("block", f"[{header}] recommended description must contain exactly one ⭐"))
+    if not _FLIPS_RE.search(rec_desc):
+        findings.append(("block", f"[{header}] recommended description must state 'Flips if ...'"))
+
+    for pos, opt in enumerate(opt_dicts):
+        desc = str(opt.get("description", ""))
+        label = str(opt.get("label", "") or f"option {pos + 1}")
+        has_prefix = (
+            bool(_RECOMMENDED_PREFIX_RE.search(desc))
+            if pos == rec_idx
+            else bool(_NUMERIC_PREFIX_RE.search(desc))
+        )
+        if not has_prefix:
+            findings.append((
+                "block",
+                f"[{header}] {label} description must begin with numeric confidence prefix",
+            ))
+        if not (_PROS_RE.search(desc) and _CONS_RE.search(desc)):
+            findings.append((
+                "block",
+                f"[{header}] {label} description must include Pros: and Cons:",
+            ))
     return findings
 
 
@@ -197,12 +232,12 @@ def evaluate(payload: dict) -> tuple[int, str]:
             (block_findings if severity == "block" else advisory_findings).append(message)
 
     if not block_findings and not advisory_findings:
-        return 0, "ok: every question has a marked, confidence-bearing recommendation"
+        return 0, "ok: every question has canonical AskUserQuestion output criteria"
 
     _log_violation(payload, "; ".join(block_findings + advisory_findings))
 
-    # Default to enforcement: a marked (Recommended) option with no confidence signal is the
-    # exact contract violation — block by default (override only via ASK_REC_GUARD_BYPASS=1).
+    # Default to enforcement: a marked (Recommended) option with non-canonical output criteria
+    # is the exact contract violation — block by default.
     if block_findings:
         return 2, f"AskUserQuestion recommendation/confidence contract: {'; '.join(block_findings)}"
     # Soft findings (no recommendation marked — possibly a symmetric question; or not-first):
