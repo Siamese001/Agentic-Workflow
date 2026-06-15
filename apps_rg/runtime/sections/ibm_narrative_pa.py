@@ -107,9 +107,9 @@ def _theme_budget_block() -> str:
         "MUST begin with a past-tense action verb. NEVER open with a preposition or "
         "scene-setting lead-in (At/In/As/With/During/While/Throughout/Across/Within/From/"
         "Upon/Amid) - 'At IBM, ...' is auto-rejected. Avoid mechanical openers led/"
-        "successfully/also/built/delivered/designed/implemented/architected; prefer Drove, "
-        "Owned, Scaled, Championed, Operationalized, Established. Keep the employer anchor "
-        "'IBM' mid-sentence, never as the opener.",
+        "successfully/also/built/delivered/designed/implemented/architected/scaled/productized; "
+        "prefer Drove, Owned, Championed, Operationalized, Established, Anchored, Stewarded. "
+        "Keep the employer anchor 'IBM' mid-sentence, never as the opener.",
         "Theme families (trigger vocabulary classes):",
     ]
     for fid, phrases in IBM_NARRATIVE_THEME_TRIGGERS:
