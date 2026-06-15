@@ -108,3 +108,66 @@ def test_sync_local_trunk_skips_non_trunk_branch(monkeypatch: pytest.MonkeyPatch
     monkeypatch.delenv("WORKTREE_AUTODELIVER_TRUNK", raising=False)
     # On a feature branch (not the trunk) the primary is never ff'd.
     assert guard._sync_local_trunk("feat/x") == ""
+
+
+def test_default_worktree_path_is_registered_sibling_style(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("CHAT_WORKTREE_ROOT", raising=False)
+    monkeypatch.delenv("WORKTREE_DIR_PREFIX", raising=False)
+    monkeypatch.delenv("WORKTREE_BRANCH_PREFIX", raising=False)
+
+    slug = "chat-20260615-abcdef12"
+
+    assert guard._branch_name(slug) == f"feat/{slug}"
+    assert guard._worktree_path(slug) == guard.REPO_ROOT.parent / f"{guard.REPO_ROOT.name}-{slug}"
+    assert ".chat-worktrees" not in str(guard._worktree_path(slug))
+
+
+def test_worktree_branch_prefix_override_normalizes_slash(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("WORKTREE_BRANCH_PREFIX", "codex")
+
+    assert guard._branch_name("chat-1") == "codex/chat-1"
+
+
+def test_is_registered_worktree_normalizes_porcelain_path(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "Agentic-Workflow-FRESH-chat-1"
+    porcelain = f"worktree {target.as_posix()}\nHEAD abc123\nbranch refs/heads/feat/chat-1\n"
+
+    def fake_git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
+        assert args == ("worktree", "list", "--porcelain")
+        return 0, porcelain
+
+    monkeypatch.setattr(guard, "_git", fake_git)
+
+    assert guard._is_registered_worktree(target)
+
+
+def test_add_registered_removes_unregistered_directory(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("CHAT_WORKTREE_ROOT", str(tmp_path))
+    monkeypatch.setenv("WORKTREE_DIR_PREFIX", "Agentic-Workflow-FRESH")
+    target = guard._worktree_path("chat-unregistered")
+    target.mkdir()
+
+    calls: list[tuple[str, ...]] = []
+
+    def fake_git(*args: str, cwd: Path | None = None) -> tuple[int, str]:
+        calls.append(args)
+        if args[:2] == ("worktree", "add"):
+            return 0, "created"
+        if args == ("worktree", "list", "--porcelain"):
+            return 0, ""
+        return 1, ""
+
+    monkeypatch.setattr(guard, "_git", fake_git)
+
+    rc, out = guard._add_registered(target, "feat/chat-unregistered", "origin/main")
+
+    assert rc == 1
+    assert "not registered" in out
+    assert not target.exists()
+    assert calls[0][:2] == ("worktree", "add")
