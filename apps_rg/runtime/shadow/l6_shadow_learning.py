@@ -91,6 +91,8 @@ def build_l6_shadow_learning_record(
 
     x2 = x2_raw if isinstance(x2_raw, dict) else {}
     x1 = x1_raw if isinstance(x1_raw, dict) else {}
+    l6_v40_raw = _load_json(ad / "l6_v40_shadow_eval_package.json")
+    l6_v40 = l6_v40_raw if isinstance(l6_v40_raw, dict) else {}
     x2_sum = summarize_x2(x2)
     x1_sum = summarize_x1d(x1)
     x3_sum = summarize_x3(x3_raw)
@@ -251,6 +253,13 @@ def build_l6_shadow_learning_record(
             "x1d_llm_judge_outputs_ref": _ref(rr, ad, "x1d_llm_judge_outputs.json"),
             "l2_output_ref": _ref(rr, ad, "l2_output.json"),
             "l6_shadow_eval_package_ref": _ref(rr, ad, "l6_shadow_eval_package.json"),
+            "l6_v40_shadow_eval_package_ref": _ref(rr, ad, "l6_v40_shadow_eval_package.json"),
+            "l6_v40_shadow_eval_spans_ref": _ref(rr, ad, "l6_v40_shadow_eval_spans.json"),
+        },
+        "l6_v40_shadow_eval_snapshot": {
+            "readiness_decision": l6_v40.get("readiness_decision"),
+            "valid_v40_shadow_exhaust": l6_v40.get("valid_v40_shadow_exhaust"),
+            "v40_gap_codes": list(l6_v40.get("v40_gap_codes") or []),
         },
         "consumed_x3_code": x3_sum.get("x3_code"),
         "consumed_x2_blocking_failures": failed_ids,

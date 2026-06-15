@@ -1,0 +1,53 @@
+{
+  "receipt_version": "1.0",
+  "audit_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+  "timestamp": "2026-06-14T19:02:05Z",
+  "changed_files": [
+    "agentic_core/L6_observability/shadow_eval/__init__.py",
+    "agentic_core/L6_observability/shadow_eval/contracts.py",
+    "agentic_core/L6_observability/shadow_eval/ingest.py",
+    "agentic_core/L6_observability/shadow_eval/observer.py",
+    "agentic_core/L6_observability/shadow_eval/otel_spans.py",
+    "agentic_core/L6_observability/shadow_eval/pipeline.py",
+    "agentic_core/L6_observability/shadow_eval/adapters/__init__.py",
+    "agentic_core/L6_observability/shadow_eval/adapters/runtime_exhaust_v40.py",
+    "agentic_core/L6_observability/shadow_eval/span_export.py",
+    "agentic_core/runtime/contracts/future_run_promotion.py",
+    "agentic_core/runtime/l6/writeback_proposer.py",
+    "agentic_core/L0_routing/types/guardian_registry_types.py",
+    "agentic_core/L2_execution/enforcement/static_dispatch_registry.py",
+    "agentic_core/utils/runners/ssot_discovery_validator.py",
+    "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py",
+    "agentic_core/L0_routing/config/path_constants.py",
+    "agentic_core/L0_routing/types/guardian_contract_types.py"
+  ],
+  "classifications": {
+    "agentic_core/L6_observability/shadow_eval/__init__.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_observability/shadow_eval/contracts.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_observability/shadow_eval/ingest.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_observability/shadow_eval/observer.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_observability/shadow_eval/otel_spans.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_observability/shadow_eval/pipeline.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_observability/shadow_eval/adapters/__init__.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_observability/shadow_eval/adapters/runtime_exhaust_v40.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_observability/shadow_eval/span_export.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/runtime/contracts/future_run_promotion.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/runtime/l6/writeback_proposer.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L0_routing/types/guardian_registry_types.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L2_execution/enforcement/static_dispatch_registry.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/utils/runners/ssot_discovery_validator.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L0_routing/config/path_constants.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L0_routing/types/guardian_contract_types.py": "GENERIC_INFRASTRUCTURE"
+  },
+  "outcome": "ALLOW_WITH_GENERIC_REFACTOR",
+  "forbidden_literals_found": [],
+  "receipts_verified": [
+    "artifacts/governance/l6_v40_core_addition_author_gate_receipt.json"
+  ],
+  "action_required": "Review and merge via PR after CI repeats GOV-3, boundary, Windows path-budget, Guardian, and targeted L6 tests.",
+  "next_steps": [
+    "Keep draft PR open until CI and boundary gates pass.",
+    "Merge only after required governance checks are green."
+  ]
+}

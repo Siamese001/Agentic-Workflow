@@ -24,6 +24,7 @@ from apps_shared.proof.runtime_drivers._driver_base import (
     write_artifact,
     write_markdown,
 )
+from apps_eval.l6_shadow_bridge import build_driver_l6_shadow_bridge_payload
 
 
 class AppsEvalDriver:
@@ -131,6 +132,13 @@ class AppsEvalDriver:
         k, p = write_artifact(ctx, rel_filename="gate_coverage_report.json", payload=gate_coverage_report, kind="GateCoverageReport")
         outputs[k] = p
         k, p = write_artifact(ctx, rel_filename="adg_delta_summary.json", payload=adg_delta_summary, kind="ADGDeltaSummary")
+        outputs[k] = p
+        bridge = build_driver_l6_shadow_bridge_payload(
+            eval_id=fixture.get("eval_id"),
+            app_scorecards=app_scorecards,
+            output_refs=outputs,
+        )
+        k, p = write_artifact(ctx, rel_filename="apps_eval_l6_shadow_bridge.json", payload=bridge, kind="AppsEvalL6ShadowBridge")
         outputs[k] = p
 
         # app_proof_index.md

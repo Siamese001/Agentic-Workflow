@@ -193,8 +193,8 @@ class StaticDispatchRegistry:
     Example::
 
         registry = StaticDispatchRegistry()
-        registry.register("guardian.hygiene", "agentic_core.L0_routing.scripts.run_guardian_hygiene")
-        registry.register("guardian.c0", "agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty")
+        registry.register("guardian.hygiene", "ops_scripts.dev_tools.L0_routing_scripts.run_guardian_hygiene")
+        registry.register("guardian.c0", "ops_scripts.dev_tools.L0_routing_scripts.run_guardian_c0_sovereignty")
 
         # Later — no __import__ needed:
         mod = registry.dispatch("guardian.hygiene")
@@ -214,7 +214,7 @@ class StaticDispatchRegistry:
         Args:
             key: Logical dispatch key (e.g. ``"guardian.hygiene"``).
             module_path: Fully-qualified Python module path (e.g.
-                ``"agentic_core.L0_routing.scripts.run_guardian_hygiene"``).
+                ``"ops_scripts.dev_tools.L0_routing_scripts.run_guardian_hygiene"``).
         """
         import uuid as _uuid  # noqa: PLC0415
 
@@ -316,13 +316,13 @@ def get_guardian_registry() -> StaticDispatchRegistry:
         _GUARDIAN_REGISTRY = StaticDispatchRegistry()
         _GUARDIAN_REGISTRY.register_many(
             {
-                "guardian.hygiene": "agentic_core.L0_routing.scripts.run_guardian_hygiene",
-                "guardian.c0_sovereignty": "agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty",
-                "guardian.change_package": "agentic_core.L0_routing.scripts.run_guardian_change_package_activation",
-                "guardian.cross_layer": "agentic_core.L0_routing.scripts.run_guardian_cross_layer_mutation",
-                "guardian.escalation_determinism": "agentic_core.L0_routing.scripts.run_guardian_escalation_determinism",
-                "guardian.gateway_bypass": "agentic_core.L0_routing.scripts.run_guardian_gateway_bypass",
-                "guardian.all": "agentic_core.L0_routing.scripts.run_all_guardians",
+                "guardian.hygiene": "ops_scripts.dev_tools.L0_routing_scripts.run_guardian_hygiene",
+                "guardian.c0_sovereignty": "ops_scripts.dev_tools.L0_routing_scripts.run_guardian_c0_sovereignty",
+                "guardian.change_package": "ops_scripts.dev_tools.L0_routing_scripts.run_guardian_change_package_activation",
+                "guardian.cross_layer": "ops_scripts.dev_tools.L0_routing_scripts.run_guardian_cross_layer_mutation",
+                "guardian.escalation_determinism": "ops_scripts.dev_tools.L0_routing_scripts.run_guardian_escalation_determinism",
+                "guardian.gateway_bypass": "ops_scripts.dev_tools.L0_routing_scripts.run_guardian_gateway_bypass",
+                "guardian.all": "ops_scripts.dev_tools.L0_routing_scripts.run_all_guardians",
                 "seam.canonical_truth": "agentic_core.L0_routing.seams.canonical_truth_seam",
                 "meta.apply_ops": "agentic_core.L0_routing.meta_control.meta_apply_ops",
             },

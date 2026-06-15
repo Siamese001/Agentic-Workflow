@@ -16,11 +16,13 @@ REQUIRED_REPO_FILES = [
     "CLAUDE.md",
     "AGENTS.md",
     "docs/codex-backup-adapter.md",
+    ".claude/rules/windows-path-budget.md",
     ".claude/skills/structured-reasoning/SKILL.md",
     ".claude/skills/mcp-integration/SKILL.md",
     ".claude/skills/plan-governance/SKILL.md",
     ".mcp.json",
     ".claude/settings.json",
+    "scripts/governance/check_windows_path_budget.py",
 ]
 
 REQUIRED_CODEX_SKILLS = [
@@ -35,6 +37,8 @@ REQUIRED_ANCHORS = {
         "scripts/governance/verify_codex_backup.py",
     ],
     "docs/codex-backup-adapter.md": [
+        ".claude/rules/windows-path-budget.md",
+        "scripts/governance/check_windows_path_budget.py",
         ".claude/skills/structured-reasoning/SKILL.md",
         ".claude/skills/mcp-integration/SKILL.md",
         "agentic-workflow-verification",
@@ -43,6 +47,8 @@ REQUIRED_ANCHORS = {
 
 REQUIRED_SKILL_ANCHORS = {
     "agentic-workflow-governance/SKILL.md": [
+        ".claude/rules/windows-path-budget.md",
+        "scripts/governance/check_windows_path_budget.py",
         ".claude/skills/structured-reasoning/SKILL.md",
         ".claude/skills/mcp-integration/SKILL.md",
         "native plan mode",

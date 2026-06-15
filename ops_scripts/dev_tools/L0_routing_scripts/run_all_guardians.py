@@ -395,6 +395,14 @@ def main() -> int:
     )
     parser.add_argument("--strict", action="store_true")
     parser.add_argument(
+        "--strict-errors-only",
+        action="store_true",
+        help=(
+            "Exit non-zero only when one or more guardians error. "
+            "Guardian FAIL findings are still emitted in the aggregate artifact."
+        ),
+    )
+    parser.add_argument(
         "--include-disabled",
         action="store_true",
         default=False,
@@ -421,6 +429,8 @@ def main() -> int:
             print(f"  [{status_icon}] {check.check_id}: {check.details}")
 
     if args.strict and result.status != GuardianStatus.PASS.value:
+        return 1
+    if args.strict_errors_only and result.status == GuardianStatus.ERROR.value:
         return 1
     return 0
 

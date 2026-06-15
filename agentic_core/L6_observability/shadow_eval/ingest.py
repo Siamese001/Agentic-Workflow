@@ -56,6 +56,11 @@ def _gen_id(prefix: str) -> str:
     return f"{prefix}-{uuid.uuid4().hex}"
 
 
+def is_missing_l5_certification_ref(value: object | None) -> bool:
+    ref = str(value or "").strip()
+    return not ref or ref == MISSING_CERT_REF_SENTINEL
+
+
 # ---------------------------------------------------------------------------
 # I1 — receive completed-run marker
 # ---------------------------------------------------------------------------
@@ -123,7 +128,7 @@ def validate_lineage(
         gap_codes.append(REASON_POLICY_HASH_MISMATCH)
     if not raw_exhaust.get("replay_key"):
         gap_codes.append(REASON_REPLAY_KEY_MISSING)
-    if not raw_exhaust.get("l5_certification_ref"):
+    if is_missing_l5_certification_ref(raw_exhaust.get("l5_certification_ref")):
         gap_codes.append(REASON_CERT_REF_MISSING)
     # Orphan artifacts (those without lineage parents AND not stage-anchored).
     for m in manifests:
@@ -351,6 +356,7 @@ __all__ = [
     "REASON_UNKNOWN_PROVIDER_FALLBACK",
     "REASON_CERT_REF_MISSING",
     "MISSING_CERT_REF_SENTINEL",
+    "is_missing_l5_certification_ref",
     "receive_completed_run_marker",
     "collect_source_refs",
     "validate_lineage",

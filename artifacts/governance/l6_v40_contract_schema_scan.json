@@ -1,0 +1,17 @@
+{
+  "artifact_type": "contract_schema_scan",
+  "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+  "freshness_ts": "2026-06-14T18:27:44Z",
+  "verdict": "PASS",
+  "changed_paths_covered": true,
+  "commands": [
+    "python -m pytest tests/l6_observability tests/apps_eval/test_l6_shadow_bridge.py tests/apps_rg/test_l6_v40_shadow_eval_runner.py tests/e2e/test_l6_v40_apps_rg_apps_eval.py tests/unit/agentic_core/test_l6_current_run_learning_firewall_boundary.py -q",
+    "python scripts/proof/run_l6_shadow_eval_proof.py",
+    "python scripts/proof/run_l6_apps_rg_apps_eval_e2e_proof.py"
+  ],
+  "results": [
+    "16 passed",
+    "l6_shadow_eval_runtime_proof.json wrote readiness=READY_FOR_6B approval=APPROVE activation=NEXT_RUN_START kpi_all_passing=True",
+    "l6_v40_apps_rg_apps_eval_e2e_proof.json wrote apps_rg_readiness=READY_FOR_6B apps_eval_readiness=READY_FOR_6B"
+  ]
+}

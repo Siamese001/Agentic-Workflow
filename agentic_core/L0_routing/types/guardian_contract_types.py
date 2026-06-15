@@ -1013,8 +1013,10 @@ class GuardianResult:
 
 def write_guardian_result(
     result: GuardianResult,
-    output_dir: Path,
+    output_dir: Path | str,
     filename: str = "guardian_result.json",
+    *,
+    correlation_id: str | None = None,
 ) -> Path:
     """
     Write a GuardianResult to a JSON file.
@@ -1023,14 +1025,30 @@ def write_guardian_result(
         result: The result to write.
         output_dir: Directory to write into (created if needed).
         filename: Output filename.
+        correlation_id: Optional correlation ID to attach before serialization.
 
     Returns:
         Absolute path to the written file.
     """
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    if correlation_id is not None:
+        result.correlation_id = correlation_id
+        if filename == "guardian_result.json":
+            artifact_class = (
+                ArtifactClass.AGGREGATE
+                if result.artifact_class == ArtifactClass.AGGREGATE.value
+                else ArtifactClass.INDIVIDUAL
+            )
+            filename = get_artifact_filename(
+                result.guardian_id,
+                correlation_id,
+                artifact_class,
+            )
     out_path = output_dir / filename
     assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
+    if is_v15_enforced() and not result.v15_signature:
+        maybe_sign_result(result, commit_hash="HEAD")
     out_path.write_text(result.to_json(), encoding="utf-8")
     return out_path
 

@@ -24,6 +24,8 @@ SPAN_NAMES: tuple[str, ...] = (
     "l6.ingest.gap_report_emit",
     "l6.observer.surface_isolation_check",
     "l6.observer.stage_barrier_check",
+    "l6.g28.audit_completeness",
+    "l6.g29.learning_firewall",
     "l6.readiness.evaluate",
     "l6.eval.outcome.start",
     "l6.eval.outcome.record_emit",

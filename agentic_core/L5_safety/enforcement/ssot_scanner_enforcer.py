@@ -248,20 +248,19 @@ class SSOTScanner:
         "semantic_memory": "L2",  # Semantic memory is L2
     }
 
-    # DEPRECATED: CANON_SIGNALS removed - replaced by dynamic validation
-    # SOVEREIGN_SIGNALS: set[str] = {
-    #     "healing",
-    #     "testing",
-    #     "validation",
-    #     "execution",
-    #     "orchestration",
-    #     "state",
-    #     "safety",
-    #     "cognition",
-    #     "intent",
-    #     "learning",
-    #     "planning",
-    # }
+    CANON_SIGNALS: tuple[str, ...] = (
+        "healing",
+        "testing",
+        "validation",
+        "execution",
+        "orchestration",
+        "state",
+        "safety",
+        "cognition",
+        "intent",
+        "learning",
+        "planning",
+    )
 
     def __init__(self, project_root: Path):
         """

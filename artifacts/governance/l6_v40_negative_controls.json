@@ -1,0 +1,9 @@
+{
+  "artifact_type": "negative_control_results",
+  "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+  "freshness_ts": "2026-06-14T18:27:44Z",
+  "verdict": "PASS",
+  "changed_paths_covered": true,
+  "command": "python -m pytest tests/governance/test_core_addition_receipt_schema.py tests/governance/test_core_addition_negative_controls.py -q",
+  "result": "43 passed"
+}

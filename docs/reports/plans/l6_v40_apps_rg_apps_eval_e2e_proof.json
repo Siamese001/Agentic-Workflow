@@ -1,0 +1,19 @@
+{
+  "apps_eval": {
+    "bridge_ref": "C:\\Git\\Agentic-Workflow-FRESH-l6-v40-shadow-observability-gap-closure\\artifacts\\proof\\l6_v40_apps_rg_apps_eval\\apps_eval_runs\\apps_rg_dev_resume_generation\\4e0368d827f03caf\\l6_shadow_bridge.json",
+    "current_run_mutated": false,
+    "g28_verdict": "PASS",
+    "g29_verdict": "PASS",
+    "readiness_decision": "READY_FOR_6B",
+    "record_id": "4e0368d827f03caf"
+  },
+  "apps_rg": {
+    "current_run_mutation_assertion": false,
+    "g28_verdict": "PASS",
+    "g29_verdict": "PASS",
+    "package_ref": "C:\\Git\\Agentic-Workflow-FRESH-l6-v40-shadow-observability-gap-closure\\artifacts\\proof\\l6_v40_apps_rg_apps_eval\\apps_rg_section\\l6_v40_shadow_eval_package.json",
+    "readiness_decision": "READY_FOR_6B"
+  },
+  "generated_at": "2026-06-14T18:27:26.326735+00:00",
+  "schema_version": "l6_v40_apps_rg_apps_eval_e2e.v1"
+}

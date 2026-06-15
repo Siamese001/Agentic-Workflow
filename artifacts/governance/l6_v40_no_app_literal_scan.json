@@ -1,0 +1,15 @@
+{
+  "artifact_type": "no_app_literal_scan",
+  "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+  "freshness_ts": "2026-06-14T19:02:05Z",
+  "verdict": "PASS",
+  "changed_paths_covered": true,
+  "evidence": [
+    "ops_scripts/ci/check_agentic_core_addition.py initially found one app-specific comment literal in agentic_core/runtime/contracts/future_run_promotion.py.",
+    "The comment was changed from app-specific wording to generic future-run proposal wording before final GOV-3 verification.",
+    "Post-merge Guardian namespace registry repair uses ops_scripts.dev_tools module paths and adds no apps_* literals.",
+    "Post-merge SSOT discovery compatibility repair adds no apps_* literals.",
+    "Post-merge Guardian path-constants compatibility repair adds no apps_* literals.",
+    "Post-merge Guardian result-writer compatibility repair adds no apps_* literals."
+  ]
+}

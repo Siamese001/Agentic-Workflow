@@ -1,0 +1,8 @@
+{
+  "artifact_type": "plugin_proof",
+  "plan_id": "l6-v40-shadow-observability-gap-closure-4f7c2a",
+  "freshness_ts": "2026-06-14T18:27:44Z",
+  "verdict": "PASS",
+  "changed_paths_covered": true,
+  "evidence": "Generic v40 L6 shadow-eval core accepts sealed runtime exhaust and app-owned bridge artifacts; apps_rg and apps_eval integrate through app-owned modules."
+}

@@ -15,6 +15,7 @@ Use these repo files as authoritative:
 | MCP dormant/re-add routing | `.claude/mcp-notes.md` and `.claude/skills/mcp-integration/sections/*.md` |
 | Hook behavior | `.claude/settings.json` and `.claude/hooks/*.py` |
 | Plan lifecycle | `.claude/skills/plan-governance/SKILL.md` and the active repo plan SSOT folder |
+| Windows artifact path budget | `.claude/rules/windows-path-budget.md` and `scripts/governance/check_windows_path_budget.py` |
 
 ## Codex-specific layer
 
@@ -26,6 +27,7 @@ Keep the Codex layer intentionally small:
 | `C:\Users\amita\.codex\skills\agentic-workflow-verification\SKILL.md` | Teaches Codex how to verify backup-agent work without duplicating hooks. |
 | `scripts/governance/verify_codex_backup.py` | Checks that the adapter points to live SSOT files and the personal Codex skills exist. |
 | `scripts/governance/audit_codex_mcp_transports.py` | Read-only Codex transport audit for command/script readiness, placeholder leakage, and duplicate MCP process classification. |
+| `scripts/governance/check_windows_path_budget.py` | Codex-callable preflight for nested Windows artifact output roots. |
 
 ## MCP parity notes
 
@@ -50,9 +52,10 @@ These files are evidence snapshots. For live routing decisions, read `.mcp.json`
 2. For T2/T3 tasks, enter the repo's native plan-mode workflow: present a structured plan for approval before edits, using `structured-reasoning` only as decomposition / retrieval guidance.
 3. Do not edit during the planning phase.
 4. Prefer repo scripts and `.claude` guidance over ad hoc shell logic.
-5. Do not duplicate Claude Code hooks in Codex. Use `scripts/governance/verify_codex_backup.py` as the Codex-facing adapter check.
-6. Do not create a Codex-specific MCP registry. If a Claude MCP is unavailable in Codex, name the missing route and use the documented substitute or degraded fallback.
-7. On any runtime failure (`STATUS: FAIL` or a runtime-failure signal — `X3_BLOCK`, traceback, non-zero exit, pytest `N failed`, `BLOCKED_*`/`MISSING_GRAPH_PATH`), include an `RCA:` block in the run summary (symptom · root_cause · evidence · fix_or_next · recurrence_guard) per `.claude/rules/001-runtime-seam-execution.md` and constitutional §37. Never report a green status over a body failure-signal.
+5. Before artifact-heavy Windows `apps_eval`, `apps_rg`, or proof runs, follow `.claude/rules/windows-path-budget.md` and preflight the output root with `scripts/governance/check_windows_path_budget.py`.
+6. Do not duplicate Claude Code hooks in Codex. Use `scripts/governance/verify_codex_backup.py` as the Codex-facing adapter check.
+7. Do not create a Codex-specific MCP registry. If a Claude MCP is unavailable in Codex, name the missing route and use the documented substitute or degraded fallback.
+8. On any runtime failure (`STATUS: FAIL` or a runtime-failure signal — `X3_BLOCK`, traceback, non-zero exit, pytest `N failed`, `BLOCKED_*`/`MISSING_GRAPH_PATH`), include an `RCA:` block in the run summary (symptom · root_cause · evidence · fix_or_next · recurrence_guard) per `.claude/rules/001-runtime-seam-execution.md` and constitutional §37. Never report a green status over a body failure-signal.
 
 ## Test
 
@@ -63,6 +66,14 @@ python scripts/governance/verify_codex_backup.py
 ```
 
 The script fails if a required SSOT file or Codex skill is missing, or if adapter files stop referencing the expected governance anchors.
+
+For Windows artifact path-budget preflight, run:
+
+```bash
+python scripts/governance/check_windows_path_budget.py --out-dir artifacts/ae_rg_live --suite apps_rg.dev.resume_generation
+```
+
+Shorten `--out-dir` until the check passes before starting long live-adapter evaluations.
 
 For MCP transport hygiene, run:
 

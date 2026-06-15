@@ -73,6 +73,7 @@ class L6WritebackProposer:
         task_class: str,
         learning_profile: Optional[dict] = None,
         policy_ref: str,
+        allow_legacy_runtime_l6_writeback: bool = False,
     ) -> None:
         """Initialize L6WritebackProposer.
         
@@ -93,6 +94,7 @@ class L6WritebackProposer:
         self._task_class = task_class
         self._lp = learning_profile or {}
         self._policy_ref = policy_ref
+        self._allow_legacy_runtime_l6_writeback = allow_legacy_runtime_l6_writeback
 
     # ------------------------------------------------------------------
     # Public interface
@@ -101,6 +103,11 @@ class L6WritebackProposer:
     def propose(
         self,
         bundle: RuntimeExhaustBundle,
+        *,
+        completed_eval_record_ref: str = "",
+        rca_packet_ref: str = "",
+        audit_manifest_ref: str = "",
+        l6_gate_receipt_refs: tuple[str, ...] = (),
     ) -> list[FutureRunPromotionRequest]:
         """Inspect ``bundle`` and return a list of FutureRunPromotionRequest proposals.
 
@@ -108,17 +115,27 @@ class L6WritebackProposer:
         Raises L6WritebackProposerError if the bundle is invalid.
         """
         self._assert_valid_bundle(bundle)
+        proof_refs = {
+            "completed_eval_record_ref": completed_eval_record_ref,
+            "rca_packet_ref": rca_packet_ref,
+            "audit_manifest_ref": audit_manifest_ref,
+            "l6_gate_receipt_refs": l6_gate_receipt_refs,
+        }
+        if not self._allow_legacy_runtime_l6_writeback and not (
+            completed_eval_record_ref and rca_packet_ref and audit_manifest_ref
+        ):
+            return []
 
         proposals: list[FutureRunPromotionRequest] = []
 
         # Delegate to per-type signal evaluators
-        proposals.extend(self._evaluate_cache_writeback(bundle))
-        proposals.extend(self._evaluate_evidence_writeback(bundle))
-        proposals.extend(self._evaluate_prompt_profile_update(bundle))
-        proposals.extend(self._evaluate_rubric_threshold_update(bundle))
-        proposals.extend(self._evaluate_judge_calibration_update(bundle))
-        proposals.extend(self._evaluate_route_policy_update(bundle))
-        proposals.extend(self._evaluate_cache_policy_update(bundle))
+        proposals.extend(self._evaluate_cache_writeback(bundle, proof_refs=proof_refs))
+        proposals.extend(self._evaluate_evidence_writeback(bundle, proof_refs=proof_refs))
+        proposals.extend(self._evaluate_prompt_profile_update(bundle, proof_refs=proof_refs))
+        proposals.extend(self._evaluate_rubric_threshold_update(bundle, proof_refs=proof_refs))
+        proposals.extend(self._evaluate_judge_calibration_update(bundle, proof_refs=proof_refs))
+        proposals.extend(self._evaluate_route_policy_update(bundle, proof_refs=proof_refs))
+        proposals.extend(self._evaluate_cache_policy_update(bundle, proof_refs=proof_refs))
 
         return proposals
 
@@ -163,7 +180,9 @@ class L6WritebackProposer:
         proposed_state_diff: str = "{}",
         metric_summary: str = "{}",
         safety_class: str = SAFETY_CLASS_STANDARD,
+        proof_refs: dict[str, object] | None = None,
     ) -> FutureRunPromotionRequest:
+        refs = proof_refs or {}
         return build_future_run_promotion_request(
             source_bundle_ref=bundle.bundle_id,
             app_id=self._app_id,
@@ -179,10 +198,18 @@ class L6WritebackProposer:
             safety_class=safety_class,
             learning_profile_ref=bundle.learning_profile_ref,
             meta_feedback_profile_ref=bundle.meta_feedback_profile_ref,
+            completed_eval_record_ref=str(refs.get("completed_eval_record_ref") or ""),
+            rca_packet_ref=str(refs.get("rca_packet_ref") or ""),
+            audit_manifest_ref=str(refs.get("audit_manifest_ref") or ""),
+            l6_gate_receipt_refs=tuple(refs.get("l6_gate_receipt_refs") or ()),
+            legacy_writeback_override=self._allow_legacy_runtime_l6_writeback,
         )
 
     def _evaluate_cache_writeback(
-        self, bundle: RuntimeExhaustBundle
+        self,
+        bundle: RuntimeExhaustBundle,
+        *,
+        proof_refs: dict[str, object],
     ) -> list[FutureRunPromotionRequest]:
         """Propose exact cache writeback when sealed_result_ref is present."""
         if not bundle.sealed_result_ref:
@@ -208,11 +235,15 @@ class L6WritebackProposer:
                     f'{{"sealed_result_ref":"{bundle.sealed_result_ref}",'
                     f'"exit_disposition_ref":"{bundle.exit_disposition_ref}"}}'
                 ),
+                proof_refs=proof_refs,
             )
         ]
 
     def _evaluate_evidence_writeback(
-        self, bundle: RuntimeExhaustBundle
+        self,
+        bundle: RuntimeExhaustBundle,
+        *,
+        proof_refs: dict[str, object],
     ) -> list[FutureRunPromotionRequest]:
         """Propose evidence artifact writeback when gate_mesh_result_ref is present."""
         if not bundle.gate_mesh_result_ref:
@@ -230,11 +261,15 @@ class L6WritebackProposer:
                 proposed_state_diff=(
                     f'{{"op":"evidence_store","ref":"{bundle.gate_mesh_result_ref}"}}'
                 ),
+                proof_refs=proof_refs,
             )
         ]
 
     def _evaluate_prompt_profile_update(
-        self, bundle: RuntimeExhaustBundle
+        self,
+        bundle: RuntimeExhaustBundle,
+        *,
+        proof_refs: dict[str, object],
     ) -> list[FutureRunPromotionRequest]:
         """Propose prompt profile update only when learning signals include prompt data."""
         if "prompt_variant_performance" not in bundle.learning_signals:
@@ -249,11 +284,15 @@ class L6WritebackProposer:
                 metric_summary=(
                     f'{{"signal":"prompt_variant_performance","run_id":"{bundle.run_id}"}}'
                 ),
+                proof_refs=proof_refs,
             )
         ]
 
     def _evaluate_rubric_threshold_update(
-        self, bundle: RuntimeExhaustBundle
+        self,
+        bundle: RuntimeExhaustBundle,
+        *,
+        proof_refs: dict[str, object],
     ) -> list[FutureRunPromotionRequest]:
         """Propose rubric threshold update when section_underperformance signal present."""
         if "section_underperformance" not in bundle.learning_signals:
@@ -265,11 +304,15 @@ class L6WritebackProposer:
                 target_store=TARGET_STORE_RUBRIC_REGISTRY,
                 target_ref=f"rubric::{self._app_id}::{bundle.run_id}",
                 evidence_refs=(bundle.exit_disposition_ref,),
+                proof_refs=proof_refs,
             )
         ]
 
     def _evaluate_judge_calibration_update(
-        self, bundle: RuntimeExhaustBundle
+        self,
+        bundle: RuntimeExhaustBundle,
+        *,
+        proof_refs: dict[str, object],
     ) -> list[FutureRunPromotionRequest]:
         """Propose judge calibration update when judge_disagreement_spike signal present."""
         if "judge_disagreement_spike" not in bundle.learning_signals:
@@ -281,11 +324,15 @@ class L6WritebackProposer:
                 target_store=TARGET_STORE_JUDGE_CALIBRATION,
                 target_ref=f"jc::{self._app_id}::{bundle.run_id}",
                 evidence_refs=(bundle.exit_disposition_ref,),
+                proof_refs=proof_refs,
             )
         ]
 
     def _evaluate_route_policy_update(
-        self, bundle: RuntimeExhaustBundle
+        self,
+        bundle: RuntimeExhaustBundle,
+        *,
+        proof_refs: dict[str, object],
     ) -> list[FutureRunPromotionRequest]:
         """Propose route policy update when route_fallback_frequency signal present."""
         if "route_fallback_frequency" not in bundle.learning_signals:
@@ -297,11 +344,15 @@ class L6WritebackProposer:
                 target_store=TARGET_STORE_ROUTE_POLICY,
                 target_ref=f"rp::{self._app_id}::{bundle.run_id}",
                 evidence_refs=(bundle.exit_disposition_ref,),
+                proof_refs=proof_refs,
             )
         ]
 
     def _evaluate_cache_policy_update(
-        self, bundle: RuntimeExhaustBundle
+        self,
+        bundle: RuntimeExhaustBundle,
+        *,
+        proof_refs: dict[str, object],
     ) -> list[FutureRunPromotionRequest]:
         """Propose cache policy update when cache_eligibility signal present."""
         if "cache_eligibility" not in bundle.learning_signals:
@@ -313,6 +364,7 @@ class L6WritebackProposer:
                 target_store=TARGET_STORE_CACHE_POLICY,
                 target_ref=f"cp::{self._app_id}::{bundle.run_id}",
                 evidence_refs=(bundle.exit_disposition_ref,),
+                proof_refs=proof_refs,
             )
         ]
 
