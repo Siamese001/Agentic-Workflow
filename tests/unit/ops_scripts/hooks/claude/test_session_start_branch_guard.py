@@ -28,13 +28,24 @@ def test_default_named_worktree_path_and_branch(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.delenv("CHAT_WORKTREE_ROOT", raising=False)
     monkeypatch.delenv("WORKTREE_DIR_PREFIX", raising=False)
     monkeypatch.delenv("WORKTREE_BRANCH_PREFIX", raising=False)
+    monkeypatch.delenv("WORKTREE_IDE_OWNER", raising=False)
 
-    assert guard._branch_name("apps-rg") == "work/apps-rg"
-    assert guard._worktree_path("apps-rg") == guard.REPO_ROOT.parent / f"{guard.REPO_ROOT.name}-apps-rg"
+    assert guard._branch_name("apps-rg") == "claude/apps-rg"
+    assert guard._worktree_path("apps-rg") == guard.REPO_ROOT.parent / "Agentic-Workflow-FRESH-claude-apps-rg"
     assert ".chat-worktrees" not in str(guard._worktree_path("apps-rg"))
 
 
+def test_codex_owner_sets_branch_and_worktree_directory(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("WORKTREE_BRANCH_PREFIX", raising=False)
+    monkeypatch.delenv("WORKTREE_DIR_PREFIX", raising=False)
+    monkeypatch.setenv("WORKTREE_IDE_OWNER", "codex")
+
+    assert guard._branch_name("governance") == "codex/governance"
+    assert guard._worktree_path("governance").name == "Agentic-Workflow-FRESH-codex-governance"
+
+
 def test_worktree_branch_prefix_override_normalizes_slash(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("WORKTREE_IDE_OWNER", raising=False)
     monkeypatch.setenv("WORKTREE_BRANCH_PREFIX", "codex")
 
     assert guard._branch_name("governance") == "codex/governance"
@@ -62,16 +73,19 @@ def test_worktree_summary_parses_registered_worktrees(monkeypatch: pytest.Monkey
 
 def test_guidance_uses_named_worktree_not_chat(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("WORKTREE_BRANCH_PREFIX", raising=False)
+    monkeypatch.delenv("WORKTREE_IDE_OWNER", raising=False)
 
     def fake_summary() -> str:
-        return "Existing worktrees:\n  - work/apps-rg C:/Git/Agentic-Workflow-FRESH-apps-rg"
+        return "Existing worktrees:\n  - claude/apps-rg C:/Git/Agentic-Workflow-FRESH-claude-apps-rg"
 
     monkeypatch.setattr(guard, "_worktree_summary", fake_summary)
 
     msg = guard._guidance("main")
 
     assert "git worktree add" in msg
-    assert "work/apps-rg" in msg
+    assert "claude/apps-rg" in msg
+    assert "Agentic-Workflow-FRESH-claude-apps-rg" in msg
+    assert "Agentic-Workflow-FRESH-codex-apps-rg" in msg
     assert "chat/<timestamp>" in msg
     assert "auto-creates" in msg
 
@@ -99,6 +113,8 @@ def test_main_on_protected_branch_emits_context_but_never_creates_worktree(
         calls.append(args)
         if args == ("rev-parse", "--abbrev-ref", "HEAD"):
             return 0, "main"
+        if args == ("rev-parse", "--git-common-dir"):
+            return 0, r"C:\Git\Agentic-Workflow-FRESH\.git"
         if args == ("worktree", "list", "--porcelain"):
             return 0, "worktree C:/repo\nbranch refs/heads/main\n"
         raise AssertionError(args)
@@ -112,5 +128,5 @@ def test_main_on_protected_branch_emits_context_but_never_creates_worktree(
     payload = json.loads(out.getvalue())
     context = payload["hookSpecificOutput"]["additionalContext"]
     assert "git worktree add" in context
-    assert "work/apps-rg" in context
+    assert "claude/apps-rg" in context
     assert not any(call[:2] == ("worktree", "add") for call in calls)

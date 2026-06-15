@@ -1,6 +1,6 @@
 """Tests for tools/git/worktree_doctor.py classification + runtime-link repair.
 
-Builds a real temp git repo with chat/work/feat/codex worktrees and verifies the doctor's
+Builds a real temp git repo with chat/work/feat/codex/claude worktrees and verifies the doctor's
 classification, recommended actions, the .keep-worktree opt-out, and the --link path.
 """
 from __future__ import annotations
@@ -56,14 +56,19 @@ def test_classifies_kinds(repo: Path) -> None:
     _add_wt(repo, "work-b", "work/b")
     _add_wt(repo, "feat-legacy", "feat/legacy")
     _add_wt(repo, "codex-c", "codex/c")
+    _add_wt(repo, "claude-d", "claude/d")
     result = doctor.classify(repo, trunk_ref="main", do_fetch=False)
     rows = _by_branch(result)
     assert rows["main"]["kind"] == "protected"
     assert rows["chat/a"]["kind"] == "ephemeral"
     assert rows["work/b"]["kind"] == "durable"
     assert rows["feat/legacy"]["kind"] == "durable"
-    assert rows["codex/c"]["kind"] == "non-canonical"
-    assert rows["codex/c"]["canonical"] is False
+    assert rows["codex/c"]["kind"] == "durable"
+    assert rows["codex/c"]["owner"] == "codex"
+    assert rows["codex/c"]["canonical"] is True
+    assert rows["claude/d"]["kind"] == "durable"
+    assert rows["claude/d"]["owner"] == "claude"
+    assert rows["claude/d"]["canonical"] is True
     assert rows["work/b"]["canonical"] is True
 
 
@@ -103,11 +108,14 @@ def test_keep_marker_surfaced(repo: Path) -> None:
 def test_render_table_runs(repo: Path) -> None:
     _add_wt(repo, "chat-a", "chat/a")
     _add_wt(repo, "codex-c", "codex/c")
+    _add_wt(repo, "other-c", "other/c")
     result = doctor.classify(repo, trunk_ref="main", do_fetch=False)
     text = doctor._render_table(result)
     assert "worktree-doctor" in text
+    assert "durable/codex" in text
     assert "non-canonical" in text
-    assert "work/*" in text
+    assert "codex/*" in text
+    assert "claude/*" in text
 
 
 def test_do_link_into_worktree(repo: Path, capsys: pytest.CaptureFixture) -> None:
