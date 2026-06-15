@@ -128,7 +128,10 @@ def test_openai_judge_tier_specific_env() -> None:
     }
     enhanced = resolve_section_proof_judge_model("executive_summary", "openai_chatgpt", env)
     assert enhanced.model_actual == "gpt-5.5"
-    assert enhanced.model_source == "profile_default"
+    # W3 (config-ssot): the env pin gpt-5.5-pro is chat-ineligible -> skipped, so the fallback model
+    # is now sourced from the provider_profiles.yaml judge_models SSOT (was the code profile_defaults
+    # tuple). Resolved model is unchanged (gpt-5.5); only the provenance label moved to the SSOT.
+    assert enhanced.model_source == "yaml_judge_models"
     assert enhanced.reasoning_effort == "high"
     standard = resolve_section_proof_judge_model("headline", "openai_chatgpt", env)
     assert standard.model_actual == "gpt-5.5"

@@ -37,3 +37,24 @@ def test_yaml_standard_matches_code_profile_defaults():
     jm = _judge_models()["standard"]
     for provider, prof in _STANDARD_PROFILE.items():
         assert jm[provider] == prof["profile_defaults"][0], f"standard/{provider} drift"
+
+
+def test_resolver_sources_enhanced_gemini_from_yaml_when_env_absent():
+    # W3 repoint: with no APPS_RG_*_JUDGE_MODEL_* env overrides, the resolver sources the model
+    # from the YAML judge_models SSOT. enhanced/gemini_pro avoids the standard-only google_ai_pro
+    # special-case, so the YAML candidate is the first non-forbidden one.
+    from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
+
+    res = resolve_section_proof_judge_model("executive_summary", "gemini_pro", environ={})
+    assert res.model_actual == _judge_models()["enhanced"]["gemini_pro"]
+    assert res.model_source == "yaml_judge_models"
+    assert not res.blocked
+
+
+def test_resolver_sources_standard_anthropic_from_yaml_when_env_absent():
+    from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
+
+    res = resolve_section_proof_judge_model("unify_narrative", "anthropic_claude", environ={})
+    assert res.model_actual == _judge_models()["standard"]["anthropic_claude"]
+    assert res.model_source == "yaml_judge_models"
+    assert not res.blocked

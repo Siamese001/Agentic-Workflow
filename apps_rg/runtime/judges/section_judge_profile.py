@@ -9,7 +9,32 @@ from typing import Any, Mapping
 
 from agentic_core.config.google_ai_env import google_ai_pro_model_id
 
+from pathlib import Path
+
 from apps_rg.runtime.section_judge_policy import JudgeTier, get_section_judge_policy, normalize_section_id
+
+# Provider-profiles SSOT (apps_rg/config/provider_profiles.yaml). This module lives at
+# apps_rg/runtime/judges/, so parents[2] == apps_rg. The YAML ``judge_models`` block is the
+# SSOT-of-record for per-tier judge models (config-ssot plan W3); the code profile_defaults
+# below remain as a fail-soft fallback and are kept EQUAL to the YAML by
+# tests/unit/apps_rg/test_judge_models_ssot.py.
+_PROVIDER_PROFILES_PATH = Path(__file__).resolve().parents[2] / "config" / "provider_profiles.yaml"
+
+
+def _yaml_judge_models() -> dict:
+    """Per-tier judge models from provider_profiles.yaml ``judge_models``; fail-soft -> {}."""
+    try:
+        import yaml  # noqa: PLC0415 — optional dep; absence falls back to code profile_defaults
+
+        data = yaml.safe_load(_PROVIDER_PROFILES_PATH.read_text(encoding="utf-8"))
+        jm = (data or {}).get("judge_models") or {}
+        return jm if isinstance(jm, dict) else {}
+    except Exception:  # guardian: allow-broad-exception -- SSOT read is fail-soft; resolver must never fail on YAML
+        return {}
+
+
+def _tier_yaml_label(tier: JudgeTier) -> str:
+    return "enhanced" if tier == JudgeTier.ENHANCED_REASONING else "standard"
 
 _FORBIDDEN_PROOF_MODEL_RE = re.compile(
     r"(?:^|[/_-])(flash|mini|haiku)(?:[/_-]|$)|"
@@ -164,6 +189,13 @@ def resolve_section_proof_judge_model(
         pro_id, pro_src = google_ai_pro_model_id(env)
         if pro_id and not any(c[0] == pro_id for c in candidates):
             candidates.append((pro_id, pro_src or "profile_default"))
+    # YAML judge_models is the SSOT-of-record (config-ssot plan W3): inject it just before the
+    # code profile_defaults so it wins over the hardcoded tuple but still loses to env overrides.
+    # Values == profile_defaults[0] (pinned by test_judge_models_ssot.py) -> behavior-preserving.
+    yaml_tier = _yaml_judge_models().get(_tier_yaml_label(tier)) or {}
+    yaml_model = yaml_tier.get(provider_key) if isinstance(yaml_tier, dict) else None
+    if yaml_model and not any(c[0] == str(yaml_model) for c in candidates):
+        candidates.append((str(yaml_model), "yaml_judge_models"))
     for default in profile.get("profile_defaults") or ():
         candidates.append((str(default), "profile_default"))
 
