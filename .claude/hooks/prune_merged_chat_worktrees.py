@@ -1,17 +1,18 @@
 """SessionStart — reap merged chat worktrees (complement to worktree-per-chat).
 
-The worktree-per-chat guard (``session_start_branch_guard.py``) CREATES a git worktree per chat at
-``<repo-parent>/.chat-worktrees/chat-<stamp>-<hex>`` on a ``chat/<...>`` branch. This hook is the
-other half of the lifecycle: once such a chat worktree's branch is fully merged into
-``origin/main`` and its tree is clean, the worktree has served its purpose and is removed
-(``git worktree remove`` + ``git branch -d``). Merged + clean ⇒ zero data loss.
+The worktree-per-chat guard (``session_start_branch_guard.py``) CREATES a registered sibling git
+worktree per chat at ``<repo-parent>/<repo-name>-chat-<stamp>-<hex>`` on a
+``feat/chat-<stamp>-<hex>`` branch. This hook is the other half of the lifecycle: once such a chat
+worktree's branch is fully merged into ``origin/main`` and its tree is clean, the worktree has
+served its purpose and is removed (``git worktree remove`` + ``git branch -d``). Merged + clean ⇒
+zero data loss.
 
 Hard safety envelope — a worktree is reaped ONLY when ALL hold:
-  * its branch matches an ENABLED reap prefix. Default is ``chat/`` only, and ``chat/*``
-    worktrees must additionally live under the chat-worktree root (``.chat-worktrees/``)
-    — long-lived ``feat/``/``codex/``/``fix/`` worktrees and the primary checkout are NEVER
-    eligible by default. An operator can opt non-chat prefixes in via
-    ``WORKTREE_REAP_BRANCH_PREFIXES`` (item #4); those may live anywhere (sibling worktrees);
+  * its branch matches an ENABLED reap prefix. Default is ``chat/`` + ``feat/``. ``chat/*``
+    worktrees must additionally live under the legacy chat-worktree root (``.chat-worktrees/``);
+    ``feat/*`` worktrees may live as registered siblings. Long-lived ``codex/``/``fix/`` worktrees
+    and the primary checkout are NEVER eligible by default. An operator can opt other prefixes in
+    via ``WORKTREE_REAP_BRANCH_PREFIXES`` (item #4); those may live anywhere (sibling worktrees);
   * it does NOT carry a ``.keep-worktree`` marker file (universal opt-out — kept regardless);
   * it is NOT the worktree this session is running in (never reap your own CWD);
   * its branch is an ANCESTOR of ``origin/main`` (fully merged — unmerged work is never touched);
@@ -45,7 +46,7 @@ Branch-prune prefixes: ``WORKTREE_PRUNE_BRANCH_PREFIXES`` csv (default ``chat/``
 Trunk acceptance refs: ``WORKTREE_TRUNK_REFS`` csv (default ``origin/main``,``main`` — a branch is
   "delivered" when it has no commits absent from ANY of these).
 Opt-out marker: a ``.keep-worktree`` file in any worktree exempts it permanently.
-Worktree root override: ``CHAT_WORKTREE_ROOT`` (default ``<repo-parent>/.chat-worktrees``).
+Legacy chat root override: ``CHAT_WORKTREE_ROOT`` (default ``<repo-parent>/.chat-worktrees``).
 Trunk ref override: ``WORKTREE_CLEANUP_TRUNK_REF`` (default ``origin/main``).
 
 CLI (manual sweep): ``python .claude/hooks/prune_merged_chat_worktrees.py [--dry-run]

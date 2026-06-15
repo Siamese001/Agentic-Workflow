@@ -4,7 +4,8 @@ Hard enforcement for worktree-per-chat. The branch is resolved from the
 **working tree that owns the file being edited** (git is run with ``cwd`` set to
 the target file's directory), so:
 
-* Edits inside a chat worktree (on a ``chat/*`` / any non-protected branch) -> ALLOW.
+* Edits inside a registered feature worktree (on a ``feat/*`` / any non-protected branch)
+  -> ALLOW.
 * Edits to the primary checkout while it is on a protected branch
   (``main``/``master``) -> BLOCK (exit 2) with a remediation pointing at the
   worktree. This nudges all mutation into the per-chat worktree created by
@@ -154,8 +155,8 @@ def main() -> int:
     reason = (
         f"worktree-per-chat: editing the primary checkout on protected branch '{branch}' "
         f"is blocked. Work in this chat's worktree instead (see the SessionStart message for "
-        f"its path under .chat-worktrees/), e.g. create one with:\n"
-        f"    git worktree add ../.chat-worktrees/chat-<topic> -b chat/<topic>\n"
+        f"its registered sibling path), e.g. create one with:\n"
+        f"    git worktree add ../Agentic-Workflow-FRESH-<topic> -b feat/<topic> origin/main\n"
         f"`cd` into it and edit there. (Set WORKTREE_PER_CHAT_BYPASS=1 only for an intentional "
         f"on-primary change.)"
     )
