@@ -23,7 +23,6 @@ from apps_qna.types.qna_types import (
     StoryBank,
 )
 
-
 # --------------------------------------------------------------------------
 # Projection helpers
 # --------------------------------------------------------------------------
@@ -332,22 +331,26 @@ def test_synthesize_into_library_fills_empty_banks() -> None:
 
 
 def test_synthesize_into_library_works_with_real_svp_resume() -> None:
-    """Smoke test against the IDENTITY-ONLY master_resume_svp.json.
+    """End-to-end against the IDENTITY-ONLY master_resume_svp.json.
 
-    The base resume carries no bullets/context (the apps_rg graph is the sole fact
-    source), so synthesis from it yields an empty library and no STAR stories.
-    TODO(apps_qna→graph): when load_master_resume is repointed at the graph-derived
-    ExperienceLibrary, restore the >0 stories assertions below.
+    The base resume carries no bullets/context; experience facts come from the
+    apps_rg augmented_skills_graph. Loading the identity-only resume therefore
+    degrades to the graph projection (non-empty points), and STAR synthesis
+    produces real stories with situation/action/lesson populated.
     """
     resume_path = Path("apps_shared/data/master_resume_svp.json")
     if not resume_path.is_file():
         return
     library = load_master_resume(resume_path=resume_path)
-    assert library.points == []  # identity-only resume, no experience facts
+    assert library.points  # graph-sourced experience facts (identity resume empty)
     result = synthesize_into_library(
         library,
         jd_text="Senior leader for AI platform with productization and team scaling.",
         resume_path=resume_path,
     )
-    assert not result.star_bank.stories  # no facts → no STAR stories
+    assert result.star_bank.stories  # graph-derived facts → STAR stories
+    for story in result.star_bank.stories:
+        assert story.situation.strip()
+        assert story.action.strip()
+        assert story.lesson.strip()
     assert isinstance(result.rca_bank, list)
