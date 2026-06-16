@@ -91,9 +91,26 @@ _APPS_LIC_RUN_LIVE_CLAUDE_X1D = "APPS_LIC_RUN_LIVE_CLAUDE_X1D"
 
 
 def _live_x1d_judge_runner():
-    if str(os.environ.get(_APPS_LIC_RUN_LIVE_CLAUDE_X1D) or "").strip() != "1":
+    """Build the live Claude X1D judge runner for the spine.
+
+    Live judging is ON BY DEFAULT whenever ``ANTHROPIC_API_KEY`` is present, so
+    the independent Claude judge gates every production run (without a judge the
+    required X1D profiles are missing and Exit fail-closes to blocked). It is
+    suppressed only when:
+      - explicitly disabled via ``APPS_LIC_RUN_LIVE_CLAUDE_X1D`` in
+        {0,false,no,off}; or
+      - running under pytest without an explicit opt-in — the test suite must not
+        make live network calls; set ``APPS_LIC_RUN_LIVE_CLAUDE_X1D=1`` to force
+        live judging under pytest.
+    """
+    raw = str(os.environ.get(_APPS_LIC_RUN_LIVE_CLAUDE_X1D) or "").strip().lower()
+    explicit_off = raw in {"0", "false", "no", "off"}
+    explicit_on = raw in {"1", "true", "yes", "on"}
+    if explicit_off:
         return None
     if not str(os.environ.get("ANTHROPIC_API_KEY") or "").strip():
+        return None
+    if os.environ.get("PYTEST_CURRENT_TEST") and not explicit_on:
         return None
     transport = AnthropicClaudeX1DTransport()
     return lambda request, candidate: run_claude_x1d_judges(
